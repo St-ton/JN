@@ -14,36 +14,38 @@ class PortletButton extends CMSPortlet
      */
     public function getPreviewHtml($renderLinks = false)
     {
-//        Shop::dbg($this->properties, false);
-
         // general
         $text          = $this->properties['button-text'];
         $type          = $this->properties['button-type'];
         $size          = $this->properties['button-size'];
         $alignment     = $this->properties['button-alignment'];
         $fullWidthflag = $this->properties['button-full-width-flag'];
+
         // icon
         $iconFlag      = $this->properties['icon-flag'];
         $icon          = $this->properties['icon'];
         $iconAlignment = $this->properties['icon-alignment'];
+
         // URL
         $linkFlag       = $this->properties['link-flag'];
         $linkUrl        = $this->properties['link-url'];
         $linkTitle      = $this->properties['link-title'];
         $linkNewTabFlag = $this->properties['link-new-tab-flag'];
 
-        $this->properties['attr']['class']  .= " btn btn-$type btn-$size";
-        $this->properties['attr']['class']  .= ($fullWidthflag == 'yes') ? " btn-block" : "";
+        $this->properties['attr']['class'] .= " btn btn-$type btn-$size";
+        $this->properties['attr']['class'] .= $fullWidthflag === 'yes' ? ' btn-block' : '';
 
-        $previewButton = "<a ";
-        if ($renderLinks && $linkFlag == 'yes' && !empty($linkUrl)) {
+        $previewButton = '<a ';
+
+        if ($renderLinks && $linkFlag === 'yes' && !empty($linkUrl)) {
             $previewButton .= " href='$linkUrl' title='$linkTitle'";
             $previewButton .= !empty($linkNewTabFlag) ? " target='_blank'" : "";
         }
 
         $wrapperClass = '';
+
         if (!empty($alignment)) {
-            if ($alignment != 'inline') {
+            if ($alignment !== 'inline') {
                 $wrapperClass .= ' text-' . $alignment;
             } else {
                 $wrapperClass = 'inline-block';
@@ -51,8 +53,9 @@ class PortletButton extends CMSPortlet
         }
 
         $previewButton .= $this->getStyleString() . $this->getAttribString() . ">";
-        if ($iconFlag == 'yes' && $icon != '') {
-            if ($iconAlignment == 'left') {
+
+        if ($iconFlag === 'yes' && $icon !== '') {
+            if ($iconAlignment === 'left') {
                 $previewButton .= "<i class='$icon' style='top:2px'></i> $text</a>";
             } else {
                 $previewButton .= "$text <i class='$icon' style='top:2px'></i></a>";

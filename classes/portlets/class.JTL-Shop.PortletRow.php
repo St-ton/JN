@@ -18,7 +18,7 @@ class PortletRow extends CMSPortlet
         $res = '<div' . $this->getAttribString() . $this->getStyleString() . '>';
 
         foreach ($layout as $i => $col) {
-            $res .= '<div class="col-xs-' . $col . ' jle-subarea"></div>';
+            $res .= '<div class="col-xs-' . $col . ' cle-area"></div>';
         }
 
         $res .= '</div>';
@@ -36,7 +36,7 @@ class PortletRow extends CMSPortlet
 
         foreach ($layout as $i => $col) {
             $subArea  = $this->subAreas[$i];
-            $res     .= '<div class="col-xs-' . $col . ' jle-subarea">';
+            $res     .= '<div class="col-xs-' . $col . '">';
 
             foreach ($subArea as $subPortlet) {
                 $portlet        = CMS::createPortlet($subPortlet['portletId'])

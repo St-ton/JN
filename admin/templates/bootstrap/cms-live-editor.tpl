@@ -60,7 +60,7 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#" id="jle-btn-save-editor"><i class="fa fa-save"></i></a></li>
+                    <li><a href="#" id="cle-btn-save-editor"><i class="fa fa-save"></i></a></li>
                     <li><a href="{$URL_SHOP}/{$oSeo->cSeo}"><i class="fa fa-close"></i></a></li>
                 </ul>
             </div>
@@ -107,13 +107,14 @@
                     <div class="modal-footer">
                         <div class="btn-group">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                            <button class="btn btn-primary" id="jle-btn-save-config">Speichern</button>
+                            <button class="btn btn-primary" id="cle-btn-save-config">Speichern</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <div class="modal-backdrop" id="loader-backdrop"></div>
+    <div class="modal-backdrop" id="loader-backdrop">
+    </div>
 </body>
 </html>

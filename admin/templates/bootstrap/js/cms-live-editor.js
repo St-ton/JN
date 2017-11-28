@@ -30,17 +30,15 @@ function CmsLiveEditor(env)
     this.iframeCtx = null;
     this.iframeJq = null;
     this.iframeLoaded = false;
-    this.configModalElm = null;
 
+    this.configModalElm = null;
     this.hoveredElm = null;
     this.selectedElm = null;
     this.draggedElm = null;
-    this.targetElm = null;
-    this.adjacentElm = null;
-    this.adjacentDir = ''; // 'above', 'below'
     this.rootElm = null;
     this.labelElm = null;
     this.pinbarElm = null;
+    this.dropTarget = null;
 
     this.curPortletId = 0;
     this.configSaveCallback = this.hostJq.noop;
@@ -50,8 +48,6 @@ function CmsLiveEditor(env)
         portletId: 0,
         defaultProps: {}
     };
-
-    this.newPortletDragging = false;
 
     this.hostJq(this.onDocumentReady.bind(this));
 }
@@ -100,14 +96,14 @@ CmsLiveEditor.prototype = {
                 e.preventDefault();
             });
 
-        this.rootElm = this.iframeJq('.jle-editable');
-        this.labelElm = this.iframeJq('<div>', { 'class': 'jle-label' }).appendTo('body').hide();
+        this.rootElm = this.iframeJq('.cle-area');
+        this.labelElm = this.iframeJq('<div>', { 'class': 'cle-label' }).appendTo('body').hide();
         this.pinbarElm = this.createPinbar().appendTo('body').hide();
         this.portletBtnElms = this.hostJq('.portlet-button');
         this.configModalElm = this.hostJq('#config-modal');
         this.configModalBodyElm = this.hostJq('#config-modal-body');
         this.configFormElm = this.hostJq('#config-form');
-        this.editorSaveBtnElm = this.hostJq('#jle-btn-save-editor');
+        this.editorSaveBtnElm = this.hostJq('#cle-btn-save-editor');
         this.loaderBackdrop = this.hostJq('#loader-backdrop');
 
         this.rootElm
@@ -143,8 +139,12 @@ CmsLiveEditor.prototype = {
     {
         var elm = this.hostJq(e.target);
 
-        this.initNewPortletDrop(elm.data('content'), elm.data('portletid'), JSON.stringify(elm.data('defaultprops')));
-        this.setDragged(this.iframeJq('<div>'));
+        var newElm = $(elm.data('content'));
+
+        newElm.attr('data-portletid', elm.data('portletid'));
+        newElm.attr('data-properties', JSON.stringify(elm.data('defaultprops')));
+
+        this.setDragged(newElm);
 
         // firefox needs this
         e.originalEvent.dataTransfer.effectAllowed = 'move';
@@ -194,7 +194,7 @@ CmsLiveEditor.prototype = {
 
         var children = this.selectedElm
         // select direct descendant subareas or non-nested subareas
-            .find('> .jle-subarea') ; //, :not(.jle-subarea) .jle-subarea');
+            .find('> .cle-area') ; //, :not(.jle-subarea) .jle-subarea');
 
         var properties = this.configFormElm.serializeControls();
 
@@ -210,7 +210,7 @@ CmsLiveEditor.prototype = {
             this.selectedElm.attr('data-properties', JSON.stringify(properties));
 
             this.selectedElm
-                .find('.jle-subarea')
+                .find('.cle-area')
                 .each(function(index, subarea) {
                     if(index < children.length) {
                         this.iframeJq(subarea).html(
@@ -220,6 +220,7 @@ CmsLiveEditor.prototype = {
                 }.bind(this));
 
             this.configModalElm.modal('hide');
+            this.updateDropTargets();
         }
 
         e.preventDefault();
@@ -298,78 +299,22 @@ CmsLiveEditor.prototype = {
     onDragOver: function(e)
     {
         var elm = this.iframeJq(e.target);
-        var adjacent = null;
-        var dir = '';
-        var elmDir = '';
 
-        while(!this.isDropTarget(elm)) {
-            adjacent = elm;
-            elm = elm.parent();
+        if(elm.hasClass('cle-droptarget') && !this.isDescendant(elm, this.draggedElm)) {
+            this.setDropTarget(elm);
         }
-
-        if(adjacent !== null) {
-            var vertRatio = (e.clientY - adjacent.offset().top) / adjacent.innerHeight();
-
-            if(vertRatio < 0.33) {
-                dir = 'above';
-            }
-            else if(vertRatio > 0.66) {
-                dir = 'below';
-            }
+        else {
+            this.setDropTarget();
         }
-
-        var elmVertRatio = (e.clientY - elm.offset().top) / elm.innerHeight();
-
-        if(elmVertRatio < 0.33) {
-            elmDir = 'above';
-        }
-        else if(elmVertRatio > 0.66) {
-            elmDir = 'below';
-        }
-
-        if(elmDir !== '' && !elm.is(this.rootElm)) {
-            do {
-                adjacent = elm;
-                elm = elm.parent();
-            } while(!this.isDropTarget(elm) && !elm.is(this.rootElm));
-
-            dir = elmDir;
-        }
-
-        this.setAdjacent(adjacent, dir);
-        this.setDropTarget(elm);
 
         e.preventDefault();
     },
 
     onDrop: function(e)
     {
-        if(this.newPortletDragging) {
-            var newElm = $(this.newPortlet.content);
-
-            newElm.attr('data-portletid', this.newPortlet.portletId);
-            newElm.attr('data-properties', this.newPortlet.defaultProps);
-
-            this.setDragged(newElm);
-            this.newPortletDragging = false;
-        }
-
-        if(this.targetElm !== null) {
-            if(this.adjacentElm !== null && this.adjacentDir !== '') {
-                if(this.adjacentDir === 'left' || this.adjacentDir === 'above') {
-                    this.draggedElm.insertBefore(this.adjacentElm);
-                }
-                else if(this.adjacentDir === 'right' || this.adjacentDir === 'below') {
-                    this.draggedElm.insertAfter(this.adjacentElm);
-                }
-            }
-            else {
-                this.draggedElm.appendTo(this.targetElm);
-            }
-
-            var selectedElm = this.selectedElm;
-            this.setSelected();
-            this.setSelected(selectedElm);
+        if(this.dropTarget !== null) {
+            this.dropTarget.replaceWith(this.draggedElm);
+            this.updateDropTargets();
         }
     },
 
@@ -393,6 +338,7 @@ CmsLiveEditor.prototype = {
         if(this.selectedElm !== null) {
             this.selectedElm.remove();
             this.setSelected();
+            this.updateDropTargets();
         }
     },
 
@@ -401,8 +347,8 @@ CmsLiveEditor.prototype = {
         if(this.selectedElm !== null) {
             var copiedElm = this.selectedElm.clone();
             copiedElm.insertAfter(this.selectedElm);
-            copiedElm.removeClass('jle-selected');
-            copiedElm.removeClass('jle-hovered');
+            copiedElm.removeClass('cle-selected');
+            copiedElm.removeClass('cle-hovered');
             this.setSelected(this.selectedElm);
         }
     },
@@ -420,7 +366,7 @@ CmsLiveEditor.prototype = {
         elm = elm || null;
 
         if(this.hoveredElm !== null) {
-            this.hoveredElm.removeClass('jle-hovered');
+            this.hoveredElm.removeClass('cle-hovered');
             this.hoveredElm.attr('draggable', 'false');
             this.labelElm.hide();
         }
@@ -428,7 +374,7 @@ CmsLiveEditor.prototype = {
         this.hoveredElm = elm;
 
         if(this.hoveredElm !== null) {
-            this.hoveredElm.addClass('jle-hovered');
+            this.hoveredElm.addClass('cle-hovered');
             this.hoveredElm.attr('draggable', 'true');
             var labelText = (
                 this.hoveredElm.prop('tagName').toLowerCase() + "." +
@@ -450,14 +396,14 @@ CmsLiveEditor.prototype = {
 
         if(elm === null || !elm.is(this.selectedElm)) {
             if(this.selectedElm !== null) {
-                this.selectedElm.removeClass('jle-selected');
+                this.selectedElm.removeClass('cle-selected');
                 this.pinbarElm.hide();
             }
 
             this.selectedElm = elm;
 
             if(this.selectedElm !== null) {
-                this.selectedElm.addClass('jle-selected');
+                this.selectedElm.addClass('cle-selected');
                 this.selectedElm.off('blur').on('blur', this.onBlur.bind(this));
                 this.selectedElm.off('focus').on('focus', this.onFocus.bind(this));
                 this.pinbarElm
@@ -475,13 +421,13 @@ CmsLiveEditor.prototype = {
         elm = elm || null;
 
         if(this.draggedElm !== null) {
-            this.draggedElm.removeClass('jle-dragged');
+            this.draggedElm.removeClass('cle-dragged');
         }
 
         this.draggedElm = elm;
 
         if(this.draggedElm !== null) {
-            this.draggedElm.addClass('jle-dragged');
+            this.draggedElm.addClass('cle-dragged');
         }
     },
 
@@ -489,43 +435,23 @@ CmsLiveEditor.prototype = {
     {
         elm = elm || null;
 
-        if(this.targetElm !== null) {
-            this.targetElm.removeClass('jle-droptarget');
+        if(this.dropTarget !== null) {
+            this.dropTarget.removeClass('cle-active-droptarget');
         }
 
-        this.targetElm = elm;
+        this.dropTarget = elm;
 
-        if(this.targetElm !== null) {
-            this.targetElm.addClass('jle-droptarget');
-        }
-    },
-
-    setAdjacent: function(elm, dir)
-    {
-        elm = elm || null;
-        dir = dir || '';
-
-        if(this.adjacentElm !== null) {
-            this.adjacentElm.removeClass('jle-adjacent-left');
-            this.adjacentElm.removeClass('jle-adjacent-right');
-            this.adjacentElm.removeClass('jle-adjacent-above');
-            this.adjacentElm.removeClass('jle-adjacent-below');
-        }
-
-        this.adjacentElm = elm;
-        this.adjacentDir = dir;
-
-        if(this.adjacentElm !== null && this.adjacentDir !== '') {
-            this.adjacentElm.addClass('jle-adjacent-' + dir);
+        if(this.dropTarget !== null) {
+            this.dropTarget.addClass('cle-active-droptarget');
         }
     },
 
     createPinbar: function()
     {
-        var pinbarElm = this.iframeJq('<div class="jle-pinbar btn-group">');
+        var pinbarElm = this.iframeJq('<div class="cle-pinbar btn-group">');
 
         pinbarElm.append(
-            this.iframeJq('<button class="btn btn-default" id="jle-btn-trash"><i class="fa fa-trash"></i></button>')
+            this.iframeJq('<button class="btn btn-default" id="cle-btn-trash"><i class="fa fa-trash"></i></button>')
                 .click(this.onTrash.bind(this))
         );
         pinbarElm.append(
@@ -544,7 +470,6 @@ CmsLiveEditor.prototype = {
     {
         this.setDragged();
         this.setDropTarget();
-        this.setAdjacent();
     },
 
     isSelectable: function(elm)
@@ -553,13 +478,6 @@ CmsLiveEditor.prototype = {
         // return elm.is(this.rootElm);
         // return !this.isInline(elm) && !elm.is(this.rootElm) && !elm.parent().is('.row');
         // && !elm.is(this.selectedLabelElm) && !elm.is(this.targetLabelElm);
-    },
-
-    isDropTarget: function(elm)
-    {
-        return !this.isDescendant(elm, this.draggedElm) && (
-            elm.is(this.rootElm) || elm.hasClass('jle-subarea')
-        );
     },
 
     isInline: function(elm)
@@ -589,7 +507,7 @@ CmsLiveEditor.prototype = {
     {
         var result = [];
 
-        rootArea.children().each(function(i, portletElm)
+        rootArea.children('[data-portletid]').each(function(i, portletElm)
         {
             result.push(this.portletToJson(this.iframeJq(portletElm)));
 
@@ -608,7 +526,7 @@ CmsLiveEditor.prototype = {
 
         var children = portletElm
         // select direct descendant subareas or non-nested subareas
-            .find('> .jle-subarea') ; //, :not(.jle-subarea) .jle-subarea');
+            .find('> .cle-area') ; //, :not(.jle-subarea) .jle-subarea');
 
         children.each(function (i, child)
         {
@@ -626,6 +544,8 @@ CmsLiveEditor.prototype = {
         for(var areaId in data) {
             this.loadAreaFromJson(data[areaId], this.iframeJq('#' + areaId));
         }
+
+        this.updateDropTargets();
     },
 
     loadAreaFromJson: function(data, areaElm)
@@ -644,7 +564,9 @@ CmsLiveEditor.prototype = {
                 newElm.attr('data-portletid', portletData.portletId);
                 newElm.attr('data-properties', JSON.stringify(portletData.properties));
 
-                newElm.find('.jle-subarea').each(function (index, subarea)
+                this.updateDropTargets();
+
+                newElm.find('.cle-area').each(function (index, subarea)
                 {
                     this.loadAreaFromJson(portletData.subAreas[index], this.iframeJq(subarea));
 
@@ -653,11 +575,17 @@ CmsLiveEditor.prototype = {
         }.bind(this));
     },
 
-    initNewPortletDrop: function(content, portletId, defaultProps)
+    updateDropTargets: function()
     {
-        this.newPortlet = {content: content, portletId: portletId, defaultProps: defaultProps};
-        this.newPortletDragging = true;
+        this.iframeJq('.cle-droptarget').remove();
+        this.iframeJq('.cle-area').append('<div class="cle-droptarget">');
+        this.iframeJq('[data-portletid]').before('<div class="cle-droptarget">');
     },
+
+    stripDropTargets: function()
+    {
+        this.iframeJq('.cle-droptarget').remove();
+    }
 
 };
 

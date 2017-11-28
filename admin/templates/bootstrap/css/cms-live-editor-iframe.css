@@ -2,52 +2,42 @@
     display: none;
 }
 
-.jle-editable, .jle-editable .row > * {
+[data-portletid] {
     min-height: 2em;
-    /*border: 1px dashed #ccc;*/
-    box-shadow: inset 0 0 8px #ccc;
-    /*background-color: rgba(128, 128, 128, 0.25);*/
+    outline: 2px dashed #ccc;
 }
 
-.jle-hovered {
+.cle-area {
+    min-height: 2em;
+}
+
+.cle-droptarget {
+    min-height: 2em;
+    background-color: #eee;
+    opacity: 0.5;
+}
+
+.cle-active-droptarget {
+    background-color: #fed;
+}
+
+.cle-hovered {
     box-shadow: inset 0 0 8px #5cbcf6 !important;
     /*border: 1px dashed #5cbcf6 !important;*/
     cursor: pointer;
 }
 
-.jle-selected {
+.cle-selected {
     outline: 1px dashed #5cbcf6 !important;
     cursor: pointer;
     /*position: relative;*/
 }
 
-.jle-dragged {
+.cle-dragged {
     opacity: 0.5;
 }
 
-.jle-droptarget {
-    box-shadow: inset 0 0 8px #5cb85c !important;
-    /*border: 1px dashed #207e99 !important;*/
-    /*position: relative;*/
-}
-
-.jle-adjacent-left {
-    border-left: 2px dashed #5cb85c !important;
-}
-
-.jle-adjacent-right {
-    border-right: 2px dashed #5cb85c !important;
-}
-
-.jle-adjacent-above {
-    border-top: 2px dashed #5cb85c !important;
-}
-
-.jle-adjacent-below {
-    border-bottom: 2px dashed #5cb85c !important;
-}
-
-.jle-label {
+.cle-label {
     position: absolute;
     background-color: #5cbcf6;
     color: #fff;
@@ -57,7 +47,7 @@
     font-size: 0.75em;
 }
 
-.jle-pinbar {
+.cle-pinbar {
     position: absolute;
     min-width: 1em;
     min-height: 1em;

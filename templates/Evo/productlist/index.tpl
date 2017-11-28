@@ -9,7 +9,7 @@
         {if (!empty($oCMSPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.editpage))}
             {$oCMSPage->cFinalHtml_arr['editor_replace_all']}
         {elseif (!empty($smarty.get.editpage) && !empty($smarty.get.action) && $smarty.get.action === 'replace')}
-            <div id="editor_replace_all" class="jle-editable"></div>
+            {include file='snippets/live_edit.tpl' id='editor_replace_all'}
         {else}
             {block name="productlist-header"}
             {include file='productlist/header.tpl'}

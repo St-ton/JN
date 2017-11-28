@@ -98,6 +98,7 @@ abstract class CMSPortlet
 
     /**
      * @param array $properties
+     * @return $this
      */
     public function setProperties($properties)
     {
@@ -110,6 +111,7 @@ abstract class CMSPortlet
 
     /**
      * @param array[] $subAreas
+     * @return $this
      */
     public function setSubAreas($subAreas)
     {
@@ -118,12 +120,14 @@ abstract class CMSPortlet
         return $this;
     }
 
+    /**
+     * @return string
+     */
     protected function getAttribString()
     {
-        // animation
-        $animationStyle     = $this->properties['animation-style'];
+        $animationStyle = $this->properties['animation-style'];
 
-        if (!empty($animationStyle)){
+        if (!empty($animationStyle)) {
             $this->properties['attr']['class'] .= ' wow ' . $animationStyle;
         }
 
@@ -137,16 +141,23 @@ abstract class CMSPortlet
             }
         }
 
-        return ($attr_str !== '') ? ' ' . $attr_str : '';
+        return $attr_str !== '' ? ' ' . $attr_str : '';
     }
 
-    protected function getStyleString(){
+    /**
+     * @return string
+     */
+    protected function getStyleString()
+    {
         $style_str = '';
+
         if (!empty($this->properties['style']) && is_array($this->properties['style'])) {
             foreach ($this->properties['style'] as $name => $value) {
                 if (trim($value) !== '') {
-                    if (stripos($name, 'margin-') !== false || stripos($name, 'padding-') !== false || stripos($name,
-                            '-width') !== false) {
+                    if (stripos($name, 'margin-') !== false ||
+                        stripos($name, 'padding-') !== false ||
+                        stripos($name, '-width') !== false
+                    ) {
                         $style_str .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . 'px;';
                     } else {
                         $style_str .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . ';';
@@ -155,6 +166,6 @@ abstract class CMSPortlet
             }
         }
 
-        return ($style_str != '') ? ' style="' . $style_str . '"' : '';
+        return $style_str !== '' ? ' style="' . $style_str . '"' : '';
     }
 }

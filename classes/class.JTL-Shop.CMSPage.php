@@ -101,13 +101,15 @@ class CMSPage
         } else {
             $oCmsPageDB->cJson = json_encode($this->data);
             Shop::DB()->update(
-                'tcmspage', ['cKey', 'kKey', 'kSprache'], [$this->cKey, $this->kKey, $this->kSprache], $oCmsPageDB
+                'tcmspage',
+                ['cKey', 'kKey', 'kSprache'],
+                [$this->cKey, $this->kKey, $this->kSprache], $oCmsPageDB
             );
         }
     }
 
     /**
-     * removes this CMS page instance from the database
+     * Remove this CMS page instance from the database
      */
     public function remove()
     {

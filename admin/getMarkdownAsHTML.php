@@ -58,7 +58,7 @@ if (validateToken()) {
     if (file_exists($_POST['path'])) {
         $info = pathinfo($_POST['path']);
         if (strtolower($info['extension']) === 'md') {
-            $szFileContent = file_get_contents(utf8_decode($_POST['path']));
+            $szFileContent = StringHandler::convertUTF8(file_get_contents($_POST['path']));
             if (class_exists('Parsedown')) {
                 $oParseDown       = new Parsedown();
                 $szLicenseContent = $oParseDown->text($szFileContent);

@@ -1351,7 +1351,7 @@ class Artikel
                 'height' => $height
              ],
             'type' => $type,
-            'alt'  => utf8_encode($image->cAltAttribut)
+            'alt'  => $image->cAltAttribut
         ];
     }
 
@@ -1463,7 +1463,6 @@ class Artikel
                 $this->cMerkmalAssoc_arr = [];
                 foreach ($this->oMerkmale_arr as $oMerkmal) {
                     $cMerkmalname = preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/', '', $oMerkmal->cName);
-                    $cMerkmalname = preg_replace('/[^' . utf8_decode('öäüÖÄÜß') . 'a-zA-Z0-9\.\-_]/', '', $cMerkmalname);
                     if (strlen($oMerkmal->cName) > 0) {
                         foreach ($oMerkmal->oMerkmalWert_arr as $i => $oMerkmalWert) {
                             if ($i > 0) {
@@ -4009,8 +4008,8 @@ class Artikel
                 if (Konfigurator::validateKonfig($this->kArtikel)) {
                     $this->oKonfig_arr = Konfigurator::getKonfig($this->kArtikel, $kSprache);
                 } else {
-                    Jtllog::writeLog(utf8_decode('Konfigurator für Artikel (Art.Nr.: ' .
-                        $this->cArtNr . ') konnte nicht geladen werden.'), JTLLOG_LEVEL_ERROR);
+                    Jtllog::writeLog('Konfigurator für Artikel (Art.Nr.: ' .
+                        $this->cArtNr . ') konnte nicht geladen werden.', JTLLOG_LEVEL_ERROR);
                 }
             }
         }

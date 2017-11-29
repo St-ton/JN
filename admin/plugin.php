@@ -129,7 +129,7 @@ if ($step === 'plugin_uebersicht') {
         // check, if there is a LICENSE.md too
         $fAddAsLicenseTab = false;
         if ('' !== $oPlugin->cTextLicensePath) {
-            $szLicenseContent = StringHandler::convertUTF8($oPlugin->cTextLicensePath); // slurp in the file content
+            $szLicenseContent = StringHandler::convertUTF8(file_get_contents($oPlugin->cTextLicensePath)); // slurp in the file content
             // check, if we got a Markdown-parser
             $fMarkDown = false;
             if (class_exists('Parsedown')) {

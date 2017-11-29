@@ -17,7 +17,12 @@ class CMS
             'tcmspage',
             ['cKey', 'kKey', 'kSprache'],
             [$cKey, $kKey, $kSprache],
-            null, null, null, null, false, 'kPage'
+            null,
+            null,
+            null,
+            null,
+            false,
+            'kPage'
         );
 
         if ($oCMSPageDB === null) {

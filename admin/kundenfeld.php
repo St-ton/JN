@@ -164,11 +164,11 @@ if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
     }
 }
 
-// calculate the highest sort-order number (based on th 'ORDER BY' above)
+// calculate the highest sort-order number (based on the 'ORDER BY' above)
 // to recommend the user the next sort-order-value, instead of a placeholder
-$oLastElement      = end($oKundenfeld_arr);
-$nHighestSortValue = (false !== $oLastElement) ? $oLastElement->nSort : 0;
-$oPreLastElement = prev($oKundenfeld_arr);
+$oLastElement       =  end($oKundenfeld_arr);
+$nHighestSortValue  =  (false !== $oLastElement) ? $oLastElement->nSort : 0;
+$oPreLastElement    =  prev($oKundenfeld_arr);
 if (false === $oPreLastElement) {
     if (false !== $oLastElement) {
         $nHighestSortDiff = (0 !== $oLastElement->nSort) ? $oLastElement->nSort : 1;

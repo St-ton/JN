@@ -1,5 +1,9 @@
 # JTL-Shop Changelog
 
+## [4.06.2]
+
+* Sicherheitsupdate
+
 ## [4.06.1]
 
 * [SHOP-1345] - Kupon-Statistikfilter liefert inkorrekte Ergebnisse
@@ -275,6 +279,9 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1674] - Neue Smarty Blocks in snippets/shipping_tax_info.tpl und productdetails/price.tpl
 * [SHOP-1694] - Backstretch-Hintergrundbild verursacht Fehler bei geringer Netzgeschwindigkeit
 
+## [4.05.5]
+
+* Sicherheitsupdate
 
 ## [4.05.4]
 

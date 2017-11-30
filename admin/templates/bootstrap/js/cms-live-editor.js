@@ -64,7 +64,7 @@ CmsLiveEditor.prototype = {
 
         this.iframeElm
             .on('load', this.onIframeLoad.bind(this))
-            .attr('src', this.pageUrl + '?editpage=1&action=' + this.cAction);
+            .attr('src', this.pageUrl + '?editpage=1&cAction=' + this.cAction);
     },
 
     onIframeLoad: function()
@@ -97,12 +97,12 @@ CmsLiveEditor.prototype = {
         this.btnTrashElm = this.hostJq('#btn-trash');
         this.btnCloneElm = this.hostJq('#btn-clone');
         this.btnConfigElm = this.hostJq('#btn-config');
+        this.configFormElm = this.hostJq('#config-form');
         this.portletBtnElms = this.hostJq('.portlet-button');
         this.configModalElm = this.hostJq('#config-modal');
-        this.configModalBodyElm = this.hostJq('#config-modal-body');
-        this.configFormElm = this.hostJq('#config-form');
-        this.editorSaveBtnElm = this.hostJq('#cle-btn-save-editor');
         this.loaderBackdrop = this.hostJq('#loader-backdrop');
+        this.editorSaveBtnElm = this.hostJq('#cle-btn-save-editor');
+        this.configModalBodyElm = this.hostJq('#config-modal-body');
 
         this.rootElm
             .on('mouseover', this.onMouseOver.bind(this))

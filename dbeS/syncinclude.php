@@ -460,11 +460,11 @@ function JTLMapArr($oXmlTree, $cMapping_arr)
 {
     $oMapped = new stdClass();
     foreach ($oXmlTree->Attributes() as $cKey => $cVal) {
-        $oMapped->{$cKey} = utf8_decode((string)$cVal);
+        $oMapped->{$cKey} = (string)$cVal;
     }
     foreach ($cMapping_arr as $cMap) {
         if (isset($oXmlTree->{$cMap})) {
-            $oMapped->{$cMap} = utf8_decode((string)$oXmlTree->{$cMap});
+            $oMapped->{$cMap} = (string)$oXmlTree->{$cMap};
         }
     }
 
@@ -680,10 +680,10 @@ function translateError($cMessage)
 {
     if (preg_match('/Maximum execution time of (\d+) second.? exceeded/', $cMessage, $cMatch_arr)) {
         $nSeconds = (int)$cMatch_arr[1];
-        $cMessage = utf8_decode("Maximale Ausführungszeit von $nSeconds Sekunden überschritten");
+        $cMessage = "Maximale Ausführungszeit von $nSeconds Sekunden überschritten";
     } elseif (preg_match("/Allowed memory size of (\d+) bytes exhausted/", $cMessage, $cMatch_arr)) {
         $nLimit   = (int)$cMatch_arr[1];
-        $cMessage = utf8_decode("Erlaubte Speichergröße von $nLimit Bytes erschöpft");
+        $cMessage = "Erlaubte Speichergröße von $nLimit Bytes erschöpft";
     }
 
     return $cMessage;

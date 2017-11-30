@@ -335,8 +335,8 @@ class NetSyncHandler
             return $_SESSION['bAuthed'];
         }
         // by syncdata
-        $cName   = utf8_decode(urldecode($_REQUEST['uid']));
-        $cPass   = utf8_decode(urldecode($_REQUEST['upwd']));
+        $cName   = urldecode($_REQUEST['uid']);
+        $cPass   = urldecode($_REQUEST['upwd']);
         $bAuthed = false;
         if (strlen($cName) > 0 && strlen($cPass) > 0) {
             $oSync   = new Synclogin();
@@ -367,7 +367,6 @@ class NetSyncHandler
         }
 
         $cJson = json_encode($oResponse);
-        $cJson = utf8_encode($cJson);
 
         echo $cJson;
         exit;

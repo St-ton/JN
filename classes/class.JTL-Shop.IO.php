@@ -153,7 +153,11 @@ class IO
             return new IOError("Wrong required parameter count");
         }
 
-        return call_user_func_array($function, $params);
+        try {
+            return call_user_func_array($function, $params);
+        } catch (Exception $e) {
+            return new IOError($e->getMessage(), $e->getCode());
+        }
     }
 
     /**

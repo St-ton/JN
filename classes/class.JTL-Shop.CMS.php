@@ -17,7 +17,12 @@ class CMS
             'tcmspage',
             ['cKey', 'kKey', 'kSprache'],
             [$cKey, $kKey, $kSprache],
-            null, null, null, null, false, 'kPage'
+            null,
+            null,
+            null,
+            null,
+            false,
+            'kPage'
         );
 
         if ($oCMSPageDB === null) {
@@ -93,7 +98,7 @@ class CMS
         $oDbPortlet = Shop::DB()->select('tcmsportlet', 'kPortlet', $kPortlet);
 
         if (!is_object($oDbPortlet)) {
-            throw new Exception("Portlet ID $kPortlet could not be found in the database.");
+            throw new Exception("Portlet ID $kPortlet could not be found in the database.", 404);
         }
 
         if (isset($oDbPortlet->kPlugin) && $oDbPortlet->kPlugin > 0) {

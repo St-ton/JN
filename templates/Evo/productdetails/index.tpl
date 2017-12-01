@@ -28,7 +28,7 @@
             <meta itemprop="url" content="{$ShopURL}/{$Artikel->cSeo}">
             {if !empty($oCMSPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.frontedit)}
                 {$oCMSPage->cFinalHtml_arr['editor_replace_all']}
-            {elseif (!empty($smarty.get.frontedit) && !empty($smarty.get.method) && $smarty.get.method === 'replace')}
+            {elseif (!empty($smarty.get.frontedit) && !empty($smarty.get.cAction) && $smarty.get.cAction === 'replace')}
                 {include file='snippets/live_edit.tpl' id='editor_replace_all'}
             {else}
                 {include file="snippets/extension.tpl"}

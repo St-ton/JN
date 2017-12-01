@@ -71,10 +71,14 @@ class CMSPage
             $cHtml = '';
 
             foreach ($areaPortlets as $portlet) {
-                $cHtml .= CMS::createPortlet($portlet['portletId'])
-                    ->setProperties($portlet['properties'])
-                    ->setSubAreas($portlet['subAreas'])
-                    ->getFinalHtml();
+                try {
+                    $cHtml .= CMS::createPortlet($portlet['portletId'])
+                        ->setProperties($portlet['properties'])
+                        ->setSubAreas($portlet['subAreas'])
+                        ->getFinalHtml();
+                } catch (Exception $e) {
+                    $cHtml .= '';
+                }
             }
 
             $this->cFinalHtml_arr[$areaId] = $cHtml;

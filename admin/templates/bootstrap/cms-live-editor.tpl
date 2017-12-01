@@ -61,6 +61,7 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" id="btn-preview"><i class="fa fa-eye"></i></a></li>
                     <li><a href="#" id="cle-btn-save-editor"><i class="fa fa-save"></i></a></li>
                     <li><a href="{$URL_SHOP}/{$oSeo->cSeo}"><i class="fa fa-close"></i></a></li>
                 </ul>
@@ -78,6 +79,7 @@
                     <a href="#" class="portlet-button btn btn-default"
                        data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
                        data-portletid="{$oPortlet->kPortlet}"
+                       data-portlettitle="{$oPortlet->cTitle}"
                        data-defaultprops="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}">
                         {$oPortlet->cTitle}
                     </a>
@@ -116,6 +118,11 @@
         </div>
     </div>
     <div class="modal-backdrop" id="loader-backdrop">
+    </div>
+    <div class="cle-pinbar btn-group" id="pinbar">
+        <button class="btn btn-default" id="btn-trash"><i class="fa fa-trash"></i></button>
+        <button class="btn btn-default" id="btn-clone"><i class="fa fa-clone"></i></button>
+        <button class="btn btn-default" id="btn-config"><i class="fa fa-cog"></i></button>
     </div>
 </body>
 </html>

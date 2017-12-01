@@ -43,11 +43,7 @@ function CmsLiveEditor(env)
     this.curPortletId = 0;
     this.configSaveCallback = this.hostJq.noop;
 
-    this.newPortlet = {
-        content: '',
-        portletId: 0,
-        defaultProps: {}
-    };
+    this.previewMode = false;
 
     this.hostJq(this.onDocumentReady.bind(this));
 }
@@ -68,7 +64,7 @@ CmsLiveEditor.prototype = {
 
         this.iframeElm
             .on('load', this.onIframeLoad.bind(this))
-            .attr('src', this.pageUrl + '?editpage=1&action=' + this.cAction);
+            .attr('src', this.pageUrl + '?editpage=1&cAction=' + this.cAction);
     },
 
     onIframeLoad: function()
@@ -92,19 +88,21 @@ CmsLiveEditor.prototype = {
             .off('click')
             .attr('onclick', '')
             .click(function(e) {
-                console.log('link click prevented');
                 e.preventDefault();
             });
 
         this.rootElm = this.iframeJq('.cle-area');
         this.labelElm = this.iframeJq('<div>', { 'class': 'cle-label' }).appendTo('body').hide();
-        this.pinbarElm = this.createPinbar().appendTo('body').hide();
+        this.pinbarElm = this.hostJq('#pinbar');
+        this.btnTrashElm = this.hostJq('#btn-trash');
+        this.btnCloneElm = this.hostJq('#btn-clone');
+        this.btnConfigElm = this.hostJq('#btn-config');
+        this.configFormElm = this.hostJq('#config-form');
         this.portletBtnElms = this.hostJq('.portlet-button');
         this.configModalElm = this.hostJq('#config-modal');
-        this.configModalBodyElm = this.hostJq('#config-modal-body');
-        this.configFormElm = this.hostJq('#config-form');
-        this.editorSaveBtnElm = this.hostJq('#cle-btn-save-editor');
         this.loaderBackdrop = this.hostJq('#loader-backdrop');
+        this.editorSaveBtnElm = this.hostJq('#cle-btn-save-editor');
+        this.configModalBodyElm = this.hostJq('#config-modal-body');
 
         this.rootElm
             .on('mouseover', this.onMouseOver.bind(this))
@@ -114,6 +112,20 @@ CmsLiveEditor.prototype = {
             .on('dragend', this.onDragEnd.bind(this))
             .on('dragover', this.onDragOver.bind(this))
             .on('drop', this.onDrop.bind(this));
+
+        this.hostJq('#btn-preview').click(this.togglePreview.bind(this));
+
+        this.pinbarElm
+            .appendTo(this.iframeCtx.document.body);
+
+        this.btnTrashElm
+            .click(this.onTrash.bind(this));
+
+        this.btnCloneElm
+            .click(this.onClone.bind(this));
+
+        this.btnConfigElm
+            .click(this.onConfig.bind(this));
 
         this.iframeJq(this.iframeCtx.document)
             .on('keydown', this.onKeyDown.bind(this));
@@ -142,6 +154,7 @@ CmsLiveEditor.prototype = {
         var newElm = $(elm.data('content'));
 
         newElm.attr('data-portletid', elm.data('portletid'));
+        newElm.attr('data-portlettitle', elm.data('portlettitle'));
         newElm.attr('data-properties', JSON.stringify(elm.data('defaultprops')));
 
         this.setDragged(newElm);
@@ -179,7 +192,7 @@ CmsLiveEditor.prototype = {
             'saveCmsPage',
             [
                 this.cKey, this.kKey, this.kSprache,
-                this.toJson()
+                this.pageToJson()
             ],
             function() {
                 this.loaderBackdrop.hide();
@@ -203,10 +216,12 @@ CmsLiveEditor.prototype = {
         function onNewHtml(newHtml)
         {
             var newElm = this.iframeJq(newHtml);
+            var portletTitle = this.selectedElm.data('portlettitle');
 
             this.selectedElm.replaceWith(newElm);
             this.setSelected(newElm);
             this.selectedElm.attr('data-portletid', this.curPortletId);
+            this.selectedElm.attr('data-portlettitle', portletTitle);
             this.selectedElm.attr('data-properties', JSON.stringify(properties));
 
             this.selectedElm
@@ -315,6 +330,8 @@ CmsLiveEditor.prototype = {
         if(this.dropTarget !== null) {
             this.dropTarget.replaceWith(this.draggedElm);
             this.updateDropTargets();
+            this.setSelected();
+            this.setSelected(this.draggedElm);
         }
     },
 
@@ -376,12 +393,8 @@ CmsLiveEditor.prototype = {
         if(this.hoveredElm !== null) {
             this.hoveredElm.addClass('cle-hovered');
             this.hoveredElm.attr('draggable', 'true');
-            var labelText = (
-                this.hoveredElm.prop('tagName').toLowerCase() + "." +
-                this.hoveredElm.attr('class').split(' ').join('.')
-            );
             this.labelElm
-                .text(labelText)
+                .text(this.hoveredElm.data('portlettitle'))
                 .show()
                 .css({
                     left: elm.offset().left + 'px',
@@ -410,7 +423,7 @@ CmsLiveEditor.prototype = {
                     .show()
                     .css({
                         left: elm.offset().left + elm.outerWidth() - this.pinbarElm.outerWidth() + 'px',
-                        top: elm.offset().top - this.pinbarElm.outerHeight() + 'px'
+                        top: elm.offset().top + elm.outerHeight() - this.pinbarElm.outerHeight() + 'px'
                     });
             }
         }
@@ -446,26 +459,6 @@ CmsLiveEditor.prototype = {
         }
     },
 
-    createPinbar: function()
-    {
-        var pinbarElm = this.iframeJq('<div class="cle-pinbar btn-group">');
-
-        pinbarElm.append(
-            this.iframeJq('<button class="btn btn-default" id="cle-btn-trash"><i class="fa fa-trash"></i></button>')
-                .click(this.onTrash.bind(this))
-        );
-        pinbarElm.append(
-            this.iframeJq('<button class="btn btn-default"><i class="fa fa-clone"></i></button>')
-                .click(this.onClone.bind(this))
-        );
-        pinbarElm.append(
-            this.iframeJq('<button class="btn btn-default"><i class="fa fa-cog"></i></button>')
-                .click(this.onConfig.bind(this))
-        );
-
-        return pinbarElm;
-    },
-
     cleanUpDrag: function()
     {
         this.setDragged();
@@ -490,7 +483,7 @@ CmsLiveEditor.prototype = {
         return tree.has(descendant).length > 0;
     },
 
-    toJson: function()
+    pageToJson: function()
     {
         var result = {};
 
@@ -521,6 +514,7 @@ CmsLiveEditor.prototype = {
         var result = {};
 
         result.portletId = portletElm.data('portletid');
+        result.portletTitle = portletElm.data('portlettitle');
         result.properties = portletElm.data('properties');
         result.subAreas = [];
 
@@ -562,6 +556,7 @@ CmsLiveEditor.prototype = {
 
                 portletElm.replaceWith(newElm);
                 newElm.attr('data-portletid', portletData.portletId);
+                newElm.attr('data-portlettitle', portletData.portletTitle);
                 newElm.attr('data-properties', JSON.stringify(portletData.properties));
 
                 this.updateDropTargets();
@@ -585,7 +580,19 @@ CmsLiveEditor.prototype = {
     stripDropTargets: function()
     {
         this.iframeJq('.cle-droptarget').remove();
-    }
+    },
+
+    togglePreview: function()
+    {
+        if (this.previewMode) {
+            this.updateDropTargets();
+            this.previewMode = false;
+        }
+        else {
+            this.stripDropTargets();
+            this.previewMode = true;
+        }
+    },
 
 };
 

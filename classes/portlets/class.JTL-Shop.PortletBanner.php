@@ -70,6 +70,7 @@ class PortletBanner extends CMSPortlet
         return Shop::Smarty()->assign('properties', $this->properties)
             ->assign('oBanner', $oImageMap)
             ->assign('isFluidBanner', false)
+            ->assign('attribString', $this->getAttribString())
             ->assign('isFluid', $isFluid)
             ->fetch('portlets/final.banner.tpl');
     }

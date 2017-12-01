@@ -13,7 +13,7 @@
                         {else}
                             <div class="slide">
                         {/if}
-                                <img alt="{$slide.cTitle}" title="{$slideTitle}" src="{$slide.url}"/>
+                                <img alt="{$slide.cTitle}" title="{$slideTitle}"{$slide.srcStr}/>
                         {if $renderLinks && !empty($slide.cLink)}
                             </a>
                         {else}

@@ -17,6 +17,9 @@ class PortletImageSlider extends CMSPortlet
             });
         }
         $this->properties['slider-id'] = uniqid();
+        foreach ($this->properties['slides'] as &$slide) {
+            $slide['srcStr'] = $this->getSrcString($slide['url']);
+        }
 
         return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
@@ -34,6 +37,9 @@ class PortletImageSlider extends CMSPortlet
             });
         }
         $this->properties['slider-id'] = uniqid();
+        foreach ($this->properties['slides'] as &$slide) {
+            $slide['srcStr'] = $this->getSrcString($slide['url']);
+        }
 
         return Shop::Smarty()
             ->assign('properties', $this->properties)

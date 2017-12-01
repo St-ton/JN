@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+use Imanee\Imanee;
 
 /**
  * Class CMSPortlet
@@ -135,7 +136,9 @@ abstract class CMSPortlet
 
         if (!empty($this->properties['attr']) && is_array($this->properties['attr'])) {
             foreach ($this->properties['attr'] as $name => $value) {
-                if (trim($value) !== '') {
+                if (trim($value) !== '' && $name === 'src' && $value !== URL_SHOP . '/gfx/keinBild.gif') {
+                    $attr_str .= $this->getSrcString($value);
+                } elseif (trim($value) !== '') {
                     $attr_str .= $name . '="' . htmlspecialchars($value, ENT_QUOTES) . '" ';
                 }
             }
@@ -167,5 +170,42 @@ abstract class CMSPortlet
         }
 
         return $style_str !== '' ? ' style="' . $style_str . '"' : '';
+    }
+
+    /**
+     * @param String $src
+     * @return string
+     */
+    protected function getSrcString($src)
+    {
+        $settings = Shop::getSettings([CONF_BILDER]);
+
+        $size_arr = [
+            'xs/' => WIDTH_CMS_IMAGE_XS,
+            'sm/' => WIDTH_CMS_IMAGE_SM,
+            'md/' => WIDTH_CMS_IMAGE_MD,
+            'lg/' => WIDTH_CMS_IMAGE_LG,
+            'xl/' => WIDTH_CMS_IMAGE_XL
+        ];
+        $name = explode('/', $src);
+        $name = end($name);
+        $srcString = ' srcset="';
+
+        foreach ($size_arr as $size => $width){
+            if (!file_exists(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name) === true){
+                $image = new Imanee(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $name);
+                $imageSize = $image->getSize();
+                $factor = $width/$imageSize['width'];
+                $image->resize((int)$width, (int)($imageSize['height']*$factor))
+                    ->write(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name, $settings['bilder']['bilder_jpg_quali']);
+
+                unset($image);
+            }
+            $srcString .= PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
+        }
+
+        $srcString = substr($srcString, 0, -1) . '" sizes="100vw" src="' . PFAD_MEDIAFILES . 'Bilder/lg/' . $name . '"';
+
+        return $srcString;
     }
 }

@@ -1451,14 +1451,16 @@ class ProductFilter
     }
 
     /**
+     * @param bool $withAnd
      * @return string
      */
-    public function getStockFilterSQL()
+    public function getStockFilterSQL($withAnd = true)
     {
         $filterSQL  = '';
         $filterType = (int)$this->conf['global']['artikel_artikelanzeigefilter'];
+        $and        = $withAnd === true ? 'AND ' : '';
         if ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-            $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
+            $filterSQL = $and . "(tartikel.cLagerBeachten != 'Y'
                         OR tartikel.fLagerbestand > 0
                         OR (tartikel.cLagerVariation = 'Y'
                             AND (
@@ -1466,9 +1468,9 @@ class ProductFilter
                                 FROM teigenschaft
                                 INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                                 WHERE teigenschaft.kArtikel = tartikel.kArtikel
-                            ) > 0))";;
+                            ) > 0))";
         } elseif ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-            $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
+            $filterSQL = $and . "(tartikel.cLagerBeachten != 'Y'
                         OR tartikel.fLagerbestand > 0
                         OR tartikel.cLagerKleinerNull = 'Y'
                         OR (tartikel.cLagerVariation = 'Y'
@@ -1946,7 +1948,7 @@ class ProductFilter
         // default base conditions
         $conditions[] = 'tartikelsichtbarkeit.kArtikel IS NULL';
         $conditions[] = 'tartikel.kVaterArtikel = 0';
-        $conditions[] = $this->getStockFilterSQL();
+        $conditions[] = $this->getStockFilterSQL(false);
         // remove empty conditions
         $conditions = array_filter($conditions);
         executeHook(HOOK_PRODUCTFILTER_GET_BASE_QUERY, [

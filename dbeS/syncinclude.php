@@ -344,7 +344,7 @@ function buildAttributes(&$arr, $cExclude_arr = [])
 function zipRedirect($zip, $xml_obj)
 {
     $xmlfile = fopen(PFAD_SYNC_TMP . FILENAME_XML, 'w');
-    fwrite($xmlfile, strtr(XML_serialize($xml_obj), "\0", ' '));
+    fwrite($xmlfile, strtr(StringHandler::convertISO(XML_serialize($xml_obj)), "\0", ' '));
     fclose($xmlfile);
     if (file_exists(PFAD_SYNC_TMP . FILENAME_XML)) {
         $archive = new PclZip(PFAD_SYNC_TMP . $zip);

@@ -211,9 +211,8 @@ class ProductFilter
      * @param array  $languages
      * @param int    $currentLanguageID
      * @param array  $config
-     * @param NiceDB $db
      */
-    public function __construct($languages = null, $currentLanguageID = null, $config = null, $db = null)
+    public function __construct($languages = null, $currentLanguageID = null, $config = null)
     {
         $urls                    = new stdClass();
         $urls->cAllePreisspannen = '';
@@ -1458,28 +1457,22 @@ class ProductFilter
     {
         $filterSQL  = '';
         $filterType = (int)$this->conf['global']['artikel_artikelanzeigefilter'];
-        $and        = $withAnd === true ? 'AND ' : '';
-        if ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-            $filterSQL = $and . "(tartikel.cLagerBeachten != 'Y'
-                        OR tartikel.fLagerbestand > 0
-                        OR (tartikel.cLagerVariation = 'Y'
-                            AND (
-                                SELECT MAX(teigenschaftwert.fLagerbestand)
-                                FROM teigenschaft
-                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
-                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
-                            ) > 0))";
-        } elseif ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-            $filterSQL = $and . "(tartikel.cLagerBeachten != 'Y'
-                        OR tartikel.fLagerbestand > 0
-                        OR tartikel.cLagerKleinerNull = 'Y'
-                        OR (tartikel.cLagerVariation = 'Y'
-                            AND (
-                                SELECT MAX(teigenschaftwert.fLagerbestand)
-                                FROM teigenschaft
-                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
-                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
-                            ) > 0))";
+        if ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+            || $filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+        ) {
+            $filterSQL = ($withAnd === true ? 'AND ' : '') .
+                "(tartikel.cLagerBeachten != 'Y'
+                    OR tartikel.fLagerbestand > 0
+                    OR (tartikel.cLagerVariation = 'Y'
+                        AND (
+                            SELECT MAX(teigenschaftwert.fLagerbestand)
+                            FROM teigenschaft
+                            INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                            WHERE teigenschaft.kArtikel = tartikel.kArtikel
+                        ) > 0))";
+        }
+        if ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
+            $filterSQL .= " OR tartikel.cLagerKleinerNull = 'Y'";
         }
         executeHook(HOOK_STOCK_FILTER, [
             'conf'      => $filterType,

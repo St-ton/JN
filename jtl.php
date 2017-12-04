@@ -59,7 +59,6 @@ if (isset($_POST['kUpload']) &&
     UploadDatei::send_file_to_browser(
         PFAD_UPLOADS . $oUploadDatei->cPfad,
         'application/octet-stream',
-        true,
         $oUploadDatei->cName
     );
 }

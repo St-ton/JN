@@ -179,7 +179,7 @@ function werteRefererAus($kBesucher, $referer)
     }
     if ($param !== '') {
         preg_match("/(\?$param|&$param)=[^&]+/i", $roh, $treffer);
-        $ausdruck->cSuchanfrage = isset($treffer[0]) ? utf8_decode(urldecode(substr($treffer[0], 3))) : null;
+        $ausdruck->cSuchanfrage = isset($treffer[0]) ? urldecode(substr($treffer[0], 3)) : null;
         if ($ausdruck->cSuchanfrage) {
             Shop::DB()->insert('tbesuchersuchausdruecke', $ausdruck);
         }

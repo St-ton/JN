@@ -1453,16 +1453,31 @@ class ProductFilter
     /**
      * @return string
      */
-    public function getStorageFilterSQL()
+    public function getStockFilterSQL()
     {
         $filterSQL  = '';
         $filterType = (int)$this->conf['global']['artikel_artikelanzeigefilter'];
         if ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-            $filterSQL = "(NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
-                            OR tartikel.cLagerVariation = 'Y')";
+            $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
+                        OR tartikel.fLagerbestand > 0
+                        OR (tartikel.cLagerVariation = 'Y'
+                            AND (
+                                SELECT MAX(teigenschaftwert.fLagerbestand)
+                                FROM teigenschaft
+                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
+                            ) > 0))";;
         } elseif ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-            $filterSQL = "(NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
-                            OR tartikel.cLagerKleinerNull = 'Y' OR tartikel.cLagerVariation = 'Y')";
+            $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
+                        OR tartikel.fLagerbestand > 0
+                        OR tartikel.cLagerKleinerNull = 'Y'
+                        OR (tartikel.cLagerVariation = 'Y'
+                            AND (
+                                SELECT MAX(teigenschaftwert.fLagerbestand)
+                                FROM teigenschaft
+                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
+                            ) > 0))";
         }
         executeHook(HOOK_STOCK_FILTER, [
             'conf'      => $filterType,
@@ -1931,7 +1946,7 @@ class ProductFilter
         // default base conditions
         $conditions[] = 'tartikelsichtbarkeit.kArtikel IS NULL';
         $conditions[] = 'tartikel.kVaterArtikel = 0';
-        $conditions[] = $this->getStorageFilterSQL();
+        $conditions[] = $this->getStockFilterSQL();
         // remove empty conditions
         $conditions = array_filter($conditions);
         executeHook(HOOK_PRODUCTFILTER_GET_BASE_QUERY, [

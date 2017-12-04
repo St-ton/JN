@@ -412,7 +412,7 @@ class FilterItemPriceRange extends AbstractFilter
                 $state->joins .
                 ' WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0 ' .
-                    $this->productFilter->getStorageFilterSQL() .
+                    $this->productFilter->getStockFilterSQL() .
                     $state->conditions .
                 ' GROUP BY tartikel.kArtikel' .
                 $state->having .
@@ -441,7 +441,7 @@ class FilterItemPriceRange extends AbstractFilter
                         $state->joins .
                         ' WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = 0' .
-                            $this->productFilter->getStorageFilterSQL() .
+                            $this->productFilter->getStockFilterSQL() .
                             $state->conditions .
                         ' GROUP BY tartikel.kArtikel' .
                         $state->having .
@@ -529,7 +529,7 @@ class FilterItemPriceRange extends AbstractFilter
                                 FROM tartikel ' . implode("\n", $state->joins) . '
                                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                     AND tartikel.kVaterArtikel = 0
-                                    ' . $this->productFilter->getStorageFilterSQL() . '
+                                    ' . $this->productFilter->getStockFilterSQL() . '
                                     ' . $state->conditions . '
                                 GROUP BY tartikel.kArtikel
                                 ' . implode("\n", $state->having) . '

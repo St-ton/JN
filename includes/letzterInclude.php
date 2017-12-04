@@ -78,7 +78,10 @@ if (!isset($NaviFilter)) {
 if ($smarty->getTemplateVars('NaviFilter') === null) {
     $smarty->assign('NaviFilter', $NaviFilter);
 }
-$smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
+// assign variables moved from $_SESSION to cache to smarty
+$smarty->assign('linkgroups', $linkHelper->getLinkGroups())
+       ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
+       ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie, false))
        ->assign('bMobilMoeglich', $bMobile)
        ->assign('cPluginCssConditional_arr', $cMinify_arr['plugin_css_conditional'])

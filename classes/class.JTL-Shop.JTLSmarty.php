@@ -308,16 +308,6 @@ class JTLSmarty extends SmartyBC
 
             if ($isAdmin === false) {
                 $this->cache_lifetime = 86400;
-                // assign variables moved from $_SESSION to cache to smarty
-                $linkHelper = LinkHelper::getInstance();
-                $linkGroups = $linkHelper->getLinkGroups();
-                if ($linkGroups === null) {
-                    // this can happen when there is a $_SESSION active and object cache is being flushed
-                    // since setzeLinks() is only executed in class.core.Session.php
-                    $linkGroups = setzeLinks();
-                }
-                $this->assign('linkgroups', $linkGroups)
-                     ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers());
                 $this->template_class = 'jtlTplClass';
             }
             if (!$isAdmin) {

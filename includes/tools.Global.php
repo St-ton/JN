@@ -1157,43 +1157,6 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
 }
 
 /**
- * @return string
- */
-function gibLagerfilter()
-{
-    $conf      = Shop::getSettings([CONF_GLOBAL]);
-    $filterSQL = '';
-    if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-        $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
-                        OR tartikel.fLagerbestand > 0
-                        OR (tartikel.cLagerVariation = 'Y'
-                            AND (
-                                SELECT MAX(teigenschaftwert.fLagerbestand)
-                                FROM teigenschaft
-                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
-                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
-                            ) > 0))";
-    } elseif ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-        $filterSQL = "AND (tartikel.cLagerBeachten != 'Y'
-                        OR tartikel.fLagerbestand > 0
-                        OR tartikel.cLagerKleinerNull = 'Y'
-                        OR (tartikel.cLagerVariation = 'Y'
-                            AND (
-                                SELECT MAX(teigenschaftwert.fLagerbestand)
-                                FROM teigenschaft
-                                INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
-                                WHERE teigenschaft.kArtikel = tartikel.kArtikel
-                            ) > 0))";
-    }
-    executeHook(HOOK_STOCK_FILTER, [
-        'conf'      => (int)$conf['global']['artikel_artikelanzeigefilter'],
-        'filterSQL' => &$filterSQL
-    ]);
-
-    return $filterSQL;
-}
-
-/**
  * @param array  $data
  * @param string $key
  * @param bool   $bStringToLower
@@ -6110,6 +6073,15 @@ function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true
     $helper = KategorieHelper::getInstance($kSprache, $kKundengruppe);
 
     return $helper->getPath($Kategorie, $bString);
+}
+
+/**
+ * @return string
+ * @deprecated since 4.07
+ */
+function gibLagerfilter()
+{
+    return Shop::getProductFilter()->getStockFilterSQL();
 }
 
 /**

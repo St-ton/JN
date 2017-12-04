@@ -34,8 +34,8 @@ class HerstellerHelper
      */
     public function __construct()
     {
-        $lagerfilter   = gibLagerfilter();
-        $this->cacheID = 'manuf_' . Shop::Cache()->getBaseID() . (($lagerfilter !== '') ? md5($lagerfilter) : '');
+        $lagerfilter   = Shop::getProductFilter()->getStockFilterSQL();
+        $this->cacheID = 'manuf_' . Shop::Cache()->getBaseID() . ($lagerfilter !== '' ? md5($lagerfilter) : '');
         self::$langID  = Shop::getLanguage();
         if (self::$langID <= 0) {
             if (Shop::getLanguage() > 0) {
@@ -68,8 +68,8 @@ class HerstellerHelper
             return $this->manufacturers;
         }
         if (($manufacturers = Shop::Cache()->get($this->cacheID)) === false) {
-            $lagerfilter = gibLagerfilter();
-            //fixes for admin backend
+            $lagerfilter = Shop::getProductFilter()->getStockFilterSQL();
+            // fixes for admin backend
             $manufacturers   = Shop::DB()->query(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                         thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 

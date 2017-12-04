@@ -121,9 +121,14 @@
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <button type="submit" value="{if isset($oVersandzuschlag->kVersandart) && $oVersandzuschlag->kVersandart > 0}{#createEditList#}{else}{#createNewList#}{/if}" class="btn btn-primary">
-                        <i class="fa fa-save"></i> {if isset($oVersandzuschlag->kVersandart) && $oVersandzuschlag->kVersandart > 0}{#createEditList#}{else}{#createNewList#}{/if}
-                    </button>
+                    <div class="btn-group">
+                        <a href="versandarten.php" type="button" class="btn btn-warning">
+                            <i class="fa fa-chevron-left"></i> {#back2versandarten#}
+                        </a>
+                        <button type="submit" value="{if isset($oVersandzuschlag->kVersandart) && $oVersandzuschlag->kVersandart > 0}{#createEditList#}{else}{#createNewList#}{/if}" class="btn btn-primary">
+                            <i class="fa fa-save"></i> {if isset($oVersandzuschlag->kVersandart) && $oVersandzuschlag->kVersandart > 0}{#createEditList#}{else}{#createNewList#}{/if}
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>

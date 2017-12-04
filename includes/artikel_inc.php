@@ -20,7 +20,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
     $config   = $config['artikeldetails'];
     if ($config['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
         $xSelling->Standard = new stdClass();
-        $cSQLLager          = gibLagerfilter();
+        $cSQLLager          = Shop::getProductFilter()->getStockFilterSQL();
         $xsell              = Shop::DB()->query(
             "SELECT txsell.* FROM txsell, tartikel
                 WHERE txsell.kXSellArtikel = tartikel.kArtikel {$cSQLLager}
@@ -628,7 +628,7 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
                     AND tpreise.kArtikel = tartikel.kArtikel
                     AND tartikel.kArtikel < $kArtikel
                     AND tpreise.kKundengruppe = " . $customerGroupID . "
-                    " . gibLagerfilter() . "
+                    " . Shop::getProductFilter()->getStockFilterSQL() . "
                 ORDER BY tartikel.kArtikel DESC
                 LIMIT 1", 1
         );
@@ -644,7 +644,7 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
                     AND tpreise.kArtikel = tartikel.kArtikel
                     AND tartikel.kArtikel > $kArtikel
                     AND tpreise.kKundengruppe = " . $customerGroupID . "
-                    " . gibLagerfilter() . "
+                    " . Shop::getProductFilter()->getStockFilterSQL() . "
                 ORDER BY tartikel.kArtikel
                 LIMIT 1", 1
         );
@@ -1126,7 +1126,7 @@ function holeAehnlicheArtikel($kArtikel)
         if ((int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
             $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
         }
-        $lagerFilter         = gibLagerfilter();
+        $lagerFilter         = Shop::getProductFilter()->getStockFilterSQL();
         $customerGroupID     = Session::CustomerGroup()->getID();
         $oArtikelMerkmal_arr = Shop::DB()->query(
             "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel

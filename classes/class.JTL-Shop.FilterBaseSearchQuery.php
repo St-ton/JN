@@ -809,7 +809,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
                     $match AS score
                     FROM tartikel
-                    WHERE $match " . gibLagerfilter() . " ";
+                    WHERE $match " . $this->productFilter->getStockFilterSQL() . " ";
 
             if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
                 $match  = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ") 
@@ -820,7 +820,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     $match AS score
                     FROM tartikel
                     INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
-                    WHERE $match " . gibLagerfilter() . " ";
+                    WHERE $match " . $this->productFilter->getStockFilterSQL() . " ";
             }
 
             $cISQL = "INSERT INTO tsuchcachetreffer

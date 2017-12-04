@@ -759,7 +759,7 @@ function gibGratisGeschenkArtikel($conf)
                 AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() .
             "WHERE tartikelsichtbarkeit.kArtikel IS NULL
             AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
-            gibLagerfilter() .
+            Shop::getProductFilter()->getStockFilterSQL() .
             $cSQLSort .
             $cSQLLimit, 2
     );

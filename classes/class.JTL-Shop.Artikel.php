@@ -1113,7 +1113,7 @@ class Artikel
      * @param int   $kKundengruppe
      * @return float|null
      */
-    public function gibPreis($anzahl, $Eigenschaft_arr, $kKundengruppe = 0)
+    public function gibPreis($anzahl, array $Eigenschaft_arr, $kKundengruppe = 0)
     {
         if (!Session::CustomerGroup()->mayViewPrices()) {
             return null;
@@ -1128,12 +1128,10 @@ class Artikel
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
         $this->Preise = new Preise($kKundengruppe, $this->kArtikel, $kKunde, (int)$this->kSteuerklasse);
         // Varkombi Kind?
-        if ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0) {
-            $this->Preise->rabbatierePreise($this->getDiscount($kKundengruppe, $this->kVaterArtikel));
-        } else {
-            $this->Preise->rabbatierePreise($this->getDiscount($kKundengruppe, $this->kArtikel));
-        }
-        //$preis = $this->Preise->fVK[1];
+        $articleID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
+            ? $this->kVaterArtikel
+            : $this->kArtikel;
+        $this->Preise->rabbatierePreise($this->getDiscount($kKundengruppe, $this->kArtikel));
         $preis = $this->Preise->fVKNetto;
         foreach ($this->Preise->fPreis_arr as $i => $fPreis) {
             if ($this->Preise->nAnzahl_arr[$i] <= $anzahl) {
@@ -1142,54 +1140,47 @@ class Artikel
         }
         $nettopreise = Session::CustomerGroup()->isMerchant();
         // Ticket #1247
-        if (!$nettopreise) {
-            //$preis = berechneBrutto($preis,gibUst($this->kSteuerklasse))/((100+gibUst($this->kSteuerklasse))/100);
-            $preis = berechneBrutto($preis, gibUst($this->kSteuerklasse), 4) / ((100 + gibUst($this->kSteuerklasse)) / 100);
-        } else {
-            //$preis = round($preis,2);
-            $preis = round($preis, 4);
-        }
-        //evtl. auf/abpreise durch variationen?
-        if (is_array($Eigenschaft_arr)) {
-            foreach ($Eigenschaft_arr as $EigenschaftWert) {
-                // Falls es sich um eine Variationskombination handelt, spielen Variationsaufpreise keine Rolle
-                // da Vakombis Ihre Aufpreise direkt im Artikelpreis definieren.
-                if ($this->nIstVater === 1 || $this->kVaterArtikel > 0) {
-                    continue;
-                }
-                if (isset($EigenschaftWert->cTyp) &&
-                    ($EigenschaftWert->cTyp === 'FREIFELD' || $EigenschaftWert->cTyp === 'PFLICHT-FREIFELD')
-                ) {
-                    continue;
-                }
-
-                $kEigenschaftWert = 0;
-                if (isset($EigenschaftWert->kEigenschaftWert) && $EigenschaftWert->kEigenschaftWert > 0) {
-                    $kEigenschaftWert = (int)$EigenschaftWert->kEigenschaftWert;
-                } elseif ($EigenschaftWert > 0) {
-                    $kEigenschaftWert = (int)$EigenschaftWert;
-                }
-                $EW          = new EigenschaftWert($kEigenschaftWert);
-                $aufpreis    = $EW->fAufpreisNetto;
-                $EW_aufpreis = Shop::DB()->select(
-                    'teigenschaftwertaufpreis',
-                    'kEigenschaftWert', $kEigenschaftWert,
-                    'kKundengruppe', $kKundengruppe
-                );
-                if (!is_object($EW_aufpreis)) {
-                    $EW_aufpreis = Shop::DB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
-                }
-                if (isset($EW_aufpreis->fAufpreisNetto)) {
-                    $fMaxRabatt = $this->getDiscount($kKundengruppe, $this->kArtikel);
-                    $aufpreis   = $EW_aufpreis->fAufpreisNetto * ((100 - $fMaxRabatt) / 100);
-                }
-                // Ticket #1247
-                $aufpreis = !$nettopreise
-                    ? berechneBrutto($aufpreis, gibUst($this->kSteuerklasse), 4) / ((100 + gibUst($this->kSteuerklasse)) / 100)
-                    : round($aufpreis, 4);
-
-                $preis += $aufpreis;
+        $preis = $nettopreise
+            ? round($preis, 4)
+            : berechneBrutto($preis, gibUst($this->kSteuerklasse), 4) / ((100 + gibUst($this->kSteuerklasse)) / 100);
+        foreach ($Eigenschaft_arr as $EigenschaftWert) {
+            // Falls es sich um eine Variationskombination handelt, spielen Variationsaufpreise keine Rolle
+            // da Vakombis Ihre Aufpreise direkt im Artikelpreis definieren.
+            if ($this->nIstVater === 1 || $this->kVaterArtikel > 0) {
+                continue;
             }
+            if (isset($EigenschaftWert->cTyp) &&
+                ($EigenschaftWert->cTyp === 'FREIFELD' || $EigenschaftWert->cTyp === 'PFLICHT-FREIFELD')
+            ) {
+                continue;
+            }
+
+            $kEigenschaftWert = 0;
+            if (isset($EigenschaftWert->kEigenschaftWert) && $EigenschaftWert->kEigenschaftWert > 0) {
+                $kEigenschaftWert = (int)$EigenschaftWert->kEigenschaftWert;
+            } elseif ($EigenschaftWert > 0) {
+                $kEigenschaftWert = (int)$EigenschaftWert;
+            }
+            $EW          = new EigenschaftWert($kEigenschaftWert);
+            $aufpreis    = $EW->fAufpreisNetto;
+            $EW_aufpreis = Shop::DB()->select(
+                'teigenschaftwertaufpreis',
+                'kEigenschaftWert', $kEigenschaftWert,
+                'kKundengruppe', $kKundengruppe
+            );
+            if (!is_object($EW_aufpreis)) {
+                $EW_aufpreis = Shop::DB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
+            }
+            if (isset($EW_aufpreis->fAufpreisNetto)) {
+                $fMaxRabatt = $this->getDiscount($kKundengruppe, $this->kArtikel);
+                $aufpreis   = $EW_aufpreis->fAufpreisNetto * ((100 - $fMaxRabatt) / 100);
+            }
+            // Ticket #1247
+            $aufpreis = $nettopreise
+                ? round($aufpreis, 4)
+                : berechneBrutto($aufpreis, gibUst($this->kSteuerklasse), 4) / ((100 + gibUst($this->kSteuerklasse)) / 100);
+
+            $preis += $aufpreis;
         }
 
         return $preis;

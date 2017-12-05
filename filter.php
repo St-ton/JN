@@ -147,12 +147,12 @@ if ($oSuchergebnisse->Artikel->elemente->count() === 0) {
 // Navigation
 $oNavigationsinfo = $NaviFilter->getMetaData()->getNavigationInfo($AktuelleKategorie, $AufgeklappteKategorien);
 // Canonical
-if (strpos(basename($NaviFilter->getURL()), '.php') === false) {
+if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
     $cSeite        = isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite)
     && $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1
         ? SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite
         : '';
-    $cCanonicalURL = $NaviFilter->getURL(null, true) . $cSeite;
+    $cCanonicalURL = $NaviFilter->getFilterURL()->getURL(null, true) . $cSeite;
 }
 // Auswahlassistent
 if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {

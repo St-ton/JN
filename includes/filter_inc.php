@@ -331,7 +331,7 @@ function checkMerkmalWertVorhanden($oMerkmalauswahl_arr, $kMerkmalWert)
 function gibArtikelsortierung($NaviFilter)
 {
     trigger_error('filter_inc.php: calling gibArtikelsortierung() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getProductFilter()->getOrder()->orderBy;
+    return Shop::getProductFilter()->getFilterSQL()->getOrder()->orderBy;
 }
 
 /**
@@ -356,7 +356,7 @@ function mappeUsersortierung($nUsersortierung)
 function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonical = false)
 {
     trigger_error('filter_inc.php: calling gibNaviURL() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getProductFilter()->getURL($oZusatzFilter, $bCanonical);
+    return Shop::getProductFilter()->getFilterURL()->getURL($oZusatzFilter, $bCanonical);
 }
 
 /**
@@ -414,7 +414,7 @@ function gibHeaderAnzeige()
 function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling erstelleFilterLoesenURLs() is deprecated.', E_USER_DEPRECATED);
-    Shop::getProductFilter()->createUnsetFilterURLs($oSuchergebnisse);
+    Shop::getProductFilter()->getFilterURL()->createUnsetFilterURLs(new stdClass(), $oSuchergebnisse);
 }
 
 /**

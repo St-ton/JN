@@ -181,11 +181,11 @@ abstract class CMSPortlet
         $settings = Shop::getSettings([CONF_BILDER]);
 
         $size_arr = [
-            'xs/' => WIDTH_CMS_IMAGE_XS,
-            'sm/' => WIDTH_CMS_IMAGE_SM,
-            'md/' => WIDTH_CMS_IMAGE_MD,
-            'lg/' => WIDTH_CMS_IMAGE_LG,
-            'xl/' => WIDTH_CMS_IMAGE_XL
+            '.xs/' => WIDTH_CMS_IMAGE_XS,
+            '.sm/' => WIDTH_CMS_IMAGE_SM,
+            '.md/' => WIDTH_CMS_IMAGE_MD,
+            '.lg/' => WIDTH_CMS_IMAGE_LG,
+            '.xl/' => WIDTH_CMS_IMAGE_XL
         ];
         $name = explode('/', $src);
         $name = end($name);

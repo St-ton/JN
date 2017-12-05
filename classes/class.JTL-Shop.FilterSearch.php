@@ -40,7 +40,7 @@ class FilterSearch extends AbstractFilter
      *
      * @param ProductFilter $productFilter
      */
-    public function __construct($productFilter)
+    public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
         $this->isCustom    = false;
@@ -117,14 +117,6 @@ class FilterSearch extends AbstractFilter
             : 0;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->cSuche;
     }
 
     /**
@@ -346,10 +338,8 @@ class FilterSearch extends AbstractFilter
                 && ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
                 ? ' LIMIT ' . $limit
                 : '';
-            $order  = $this->productFilter->getOrder();
             $state  = $this->productFilter->getCurrentStateData();
 
-            $state->joins[] = $order->join;
             $state->joins[] = (new FilterJoin())
                 ->setComment('join1 from getSearchFilterOptions')
                 ->setType('JOIN')
@@ -372,12 +362,12 @@ class FilterSearch extends AbstractFilter
 
             $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 
-            $query         = $this->productFilter->getBaseQuery(
+            $query         = $this->productFilter->getFilterSQL()->getBaseQuery(
                 ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
                 $state->having,
-                $order->orderBy,
+                null,
                 '',
                 ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
             );
@@ -430,7 +420,7 @@ class FilterSearch extends AbstractFilter
                     ->setName($searchFilter->cSuche)
                     ->setValue((int)$searchFilter->kSuchanfrage)
                     ->setCount($searchFilter->nAnzahl)
-                    ->setURL($this->productFilter->getURL(
+                    ->setURL($this->productFilter->getFilterURL()->getURL(
                         $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                     ));
                 $fe->cSuche       = $searchFilter->cSuche;

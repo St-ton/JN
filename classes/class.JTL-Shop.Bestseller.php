@@ -153,7 +153,7 @@ class Bestseller
                 $productsql .= ')';
             }
             // Storage SQL
-            $storagesql = Shop::getProductFilter()->getStockFilterSQL();
+            $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $obj_arr    = Shop::DB()->query(
                 "SELECT tartikel.kArtikel
                     FROM tartikel

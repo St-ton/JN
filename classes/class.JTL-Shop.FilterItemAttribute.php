@@ -43,7 +43,7 @@ class FilterItemAttribute extends FilterBaseAttribute
      *
      * @param ProductFilter $productFilter
      */
-    public function __construct($productFilter)
+    public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
         $this->isCustom    = false;
@@ -271,10 +271,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]
             );
         }
-        $select         = 'tmerkmal.cName';
-        $order          = $this->productFilter->getOrder();
-        $state          = $this->productFilter->getCurrentStateData('FilterItemAttribute');
-        $state->joins[] = $order->join;
+        $select = 'tmerkmal.cName';
+        $state  = $this->productFilter->getCurrentStateData('FilterItemAttribute');
 
         // @todo?
         if (true || (!$this->productFilter->hasAttributeValue() && !$this->productFilter->hasAttributeFilter())) {
@@ -389,7 +387,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         } else {
             $select .= ', tartikel.kArtikel AS kArtikel';
         }
-        $baseQry               = $this->productFilter->getBaseQuery(
+        $baseQry               = $this->productFilter->getFilterSQL()->getBaseQuery(
             [
                 'tartikelmerkmal.kMerkmal',
                 'tartikelmerkmal.kMerkmalWert',
@@ -505,7 +503,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                     $attributeValue->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                 }
                 // baue URL
-                $attributeValueURL = $this->productFilter->getURL(
+                $attributeValueURL = $this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($filterValue->kMerkmalWert)
                 );
                 // hack for #4815

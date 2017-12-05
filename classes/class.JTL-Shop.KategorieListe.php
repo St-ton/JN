@@ -496,7 +496,7 @@ class KategorieListe
      */
     public function artikelVorhanden($kKategorie, $kKundengruppe)
     {
-        $lagerfilter   = Shop::getProductFilter()->getStockFilterSQL();
+        $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $kKategorie    = (int)$kKategorie;
         $kKundengruppe = (int)$kKundengruppe;
         $obj           = Shop::DB()->query(

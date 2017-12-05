@@ -204,7 +204,7 @@ class Hersteller
                             SELECT 1
                             FROM tartikel
                             WHERE tartikel.kHersteller = thersteller.kHersteller
-                                " . Shop::getProductFilter()->getStockFilterSQL() . "
+                                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
                                 AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel

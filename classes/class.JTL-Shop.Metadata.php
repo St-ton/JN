@@ -420,7 +420,7 @@ class Metadata
                 '',
                 0,
                 $this->productFilter->getMetaData()->getBreadCrumbName(),
-                $this->productFilter->getURL()
+                $this->productFilter->getFilterURL()->getURL()
             );
         } elseif ($this->productFilter->hasAttributeValue()) {
             $this->attributeValue = new MerkmalWert($this->productFilter->getAttributeValue()->getValue());
@@ -916,7 +916,7 @@ class Metadata
         $oSeite_arr = [];
         $nVon       = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
         $nBis       = 0; // Begrenzt durch $nMaxAnzeige.
-        $naviURL    = $this->productFilter->getURL();
+        $naviURL    = $this->productFilter->getFilterURL()->getURL();
         $bSeo       = $bSeo && strpos($naviURL, '?') === false;
         if (isset($oSeitenzahlen->MaxSeiten, $oSeitenzahlen->AktuelleSeite)
             && $oSeitenzahlen->MaxSeiten > 0
@@ -1146,7 +1146,7 @@ class Metadata
             }
         }
         if (isset($_SESSION['oErweiterteDarstellung'])) {
-            $naviURL = $this->productFilter->getURL();
+            $naviURL = $this->productFilter->getFilterURL()->getURL();
             $naviURL .= strpos($naviURL, '?') === false ? '?ed=' : '&amp;ed=';
 
             $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL .
@@ -1349,7 +1349,7 @@ class Metadata
         }
         // Kategorie Funktionsattribut
         if (!empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
-            $_SESSION['Usersortierung'] = $this->mapUserSorting(
+            $_SESSION['Usersortierung'] = static::mapUserSorting(
                 $currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]
             );
         }
@@ -1380,7 +1380,7 @@ class Metadata
      * @param int|string $sort
      * @return int
      */
-    public function mapUserSorting($sort)
+    public static function mapUserSorting($sort)
     {
         // Ist die Usersortierung ein Integer => Return direkt den Integer
         preg_match('/\d+/', $sort, $cTreffer_arr);
@@ -1390,8 +1390,6 @@ class Metadata
         // Usersortierung ist ein String aus einem Kategorieattribut
         switch (strtolower($sort)) {
             case SEARCH_SORT_CRITERION_NAME:
-                return SEARCH_SORT_NAME_ASC;
-
             case SEARCH_SORT_CRITERION_NAME_ASC:
                 return SEARCH_SORT_NAME_ASC;
 
@@ -1407,10 +1405,8 @@ class Metadata
             case SEARCH_SORT_CRITERION_WEIGHT:
                 return SEARCH_SORT_WEIGHT;
 
-            case SEARCH_SORT_CRITERION_PRICE:
-                return SEARCH_SORT_PRICE_ASC;
-
             case SEARCH_SORT_CRITERION_PRICE_ASC:
+            case SEARCH_SORT_CRITERION_PRICE:
                 return SEARCH_SORT_PRICE_ASC;
 
             case SEARCH_SORT_CRITERION_PRICE_DESC:
@@ -1434,5 +1430,28 @@ class Metadata
             default:
                 return SEARCH_SORT_STANDARD;
         }
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getProductsPerPageLimit()
+    {
+        if ($this->productFilter->getProductLimit() > 0) {
+            $limit = (int)$this->productFilter->getProductLimit();
+        } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
+            $limit = (int)$_SESSION['ArtikelProSeite'];
+        } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel)
+            && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0
+        ) {
+            $limit = (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
+        } else {
+            $limit = ($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0
+                ? (int)$max
+                : 20;
+        }
+
+        return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
     }
 }

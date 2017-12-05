@@ -24,7 +24,7 @@ class FilterBaseManufacturer extends AbstractFilter
      *
      * @param ProductFilter $productFilter
      */
-    public function __construct($productFilter)
+    public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
         $this->isCustom    = false;
@@ -123,10 +123,8 @@ class FilterBaseManufacturer extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
-            $order      = $this->productFilter->getOrder();
-            $state      = $this->productFilter->getCurrentStateData();
+            $state = $this->productFilter->getCurrentStateData();
 
-            $state->joins[] = $order->join;
             $state->joins[] = (new FilterJoin())
                 ->setComment('join from FilterManufacturer::getOptions()')
                 ->setType('JOIN')
@@ -134,7 +132,7 @@ class FilterBaseManufacturer extends AbstractFilter
                 ->setOn('tartikel.kHersteller = thersteller.kHersteller')
                 ->setOrigin(__CLASS__);
 
-            $query = $this->productFilter->getBaseQuery(
+            $query = $this->productFilter->getFilterSQL()->getBaseQuery(
                 [
                     'thersteller.kHersteller',
                     'thersteller.cName',
@@ -143,8 +141,7 @@ class FilterBaseManufacturer extends AbstractFilter
                 ],
                 $state->joins,
                 $state->conditions,
-                $state->having,
-                $order->orderBy
+                $state->having
             );
             $manufacturers    = Shop::DB()->query(
                 "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
@@ -165,7 +162,7 @@ class FilterBaseManufacturer extends AbstractFilter
                 $manufacturer->kHersteller = (int)$manufacturer->kHersteller;
                 $manufacturer->nAnzahl     = (int)$manufacturer->nAnzahl;
                 $manufacturer->nSortNr     = (int)$manufacturer->nSortNr;
-                $manufacturer->cURL        = $this->productFilter->getURL(
+                $manufacturer->cURL        = $this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($manufacturer->kHersteller)
                 );
                 $fe                        = (new FilterExtra())

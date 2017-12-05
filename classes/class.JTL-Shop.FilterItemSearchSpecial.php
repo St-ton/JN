@@ -28,7 +28,7 @@ class FilterItemSearchSpecial extends AbstractFilter
      *
      * @param ProductFilter $productFilter
      */
-    public function __construct($productFilter)
+    public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
         $this->isCustom = false;
@@ -324,7 +324,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                         (int)$this->getConfig()['boxen']['boxen_topbewertet_minsterne'];
                     break;
             }
-            $qry    = $this->productFilter->getBaseQuery(
+            $qry    = $this->productFilter->getFilterSQL()->getBaseQuery(
                 ['tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
@@ -340,7 +340,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 ->setValue($i)
                 ->setCount(count($qryRes))
                 ->setSort(0)
-                ->setURL($this->productFilter->getURL(
+                ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($i)
                 ));
             $fe->kKey = $i;

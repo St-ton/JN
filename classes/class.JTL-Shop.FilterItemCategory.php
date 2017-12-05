@@ -16,7 +16,7 @@ class FilterItemCategory extends FilterBaseCategory
      *
      * @param ProductFilter $productFilter
      */
-    public function __construct($productFilter)
+    public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
         $this->isCustom    = false;
@@ -86,11 +86,8 @@ class FilterItemCategory extends FilterBaseCategory
             return $this->options;
         }
         $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
-        $order              = $this->productFilter->getOrder();
         $state              = $this->productFilter->getCurrentStateData();
         $options            = [];
-
-        $state->joins[] = $order->join;
         // Kategoriefilter anzeige
         if ($categoryFilterType === 'HF' && (!$this->productFilter->hasCategory())) {
             //@todo: $this instead of $naviFilter->KategorieFilter?
@@ -168,12 +165,12 @@ class FilterItemCategory extends FilterBaseCategory
             $select[] = 'tkategorie.cName';
         }
 
-        $query            = $this->productFilter->getBaseQuery(
+        $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
             $select,
             $state->joins,
             $state->conditions,
             $state->having,
-            $order->orderBy,
+            null,
             '',
             ['tkategorie.kKategorie', 'tartikel.kArtikel']
         );
@@ -205,7 +202,7 @@ class FilterItemCategory extends FilterBaseCategory
                 ->setValue((int)$category->kKategorie)
                 ->setCount($category->nAnzahl)
                 ->setSort($category->nSort)
-                ->setURL($this->productFilter->getURL(
+                ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$category->kKategorie)
                 ));
             $options[]      = $fe;

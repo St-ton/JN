@@ -1261,7 +1261,7 @@ class Boxen
             ? $this->gibBoxenFilterNach(Shop::getProductFilter(), $GLOBALS['oSuchergebnisse'])
             : 0;
         $path              = 'boxes/';
-        $this->lagerFilter = Shop::getProductFilter()->getStockFilterSQL();
+        $this->lagerFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $htmlArray         = [
             'top'    => null,
             'right'  => null,

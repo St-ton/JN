@@ -187,7 +187,7 @@ abstract class AbstractFilter implements IFilter
      *
      * @param ProductFilter $productFilter
      */
-    public function __construct($productFilter)
+    public function __construct(ProductFilter $productFilter)
     {
         $this->setData($productFilter)->setClassName(get_class($this));
     }
@@ -198,8 +198,8 @@ abstract class AbstractFilter implements IFilter
      */
     public function init($value)
     {
-        $this->isInitialized = true;
         if ($value !== null) {
+            $this->isInitialized = true;
             $this->setValue($value)->setSeo($this->availableLanguages);
         }
 

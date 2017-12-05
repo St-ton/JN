@@ -34,7 +34,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
      *
      * @param ProductFilter $productFilter
      */
-    public function __construct($productFilter)
+    public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
         $this->isCustom    = false;
@@ -321,10 +321,8 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                 $currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]
             );
         }
-        $select = 'tmerkmal.cName';
-        $order  = $this->productFilter->getOrder();
+        $select         = 'tmerkmal.cName';
         $state          = $this->productFilter->getCurrentStateData($this);
-        $state->joins[] = $order->join;
         if ($this->kMerkmal > 0) {
             $state->joins[] = (new FilterJoin())
                 ->setType('JOIN')
@@ -448,7 +446,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             }
             $state->conditions[] = 'z.kMerkmalWert NOT IN (' . implode(', ', $filterValue) . ')';
         }
-        $baseQry = $this->productFilter->getBaseQuery(
+        $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery(
             [
                 'z.kMerkmal',
                 'z.kMerkmalWert',
@@ -463,7 +461,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
             $state->joins,
             $state->conditions,
             $state->having,
-            $order->orderBy,
+            null,
             '',
             ['z.kMerkmalWert', 'tartikel.kArtikel']
         );
@@ -492,7 +490,7 @@ class FilterItemAttributeAdvanced extends FilterBaseAttribute
                     ? 1
                     : 0;
                 // baue URL
-                $attributeValues->cURL = $this->productFilter->getURL(
+                $attributeValues->cURL = $this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->setSeo($this->getAvailableLanguages())
                 );
                 // hack for #4815

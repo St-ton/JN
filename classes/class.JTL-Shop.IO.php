@@ -95,11 +95,14 @@ class IO
      */
     public function respondAndExit($data)
     {
-        // respond with an error?
-        if (is_object($data) && get_class($data) === 'IOError') {
-            header(makeHTTPHeader($data->code), true, $data->code);
-        } elseif (is_object($data) && get_class($data) === 'IOFile') {
-            $this->pushFile($data->filename, $data->mimetype);
+        if (is_object($data)) {
+            if ($data instanceof IOError) {
+                // respond with an error?
+                header(makeHTTPHeader($data->code), true, $data->code);
+            } elseif ($data instanceof IOFile) {
+                // respond with a file download offer?
+                $this->pushFile($data->filename, $data->mimetype);
+            }
         }
 
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');

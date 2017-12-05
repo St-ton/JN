@@ -34,7 +34,7 @@ class HerstellerHelper
      */
     public function __construct()
     {
-        $lagerfilter   = Shop::getProductFilter()->getStockFilterSQL();
+        $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $this->cacheID = 'manuf_' . Shop::Cache()->getBaseID() . ($lagerfilter !== '' ? md5($lagerfilter) : '');
         self::$langID  = Shop::getLanguage();
         if (self::$langID <= 0) {
@@ -68,7 +68,7 @@ class HerstellerHelper
             return $this->manufacturers;
         }
         if (($manufacturers = Shop::Cache()->get($this->cacheID)) === false) {
-            $lagerfilter = Shop::getProductFilter()->getStockFilterSQL();
+            $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             // fixes for admin backend
             $manufacturers   = Shop::DB()->query(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 

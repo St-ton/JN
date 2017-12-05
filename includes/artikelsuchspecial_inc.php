@@ -37,7 +37,7 @@ function gibTopAngebote($nLimit, $kKundengruppe = 0)
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.cTopArtikel = 'Y'
                 " . gibVaterSQL() . "
-                " . Shop::getProductFilter()->getStockFilterSQL(), 2
+                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(), 2
     );
 
     return array_random_assoc($topArticles, min(count($topArticles), $nLimit));
@@ -89,7 +89,7 @@ function gibBestseller($nLimit, $kKundengruppe = 0)
                 AND tbestseller.kArtikel = tartikel.kArtikel
                 AND round(tbestseller.fAnzahl) >= " . $nSchwelleBestseller . "
                 " . gibVaterSQL() . "
-                " . Shop::getProductFilter()->getStockFilterSQL() . "
+                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
             ORDER BY fAnzahl DESC
             LIMIT " . $nLimit, 2
     );
@@ -130,7 +130,7 @@ function gibSonderangebote($nLimit, $kKundengruppe = 0)
                 AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
                 AND (tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                 " . gibVaterSQL() . "
-                " . Shop::getProductFilter()->getStockFilterSQL(), 2
+                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(), 2
     );
 
     return array_random_assoc($specialOffers, min(count($specialOffers), $nLimit));
@@ -166,7 +166,7 @@ function gibNeuImSortiment($nLimit, $kKundengruppe = 0)
                 AND dErscheinungsdatum <= now()
                 AND DATE_SUB(now(), INTERVAL " . $nAlterTage . " DAY) < tartikel.dErstellt
                 " . gibVaterSQL() . "
-                " . Shop::getProductFilter()->getStockFilterSQL(), 2
+                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(), 2
     );
 
     return array_random_assoc($new, min(count($new), $nLimit));

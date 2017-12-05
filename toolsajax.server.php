@@ -1103,7 +1103,7 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
         }
         $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
         $NaviFilter                          = Shop::buildProductFilter($cParameter_arr, $NaviFilter);
-        $objResponse->script("window.location.href='" . StringHandler::htmlentitydecode($NaviFilter->getURL()) . "';");
+        $objResponse->script("window.location.href='" . StringHandler::htmlentitydecode($NaviFilter->getFilterURL()->getURL()) . "';");
         unset($_SESSION['AuswahlAssistent']);
     }
 

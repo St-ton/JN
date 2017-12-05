@@ -95,7 +95,7 @@ class KategorieHelper
             return self::$fullCategories;
         }
         $filterEmpty = (int)self::$config['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
-        $stockFilter = Shop::getProductFilter()->getStockFilterSQL();
+        $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $stockJoin   = '';
         $extended    = !empty($stockFilter);
         if (false === ($fullCats = Shop::Cache()->get(self::$cacheID))) {
@@ -330,7 +330,7 @@ class KategorieHelper
     public function getFallBackFlatTree($categoryID)
     {
         $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
-        $stockFilter         = Shop::getProductFilter()->getStockFilterSQL();
+        $stockFilter         = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $stockJoin           = '';
         $extended            = !empty($stockFilter);
         $functionAttributes  = [];

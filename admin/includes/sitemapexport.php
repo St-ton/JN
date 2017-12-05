@@ -1232,14 +1232,14 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
             for ($i = 1; $i <= $oSuchergebnisse->Seitenzahlen->MaxSeiten; ++$i) {
                 if ($i > 1) {
                     $cURL_arr[] = makeURL(
-                        str_replace($search, $replace, $naviFilter->getURL()) . '_s' . $i,
+                        str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()) . '_s' . $i,
                         $dLetzteAktualisierung,
                         FREQ_WEEKLY,
                         PRIO_NORMAL
                     );
                 } else {
                     $cURL_arr[] = makeURL(
-                        str_replace($search, $replace, $naviFilter->getURL()),
+                        str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
                         $dLetzteAktualisierung,
                         FREQ_WEEKLY,
                         PRIO_NORMAL
@@ -1248,7 +1248,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
             }
         } else {
             $cURL_arr[] = makeURL(
-                str_replace($search, $replace, $naviFilter->getURL()),
+                str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
                 $dLetzteAktualisierung,
                 FREQ_WEEKLY,
                 PRIO_NORMAL
@@ -1256,7 +1256,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
         }
     } elseif ($cKey === 'kKategorie' && $kKey > 0) {
         $cURL_arr[] = makeURL(
-            str_replace($search, $replace, $naviFilter->getURL()),
+            str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
             $dLetzteAktualisierung,
             FREQ_WEEKLY,
             PRIO_NORMAL

@@ -941,7 +941,9 @@ function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $kSelection_arr)
             $AWA->getCurQuestion() === $AWA->getQuestionCount() ||
             $AWA->getQuestion($AWA->getCurQuestion())->nTotalResultCount === 0)
         {
-            $response->script("window.location.href='" . StringHandler::htmlentitydecode($NaviFilter->getURL()) . "';");
+            $response->script("window.location.href='" . StringHandler::htmlentitydecode(
+                $NaviFilter->getFilterURL()->getURL()
+                ) . "';");
         } else {
             $response->assign('selectionwizard', 'innerHTML', utf8_encode($AWA->fetchForm($smarty)));
         }

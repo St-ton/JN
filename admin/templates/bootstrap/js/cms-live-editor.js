@@ -26,6 +26,7 @@ function CmsLiveEditor(env)
 
     this.hostCtx = window;
     this.hostJq = this.hostCtx.$;
+    this.noop = this.hostJq.noop;
     this.iframeElm = null;
     this.iframeCtx = null;
     this.iframeJq = null;
@@ -41,7 +42,7 @@ function CmsLiveEditor(env)
     this.dropTarget = null;
 
     this.curPortletId = 0;
-    this.configSaveCallback = this.hostJq.noop;
+    this.configSaveCallback = this.noop;
 
     this.previewMode = false;
 
@@ -194,7 +195,7 @@ CmsLiveEditor.prototype = {
 
     openConfigurator: function(portletId, properties)
     {
-        this.configSaveCallback = this.hostJq.noop;
+        this.configSaveCallback = this.noop;
 
         ioCall(
             'getPortletConfigPanelHtml',
@@ -213,15 +214,14 @@ CmsLiveEditor.prototype = {
     {
         this.loaderBackdrop.show();
 
-        ioCall(
-            'saveCmsPage',
-            [
-                this.cKey, this.kKey, this.kSprache,
-                this.pageToJson()
-            ],
+        this.savePage(
             function() {
                 this.loaderBackdrop.hide();
-            }.bind(this));
+            },
+            function () {
+                window.location.reload();
+            }
+        );
 
         e.preventDefault();
     },
@@ -365,16 +365,6 @@ CmsLiveEditor.prototype = {
         this.cleanUpDrag();
     },
 
-    onFocus: function(e)
-    {
-        console.log('focus', this.selectedElm);
-    },
-
-    onBlur: function(e)
-    {
-        console.log('blur', this.selectedElm);
-    },
-
     onTrash: function(e)
     {
         if(this.selectedElm !== null) {
@@ -442,8 +432,6 @@ CmsLiveEditor.prototype = {
 
             if(this.selectedElm !== null) {
                 this.selectedElm.addClass('cle-selected');
-                this.selectedElm.off('blur').on('blur', this.onBlur.bind(this));
-                this.selectedElm.off('focus').on('focus', this.onFocus.bind(this));
                 this.pinbarElm
                     .show()
                     .css({
@@ -510,7 +498,24 @@ CmsLiveEditor.prototype = {
 
     loadPage: function()
     {
-        ioCall('getCmsPageJson', [this.cKey, this.kKey, this.kSprache], this.pageFromJson.bind(this));
+        ioCall(
+            'getCmsPageJson',
+            [this.cKey, this.kKey, this.kSprache],
+            this.pageFromJson.bind(this)
+        );
+    },
+
+    savePage: function(success, error)
+    {
+        success = success || this.noop;
+        error = error || this.noop;
+
+        ioCall(
+            'saveCmsPage',
+            [this.cKey, this.kKey, this.kSprache, this.pageToJson()],
+            success.bind(this),
+            error.bind(this)
+        );
     },
 
     pageToJson: function()
@@ -659,6 +664,11 @@ CmsLiveEditor.prototype = {
     {
         this.rootElm.empty();
         this.updateDropTargets();
+    },
+
+    setUnsaved: function(enable)
+    {
+        this.editorSaveBtnElm.find('i').html(enable ? '*' : '');
     },
 
 };

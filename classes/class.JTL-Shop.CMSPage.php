@@ -35,6 +35,11 @@ class CMSPage
     public $data = [];
 
     /**
+     * @var string
+     */
+    public $dLastModified = '';
+
+    /**
      * @var array
      */
     public $cFinalHtml_arr = null;
@@ -52,11 +57,12 @@ class CMSPage
                 throw new Exception('No CMS Page found with the given page id.');
             }
 
-            $this->kPage    = $oCMSPageDB->kPage;
-            $this->cKey     = $oCMSPageDB->cKey;
-            $this->kKey     = $oCMSPageDB->kKey;
-            $this->kSprache = $oCMSPageDB->kSprache;
-            $this->data     = json_decode($oCMSPageDB->cJson, true);
+            $this->kPage         = $oCMSPageDB->kPage;
+            $this->cKey          = $oCMSPageDB->cKey;
+            $this->kKey          = $oCMSPageDB->kKey;
+            $this->kSprache      = $oCMSPageDB->kSprache;
+            $this->data          = json_decode($oCMSPageDB->cJson, true);
+            $this->dLastModified = $oCMSPageDB->dLastModified;
         }
     }
 
@@ -100,10 +106,12 @@ class CMSPage
                 'kKey' => $this->kKey,
                 'kSprache' => $this->kSprache,
                 'cJson' => json_encode($this->data),
+                'dLastModified' => date('Y-m-d H:i:s')
             ];
             $this->kPage = Shop::DB()->insert('tcmspage', $oCmsPageDB);
         } else {
-            $oCmsPageDB->cJson = json_encode($this->data);
+            $oCmsPageDB->cJson         = json_encode($this->data);
+            $oCmsPageDB->dLastModified = date('Y-m-d H:i:s');
             Shop::DB()->update(
                 'tcmspage',
                 ['cKey', 'kKey', 'kSprache'],

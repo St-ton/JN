@@ -23,6 +23,7 @@
     <script src="{$templateUrl}js/ckeditor_4.7.3_basic/ckeditor.js"></script>
     <script src="{$templateUrl}js/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
     <script src="{$templateUrl}js/cms-live-editor.js"></script>
+    <script src="{$templateUrl}js/moment.js"></script>
 
     <script>
         var cmsLiveEditor = new CmsLiveEditor({
@@ -61,37 +62,53 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#" id="btn-preview"><i class="fa fa-eye"></i></a></li>
-                    <li><a href="#" id="cle-btn-save-editor"><i class="fa fa-save"></i></a></li>
-                    <li><a href="{$URL_SHOP}/{$oSeo->cSeo}"><i class="fa fa-close"></i></a></li>
+                    <li>
+                        <a href="#" id="btn-preview" data-toggle="tooltip" data-placement="bottom" title="Preview">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="cle-btn-save-editor" data-toggle="tooltip" data-placement="bottom"
+                           title="Seite speichern">
+                            <i class="fa fa-save"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{$URL_SHOP}/{$oSeo->cSeo}" data-toggle="tooltip" data-placement="bottom"
+                           title="Editor schlie&szlig;en">
+                            <i class="fa fa-close"></i>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
-    <div id="sidebar-panel">
-        <ul class="nav nav-tabs">
-            <li class="active"><a href="#elements" data-toggle="tab">Elemente</a></li>
-            <li><a href="#templates" data-toggle="tab">Templates</a></li>
-        </ul>
-        <div class="tab-content">
-            <div class="tab-pane active" id="elements">
-                {foreach $oPortlet_arr as $oPortlet}
-                    <a href="#" class="portlet-button btn btn-default"
-                       data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
-                       data-portletid="{$oPortlet->kPortlet}"
-                       data-portlettitle="{$oPortlet->cTitle}"
-                       data-defaultprops="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}">
-                        {$oPortlet->cTitle}
-                    </a>
-                {/foreach}
-            </div>
-            <div class="tab-pane" id="templates">
-                Coming soon...
+    <div id="main-frame">
+        <div id="sidebar-panel">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#elements" data-toggle="tab">Elemente</a></li>
+                <li><a href="#templates" data-toggle="tab">Templates</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="elements">
+                    {foreach $oPortlet_arr as $oPortlet}
+                        <a href="#" class="portlet-button btn btn-default"
+                           data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
+                           data-portletid="{$oPortlet->kPortlet}"
+                           data-portlettitle="{$oPortlet->cTitle}"
+                           data-defaultprops="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}">
+                            {$oPortlet->cTitle}
+                        </a>
+                    {/foreach}
+                </div>
+                <div class="tab-pane" id="templates">
+                    Coming soon...
+                </div>
             </div>
         </div>
-    </div>
-    <div id="iframe-panel">
-        <iframe id="iframe"></iframe>
+        <div id="iframe-panel">
+            <iframe id="iframe"></iframe>
+        </div>
     </div>
     <div id="config-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -124,5 +141,6 @@
         <button class="btn btn-default" id="btn-clone"><i class="fa fa-clone"></i></button>
         <button class="btn btn-default" id="btn-config"><i class="fa fa-cog"></i></button>
     </div>
+    <div class="cle-label"></div>
 </body>
 </html>

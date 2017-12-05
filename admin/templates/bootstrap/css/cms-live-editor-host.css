@@ -1,6 +1,20 @@
 html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
     height: 100%;
     overflow: hidden;
+    box-sizing: border-box;
+}
+
+#editor-top-nav {
+    margin-bottom: 0;
+    height: 5rem;
+}
+
+#main-frame {
+    position: absolute;
+    top: 5rem;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 #sidebar-panel, #iframe-panel {
@@ -8,7 +22,7 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
     position: relative;
 }
 
-#sidebar-panel{
+#sidebar-panel {
     padding: 10px 15px;
 }
 
@@ -36,10 +50,6 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 
 .portlet-button {
     margin-right: 15px;
-}
-
-#editor-top-nav {
-	margin-bottom: 0;
 }
 
 .cle-image-btn {

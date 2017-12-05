@@ -84,6 +84,8 @@ CmsLiveEditor.prototype = {
 
     initEditor: function()
     {
+        // disable links and buttons that could change the current iframes location
+
         this.iframeJq('a, button')
             .off('click')
             .attr('onclick', '')
@@ -97,23 +99,17 @@ CmsLiveEditor.prototype = {
         this.btnTrashElm = this.hostJq('#btn-trash');
         this.btnCloneElm = this.hostJq('#btn-clone');
         this.btnConfigElm = this.hostJq('#btn-config');
-        this.configFormElm = this.hostJq('#config-form');
         this.portletBtnElms = this.hostJq('.portlet-button');
-        this.configModalElm = this.hostJq('#config-modal');
         this.loaderBackdrop = this.hostJq('#loader-backdrop');
         this.editorSaveBtnElm = this.hostJq('#cle-btn-save-editor');
+        this.configModalElm = this.hostJq('#config-modal');
         this.configModalBodyElm = this.hostJq('#config-modal-body');
+        this.configFormElm = this.hostJq('#config-form');
 
-        this.rootElm
-            .on('mouseover', this.onMouseOver.bind(this))
-            .on('click', this.onClick.bind(this))
-            .on('dblclick', this.onConfig.bind(this))
-            .on('dragstart', this.onDragStart.bind(this))
-            .on('dragend', this.onDragEnd.bind(this))
-            .on('dragover', this.onDragOver.bind(this))
-            .on('drop', this.onDrop.bind(this));
+        this.enableEvents();
 
-        this.hostJq('#btn-preview').click(this.togglePreview.bind(this));
+        this.hostJq('#btn-preview')
+            .click(this.togglePreview.bind(this));
 
         this.pinbarElm
             .appendTo(this.iframeCtx.document.body);
@@ -126,9 +122,6 @@ CmsLiveEditor.prototype = {
 
         this.btnConfigElm
             .click(this.onConfig.bind(this));
-
-        this.iframeJq(this.iframeCtx.document)
-            .on('keydown', this.onKeyDown.bind(this));
 
         this.portletBtnElms
             .attr('draggable', 'true')
@@ -144,7 +137,37 @@ CmsLiveEditor.prototype = {
         this.loaderBackdrop
             .hide();
 
-        ioCall('getCmsPageJson', [this.cKey, this.kKey, this.kSprache], this.loadFromJson.bind(this));
+        this.loadPage();
+    },
+
+    enableEvents: function()
+    {
+        this.rootElm
+            .on('mouseover', this.onMouseOver.bind(this))
+            .on('click', this.onClick.bind(this))
+            .on('dblclick', this.onConfig.bind(this))
+            .on('dragstart', this.onDragStart.bind(this))
+            .on('dragend', this.onDragEnd.bind(this))
+            .on('dragover', this.onDragOver.bind(this))
+            .on('drop', this.onDrop.bind(this));
+
+        this.iframeJq(this.iframeCtx.document)
+            .on('keydown', this.onKeyDown.bind(this));
+    },
+
+    disableEvents: function()
+    {
+        this.rootElm
+            .off('mouseover')
+            .off('click')
+            .off('dblclick')
+            .off('dragstart')
+            .off('dragend')
+            .off('dragover')
+            .off('drop');
+
+        this.iframeJq(this.iframeCtx.document)
+            .off('keydown');
     },
 
     onPortletBtnDragStart: function(e)
@@ -171,6 +194,8 @@ CmsLiveEditor.prototype = {
 
     openConfigurator: function(portletId, properties)
     {
+        this.configSaveCallback = this.hostJq.noop;
+
         ioCall(
             'getPortletConfigPanelHtml',
             [portletId, properties],
@@ -423,7 +448,7 @@ CmsLiveEditor.prototype = {
                     .show()
                     .css({
                         left: elm.offset().left + elm.outerWidth() - this.pinbarElm.outerWidth() + 'px',
-                        top: elm.offset().top + elm.outerHeight() - this.pinbarElm.outerHeight() + 'px'
+                        top: elm.offset().top + elm.outerHeight() + 'px'
                     });
             }
         }
@@ -483,6 +508,11 @@ CmsLiveEditor.prototype = {
         return tree.has(descendant).length > 0;
     },
 
+    loadPage: function()
+    {
+        ioCall('getCmsPageJson', [this.cKey, this.kKey, this.kSprache], this.pageFromJson.bind(this));
+    },
+
     pageToJson: function()
     {
         var result = {};
@@ -531,18 +561,16 @@ CmsLiveEditor.prototype = {
         return result;
     },
 
-    loadFromJson: function(data)
+    pageFromJson: function(data)
     {
-        console.log(data);
-
         for(var areaId in data) {
-            this.loadAreaFromJson(data[areaId], this.iframeJq('#' + areaId));
+            this.areaFromJson(data[areaId], this.iframeJq('#' + areaId));
         }
 
         this.updateDropTargets();
     },
 
-    loadAreaFromJson: function(data, areaElm)
+    areaFromJson: function(data, areaElm)
     {
         data.forEach(function(portletData)
         {
@@ -563,7 +591,7 @@ CmsLiveEditor.prototype = {
 
                 newElm.find('.cle-area').each(function (index, subarea)
                 {
-                    this.loadAreaFromJson(portletData.subAreas[index], this.iframeJq(subarea));
+                    this.areaFromJson(portletData.subAreas[index], this.iframeJq(subarea));
 
                 }.bind(this));
             }.bind(this));
@@ -586,12 +614,51 @@ CmsLiveEditor.prototype = {
     {
         if (this.previewMode) {
             this.updateDropTargets();
+            this.enableEvents();
+            this.iframeJq('[data-portletid]').removeClass('cle-preview');
             this.previewMode = false;
         }
         else {
             this.stripDropTargets();
+            this.disableEvents();
+            this.setSelected();
+            this.setHovered();
+            this.iframeJq('[data-portletid]').addClass('cle-preview');
             this.previewMode = true;
         }
+    },
+
+    getPageStorageId: function()
+    {
+        return 'cmspage.' + this.cKey + '.' + this.kKey + '.' + this.kSprache + '.' + this.cAction;
+    },
+
+    savePageToWebStorage: function()
+    {
+        window.localStorage.setItem(
+            this.getPageStorageId(),
+            JSON.stringify(this.pageToJson())
+        );
+        window.localStorage.setItem(
+            this.getPageStorageId() + '.lastmodified',
+            moment().format("YYYY-MM-DD HH:mm:ss")
+        )
+    },
+
+    loadPageFromWebStorage: function()
+    {
+        var pageJson = window.localStorage.getItem(this.getPageStorageId());
+
+        if(pageJson !== null) {
+            this.clearPage();
+            this.pageFromJson(JSON.parse(pageJson));
+        }
+    },
+
+    clearPage: function()
+    {
+        this.rootElm.empty();
+        this.updateDropTargets();
     },
 
 };
@@ -619,7 +686,7 @@ function injectJqueryFixes()
     };
 
     // Fix from: https://stackoverflow.com/questions/11127227/jquery-serialize-input-with-arrays/35689636
-    // to serialize input from array-like inputs
+    // to serialize data from array-like inputs
     $.fn.serializeControls = function()
     {
         var data = {};

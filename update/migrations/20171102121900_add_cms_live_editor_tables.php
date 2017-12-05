@@ -26,7 +26,8 @@ class Migration_20171102121900 extends Migration implements IMigration
             cKey VARCHAR(255) NOT NULL,
             kKey INT NOT NULL,
             kSprache INT NOT NULL,
-            cJson LONGTEXT
+            cJson LONGTEXT,
+            dLastModified DATETIME
         )");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)

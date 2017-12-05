@@ -195,16 +195,13 @@ class FilterBaseTag extends AbstractFilter
                         $additionalFilter->init((int)$tag->kTag)
                     ));
                 $fe->nAnzahlTagging = (int)$tag->nAnzahlTagging;
-                $class                      = '';
                 // generic attributes for new filter templates
-                if ($fe->getValue() > 0) {
-                    $class = $nPrioStep < 1
-                        ? rand(1, 10)
-                        : round(
-                            ($fe->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
-                            $nPrioStep
-                        ) + 1;
-                }
+                $class = $nPrioStep < 1
+                    ? rand(1, 10)
+                    : round(
+                        ($fe->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
+                        $nPrioStep
+                    ) + 1;
                 $options[] = $fe->setClass($class);
             }
         }

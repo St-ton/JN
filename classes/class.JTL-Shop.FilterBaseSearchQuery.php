@@ -184,10 +184,11 @@ class FilterBaseSearchQuery extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        $options = [];
-        if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
-            $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) &&
-                ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
+        $options  = [];
+        $naviConf = $this->getConfig()['navigationsfilter'];
+        if ($naviConf['suchtrefferfilter_nutzen'] !== 'N') {
+            $nLimit     = (isset($naviConf['suchtrefferfilter_anzahl'])
+                && ($limit = (int)$naviConf['suchtrefferfilter_anzahl']) > 0)
                 ? ' LIMIT ' . $limit
                 : '';
             $state      = $this->productFilter->getCurrentStateData();

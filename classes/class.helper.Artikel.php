@@ -85,21 +85,18 @@ class ArtikelHelper
         $properties          = self::getChildPropertiesForParent($kArtikel, $kKundengruppe);
         $kVariationKombi_arr = [];
         $nGueltig            = 1;
-        if (count($properties) > 0) {
-            foreach ($properties as $i => $kAlleEigenschaftWerteProEigenschaft) {
-                if (!self::hasSelectedVariationValue($i)) {
-                    $nGueltig = 0;
-                    break;
-                }
-                $kVariationKombi_arr[$i] = self::getSelectedVariationValue($i);
+        foreach ($properties as $i => $kAlleEigenschaftWerteProEigenschaft) {
+            if (!self::hasSelectedVariationValue($i)) {
+                $nGueltig = 0;
+                break;
             }
+            $kVariationKombi_arr[$i] = self::getSelectedVariationValue($i);
         }
         if ($nGueltig) {
             $cSQL1       = '';
             $cSQL2       = '';
-            $oArtikelTMP = new stdClass();
             $j           = 0;
-            if (is_array($kVariationKombi_arr) && count($kVariationKombi_arr) > 0) {
+            if (count($kVariationKombi_arr) > 0) {
                 foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
                     if ($j > 0) {
                         $cSQL1 .= ',' . $i;
@@ -125,14 +122,14 @@ class ArtikelHelper
                         GROUP BY tartikel.kArtikel
                         HAVING count(*) = " . count($kVariationKombi_arr), 1
                 );
-            }
-            if (isset($oArtikelTMP->kArtikel) && $oArtikelTMP->kArtikel > 0) {
-                return $oArtikelTMP->kArtikel;
+                if (isset($oArtikelTMP->kArtikel) && $oArtikelTMP->kArtikel > 0) {
+                    return (int)$oArtikelTMP->kArtikel;
+                }
             }
             if (!isset($_SESSION['variBoxAnzahl_arr'])) {
                 //redirekt zum artikel, um variation/en zu waehlen / MBM beachten
                 header('Location: ' . Shop::getURL() .
-                    '/index.php?a=' . $kArtikel .
+                    '/?a=' . $kArtikel .
                     '&n=' . $_POST['anzahl'] .
                     '&r=' . R_VARWAEHLEN, true, 302);
                 exit();
@@ -234,7 +231,6 @@ class ArtikelHelper
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 ORDER BY tartikel.kArtikel", 2
         );
-        $kVaterArtikel = 0;
         if (!is_array($oVariationKombiKind_arr) || count($oVariationKombiKind_arr) === 0) {
             return [];
         }
@@ -477,7 +473,7 @@ class ArtikelHelper
                     if (!isset($_SESSION['variBoxAnzahl_arr']) && $bRedirect) {
                         //redirekt zum artikel, um variation/en zu waehlen  MBM beachten
                         header('Location: ' . Shop::getURL() .
-                            '/index.php?a=' . $kArtikel .
+                            '/?a=' . $kArtikel .
                             '&n=' . (int)$_POST['anzahl'] .
                             '&r=' . R_VARWAEHLEN, true, 302);
                         exit();
@@ -490,7 +486,7 @@ class ArtikelHelper
                     && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0
                 ) {
                     header('Location: ' . Shop::getURL() .
-                        '/index.php?a=' . $kArtikel .
+                        '/?a=' . $kArtikel .
                         '&n=' . (int)$_POST['anzahl'] .
                         '&r=' . R_VARWAEHLEN, true, 302);
                     exit();
@@ -508,7 +504,7 @@ class ArtikelHelper
         if (!$nVorhanden && $bRedirect && !isset($_SESSION['variBoxAnzahl_arr'])) {
             //redirect zum artikel, weil variation nicht vorhanden
             header('Location: ' . Shop::getURL() .
-                '/index.php?a=' . $kArtikel .
+                '/?a=' . $kArtikel .
                 '&n=' . (int)$_POST['anzahl'] .
                 '&r=' . R_VARWAEHLEN, true, 302);
             exit();

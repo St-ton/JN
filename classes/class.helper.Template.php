@@ -101,8 +101,6 @@ class TemplateHelper
     }
 
     /**
-     * todo
-     *
      * @return array
      */
     public function getStoredTemplates()
@@ -165,10 +163,10 @@ class TemplateHelper
 
     /**
      * @param string $path
-     * @param int    $depht
+     * @param int    $depth
      * @return array
      */
-    public function getFolders($path, $depht = 0)
+    public function getFolders($path, $depth = 0)
     {
         $result = [];
 
@@ -176,10 +174,10 @@ class TemplateHelper
             return $result;
         }
 
-        foreach (scandir($path, SCANDIR_SORT_ASCENDING) as $key => $value) {
+        foreach (scandir($path, SCANDIR_SORT_ASCENDING) as $value) {
             if (!in_array($value, ['.', '..'], true) && is_dir($path . DIRECTORY_SEPARATOR . $value)) {
-                $result[$value] = $depht > 1
-                    ? $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depht - 1)
+                $result[$value] = $depth > 1
+                    ? $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depth - 1)
                     : [];
             }
         }

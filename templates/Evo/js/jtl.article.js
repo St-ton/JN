@@ -354,7 +354,7 @@
             });
 
             if ($('#buy_form .switch-variations .form-group').length == 1) {
-                this.variationSwitch($('.switch-variations'), false, $wrapper);
+                this.variationSwitch($('.switch-variations'), false, '#buy_form');
             }
 
             this.registerProductActions($wrapper);

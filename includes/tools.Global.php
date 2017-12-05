@@ -206,6 +206,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'NEWS':
+        case 'UMFRAGE':
             $SieSindHierString .= ' &gt; <a href="' . $shopURL . $linkURL . '">' . $linkname . '</a>';
             $ele->name          = $linkname;
             $ele->url           = $linkURL;
@@ -267,15 +268,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             $SieSindHierString .= ' &gt; <a href="' . $shopURL . $linkURL . '">' . $linkname . '</a>';
             $ele                = new stdClass();
             $ele->hasChild      = false;
-            $ele->name          = $linkname;
-            $ele->url           = $linkURL;
-            $ele->urlFull       = $shopURL . $linkURL;
-            $brotnavi[]         = $ele;
-            $SieSindHierString .= '<br />';
-            break;
-
-        case 'UMFRAGE':
-            $SieSindHierString .= ' &gt; <a href="' . $shopURL . $linkURL . '">' . $linkname . '</a>';
             $ele->name          = $linkname;
             $ele->url           = $linkURL;
             $ele->urlFull       = $shopURL . $linkURL;
@@ -1810,30 +1802,32 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
         $oKategorienNoHTML->oUnterKat_arr               = [];
         $oKategorienNoHTML_arr[$oKategorie->kKategorie] = $oKategorienNoHTML;
         //nur wenn unterkategorien enthalten sind!
-        if (K_KATEGORIE_TIEFE > 1) {
-            $oAktKategorie = new Kategorie($oKategorie->kKategorie);
-            if ($oAktKategorie->bUnterKategorien) {
-                $nTiefe           = 1;
-                $oUnterKategorien = new KategorieListe();
-                $oUnterKategorien->getAllCategoriesOnLevel($oAktKategorie->kKategorie);
-                foreach ($oUnterKategorien->elemente as $oUKategorie) {
-                    unset($oKategorienNoHTML);
-                    $oKategorienNoHTML = $oUKategorie;
-                    unset($oKategorienNoHTML->Unterkategorien);
-                    $oKategorienNoHTML->oUnterKat_arr                                                        = [];
-                    $oKategorienNoHTML_arr[$oKategorie->kKategorie]->oUnterKat_arr[$oUKategorie->kKategorie] = $oKategorienNoHTML;
+        if (K_KATEGORIE_TIEFE < 2) {
+            continue;
+        }
+        $oAktKategorie = new Kategorie($oKategorie->kKategorie);
+        if ($oAktKategorie->bUnterKategorien) {
+            $nTiefe           = 1;
+            $oUnterKategorien = new KategorieListe();
+            $oUnterKategorien->getAllCategoriesOnLevel($oAktKategorie->kKategorie);
+            foreach ($oUnterKategorien->elemente as $oUKategorie) {
+                unset($oKategorienNoHTML);
+                $oKategorienNoHTML = $oUKategorie;
+                unset($oKategorienNoHTML->Unterkategorien);
+                $oKategorienNoHTML->oUnterKat_arr                                                        = [];
+                $oKategorienNoHTML_arr[$oKategorie->kKategorie]->oUnterKat_arr[$oUKategorie->kKategorie] = $oKategorienNoHTML;
 
-                    if (K_KATEGORIE_TIEFE > 2) {
-                        $nTiefe                = 2;
-                        $oUnterUnterKategorien = new KategorieListe();
-                        $oUnterUnterKategorien->getAllCategoriesOnLevel($oUKategorie->kKategorie);
-                        foreach ($oUnterUnterKategorien->elemente as $oUUKategorie) {
-                            unset($oKategorienNoHTML);
-                            $oKategorienNoHTML = $oUUKategorie;
-                            unset($oKategorienNoHTML->Unterkategorien);
-                            $oKategorienNoHTML_arr[$oKategorie->kKategorie]->oUnterKat_arr[$oUKategorie->kKategorie]->oUnterKat_arr[$oUUKategorie->kKategorie] = $oKategorienNoHTML;
-                        }
-                    }
+                if (K_KATEGORIE_TIEFE < 3) {
+                    continue;
+                }
+                $nTiefe                = 2;
+                $oUnterUnterKategorien = new KategorieListe();
+                $oUnterUnterKategorien->getAllCategoriesOnLevel($oUKategorie->kKategorie);
+                foreach ($oUnterUnterKategorien->elemente as $oUUKategorie) {
+                    unset($oKategorienNoHTML);
+                    $oKategorienNoHTML = $oUUKategorie;
+                    unset($oKategorienNoHTML->Unterkategorien);
+                    $oKategorienNoHTML_arr[$oKategorie->kKategorie]->oUnterKat_arr[$oUKategorie->kKategorie]->oUnterKat_arr[$oUUKategorie->kKategorie] = $oKategorienNoHTML;
                 }
             }
         }
@@ -2035,10 +2029,8 @@ function gibAlteSteuerpositionen($Positionen, $Nettopreise = -1, $htmlWaehrung =
         return $steuerpos;
     }
     foreach ($Positionen as $position) {
-        if ($position->fMwSt > 0) {
-            if (!in_array($position->fMwSt, $steuersatz)) {
-                $steuersatz[] = $position->fMwSt;
-            }
+        if ($position->fMwSt > 0 && !in_array($position->fMwSt, $steuersatz)) {
+            $steuersatz[] = $position->fMwSt;
         }
     }
     sort($steuersatz);
@@ -2269,33 +2261,29 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
     //versandkostenfrei?
     $fArtikelPreis     = 0;
     $fGesamtsummeWaren = 0;
-    switch ($versandart->eSteuer) {
-        case 'netto':
-            if ($Artikel) {
-                $fArtikelPreis = $Artikel->Preise->fVKNetto;
-            }
-            if (isset($_SESSION['Warenkorb'])) {
-                $fGesamtsummeWaren = berechneNetto(
-                    Session::Cart()->gibGesamtsummeWarenExt(
-                        [C_WARENKORBPOS_TYP_ARTIKEL],
-                        1
-                    ),
-                    gibUst(Session::Cart()->gibVersandkostenSteuerklasse())
-                );
-            }
-            break;
-
-        case 'brutto':
-            if ($Artikel) {
-                $fArtikelPreis = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
-            }
-            if (isset($_SESSION['Warenkorb'])) {
-                $fGesamtsummeWaren = Session::Cart()->gibGesamtsummeWarenExt(
+    if ($versandart->eSteuer === 'netto') {
+        if ($Artikel) {
+            $fArtikelPreis = $Artikel->Preise->fVKNetto;
+        }
+        if (isset($_SESSION['Warenkorb'])) {
+            $fGesamtsummeWaren = berechneNetto(
+                Session::Cart()->gibGesamtsummeWarenExt(
                     [C_WARENKORBPOS_TYP_ARTIKEL],
                     1
-                );
-            }
-            break;
+                ),
+                gibUst(Session::Cart()->gibVersandkostenSteuerklasse())
+            );
+        }
+    } elseif ($versandart->eSteuer === 'brutto') {
+        if ($Artikel) {
+            $fArtikelPreis = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
+        }
+        if (isset($_SESSION['Warenkorb'])) {
+            $fGesamtsummeWaren = Session::Cart()->gibGesamtsummeWarenExt(
+                [C_WARENKORBPOS_TYP_ARTIKEL],
+                1
+            );
+        }
     }
 
     if ($versandart->fVersandkostenfreiAbX > 0
@@ -2390,20 +2378,21 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
                 WHERE (cKundengruppen = '-1' 
                   OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)", 2
         );
-        $where       = '';
         foreach ($ll_obj_arr as $cLaender) {
             $pcs = explode(' ', $cLaender->cLaender);
-            foreach ($pcs as $i => $land) {
+            foreach ($pcs as $land) {
                 if ($land && !in_array($land, $laender_arr, true)) {
-                    if (count($laender_arr) > 0) {
-                        $where .= ' OR ';
-                    }
                     $laender_arr[] = $land;
-                    $where        .= ' cISO = "' . $land . '"';
                 }
             }
         }
-        $laender = Shop::DB()->query("SELECT cISO, $sel_var AS cName FROM tland WHERE $where ORDER BY $sel_var", 2);
+        $laender_arr = array_map(function ($e) {
+            return '"' . $e . '"';
+        }, $laender_arr);
+        $where       = ' cISO IN (' . implode(',', $laender_arr) . ')';
+        $laender     = count($laender_arr) > 0
+            ? Shop::DB()->query("SELECT cISO, $sel_var AS cName FROM tland WHERE $where ORDER BY $sel_var", 2)
+            : [];
     } else {
         $laender = Shop::DB()->query("SELECT cISO, $sel_var AS cName FROM tland ORDER BY $sel_var", 2);
     }
@@ -2453,6 +2442,7 @@ function gibCaptchaCode($sec)
             break;
         case 2:
         case 3:
+        default:
             $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             for ($i = 0; $i < 4; $i++) {
                 $code .= $chars{rand(0, strlen($chars) - 1)};
@@ -2600,7 +2590,8 @@ function checkeDatum($data)
  */
 function gibVerfuegbarkeitsformularAnzeigen($Artikel, $einstellung)
 {
-    if (isset($einstellung) && $einstellung !== 'N'
+    if (isset($einstellung)
+        && $einstellung !== 'N'
         && ((int)$Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGER
             || (int)$Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGERVAR
             || ($Artikel->fLagerbestand <= 0 && $Artikel->cLagerKleinerNull === 'Y'))
@@ -2611,6 +2602,7 @@ function gibVerfuegbarkeitsformularAnzeigen($Artikel, $einstellung)
             case 'P':
                 return 2;
             case 'L':
+            default:
                 return 3;
         }
     }
@@ -2967,10 +2959,9 @@ function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
 
 /**
  * @param Versandart $oVersandart
- * @param float      $fWarenkorbSumme
- * @return mixed|string
+ * @return string
  */
-function baueVersandkostenfreiLaenderString($oVersandart, $fWarenkorbSumme = 0.0)
+function baueVersandkostenfreiLaenderString($oVersandart)
 {
     if (is_object($oVersandart) && (float)$oVersandart->fVersandkostenfreiAbX > 0) {
         $cacheID = 'bvkfls_' .
@@ -3571,7 +3562,7 @@ function setzeSpracheUndWaehrungLink()
                         $id               = null;
                         $originalLanguage = $NaviFilter->getLanguageID();
                         $NaviFilter->setLanguageID($oSprache->kSprache);
-                        $oSprache->cURL = $NaviFilter->getURL($oZusatzFilter);
+                        $oSprache->cURL = $NaviFilter->getFilterURL()->getURL($oZusatzFilter);
                         $NaviFilter->setLanguageID($originalLanguage);
                         if ($oSprache->cURL === $shopURL) {
                             $oSprache->cURL .= '?lang=' . $oSprache->cISO;
@@ -3643,7 +3634,7 @@ function setzeSpracheUndWaehrungLink()
             } else {
                 $originalLanguage = $NaviFilter->getLanguageID();
                 $NaviFilter->setLanguageID($oSprache->kSprache);
-                $cUrl = $NaviFilter->getURL($oZusatzFilter);
+                $cUrl = $NaviFilter->getFilterURL()->getURL($oZusatzFilter);
                 $NaviFilter->setLanguageID($originalLanguage);
                 if ($NaviFilter->getPage() > 1) {
                     if (strpos($sprachURL, 'navi.php') !== false) {
@@ -3740,7 +3731,7 @@ function setzeSpracheUndWaehrungLink()
             } elseif ($kLink > 0) {
                 $url = 'index.php?s=' . $kLink . '&lang=' . $_SESSION['cISOSprache'] . '&curr=' . $currency->getCode();
             } else {
-                $url = $NaviFilter->getURL($oZusatzFilter);
+                $url = $NaviFilter->getFilterURL()->getURL($oZusatzFilter);
                 $url .= strpos($url, '?') === false
                     ? ('?curr=' . $currency->getCode())
                     : ('&curr=' . $currency->getCode());
@@ -3836,11 +3827,7 @@ function gibUID($nAnzahlStellen = 40, $cString = '')
         $cUID = cryptPasswort(md5(M_PI . $cSalt . md5(time() - mt_rand())));
     }
     // Anzahl Stellen beachten
-    if ($nAnzahlStellen > 0) {
-        return substr($cUID, 0, $nAnzahlStellen);
-    }
-
-    return $cUID;
+    return $nAnzahlStellen > 0 ? substr($cUID, 0, $nAnzahlStellen) : $cUID;
 }
 
 /**
@@ -3987,37 +3974,30 @@ function gibAlleSprachen($nOption = 0)
     $languages = Session::Languages();
     if (count($languages) > 0) {
         switch ($nOption) {
-            case 0:
-                return $languages;
-                break;
+            case 2:
+                return baueAssocArray($languages, 'cISO');
 
             case 1:
                 return baueAssocArray($languages, 'kSprache');
-                break;
 
-            case 2:
-                return baueAssocArray($languages, 'cISO');
-                break;
-        }
-    } else {
-        $oSprach_arr = Shop::DB()->query("SELECT * FROM tsprache ORDER BY cShopStandard DESC, cNameDeutsch", 2);
-
-        switch ($nOption) {
             case 0:
-                return $oSprach_arr;
-                break;
-
-            case 1:
-                return baueAssocArray($oSprach_arr, 'kSprache');
-                break;
-
-            case 2:
-                return baueAssocArray($oSprach_arr, 'cISO');
-                break;
+            default:
+                return $languages;
         }
     }
+    $oSprach_arr = Shop::DB()->query("SELECT * FROM tsprache ORDER BY cShopStandard DESC, cNameDeutsch", 2);
 
-    return [];
+    switch ($nOption) {
+        case 2:
+            return baueAssocArray($oSprach_arr, 'cISO');
+
+        case 1:
+            return baueAssocArray($oSprach_arr, 'kSprache');
+
+        case 0:
+        default:
+            return $oSprach_arr;
+    }
 }
 
 /**
@@ -4025,9 +4005,7 @@ function gibAlleSprachen($nOption = 0)
  * @return bool
  */
 function pruefeSOAP($cURL = '')
-{    return strlen($cURL) > 0 && !phpLinkCheck($cURL)
-        ? false
-        : class_exists('SoapClient');
+{    return !(strlen($cURL) > 0 && !phpLinkCheck($cURL)) && class_exists('SoapClient');
 }
 
 /**
@@ -4036,9 +4014,7 @@ function pruefeSOAP($cURL = '')
  */
 function pruefeCURL($cURL = '')
 {
-    return strlen($cURL) > 0 && !phpLinkCheck($cURL)
-        ? false
-        : function_exists('curl_init');
+    return !(strlen($cURL) > 0 && !phpLinkCheck($cURL)) && function_exists('curl_init');
 }
 
 /**
@@ -4055,9 +4031,7 @@ function pruefeALLOWFOPEN()
  */
 function pruefeSOCKETS($cSOCKETS = '')
 {
-    return strlen($cSOCKETS) > 0 && !phpLinkCheck($cSOCKETS)
-        ? false
-        : function_exists('fsockopen');
+    return !(strlen($cSOCKETS) > 0 && !phpLinkCheck($cSOCKETS)) && function_exists('fsockopen');
 }
 
 /**
@@ -4164,52 +4138,50 @@ function mappeKundenanrede($cAnrede, $kSprache, $kKunde = 0)
 function pruefeKampagnenParameter()
 {
     $campaigns = Kampagne::getAvailable();
-    if (isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0 && count($campaigns) > 0) {
+    if (!empty($_SESSION['oBesucher']->kBesucher) && count($campaigns) > 0) {
         $bKampagnenHit = false;
         foreach ($campaigns as $oKampagne) {
             // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
-            if (strlen(verifyGPDataString($oKampagne->cParameter)) > 0) {
-                // Wurde bei nicht dynamischen Kampagnen der richtige Wert uebergeben?
-                if (isset($oKampagne->nDynamisch)
-                    && ((int)$oKampagne->nDynamisch === 1
-                        || ((int)$oKampagne->nDynamisch === 0
-                            && isset($oKampagne->cWert)
-                            && strtolower($oKampagne->cWert) === strtolower(verifyGPDataString($oKampagne->cParameter)))
-                    )
-                ) {
-                    $referrer = gibReferer();
-                    //wurde der HIT für diesen Besucher schon gezaehlt?
-                    $oVorgang = Shop::DB()->select(
-                        'tkampagnevorgang',
-                        ['kKampagneDef', 'kKampagne', 'kKey', 'cCustomData'],
-                        [
-                            KAMPAGNE_DEF_HIT,
-                            (int)$oKampagne->kKampagne,
-                            (int)$_SESSION['oBesucher']->kBesucher,
-                            StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer
-                        ]
-                    );
+            if (strlen(verifyGPDataString($oKampagne->cParameter)) > 0
+                && isset($oKampagne->nDynamisch)
+                && ((int)$oKampagne->nDynamisch === 1
+                    || ((int)$oKampagne->nDynamisch === 0
+                        && isset($oKampagne->cWert)
+                        && strtolower($oKampagne->cWert) === strtolower(verifyGPDataString($oKampagne->cParameter)))
+                )
+            ) {
+                $referrer = gibReferer();
+                //wurde der HIT für diesen Besucher schon gezaehlt?
+                $oVorgang = Shop::DB()->select(
+                    'tkampagnevorgang',
+                    ['kKampagneDef', 'kKampagne', 'kKey', 'cCustomData'],
+                    [
+                        KAMPAGNE_DEF_HIT,
+                        (int)$oKampagne->kKampagne,
+                        (int)$_SESSION['oBesucher']->kBesucher,
+                        StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer
+                    ]
+                );
 
-                    if (!isset($oVorgang->kKampagneVorgang)) {
-                        $oKampagnenVorgang               = new stdClass();
-                        $oKampagnenVorgang->kKampagne    = $oKampagne->kKampagne;
-                        $oKampagnenVorgang->kKampagneDef = KAMPAGNE_DEF_HIT;
-                        $oKampagnenVorgang->kKey         = $_SESSION['oBesucher']->kBesucher;
-                        $oKampagnenVorgang->fWert        = 1.0;
-                        $oKampagnenVorgang->cParamWert   = verifyGPDataString($oKampagne->cParameter);
-                        $oKampagnenVorgang->cCustomData  = StringHandler::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer;
-                        if ((int)$oKampagne->nDynamisch === 0) {
-                            $oKampagnenVorgang->cParamWert = $oKampagne->cWert;
-                        }
-                        $oKampagnenVorgang->dErstellt = 'now()';
-
-                        Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);
-                        // Kampagnenbesucher in die Session
-                        $_SESSION['Kampagnenbesucher']        = $oKampagne;
-                        $_SESSION['Kampagnenbesucher']->cWert = $oKampagnenVorgang->cParamWert;
-
-                        break;
+                if (!isset($oVorgang->kKampagneVorgang)) {
+                    $oKampagnenVorgang               = new stdClass();
+                    $oKampagnenVorgang->kKampagne    = $oKampagne->kKampagne;
+                    $oKampagnenVorgang->kKampagneDef = KAMPAGNE_DEF_HIT;
+                    $oKampagnenVorgang->kKey         = $_SESSION['oBesucher']->kBesucher;
+                    $oKampagnenVorgang->fWert        = 1.0;
+                    $oKampagnenVorgang->cParamWert   = verifyGPDataString($oKampagne->cParameter);
+                    $oKampagnenVorgang->cCustomData  = StringHandler::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer;
+                    if ((int)$oKampagne->nDynamisch === 0) {
+                        $oKampagnenVorgang->cParamWert = $oKampagne->cWert;
                     }
+                    $oKampagnenVorgang->dErstellt = 'now()';
+
+                    Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);
+                    // Kampagnenbesucher in die Session
+                    $_SESSION['Kampagnenbesucher']        = $oKampagne;
+                    $_SESSION['Kampagnenbesucher']->cWert = $oKampagnenVorgang->cParamWert;
+
+                    break;
                 }
             }
 
@@ -4845,9 +4817,7 @@ function validToken()
 {
     $cName = gibTokenName(true);
 
-    return isset($_POST[$cName])
-        ? gibToken(true) === $_POST[$cName]
-        : false;
+    return isset($_POST[$cName]) && gibToken(true) === $_POST[$cName];
 }
 
 /**
@@ -5711,24 +5681,22 @@ function pruefeVariationAusverkauft($kArtikel = 0, $oArtikel = null)
         $oArtikel = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
     }
 
-    if ($oArtikel === null) {
-        return [];
-    }
-
     $oVariationsAusverkauft_arr = [];
-    if ($oArtikel->kEigenschaftKombi === 0
+    if ($oArtikel !== null
+        && $oArtikel->kEigenschaftKombi === 0
         && $oArtikel->nIstVater === 0
         && $oArtikel->Variationen !== null
         && count($oArtikel->Variationen) > 0
     ) {
         foreach ($oArtikel->Variationen as $oVariation) {
-            if (isset($oVariation->Werte) && count($oVariation->Werte) > 0) {
-                foreach ($oVariation->Werte as $oVariationWert) {
-                    // Ist Variation ausverkauft?
-                    if ($oVariationWert->fLagerbestand <= 0) {
-                        $oVariationWert->cNameEigenschaft                      = $oVariation->cName;
-                        $oVariationsAusverkauft_arr[$oVariation->kEigenschaft] = $oVariationWert;
-                    }
+            if (!isset($oVariation->Werte) || count($oVariation->Werte) === 0) {
+                continue;
+            }
+            foreach ($oVariation->Werte as $oVariationWert) {
+                // Ist Variation ausverkauft?
+                if ($oVariationWert->fLagerbestand <= 0) {
+                    $oVariationWert->cNameEigenschaft                      = $oVariation->cName;
+                    $oVariationsAusverkauft_arr[$oVariation->kEigenschaft] = $oVariationWert;
                 }
             }
         }
@@ -5892,136 +5860,101 @@ function gibSuchspecialEinstellungMapping(array $oSuchspecialEinstellung_arr)
 function mappeSeitentyp($nSeitentyp)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $nSeitentyp = (int)$nSeitentyp;
-    if ($nSeitentyp > 0) {
-        switch ($nSeitentyp) {
-            case PAGE_UNBEKANNT:
-                return 'Unbekannt';
-                break;
+    switch ((int)$nSeitentyp) {
+        case PAGE_ARTIKEL:
+            return 'Artikeldetails';
 
-            case PAGE_ARTIKEL:
-                return 'Artikeldetails';
-                break;
+        case PAGE_ARTIKELLISTE:
+            return 'Artikelliste';
 
-            case PAGE_ARTIKELLISTE:
-                return 'Artikelliste';
-                break;
+        case PAGE_WARENKORB:
+            return 'Warenkorb';
 
-            case PAGE_WARENKORB:
-                return 'Warenkorb';
-                break;
+        case PAGE_MEINKONTO:
+            return 'Mein Konto';
 
-            case PAGE_MEINKONTO:
-                return 'Mein Konto';
-                break;
+        case PAGE_KONTAKT:
+            return 'Kontakt';
 
-            case PAGE_KONTAKT:
-                return 'Kontakt';
-                break;
+        case PAGE_UMFRAGE:
+            return 'Umfrage';
 
-            case PAGE_UMFRAGE:
-                return 'Umfrage';
-                break;
+        case PAGE_NEWS:
+            return 'News';
 
-            case PAGE_NEWS:
-                return 'News';
-                break;
+        case PAGE_NEWSLETTER:
+            return 'Newsletter';
 
-            case PAGE_NEWSLETTER:
-                return 'Newsletter';
-                break;
+        case PAGE_LOGIN:
+            return 'Login';
 
-            case PAGE_LOGIN:
-                return 'Login';
-                break;
+        case PAGE_REGISTRIERUNG:
+            return 'Registrierung';
 
-            case PAGE_REGISTRIERUNG:
-                return 'Registrierung';
-                break;
+        case PAGE_BESTELLVORGANG:
+            return 'Bestellvorgang';
 
-            case PAGE_BESTELLVORGANG:
-                return 'Bestellvorgang';
-                break;
+        case PAGE_BEWERTUNG:
+            return 'Bewertung';
 
-            case PAGE_BEWERTUNG:
-                return 'Bewertung';
-                break;
+        case PAGE_DRUCKANSICHT:
+            return 'Druckansicht';
 
-            case PAGE_DRUCKANSICHT:
-                return 'Druckansicht';
-                break;
+        case PAGE_PASSWORTVERGESSEN:
+            return 'Passwort vergessen';
 
-            case PAGE_PASSWORTVERGESSEN:
-                return 'Passwort vergessen';
-                break;
+        case PAGE_WARTUNG:
+            return 'Wartung';
 
-            case PAGE_WARTUNG:
-                return 'Wartung';
-                break;
+        case PAGE_WUNSCHLISTE:
+            return 'Wunschliste';
 
-            case PAGE_WUNSCHLISTE:
-                return 'Wunschliste';
-                break;
+        case PAGE_VERGLEICHSLISTE:
+            return 'Vergleichsliste';
 
-            case PAGE_VERGLEICHSLISTE:
-                return 'Vergleichsliste';
-                break;
+        case PAGE_STARTSEITE:
+            return 'Startseite';
 
-            case PAGE_STARTSEITE:
-                return 'Startseite';
-                break;
+        case PAGE_VERSAND:
+            return 'Versand';
 
-            case PAGE_VERSAND:
-                return 'Versand';
-                break;
+        case PAGE_AGB:
+            return 'AGB';
 
-            case PAGE_AGB:
-                return 'AGB';
-                break;
+        case PAGE_DATENSCHUTZ:
+            return 'Datenschutz';
 
-            case PAGE_DATENSCHUTZ:
-                return 'Datenschutz';
-                break;
+        case PAGE_TAGGING:
+            return 'Tagging';
 
-            case PAGE_TAGGING:
-                return 'Tagging';
-                break;
+        case PAGE_LIVESUCHE:
+            return 'Livesuche';
 
-            case PAGE_LIVESUCHE:
-                return 'Livesuche';
-                break;
+        case PAGE_HERSTELLER:
+            return 'Hersteller';
 
-            case PAGE_HERSTELLER:
-                return 'Hersteller';
-                break;
+        case PAGE_SITEMAP:
+            return 'Sitemap';
 
-            case PAGE_SITEMAP:
-                return 'Sitemap';
-                break;
+        case PAGE_GRATISGESCHENK:
+            return 'Gratis Geschenk ';
 
-            case PAGE_GRATISGESCHENK:
-                return 'Gratis Geschenk ';
-                break;
+        case PAGE_WRB:
+            return 'WRB';
 
-            case PAGE_WRB:
-                return 'WRB';
-                break;
+        case PAGE_PLUGIN:
+            return 'Plugin';
 
-            case PAGE_PLUGIN:
-                return 'Plugin';
-                break;
+        case PAGE_NEWSLETTERARCHIV:
+            return 'Newsletterarchiv';
 
-            case PAGE_NEWSLETTERARCHIV:
-                return 'Newsletterarchiv';
-                break;
+        case PAGE_EIGENE:
+            return 'Eigene Seite';
 
-            case PAGE_EIGENE:
-                return 'Eigene Seite';
-                break;
-        }
+        case PAGE_UNBEKANNT:
+        default:
+            return 'Unbekannt';
     }
-
-    return '';
 }
 
 /**
@@ -6081,7 +6014,7 @@ function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true
  */
 function gibLagerfilter()
 {
-    return Shop::getProductFilter()->getStockFilterSQL();
+    return Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
 }
 
 /**
@@ -6092,7 +6025,7 @@ function formatSize($size)
 {
     $units = ['b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb'];
     $res   = '';
-    foreach ($units as $n => $unit) {
+    foreach ($units as $unit) {
         $div = 1024 ** 2;
         if ($size > $div) {
             $res = sprintf('%s %s', number_format($size / $div, 2), $unit);

@@ -2,7 +2,7 @@
     display: none;
 }
 
-[data-portletid] {
+[data-portletid]:not(.cle-preview) {
     min-height: 2em;
     outline: 2px dashed #eee;
     position: relative;

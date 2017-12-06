@@ -9,8 +9,6 @@
  */
 class FilterItemPriceRange extends AbstractFilter
 {
-    use FilterItemTrait;
-
     /**
      * @var float
      */

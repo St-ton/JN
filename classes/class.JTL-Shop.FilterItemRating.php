@@ -9,8 +9,6 @@
  */
 class FilterItemRating extends AbstractFilter
 {
-    use FilterItemTrait;
-
     /**
      * @var int
      */

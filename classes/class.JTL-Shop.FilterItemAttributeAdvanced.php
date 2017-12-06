@@ -9,8 +9,6 @@
  */
 class FilterItemAttributeAdvanced extends FilterBaseAttribute
 {
-    use FilterItemTrait;
-
     /**
      * @var string
      */

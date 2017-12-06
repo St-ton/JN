@@ -9,8 +9,6 @@
  */
 class FilterItemManufacturer extends FilterBaseManufacturer
 {
-    use FilterItemTrait;
-
     /**
      * FilterItemManufacturer constructor.
      *

@@ -9,8 +9,6 @@
  */
 class FilterItemTag extends FilterBaseTag
 {
-    use FilterItemTrait;
-
     /**
      * FilterItemTag constructor.
      *

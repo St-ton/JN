@@ -9,7 +9,6 @@
  */
 class FilterBaseSearchQuery extends AbstractFilter
 {
-    use FilterItemTrait;
     use MagicCompatibilityTrait;
 
     /**

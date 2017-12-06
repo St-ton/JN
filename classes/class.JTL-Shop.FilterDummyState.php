@@ -9,8 +9,6 @@
  */
 class FilterDummyState extends AbstractFilter
 {
-    use FilterItemTrait;
-
     /**
      * @var null
      */

@@ -9,8 +9,6 @@
  */
 class FilterItemCategory extends FilterBaseCategory
 {
-    use FilterItemTrait;
-
     /**
      * FilterItemCategory constructor.
      *

@@ -56,6 +56,10 @@ class cache_advancedfile implements ICachingMethod
         if ($fileName === false || (!is_dir($dir) && mkdir($dir) === false && !is_dir($dir))) {
             return false;
         }
+        $info = pathinfo($fileName);
+        if (strpos(realpath($info['dirname']) . '/', $dir) !== 0) {
+            return false;
+        }
 
         return file_put_contents(
                 $fileName,

@@ -76,7 +76,6 @@ if (isset($_FILES['vcard']) &&
     validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
-    @unlink($_FILES['vcard']['tmp_name']);
 }
 if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'

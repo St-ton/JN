@@ -193,45 +193,34 @@ class TemplateHelper
      */
     public function getFrontendTemplateFolders($path = false)
     {
-        $cOrdner_arr = [];
-        if (($nHandle = opendir(PFAD_ROOT . PFAD_TEMPLATES)) !== false) {
-            while (false !== ($cFile = readdir($nHandle))) {
-                if ($cFile !== '.' && $cFile !== '..' && $cFile[0] !== '.') {
-                    $cOrdner_arr[] = $path ? (PFAD_ROOT . PFAD_TEMPLATES . $cFile) : $cFile;
-                }
+        $res      = [];
+        $iterator = new DirectoryIterator(PFAD_ROOT . PFAD_TEMPLATES);
+        foreach ($iterator as $fileinfo) {
+            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
+                $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
             }
-            closedir($nHandle);
         }
 
-        return $cOrdner_arr;
+        return $res;
     }
 
     /**
      * get all potential admin template folder names
      *
-     * @param bool $bPfad
+     * @param bool $path
      * @return array
      */
-    public function getAdminTemplateFolders($bPfad = false)
+    public function getAdminTemplateFolders($path = false)
     {
-        $cOrdner_arr = [];
-        if (($nHandle = opendir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)) !== false) {
-            while (false !== ($cFile = readdir($nHandle))) {
-                if (
-                    $cFile !== '.' &&
-                    $cFile !== '..' &&
-                    $cFile[0] !== '.' &&
-                    is_dir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cFile)
-                ) {
-                    $cOrdner_arr[] = $bPfad
-                        ? (PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cFile)
-                        : $cFile;
-                }
+        $res      = [];
+        $iterator = new DirectoryIterator(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES);
+        foreach ($iterator as $fileinfo) {
+            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
+                $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
             }
-            closedir($nHandle);
         }
 
-        return $cOrdner_arr;
+        return $res;
     }
 
     /**

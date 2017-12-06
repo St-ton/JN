@@ -47,7 +47,7 @@ if (isset($_GET['faviconError'])) {
 }
 if (isset($_POST['type']) && $_POST['type'] === 'layout' && validateToken()) {
     $oCSS           = new SimpleCSS();
-    $cOrdner        = $_POST['ordner'];
+    $cOrdner        = basename($_POST['ordner']);
     $cCustomCSSFile = $oCSS->getCustomCSSFile($cOrdner);
     $bReset         = (isset($_POST['reset']) && $_POST['reset'] == 1);
     if ($bReset) {

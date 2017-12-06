@@ -23,7 +23,7 @@ class PortletImage extends CMSPortlet
 
         $content = "<img" . $this->getAttribString() . $this->getStyleString() .">";
 
-        if ($renderLinks && $linkFlag == 'yes' && !empty($linkUrl)) {
+        if ($renderLinks && $linkFlag === 'yes' && !empty($linkUrl)) {
             if ($linkNewTabFlag) {
                 $content = '<a href="' . $linkUrl . '" title="' . $linkTitle . '" target="_blank">' . $content . '</a>';
             } else {
@@ -61,7 +61,7 @@ class PortletImage extends CMSPortlet
             // attributes
             'attr' => [
                 'class'              => '',
-                'src'                => Shop::getURL() . '/gfx/keinBild.gif',
+                'src'                => '',
                 'alt'                => '',
                 'title'              => '',
                 'data-wow-duration'  => '',

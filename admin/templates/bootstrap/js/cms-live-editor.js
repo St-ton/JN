@@ -261,7 +261,6 @@ CmsLiveEditor.prototype = {
 
             this.configModalElm.modal('hide');
             this.updateDropTargets();
-            this.setUnsaved(true);
             this.savePageToWebStorage();
         }
 
@@ -359,7 +358,7 @@ CmsLiveEditor.prototype = {
             this.setSelected();
             this.setSelected(this.draggedElm);
             this.updateDropTargets();
-            this.setUnsaved(true);
+            this.savePageToWebStorage();
         }
     },
 
@@ -374,7 +373,6 @@ CmsLiveEditor.prototype = {
             this.selectedElm.remove();
             this.setSelected();
             this.updateDropTargets();
-            this.setUnsaved(true);
             this.savePageToWebStorage();
         }
     },
@@ -388,7 +386,6 @@ CmsLiveEditor.prototype = {
             copiedElm.removeClass('cle-hovered');
             this.setSelected(this.selectedElm);
             this.updateDropTargets();
-            this.setUnsaved(true);
             this.savePageToWebStorage();
         }
     },
@@ -669,20 +666,23 @@ CmsLiveEditor.prototype = {
             this.getPageStorageId(),
             JSON.stringify(this.pageToJson())
         );
+
         window.localStorage.setItem(
             this.getPageStorageId() + '.lastmodified',
             moment().format("YYYY-MM-DD HH:mm:ss")
-        )
+        );
+
+        this.setUnsaved(true);
     },
 
     loadPageFromWebStorage: function()
     {
-        // var pageJson = window.localStorage.getItem(this.getPageStorageId());
-        //
-        // if(pageJson !== null) {
-        //     this.clearPage();
-        //     this.pageFromJson(JSON.parse(pageJson));
-        // }
+        var pageJson = window.localStorage.getItem(this.getPageStorageId());
+
+        if(pageJson !== null) {
+            this.clearPage();
+            this.pageFromJson(JSON.parse(pageJson));
+        }
     },
 
     getPageWebStorageLastModified: function()

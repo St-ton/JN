@@ -174,8 +174,7 @@ CmsLiveEditor.prototype = {
     onPortletBtnDragStart: function(e)
     {
         var elm = this.hostJq(e.target);
-
-        var newElm = $(elm.data('content'));
+        var newElm = this.iframeJq(elm.data('content'));
 
         newElm.attr('data-portletid', elm.data('portletid'));
         newElm.attr('data-portlettitle', elm.data('portlettitle'));
@@ -217,6 +216,7 @@ CmsLiveEditor.prototype = {
         this.savePage(
             function() {
                 this.loaderBackdrop.hide();
+                this.setUnsaved(false);
             },
             function () {
                 window.location.reload();
@@ -261,6 +261,8 @@ CmsLiveEditor.prototype = {
 
             this.configModalElm.modal('hide');
             this.updateDropTargets();
+            this.setUnsaved(true);
+            this.savePageToWebStorage();
         }
 
         e.preventDefault();
@@ -354,9 +356,10 @@ CmsLiveEditor.prototype = {
     {
         if(this.dropTarget !== null) {
             this.dropTarget.replaceWith(this.draggedElm);
-            this.updateDropTargets();
             this.setSelected();
             this.setSelected(this.draggedElm);
+            this.updateDropTargets();
+            this.setUnsaved(true);
         }
     },
 
@@ -371,6 +374,8 @@ CmsLiveEditor.prototype = {
             this.selectedElm.remove();
             this.setSelected();
             this.updateDropTargets();
+            this.setUnsaved(true);
+            this.savePageToWebStorage();
         }
     },
 
@@ -382,6 +387,9 @@ CmsLiveEditor.prototype = {
             copiedElm.removeClass('cle-selected');
             copiedElm.removeClass('cle-hovered');
             this.setSelected(this.selectedElm);
+            this.updateDropTargets();
+            this.setUnsaved(true);
+            this.savePageToWebStorage();
         }
     },
 
@@ -499,9 +507,26 @@ CmsLiveEditor.prototype = {
     loadPage: function()
     {
         ioCall(
-            'getCmsPageJson',
+            'getCMSPage',
             [this.cKey, this.kKey, this.kSprache],
-            this.pageFromJson.bind(this)
+            function(cmsPage)
+            {
+                var serverLastModified = cmsPage && cmsPage.dLastModified || '0000-00-00';
+                var localLastModified = this.getPageWebStorageLastModified();
+
+                var locallyModified = localLastModified > serverLastModified;
+                var data = locallyModified
+                    ? JSON.parse(window.localStorage.getItem(this.getPageStorageId()))
+                    : cmsPage
+                        ? cmsPage.data
+                        : {};
+
+                console.log(locallyModified);
+
+                this.pageFromJson(data);
+                this.setUnsaved(locallyModified);
+
+            }.bind(this)
         );
     },
 
@@ -524,7 +549,7 @@ CmsLiveEditor.prototype = {
 
         this.rootElm.each(function(i, rootArea)
         {
-            result[rootArea.id] = this.areaToJson($(rootArea));
+            result[rootArea.id] = this.areaToJson(this.iframeJq(rootArea));
 
         }.bind(this));
 
@@ -559,7 +584,7 @@ CmsLiveEditor.prototype = {
 
         children.each(function (i, child)
         {
-            result.subAreas.push(this.areaToJson($(child)));
+            result.subAreas.push(this.areaToJson(this.iframeJq(child)));
 
         }.bind(this));
 
@@ -652,12 +677,17 @@ CmsLiveEditor.prototype = {
 
     loadPageFromWebStorage: function()
     {
-        var pageJson = window.localStorage.getItem(this.getPageStorageId());
+        // var pageJson = window.localStorage.getItem(this.getPageStorageId());
+        //
+        // if(pageJson !== null) {
+        //     this.clearPage();
+        //     this.pageFromJson(JSON.parse(pageJson));
+        // }
+    },
 
-        if(pageJson !== null) {
-            this.clearPage();
-            this.pageFromJson(JSON.parse(pageJson));
-        }
+    getPageWebStorageLastModified: function()
+    {
+        return window.localStorage.getItem(this.getPageStorageId() + '.lastmodified') || '0000-00-00';
     },
 
     clearPage: function()

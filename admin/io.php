@@ -81,6 +81,7 @@ $io
     ->register('getPortletDefaultProps', ['CMS', 'getPortletDefaultProps'], null, 'CONTENT_PAGE_VIEW')
     ->register('saveCmsPage', ['CMS', 'saveCmsPage'], null, 'CONTENT_PAGE_VIEW')
     ->register('getCmsPageJson', ['CMS', 'getCmsPageJson'], null, 'CONTENT_PAGE_VIEW')
+    ->register('getCMSPage', ['CMS', 'getCMSPage'], null, 'CONTENT_PAGE_VIEW')
     // Other
     ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
     ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')

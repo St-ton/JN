@@ -63,11 +63,11 @@ class CMS
 
     public static function saveCmsPage($cKey, $kKey, $kSprache, $oCmsPageData)
     {
-        $oCmsPage = new CMSPage();
-        $oCmsPage->cKey = $cKey;
-        $oCmsPage->kKey = $kKey;
+        $oCmsPage           = new CMSPage();
+        $oCmsPage->cKey     = $cKey;
+        $oCmsPage->kKey     = $kKey;
         $oCmsPage->kSprache = $kSprache;
-        $oCmsPage->data = $oCmsPageData;
+        $oCmsPage->data     = $oCmsPageData;
         $oCmsPage->save();
     }
 

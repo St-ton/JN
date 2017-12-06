@@ -787,9 +787,9 @@ class Metadata
         }
         // Suchbegrifffilter
         if ($this->productFilter->hasSearchFilter()) {
-            foreach ($this->productFilter->getSearchFilter() as $i => $oSuchFilter) {
-                if ($oSuchFilter->cName !== null) {
-                    $cMetaTitle .= ' ' . $oSuchFilter->getName();
+            foreach ($this->productFilter->getSearchFilter() as $searchFilter) {
+                if ($searchFilter->getName() !== null) {
+                    $cMetaTitle .= ' ' . $searchFilter->getName();
                 }
             }
         }

@@ -232,7 +232,7 @@ class StringHandler
      */
     public static function getISOMappings()
     {
-        $cIso639_2To639_1 = [
+        return [
             'aar' => 'aa', // Afar
             'abk' => 'ab', // Abkhazian
             'afr' => 'af', // Afrikaans
@@ -418,8 +418,6 @@ class StringHandler
             'zha' => 'za', // Zhuang; Chuang
             'zul' => 'zu'
         ];
-
-        return $cIso639_2To639_1;
     }
 
     /**

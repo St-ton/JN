@@ -216,13 +216,11 @@ function istSpider($cUserAgent)
     $cSpider_arr       = getSpiderArr();
     $oBesucherBot      = null;
     $cBotUserAgent_arr = array_keys($cSpider_arr);
-    if (is_array($cBotUserAgent_arr) && count($cBotUserAgent_arr) > 0) {
-        foreach ($cBotUserAgent_arr as $i => $cBotUserAgent) {
-            if (strpos($cUserAgent, $cBotUserAgent) !== false) {
-                $oBesucherBot = Shop::DB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
+    foreach ($cBotUserAgent_arr as $cBotUserAgent) {
+        if (strpos($cUserAgent, $cBotUserAgent) !== false) {
+            $oBesucherBot = Shop::DB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
 
-                break;
-            }
+            break;
         }
     }
 

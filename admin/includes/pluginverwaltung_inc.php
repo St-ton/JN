@@ -220,12 +220,16 @@ function gibAllePlugins($PluginInstalliert_arr)
                         $XML_arr['shop4compatible']    = isset($XML_arr['jtlshop3plugin'][0]['Shop4Version']);
                         $Plugins->index[$cVerzeichnis] = makeXMLToObj($XML_arr);
                         $Plugins->installiert[]        =& $Plugins->index[$cVerzeichnis];
-                    } elseif ($nReturnValue === 126 || $nReturnValue === 1) {
+                    } elseif ($nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE
+                        || $nReturnValue === PLUGIN_CODE_OK
+                    ) {
                         $XML_arr['cVerzeichnis']       = $cVerzeichnis;
                         $XML_arr['shop4compatible']    = ($nReturnValue === 1);
                         $Plugins->index[$cVerzeichnis] = makeXMLToObj($XML_arr);
                         $Plugins->verfuegbar[]         =& $Plugins->index[$cVerzeichnis];
-                    } elseif ($nReturnValue !== 1 && $nReturnValue !== 126) {
+                    } elseif ($nReturnValue !== PLUGIN_CODE_OK
+                        && $nReturnValue !== PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE
+                    ) {
                         $XML_arr['cVerzeichnis']       = $cVerzeichnis;
                         $XML_arr['cFehlercode']        = $nReturnValue;
                         $Plugins->index[$cVerzeichnis] = makeXMLToObj($XML_arr);
@@ -234,7 +238,6 @@ function gibAllePlugins($PluginInstalliert_arr)
                 }
             }
         }
-
         // Pluginsortierung nach Name
         usort($Plugins->installiert, function ($left, $right) {
             return strcasecmp($left->cName, $right->cName);
@@ -309,7 +312,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     $requiresMissingIoncube = false;
     $nXMLShopVersion        = 0; // Shop-Version die das Plugin braucht um zu laufen
     $nShopVersion           = 0; // Aktuelle Shop-Version
-    $baseNode                = $XML_arr['jtlshop3plugin'][0];
+    $baseNode               = $XML_arr['jtlshop3plugin'][0];
     // Shopversion holen
     $oVersion = Shop::DB()->query("SELECT nVersion FROM tversion LIMIT 1", 1);
 
@@ -1584,40 +1587,10 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     }
     // Interne XML prüfung mit höheren XML Versionen
     if ($nXMLVersion > 100) {
-        $nReturnValue = pluginPlausiInterVersion($XML_arr, $nXMLVersion, $cVerzeichnis);
-        if ($nReturnValue === PLUGIN_CODE_OK) {
-            return $isShop4Compatible ? PLUGIN_CODE_OK : PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE;
-        }
-
-        return $nReturnValue;
+        return $isShop4Compatible ? PLUGIN_CODE_OK : PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE;
     }
 
     return $isShop4Compatible ? PLUGIN_CODE_OK : PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE;
-}
-
-/**
- * @todo: use/remove
- * @param array $XML_arr
- * @param int   $nXMLVersion
- * @param string $cVerzeichnis
- * @return int
- */
-function pluginPlausiInterVersion($XML_arr, $nXMLVersion, $cVerzeichnis)
-{
-    switch ($nXMLVersion) {
-        case 101:
-            // Teste etwas im XML
-            return PLUGIN_CODE_OK;
-            break;
-
-        case 102:
-            // Teste etwas im XML
-            return PLUGIN_CODE_OK;
-            break;
-
-    }
-
-    return PLUGIN_CODE_OK;
 }
 
 /**
@@ -1892,7 +1865,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     if ($nXMLVersion > 100
         && ($nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE || $nReturnValue ===  PLUGIN_CODE_OK)
     ) {
-        $nReturnValue = installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVersion);
+        $nReturnValue = PLUGIN_CODE_OK;
         // Update
         if (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0 && $nReturnValue === 1) {
             // Update erfolgreich => sync neue Version auf altes Plugin
@@ -3078,37 +3051,6 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
 }
 
 /**
- * Installation von höheren XML Versionen
- *
- * @todo: use/remove
- * @param array  $XML_arr
- * @param string $cVerzeichnis
- * @param Plugin $oPluginOld
- * @param int    $nXMLVersion
- * @return int
- *
- * 40+ = Fehler Version 101
- * 50+ = Fehler Version 102
- */
-function installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVersion)
-{
-    switch ($nXMLVersion) {
-        case 101:
-            // Installiere etwas
-            return PLUGIN_CODE_OK;
-            break;
-
-        case 102:
-            // Installiere etwas
-            return PLUGIN_CODE_OK;
-            break;
-
-    }
-
-    return PLUGIN_CODE_OK;
-}
-
-/**
  * Laedt das Plugin neu, d.h. liest die XML Struktur neu ein, fuehrt neue SQLs aus.
  *
  * @param Plugin $oPlugin
@@ -3375,7 +3317,7 @@ function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginN
         }
         // Custom Tables löschen
         $oCustomTabelle_arr = Shop::DB()->selectAll('tplugincustomtabelle', 'kPlugin', $kPlugin);
-        foreach ($oCustomTabelle_arr as $j => $oCustomTabelle) {
+        foreach ($oCustomTabelle_arr as $oCustomTabelle) {
             Shop::DB()->query("DROP TABLE IF EXISTS " . $oCustomTabelle->cTabelle, 4);
         }
         doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
@@ -3386,7 +3328,7 @@ function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginN
     Shop::Cache()->flushAll();
     // Deinstallation für eine höhere XML Version
     if ($nXMLVersion > 100) {
-        return deinstallierePluginVersion($kPlugin, $nXMLVersion, $bUpdate);
+        return PLUGIN_CODE_OK;
     }
 
     if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
@@ -3552,33 +3494,6 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
             WHERE texportformat.kPlugin = " . $kPlugin, 3
     );
     Shop::DB()->delete('tplugin', 'kPlugin', $kPlugin);
-}
-
-/**
- * Deinstallation für eine höhere XML Version
- *
- * @param int $kPlugin
- * @param int $nXMLVersion
- * @param bool $bUpdate
- * @return int
- * 10+ = XML Version 101
- * 20+ = XML Version 102
- */
-function deinstallierePluginVersion($kPlugin, $nXMLVersion, $bUpdate)
-{
-    switch ($nXMLVersion) {
-        case 101:
-            // Deinstalliere etwas
-            return PLUGIN_CODE_OK;
-            break;
-
-        case 102:
-            // Deinstalliere etwas
-            return PLUGIN_CODE_OK;
-            break;
-        default:
-            return PLUGIN_CODE_OK;
-    }
 }
 
 /**

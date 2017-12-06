@@ -145,7 +145,7 @@ function gibNews($conf)
         );
         // URLs bauen
         $shopURL = Shop::getURL() . '/';
-        foreach ($oNews_arr as $i => $oNews) {
+        foreach ($oNews_arr as $oNews) {
             $oNews->cPreviewImageFull = empty($oNews->cPreviewImage)
                 ? ''
                 : $shopURL . $oNews->cPreviewImage;
@@ -392,7 +392,7 @@ function gibNewsletterHistory()
         'dStart DESC'
     );
     // URLs bauen
-    foreach ($oNewsletterHistory_arr as $i => $oNewsletterHistory) {
+    foreach ($oNewsletterHistory_arr as $oNewsletterHistory) {
         $oNewsletterHistory->cURL = baueURL($oNewsletterHistory, URLART_NEWS);
     }
 
@@ -618,7 +618,7 @@ function gibSitemapNews()
                 GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
                 ORDER BY tnews.dGueltigVon DESC", 2
         );
-        foreach ($overview as $i => $news) {
+        foreach ($overview as $news) {
             $entries = Shop::DB()->query(
                 "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
                     tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords,
@@ -646,7 +646,7 @@ function gibSitemapNews()
                     GROUP BY tnews.kNews
                     ORDER BY dGueltigVon DESC", 2
             );
-            foreach ($entries as $j => $oNews) {
+            foreach ($entries as $oNews) {
                 $oNews->cURL     = baueURL($oNews, URLART_NEWS);
                 $oNews->cURLFull = baueURL($oNews, URLART_NEWS, 0, false, true);
             }
@@ -766,7 +766,7 @@ function gibGratisGeschenkArtikel($conf)
 
     if (is_array($oArtikelGeschenkTMP_arr) && count($oArtikelGeschenkTMP_arr) > 0) {
         $defaultOptions = Artikel::getDefaultOptions();
-        foreach ($oArtikelGeschenkTMP_arr as $i => $oArtikelGeschenkTMP) {
+        foreach ($oArtikelGeschenkTMP_arr as $oArtikelGeschenkTMP) {
             $oArtikel = new Artikel();
             $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
             $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkTMP->cWert);

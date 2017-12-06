@@ -104,7 +104,6 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
     global $Einstellungen, $smarty;
 
     require_once PFAD_ROOT . PFAD_INCLUDES . 'boxen.php';
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
     $oResponse   = new stdClass();
@@ -363,7 +362,6 @@ function getBasketItems($nTyp)
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     global $Einstellungen, $smarty;
 
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
     $cart        = Session::Cart();
@@ -716,7 +714,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                         'value' => $cValue
                     ];
                 }
-                $cUrl = baueURL($oArtikelTMP, URLART_ARTIKEL, 0, empty($oArtikelTMP->kSeoKey) ? true : false, true);
+                $cUrl = baueURL($oArtikelTMP, URLART_ARTIKEL, 0, empty($oArtikelTMP->kSeoKey), true);
                 $objResponse->jsfunc(
                     '$.evo.article().setArticleContent',
                     $kVaterArtikel,
@@ -826,9 +824,8 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
         }
     }
 
-    $kSprache    = Shop::getLanguage();
-    $oArtikelTMP = Shop::DB()->query("
-        SELECT a.kArtikel, tseo.kKey AS kSeoKey, IF (tseo.cSeo IS NULL, a.cSeo, tseo.cSeo) AS cSeo, 
+    return  Shop::DB()->query(
+        "SELECT a.kArtikel, tseo.kKey AS kSeoKey, IF (tseo.cSeo IS NULL, a.cSeo, tseo.cSeo) AS cSeo, 
             a.fLagerbestand, a.cLagerBeachten, a.cLagerKleinerNull
             FROM teigenschaftkombiwert
             JOIN tartikel a 
@@ -836,7 +833,7 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kArtikel' 
                 AND tseo.kKey = a.kArtikel 
-                AND tseo.kSprache = " . $kSprache .  "
+                AND tseo.kSprache = " . Shop::getLanguageID() .  "
             LEFT JOIN tartikelsichtbarkeit 
                 ON a.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
@@ -847,8 +844,6 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
         GROUP BY a.kArtikel
         HAVING count(*) = " . count($kVariationKombi_arr), 1
     );
-
-    return $oArtikelTMP;
 }
 
 /**

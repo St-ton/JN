@@ -194,7 +194,7 @@ function wunschlisteSpeichern($cWunschlisteName)
  * @param int   $kWunschliste
  * @return string
  */
-function wunschlisteSenden($cEmail_arr, $kWunschliste)
+function wunschlisteSenden(array $cEmail_arr, $kWunschliste)
 {
     $hinweis      = '';
     $kWunschliste = (int)$kWunschliste;

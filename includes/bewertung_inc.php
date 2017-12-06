@@ -30,7 +30,7 @@ function speicherBewertung($kArtikel, $kKunde, $kSprache, $cTitel, $cText, $nSte
     $cTitel  = StringHandler::htmlentities(StringHandler::filterXSS($cTitel));
     $cText   = StringHandler::htmlentities(StringHandler::filterXSS($cText));
     $article = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
-    $url = ($article === null || empty($article->cURLFull))
+    $url     = ($article === null || empty($article->cURLFull))
         ? (Shop::getURL() . '/?a=' . $kArtikel . '&')
         : ($article->cURLFull . '?');
 

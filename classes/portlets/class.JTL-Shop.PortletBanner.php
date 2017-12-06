@@ -25,7 +25,7 @@ class PortletBanner extends CMSPortlet
         $oImageMap = new stdClass();
         $oImageMap->cTitel    = $this->properties['data']['kImageMap'];
         $oImageMap->cBildPfad = $this->properties['attr']['src'];
-        $oImageMap->oArea_arr = $zones->oArea_arr;
+        $oImageMap->oArea_arr = !empty($zones->oArea_arr) ? $zones->oArea_arr : null;
         $isFluid   = false;
 
         $cBildPfad            = PFAD_ROOT . $this->properties['attr']['src'];
@@ -38,31 +38,33 @@ class PortletBanner extends CMSPortlet
         $defaultOptions       = Artikel::getDefaultOptions();
         $fill = true;
 
-        foreach ($oImageMap->oArea_arr as &$oArea) {
-            $oArea->oArtikel = null;
-            if ((int)$oArea->kArtikel > 0) {
-                $oArea->oArtikel = new Artikel();
-                if ($fill === true) {
-                    $oArea->oArtikel->fuelleArtikel(
-                        $oArea->kArtikel,
-                        $defaultOptions
-                    );
-                } else {
-                    $oArea->oArtikel->kArtikel = $oArea->kArtikel;
-                    $oArea->oArtikel->cName    = utf8_encode(
-                        Shop::DB()->select(
-                            'tartikel', 'kArtikel', $oArea->kArtikel, null, null, null, null, false, 'cName'
-                        )->cName
-                    );
-                }
-                if (strlen($oArea->cTitel) === 0) {
-                    $oArea->cTitel = $oArea->oArtikel->cName;
-                }
-                if (strlen($oArea->cUrl) === 0) {
-                    $oArea->cUrl = $oArea->oArtikel->cURL;
-                }
-                if (strlen($oArea->cBeschreibung) === 0) {
-                    $oArea->cBeschreibung = $oArea->oArtikel->cKurzBeschreibung;
+        if (!empty($oImageMap->oArea_arr)) {
+            foreach ($oImageMap->oArea_arr as &$oArea) {
+                $oArea->oArtikel = null;
+                if ((int)$oArea->kArtikel > 0) {
+                    $oArea->oArtikel = new Artikel();
+                    if ($fill === true) {
+                        $oArea->oArtikel->fuelleArtikel(
+                            $oArea->kArtikel,
+                            $defaultOptions
+                        );
+                    } else {
+                        $oArea->oArtikel->kArtikel = $oArea->kArtikel;
+                        $oArea->oArtikel->cName    = utf8_encode(
+                            Shop::DB()->select(
+                                'tartikel', 'kArtikel', $oArea->kArtikel, null, null, null, null, false, 'cName'
+                            )->cName
+                        );
+                    }
+                    if (strlen($oArea->cTitel) === 0) {
+                        $oArea->cTitel = $oArea->oArtikel->cName;
+                    }
+                    if (strlen($oArea->cUrl) === 0) {
+                        $oArea->cUrl = $oArea->oArtikel->cURL;
+                    }
+                    if (strlen($oArea->cBeschreibung) === 0) {
+                        $oArea->cBeschreibung = $oArea->oArtikel->cKurzBeschreibung;
+                    }
                 }
             }
         }
@@ -70,6 +72,7 @@ class PortletBanner extends CMSPortlet
         return Shop::Smarty()->assign('properties', $this->properties)
             ->assign('oBanner', $oImageMap)
             ->assign('isFluidBanner', false)
+            ->assign('attribString', $this->getAttribString())
             ->assign('isFluid', $isFluid)
             ->fetch('portlets/final.banner.tpl');
     }

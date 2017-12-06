@@ -174,7 +174,12 @@ ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
 ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
-
+// CMS Image Widths
+ifndef('WIDTH_CMS_IMAGE_XS', '480');
+ifndef('WIDTH_CMS_IMAGE_SM', '720');
+ifndef('WIDTH_CMS_IMAGE_MD', '1080');
+ifndef('WIDTH_CMS_IMAGE_LG', '1440');
+ifndef('WIDTH_CMS_IMAGE_XL', '1920');
 /**
  * @param string     $constant
  * @param string|int $value

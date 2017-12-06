@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{$templateUrl}css/font-awesome.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-colorpicker.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/cms-live-editor-host.css">
+    <link rel="stylesheet" href="{$templateUrl}css/typeaheadjs.css">
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
     <script src="{$templateUrl}js/jquery-ui-1.11.4.min.js"></script>

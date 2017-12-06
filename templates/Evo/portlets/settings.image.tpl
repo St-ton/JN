@@ -10,10 +10,10 @@
             <label for="image-btn-img">Bild</label>
             <input type="hidden" id="img-url" name="attr[src]" value="{$properties.attr['src']}">
             <button type="button" class="btn btn-default cle-image-btn" onclick="cmsLiveEditor.onOpenKCFinder(kcfinderCallback);">
-                {if isset($properties.attr['src'])}
+                {if !empty($properties.attr['src'])}
                     <img src="{$properties.attr['src']}" id="image-btn-img" alt="einzufügendes Bild">
                 {else}
-                    Bild auswählen
+                    <img src="../gfx/keinBild.gif" id="image-btn-img" alt="Bild wählen">
                 {/if}
             </button>
         </div>

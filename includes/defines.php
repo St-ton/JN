@@ -179,7 +179,7 @@ ifndef('WIDTH_CMS_IMAGE_XS', '480');
 ifndef('WIDTH_CMS_IMAGE_SM', '720');
 ifndef('WIDTH_CMS_IMAGE_MD', '1080');
 ifndef('WIDTH_CMS_IMAGE_LG', '1440');
-ifndef('WIDTH_CMS_IMAGE_XL', '1920');
+ifndef('WIDTH_CMS_IMAGE_XL', '2040');
 /**
  * @param string     $constant
  * @param string|int $value

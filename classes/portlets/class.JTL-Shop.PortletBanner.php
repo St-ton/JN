@@ -101,7 +101,7 @@ class PortletBanner extends CMSPortlet
             // attributes
             'attr' => [
                 'class'              => '',
-                'src'                => Shop::getURL() . '/gfx/keinBild.gif',
+                'src'                => '',
                 'alt'                => '',
                 'title'              => '',
                 'data-wow-duration'  => '',

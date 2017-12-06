@@ -136,10 +136,10 @@ abstract class CMSPortlet
 
         if (!empty($this->properties['attr']) && is_array($this->properties['attr'])) {
             foreach ($this->properties['attr'] as $name => $value) {
-                if (trim($value) !== '' && $name === 'src' && $value !== URL_SHOP . '/gfx/keinBild.gif') {
-                    $attr_str .= $this->getSrcString($value);
-                } elseif (trim($value) !== '') {
+                if (trim($value) !== '' && $name !== 'src') {
                     $attr_str .= $name . '="' . htmlspecialchars($value, ENT_QUOTES) . '" ';
+                } elseif ($name === 'src') {
+                    $attr_str .= $this->getSrcString($value);
                 }
             }
         }
@@ -178,6 +178,9 @@ abstract class CMSPortlet
      */
     protected function getSrcString($src)
     {
+        if (empty($src)) {
+            return ' src="' . BILD_KEIN_ARTIKELBILD_VORHANDEN . '"';
+        }
         $settings = Shop::getSettings([CONF_BILDER]);
 
         $size_arr = [

@@ -337,89 +337,78 @@ class WarenkorbPers
         $cArtikel_arr = [];
         $kArtikel_arr = [];
         $hinweis      = '';
-        if (count($this->oWarenkorbPersPos_arr) > 0) {
-            foreach ($this->oWarenkorbPersPos_arr as $WarenkorbPersPos) {
-                // Hat die Position einen Artikel
-                if ($WarenkorbPersPos->kArtikel > 0) {
-                    // Prüfe auf kArtikel
-                    $oArtikelVorhanden = Shop::DB()->select('tartikel', 'kArtikel', (int)$WarenkorbPersPos->kArtikel);
-                    // Falls Artikel vorhanden
-                    if (isset($oArtikelVorhanden->kArtikel) && $oArtikelVorhanden->kArtikel > 0) {
-                        // Sichtbarkeit Prüfen
-                        $oSichtbarkeit = Shop::DB()->select(
-                            'tartikelsichtbarkeit',
+        foreach ($this->oWarenkorbPersPos_arr as $WarenkorbPersPos) {
+            // Hat die Position einen Artikel
+            if ($WarenkorbPersPos->kArtikel > 0) {
+                // Prüfe auf kArtikel
+                $oArtikelVorhanden = Shop::DB()->select('tartikel', 'kArtikel', (int)$WarenkorbPersPos->kArtikel);
+                // Falls Artikel vorhanden
+                if (isset($oArtikelVorhanden->kArtikel) && $oArtikelVorhanden->kArtikel > 0) {
+                    // Sichtbarkeit Prüfen
+                    $oSichtbarkeit = Shop::DB()->select(
+                        'tartikelsichtbarkeit',
+                        'kArtikel', (int)$WarenkorbPersPos->kArtikel,
+                        'kKundengruppe', Session::CustomerGroup()->getID()
+                    );
+                    if ($oSichtbarkeit === null || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
+                        // Prüfe welche kEigenschaft gesetzt ist
+                        $oEigenschaft_arr = Shop::DB()->selectAll(
+                            'teigenschaft',
                             'kArtikel', (int)$WarenkorbPersPos->kArtikel,
-                            'kKundengruppe', Session::CustomerGroup()->getID()
+                            'kEigenschaft, cName, cTyp'
                         );
-                        if ($oSichtbarkeit === null || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
-                            // Prüfe welche kEigenschaft gesetzt ist
-                            $oEigenschaft_arr = Shop::DB()->selectAll(
-                                'teigenschaft',
-                                'kArtikel', (int)$WarenkorbPersPos->kArtikel,
-                                'kEigenschaft, cName, cTyp'
-                            );
-                            if (is_array($oEigenschaft_arr) && count($oEigenschaft_arr) > 0) {
-                                foreach ($oEigenschaft_arr as $oEigenschaft) {
-                                    if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
-                                        if (count($WarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0) {
-                                            foreach ($WarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
-                                                if ($oWarenkorbPersPosEigenschaft->kEigenschaft === $oEigenschaft->kEigenschaft) {
-                                                    $oEigenschaftWertVorhanden = Shop::DB()->select(
-                                                        'teigenschaftwert',
-                                                        'kEigenschaftWert',
-                                                        (int)$oWarenkorbPersPosEigenschaft->kEigenschaftWert,
-                                                        'kEigenschaft',
-                                                        (int)$oEigenschaft->kEigenschaft
-                                                    );
-                                                    // Prüfe ob die Eigenschaft vorhanden ist
-                                                    if (!isset($oEigenschaftWertVorhanden->kEigenschaftWert) || !$oEigenschaftWertVorhanden->kEigenschaftWert) {
-                                                        Shop::DB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
-                                                        Shop::DB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
-                                                        $cArtikel_arr[] = $WarenkorbPersPos->cArtikelName;
-                                                        $hinweis .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
-                                                    }
-                                                }
-                                            }
+                        foreach ($oEigenschaft_arr as $oEigenschaft) {
+                            if ($oEigenschaft->cTyp !== 'FREIFELD'
+                                && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD'
+                                && count($WarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0
+                            ) {
+                                foreach ($WarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
+                                    if ($oWarenkorbPersPosEigenschaft->kEigenschaft === $oEigenschaft->kEigenschaft) {
+                                        $oEigenschaftWertVorhanden = Shop::DB()->select(
+                                            'teigenschaftwert',
+                                            'kEigenschaftWert',
+                                            (int)$oWarenkorbPersPosEigenschaft->kEigenschaftWert,
+                                            'kEigenschaft',
+                                            (int)$oEigenschaft->kEigenschaft
+                                        );
+                                        // Prüfe ob die Eigenschaft vorhanden ist
+                                        if (!isset($oEigenschaftWertVorhanden->kEigenschaftWert) || !$oEigenschaftWertVorhanden->kEigenschaftWert) {
+                                            Shop::DB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
+                                            Shop::DB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
+                                            $cArtikel_arr[] = $WarenkorbPersPos->cArtikelName;
+                                            $hinweis .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                                         }
                                     }
                                 }
                             }
-                            $kArtikel_arr[] = $oArtikelVorhanden->kArtikel;
                         }
-                    }
-                // Konfigitem ohne Artikelbezug?
-                } elseif ($WarenkorbPersPos->kArtikel === 0 && !empty($WarenkorbPersPos->kKonfigitem)) {
-                    $kArtikel_arr[] = $WarenkorbPersPos->kArtikel;
-                }
-            }
-            // Artikel aus dem Array Löschen, die nicht mehr Gültig sind
-            if ($bForceDelete) {
-                foreach ($this->oWarenkorbPersPos_arr as $i => $WarenkorbPersPos) {
-                    if (!in_array($WarenkorbPersPos->kArtikel, $kArtikel_arr)) {
-                        $this->entfernePos($WarenkorbPersPos->kWarenkorbPersPos);
-                        Jtllog::writeLog(
-                            'Der Artikel ' . $WarenkorbPersPos->kArtikel . ' ist vom persistenten Warenkorb gelöscht worden.',
-                            JTLLOG_LEVEL_NOTICE,
-                            false,
-                            'kWarenkorbPersPos',
-                            $WarenkorbPersPos->kWarenkorbPersPos
-                        );
-                        unset($this->oWarenkorbPersPos_arr[$i]);
+                        $kArtikel_arr[] = $oArtikelVorhanden->kArtikel;
                     }
                 }
-                $this->oWarenkorbPersPos_arr = array_merge($this->oWarenkorbPersPos_arr);
+            // Konfigitem ohne Artikelbezug?
+            } elseif ($WarenkorbPersPos->kArtikel === 0 && !empty($WarenkorbPersPos->kKonfigitem)) {
+                $kArtikel_arr[] = $WarenkorbPersPos->kArtikel;
             }
         }
-        // Artikel die nicht mehr Gültig sind aufführen und an den Hinweis hängen
-        $tmp_str = '';
-        if (count($cArtikel_arr) > 0) {
-            foreach ($cArtikel_arr as $cArtikel) {
-                $tmp_str .= $cArtikel . ', ';
+        // Artikel aus dem Array Löschen, die nicht mehr Gültig sind
+        if ($bForceDelete) {
+            foreach ($this->oWarenkorbPersPos_arr as $i => $WarenkorbPersPos) {
+                if (!in_array($WarenkorbPersPos->kArtikel, $kArtikel_arr)) {
+                    $this->entfernePos($WarenkorbPersPos->kWarenkorbPersPos);
+                    Jtllog::writeLog(
+                        'Der Artikel ' . $WarenkorbPersPos->kArtikel . ' ist vom persistenten Warenkorb gelöscht worden.',
+                        JTLLOG_LEVEL_NOTICE,
+                        false,
+                        'kWarenkorbPersPos',
+                        $WarenkorbPersPos->kWarenkorbPersPos
+                    );
+                    unset($this->oWarenkorbPersPos_arr[$i]);
+                }
             }
+            $this->oWarenkorbPersPos_arr = array_merge($this->oWarenkorbPersPos_arr);
         }
-        $hinweis .= substr($tmp_str, 0, strlen($tmp_str) - 2);
 
-        return $hinweis;
+        return $hinweis . implode(', ', $cArtikel_arr);
     }
 
     /**

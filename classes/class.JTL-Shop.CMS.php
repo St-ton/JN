@@ -9,21 +9,11 @@
  */
 class CMS
 {
-    public static $oPageParameters = null;
+    public static $cPageIdHash = '';
 
-    public static function getCMSPage($cKey, $kKey, $kSprache)
+    public static function getCmsPage($cPageIdHash)
     {
-        $oCMSPageDB = Shop::DB()->select(
-            'tcmspage',
-            ['cKey', 'kKey', 'kSprache'],
-            [$cKey, $kKey, $kSprache],
-            null,
-            null,
-            null,
-            null,
-            false,
-            'kPage'
-        );
+        $oCMSPageDB = Shop::DB()->select('tcmspage', 'cIdHash', $cPageIdHash, null, null, null, null, false, 'kPage');
 
         if ($oCMSPageDB === null) {
             return null;
@@ -32,68 +22,27 @@ class CMS
         return new CMSPage($oCMSPageDB->kPage);
     }
 
-    public static function getCurrentCMSPage()
+    public static function getCurrentCmsPage()
     {
-        $cParameter_arr = Shop::getParameters();
-        $NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
-        Shop::dbg($cParameter_arr, false, 'cParameter_arr');
-        Shop::dbg($NaviFilter, false, 'NaviFilter');
-        $pageParams = self::getPageParameters();
-        Shop::dbg(serialize($NaviFilter),  false, 'NaviSerialized');
-        Shop::dbg(hash('MD5', serialize($NaviFilter)), false, 'hashed');
-        Shop::dbg('99a96d7da1b91c14b23a33edf9dbe321', false, 'hash Pinguine__blau');
-        Shop::dbg($pageParams, false, 'pageParams');
 
-        return self::getCMSPage($pageParams->cKey, $pageParams->kKey, $pageParams->kSprache);
+        return self::getCmsPage(self::getCurrentPageIdHash());
     }
 
-    public static function getPageParameters()
+    public static function getCurrentPageIdHash()
     {
-        if (self::$oPageParameters === null) {
-            self::$oPageParameters = (object)[ 'cKey' => '', 'kKey' => 0, 'kSprache' => Shop::getLanguage() ];
-            $shopParams            = Shop::getParameters();
-            $possibleKeys          = [
-                'kArtikel', 'kHersteller', 'kKategorie', 'kLink', 'kMerkmalWert', 'kNews', 'kNewsKategorie',
-                'kNewsUebersicht', 'kSuchanfrage', 'kTag', 'kUmfrage', 'suchspecial'
-            ];
-
-            foreach ($shopParams as $cKey => $kKey) {
-                if (!empty($kKey) && in_array($cKey, $possibleKeys, true)) {
-                    self::$oPageParameters->cKey = $cKey;
-                    self::$oPageParameters->kKey = $kKey;
-                    break;
-                }
-            }
+        if (self::$cPageIdHash === '') {
+            self::$cPageIdHash = md5(serialize(Shop::getParameters()));
         }
 
-        return self::$oPageParameters;
+        return self::$cPageIdHash;
     }
 
-    public static function saveCmsPage($cKey, $kKey, $kSprache, $oCmsPageData)
+    public static function saveCmsPage($cIdHash, $oCmsPageData)
     {
-        $oCmsPage           = new CMSPage();
-        $oCmsPage->cKey     = $cKey;
-        $oCmsPage->kKey     = $kKey;
-        $oCmsPage->kSprache = $kSprache;
-        $oCmsPage->data     = $oCmsPageData;
+        $oCmsPage          = new CMSPage();
+        $oCmsPage->cIdHash = $cIdHash;
+        $oCmsPage->data    = $oCmsPageData;
         $oCmsPage->save();
-    }
-
-    /**
-     * @param $cKey
-     * @param $kKey
-     * @param $kSprache
-     * @return mixed|object
-     */
-    public static function getCmsPageJson($cKey, $kKey, $kSprache)
-    {
-        $oCmsPage = self::getCMSPage($cKey, $kKey, $kSprache);
-
-        if ($oCmsPage === null) {
-            return [];
-        }
-
-        return $oCmsPage->data;
     }
 
     /**
@@ -169,5 +118,4 @@ class CMS
         return self::createPortlet($kPortlet)
             ->getDefaultProps();
     }
-
 }

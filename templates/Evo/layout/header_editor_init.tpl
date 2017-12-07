@@ -8,12 +8,8 @@
                 <h2>Live Editor</h2>
             </div>
             <div class="switcher-content">
-                <form id="start-editor" action="admin/cms-live-editor.php" method="get" class="form-group"
-                      data-ed-sprache="{$oCMSPageParams->kSprache}" data-ed-cKey="{$oCMSPageParams->cKey}"
-                      data-ed-kKey="{$oCMSPageParams->kKey}">
-                    <input type="hidden" name="cKey" value="{$oCMSPageParams->cKey}">
-                    <input type="hidden" name="kKey" value="{$oCMSPageParams->kKey}">
-                    <input type="hidden" name="kSprache" value="{$oCMSPageParams->kSprache}">
+                <form id="start-editor" action="admin/cms-live-editor.php" method="get" class="form-group">
+                    <input type="hidden" name="cCmsPageIdHash" value="{$cCmsPageIdHash}">
                     {if !empty($oCMSPage->cFinalHtml_arr)}
                         <p>
                             <button type="submit" name="cAction" class="btn btn-default" value="restore_default">

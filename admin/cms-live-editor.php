@@ -13,22 +13,14 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-$cKey     = verifyGPDataString('cKey');
-$kKey     = verifyGPCDataInteger('kKey');
-$kSprache = verifyGPCDataInteger('kSprache');
-$cAction  = verifyGPDataString('cAction');
-$oSeo     = Shop::DB()->select('tseo', ['cKey', 'kKey', 'kSprache'], [$cKey, $kKey, $kSprache]);
+$cPageIdHash = verifyGPDataString('cCmsPageIdHash');
+$cAction     = verifyGPDataString('cAction');
+$cPageUrl    = $_SERVER['HTTP_REFERER'];
 
 if ($cAction === 'restore_default') {
-    $oCMSPage = CMS::getCMSPage($cKey, $kKey, $kSprache);
-
-    if ($oCMSPage->remove() !== -1) {
-        // erfolg
-    } else {
-        //fehler
-    }
-
-    header('Location: ' . URL_SHOP . '/' . $oSeo->cSeo);
+    $oCMSPage = CMS::getCmsPage($cPageIdHash);
+    $oCMSPage->remove();
+    header('Location: ' . $cPageUrl);
     exit();
 }
 
@@ -36,10 +28,8 @@ $oPortlet_arr = CMS::getPortlets();
 
 $smarty
     ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
-    ->assign('oSeo', $oSeo)
     ->assign('oPortlet_arr', $oPortlet_arr)
     ->assign('cAction', $cAction)
-    ->assign('cKey', $cKey)
-    ->assign('kKey', $kKey)
-    ->assign('kSprache', $kSprache)
+    ->assign('cPageUrl', $cPageUrl)
+    ->assign('cPageIdHash', $cPageIdHash)
     ->display('cms-live-editor.tpl');

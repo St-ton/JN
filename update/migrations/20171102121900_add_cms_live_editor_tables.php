@@ -23,9 +23,7 @@ class Migration_20171102121900 extends Migration implements IMigration
 
         $this->execute("CREATE TABLE tcmspage (
             kPage INT AUTO_INCREMENT PRIMARY KEY,
-            cKey VARCHAR(255) NOT NULL,
-            kKey INT NOT NULL,
-            kSprache INT NOT NULL,
+            cIdHash CHAR(32) NOT NULL,
             cJson LONGTEXT,
             dLastModified DATETIME
         )");

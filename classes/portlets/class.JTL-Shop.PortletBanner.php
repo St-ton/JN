@@ -14,9 +14,9 @@ class PortletBanner extends CMSPortlet
         $zones = !empty($this->properties['zones']) ? json_decode($this->properties['zones']) : '';
         $styleString = $this->getStyleString();
         if (!empty($this->properties['attr']['src']) && strpos($this->properties['attr']['src'], 'gfx/keinBild.gif') === false) {
-            return '<div class="text-center"' . $styleString . '><img src="' . $this->properties['attr']['src'] . '" style="margin-top: 4px; width: 98%;filter: grayscale() opacity(60%)"/>Banner<p><small>preview images mit transparenten rand anlegen, graustufen, img responsive nutzen</small></p></div>';
+            return '<div class="text-center"' . $styleString . '><img src="' . $this->properties['attr']['src'] . '" style="width: 98%;filter: grayscale() opacity(60%)"/><p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Banner</p></div>';
         }
-        return '<div class="text-center"' . $styleString . '><img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.banner.png" style="margin-top: 4px; width: 98%;filter: grayscale() opacity(60%)"/>Banner<p><small>preview images mit transparenten rand anlegen, graustufen, img responsive nutzen</small></p></div>';
+        return '<div class="text-center"' . $styleString . '><img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.banner.png" style="width: 98%;filter: grayscale() opacity(60%)"/><p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Banner</p></div>';
     }
 
     public function getFinalHtml()

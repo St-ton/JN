@@ -21,12 +21,21 @@ class PortletImageSlider extends CMSPortlet
             $slide['srcStr'] = $this->getSrcString($slide['url']);
         }
 
+        if (!empty($this->properties['slides'][0]['url'])) {
+            return '<div class="text-center"' . $this->getStyleString() . '><img' . $this->properties['slides'][0]['srcStr'] . ' style="width: 98%;filter: grayscale() opacity(60%)"/><p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Slider</p></div>';
+        } elseif (!empty($this->properties['slides'][1]['url'])) {
+            return '<div class="text-center"' . $this->getStyleString() . '><img' . $this->properties['slides'][1]['srcStr'] . ' style="width: 98%;filter: grayscale() opacity(60%)"/><p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Slider</p></div>';
+        } else {
+            return '<img src="/gfx/keinBild.gif">';
+        }
+        /*TODO EDITOR: platzhalter oder preview prüfen*/
+        /*
         return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
             ->assign('noImageUrl', Shop::getURL() . "/gfx/keinBild.gif")
             ->assign('styleString', $this->getStyleString())
             ->assign('renderLinks', false)
-            ->fetch('portlets/final.imageslider.tpl');
+            ->fetch('portlets/final.imageslider.tpl');*/
     }
 
     public function getFinalHtml()

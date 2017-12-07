@@ -34,7 +34,15 @@ class CMS
 
     public static function getCurrentCMSPage()
     {
+        $cParameter_arr = Shop::getParameters();
+        $NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
+        Shop::dbg($cParameter_arr, false, 'cParameter_arr');
+        Shop::dbg($NaviFilter, false, 'NaviFilter');
         $pageParams = self::getPageParameters();
+        Shop::dbg(serialize($NaviFilter),  false, 'NaviSerialized');
+        Shop::dbg(hash('MD5', serialize($NaviFilter)), false, 'hashed');
+        Shop::dbg('99a96d7da1b91c14b23a33edf9dbe321', false, 'hash Pinguine__blau');
+        Shop::dbg($pageParams, false, 'pageParams');
 
         return self::getCMSPage($pageParams->cKey, $pageParams->kKey, $pageParams->kSprache);
     }

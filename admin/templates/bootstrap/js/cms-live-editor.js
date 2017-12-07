@@ -59,9 +59,18 @@ CmsLiveEditor.prototype = {
 
         this.iframeElm = this.hostJq('#iframe');
 
+        var pageUrlLink = document.createElement('a');
+        pageUrlLink.href = this.pageUrl;
+
+        if(pageUrlLink.search !== '') {
+            pageUrlLink.search += '&editpage=1&cAction=' + this.cAction;
+        } else {
+            pageUrlLink.search = '?editpage=1&cAction=' + this.cAction;
+        }
+
         this.iframeElm
             .on('load', this.onIframeLoad.bind(this))
-            .attr('src', this.pageUrl + '?editpage=1&cAction=' + this.cAction);
+            .attr('src', pageUrlLink.href.toString());
     },
 
     onIframeLoad: function()

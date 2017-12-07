@@ -8,7 +8,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 if (!$oAccount->getIsAuthenticated()) {
-    makeHTTPHeader(401);
+    header(makeHTTPHeader(401));
     exit;
 }
 if (!validateToken()) {

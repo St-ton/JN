@@ -22,31 +22,35 @@ function saveShopLogo($cFiles_arr)
     // Prüfe Dateiname
     if (strlen($cFiles_arr['shopLogo']['name']) > 0) {
         // Prüfe Dateityp
-        if ($cFiles_arr['shopLogo']['type'] !== 'image/jpeg' && $cFiles_arr['shopLogo']['type'] !== 'image/pjpeg' &&
-            $cFiles_arr['shopLogo']['type'] !== 'image/gif' && $cFiles_arr['shopLogo']['type'] !== 'image/png' &&
-            $cFiles_arr['shopLogo']['type'] !== 'image/bmp' && $cFiles_arr['shopLogo']['type'] !== 'image/x-png' &&
-            $cFiles_arr['shopLogo']['type'] !== 'image/jpg'
+        if ($cFiles_arr['shopLogo']['type'] !== 'image/jpeg'
+            && $cFiles_arr['shopLogo']['type'] !== 'image/pjpeg'
+            && $cFiles_arr['shopLogo']['type'] !== 'image/gif'
+            && $cFiles_arr['shopLogo']['type'] !== 'image/png'
+            && $cFiles_arr['shopLogo']['type'] !== 'image/bmp'
+            && $cFiles_arr['shopLogo']['type'] !== 'image/x-png'
+            && $cFiles_arr['shopLogo']['type'] !== 'image/jpg'
         ) {
+            // Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/ Bilder) oder fehlt
             return 3;
-        } else { // Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/ Bilder) oder fehlt
-            $cUploadDatei = PFAD_ROOT . PFAD_SHOPLOGO . $cFiles_arr['shopLogo']['name'];
-            $mvRes        = move_uploaded_file($cFiles_arr['shopLogo']['tmp_name'], $cUploadDatei);
-            if ($mvRes === true) {
-                $option                        = new stdClass();
-                $option->kEinstellungenSektion = CONF_LOGO;
-                $option->cName                 = 'shop_logo';
-                $option->cWert                 = $cFiles_arr['shopLogo']['name'];
-                Shop::DB()->update('teinstellungen', 'cName', 'shop_logo', $option);
-                Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
-
-                return 1; // Alles O.K.
-            }
-
-            return 4;
         }
-    } else {
-        return 2; // Dateiname fehlt
+        $cUploadDatei = PFAD_ROOT . PFAD_SHOPLOGO . basename($cFiles_arr['shopLogo']['name']);
+        if ($cFiles_arr['shopLogo']['error'] === UPLOAD_ERR_OK
+            && move_uploaded_file($cFiles_arr['shopLogo']['tmp_name'], $cUploadDatei)
+        ) {
+            $option                        = new stdClass();
+            $option->kEinstellungenSektion = CONF_LOGO;
+            $option->cName                 = 'shop_logo';
+            $option->cWert                 = $cFiles_arr['shopLogo']['name'];
+            Shop::DB()->update('teinstellungen', 'cName', 'shop_logo', $option);
+            Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+
+            return 1; // Alles O.K.
+        }
+
+        return 4;
     }
+
+    return 2; // Dateiname fehlt
 }
 
 /**

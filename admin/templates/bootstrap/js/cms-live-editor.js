@@ -9,9 +9,7 @@
  * @param env.kcfinderUrl - the URL to the KCFinder installation
  * @param env.pageUrl - the URL to the page to edit
  * @param env.cAction - the editor action name
- * @param env.cKey - current page parameter
- * @param env.kKey - current page parameter
- * @param env.kSprache - current page parameter
+ * @param env.cPageIdHash - current page id hash
  */
 function CmsLiveEditor(env)
 {
@@ -20,9 +18,7 @@ function CmsLiveEditor(env)
     this.kcfinderUrl = env.kcfinderUrl;
     this.pageUrl = env.pageUrl;
     this.cAction = env.cAction;
-    this.cKey = env.cKey;
-    this.kKey = env.kKey;
-    this.kSprache = env.kSprache;
+    this.cPageIdHash = env.cPageIdHash;
 
     this.hostCtx = window;
     this.hostJq = this.hostCtx.$;
@@ -504,8 +500,8 @@ CmsLiveEditor.prototype = {
     loadPage: function()
     {
         ioCall(
-            'getCMSPage',
-            [this.cKey, this.kKey, this.kSprache],
+            'getCmsPage',
+            [this.cPageIdHash],
             function(cmsPage)
             {
                 var serverLastModified = cmsPage && cmsPage.dLastModified || '0000-00-00';
@@ -534,7 +530,7 @@ CmsLiveEditor.prototype = {
 
         ioCall(
             'saveCmsPage',
-            [this.cKey, this.kKey, this.kSprache, this.pageToJson()],
+            [this.cPageIdHash, this.pageToJson()],
             success.bind(this),
             error.bind(this)
         );
@@ -657,7 +653,7 @@ CmsLiveEditor.prototype = {
 
     getPageStorageId: function()
     {
-        return 'cmspage.' + this.cKey + '.' + this.kKey + '.' + this.kSprache + '.' + this.cAction;
+        return 'cmspage.' + this.cPageIdHash + '.' + this.cAction;
     },
 
     savePageToWebStorage: function()

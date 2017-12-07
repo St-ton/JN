@@ -17,17 +17,7 @@ class CMSPage
     /**
      * @var string
      */
-    public $cKey = '';
-
-    /**
-     * @var int
-     */
-    public $kKey = 0;
-
-    /**
-     * @var int
-     */
-    public $kSprache = 0;
+    public $cIdHash = '';
 
     /**
      * @var array
@@ -58,9 +48,7 @@ class CMSPage
             }
 
             $this->kPage         = $oCMSPageDB->kPage;
-            $this->cKey          = $oCMSPageDB->cKey;
-            $this->kKey          = $oCMSPageDB->kKey;
-            $this->kSprache      = $oCMSPageDB->kSprache;
+            $this->cIdHash       = $oCMSPageDB->cIdHash;
             $this->data          = json_decode($oCMSPageDB->cJson, true);
             $this->dLastModified = $oCMSPageDB->dLastModified;
         }
@@ -97,14 +85,14 @@ class CMSPage
     public function save()
     {
         $oCmsPageDB = Shop::DB()->select(
-            'tcmspage', ['cKey', 'kKey', 'kSprache'], [$this->cKey, $this->kKey, $this->kSprache]
+            'tcmspage',
+            'cIdHash',
+            $this->cIdHash
         );
 
         if ($oCmsPageDB === null) {
             $oCmsPageDB = (object)[
-                'cKey' => $this->cKey,
-                'kKey' => $this->kKey,
-                'kSprache' => $this->kSprache,
+                'cIdHash' => $this->cIdHash,
                 'cJson' => json_encode($this->data),
                 'dLastModified' => date('Y-m-d H:i:s')
             ];
@@ -114,8 +102,9 @@ class CMSPage
             $oCmsPageDB->dLastModified = date('Y-m-d H:i:s');
             Shop::DB()->update(
                 'tcmspage',
-                ['cKey', 'kKey', 'kSprache'],
-                [$this->cKey, $this->kKey, $this->kSprache], $oCmsPageDB
+                'cIdHash',
+                $this->cIdHash,
+                $oCmsPageDB
             );
         }
     }
@@ -125,6 +114,6 @@ class CMSPage
      */
     public function remove()
     {
-        Shop::DB()->delete('tcmspage', ['cKey', 'kKey', 'kSprache'], [$this->cKey, $this->kKey, $this->kSprache]);
+        Shop::DB()->delete('tcmspage', 'cIdHash', $this->cIdHash);
     }
 }

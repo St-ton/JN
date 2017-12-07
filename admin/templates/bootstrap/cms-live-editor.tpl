@@ -30,11 +30,9 @@
             jtlToken: '{$smarty.session.jtl_token}',
             templateUrl: '{$templateUrl}',
             kcfinderUrl: '{$PFAD_KCFINDER}',
-            pageUrl: '{URL_SHOP}/{$oSeo->cSeo}',
+            pageUrl: '{$cPageUrl}',
             cAction: '{$cAction}',
-            cKey: '{$cKey}',
-            kKey: {$kKey},
-            kSprache: {$kSprache},
+            cPageIdHash: '{$cPageIdHash}',
         });
     </script>
 </head>
@@ -74,7 +72,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{$URL_SHOP}/{$oSeo->cSeo}" data-toggle="tooltip" data-placement="bottom"
+                        <a href="{$cPageUrl}" data-toggle="tooltip" data-placement="bottom"
                            title="Editor schlie&szlig;en">
                             <i class="fa fa-close"></i>
                         </a>

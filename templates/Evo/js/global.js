@@ -147,6 +147,7 @@ function loadContent(url)
         if (typeof $.evo.article === 'function') {
             $.evo.article().onLoad();
             $.evo.article().register();
+            addValidationListener();
         }
 
         $('html,body').animate({
@@ -207,7 +208,21 @@ function addValidationListener() {
 
     for (var i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener('blur', function (event) {
-            $(event.target).closest('.form-group').find('div.form-error-msg').remove();
+            var $target = $(event.target);
+            $target.closest('.form-group').find('div.form-error-msg').remove();
+
+            if ($target.data('must-equal-to') !== undefined) {
+                var $equalsTo = $($target.data('must-equal-to'));
+                if ($equalsTo.length === 1) {
+                    var theOther = $equalsTo[0];
+                    if (theOther.value !== '' && theOther.value !== event.target.value && event.target.value !== '') {
+                        event.target.setCustomValidity($target.data('custom-message') !== undefined ? $target.data('custom-message') : event.target.validationMessage);
+                    } else {
+                        event.target.setCustomValidity('');
+                    }
+                }
+            }
+
             if (event.target.validity.valid) {
                 $(event.target).closest('.form-group').removeClass('has-error');
             } else {
@@ -269,13 +284,15 @@ $(document).ready(function () {
         }
     });
 
-    $('.footnote-vat a, .versand, .popup').click(function(e) {
+    $(document).on('click', '.footnote-vat a, .versand, .popup', function(e) {
         var url = e.currentTarget.href;
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
         eModal.ajax({
-            'size': 'lg',
-            'url': url,
-            'title': typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : ''
+            size: 'lg',
+            url: url,
+            title: typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : '',
+            keyboard: true,
+            tabindex: -1
         });
         e.stopPropagation();
         return false;
@@ -292,7 +309,7 @@ $(document).ready(function () {
         window.addEventListener('popstate', function(e) {
             loadContent(document.location.href);
         }, false);
-    };
+    }
 
     $('.dropdown .dropdown-menu.keepopen').on('click touchstart', function(e) {
         e.stopPropagation();
@@ -329,55 +346,29 @@ $(document).ready(function () {
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote:         {
-            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}',
+            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
             wildcard: '%QUERY'
         },
         dataType: "json"
     });
-
-    $('#neukunde #plz, #new_customer #plz, #form-register #plz').change(function(){
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
+    $('.city_input').focusin(function () {
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
-    $('#neukunde #country, #new_customer #country, #form-register #country').change(function(){
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
+    $('.postcode_input').change(function () {
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).val() + '"]}';
+    });
+    $('.country_input').change(function () {
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
 
-    $('#neukunde #city, #new_customer #city, #form-register #city').typeahead(
+    $('.city_input').typeahead(
         {
             hint: true,
-            minLength: 1
+            minLength: 0
         },
         {
-            name:       'cities',
-            source:     citySuggestion
-        }
-    );
-
-    var citySuggestionRegShip = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        remote:         {
-            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}',
-            wildcard: '%QUERY'
-        },
-        dataType: "json"
-    });
-
-    $('#form-register #register-shipping_address-postcode, #neukunde #register-shipping_address-postcode').change(function(){
-        citySuggestionRegShip.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}';
-    });
-    $('#form-register #register-shipping_address-country, #neukunde #register-shipping_address-country').change(function(){
-        citySuggestionRegShip.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#register-shipping_address-country').val() + '", "' + $('#register-shipping_address-postcode').val() + '"]}';
-    });
-
-    $('#form-register #register-shipping_address-city, #neukunde #register-shipping_address-city').typeahead(
-        {
-            hint: true,
-            minLength: 1
-        },
-        {
-            name:       'cities',
-            source:     citySuggestionRegShip
+            name:   'cities',
+            source: citySuggestion
         }
     );
 

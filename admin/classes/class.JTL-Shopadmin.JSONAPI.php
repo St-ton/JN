@@ -102,7 +102,7 @@ class JSONAPI
     public function getProducts($search = null, $limit = 0, $keyName = 'kArtikel')
     {
         if (is_string($search)) {
-            $searchIn = ['cName'];
+            $searchIn = ['cName', 'cArtNr'];
         } elseif (is_array($search)) {
             $searchIn = $keyName;
         } else {

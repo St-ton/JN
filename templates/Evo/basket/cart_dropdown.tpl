@@ -1,4 +1,4 @@
-<li class="table-responsive">
+<li>
     {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
         <table class="table table-striped dropdown-cart-items hyphens">
             <tbody>
@@ -62,18 +62,18 @@
         </table>
         {if !empty($WarenkorbVersandkostenfreiHinweis)}
             <p class="small text-muted">{$WarenkorbVersandkostenfreiHinweis|truncate:120:"..."}
-                <a href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[6])}{$oSpezialseiten_arr[6]->cURL}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang section="login" key="shippingInfo"}">
+                <a class="popup" href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[6])}{$oSpezialseiten_arr[6]->cURL}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang section="login" key="shippingInfo"}">
                     <i class="fa fa-info-circle"></i>
                 </a>
             </p>
         {/if}
         <div class="btn-group btn-group-justified btn-group-full">
-            <a href="{get_static_route id='warenkorb.php'}" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>
+            <a href="{get_static_route id='warenkorb.php'}" class="btn btn-primary" title="{lang key='gotoBasket'}"><i class="fa fa-shopping-cart"></i> {lang key='gotoBasket'}</a>
             {*
             <a href="{get_static_route id='bestellvorgang.php'}" class="btn btn-primary">{lang key="checkout" section="basketpreview"}</a>
             *}
         </div>
     {else}
-        <a href="{get_static_route id='warenkorb.php'}">{lang section="checkout" key="emptybasket"}</a>
+        <a href="{get_static_route id='warenkorb.php'}" title="{lang section='checkout' key='emptybasket'}">{lang section='checkout' key='emptybasket'}</a>
     {/if}
 </li>

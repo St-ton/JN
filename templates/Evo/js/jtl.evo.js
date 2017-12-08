@@ -5,80 +5,17 @@
 
 (function () {
     'use strict';
-    
+
     if (!$.evo) {
-        $.evo = { 'showDebug' : false };
+        $.evo = {};
     }
 
-    var EvoClass = function (options) {
-        this.init(options);
-    };
-
-    EvoClass.VERSION = '1.0.0';
-
-    EvoClass.DEFAULTS = { captcha: {} };
+    var EvoClass = function() {};
 
     EvoClass.prototype = {
+        options: { captcha: {} },
 
         constructor: EvoClass,
-
-        init: function (options) {
-            this.options = $.extend({}, EvoClass.DEFAULTS, options);
-        },
-
-        /*
-        generateEvoSlider: function () {
-            var slideNum = 3,
-                containerWidth,
-                target,
-                slideWidthPercent,
-                cellCount,
-                item,
-                items;
-            $('.evo-slider > .carousel-inner').each(function (index, el) {
-                containerWidth = $(this).parent().width();
-                target = $(this).parent().data('item-width');
-                slideNum = 1;
-                if (parseFloat(target) > 0) {
-                    slideNum = Math.floor(containerWidth / target);
-                }
-                items = $(this).parent().data('item-count');
-                if (parseInt(items) > 0) {
-                    slideNum = items;
-                }
-                //cellWidth = (containerWidth / slideNum) - 1;
-                slideWidthPercent = Math.floor(100 / slideNum);
-                cellCount = 0;
-                item = null;
-                items = $(el).find('.product-wrapper');
-
-                items.find('.product-cell').css('margin-bottom', 0);
-
-                $(el).empty();
-
-                items.each(function () {
-                    if (cellCount === 0) {
-                        item = $('<div class="item"></div>');
-                    }
-
-                    // $(this).css('width', cellWidth).appendTo(item);
-                    $(this).css('width', slideWidthPercent + '%').appendTo(item);
-
-                    cellCount++;
-
-                    if (cellCount >= slideNum) {
-                        $(el).append(item);
-                        cellCount = 0;
-                    }
-                });
-
-                $(el).append(item).children('.item').first().addClass('active');
-                $(this).removeClass('hidden');
-            });
-            
-            $('.evo-slider').carousel('cycle');
-        },
-        */
 
         generateSlickSlider: function() {
             /*
@@ -191,22 +128,25 @@
         },
 
         imagebox: function(wrapper) {
-            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
+            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper),
+                square   = $('.image-box', $wrapper).first().height() + 'px',
+                padding  = $(window).height() / 2;
 
             $('.image-box', $wrapper).each(function(i, item) {
                 var box = $(this),
                     img = box.find('img'),
                     src = img.data('src');
-                box.addClass('loading');
-                    
+
+                img.css('max-height', square);
+                box.css('max-height', square)
+                    .addClass('loading');
+
                 if (src && src.length > 0) {
                     //if (src === 'gfx/keinBild.gif') {
                     //    box.removeClass('loading')
                     //        .addClass('none');
                     //    box.parent().find('.overlay-img').remove();
                     //} else {
-                        var padding = $(window).height() / 2,
-                            square = box.width() + 'px';
                         $(img).lazy(padding, function() {
                             $(this).load(function() {
                                 img.css('max-height', square);
@@ -249,7 +189,7 @@
                 keyboard: true,
                 tabindex: -1,
                 onShown: function() {
-                    $.evo.extended().generateSlickSlider();
+                    $.evo.generateSlickSlider();
                 }
             });
         },
@@ -284,6 +224,8 @@
                 eModal.alert({
                     message: html,
                     title: title,
+                    keyboard: true,
+                    tabindex: -1,
                     onShown:function () {
                         //the modal just copies all the html.. so we got duplicate IDs which confuses recaptcha
                         var recaptcha = $('.tmp-modal-content .g-recaptcha');
@@ -397,29 +339,12 @@
                     .attr('disabled', true);
 
                 var url = 'bestellvorgang.php?kVersandart=' + id;
-                $.evo.extended().loadContent(url, function() {
-                    $.evo.extended().checkout();
+                $.evo.loadContent(url, function() {
+                    $.evo.checkout();
                 }, null, true);
             });
         },
 
-        register: function() {
-            this.addSliderTouchSupport();
-            this.productTabsPriceFlow();
-            // this.generateEvoSlider();
-            this.generateSlickSlider();
-            $('.nav-pills, .nav-tabs').tabdrop();
-            this.autoheight();
-            this.tooltips();
-            this.imagebox();
-            this.renderCaptcha();
-            this.popupDep();
-            this.popover();
-            this.preventDropdownToggle();
-            this.smoothScroll();
-            this.checkout();
-        },
-        
         loadContent: function(url, callback, error, animation, wrapper) {
             var that        = this;
             var $wrapper    = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
@@ -427,6 +352,8 @@
             if (animation) {
                 $wrapper.addClass('loading');
             }
+
+            that.trigger('load.evo.content', { url: url });
 
             $.ajax(url, ajaxOptions).done(function(html) {
                 var $data = $(html);
@@ -446,7 +373,8 @@
             })
             .always(function() {
                 $wrapper.removeClass('loading');
-                that.trigger('contentLoaded');
+                that.trigger('contentLoaded'); // compatibility
+                that.trigger('loaded.evo.content', { url: url });
             });
         },
         
@@ -483,39 +411,59 @@
 
         trigger: function(event, args) {
             $(document).trigger('evo:' + event, args);
+            return this;
+        },
+
+        error: function() {
+            if (console && console.error) {
+                console.error(arguments);
+            }
+        },
+
+        /**
+         * $.evo.extended() is deprecated, please use $.evo instead
+         */
+        extended: function() {
+            return $.evo;
+        },
+
+        register: function() {
+            this.addSliderTouchSupport();
+            this.productTabsPriceFlow();
+            this.generateSlickSlider();
+            $('.nav-pills, .nav-tabs').tabdrop();
+            this.autoheight();
+            this.tooltips();
+            this.imagebox();
+            this.renderCaptcha();
+            this.popupDep();
+            this.popover();
+            this.preventDropdownToggle();
+            this.smoothScroll();
+            this.checkout();
         }
     };
 
     var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
     if (ie && parseInt(ie) <= 9) {
         $(document).ready(function () {
-            $.evo.extended().register();
+            $.evo.register();
         });
     } else {
         $(window).on('load', function () {
-            $.evo.extended().register();
+            $.evo.register();
         });
     }
 
     $(window).on('resize', function () {
-        $.evo.extended().autoheight();
+        $.evo.autoheight();
     });
 
     // PLUGIN DEFINITION
     // =================
-
-    $.evo.extended = function(option) {
-        return new EvoClass(option);
-    };
-    
-    $.evo.error = function() {
-        if (console && console.error) {
-            console.error(arguments);
-        }
-    }
-
+    $.evo = new EvoClass();
 })(jQuery);
 
 function g_recaptcha_callback() {
-    $.evo.extended().renderCaptcha();
+    $.evo.renderCaptcha();
 }

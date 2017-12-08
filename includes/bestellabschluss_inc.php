@@ -257,7 +257,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $kRechnungsadresse = $oRechnungsadresse->insertInDB();
 
     if (isset($_POST['kommentar'])) {
-        $_SESSION['kommentar'] = substr(strip_tags(Shop::DB()->escape($_POST['kommentar'])), 0, 1000);
+        $_SESSION['kommentar'] = substr(strip_tags($_POST['kommentar']), 0, 1000);
     } elseif (!isset($_SESSION['kommentar'])) {
         $_SESSION['kommentar'] = '';
     }
@@ -274,7 +274,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->cVersandartName   = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cZahlungsartName  = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cSession          = session_id();
-    $Bestellung->cKommentar        = stripslashes($_SESSION['kommentar']);
+    $Bestellung->cKommentar        = $_SESSION['kommentar'];
     $Bestellung->cAbgeholt         = 'N';
     $Bestellung->cStatus           = BESTELLUNG_STATUS_OFFEN;
     $Bestellung->dErstellt         = 'now()';
@@ -702,6 +702,8 @@ function aktualisiereStuecklistenLagerbestand($oStueckListeArtikel, $nAnzahl)
         if (is_array($oKomponente_arr) && count($oKomponente_arr) > 0) {
             // wenn ja, dann wird für diese auch der Bestand aktualisiert
             $options = Artikel::getDefaultOptions();
+
+            $options->nKeineSichtbarkeitBeachten = 1;
 
             foreach ($oKomponente_arr as $oKomponente) {
                 $tmpArtikel = new Artikel();

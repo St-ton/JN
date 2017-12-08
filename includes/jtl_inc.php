@@ -98,7 +98,6 @@ function gibRedirect($cRedirect)
             break;
     }
     executeHook(HOOK_JTL_INC_SWITCH_REDIRECT, ['cRedirect' => &$cRedirect, 'oRedirect' => &$oRedirect]);
-
     $_SESSION['JTL_REDIRECT'] = $oRedirect;
 
     return $oRedirect;
@@ -319,7 +318,6 @@ function fuehreLoginAus($userLogin, $passLogin)
     global $cHinweis;
     $Kunde    = new Kunde();
     $csrfTest = validateToken();
-
     if ($csrfTest === false) {
         $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
         Jtllog::writeLog('CSRF-Warnung fuer Login: ' . $_POST['login'], JTLLOG_LEVEL_ERROR);
@@ -375,8 +373,8 @@ function fuehreLoginAus($userLogin, $passLogin)
                 $cURL = StringHandler::filterXSS(verifyGPDataString('cURL'));
                 // Lade WarenkorbPers
                 $bPersWarenkorbGeladen = false;
-                if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' &&
-                    count($_SESSION['Warenkorb']->PositionenArr) === 0
+                if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y'
+                    && count($_SESSION['Warenkorb']->PositionenArr) === 0
                 ) {
                     $oWarenkorbPers = new WarenkorbPers($Kunde->kKunde);
                     $oWarenkorbPers->ueberpruefePositionen(true);
@@ -444,6 +442,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                         $bPersWarenkorbGeladen = true;
                     }
                 }
+                LinkHelper::getInstance()->buildLinkGroups(true);
                 // Pruefe, ob Artikel im Warenkorb vorhanden sind,
                 // welche für den aktuellen Kunden nicht mehr sichtbar sein duerfen
                 pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
@@ -451,10 +450,12 @@ function fuehreLoginAus($userLogin, $passLogin)
                 checkeWarenkorbEingang();
                 if (strlen($cURL) > 0) {
                     if (strpos($cURL, 'http') !== 0) {
-                        header('Location: ' . $cURL, true, 301);
-                        exit();
+                        $cURL = Shop::getURL() . '/' . ltrim($cURL, '/');
                     }
-                } elseif ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && !$bPersWarenkorbGeladen) {
+                    header('Location: ' . $cURL, true, 301);
+                    exit();
+                }
+                if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && !$bPersWarenkorbGeladen) {
                     // Existiert ein pers. Warenkorb?
                     // Wenn ja => frag Kunde ob er einen eventuell vorhandenen Warenkorb mergen möchte
                     if ($Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {

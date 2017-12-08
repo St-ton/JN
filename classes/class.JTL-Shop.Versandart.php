@@ -95,6 +95,11 @@ class Versandart
     public $cSendConfirmationMail;
 
     /**
+     * @var string
+     */
+    public $cIgnoreShippingProposal;
+
+    /**
      * @var int
      */
     public $nMinLiefertage;

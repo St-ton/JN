@@ -92,6 +92,12 @@
   #RewriteCond %{HTTP_HOST} ^meinedomain.de
   #RewriteRule ^(.*)$ http://www.meinedomain.de/$1 [r=301,L]
 
+  #REWRITE ANPASSUNG 3 (Entfernt abschließenden Slash per 301-Redirect)
+  #RewriteCond %{REQUEST_FILENAME} !-f
+  #RewriteCond %{REQUEST_FILENAME} !-d
+  #RewriteCond %{REQUEST_URI} ^(.*)/$
+  #RewriteRule ^. %1 [L,R=301]
+
   #Rewrite der JTL-Shop-URLs
   #Aendern Sie an diesen Zeilen nichts!
   RewriteRule ^((urllist|sitemap_).*\.(xml|txt)(\.gz)?)$ includes/sitemap.php?datei=$1 [L]

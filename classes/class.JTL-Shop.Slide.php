@@ -136,8 +136,8 @@ class Slide
     public function save()
     {
         if (!empty($this->cBild)) {
-            $cShopUrl  = Shop::getURL();
-            $cShopUrl2 = URL_SHOP;
+            $cShopUrl  = parse_url(Shop::getURL(), PHP_URL_PATH);
+            $cShopUrl2 = parse_url(URL_SHOP, PHP_URL_PATH);
             if (strrpos($cShopUrl, '/') !== (strlen($cShopUrl) - 1)) {
                 $cShopUrl .= '/';
             }

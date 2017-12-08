@@ -4,23 +4,37 @@
     <thead>
         <tr class="row">
             {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-                <th class="hidden-xs col-sm-3"></th>
+                <th class="hidden-xs col-sm-2"></th>
             {/if}
-            <th class="{if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y' && $tplscope === 'cart'}col-xs-7 col-sm-4
-                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y' && $tplscope !== 'cart'}col-xs-8 col-sm-5
-                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'N' && $tplscope === 'cart'}col-xs-7 col-sm-5
-                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'N' && $tplscope !== 'cart'}col-xs-8 col-sm-6
-                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y' && $tplscope === 'cart'}col-xs-7
-                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y' && $tplscope !== 'cart'}col-xs-8
-                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'N' && $tplscope === 'cart'}col-xs-7 col-sm-8
+            <th class="{if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'
+                            && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'
+                            && $tplscope === 'cart'}col-xs-6 col-sm-3
+                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'
+                            && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'
+                            && $tplscope !== 'cart'}col-xs-8 col-sm-5
+                        {elseif ($Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'
+                            && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'N'
+                            || $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N'
+                            && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y')
+                            && $tplscope === 'cart'}col-xs-6 col-sm-5
+                        {elseif ($Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'
+                            && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'N'
+                            || $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N'
+                            && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y')
+                            && $tplscope !== 'cart'}col-xs-8 col-sm-7
+                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N'
+                            && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'N'
+                            && $tplscope === 'cart'}col-xs-6 col-sm-7
                         {else}col-xs-8 col-sm-9{/if}">{lang key="product" section="global"}</th>
-            <th class="col-xs-2 col-sm-1">{lang key="quantity" section="global"}</th>
+            <th class="{if $tplscope === "cart"}col-xs-2{else}col-xs-2 col-sm-1{/if}">
+                {lang key="quantity" section="global"}
+            </th>
             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                <th class="text-right hidden-xs col-sm-1">{lang key="pricePerUnit" section="productDetails"}</th>
+                <th class="hidden-xs col-sm-2 text-right">{lang key="pricePerUnit" section="productDetails"}</th>
             {/if}
-            <th class="text-right col-xs-2">{lang key="price" section="global"}</th>
+            <th class="col-xs-2 text-right">{lang key="price" section="global"}</th>
             {if $tplscope === 'cart'}
-                <th class="delitem-col col-xs-1"></th>
+                <th class="col-xs-2 col-sm-1 delitem-col"></th>
             {/if}
         </tr>
     </thead>
@@ -77,26 +91,26 @@
 
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oPosition->Artikel->oMerkmale_arr)}
                                 {foreach from=$oPosition->Artikel->oMerkmale_arr item="oMerkmale_arr"}
-                                  <li class="characteristic">
-                                     <strong>{$oMerkmale_arr->cName}</strong>:
-                                     <span class="values">
-                                        {foreach name="merkmalwerte" from=$oMerkmale_arr->oMerkmalWert_arr item="oWert"}
-                                           {if !$smarty.foreach.merkmalwerte.first}, {/if}
-                                           {$oWert->cWert}
-                                        {/foreach}
-                                     </span>
-                                  </li>
+                                    <li class="characteristic">
+                                        <strong>{$oMerkmale_arr->cName}</strong>:
+                                        <span class="values">
+                                            {foreach name="merkmalwerte" from=$oMerkmale_arr->oMerkmalWert_arr item="oWert"}
+                                                {if !$smarty.foreach.merkmalwerte.first}, {/if}
+                                                {$oWert->cWert}
+                                            {/foreach}
+                                        </span>
+                                    </li>
                                 {/foreach}
                             {/if}
 
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelattribute == 'Y' && !empty($oPosition->Artikel->Attribute)}
                                 {foreach from=$oPosition->Artikel->Attribute item="oAttribute_arr"}
-                                 <li class="attribute">
-                                    <strong>{$oAttribute_arr->cName}</strong>:
-                                    <span class="values">
-                                       {$oAttribute_arr->cWert}
-                                    </span>
-                                 </li>
+                                    <li class="attribute">
+                                        <strong>{$oAttribute_arr->cName}</strong>:
+                                        <span class="values">
+                                            {$oAttribute_arr->cWert}
+                                        </span>
+                                    </li>
                                 {/foreach}
                             {/if}
 
@@ -134,11 +148,31 @@
                     {if $oPosition->istKonfigVater()}
                         <ul class="config-items text-muted small">
                             {foreach from=$smarty.session.Warenkorb->PositionenArr item=KonfigPos name=konfigposition}
-                                {if $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0}
+                                {if $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0
+                                    && !$KonfigPos->isIgnoreMultiplier()}
                                     <li>
                                         <span class="qty">{if !$KonfigPos->istKonfigVater()}{$KonfigPos->nAnzahlEinzel}{else}1{/if}x</span>
                                         {$KonfigPos->cName|trans} &raquo;
-                                        <span class="price_value">{$KonfigPos->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}</span>
+                                        <span class="price_value">
+                                            {$KonfigPos->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                            {lang key="pricePerUnit" section="checkout"}
+                                        </span>
+                                    </li>
+                                {/if}
+                            {/foreach}
+                        </ul>
+                        <ul class="config-items text-muted small">
+                            <strong>{lang key="one-off" section="checkout"}</strong>
+                            {foreach from=$smarty.session.Warenkorb->PositionenArr item=KonfigPos name=konfigposition}
+                                {if $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0
+                                    && $KonfigPos->isIgnoreMultiplier()}
+                                    <li>
+                                        <span class="qty">{if !$KonfigPos->istKonfigVater()}{$KonfigPos->nAnzahlEinzel}{else}1{/if}x</span>
+                                        {$KonfigPos->cName|trans} &raquo;
+                                        <span class="price_value">
+                                            {$KonfigPos->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                            {lang key="pricePerUnit" section="checkout"}
+                                        </span>
                                     </li>
                                 {/if}
                             {/foreach}
@@ -150,55 +184,79 @@
                     {if $tplscope === 'cart'}
                         {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                             {if !isset($Einstellungen.template.theme.qty_modify_dropdown) || $Einstellungen.template.theme.qty_modify_dropdown === 'Y'}
-                                <div class="qty-wrapper dropdown modify">
-                                    {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
-                                    <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
-                                        <span class="caret"></span>
-                                    </button>
-                                    <div id="cartitem-dropdown-menu{$smarty.foreach.positionen.index}" class="dropdown-menu dropdown-menu-right keepopen">
-                                        <div class="panel-body text-center">
-                                            {if $oPosition->istKonfigVater()}
-                                                <input name="anzahl[{$smarty.foreach.positionen.index}]" type="hidden" class="form-control" value="{$oPosition->nAnzahl}" />
-                                                <a class="btn btn-default configurepos" href="index.php?a={$oPosition->kArtikel}&ek={$smarty.foreach.positionen.index}">{lang key="configure" section="global"}</a>
-                                            {else}
+                                {if $oPosition->istKonfigVater()}
+                                    <div class="qty-wrapper dropdown modify">
+                                        {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
+                                        <input name="anzahl[{$smarty.foreach.positionen.index}]" type="hidden" class="form-control" value="{$oPosition->nAnzahl}" />
+                                        <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-label="{lang key='configure'}">
+                                            <span class="caret"></span>
+                                        </button>
+                                        <div id="cartitem-dropdown-menu{$smarty.foreach.positionen.index}" class="dropdown-menu dropdown-menu-right keepopen">
+                                            <div class="panel-body text-center">
                                                 <div class="form-inline">
-                                                    <label for="quantity{$smarty.foreach.positionen.index}">{lang key="quantity" section="global"}
+                                                    <span class="btn-group">
+                                                        <a class="btn btn-default configurepos"
+                                                           href="index.php?a={$oPosition->kArtikel}&ek={$smarty.foreach.positionen.index}">
+                                                            <span class="visible-xs visible-sm"><i class="fa fa-cogs"></i></span>
+                                                            <span class="hidden-xs hidden-sm">{lang key='configure'}</span>
+                                                        </a>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {else}
+                                    <div class="qty-wrapper dropdown modify">
+                                        {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
+                                        <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-label="{lang key='quantity'}">
+                                            <span class="caret"></span>
+                                        </button>
+                                        <div id="cartitem-dropdown-menu{$smarty.foreach.positionen.index}" class="dropdown-menu dropdown-menu-right keepopen">
+                                            <div class="panel-body text-center">
+                                                <div class="form-inline">
+                                                    <label for="quantity{$smarty.foreach.positionen.index}">{lang key='quantity'}
                                                         {if $oPosition->Artikel->cEinheit}
                                                             ({$oPosition->Artikel->cEinheit})
                                                         {/if}
                                                     </label>:
-                                                    <div id="quantity-grp" class="choose_quantity input-group">
+                                                    <div id="quantity-grp{$smarty.foreach.positionen.index}" class="choose_quantity input-group">
                                                         <input name="anzahl[{$smarty.foreach.positionen.index}]" id="quantity{$smarty.foreach.positionen.index}" class="form-control quantity form-control text-right" size="3" value="{$oPosition->nAnzahl}" />
                                                         <span class="input-group-btn">
                                                             <button type="submit" class="btn btn-default" title="{lang key='refresh' section='checkout'}"><i class="fa fa-refresh"></i></button>
                                                         </span>
                                                     </div>
                                                 </div>
-                                            {/if}
-                                        </div>
-                                    </div>
-                                </div>
-                            {else}
-                                <div class="qty-wrapper modify">
-                                    {if $oPosition->istKonfigVater()}
-                                        <input name="anzahl[{$smarty.foreach.positionen.index}]" type="hidden" class="form-control" value="{$oPosition->nAnzahl}" />
-                                        <span class="btn-group">
-                                            <a class="btn btn-default configurepos" href="index.php?a={$oPosition->kArtikel}&ek={$smarty.foreach.positionen.index}">{lang key="configure" section="global"}</a>
-                                        </span>
-                                    {else}
-                                        <div class="form-inline">
-                                            <div class="btn-group-vertical" role="group" id="quantity-grp">
-                                                <input name="anzahl[{$smarty.foreach.positionen.index}]" id="quantity{$smarty.foreach.positionen.index}" class="btn-group form-control quantity text-right" size="3" value="{$oPosition->nAnzahl}" />
-                                                {if $oPosition->Artikel->cEinheit}
-                                                    <span class="btn-group unit input-group-addon hidden-xs">{$oPosition->Artikel->cEinheit}</span>
-                                                {/if}
-                                                <span class="btn-group">
-                                                    <button type="submit" class="btn btn-default" title="{lang key='refresh' section='checkout'}"><i class="fa fa-refresh"></i></button>
-                                                </span>
                                             </div>
                                         </div>
-                                    {/if}
-                                </div>
+                                    </div>
+                                {/if}
+                            {else}
+                                {if $oPosition->istKonfigVater()}
+                                    <div class="qty-wrapper modify">
+                                        <div class="btn-group-vertical" role="group" id="quantity-grp{$smarty.foreach.positionen.index}">
+                                            <input name="anzahl[{$smarty.foreach.positionen.index}]" type="text" class="form-control text-center" value="{$oPosition->nAnzahl}" readonly />
+                                            <span class="btn-group">
+                                                <a class="btn btn-default configurepos"
+                                                    href="index.php?a={$oPosition->kArtikel}&ek={$smarty.foreach.positionen.index}">
+                                                    <span class="visible-xs visible-sm"><i class="fa fa-cogs"></i></span>
+                                                    <span class="hidden-xs hidden-sm">{lang key="configure" section="global"}</span>
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                {else}
+                                    <div class="form-inline">
+                                        <div class="btn-group-vertical" role="group" id="quantity-grp{$smarty.foreach.positionen.index}">
+                                            <input name="anzahl[{$smarty.foreach.positionen.index}]" id="quantity{$smarty.foreach.positionen.index}" class="btn-group form-control quantity text-right" size="3" value="{$oPosition->nAnzahl}" />
+                                            {if $oPosition->Artikel->cEinheit}
+                                                <span class="btn-group unit input-group-addon hidden-xs">{$oPosition->Artikel->cEinheit}</span>
+                                            {/if}
+                                            <span class="btn-group">
+                                                <button type="submit" class="btn btn-default" title="{lang key='refresh' section='checkout'}"><i class="fa fa-refresh"></i></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                {/if}
                             {/if}
                         {elseif $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
                             <input name="anzahl[{$smarty.foreach.positionen.index}]" type="hidden" value="1" />

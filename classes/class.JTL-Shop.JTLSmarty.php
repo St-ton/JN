@@ -729,7 +729,14 @@ class JTLSmarty extends SmartyBC
 
             foreach (Plugin::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
                 $templateKey = 'plugin_' . $moduleId;
-                $file        = $this->_realpath($pluginTemplatePath . '/' . $resource_cfb_name, true);
+                $templateVar = 'oPlugin_' . $moduleId;
+
+                if ($this->getTemplateVars($templateVar) === null) {
+                    $oPlugin = Plugin::getPluginById($moduleId);
+                    $this->assign($templateVar, $oPlugin);
+                }
+
+                $file        = $this->_realpath($pluginTemplatePath . $resource_cfb_name, true);
                 if (file_exists($file)) {
                     $pluginTemplateExtends[] = sprintf('[%s]%s', $templateKey, $resource_cfb_name);
                 }

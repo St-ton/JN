@@ -37,20 +37,33 @@ class LinkHelper
      */
     public function __construct()
     {
-        $this->cacheID    = 'linkgroups' . Shop::Cache()->getBaseID(false, false, true, true, true, false);
         self::$_langID    = isset($_SESSION['kSprache']) ? (int)$_SESSION['kSprache'] : 0;
+        $this->generateCacheID();
         $this->linkGroups = $this->getLinkGroups();
         self::$_instance  = $this;
     }
 
     /**
+     * @return string
+     */
+    private function generateCacheID()
+    {
+        $this->cacheID    = 'lnkgrps' .
+            Shop::Cache()->getBaseID(false, false, true, true, true, false) .
+            (isset($_SESSION['Kunde']->kKunde) ? 'k' : '');
+
+        return $this->cacheID;
+
+    }
+
+    /**
      * singleton
      *
-     * @return LinkHelper|null
+     * @return LinkHelper
      */
     public static function getInstance()
     {
-        return (self::$_instance === null) ? new self() : self::$_instance;
+        return self::$_instance === null ? new self() : self::$_instance;
     }
 
     /**
@@ -62,7 +75,7 @@ class LinkHelper
             // update last used lang id
             self::$_langID = (int)$_SESSION['kSprache'];
             // create new cache ID with new lang ID
-            $this->cacheID = 'linkgroups' . Shop::Cache()->getBaseID(false, false, true, true, true, false);
+            $this->generateCacheID();
         } elseif ($this->linkGroups !== null) {
             // if we got matching language IDs, try to use class property
             return $this->linkGroups;
@@ -296,6 +309,9 @@ class LinkHelper
      */
     public function buildLinkGroups($force = false)
     {
+        if ($force === true) {
+            $this->generateCacheID();
+        }
         $linkGroups = $this->linkGroups;
         if ($linkGroups === null || !is_object($linkGroups) || $force === true) {
             $session = [];
@@ -337,7 +353,7 @@ class LinkHelper
                             AND tlink.kLinkgruppe = " . (int)$Linkgruppe->kLinkgruppe . $loginSichtbarkeit . "
                             AND (tlink.cKundengruppen IS NULL
                             OR tlink.cKundengruppen = 'NULL'
-                            OR tlink.cKundengruppen RLIKE '^([0-9;]*;)?" . $customerGroupID . ";')
+                            OR FIND_IN_SET('{$customerGroupID}', REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
                         ORDER BY tlink.nSort, tlink.cName", 2
                 );
                 $links = [];
@@ -418,8 +434,8 @@ class LinkHelper
             // versand
             $cKundengruppenSQL = '';
             if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->kKundengruppe > 0) {
-                $cKundengruppenSQL = " AND (tlink.cKundengruppen RLIKE '^([0-9;]*;)?" .
-                    (int)$_SESSION['Kundengruppe']->kKundengruppe . ";'
+                $cKundengruppenSQL = " AND (FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                    . "', REPLACE(tlink.cKundengruppen, ';', ',')) > 0
                     OR tlink.cKundengruppen IS NULL OR tlink.cKundengruppen = 'NULL' OR tlink.cKundengruppen = '')";
             }
             $versand_arr = Shop::DB()->query(
@@ -539,7 +555,7 @@ class LinkHelper
                     : explode(';', $sr->cKundengruppen);
 
                 foreach ($customerGroups as $idx => &$customerGroup) {
-                    if ($customerGroup === 'NULL') {
+                    if ($customerGroup === null || $customerGroup === 'NULL') {
                         $customerGroup = 0;
                     } elseif (empty($customerGroup)) {
                         unset($customerGroups[$idx]);
@@ -852,8 +868,8 @@ class LinkHelper
                         $loginSichtbarkeit . "
                         AND (tlink.cKundengruppen IS NULL
                         OR tlink.cKundengruppen = 'NULL'
-                        OR tlink.cKundengruppen RLIKE '^([0-9;]*;)?" .
-                            (int)$_SESSION['Kundengruppe']->kKundengruppe . ";')",
+                        OR FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                            . "', REPLACE(tlink.cKundengruppen, ';', ',')) > 0)",
                 2
             );
             if (!empty($linkData)) {

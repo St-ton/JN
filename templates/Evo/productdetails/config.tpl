@@ -158,16 +158,17 @@
                     <div class="panel-heading">
                         <h5 class="panel-title">{lang key="yourConfiguration" section="global"}</h5>
                     </div>
-                    <div class="panel-body">
-                        <p class="text-center">
-                            <strong class="price"></strong>
-                        </p>
-                        <hr/>
-                        <div class="summary"></div>
-                        <hr/>
-                        <p class="text-center">
-                            <strong class="price"></strong>
-                        </p>
+                    <table class="table table-striped">
+                        <tbody class="summary"></tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right word-break">
+                                <strong class="price"></strong>
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                    <div class="panel-footer">
                         {if $Artikel->inWarenkorbLegbar == 1}
                             <div id="quantity-grp" class="choose_quantity input-group">
                                 <input type="number"{if $Artikel->fAbnahmeintervall > 0} required step="{$Artikel->fAbnahmeintervall}"{/if} id="quantity"

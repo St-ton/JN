@@ -123,16 +123,19 @@ function normalizeDate($string)
  * @param string $cLimitSQL
  * @return array|int|object
  */
-function getRawCoupons($cKuponTyp = 'standard', $columns = [], $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
+function getRawCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
 {
-    return Shop::DB()->query("
-        SELECT " . (count($columns) > 0 ? implode(',', $columns) : '*') . "
-            FROM tkupon
+    return Shop::DB()->query(
+        "SELECT k.*, max(kk.dErstellt) AS dLastUse
+            FROM tkupon AS k
+            LEFT JOIN tkuponkunde AS kk ON kk.kKupon = k.kKupon
             WHERE cKuponTyp = '" . Shop::DB()->escape($cKuponTyp) . "' " .
             ($cWhereSQL !== '' ? " AND " . $cWhereSQL : "") .
+            "GROUP BY k.kKupon" .
             ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : "") .
             ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
-        2);
+        2
+    );
 }
 
 /**
@@ -146,7 +149,7 @@ function getRawCoupons($cKuponTyp = 'standard', $columns = [], $cWhereSQL = '', 
  */
 function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
 {
-    $oKuponDB_arr = getRawCoupons($cKuponTyp, ['kKupon'], $cWhereSQL, $cOrderSQL, $cLimitSQL);
+    $oKuponDB_arr = getRawCoupons($cKuponTyp, $cWhereSQL, $cOrderSQL, $cLimitSQL);
     $oKupon_arr   = [];
 
     if (is_array($oKuponDB_arr)) {
@@ -165,7 +168,7 @@ function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $
  */
 function getExportableCoupons($cKuponTyp = 'standard', $cWhereSQL = '')
 {
-    $coupons = getRawCoupons($cKuponTyp, [], $cWhereSQL);
+    $coupons = getRawCoupons($cKuponTyp, $cWhereSQL);
 
     foreach ($coupons as $rawCoupon) {
         foreach (getCouponNames($rawCoupon->kKupon) as $iso => $name) {
@@ -228,7 +231,7 @@ function augmentCoupon($oKupon)
     }
 
     if ((int)$oKupon->kKundengruppe === -1) {
-        $oKupon->cKundengruppe = 'Alle';
+        $oKupon->cKundengruppe = '';
     } else {
         $oKundengruppe         = Shop::DB()->query("
             SELECT cName 
@@ -238,12 +241,23 @@ function augmentCoupon($oKupon)
         $oKupon->cKundengruppe = $oKundengruppe->cName;
     }
 
+    $cArtNr_arr      = StringHandler::parseSSK($oKupon->cArtikel);
+    $cHersteller_arr = StringHandler::parseSSK($oKupon->cHersteller);
+    $cKategorie_arr  = StringHandler::parseSSK($oKupon->cKategorien);
+    $cKunde_arr      = StringHandler::parseSSK($oKupon->cKunden);
+
     $oKupon->cArtikelInfo    = ($oKupon->cArtikel === '')
-        ? 'Alle'
-        : 'eingeschr&auml;nkt';
+        ? ''
+        : (string)count($cArtNr_arr);
     $oKupon->cHerstellerInfo = (empty($oKupon->cHersteller) || $oKupon->cHersteller === '-1')
-        ? 'Alle'
-        : 'eingeschr&auml;nkt';
+        ? ''
+        : (string)count($cHersteller_arr);
+    $oKupon->cKategorieInfo  = (empty($oKupon->cKategorien) || $oKupon->cKategorien=== '-1')
+        ? ''
+        : (string)count($cKategorie_arr);
+    $oKupon->cKundenInfo  = (empty($oKupon->cKunden) || $oKupon->cKunden=== '-1')
+        ? ''
+        : (string)count($cKunde_arr);
 
     $oMaxErstelltDB   = Shop::DB()->query("
         SELECT max(dErstellt) as dLastUse
@@ -314,7 +328,7 @@ function createCouponFromInput()
     $oKupon->cLieferlaender        = !empty($_POST['cLieferlaender']) ? strtoupper($_POST['cLieferlaender']) : '';
     $oKupon->nVerwendungen         = !empty($_POST['nVerwendungen']) ? (int)$_POST['nVerwendungen'] : 0;
     $oKupon->nVerwendungenProKunde = !empty($_POST['nVerwendungenProKunde']) ? (int)$_POST['nVerwendungenProKunde'] : 0;
-    $oKupon->cArtikel              = !empty($_POST['cArtikel']) ? ';' . trim($_POST['cArtikel'], ';\t\n\r') . ';' : '';
+    $oKupon->cArtikel              = !empty($_POST['cArtikel']) ? ';' . trim($_POST['cArtikel'], ";\t\n\r") . ';' : '';
     $oKupon->cHersteller           = '-1';
     $oKupon->kKundengruppe         = (int)$_POST['kKundengruppe'];
     $oKupon->dGueltigAb            = normalizeDate(!empty($_POST['dGueltigAb']) ? $_POST['dGueltigAb'] : date_create()->format('Y-m-d H:i') . ':00');
@@ -344,7 +358,7 @@ function createCouponFromInput()
         $oKupon->cKategorien = StringHandler::createSSK($_POST['kKategorien']);
     }
     if (!empty($_POST['cKunden']) && $_POST['cKunden'] != "-1") {
-        $oKupon->cKunden = trim($_POST['cKunden'], ';\t\n\r') . ';';
+        $oKupon->cKunden = trim($_POST['cKunden'], ";\t\n\r") . ';';
     }
     if (isset($_POST['couponCreation'])) {
         $massCreationCoupon                  = new stdClass();

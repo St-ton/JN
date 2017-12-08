@@ -84,9 +84,9 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
         $kPlugin     = gibkPluginAuscModulId($zahlungsart->cModulId);
         $cModulId    = gibPlugincModulId($kPlugin, $zahlungsart->cName);
         $Conf        = Shop::DB()->query("
-            SELECT * 
-                FROM tplugineinstellungenconf 
-                WHERE cWertName LIKE '" . $cModulId . "_%' 
+            SELECT *
+                FROM tplugineinstellungenconf
+                WHERE cWertName LIKE '" . $cModulId . "\_%'
                 AND cConf = 'Y' ORDER BY nSort", 2
         );
         $configCount = count($Conf);
@@ -191,9 +191,9 @@ if ($step === 'einstellen') {
             $kPlugin     = gibkPluginAuscModulId($zahlungsart->cModulId);
             $cModulId    = gibPlugincModulId($kPlugin, $zahlungsart->cName);
             $Conf        = Shop::DB()->query("
-                SELECT * 
-                    FROM tplugineinstellungenconf 
-                    WHERE cWertName LIKE '" . $cModulId . "\_%' 
+                SELECT *
+                    FROM tplugineinstellungenconf
+                    WHERE cWertName LIKE '" . $cModulId . "\_%'
                     ORDER BY nSort", 2
             );
             $configCount = count($Conf);
@@ -302,9 +302,9 @@ if ($step === 'einstellen') {
     $oZahlunseingang_arr = Shop::DB()->query("
         SELECT ze.*, b.kZahlungsart, b.cBestellNr, k.kKunde, k.cVorname, k.cNachname, k.cMail
             FROM tzahlungseingang AS ze
-                JOIN tbestellung AS b 
+                JOIN tbestellung AS b
                     ON ze.kBestellung = b.kBestellung
-                JOIN tkunde AS k 
+                JOIN tkunde AS k
                     ON b.kKunde = k.kKunde
             WHERE b.kZahlungsart = " . (int)$kZahlungsart . "
                 " . ($oFilter->getWhereSQL() !== '' ? " AND " . $oFilter->getWhereSQL() : "") . "
@@ -338,7 +338,7 @@ if ($step === 'uebersicht') {
         $oZahlungsart->nEingangAnzahl = (int)Shop::DB()->query("
                     SELECT count(*) AS nAnzahl
                         FROM tzahlungseingang AS ze
-                            JOIN tbestellung AS b 
+                            JOIN tbestellung AS b
                                 ON ze.kBestellung = b.kBestellung
                         WHERE b.kZahlungsart = " . $oZahlungsart->kZahlungsart,
             1)->nAnzahl;
@@ -348,9 +348,7 @@ if ($step === 'uebersicht') {
         $oZahlungsart->nErrorLogCount = ZahlungsLog::count($oZahlungsart->cModulId, JTLLOG_LEVEL_ERROR);
     }
 
-    $oNice = Nice::getInstance();
-    $smarty->assign('zahlungsarten', $oZahlungsart_arr)
-           ->assign('nFinanzierungAktiv', 0);
+    $smarty->assign('zahlungsarten', $oZahlungsart_arr);
 }
 $smarty->assign('step', $step)
        ->assign('waehrung', $standardwaehrung->cName)

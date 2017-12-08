@@ -598,9 +598,14 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
             $kKatFilter        = (isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0)
                 ? ''
                 : "AND tkategorieartikelgesamt.kOberKategorie = 0";
-            $cSQLFilterAnzeige = "JOIN tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel
-                                    " . $kKatFilter . "
-                                    JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
+            $cSQLFilterAnzeige = "JOIN (
+                SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
+                FROM tkategorieartikel
+                INNER JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                INNER JOIN tkategorie oberkategorie ON tkategorie.lft BETWEEN oberkategorie.lft AND oberkategorie.rght
+                ) tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel
+                " . $kKatFilter . "
+                JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
         }
         // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
         $cSQLKategorieSprache          = new stdClass();
@@ -2430,7 +2435,12 @@ function gibKategorieFilterSQL($NaviFilter)
         $oFilter->cJoin  = 'JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel';
         $oFilter->cWhere = ' AND tkategorieartikel.kKategorie = ' . (int)$NaviFilter->KategorieFilter->kKategorie;
         if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
-            $oFilter->cJoin  = 'JOIN tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel';
+            $oFilter->cJoin  = 'JOIN (
+                SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
+                FROM tkategorieartikel
+                INNER JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                INNER JOIN tkategorie oberkategorie ON tkategorie.lft BETWEEN oberkategorie.lft AND oberkategorie.rght
+                ) tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel';
             $oFilter->cWhere = ' AND (tkategorieartikelgesamt.kOberKategorie = ' . (int)$NaviFilter->KategorieFilter->kKategorie . ' 
                                     OR tkategorieartikelgesamt.kKategorie = ' . (int)$NaviFilter->KategorieFilter->kKategorie . ') ';
         }

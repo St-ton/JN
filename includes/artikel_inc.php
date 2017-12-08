@@ -94,7 +94,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                         ) OR txsellkauf.kArtikel = {$kArtikel})
                         AND {$filterXSellParentArtikel} != {$kArtikel}
                     GROUP BY 1, 2
-                    ORDER BY SUM(txsellkauf.nAnzahl) DESC, rand()
+                    ORDER BY SUM(txsellkauf.nAnzahl) DESC
                     LIMIT {$anzahl}", 2
             );
         } else {
@@ -113,7 +113,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                                 WHERE tartikel.kArtikel = {$kArtikel}
                             ) OR tartikel.kVaterArtikel = 0)
                         GROUP BY 1, 2
-                        ORDER BY SUM(txsellkauf.nAnzahl) DESC, rand()
+                        ORDER BY SUM(txsellkauf.nAnzahl) DESC
                         LIMIT {$anzahl}", 2
                 );
             } else {
@@ -122,7 +122,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                     'kArtikel',
                     $kArtikel,
                     '*',
-                    'nAnzahl DESC, rand()',
+                    'nAnzahl DESC',
                     $anzahl
                 );
             }
@@ -526,6 +526,9 @@ function baueFormularVorgabenBenachrichtigung()
     }
     if (!empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] !== 'N') {
         $msg->cNachname = StringHandler::filterXSS($_POST['nachname']);
+    }
+    if (!empty($_POST['email'])) {
+        $msg->cMail = StringHandler::filterXSS($_POST['email']);
     }
 
     return $msg;
@@ -1329,6 +1332,7 @@ function ProductBundleWK($Productkey)
 function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $nKonfiggruppeAnzahl_arr, $nKonfigitemAnzahl_arr)
 {
     $oKonfig                  = new stdClass;
+    $oKonfig->fAnzahl         = $fAnzahl;
     $oKonfig->fGesamtpreis    = [0.0, 0.0];
     $oKonfig->cPreisLocalized = [];
     $oKonfig->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');

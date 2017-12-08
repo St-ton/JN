@@ -4,7 +4,7 @@
     <ul class="list-inline user-settings pull-right">
         {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
             <li class="currency-dropdown dropdown">
-                <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown">
+                <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown" title="{lang key='selectCurrency'}">
                     {if $smarty.session.Waehrung->cISO === 'EUR'}
                         <i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>
                     {elseif $smarty.session.Waehrung->cISO === 'USD'}
@@ -25,7 +25,7 @@
         {/if}
         {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
         <li class="language-dropdown dropdown">
-            <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown" itemprop="inLanguage" itemscope itemtype="http://schema.org/Language">
+            <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown" itemprop="inLanguage" itemscope itemtype="http://schema.org/Language" title="{lang key='selectLang'}">
                 <i class="fa fa-language"></i>
                 {foreach from=$smarty.session.Sprachen item=Sprache}
                     {if $Sprache->kSprache == $smarty.session.kSprache}
@@ -55,7 +55,7 @@
         {foreach name=headlinks from=$linkgroups->Kopf->Links item=Link}
             {if $Link->cLocalizedName|has_trans}
                 <li class="{if isset($Link->aktiv) && $Link->aktiv == 1}active{/if}">
-                    <a href="{$Link->URL}"{if $Link->cNoFollow == 'Y'} rel="nofollow"{/if}>{$Link->cLocalizedName|trans}</a>
+                    <a href="{$Link->URL}"{if $Link->cNoFollow == 'Y'} rel="nofollow"{/if} title="{$Link->cLocalizedName|trans}">{$Link->cLocalizedName|trans}</a>
                 </li>
             {/if}
         {/foreach}

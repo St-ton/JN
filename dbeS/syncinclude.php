@@ -617,31 +617,37 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
             ORDER BY dDate DESC LIMIT 2", 2
     );
 
-    // if a record from today and from the nearest past exists and the record from the past has same fVKNetto...
-    if (isset($oPreis_arr) && count($oPreis_arr) === 2 &&
-        (int)$oPreis_arr[0]->bToday === 1 &&
-        round($oPreis_arr[1]->fVKNetto * 100) === round($fVKNetto * 100)) {
-        // ...delete the record from today
-
-        Shop::DB()->delete('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf);
-    } elseif (isset($oPreis_arr) && count($oPreis_arr) > 0 && (int)$oPreis_arr[0]->bToday === 1) {
-        // ...otherwise, if a record from today exists... UPDATE
-
-        Shop::DB()->update('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf, (object)[
-           'fVKNetto' => $fVKNetto,
-        ]);
+    if (!empty($oPreis_arr[0]) && (int)$oPreis_arr[0]->bToday === 1) {
+        // price for today exists
+        if (round($oPreis_arr[0]->fVKNetto * 100) === round($fVKNetto * 100)) {
+            // return if there is no difference
+            return;
+        }
+        if (!empty($oPreis_arr[1]) && round($oPreis_arr[1]->fVKNetto * 100) === round($fVKNetto * 100)) {
+            // delete todays price if the new price for today is the same as the latest price
+            Shop::DB()->delete('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf);
+        } else {
+            // update if prices are different
+            Shop::DB()->update('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf, (object)[
+                'fVKNetto' => $fVKNetto,
+            ]);
+        }
     } else {
-        // ...in all other cases... INSERT
-
+        // no price for today exists
+        if (!empty($oPreis_arr[0]) && round($oPreis_arr[0]->fVKNetto * 100) === round($fVKNetto * 100)) {
+            // return if there is no difference
+            return;
+        }
         Shop::DB()->insert('tpreisverlauf', (object)[
             'kArtikel'      => $kArtikel,
             'kKundengruppe' => $kKundengruppe,
             'fVKNetto'      => $fVKNetto,
             'dDate'         => 'now()',
         ]);
-        // Clear Artikel Cache
-        Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
     }
+
+    // Clear Artikel Cache
+    Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
 }
 
 /**

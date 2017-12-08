@@ -235,11 +235,11 @@ deploy_create_initial_schema()
 
     rm $TMPFILE
 
-    mysql -D $TMPDB -e "TRUNCATE TABLE tsynclogin; TRUNCATE TABLE tadminlogin;TRUNCATE TABLE tbesucher; TRUNCATE TABLE tbesucherarchiv; TRUNCATE TABLE tbesuchteseiten; TRUNCATE TABLE tbrocken; TRUNCATE TABLE tfirma; TRUNCATE TABLE tsprachlog; TRUNCATE TABLE tredirect; TRUNCATE TABLE tredirectreferer;TRUNCATE TABLE tjtllog;TRUNCATE TABLE tsuchanfragencache;TRUNCATE TABLE tsuchanfrageerfolglos;TRUNCATE TABLE ttrustedshopskundenbewertung;TRUNCATE TABLE teinheit;"
+    mysql -D $TMPDB -e "TRUNCATE TABLE tsynclogin; TRUNCATE TABLE tadminlogin;TRUNCATE TABLE tbesucher; TRUNCATE TABLE tbesucherarchiv; TRUNCATE TABLE tbesuchteseiten; TRUNCATE TABLE tbrocken; TRUNCATE TABLE tfirma; TRUNCATE TABLE tsprachlog; TRUNCATE TABLE tredirect; TRUNCATE TABLE tredirectreferer;TRUNCATE TABLE tjtllog;TRUNCATE TABLE tsuchanfragencache;TRUNCATE TABLE tsuchanfrageerfolglos;TRUNCATE TABLE ttrustedshopskundenbewertung;TRUNCATE TABLE teinheit;TRUNCATE TABLE trevisions;"
 
     mysql -D $TMPDB -e "UPDATE tversion SET nVersion=${SHOP_VERSION}; UPDATE tbesucherzaehler SET nZaehler=0; UPDATE tnummern SET nNummer = 10000 WHERE nArt=1; UPDATE tnummern SET dAktualisiert='0000-00-00 00:00:00';UPDATE tmigration SET dExecuted=NOW();"
 
-    mysqldump $TMPDB
+    mysqldump --default-character-set=latin1 --skip-add-locks  --skip-add-drop-table --skip-comments $TMPDB
 
     mysql -e "DROP DATABASE IF EXISTS ${TMPDB}"
 }

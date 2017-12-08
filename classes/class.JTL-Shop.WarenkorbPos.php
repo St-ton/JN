@@ -366,7 +366,11 @@ class WarenkorbPos
                     if ($nVaterPos !== null) {
                         $oVaterPos = $_SESSION['Warenkorb']->PositionenArr[$nVaterPos];
                         if (is_object($oVaterPos)) {
-                            $this->nAnzahlEinzel                                         = $this->nAnzahl / $oVaterPos->nAnzahl;
+                            if (!$this->isIgnoreMultiplier()) {
+                                $this->nAnzahlEinzel = $this->nAnzahl / $oVaterPos->nAnzahl;
+                            } else {
+                                $this->nAnzahlEinzel = $this->nAnzahl;
+                            }
                             $oVaterPos->cKonfigpreisLocalized[0][$Waehrung->cName]       = gibPreisStringLocalized($fPreisBrutto, $Waehrung);
                             $oVaterPos->cKonfigpreisLocalized[1][$Waehrung->cName]       = gibPreisStringLocalized($fPreisNetto, $Waehrung);
                             $oVaterPos->cKonfigeinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized($fPreisBrutto / $oVaterPos->nAnzahl, $Waehrung);
@@ -491,5 +495,17 @@ class WarenkorbPos
                 : '';
         }
         $oWarenkorbPos->cEstimatedDelivery = &$oWarenkorbPos->oEstimatedDelivery->localized;
+    }
+
+    /**
+     * Return value of config item property bIgnoreMultiplier
+     *
+     * @return boolean
+     */
+    public function isIgnoreMultiplier()
+    {
+        $konfigItem = new Konfigitem($this->kKonfigitem);
+
+        return $konfigItem->ignoreMultiplier();
     }
 }

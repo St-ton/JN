@@ -88,7 +88,7 @@ if (ArtikelHelper::isVariChild($cParameter_arr['kArtikel'])) {
 }
 if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0) {
     header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php') .
-        '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
+        '?wlid=' . StringHandler::filterXSS(verifyGPDataString('wlid')) . '&error=1', true, 303);
     exit();
 }
 $smarty->assign('NaviFilter', $NaviFilter);
@@ -141,6 +141,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
                 }
             }
             require_once PFAD_ROOT . 'seite.php';
+            exit;
         }
     }
     //Artikelanzahl pro Seite

@@ -497,7 +497,8 @@ class News extends MainModel
                     AND tnewskommentar.nAktiv = 1
                 {$cSqlExcludeCategory}
                 WHERE tnews.dGueltigVon <= now()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?{$kKundengruppe};')
+                    AND (tnews.cKundengruppe LIKE '%;-1;%' 
+                        OR FIND_IN_SET('{$kKundengruppe}', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnews.kSprache = {$kSprache}
                 {$cSqlActive}
                 GROUP BY tnews.kNews

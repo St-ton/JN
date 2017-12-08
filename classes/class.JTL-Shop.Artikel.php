@@ -1069,13 +1069,11 @@ class Artikel
         if (!$kKundengruppe) {
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
         }
-        if (isset($_SESSION['Kundengruppe']->darfPreiseSehen) && !$_SESSION['Kundengruppe']->darfPreiseSehen) {
-            $this->Preise = null;
-
-            return $this;
-        }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
         $this->Preise = new Preise($kKundengruppe, $oArtikelTMP->kArtikel, $kKunde, (int)$oArtikelTMP->kSteuerklasse);
+        if (isset($_SESSION['Kundengruppe']->darfPreiseSehen) && !$_SESSION['Kundengruppe']->darfPreiseSehen) {
+            $this->Preise->setPricesToZero();
+        }
         $this->Preise->localizePreise();
 
         return $this;
@@ -2301,8 +2299,7 @@ class Artikel
                             $this->Variationen[$nZaehler]->Werte[$i]->cAufpreisLocalized,
                             $this->Variationen[$nZaehler]->Werte[$i]->cPreisInklAufpreis
                         );
-                    }
-                    if (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert) &&
+                    } elseif (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert) &&
                         $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert > 0
                     ) {
                         $nGenauigkeit = 2;
@@ -3211,9 +3208,7 @@ class Artikel
         $kKundengruppe                   = (int)$kKundengruppe;
         $kSprache                        = (int)$kSprache;
         $this->oVariationDetailPreis_arr = [];
-        // Leider wird durch dieses IF auch nVariationsAufpreisVorhanden bei mehr als einer Variation verworfen
-        // und man kann keine Aufpreise in der Artikeluebersicht mehr erkennen. So koennen wir kein "ab" schreiben
-        // sondern nur "nur" bei der Preisangabe => Abmahnung. TODO: Loesung dafuer finden
+
         if ($this->nVariationOhneFreifeldAnzahl === 1) {
             $oVariationDetailPreis_arr = Shop::DB()->query(
                 "SELECT tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert
@@ -4060,10 +4055,8 @@ class Artikel
         ) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGER;
         }
-        if ((!$this->bHasKonfig) &&
-            $this->Preise->fVKNetto == 0 &&
-            isset($this->Preise->fVKNetto, $conf['global']['global_preis0']) &&
-            $conf['global']['global_preis0'] === 'N'
+        if (isset($this->Preise->fVKNetto, $conf['global']['global_preis0']) && (!$this->bHasKonfig)
+            && $this->Preise->fVKNetto == 0 && $conf['global']['global_preis0'] === 'N'
         ) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_PREISAUFANFRAGE;
         }
@@ -4783,7 +4776,7 @@ class Artikel
      */
     public function setzeSprache($kSprache)
     {
-        $oSprache = gibStandardsprache();
+        $oSprache = gibStandardsprache(false);
         if ($this->kArtikel > 0 && $kSprache != $oSprache->kSprache) {
             //auf aktuelle Sprache setzen
             $objSprache = Shop::DB()->query(
@@ -4823,7 +4816,7 @@ class Artikel
         $oArtikel = ($oArtikel !== null) ? $oArtikel : $this;
 
         if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-            if ($oArtikel->cLagerVariation === 'Y') {
+            if (isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y') {
                 return true;
             }
             if ($oArtikel->fLagerbestand <= 0 && $oArtikel->cLagerBeachten === 'Y') {
@@ -4831,7 +4824,7 @@ class Artikel
             }
         }
         if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-            if ($oArtikel->cLagerVariation === 'Y' || $oArtikel->cLagerKleinerNull === 'Y') {
+            if (isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y' || $oArtikel->cLagerKleinerNull === 'Y') {
                 return true;
             }
             if ($oArtikel->fLagerbestand <= 0 && $oArtikel->cLagerBeachten === 'Y') {
@@ -5097,7 +5090,10 @@ class Artikel
      */
     public function getFavourableShipping($countryCode, $shippingID = null)
     {
-        if (!empty($_SESSION['Versandart']->kVersandart) && $countryCode === $this->cCachedCountryCode) {
+        if (!empty($_SESSION['Versandart']->kVersandart)
+            && isset($_SESSION['Versandart']->nMinLiefertage)
+            && $countryCode === $this->cCachedCountryCode
+        ) {
             return $_SESSION['Versandart'];
         }
         // if nothing changed, return cached shipping-object
@@ -5116,12 +5112,6 @@ class Artikel
         if ($this->fGewicht === null) {
             $this->fGewicht = 0;
         }
-        if ($this->Preise === null) {
-            $this->Preise = new stdClass();
-        }
-        if ($this->Preise->fVKNetto === null) {
-            $this->Preise->fVKNetto = 0;
-        }
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::DB()->query(
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
@@ -5132,7 +5122,7 @@ class Artikel
                 AND (va.cVersandklassen = '-1'
                     OR va.cVersandklassen RLIKE '^([0-9 -]* )?{$this->kVersandklasse} ')
                 AND (va.cKundengruppen = '-1'
-                    OR va.cKundengruppen RLIKE '^([0-9;]*;)?{$_SESSION['Kundengruppe']->kKundengruppe};')
+                    OR FIND_IN_SET('{$_SESSION['Kundengruppe']->kKundengruppe}', REPLACE(va.cKundengruppen, ';', ',')) > 0)
                 AND va.kVersandart NOT IN (
                     SELECT vaza.kVersandart
                         FROM tversandartzahlungsart vaza
@@ -5206,14 +5196,30 @@ class Artikel
             unset($this->oStueckliste_arr);
             $this->holeStueckliste($_SESSION['Kundengruppe']->kKundengruppe, true);
         }
-        if (!empty($this->oStueckliste_arr) && !empty($this->kStueckliste)) {
-            foreach ($this->oStueckliste_arr as $piece) {
-                $piece->getDeliveryTime($countryCode, $purchaseQuantity * (float)$piece->fAnzahl_stueckliste, null, null, $shippingID);
-                if (isset($piece->nMaxDeliveryDays)) {
-                    $maxDeliveryDays = max($maxDeliveryDays, $piece->nMaxDeliveryDays);
-                }
-                if (isset($piece->nMinDeliveryDays)) {
-                    $minDeliveryDays = max($minDeliveryDays, $piece->nMinDeliveryDays);
+        $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
+        if ($isPartsList) {
+            $oPiecesNotInShop = Shop::DB()->query(
+                "SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
+                    FROM tstueckliste
+                    LEFT JOIN tartikel ON tartikel.kArtikel = tstueckliste.kArtikel
+                    WHERE tstueckliste.kStueckliste = " . (int)$this->kStueckliste . "
+	                    AND tartikel.kArtikel IS NULL", 1
+            );
+
+            if (is_object($oPiecesNotInShop) && (int)$oPiecesNotInShop->nAnzahl > 0) {
+                // this list has potentially invisible parts and can't calculated correctly
+                // handle this parts list as an normal product
+                $isPartsList = false;
+            } else {
+                // all parts of this list are accessible
+                foreach ($this->oStueckliste_arr as $piece) {
+                    $piece->getDeliveryTime($countryCode, $purchaseQuantity * (float)$piece->fAnzahl_stueckliste, null, null, $shippingID);
+                    if (isset($piece->nMaxDeliveryDays) && $piece->nMaxDeliveryDays > $maxDeliveryDays) {
+                        $maxDeliveryDays = $piece->nMaxDeliveryDays;
+                    }
+                    if (isset($piece->nMinDeliveryDays) && $piece->nMinDeliveryDays > $minDeliveryDays) {
+                        $minDeliveryDays = $piece->nMinDeliveryDays;
+                    }
                 }
             }
             if (!empty($resetArray)) {
@@ -5244,7 +5250,7 @@ class Artikel
                 }
             }
         }
-        if ($this->nBearbeitungszeit > 0 ||
+        if ((!$isPartsList && $this->nBearbeitungszeit > 0) ||
             (isset($this->FunktionsAttribute['processingtime']) && $this->FunktionsAttribute['processingtime'] > 0)
         ) {
             $processingTime   = ($this->nBearbeitungszeit > 0)
@@ -5255,9 +5261,21 @@ class Artikel
         }
         // product coming soon? then add remaining days. stocklevel doesnt matter, see #13604
         if ($this->nErscheinendesProdukt && new DateTime($this->dErscheinungsdatum) > new DateTime()) {
-            $minDeliveryDays += $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d', time()));
-            $maxDeliveryDays += $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d', time()));
-        } elseif ($this->cLagerBeachten === 'Y' && ($stockLevel <= 0 || ($stockLevel - $purchaseQuantity < 0))) {
+            $daysToRelease = $this->calculateDaysBetween($this->dErscheinungsdatum, date('Y-m-d', time()));
+
+            if ($isPartsList) {
+                // if this is a parts list...
+                if ($minDeliveryDays < $daysToRelease) {
+                    // ...and release date is after min delivery date from list parts, then release date is the new min delivery date
+                    $offset          = $maxDeliveryDays - $minDeliveryDays;
+                    $minDeliveryDays = $daysToRelease;
+                    $maxDeliveryDays = $minDeliveryDays + $offset;
+                }
+            } else {
+                $minDeliveryDays += $daysToRelease;
+                $maxDeliveryDays += $daysToRelease;
+            }
+        } elseif (!$isPartsList && ($this->cLagerBeachten === 'Y' && ($stockLevel <= 0 || ($stockLevel - $purchaseQuantity < 0)))) {
             if (isset($this->FunktionsAttribute['deliverytime_outofstock']) && $this->FunktionsAttribute['deliverytime_outofstock'] > 0) {
                 //prio on attribute "deliverytime_outofstock" for simple deliverytimes
                 $deliverytime_outofstock = (int)$this->FunktionsAttribute['deliverytime_outofstock'];
@@ -5267,7 +5285,7 @@ class Artikel
                 (isset($this->FunktionsAttribute['supplytime']) && $this->FunktionsAttribute['supplytime'] > 0)
             ) {
                 //attribute "supplytime" for merchants who do not use JTL-Wawis purchase-system
-                $supplyTime = ($this->nLiefertageWennAusverkauft > 0)
+                $supplyTime       = ($this->nLiefertageWennAusverkauft > 0)
                     ? $this->nLiefertageWennAusverkauft
                     : (int)$this->FunktionsAttribute['supplytime'];
                 $minDeliveryDays += $supplyTime;
@@ -6086,36 +6104,44 @@ class Artikel
                 $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::$kSprache]->Title;
             }
         }
-        if ($this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise] > 0 &&
-            $conf['metaangaben']['global_meta_title_preis'] === 'Y' &&
-            isset(
-                $_SESSION['Kundengruppe']->nNettoPreise,
-                $this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise],
-                $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
-            )
+        if (isset(
+            $_SESSION['Kundengruppe']->nNettoPreise,
+            $this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise],
+            $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
+            ) && $this->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise] > 0
+            && $conf['metaangaben']['global_meta_title_preis'] === 'Y'
         ) {
             $cPreis = ', ' . $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise];
         }
         if (!empty($this->AttributeAssoc[ART_ATTRIBUT_METATITLE])) {
-            return $this->AttributeAssoc[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle . $cPreis;
+            return prepareMeta(
+                $this->AttributeAssoc[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle,
+                $cPreis,
+                (int)$conf['metaangaben']['global_meta_maxlaenge_title']
+            );
         }
         if (!empty($this->FunktionsAttribute[ART_ATTRIBUT_METATITLE])) {
-            return $this->FunktionsAttribute[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle . $cPreis;
+            return prepareMeta(
+                $this->FunktionsAttribute[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle,
+                $cPreis,
+                (int)$conf['metaangaben']['global_meta_maxlaenge_title']
+            );
         }
         if (!empty($this->cName)) {
             $title = (!isset($conf['global']['global_artikelname_htmlentities']) ||
                 $conf['global']['global_artikelname_htmlentities'] === 'N')
-                ? StringHandler::htmlentities($this->cName) . $cPreis
-                : $title = $this->cName . $cPreis;
+                ? StringHandler::htmlentities($this->cName)
+                : $this->cName;
         }
         $cTitle = str_replace('"', '', $title) . $cGlobalMetaTitle;
 
         executeHook(HOOK_ARTIKEL_INC_METATITLE, ['cTitle' => &$cTitle]);
 
-        return (isset($conf['metaangaben']['global_meta_maxlaenge_title']) &&
-            $conf['metaangaben']['global_meta_maxlaenge_title'] > 0)
-            ? substr($cTitle, 0, (int)$conf['metaangaben']['global_meta_maxlaenge_title'])
-            : $cTitle;
+        return prepareMeta(
+            $cTitle,
+            $cPreis,
+            (int)$conf['metaangaben']['global_meta_maxlaenge_title']
+        );
     }
 
     /**
@@ -6312,7 +6338,7 @@ class Artikel
      */
     public function showMatrix()
     {
-        if (!$this->kArtikelVariKombi && !$this->kVariKindArtikel && !$this->nErscheinendesProdukt) {
+        if (verifyGPCDataInteger('quickView') === 0 && !$this->kArtikelVariKombi && !$this->kVariKindArtikel && !$this->nErscheinendesProdukt) {
             $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
             if ($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y' ||
                 (!empty($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) &&
@@ -6420,8 +6446,10 @@ class Artikel
                 if (!isset($nPossibleVariation_arr[$oEigenschaft->kEigenschaft])) {
                     $nPossibleVariation_arr[$oEigenschaft->kEigenschaft] = [];
                 }
-                if ($this->aufLagerSichtbarkeit($oEigenschaft) &&
-                    !in_array($oEigenschaft->kEigenschaftWert, $nPossibleVariation_arr[$oEigenschaft->kEigenschaft], true)
+                //aufLagerSichtbarkeit() betrachtet allgemein alle Artikel, hier muss zusätzlich geprüft werden
+                //ob die entsprechende VarKombi verfügbar ist, auch wenn global "alle Artikel anzeigen" aktiv ist
+                if ($this->aufLagerSichtbarkeit($oEigenschaft)
+                    && !in_array($oEigenschaft->kEigenschaftWert, $nPossibleVariation_arr[$oEigenschaft->kEigenschaft], true)
                 ) {
                     $nPossibleVariation_arr[$oEigenschaft->kEigenschaft][] = $oEigenschaft->kEigenschaftWert;
                 }

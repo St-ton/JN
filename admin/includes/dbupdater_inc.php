@@ -296,7 +296,7 @@ function dbupdaterBackup()
 }
 
 /**
- * @param $file
+ * @param string $file
  * @return IOFile|IOError
  */
 function dbupdaterDownload($file)
@@ -343,15 +343,15 @@ function dbupdaterStatusTpl()
         ->assign('currentTemplateDatabaseVersion', $template->shopVersion);
 
     return [
-        'tpl' => $smarty->fetch('tpl_inc/dbupdater_status.tpl'),
+        'tpl'  => $smarty->fetch('tpl_inc/dbupdater_status.tpl'),
         'type' => 'status_tpl'
     ];
 }
 
 /**
- * @param null $id
- * @param null $version
- * @param null $dir
+ * @param null|int $id
+ * @param null|int $version
+ * @param null|string $dir
  * @return array|IOError
  */
 function dbupdaterMigration($id = null, $version = null, $dir = null)
@@ -362,12 +362,10 @@ function dbupdaterMigration($id = null, $version = null, $dir = null)
         if ($id !== null && in_array($dir, [IMigration::UP, IMigration::DOWN], true)) {
             $migration->executeMigrationById($id, $dir);
         }
-
-        $result = ['id' => $id];
+        $result = ['id' => $id, 'type' => 'migration'];
     } catch (Exception $e) {
         $result = new IOError($e->getMessage());
     }
 
-    $result['type'] = 'migration';
     return $result;
 }

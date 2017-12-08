@@ -27,7 +27,8 @@ $Einstellungen          = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_NEWS,
-    CONF_KONTAKTFORMULAR
+    CONF_KONTAKTFORMULAR,
+    CONF_METAANGABEN
 ]);
 $nAktuelleSeite         = (Shop::$kSeite !== null && Shop::$kSeite > 0) ? Shop::$kSeite : 1;
 $oNewsUebersicht_arr    = [];
@@ -37,6 +38,7 @@ $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
+$cUploadVerzeichnis     = PFAD_ROOT . PFAD_NEWSBILDER;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 if ($Einstellungen['news']['news_benutzen'] === 'Y') {
@@ -75,6 +77,10 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         if ($oNewsArchiv !== false) {
             if (isset($oNewsArchiv->kNews) && $oNewsArchiv->kNews > 0) {
                 $oNewsArchiv->cText = parseNewsText($oNewsArchiv->cText);
+                $oNewsArchiv->oDatei_arr = [];
+                if (is_dir($cUploadVerzeichnis . $oNewsArchiv->kNews)) {
+                    $oNewsArchiv->oDatei_arr     = holeNewsBilder($oNewsArchiv->kNews, $cUploadVerzeichnis);
+                }
                 $smarty->assign('oNewsArchiv', $oNewsArchiv);
             }
             // Metas
@@ -336,6 +342,9 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 $oNewsUebersicht_arr[$i]->cPreviewImageFull = empty($oNewsUebersicht_arr[$i]->cPreviewImage)
                     ? ''
                     : $shopURL . $oNewsUebersicht_arr[$i]->cPreviewImage;
+                if (is_dir($cUploadVerzeichnis . $oNewsUebersicht->kNews)) {
+                    $oNewsUebersicht_arr[$i]->oDatei_arr = holeNewsBilder($oNewsUebersicht->kNews, $cUploadVerzeichnis);
+                }
                 $oNewsUebersicht_arr[$i]->cText             = parseNewsText($oNewsUebersicht_arr[$i]->cText);
                 $oNewsUebersicht_arr[$i]->cURL              = baueURL($oNewsUebersicht, URLART_NEWS);
                 $oNewsUebersicht_arr[$i]->cURLFull          = $shopURL . $oNewsUebersicht_arr[$i]->cURL;
@@ -349,7 +358,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         }
         $cMetaTitle       = (strlen($cMetaDescription) < 1)
             ? Shop::Lang()->get('news', 'news') . ' ' .
-                Shop::Lang()->get('from', 'global') . ' ' . $conf['global']['global_shopname']
+                Shop::Lang()->get('from', 'global') . ' ' . $Einstellungen['global']['global_shopname']
             : $cMetaTitle;
         $cMetaDescription = (strlen($cMetaDescription) < 1)
             ? Shop::Lang()->get('newsMetaDesc', 'news')
@@ -374,6 +383,8 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
         executeHook(HOOK_NEWS_PAGE_NEWSUEBERSICHT);
     }
+
+    $cMetaTitle = prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
 
     $smarty->assign('Einstellungen', $Einstellungen)
            ->assign('hinweis', $cHinweis)

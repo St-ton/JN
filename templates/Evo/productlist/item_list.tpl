@@ -3,10 +3,10 @@
 {if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
     {assign var="hasOnlyListableVariations" value=0}
 {else}
-    {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist assign="hasOnlyListableVariations"}
+    {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist assign="hasOnlyListableVariations"}
 {/if}
-<div class="product-cell thumbnail">
-    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-body row {if $tplscope !== 'list'} text-center{/if}">
+<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell thumbnail">
+    <div class="product-body row {if $tplscope !== 'list'} text-center{/if}">
         <div class="col-xs-3 col-sm-2 col-lg-3 text-center">
             {block name="image-wrapper"}
                 <a class="image-wrapper" href="{$Artikel->cURL}">
@@ -136,13 +136,19 @@
                             {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar === 1}
                                 <div class="attr attr-preorder"><small class="value">{lang key="preorderPossible" section="global"}</small></div>
                             {/if}
-                        {elseif $anzeige !== 'nichts' && $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' ||
-                        $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U') && $Artikel->fLagerbestand <= 0 && $Artikel->fZulauf > 0 && isset($Artikel->dZulaufDatum_de)}
+                        {elseif $anzeige !== 'nichts' &&
+                            $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N' &&
+                            $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' ||
+                            $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U') &&
+                            $Artikel->fLagerbestand <= 0 && $Artikel->fZulauf > 0 && isset($Artikel->dZulaufDatum_de)}
                             {assign var=cZulauf value=$Artikel->fZulauf|cat:':::'|cat:$Artikel->dZulaufDatum_de}
                             <div class="signal_image status-1"><small>{lang key="productInflowing" section="productDetails" printf=$cZulauf}</small></div>
-                        {elseif $anzeige !== 'nichts' && $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N' && $Artikel->cLagerBeachten === 'Y' &&
-                        $Artikel->fLagerbestand <= 0 && $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
-                        ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
+                        {elseif $anzeige !== 'nichts' &&
+                            $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N' &&
+                            $Artikel->cLagerBeachten === 'Y' && $Artikel->fLagerbestand <= 0 &&
+                            $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
+                            ($Artikel->cLagerKleinerNull === 'N' ||
+                            $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
                             <div class="signal_image status-1"><small>{lang key="supplierStockNotice" section="global" printf=$Artikel->fLieferzeit}</small></div>
                         {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
                             <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</small></div>
@@ -156,7 +162,7 @@
                         {/if}
                     {/block}
                     </div>
-                    {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig}
+                    {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0}
                         <div class="hidden-xs basket-variations">
                             {assign var="singleVariation" value=true}
                             {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=false smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}
@@ -272,7 +278,7 @@
                     {/if}
                 {/block}
                 </div>
-                <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
+                <input type="hidden" name="a" value="{if !empty({$Artikel->kVariKindArtikel})}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}" />
             </form>
         </div>{* /col-md-3 *}
     </div>{* /product-body *}

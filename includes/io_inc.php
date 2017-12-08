@@ -42,7 +42,12 @@ function suggestions($keyword)
               WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX(:keyword)), '%')
                   AND nAktiv = 1
                   AND kSprache = :lang
-            ORDER BY nAnzahlGesuche DESC, cSuche
+            ORDER BY CASE
+                WHEN cSuche = :keyword THEN 0
+                WHEN cSuche LIKE CONCAT(:keyword, '%') THEN 1
+                WHEN cSuche LIKE CONCAT('%', :keyword, '%') THEN 2
+                ELSE 99
+                END, nAnzahlGesuche DESC, cSuche
             LIMIT :maxres",
             [
                 'keyword' => $keyword,
@@ -55,6 +60,7 @@ function suggestions($keyword)
         if (is_array($results) && count($results) > 0) {
             foreach ($results as &$result) {
                 $result->suggestion = utf8_encode($smarty->assign('result', $result)->fetch('snippets/suggestion.tpl'));
+                $result->keyword    = utf8_encode($result->keyword);
             }
         }
     }
@@ -71,7 +77,7 @@ function suggestions($keyword)
 function getCitiesByZip($cityQuery, $country, $zip)
 {
     $results    = [];
-    if (!empty($country) && !empty($zip) && strlen($cityQuery) >= 1) {
+    if (!empty($country) && !empty($zip)) {
         $cityQuery = "%" . StringHandler::filterXSS($cityQuery) . "%";
         $country   = StringHandler::filterXSS($country);
         $zip       = StringHandler::filterXSS($zip);
@@ -125,22 +131,12 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
         if ($Artikel->kEigenschaftKombi > 0) {
             // Variationskombi-Artikel
-            $oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);
+            $_POST['eigenschaftwert'] = $oEigenschaftwerte_arr['eigenschaftwert'];
+            $oEigenschaftwerte_arr    = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel);
         } elseif (isset($oEigenschaftwerte_arr['eigenschaftwert']) && is_array($oEigenschaftwerte_arr['eigenschaftwert'])) {
             // einfache Variation - keine Varkombi
-            foreach ($Artikel->Variationen as $oVariation) {
-                if (array_key_exists($oVariation->kEigenschaft, $oEigenschaftwerte_arr['eigenschaftwert'])) {
-                    $value =& $oEigenschaftwerte_arr['eigenschaftwert'][$oVariation->kEigenschaft];
-
-                    $oEigenschaftwerte_arr[$oVariation->kEigenschaft] = (object)[
-                        'kEigenschaft'     => (int)$oVariation->kEigenschaft,
-                        'kEigenschaftWert' => ($oVariation->cTyp === 'FREIFELD' || $oVariation->cTyp === 'PFLICHT-FREIFELD') ? utf8_decode(StringHandler::filterXSS($value)) : (int)$value,
-                    ];
-                    if ($oVariation->cTyp === 'FREIFELD' || $oVariation->cTyp === 'PFLICHT-FREIFELD') {
-                        $oEigenschaftwerte_arr[$oVariation->kEigenschaft]->cFreifeldWert = &$oEigenschaftwerte_arr[$oVariation->kEigenschaft]->kEigenschaftWert;
-                    }
-                }
-            }
+            $_POST['eigenschaftwert'] = $oEigenschaftwerte_arr['eigenschaftwert'];
+            $oEigenschaftwerte_arr    = ArtikelHelper::getSelectedPropertiesForArticle($kArtikel);
         }
 
         if ((int)$anzahl != $anzahl && $Artikel->cTeilbar !== 'Y') {
@@ -445,13 +441,20 @@ function buildConfiguration($aValues)
     global $smarty;
 
     $oResponse       = new IOResponse();
+    $Artikel         = new Artikel();
     $articleId       = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : (int)$aValues['a'];
     $items           = isset($aValues['item']) ? $aValues['item'] : [];
     $quantities      = isset($aValues['quantity']) ? $aValues['quantity'] : [];
     $variationValues = isset($aValues['eigenschaftwert']) ? $aValues['eigenschaftwert'] : [];
     $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, []);
+    $Artikel->fuelleArtikel($articleId, null);
+    $Artikel->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
+        = gibPreisStringLocalized($Artikel->Preise->fVK[$_SESSION['Kundengruppe']->nNettoPreise] * $aValues['anzahl'], 0, true);
 
-    $smarty->assign('oKonfig', $oKonfig);
+
+    $smarty->assign('oKonfig', $oKonfig)
+        ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
+        ->assign('Artikel', $Artikel);
     $oKonfig->cTemplate = utf8_encode(
         $smarty->fetch('productdetails/config_summary.tpl')
     );
@@ -776,28 +779,31 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                 array_keys($kGesetzteEigeschaftWert_arr)
             )
         );
+        $kZuletztGesetzteEigenschaft = $kEigenschaft;
         if (count($kNichtGesetzteEigenschaft_arr) <= 1) {
             foreach ($nKeyValueVariation_arr as $kEigenschaft => $kEigenschaftWert) {
                 $kVerfuegbareEigenschaftWert_arr = $nKeyValueVariation_arr[$kEigenschaft];
                 $kMoeglicheEigeschaftWert_arr    = $kGesetzteEigeschaftWert_arr;
 
                 foreach ($kVerfuegbareEigenschaftWert_arr as $kVerfuegbareEigenschaftWert) {
-                    $kMoeglicheEigeschaftWert_arr[$kEigenschaft] = $kVerfuegbareEigenschaftWert;
-                    $oKindArtikel                                = getArticleStockInfo(
-                        $kVaterArtikel,
-                        $kMoeglicheEigeschaftWert_arr
-                    );
-
-                    if ($oKindArtikel !== null &&
-                        $oKindArtikel->status == 0 &&
-                        !in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)
-                    ) {
-                        $objResponse->jsfunc(
-                            '$.evo.article().variationInfo',
-                            $kVerfuegbareEigenschaftWert,
-                            $oKindArtikel->status,
-                            $oKindArtikel->text
+                    //nur für noch auswählbare Varkombis Lagerbestand holen und Infos setzen
+                    if (in_array($kEigenschaft, $kNichtGesetzteEigenschaft_arr) || $kZuletztGesetzteEigenschaft === 0) {
+                        $kMoeglicheEigeschaftWert_arr[$kEigenschaft] = $kVerfuegbareEigenschaftWert;
+                        $oKindArtikel = getArticleStockInfo(
+                            $kVaterArtikel,
+                            $kMoeglicheEigeschaftWert_arr
                         );
+
+                        if ($oKindArtikel !== null && $oKindArtikel->status == 0) {
+                            if (!in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)) {
+                                $objResponse->jsfunc(
+                                    '$.evo.article().variationInfo',
+                                    $kVerfuegbareEigenschaftWert,
+                                    $oKindArtikel->status,
+                                    $oKindArtikel->text
+                                );
+                            }
+                        }
                     }
                 }
             }
@@ -805,6 +811,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
     } else {
         $objResponse->jsfunc('$.evo.error', 'Article not found', $kVaterArtikel);
     }
+    $objResponse->jsfunc("$.evo.article().variationRefreshAll", $wrapper);
 
     return $objResponse;
 }

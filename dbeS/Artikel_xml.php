@@ -112,8 +112,6 @@ function bearbeiteDeletes($xml, $conf)
             $res[] = loescheArtikel($kArtikel, $nIstVater, false, $conf);
             // Lösche Artikel aus tartikelkategorierabatt
             Shop::DB()->delete('tartikelkategorierabatt', 'kArtikel', $kArtikel);
-            // Lösche Artikel aus tkategorieartikelgesamt
-            Shop::DB()->delete('tkategorieartikelgesamt', 'kArtikel', $kArtikel);
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
             if ($kVaterArtikel > 0) {
                 Artikel::beachteVarikombiMerkmalLagerbestand($kVaterArtikel);
@@ -354,10 +352,12 @@ function bearbeiteInsert($xml, array $conf)
                     //subtract delta from stocklevel
                     $artikel_arr[0]->fLagerbestand -= $delta->totalquantity;
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog("Artikel-Sync: Lagerbestand von kArtikel {$artikel_arr[0]->kArtikel} wurde " .
+                        Jtllog::writeLog(
+                            "Artikel-Sync: Lagerbestand von kArtikel {$artikel_arr[0]->kArtikel} wurde " .
                             "wegen nicht-abgeholter Bestellungen " .
                             "um {$delta->totalquantity} auf {$artikel_arr[0]->fLagerbestand} reduziert.",
-                            JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                            JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml'
+                        );
                     }
                 }
             }
@@ -401,7 +401,8 @@ function bearbeiteInsert($xml, array $conf)
                 $artikelsprache_arr[$i]->cSeo = checkSeo($artikelsprache_arr[$i]->cSeo);
 
                 DBUpdateInsert('tartikelsprache', [$artikelsprache_arr[$i]], 'kArtikel', 'kSprache');
-                Shop::DB()->delete('tseo',
+                Shop::DB()->delete(
+                    'tseo',
                     ['cKey', 'kKey', 'kSprache'],
                     ['kArtikel', (int)$artikelsprache_arr[$i]->kArtikel, (int)$artikelsprache_arr[$i]->kSprache]
                 );
@@ -563,8 +564,8 @@ function bearbeiteInsert($xml, array $conf)
                 $oArtikelUploadSprache_arr = mapArray(
                     $xml['tartikel']['tartikelupload'],
                     'tartikeluploadsprache',
-                    $GLOBALS['mArtikelUploadSprache'])
-                ;
+                    $GLOBALS['mArtikelUploadSprache']
+                );
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                     Jtllog::writeLog(
                         'oArtikelUploadSprache_arr: ' . print_r($oArtikelUploadSprache_arr, true),
@@ -712,8 +713,8 @@ function bearbeiteInsert($xml, array $conf)
                         foreach ($cDel_arr as $cDel) {
                             $kKey_arr[] = (int)substr($cDel, 0, strpos($cDel, ','));
                         }
-                        Shop::DB()->query("
-                            DELETE 
+                        Shop::DB()->query(
+                            "DELETE
                                 FROM teigenschaftkombiwert 
                                 WHERE kEigenschaftKombi IN (" . implode(',', $kKey_arr) . ")", 4
                         );
@@ -722,8 +723,6 @@ function bearbeiteInsert($xml, array $conf)
                 }
             }
         }
-        // tkategoriegesamt füllen
-        fuelleKategorieGesamt(mapArray($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel']));
         // Artikel Warenlager
         Shop::DB()->delete('tartikelwarenlager', 'kArtikel', (int)$xml['tartikel attr']['kArtikel']);
         if (isset($xml['tartikel']['tartikelwarenlager']) && is_array($xml['tartikel']['tartikelwarenlager'])) {
@@ -1263,7 +1262,7 @@ function loescheDownload($kArtikel, $kDownload = null)
  */
 function loescheArtikelDownload($kArtikel)
 {
-    $kArtikel  = (int)$kArtikel;
+    $kArtikel = (int)$kArtikel;
     if ($kArtikel > 0) {
         $downloadKeys = getDownloadKeys($kArtikel);
         foreach ($downloadKeys as $kDownload) {
@@ -1291,66 +1290,6 @@ function loescheStueckliste($kStueckliste)
     $kStueckliste = (int)$kStueckliste;
     if ($kStueckliste > 0) {
         Shop::DB()->delete('tstueckliste', 'kStueckliste', $kStueckliste);
-    }
-}
-
-/**
- * @param array $oKategorieArtikel_arr
- */
-function fuelleKategorieGesamt($oKategorieArtikel_arr)
-{
-    if (is_array($oKategorieArtikel_arr) && count($oKategorieArtikel_arr) > 0) {
-        $deleted   = [];
-        $added     = [];
-        $cacheTags = [];
-        //$oKategorieArtikel_arr probably always contains the same kArtikel. this is just to be sure.
-        foreach ($oKategorieArtikel_arr as $oKategorieArtikel) {
-            $kArtikel = (int)$oKategorieArtikel->kArtikel;
-            if (!in_array($kArtikel, $deleted, true)) {
-                $deleted[] = $kArtikel;
-                Shop::DB()->delete('tkategorieartikelgesamt', 'kArtikel', (int)$oKategorieArtikel->kArtikel);
-            }
-        }
-        foreach ($oKategorieArtikel_arr as $oKategorieArtikel) {
-            // Lösche aktuellen KategorieArtikel
-            $oOberKategorie_arr = [];
-            // Hole die Kategorie vom aktuellen KategorieArtikel
-            $oKategorie           = Shop::DB()->select('tkategorie', 'kKategorie', (int)$oKategorieArtikel->kKategorie);
-            $oOberKategorie_arr[] = $oKategorie;
-            $cacheTags[]          = (int)$oKategorieArtikel->kKategorie;
-            // Laufe solange bis es keine OberKategorie mehr zum aktuellen KategorieArtikel gibt
-            // Falls es zum aktuellen KategorieArtikel keine OberKategorie gibt, wird die schleife nicht betreten
-            while (isset($oKategorie->kOberKategorie) && $oKategorie->kOberKategorie > 0) {
-                // Hole OberKategorie
-                $oKategorie = Shop::DB()->select('tkategorie', 'kKategorie', (int)$oKategorie->kOberKategorie);
-                if (isset($oKategorie->kKategorie)) {
-                    $oOberKategorie_arr[] = $oKategorie;
-                }
-            }
-            // Arrayreihenfolge umkehren, damit an Array[0] auch Level 0 steht
-            $oOberKategorie_arr = array_reverse($oOberKategorie_arr);
-
-            if (count($oOberKategorie_arr) > 0) {
-                // Speicher den kompletten Kategoriepfad zum aktuellen KategorieArtikel nach Level sortiert in die Datenbank
-                foreach ($oOberKategorie_arr as $i => $oOberKategorie) {
-                    if (!in_array((int)$oOberKategorie->kKategorie, $added, true)) {
-                        $oKategorieArtikelGesamt                 = new stdClass();
-                        $oKategorieArtikelGesamt->kArtikel       = (int)$oKategorieArtikel->kArtikel;
-                        $oKategorieArtikelGesamt->kOberKategorie = (int)$oOberKategorie->kOberKategorie;
-                        $oKategorieArtikelGesamt->kKategorie     = (int)$oOberKategorie->kKategorie;
-                        $oKategorieArtikelGesamt->nLevel         = $i;
-
-                        Shop::DB()->insert('tkategorieartikelgesamt', $oKategorieArtikelGesamt);
-                        $added[]     = (int)$oOberKategorie->kKategorie;
-                        $cacheTags[] = (int)$oOberKategorie->kKategorie;
-                    }
-                }
-            }
-        }
-        array_walk($cacheTags, function (&$i) {
-            $i = CACHING_GROUP_CATEGORY . '_' . $i;
-        });
-        Shop::Cache()->flushTags($cacheTags);
     }
 }
 
@@ -1480,10 +1419,10 @@ function clearProductCaches($articles)
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . (int)$manufacturer->kHersteller;
             }
             // flush cache tags associated with the article's category IDs
-            $categories = Shop::DB()->query('
-                    SELECT kKategorie 
-                        FROM tkategorieartikel 
-                        WHERE kArtikel IN (' . implode(',', $deps) . ')',
+            $categories = Shop::DB()->query(
+                "SELECT kKategorie
+                    FROM tkategorieartikel
+                    WHERE kArtikel IN (" . implode(',', $deps) . ')',
                 2
             );
             foreach ($categories as $category) {
@@ -1492,7 +1431,7 @@ function clearProductCaches($articles)
         }
 
         $cacheTags[] = 'jtl_mmf';
-        $cacheTags = array_unique($cacheTags);
+        $cacheTags   = array_unique($cacheTags);
         // flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
         $totalCount = Shop::Cache()->flushTags($cacheTags);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {

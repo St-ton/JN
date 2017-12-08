@@ -1,9 +1,17 @@
+{if isset($smarty.get.quickView) && $smarty.get.quickView == 1}
+    {assign var="modal" value=true}
+{else}
+    {assign var="modal" value=false}
+{/if}
 {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
     {assign var="VariationsSource" value="Variationen"}
     {if isset($ohneFreifeld) && $ohneFreifeld}
         {assign var="VariationsSource" value="VariationenOhneFreifeld"}
     {/if}
     {assign var="oVariationKombi_arr" value=$Artikel->getChildVariations()}
+    <div class="row">
+        <div class="updatingStockInfo col-xs-12 text-center"><i class="fa fa-spinner fa-spin" title="{lang key="updatingStockInformation" section="productDetails"}"></i></div>
+    </div>
     <div class="variations {if $simple}simple{else}switch{/if}-variations top15 row">
         <div class="col-xs-12">
             <dl>
@@ -63,7 +71,7 @@
                             !empty($Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar) && $Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar == 1}
                             {else}
                                 {block name="productdetails-info-variation-radio"}
-                                <label class="variation" for="vt{$Variationswert->kEigenschaftWert}"
+                                <label class="variation" for="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
                                        data-type="radio"
                                        data-original="{$Variationswert->cName}"
                                        data-key="{$Variationswert->kEigenschaft}"
@@ -77,7 +85,7 @@
                                        {/if}>
                                     <input type="radio"
                                            name="eigenschaftwert[{$Variation->kEigenschaft}]"
-                                           id="vt{$Variationswert->kEigenschaftWert}"
+                                           id="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
                                            value="{$Variationswert->kEigenschaftWert}"
                                            {if $bSelected}checked="checked"{/if}
                                            {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
@@ -108,7 +116,7 @@
                                             data-original="{$Variationswert->cName}"
                                             data-key="{$Variationswert->kEigenschaft}"
                                             data-value="{$Variationswert->kEigenschaftWert}"
-                                            for="vt{$Variationswert->kEigenschaftWert}"
+                                            for="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
                                             {if !empty($Variationswert->cBildPfadMini)}
                                                 data-list='{prepare_image_details item=$Variationswert json=true}'
                                                 data-title='{$Variationswert->cName}'
@@ -119,7 +127,7 @@
                                         <input type="radio"
                                                class="control-hidden"
                                                name="eigenschaftwert[{$Variation->kEigenschaft}]"
-                                               id="vt{$Variationswert->kEigenschaftWert}"
+                                               id="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
                                                value="{$Variationswert->kEigenschaftWert}"
                                                {if $bSelected}checked="checked"{/if}
                                                {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}

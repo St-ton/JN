@@ -26,7 +26,7 @@
                                     {$jtl_token}
                                     <span class="btn-group btn-group-sm">
                                         {if $Wunschliste->nStandard != 1}
-                                            <button class="btn btn-default" name="wls" value="{$Wunschliste->kWunschliste}">
+                                            <button class="btn btn-default" name="wls" value="{$Wunschliste->kWunschliste}" title="{lang key="wishlistStandard" section="login"}">
                                                 <span class="fa fa-ok"></span> {lang key="wishlistStandard" section="login"}
                                             </button>
                                         {/if}
@@ -40,7 +40,7 @@
                                                 <span class="fa fa-eye-slash"></span><span class="hidden-xs"> {lang key="wishlistNotPrivat" section="login"}</span>
                                             </button>
                                         {/if}
-                                        <button type="submit" class="btn btn-danger" name="wllo" value="{$Wunschliste->kWunschliste}">
+                                        <button type="submit" class="btn btn-danger" name="wllo" value="{$Wunschliste->kWunschliste}" title="{lang key='wishlisteDelete' section='login'}">
                                             <span class="fa fa-trash-o"></span>
                                         </button>
                                     </span>
@@ -55,7 +55,7 @@
                 {$jtl_token}
                 <input name="wlh" type="hidden" value="1" />
                 <div class="input-group">
-                    <input name="cWunschlisteName" type="text" class="form-control input-sm" placeholder="{lang key="wishlistAddNew" section="login"}" size="25">
+                    <input name="cWunschlisteName" type="text" class="form-control input-sm" placeholder="{lang key="wishlistAddNew" section="login"}" size="25" aria-label="{lang key="wishlistAddNew" section="login"}">
                     <span class="input-group-btn">
                         <input type="submit" class="btn btn-default btn-sm" name="submit" value="{lang key="wishlistSaveNew" section="login"}" />
                     </span>

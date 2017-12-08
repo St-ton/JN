@@ -1,7 +1,7 @@
 <script type="text/javascript">
     {literal}
     function confirmDelete(cName) {
-        return confirm('Sind Sie sicher, dass Sie die Versandart "' + cName + '" lï¿½schen mï¿½chten?');
+        return confirm('Sind Sie sicher, dass Sie die Versandart "' + cName + '" löschen möchten?');
     }
     {/literal}
 </script>
@@ -34,9 +34,13 @@
                     <tr>
                         <td>{#shippingclasses#}</td>
                         <td>
-                            {foreach name=versandklassen from=$versandart->versandklassen item=versandklasse}
-                                {$versandklasse}
-                            {/foreach}
+                            {if $versandart->versandklassen|@count == 1 && $versandart->versandklassen[0] === 'Alle'}
+                                {$versandart->versandklassen[0]}
+                            {else}
+                                {foreach name=versandklassen from=$versandart->versandklassen item=versandklasse}
+                                    [{$versandklasse}] &nbsp;
+                                {/foreach}
+                            {/if}
                         </td>
                     </tr>
                     <tr>

@@ -31,7 +31,7 @@
                     <ul class="pagination btn-group">
                         {if $oPagination->getPage() > 0}
                             <li>
-                                <a href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"}>&laquo;</a>
+                                <a href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}">&laquo;</a>
                             </li>
                         {/if}
                         {if $oPagination->getLeftRangePage() > 0}

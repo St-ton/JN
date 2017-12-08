@@ -96,13 +96,13 @@ function gibAllePlugins($PluginInstalliert_arr)
 
         // Pluginsortierung nach Name
         usort($Plugins->installiert, function ($left, $right) {
-            return strcmp($left->cName, $right->cName);
+            return strcasecmp($left->cName, $right->cName);
         });
         usort($Plugins->verfuegbar, function ($left, $right) {
-            return strcmp($left->cName, $right->cName);
+            return strcasecmp($left->cName, $right->cName);
         });
         usort($Plugins->fehlerhaft, function ($left, $right) {
-            return strcmp($left->cName, $right->cName);
+            return strcasecmp($left->cName, $right->cName);
         });
     }
 
@@ -573,7 +573,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                     return 130;
                 }
 
-                $bootstrapper = new $cClass($cBootstrapNamespace);
+                $bootstrapper = new $cClass((object)['cPluginID' => $cBootstrapNamespace]);
 
                 if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
                     return 131;
@@ -2081,10 +2081,8 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
             deinstallierePlugin($oPlugin->kPlugin, $nXMLVersion);
         }
 
-        if ($nReturnValue === 1) {
-            if ($p = Plugin::bootstrapper($oPlugin->kPlugin)) {
-                $p->installed();
-            }
+        if ($nReturnValue === 1 && $oPluginOld === 0 && ($p = Plugin::bootstrapper($oPlugin->kPlugin)) !== null) {
+            $p->installed();
         }
 
         // Installation von höheren XML Versionen
@@ -3912,11 +3910,16 @@ function makeXMLToObj($XML)
             : false;
         $oObj->nVersion        = (int)$XML['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'];
         $oObj->cVersion        = number_format($oObj->nVersion / 100, 2);
+    }
 
-        if (isset($XML['cFehlercode']) && strlen($XML['cFehlercode']) > 0) {
-            $oObj->cFehlercode         = $XML['cFehlercode'];
-            $oObj->cFehlerBeschreibung = mappePlausiFehler($XML['cFehlercode'], $oObj);
-        }
+    if (empty($oObj->cName) && empty($oObj->cDescription) && !empty($XML['cVerzeichnis'])) {
+        $oObj->cName        = $XML['cVerzeichnis'];
+        $oObj->cDescription = '';
+        $oObj->cVerzeichnis = $XML['cVerzeichnis'];
+    }
+    if (isset($XML['cFehlercode']) && strlen($XML['cFehlercode']) > 0) {
+        $oObj->cFehlercode         = $XML['cFehlercode'];
+        $oObj->cFehlerBeschreibung = mappePlausiFehler($XML['cFehlercode'], $oObj);
     }
 
     return $oObj;

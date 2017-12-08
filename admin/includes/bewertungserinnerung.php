@@ -44,7 +44,7 @@ function baueBewertungsErinnerung()
                     if ($nVersandTage == 1) {
                         $nMaxTage = 4;
                     }
-                    $cQuery = "SELECT kBestellung
+                    $cQuery            = "SELECT kBestellung
                             FROM tbestellung
                             JOIN tkunde 
                                 ON tkunde.kKunde = tbestellung.kKunde
@@ -63,10 +63,32 @@ function baueBewertungsErinnerung()
                         foreach ($oBestellungen_arr as $oBestellungen) {
                             $oBestellung = new Bestellung($oBestellungen->kBestellung);
                             $oBestellung->fuelleBestellung(0);
-                            $oKunde           = new Kunde($oBestellung->kKunde);
-                            $obj              = new stdClass();
-                            $obj->tkunde      = $oKunde;
-                            $obj->tbestellung = $oBestellung;
+                            $oKunde            = new Kunde($oBestellung->kKunde);
+                            $obj               = new stdClass();
+                            $obj->tkunde       = $oKunde;
+                            $obj->tbestellung  = $oBestellung;
+                            $openReviewPos_arr = [];
+
+                            foreach ($oBestellung->Positionen as $Pos) {
+                                if ($Pos->kArtikel > 0) {
+                                    $res = Shop::DB()->query(
+                                        "SELECT kBewertung
+                                            FROM tbewertung
+                                            WHERE kArtikel = " . (int)$Pos->kArtikel . "
+                                                AND kKunde = " . (int)$oBestellung->kKunde,
+                                        1
+                                    );
+                                    if ($res === false) {
+                                        $openReviewPos_arr[] = $Pos;
+                                    }
+                                }
+                            }
+
+                            if (count($openReviewPos_arr) === 0) {
+                                continue;
+                            }
+
+                            $oBestellung->Positionen = $openReviewPos_arr;
 
                             Shop::DB()->query(
                                 "UPDATE tbestellung

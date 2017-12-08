@@ -269,6 +269,7 @@ function speicherOverlay($im, $cFormat, $cPfad, $nQuali = 80)
 }
 
 /**
+ * @deprecated since 4.07
  * @param string $cBild
  * @param string $cBreite
  * @param string $cHoehe
@@ -309,6 +310,26 @@ function erstelleOverlay($cBild, $cBreite, $cHoehe, $nGroesse, $nTransparenz, $c
 }
 
 /**
+ * @param string $cBild
+ * @param int    $nGroesse
+ * @param int    $nTransparenz
+ * @param string $cFormat
+ * @param string $cPfad
+ */
+function erstelleFixedOverlay($cBild, $nGroesse, $nTransparenz, $cFormat, $cPfad)
+{
+    $Einstellungen = Shop::getSettings([CONF_BILDER]);
+    $bSkalieren    = !($Einstellungen['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
+
+    list($nBreite, $nHoehe) = getimagesize($cBild);
+    $factor = $nGroesse/$nBreite;
+
+    $im = ladeOverlay($cBild, $nGroesse, $nHoehe*$factor, $nTransparenz);
+    speicherOverlay($im, $cFormat, $cPfad);
+}
+
+
+/**
  * @param array  $cFiles_arr
  * @param object $oSuchspecialoverlaySprache
  * @return bool
@@ -329,28 +350,29 @@ function speicherBild($cFiles_arr, $oSuchspecialoverlaySprache)
                 $oSuchspecialoverlaySprache->kSuchspecialOverlay . $cFormat;
             $cOriginal = $cFiles_arr['cSuchspecialOverlayBild']['tmp_name'];
 
-            erstelleOverlay(
+            erstelleFixedOverlay(
                 $cOriginal,
-                'bilder_artikel_gross_breite',
-                'bilder_artikel_gross_hoehe',
-                $oSuchspecialoverlaySprache->nGroesse,
+                ($oSuchspecialoverlaySprache->nGroesse * 4),
+                $oSuchspecialoverlaySprache->nTransparenz,
+                $cFormat,
+                PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_RETINA . $cName
+            );
+            erstelleFixedOverlay(
+                $cOriginal,
+                ($oSuchspecialoverlaySprache->nGroesse * 3),
                 $oSuchspecialoverlaySprache->nTransparenz,
                 $cFormat,
                 PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_GROSS . $cName
             );
-            erstelleOverlay(
+            erstelleFixedOverlay(
                 $cOriginal,
-                'bilder_artikel_normal_breite',
-                'bilder_artikel_normal_hoehe',
-                $oSuchspecialoverlaySprache->nGroesse,
+                ($oSuchspecialoverlaySprache->nGroesse * 2),
                 $oSuchspecialoverlaySprache->nTransparenz,
                 $cFormat,
                 PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $cName
             );
-            erstelleOverlay(
+            erstelleFixedOverlay(
                 $cOriginal,
-                'bilder_artikel_klein_breite',
-                'bilder_artikel_klein_hoehe',
                 $oSuchspecialoverlaySprache->nGroesse,
                 $oSuchspecialoverlaySprache->nTransparenz,
                 $cFormat,

@@ -4336,12 +4336,13 @@ class Artikel
                 $bSuchspecial_arr[SEARCHSPECIALS_PREORDER] = true;
             }
             $this->bSuchspecial_arr = $bSuchspecial_arr;
-            // SuchspecialBild anhand der hächsten Prio und des gesetzten Suchspecials festlegen
+            // SuchspecialBild anhand der höchsten Prio und des gesetzten Suchspecials festlegen
             foreach ($searchSpecial_arr as $oSuchspecialoverlay) {
                 if (isset($oSuchspecialoverlay->kSuchspecialOverlay) && $this->bSuchspecial_arr[$oSuchspecialoverlay->kSuchspecialOverlay]) {
                     if ($this->oSuchspecialBild === null) {
                         $this->oSuchspecialBild = new stdClass();
                     }
+                    $this->oSuchspecialBild->cPfadRetina  = PFAD_SUCHSPECIALOVERLAY_RETINA . $oSuchspecialoverlay->cBildPfad;
                     $this->oSuchspecialBild->cPfadGross   = PFAD_SUCHSPECIALOVERLAY_GROSS . $oSuchspecialoverlay->cBildPfad;
                     $this->oSuchspecialBild->cPfadNormal  = PFAD_SUCHSPECIALOVERLAY_NORMAL . $oSuchspecialoverlay->cBildPfad;
                     $this->oSuchspecialBild->cPfadKlein   = PFAD_SUCHSPECIALOVERLAY_KLEIN . $oSuchspecialoverlay->cBildPfad;

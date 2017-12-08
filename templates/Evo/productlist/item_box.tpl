@@ -17,8 +17,13 @@
         {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt}
 
         {if isset($Artikel->oSuchspecialBild)}
-            <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
-                 alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}" />
+            <img class="overlay-img"
+                 srcset="{$Artikel->oSuchspecialBild->cPfadKlein},
+                         {$Artikel->oSuchspecialBild->cPfadNormal} 2x,
+                         {$Artikel->oSuchspecialBild->cPfadGross} 3x,
+                         {$Artikel->oSuchspecialBild->cPfadRetina} 4x"
+                 src="{$Artikel->oSuchspecialBild->cPfadKlein}"
+                 alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}"/>
         {/if}
 
         {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}

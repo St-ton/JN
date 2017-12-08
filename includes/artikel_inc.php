@@ -804,11 +804,13 @@ function bearbeiteProdukttags($AktuellerArtikel)
                 $ip = gibIP();
                 // Ist eine Kunde eingeloggt?
                 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-                    $count_tag_postings = Shop::DB()->query(
+                    $count_tag_postings = Shop::DB()->executeQueryPrepared(
                         "SELECT count(kTagKunde) AS Anzahl
                             FROM ttagkunde
                             WHERE dZeit > DATE_SUB(now(),INTERVAL 1 DAY)
-                                AND kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
+                                AND kKunde = :kKunde",
+                        ['kKunde' => (int)$_SESSION['Kunde']->kKunde],
+                        1
                     );
                     $kKunde = (int)$_SESSION['Kunde']->kKunde;
                 } else { // Wenn nicht, dann hat ein anonymer Besucher ein Tag gepostet
@@ -842,7 +844,6 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     // Prüfe ob der Tag bereits vorhanden ist
                     $tag_obj = new Tag();
                     $tag_obj->loadViaName($tag);
-                    Shop::dbg($tag_obj,false,'Tag');
                     $kTag    = isset($tag_obj->kTag) ? (int)$tag_obj->kTag : null;
                     if (!empty($kTag)) {
                         // Tag existiert bereits, TagArtikel updaten/anlegen
@@ -858,11 +859,9 @@ function bearbeiteProdukttags($AktuellerArtikel)
                             $tagArticle->nAnzahlTagging = 1;
                             $tagArticle->insertInDB();
                         }
-                        Shop::dbg($tagArticle,false,'TagArticle nachdem tag existiert');
 
                         if (!empty($variKindArtikel)) {
                             $childTag                 = new TagArticle($kTag, (int)$variKindArtikel);
-                            Shop::dbg($childTag, false, 'ChildTag');
                             if (!empty($childTag->kTag)){
                                 // TagArticle hinzufügen
                                 $childTag->nAnzahlTagging = (int)$childTag->nAnzahlTagging + 1;
@@ -874,7 +873,6 @@ function bearbeiteProdukttags($AktuellerArtikel)
                                 $childTag->nAnzahlTagging = 1;
                                 $childTag->insertInDB();
                             }
-                            Shop::dbg($childTag,false,'childTag bei existierenden Tag und VarkombiKind');
                         }
                     } else {
                         // Tag muss angelegt werden
@@ -886,14 +884,11 @@ function bearbeiteProdukttags($AktuellerArtikel)
                         $neuerTag->cSeo     = checkSeo($neuerTag->cSeo);
                         $neuerTag->nAktiv   = 0;
                         $kTag               = (int)$neuerTag->insertInDB();
-                        Shop::dbg($kTag,false,'kTag nach neuanlage des Tags');
                         $newTag = new Tag($kTag);
-                        Shop::dbg($newTag,false,'Tagobject aus der db - nur zum test');
                         if ($kTag > 0) {
                             $tagArticle           = new TagArticle();
                             $tagArticle->kTag     = $kTag;
                             $tagArticle->kArtikel = (int)$AktuellerArtikel->kArtikel;
-                            Shop::dbg($tagArticle,false,'TagArticle nachdem tag neu angelegt');
                             $tagArticle->nAnzahlTagging = 1;
                             $tagArticle->insertInDB();
                             if (!empty($variKindArtikel)) {
@@ -906,7 +901,6 @@ function bearbeiteProdukttags($AktuellerArtikel)
                             }
                         }
                     }
-                    Shop::dbg($tag_obj, false,'neuer Tag in der DB gespeicher');
                     $neuerTagKunde         = new stdClass();
                     $neuerTagKunde->kTag   = $kTag;
                     $neuerTagKunde->kKunde = $kKunde;

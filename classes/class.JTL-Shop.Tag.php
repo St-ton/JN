@@ -57,11 +57,14 @@ class Tag
     public function loadFromDB($kTag)
     {
         $obj = Shop::DB()->select('ttag', 'kTag', (int)$kTag);
-        foreach (get_object_vars($obj) as $k => $v) {
-            $this->$k = $v;
-        }
+        if (!empty($obj)) {
+            foreach (get_object_vars($obj) as $k => $v) {
+                $this->$k = $v;
+            }
 
-        return $this;
+            return $this;
+        }
+        return false;
     }
 
     /**
@@ -75,11 +78,14 @@ class Tag
     {
         $cName = StringHandler::filterXSS($cName);
         $obj = Shop::DB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $cName);
-        foreach (get_object_vars($obj) as $k => $v) {
-            $this->$k = $v;
-        }
+        if (!empty($obj)) {
+            foreach (get_object_vars($obj) as $k => $v) {
+                $this->$k = $v;
+            }
 
-        return !empty($this->kTag) ? $this : false;
+            return !empty($this->kTag) ? $this : false;
+        }
+        return false;
     }
 
     /**

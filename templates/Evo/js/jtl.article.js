@@ -344,17 +344,22 @@
             $('#jump-to-votes-tab', $wrapper).click(function () {
                 $('#content a[href="#tab-votes"]').tab('show');
             });
-            var that = this;
-            $('#product-list .switch-variations .form-group:only-of-type').hover(function (el) {
-                if (!$(this).hasClass('varLoaded')) {
-                    $wrapper = $(this).closest('form').attr('id');
-                    that.variationSwitch($(this), false, $('#'+$wrapper));
-                    $(this).addClass('varLoaded');
-                }
-            });
 
-            if ($('#buy_form .switch-variations .form-group').length == 1) {
-                this.variationSwitch($('.switch-variations'), false, '#buy_form');
+            if (this.isSingleArticle()) {
+                if ($('.switch-variations .form-group', $wrapper).length === 1) {
+                    var wrapper = '#' + $($wrapper).attr('id');
+                    this.variationSwitch($('.switch-variations', $wrapper), false, wrapper);
+                }
+            } else {
+                var that = this;
+                $('.product-cell.hover-enabled').mouseenter(function (event) {
+                    var $this   = $(this),
+                        wrapper = '#' + $(this).attr('id');
+                    if (!$this.data('varLoaded') && $('.switch-variations .form-group', $this).length === 1) {
+                        that.variationSwitch($('.switch-variations', $this), false, wrapper);
+                        $this.data('varLoaded', true);
+                    }
+                });
             }
 
             this.registerProductActions($wrapper);
@@ -894,7 +899,6 @@
                 $.evo.extended().loadContent(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'isListStyle=' + listStyle, function (content) {
                     $.evo.extended().imagebox(wrapper);
                     $.evo.article().register(wrapper);
-                    $.evo.extended().register();
 
                     $('[data-toggle="basket-add"]', $(wrapper)).on('submit', function(event) {
                         event.preventDefault();

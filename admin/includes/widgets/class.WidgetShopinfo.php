@@ -28,32 +28,12 @@ class WidgetShopinfo extends WidgetBase
             $strMinorVersion = 'DEV';
         }
 
-        if (isset($_SESSION['oSubscriptionWidget'])) {
-            $oSubscription = $_SESSION['oSubscriptionWidget'];
-        } else {
-            $oSubscription = jtlAPI::getSubscription();
-        }
-
-        if (isset($oSubscription->kShop) && $oSubscription->kShop > 0) {
-            // Läuft bald ab?
-            if ((int)$oSubscription->bUpdate === 1) {
-                $oSubscription->cUpdate = 'http://jtl-url.de/subscription';
-            }
-            // Caching
-            if (!isset($_SESSION['oSubscriptionWidget'])) {
-                $_SESSION['oSubscriptionWidget'] = $oSubscription;
-            }
-        } else {
-            $oSubscription = new stdClass();
-        }
-
         $this->oSmarty->assign('nVersionFile', $nVersionFile);
         $this->oSmarty->assign('strFileVersion', $strFileVersion);
         $this->oSmarty->assign('strDBVersion', $strDBVersion);
         $this->oSmarty->assign('strTplVersion', $strTplVersion);
         $this->oSmarty->assign('strUpdated', $strUpdated);
         $this->oSmarty->assign('strMinorVersion', $strMinorVersion);
-        $this->oSmarty->assign('oSubscription', $oSubscription);
         $this->oSmarty->assign('JTLURL_GET_SHOPVERSION', JTLURL_GET_SHOPVERSION);
     }
 

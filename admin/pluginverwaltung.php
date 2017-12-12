@@ -274,7 +274,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
         $cVerzeichnis_arr = $_POST['cVerzeichnis'];
         if (is_array($cVerzeichnis_arr) && count($cVerzeichnis_arr) > 0) {
             foreach ($cVerzeichnis_arr as $cVerzeichnis) {
-                $nReturnValue = installierePluginVorbereitung($cVerzeichnis);
+                $nReturnValue = installierePluginVorbereitung(basename($cVerzeichnis));
                 if ($nReturnValue === PLUGIN_CODE_OK || $nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE) {
                     $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich installiert.';
                     $reload   = true;

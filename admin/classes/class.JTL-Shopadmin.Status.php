@@ -207,21 +207,6 @@ class Status
     }
 
     /**
-     * @return mixed|null
-     */
-    protected function getSubscription()
-    {
-        if (!isset($_SESSION['subscription'])) {
-            $_SESSION['subscription'] = jtlAPI::getSubscription();
-        }
-        return (is_object($_SESSION['subscription'])
-            && isset($_SESSION['subscription']->kShop)
-            && (int)$_SESSION['subscription']->kShop > 0)
-            ? $_SESSION['subscription']
-            : null;
-    }
-
-    /**
      * @return bool
      */
     protected function hasValidEnvironment()
@@ -262,9 +247,8 @@ class Status
 
             return ['key' => trim($key), 'value' => trim($value)];
         }, $lines);
-        $lines = array_merge([['key' => 'Version', 'value' => $info]], $lines);
 
-        return $lines;
+        return array_merge([['key' => 'Version', 'value' => $info]], $lines);
     }
 
     /**

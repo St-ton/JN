@@ -21,9 +21,9 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $cPlausi_arr['cName'] = 1;
     }
     $cBannerPath = (isset($_POST['cPath']) && $_POST['cPath'] !== '' ? $_POST['cPath'] : null);
-    if (isset($_FILES['oFile']) &&
-        $_FILES['oFile']['error'] == 0 &&
-        move_uploaded_file($_FILES['oFile']['tmp_name'], PFAD_ROOT . PFAD_BILDER_BANNER . $_FILES['oFile']['name'])
+    if (isset($_FILES['oFile'])
+        && $_FILES['oFile']['error'] === UPLOAD_ERR_OK
+        && move_uploaded_file($_FILES['oFile']['tmp_name'], PFAD_ROOT . PFAD_BILDER_BANNER . $_FILES['oFile']['name'])
     ) {
         $cBannerPath = $_FILES['oFile']['name'];
     }

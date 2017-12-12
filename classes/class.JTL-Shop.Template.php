@@ -115,7 +115,7 @@ class Template
 
             return $this;
         }
-        $bMobil  = isset($_COOKIE['bMobil']) && $_COOKIE['bMobil'];
+        $bMobil  = (isset($_SESSION['bMobil']) && $_SESSION['bMobil']);
         $cacheID = 'current_template_' . ($bMobil === true
                 ? 'mobile'
                 : 'nonmobile') .
@@ -140,7 +140,7 @@ class Template
         }
         if (!empty($oTemplate)) {
             self::$cTemplate   = $oTemplate->cTemplate;
-            self::$parent      = (!empty($oTemplate->parent)) ? $oTemplate->parent : null;
+            self::$parent      = !empty($oTemplate->parent) ? $oTemplate->parent : null;
             $this->name        = $oTemplate->name;
             $this->author      = $oTemplate->author;
             $this->url         = $oTemplate->url;
@@ -539,7 +539,7 @@ class Template
         if (!$this->hasMobileTemplate()) {
             $bMobil = false;
         }
-        setcookie('bMobil', $bMobil);
+        $_SESSION['bMobil'] = $bMobil;
         self::$bMobil = $bMobil;
         unset($_SESSION['template'], $_SESSION['cTemplate']);
         $this->init();

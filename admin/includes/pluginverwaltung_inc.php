@@ -1635,7 +1635,7 @@ function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
     if (!empty($oPluginTMP->kPlugin)) {
         return 4;// Plugin wurde schon installiert
     }
-    $cPfad = PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis;
+    $cPfad = PFAD_ROOT . PFAD_PLUGIN . basename($cVerzeichnis);
     if (!file_exists($cPfad . '/' . PLUGIN_INFO_FILE)) {
         return 3;// info.xml existiert nicht
     }

@@ -33,9 +33,7 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
 }
-if (!isset($link)) {
-    $link = $linkHelper->getPageLink(Shop::$kLink);
-}
+$link = $linkHelper->getPageLink(Shop::$kLink);
 if (!isset($link->bHideContent) || !$link->bHideContent) {
     $link->Sprache = $linkHelper->getPageLinkLanguage($link->kLink);
 }

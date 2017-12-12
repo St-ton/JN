@@ -1378,6 +1378,23 @@ final class Shop
                 self::setPageType(PAGE_EIGENE);
             }
         }
+        if (self::$is404 === true) {
+            if (!isset($seo)) {
+                $seo = null;
+            }
+            executeHook(HOOK_INDEX_SEO_404, ['seo' => $seo]);
+            if (!self::$kLink) {
+                $hookInfos     = urlNotFoundRedirect([
+                    'key'   => 'kLink',
+                    'value' => self::$kLink
+                ]);
+                $kLink         = $hookInfos['value'];
+                $bFileNotFound = $hookInfos['isFileNotFound'];
+                if (!$kLink) {
+                    self::$kLink = LinkHelper::getInstance()->getSpecialPageLinkKey(LINKTYP_404);
+                }
+            }
+        }
     }
 
     /**

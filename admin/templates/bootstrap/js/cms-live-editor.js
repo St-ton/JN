@@ -57,20 +57,31 @@ CmsLiveEditor.prototype = {
 
         injectJqueryFixes();
 
-        this.iframeElm = this.hostJq('#iframe');
+        this.iframeElm   = this.hostJq('#iframe');
+        this.loaderModal = this.hostJq('#loader-modal');
+        this.errorModal  = this.hostJq('#error-modal');
+        this.errorAlert  = this.hostJq('#error-alert');
 
-        var pageUrlLink = document.createElement('a');
-        pageUrlLink.href = this.pageUrl;
+        if(this.pageUrl !== '') {
+            var pageUrlLink = document.createElement('a');
+            pageUrlLink.href = this.pageUrl;
 
-        if(pageUrlLink.search !== '') {
-            pageUrlLink.search += '&editpage=1&cAction=' + this.cAction;
+            if(pageUrlLink.search !== '') {
+                pageUrlLink.search += '&editpage=1&cAction=' + this.cAction;
+            } else {
+                pageUrlLink.search = '?editpage=1&cAction=' + this.cAction;
+            }
+
+            this.iframeElm
+                .on('load', this.onIframeLoad.bind(this))
+                .attr('src', pageUrlLink.href.toString());
+
+            this.loaderModal
+                .modal('show');
         } else {
-            pageUrlLink.search = '?editpage=1&cAction=' + this.cAction;
+            this.errorAlert.html('Parameter f&uuml;r den Live-Editor fehlen!');
+            this.errorModal.modal('show');
         }
-
-        this.iframeElm
-            .on('load', this.onIframeLoad.bind(this))
-            .attr('src', pageUrlLink.href.toString());
     },
 
     onIframeLoad: function()
@@ -106,7 +117,6 @@ CmsLiveEditor.prototype = {
         this.btnCloneElm = this.hostJq('#btn-clone');
         this.btnConfigElm = this.hostJq('#btn-config');
         this.portletBtnElms = this.hostJq('.portlet-button');
-        this.loaderBackdrop = this.hostJq('#loader-backdrop');
         this.editorSaveBtnElm = this.hostJq('#cle-btn-save-editor');
         this.configModalElm = this.hostJq('#config-modal');
         this.configModalBodyElm = this.hostJq('#config-modal-body');
@@ -140,8 +150,8 @@ CmsLiveEditor.prototype = {
         this.editorSaveBtnElm
             .click(this.onEditorSave.bind(this));
 
-        this.loaderBackdrop
-            .hide();
+        this.loaderModal
+            .modal('hide');
 
         this.loadPage();
     },
@@ -216,11 +226,11 @@ CmsLiveEditor.prototype = {
 
     onEditorSave: function (e)
     {
-        this.loaderBackdrop.show();
+        this.loaderModal.modal('show');
 
         this.savePage(
             function() {
-                this.loaderBackdrop.hide();
+                this.loaderModal.modal('hide');
                 this.setUnsaved(false);
             },
             function () {

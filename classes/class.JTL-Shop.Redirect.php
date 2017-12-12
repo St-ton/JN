@@ -30,6 +30,11 @@ class Redirect
     public $cAvailable;
 
     /**
+     * @var int
+     */
+    public $nCount = 0;
+
+    /**
      * @param int $kRedirect
      */
     public function __construct($kRedirect = 0)
@@ -417,6 +422,7 @@ class Redirect
                 $oReferer->dDate        = time();
                 Shop::DB()->insert('tredirectreferer', $oReferer);
                 if ($oItem !== null) {
+                    Shop::dbg($oItem, false, 'oItem:');
                     ++$oItem->nCount;
                     Shop::DB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
                 }
@@ -576,10 +582,11 @@ class Redirect
 
     /**
      * @param string $cWhereSQL
+     * @return int
      */
     public static function getRedirectCount($cWhereSQL = '')
     {
-        return Shop::DB()->query(
+        return (int)Shop::DB()->query(
             "SELECT COUNT(kRedirect) AS nCount
                 FROM tredirect" .
                 ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : ""),
@@ -642,11 +649,10 @@ class Redirect
         if (!isset($parsedUrl['path'])) {
             $fullUrlParts['path'] = $parsedShopUrl['path'];
         } elseif (strpos($parsedUrl['path'], $parsedShopUrl['path']) !== 0) {
-            if (!isset($parsedUrl['host'])) {
-                $fullUrlParts['path'] = $parsedShopUrl['path'] . ltrim($parsedUrl['path'], '/');
-            } else {
+            if (isset($parsedUrl['host'])) {
                 return false;
             }
+            $fullUrlParts['path'] = $parsedShopUrl['path'] . ltrim($parsedUrl['path'], '/');
         }
 
         if (isset($parsedUrl['query'])) {
@@ -655,8 +661,7 @@ class Redirect
             $fullUrlParts['query'] = 'notrack';
         }
 
-        $rebuiltUrl  = StringHandler::buildUrl($fullUrlParts);
-        $cHeader_arr = get_headers($rebuiltUrl);
+        $cHeader_arr = get_headers(StringHandler::buildUrl($fullUrlParts));
 
         if ($cHeader_arr !== false) {
             foreach ($cHeader_arr as $header) {

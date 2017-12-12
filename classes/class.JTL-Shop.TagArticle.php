@@ -47,7 +47,7 @@ class TagArticle
      * @param int $kArtikel
      * @return $this
      */
-    public function loadFromDB($kTag, $kArtikel)
+    private function loadFromDB($kTag, $kArtikel)
     {
         $obj = Shop::DB()->select('ttagartikel', 'kTag', (int)$kTag, 'kArtikel', (int)$kArtikel);
         foreach (get_object_vars($obj) as $k => $v) {

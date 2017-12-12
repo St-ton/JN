@@ -843,7 +843,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     }
                     // Prüfe ob der Tag bereits vorhanden ist
                     $tag_obj = new Tag();
-                    $tag_obj->loadViaName($tag);
+                    $tag_obj->getByName($tag);
                     $kTag    = isset($tag_obj->kTag) ? (int)$tag_obj->kTag : null;
                     if (!empty($kTag)) {
                         // Tag existiert bereits, TagArtikel updaten/anlegen

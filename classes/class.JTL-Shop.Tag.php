@@ -54,7 +54,7 @@ class Tag
      * @param int $kTag Primary Key
      * @return $this
      */
-    public function loadFromDB($kTag)
+    private function loadFromDB($kTag)
     {
         $obj = Shop::DB()->select('ttag', 'kTag', (int)$kTag);
         if (!empty($obj)) {
@@ -74,7 +74,7 @@ class Tag
      * @param string $cName
      * @return mixed - returns Object if found in DB, else false
      */
-    public function loadViaName($cName = '')
+    public function getByName($cName = '')
     {
         $cName = StringHandler::filterXSS($cName);
         $obj = Shop::DB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $cName);

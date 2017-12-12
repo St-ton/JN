@@ -5,24 +5,20 @@
  */
 require __DIR__ . '/includes/globalinclude.php';
 
-$NaviFilter     = Shop::run();
-$cParameter_arr = Shop::getParameters();
-$linkHelper     = LinkHelper::getInstance();
+$NaviFilter = Shop::run();
+$linkHelper = LinkHelper::getInstance();
 if (Shop::$kLink > 0) {
     $link = $linkHelper->getPageLink(Shop::$kLink);
 }
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
 WarenkorbHelper::checkAdditions();
 Shop::getEntryPoint();
-if (Shop::$is404 === true) {
-    $cParameter_arr['is404'] = true;
-    Shop::$fileName = null;
-}
+$cParameter_arr = Shop::getParameters();
 Shop::Smarty()->assign('NaviFilter', $NaviFilter);
 if (Shop::$fileName !== null) {
     require PFAD_ROOT . Shop::$fileName;
 }
-if ($cParameter_arr['is404'] === true) {
+if (Shop::$is404 === true) {
     if (!isset($seo)) {
         $seo = null;
     }

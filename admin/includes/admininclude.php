@@ -56,7 +56,10 @@ Shop::fire('backend.notification', [&$notify]);
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
-if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && validateToken()) {
+if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id'])
+    && validateToken()
+    && $oAccount->logged()
+) {
     $revision = new Revision();
     if ($_POST['revision-action'] === 'restore') {
         $revision->restoreRevision(

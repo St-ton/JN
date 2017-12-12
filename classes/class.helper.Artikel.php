@@ -350,7 +350,7 @@ class ArtikelHelper
                         if (!isset($_SESSION['variBoxAnzahl_arr'])) {
                             //redirekt zum artikel, um variation/en zu waehlen / MBM beachten
                             header('Location: ' . Shop::getURL() .
-                                '/index.php?a=' . $kArtikel .
+                                '/?a=' . $kArtikel .
                                 '&n=' . (int)$_POST['anzahl'] .
                                 '&r=' . R_VARWAEHLEN, true, 302);
                             exit();
@@ -363,7 +363,7 @@ class ArtikelHelper
                             && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0
                     ) {
                         header('Location: ' . Shop::getURL() .
-                            '/index.php?a=' . $kArtikel .
+                            '/?a=' . $kArtikel .
                             '&n=' . (int)$_POST['anzahl'] .
                             '&r=' . R_VARWAEHLEN, true, 302);
                         exit();
@@ -382,7 +382,7 @@ class ArtikelHelper
         if (!$nVorhanden && !isset($_SESSION['variBoxAnzahl_arr'])) {
             //redirekt zum artikel, weil variation nicht vorhanden
             header('Location: ' . Shop::getURL() .
-                '/index.php?a=' . $kArtikel .
+                '/?a=' . $kArtikel .
                 '&n=' . (int)$_POST['anzahl'] .
                 '&r=' . R_VARWAEHLEN, true, 301);
             exit();

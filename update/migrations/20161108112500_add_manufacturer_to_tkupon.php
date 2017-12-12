@@ -25,8 +25,6 @@ class Migration_20161108112500 extends Migration implements IMigration
 
         $this->setLocalization('ger', 'global', 'couponErr12', 'Der Kupon ist für den aktuellen Warenkorb ungültig (gilt nur für bestimmte Hersteller).');
         $this->setLocalization('eng', 'global', 'couponErr12', 'This coupon is invalid for your cart (valid only for specific manufacturers).');
-
-        $this->execute("UPDATE tkupon SET cHersteller = '-1' WHERE cHersteller IS NULL OR cHersteller = ' ';");
     }
 
     public function down()

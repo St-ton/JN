@@ -21,7 +21,7 @@ class Migration_20171211131600 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("UPDATE tkupon SET cHersteller = '-1' WHERE cHersteller IS NULL OR cHersteller = ' ';");
+        $this->execute("UPDATE tkupon SET cHersteller = '-1' WHERE cHersteller = '';");
     }
 
     public function down()

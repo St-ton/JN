@@ -1611,7 +1611,7 @@ final class Shop
             $NaviFilter->TagFilter = [];
             for ($i = 0; $i < $tagCount; ++$i) {
                 $oTag       = new stdClass();
-                $oTag->kTag = $cParameter_arr['TagFilter_arr'][$i];
+                $oTag->kTag = (int)$cParameter_arr['TagFilter_arr'][$i];
                 $seo_obj    = new stdClass();
                 if (isset(self::$kSprache) && self::$kSprache > 0 && $oTag->kTag > 0) {
                     $seo_obj = self::DB()->select('ttag', 'nAktiv', 1, 'kSprache', self::$kSprache, 'kTag', $oTag->kTag, false, 'cName');

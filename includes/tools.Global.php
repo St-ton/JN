@@ -3361,13 +3361,13 @@ function setzeMerkmalFilter($nFilter_arr = [])
         if (count($_GET) > 0) {
             foreach ($_GET as $key => $value) {
                 if (preg_match('/mf\d+/i', $key)) {
-                    $filter[] = $value;
+                    $filter[] = (int)$value;
                 }
             }
         } elseif (count($_POST) > 0) {
             foreach ($_POST as $key => $value) {
                 if (preg_match('/mf\d+/i', $key)) {
-                    $filter[] = $value;
+                    $filter[] = (int)$value;
                 }
             }
         }

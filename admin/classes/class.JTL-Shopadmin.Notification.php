@@ -122,9 +122,9 @@ class Notification implements IteratorAggregate, Countable
         if ($subscription = $status->getSubscription()) {
             if ((int)$subscription->bUpdate === 1) {
                 if ((int)$subscription->nDayDiff <= 0) {
-                    $this->add(NotificationEntry::TYPE_WARNING, 'Subscription', 'Ihre Subscription ist abgelaufen. Jetzt erneuern.', 'http://jtl-url.de/subscription');
+                    $this->add(NotificationEntry::TYPE_WARNING, 'Subscription', 'Ihre Subscription ist abgelaufen. Jetzt erneuern.', 'https://jtl-url.de/subscription');
                 } else {
-                    $this->add(NotificationEntry::TYPE_INFO, 'Subscription', "Ihre Subscription l&auml;uft in {$subscription->nDayDiff} Tagen ab.", 'http://jtl-url.de/subscription');
+                    $this->add(NotificationEntry::TYPE_INFO, 'Subscription', "Ihre Subscription l&auml;uft in {$subscription->nDayDiff} Tagen ab.", 'https://jtl-url.de/subscription');
                 }
             }
         }

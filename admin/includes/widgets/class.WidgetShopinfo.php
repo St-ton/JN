@@ -39,7 +39,7 @@ class WidgetShopinfo extends WidgetBase
         if (isset($oSubscription->kShop) && $oSubscription->kShop > 0) {
             // Läuft bald ab?
             if ((int)$oSubscription->bUpdate === 1) {
-                $oSubscription->cUpdate = 'http://jtl-url.de/subscription';
+                $oSubscription->cUpdate = 'https://jtl-url.de/subscription';
             }
             // Caching
             if (!isset($_SESSION['oSubscriptionWidget'])) {

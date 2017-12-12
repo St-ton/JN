@@ -206,7 +206,7 @@ class Updater
     public function getAvailableVersions()
     {
         if (static::$availableVersions === null || !is_array(static::$availableVersions)) {
-            $content = http_get_contents('http://api.jtl-software.de/shop/versions');
+            $content = http_get_contents('https://api.jtl-software.de/shop/versions');
             if ($content !== null && !empty($content)) {
                 $versions = json_decode($content);
                 if (is_array($versions)) {

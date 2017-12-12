@@ -113,14 +113,14 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
     $step        = 'Zuschlagsliste';
     $ZuschlagPLZ = new stdClass();
     $ZuschlagPLZ->kVersandzuschlag = (int)$_POST['kVersandzuschlag'];
-    $ZuschlagPLZ->cPLZ             = validatePost('plz', $_POST['cPLZ']);
+    $ZuschlagPLZ->cPLZ             = validatePost('postcode', $_POST['cPLZ']);
     if (!empty($_POST['cPLZAb']) && !empty($_POST['cPLZBis'])) {
         unset($ZuschlagPLZ->cPLZ);
-        $ZuschlagPLZ->cPLZAb  = validatePost('plz', $_POST['cPLZAb']);
-        $ZuschlagPLZ->cPLZBis = validatePost('plz', $_POST['cPLZBis']);
+        $ZuschlagPLZ->cPLZAb  = validatePost('postcode', $_POST['cPLZAb']);
+        $ZuschlagPLZ->cPLZBis = validatePost('postcode', $_POST['cPLZBis']);
         if ($ZuschlagPLZ->cPLZAb > $ZuschlagPLZ->cPLZBis) {
-            $ZuschlagPLZ->cPLZAb  = validatePost('plz', $_POST['cPLZBis']);
-            $ZuschlagPLZ->cPLZBis = validatePost('plz', $_POST['cPLZAb']);
+            $ZuschlagPLZ->cPLZAb  = validatePost('postcode', $_POST['cPLZBis']);
+            $ZuschlagPLZ->cPLZBis = validatePost('postcode', $_POST['cPLZAb']);
         }
     }
 
@@ -630,7 +630,7 @@ $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]])
  * otherwise return "the empty string" to signalize an error.
  *
  * @param string  what we want to validate. currently possible values:
- *                'plz' = check (any) international PLZ
+ *                'postcode' = check (any) international postal code (ZIP)
  * @param string  (_POST-)field input-strings
  * @return string  the input-string if all was fine OR the empty string, if there where errors
  */
@@ -638,24 +638,24 @@ function validatePost($szType, $szSubject) {
     $szResult = $szSubject;
     $nError   = 0;
     switch ($szType) {
-        case 'plz' :
-            // limit the length of the PLZ for 15 characters at all
+        case 'postcode' :
+            // limit the length of the ZIP for 15 characters at all
             $nError += (15 < strlen($szSubject));
 
-            // examine each "word" of our PLZ
+            // examine each "word" of our ZIP
             preg_match_all('/[0-9]+|[a-z]+/ui', $szSubject, $vHits);
             foreach ($vHits[0] as $szPiece) {
                 $nPieceLen = strlen($szPiece);
-                // numbers can have a length of 5 digits
+                // numbers can have a length of 8 digits
                 if (0 !== (int)$szPiece && 0 < $nPieceLen) {
                     $nError += (8 < $nPieceLen);
                 }
-                // words can have a length of 2 letters
+                // words can have a length of 10 letters
                 if (0 === (int)$szPiece && 0 < $nPieceLen) {
                     $nError += (10 < $nPieceLen);
                 }
             }
-            // (let's do a little bit magic) "regex-lookaround" for pissible ("invisible") cut-positions.
+            // "regex-lookaround" for possible ("invisible") cut-positions.
             // potentially unsafe strings can be divided into more pieces than correct strings.
             preg_match_all('/(?![0-9]+|[a-z]+)/ui', $szSubject, $vInvisibles);
             $nError += (count($vInvisibles[0]) > count($vHits[0]));

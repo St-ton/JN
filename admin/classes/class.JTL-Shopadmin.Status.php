@@ -221,24 +221,6 @@ class Status
     }
 
     /**
-     * @return mixed|null
-     */
-    protected function getSubscription()
-    {
-        if (!isset($_SESSION['subscription'])) {
-            $_SESSION['subscription'] = jtlAPI::getSubscription();
-        }
-        if (is_object($_SESSION['subscription']) &&
-            isset($_SESSION['subscription']->kShop) &&
-            (int)$_SESSION['subscription']->kShop > 0
-        ) {
-            return $_SESSION['subscription'];
-        }
-
-        return null;
-    }
-
-    /**
      * @return bool
      */
     protected function hasValidEnvironment()

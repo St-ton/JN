@@ -1285,6 +1285,7 @@ final class Shop
                 self::Media()->handleRequest($cPath);
             } else {
                 self::$is404         = true;
+                self::$fileName      = null;
                 self::$AktuelleSeite = '404';
                 self::setPageType(PAGE_404);
             }

@@ -226,7 +226,7 @@ class Status
     protected function getSubscription()
     {
         if (!isset($_SESSION['subscription'])) {
-            $_SESSION['subscription'] = jtlAPI::getSubscription();
+            $_SESSION['subscription'] = Shop()->RS()->getSubscription();
         }
         if (is_object($_SESSION['subscription']) &&
             isset($_SESSION['subscription']->kShop) &&

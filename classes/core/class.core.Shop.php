@@ -411,6 +411,16 @@ final class Shop
     }
 
     /**
+     * get remote service instance
+     *
+     * @return RemoteService
+     */
+    public function RS()
+    {
+        return RemoteService::getInstance();
+    }
+
+    /**
      * get session instance
      *
      * @return Session

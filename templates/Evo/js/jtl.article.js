@@ -351,14 +351,30 @@
                     this.variationSwitch($('.switch-variations', $wrapper), false, wrapper);
                 }
             } else {
-                var that = this;
-                $('.product-cell.hover-enabled').mouseenter(function (event) {
-                    var $this   = $(this),
-                        wrapper = '#' + $(this).attr('id');
-                    if (!$this.data('varLoaded') && $('.switch-variations .form-group', $this).length === 1) {
-                        that.variationSwitch($('.switch-variations', $this), false, wrapper);
-                        $this.data('varLoaded', true);
-                    }
+                var that          = this,
+                    variationLoad = function ($wrapper) {
+                        var wrapper = '#' + $wrapper.attr('id');
+                        if (!$wrapper.data('varLoaded') && $('.switch-variations .form-group', $wrapper).length === 1) {
+                            console.log('variationSwitch: ' + wrapper);
+                            that.variationSwitch($('.switch-variations', $wrapper), false, wrapper);
+                        }
+                        $wrapper.attr('data-varLoaded', true);
+                    },
+                    variationLoadVisible = function () {
+                        $('.product-cell:not([data-varLoaded])', $wrapper).each(function (index, elem) {
+                            if ($(elem).isInViewport()) {
+                                variationLoad($(elem));
+                            }
+                        });
+                    };
+
+                variationLoadVisible();
+
+                $(window).scroll(function () {
+                    clearTimeout($.data(this, 'scrollTimer'));
+                    $.data(this, 'scrollTimer', setTimeout(function() {
+                        variationLoadVisible();
+                    }, 250));
                 });
             }
 

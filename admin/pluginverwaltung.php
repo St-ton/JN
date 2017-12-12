@@ -400,7 +400,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
 
         if (is_array($cVerzeichnis_arr) && count($cVerzeichnis_arr) > 0) {
             foreach ($cVerzeichnis_arr as $cVerzeichnis) {
-                $nReturnValue = installierePluginVorbereitung($cVerzeichnis);
+                $nReturnValue = installierePluginVorbereitung(basename($cVerzeichnis));
                 if ($nReturnValue === 1 || $nReturnValue === 126) {
                     $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich installiert.';
                     $reload   = true;

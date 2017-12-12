@@ -45,7 +45,7 @@ if (isset($_GET['faviconError'])) {
 }
 if (isset($_POST['type']) && $_POST['type'] === 'layout' && validateToken()) {
     $oCSS           = new SimpleCSS();
-    $cOrdner        = $_POST['ordner'];
+    $cOrdner        = basename($_POST['ordner']);
     $cCustomCSSFile = $oCSS->getCustomCSSFile($cOrdner);
     $bReset         = (isset($_POST['reset']) && $_POST['reset'] == 1);
     if ($bReset) {
@@ -94,33 +94,29 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
         //for uploads, the value of an input field is the $_FILES index of the uploaded file
         if (strpos($cWert, 'upload-') === 0) {
             //all upload fields have to start with "upload-" - so check for that
-            if (!empty($_FILES[$cWert]['name'])) {
+            if (!empty($_FILES[$cWert]['name']) && $_FILES[$cWert]['error'] === UPLOAD_ERR_OK) {
                 //we have an upload field and the file is set in $_FILES array
                 $file  = $_FILES[$cWert];
-                $cWert = $_FILES[$cWert]['name'];
+                $cWert = basename($_FILES[$cWert]['name']);
                 $break = false;
                 foreach ($tplConfXML as $_section) {
                     if (isset($_section->oSettings_arr)) {
                         foreach ($_section->oSettings_arr as $_setting) {
-                            if (isset($_setting->cKey) && $_setting->cKey === $cName) {
-                                if (isset($_setting->rawAttributes['target'])) {
-                                    //target folder
-                                    $targetFile = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target'];
-                                    //add trailing slash
-                                    if ($targetFile[strlen($targetFile) - 1] !== '/') {
-                                        $targetFile .= '/';
-                                    }
-                                    //optional target file name + extension
-                                    if (isset($_setting->rawAttributes['targetFileName'])) {
-                                        $cWert = $_setting->rawAttributes['targetFileName'];
-                                    }
-                                    $targetFile .= $cWert;
-                                    if (!move_uploaded_file($file['tmp_name'], $targetFile)) {
-                                        $faviconError = '&faviconError=true';
-                                    }
-                                    $break = true;
-                                    break;
+                            if (isset($_setting->cKey, $_setting->rawAttributes['target'])
+                                && $_setting->cKey === $cName
+                            ) {
+                                //target folder
+                                $base = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/';
+                                //optional target file name + extension
+                                if (isset($_setting->rawAttributes['targetFileName'])) {
+                                    $cWert = $_setting->rawAttributes['targetFileName'];
                                 }
+                                $targetFile = $base . $cWert;
+                                if (strpos($targetFile, $base) !== 0 || !move_uploaded_file($file['tmp_name'], $targetFile)) {
+                                    $faviconError = '&faviconError=true';
+                                }
+                                $break = true;
+                                break;
                             }
                         }
                     }
@@ -128,6 +124,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
                         break;
                     }
                 }
+
             } else {
                 //no file uploaded, ignore
                 continue;

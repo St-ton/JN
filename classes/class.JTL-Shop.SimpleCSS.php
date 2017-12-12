@@ -169,7 +169,7 @@ class SimpleCSS
      */
     public function getTemplatePath($cOrdner)
     {
-        return PFAD_ROOT . 'templates/' . $cOrdner . '/';
+        return realpath(PFAD_ROOT . 'templates/' . $cOrdner) . '/';
     }
 
     /**

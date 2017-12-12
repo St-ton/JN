@@ -9,7 +9,7 @@ require_once dirname(__FILE__) . '/syncinclude.php';
 //wawi mindestversion überprüfen
 if (!isset($_POST['wawiversion']) || intval($_POST['wawiversion']) < JTL_MIN_WAWI_VERSION) {
     syncException("Ihr JTL-Shop Version " . (JTL_VERSION / 100) . " benötigt für den Datenabgleich mindestens JTL-Wawi Version " .
-        (JTL_MIN_WAWI_VERSION / 100000.0) . ". \nEine aktuelle Version erhalten Sie unter: http://jtl-url.de/wawidownload", 8);
+        (JTL_MIN_WAWI_VERSION / 100000.0) . ". \nEine aktuelle Version erhalten Sie unter: https://jtl-url.de/wawidownload", 8);
 }
 $return = 3;
 $cName  = $_POST['uID'];

@@ -29,8 +29,12 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
     $step = 'umfrage_uebersicht';
     // Umfrage durchführen
-    if (($Einstellungen['umfrage']['umfrage_einloggen'] === 'Y' && isset($_SESSION['Kunde']->kKunde) &&
-            $_SESSION['Kunde']->kKunde > 0) || $Einstellungen['umfrage']['umfrage_einloggen'] === 'N') {
+    if (($Einstellungen['umfrage']['umfrage_einloggen'] === 'Y'
+            && isset($_SESSION['Kunde']->kKunde)
+            && $_SESSION['Kunde']->kKunde > 0
+        )
+        || $Einstellungen['umfrage']['umfrage_einloggen'] === 'N'
+    ) {
         // Umfrage holen
         $oUmfrage = holeAktuelleUmfrage($cParameter_arr['kUmfrage']);
         if ($oUmfrage->kUmfrage > 0) {
@@ -97,7 +101,6 @@ if ($step === 'umfrage_uebersicht') {
     } else {
         $cFehler .= Shop::Lang()->get('pollNopoll', 'errorMessages') . '<br />';
     }
-    // Canonical
     $cCanonicalURL = Shop::getURL() . '/umfrage.php';
 
     $smarty->assign('Navigation', createNavigation(

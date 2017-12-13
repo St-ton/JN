@@ -5,8 +5,8 @@
  */
 
 /**
- * @param $index
- * @param $create
+ * @param string $index
+ * @param string $create
  * @return array|IOError
  */
 function createSearchIndex($index, $create)

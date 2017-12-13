@@ -356,28 +356,36 @@ function bearbeiteUpdate($xml)
     // Zahlungsart vorhanden?
     $oZahlungsart = new stdClass();
     if (isset($xml['tbestellung']['cZahlungsartName']) && strlen($xml['tbestellung']['cZahlungsartName']) > 0) {
-        $oSprache = gibStandardsprache(true);
-        if ($oSprache->kSprache != $oBestellung->kSprache) {
-            $oZahlungsart = Shop::DB()->executeQueryPrepared(
-                "SELECT kZahlungsart, cName
-                    FROM tzahlungsart
-                    WHERE cName LIKE :name",
-                ['name' => '%' . $xml['tbestellung']['cZahlungsartName'] . '%'],
-                1
-            );
-        } else {
-            $oZahlungsart = Shop::DB()->executeQueryPrepared(
-                "SELECT tzahlungsart.kZahlungsart, IFNULL(tzahlungsartsprache.cName, tzahlungsart.cName) AS cName
-                    FROM tzahlungsart
-                    LEFT JOIN tzahlungsartsprache 
-                        ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                        AND tzahlungsartsprache.cISOSprache = :iso
-                    WHERE tzahlungsart.cName LIKE :name",
-                [
-                    'iso'  => gibSprachKeyISO('', (int)$oBestellung->kSprache),
-                    'name' => '%' . $xml['tbestellung']['cZahlungsartName'] . '%'
-                ],
-                1
+        // Von Wawi kommt in $xml['tbestellung']['cZahlungsartName'] nur der deutsche Wert,
+        // deshalb immer Abfrage auf tzahlungsart.cName
+        $cZahlungsartName = $xml['tbestellung']['cZahlungsartName'];
+        $oZahlungsart     = Shop::DB()->executeQueryPrepared(
+            "SELECT tzahlungsart.kZahlungsart, IFNULL(tzahlungsartsprache.cName, tzahlungsart.cName) AS cName
+                FROM tzahlungsart
+                LEFT JOIN tzahlungsartsprache
+                    ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
+                    AND tzahlungsartsprache.cISOSprache = :iso
+                WHERE tzahlungsart.cName LIKE :search
+                ORDER BY CASE
+                    WHEN tzahlungsart.cName = :name1 THEN 1
+                    WHEN tzahlungsart.cName LIKE :name2 THEN 2
+                    WHEN tzahlungsart.cName LIKE :name3 THEN 3
+                    END, kZahlungsart",
+            [
+                'iso'    => gibSprachKeyISO('', (int)$oBestellung->kSprache),
+                'search' => "%{$cZahlungsartName}%",
+                'name1'  => $cZahlungsartName,
+                'name2'  => "{$cZahlungsartName}%",
+                'name3'  => "%{$cZahlungsartName}%",
+            ],
+            1
+        );
+        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog(
+                'Zahlungsart Matching (' . gibSprachKeyISO('', (int)$oBestellung->kSprache) . '): ' . $xml['tbestellung']['cZahlungsartName'] . ' matched: ' . $oZahlungsart->cName,
+                JTLLOG_LEVEL_DEBUG,
+                false,
+                'Bestellungen_xml'
             );
         }
     }
@@ -591,8 +599,8 @@ function bearbeiteSet($xml)
             if (strlen($cZahlungsartName) > 0) {
                 $upd->cZahlungsartName = $cZahlungsartName;
             }
-            $upd->dBezahltDatum = empty($dBezahltDatum) 
-                ? '0000-00-00' 
+            $upd->dBezahltDatum = empty($dBezahltDatum)
+                ? '0000-00-00'
                 : $dBezahltDatum;
             Shop::DB()->update('tbestellung', 'kBestellung', (int)$oBestellungWawi->kBestellung, $upd);
             $oBestellungUpdated = new Bestellung($oBestellungShop->kBestellung, true);
@@ -728,7 +736,7 @@ function checkGuestAccount($kKunde)
 
 /**
  * @param int $kBestellung
- * @param stdClass[] $oBestellatribute_arr
+ * @param stdClass[] $oBestellattribut_arr
  */
 function bearbeiteBestellattribute($kBestellung, $oBestellattribut_arr)
 {

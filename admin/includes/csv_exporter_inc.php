@@ -12,7 +12,7 @@
  * @param string $exporterId
  * @param string $csvFilename
  * @param array|callable $source - array of objects to be exported as CSV or function that gives that array back on
- *      demand
+ *      demand. The function may also return an Iterator object
  * @param array $fields - array of property/column names to be included or empty array for all columns (taken from
  *      first item of $source)
  * @param array $excluded - array of property/column names to be excluded
@@ -33,12 +33,21 @@ function handleCsvExportAction($exporterId, $csvFilename, $source, $fields = [],
         }
 
         if (count($fields) === 0) {
-            $fields = array_diff(array_keys(get_object_vars($arr[0])), $excluded);
+            if ($arr instanceof Iterator) {
+                /** @var Iterator $arr **/
+                $first  = $arr->current();
+            } else {
+                $first  = $arr[0];
+            }
+            $assoc  = get_object_vars($first);
+            $fields = array_keys($assoc);
+            $fields = array_diff($fields, $excluded);
+            $fields = array_filter($fields, 'is_string');
         }
 
         header('Content-Disposition: attachment; filename=' . $csvFilename);
         header('Content-Type: text/csv');
-        $fs = fopen('php://output', 'w');
+        $fs = fopen('php://output', 'wb');
 
         if ($bHead) {
             fputcsv($fs, $fields);

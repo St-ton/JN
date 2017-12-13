@@ -1,5 +1,12 @@
 # JTL-Shop Changelog
 
+## [4.06.3]
+
+Dieses Update enthält Bugfixes und Sicherheitsupdates
+
+* [SHOP-1881] - Bugfix: JavaScript-Exception in jtl.io.js, wenn im DOM ein iFrame enthalten ist (z.B. Recaptcha)
+* [SHOP-1882] - Bugfix: Markup-Fehler im Evo-Template, wenn über JTL-Search Kindartikel in Listenansicht angezeigt werden
+
 ## [4.06.2]
 
 * Sicherheitsupdate
@@ -278,6 +285,10 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1667] - Backend Weiterleitungen nach Aufrufen filtern
 * [SHOP-1674] - Neue Smarty Blocks in snippets/shipping_tax_info.tpl und productdetails/price.tpl
 * [SHOP-1694] - Backstretch-Hintergrundbild verursacht Fehler bei geringer Netzgeschwindigkeit
+
+## [4.05.6]
+
+* Sicherheitsupdate
 
 ## [4.05.5]
 

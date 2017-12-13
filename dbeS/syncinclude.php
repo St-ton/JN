@@ -1081,7 +1081,7 @@ function syncException($msg, $wawiExceptionCode = null)
 {
     $output = '';
     if ($wawiExceptionCode !== null) {
-        $output .= $wawiExceptionCode . '\n';
+        $output .= $wawiExceptionCode . "\n";
     }
     $output .= $msg;
     die(mb_convert_encoding($output, 'ISO-8859-1', 'auto'));

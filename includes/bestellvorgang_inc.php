@@ -2085,36 +2085,63 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         if (!isset($_SESSION['Kunde']->cUSTID) ||
             (isset($_SESSION['Kunde']->cUSTID) && $_SESSION['Kunde']->cUSTID !== $data['ustid'])
         ) {
-            $oUstID = new UstID(
-                $conf['kunden']['shop_ustid'],
-                StringHandler::filterXSS($data['ustid']),
-                StringHandler::filterXSS($data['firma']),
-                StringHandler::filterXSS($data['ort']),
-                StringHandler::filterXSS($data['plz']),
-                StringHandler::filterXSS($data['strasse']),
-                'Nein',
-                (isset($data['hausnummer']) ? StringHandler::filterXSS($data['hausnummer']) : '')
-            );
-
-            $bBZStPruefung = false;
-            //Admin-Einstellung BZST pruefen und checken ob Auslaendische USt-ID angegeben (deutsche USt-IDs koennen nicht geprueft werden)
-            $ustLaendercode = strtolower(substr($data['ustid'], 0, 2));
-            if ($ustLaendercode !== 'de' && $conf['kunden']['shop_ustid_bzstpruefung'] === 'Y') {
-                $bBZStPruefung = true;
+            $bAnalizeCheck = false; // flag to signalize further analization
+            if ('Y' === $conf['kunden']['shop_ustid_bzstpruefung']) { // backend-setting: "Einstellungen -> Formulareinstellungen ->"
+                $oVies         = new UstIDvies();
+                $vViesResult   = $oVies->doCheckID(trim($data['ustid']));
+                $bAnalizeCheck = true; // flag to signalize further analization
             }
-            $cUstPruefung = $oUstID->bearbeiteAnfrage($bBZStPruefung);
+            if (true === $bAnalizeCheck && true === $vViesResult['success']) {
+                // "all was fine"
+                $ret['ustid'] = 0;
+            } else {
 
-            if ($cUstPruefung === -1) { // UstID ist durch Stringprüfung ungültig
-                $oReturn          = $oUstID->pruefeUstIDString($data['ustid']);
-                $ret['ustid']     = 2;
-                $ret['ustid_err'] = $oReturn->cError;
-            } elseif ($cUstPruefung === 999) {
-                // BZSt ist nicht erreichbar aber Stringprüfung war erfolgreich
-                $ret['ustid'] = 4;
-            } elseif ($cUstPruefung !== 200 && $cUstPruefung !== 1) { // UstID ist durch BZSt ungültig
-                $ret['ustid'] = 5;
+                switch ($vViesResult['errortype']) {
+                    case 'vies' :
+                        // vies-error: the ID is invalid according to the VIES-system
+                        $ret['ustid'] = $vViesResult['errorcode']; // (old value 5)
+                        break;
+                    case 'parse' :
+                        // parse-error: the ID-string is misspelled in any way
+                        if (1 === $vViesResult['errorcode']) {
+                            $ret['ustid'] = 1; // parse-error: no id was given
+                        } elseif (1 < $vViesResult['errorcode']) {
+                            $ret['ustid'] = 2; // parse-error: with the position of error in given ID-string
+                            switch ($vViesResult['errorcode']) {
+                                case 120:
+                                    // build a string with error-code and error-information
+                                    $ret['ustid_err'] = $vViesResult['errorcode'].
+                                        ','.
+                                        substr($data['ustid'], 0, $vViesResult['errorinfo']).
+                                        '<span style="color:red;">'.
+                                        substr($data['ustid'], $vViesResult['errorinfo']).
+                                        '</span>';
+                                    break;
+                                case 130 :
+                                    $ret['ustid_err'] = $vViesResult['errorcode'].
+                                        ','.
+                                        $vViesResult['errorinfo'];
+                                    break;
+                                default:
+                                    $ret['ustid_err'] = $vViesResult['errorcode'];
+                                    break;
+                            }
+                        }
+                        break;
+                    case 'time' :
+                        // according to the backend-setting: "Einstellungen -> (Formular)einstellungen -> UstID-Nummer"-check active
+                        if ('Y' === $conf['kunden']['shop_ustid_force_remote_check']) {
+                            $ret['ustid'] = 4; // parsing ok, but the remote-service is in a "down-slot" and unreachable
+                            $ret['ustid_err'] = $vViesResult['errorcode'].
+                                ','.
+                                $vViesResult['errorinfo'];
+                        }
+                        break;
+                }
+
             }
         }
+
     }
     if ($conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y' &&
         checkeDatum(StringHandler::filterXSS($data['geburtstag'])) > 0
@@ -2693,162 +2720,60 @@ function warenkorbKuponFaehigKategorien($Kupon, array $PositionenArr)
  */
 function getKundendaten($post, $kundenaccount, $htmlentities = 1)
 {
+    $mapping = [
+        'anrede'            => 'cAnrede',
+        'vorname'           => 'cVorname',
+        'nachname'          => 'cNachname',
+        'strasse'           => 'cStrasse',
+        'hausenummer'       => 'cHausnummer',
+        'plz'               => 'cPLZ',
+        'ort'               => 'cOrt',
+        'land'              => 'cLand',
+        'email'             => 'cMail',
+        'tel'               => 'cTel',
+        'fax'               => 'cFax',
+        'firma'             => 'cFirma',
+        'firmazusatz'       => 'cZusatz',
+        'bundesland'        => 'cBundesland',
+        'titel'             => 'cTitel',
+        'adresszusatz'      => 'cAdressZusatz',
+        'mobil'             => 'cMobil',
+        'www'               => 'cWWWW',
+        'ustid'             => 'cUSTID',
+        'geburtstag'        => 'dGeburtstag',
+        'kundenherkunft'    => 'cHerkunft',
+    ];
+
+    if ($kundenaccount !== 0) {
+        $mapping['pass'] = 'cPasswort';
+    }
+
     //erstelle neuen Kunden
-    $kKunde = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)
-        ? (int)$_SESSION['Kunde']->kKunde
-        : 0;
-    $Kunde  = new Kunde($kKunde);
-    if ($htmlentities) {
-        $Kunde->cAnrede       = isset($post['anrede'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['anrede']))
-            : $Kunde->cAnrede;
-        $Kunde->cVorname      = isset($post['vorname'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['vorname']))
-            : $Kunde->cVorname;
-        $Kunde->cNachname     = isset($post['nachname'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['nachname']))
-            : $Kunde->cNachname;
-        $Kunde->cStrasse      = isset($post['strasse'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['strasse']))
-            : $Kunde->cStrasse;
-        $Kunde->cHausnummer   = isset($post['hausnummer'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['hausnummer']))
-            : $Kunde->cHausnummer;
-        $Kunde->cPLZ          = isset($post['plz'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['plz']))
-            : $Kunde->cPLZ;
-        $Kunde->cOrt          = isset($post['ort'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['ort']))
-            : $Kunde->cOrt;
-        $Kunde->cLand         = isset($post['land'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['land']))
-            : $Kunde->cLand;
-        $Kunde->cMail         = isset($post['email'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['email']))
-            : $Kunde->cMail;
-        $Kunde->cTel          = isset($post['tel'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['tel']))
-            : $Kunde->cTel;
-        $Kunde->cFax          = isset($post['fax'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['fax']))
-            : $Kunde->cFax;
-        $Kunde->cFirma        = isset($post['firma'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['firma']))
-            : $Kunde->cFirma;
-        $Kunde->cZusatz       = isset($post['firmazusatz'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['firmazusatz']))
-            : $Kunde->cZusatz;
-        $Kunde->cBundesland   = isset($post['bundesland'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['bundesland']))
-            : $Kunde->cBundesland;
-        $Kunde->cTitel        = isset($post['titel'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['titel']))
-            : $Kunde->cTitel;
-        $Kunde->cAdressZusatz = isset($post['adresszusatz'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['adresszusatz']))
-            : $Kunde->cAdressZusatz;
-        $Kunde->cMobil        = isset($post['mobil'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['mobil']))
-            : $Kunde->cMobil;
-        $Kunde->cWWW          = isset($post['www'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['www']))
-            : $Kunde->cWWW;
-        $Kunde->cUSTID        = isset($post['ustid'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['ustid']))
-            : $Kunde->cUSTID;
-        $Kunde->dGeburtstag   = isset($post['geburtstag'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['geburtstag']))
-            : $Kunde->dGeburtstag;
-        $Kunde->cHerkunft     = isset($post['kundenherkunft'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['kundenherkunft']))
-            : $Kunde->cHerkunft;
-        if ($kundenaccount != 0) {
-            $Kunde->cPasswort = isset($post['pass'])
-                ? StringHandler::htmlentities(StringHandler::filterXSS($post['pass']))
-                : $Kunde->cPasswort;
-        }
-    } else {
-        $Kunde->cAnrede       = isset($post['anrede'])
-            ? StringHandler::filterXSS($post['anrede'])
-            : $Kunde->cAnrede;
-        $Kunde->cVorname      = isset($post['vorname'])
-            ? StringHandler::filterXSS($post['vorname'])
-            : $Kunde->cVorname;
-        $Kunde->cNachname     = isset($post['nachname'])
-            ? StringHandler::filterXSS($post['nachname'])
-            : $Kunde->cNachname;
-        $Kunde->cStrasse      = isset($post['strasse'])
-            ? StringHandler::filterXSS($post['strasse'])
-            : $Kunde->cStrasse;
-        $Kunde->cHausnummer   = isset($post['hausnummer'])
-            ? StringHandler::filterXSS($post['hausnummer'])
-            : $Kunde->cHausnummer;
-        $Kunde->cPLZ          = isset($post['plz'])
-            ? StringHandler::filterXSS($post['plz'])
-            : $Kunde->cPLZ;
-        $Kunde->cOrt          = isset($post['ort'])
-            ? StringHandler::filterXSS($post['ort'])
-            : $Kunde->cOrt;
-        $Kunde->cLand         = isset($post['land'])
-            ? StringHandler::filterXSS($post['land'])
-            : $Kunde->cLand;
-        $Kunde->cMail         = isset($post['email'])
-            ? StringHandler::filterXSS($post['email'])
-            : $Kunde->cMail;
-        $Kunde->cTel          = isset($post['tel'])
-            ? StringHandler::filterXSS($post['tel'])
-            : $Kunde->cTel;
-        $Kunde->cFax          = isset($post['fax'])
-            ? StringHandler::filterXSS($post['fax'])
-            : $Kunde->cFax;
-        $Kunde->cFirma        = isset($post['firma'])
-            ? StringHandler::filterXSS($post['firma'])
-            : $Kunde->cFirma;
-        $Kunde->cZusatz       = isset($post['firmazusatz'])
-            ? StringHandler::filterXSS($post['firmazusatz'])
-            : $Kunde->cZusatz;
-        $Kunde->cBundesland   = isset($post['bundesland'])
-            ? StringHandler::filterXSS($post['bundesland'])
-            : $Kunde->cBundesland;
-        $Kunde->cTitel        = isset($post['titel'])
-            ? StringHandler::filterXSS($post['titel'])
-            : $Kunde->cTitel;
-        $Kunde->cAdressZusatz = isset($post['adresszusatz'])
-            ? StringHandler::filterXSS($post['adresszusatz'])
-            : $Kunde->cAdressZusatz;
-        $Kunde->cMobil        = isset($post['mobil'])
-            ? StringHandler::filterXSS($post['mobil'])
-            : $Kunde->cMobil;
-        $Kunde->cWWW          = isset($post['www'])
-            ? StringHandler::filterXSS($post['www'])
-            : $Kunde->cWWW;
-        $Kunde->cUSTID        = isset($post['ustid'])
-            ? StringHandler::filterXSS($post['ustid'])
-            : $Kunde->cUSTID;
-        $Kunde->dGeburtstag   = isset($post['geburtstag'])
-            ? StringHandler::filterXSS($post['geburtstag'])
-            : $Kunde->dGeburtstag;
-        $Kunde->cHerkunft     = isset($post['kundenherkunft'])
-            ? StringHandler::filterXSS($post['kundenherkunft'])
-            : $Kunde->cHerkunft;
-        if ($kundenaccount != 0) {
-            $Kunde->cPasswort = isset($post['pass'])
-                ? StringHandler::filterXSS($post['pass'])
-                : $Kunde->cPasswort;
-        }
-    }
-    if (preg_match('/^\d{2}\.\d{2}\.(\d{4})$/', $Kunde->dGeburtstag)) {
-        $Kunde->dGeburtstag = DateTime::createFromFormat('d.m.Y', $Kunde->dGeburtstag)->format('Y-m-d');
-    }
-    $Kunde->angezeigtesLand = ISO2land($Kunde->cLand);
-    if (!empty($Kunde->cBundesland)) {
-        $oISO = Staat::getRegionByIso($Kunde->cBundesland, $Kunde->cLand);
-        if (is_object($oISO)) {
-            $Kunde->cBundesland = $oISO->cName;
+    $kKunde    = isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 ? (int)$_SESSION['Kunde']->kKunde : 0;
+    $customer  = new Kunde($kKunde);
+
+    foreach ($mapping as $external => $internal) {
+        if (isset($post[$external])) {
+            $val                   = StringHandler::filterXSS($post[$external]);
+            if ($htmlentities) {
+                $val = StringHandler::htmlentities($val);
+            }
+            $customer->$internal   = $val;
         }
     }
 
-    return $Kunde;
+    if (preg_match('/^\d{2}\.\d{2}\.(\d{4})$/', $customer->dGeburtstag)) {
+        $customer->dGeburtstag = DateTime::createFromFormat('d.m.Y', $customer->dGeburtstag)->format('Y-m-d');
+    }
+    $customer->angezeigtesLand = ISO2land($customer->cLand);
+    if (!empty($customer->cBundesland)) {
+        $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
+        if (is_object($oISO)) {
+            $customer->cBundesland = $oISO->cName;
+        }
+    }
+
+    return $customer;
 }
 
 /**
@@ -3025,7 +2950,8 @@ function kuponMoeglich()
     $Kategorie_qry  = '';
     $Kunden_qry     = '';
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    if (isset($_SESSION['Zahlungsart']->cModulId) && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
+    if (isset($_SESSION['Zahlungsart']->cModulId) && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0
+        || isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen']) {
         return 0;
     }
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {

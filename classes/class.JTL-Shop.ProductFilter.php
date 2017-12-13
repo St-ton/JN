@@ -676,10 +676,10 @@ class ProductFilter
         } elseif (strlen($params['cSuche']) > 0) {
             $params['cSuche'] = StringHandler::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
-            $this->searchQuery->cSuche     = $this->search->cSuche;
+            $this->searchQuery->setName($params['cSuche']);
             $oSuchanfrage                  = Shop::DB()->select(
                 'tsuchanfrage',
-                'cSuche', $this->search->cSuche,
+                'cSuche', $params['cSuche'],
                 'kSprache', $this->getLanguageID(),
                 'nAktiv', 1,
                 false,
@@ -691,8 +691,7 @@ class ProductFilter
                 : $params['kSuchanfrage'];
             $this->search->kSuchCache      = $kSuchCache;
             $this->searchQuery->kSuchCache = $kSuchCache;
-            $this->searchQuery->init($kSuchAnfrage);
-            $this->searchQuery->cSuche = $params['cSuche'];
+            $this->searchQuery->init($kSuchAnfrage)->setName($params['cSuche']);
             $this->EchteSuche          = new stdClass();
             $this->EchteSuche->cSuche  = $params['cSuche'];
             $this->baseState           = $this->searchQuery;
@@ -1492,19 +1491,22 @@ class ProductFilter
         $limitPerPage = $limit > 0 ? $limit : $this->metaData->getProductsPerPageLimit();
         $nLimitN      = $limitPerPage * ($this->nSeite - 1);
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
+        $error        = false;
         if ($this->searchResults === null) {
             $this->searchResults                       = new stdClass();
             $this->searchResults->Artikel              = new stdClass();
             $this->searchResults->Artikel->elemente    = new Collection();
             $this->searchResults->Artikel->productKeys = $this->getProductKeys();
             $this->searchResults->GesamtanzahlArtikel  = count($this->searchResults->Artikel->productKeys);
-
             if (!empty($this->search->getName())) {
-                $this->search->saveQuery($this->searchResults->GesamtanzahlArtikel);
-                $this->search->setQueryID($this->search->cSuche, $this->getLanguageID());
-                $this->searchQuery->setValue($this->search->kSuchanfrage)->setSeo($this->languages);
+                if ($this->searchQuery->getError() === null) {
+                    $this->search->saveQuery($this->searchResults->GesamtanzahlArtikel);
+                    $this->search->setQueryID($this->search->getName(), $this->getLanguageID());
+                    $this->searchQuery->setValue($this->search->getValue())->setSeo($this->languages);
+                } else {
+                    $error = $this->searchQuery->getError();
+                }
             }
-
             $this->searchResults->ArtikelVon                  = $nLimitN + 1;
             $this->searchResults->ArtikelBis                  = min(
                 $nLimitN + $limitPerPage,
@@ -1529,6 +1531,14 @@ class ProductFilter
             $this->searchResults = $this->setFilterOptions($this->searchResults, $currentCategory);
             // Header bauen
             $this->searchResults->SuchausdruckWrite = $this->metaData->getHeader();
+        }
+        if ($error !== false) {
+            $this->searchResults->GesamtanzahlArtikel = 0;
+            $this->searchResults->SucheErfolglos      = 1;
+            $this->searchResults->Fehler              = $error;
+            $this->searchResults->cSuche              = strip_tags(trim($this->params['cSuche']));
+
+            return $this->searchResults;
         }
         if ($fillProducts === true) {
             // @todo: slice list of IDs when not filling?

@@ -37,7 +37,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         }
     } catch (Exception $e) {
         // Fehler beim Index löschen ignorieren
-        null;
     }
 
     if ($_GET['create'] === 'Y') {

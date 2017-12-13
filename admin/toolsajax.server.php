@@ -192,16 +192,6 @@ function getRemoteDataAjax($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null,
  */
 function getRemoteDataApiAjax($cURL, $cDataName, $cTpl, $cWrapperID)
 {
-    global $oAccount;
-    $oResponse = new xajaxResponse();
-    if ($oAccount->permission('DASHBOARD_VIEW')) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'core/class.core.jtlAPI.php';
-
-        $cData = jtlAPI::checkVersion(Shop::getVersion());
-        Shop::Smarty()->assign($cDataName, $cData);
-        $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
-        $oResponse->assign($cWrapperID, 'innerHTML', $cWrapper);
-    }
 }
 
 /**

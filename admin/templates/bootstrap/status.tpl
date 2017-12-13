@@ -126,7 +126,6 @@ $(function() {
                     <h4 class="panel-title">Subscription</h4>
                 </div>
                 <div class="panel-body">
-                    {$sub = $status->getSubscription()}
                     {if $sub === null}
                         <div class="alert alert-danger alert-sm">
                             <p><i class="fa fa-exclamation-circle"></i> Vor&uuml;bergehend keine Informationen verf&uuml;gbar.</p>

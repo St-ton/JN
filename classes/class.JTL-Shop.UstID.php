@@ -99,7 +99,7 @@ class UstID
                     // Uhrzeit pruefen da die API Ruhezeit hat -.-
                     // Taeglich von 5 Uhr - 23 Uhr
                     if ((int)date('H') >= 5 && (int)date('H') < 23) {
-                        $cURL = 'http://evatr.bff-online.de/evatrRPC?UstId_1=' . $this->urlencode_special($this->cUstId_1) . 
+                        $cURL = 'https://evatr.bff-online.de/evatrRPC?UstId_1=' . $this->urlencode_special($this->cUstId_1) .
                             '&UstId_2=' . $this->urlencode_special($this->cUstId_2) . 
                             '&Firmenname=' . $this->urlencode_special($this->cFirmenname) . 
                             '&Ort=' . $this->urlencode_special($this->cOrt) . 

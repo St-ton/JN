@@ -33,6 +33,4 @@
             </div>
         </section>
     {/if}
-{elseif isset($oBox->kBox)}
-    <section class="hidden box-compare" id="sidebox{$oBox->kBox}"></section>
 {/if}

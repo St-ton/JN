@@ -1834,7 +1834,7 @@ function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
             $oPluginTMP = Shop::DB()->select('tplugin', 'cVerzeichnis', $cVerzeichnis);
         }
         if (!isset($oPluginTMP->kPlugin) || !$oPluginTMP->kPlugin || $oPluginOld->kPlugin > 0) {
-            $cPfad = PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis;
+            $cPfad = realpath(PFAD_ROOT . PFAD_PLUGIN . basename($cVerzeichnis));
             if (file_exists($cPfad . '/' . PLUGIN_INFO_FILE)) {
                 $xml     = file_get_contents($cPfad . '/' . PLUGIN_INFO_FILE);
                 $XML_arr = XML_unserialize($xml, 'UTF-8');

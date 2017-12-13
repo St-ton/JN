@@ -65,7 +65,7 @@ if (!empty($pluginID)) {
         $sp->cPLZ                  = '10179';
         $sp->cOrt                  = 'Berlin';
         $sp->cStrasse              = 'Engeldamm 20';
-        $sp->cWWW                  = 'http://www.solution360.de';
+        $sp->cWWW                  = 'https://www.solution360.de';
         $sp->cMail                 = 'mail@solution360.de';
         $sp->cAdresszusatz         = '';
         $sp->cLandName             = 'Deutschland';
@@ -83,7 +83,7 @@ if (!empty($pluginID)) {
 
         $pp->setAuthor('Trusted Shops GmbH');
 
-        $pp->addButton('Jetzt registrieren', 'http://www.trustbadge.com/de/bewertungen?utm_source=jtl&utm_medium=software-app&utm_content=marketing-page&utm_campaign=jtl-app', 'btn btn-primary', 'sign-in')
+        $pp->addButton('Jetzt registrieren', 'https://business.trustedshops.de/produkte/bewertungen/?utm_source=jtl&utm_medium=software-app&utm_content=marketing-page&utm_campaign=jtl-app', 'btn btn-primary', 'sign-in')
            ->addButton('Dokumentation', 'http://www.trustedshops.de/shopbetreiber/integration/shopsoftware-integration/jtl/?shop_id=&variant=&yOffset=', 'btn btn-default', null, true);
 
         $pp->addAdvantage('Sammeln Sie Shop- und Produktbewertungen automatisch von echten Kunden')
@@ -126,7 +126,7 @@ if (!empty($pluginID)) {
         $sp->cPLZ                  = '50823';
         $sp->cOrt                  = 'Köln';
         $sp->cStrasse              = 'Subbelrather Straße 15c';
-        $sp->cWWW                  = 'http://www.trustbadge.com/de/';
+        $sp->cWWW                  = 'https://business.trustedshops.de/produkte/bewertungen/';
         $sp->cMail                 = 'welcome@trustbadge.com';
         $sp->cAdresszusatz         = '';
         $sp->cLandName             = 'Deutschland';

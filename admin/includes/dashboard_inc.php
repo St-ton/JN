@@ -173,6 +173,29 @@ function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $
     return $response;
 }
 
+function getShopInfoIO($cTpl, $cWrapperID)
+{
+    $response = new IOResponse();
+
+    $oSubscription = Shop()->RS()->getSubscription();
+    $oLatestVersion = Shop()->RS()->getLatestVersion();
+    $bUpdateAvailable = Shop()->RS()->hasNewerVersion();
+
+    $strLatestVersion = $oLatestVersion
+        ? sprintf('%.2f', $oLatestVersion->version / 100)
+        : null;
+
+    Shop::Smarty()->assign('oSubscription', $oSubscription);
+    Shop::Smarty()->assign('oVersion', $oLatestVersion);
+    Shop::Smarty()->assign('strLatestVersion', $strLatestVersion);
+    Shop::Smarty()->assign('bUpdateAvailable', $bUpdateAvailable);
+
+    $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
+    $response->assign($cWrapperID, 'innerHTML', $cWrapper);
+
+    return $response;
+}
+
 function getAvailableWidgetsIO()
 {
     $response             = new IOResponse();

@@ -1445,6 +1445,10 @@ final class Shop
      */
     public static function getProductFilter()
     {
+        if (self::$productFilter === null) {
+            self::$productFilter = self::buildProductFilter([]);
+        }
+
         return self::$productFilter;
     }
 

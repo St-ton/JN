@@ -62,18 +62,7 @@ if ($link->nLinkart === LINKTYP_STARTSEITE) {
     $smarty->assign('StartseiteBoxen', gibStartBoxen())
            ->assign('Navigation', $Navigation)
            ->assign('oNews_arr', ($Einstellungen['news']['news_benutzen'] === 'Y') ? gibNews($Einstellungen) : []);
-    // Auswahlassistent
-    if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
-        starteAuswahlAssistent(
-            AUSWAHLASSISTENT_ORT_STARTSEITE,
-            1,
-            Shop::getLanguage(),
-            $smarty,
-            $Einstellungen['auswahlassistent']
-        );
-    } elseif (class_exists('AuswahlAssistent')) {
-        AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
-    }
+    AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
     if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $smarty->assign('oNews_arr', gibNews($Einstellungen));
     }

@@ -3016,7 +3016,7 @@ function kuponMoeglich()
     $Kunden_qry     = '';
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     if (isset($_SESSION['Zahlungsart']->cModulId) && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0
-        || isset($_SESSION["NeukundenKuponAngenommen"]) && $_SESSION["NeukundenKuponAngenommen"]) {
+        || isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen']) {
         return 0;
     }
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {

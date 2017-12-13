@@ -300,9 +300,9 @@ Shop::Smarty()->assign('CWunschliste', $CWunschliste)
     ->assign('oWunschliste_arr', $oWunschliste_arr)
     ->assign('wlsearch', $cSuche)
     ->assign('hasItems', !empty($CWunschliste->CWunschlistePos_arr))
-    ->assign('isCurrenctCustomer', isset($CWunschliste->kKunde) &&
-        isset($_SESSION['Kunde']->kKunde) &&
-        (int)$CWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde)
+    ->assign('isCurrenctCustomer', isset($CWunschliste->kKunde)
+        && isset($_SESSION['Kunde']->kKunde)
+        && (int)$CWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde)
     ->assign('cURLID', $cURLID)
     ->assign('step', $step)
     ->assign('cFehler', $cFehler)
@@ -314,8 +314,8 @@ require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 if (isset($CWunschliste->kWunschliste) && $CWunschliste->kWunschliste > 0) {
     $oKampagne = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
 
-    if (isset($oKampagne->kKampagne, $oKampagne->cWert) &&
-        strtolower($oKampagne->cWert) === strtolower(verifyGPDataString($oKampagne->cParameter))
+    if (isset($oKampagne->kKampagne, $oKampagne->cWert)
+        && strtolower($oKampagne->cWert) === strtolower(verifyGPDataString($oKampagne->cParameter))
     ) {
         $oKampagnenVorgang               = new stdClass();
         $oKampagnenVorgang->kKampagne    = $oKampagne->kKampagne;

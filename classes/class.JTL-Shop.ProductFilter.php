@@ -659,6 +659,7 @@ class ProductFilter
         if ($params['nArtikelProSeite'] > 0) {
             $this->productLimit = (int)$params['nArtikelProSeite'];
         }
+        // @todo: how to handle strlen($params['cSuche']) === 0?
         if ($params['kSuchanfrage'] > 0) {
             $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {

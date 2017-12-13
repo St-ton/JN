@@ -234,6 +234,13 @@ class Jtllog
         return $oJtllog_arr;
     }
 
+    /**
+     * Get Logs from the database filtered by an arbitrary SQL expression
+     *
+     * @param string $cWhereSQL
+     * @param string $cLimitSQL
+     * @return array
+     */
     public static function getLogWhere($cWhereSQL = '', $cLimitSQL = '')
     {
         return Shop::DB()->query(

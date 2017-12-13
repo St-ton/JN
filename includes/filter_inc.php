@@ -527,7 +527,7 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
         }
         unset($oZusatzFilter);
     }
-    $tagArray = [CACHING_GROUP_CATEGORY];
+    $tagArray = [CACHING_GROUP_CATEGORY, CACHING_GROUP_FILTER];
     if (isset($NaviFilter->Kategorie->kKategorie)) {
         $tagArray[] = CACHING_GROUP_CATEGORY . '_' . $NaviFilter->Kategorie->kKategorie;
     }
@@ -958,7 +958,7 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
         }
     }
     //@todo: bewertungen have to flush the cache
-    $tagArray = [CACHING_GROUP_CATEGORY];
+    $tagArray = [CACHING_GROUP_CATEGORY, CACHING_GROUP_FILTER];
     if (isset($NaviFilter->Kategorie->kKategorie)) {
         $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int)$NaviFilter->Kategorie->kKategorie;
     }
@@ -1083,7 +1083,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
         );
         if (isset($oPreisspannenFilterMaxMin->fMax) && isset($oPreisspannenFilterMaxMin->fMin) && $oPreisspannenFilterMaxMin->fMax == $oPreisspannenFilterMaxMin->fMin) {
             $res = [];
-            Shop::Cache()->set($cacheID, $res, [CACHING_GROUP_CATEGORY]);
+            Shop::Cache()->set($cacheID, $res, [CACHING_GROUP_CATEGORY, CACHING_GROUP_FILTER]);
 
             return $res;
         }
@@ -1092,7 +1092,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
             $oPreis = berechneMaxMinStep($oPreisspannenFilterMaxMin->fMax * $_SESSION['Waehrung']->fFaktor, $oPreisspannenFilterMaxMin->fMin * $_SESSION['Waehrung']->fFaktor);
             if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
                 $res = [];
-                Shop::Cache()->set($cacheID, $res, [CACHING_GROUP_CATEGORY]);
+                Shop::Cache()->set($cacheID, $res, [CACHING_GROUP_CATEGORY, CACHING_GROUP_FILTER]);
 
                 return $res;
             }
@@ -1197,7 +1197,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
             );
             if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
                 $res = [];
-                Shop::Cache()->set($cacheID, $res, [CACHING_GROUP_CATEGORY]);
+                Shop::Cache()->set($cacheID, $res, [CACHING_GROUP_CATEGORY, CACHING_GROUP_FILTER]);
 
                 return $res;
             }
@@ -1286,7 +1286,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
         }
         $oPreisspanne_arr = $oPreisspanneTMP_arr;
     }
-    $tagArray = [CACHING_GROUP_CATEGORY];
+    $tagArray = [CACHING_GROUP_CATEGORY, CACHING_GROUP_FILTER];
     if (isset($NaviFilter->Kategorie->kKategorie)) {
         $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int)$NaviFilter->Kategorie->kKategorie;
     }
@@ -1391,7 +1391,7 @@ function gibTagFilterOptionen($FilterSQL, $NaviFilter)
             }
         }
     }
-    $tagArray = [CACHING_GROUP_CATEGORY];
+    $tagArray = [CACHING_GROUP_CATEGORY, CACHING_GROUP_FILTER];
     //@todo: tags should flush the cache
     if (isset($NaviFilter->Kategorie->kKategorie)) {
         $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int)$NaviFilter->Kategorie->kKategorie;
@@ -1702,7 +1702,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
             }
         }
     }
-    $tagArray = [CACHING_GROUP_CATEGORY, 'jtl_mmf'];
+    $tagArray = [CACHING_GROUP_CATEGORY, 'jtl_mmf', CACHING_GROUP_FILTER];
     //the cache depends on article attributes - so it has to be invalidated on every product update...
     if (isset($NaviFilter->Kategorie->kKategorie)) {
         $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int)$NaviFilter->Kategorie->kKategorie;
@@ -1841,7 +1841,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
         }
     }
 
-    $tagArray = [CACHING_GROUP_CATEGORY];
+    $tagArray = [CACHING_GROUP_CATEGORY, CACHING_GROUP_FILTER];
     if (isset($NaviFilter->Kategorie->kKategorie)) {
         $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int)$NaviFilter->Kategorie->kKategorie;
     }
@@ -4382,7 +4382,7 @@ function bauFilterSQL($NaviFilter)
             ]
         );
 
-        Shop::Cache()->set($cacheID, $FilterSQL, [CACHING_GROUP_CATEGORY]);
+        Shop::Cache()->set($cacheID, $FilterSQL, [CACHING_GROUP_CATEGORY, CACHING_GROUP_FILTER]);
     }
 
     return $FilterSQL;

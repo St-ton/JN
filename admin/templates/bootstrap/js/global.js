@@ -868,3 +868,8 @@ function enableTypeahead(selector, funcName, display, suggestion, onSelect)
         .bind('typeahead:select', onSelect)
     ;
 }
+
+function selectAllItems(elm, enable)
+{
+    $(elm).closest('form').find('input[type=checkbox]').prop('checked', enable);
+}

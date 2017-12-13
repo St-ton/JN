@@ -235,6 +235,25 @@ class Jtllog
     }
 
     /**
+     * Get Logs from the database filtered by an arbitrary SQL expression
+     *
+     * @param string $cWhereSQL
+     * @param string $cLimitSQL
+     * @return array
+     */
+    public static function getLogWhere($cWhereSQL = '', $cLimitSQL = '')
+    {
+        return Shop::DB()->query(
+            "SELECT *
+                FROM tjtllog" .
+                ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .
+                " ORDER BY dErstellt DESC " .
+                ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
+            2
+        );
+    }
+
+    /**
      * Get Logcount from the database
      *
      * @access public
@@ -400,7 +419,7 @@ class Jtllog
 
         if (is_array($nFlag_arr) && count($nFlag_arr) > 0) {
             foreach ($nFlag_arr as $nFlag) {
-                $nVal |= $nFlag;
+                $nVal |= (int)$nFlag;
             }
         }
 

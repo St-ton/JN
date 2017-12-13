@@ -1554,8 +1554,12 @@ class Warenkorb
             return null;
         }
 
-        if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
-            $countryCode = $_SESSION['Kunde']->cLand;
+        $customerGroupSQL = '';
+        $kKundengruppe    = (isset($_SESSION['Kunde']->kKundengruppe)) ? $_SESSION['Kunde']->kKundengruppe : 0;
+
+        if ($kKundengruppe > 0) {
+            $countryCode      = $_SESSION['Kunde']->cLand;
+            $customerGroupSQL = " OR FIND_IN_SET('{$kKundengruppe}', REPLACE(va.cKundengruppen, ';', ',')) > 0";
         } else {
             $countryCode = $_SESSION['cLieferlandISO'];
         }
@@ -1584,8 +1588,7 @@ class Warenkorb
                 WHERE va.cLaender LIKE '%{$countryCode}%'
                 AND (va.cVersandklassen = '-1'
                     OR va.cVersandklassen IN (" . implode(',', $shippingClasses) . "))
-                AND (va.cKundengruppen = '-1'
-                    OR FIND_IN_SET('{$_SESSION['Kundengruppe']->kKundengruppe}', REPLACE(va.cKundengruppen, ';', ',')) > 0)
+                AND (va.cKundengruppen = '-1' {$customerGroupSQL})
                 AND va.kVersandart NOT IN (
                     SELECT vaza.kVersandart
                         FROM tversandartzahlungsart vaza
@@ -1619,14 +1622,10 @@ class Warenkorb
                 );
                 $oFavourableShipping->cPriceLocalized[1] = gibPreisStringLocalized($oFavourableShipping->fPreis);
             }
-
-            $this->oFavourableShipping = $oFavourableShipping;
-
-            return $oFavourableShipping;
-        } else {
-            $this->oFavourableShipping = null;
-
-            return null;
         }
+
+        $this->oFavourableShipping = isset($oFavourableShipping) ? $oFavourableShipping : null;
+
+        return isset($oFavourableShipping) ? $oFavourableShipping : null;
     }
 }

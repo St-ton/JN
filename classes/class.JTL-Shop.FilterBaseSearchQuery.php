@@ -15,18 +15,26 @@ class FilterBaseSearchQuery extends AbstractFilter
      * @var array
      */
     private static $mapping = [
-        'kSuchanfrage' => 'ValueCompat'
+        'kSuchanfrage' => 'ID',
+        'cSuche'       => 'Name',
+        'Fehler'       => 'Error'
     ];
 
     /**
-     * @var string
+     * @former kSuchanfrage
+     * @var int
      */
-    public $cSuche;
+    private $id = 0;
 
     /**
      * @var int
      */
     public $kSuchCache = 0;
+
+    /**
+     * @var string
+     */
+    public $error;
 
     /**
      * FilterBaseSearchQuery constructor.
@@ -53,15 +61,55 @@ class FilterBaseSearchQuery extends AbstractFilter
     }
 
     /**
+     * @param string $name
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->error = null;
+        $minChars = ((int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen'] > 0)
+            ? (int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen']
+            : 3;
+        if (strlen($name) > 0 || (isset($_GET['qs']) && strlen($_GET['qs']) === 0)) {
+            preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $minChars . ",}/",
+                str_replace(' ', '', $name), $cTreffer_arr);
+            if (count($cTreffer_arr) === 0) {
+                $this->error = Shop::Lang()->get('expressionHasTo') . ' ' .
+                    $minChars . ' ' .
+                    Shop::Lang()->get('lettersDigits');
+            }
+        }
+
+        return parent::setName($name);
+    }
+
+    /**
      * @return int
      */
     public function getValue()
     {
-        if ($this->productFilter->getRealSearch() !== null && !$this->productFilter->hasSearchQuery()) {
-            return urlencode($this->productFilter->getRealSearch()->cSuche);
-        }
+        return ($this->productFilter->getRealSearch() !== null && !$this->productFilter->hasSearchQuery())
+            ? urlencode($this->productFilter->getRealSearch()->cSuche)
+            : $this->value;
+    }
 
-        return $this->value;
+    /**
+     * @param int $id
+     * @return $this
+     */
+    public function setID($id)
+    {
+        $this->id = (int)$id;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getID()
+    {
+        return $this->id;
     }
 
     /**
@@ -74,6 +122,24 @@ class FilterBaseSearchQuery extends AbstractFilter
         }
 
         return parent::getUrlParam();
+    }
+
+    /**
+     * @param string $errorMsg
+     * @return $this
+     */
+    public function setError($errorMsg) {
+        $this->error = $errorMsg;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getError()
+    {
+        return $this->error;
     }
 
     /**
@@ -104,14 +170,6 @@ class FilterBaseSearchQuery extends AbstractFilter
         }
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->cSuche;
     }
 
     /**
@@ -336,8 +394,8 @@ class FilterBaseSearchQuery extends AbstractFilter
     {
         require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
         // Mapping beachten
-        $cSuche       = $this->getMapping($this->cSuche, $kSpracheExt);
-        $this->cSuche = $cSuche;
+        $cSuche       = $this->getMapping($this->getName(), $kSpracheExt);
+        $this->setName($cSuche);
         $kSprache     = $kSpracheExt > 0
             ? (int)$kSpracheExt
             : $this->getLanguageID();
@@ -375,7 +433,7 @@ class FilterBaseSearchQuery extends AbstractFilter
             : 3;
         if (strlen($cSuche) < $nMindestzeichen) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-            $this->Fehler = lang_suche_mindestanzahl($cSuche, $nMindestzeichen);
+            $this->error = lang_suche_mindestanzahl($cSuche, $nMindestzeichen);
 
             return 0;
         }

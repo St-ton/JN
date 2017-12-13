@@ -10,64 +10,40 @@ if (!defined('PFAD_ROOT')) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
-/** @global array $cParameter_arr */
 /** @global ProductFilter $NaviFilter*/
-$Einstellungen          = Shopsetting::getInstance()->getAll();
-$nArtikelProSeite_arr   = [5, 10, 25, 50, 100];
-$suchanfrage            = '';
-$doSearch               = true;
-$AktuelleKategorie      = new stdClass();
-$oSuchergebnisse        = new stdClass();
-$AufgeklappteKategorien = new stdClass();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
-$hasError               = false;
-$nMindestzeichen        = ((int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] > 0)
-    ? (int)$Einstellungen['artikeluebersicht']['suche_min_zeichen']
-    : 3;
-if (strlen($cParameter_arr['cSuche']) > 0 || (isset($_GET['qs']) && strlen($_GET['qs']) === 0)) {
-    preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $nMindestzeichen . ",}/",
-        str_replace(' ', '', $cParameter_arr['cSuche']), $cTreffer_arr);
-    $hasError = count($cTreffer_arr) === 0;
-}
-// setze Kat in Session
-if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
-    $_SESSION['LetzteKategorie'] = $cParameter_arr['kKategorie'];
-    $AktuelleSeite               = 'PRODUKTE';
-}
+$Einstellungen      = Shopsetting::getInstance()->getAll();
+$productsPerPage    = [5, 10, 25, 50, 100];
+$bestsellers        = [];
+$suchanfrage        = '';
+$doSearch           = true;
+$AktuelleKategorie  = new stdClass();
+$oSuchergebnisse    = new stdClass();
+$expandedCategories = new stdClass();
+$hasError           = false;
+$cParameter_arr     = Shop::getParameters();
 if ($NaviFilter->hasCategory()) {
-    $kKategorie        = $NaviFilter->getBaseState()->getValue();
-    $AktuelleKategorie = new Kategorie($kKategorie);
+    $AktuelleSeite               = 'PRODUKTE';
+    $kKategorie                  = $NaviFilter->getBaseState()->getValue();
+    $AktuelleKategorie           = new Kategorie($kKategorie);
+    $_SESSION['LetzteKategorie'] = $kKategorie;
     if ($AktuelleKategorie->kKategorie === null) {
         //temp. workaround: do not return 404 when non-localized existing category is loaded
         if (KategorieHelper::categoryExists($kKategorie)) {
             $AktuelleKategorie->kKategorie = $kKategorie;
         } else {
-            $is404                   = true;
+            Shop::$is404             = true;
             $cParameter_arr['is404'] = true;
 
             return;
         }
     }
-    $AufgeklappteKategorien = new KategorieListe();
-    $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+    $expandedCategories = new KategorieListe();
+    $expandedCategories->getOpenCategories($AktuelleKategorie);
 }
 // Usersortierung
 $NaviFilter->getMetaData()->setUserSort($AktuelleKategorie);
 // Erweiterte Darstellung Artikelübersicht
-$smarty->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']));
 $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
-if ($hasError) {
-    $cFehler                              = Shop::Lang()->get('expressionHasTo') .
-        ' ' . $nMindestzeichen . ' ' .
-        Shop::Lang()->get('lettersDigits');
-    $oSuchergebnisse->GesamtanzahlArtikel = 0;
-    $oSuchergebnisse->SucheErfolglos      = 1;
-    $oSuchergebnisse->Fehler              = $cFehler;
-    $oSuchergebnisse->cSuche              = strip_tags(trim($cParameter_arr['cSuche']));
-}
-// @todo: this is already called in ProductFilter::getProduct() - remove line?
-//$NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::getLanguage());
 // Umleiten falls SEO keine Artikel ergibt
 doMainwordRedirect($NaviFilter, $oSuchergebnisse->Artikel->elemente->count(), true);
 // Bestsellers
@@ -91,8 +67,9 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
     );
     $products = $oSuchergebnisse->Artikel->elemente->getItems();
     Bestseller::ignoreProducts($products, $bestsellers);
-    $smarty->assign('oBestseller_arr', $bestsellers);
 }
+$smarty->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']))
+       ->assign('oBestseller_arr', $bestsellers);
 if (verifyGPCDataInteger('zahl') > 0) {
     $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
     setFsession(0, 0, $_SESSION['ArtikelProSeite']);
@@ -121,17 +98,15 @@ if ($oSuchergebnisse->Artikel->elemente->count() === 0) {
         $KategorieInhalt                  = new stdClass();
         $KategorieInhalt->Unterkategorien = new KategorieListe();
         $KategorieInhalt->Unterkategorien->getAllCategoriesOnLevel($NaviFilter->getCategory()->getValue());
+
+        $tb = $Einstellungen['artikeluebersicht']['topbest_anzeigen'];
         // wenn keine eigenen Artikel in dieser Kat, Top Angebote / Bestseller
         // aus unterkats + unterunterkats rausholen und anzeigen?
-        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Top'
-            || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest'
-        ) {
+        if ($tb === 'Top' || $tb === 'TopBest') {
             $KategorieInhalt->TopArtikel = new ArtikelListe();
             $KategorieInhalt->TopArtikel->holeTopArtikel($KategorieInhalt->Unterkategorien);
         }
-        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Bestseller'
-            || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest'
-        ) {
+        if ($tb === 'Bestseller' || $tb === 'TopBest') {
             $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
             $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
                 $KategorieInhalt->Unterkategorien,
@@ -145,7 +120,7 @@ if ($oSuchergebnisse->Artikel->elemente->count() === 0) {
     }
 }
 // Navigation
-$oNavigationsinfo = $NaviFilter->getMetaData()->getNavigationInfo($AktuelleKategorie, $AufgeklappteKategorien);
+$oNavigationsinfo = $NaviFilter->getMetaData()->getNavigationInfo($AktuelleKategorie, $expandedCategories);
 // Canonical
 if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
     $cSeite        = isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite)
@@ -154,23 +129,14 @@ if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
         : '';
     $cCanonicalURL = $NaviFilter->getFilterURL()->getURL(null, true) . $cSeite;
 }
-// Auswahlassistent
-if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
-    starteAuswahlAssistent(
-        AUSWAHLASSISTENT_ORT_KATEGORIE,
-        $cParameter_arr['kKategorie'],
-        Shop::getLanguageID(),
-        $smarty,
-        $Einstellungen['auswahlassistent']
-    );
-} elseif (class_exists('AuswahlAssistent')) {
-    AuswahlAssistent::startIfRequired(
-        AUSWAHLASSISTENT_ORT_KATEGORIE,
-        $cParameter_arr['kKategorie'],
-        Shop::getLanguageID(),
-        $smarty
-    );
-}
+AuswahlAssistent::startIfRequired(
+    AUSWAHLASSISTENT_ORT_KATEGORIE,
+    $cParameter_arr['kKategorie'],
+    Shop::getLanguageID(),
+    $smarty,
+    [],
+    $NaviFilter
+);
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
        ->assign('code_benachrichtigung_verfuegbarkeit',
            generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
@@ -178,7 +144,7 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
            true,
            $oSuchergebnisse->Seitenzahlen,
            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
-       ->assign('ArtikelProSeite', $nArtikelProSeite_arr)
+       ->assign('ArtikelProSeite', $productsPerPage)
        ->assign('Navigation', $oNavigationsinfo->getBreadCrumb())
        ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())
        ->assign('Suchergebnisse', $oSuchergebnisse)
@@ -200,8 +166,7 @@ $smarty->assign(
         $oGlobaleMetaAngabenAssoc_arr,
         $AktuelleKategorie
     )
-);
-$smarty->assign(
+)->assign(
     'meta_description',
     $oNavigationsinfo->generateMetaDescription(
         $oSuchergebnisse->Artikel->elemente->getItems(),
@@ -209,8 +174,7 @@ $smarty->assign(
         $oGlobaleMetaAngabenAssoc_arr,
         $AktuelleKategorie
     )
-);
-$smarty->assign(
+)->assign(
     'meta_keywords',
     $oNavigationsinfo->generateMetaKeywords(
         $oSuchergebnisse->Artikel->elemente->getItems(),

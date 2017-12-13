@@ -2085,36 +2085,63 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         if (!isset($_SESSION['Kunde']->cUSTID) ||
             (isset($_SESSION['Kunde']->cUSTID) && $_SESSION['Kunde']->cUSTID !== $data['ustid'])
         ) {
-            $oUstID = new UstID(
-                $conf['kunden']['shop_ustid'],
-                StringHandler::filterXSS($data['ustid']),
-                StringHandler::filterXSS($data['firma']),
-                StringHandler::filterXSS($data['ort']),
-                StringHandler::filterXSS($data['plz']),
-                StringHandler::filterXSS($data['strasse']),
-                'Nein',
-                (isset($data['hausnummer']) ? StringHandler::filterXSS($data['hausnummer']) : '')
-            );
-
-            $bBZStPruefung = false;
-            //Admin-Einstellung BZST pruefen und checken ob Auslaendische USt-ID angegeben (deutsche USt-IDs koennen nicht geprueft werden)
-            $ustLaendercode = strtolower(substr($data['ustid'], 0, 2));
-            if ($ustLaendercode !== 'de' && $conf['kunden']['shop_ustid_bzstpruefung'] === 'Y') {
-                $bBZStPruefung = true;
+            $bAnalizeCheck = false; // flag to signalize further analization
+            if ('Y' === $conf['kunden']['shop_ustid_bzstpruefung']) { // backend-setting: "Einstellungen -> Formulareinstellungen ->"
+                $oVies         = new UstIDvies();
+                $vViesResult   = $oVies->doCheckID(trim($data['ustid']));
+                $bAnalizeCheck = true; // flag to signalize further analization
             }
-            $cUstPruefung = $oUstID->bearbeiteAnfrage($bBZStPruefung);
+            if (true === $bAnalizeCheck && true === $vViesResult['success']) {
+                // "all was fine"
+                $ret['ustid'] = 0;
+            } else {
 
-            if ($cUstPruefung === -1) { // UstID ist durch Stringprüfung ungültig
-                $oReturn          = $oUstID->pruefeUstIDString($data['ustid']);
-                $ret['ustid']     = 2;
-                $ret['ustid_err'] = $oReturn->cError;
-            } elseif ($cUstPruefung === 999) {
-                // BZSt ist nicht erreichbar aber Stringprüfung war erfolgreich
-                $ret['ustid'] = 4;
-            } elseif ($cUstPruefung !== 200 && $cUstPruefung !== 1) { // UstID ist durch BZSt ungültig
-                $ret['ustid'] = 5;
+                switch ($vViesResult['errortype']) {
+                    case 'vies' :
+                        // vies-error: the ID is invalid according to the VIES-system
+                        $ret['ustid'] = $vViesResult['errorcode']; // (old value 5)
+                        break;
+                    case 'parse' :
+                        // parse-error: the ID-string is misspelled in any way
+                        if (1 === $vViesResult['errorcode']) {
+                            $ret['ustid'] = 1; // parse-error: no id was given
+                        } elseif (1 < $vViesResult['errorcode']) {
+                            $ret['ustid'] = 2; // parse-error: with the position of error in given ID-string
+                            switch ($vViesResult['errorcode']) {
+                                case 120:
+                                    // build a string with error-code and error-information
+                                    $ret['ustid_err'] = $vViesResult['errorcode'].
+                                        ','.
+                                        substr($data['ustid'], 0, $vViesResult['errorinfo']).
+                                        '<span style="color:red;">'.
+                                        substr($data['ustid'], $vViesResult['errorinfo']).
+                                        '</span>';
+                                    break;
+                                case 130 :
+                                    $ret['ustid_err'] = $vViesResult['errorcode'].
+                                        ','.
+                                        $vViesResult['errorinfo'];
+                                    break;
+                                default:
+                                    $ret['ustid_err'] = $vViesResult['errorcode'];
+                                    break;
+                            }
+                        }
+                        break;
+                    case 'time' :
+                        // according to the backend-setting: "Einstellungen -> (Formular)einstellungen -> UstID-Nummer"-check active
+                        if ('Y' === $conf['kunden']['shop_ustid_force_remote_check']) {
+                            $ret['ustid'] = 4; // parsing ok, but the remote-service is in a "down-slot" and unreachable
+                            $ret['ustid_err'] = $vViesResult['errorcode'].
+                                ','.
+                                $vViesResult['errorinfo'];
+                        }
+                        break;
+                }
+
             }
         }
+
     }
     if ($conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y' &&
         checkeDatum(StringHandler::filterXSS($data['geburtstag'])) > 0

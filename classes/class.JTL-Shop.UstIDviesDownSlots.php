@@ -31,112 +31,112 @@ class UstIDviesDownSlots
         // ]
 
         // Unavailable almost daily around 06:00 AM for a few minutes (Oesterreich)
-          'AT' => [
+        'AT' => [
             ['', '05:59', '06:15']
-        ]
+        ],
 
         // Available 24/7 (Belgien)
-        , 'BE' => [ ]
+        'BE' => [ ],
 
         // Unknown (Bulgarien)
-        , 'BG' => [ ]
+        'BG' => [ ],
 
         // Unknown (Kroatien)
-        , 'HR' => [ ]
+        'HR' => [ ],
 
         // Available 24/7 (Zypern)
-        , 'CY' => [ ]
+        'CY' => [ ],
 
         // Unavailable everyday around 07:00 AM for about 20 minutes (Tschechische Republik)
-        , 'CZ' => [
+        'CZ' => [
             ['', '07:00', '07:20']
-        ]
+        ],
 
         // Available from 05:00 AM to 11:00 PM (Deutschland)
-        , 'DE' => [
+        'DE' => [
             ['', '23:00', '05:00']
-        ]
+        ],
 
         // Available 24/7 (Daenemark)
-        , 'DK' => [   ]
+        'DK' => [   ],
 
         // Available 24/7 (Estland)
-        , 'EE' => [   ]
+        'EE' => [   ],
 
         // Available 24/7 (Griechenland)
-        , 'EL' => [   ]
+        'EL' => [   ],
 
         // Unavailable daily around 11:00 PM for a few minutes (Spanien)
-        , 'ES' => [   ]
+        'ES' => [   ],
 
         // Unavailable every Sunday between 05:40 AM and 05:50 AM (Finnland)
-        , 'FI' => [
+        'FI' => [
             ['Sun', '05:40', '05:50']
-        ]
+        ],
 
         // Unavailable almost everyday between 01:30 AM and 01:40 AM (Frankreich)
-        , 'FR' => [
+        'FR' => [
             ['', '01:30', '01:40']
-        ]
+        ],
 
         // Unavailable every Saturday from 07:30 AM to 10:30 AM and almost daily from around 04:30 AM to 04:40 AM (Vereinigtes Königreich)
-        , 'GB' => [
-              ['Sat', '07:30', '10:30']
-            , [   '', '04:30', '04:40']
-        ]
+        'GB' => [
+            ['Sat', '07:30', '10:30'],
+            [   '', '04:30', '04:40']
+        ],
 
         // Available 24/7 (Ungarn)
-        , 'HU' => [   ]
+        'HU' => [   ],
 
         // Unavailable on Sunday nights for maximum 2 hours (Irland)
-        , 'IE' => [
+        'IE' => [
             ['Sun', '', '']
-        ]
+        ],
 
         // Unavailable every Monday to Saturday from 08:00 PM for 30 to 60 minutes (Italien)
-        , 'IT' => [
+        'IT' => [
             ['Sun', '08:00', '09:00']
-        ]
+        ],
 
         // Available 24/7 (Litauen)
-        , 'LT' => [   ]
+        'LT' => [   ],
 
         // Available 24/7 (Luxemburg)
-        , 'LU' => [   ]
+        'LU' => [   ],
 
         // Available 24/7 (Lettland)
-        , 'LV' => [   ]
+        'LV' => [   ],
 
         // Unavailable every Thursday from 07:00 AM to 07:30 AM (Malta)
-        , 'MT' => [
+        'MT' => [
             ['Thu', '07:00', '7:30']
-        ]
+        ],
 
         // Unavailable every weekend from Saturday 09:50 PM to Sunday 09:40 PM (Niederlande)
-        , 'NL' => [
-              ['Sat', '09:50', '00:00']
-            , ['Sun', '00:00', '09:40']
-        ]
+        'NL' => [
+            ['Sat', '09:50', '00:00'],
+            ['Sun', '00:00', '09:40']
+        ],
 
         // Available 24/7 (Polen)
-        , 'PL' => [   ]
+        'PL' => [   ],
 
         // Unavailable every Friday from around 23:30 for about 30 minutes or more (Portugal)
-        , 'PT' => [
+        'PT' => [
             ['Fri', '23:30', '00:00']
-        ]
+        ],
 
         // Unavailable almost every weekend from Saturday 09:50 PM to Sunday 09:50 PM (Rumänien)
-        , 'RO' => [
-              ['Sat', '09:50', '00:00']
-            , ['Sun', '00:00', '09:50']
-        ]
+        'RO' => [
+            ['Sat', '09:50', '00:00'],
+            ['Sun', '00:00', '09:50']
+        ],
 
         // Available 24/7 (Schweden)
-        , 'SE' => [   ]
+        'SE' => [   ],
 
         // Available 24/7 (Slowakei)
-        , 'SK' => [   ]
+        'SK' => [   ]
     ];
 
     /**
@@ -161,7 +161,7 @@ class UstIDviesDownSlots
 
 
     /**
-     * __construct an instance of this object
+     * __construct
      *
      * @param void
      * @return void
@@ -176,7 +176,7 @@ class UstIDviesDownSlots
      * VAT-check is currently not possible and with which time-slot he has to calculate.
      *
      * @param void
-     * @return string  the time, till which the office has closed
+     * @return string
      */
     public function getDownInfo()
     {
@@ -185,9 +185,10 @@ class UstIDviesDownSlots
 
     /**
      * return the availablity  of a country VAT-office
+     * ('true' = "service down", 'false' = "service available")
      *
-     * @param string(2)  country-code
-     * @return boolean  'true' = "service down", 'false' = "service available"
+     * @param string $szCountryCode
+     * @return boolean
      */
     public function isDown($szCountryCode)
     {

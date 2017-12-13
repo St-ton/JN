@@ -2100,19 +2100,17 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                             switch ($vViesResult['errorcode']) {
                                 case 120:
                                     // build a string with error-code and error-information
-                                    $ret['ustid_err'] = $vViesResult['errorcode']
-                                        .','
-                                        .substr($data['ustid'], 0, $vViesResult['errorinfo'])
-                                        .'<span style="color:red;">'
-                                        .substr($data['ustid'], $vViesResult['errorinfo'])
-                                        .'</span>'
-                                    ;
+                                    $ret['ustid_err'] = $vViesResult['errorcode'].
+                                        ','.
+                                        substr($data['ustid'], 0, $vViesResult['errorinfo']).
+                                        '<span style="color:red;">'.
+                                        substr($data['ustid'], $vViesResult['errorinfo']).
+                                        '</span>';
                                     break;
                                 case 130 :
-                                    $ret['ustid_err'] = $vViesResult['errorcode']
-                                        .','
-                                        .$vViesResult['errorinfo']
-                                    ;
+                                    $ret['ustid_err'] = $vViesResult['errorcode'].
+                                        ','.
+                                        $vViesResult['errorinfo'];
                                     break;
                                 default:
                                     $ret['ustid_err'] = $vViesResult['errorcode'];
@@ -2124,10 +2122,9 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                         // according to the backend-setting: "Einstellungen -> (Formular)einstellungen -> UstID-Nummer"-check active
                         if ('Y' === $conf['kunden']['shop_ustid_force_remote_check']) {
                             $ret['ustid'] = 4; // parsing ok, but the remote-service is in a "down-slot" and unreachable
-                            $ret['ustid_err'] = $vViesResult['errorcode']
-                                .','
-                                .$vViesResult['errorinfo']
-                            ;
+                            $ret['ustid_err'] = $vViesResult['errorcode'].
+                                ','.
+                                $vViesResult['errorinfo'];
                         }
                         break;
                 }

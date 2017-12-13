@@ -29,17 +29,17 @@ class Migration_20171110102354 extends Migration implements IMigration
     {
         // add config-setting to force remote UstID-check
         $this->setConfig(
-              'shop_ustid_force_remote_check'                     // setting name
-            , 'Y'                                                 // default value of setting
-            , CONF_KUNDEN                                         // section of setting (see: includes / defines_inc.php)
-            , 'Kundenregistrierung nur mit MIAS-Best&auml;tigung' // caption of setting in the backend
-            , 'selectbox'                                         // setting-type
-            , 430                                                 // order-position
-            , (object) [
-                  'cBeschreibung' => '"JA" stoppt die Kundenregistrierung in jedem Fall (auch wenn das Steueramt des jeweiligen Landes nicht erreichbar ist).'
-                , 'inputOptions'  => [
-                      'Y' => 'Ja'
-                    , 'N' => 'Nein'
+            'shop_ustid_force_remote_check',                     // setting name
+            'Y',                                                 // default value of setting
+            CONF_KUNDEN,                                         // section of setting (see: includes / defines_inc.php)
+            'Kundenregistrierung nur mit MIAS-Best&auml;tigung', // caption of setting in the backend
+            'selectbox',                                         // setting-type
+            430,                                                 // order-position
+            (object) [
+                'cBeschreibung' => '"JA" stoppt die Kundenregistrierung in jedem Fall (auch wenn das Steueramt des jeweiligen Landes nicht erreichbar ist).',
+                'inputOptions'  => [
+                    'Y' => 'Ja',
+                    'N' => 'Nein'
                 ]
             ]
         );
@@ -47,17 +47,17 @@ class Migration_20171110102354 extends Migration implements IMigration
         // modify config-setting "activate check"
         $this->removeConfig('shop_ustid_bzstpruefung');
         $this->setConfig(
-              'shop_ustid_bzstpruefung'                                // setting name
-            , 'N'                                                      // default value of setting
-            , CONF_KUNDEN                                              // section of setting (see: includes / defines_inc.php)
-            , 'UStID-Nummer Pr&uuml;fung durch MIAS-System aktivieren' // caption of setting in the backend
-            , 'selectbox'                                              // setting-type
-            , 420                                                      // order-position
-            , (object) [
-                  'cBeschreibung' => '&Uuml;berpr&uuml;fung der UstID-Nummer durch das MIAS-System der Europ&auml;ischen Kommission. Dazu ist die Angabe der eigenen USt-ID im Feld dar&uuml;ber n&ouml;tig.'
-                , 'inputOptions'  => [
-                      'Y' => 'Ja'
-                    , 'N' => 'Nein'
+            'shop_ustid_bzstpruefung',                                // setting name
+            'N',                                                      // default value of setting
+            CONF_KUNDEN,                                              // section of setting (see: includes / defines_inc.php)
+            'UStID-Nummer Pr&uuml;fung durch MIAS-System aktivieren', // caption of setting in the backend
+            'selectbox',                                              // setting-type
+            420,                                                      // order-position
+            (object) [
+                'cBeschreibung' => '&Uuml;berpr&uuml;fung der UstID-Nummer durch das MIAS-System der Europ&auml;ischen Kommission. Dazu ist die Angabe der eigenen USt-ID im Feld dar&uuml;ber n&ouml;tig.',
+                'inputOptions'  => [
+                    'Y' => 'Ja',
+                    'N' => 'Nein'
                 ]
             ]
         );
@@ -88,17 +88,17 @@ class Migration_20171110102354 extends Migration implements IMigration
         // modify config-setting "activate check"
         $this->removeConfig('shop_ustid_bzstpruefung');
         $this->setConfig(
-              'shop_ustid_bzstpruefung'                                               // setting name
-            , 'N'                                                                     // default value of setting
-            , CONF_KUNDEN                                                             // section of setting (see: includes / defines_inc.php)
-            , 'USt-ID Pr&uuml;fung des Bundeszentralamts f&uuml;r Steuern aktivieren' // caption of setting in the backend
-            , 'selectbox'                                                             // setting-type
-            , 430                                                                     // order-position
-            , (object) [
-                  'cBeschreibung' => 'Soll die USt-ID Nummer &uuml;berpr&uuml;ft werden? Dazu ist die Angabe der eigenen USt-ID im Feld dar&uuml;ber n&ouml;tig.'
-                , 'inputOptions'  => [
-                      'Y' => 'Ja'
-                    , 'N' => 'Nein'
+            'shop_ustid_bzstpruefung',                                               // setting name
+            'N',                                                                     // default value of setting
+            CONF_KUNDEN,                                                             // section of setting (see: includes / defines_inc.php)
+            'USt-ID Pr&uuml;fung des Bundeszentralamts f&uuml;r Steuern aktivieren', // caption of setting in the backend
+            'selectbox',                                                             // setting-type
+            430,                                                                     // order-position
+            (object) [
+                'cBeschreibung' => 'Soll die USt-ID Nummer &uuml;berpr&uuml;ft werden? Dazu ist die Angabe der eigenen USt-ID im Feld dar&uuml;ber n&ouml;tig.',
+                'inputOptions'  => [
+                    'Y' => 'Ja',
+                    'N' => 'Nein'
                 ]
             ]
         );

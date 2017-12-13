@@ -31,54 +31,54 @@ class UstIDviesVatParser
     private $vCountryPattern = [
 
         // AT-Oesterreich                ATU99999999          1 Block mit 9 Ziffern    (comment: 8 !?)
-          'AT' => ['ATU99999999']        // example: ATU48075808(ok)
+        'AT' => ['ATU99999999'],         // example: ATU48075808(ok)
 
         // BE-Belgien                    BE0999999999         1 Block mit 10 Ziffern
-        , 'BE' => ['BE0999999999']       // example: BE0428759497(ok)
+        'BE' => ['BE0999999999'],        // example: BE0428759497(ok)
 
         // BG-Bulgarien                  BG999999999 oder
         //                               BG9999999999         1 Block mit 9 Ziffern oder 1 Block mit 10 Ziffern
-        , 'BG' => [
-             'BG999999999'               // example: BG175074752(ok)
-            ,'BG9999999999'
-        ]
+        'BG' => [
+            'BG999999999',              // example: BG175074752(ok)
+            'BG9999999999'
+        ],
 
         // CY-Zypern                     CY99999999L          1 Block mit 9 Ziffern    (comment: 8 with 1 char!?)
-        , 'CY' => ['CY99999999_']        //example: CY10259033P(ok)
+        'CY' => ['CY99999999_'],         //example: CY10259033P(ok)
 
         // CZ-Tschechische Republik      CZ99999999 oder
         //                               CZ999999999 oder
         //                               CZ9999999999         1 Block mit 8, 9 oder 10 Ziffern
-        , 'CZ' => [
-              'CZ99999999'               // example: CZ25123891(ok)
-            , 'CZ999999999'
-            , 'CZ9999999999'             // example: CZ7103192745(ok)
-        ]
+        'CZ' => [
+            'CZ99999999',                // example: CZ25123891(ok)
+            'CZ999999999',
+            'CZ9999999999'               // example: CZ7103192745(ok)
+        ],
 
         // DE-Deutschland                DE999999999          1 Block mit 9 Ziffern
-        , 'DE' => ['DE999999999']        // example: DE122779245(ok)
+        'DE' => ['DE999999999'],         // example: DE122779245(ok)
 
         // DK-Dänemark                   DK99 99 99 99        4 Blöcke mit 2 Ziffern
         //, 'DK' => ['DK99 99 99 99']
         // modification in place of original documentation, because the VIES can not handle spaces
-        , 'DK' => ['DK99999999']         // example: DK13585628(ok)
+        'DK' => ['DK99999999'],          // example: DK13585628(ok)
 
         // EE-Estland                    EE999999999          1 Block mit 9 Ziffern
-        , 'EE' => ['EE999999999']        // example: EE100594102(ok)
+        'EE' => ['EE999999999'],         // example: EE100594102(ok)
 
         // EL-Griechenland               EL999999999          1 Block mit 9 Ziffern
-        , 'EL' => ['EL999999999']        // example: EL094259216(ok)
+        'EL' => ['EL999999999'],         // example: EL094259216(ok)
 
         // ES-Spanien                    ESX9999999X          1 Block mit 9 Ziffern    (comment: 8 with 1 char!?)
-        , 'ES' => ['ES_9999999_']        // example: ESX2482300W(ok), ESB58378431(ok)
+        'ES' => ['ES_9999999_'],         // example: ESX2482300W(ok), ESB58378431(ok)
 
         // FI-Finnland                   FI99999999           1 Block mit 8 Ziffern
-        , 'FI' => ['FI99999999']         // example: FI20774740(ok)
+        'FI' => ['FI99999999'],          // example: FI20774740(ok)
 
         // FR-Frankreich                 FRXX 999999999       1 Block mit 2 Ziffern und 1 Block mit 9 Ziffern
-        //, 'FR' => ['FRXX 999999999']
+        //'FR' => ['FRXX 999999999'],
         // modification in place of original documentation, because the VIES can not handle spaces
-        , 'FR' => ['FR__999999999']      // example: FR40303265045(ok), FRK7399859412(ok)
+        'FR' => ['FR__999999999'],       // example: FR40303265045(ok), FRK7399859412(ok)
 
         // GB-Vereinigtes Königreich     GB999 9999 99 oder
         //                               GB999 9999 99 999 oder
@@ -91,18 +91,18 @@ class UstIDviesVatParser
         //    , 'GBHA999'
         //]
         // modification in place of original documentation, because the VIES can not handle spaces
-        , 'GB' => [
-              'GB999999999'              // example: GB862906405(ok), 'GB 117 8490 96'(ok, spaces are removed before parsing)
-            , 'GB999999999999'
-            , 'GBGD999'
-            , 'GBHA999'
-        ]
+        'GB' => [
+            'GB999999999',               // example: GB862906405(ok), 'GB 117 8490 96'(ok, spaces are removed before parsing)
+            'GB999999999999',
+            'GBGD999',
+            'GBHA999'
+        ],
 
         // HR-Kroatien                   HR99999999999        1 Block mit 11 Ziffern
-        , 'HR' => ['HR99999999999']      // example: HR33392005961(ok)
+        'HR' => ['HR99999999999'],       // example: HR33392005961(ok)
 
         // HU-Ungarn                     HU99999999           1 Block mit 8 Ziffern
-        , 'HU' => ['HU99999999']
+        'HU' => ['HU99999999'],
 
         // IE-Irland                     IE9S99999L oder
         //                               IE9999999WI          1 Block mit 8 Ziffern oder 1 Block mit 9 Ziffern
@@ -111,58 +111,58 @@ class UstIDviesVatParser
         //    , 'IE9999999WI'
         //]
         // modification in place of original EU-documentation
-        , 'IE' => [
-              'IE9_99999_'               // example: IE6433435F(ok), IE8D79739I(ok)
-            , 'IE9_99999__'              // example: IE3333510LH(ok)
-        ]
+        'IE' => [
+            'IE9_99999_',                // example: IE6433435F(ok), IE8D79739I(ok)
+            'IE9_99999__'                // example: IE3333510LH(ok)
+        ],
 
         // IT-Italien                    IT99999999999        1 Block mit 11 Ziffern
-        , 'IT' => ['IT99999999999']      // example: IT00743110157(ok)
+        'IT' => ['IT99999999999'],      // example: IT00743110157(ok)
 
         // LT-Litauen                    LT999999999 oder
         //                               LT999999999999       1 Block mit 9 Ziffern oder 1 Block mit 12 Ziffern
-        , 'LT' => [
-              'LT999999999'              // example: LT119511515(ok)
-            , 'LT999999999999'           // example: LT100001919017(ok)
-        ]
+        'LT' => [
+            'LT999999999',               // example: LT119511515(ok)
+            'LT999999999999'             // example: LT100001919017(ok)
+        ],
 
         // LU-Luxemburg                  LU99999999           1 Block mit 8 Ziffern
-        , 'LU' => ['LU99999999']         // example: LU15027442(ok)
+        'LU' => ['LU99999999'],          // example: LU15027442(ok)
 
         // LV-Lettland                   LV99999999999        1 Block mit 11 Ziffern
-        , 'LV' => ['LV99999999999']      // example: LV40003737497(ok)
+        'LV' => ['LV99999999999'],       // example: LV40003737497(ok)
 
         // MT-Malta                      MT99999999           1 Block mit 8 Ziffern
-        , 'MT' => ['MT99999999']         // example: MT10047516(ok)
+        'MT' => ['MT99999999'],          // example: MT10047516(ok)
 
         // NL-Niederlande                NL999999999B99       1 Block mit 12 Ziffern
-        , 'NL' => ['NL999999999B99']     // example: NL004495445B01(ok)
+        'NL' => ['NL999999999B99'],      // example: NL004495445B01(ok)
 
         // PL-Polen                      PL9999999999         1 Block mit 10 Ziffern
-        , 'PL' => ['PL9999999999']       // example: PL8290001028(ok)
+        'PL' => ['PL9999999999'],        // example: PL8290001028(ok)
 
         // PT-Portugal                   PT999999999          1 Block mit 9 Ziffern
-        , 'PT' => ['PT999999999']        // example: PT501964843(ok)
+        'PT' => ['PT999999999'],         // example: PT501964843(ok)
 
         // RO-Rumänien                   RO999999999          1 Block mit mindestens 2 und höchstens 10 Ziffern
-        , 'RO' => [
-              'RO999999999'
-            , 'RO99999999'               // example: RO27079589(ok), RO33315358(ok)
-        ]
+        'RO' => [
+            'RO999999999',
+            'RO99999999'                 // example: RO27079589(ok), RO33315358(ok)
+        ],
 
         // SE-Schweden                   SE999999999999       1 Block mit 12 Ziffern
-        , 'SE' => ['SE999999999901']     // example: SE556857280301(ok), SE556789180801(ok)
+        'SE' => ['SE999999999901'],      // example: SE556857280301(ok), SE556789180801(ok)
 
         // SI-Slowenien                  SI99999999           1 Block mit 8 Ziffern
-        , 'SI' => ['SI99999999']         // example: SI50223054(ok)
+        'SI' => ['SI99999999'],          // example: SI50223054(ok)
 
         // SK-Slowakei                   SK9999999999         1 Block mit 10 Ziffern
-        , 'SK' => ['SK9999999999']       // example: SK7120000019(ok), SK2021254631(ok)
+        'SK' => ['SK9999999999']         // example: SK7120000019(ok), SK2021254631(ok)
     ];
 
 
     /**
-     * @var string zero-terminated
+     * @var string
      * given VAT-ID
      */
     private $szVATid = '';
@@ -180,7 +180,7 @@ class UstIDviesVatParser
     private $nErrorCode = 0;
 
     /**
-     * @var string zero-terminated
+     * @var string
      * additional error-information
      */
     private $szErrorInfo = '';
@@ -193,11 +193,12 @@ class UstIDviesVatParser
 
 
     /**
-     * parses the VAT-ID-string
+     * parses the VAT-ID-string.
+     * returns the position of a possigble check-interrupt or 0 if all was fine.
      *
-     * @param string  VAT-ID
-     * @param string  country-specific VAT-ID-pattern
-     * @return int  the position of a possigble check-interrupt or 0 if all was fine
+     * @param string $szVATid
+     * @param string $szPattern
+     * @return int
      */
     private function isIdPatternValid($szVATid, $szPattern)
     {
@@ -239,9 +240,10 @@ class UstIDviesVatParser
     /**
      * controlls the parsing of the VAT-ID
      * ("comparing against multiple patterns of one country")
+     * returns "true" = VAT-ID is correct, "false" = not correct.
      *
      * @param void
-     * @return boolean  "true" = VAT-ID is correct, "false" = not correct
+     * @return boolean
      */
     public function parseVatId()
     {
@@ -290,7 +292,7 @@ class UstIDviesVatParser
      * NOTE: should called after '->parseVatId()'
      *
      * @param void
-     * @return array  the pieces of the VAT-ID as described above
+     * @return array
      */
     public function getIdAsParams()
     {
@@ -302,7 +304,7 @@ class UstIDviesVatParser
      * returns a descriptive string of the last ocurred error
      *
      * @param void
-     * @return string  error-description
+     * @return string
      */
     public function getErrorCode()
     {
@@ -314,7 +316,7 @@ class UstIDviesVatParser
      * return additional informations of the occurred error
      *
      * @param void
-     * @return string  additional error-information
+     * @return string
      */
     public function getErrorInfo()
     {
@@ -325,7 +327,7 @@ class UstIDviesVatParser
      * returns the position, in the VAT-ID-string, at which the last error was ocurred
      *
      * @param void
-     * @return string  error-position in the VAT-ID-string
+     * @return string
      */
     public function getErrorPos()
     {

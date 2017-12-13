@@ -19,19 +19,19 @@
 class UstIDvies
 {
     /**
-     * string zero-terminated
+     * @var string
      * URL of the MIAS
      */
     private $szViesWSDL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
-     * object
+     * @var object
      * UstIDviesDownSlots-object
      */
     private $oDownTimes = null;
 
     /**
-     * string zero-terminated
+     * @var string
      * given VAT-number to check
      */
     private $szVATid;
@@ -42,21 +42,21 @@ class UstIDvies
      * by giving a boolean value back via SOAP.
      * So we keep this error-string only for a possible future usage - currently they are not used.
      *
-     * array
-     * answers of the MIAS-system  --TO-CHECK-- may it's not needed here this way
+     * @var array
+     * answers of the MIAS-system (may it's not needed here this way)
      */
     private $vMiasAnswerStrings = [
-           0 => 'MwSt-Nummer gültig.'
-        , 10 => 'MwSt-Nummer ungültig.' // (D.h. die eingegebene Nummer ist zumindest an dem angegebenen Tag ungültig)
-        , 20 => 'Bearbeitung derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.' // (D.h. es gibt ein Problem mit dem Netz oder mit der Web-Anwendung)
-        , 30 => 'Bearbeitung im Mitgliedstaat derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.' // (D.h. die Anwendung ist in dem Mitgliedstaat, der die von Ihnen eingegebene MwSt-Nummer erteilt hat, derzeit nicht möglich)
-        , 40 => 'Unvollständige oder fehlerhafte Dateneingabe' // (MwSt-Nummer + Mitgliedstaat)
-        , 50 => 'Zeitüberschreitung. Bitte wiederholen Sie Ihre Anfrage später.'
+        0  => 'MwSt-Nummer gültig.',
+        10 => 'MwSt-Nummer ungültig.', // (D.h. die eingegebene Nummer ist zumindest an dem angegebenen Tag ungültig)
+        20 => 'Bearbeitung derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.', // (D.h. es gibt ein Problem mit dem Netz oder mit der Web-Anwendung)
+        30 => 'Bearbeitung im Mitgliedstaat derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.', // (D.h. die Anwendung ist in dem Mitgliedstaat, der die von Ihnen eingegebene MwSt-Nummer erteilt hat, derzeit nicht möglich)
+        40 => 'Unvollständige oder fehlerhafte Dateneingabe', // (MwSt-Nummer + Mitgliedstaat)
+        50 => 'Zeitüberschreitung. Bitte wiederholen Sie Ihre Anfrage später.'
     ];
 
 
     /**
-     * __construct an instance of this object
+     * __construct
      */
     public function __construct()
     {
@@ -67,8 +67,8 @@ class UstIDvies
      * spaces can't handled by the VIES-system,
      * so we condense the ID-string here and let them out
      *
-     * @param string  with spaces
-     * @return string  condensed string witout spaces
+     * @param string $szString
+     * @return string
      */
     public function condenseSpaces($szString) {
         return str_replace(' ', '', $szString);
@@ -86,16 +86,16 @@ class UstIDvies
      *      , errorinfo : addition information to show it the user in the frontend
      * ]
      *
-     * @param string  the VAT-ID
-     * @return array  array containing information about the check-results
+     * @param string $szUstID
+     * @return array
      */
     public function doCheckID($szUstID = '')
     {
         if ('' === $szUstID) {
             return [
-                  'success'   => false
-                , 'errortype' => 'parse'
-                , 'errorcode' => 1 // error: no $szUstID was given
+                'success'   => false,
+                'errortype' => 'parse',
+                'errorcode' => 1 // error: no $szUstID was given
             ];
         }
 
@@ -105,10 +105,10 @@ class UstIDvies
             list($szCountryCode, $szVatNumber) = $oVatParser->getIdAsParams();
         } else {
             return [
-                  'success'   => false
-                , 'errortype' => 'parse'
-                , 'errorcode' => $oVatParser->getErrorCode() // --TODO-- return the error-position....
-                , 'errorinfo' => ('' !== ($szErrorInfo = $oVatParser->getErrorInfo()) ? $szErrorInfo : '')
+                'success'   => false,
+                'errortype' => 'parse',
+                'errorcode' => $oVatParser->getErrorCode(),
+                'errorinfo' => ('' !== ($szErrorInfo = $oVatParser->getErrorInfo()) ? $szErrorInfo : '')
             ];
         }
 
@@ -126,16 +126,16 @@ class UstIDvies
             if (null !== $oViesResult && true === $oViesResult->valid) {
                 Jtllog::writeLog('MwStID valid. ('.print_r($oViesResult, true).')', JTLLOG_LEVEL_NOTICE); // sometimes we get the address too
                 return [
-                      'success'   => true
-                    , 'errortype' => 'vies'
-                    , 'errorcode' => ''
+                    'success'   => true,
+                    'errortype' => 'vies',
+                    'errorcode' => ''
                 ];
             } else {
                 Jtllog::writeLog('MwStID invalid! ('.print_r($oViesResult, true).')', JTLLOG_LEVEL_NOTICE);
                 return [
-                      'success'   => false
-                    , 'errortype' => 'vies'
-                    , 'errorcode' => 5 // error: ID is invalid according to the VIES-system
+                    'success'   => false,
+                    'errortype' => 'vies',
+                    'errorcode' => 5 // error: ID is invalid according to the VIES-system
                 ];
             }
 
@@ -143,10 +143,10 @@ class UstIDvies
             // inform the user:"The VAT-office in this country has closed this time."
             Jtllog::writeLog('MIAS-Amt aktuell nicht erreichbar. (ID: '.$szUstID.')', JTLLOG_LEVEL_NOTICE);
             return [
-                  'success'   => false
-                , 'errortype' => 'time'
-                , 'errorcode' => 200
-                , 'errorinfo' => $this->oDownTimes->getDownInfo() // the time, till which the office has closed
+                'success'   => false,
+                'errortype' => 'time',
+                'errorcode' => 200,
+                'errorinfo' => $this->oDownTimes->getDownInfo() // the time, till which the office has closed
             ];
         }
     }

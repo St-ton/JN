@@ -84,7 +84,6 @@ if (empty($AktuellerArtikel->kArtikel)) {
         exit;
     }
     //404 otherwise
-    $cParameter_arr['is404'] = true;
     Shop::$is404             = true;
     Shop::$kLink             = 0;
     Shop::$kArtikel          = 0;

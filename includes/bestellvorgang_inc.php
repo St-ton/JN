@@ -2709,7 +2709,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         'kundenherkunft'    => 'cHerkunft',
     ];
 
-    if ($kundenaccount != 0) {
+    if ($kundenaccount !== 0) {
         $mapping['pass'] = 'cPasswort';
     }
 

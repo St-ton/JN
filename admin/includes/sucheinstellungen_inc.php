@@ -5,8 +5,8 @@
  */
 
 /**
- * @param $index
- * @param $create
+ * @param string $index
+ * @param string $create
  * @return array|IOError
  */
 function createSearchIndex($index, $create)
@@ -27,7 +27,6 @@ function createSearchIndex($index, $create)
         }
     } catch (Exception $e) {
         // Fehler beim Index löschen ignorieren
-        null;
     }
 
     if ($create === 'Y') {
@@ -62,12 +61,22 @@ function createSearchIndex($index, $create)
         }
 
         if ($res === 0) {
-            $cFehler = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
-            $param   = ['suche_fulltext' => 'N'];
-            saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $param);
+            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
+            $shopSettings = Shopsetting::getInstance();
+            $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
-            Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
-            Shopsetting::getInstance()->reset();
+            if ($settings['suche_fulltext'] === 'Y') {
+                $settings['suche_fulltext'] = 'N';
+                saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $settings);
+
+                Shop::Cache()->flushTags([
+                    CACHING_GROUP_OPTION,
+                    CACHING_GROUP_CORE,
+                    CACHING_GROUP_ARTICLE,
+                    CACHING_GROUP_CATEGORY
+                ]);
+                $shopSettings->reset();
+            }
         } else {
             $cHinweis = 'Der Volltextindex für ' . $index . ' wurde angelegt!';
         }
@@ -75,11 +84,5 @@ function createSearchIndex($index, $create)
         $cHinweis = 'Der Volltextindex für ' . $index . ' wurde gelöscht!';
     }
 
-    if ($cFehler !== '') {
-        return new IOError($cFehler);
-    } else {
-        return [
-            'hinweis' => $cHinweis
-        ];
-    }
+    return $cFehler !== '' ? new IOError($cFehler) : ['hinweis' => $cHinweis];
 }

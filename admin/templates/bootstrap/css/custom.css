@@ -2984,3 +2984,7 @@ h2 .btn-group {
 .top40 {
     margin-top: 40px;
 }
+
+.logtext {
+    max-height: 32em;
+}

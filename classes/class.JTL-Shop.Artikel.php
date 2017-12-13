@@ -997,11 +997,12 @@ class Artikel
      */
     public function gibKategorie()
     {
+        $oKategorieartikel = null;
         if ($this->kArtikel > 0) {
-            $kArtikel = (int)$this->kArtikel;
+            $id = (int)$this->kArtikel;
             // Ist der Artikel in Variationskombi Kind? Falls ja, hol den Vater und die Kategorie von ihm
             if ($this->kEigenschaftKombi > 0) {
-                $kArtikel = (int)$this->kVaterArtikel;
+                $id = (int)$this->kVaterArtikel;
             } elseif (!empty($this->oKategorie_arr)) {
                 //oKategorie_arr already has all categories for this article in it
                 if (isset($_SESSION['LetzteKategorie'])) {
@@ -1027,16 +1028,15 @@ class Artikel
                     JOIN tkategorie 
                         ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                     WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                        AND kArtikel = " . $kArtikel . $categoryFilter . "
+                        AND kArtikel = " . $id . $categoryFilter . "
                     ORDER BY tkategorie.nSort
                     LIMIT 1", 1
             );
-            if (isset($oKategorieartikel->kKategorie) && $oKategorieartikel->kKategorie > 0) {
-                return (int)$oKategorieartikel->kKategorie;
-            }
         }
 
-        return 0;
+        return (isset($oKategorieartikel->kKategorie) && $oKategorieartikel->kKategorie > 0)
+            ? (int)$oKategorieartikel->kKategorie
+            : 0;
     }
 
     /**
@@ -1085,7 +1085,9 @@ class Artikel
     private function rabattierePreise()
     {
         if ($this->Preise !== null && method_exists($this->Preise, 'rabbatierePreise')) {
-            $this->Preise->rabbatierePreise($this->getDiscount(Session::CustomerGroup()->getID(), $this->kArtikel))->localizePreise();
+            $this->Preise->rabbatierePreise(
+                $this->getDiscount(Session::CustomerGroup()->getID(), $this->kArtikel)
+            )->localizePreise();
         }
 
         return $this;
@@ -1097,9 +1099,9 @@ class Artikel
      */
     public function gibKundenRabatt($fMaxRabatt)
     {
-        if (isset($_SESSION['Kunde']->kKunde, $_SESSION['Kunde']->fRabatt) &&
-            (int)$_SESSION['Kunde']->kKunde > 0 &&
-            (double)$_SESSION['Kunde']->fRabatt > $fMaxRabatt
+        if (isset($_SESSION['Kunde']->kKunde, $_SESSION['Kunde']->fRabatt)
+            && (int)$_SESSION['Kunde']->kKunde > 0
+            && (double)$_SESSION['Kunde']->fRabatt > $fMaxRabatt
         ) {
             $fMaxRabatt = (double)$_SESSION['Kunde']->fRabatt;
         }
@@ -1455,14 +1457,10 @@ class Artikel
                     $cMerkmalname = preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/', '', $oMerkmal->cName);
                     $cMerkmalname = preg_replace('/[^' . utf8_decode('öäüÖÄÜß') . 'a-zA-Z0-9\.\-_]/', '', $cMerkmalname);
                     if (strlen($oMerkmal->cName) > 0) {
-                        foreach ($oMerkmal->oMerkmalWert_arr as $i => $oMerkmalWert) {
-                            if ($i > 0) {
-                                $this->cMerkmalAssoc_arr[$cMerkmalname] .= ', ';
-                            }
-                            $this->cMerkmalAssoc_arr[$cMerkmalname] = isset($oMerkmalWert->cWert)
-                                ? $oMerkmalWert->cWert
-                                : null;
-                        }
+                        $values = array_filter(array_map(function ($e) {
+                            return isset($e->cWert) ? $e->cWert : null;
+                        }, $oMerkmal->oMerkmalWert_arr));
+                        $this->cMerkmalAssoc_arr[$cMerkmalname] = implode(', ', $values);
                     }
                 }
             }
@@ -3618,11 +3616,11 @@ class Artikel
         }
         // Work Around Lagerbestand nicht beachten wenn es sich um ein VariKind handelt
         // Da das Kind geladen werden muss. Erst nach dem Laden wird angezeigt, dass der Lagerbestand auf "ausverkauft" steht
-        $cLagerbestandSQL = (isset($oArtikelOptionen->nKeinLagerbestandBeachten) && $oArtikelOptionen->nKeinLagerbestandBeachten == 1)
+        $cLagerbestandSQL = (isset($oArtikelOptionen->nKeinLagerbestandBeachten) && $oArtikelOptionen->nKeinLagerbestandBeachten === 1)
             ? ''
-            : gibLagerfilter();
+            : Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         // Nicht sichtbare Artikel je nach ArtikelOption trotzdem laden
-        $cSichbarkeitSQL = (isset($oArtikelOptionen->nKeineSichtbarkeitBeachten) && $oArtikelOptionen->nKeineSichtbarkeitBeachten == 1)
+        $cSichbarkeitSQL = (isset($oArtikelOptionen->nKeineSichtbarkeitBeachten) && $oArtikelOptionen->nKeineSichtbarkeitBeachten === 1)
             ? ''
             : ' AND tartikelsichtbarkeit.kArtikel IS NULL ';
 
@@ -4860,13 +4858,9 @@ class Artikel
     {
         $members = array_keys(get_object_vars($obj));
         foreach ($members as $member) {
-            if ($member === 'cBeschreibung') {
-                $this->$member = parseNewsText($obj->$member);
-            } elseif ($member === 'cKurzBeschreibung') {
-                $this->$member = parseNewsText($obj->$member);
-            } else {
-                $this->$member = $obj->$member;
-            }
+            $this->$member = ($member === 'cBeschreibung' || $member === 'cKurzBeschreibung')
+                ? parseNewsText($obj->$member)
+                : $obj->$member;
         }
 
         return $this;
@@ -5564,7 +5558,7 @@ class Artikel
             if ((int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
                 $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
             }
-            $lagerFilter           = gibLagerfilter();
+            $lagerFilter           = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $return['oArtikelArr'] = Shop::DB()->query(
                 "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
                     FROM (
@@ -5612,7 +5606,7 @@ class Artikel
                             ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            " . gibLagerfilter() . "
+                            " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
                             {$cSQLXSeller}
                         GROUP BY tsuchcachetreffer.kArtikel
                         ORDER BY COUNT(*) DESC
@@ -5638,7 +5632,7 @@ class Artikel
                             ON tartikel.kArtikel = ttagartikel.kArtikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            " . gibLagerfilter() . "
+                            " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
                             {$cSQLXSeller}
                         GROUP BY ttagartikel.kArtikel
                         ORDER BY COUNT(*) DESC

@@ -7,7 +7,6 @@
 
 /**
  * class UstIDviesDownSlots
- *
  */
 class UstIDviesDownSlots
 {
@@ -140,26 +139,21 @@ class UstIDviesDownSlots
     ];
 
     /**
-     * @var object DateTime
+     * @var DateTime
      */
-    private $oNow = null;
+    private $oNow;
 
     /**
-     * @var string zero-terminated
+     * @var string - zero-terminated
      */
     private $szDownInfo = '';
 
-    /**
-     * @const integer
-     * (locally for this object)
-     */
     const WEEKDAY = 0;
     const START   = 1;
     const ENDING  = 2;
 
     /**
-     * @param void
-     * @return void
+     *
      */
     public function __construct()
     {
@@ -170,7 +164,6 @@ class UstIDviesDownSlots
      * return a informational string, which tells the user why the
      * VAT-check is currently not possible and with which time-slot he has to calculate.
      *
-     * @param void
      * @return string
      */
     public function getDownInfo()
@@ -183,7 +176,7 @@ class UstIDviesDownSlots
      * ('true' = "service down", 'false' = "service available")
      *
      * @param string $szCountryCode
-     * @return boolean
+     * @return bool
      */
     public function isDown($szCountryCode)
     {
@@ -193,17 +186,25 @@ class UstIDviesDownSlots
         }
 
         foreach ($this->vDownTimeSlots[$szCountryCode] as $vCountryDownTimes) {
-            // if no weekday was given (which means "every weekday"), we replace the weekday in the check-array with the current weekday here
+            // if no weekday was given (which means "every weekday"),
+            // we replace the weekday in the check-array with the current weekday here
             if ('' === $vCountryDownTimes[self::WEEKDAY]) {
                 $vCountryDownTimes[self::WEEKDAY] = $this->oNow->format('D');
             }
 
-            $oStartTime = DateTime::createFromFormat('D:H:i', $vCountryDownTimes[self::WEEKDAY] . ':' . $vCountryDownTimes[self::START]);
-            $oEndTime   = DateTime::createFromFormat('D:H:i', $vCountryDownTimes[self::WEEKDAY] . ':' . $vCountryDownTimes[self::ENDING]);
+            $oStartTime = DateTime::createFromFormat(
+                'D:H:i',
+                $vCountryDownTimes[self::WEEKDAY] . ':' . $vCountryDownTimes[self::START]
+            );
+            $oEndTime   = DateTime::createFromFormat(
+                'D:H:i',
+                $vCountryDownTimes[self::WEEKDAY] . ':' . $vCountryDownTimes[self::ENDING]
+            );
 
             if ($oStartTime <= $this->oNow && $this->oNow <= $oEndTime) {
                 // inform the user about this event
-                $this->szDownInfo = $oEndTime->format('H:i'); // the VAT-service of this country is down till this time
+                $this->szDownInfo = $oEndTime->format('H:i');
+                // the VAT-service of this country is down till this time
 
                 // if we see ANY VALID DOWNTIME, we go back with TRUE (what means "service is DOWN NOW")
                 return true;
@@ -212,5 +213,4 @@ class UstIDviesDownSlots
         // the service is not down. all is fine to proceed normally.
         return false;
     }
-
 }

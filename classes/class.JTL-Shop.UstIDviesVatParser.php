@@ -6,7 +6,6 @@
 
 /**
  * class UstIDviesVatParser
- *
  */
 class UstIDviesVatParser
 {
@@ -83,7 +82,8 @@ class UstIDviesVatParser
         // GB-Vereinigtes Königreich     GB999 9999 99 oder
         //                               GB999 9999 99 999 oder
         //                               GBGD999 oder
-        //                               GBHA999              1 Block mit 3 Ziffern, 1 Block mit 4 Ziffern und 1 Block mit 2 Ziffern; oder wie oben, gefolgt von einem Block mit 3 Ziffern; oder 1 Block mit 5 Ziffern
+        //                               GBHA999              1 Block mit 3 Ziffern, 1 Block mit 4 Ziffern
+        // und 1 Block mit 2 Ziffern; oder wie oben, gefolgt von einem Block mit 3 Ziffern; oder 1 Block mit 5 Ziffern
         //, 'GB' => [
         //      'GB999 9999 99'
         //    , 'GB999 9999 99 999'
@@ -183,7 +183,6 @@ class UstIDviesVatParser
 
     /**
      * @param string $szVATid
-     * @return void
      */
     public function __construct($szVATid)
     {
@@ -200,27 +199,24 @@ class UstIDviesVatParser
      */
     private function isIdPatternValid($szVATid, $szPattern)
     {
-        for($i=0; $i < strlen($szVATid); $i++) {
+        $len = strlen($szVATid);
+        for ($i = 0; $i < $len; $i++) {
             // each character and white-space is compared exactly, while digits can be [1..9]
             switch (true) {
                 case ctype_alpha($szPattern[$i]) :
-                    if ($szPattern[$i] === $szVATid[$i]) {
-                        continue; // check-letter OK
-                    }
-                    break 2; // check-letter FAIL
                 case ctype_space($szPattern[$i]) :
                     if ($szPattern[$i] === $szVATid[$i]) {
-                        continue; // check-space OK
+                        continue 2; // check-space OK
                     }
                     break 2; // check-space FAIL
                 case is_numeric($szPattern[$i]) :
                     if (is_numeric($szVATid[$i])) {
-                        continue; // check-num OK
+                        continue 2; // check-num OK
                     }
                     break 2; // check-num FAIL
                 default :
                     if ('_' === $szPattern[$i]) {
-                        continue;
+                        continue 2;
                     }
                     break 2;
             }
@@ -229,18 +225,19 @@ class UstIDviesVatParser
         // and if not, return the position, at which we sopped
         if (strlen($szVATid) !== $i) {
             $this->nErrorPos = $i; // store the error-position for later usage too
+
             return $i;
         }
+
         return 0;
     }
 
     /**
-     * controlls the parsing of the VAT-ID
+     * controls the parsing of the VAT-ID
      * ("comparing against multiple patterns of one country")
      * returns "true" = VAT-ID is correct, "false" = not correct.
      *
-     * @param void
-     * @return boolean
+     * @return bool
      */
     public function parseVatId()
     {
@@ -249,12 +246,14 @@ class UstIDviesVatParser
         $nResult = preg_match('/([A-Z]{2})(.*)/', $this->szVATid, $this->vIdParts);
         if (0 === $nResult) {
             $this->nErrorCode = 100; // error: the ID did not start with 2 big letters
+
             return false;
         }
         // there is no country starting with this 2 letters
         if (! isset($this->vCountryPattern[$this->vIdParts[1]])) {
             $this->nErrorCode  = 130; // error: no pattern for such a country
             $this->szErrorInfo = $this->vIdParts[1];
+
             return false;
         }
 
@@ -263,20 +262,21 @@ class UstIDviesVatParser
             // length-check (and go back, if nothing matches)
             if (strlen($this->szVATid) !== strlen($szPattern)) {
                 continue; // skipt this pattern, if the length did not match. try the next one
-            } else {
-                // checking the given pattern (return a possible interrupt-position)
-                $nParseResult = $this->isIdPatternValid($this->szVATid, $szPattern);
-                if (0 === $nParseResult) {
-                    return true; // if we found a valid pattern-match, we've done our job here
-                } else {
-                    $this->nErrorCode  = 120; // error: id did not match any pattern of this country
-                    $this->szErrorInfo = $nParseResult; // interrupt-/error-position
-                    return false;
-                }
-
             }
+            // checking the given pattern (return a possible interrupt-position)
+            $nParseResult = $this->isIdPatternValid($this->szVATid, $szPattern);
+            if (0 === $nParseResult) {
+
+                return true; // if we found a valid pattern-match, we've done our job here
+            }
+
+            $this->nErrorCode  = 120; // error: id did not match any pattern of this country
+            $this->szErrorInfo = $nParseResult; // interrupt-/error-position
+
+            return false;
         }
         $this->nErrorCode = 110; // error: no length was matching
+
         return false;
     }
 
@@ -287,18 +287,16 @@ class UstIDviesVatParser
      *
      * NOTE: should called after '->parseVatId()'
      *
-     * @param void
      * @return array
      */
     public function getIdAsParams()
     {
-        return [ $this->vIdParts[1], $this->vIdParts[2] ];
+        return [$this->vIdParts[1], $this->vIdParts[2]];
     }
 
     /**
      * returns a descriptive string of the last ocurred error
      *
-     * @param void
      * @return string
      */
     public function getErrorCode()
@@ -309,7 +307,6 @@ class UstIDviesVatParser
     /**
      * return additional informations of the occurred error
      *
-     * @param void
      * @return string
      */
     public function getErrorInfo()
@@ -320,13 +317,11 @@ class UstIDviesVatParser
     /**
      * returns the position, in the VAT-ID-string, at which the last error was ocurred
      *
-     * @param void
      * @return string
      */
     public function getErrorPos()
     {
         return $this->nErrorPos;
     }
-
 }
 

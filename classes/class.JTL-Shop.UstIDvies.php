@@ -24,17 +24,12 @@ class UstIDvies
     private $szViesWSDL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
-     * @var object
+     * @var UstIDviesDownSlots
      */
-    private $oDownTimes = null;
+    private $oDownTimes;
 
     /**
-     * @var string
-     */
-    private $szVATid;
-
-    /**
-     * At this moment, the VIES-syste, did not return any information other than "valid" or "invalid"
+     * At this moment, the VIES-system, does not return any information other than "valid" or "invalid"
      * by giving a boolean value back via SOAP.
      * So we keep this error-string only for a possible future usage - currently they are not used.
      *
@@ -50,8 +45,7 @@ class UstIDvies
     ];
 
     /**
-     * @param void
-     * @return void
+     *
      */
     public function __construct()
     {
@@ -102,47 +96,48 @@ class UstIDvies
                 'success'   => false,
                 'errortype' => 'parse',
                 'errorcode' => $oVatParser->getErrorCode(),
-                'errorinfo' => ('' !== ($szErrorInfo = $oVatParser->getErrorInfo()) ? $szErrorInfo : '')
+                'errorinfo' => '' !== ($szErrorInfo = $oVatParser->getErrorInfo()) ? $szErrorInfo : ''
             ];
         }
 
         // asking the remote service, if the VAT-office is reachable
         if (false === $this->oDownTimes->isDown($szCountryCode)) {
-
             $oSoapClient = new SoapClient($this->szViesWSDL);
             $oViesResult = null;
             try {
-                $oViesResult = $oSoapClient->checkVat(['countryCode' => $szCountryCode, 'vatNumber' => $szVatNumber]); // --TODO--
+                $oViesResult = $oSoapClient->checkVat(['countryCode' => $szCountryCode, 'vatNumber' => $szVatNumber]);
             } catch (Exception $e) {
                 Jtllog::writeLog('MwStID Problem: '.$e->getMessage(), JTLLOG_LEVEL_ERROR);
             }
 
             if (null !== $oViesResult && true === $oViesResult->valid) {
-                Jtllog::writeLog('MwStID valid. ('.print_r($oViesResult, true).')', JTLLOG_LEVEL_NOTICE); // sometimes we get the address too
+                Jtllog::writeLog('MwStID valid. (' . print_r($oViesResult, true) . ')',
+                    JTLLOG_LEVEL_NOTICE); // sometimes we get the address too
+
                 return [
                     'success'   => true,
                     'errortype' => 'vies',
                     'errorcode' => ''
                 ];
-            } else {
-                Jtllog::writeLog('MwStID invalid! ('.print_r($oViesResult, true).')', JTLLOG_LEVEL_NOTICE);
-                return [
-                    'success'   => false,
-                    'errortype' => 'vies',
-                    'errorcode' => 5 // error: ID is invalid according to the VIES-system
-                ];
             }
+            Jtllog::writeLog('MwStID invalid! (' . print_r($oViesResult, true) . ')', JTLLOG_LEVEL_NOTICE);
 
-        } else {
-            // inform the user:"The VAT-office in this country has closed this time."
-            Jtllog::writeLog('MIAS-Amt aktuell nicht erreichbar. (ID: '.$szUstID.')', JTLLOG_LEVEL_NOTICE);
             return [
                 'success'   => false,
-                'errortype' => 'time',
-                'errorcode' => 200,
-                'errorinfo' => $this->oDownTimes->getDownInfo() // the time, till which the office has closed
+                'errortype' => 'vies',
+                'errorcode' => 5 // error: ID is invalid according to the VIES-system
             ];
+
         }
+        // inform the user:"The VAT-office in this country has closed this time."
+        Jtllog::writeLog('MIAS-Amt aktuell nicht erreichbar. (ID: '.$szUstID.')', JTLLOG_LEVEL_NOTICE);
+
+        return [
+            'success'   => false,
+            'errortype' => 'time',
+            'errorcode' => 200,
+            'errorinfo' => $this->oDownTimes->getDownInfo() // the time, till which the office has closed
+        ];
     }
 
 }

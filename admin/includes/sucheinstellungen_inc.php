@@ -62,12 +62,22 @@ function createSearchIndex($index, $create)
         }
 
         if ($res === 0) {
-            $cFehler = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
-            $param   = ['suche_fulltext' => 'N'];
-            saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $param);
+            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
+            $shopSettings = Shopsetting::getInstance();
+            $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
-            Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
-            Shopsetting::getInstance()->reset();
+            if ($settings['suche_fulltext'] === 'Y') {
+                $settings['suche_fulltext'] = 'N';
+                saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $settings);
+
+                Shop::Cache()->flushTags([
+                    CACHING_GROUP_OPTION,
+                    CACHING_GROUP_CORE,
+                    CACHING_GROUP_ARTICLE,
+                    CACHING_GROUP_CATEGORY
+                ]);
+                $shopSettings->reset();
+            }
         } else {
             $cHinweis = 'Der Volltextindex für ' . $index . ' wurde angelegt!';
         }

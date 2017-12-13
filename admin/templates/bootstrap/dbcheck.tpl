@@ -16,8 +16,8 @@
         {/if}
     {/if}
     <div id="pageCheck">
-        {if isset($cDBFileStruct_arr) && $cDBFileStruct_arr|@count > 0}
-            {if isset($engineUpdate)}
+        {if $cDBFileStruct_arr|@count > 0}
+            {if $engineUpdate !== null}
                 {include file='tpl_inc/dbcheck_engineupdate.tpl'}
             {else}
                 <div class="alert alert-info"><strong>Anzahl Tabellen:</strong> {$cDBFileStruct_arr|@count}<br /><strong>Anzahl modifizierter Tabellen:</strong> {$cDBError_arr|@count}</div>
@@ -123,7 +123,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4><span>&nbsp;</span> <img src="/admin/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h4>
+                <h4><span>&nbsp;</span> <img src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}gfx/widgets/ajax-loader.gif"></h4>
             </div>
             <div class="modal-body">
                 <div class="progress" data-notify="progressbar">

@@ -19,7 +19,8 @@ class DBMigrationHelper
     public static function getTablesNeedMigration()
     {
         $database = Shop::DB()->getConfig()['database'];
-        $result   = Shop::DB()->queryPrepared(
+
+        return Shop::DB()->queryPrepared(
             "SELECT `TABLE_NAME`, `ENGINE`, TABLE_COLLATION
                 FROM information_schema.tables
                 WHERE TABLE_SCHEMA = :schema
@@ -29,8 +30,6 @@ class DBMigrationHelper
                     'schema' => $database
                 ], 2
         );
-
-        return $result;
     }
 
     /**
@@ -41,7 +40,8 @@ class DBMigrationHelper
     {
         $database   = Shop::DB()->getConfig()['database'];
         $excludeStr = implode("','", StringHandler::filterXSS($excludeTables));
-        $result     = Shop::DB()->queryPrepared(
+
+        return Shop::DB()->queryPrepared(
             "SELECT `TABLE_NAME`, `ENGINE`, TABLE_COLLATION
                 FROM information_schema.tables
                 WHERE TABLE_SCHEMA = :schema
@@ -52,8 +52,6 @@ class DBMigrationHelper
                     'schema' => $database
                 ], 1
         );
-
-        return $result;
     }
 
     /**
@@ -63,7 +61,8 @@ class DBMigrationHelper
     public static function getTable($cTable)
     {
         $database = Shop::DB()->getConfig()['database'];
-        $result   = Shop::DB()->queryPrepared(
+
+        return Shop::DB()->queryPrepared(
             "SELECT `TABLE_NAME`, `ENGINE`, TABLE_COLLATION
                 FROM information_schema.tables
                 WHERE TABLE_SCHEMA = :schema
@@ -73,8 +72,6 @@ class DBMigrationHelper
                     'table'  => $cTable,
                 ], 1
         );
-
-        return $result;
     }
 
     /**
@@ -116,7 +113,8 @@ class DBMigrationHelper
     public static function getColumnsNeedMigration($cTable)
     {
         $database = Shop::DB()->getConfig()['database'];
-        $result   = Shop::DB()->queryPrepared(
+
+        return Shop::DB()->queryPrepared(
             "SELECT `COLUMN_NAME`, DATA_TYPE, COLUMN_TYPE, `COLUMN_DEFAULT`, IS_NULLABLE
                 FROM information_schema.columns
                 WHERE TABLE_SCHEMA = :schema
@@ -128,8 +126,6 @@ class DBMigrationHelper
                     'table'  => $cTable,
                 ], 2
         );
-
-        return $result;
     }
 
     /**
@@ -145,9 +141,8 @@ class DBMigrationHelper
         } else {
             $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'";
         }
-        $sql .= ', LOCK EXCLUSIVE';
 
-        return $sql;
+        return $sql . ', LOCK EXCLUSIVE';
     }
 
     /**
@@ -158,6 +153,7 @@ class DBMigrationHelper
     public static function sqlConvertUTF8($oTable, $lineBreak = '')
     {
         $oColumn_arr = self::getColumnsNeedMigration($oTable->TABLE_NAME);
+        $sql         = '';
 
         if ($oColumn_arr !== false && count($oColumn_arr) > 0) {
             $sql = "ALTER TABLE `{$oTable->TABLE_NAME}`$lineBreak";
@@ -169,8 +165,6 @@ class DBMigrationHelper
                     . ($oColumn->IS_NULLABLE === 'NO' && $oColumn->COLUMN_DEFAULT === null ? '' : " DEFAULT " . ($oColumn->COLUMN_DEFAULT === null ? 'NULL' : "'{$oColumn->COLUMN_DEFAULT}'"));
             }
             $sql .= implode(", $lineBreak", $columChange) . ', LOCK EXCLUSIVE';
-        } else {
-            $sql = '';
         }
 
         return $sql;

@@ -52,7 +52,7 @@ class Warenkorb
     /**
      * @var Versandart
      */
-    public $oFavourableShipping;
+    public $oFavourableShipping = null;
 
     /**
      * @var array
@@ -1549,13 +1549,12 @@ class Warenkorb
      */
     public function getFavourableShipping()
     {
-        if (!empty($_SESSION['Versandart']->kVersandart)
-            && isset($_SESSION['Versandart']->nMinLiefertage)) {
+        if (!empty($_SESSION['Versandart']->kVersandart) && isset($_SESSION['Versandart']->nMinLiefertage)) {
             return null;
         }
 
         $customerGroupSQL = '';
-        $kKundengruppe    = (isset($_SESSION['Kunde']->kKundengruppe)) ? $_SESSION['Kunde']->kKundengruppe : 0;
+        $kKundengruppe    = isset($_SESSION['Kunde']->kKundengruppe) ? $_SESSION['Kunde']->kKundengruppe : 0;
 
         if ($kKundengruppe > 0) {
             $countryCode      = $_SESSION['Kunde']->cLand;
@@ -1601,11 +1600,12 @@ class Warenkorb
                 ORDER BY minPrice, nSort ASC LIMIT 1", 1
         );
 
+        $this->oFavourableShipping = null;
         if (isset($shipping->kVersandart)) {
             $oFavourableShipping               = new Versandart($shipping->kVersandart);
             $oFavourableShipping->cCountryCode = $countryCode;
 
-            if ($oFavourableShipping->eSteuer === "brutto") {
+            if ($oFavourableShipping->eSteuer === 'brutto') {
                 $oFavourableShipping->cPriceLocalized[0] = gibPreisStringLocalized($oFavourableShipping->fPreis);
                 $oFavourableShipping->cPriceLocalized[1] = gibPreisStringLocalized(
                     berechneNetto(
@@ -1622,10 +1622,9 @@ class Warenkorb
                 );
                 $oFavourableShipping->cPriceLocalized[1] = gibPreisStringLocalized($oFavourableShipping->fPreis);
             }
+            $this->oFavourableShipping = $oFavourableShipping;
         }
 
-        $this->oFavourableShipping = isset($oFavourableShipping) ? $oFavourableShipping : null;
-
-        return isset($oFavourableShipping) ? $oFavourableShipping : null;
+        return $this->oFavourableShipping;
     }
 }

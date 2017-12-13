@@ -9,6 +9,8 @@
  */
 class FilterSearch extends AbstractFilter
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var int
      */
@@ -17,7 +19,7 @@ class FilterSearch extends AbstractFilter
     /**
      * @var string
      */
-    public $Fehler;
+    private $error;
 
     /**
      * @var int
@@ -30,7 +32,8 @@ class FilterSearch extends AbstractFilter
      */
     private static $mapping = [
         'kSuchanfrage' => 'Value',
-        'cSuche'       => 'Name'
+        'cSuche'       => 'Name',
+        'Fehler'       => 'Error'
     ];
 
     /**
@@ -44,6 +47,24 @@ class FilterSearch extends AbstractFilter
         $this->isCustom    = false;
         $this->urlParam    = 'sf';
         $this->urlParamSEO = null;
+    }
+
+    /**
+     * @param string $errorMsg
+     * @return $this
+     */
+    public function setError($errorMsg) {
+        $this->error = $errorMsg;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getError()
+    {
+        return $this->error;
     }
 
     /**
@@ -110,9 +131,9 @@ class FilterSearch extends AbstractFilter
                 'kSprache', $languageID
             );
         }
-        $this->kSuchanfrage = (isset($searchQuery->kSuchanfrage) && $searchQuery->kSuchanfrage > 0)
+        $this->setValue((isset($searchQuery->kSuchanfrage) && $searchQuery->kSuchanfrage > 0)
             ? (int)$searchQuery->kSuchanfrage
-            : 0;
+            : 0);
 
         return $this;
     }

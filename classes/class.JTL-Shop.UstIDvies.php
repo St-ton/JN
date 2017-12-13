@@ -20,22 +20,18 @@ class UstIDvies
 {
     /**
      * @var string
-     * URL of the MIAS
      */
     private $szViesWSDL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
      * @var object
-     * UstIDviesDownSlots-object
      */
     private $oDownTimes = null;
 
     /**
      * @var string
-     * given VAT-number to check
      */
     private $szVATid;
-
 
     /**
      * At this moment, the VIES-syste, did not return any information other than "valid" or "invalid"
@@ -43,7 +39,6 @@ class UstIDvies
      * So we keep this error-string only for a possible future usage - currently they are not used.
      *
      * @var array
-     * answers of the MIAS-system (may it's not needed here this way)
      */
     private $vMiasAnswerStrings = [
         0  => 'MwSt-Nummer gültig.',
@@ -54,9 +49,9 @@ class UstIDvies
         50 => 'Zeitüberschreitung. Bitte wiederholen Sie Ihre Anfrage später.'
     ];
 
-
     /**
-     * __construct
+     * @param void
+     * @return void
      */
     public function __construct()
     {
@@ -73,7 +68,6 @@ class UstIDvies
     public function condenseSpaces($szString) {
         return str_replace(' ', '', $szString);
     }
-
 
     /**
      * ask the remote APIs of the VIES-online-system

@@ -141,28 +141,23 @@ class UstIDviesDownSlots
 
     /**
      * @var object DateTime
-     * current date and time, "now" at runtime
      */
     private $oNow = null;
 
     /**
      * @var string zero-terminated
-     * information, which can shown in the frontend "how long is the office closed"
      */
     private $szDownInfo = '';
 
     /**
      * @const integer
-     * in this object used constants
+     * (locally for this object)
      */
     const WEEKDAY = 0;
     const START   = 1;
     const ENDING  = 2;
 
-
     /**
-     * __construct
-     *
      * @param void
      * @return void
      */

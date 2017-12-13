@@ -160,37 +160,35 @@ class UstIDviesVatParser
         'SK' => ['SK9999999999']         // example: SK7120000019(ok), SK2021254631(ok)
     ];
 
-
     /**
      * @var string
-     * given VAT-ID
      */
     private $szVATid = '';
 
     /**
      * @var array
-     * the two parts of the VAT-ID: 2 letters of country-code, rest of the string
      */
     private $vIdParts = [];
 
     /**
      * @var integer
-     * numerical error-code
      */
     private $nErrorCode = 0;
 
     /**
      * @var string
-     * additional error-information
      */
     private $szErrorInfo = '';
 
 
+    /**
+     * @param string $szVATid
+     * @return void
+     */
     public function __construct($szVATid)
     {
         $this->szVATid = $szVATid;
     }
-
 
     /**
      * parses the VAT-ID-string.
@@ -235,7 +233,6 @@ class UstIDviesVatParser
         }
         return 0;
     }
-
 
     /**
      * controlls the parsing of the VAT-ID
@@ -283,7 +280,6 @@ class UstIDviesVatParser
         return false;
     }
 
-
     /**
      * return the ID splitted into the two pieces:
      * - 2 (big) letters of country code
@@ -299,7 +295,6 @@ class UstIDviesVatParser
         return [ $this->vIdParts[1], $this->vIdParts[2] ];
     }
 
-
     /**
      * returns a descriptive string of the last ocurred error
      *
@@ -310,7 +305,6 @@ class UstIDviesVatParser
     {
         return $this->nErrorCode;
     }
-
 
     /**
      * return additional informations of the occurred error

@@ -882,8 +882,8 @@ class Metadata
         } elseif ($this->productFilter->getSearchQuery()->isInitialized()) {
             $this->breadCrumb = $this->productFilter->getSearchQuery()->getName();
         }
-        if (!empty($this->productFilter->getSearch()->cSuche)
-            || !empty($this->productFilter->getSearchQuery()->cSuche)
+        if (!empty($this->productFilter->getSearch()->getName())
+            || !empty($this->productFilter->getSearchQuery()->getName())
         ) {
             return Shop::Lang()->get('for') . ' ' . $this->breadCrumb;
         }

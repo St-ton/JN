@@ -11,7 +11,7 @@ WarenkorbHelper::checkAdditions();
 Shop::getEntryPoint();
 Shop::Smarty()->assign('NaviFilter', $NaviFilter);
 if (Shop::$fileName !== null) {
-    require PFAD_ROOT . Shop::$fileName;
+    require PFAD_ROOT . basename(Shop::$fileName);
 } else {
     require_once PFAD_ROOT . 'seite.php';
 }

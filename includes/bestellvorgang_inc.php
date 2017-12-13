@@ -1225,9 +1225,7 @@ function zahlungsartKorrekt($kZahlungsart)
         getPaymentSurchageDiscount($Zahlungsart);
 
         //posname lokalisiert ablegen
-        if (!isset($Spezialpos)) {
-            $Spezialpos = new stdClass();
-        }
+        $Spezialpos        = new stdClass();
         $Spezialpos->cName = [];
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             if ($Zahlungsart->kZahlungsart > 0) {
@@ -1323,6 +1321,9 @@ function zahlungsartKorrekt($kZahlungsart)
     return 0;
 }
 
+/**
+ * @param $Zahlungsart
+ */
 function getPaymentSurchageDiscount($Zahlungsart)
 {
     if ($Zahlungsart->fAufpreis != 0) {
@@ -1352,9 +1353,7 @@ function getPaymentSurchageDiscount($Zahlungsart)
             $Zahlungsart->cPreisLocalized = gibPreisStringLocalized($Aufpreis);
         }
         //posname lokalisiert ablegen
-        if (!isset($Spezialpos)) {
-            $Spezialpos = new stdClass();
-        }
+        $Spezialpos               = new stdClass();
         $Spezialpos->cGebuehrname = [];
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             if ($Zahlungsart->kZahlungsart > 0) {

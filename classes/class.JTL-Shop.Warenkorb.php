@@ -218,9 +218,8 @@ class Warenkorb
         $NeuePosition->kArtikel          = $NeuePosition->Artikel->kArtikel;
         $NeuePosition->kVersandklasse    = $NeuePosition->Artikel->kVersandklasse;
         $NeuePosition->kSteuerklasse     = $NeuePosition->Artikel->kSteuerklasse;
-        $NeuePosition->fPreisEinzelNetto = $NeuePosition->Artikel->gibPreis($NeuePosition->nAnzahl, []); // ????
-        // $NeuePosition->Artikel->gibPreis(1, isset($Eigenschaft_arr) ? $Eigenschaft_arr : null); <--
-        $NeuePosition->fPreis      = $NeuePosition->Artikel->gibPreis($anzahl, isset($Eigenschaft_arr) ? $Eigenschaft_arr : null);
+        $NeuePosition->fPreisEinzelNetto = $NeuePosition->Artikel->gibPreis($NeuePosition->nAnzahl, []);
+        $NeuePosition->fPreis      = $NeuePosition->Artikel->gibPreis($anzahl, []);
         $NeuePosition->cArtNr      = $NeuePosition->Artikel->cArtNr;
         $NeuePosition->nPosTyp     = $nPosTyp;
         $NeuePosition->cEinheit    = $NeuePosition->Artikel->cEinheit;

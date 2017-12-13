@@ -100,6 +100,11 @@ class Warenkorb
                 } else {
                     $delete = (Shop::DB()->select('tartikel', 'kArtikel', $Position->kArtikel) === null);
                 }
+
+                executeHook(HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS, [
+                    'oPosition' => $Position,
+                    'delete'    => &$delete
+                ]);
             }
             if ($delete) {
                 self::addDeletedPosition($Position);
@@ -170,7 +175,7 @@ class Warenkorb
                 if (!$neuePos && !$cUnique) {
                     //erhoehe Anzahl dieser Position
                     $this->PositionenArr[$i]->nZeitLetzteAenderung = time();
-                    $this->PositionenArr[$i]->nAnzahl += $anzahl;
+                    $this->PositionenArr[$i]->nAnzahl             += $anzahl;
                     if ($setzePositionsPreise === true) {
                         $this->setzePositionsPreise();
                     }
@@ -188,8 +193,8 @@ class Warenkorb
 
         $NeuePosition = new WarenkorbPos();
         //kopiere Artikel in Warenkorbpos
-        $NeuePosition->Artikel               = new Artikel();
-        $oArtikelOptionen                    = Artikel::getDefaultOptions();
+        $NeuePosition->Artikel = new Artikel();
+        $oArtikelOptionen      = Artikel::getDefaultOptions();
         if ($kKonfigitem > 0) {
             $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
         }
@@ -514,7 +519,7 @@ class Warenkorb
 
                 foreach ($this->PositionenArr as $nPos => $oPosition) {
                     if ($NeuePosition->cUnique === $oPosition->cUnique) {
-                        $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
+                        $fPreisNetto  += $oPosition->fPreis * $oPosition->nAnzahl;
                         $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, gibUst($oPosition->kSteuerklasse));
 
                         if ((int)$oPosition->kKonfigitem === 0 &&
@@ -734,6 +739,7 @@ class Warenkorb
                                                 $this->PositionenArr[$i]->WarenkorbPosEigenschaftArr[$j]->fAufpreis = isset($oEigenschaftWert->fAufpreisNetto)
                                                     ? $oEigenschaftWert->fAufpreisNetto
                                                     : null;
+
                                                 $this->PositionenArr[$i]->WarenkorbPosEigenschaftArr[$j]->cAufpreisLocalized = isset($oEigenschaftWert->cAufpreisLocalized[1])
                                                     ? $oEigenschaftWert->cAufpreisLocalized[1]
                                                     : null;
@@ -748,6 +754,7 @@ class Warenkorb
                         }
                     }
                     $anz = $this->gibAnzahlEinesArtikels($oArtikel->kArtikel);
+
                     $this->PositionenArr[$i]->Artikel           = $oArtikel;
                     $this->PositionenArr[$i]->fPreisEinzelNetto = $oArtikel->gibPreis($anz, []);
                     $this->PositionenArr[$i]->fPreis            = $oArtikel->gibPreis($anz, $Position->WarenkorbPosEigenschaftArr);
@@ -757,7 +764,7 @@ class Warenkorb
                     if ($_oldPosition->cGesamtpreisLocalized !== $this->PositionenArr[$i]->cGesamtpreisLocalized &&
                         $_oldPosition->Artikel->Preise->fVK !== $this->PositionenArr[$i]->Artikel->Preise->fVK
                     ) {
-                        $updatedPosition = new stdClass();
+                        $updatedPosition                           = new stdClass();
                         $updatedPosition->cKonfigpreisLocalized    = $this->PositionenArr[$i]->cKonfigpreisLocalized;
                         $updatedPosition->cGesamtpreisLocalized    = $this->PositionenArr[$i]->cGesamtpreisLocalized;
                         $updatedPosition->cName                    = $this->PositionenArr[$i]->cName;
@@ -1020,11 +1027,11 @@ class Warenkorb
             if ($waehrung === null || !isset($waehrung->kWaehrung)) {
                 $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
             }
-            $faktor = $waehrung->fFaktor;
+            $faktor       = $waehrung->fFaktor;
             $gesamtsumme *= $faktor;
 
             // simplification. see https://de.wikipedia.org/wiki/Rundung#Rappenrundung
-            $gesamtsumme = round($gesamtsumme * 20) / 20;
+            $gesamtsumme  = round($gesamtsumme * 20) / 20;
             $gesamtsumme /= $faktor;
         }
 
@@ -1118,7 +1125,7 @@ class Warenkorb
                         $steuerpos[$idx]->fBetrag         = ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
                         $steuerpos[$idx]->cPreisLocalized = gibPreisStringLocalized($steuerpos[$idx]->fBetrag);
                     } else {
-                        $steuerpos[$idx]->fBetrag += ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
+                        $steuerpos[$idx]->fBetrag        += ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
                         $steuerpos[$idx]->cPreisLocalized = gibPreisStringLocalized($steuerpos[$idx]->fBetrag);
                     }
                 }
@@ -1444,7 +1451,7 @@ class Warenkorb
             if ($Kupon->fWert > $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
                 $maxPreisKupon = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
             }
-            $Spezialpos = new stdClass();
+            $Spezialpos        = new stdClass();
             $Spezialpos->cName = [];
             foreach ($_SESSION['Sprachen'] as $Sprache) {
                 $name_spr                          = Shop::DB()->select('tkuponsprache', 'kKupon', (int)$Kupon->kKupon, 'cISOSprache', $Sprache->cISO, null, null, false, 'cName');
@@ -1480,7 +1487,7 @@ class Warenkorb
                         $this->PositionenArr[$i]->cGesamtpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($roundedNetAmount, $Waehrung);
                     }
                 }
-                $cumulatedDelta += ($grossAmount - $roundedGrossAmount);
+                $cumulatedDelta    += ($grossAmount - $roundedGrossAmount);
                 $cumulatedDeltaNet += ($netAmount - $roundedNetAmount);
             }
         }

@@ -8,7 +8,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 if (!$oAccount->getIsAuthenticated()) {
-    makeHTTPHeader(401);
+    header(makeHTTPHeader(401));
     exit;
 }
 if (!validateToken()) {
@@ -50,6 +50,7 @@ $io
     ->register('expandWidget', 'expandWidget', $dashboardInc, 'DASHBOARD_VIEW')
     ->register('getAvailableWidgets', 'getAvailableWidgetsIO', $dashboardInc, 'DASHBOARD_VIEW')
     ->register('getRemoteData', 'getRemoteDataIO', $dashboardInc, 'DASHBOARD_VIEW')
+    ->register('getShopInfo', 'getShopInfoIO', $dashboardInc, 'DASHBOARD_VIEW')
     ->register('truncateJtllog', ['Jtllog', 'truncateLog'], null, 'DASHBOARD_VIEW')
     ->register('addFav')
     ->register('reloadFavs')

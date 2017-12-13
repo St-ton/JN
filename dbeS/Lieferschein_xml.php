@@ -69,27 +69,29 @@ if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
 function bearbeiteInsert($oXml)
 {
     foreach ($oXml->tlieferschein as $oXmlLieferschein) {
-        $oLieferschein            = JTLMapArr($oXmlLieferschein, $GLOBALS['mLieferschein']);
-        $oLieferschein->dErstellt = date_format(date_create($oLieferschein->dErstellt), 'U');
-        DBUpdateInsert('tlieferschein', [$oLieferschein], 'kLieferschein');
+        $oLieferschein = JTLMapArr($oXmlLieferschein, $GLOBALS['mLieferschein']);
+        if ((int)$oLieferschein->kInetBestellung > 0) {
+            $oLieferschein->dErstellt = date_format(date_create($oLieferschein->dErstellt), 'U');
+            DBUpdateInsert('tlieferschein', [$oLieferschein], 'kLieferschein');
 
-        foreach ($oXmlLieferschein->tlieferscheinpos as $oXmlLieferscheinpos) {
-            $oLieferscheinpos                = JTLMapArr($oXmlLieferscheinpos, $GLOBALS['mLieferscheinpos']);
-            $oLieferscheinpos->kLieferschein = $oLieferschein->kLieferschein;
-            DBUpdateInsert('tlieferscheinpos', [$oLieferscheinpos], 'kLieferscheinPos');
+            foreach ($oXmlLieferschein->tlieferscheinpos as $oXmlLieferscheinpos) {
+                $oLieferscheinpos                = JTLMapArr($oXmlLieferscheinpos, $GLOBALS['mLieferscheinpos']);
+                $oLieferscheinpos->kLieferschein = $oLieferschein->kLieferschein;
+                DBUpdateInsert('tlieferscheinpos', [$oLieferscheinpos], 'kLieferscheinPos');
 
-            foreach ($oXmlLieferscheinpos->tlieferscheinposInfo as $oXmlLieferscheinposinfo) {
-                $oLieferscheinposinfo                   = JTLMapArr($oXmlLieferscheinposinfo, $GLOBALS['mLieferscheinposinfo']);
-                $oLieferscheinposinfo->kLieferscheinPos = $oLieferscheinpos->kLieferscheinPos;
-                DBUpdateInsert('tlieferscheinposinfo', [$oLieferscheinposinfo], 'kLieferscheinPosInfo');
+                foreach ($oXmlLieferscheinpos->tlieferscheinposInfo as $oXmlLieferscheinposinfo) {
+                    $oLieferscheinposinfo                   = JTLMapArr($oXmlLieferscheinposinfo, $GLOBALS['mLieferscheinposinfo']);
+                    $oLieferscheinposinfo->kLieferscheinPos = $oLieferscheinpos->kLieferscheinPos;
+                    DBUpdateInsert('tlieferscheinposinfo', [$oLieferscheinposinfo], 'kLieferscheinPosInfo');
+                }
             }
-        }
 
-        foreach ($oXmlLieferschein->tversand as $oXmlVersand) {
-            $oVersand                = JTLMapArr($oXmlVersand, $GLOBALS['mVersand']);
-            $oVersand->kLieferschein = $oLieferschein->kLieferschein;
-            $oVersand->dErstellt     = date_format(date_create($oVersand->dErstellt), 'U');
-            DBUpdateInsert('tversand', [$oVersand], 'kVersand');
+            foreach ($oXmlLieferschein->tversand as $oXmlVersand) {
+                $oVersand                = JTLMapArr($oXmlVersand, $GLOBALS['mVersand']);
+                $oVersand->kLieferschein = $oLieferschein->kLieferschein;
+                $oVersand->dErstellt     = date_format(date_create($oVersand->dErstellt), 'U');
+                DBUpdateInsert('tversand', [$oVersand], 'kVersand');
+            }
         }
     }
 }

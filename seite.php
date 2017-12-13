@@ -87,7 +87,7 @@ if ($link->nLinkart === LINKTYP_STARTSEITE) {
     $smarty->assign('oHersteller_arr', Hersteller::getAll());
 } elseif ($link->nLinkart === LINKTYP_NEWSLETTERARCHIV) {
     $smarty->assign('oNewsletterHistory_arr', gibNewsletterHistory());
-} elseif ($link->nLinkart === LINKTYP_SITEMAP) {
+} elseif ($link->nLinkart === LINKTYP_SITEMAP || $link->nLinkart === LINKTYP_404) {
     gibSeiteSitemap($Einstellungen, $smarty);
 } elseif ($link->nLinkart === LINKTYP_GRATISGESCHENK) {
     if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
@@ -99,20 +99,7 @@ if ($link->nLinkart === LINKTYP_STARTSEITE) {
         }
     }
 } elseif ($link->nLinkart === LINKTYP_AUSWAHLASSISTENT) {
-    // Auswahlassistent
-    if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
-        starteAuswahlAssistent(
-            AUSWAHLASSISTENT_ORT_LINK,
-            $link->kLink,
-            Shop::getLanguage(),
-            $smarty,
-            $Einstellungen['auswahlassistent']
-        );
-    } elseif (class_exists('AuswahlAssistent')) {
-        AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::getLanguage(), $smarty);
-    }
-} elseif ($link->nLinkart === LINKTYP_404) {
-    gibSeiteSitemap($Einstellungen, $smarty);
+    AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::getLanguage(), $smarty);
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

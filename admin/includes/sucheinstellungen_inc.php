@@ -18,7 +18,7 @@ function createSearchIndex($index, $create)
     $cFehler  = '';
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
-        return new IOError('Ungültiger Index angegeben', 403);
+        return new IOError('UngÃ¼ltiger Index angegeben', 403);
     }
 
     try {
@@ -26,7 +26,7 @@ function createSearchIndex($index, $create)
             Shop::DB()->executeQuery("ALTER IGNORE TABLE $index DROP KEY idx_{$index}_fulltext", 10);
         }
     } catch (Exception $e) {
-        // Fehler beim Index löschen ignorieren
+        // Fehler beim Index lÃ¶schen ignorieren
         null;
     }
 
@@ -48,7 +48,7 @@ function createSearchIndex($index, $create)
                 $cSpalten_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
                 break;
             default:
-                return new IOError('Ungültiger Index angegeben', 403);
+                return new IOError('UngÃ¼ltiger Index angegeben', 403);
         }
 
         try {
@@ -62,17 +62,17 @@ function createSearchIndex($index, $create)
         }
 
         if ($res === 0) {
-            $cFehler = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
+            $cFehler = 'Der Index fÃ¼r die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
             $param   = ['suche_fulltext' => 'N'];
             saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $param);
 
             Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
             Shopsetting::getInstance()->reset();
         } else {
-            $cHinweis = 'Der Volltextindex für ' . $index . ' wurde angelegt!';
+            $cHinweis = 'Der Volltextindex fÃ¼r ' . $index . ' wurde angelegt!';
         }
     } else {
-        $cHinweis = 'Der Volltextindex für ' . $index . ' wurde gelöscht!';
+        $cHinweis = 'Der Volltextindex fÃ¼r ' . $index . ' wurde gelÃ¶scht!';
     }
 
     if ($cFehler !== '') {

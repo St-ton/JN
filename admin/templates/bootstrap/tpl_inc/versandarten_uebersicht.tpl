@@ -1,7 +1,7 @@
 <script type="text/javascript">
     {literal}
     function confirmDelete(cName) {
-        return confirm('Sind Sie sicher, dass Sie die Versandart "' + cName + '" löschen möchten?');
+        return confirm('Sind Sie sicher, dass Sie die Versandart "' + cName + '" lÃ¶schen mÃ¶chten?');
     }
     {/literal}
 </script>

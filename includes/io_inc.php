@@ -932,9 +932,9 @@ function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $kSelection_arr)
         $oLastSelectedValue = $AWA->getLastSelectedValue();
         $NaviFilter         = $AWA->getNaviFilter();
 
-        if (($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1) ||
-            $AWA->getCurQuestion() === $AWA->getQuestionCount() ||
-            $AWA->getQuestion($AWA->getCurQuestion())->nTotalResultCount === 0)
+        if (($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1)
+            || $AWA->getCurQuestion() === $AWA->getQuestionCount()
+            || $AWA->getQuestion($AWA->getCurQuestion())->nTotalResultCount === 0)
         {
             $response->script("window.location.href='" . StringHandler::htmlentitydecode(
                 $NaviFilter->getFilterURL()->getURL()

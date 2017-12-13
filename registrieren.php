@@ -54,7 +54,6 @@ if (isset($_FILES['vcard'])
     && validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
-    @unlink($_FILES['vcard']['tmp_name']);
 }
 // hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));

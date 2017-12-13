@@ -79,4 +79,12 @@ class FilterSelectField extends FilterField
 
         return null;
     }
+
+    /**
+     * @return FilterSelectOption
+     */
+    public function getSelectedOption()
+    {
+        return $this->oOption_arr[(int)$this->cValue];
+    }
 }

@@ -1690,3 +1690,13 @@ define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);
  * @file admin/shopzuruecksetzen.php
  */
 define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
+
+/**
+ * on removing a cart position that has been deactivated / deleted in the meantime
+ *
+ * @since 4.07
+ * @file classes/class.JTL-Shop.Warenkorb.php
+ * @param WarenkorbPos - oPosition
+ * @param bool         - &delete
+ */
+define('HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS', 230);

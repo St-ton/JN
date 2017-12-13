@@ -48,15 +48,21 @@ $session = AdminSession::getInstance();
 
 /** @var Notification $notify */
 $notify = Notification::getInstance();
-/** @var Notification $notify */
-$notify->buildDefault();
-
-Shop::bootstrap();
-Shop::fire('backend.notification', [&$notify]);
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
-if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && validateToken()) {
+Shop::bootstrap();
+
+if ($oAccount->logged()) {
+    /** @var Notification $notify */
+    $notify->buildDefault();
+    Shop::fire('backend.notification', [&$notify]);
+}
+
+if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id'])
+    && validateToken()
+    && $oAccount->logged()
+) {
     $revision = new Revision();
     if ($_POST['revision-action'] === 'restore') {
         $revision->restoreRevision(

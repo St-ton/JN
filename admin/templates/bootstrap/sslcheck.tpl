@@ -4,7 +4,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#sslcheck# cBeschreibung=#sslcheckDesc# cDokuURL=#sslcheckURL#}
 <div id="content" class="container-fluid">
     <div class="container-fluid2">
-        <a href="sslcheck.php?action=check" data-callback="check">Check</a>
+        <a href="#" data-callback="check">Check</a>
         <div id="result">
             {include file='tpl_inc/sslcheck.tpl'}
         </div>

@@ -311,7 +311,7 @@ function pruefeRechnungsadresseStep($cGet_arr)
         if (isset($_SESSION['checkout.fehlendeAngaben'])) {
             setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
             unset($_SESSION['checkout.fehlendeAngaben']);
-            $step = 'edit_customer_address';
+            $step = 'accountwahl';
         }
         if (isset($_SESSION['checkout.cPost_arr'])) {
             $Kunde                      = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
@@ -974,6 +974,16 @@ function plausiNeukundenKupon()
                 $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
                 $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
                 foreach ($NeukundenKupons as $NeukundenKupon) {
+                    // teste ob Kunde mit cMail den Neukundenkupon schon verwendet hat...
+                    $oDbKuponKunde = Shop::DB()->select(
+                        'tkuponkunde',
+                        ['kKupon', 'cMail'],
+                        [$NeukundenKupon->kKupon, $_SESSION['Kunde']->cMail]
+                    );
+                    if (is_object($oDbKuponKunde)) {
+                        // ...falls ja, versuche nächsten Neukundenkupon
+                        continue;
+                    }
                     if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(checkeKupon($NeukundenKupon))) {
                         kuponAnnehmen($NeukundenKupon);
                         if (empty($verwendet)) {
@@ -2712,162 +2722,60 @@ function warenkorbKuponFaehigKategorien($Kupon, $PositionenArr)
  */
 function getKundendaten($post, $kundenaccount, $htmlentities = 1)
 {
+    $mapping = [
+        'anrede'            => 'cAnrede',
+        'vorname'           => 'cVorname',
+        'nachname'          => 'cNachname',
+        'strasse'           => 'cStrasse',
+        'hausenummer'       => 'cHausnummer',
+        'plz'               => 'cPLZ',
+        'ort'               => 'cOrt',
+        'land'              => 'cLand',
+        'email'             => 'cMail',
+        'tel'               => 'cTel',
+        'fax'               => 'cFax',
+        'firma'             => 'cFirma',
+        'firmazusatz'       => 'cZusatz',
+        'bundesland'        => 'cBundesland',
+        'titel'             => 'cTitel',
+        'adresszusatz'      => 'cAdressZusatz',
+        'mobil'             => 'cMobil',
+        'www'               => 'cWWWW',
+        'ustid'             => 'cUSTID',
+        'geburtstag'        => 'dGeburtstag',
+        'kundenherkunft'    => 'cHerkunft',
+    ];
+
+    if ($kundenaccount !== 0) {
+        $mapping['pass'] = 'cPasswort';
+    }
+
     //erstelle neuen Kunden
-    $kKunde = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)
-        ? (int)$_SESSION['Kunde']->kKunde
-        : 0;
-    $Kunde  = new Kunde($kKunde);
-    if ($htmlentities) {
-        $Kunde->cAnrede       = isset($post['anrede'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['anrede']))
-            : $Kunde->cAnrede;
-        $Kunde->cVorname      = isset($post['vorname'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['vorname']))
-            : $Kunde->cVorname;
-        $Kunde->cNachname     = isset($post['nachname'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['nachname']))
-            : $Kunde->cNachname;
-        $Kunde->cStrasse      = isset($post['strasse'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['strasse']))
-            : $Kunde->cStrasse;
-        $Kunde->cHausnummer   = isset($post['hausnummer'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['hausnummer']))
-            : $Kunde->cHausnummer;
-        $Kunde->cPLZ          = isset($post['plz'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['plz']))
-            : $Kunde->cPLZ;
-        $Kunde->cOrt          = isset($post['ort'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['ort']))
-            : $Kunde->cOrt;
-        $Kunde->cLand         = isset($post['land'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['land']))
-            : $Kunde->cLand;
-        $Kunde->cMail         = isset($post['email'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['email']))
-            : $Kunde->cMail;
-        $Kunde->cTel          = isset($post['tel'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['tel']))
-            : $Kunde->cTel;
-        $Kunde->cFax          = isset($post['fax'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['fax']))
-            : $Kunde->cFax;
-        $Kunde->cFirma        = isset($post['firma'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['firma']))
-            : $Kunde->cFirma;
-        $Kunde->cZusatz       = isset($post['firmazusatz'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['firmazusatz']))
-            : $Kunde->cZusatz;
-        $Kunde->cBundesland   = isset($post['bundesland'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['bundesland']))
-            : $Kunde->cBundesland;
-        $Kunde->cTitel        = isset($post['titel'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['titel']))
-            : $Kunde->cTitel;
-        $Kunde->cAdressZusatz = isset($post['adresszusatz'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['adresszusatz']))
-            : $Kunde->cAdressZusatz;
-        $Kunde->cMobil        = isset($post['mobil'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['mobil']))
-            : $Kunde->cMobil;
-        $Kunde->cWWW          = isset($post['www'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['www']))
-            : $Kunde->cWWW;
-        $Kunde->cUSTID        = isset($post['ustid'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['ustid']))
-            : $Kunde->cUSTID;
-        $Kunde->dGeburtstag   = isset($post['geburtstag'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['geburtstag']))
-            : $Kunde->dGeburtstag;
-        $Kunde->cHerkunft     = isset($post['kundenherkunft'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($post['kundenherkunft']))
-            : $Kunde->cHerkunft;
-        if ($kundenaccount != 0) {
-            $Kunde->cPasswort = isset($post['pass'])
-                ? StringHandler::htmlentities(StringHandler::filterXSS($post['pass']))
-                : $Kunde->cPasswort;
-        }
-    } else {
-        $Kunde->cAnrede       = isset($post['anrede'])
-            ? StringHandler::filterXSS($post['anrede'])
-            : $Kunde->cAnrede;
-        $Kunde->cVorname      = isset($post['vorname'])
-            ? StringHandler::filterXSS($post['vorname'])
-            : $Kunde->cVorname;
-        $Kunde->cNachname     = isset($post['nachname'])
-            ? StringHandler::filterXSS($post['nachname'])
-            : $Kunde->cNachname;
-        $Kunde->cStrasse      = isset($post['strasse'])
-            ? StringHandler::filterXSS($post['strasse'])
-            : $Kunde->cStrasse;
-        $Kunde->cHausnummer   = isset($post['hausnummer'])
-            ? StringHandler::filterXSS($post['hausnummer'])
-            : $Kunde->cHausnummer;
-        $Kunde->cPLZ          = isset($post['plz'])
-            ? StringHandler::filterXSS($post['plz'])
-            : $Kunde->cPLZ;
-        $Kunde->cOrt          = isset($post['ort'])
-            ? StringHandler::filterXSS($post['ort'])
-            : $Kunde->cOrt;
-        $Kunde->cLand         = isset($post['land'])
-            ? StringHandler::filterXSS($post['land'])
-            : $Kunde->cLand;
-        $Kunde->cMail         = isset($post['email'])
-            ? StringHandler::filterXSS($post['email'])
-            : $Kunde->cMail;
-        $Kunde->cTel          = isset($post['tel'])
-            ? StringHandler::filterXSS($post['tel'])
-            : $Kunde->cTel;
-        $Kunde->cFax          = isset($post['fax'])
-            ? StringHandler::filterXSS($post['fax'])
-            : $Kunde->cFax;
-        $Kunde->cFirma        = isset($post['firma'])
-            ? StringHandler::filterXSS($post['firma'])
-            : $Kunde->cFirma;
-        $Kunde->cZusatz       = isset($post['firmazusatz'])
-            ? StringHandler::filterXSS($post['firmazusatz'])
-            : $Kunde->cZusatz;
-        $Kunde->cBundesland   = isset($post['bundesland'])
-            ? StringHandler::filterXSS($post['bundesland'])
-            : $Kunde->cBundesland;
-        $Kunde->cTitel        = isset($post['titel'])
-            ? StringHandler::filterXSS($post['titel'])
-            : $Kunde->cTitel;
-        $Kunde->cAdressZusatz = isset($post['adresszusatz'])
-            ? StringHandler::filterXSS($post['adresszusatz'])
-            : $Kunde->cAdressZusatz;
-        $Kunde->cMobil        = isset($post['mobil'])
-            ? StringHandler::filterXSS($post['mobil'])
-            : $Kunde->cMobil;
-        $Kunde->cWWW          = isset($post['www'])
-            ? StringHandler::filterXSS($post['www'])
-            : $Kunde->cWWW;
-        $Kunde->cUSTID        = isset($post['ustid'])
-            ? StringHandler::filterXSS($post['ustid'])
-            : $Kunde->cUSTID;
-        $Kunde->dGeburtstag   = isset($post['geburtstag'])
-            ? StringHandler::filterXSS($post['geburtstag'])
-            : $Kunde->dGeburtstag;
-        $Kunde->cHerkunft     = isset($post['kundenherkunft'])
-            ? StringHandler::filterXSS($post['kundenherkunft'])
-            : $Kunde->cHerkunft;
-        if ($kundenaccount != 0) {
-            $Kunde->cPasswort = isset($post['pass'])
-                ? StringHandler::filterXSS($post['pass'])
-                : $Kunde->cPasswort;
-        }
-    }
-    if (preg_match('/^\d{2}\.\d{2}\.(\d{4})$/', $Kunde->dGeburtstag)) {
-        $Kunde->dGeburtstag = DateTime::createFromFormat('d.m.Y', $Kunde->dGeburtstag)->format('Y-m-d');
-    }
-    $Kunde->angezeigtesLand = ISO2land($Kunde->cLand);
-    if (!empty($Kunde->cBundesland)) {
-        $oISO = Staat::getRegionByIso($Kunde->cBundesland, $Kunde->cLand);
-        if (is_object($oISO)) {
-            $Kunde->cBundesland = $oISO->cName;
+    $kKunde    = isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 ? (int)$_SESSION['Kunde']->kKunde : 0;
+    $customer  = new Kunde($kKunde);
+
+    foreach ($mapping as $external => $internal) {
+        if (isset($post[$external])) {
+            $val                   = StringHandler::filterXSS($post[$external]);
+            if ($htmlentities) {
+                $val = StringHandler::htmlentities($val);
+            }
+            $customer->$internal   = $val;
         }
     }
 
-    return $Kunde;
+    if (preg_match('/^\d{2}\.\d{2}\.(\d{4})$/', $customer->dGeburtstag)) {
+        $customer->dGeburtstag = DateTime::createFromFormat('d.m.Y', $customer->dGeburtstag)->format('Y-m-d');
+    }
+    $customer->angezeigtesLand = ISO2land($customer->cLand);
+    if (!empty($customer->cBundesland)) {
+        $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
+        if (is_object($oISO)) {
+            $customer->cBundesland = $oISO->cName;
+        }
+    }
+
+    return $customer;
 }
 
 /**

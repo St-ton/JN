@@ -33,11 +33,11 @@
                 <div class="btn-group">
                     <button type="button" class="btn btn-xs btn-primary" id="{$searchPickerName}-select-all-btn">
                         <i class="fa fa-check-square-o"></i>
-                        {#searchpickerSelectAllShown#}
+                        {#selectAllShown#}
                     </button>
                     <button type="button" class="btn btn-xs btn-danger" id="{$searchPickerName}-unselect-all-btn">
                         <i class="fa fa-square-o"></i>
-                        {#searchpickerUnselectAllShown#}
+                        {#unselectAllShown#}
                     </button>
                 </div>
             </div>

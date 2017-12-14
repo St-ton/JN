@@ -1614,7 +1614,9 @@ class Warenkorb
      */
     public function getFavourableShipping()
     {
-        if (!empty($_SESSION['Versandart']->kVersandart) && isset($_SESSION['Versandart']->nMinLiefertage)) {
+        if (!empty($_SESSION['Versandart']->kVersandart) && isset($_SESSION['Versandart']->nMinLiefertage) 
+            || empty($_SESSION['Warenkorb']->PositionenArr)
+        ) {
             return null;
         }
 

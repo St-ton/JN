@@ -99,9 +99,9 @@ function kundeSpeichern($cPost_arr)
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
             $oNeukunde     = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
             $kKundengruppe = Session::CustomerGroup()->getID();
-            if ($oNeukunde->kKundenWerbenKunden > 0 &&
-                isset($oNeukunde->kKundenWerbenKunden, $Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) &&
-                (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'] > 0
+            if (isset($oNeukunde->kKundenWerbenKunden, $Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'])
+                && $oNeukunde->kKundenWerbenKunden > 0
+                && (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'] > 0
             ) {
                 $kKundengruppe = (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'];
             }

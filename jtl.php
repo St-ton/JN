@@ -364,7 +364,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
         }
     } elseif (verifyGPCDataInteger('wl') > 0 && verifyGPCDataInteger('wlvm') === 0) { // Wunschliste anzeigen
-        $step         = (!empty($_SESSION['Kunde']->kKunde)) ? 'mein Konto' : 'login';
+        $step         = !empty($_SESSION['Kunde']->kKunde) ? 'mein Konto' : 'login';
         $kWunschliste = verifyGPCDataInteger('wl');
         if ($kWunschliste > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört

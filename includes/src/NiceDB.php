@@ -504,49 +504,6 @@ class NiceDB implements Serializable
                     "\n\nBacktrace:" . print_r(debug_backtrace(), 1)
                 );
             }
-            if ($this->debug === true || $this->collectData === true) {
-                $end       = microtime(true);
-                $backtrace = null;
-                if ($this->debugLevel > 2) {
-                    $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-                }
-                $arr = get_object_vars($object);
-                if (!is_array($arr)) {
-                    if ($this->logErrors && $this->logfileName) {
-                        $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
-                    }
-
-                    return 0;
-                }
-                $columns  = '(';
-                $values   = '(';
-                $keys     = array_keys($arr);
-                $keyCount = count($keys);
-                for ($i = 0; $i < $keyCount; $i++) {
-                    if ($i === (count($keys) - 1)) {
-                        $columns .= $keys[$i] . ') values';
-                        if ($object->$keys[$i] === '_DBNULL_') {
-                            $values .= 'null' . ')';
-                        } elseif ($object->$keys[$i] === 'now()') {
-                            $values .= $object->$keys[$i] . ')';
-                        } else {
-                            $values .= '' . $this->pdoEscape($object->$keys[$i]) . ')';
-                        }
-                    } else {
-                        $columns .= $keys[$i] . ', ';
-                        if ($object->$keys[$i] === '_DBNULL_') {
-                            $values .= 'null' . ', ';
-                        } elseif ($object->$keys[$i] === 'now()') {
-                            $values .= $object->$keys[$i] . ', ';
-                        } else {
-                            $values .= '' . $this->pdoEscape($object->$keys[$i]) . ', ';
-                        }
-                    }
-                }
-                $stmt = "INSERT INTO $tableName $columns $values";
-                $this->analyzeQuery('insert', $stmt, $end - $start, $backtrace);
-            }
-
             return 0;
         }
         $id = $this->pdo->lastInsertId();

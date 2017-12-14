@@ -2034,19 +2034,21 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         $ret['email'] = 3;
     }
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-        if (isset($ret['email']) && $ret['email'] !== 1 && $data['email'] !== $_SESSION['Kunde']->cMail &&
-            !isEmailAvailable($data['email'])
+        if (isset($ret['email'])
+            && $ret['email'] !== 1
+            && $data['email'] !== $_SESSION['Kunde']->cMail
+            && !isEmailAvailable($data['email'])
         ) {
             $ret['email'] = 5;
         }
     } elseif (isset($ret['email']) && $ret['email'] !== 1 && !isEmailAvailable($data['email'])) {
         $ret['email'] = 5;
     }
-    if (empty($_SESSION['check_plzort']) &&
-        $data['plz'] &&
-        $data['ort'] &&
-        $data['land'] &&
-        $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
+    if (empty($_SESSION['check_plzort'])
+        && $data['plz']
+        && $data['ort']
+        && $data['land']
+        && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
     ) {
         if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
             $ret['plz']               = 2;
@@ -2072,18 +2074,18 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         ? Shop::DB()->select('tland', 'cISO', $data['land'])
         : null;
 
-    if (isset($deliveryCountry->nEU) &&
-        $deliveryCountry->nEU === '0' &&
-        $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y'
+    if (isset($deliveryCountry->nEU)
+        && $deliveryCountry->nEU === '0'
+        && $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y'
     ) {
         //skip
     } elseif (empty($data['ustid']) && $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y') {
         $ret['ustid'] = 1;
-    } elseif ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N' &&
-        isset($data['ustid']) && $data['ustid'] !== ''
+    } elseif ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N'
+        && isset($data['ustid']) && $data['ustid'] !== ''
     ) {
-        if (!isset($_SESSION['Kunde']->cUSTID) ||
-            (isset($_SESSION['Kunde']->cUSTID) && $_SESSION['Kunde']->cUSTID !== $data['ustid'])
+        if (!isset($_SESSION['Kunde']->cUSTID)
+            || (isset($_SESSION['Kunde']->cUSTID) && $_SESSION['Kunde']->cUSTID !== $data['ustid'])
         ) {
             $bAnalizeCheck = false; // flag to signalize further analization
             if ('Y' === $conf['kunden']['shop_ustid_bzstpruefung']) { // backend-setting: "Einstellungen -> Formulareinstellungen ->"
@@ -2095,7 +2097,6 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                 // "all was fine"
                 $ret['ustid'] = 0;
             } else {
-
                 switch ($vViesResult['errortype']) {
                     case 'vies' :
                         // vies-error: the ID is invalid according to the VIES-system
@@ -2143,8 +2144,8 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         }
 
     }
-    if ($conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y' &&
-        checkeDatum(StringHandler::filterXSS($data['geburtstag'])) > 0
+    if ($conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
+        && checkeDatum(StringHandler::filterXSS($data['geburtstag'])) > 0
     ) {
         $ret['geburtstag'] = checkeDatum(StringHandler::filterXSS($data['geburtstag']));
     }
@@ -2159,7 +2160,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
     }
     if ($kundenaccount == 1) {
         if ($checkpass) {
-            if ($data['pass'] != $data['pass2']) {
+            if ($data['pass'] !== $data['pass2']) {
                 $ret['pass_ungleich'] = 1;
             }
             if (strlen($data['pass']) < $conf['kunden']['kundenregistrierung_passwortlaenge']) {
@@ -2190,64 +2191,62 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             Shop::getLanguage(),
             'kKundenfeld, cName, cTyp, nPflicht, nEditierbar'
         );
-        if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
-            foreach ($oKundenfeld_arr as $oKundenfeld) {
-                // Kundendaten ändern?
-                if ((int)$data['editRechnungsadresse'] === 1) {
-                    if (!isset($data['custom_' . $oKundenfeld->kKundenfeld]) &&
-                        $oKundenfeld->nPflicht == 1 &&
-                        $oKundenfeld->nEditierbar == 1
+        foreach ($oKundenfeld_arr as $oKundenfeld) {
+            // Kundendaten ändern?
+            if ((int)$data['editRechnungsadresse'] === 1) {
+                if (!isset($data['custom_' . $oKundenfeld->kKundenfeld])
+                    && $oKundenfeld->nPflicht == 1
+                    && $oKundenfeld->nEditierbar == 1
+                ) {
+                    $ret['custom'][$oKundenfeld->kKundenfeld] = 1;
+                } else {
+                    if (isset($data['custom_' . $oKundenfeld->kKundenfeld])
+                        && $data['custom_' . $oKundenfeld->kKundenfeld]
                     ) {
-                        $ret['custom'][$oKundenfeld->kKundenfeld] = 1;
-                    } else {
-                        if (isset($data['custom_' . $oKundenfeld->kKundenfeld]) &&
-                            $data['custom_' . $oKundenfeld->kKundenfeld]
-                        ) {
-                            // Datum
-                            // 1 = leer
-                            // 2 = falsches Format
-                            // 3 = falsches Datum
-                            // 0 = o.k.
-                            if ($oKundenfeld->cTyp === 'datum') {
-                                $_dat   = StringHandler::filterXSS($data['custom_' . $oKundenfeld->kKundenfeld]);
-                                $_datTs = strtotime($_dat);
-                                $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
-                                $check  = checkeDatum($_dat);
-                                if ($check !== 0) {
-                                    $ret['custom'][$oKundenfeld->kKundenfeld] = $check;
-                                }
-                            } elseif ($oKundenfeld->cTyp === 'zahl') {
-                                // Zahl, 4 = keine Zahl
-                                if ($data['custom_' . $oKundenfeld->kKundenfeld] != (float)$data['custom_' . $oKundenfeld->kKundenfeld]
-                                ) {
-                                    $ret['custom'][$oKundenfeld->kKundenfeld] = 4;
-                                }
+                        // Datum
+                        // 1 = leer
+                        // 2 = falsches Format
+                        // 3 = falsches Datum
+                        // 0 = o.k.
+                        if ($oKundenfeld->cTyp === 'datum') {
+                            $_dat   = StringHandler::filterXSS($data['custom_' . $oKundenfeld->kKundenfeld]);
+                            $_datTs = strtotime($_dat);
+                            $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
+                            $check  = checkeDatum($_dat);
+                            if ($check !== 0) {
+                                $ret['custom'][$oKundenfeld->kKundenfeld] = $check;
+                            }
+                        } elseif ($oKundenfeld->cTyp === 'zahl') {
+                            // Zahl, 4 = keine Zahl
+                            if ($data['custom_' . $oKundenfeld->kKundenfeld] != (float)$data['custom_' . $oKundenfeld->kKundenfeld]
+                            ) {
+                                $ret['custom'][$oKundenfeld->kKundenfeld] = 4;
                             }
                         }
                     }
-                } else { // Neuer Kunde
-                    if (empty($data['custom_' . $oKundenfeld->kKundenfeld]) && $oKundenfeld->nPflicht == 1) {
-                        $ret['custom'][$oKundenfeld->kKundenfeld] = 1;
-                    } else {
-                        if ($data['custom_' . $oKundenfeld->kKundenfeld]) {
-                            // Datum
-                            // 1 = leer
-                            // 2 = falsches Format
-                            // 3 = falsches Datum
-                            // 0 = o.k.
-                            if ($oKundenfeld->cTyp === 'datum') {
-                                $_dat   = StringHandler::filterXSS($data['custom_' . $oKundenfeld->kKundenfeld]);
-                                $_datTs = strtotime($_dat);
-                                $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
-                                $check  = checkeDatum($_dat);
-                                if ($check !== 0) {
-                                    $ret['custom'][$oKundenfeld->kKundenfeld] = $check;
-                                }
-                            } elseif ($oKundenfeld->cTyp === 'zahl') {
-                                // Zahl, 4 = keine Zahl
-                                if ($data['custom_' . $oKundenfeld->kKundenfeld] != (float)$data['custom_' . $oKundenfeld->kKundenfeld]) {
-                                    $ret['custom'][$oKundenfeld->kKundenfeld] = 4;
-                                }
+                }
+            } else { // Neuer Kunde
+                if (empty($data['custom_' . $oKundenfeld->kKundenfeld]) && $oKundenfeld->nPflicht == 1) {
+                    $ret['custom'][$oKundenfeld->kKundenfeld] = 1;
+                } else {
+                    if ($data['custom_' . $oKundenfeld->kKundenfeld]) {
+                        // Datum
+                        // 1 = leer
+                        // 2 = falsches Format
+                        // 3 = falsches Datum
+                        // 0 = o.k.
+                        if ($oKundenfeld->cTyp === 'datum') {
+                            $_dat   = StringHandler::filterXSS($data['custom_' . $oKundenfeld->kKundenfeld]);
+                            $_datTs = strtotime($_dat);
+                            $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
+                            $check  = checkeDatum($_dat);
+                            if ($check !== 0) {
+                                $ret['custom'][$oKundenfeld->kKundenfeld] = $check;
+                            }
+                        } elseif ($oKundenfeld->cTyp === 'zahl') {
+                            // Zahl, 4 = keine Zahl
+                            if ($data['custom_' . $oKundenfeld->kKundenfeld] != (float)$data['custom_' . $oKundenfeld->kKundenfeld]) {
+                                $ret['custom'][$oKundenfeld->kKundenfeld] = 4;
                             }
                         }
                     }
@@ -2255,39 +2254,39 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             }
         }
     }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_ort']) &&
-        $conf['kunden']['kundenregistrierung_pruefen_ort'] === 'Y' &&
-        preg_match('#[0-9]+#', $data['ort'])
+    if (isset($conf['kunden']['kundenregistrierung_pruefen_ort'])
+        && $conf['kunden']['kundenregistrierung_pruefen_ort'] === 'Y'
+        && preg_match('#[0-9]+#', $data['ort'])
     ) {
         $ret['ort'] = 3;
     }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_name']) &&
-        $conf['kunden']['kundenregistrierung_pruefen_name'] === 'Y' &&
-        preg_match('#[0-9]+#', $data['nachname'])
+    if (isset($conf['kunden']['kundenregistrierung_pruefen_name'])
+        && $conf['kunden']['kundenregistrierung_pruefen_name'] === 'Y'
+        && preg_match('#[0-9]+#', $data['nachname'])
     ) {
         $ret['nachname'] = 2;
     }
 
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'], $data['editRechnungsadresse']) &&
-        $data['editRechnungsadresse'] != 1 &&
-        $conf['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
+    if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'], $data['editRechnungsadresse'])
+        && $data['editRechnungsadresse'] != 1
+        && $conf['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
     ) {
         $dRegZeit = (!isset($_SESSION['dRegZeit'])) ? 0 : $_SESSION['dRegZeit'];
         if (!($dRegZeit + 5 < time())) {
             $ret['formular_zeit'] = 1;
         }
     }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_email'], $data['email']) &&
-        $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y' &&
-        strlen($data['email']) > 0 &&
-        !checkdnsrr(substr($data['email'], strpos($data['email'], '@') + 1))
+    if (isset($conf['kunden']['kundenregistrierung_pruefen_email'], $data['email'])
+        && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
+        && strlen($data['email']) > 0
+        && !checkdnsrr(substr($data['email'], strpos($data['email'], '@') + 1))
     ) {
         $ret['email'] = 4;
     }
 
-    if (isset($conf['kunden']['registrieren_captcha']) &&
-        $conf['kunden']['registrieren_captcha'] !== 'N' &&
-        !validateCaptcha($data)
+    if (isset($conf['kunden']['registrieren_captcha'])
+        && $conf['kunden']['registrieren_captcha'] !== 'N'
+        && !validateCaptcha($data)
     ) {
         $ret['captcha'] = 2;
     }

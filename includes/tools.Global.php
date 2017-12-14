@@ -3328,11 +3328,21 @@ function gibAGBWRB($kSprache, $kKundengruppe)
     if ($kSprache <= 0 || $kKundengruppe <= 0) {
         return false;
     }
+    $linkHelper = LinkHelper::getInstance();
+    $oLinkAGB   = null;
+    $oLinkWRB   = null;
     // kLink für AGB und WRB suchen
-    $oLinkAGB = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_AGB, 1);
-    $oLinkWRB = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_WRB, 1);
-    $oAGBWRB  = Shop::DB()->select('ttext', 'kKundengruppe', (int)$kKundengruppe, 'kSprache', (int)$kSprache);
+    foreach ($linkHelper->getSpecialPages() as $sp) {
+        if ($sp->nLinkart === LINKTYP_AGB) {
+            $oLinkAGB = $sp;
+        } elseif ($sp->nLinkart === LINKTYP_WRB) {
+            $oLinkWRB = $sp;
+        }
+    }
+    $oAGBWRB = Shop::DB()->select('ttext', 'kKundengruppe', (int)$kKundengruppe, 'kSprache', (int)$kSprache);
     if (!empty($oAGBWRB->kText)) {
+        $oAGBWRB->cURLAGB  = isset($oLinkAGB->cURL) ? $oLinkAGB->cURL : '';
+        $oAGBWRB->cURLWRB  = isset($oLinkWRB->cURL) ? $oLinkWRB->cURL : '';
         $oAGBWRB->kLinkAGB = (isset($oLinkAGB->kLink) && $oLinkAGB->kLink > 0)
             ? (int)$oLinkAGB->kLink
             : 0;
@@ -3344,6 +3354,8 @@ function gibAGBWRB($kSprache, $kKundengruppe)
     }
     $oAGBWRB = Shop::DB()->select('ttext', 'nStandard', 1);
     if (!empty($oAGBWRB->kText)) {
+        $oAGBWRB->cURLAGB  = isset($oLinkAGB->cURL) ? $oLinkAGB->cURL : '';
+        $oAGBWRB->cURLWRB  = isset($oLinkWRB->cURL) ? $oLinkWRB->cURL : '';
         $oAGBWRB->kLinkAGB = (isset($oLinkAGB->kLink) && $oLinkAGB->kLink > 0)
             ? (int)$oLinkAGB->kLink
             : 0;

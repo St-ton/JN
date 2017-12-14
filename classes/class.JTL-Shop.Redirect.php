@@ -422,7 +422,6 @@ class Redirect
                 $oReferer->dDate        = time();
                 Shop::DB()->insert('tredirectreferer', $oReferer);
                 if ($oItem !== null) {
-                    Shop::dbg($oItem, false, 'oItem:');
                     ++$oItem->nCount;
                     Shop::DB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
                 }

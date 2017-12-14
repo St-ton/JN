@@ -28,7 +28,6 @@ $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
 $cHinweis      = '';
 $hinweis       = '';
 $cFehler       = '';
-
 if (verifyGPCDataInteger('wlidmsg') > 0) {
     $cHinweis .= mappeWunschlisteMSG(verifyGPCDataInteger('wlidmsg'));
 }
@@ -518,8 +517,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         ) {
             $cFehler .= Shop::Lang()->get('changepasswordPassesNotEqual', 'login');
         }
-        if (isset($_POST['neuesPasswort1']) &&
-            strlen($_POST['neuesPasswort1']) < $Einstellungen['kunden']['kundenregistrierung_passwortlaenge']
+        if (isset($_POST['neuesPasswort1'])
+            && strlen($_POST['neuesPasswort1']) < $Einstellungen['kunden']['kundenregistrierung_passwortlaenge']
         ) {
             $cFehler .= Shop::Lang()->get('changepasswordPassTooShort', 'login') . ' ' .
                 lang_passwortlaenge($Einstellungen['kunden']['kundenregistrierung_passwortlaenge']);

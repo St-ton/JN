@@ -411,6 +411,7 @@ function getBasketItems($nTyp)
                    ->assign('WarenkorbGesamtgewicht', $_SESSION['Warenkorb']->getWeight())
                    ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($_SESSION['Warenkorb']))
                    ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
+                   ->assign('FavourableShipping', $_SESSION['Warenkorb']->getFavourableShipping())
                    ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb,
                        $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
                            [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],

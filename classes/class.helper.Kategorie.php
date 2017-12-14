@@ -281,6 +281,7 @@ class KategorieHelper
                         foreach ($hierarchy as $_i) {
                             if ($newCurrent[$_i]->kKategorie === $_cat->kOberKategorie) {
                                 $current                                     = $newCurrent[$_i];
+                                $current->bUnterKategorien                   = 1;
                                 $current->Unterkategorien[$_cat->kKategorie] = $_cat;
                                 array_splice($hierarchy, $i);
                                 $hierarchy[] = $_cat->kOberKategorie;

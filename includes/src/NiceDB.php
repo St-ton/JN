@@ -661,9 +661,8 @@ class NiceDB implements Serializable
             if ($this->debugLevel > 2) {
                 $backtrace = debug_backtrace();
             }
-            $arr     = get_object_vars($object);
             $updates = [];
-            foreach ($arr as $_key => $_val) {
+            foreach ($object as $_key => $_val) {
                 if ($_val === '_DBNULL_') {
                     $_val = null;
                 } elseif ($_val === null) {

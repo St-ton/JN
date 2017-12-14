@@ -70,7 +70,7 @@ class Status
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
-        $current  = getDBStruct();
+        $current  = getDBStruct(true);
         $original = getDBFileStruct();
 
         return (is_array($current) && is_array($original))
@@ -287,7 +287,7 @@ class Status
 
         if (count($aPollCoupons) > 0) {
             foreach ($aPollCoupons as $Kupon) {
-                if ($Kupon->kKupon > 0){
+                if ($Kupon->kKupon > 0) {
                     $kKupon = Shop::DB()->select(
                         'tkupon',
                         'kKupon',
@@ -299,6 +299,7 @@ class Status
                         false,
                         'kKupon'
                     );
+
                     $invalidCouponsFound = empty($kKupon);
                 }
             }

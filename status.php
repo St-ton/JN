@@ -29,7 +29,7 @@ if (strlen($_GET['uid']) === 40) {
         1
     );
     if (empty($status->kBestellung)) {
-        header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
         exit;
     }
     $bestellung = (new Bestellung($status->kBestellung))->fuelleBestellung();
@@ -37,7 +37,7 @@ if (strlen($_GET['uid']) === 40) {
            ->assign('Kunde', new Kunde($bestellung->kKunde))
            ->assign('Lieferadresse', $bestellung->Lieferadresse);
 } else {
-    header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
     exit;
 }
 

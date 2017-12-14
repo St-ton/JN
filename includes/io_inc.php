@@ -396,6 +396,7 @@ function getBasketItems($nTyp)
                    ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
                    ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
                    ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
+                   ->assign('FavourableShipping', $cart->getFavourableShipping())
                    ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb,
                        $cart->gibGesamtsummeWarenExt(
                            [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],

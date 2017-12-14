@@ -49,8 +49,8 @@
                         ca. {($engineUpdate->estimated[1] / 60)|ceil} Minuten
                     {else}
                         ca. {($engineUpdate->estimated[1] / 3600)|ceil} Stunden
-                    {/if} dauern. W&auml;hrend der Migration werden zudem wichtige Tabellen im Shop gesperrt, so dass es zu erheblichen Einschr&auml;nckungen im Frontend kommen kann.
-                    Es wird deshalb empfohlen den <a title="Globale Einstellungen - Wartungsmodus" href="/admin/einstellungen.php?kSektion=1#wartungsmodus_aktiviert">Wartungsmodus</a> zu aktivieren,
+                    {/if} dauern. W&auml;hrend der Migration werden zudem wichtige Tabellen im Shop gesperrt, so dass es zu erheblichen Einschr&auml;nkungen im Frontend kommen kann.
+                    Es wird deshalb empfohlen, den <a title="Globale Einstellungen - Wartungsmodus" href="/admin/einstellungen.php?kSektion=1#wartungsmodus_aktiviert">Wartungsmodus</a> zu aktivieren,
                     w&auml;hrend Sie die Migration durchf&uuml;hren!<br />
                     Jede Tabelle wird einzeln in zwei Schritten migriert. Im ersten Schritt erfolgt die Verschiebung in den InnoDB-Tablespace und im Zweiten die Konvertierung der Daten in den UTF-8 Zeichensatz.
                 </p>
@@ -91,7 +91,7 @@
             {if isset($scriptGenerationAvailable) && $scriptGenerationAvailable}
             <div id="update_script" class="tab-pane fade{if $tab === 'update_script'} in active{/if}">
                 <h3>Per Script auf der DB-Konsole</h3>
-                <p>Die Migration per Script &uuml;ber die MySQL-Konsole wird empfohlen, wenn Sie administrativen Zugang zu Ihrem Datenbankserver haben und eine gro&szlig;e Menge an Daten migriert werden mu&szlig;.</p>
+                <p>Die Migration per Script &uuml;ber die MySQL-Konsole wird empfohlen, wenn Sie administrativen Zugang zu Ihrem Datenbankserver haben und eine gro&szlig;e Menge an Daten migriert werden muss.</p>
                 <p>Mit einem Klick auf den Button &quot;Script erstellen&quot; k&ouml;nnen Sie sich ein Script zur Durchf&uuml;hrung der notwendigen Migration generieren lassen. Dieses Script k&ouml;nnen Sie dann komplett oder
                     in Teilen auf der Konsole Ihres Datenbankservers ausf&uuml;hren. Sie ben&ouml;tigen daf&uuml;r einen administrativen Zugang (z.B. per SSH) zu Ihrem Datenbank-Server. Eine Weboberfl&auml;che wie phpMyAdmin
                     ist f&uuml;r das Ausf&uuml;hren dieses Scriptes <strong>nicht</strong> geeignet.
@@ -99,8 +99,8 @@
                 <p>Das Script wird anhand der aktuellen Situation erstellt und beinhaltet nur die &Auml;nderungen, die f&uuml;r diesen JTL-Shop notwendig sind. Sie k&ouml;nnen das Script nicht verwenden, um die Migration
                     auf einem anderen JTL-Shop auszuf&uuml;hren!
                 </p>
-                <p>Bedenken Sie beim Ausf&uuml;hren des Scriptes das dieses ggfs. eine l&auml;ngere Zeit f&uuml;r den kompletten Durchlauf ben&ouml;tigt und w&auml;hrenddessen wichtige Tabellen im Shop f&uuml;r den Zugriff gesperrt werden.
-                    Es wird deshalb empfohlen den <a title="Globale Einstellungen - Wartungsmodus" href="/admin/einstellungen.php?kSektion=1#wartungsmodus_aktiviert">Wartungsmodus</a> zu aktivieren,
+                <p>Bedenken Sie beim Ausf&uuml;hren des Scriptes, dass dieses ggfs. eine l&auml;ngere Zeit f&uuml;r den kompletten Durchlauf ben&ouml;tigt und w&auml;hrenddessen wichtige Tabellen im Shop f&uuml;r den Zugriff gesperrt werden.
+                    Es wird deshalb empfohlen, den <a title="Globale Einstellungen - Wartungsmodus" href="/admin/einstellungen.php?kSektion=1#wartungsmodus_aktiviert">Wartungsmodus</a> zu aktivieren,
                     w&auml;hrend Sie die Migration durchf&uuml;hren!
                 </p>
                 <div class="alert alert-warning">Erstellen Sie unbedingt ein Backup der gesamten Datenbank <strong>BEVOR</strong> Sie das Script ausf&uuml;hren!</div>
@@ -147,7 +147,7 @@
         if (typeof exclude === 'undefined' && exclude !== null) {
             exclude = [];
         }
-        if (status === ' finished') {
+        if (status === 'finished') {
             updateModalWait('Migration wird beendet...');
             window.location.reload(true);
         } else {

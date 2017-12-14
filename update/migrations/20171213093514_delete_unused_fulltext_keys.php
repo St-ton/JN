@@ -36,7 +36,7 @@ class Migration_20171213093514 extends Migration implements IMigration
             );
             if (is_array($oKeys)) {
                 foreach ($oKeys as $key) {
-                    $this->execute("ALTER IGNORE TABLE $table DROP KEY {$key->Key_name}");
+                    $this->execute("ALTER TABLE $table DROP KEY {$key->Key_name}");
                 }
             }
         }

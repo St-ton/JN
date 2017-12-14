@@ -15,7 +15,7 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
 $cPageIdHash = verifyGPDataString('cCmsPageIdHash');
 $cAction     = verifyGPDataString('cAction');
-$cPageUrl    = $_SERVER['HTTP_REFERER'];
+$cPageUrl    = verifyGPDataString('cPageUrl');
 
 if ($cAction === 'restore_default') {
     $oCMSPage = CMS::getCmsPage($cPageIdHash);

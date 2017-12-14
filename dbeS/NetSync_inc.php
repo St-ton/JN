@@ -425,6 +425,7 @@ class NetSyncHandler
             header("Content-length: $size");
         }
         readfile($filename);
+        unlink($filename);
         exit;
     }
 }

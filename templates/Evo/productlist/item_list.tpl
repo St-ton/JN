@@ -278,7 +278,7 @@
                     {/if}
                 {/block}
                 </div>
-                <input type="hidden" name="a" value="{if !empty({$Artikel->kVariKindArtikel})}{{$Artikel->kVariKindArtikel}}{else}{$Artikel->kArtikel}{/if}" />
+                <input type="hidden" name="a" value="{if !empty({$Artikel->kVariKindArtikel})}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}" />
             </form>
         </div>{* /col-md-3 *}
     </div>{* /product-body *}

@@ -132,7 +132,33 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop" id="loader-backdrop">
+    <div id="loader-modal" class="modal fade" tabindex="-1" role="dialog" style="padding-top:25%">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Bitte warten...</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-info active" style="width:100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="error-modal" class="modal fade" tabindex="-1" role="dialog" style="padding-top:25%">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Fehler</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="error-alert">
+                        Something happened
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="cle-pinbar btn-group" id="pinbar">
         <button class="btn btn-default" id="btn-trash"><i class="fa fa-trash"></i></button>

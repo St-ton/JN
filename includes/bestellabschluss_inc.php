@@ -703,6 +703,8 @@ function aktualisiereStuecklistenLagerbestand($oStueckListeArtikel, $nAnzahl)
             // wenn ja, dann wird für diese auch der Bestand aktualisiert
             $options = Artikel::getDefaultOptions();
 
+            $options->nKeineSichtbarkeitBeachten = 1;
+
             foreach ($oKomponente_arr as $oKomponente) {
                 $tmpArtikel = new Artikel();
                 $tmpArtikel->fuelleArtikel($oKomponente->kArtikel, $options);

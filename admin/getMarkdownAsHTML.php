@@ -11,15 +11,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-date_default_timezone_set('Europe/Berlin');
+require_once __DIR__ . '/includes/admininclude.php';
 
-// try to guess our root-path, by the knowing "we are somewhere in 'admin'"
-$szRootPath = preg_split('/admin/', __FILE__)[0];
-// "close the ring" to the main-application (for the correct _SESSION)
-require_once $szRootPath . '/admin/includes/admininclude.php';
+$oAccount->redirectOnFailure();
 
-if (validateToken()) {
-
+if (isset($_POST['path']) && validateToken()) {
     $szMdStyle = '
         <style>
             div.markdown {
@@ -58,22 +54,21 @@ if (validateToken()) {
             div.markdown thead tr td {
                 border-bottom-width: 2px;
             }
-        </style>
-    ';
-    if (file_exists($_POST['path'])) {
-        // slurp in the files content
-        $szFileContent = file_get_contents(utf8_decode($_POST['path']));
-        // check, if we got a Markdown-parser
-        if (class_exists('Parsedown')) {
-            $oParseDown       = new Parsedown();
-            $szLicenseContent = $oParseDown->text($szFileContent);
-        } else {
-            // if we don't have a parser, we deliver plain 'pre-formatted' text
-            $szLicenseContent = '<pre>' . $szFileContent . '</pre>';
+        </style>';
+    $path = realpath($_POST['path']);
+    if ($path !== false && strpos($path . '/', PFAD_ROOT . PFAD_PLUGIN) === 0) {
+        $info = pathinfo($path);
+        if (strtolower($info['extension']) === 'md') {
+            $szFileContent = file_get_contents(utf8_decode($path));
+            if (class_exists('Parsedown')) {
+                $oParseDown       = new Parsedown();
+                $szLicenseContent = $oParseDown->text($szFileContent);
+            } else {
+                // if we don't have a parser, we deliver plain 'pre-formatted' text
+                $szLicenseContent = '<pre>' . $szFileContent . '</pre>';
+            }
+            $szLicenseContent = mb_convert_encoding($szLicenseContent, 'HTML-ENTITIES');
+            echo $szMdStyle . "\n<div class='markdown'>\n" . $szLicenseContent . "\n</div>\n";
         }
-        // spit out, what we have
-        $szLicenseContent = mb_convert_encoding($szLicenseContent, 'HTML-ENTITIES');
-        echo $szMdStyle . "\n<div class='markdown'>\n" . $szLicenseContent . "\n</div>\n";
     }
 }
-

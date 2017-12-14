@@ -527,6 +527,9 @@ function baueFormularVorgabenBenachrichtigung()
     if (!empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] !== 'N') {
         $msg->cNachname = StringHandler::filterXSS($_POST['nachname']);
     }
+    if (!empty($_POST['email'])) {
+        $msg->cMail = StringHandler::filterXSS($_POST['email']);
+    }
 
     return $msg;
 }

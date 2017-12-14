@@ -794,7 +794,7 @@ define('HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG', 109);
 /**
  * after loading an article
  *
- * @file class.JTL-Shop.Attribut.php
+ * @file class.JTL-Shop.Artikel.php
  * @param Artikel - oArtikel
  * @param array   - cacheTags - list of associated cache tags (since 4.0)
  * @param bool    - cached - true when fetched from object cache (since 4.0)

@@ -2207,7 +2207,7 @@ class Artikel
                     $value                                   = new stdClass();
                     $value->kEigenschaftWert                 = (int)$oVariationTMP->kEigenschaftWert;
                     $value->kEigenschaft                     = (int)$oVariationTMP->kEigenschaft;
-                    $value->cName                            = $oVariationTMP->cName_teigenschaftwert;
+                    $value->cName                            = htmlspecialchars($oVariationTMP->cName_teigenschaftwert, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
                     $value->fAufpreisNetto                   = $oVariationTMP->fAufpreisNetto;
                     $value->fGewichtDiff                     = $oVariationTMP->fGewichtDiff;
                     $value->cArtNr                           = $oVariationTMP->cArtNr;

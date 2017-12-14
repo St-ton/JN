@@ -41,7 +41,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         }
     } elseif (isset($_POST['aktualisieren']) && validateToken()) { // Aktualisieren
         // Kundenfelder auslesen und in Smarty assignen
-        $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nSort ASC');
+        $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*');
 
         if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
             foreach ($oKundenfeld_arr as $oKundenfeld) {

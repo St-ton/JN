@@ -233,8 +233,11 @@
                                             <div class="col-lg-3 jtl-list-group">
                                                 <input name="cWert[]" type="text" class="field form-control" value="{$oKundenfeldWert->cWert}" />
                                             </div>
-                                            <div class="col-lg-1 jtl-list-group">
-                                                <input name="nWertSort[]" type="text" class="field form-control" value="{$oKundenfeldWert->nSort}" />
+                                            <div class="col-lg-2 jtl-list-group">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">Sort.</span>
+                                                    <input name="nWertSort[]" type="text" class="field form-control" value="{$oKundenfeldWert->nSort}" />
+                                                </div>
                                             </div>
                                             <div class="btn-group">
                                                 <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>
@@ -252,8 +255,11 @@
                                             <div class="col-lg-3 jtl-list-group">
                                                 <input name="cWert[]" type="text" class="field form-control" value="{$cKundenfeldWert}" />
                                             </div>
-                                            <div class="col-lg-1 jtl-list-group">
-                                                <input name="nWertSort[]" type="text" class="field form-control" value="{$xPostVar_arr.nWertSort.$key}" />
+                                            <div class="col-lg-2 jtl-list-group">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">Sort.</span>
+                                                    <input name="nWertSort[]" type="text" class="field form-control" value="{$xPostVar_arr.nWertSort.$key}" />
+                                                </div>
                                             </div>
                                             <div class="btn-group">
                                                 <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>

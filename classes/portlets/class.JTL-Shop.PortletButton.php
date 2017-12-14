@@ -110,6 +110,7 @@ class PortletButton extends CMSPortlet
             ],
             // style
             'style' => [
+                'color'               => '',
                 'margin-top'          => '',
                 'margin-right'        => '',
                 'margin-bottom'       => '',

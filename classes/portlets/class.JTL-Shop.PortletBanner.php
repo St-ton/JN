@@ -111,6 +111,7 @@ class PortletBanner extends CMSPortlet
             ],
             // style
             'style' => [
+                'color'               => '',
                 'margin-top'          => '',
                 'margin-right'        => '',
                 'margin-bottom'       => '',

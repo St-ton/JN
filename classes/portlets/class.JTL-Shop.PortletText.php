@@ -13,7 +13,7 @@ class PortletText extends CMSPortlet
     {
         $text = $this->properties['text'];
 
-        return "<div>$text</div>";
+        return "<div" . $this->getAttribString() . $this->getStyleString() . ">$text</div>";
     }
 
     public function getFinalHtml()
@@ -32,6 +32,35 @@ class PortletText extends CMSPortlet
     {
         return [
             'text' => 'ein neuer Abschnitt',
+            // animation
+            'animation-style'     => '',
+            // attributes
+            'attr' => [
+                'class'              => '',
+                'data-wow-duration'  => '',
+                'data-wow-delay'     => '',
+                'data-wow-offset'    => '',
+                'data-wow-iteration' => '',
+            ],
+            // style
+            'style' => [
+                'color'               => '',
+                'margin-top'          => '',
+                'margin-right'        => '',
+                'margin-bottom'       => '',
+                'margin-left'         => '',
+                'background-color'    => '',
+                'padding-top'         => '',
+                'padding-right'       => '',
+                'padding-bottom'      => '',
+                'padding-left'        => '',
+                'border-top-width'    => '',
+                'border-right-width'  => '',
+                'border-bottom-width' => '',
+                'border-left-width'   => '',
+                'border-style'        => '',
+                'border-color'        => '',
+            ],
         ];
     }
 }

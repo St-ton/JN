@@ -219,7 +219,7 @@
                 return;
             }
 
-            if ((result.nextIndex > 0) && (result.nextIndex < total) && running) {
+            if (result.nextIndex > 0 && result.nextIndex < total && running) {
                 doCleanup(result.nextIndex);
             }
         });
@@ -318,7 +318,7 @@
                 return;
             }
 
-            if ((rendered < total) && running) {
+            if (rendered < total && running) {
                 doGenerate(type, rendered);
             }
         });

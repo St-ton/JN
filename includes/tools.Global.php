@@ -6026,10 +6026,10 @@ function formatSize($size, $format = '%.2f')
 {
     $units = ['b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb'];
     $res   = '';
-    foreach ($units as $unit) {
-        $div = 1024 ** 2;
+    foreach ($units as $n => $unit) {
+        $div = 1024 ** $n;
         if ($size > $div) {
-            $res = sprintf("$format %s", ($size / $div), $unit);
+            $res = sprintf("$format %s", $size / $div, $unit);
         }
     }
 

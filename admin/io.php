@@ -27,6 +27,7 @@ $sucheinstellungInc  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sucheinstellung
 $plzimportInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plz_ort_import_inc.php';
 $redirectInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'redirect_inc.php';
 $dbupdaterInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
+$dbcheckInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 $sslcheckInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sslcheck_inc.php';
 
 $io
@@ -38,14 +39,11 @@ $io
     ->register('getSeos', [$jsonApi, 'getSeos'])
     ->register('getTags', [$jsonApi, 'getTags'])
     ->register('getAttributes', [$jsonApi, 'getAttributes'])
-    // Allround-IO-calls
     ->register('getCurrencyConversion', 'getCurrencyConversionIO')
     ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
     ->register('getNotifyDropIO')
-    // Two-FA-related functions
     ->register('getNewTwoFA', ['TwoFA', 'getNewTwoFA'])
     ->register('genTwoFAEmergencyCodes', ['TwoFA', 'genTwoFAEmergencyCodes'])
-    // Dashboard-related functions
     ->register('setWidgetPosition', 'setWidgetPosition', $dashboardInc, 'DASHBOARD_VIEW')
     ->register('closeWidget', 'closeWidget', $dashboardInc, 'DASHBOARD_VIEW')
     ->register('addWidget', 'addWidget', $dashboardInc, 'DASHBOARD_VIEW')
@@ -56,12 +54,10 @@ $io
     ->register('truncateJtllog', ['Jtllog', 'truncateLog'], null, 'DASHBOARD_VIEW')
     ->register('addFav')
     ->register('reloadFavs')
-    // Bilderverwaltung
     ->register('loadStats', 'loadStats', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
     ->register('cleanupStorage', 'cleanupStorage', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
     ->register('clearImageCache', 'clearImageCache', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
     ->register('generateImageCache', 'generateImageCache', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
-    // PLZ-Import
     ->register('plzimportActionLoadAvailableDownloads', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
     ->register('plzimportActionDoImport', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
     ->register('plzimportActionResetImport', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
@@ -70,16 +66,14 @@ $io
     ->register('plzimportActionRestoreBackup', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
     ->register('plzimportActionCheckStatus', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
     ->register('plzimportActionDelTempImport', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
-    // DB-Updater
     ->register('dbUpdateIO', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
     ->register('dbupdaterBackup', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
     ->register('dbupdaterDownload', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
     ->register('dbupdaterStatusTpl', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
     ->register('dbupdaterMigration', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
-    // Redirects
+    ->register('migrateToInnoDB_utf8', 'doMigrateToInnoDB_utf8', $dbcheckInc, 'DBCHECK_VIEW')
     ->register('redirectCheckAvailability', ['Redirect', 'checkAvailability'])
     ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
-    // Other
     ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
     ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')
     ->register('createSearchIndex', 'createSearchIndex', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')

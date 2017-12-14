@@ -3627,6 +3627,7 @@ function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
     if (!is_array($cSQL_arr) || count($cSQL_arr) === 0) {
         return PLUGIN_CODE_SQL_INVALID_FILE_CONTENT;
     }
+    $sqlRegEx = "/xplugin[_]{1}" . $oPlugin->cPluginID . "[_]{1}[a-zA-Z0-9_]+/";
     foreach ($cSQL_arr as $cSQL) {
         $cSQL = removeNumerousWhitespaces($cSQL);
         // SQL legt eine neue Tabelle an => fülle tplugincustomtabelle
@@ -3635,7 +3636,7 @@ function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
             $tableNameAtIndex = (stripos($cSQL, 'create table if not exists') !== false) ? 5 : 2;
             $cSQLTMP_arr      = explode(' ', $cSQL);
             $cTabelle         = str_replace(["'", "`"], '', $cSQLTMP_arr[$tableNameAtIndex]);
-            preg_match("/xplugin[_]{1}" . $oPlugin->cPluginID . "[_]{1}[a-zA-Z0-9_]+/", $cTabelle, $cTreffer_arr);
+            preg_match($sqlRegEx, $cTabelle, $cTreffer_arr);
             if (!isset($cTreffer_arr[0]) || strlen($cTreffer_arr[0]) !== strlen($cTabelle)) {
                 return 5;// Versuch eine nicht Plugintabelle anzulegen
             }
@@ -3656,7 +3657,7 @@ function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
             $tableNameAtIndex = (stripos($cSQL, 'drop table if exists') !== false) ? 4 : 2;
             $cSQLTMP_arr      = explode(' ', removeNumerousWhitespaces($cSQL));
             $cTabelle         = str_replace(["'", "`"], '', $cSQLTMP_arr[$tableNameAtIndex]);
-            preg_match("/xplugin[_]{1}" . $oPlugin->cPluginID . "[_]{1}[a-zA-Z0-9]+/", $cTabelle, $cTreffer_arr);
+            preg_match($sqlRegEx, $cTabelle, $cTreffer_arr);
             if (strlen($cTreffer_arr[0]) !== strlen($cTabelle)) {
                 return PLUGIN_CODE_SQL_WRONG_TABLE_NAME_DELETE;
             }

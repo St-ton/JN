@@ -350,32 +350,32 @@
                     var wrapper = '#' + $($wrapper).attr('id');
                     this.variationSwitch($('.switch-variations', $wrapper), false, wrapper);
                 }
-            } else {
-                var that          = this,
-                    variationLoad = function ($wrapper) {
-                        var wrapper = '#' + $wrapper.attr('id');
-                        if (!$wrapper.data('varLoaded') && $('.switch-variations .form-group', $wrapper).length === 1) {
-                            console.log('variationSwitch: ' + wrapper);
-                            that.variationSwitch($('.switch-variations', $wrapper), false, wrapper);
-                        }
-                        $wrapper.attr('data-varLoaded', true);
-                    },
-                    variationLoadVisible = function () {
-                        $('.product-cell:not([data-varLoaded])', $wrapper).each(function (index, elem) {
-                            if ($(elem).isInViewport()) {
-                                variationLoad($(elem));
+            }
+            else {
+                var that = this;
+
+                $('.product-cell.hover-enabled')
+                    .on('click', function (event) {
+                        if (isTouchCapable() && ResponsiveBootstrapToolkit.current() !== 'xs') {
+                            var $this = $(this);
+
+                            if (!$this.hasClass('active')) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                $('.product-cell').removeClass('active');
+                                $this.addClass('active');
                             }
-                        });
-                    };
+                        }
+                    })
+                    .on('mouseenter', function (event) {
+                        var $this = $(this),
+                            wrapper = '#' + $this.attr('id');
 
-                variationLoadVisible();
-
-                $(window).scroll(function () {
-                    clearTimeout($.data(this, 'scrollTimer'));
-                    $.data(this, 'scrollTimer', setTimeout(function() {
-                        variationLoadVisible();
-                    }, 250));
-                });
+                        if (!$this.data('varLoaded') && $('.switch-variations .form-group', $this).length === 1) {
+                            that.variationSwitch($('.switch-variations', $this), false, wrapper);
+                        }
+                        $this.data('varLoaded', true);
+                    });
             }
 
             this.registerProductActions($wrapper);

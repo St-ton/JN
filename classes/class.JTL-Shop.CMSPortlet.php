@@ -66,6 +66,14 @@ abstract class CMSPortlet
     }
 
     /**
+     * @return string - sidepanel button
+     */
+    public function getButton()
+    {
+        return $this->cTitle;
+    }
+
+    /**
      * @return string - editor mode HTML content
      */
     public function getPreviewHtml()

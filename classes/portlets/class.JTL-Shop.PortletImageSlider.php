@@ -9,6 +9,8 @@
  */
 class PortletImageSlider extends CMSPortlet
 {
+
+
     public function getPreviewHtml($renderLinks = false)
     {
         if (!empty($this->properties['slides'])) {

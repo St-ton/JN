@@ -90,12 +90,13 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="elements">
                     {foreach $oPortlet_arr as $oPortlet}
-                        <a href="#" class="portlet-button btn btn-default"
+                        <a href="#" class="portlet-button btn btn-default btn-lg"
                            data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
                            data-portletid="{$oPortlet->kPortlet}"
                            data-portlettitle="{$oPortlet->cTitle}"
-                           data-defaultprops="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}">
-                            {$oPortlet->cTitle}
+                           data-defaultprops="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}"
+                           title="{$oPortlet->cTitle}">
+                            {$oPortlet->getButton()}
                         </a>
                     {/foreach}
                 </div>

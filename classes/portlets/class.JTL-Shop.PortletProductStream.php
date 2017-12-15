@@ -9,6 +9,14 @@
  */
 class PortletProductStream extends CMSPortlet
 {
+    /**
+     * @return string
+     */
+    public function getButton()
+    {
+        return '<div class="text-center" style="width: 100px;"><img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.productstream.gallery.png" style="width: 98%;filter: grayscale() opacity(60%)"/></div>';
+    }
+
     public function getPreviewHtml()
     {
         $style = $this->properties['listStyle'];

@@ -12,6 +12,14 @@ class PortletHeading extends CMSPortlet
     /**
      * @return string
      */
+    public function getButton()
+    {
+        return '<i class="fa fa-header"></i>';
+    }
+
+    /**
+     * @return string
+     */
     public function getPreviewHtml()
     {
         $level = $this->properties['level'];
@@ -40,6 +48,7 @@ class PortletHeading extends CMSPortlet
             'animation-style'     => '',
             // attributes
             'attr' => [
+                'id'                 => '',
                 'class'              => '',
                 'data-wow-duration'  => '',
                 'data-wow-delay'     => '',

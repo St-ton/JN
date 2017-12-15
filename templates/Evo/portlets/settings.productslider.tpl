@@ -8,6 +8,11 @@
         <a data-toggle="tab"  aria-controls="searchpicker-articlePicker" data-toggle="tab" role="tab" href="#searchpicker-articlePicker">Artikel</a>
     </li>
     <li role="presentation">
+        <a aria-expanded="true" aria-controls="wow-animation" data-toggle="tab" role="tab" id="wow-animation-tab" href="#wow-animation">
+            Animation
+        </a>
+    </li>
+    <li role="presentation">
         <a aria-controls="style-design" data-toggle="tab" id="style-design-tab" role="tab" href="#style-design" aria-expanded="false">
             Style
         </a>
@@ -32,6 +37,7 @@
         </div>
     </div>
     {include file='./settings.tabcontent.searchpicker.tpl' searchPickerName='articlePicker'}
+    {include file='./settings.tabcontent.animation.tpl'}
     {include file='./settings.tabcontent.style.tpl'}
 </div>
 

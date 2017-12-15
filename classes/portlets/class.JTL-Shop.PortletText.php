@@ -9,6 +9,14 @@
  */
 class PortletText extends CMSPortlet
 {
+    /**
+     * @return string
+     */
+    public function getButton()
+    {
+        return '<i class="fa fa-font"></i>';
+    }
+
     public function getPreviewHtml()
     {
         $text = $this->properties['text'];

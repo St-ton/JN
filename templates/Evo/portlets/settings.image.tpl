@@ -38,7 +38,7 @@
                     <select name="shape" class="form-control" id="config-image-shape">
                         <option value=""{if $properties.shape === ''} selected{/if}>flat</option>
                         <option value="img-rounded"{if $properties.shape === 'img-rounded'} selected{/if}>abgerundete Ecken</option>
-                        <option value="img-circle">{if $properties.shape === 'img-circle'} selected{/if}rund</option>
+                        <option value="img-circle"{if $properties.shape === 'img-circle'} selected{/if}>rund</option>
                         <option value="img-thumbnail"{if $properties.shape === 'img-thumbnail'} selected{/if}>Thumbnail</option>
                     </select>
                 </div>

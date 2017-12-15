@@ -12,6 +12,14 @@ class PortletButton extends CMSPortlet
     /**
      * @return string
      */
+    public function getButton()
+    {
+        return '<i class="fa fa-square-o"></i> Button';
+    }
+
+    /**
+     * @return string
+     */
     public function getPreviewHtml($renderLinks = false)
     {
         // general

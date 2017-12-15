@@ -9,6 +9,14 @@
  */
 class PortletBanner extends CMSPortlet
 {
+    /**
+     * @return string - sidepanel button
+     */
+    public function getButton()
+    {
+        return '<div class="text-center" style="width: 100px;"><img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.banner.png" style="width: 98%;filter: grayscale() opacity(60%)"/></div>';
+    }
+
     public function getPreviewHtml($renderLinks = false)
     {
         $zones = !empty($this->properties['zones']) ? json_decode($this->properties['zones']) : '';

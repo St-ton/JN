@@ -9,6 +9,15 @@
  */
 class PortletImage extends CMSPortlet
 {
+    /**
+     * @return string
+     */
+    public function getButton()
+    {
+        return '<i class="fa fa-image"></i>';
+    }
+
+
     public function getPreviewHtml($renderLinks = false)
     {
         // general

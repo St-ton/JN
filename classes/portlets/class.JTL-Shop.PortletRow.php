@@ -9,6 +9,14 @@
  */
 class PortletRow extends CMSPortlet
 {
+    /**
+     * @return string
+     */
+    public function getButton()
+    {
+        return '<i class="fa fa-columns"></i>';
+    }
+
     public function getPreviewHtml()
     {
         $layout = $this->properties['layout'];

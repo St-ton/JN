@@ -37,7 +37,7 @@
     </script>
 </head>
 <body>
-    <nav id="editor-top-nav" class="navbar navbar-inverse">
+    <nav id="editor-top-nav" class="navbar">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="collapsed navbar-toggle" data-toggle="collapse"

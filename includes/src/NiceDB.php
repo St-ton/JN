@@ -436,10 +436,14 @@ class NiceDB implements Serializable
      * @param object   $object - object to insert
      * @param int|bool $echo - true -> print statement
      * @param bool     $bExecuteHook - true -> execute corresponding hook
+     * @throws InvalidEntityNameException
+     * @throws InvalidArgumentException
      * @return int - 0 if fails, PrimaryKeyValue if successful
      */
     public function insertRow($tableName, $object, $echo = false, $bExecuteHook = false)
     {
+        $this->validateEntityName($tableName);
+        $this->validateDbObject($object);
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
             : 0;
@@ -561,10 +565,16 @@ class NiceDB implements Serializable
      * @param int|string|array $keyvalue  - Value of Key which should be compared
      * @param object           $object    - object to update with
      * @param int|bool         $echo      - true -> print statement
+     * @throws InvalidArgumentException
+     * @throws InvalidEntityNameException
      * @return int - -1 if fails, number of affected rows if successful
      */
     public function updateRow($tableName, $keyname, $keyvalue, $object, $echo = false)
     {
+        $this->validateEntityName($tableName);
+        $this->validateEntityName($keyname);
+        $this->validateDbObject($object);
+
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
             : 0;
@@ -711,6 +721,15 @@ class NiceDB implements Serializable
         $echo = false,
         $select = '*'
     ) {
+        $this->validateEntityName($tableName);
+        $this->validateEntityName($keyname);
+        if($keyname1 !== null) {
+            $this->validateEntityName($keyname1);
+        }
+        if($keyname2 !== null) {
+            $this->validateEntityName($keyname2);
+        }
+        // TODO validate $select
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
             : 0;
@@ -810,6 +829,11 @@ class NiceDB implements Serializable
      */
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
+        $this->validateEntityName($tableName);
+        foreach($keys as $key) {
+            $this->validateEntityName($key);
+        }
+        // TODO verify $orderBy and $limit
         $keys   = is_array($keys) ? $keys : [$keys];
         $values = is_array($values) ? $values : [$values];
         $kv     = [];
@@ -1085,6 +1109,8 @@ class NiceDB implements Serializable
      */
     public function deleteRow($tableName, $keyname, $keyvalue, $echo = false)
     {
+        $this->validateEntityName($tableName);
+        $this->validateEntityName($keyname);
         $start = 0;
         if ($this->debug === true || $this->collectData === true) {
             $start = microtime(true);
@@ -1394,6 +1420,51 @@ class NiceDB implements Serializable
         }
 
         return preg_replace($keys, $values, $query, 1, $count);
+    }
+
+    /**
+     * Verifies, that a database entity name matches the preconditions. Those preconditions are enforced, to prevent
+     * SQL-Injection through not preparable sql command components.
+     *
+     * @param $name
+     * @return bool
+     */
+    protected function isValidEntityName($name)
+    {
+        return preg_match('/^[a-z_]+$/i', $name) === 1;
+    }
+
+    /**
+     * Verifies db entity names and throws an exception if it does not match the preconditions
+     *
+     * @param $name
+     * @throws InvalidEntityNameException
+     */
+    protected function validateEntityName($name)
+    {
+        if(!$this->isValidEntityName($name)) {
+            throw new InvalidEntityNameException($name);
+        }
+    }
+
+    /**
+     * This method shall prevent SQL-Injection through the member names of objects, because they are not preparable.
+     *
+     * @param object $obj
+     * @throws InvalidEntityNameException
+     * @throws InvalidArgumentException
+     */
+    protected function validateDbObject($obj)
+    {
+        if(!is_object($obj)) {
+            $type = gettype($obj);
+            throw new \InvalidArgumentException("got var of type $type where object was expected");
+        }
+        foreach($obj as $key => $value) {
+            if(!$this->isValidEntityName($key)) {
+                throw new InvalidEntityNameException($key);
+            }
+        }
     }
 
     /**

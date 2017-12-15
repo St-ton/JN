@@ -98,6 +98,8 @@ class CMSPage
             ];
             $this->kPage = Shop::DB()->insert('tcmspage', $oCmsPageDB);
         } else {
+            $revision    = new Revision();
+            $revision->addRevision('cmspage', (int)$oCmsPageDB->kPage);
             $oCmsPageDB->cJson         = json_encode($this->data);
             $oCmsPageDB->dLastModified = date('Y-m-d H:i:s');
             Shop::DB()->update(

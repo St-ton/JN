@@ -602,13 +602,17 @@ function sendeMail($ModulId, $Object, $mail = null)
     verschickeMail($mail);
 
     if ($kopie) {
-        $mail->toEmail      = $kopie;
-        $mail->toName       = $kopie;
-        $mail->fromEmail    = $absender_mail;
-        $mail->fromName     = $absender_name;
-        $mail->replyToEmail = $Object->tkunde->cMail;
-        $mail->replyToName  = $Object->tkunde->cVorname . ' ' . $Object->tkunde->cNachname;
-        verschickeMail($mail);
+        $copyAddresses = StringHandler::parseSSK($kopie);
+
+        foreach ($copyAddresses as $copyAddress) {
+            $mail->toEmail      = $copyAddress;
+            $mail->toName       = $copyAddress;
+            $mail->fromEmail    = $absender_mail;
+            $mail->fromName     = $absender_name;
+            $mail->replyToEmail = $Object->tkunde->cMail;
+            $mail->replyToName  = $Object->tkunde->cVorname . ' ' . $Object->tkunde->cNachname;
+            verschickeMail($mail);
+        }
     }
     // Kopie Plugin
     if (isset($Object->oKopie, $Object->oKopie->cToMail) && strlen($Object->oKopie->cToMail) > 0) {

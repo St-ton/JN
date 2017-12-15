@@ -8,7 +8,6 @@
  * @global JTLSmarty $smarty
  * @global AdminAccount $oAccount
  */
-
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);
 
@@ -21,10 +20,10 @@ setzeSprache();
 if (isset($_POST['speichern']) && validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);
     Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY]);
-    if (is_array($_POST['nVon']) &&
-        is_array($_POST['nBis']) &&
-        count($_POST['nVon']) > 0 &&
-        count($_POST['nBis']) > 0
+    if (is_array($_POST['nVon'])
+        && is_array($_POST['nBis'])
+        && count($_POST['nVon']) > 0
+        && count($_POST['nBis']) > 0
     ) {
         // Tabelle leeren
         Shop::DB()->query("TRUNCATE TABLE tpreisspannenfilter", 3);
@@ -34,10 +33,7 @@ if (isset($_POST['speichern']) && validateToken()) {
             $nBis = (float)$_POST['nBis'][$i];
 
             if ($nVon >= 0 && $nBis >= 0) {
-                Shop::DB()->insert(
-                    'tpreisspannenfilter',
-                    (object)[ 'nVon' => $nVon, 'nBis' => $nBis ]
-                );
+                Shop::DB()->insert('tpreisspannenfilter', (object)['nVon' => $nVon, 'nBis' => $nBis]);
             }
         }
     }

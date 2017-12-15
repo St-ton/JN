@@ -30,7 +30,7 @@
 
         $('#btn-add-range').before(
             '<div class="price-row">' +
-                '<button type="button" class="btn-remove-range btn btn-default btn-sm">' +
+                '<button type="button" class="btn-remove-range btn btn-danger btn-sm">' +
                     '<i class="fa fa-trash"></i></button> ' +
                 '<button type="button" class="btn-move-range-up btn btn-default btn-sm">' +
                     '<i class="fa fa-chevron-up"></i></button> ' +
@@ -55,15 +55,15 @@
 
     function moveRangeUp()
     {
-        var $row    = $(this).parent();
-        var $preRow = $row.prev();
+        var $row    = $(this).parent(),
+            $preRow = $row.prev();
         $preRow.before($row);
     }
 
     function moveRangeDown()
     {
-        var $row     = $(this).parent();
-        var $nextRow = $row.next();
+        var $row     = $(this).parent(),
+            $nextRow = $row.next();
         $nextRow.after($row);
     }
 
@@ -81,21 +81,21 @@
     function validateFormData(e)
     {
         if (bManuell === true) {
-            var cFehler = '';
-            var priceRows = $('.price-row');
-            var lastUpperBound = 0;
-            var $errorAlert = $('#ranges-error-alert');
+            var cFehler = '',
+                priceRows = $('.price-row'),
+                lastUpperBound = 0,
+                $errorAlert = $('#ranges-error-alert');
 
             $errorAlert.hide();
 
             priceRows.each(function(i, row) {
-                var $row  = $(row);
-                var $nVon = $row.find('[id^=nVon_]');
-                var $nBis = $row.find('[id^=nBis_]');
-                var nVon  = $nVon.val();
-                var nBis  = $nBis.val();
-                var fVon  = parseFloat(nVon);
-                var fBis  = parseFloat(nBis);
+                var $row  = $(row),
+                    $nVon = $row.find('[id^=nVon_]'),
+                    $nBis = $row.find('[id^=nBis_]'),
+                    nVon  = $nVon.val(),
+                    nBis  = $nBis.val(),
+                    fVon  = parseFloat(nVon),
+                    fBis  = parseFloat(nBis);
 
                 $row.removeClass('has-error');
 
@@ -170,7 +170,7 @@
                     <div id="Werte" style="display: {if $oConfig->gesetzterWert === 'M'}block{else}none{/if};"
                          class="form-inline">
                         <div id="ranges-error-alert" class="alert alert-danger" style="display: none;"></div>
-                        <button type="button" class="btn btn-default btn-sm" id="btn-add-range">
+                        <button type="button" class="btn btn-info btn-sm" id="btn-add-range">
                             <i class="fa fa-plus"></i>
                         </button>
                     </div>

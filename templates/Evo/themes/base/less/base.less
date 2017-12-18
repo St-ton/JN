@@ -573,7 +573,7 @@ hr.hr-sm {
 #menu-content {
     position: absolute;
     left: 97px;
-    z-index: @zindex-overall;
+    z-index: @zindex-overtop;
     max-width: none;
 }
 
@@ -1905,6 +1905,14 @@ fieldset {
 @media (max-width: @screen-md-max) {
     .row.gallery .product-wrapper.col-xs-6:nth-child(2n) {
         border-right-color: transparent;
+    }
+    .row.gallery .product-wrapper.col-md-4 {
+        &:nth-child(2n) {
+            border-right-color: @panel-default-border;
+        }
+        &:nth-child(3n) {
+            border-right-color: transparent;
+        }
     }
 }
 

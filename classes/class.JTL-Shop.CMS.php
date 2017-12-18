@@ -24,6 +24,7 @@ class CMS
 
     public static function getCurrentCmsPage()
     {
+
         return self::getCmsPage(self::getCurrentPageIdHash());
     }
 

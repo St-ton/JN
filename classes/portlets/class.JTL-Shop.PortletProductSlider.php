@@ -13,7 +13,7 @@ class PortletProductSlider extends CMSPortlet
     {
         $styleString = $this->getStyleString();
 
-        return '<div class="text-center"' . $styleString . '><img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.productslider.png" style="margin-top: 4px; width: 98%;filter: grayscale() opacity(60%)"/>Produkt-Slider<p><small>preview images mit transparenten rand anlegen, graustufen, img responsive nutzen</small></p></div>';
+        return '<div class="text-center"' . $styleString . '><img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.productslider.png" style="width: 98%;filter: grayscale() opacity(60%)"/><p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Produktslider</p></div>';
         //return $this->getFinalHtml();
     }
 
@@ -55,6 +55,7 @@ class PortletProductSlider extends CMSPortlet
             ],
             // style
             'style' => [
+                'color'               => '',
                 'margin-top'          => '',
                 'margin-right'        => '',
                 'margin-bottom'       => '',

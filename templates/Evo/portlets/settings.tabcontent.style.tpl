@@ -1,10 +1,22 @@
 <div id="style-design" class="tab-pane fade in" role="tabpanel" aria-labelledby="style-design-tab">
     <div class="row">
-        <label for="background-color" class="col-sm-4 form-control-static">Background color</label>
-        <div class="col-sm-4">
-            <div class="input-group background-color-picker colorpicker-element">
-                <input type="text" class="form-control" name="style[background-color]" id="background-color" value="{$properties['style']['background-color']}">
-                <span class="input-group-addon"><i style="margin-right: 0px;"></i></span>
+        <label for="colors" class="col-sm-2 form-control-static">Colors</label>
+        <div class="col-sm-10" id="colors">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="input-group background-color-picker colorpicker-element">
+                        <input type="text" class="form-control" name="style[background-color]" id="background-color" value="{$properties['style']['background-color']}">
+                        <span class="input-group-addon"><i style="margin-right: 0px;"></i></span>
+                    </div>
+                    <span class="help-block">Background-color</span>
+                </div>
+                <div class="col-sm-6">
+                    <div class="input-group font-color-picker colorpicker-element">
+                        <input type="text" class="form-control" name="style[color]" id="font-color" value="{$properties['style']['color']}">
+                        <span class="input-group-addon"><i style="margin-right: 0px;"></i></span>
+                    </div>
+                    <span class="help-block">Font-color</span>
+                </div>
             </div>
         </div>
     </div>
@@ -117,7 +129,7 @@
 
     </div>
     <div class="row">
-        <div class="col-sm-4 col-sm-offset-2">
+        <div class="col-sm-5 col-sm-offset-2">
             <select  class="form-control" name="style[border-style]" id="border-style">
                 <option value=""></option>
                 <option value="none"{if $properties['style']['border-style'] === 'none'} selected{/if}>none</option>
@@ -134,7 +146,7 @@
                 <option value="inherit"{if $properties['style']['border-style'] === 'inherit'} selected{/if}>inherit</option>
             </select> <span class="help-block">Style</span>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-5">
             <div class="input-group border-color-picker colorpicker-element">
                 <input type="text" class="form-control" name="style[border-color]" id="border-color" value="{$properties['style']['border-color']}">
                 <span class="input-group-addon"><i style="margin-right: 0px;"></i></span>
@@ -176,6 +188,23 @@
             });
             $('#config-modal-body #border-color').click(function(){
                 $('#config-modal-body .border-color-picker').colorpicker('show');
+            });
+
+            $('#config-modal-body .font-color-picker').colorpicker({
+                format:'hex',
+                colorSelectors: {
+                    '#ffffff': '#ffffff',
+                    '#777777': '#777777',
+                    '#337ab7': '#337ab7',
+                    '#5cb85c': '#5cb85c',
+                    '#5bc0de': '#5bc0de',
+                    '#f0ad4e': '#f0ad4e',
+                    '#d9534f': '#d9534f',
+                    '#000000': '#000000'
+                }
+            });
+            $('#config-modal-body #font-color').click(function(){
+                $('#config-modal-body .font-color-picker').colorpicker('show');
             });
 
             $('input[name="link-flag"]').click(function(){

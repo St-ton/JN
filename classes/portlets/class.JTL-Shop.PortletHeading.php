@@ -48,6 +48,7 @@ class PortletHeading extends CMSPortlet
             ],
             // style
             'style' => [
+                'color'               => '',
                 'margin-top'          => '',
                 'margin-right'        => '',
                 'margin-bottom'       => '',

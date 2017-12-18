@@ -207,7 +207,7 @@ abstract class CMSPortlet
             $srcString .= PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
-        $srcString = substr($srcString, 0, -1) . '" sizes="100vw" src="' . PFAD_MEDIAFILES . 'Bilder/lg/' . $name . '"';
+        $srcString = substr($srcString, 0, -1) . '" sizes="100vw" src="' . PFAD_MEDIAFILES . 'Bilder/.lg/' . $name . '"';
 
         return $srcString;
     }

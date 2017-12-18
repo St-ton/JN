@@ -71,6 +71,7 @@ class PortletImage extends CMSPortlet
             ],
             // style
             'style' => [
+                'color'               => '',
                 'margin-top'          => '',
                 'margin-right'        => '',
                 'margin-bottom'       => '',

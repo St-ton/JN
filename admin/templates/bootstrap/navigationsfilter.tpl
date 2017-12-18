@@ -11,8 +11,6 @@
         $('#einstellen').submit(validateFormData);
         $('#btn-add-range').click(function() { addPriceRange(); });
         $('.btn-remove-range').click(removePriceRange);
-        $('.btn-move-range-up').click(moveRangeUp);
-        $('.btn-move-range-down').click(moveRangeDown);
 
         selectCheck(document.getElementById('preisspannenfilter_anzeige_berechnung'));
 
@@ -28,14 +26,10 @@
         nVon = nVon || 0;
         nBis = nBis || 0;
 
-        $('#btn-add-range').before(
+        $('#price-rows').append(
             '<div class="price-row">' +
                 '<button type="button" class="btn-remove-range btn btn-danger btn-sm">' +
                     '<i class="fa fa-trash"></i></button> ' +
-                '<button type="button" class="btn-move-range-up btn btn-default btn-sm">' +
-                    '<i class="fa fa-chevron-up"></i></button> ' +
-                '<button type="button" class="btn-move-range-down btn btn-default btn-sm">' +
-                    '<i class="fa fa-chevron-down"></i></button> ' +
                 '<label for="nVon_' + n + '">{#navigationsfilterFrom#}:</label> ' +
                 '<input id="nVon_' + n + '" class="form-control" name="nVon[]" type="text" value="' + nVon + '"> ' +
                 '<label for="nBis_' + n + '">{#navigationsfilterTo#}:</label> ' +
@@ -44,27 +38,11 @@
         );
 
         $('.btn-remove-range').off('click').click(removePriceRange);
-        $('.btn-move-range-up').off('click').click(moveRangeUp);
-        $('.btn-move-range-down').off('click').click(moveRangeDown);
     }
 
     function removePriceRange()
     {
         $(this).parent().remove();
-    }
-
-    function moveRangeUp()
-    {
-        var $row    = $(this).parent(),
-            $preRow = $row.prev();
-        $preRow.before($row);
-    }
-
-    function moveRangeDown()
-    {
-        var $row     = $(this).parent(),
-            $nextRow = $row.next();
-        $nextRow.after($row);
     }
 
     function selectCheck(selectBox)
@@ -82,13 +60,23 @@
     {
         if (bManuell === true) {
             var cFehler = '',
-                priceRows = $('.price-row'),
+                $priceRows = $('.price-row'),
                 lastUpperBound = 0,
                 $errorAlert = $('#ranges-error-alert');
 
             $errorAlert.hide();
 
-            priceRows.each(function(i, row) {
+            $priceRows
+                .sort(function(a, b) {
+                    var aVon = parseFloat($(a).find('[id^=nVon_]').val());
+                    var bVon = parseFloat($(b).find('[id^=nVon_]').val());
+                    return aVon < bVon ? -1 : +1;
+                })
+                .each(function(i, row) {
+                    $('#price-rows').append(row);
+                });
+
+            $priceRows.each(function(i, row) {
                 var $row  = $(row),
                     $nVon = $row.find('[id^=nVon_]'),
                     $nBis = $row.find('[id^=nBis_]'),
@@ -106,8 +94,7 @@
                     cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' ist ung&uuml;tig.<br>';
                     $row.addClass('has-error');
                 } else if(fVon < lastUpperBound) {
-                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' &uuml;berschneidet sich mit ihrer ' +
-                        'vorhergehenden.<br>';
+                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' &uuml;berschneidet sich mit anderen.<br>';
                     $row.addClass('has-error');
                 }
 
@@ -170,6 +157,7 @@
                     <div id="Werte" style="display: {if $oConfig->gesetzterWert === 'M'}block{else}none{/if};"
                          class="form-inline">
                         <div id="ranges-error-alert" class="alert alert-danger" style="display: none;"></div>
+                        <div id="price-rows"></div>
                         <button type="button" class="btn btn-info btn-sm" id="btn-add-range">
                             <i class="fa fa-plus"></i>
                         </button>

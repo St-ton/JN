@@ -467,16 +467,6 @@ $(document).ready(function () {
         );
         $body.attr('data-viewport', viewport.current());
         $body.attr('data-touchcapable', isTouchCapable() ? 'true' : 'false');
-
-        $.fn.isInViewport = function () {
-            var $this          = $(this),
-                elementTop     = $this.offset().top,
-                elementBottom  = elementTop + $this.outerHeight(),
-                viewportTop    = $(window).scrollTop(),
-                viewportBottom = viewportTop + $(window).height();
-
-            return elementBottom > viewportTop && elementTop < viewportBottom;
-        }
     })(jQuery, document, window, ResponsiveBootstrapToolkit);
 
     categoryMenu();

@@ -570,7 +570,7 @@ hr.hr-sm {
 #menu-content {
     position: absolute;
     left: 97px;
-    z-index: 9999;
+    z-index: @zindex-overall;
     max-width: none;
 }
 
@@ -842,7 +842,7 @@ ul.filter_state {
 
             &:hover, &.active {
                 position: absolute;
-                z-index: @zindex-navbar - 10;
+                z-index: @zindex-menu - 1;
                 left: 0;
                 top: 0;
                 height: auto !important;
@@ -914,7 +914,7 @@ ul.filter_state {
 
                 .product-detail-cell {
                     position: absolute;
-                    z-index: @zindex-navbar - 10;
+                    z-index: @zindex-menu - 1;
                     left: 0;
                     top: 0;
                     height: auto !important;
@@ -1818,7 +1818,7 @@ fieldset {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1060;
+    z-index: @zindex-popover;
     display: none;
     max-width: @screen-lg-min;
     padding: 1px;
@@ -2081,7 +2081,7 @@ fieldset {
         max-width: 100%;
         left: -250px;
         top: 0;
-        z-index: 999;
+        z-index: @zindex-navbar - 1;
         -webkit-overflow-scrolling: touch;
         -webkit-transition: all 0.15s ease-in;
         -moz-transition: all 0.15s ease-in;
@@ -2261,7 +2261,7 @@ fieldset {
         padding: 30px 30px;
         max-height: 62rem;
         overflow-y: auto;
-        z-index: 20;
+        z-index: @zindex-menu;
         .category-title {
             font-size: 2em;
         }
@@ -3056,7 +3056,7 @@ div#add-to-cart {
 
 #evo-main-nav {
     margin-bottom: 0;
-    z-index: 20;
+    z-index: @zindex-menu;
 
     .dropdown-cart-items {
         word-break: break-word;
@@ -3087,7 +3087,7 @@ header.fixed-navbar {
         position: fixed;
         top: 0;
         width: 100%;
-        z-index: 20;
+        z-index: @zindex-menu;
         left: 0;
     }
     .navbar-container {
@@ -3418,11 +3418,11 @@ header.fixed-navbar {
 // Fix for #513 - backdrop was not visible
 .modal-backdrop {
     bottom: 0;
-    z-index: 1040;
+    z-index: @zindex-modal - 10;
 }
 
 .modal {
-    z-index: 1050;
+    z-index: @zindex-modal;
 }
 
 .notification-alert {

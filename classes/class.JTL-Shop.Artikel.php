@@ -2207,7 +2207,7 @@ class Artikel
                     $value                                   = new stdClass();
                     $value->kEigenschaftWert                 = (int)$oVariationTMP->kEigenschaftWert;
                     $value->kEigenschaft                     = (int)$oVariationTMP->kEigenschaft;
-                    $value->cName                            = $oVariationTMP->cName_teigenschaftwert;
+                    $value->cName                            = htmlspecialchars($oVariationTMP->cName_teigenschaftwert, ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
                     $value->fAufpreisNetto                   = $oVariationTMP->fAufpreisNetto;
                     $value->fGewichtDiff                     = $oVariationTMP->fGewichtDiff;
                     $value->cArtNr                           = $oVariationTMP->cArtNr;
@@ -5118,7 +5118,8 @@ class Artikel
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
                     ON vas.kVersandart = va.kVersandart
-                WHERE va.cLaender LIKE '%{$countryCode}%'
+                WHERE cIgnoreShippingProposal != 'Y'
+                AND va.cLaender LIKE '%{$countryCode}%'
                 AND (va.cVersandklassen = '-1'
                     OR va.cVersandklassen RLIKE '^([0-9 -]* )?{$this->kVersandklasse} ')
                 AND (va.cKundengruppen = '-1'

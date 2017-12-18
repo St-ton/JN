@@ -12,7 +12,6 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.IOResponse.php';
 $AktuelleSeite = 'IO';
 /** @global JTLSmarty $smarty */
 $io = IO::getInstance();
-
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 $smarty->setCaching(false)
        ->assign('BILD_KEIN_KATEGORIEBILD_VORHANDEN', BILD_KEIN_KATEGORIEBILD_VORHANDEN)
@@ -24,7 +23,7 @@ $smarty->setCaching(false)
 Shop::setPageType(PAGE_IO);
 
 if (!isset($_REQUEST['io'])) {
-    header('Bad Request', true, 400);
+    header(makeHTTPHeader(400));
     exit;
 }
 
@@ -39,7 +38,7 @@ try {
     $data = $io->handleRequest($request);
 } catch (Exception $e) {
     $data = $e->getMessage();
-    header('Internal Server Error', true, 500);
+    header(makeHTTPHeader(500));
 }
 
 ob_end_clean();

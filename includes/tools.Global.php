@@ -1899,7 +1899,9 @@ function setzeSteuersaetze($steuerland = 0)
                 ->assign('Link', $link);
             Shop::Smarty()->display('layout/index.tpl');
             exit;
-        } elseif ($redirURL === $urlHelper->normalize()) {
+        }
+
+        if ($redirURL === $urlHelper->normalize()) {
             Shop::Smarty()->assign(
                 'cFehler',
                 Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages')
@@ -1908,10 +1910,10 @@ function setzeSteuersaetze($steuerland = 0)
             );
 
             return;
-        } else {
-            header('Location: ' . $redirURL);
-            exit;
         }
+
+        header('Location: ' . $redirURL);
+        exit;
     }
     $steuerklassen = Shop::DB()->query("SELECT * FROM tsteuerklasse", 2);
     $qry           = '';

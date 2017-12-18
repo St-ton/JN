@@ -1,6 +1,6 @@
 {* template to display products in boxes and product-lists *}
 
-{if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
+{if $Einstellungen.template.productlist.variation_select_productlist === 'N' || $Einstellungen.template.productlist.hover_productlist !== 'Y'}
     {assign var="hasOnlyListableVariations" value=0}
 {else}
     {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist assign="hasOnlyListableVariations"}
@@ -80,13 +80,14 @@
             </div>
         {/block}
         <div class="expandable">
+            {block name="form-expandable"}
             {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0}
-                <div class="hidden-xs basket-variations">
+                <div class="basket-variations">
                     {assign var="singleVariation" value=true}
                     {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=false smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}
                 </div>
             {/if}
-            <div class="hidden-xs">
+            <div>
                 {block name="productlist-add-basket"}
                 {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) &&
                     (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig
@@ -100,17 +101,16 @@
                                    value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}">
 
                             <span class="change_quantity input-group-btn">
-                                <button type="submit" class="btn btn-default" id="submit{$Artikel->kArtikel}"
+                                <button type="submit" class="btn btn-primary" id="submit{$Artikel->kArtikel}"
                                         title="{lang key="addToCart" section="global"}">
-                                    <span class="fa fa-shopping-cart"></span>
-                                    <span class="hidden-md"> {lang key="addToCart" section="global"}</span>
+                                    <span><i class="fa fa-shopping-cart"></i> {lang key="addToCart" section="global"}</span>
                                 </button>
                             </span>
                         </div>
                     </div>
                 {else}
                     <div class="top7 form-group">
-                        <a class="btn btn-default btn-sm btn-block" role="button" href="{$Artikel->cURL}">{lang key="details"}</a>
+                        <a class="btn btn-default btn-md btn-block" role="button" href="{$Artikel->cURL}">{lang key="details"}</a>
                     </div>
                 {/if}
                 {/block}
@@ -152,6 +152,7 @@
                     <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tag->kTag}" />
                 {/foreach}
             {/if}
+            {/block}
         </div>
     </form>
 </div>{* /product-cell *}

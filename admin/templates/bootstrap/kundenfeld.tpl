@@ -2,61 +2,106 @@
 {include file='tpl_inc/header.tpl'}
 
 <script type="text/javascript">
-    function countKundenfeldwert() {ldelim}
+    var kundenfeldSortDesc = "{#kundenfeldSortDesc#}";
+{literal}
+    function countKundenfeldwert() {
         return $('#formtable tr.kundenfeld_wert').length;
-    {rdelim}
+    }
 
-    function startKundenfeldwertEdit() {ldelim}
+    function startKundenfeldwertEdit() {
         $('#cTyp').after($('<div class="kundenfeld_wert"></div>').append(
                 $('<button name="button" type="button" class="btn btn-primary add" value="Wert hinzuf&uuml;gen"></button>')
-                .click(function() {ldelim}
+                .click(function() {
                     addKundenfeldWert();
-                {rdelim})
+                })
                 .append('<i class="fa fa-plus-square-o"></i>&nbsp;Wert hinzuf&uuml;gen'))
         );
         addKundenfeldWert();
-    {rdelim}
+    }
 
-    function addKundenfeldWert() {ldelim}
+    function emptyToZero() {
+        var vSortValues = $('[name^=nWertSort]')
+            .map(function(key, oWertSortField) {
+                if (0 == oWertSortField.value.length) {
+                    oWertSortField.value = 0;
+                }
+            })
+        ;
+    }
+
+    function recommendSort() {
+        var retval       = '';
+        var nWertStepLen = 1;
+
+        emptyToZero();
+        var vSortValues = $('[name^=nWertSort]')
+            .map(function() {
+                return this.value;
+            })
+            .get()
+        ;
+        if (0 < vSortValues.length) {
+            vSortValues
+                .sort(function(val1, val2) {
+                    if(Number(val1) == Number(val2)) return 0;
+                    else return Number(val1) < Number(val2) ? 1 : -1;
+                })
+            ;
+            if (1 < vSortValues.length) {
+                nWertStepLen = Number(vSortValues[0] - vSortValues[1]);
+            } else {
+                nWertStepLen = Number(vSortValues[0]);
+            }
+            retval = Number(vSortValues[0]) + nWertStepLen;
+        }
+
+        return(retval);
+    }
+
+    function addKundenfeldWert() {
         $('#formtable tbody').append($('<tr class="kundenfeld_wert"></tr>').append(
                 '<td class="kundenfeld_wert_label">Wert ' + (countKundenfeldwert() + 1) + ':</td>',
                 $('<td class="row"></td>').append(
                     $('<div class="col-lg-3 jtl-list-group"></div>').append(
                         '<input name="cWert[]" type="text" class="field form-control" value="" />'),
+                    $('<div class="col-lg-2 jtl-list-group"></div>').append($('<div class="input-group" title="' + kundenfeldSortDesc + '"></div>').append(
+                        '<span class="input-group-addon">Sort.</span>'
+                        +'<input name="nWertSort[]" type="text" class="field form-control" value="' + recommendSort() + '" />')),
                     $('<div class="btn-group"></div>').append(
                         $('<button name="delete" type="button" class="btn btn-danger" value="Entfernen"></button>')
-                            .click(function() {ldelim}
+                            .click(function() {
                                 delKundenfeldWert(this);
-                            {rdelim})
+                            })
                             .append('<i class="fa fa-trash"></i>&nbsp;Entfernen')
                         )
                     )
                 )
         );
-    {rdelim}
+    }
 
-    function delKundenfeldWert(pThis) {ldelim}
-        if (countKundenfeldwert() > 1) {ldelim}
+    function delKundenfeldWert(pThis) {
+        if (countKundenfeldwert() > 1) {
             $(pThis).closest('tr.kundenfeld_wert').remove();
-            $('#formtable tr.kundenfeld_wert td.kundenfeld_wert_label').each(function(pIndex) {ldelim}
+            $('#formtable tr.kundenfeld_wert td.kundenfeld_wert_label').each(function(pIndex) {
                 $(this).html('Wert ' + (pIndex + 1) + ':');
-            {rdelim});
-        {rdelim} else {ldelim}
+            });
+        } else {
             alert('Das Feld muss mindestens einen Wert haben!');
-        {rdelim}
-    {rdelim}
+        }
+    }
 
-    function stopKundenfeldwertEdit() {ldelim}
+    function stopKundenfeldwertEdit() {
         $('#formtable .kundenfeld_wert').remove();
-    {rdelim}
+    }
 
-    function selectCheck(selectBox) {ldelim}
-        if (selectBox.selectedIndex == 3) {ldelim}
+    function selectCheck(selectBox) {
+        if (selectBox.selectedIndex == 3) {
             startKundenfeldwertEdit();
-        {rdelim} else {ldelim}
+        } else {
             stopKundenfeldwertEdit();
-        {rdelim}
-    {rdelim}
+        }
+    }
+{/literal}
 </script>
 
 {include file='tpl_inc/seite_header.tpl' cTitel=#kundenfeld# cBeschreibung=#kundenfeldDesc# cDokuURL=#kundenfeldURL#}
@@ -120,7 +165,12 @@
                             <tr>
                                 <td><label for="nSort">{#kundenfeldSort#}</label></td>
                                 <td>
-                                    <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{#kundenfeldSortDesc#}"/>
+                                    {if !empty($nHighestSortValue)}
+                                        {assign var="nNextHighestSort" value=$nHighestSortValue|intval + $nHighestSortDiff|intval}
+                                        <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{else}{$nNextHighestSort}{/if}"/>
+                                    {else}
+                                        <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{#kundenfeldSortDesc#}"/>
+                                    {/if}
                                 </td>
                             </tr>
                             <tr>
@@ -183,6 +233,12 @@
                                             <div class="col-lg-3 jtl-list-group">
                                                 <input name="cWert[]" type="text" class="field form-control" value="{$oKundenfeldWert->cWert}" />
                                             </div>
+                                            <div class="col-lg-2 jtl-list-group">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">Sort.</span>
+                                                    <input name="nWertSort[]" type="text" class="field form-control" value="{$oKundenfeldWert->nSort}" />
+                                                </div>
+                                            </div>
                                             <div class="btn-group">
                                                 <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>
                                             </div>
@@ -198,6 +254,12 @@
                                         <td class="row">
                                             <div class="col-lg-3 jtl-list-group">
                                                 <input name="cWert[]" type="text" class="field form-control" value="{$cKundenfeldWert}" />
+                                            </div>
+                                            <div class="col-lg-2 jtl-list-group">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">Sort.</span>
+                                                    <input name="nWertSort[]" type="text" class="field form-control" value="{$xPostVar_arr.nWertSort.$key}" />
+                                                </div>
                                             </div>
                                             <div class="btn-group">
                                                 <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> Entfernen</button>

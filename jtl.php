@@ -682,9 +682,9 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             Shop::DB()->query(
                 "DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
                     FROM twarenkorbpers
-                    LEFT JOIN twarenkorbperspos 
+                    LEFT JOIN twarenkorbperspos
                         ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-                    LEFT JOIN twarenkorbpersposeigenschaft 
+                    LEFT JOIN twarenkorbpersposeigenschaft
                         ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
                     WHERE twarenkorbpers.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
             );
@@ -838,9 +838,11 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
                 if ($oKundenfeld->cTyp === 'auswahl') {
                     $oKundenfeld_arr[$i]->oKundenfeldWert_arr = Shop::DB()->selectAll(
-                        'tkundenfeldwert',
-                        'kKundenfeld',
-                        (int)$oKundenfeld->kKundenfeld
+                          'tkundenfeldwert'
+                        , 'kKundenfeld'
+                        , (int)$oKundenfeld->kKundenfeld
+                        , '*'
+                        , '`kKundenfeld`, `nSort`, `kKundenfeldWert` ASC'
                     );
                 }
             }

@@ -102,6 +102,9 @@
                 <div class="tab-pane" id="templates">
                     Coming soon...
                 </div>
+                <div class="tab-pane" id="revisions">
+                    Coming soon...
+                </div>
             </div>
         </div>
         <div id="iframe-panel">

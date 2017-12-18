@@ -195,12 +195,9 @@
                         </div>
                         <input type="hidden" name="a" value="{if !empty({$Artikel->kVariKindArtikel})}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}" />
                     </form>
-
-
-
-
                     <div class="expandable">
                         <form id="buy_form_{$Artikel->kArtikel}" action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
+                            {block name="form-expandable"}
                             {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0}
                                 <div class="hidden-xs basket-variations">
                                     {assign var="singleVariation" value=true}
@@ -236,7 +233,6 @@
                                     {/if}
                                 {/block}
                             </div>
-
                             {if $Artikel->kArtikelVariKombi > 0}
                                 <input type="hidden" name="aK" value="{$Artikel->kArtikelVariKombi}" />
                             {/if}
@@ -281,6 +277,7 @@
                                     <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tag->kTag}" />
                                 {/foreach}
                             {/if}
+                            {/block}
                         </form>
                     </div>
                 {/block}

@@ -80,6 +80,7 @@
             </div>
         {/block}
         <div class="expandable">
+            {block name="form-expandable"}
             {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0}
                 <div class="basket-variations">
                     {assign var="singleVariation" value=true}
@@ -151,6 +152,7 @@
                     <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tag->kTag}" />
                 {/foreach}
             {/if}
+            {/block}
         </div>
     </form>
 </div>{* /product-cell *}

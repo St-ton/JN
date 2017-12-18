@@ -45,9 +45,10 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cEmailCopyTo">{#emailCopyTo#}</label>
+                                <label for="cEmailCopyTo">{#emailCopyTo#} </label>
                             </span>
                             <input class="form-control" id="cEmailCopyTo" name="cEmailCopyTo" type="text" value="{if isset($oEmailEinstellungAssoc_arr.cEmailCopyTo)}{$oEmailEinstellungAssoc_arr.cEmailCopyTo}{/if}" />
+                            <span class="input-group-addon">(mehrere durch Semikolon getrennt) </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">

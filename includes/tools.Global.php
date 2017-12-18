@@ -3481,13 +3481,13 @@ function setzeMerkmalFilter($nFilter_arr = [])
         if (count($_GET) > 0) {
             foreach ($_GET as $key => $value) {
                 if (preg_match('/mf\d+/i', $key)) {
-                    $filter[] = $value;
+                    $filter[] = (int)$value;
                 }
             }
         } elseif (count($_POST) > 0) {
             foreach ($_POST as $key => $value) {
                 if (preg_match('/mf\d+/i', $key)) {
-                    $filter[] = $value;
+                    $filter[] = (int)$value;
                 }
             }
         }
@@ -6882,15 +6882,16 @@ function gibURLzuNewsArchiv()
 
 /**
  * @param int $size
+ * @param string $format
  * @return string
  */
-function formatSize($size)
+function formatSize($size, $format = '%.2f')
 {
     $units = ['b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb'];
     foreach ($units as $n => $unit) {
         $div = pow(1024, $n);
         if ($size > $div) {
-            $res = sprintf('%s %s', number_format($size / $div, 2), $unit);
+            $res = sprintf("$format %s", ($size / $div), $unit);
         }
     }
 

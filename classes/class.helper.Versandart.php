@@ -239,6 +239,7 @@ class VersandartHelper
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
                 $versandarten[$i]->cPreisLocalized = Shop::Lang()->get('freeshipping', 'global');
                 if ($hasSpecificShippingcosts === true) {
+                    $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($shippingCosts);
                     $versandarten[$i]->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK(
                         $lieferland,
                         $_SESSION['Warenkorb']->PositionenArr

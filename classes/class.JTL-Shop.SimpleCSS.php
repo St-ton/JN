@@ -162,16 +162,16 @@ class SimpleCSS
     }
 
     /**
-     * @param $cOrdner
+     * @param string $cOrdner
      * @return string
      */
     public function getTemplatePath($cOrdner)
     {
-        return PFAD_ROOT . 'templates/' . $cOrdner . '/';
+        return realpath(PFAD_ROOT . 'templates/' . basename($cOrdner)) . '/';
     }
 
     /**
-     * @param $cOrdner
+     * @param string $cOrdner
      * @return string
      */
     public function getCustomCSSFile($cOrdner)

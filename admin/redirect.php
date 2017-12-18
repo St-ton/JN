@@ -109,10 +109,26 @@ $oRedirect_arr = Redirect::getRedirects(
 
 handleCsvExportAction(
     'redirects', 'redirects.csv',
-    function () use ($oFilter, $oPagination) {
-        return Redirect::getRedirects($oFilter->getWhereSQL(), $oPagination->getOrderSQL());
-    },
-    ['cFromUrl', 'cToUrl']
+    function () use ($oFilter, $oPagination, $nRedirectCount)
+    {
+        $cWhereSQL = $oFilter->getWhereSQL();
+        $cOrderSQL = $oPagination->getOrderSQL();
+
+        for ($i = 0; $i < $nRedirectCount; $i += 1000) {
+            $oRedirectIter = Shop::DB()->query(
+                "SELECT cFromUrl, cToUrl
+                    FROM tredirect" .
+                    ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .
+                    ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : "") .
+                    " LIMIT $i, 1000",
+                10
+            );
+
+            foreach ($oRedirectIter as $oRedirect) {
+                yield (object)$oRedirect;
+            }
+        }
+    }
 );
 
 $smarty

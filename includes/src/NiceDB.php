@@ -678,16 +678,16 @@ class NiceDB implements Serializable
                 } elseif ($_val === null) {
                     $_val = '';
                 }
-                $updates[] = $_key . '="' . $_val . '"';
+                $updates[] = $_key . '=' . $this->pdo->quote($_val);
             }
             if (is_array($keyname) && is_array($keyvalue)) {
                 $combined = [];
                 foreach ($keyname as $i => $key) {
-                    $combined[] = $key . '=' . $keyvalue[$i];
+                    $combined[] = $key . '=' . $this->pdo->quote($keyvalue[$i]);
                 }
                 $where = ' WHERE ' . implode(' AND ', $combined);
             } else {
-                $where = ' WHERE ' . $keyname . '=' . $keyvalue;
+                $where = ' WHERE ' . $keyname . '=' .  $this->pdo->quote($keyvalue);
             }
             $stmt = 'UPDATE ' . $tableName . ' SET ' . implode(',', $updates) . $where;
             $this->analyzeQuery('update', $stmt, $end - $start, $backtrace);

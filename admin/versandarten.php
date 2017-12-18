@@ -157,7 +157,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
             );
         }
         // (string-)merge the possible resulting 'overlaps'
-        // (multiple single PLZ or multiple PLZ-ranges)
+        // (multiple single ZIP or multiple ZIP-ranges)
         $szPLZ = $szPLZRange = $szOverlap = '';
         foreach ($plz_x as $oResult) {
             if (!empty($oResult->cPLZ) && (0 < strlen($szPLZ))) {

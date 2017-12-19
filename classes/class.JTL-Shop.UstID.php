@@ -221,7 +221,6 @@ class UstID
                 $this->cAntwortInfo_arr['cFehlerNachricht'] = 'Eine Bearbeitung Ihrer Anfrage ist zurzeit nicht möglich. Bitte versuchen Sie es später noch einmal.';
                 break;
         }
-        $this->cAntwortInfo_arr['cFehlerNachricht'] = utf8_decode($this->cAntwortInfo_arr['cFehlerNachricht']);
 
         return $this;
     }

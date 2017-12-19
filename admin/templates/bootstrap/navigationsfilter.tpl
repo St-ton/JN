@@ -1,181 +1,199 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="navigationsfilter"}
+{include file='tpl_inc/seite_header.tpl' cTitel=#navigationsfilter# cBeschreibung=#navigationsfilterDesc#
+         cDokuURL=#navigationsfilterUrl#}
 
-<script type="text/javascript">
+<script>
     var bManuell = false;
 
-    function selectCheck(selectBox) {ldelim}
-        if (selectBox.selectedIndex === 1) {ldelim}
-            // Laden falls vorhanden
-            {if isset($oPreisspannenfilter_arr) && $oPreisspannenfilter_arr|@count > 0}
-            {assign var=i value=1}
-            {foreach name=werte from=$oPreisspannenfilter_arr item=oPreisspannenfilter}
-            document.getElementById('nVon_{$smarty.foreach.werte.iteration-$i}').value = {$oPreisspannenfilter->nVon};
-            document.getElementById('nBis_{$smarty.foreach.werte.iteration-$i}').value = {$oPreisspannenfilter->nBis};
-            {/foreach}
-            {/if}
+    $(function()
+    {
+        $('#einstellen').submit(validateFormData);
+        $('#btn-add-range').click(function() { addPriceRange(); });
+        $('.btn-remove-range').click(removePriceRange);
 
-            document.getElementById('Werte').style.display = 'block';
+        selectCheck(document.getElementById('preisspannenfilter_anzeige_berechnung'));
+
+        {foreach $oPreisspannenfilter_arr as $i => $oPreisspanne}
+            addPriceRange({$oPreisspanne->nVon}, {$oPreisspanne->nBis});
+        {/foreach}
+    });
+
+    function addPriceRange(nVon, nBis)
+    {
+        var n = Math.floor(Math.random() * 1000000);
+
+        nVon = nVon || 0;
+        nBis = nBis || 0;
+
+        $('#price-rows').append(
+            '<div class="price-row">' +
+                '<button type="button" class="btn-remove-range btn btn-danger btn-sm">' +
+                    '<i class="fa fa-trash"></i></button> ' +
+                '<label for="nVon_' + n + '">{#navigationsfilterFrom#}:</label> ' +
+                '<input id="nVon_' + n + '" class="form-control" name="nVon[]" type="text" value="' + nVon + '"> ' +
+                '<label for="nBis_' + n + '">{#navigationsfilterTo#}:</label> ' +
+                '<input id="nBis_' + n + '" class="form-control" name="nBis[]" type="text" value="' + nBis + '">' +
+            '</div>'
+        );
+
+        $('.btn-remove-range').off('click').click(removePriceRange);
+    }
+
+    function removePriceRange()
+    {
+        $(this).parent().remove();
+    }
+
+    function selectCheck(selectBox)
+    {
+        if (selectBox.selectedIndex === 1) {
+            $('#Werte').show();
             bManuell = true;
-            {rdelim} else if (selectBox.selectedIndex === 0) {ldelim}
-            document.getElementById('Werte').style.display = 'none';
+        } else if (selectBox.selectedIndex === 0) {
+            $('#Werte').hide();
             bManuell = false;
-            {rdelim}
-        {rdelim}
+        }
+    }
 
-    // Plausibilitaetspruefung
-    function speicherDaten() {ldelim}
-        if (bManuell === true) {ldelim}
-            var bCheck = true,
-                cFehler = '',
-                j;
-            // Resetten
-            for (j = 0; j < 10; j++) {ldelim}
-                document.getElementById('nVon_' + j).style.background = '#FFFFFF';
-                document.getElementById('nBis_' + j).style.background = '#FFFFFF';
-                {rdelim}
+    function validateFormData(e)
+    {
+        if (bManuell === true) {
+            var cFehler = '',
+                $priceRows = $('.price-row'),
+                lastUpperBound = 0,
+                $errorAlert = $('#ranges-error-alert');
 
-            for (var i = 0; i < 10; i++) {ldelim}
-                if (i > 0) {ldelim}// Zeilen >= 2
-                    if (document.getElementById("nVon_" + i).value.length > 0) {ldelim}
-                        // Wenn das Feld "nVon" gesetzt wurde, muss auch "nBis" gesetzt werden
-                        if (document.getElementById("nBis_" + i).value.length > 0) {ldelim}
-                            // Wenn beide Felder gesetzt wurde, muss der Wert von "nVon" < sein als "nBis"
-                            if (parseFloat(document.getElementById("nVon_" + i).value) < parseFloat(document.getElementById("nBis_" + i).value)) {ldelim}
+            $errorAlert.hide();
 
-                                // Wenn beide Felder gesetzt wurden, "nVon" < ist als "nBis", dann muss "nVon" aus der Iteration > sein als "nBis" von der Iteration -1
-                                if (parseFloat(document.getElementById("nVon_" + i).value) < parseFloat(document.getElementById("nBis_" + (i - 1)).value)) {ldelim}
-                                    bCheck = false;
-                                    cFehler += "Fehler: Das Feld \"Von\" muss gr&ouml;&szlig;er oder gleich sein, als das Feld \"Bis\" von der voherigen Zeile.";
-                                    document.getElementById("nVon_" + i).style.background = "#FFE4E1";
-                                    {rdelim}
-                                {rdelim}
-                            else {ldelim}
-                                bCheck = false;
-                                cFehler += "Fehler: Das Feld \"Von\" muss kleiner sein als \"Bis\".";
-                                document.getElementById("nVon_" + i).style.background = "#FFE4E1";
-                                document.getElementById("nBis_" + i).style.background = "#FFE4E1";
-                                {rdelim}
-                            {rdelim}
-                        else {ldelim}
-                            bCheck = false;
-                            cFehler += "Fehler: Wenn \"Von\" gesetzt wurd, muss auch \"Bis\" gesetzt werden.";
-                            document.getElementById("nBis_" + i).style.background = "#FFE4E1";
-                            {rdelim}
-                        {rdelim}
-                    {rdelim} else {ldelim} // Erster Durchlauf, Zeile 1
-                    if (document.getElementById("nVon_" + i).value.length > 0 && document.getElementById("nBis_" + i).value.length > 0) {ldelim}
-                        if (parseFloat(document.getElementById("nVon_" + i).value) >= parseFloat(document.getElementById("nBis_" + i).value)) {ldelim}
-                            bCheck = false;
-                            cFehler = "Fehler: Das Feld \"Von\" muss kleiner sein als \"Bis\".";
-                            document.getElementById("nVon_" + i).style.background = "#FFE4E1";
-                            document.getElementById("nBis_" + i).style.background = "#FFE4E1";
-                            {rdelim}
-                        {rdelim} else {ldelim}
-                        bCheck = false;
-                        cFehler = "Fehler: Keiner der beiden Felder darf leer sein.";
-                        document.getElementById("nVon_" + i).style.background = "#FFE4E1";
-                        document.getElementById("nBis_" + i).style.background = "#FFE4E1";
-                        {rdelim}
-                    {rdelim}
-                {rdelim}
+            $priceRows
+                .sort(function(a, b) {
+                    var aVon = parseFloat($(a).find('[id^=nVon_]').val()),
+                        bVon = parseFloat($(b).find('[id^=nVon_]').val());
+                    return aVon < bVon ? -1 : +1;
+                })
+                .each(function(i, row) {
+                    $('#price-rows').append(row);
+                });
 
-            if (!bCheck) {ldelim}
-                //document.getElementById("Werte").innerHTML += cFehler;
-                alert(cFehler);
-                {rdelim} else {ldelim} // Alles O.K. -> Form abschicken
-                document.einstellen.submit();
-                {rdelim}
-            {rdelim} else {ldelim}
-            document.einstellen.submit();
-            {rdelim}
-        {rdelim}
+            $priceRows.each(function(i, row) {
+                var $row  = $(row),
+                    $nVon = $row.find('[id^=nVon_]'),
+                    $nBis = $row.find('[id^=nBis_]'),
+                    nVon  = $nVon.val(),
+                    nBis  = $nBis.val(),
+                    fVon  = parseFloat(nVon),
+                    fBis  = parseFloat(nBis);
+
+                $row.removeClass('has-error');
+
+                if(nVon === '' || nBis === '') {
+                    cFehler += 'Ein oder mehrere Felder sind nicht gesetzt.<br>';
+                    $row.addClass('has-error');
+                } else if(fVon >= fBis) {
+                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' ist ung&uuml;tig.<br>';
+                    $row.addClass('has-error');
+                } else if(fVon < lastUpperBound) {
+                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' &uuml;berschneidet sich mit anderen.<br>';
+                    $row.addClass('has-error');
+                }
+
+                lastUpperBound = fBis;
+            });
+
+            if(cFehler !== '') {
+                $errorAlert.html(cFehler).show();
+                e.preventDefault();
+            }
+        }
+    }
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#navigationsfilter# cBeschreibung=#navigationsfilterDesc# cDokuURL=#navigationsfilterUrl#}
 <div id="content" class="container-fluid">
-    <form name="einstellen" method="post" action="navigationsfilter.php" id="einstellen">
+    <form name="einstellen" method="post" id="einstellen">
         {$jtl_token}
         <input type="hidden" name="speichern" value="1"/>
         <div id="settings">
             {assign var=open value=false}
             {foreach name=conf from=$oConfig_arr item=oConfig}
-            {if $oConfig->cConf === 'Y'}
-            <div class="item input-group">
-                <span class="input-group-addon">
-                    <label for="{$oConfig->cWertName}">{$oConfig->cName}</label>
-                </span>
-                {if $oConfig->cInputTyp === 'selectbox'}
-                    <span class="input-group-wrap">
-                       <select id="{$oConfig->cWertName}" name="{$oConfig->cWertName}"
-                                class="form-control combo" {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'} onChange="selectCheck(this);"{/if}>
-                            {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
-                                <option value="{$wert->cWert}"
-                                        {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                            {/foreach}
-                        </select>
-                  </span>
-                {elseif $oConfig->cInputTyp === 'number'}
-                    <input class="form-control" type="number" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}"
-                           value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1"/>
-                {else}
-                    <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}"
-                           value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1"/>
-                {/if}
-                <span class="input-group-addon">
-                   {if $oConfig->cBeschreibung}
-                        {getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}
-                    {/if}
-               </span>
-                {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
-            </div>
-            <div id="Werte" style="display: {if $oConfig->gesetzterWert === 'M'}block{else}none{/if};"
-                 class="form-inline">
-                {section name="werte" start=0 loop=10 step=1}
-                    <div class="price-row" id="zeile_{$smarty.section.werte.index}">
-                        <label for="nVon_{$smarty.section.werte.index}">{#navigationsfilterFrom#}:</label>
-                        <input class="form-control" name="nVon[]" type="text" id="nVon_{$smarty.section.werte.index}"
-                               value="{if isset($oPreisspannenfilter_arr[$smarty.section.werte.index]->nVon)}{$oPreisspannenfilter_arr[$smarty.section.werte.index]->nVon}{/if}">
-                        <label for="nBis_{$smarty.section.werte.index}">{#navigationsfilterTo#}:</label>
-                        <input class="form-control" name="nBis[]" type="text" id="nBis_{$smarty.section.werte.index}"
-                               value="{if isset($oPreisspannenfilter_arr[$smarty.section.werte.index]->nBis)}{$oPreisspannenfilter_arr[$smarty.section.werte.index]->nBis}{/if}">
+                {if $oConfig->cConf === 'Y'}
+                    <div class="item input-group">
+                        <span class="input-group-addon">
+                            <label for="{$oConfig->cWertName}">{$oConfig->cName}</label>
+                        </span>
+                        {if $oConfig->cInputTyp === 'selectbox'}
+                            <span class="input-group-wrap">
+                                <select id="{$oConfig->cWertName}" name="{$oConfig->cWertName}"
+                                        class="form-control combo"
+                                        {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
+                                            onChange="selectCheck(this);"
+                                        {/if}>
+                                    {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
+                                        <option value="{$wert->cWert}"
+                                                {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>
+                                            {$wert->cName}
+                                        </option>
+                                    {/foreach}
+                                </select>
+                            </span>
+                        {elseif $oConfig->cInputTyp === 'number'}
+                            <input class="form-control" type="number" name="{$oConfig->cWertName}"
+                                   id="{$oConfig->cWertName}"
+                                   value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
+                                   tabindex="1">
+                        {else}
+                            <input class="form-control" type="text" name="{$oConfig->cWertName}"
+                                   id="{$oConfig->cWertName}"
+                                   value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
+                                   tabindex="1">
+                        {/if}
+                        <span class="input-group-addon">
+                            {if $oConfig->cBeschreibung}
+                                {getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}
+                            {/if}
+                        </span>
+                        {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
                     </div>
-                {/section}
-            </div>
-            <div class="item input-group">
+                    <div id="Werte" style="display: {if $oConfig->gesetzterWert === 'M'}block{else}none{/if};"
+                         class="form-inline">
+                        <div id="ranges-error-alert" class="alert alert-danger" style="display: none;"></div>
+                        <div id="price-rows"></div>
+                        <button type="button" class="btn btn-info btn-sm" id="btn-add-range">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="item input-group">
+                        {/if}
+                    </div>
+                {else}
+                    {if $oConfig->cName}
+                        {if $open}
+                    </div>
+                </div>
+                        {/if}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            {$oConfig->cName}
+                            <span class="pull-right">{getHelpDesc cID=$oConfig->kEinstellungenConf}</span>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        {assign var=open value=true}
+                    {/if}
                 {/if}
-            </div>
-            {else}
-            {if $oConfig->cName}
-            {if $open}</div>
-</div>{/if}
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            {$oConfig->cName} <span class="pull-right">{getHelpDesc cID=$oConfig->kEinstellungenConf}</span>
-        </h3>
-    </div>
-    <div class="panel-body">
-        {assign var=open value=true}
-        {/if}
-        {/if}
-        {/foreach}
-        {if $open}
-    </div>
+            {/foreach}
+            {if $open}
+                    </div>
+                </div>
+            {/if}
+        </div>
+        <p class="submit">
+            <button name="speichern" class="btn btn-primary" type="submit" value="{#navigationsfilterSave#}">
+                <i class="fa fa-save"></i> {#navigationsfilterSave#}
+            </button>
+        </p>
+    </form>
 </div>
-{/if}
-</div>
-
-<p class="submit">
-    <button name="speichern" class="btn btn-primary" type="button" value="{#navigationsfilterSave#}" onclick="speicherDaten();">
-        <i class="fa fa-save"></i> {#navigationsfilterSave#}
-    </button>
-</p>
-</form>
-</div>
-
-<script type="text/javascript">
-    selectCheck(document.getElementById('preisspannenfilter_anzeige_berechnung'));
-</script>
 
 {include file='tpl_inc/footer.tpl'}

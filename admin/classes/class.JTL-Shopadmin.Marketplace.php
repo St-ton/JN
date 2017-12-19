@@ -34,6 +34,6 @@ final class Marketplace
             throw new UnexpectedValueException('Empty api response');
         }
 
-        return utf8_convert_recursive(json_decode($response), false);
+        return json_decode($response);
     }
 }

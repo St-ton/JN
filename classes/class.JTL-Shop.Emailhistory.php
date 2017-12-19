@@ -89,7 +89,8 @@ class Emailhistory
 
     /**
      * @param bool $bPrim
-     * @return bool
+     * @return bool|int
+     * @throws Exception
      */
     public function save($bPrim = true)
     {
@@ -141,7 +142,7 @@ class Emailhistory
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function delete()
     {
@@ -198,13 +199,11 @@ class Emailhistory
     /**
      * truncate the email-history-table
      *
-     * @param void
-     * @return boolean  true=success, false='something went wrong'
+     * @return bool
      */
     public function deleteAll()
     {
-        // log that event!
-        Jtllog::writeLog(utf8_decode('eMail-History gelöscht'), JTLLOG_LEVEL_NOTICE, true, 'Emailhistory');
+        Jtllog::writeLog('eMail-History gelöscht', JTLLOG_LEVEL_NOTICE, true, 'Emailhistory');
         return !Shop::DB()->query('TRUNCATE TABLE temailhistory', 3);
     }
 

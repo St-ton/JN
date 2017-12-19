@@ -66,7 +66,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
                 $oKunde->updatePassword($_POST['pw_new']);
                 header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
             } else {
-                $cFehler = Shop::Lang()->get('invalidHash', 'productDetails');
+                $cFehler = Shop::Lang()->get('invalidHash', 'account data');
             }
         } else {
             $cFehler = Shop::Lang()->get('invalidCustomer', 'account data');

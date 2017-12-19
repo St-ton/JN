@@ -313,8 +313,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
 
                     self::send_file_to_browser(
                         PFAD_DOWNLOADS . $oDownload->getPfad(),
-                        'application/octet-stream',
-                        true
+                        'application/octet-stream'
                     );
 
                     return 1;
@@ -680,13 +679,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param string $mimetype
          * @param bool $bEncode
          */
-        private static function send_file_to_browser($filename, $mimetype, $bEncode = false)
+        private static function send_file_to_browser($filename, $mimetype)
         {
-            if ($bEncode) {
-                $file     = basename($filename);
-                $filename = str_replace($file, '', $filename);
-                $filename .= utf8_encode($file);
-            }
             $browser_agent   = 'other';
             $HTTP_USER_AGENT = (!empty($_SERVER['HTTP_USER_AGENT']))
                 ? $_SERVER['HTTP_USER_AGENT']

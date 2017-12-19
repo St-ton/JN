@@ -1651,7 +1651,8 @@ class Warenkorb
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
                     ON vas.kVersandart = va.kVersandart
-                WHERE va.cLaender LIKE '%{$countryCode}%'
+                WHERE cIgnoreShippingProposal != 'Y'
+                AND va.cLaender LIKE '%{$countryCode}%'
                 AND (va.cVersandklassen = '-1'
                     OR va.cVersandklassen IN (" . implode(',', $shippingClasses) . "))
                 AND (va.cKundengruppen = '-1' {$customerGroupSQL})

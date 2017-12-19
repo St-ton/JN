@@ -49,7 +49,7 @@ function gibTrustedShops()
 
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog(
-            utf8_decode("Der TrustedShops Käuferschutz im Bestellvorgang wurde mit folgendem Ergebnis geladen: ") .
+            "Der TrustedShops Käuferschutz im Bestellvorgang wurde mit folgendem Ergebnis geladen: " .
                 print_r($oTrustedShopsTMP, true),
             JTLLOG_LEVEL_DEBUG
         );

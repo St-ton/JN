@@ -97,13 +97,13 @@ if (isset($_POST['resetEmailvorlage']) && (int)$_POST['resetEmailvorlage'] === 1
                                 $html              = file_get_contents($fileHtml);
                                 $text              = file_get_contents($filePlain);
                                 $doDecodeHtml      = function_exists('mb_detect_encoding')
-                                    ? (mb_detect_encoding($html, 'UTF-8', true) === 'UTF-8')
+                                    ? (mb_detect_encoding($html, ['UTF-8', 'ISO-8859-1', 'ISO-8859-15'], true) !== 'UTF-8')
                                     : (StringHandler::is_utf8($html) === 1);
                                 $doDecodeText      = function_exists('mb_detect_encoding')
-                                    ? (mb_detect_encoding($text, 'UTF-8', true) === 'UTF-8')
+                                    ? (mb_detect_encoding($text, ['UTF-8', 'ISO-8859-1', 'ISO-8859-15'], true) !== 'UTF-8')
                                     : (StringHandler::is_utf8($text) === 1);
-                                $upd->cContentHtml = ($doDecodeHtml === true) ? utf8_decode($html) : $html;
-                                $upd->cContentText = ($doDecodeText === true) ? utf8_decode($text) : $text;
+                                $upd->cContentHtml = ($doDecodeHtml === true) ? StringHandler::convertUTF8($html) : $html;
+                                $upd->cContentText = ($doDecodeText === true) ? StringHandler::convertUTF8($text) : $text;
                                 Shop::DB()->update(
                                     $cTableSprache,
                                     ['kEmailVorlage', 'kSprache'],
@@ -622,8 +622,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
                             $cUploadDatei = $cUploadVerzeichnis . $Emailvorlagesprache->kEmailvorlage .
                                 '_' . $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
                             if (!move_uploaded_file($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['tmp_name'], $cUploadDatei)) {
-                                $cFehler .= 'Fehler: Die Dateien konnte nicht geschrieben werden. ' .
-                                    'Pr&uuml;fen Sie bitte ob das PDF Verzeichnis Schreibrechte besitzt.<br />';
+                                $cFehler .= 'Fehler: Die Dateien konnten nicht geschrieben werden. ' .
+                                    'Pr&uuml;fen Sie bitte, ob das PDF Verzeichnis Schreibrechte besitzt.<br />';
                                 $nFehler = 1;
                                 break;
                             }

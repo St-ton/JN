@@ -141,7 +141,7 @@ class MigrationHelper
                 nVersion int(3) NOT NULL, 
                 dExecuted datetime NOT NULL,
                 PRIMARY KEY (kMigration)
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1", 3
+            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'", 3
         );
         Shop::DB()->query("
             CREATE TABLE IF NOT EXISTS tmigrationlog 
@@ -153,7 +153,7 @@ class MigrationHelper
                 cLog text NOT NULL, 
                 dCreated datetime NOT NULL, 
                 PRIMARY KEY (kMigrationlog)
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1", 3
+            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'", 3
         );
     }
 }

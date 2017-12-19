@@ -854,7 +854,7 @@ class Exportformat
                 fwrite($handle, "\xEF\xBB\xBF");
             }
             if ($encoding === 'UTF-8' || $encoding === 'UTF-8noBOM') {
-                $header = utf8_encode($header);
+                $header = StringHandler::convertUTF8($header);
             }
 
             return fwrite($handle, $header . "\n");
@@ -873,7 +873,7 @@ class Exportformat
         if (strlen($footer) > 0) {
             $encoding = $this->getKodierung();
             if ($encoding === 'UTF-8' || $encoding === 'UTF-8noBOM') {
-                $footer = utf8_encode($footer);
+                $footer = StringHandler::convertUTF8($footer);
             }
 
             return fwrite($handle, $footer);
@@ -1058,7 +1058,7 @@ class Exportformat
             $max = (int)$max;
         }
 
-        Jtllog::cronLog('Starting exportformat "' . utf8_encode($this->getName()) .
+        Jtllog::cronLog('Starting exportformat "' . StringHandler::convertUTF8($this->getName()) .
             '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
             ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
              ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
@@ -1229,7 +1229,7 @@ class Exportformat
         }
         if (strlen($cOutput) > 0) {
             fwrite($datei, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM')
-                ? utf8_encode($cOutput)
+                ? StringHandler::convertUTF8($cOutput)
                 : $cOutput));
         }
 

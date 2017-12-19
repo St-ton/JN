@@ -18,11 +18,7 @@ function getWidgets($bActive = true)
             $cClassFile                = 'class.' . $cClass . '.php';
             $cClassPath                = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
             $oWidget->cNiceTitle       = str_replace(['--', ' '], '-', $oWidget->cTitle);
-            $oWidget->cNiceTitle       = strtolower(str_replace(
-                ['ä', 'Ä', 'ü', 'Ü', 'ö', 'Ö', 'ß', utf8_decode('ü'), utf8_decode('Ü'), utf8_decode('ä'), utf8_decode('Ä'), utf8_decode('ö'), utf8_decode('Ö'), '(', ')', '/', '\\'],
-                '',
-                $oWidget->cNiceTitle)
-            );
+            $oWidget->cNiceTitle       = strtolower(preg_replace('/[äüöß\(\)\/\\\]/iu', '', $oWidget->cNiceTitle));
             // Plugin?
             $oPlugin = null;
             if (isset($oWidget->kPlugin) && $oWidget->kPlugin > 0) {
@@ -206,7 +202,6 @@ function getAvailableWidgetsIO()
     $oAvailableWidget_arr = getWidgets(false);
     Shop::Smarty()->assign('oAvailableWidget_arr', $oAvailableWidget_arr);
     $cWrapper = Shop::Smarty()->fetch('tpl_inc/widget_selector.tpl');
-    $cWrapper = utf8_encode($cWrapper);
     $response->assign('settings', 'innerHTML', $cWrapper);
 
     return $response;

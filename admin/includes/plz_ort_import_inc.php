@@ -87,7 +87,7 @@ function plzimportDoImport($target, array $sessData, $result)
 
             if (isset($data[13]) && in_array($data[13], [6, 8])) {
                 $plz_arr       = explode(',', $data[7]);
-                $oPLZOrt->cOrt = utf8_decode($data[3]);
+                $oPLZOrt->cOrt = $data[3];
 
                 foreach ($plz_arr as $plz) {
                     $oPLZOrt->cPLZ = $plz;
@@ -116,7 +116,7 @@ function plzimportDoImport($target, array $sessData, $result)
                                     'params' => [$target, 'import', $sessData['step']]
                                 ]
                             )
-                        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
+                        ) . '&token=' . StringHandler::filterXSS($_SESSION['jtl_token']);
                     header('Location: ' . $cRedirectUrl);
                     exit;
                 }
@@ -255,7 +255,7 @@ function plzimportDoDownload($target, array $sessData, $result)
                     'params' => [$target, 'import', $sessData['step']]
                 ]
             )
-        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
+        ) . '&token=' . StringHandler::filterXSS($_SESSION['jtl_token']);
     header('Location: ' . $cRedirectUrl);
     exit;
 }
@@ -487,6 +487,7 @@ function plzimportActionLoadAvailableDownloads()
 
 /**
  * @param string $target
+ * @return stdClass
  */
 function plzimportActionRestoreBackup($target = '')
 {
@@ -616,7 +617,7 @@ function plzimportMakeResponse($data, $error = null)
 
     $result = (object)[
         'error' => $error,
-        'data'  => utf8_convert_recursive($data)
+        'data'  => $data
     ];
 
     $json = json_encode($result);

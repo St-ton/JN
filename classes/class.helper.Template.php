@@ -315,9 +315,9 @@ class TemplateHelper
             : (strtolower((string)$oXMLTemplate['isFullResponsive']) === 'true');
         $oTemplate->bHasError    = false;
         $oTemplate->eTyp         = '';
-        $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? trim($oXMLTemplate->Description) : '';
+        $oTemplate->cDescription = !empty($oXMLTemplate->Description) ? trim($oXMLTemplate->Description) : '';
         if (StringHandler::is_utf8($oTemplate->cDescription)) {
-            $oTemplate->cDescription = utf8_decode($oTemplate->cDescription);
+            $oTemplate->cDescription = StringHandler::convertISO($oTemplate->cDescription);
         }
 
         if (!empty($oXMLTemplate->Parent)) {

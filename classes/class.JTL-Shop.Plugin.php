@@ -687,8 +687,8 @@ class Plugin
     {
         $cPfad = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis;
         if (is_dir($cPfad) && file_exists($cPfad . '/' . PLUGIN_INFO_FILE)) {
-            $xml     = StringHandler::convertISO(file_get_contents($cPfad . '/' . PLUGIN_INFO_FILE));
-            $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
+            $xml     = file_get_contents($cPfad . '/' . PLUGIN_INFO_FILE);
+            $XML_arr = XML_unserialize($xml, 'UTF-8');
             $XML_arr = getArrangedArray($XML_arr);
 
             $nLastVersionKey = count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;

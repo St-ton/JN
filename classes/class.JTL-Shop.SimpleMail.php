@@ -236,6 +236,7 @@ class SimpleMail
     {
         if ($this->validate() === true) {
             $oPHPMailer            = new PHPMailer();
+            $oPHPMailer->CharSet   = JTL_CHARSET;
             $oPHPMailer->Timeout   = SOCKET_TIMEOUT;
             $oPHPMailer->From      = $this->cVerfasserMail;
             $oPHPMailer->Sender    = $this->cVerfasserMail;

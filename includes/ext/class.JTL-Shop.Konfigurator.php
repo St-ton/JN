@@ -144,7 +144,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public static function validateBasket($kArtikel, $oKonfigitem_arr)
         {
             if ((int)$kArtikel === 0 || !is_array($oKonfigitem_arr)) {
-                Jtllog::writeLog(utf8_decode('Validierung der Konfiguration fehlgeschlagen - Ungültige Daten'));
+                Jtllog::writeLog('Validierung der Konfiguration fehlgeschlagen - Ungültige Daten');
 
                 return false;
             }

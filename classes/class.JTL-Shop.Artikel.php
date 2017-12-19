@@ -1348,7 +1348,7 @@ class Artikel
                 'height' => $height
              ],
             'type' => $type,
-            'alt'  => utf8_encode($image->cAltAttribut)
+            'alt'  => $image->cAltAttribut
         ];
     }
 
@@ -1454,7 +1454,6 @@ class Artikel
             $this->cMerkmalAssoc_arr = [];
             foreach ($this->oMerkmale_arr as $oMerkmal) {
                 $cMerkmalname = preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/', '', $oMerkmal->cName);
-                $cMerkmalname = preg_replace('/[^' . utf8_decode('öäüÖÄÜß') . 'a-zA-Z0-9\.\-_]/', '', $cMerkmalname);
                 if (strlen($oMerkmal->cName) > 0) {
                     $values = array_filter(array_map(function ($e) {
                         return isset($e->cWert) ? $e->cWert : null;
@@ -3979,8 +3978,8 @@ class Artikel
                 if (Konfigurator::validateKonfig($this->kArtikel)) {
                     $this->oKonfig_arr = Konfigurator::getKonfig($this->kArtikel, $kSprache);
                 } else {
-                    Jtllog::writeLog(utf8_decode('Konfigurator für Artikel (Art.Nr.: ' .
-                        $this->cArtNr . ') konnte nicht geladen werden.'), JTLLOG_LEVEL_ERROR);
+                    Jtllog::writeLog('Konfigurator für Artikel (Art.Nr.: ' .
+                        $this->cArtNr . ') konnte nicht geladen werden.', JTLLOG_LEVEL_ERROR);
                 }
             }
         }
@@ -5083,7 +5082,8 @@ class Artikel
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
                     ON vas.kVersandart = va.kVersandart
-                WHERE va.cLaender LIKE '%{$countryCode}%'
+                WHERE cIgnoreShippingProposal != 'Y'
+                AND va.cLaender LIKE '%{$countryCode}%'
                 AND (va.cVersandklassen = '-1'
                     OR va.cVersandklassen RLIKE '^([0-9 -]* )?{$this->kVersandklasse} ')
                 AND (va.cKundengruppen = '-1'
@@ -5166,9 +5166,10 @@ class Artikel
             $oPiecesNotInShop = Shop::DB()->query(
                 "SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
                     FROM tstueckliste
-                    LEFT JOIN tartikel ON tartikel.kArtikel = tstueckliste.kArtikel
+                    LEFT JOIN tartikel
+                      ON tartikel.kArtikel = tstueckliste.kArtikel
                     WHERE tstueckliste.kStueckliste = " . (int)$this->kStueckliste . "
-	                    AND tartikel.kArtikel IS NULL", 1
+                        AND tartikel.kArtikel IS NULL", 1
             );
 
             if (is_object($oPiecesNotInShop) && (int)$oPiecesNotInShop->nAnzahl > 0) {
@@ -5312,124 +5313,46 @@ class Artikel
             $oMappedTyp = new stdClass();
             switch ($cTyp) {
                 case '.bmp':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabPicture', 'media');
-                    $oMappedTyp->nTyp  = 1;
-                    break;
                 case '.gif':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabPicture', 'media');
-                    $oMappedTyp->nTyp  = 1;
-                    break;
                 case '.ico':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabPicture', 'media');
-                    $oMappedTyp->nTyp  = 1;
-                    break;
                 case '.jpg':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabPicture', 'media');
-                    $oMappedTyp->nTyp  = 1;
-                    break;
                 case '.png':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabPicture', 'media');
-                    $oMappedTyp->nTyp  = 1;
-                    break;
                 case '.tga':
                     $oMappedTyp->cName = Shop::Lang()->get('tabPicture', 'media');
                     $oMappedTyp->nTyp  = 1;
                     break;
                 case '.wav':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabMusic', 'media');
-                    $oMappedTyp->nTyp  = 2;
-                    break;
                 case '.mp3':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabMusic', 'media');
-                    $oMappedTyp->nTyp  = 2;
-                    break;
                 case '.wma':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabMusic', 'media');
-                    $oMappedTyp->nTyp  = 2;
-                    break;
                 case '.m4a':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabMusic', 'media');
-                    $oMappedTyp->nTyp  = 2;
-                    break;
                 case '.aac':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabMusic', 'media');
-                    $oMappedTyp->nTyp  = 2;
-                    break;
                 case '.ra':
                     $oMappedTyp->cName = Shop::Lang()->get('tabMusic', 'media');
                     $oMappedTyp->nTyp  = 2;
                     break;
                 case '.ogg':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabVideo', 'media');
-                    $oMappedTyp->nTyp  = 3;
-                    break;
                 case '.ac3':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabVideo', 'media');
-                    $oMappedTyp->nTyp  = 3;
-                    break;
                 case '.fla':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabVideo', 'media');
-                    $oMappedTyp->nTyp  = 3;
-                    break;
                 case '.swf':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabVideo', 'media');
-                    $oMappedTyp->nTyp  = 3;
-                    break;
                 case '.avi':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabVideo', 'media');
-                    $oMappedTyp->nTyp  = 3;
-                    break;
                 case '.mov':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabVideo', 'media');
-                    $oMappedTyp->nTyp  = 3;
-                    break;
                 case '.h264':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabVideo', 'media');
-                    $oMappedTyp->nTyp  = 3;
-                    break;
                 case '.mp4':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabVideo', 'media');
-                    $oMappedTyp->nTyp  = 3;
-                    break;
                 case '.flv':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabVideo', 'media');
-                    $oMappedTyp->nTyp  = 3;
-                    break;
                 case '.3gp':
                     $oMappedTyp->cName = Shop::Lang()->get('tabVideo', 'media');
                     $oMappedTyp->nTyp  = 3;
                     break;
-                case '.zip':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabMisc', 'media');
-                    $oMappedTyp->nTyp  = 4;
-                    break;
-                case '.rar':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabMisc', 'media');
-                    $oMappedTyp->nTyp  = 4;
-                    break;
-                case '.tar':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabMisc', 'media');
-                    $oMappedTyp->nTyp  = 4;
-                    break;
-                case '.gz':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabMisc', 'media');
-                    $oMappedTyp->nTyp  = 4;
-                    break;
-                case '.tar.gz':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabMisc', 'media');
-                    $oMappedTyp->nTyp  = 4;
-                    break;
-
                 case '.pdf':
                     $oMappedTyp->cName = Shop::Lang()->get('tabPdf', 'media');
                     $oMappedTyp->nTyp  = 5;
                     break;
-
+                case '.zip':
+                case '.rar':
+                case '.tar':
+                case '.gz':
+                case '.tar.gz':
                 case '':
-                    $oMappedTyp->cName = Shop::Lang()->get('tabMisc', 'media');
-                    $oMappedTyp->nTyp  = 4;
-                    break;
-
                 default:
                     $oMappedTyp->cName = Shop::Lang()->get('tabMisc', 'media');
                     $oMappedTyp->nTyp  = 4;
@@ -5505,9 +5428,9 @@ class Artikel
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
         $oXSeller               = gibArtikelXSelling($kArtikel, $this->nIstVater > 0);
         $kArtikelXSellerKey_arr = [];
-        if (isset($oXSeller->Standard->XSellGruppen) &&
-            is_array($oXSeller->Standard->XSellGruppen) &&
-            count($oXSeller->Standard->XSellGruppen) > 0
+        if (isset($oXSeller->Standard->XSellGruppen)
+            && is_array($oXSeller->Standard->XSellGruppen)
+            && count($oXSeller->Standard->XSellGruppen) > 0
         ) {
             foreach ($oXSeller->Standard->XSellGruppen as $oXSeller) {
                 if (is_array($oXSeller->Artikel) && count($oXSeller->Artikel) > 0) {
@@ -5520,9 +5443,9 @@ class Artikel
                 }
             }
         }
-        if (isset($oXSeller->Kauf->XSellGruppen) &&
-            is_array($oXSeller->Kauf->XSellGruppen) &&
-            count($oXSeller->Kauf->XSellGruppen) > 0
+        if (isset($oXSeller->Kauf->XSellGruppen)
+            && is_array($oXSeller->Kauf->XSellGruppen)
+            && count($oXSeller->Kauf->XSellGruppen) > 0
         ) {
             foreach ($oXSeller->Kauf->XSellGruppen as $oXSeller) {
                 if (is_array($oXSeller->Artikel) && count($oXSeller->Artikel) > 0) {
@@ -5772,7 +5695,6 @@ class Artikel
      */
     public function gibMwStVersandString($NettoPreise)
     {
-        // Standards
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
             $NettoPreise              = Session::CustomerGroup()->isMerchant();
@@ -5781,9 +5703,7 @@ class Artikel
             setzeLinks();
         }
         $NettoPreise = (bool)$NettoPreise;
-        $inklexkl    = $NettoPreise === true
-            ? Shop::Lang()->get('excl', 'productDetails')
-            : Shop::Lang()->get('incl', 'productDetails');
+        $inklexkl    = Shop::Lang()->get($NettoPreise === true ? 'excl' : 'incl', 'productDetails');
         $mwst        = $this->mwstFormat(gibUst($this->kSteuerklasse));
         $ust         = '';
         $versand     = '';
@@ -5795,10 +5715,8 @@ class Artikel
                 if ($conf['global']['global_versandkostenfrei_darstellung'] === 'D') {
                     $cLaenderAssoc_arr = $this->gibMwStVersandLaenderString(false);
                     $cLaender          = '';
-                    if (count($cLaenderAssoc_arr) > 0) {
-                        foreach ($cLaenderAssoc_arr as $cISO => $cLaenderAssoc) {
-                            $cLaender .= '<abbr title="' . $cLaenderAssoc . '">' . $cISO . '</abbr> ';
-                        }
+                    foreach ($cLaenderAssoc_arr as $cISO => $cLaenderAssoc) {
+                        $cLaender .= '<abbr title="' . $cLaenderAssoc . '">' . $cISO . '</abbr> ';
                     }
 
                     $versand .= Shop::Lang()->get('noShippingcostsTo') . ' ' .
@@ -6021,8 +5939,8 @@ class Artikel
         $confMinKeyLen        = (int)Shop::getSettings([CONF_METAANGABEN])['metaangaben']['global_meta_keywords_laenge'];
         $cacheID              = 'meta_keywords_' . Shop::getLanguageID();
         $_descriptionKeywords = explode(' ', StringHandler::removeDoubleSpaces(
-            preg_replace('/[^a-zA-Z0-9 ??¸?÷??-]/', ' ', $description))
-        );
+            preg_replace('/[^a-zA-Z0-9üÜäÄöÖß-]/', ' ', $description)
+        ));
         $descriptionKeywords  = array_filter($_descriptionKeywords, function ($value) use ($confMinKeyLen) {
             return strlen($value) >= $confMinKeyLen;
         });

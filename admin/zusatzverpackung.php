@@ -29,7 +29,11 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
                 $oVerpackung = new stdClass();
             }
             $oVerpackung->kSteuerklasse = $kSteuerklasse;
-            $oVerpackung->cName         = htmlspecialchars(strip_tags(trim($_POST['cName_' . $oSprache_arr[0]->cISO])), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $oVerpackung->cName         = htmlspecialchars(
+                strip_tags(trim($_POST['cName_' . $oSprache_arr[0]->cISO])),
+                ENT_COMPAT | ENT_HTML401,
+                JTL_CHARSET
+            );
 
             if ($kKundengruppe_arr[0] == '-1') {
                 $oVerpackung->cKundengruppe = '-1';
@@ -82,11 +86,7 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
     }
 } elseif (isset($_POST['bearbeiten']) && (int)$_POST['bearbeiten'] === 1 && validateToken()) {
     // Verpackungen bearbeiten (aktualisieren / loeschen)
-    if (isset($_POST['loeschen'])
-        && ($_POST['loeschen'] === 'Löschen'
-            || utf8_decode($_POST['loeschen']) === 'Löschen'
-            || $_POST['loeschen'] === utf8_decode('Löschen'))
-    ) {
+    if (isset($_POST['loeschen']) && $_POST['loeschen'] === 'delete') {
         if (is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0) {
             foreach ($_POST['kVerpackung'] as $kVerpackung) {
                 $kVerpackung = (int)$kVerpackung;
@@ -101,7 +101,7 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Verpackung.<br />';
         }
     } elseif (isset($_POST['aktualisieren']) &&
-        $_POST['aktualisieren'] === 'Aktualisieren' && validateToken()) {
+        $_POST['aktualisieren'] === 'refresh' && validateToken()) {
         // Aktualisieren
         // Alle Verpackungen deaktivieren
         Shop::DB()->query("UPDATE tverpackung SET nAktiv = 0", 3);
@@ -174,7 +174,7 @@ $smarty->assign('hinweis', $cHinweis)
 
 /**
  * @param string $cKundengruppe
- * @return object|null
+ * @return stdClass|null
  */
 function gibKundengruppeObj($cKundengruppe)
 {

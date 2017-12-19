@@ -689,21 +689,19 @@ function gibStepZahlung()
                 if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
                     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                 }
-                if (isset($oTrustedShops->tsId) &&
-                    $oTrustedShops->eType === TS_BUYERPROT_EXCELLENCE &&
-                    strlen($oTrustedShops->tsId) > 0
+                if (isset($oTrustedShops->tsId)
+                    && $oTrustedShops->eType === TS_BUYERPROT_EXCELLENCE
+                    && strlen($oTrustedShops->tsId) > 0
                 ) {
                     $_SESSION['TrustedShopsZahlung'] = true;
                     gibStepZahlung();
                 }
             }
-        } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                Jtllog::writeLog(utf8_decode(
-                    'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
-                    $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . Session::CustomerGroup()->getID()
-                ));
-            }
+        } elseif ((!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) && Jtllog::doLog()) {
+            Jtllog::writeLog(
+                'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
+                $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . Session::CustomerGroup()->getID()
+            );
         }
 
         $aktiveVerpackung  = gibAktiveVerpackung($oVerpackung_arr);
@@ -1684,7 +1682,7 @@ function zahlungsartGueltig($Zahlungsart)
             }
             if ($oZahlungsart && !$oZahlungsart->isValidIntern()) {
                 Jtllog::writeLog(
-                    utf8_decode('Die Zahlungsartprüfung (' . $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).'),
+                    'Die Zahlungsartprüfung (' . $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).',
                     JTLLOG_LEVEL_DEBUG,
                     false,
                     'cModulId',
@@ -1709,8 +1707,8 @@ function zahlungsartGueltig($Zahlungsart)
         }
         if ($oZahlungsart && !$oZahlungsart->isValidIntern()) {
             Jtllog::writeLog(
-                utf8_decode('Die Zahlungsartprüfung (' .
-                    $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).'),
+                'Die Zahlungsartprüfung (' .
+                    $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).',
                 JTLLOG_LEVEL_DEBUG,
                 false,
                 'cModulId',
@@ -3123,7 +3121,7 @@ function valid_plzort($plz, $ort, $land)
  */
 function umlauteUmschreibenA2AE($str)
 {
-    $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß'), utf8_decode('Ä'), utf8_decode('Ö'), utf8_decode('Ü')];
+    $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
     $rpl = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue', 'ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
 
     return str_replace($src, $rpl, $str);
@@ -3135,8 +3133,8 @@ function umlauteUmschreibenA2AE($str)
  */
 function umlauteUmschreibenAE2A($str)
 {
-    $rpl = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß'), utf8_decode('Ä'), utf8_decode('Ö'), utf8_decode('Ü')];
-    $src = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue', 'ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
+    $rpl = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
+    $src = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
 
     return str_replace($src, $rpl, $str);
 }
@@ -3249,14 +3247,14 @@ function gibSelbstdefKundenfelder()
         "SELECT *
             FROM tkundenfeld
             WHERE kSprache = " . Shop::getLanguage(). "
-            ORDER BY nSort DESC", 2
+            ORDER BY nSort ASC", 2
     );
 
     if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
         // tkundenfeldwert nachschauen ob dort Werte für tkundenfeld enthalten sind
         foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
             if ($oKundenfeld->cTyp === 'auswahl') {
-                $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$oKundenfeld->kKundenfeld);
+                $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$oKundenfeld->kKundenfeld, '*', '`kKundenfeld`, `nSort`, `kKundenfeldWert` ASC');
 
                 $oKundenfeld_arr[$i]->oKundenfeldWert_arr = $oKundenfeldWert_arr;
             }

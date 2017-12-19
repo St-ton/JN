@@ -77,11 +77,9 @@ function saveBannerAreasIO($cData)
     $oData    = json_decode($cData);
 
     foreach ($oData->oArea_arr as $oArea) {
-        $oArea->cTitel        = utf8_decode($oArea->cTitel);
-        $oArea->cUrl          = utf8_decode($oArea->cUrl);
-        $oArea->cBeschreibung = utf8_decode($oArea->cBeschreibung);
-        $oArea->cStyle        = utf8_decode($oArea->cStyle);
         $oArea->kArtikel      = (int)$oArea->kArtikel;
+        $oArea->kImageMap     = (int)$oArea->kImageMap;
+        $oArea->kImageMapArea = (int)$oArea->kImageMapArea;
     }
 
     $oBanner->saveAreas($oData);

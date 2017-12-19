@@ -121,9 +121,9 @@ if (!empty($_FILES['file_data'])) {
            ->assign('PluginFehlerhaft_arr', $PluginFehlerhaft_arr);
 
     $response->html                   = new stdClass();
-    $response->html->verfuegbar       = utf8_encode($smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl'));
+    $response->html->verfuegbar       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
     $response->html->verfuegbar_count = count($PluginVerfuebar_arr);
-    $response->html->fehlerhaft       = utf8_encode($smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_fehlerhaft.tpl'));
+    $response->html->fehlerhaft       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_fehlerhaft.tpl');
     $response->html->fehlerhaft_count = count($PluginFehlerhaft_arr);
     die(json_encode($response));
 }

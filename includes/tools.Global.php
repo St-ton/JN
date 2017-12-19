@@ -2399,16 +2399,16 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
     if (is_array($laender)) {
         usort(
             $laender, function ($a, $b) {
-                $a = mb_convert_case($a->cName, MB_CASE_LOWER, 'iso-8859-1');
-                $b = mb_convert_case($b->cName, MB_CASE_LOWER, 'iso-8859-1');
+                $a = mb_convert_case($a->cName, MB_CASE_LOWER, 'utf-8');
+                $b = mb_convert_case($b->cName, MB_CASE_LOWER, 'utf-8');
                 $a = str_replace(
-                    ['ä', 'ü', 'ö', 'ss', utf8_decode('ä'), utf8_decode('ü'), utf8_decode('ö')],
-                    ['a', 'u', 'o', 'ß', 'a', 'u', 'o', 'ß'],
+                    ['ä', 'ü', 'ö', 'ss'],
+                    ['a', 'u', 'o', 'ß'],
                     $a
                 );
                 $b = str_replace(
-                    ['ä', 'ü', 'ö', 'ss', utf8_decode('ä'), utf8_decode('ü'), utf8_decode('ö')],
-                    ['a', 'u', 'o', 'ß', 'a', 'u', 'o', 'ß'],
+                    ['ä', 'ü', 'ö', 'ss'],
+                    ['a', 'u', 'o', 'ß'],
                     $b
                 );
                 if ($a === $b) {
@@ -3412,18 +3412,8 @@ function holeAlleSuchspecialOverlays($kSprache = 0)
 
             $idx = strtolower(str_replace([' ', '-', '_'], '', $sso->cSuchspecial));
             $idx = preg_replace(
-                ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/',
-                 utf8_decode('/Ä/'),
-                 utf8_decode('/Ö/'),
-                 utf8_decode('/Ü/'),
-                 utf8_decode('/ä/'),
-                 utf8_decode('/ö/'),
-                 utf8_decode('/ü/'),
-                 utf8_decode('/ß/')
-                ],
-                ['ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss',
-                 'ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss'
-                ],
+                ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/'],
+                ['ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss'],
                 $idx
             );
             $overlays[$idx]              = $sso;
@@ -4573,7 +4563,7 @@ function utf8_convert_recursive($data, $encode = true, $copy = false)
         $isUtf8 = mb_detect_encoding($data, 'UTF-8', true) !== false;
 
         if ((!$isUtf8 && $encode) || ($isUtf8 && !$encode)) {
-            $data = $encode ? utf8_encode($data) : utf8_decode($data);
+            $data = $encode ? StringHandler::convertUTF8($data) : StringHandler::convertISO($data);
         }
     } elseif (is_array($data)) {
         foreach ($data as $key => $val) {

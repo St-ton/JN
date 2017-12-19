@@ -55,9 +55,8 @@ function suggestions($keyword)
             ],
             2
         );
-        foreach ($results as $result) {
-            $result->suggestion = utf8_encode($smarty->assign('result', $result)->fetch('snippets/suggestion.tpl'));
-            $result->keyword    = utf8_encode($result->keyword);
+        foreach ($results as &$result) {
+            $result->suggestion = $smarty->assign('result', $result)->fetch('snippets/suggestion.tpl');
         }
     }
 
@@ -86,7 +85,7 @@ function getCitiesByZip($cityQuery, $country, $zip)
             ['country' => $country, 'zip' => $zip, 'cityQuery' => $cityQuery],
             2);
         foreach ($cities as $result) {
-            $results[] = utf8_encode($result->cOrt);
+            $results[] = $result->cOrt;
         }
     }
 
@@ -201,12 +200,12 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
            ->assign('Steuerpositionen', $cart->gibSteuerpositionen());
 
     $oResponse->nType           = 2;
-    $oResponse->cWarenkorbText  = utf8_encode(lang_warenkorb_warenkorbEnthaeltXArtikel($cart));
-    $oResponse->cWarenkorbLabel = utf8_encode(lang_warenkorb_warenkorbLabel($cart));
-    $oResponse->cPopup          = utf8_encode($smarty->fetch('productdetails/pushed.tpl'));
-    $oResponse->cWarenkorbMini  = utf8_encode($smarty->fetch('basket/cart_dropdown.tpl'));
-    $oResponse->oArtikel        = utf8_convert_recursive($Artikel, true);
-    $oResponse->cNotification   = utf8_encode(Shop::Lang()->get('basketAllAdded', 'messages'));
+    $oResponse->cWarenkorbText  = lang_warenkorb_warenkorbEnthaeltXArtikel($cart);
+    $oResponse->cWarenkorbLabel = lang_warenkorb_warenkorbLabel($cart);
+    $oResponse->cPopup          = $smarty->fetch('productdetails/pushed.tpl');
+    $oResponse->cWarenkorbMini  = $smarty->fetch('basket/cart_dropdown.tpl');
+    $oResponse->oArtikel        = $Artikel;
+    $oResponse->cNotification   = Shop::Lang()->get('basketAllAdded', 'messages');
 
     $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
     // Kampagne
@@ -219,8 +218,6 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         $oResponse->nType     = 1;
         $oResponse->cLocation = $linkHelper->getStaticRoute('warenkorb.php');
         $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
-
-        return $objResponse;
     }
 
     return $objResponse;
@@ -253,7 +250,7 @@ function pushToComparelist($kArtikel)
     $notice            = Shop::Smarty()->getTemplateVars('hinweis');
     $oResponse->nType  = 2;
     $oResponse->nCount = count($_SESSION['Vergleichsliste']->oArtikel_arr);
-    $oResponse->cTitle = utf8_encode(Shop::Lang()->get('compare'));
+    $oResponse->cTitle = Shop::Lang()->get('compare');
     $buttons           = [
         (object)[
             'href'    => '#',
@@ -272,30 +269,26 @@ function pushToComparelist($kArtikel)
         ]);
     }
 
-    $oResponse->cNotification = utf8_encode(
-        Shop::Smarty()
+    $oResponse->cNotification = Shop::Smarty()
             ->assign('type', empty($error) ? 'info' : 'danger')
             ->assign('body', empty($error) ? $notice : $error)
             ->assign('buttons', $buttons)
-            ->fetch('snippets/notification.tpl')
-    );
+            ->fetch('snippets/notification.tpl');
+
     $oResponse->cNavBadge = '';
     if ($oResponse->nCount > 1) {
-        $oResponse->cNavBadge = utf8_encode(
-            Shop::Smarty()
+        $oResponse->cNavBadge = Shop::Smarty()
                 ->assign('Einstellungen', $Einstellungen)
-                ->fetch('layout/header_shop_nav_compare.tpl')
-        );
+                ->fetch('layout/header_shop_nav_compare.tpl');
     }
 
     $boxes = Boxen::getInstance();
     $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
-    $oResponse->cBoxContainer = utf8_encode(
-        Shop::Smarty()
+
+    $oResponse->cBoxContainer = Shop::Smarty()
             ->assign('Einstellungen', $Einstellungen)
             ->assign('oBox', $oBox)
-            ->fetch('boxes/box_comparelist.tpl')
-    );
+            ->fetch('boxes/box_comparelist.tpl');
 
     $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
@@ -328,25 +321,22 @@ function removeFromComparelist($kArtikel)
     Session::getInstance()->setStandardSessionVars();
     $oResponse->nType     = 2;
     $oResponse->nCount    = count($_SESSION['Vergleichsliste']->oArtikel_arr);
-    $oResponse->cTitle    = utf8_encode(Shop::Lang()->get('compare'));
+    $oResponse->cTitle    = Shop::Lang()->get('compare');
     $oResponse->cNavBadge = '';
 
     if ($oResponse->nCount > 1) {
-        $oResponse->cNavBadge = utf8_encode(
-            Shop::Smarty()
+        $oResponse->cNavBadge = Shop::Smarty()
                 ->assign('Einstellungen', $Einstellungen)
-                ->fetch('layout/header_shop_nav_compare.tpl')
-        );
+                ->fetch('layout/header_shop_nav_compare.tpl');
     }
 
     $boxes = Boxen::getInstance();
     $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
-    $oResponse->cBoxContainer = utf8_encode(
-        Shop::Smarty()
+
+    $oResponse->cBoxContainer = Shop::Smarty()
             ->assign('Einstellungen', $Einstellungen)
             ->assign('oBox', $oBox)
-            ->fetch('boxes/box_comparelist.tpl')
-    );
+            ->fetch('boxes/box_comparelist.tpl');
 
     $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
@@ -405,11 +395,11 @@ function getBasketItems($nTyp)
                    ->assign('oSpezialseiten_arr', LinkHelper::getInstance()->getSpecialPages());
 
             VersandartHelper::getShippingCosts($cLand, $cPLZ, $error);
-            $oResponse->cTemplate = utf8_encode($smarty->fetch('basket/cart_dropdown_label.tpl'));
+            $oResponse->cTemplate = $smarty->fetch('basket/cart_dropdown_label.tpl');
             break;
 
         case 1:
-            $oResponse->cItems = utf8_convert_recursive($cart->PositionenArr);
+            $oResponse->cItems = $cart->PositionenArr;
             break;
     }
 
@@ -441,7 +431,7 @@ function buildConfiguration($aValues)
     $smarty->assign('oKonfig', $oKonfig)
            ->assign('NettoPreise', $net)
            ->assign('Artikel', $Artikel);
-    $oKonfig->cTemplate = utf8_encode($smarty->fetch('productdetails/config_summary.tpl'));
+    $oKonfig->cTemplate = $smarty->fetch('productdetails/config_summary.tpl');
 
     $oResponse->script('this.response = ' . json_encode($oKonfig) . ';');
 
@@ -471,7 +461,6 @@ function getArticleStockInfo($kArtikel, $kEigenschaftWert_arr)
             Kundengruppe::getCurrent(),
             Shop::getLanguage()
         );
-        $oTestArtikel->Lageranzeige->AmpelText = utf8_encode($oTestArtikel->Lageranzeige->AmpelText);
 
         return (object)[
             'stock'  => $oTestArtikel->aufLagerSichtbarkeit(),
@@ -752,7 +741,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
 
         foreach ($nInvalidVariations as $k => $values) {
             foreach ($values as $v) {
-                $text = utf8_encode(Shop::Lang()->get('notAvailableInSelection'));
+                $text = Shop::Lang()->get('notAvailableInSelection');
                 $objResponse->jsfunc('$.evo.article().variationInfo', $v, -1, $text);
             }
         }
@@ -891,7 +880,7 @@ function getCategoryMenu($categoryId)
 
     $smarty->assign('result', $result)
            ->assign('nSeitenTyp', 0);
-    $template = utf8_encode($smarty->fetch('snippets/categories_offcanvas.tpl'));
+    $template = $smarty->fetch('snippets/categories_offcanvas.tpl');
 
     $response->script('this.response = ' . json_encode($template) . ';');
 
@@ -941,7 +930,7 @@ function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $kSelection_arr)
                 $NaviFilter->getFilterURL()->getURL()
                 ) . "';");
         } else {
-            $response->assign('selectionwizard', 'innerHTML', utf8_encode($AWA->fetchForm($smarty)));
+            $response->assign('selectionwizard', 'innerHTML', $AWA->fetchForm($smarty));
         }
     }
 

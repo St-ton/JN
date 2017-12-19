@@ -60,7 +60,7 @@ function bearbeiteStatusemail($oJobQueue)
             $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
 
             if ($oMailObjekt) {
-                $oMailObjekt->cIntervall = utf8_decode($cIntervalAdj . ' Status-Email');
+                $oMailObjekt->cIntervall = $cIntervalAdj . ' Status-Email';
                 sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $oMailObjekt->mail);
                 Shop::DB()->query(
                     "UPDATE tstatusemail

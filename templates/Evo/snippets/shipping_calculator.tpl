@@ -81,11 +81,7 @@
                                         </td>
                                         <td class="text-right">
                                             <strong>
-                                                {if $versandart->fEndpreis == 0}
-                                                    {lang key="freeshipping" section="global"}
-                                                {else}
-                                                    {$versandart->cPreisLocalized}
-                                                {/if}
+                                                {$versandart->cPreisLocalized}
                                             </strong>
                                         </td>
                                     </tr>

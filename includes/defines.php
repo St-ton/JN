@@ -5,7 +5,9 @@
  */
 
 // Charset
-ifndef('JTL_CHARSET', 'iso-8859-1');
+ifndef('JTL_CHARSET', 'utf-8');
+ifndef('DB_CHARSET', 'utf8');
+ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
 date_default_timezone_set('Europe/Berlin');
 // Log-Levels

@@ -593,7 +593,7 @@ class TrustedShops
         }
 
         if ($this->dChecked === null || $this->dChecked === '0000-00-00 00:00:00' || $bForce) {
-            Jtllog::writeLog(utf8_decode('Die Zertifikatsprüfung von TrustedShops wurde eingeleitet!'), JTLLOG_LEVEL_NOTICE);
+            Jtllog::writeLog('Die Zertifikatsprüfung von TrustedShops wurde eingeleitet!', JTLLOG_LEVEL_NOTICE);
             //call TS protection web service
             ini_set('soap.wsdl_cache_enabled', 1);
 
@@ -609,9 +609,10 @@ class TrustedShops
                 if (is_soap_fault($returnValue)) {
                     $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
                     writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
-                    Jtllog::writeLog(utf8_decode('Bei der Zertifikatsprüfung von TrustedShops ist ein Fehler aufgetreten! Error: ') . $errorText, JTLLOG_LEVEL_ERROR);
+                    Jtllog::writeLog('Bei der Zertifikatsprüfung von TrustedShops ist ein Fehler aufgetreten! Error: ' . $errorText, JTLLOG_LEVEL_ERROR);
 
                     return 11; // SOAP Fehler
+<<<<<<< HEAD
                 }
                 writeLog(PFAD_LOGFILES . 'trustedshops.log', print_r($returnValue, 1), 1);
                 Jtllog::writeLog(utf8_decode('Die Zertifikatsprüfung von TrustedShops ergab folgendes Ergebnis: ') . print_r($returnValue, true), JTLLOG_LEVEL_NOTICE);
@@ -623,10 +624,24 @@ class TrustedShops
                             SET dChecked = '{$this->dChecked}' 
                             WHERE kTrustedShopsZertifikat = {$this->kTrustedShopsZertifikat}", 3
                     );
+=======
+                } else {
+                    writeLog(PFAD_LOGFILES . 'trustedshops.log', print_r($returnValue, 1), 1);
+                    Jtllog::writeLog('Die Zertifikatsprüfung von TrustedShops ergab folgendes Ergebnis: ' . print_r($returnValue, true), JTLLOG_LEVEL_NOTICE);
+
+                    $this->dChecked = date('Y-m-d H:i:s');
+                    if (!$bSaved) {
+                        Shop::DB()->query("
+                            UPDATE ttrustedshopszertifikat 
+                                SET dChecked = '{$this->dChecked}' 
+                                WHERE kTrustedShopsZertifikat = {$this->kTrustedShopsZertifikat}", 3
+                        );
+                    }
+>>>>>>> master
                 }
             } else {
                 writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
-                Jtllog::writeLog(utf8_decode('Es ist kein SOAP möglich um eine Zertifikatsprüfung von TrustedShops durchzuführen!'), JTLLOG_LEVEL_ERROR);
+                Jtllog::writeLog('Es ist kein SOAP möglich um eine Zertifikatsprüfung von TrustedShops durchzuführen!', JTLLOG_LEVEL_ERROR);
 
                 return 11; // SOAP Fehler
             }

@@ -146,7 +146,7 @@ class StringHandler
         if (!self::is_utf8($data)) {
             //with non-utf8 input this function would return an empty string
             $convert = true;
-            $data    = utf8_encode($data);
+            $data    = self::convertUTF8($data);
         }
         // Fix &entity\n;
         $data = str_replace(['&amp;', '&lt;', '&gt;'], ['&amp;amp;', '&amp;lt;', '&amp;gt;'], $data);
@@ -179,7 +179,7 @@ class StringHandler
         } while ($old_data !== $data);
 
         // we are done...
-        return $convert ? utf8_decode($data) : $data;
+        return $convert ? self::convertISO($data) : $data;
     }
 
     /**
@@ -467,7 +467,7 @@ class StringHandler
     public static function parseSSK($ssk)
     {
         if (is_string($ssk)) {
-            return array_filter(explode(';', $ssk));
+            return array_map('trim', array_filter(explode(';', $ssk)));
         }
 
         return [];
@@ -484,7 +484,7 @@ class StringHandler
     public static function filterEmailAddress($input, $validate = true)
     {
         if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
-            $input = utf8_encode($input);
+            $input = self::convertUTF8($input);
         }
         $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
         $sanitized = filter_var($input, FILTER_SANITIZE_EMAIL);
@@ -505,7 +505,7 @@ class StringHandler
     public static function filterURL($input, $validate = true)
     {
         if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
-            $input = utf8_encode($input);
+            $input = self::convertUTF8($input);
         }
         $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
         $sanitized = filter_var($input, FILTER_SANITIZE_URL);

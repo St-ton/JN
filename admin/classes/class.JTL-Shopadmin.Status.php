@@ -39,7 +39,8 @@ class Status
     }
 
     /**
-     * @return object
+     * @return stdClass
+     * @throws Exception
      */
     protected function getImageCache()
     {
@@ -47,7 +48,7 @@ class Status
     }
 
     /**
-     * @return object
+     * @return stdClass
      */
     protected function getSystemLogInfo()
     {
@@ -73,9 +74,7 @@ class Status
         $current  = getDBStruct(true);
         $original = getDBFileStruct();
 
-        return (is_array($current) && is_array($original))
-            ? count(compareDBStruct($original, $current)) === 0
-            : false;
+        return is_array($current) && is_array($original) && count(compareDBStruct($original, $current)) === 0;
     }
 
     /**
@@ -117,14 +116,10 @@ class Status
                 GROUP BY nHook
                 HAVING COUNT(DISTINCT kPlugin) > 1", 2
         );
-
-        array_walk($sharedHookIds, function (&$val, $key) {
-            $val = (int)$val->nHook;
-        });
-
-        foreach ($sharedHookIds as $hookId) {
+        foreach ($sharedHookIds as $hookData) {
+            $hookId                 = (int)$hookData->nHook;
             $sharedPlugins[$hookId] = [];
-            $plugins                = Shop::DB()->executeQuery(
+            $plugins                = Shop::DB()->query(
                 "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
                     FROM tpluginhook
                     INNER JOIN tplugin
@@ -264,13 +259,10 @@ class Status
             '*',
             'cAnbieter, cName, nSort, kZahlungsart'
         );
-
-        if (is_array($paymentMethods)) {
-            foreach ($paymentMethods as $i => $method) {
-                if (($logCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR)) > 0) {
-                    $method->logCount = $logCount;
-                    $incorrectPaymentMethods[] = $method;
-                }
+        foreach ($paymentMethods as $method) {
+            if (($logCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR)) > 0) {
+                $method->logCount = $logCount;
+                $incorrectPaymentMethods[] = $method;
             }
         }
 
@@ -284,24 +276,21 @@ class Status
     {
         $aPollCoupons        = Shop::DB()->selectAll('tumfrage', 'nAktiv', 1);
         $invalidCouponsFound = false;
+        foreach ($aPollCoupons as $Kupon) {
+            if ($Kupon->kKupon > 0) {
+                $kKupon = Shop::DB()->select(
+                    'tkupon',
+                    'kKupon',
+                    $Kupon->kKupon,
+                    'cAktiv',
+                    'Y',
+                    null,
+                    null,
+                    false,
+                    'kKupon'
+                );
 
-        if (count($aPollCoupons) > 0) {
-            foreach ($aPollCoupons as $Kupon) {
-                if ($Kupon->kKupon > 0) {
-                    $kKupon = Shop::DB()->select(
-                        'tkupon',
-                        'kKupon',
-                        $Kupon->kKupon,
-                        'cAktiv',
-                        'Y',
-                        null,
-                        null,
-                        false,
-                        'kKupon'
-                    );
-
-                    $invalidCouponsFound = empty($kKupon);
-                }
+                $invalidCouponsFound = empty($kKupon);
             }
         }
 

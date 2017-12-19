@@ -23,21 +23,19 @@ class MediaImage implements IMedia
      * @param object $mixed
      * @param string $size
      * @param int    $number
-     *
      * @return MediaImageRequest
      */
     public static function getRequest($type, $id, $mixed, $size, $number = 1)
     {
         $name = Image::getCustomName($type, $mixed);
-        $req  = MediaImageRequest::create([
+
+        return MediaImageRequest::create([
             'id'     => $id,
             'type'   => $type,
             'number' => $number,
             'name'   => $name,
             'size'   => $size,
         ]);
-
-        return $req;
     }
 
     /**
@@ -77,7 +75,6 @@ class MediaImage implements IMedia
      * @param string $id
      * @param string $size
      * @param int    $number
-     *
      * @return string
      */
     public static function getThumbUrl($type, $id, $size, $number = 1)
@@ -94,9 +91,7 @@ class MediaImage implements IMedia
     /**
      * @param string $type
      * @param bool   $filesize
-     *
-     * @return object
-     *
+     * @return stdClass
      * @throws Exception
      */
     public static function getStats($type, $filesize = false)
@@ -120,8 +115,7 @@ class MediaImage implements IMedia
             ],
         ];
 
-        $images = self::getImages($type);
-        foreach ($images as $image) {
+        foreach (self::getImages($type) as $image) {
             $raw = $image->getRaw(true);
             ++$result->total;
             if (!file_exists($raw)) {
@@ -177,7 +171,6 @@ class MediaImage implements IMedia
 
     /**
      * @param string $request
-     *
      * @return bool
      */
     public function isValid($request)
@@ -187,7 +180,6 @@ class MediaImage implements IMedia
 
     /**
      * @param string $imageUrl
-     *
      * @return MediaImageRequest
      */
     public static function toRequest($imageUrl)
@@ -199,9 +191,7 @@ class MediaImage implements IMedia
 
     /**
      * @param string $request
-     *
      * @return mixed|void
-     *
      * @throws Exception
      */
     public function handle($request)
@@ -301,7 +291,6 @@ class MediaImage implements IMedia
     /**
      * @param MediaImageRequest $req
      * @param bool              $overwrite
-     *
      * @return array
      */
     public static function cacheImage(MediaImageRequest $req, $overwrite = false)
@@ -358,9 +347,7 @@ class MediaImage implements IMedia
      * @param bool     $notCached
      * @param int|null $offset
      * @param int|null $limit
-     *
      * @return MediaImageRequest[]
-     *
      * @throws Exception
      */
     public static function getImages($type, $notCached = false, $offset = null, $limit = null)
@@ -397,15 +384,15 @@ class MediaImage implements IMedia
                     }
                     $limitStmt .= (int)$limit;
                 }
-                $images = Shop::DB()->query('
-                    SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
+                $images = Shop::DB()->query(
+                    'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
                         FROM tartikelpict
                         INNER JOIN tartikel
                           ON tartikelpict.kArtikel = tartikel.kArtikel' . $limitStmt, 10);
                 break;
 
             default:
-                throw new Exception('Not implemented');
+                throw new InvalidArgumentException('Image type not implemented');
         }
 
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
@@ -434,10 +421,10 @@ class MediaImage implements IMedia
      */
     public static function isCached(MediaImageRequest $req)
     {
-        return file_exists($req->getThumb(Image::SIZE_XS, true)) &&
-                file_exists($req->getThumb(Image::SIZE_SM, true)) &&
-                file_exists($req->getThumb(Image::SIZE_MD, true)) &&
-                file_exists($req->getThumb(Image::SIZE_LG, true));
+        return file_exists($req->getThumb(Image::SIZE_XS, true))
+            && file_exists($req->getThumb(Image::SIZE_SM, true))
+            && file_exists($req->getThumb(Image::SIZE_MD, true))
+            && file_exists($req->getThumb(Image::SIZE_LG, true));
     }
 
     /**
@@ -493,8 +480,7 @@ class MediaImage implements IMedia
     /**
      * @param string $type
      * @param int    $id
-     *
-     * @return bool
+     * @return stdClass
      */
     public static function getImageStmt($type, $id)
     {
@@ -531,7 +517,6 @@ class MediaImage implements IMedia
     /**
      * @param string $type
      * @param int    $id
-     *
      * @return bool
      */
     public static function imageCount($type, $id)
@@ -551,7 +536,6 @@ class MediaImage implements IMedia
     /**
      * @param string $type
      * @param int    $id
-     *
      * @return bool
      */
     public static function hasImage($type, $id)
@@ -565,7 +549,6 @@ class MediaImage implements IMedia
      * @param object $mixed
      * @param string $size
      * @param int    $number
-     *
      * @return string
      */
     public static function getRawOrFilesize($type, $id, $mixed, $size, $number = 1)

@@ -32,11 +32,9 @@ function loadStats($type)
 {
     $items = getItems(true);
 
-    if ($type === null || in_array($type, $items, true)) {
-        return new IOError('Invalid argument request', 500);
-    }
-
-    return $items[$type]->stats;
+    return ($type === null || in_array($type, $items, true))
+        ? new IOError('Invalid argument request', 500)
+        : $items[$type]->stats;
 }
 
 /**
@@ -91,7 +89,7 @@ function cleanupStorage($index)
     }
     // increment total number of checked files by the amount checked in this run
     $_SESSION['checkedImages'] += $checkedInThisRun;
-    $index                      = ($idx > 0) ? $idx + 1 - $deletedInThisRun : $total;
+    $index                      = $idx > 0 ? $idx + 1 - $deletedInThisRun : $total;
     // avoid endless recursion
     if ($index === $startIndex && $deletedInThisRun === 0) {
         $index = $total;
@@ -192,7 +190,7 @@ function getCorruptedImages($type, $limit)
 {
     static $offset = 0;
     $corruptedImages = [];
-    $totalImages = count(MediaImage::getImages($type));
+    $totalImages     = count(MediaImage::getImages($type));
 
     do {
         $images = MediaImage::getImages($type, false, $offset, $limit);

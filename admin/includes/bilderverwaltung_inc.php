@@ -155,9 +155,10 @@ function generateImageCache($type, $index)
         $_SESSION['renderedImages'] = 0;
     }
 
-    $total  = $_SESSION['image_count'];
-    $images = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
-    while (count($images) === 0 && $index < $total) {
+    $total    = $_SESSION['image_count'];
+    $images   = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
+    $totalAll = count(MediaImage::getImages($type));
+    while (count($images) === 0 && $index < $totalAll) {
         $index += 10;
         $images = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
     }

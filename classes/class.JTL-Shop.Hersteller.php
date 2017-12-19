@@ -209,7 +209,7 @@ class Hersteller
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                                     AND tartikelsichtbarkeit.kKundengruppe = ". Session::CustomerGroup()->getID() .
-							")
+                            ")
                         )";
         }
         $objs = Shop::DB()->query(

@@ -1133,15 +1133,15 @@ function holeAehnlicheArtikel($kArtikel)
                 FROM (
                     SELECT DISTINCT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel, 
                     tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
-	                FROM tartikelmerkmal
-	                JOIN tartikel 
-	                    ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                    FROM tartikelmerkmal
+                    JOIN tartikel 
+                        ON tartikel.kArtikel = tartikelmerkmal.kArtikel
                         AND tartikel.kVaterArtikel != {$kArtikel}
                         AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
-	                LEFT JOIN tartikelsichtbarkeit 
-	                    ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = {$customerGroupID}
-	                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                  WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikelmerkmal.kArtikel != {$kArtikel}
                         {$lagerFilter}
                         {$cSQLXSeller}

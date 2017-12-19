@@ -66,8 +66,8 @@ function show_confirmation($bestellung)
         header('Location: ' . $TransactionData['SelectedBank']['NavigationURL']);
     } else {
         return '<center>
-		<div style="float:center; border: #ffffff 1px solid; width: 400px; margin:5px; margin-top:0px;">
-		<center>
+        <div style="float:center; border: #ffffff 1px solid; width: 400px; margin:5px; margin-top:0px;">
+        <center>
             <table width="100%" cellpadding="3" cellspacing="3">
                 <tr>
                     <td colspan="2" nowrap>
@@ -90,7 +90,7 @@ function show_confirmation($bestellung)
                 </tr>
             </table>
             </center>
-		</div>
-		</center>';
+        </div>
+        </center>';
     }
 }

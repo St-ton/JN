@@ -26,7 +26,7 @@ function gib_moneybookers_form($Bestellung, $email, $returnURL)
     <input type="hidden" name="return_url" value="' . $returnURL . '">
     <input type="submit" value="' . Shop::Lang()->get('payWithMoneybookers', 'global') . '">
     </form>
-	';
+    ';
     }
 
     return 'Moneybookerszahlung nicht m&ouml;glich.';

@@ -11,7 +11,7 @@
  * @param env.cAction - the editor action name
  * @param env.cPageIdHash - current page id hash
  */
-function CmsLiveEditor(env)
+function Editor(env)
 {
     this.jtlToken = env.jtlToken;
     this.templateUrl = env.templateUrl;
@@ -42,12 +42,14 @@ function CmsLiveEditor(env)
 
     this.previewMode = false;
 
+    this.io = new EditorIO(this);
+
     this.hostJq(this.onDocumentReady.bind(this));
 }
 
-CmsLiveEditor.prototype = {
+Editor.prototype = {
 
-    constructor: CmsLiveEditor,
+    constructor: Editor,
 
     onDocumentReady: function()
     {
@@ -102,7 +104,6 @@ CmsLiveEditor.prototype = {
     initEditor: function()
     {
         // disable links and buttons that could change the current iframes location
-
         this.iframeJq('a, button')
             .off('click')
             .attr('onclick', '')
@@ -153,7 +154,7 @@ CmsLiveEditor.prototype = {
         this.loaderModal
             .modal('hide');
 
-        this.loadPage();
+        this.io.loadPage();
     },
 
     enableEvents: function()
@@ -228,14 +229,14 @@ CmsLiveEditor.prototype = {
     {
         this.loaderModal.modal('show');
 
-        this.savePage(
+        this.io.savePage(
             function() {
                 this.loaderModal.modal('hide');
                 this.setUnsaved(false);
-            },
+            }.bind(this),
             function () {
                 window.location.reload();
-            }
+            }.bind(this)
         );
 
         e.preventDefault();
@@ -276,7 +277,7 @@ CmsLiveEditor.prototype = {
 
             this.configModalElm.modal('hide');
             this.updateDropTargets();
-            this.savePageToWebStorage();
+            this.io.savePageToWebStorage();
         }
 
         e.preventDefault();
@@ -373,7 +374,7 @@ CmsLiveEditor.prototype = {
             this.setSelected();
             this.setSelected(this.draggedElm);
             this.updateDropTargets();
-            this.savePageToWebStorage();
+            this.io.savePageToWebStorage();
         }
     },
 
@@ -388,7 +389,7 @@ CmsLiveEditor.prototype = {
             this.selectedElm.remove();
             this.setSelected();
             this.updateDropTargets();
-            this.savePageToWebStorage();
+            this.io.savePageToWebStorage();
         }
     },
 
@@ -401,7 +402,7 @@ CmsLiveEditor.prototype = {
             copiedElm.removeClass('cle-hovered');
             this.setSelected(this.selectedElm);
             this.updateDropTargets();
-            this.savePageToWebStorage();
+            this.io.savePageToWebStorage();
         }
     },
 
@@ -516,130 +517,6 @@ CmsLiveEditor.prototype = {
         return tree.has(descendant).length > 0;
     },
 
-    loadPage: function()
-    {
-        ioCall(
-            'getCmsPage',
-            [this.cPageIdHash],
-            function(cmsPage)
-            {
-                var serverLastModified = cmsPage && cmsPage.dLastModified || '0000-00-00';
-                var localLastModified = this.getPageWebStorageLastModified();
-
-                var locallyModified = localLastModified > serverLastModified;
-                var data = locallyModified
-                    ? JSON.parse(window.localStorage.getItem(this.getPageStorageId()))
-                    : cmsPage
-                        ? cmsPage.data
-                        : {};
-
-                console.log(locallyModified);
-
-                this.pageFromJson(data);
-                this.setUnsaved(locallyModified);
-
-            }.bind(this)
-        );
-    },
-
-    savePage: function(success, error)
-    {
-        success = success || this.noop;
-        error = error || this.noop;
-
-        ioCall(
-            'saveCmsPage',
-            [this.cPageIdHash, this.pageToJson()],
-            success.bind(this),
-            error.bind(this)
-        );
-    },
-
-    pageToJson: function()
-    {
-        var result = {};
-
-        this.rootElm.each(function(i, rootArea)
-        {
-            result[rootArea.id] = this.areaToJson(this.iframeJq(rootArea));
-
-        }.bind(this));
-
-        return result;
-    },
-
-    areaToJson: function(rootArea)
-    {
-        var result = [];
-
-        rootArea.children('[data-portletid]').each(function(i, portletElm)
-        {
-            result.push(this.portletToJson(this.iframeJq(portletElm)));
-
-        }.bind(this));
-
-        return result;
-    },
-
-    portletToJson: function(portletElm)
-    {
-        var result = {};
-
-        result.portletId = portletElm.data('portletid');
-        result.portletTitle = portletElm.data('portlettitle');
-        result.properties = portletElm.data('properties');
-        result.subAreas = [];
-
-        var children = portletElm
-        // select direct descendant subareas or non-nested subareas
-            .find('> .cle-area') ; //, :not(.jle-subarea) .jle-subarea');
-
-        children.each(function (i, child)
-        {
-            result.subAreas.push(this.areaToJson(this.iframeJq(child)));
-
-        }.bind(this));
-
-        return result;
-    },
-
-    pageFromJson: function(data)
-    {
-        for(var areaId in data) {
-            this.areaFromJson(data[areaId], this.iframeJq('#' + areaId));
-        }
-
-        this.updateDropTargets();
-    },
-
-    areaFromJson: function(data, areaElm)
-    {
-        data.forEach(function(portletData)
-        {
-            var portletElm = this.iframeJq('<div><i class="fa fa-spinner fa-pulse fa-2x"></i></div>');
-
-            areaElm.append(portletElm);
-
-            ioCall('getPortletPreviewHtml', [portletData.portletId, portletData.properties], function (newHtml)
-            {
-                var newElm = this.iframeJq(newHtml);
-
-                portletElm.replaceWith(newElm);
-                newElm.attr('data-portletid', portletData.portletId);
-                newElm.attr('data-portlettitle', portletData.portletTitle);
-                newElm.attr('data-properties', JSON.stringify(portletData.properties));
-
-                this.updateDropTargets();
-
-                newElm.find('.cle-area').each(function (index, subarea)
-                {
-                    this.areaFromJson(portletData.subAreas[index], this.iframeJq(subarea));
-
-                }.bind(this));
-            }.bind(this));
-        }.bind(this));
-    },
-
     updateDropTargets: function()
     {
         this.iframeJq('.cle-droptarget').remove();
@@ -668,41 +545,6 @@ CmsLiveEditor.prototype = {
             this.iframeJq('[data-portletid]').addClass('cle-preview');
             this.previewMode = true;
         }
-    },
-
-    getPageStorageId: function()
-    {
-        return 'cmspage.' + this.cPageIdHash + '.' + this.cAction;
-    },
-
-    savePageToWebStorage: function()
-    {
-        window.localStorage.setItem(
-            this.getPageStorageId(),
-            JSON.stringify(this.pageToJson())
-        );
-
-        window.localStorage.setItem(
-            this.getPageStorageId() + '.lastmodified',
-            moment().format("YYYY-MM-DD HH:mm:ss")
-        );
-
-        this.setUnsaved(true);
-    },
-
-    loadPageFromWebStorage: function()
-    {
-        var pageJson = window.localStorage.getItem(this.getPageStorageId());
-
-        if(pageJson !== null) {
-            this.clearPage();
-            this.pageFromJson(JSON.parse(pageJson));
-        }
-    },
-
-    getPageWebStorageLastModified: function()
-    {
-        return window.localStorage.getItem(this.getPageStorageId() + '.lastmodified') || '0000-00-00';
     },
 
     clearPage: function()

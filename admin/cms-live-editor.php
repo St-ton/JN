@@ -16,9 +16,9 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 $cPageIdHash = verifyGPDataString('cCmsPageIdHash');
 $cAction     = verifyGPDataString('cAction');
 $cPageUrl    = verifyGPDataString('cPageUrl');
+$oCMSPage    = CMS::getCmsPage($cPageIdHash);
 
 if ($cAction === 'restore_default') {
-    $oCMSPage = CMS::getCmsPage($cPageIdHash);
     $oCMSPage->remove();
     header('Location: ' . $cPageUrl);
     exit();
@@ -32,4 +32,5 @@ $smarty
     ->assign('cAction', $cAction)
     ->assign('cPageUrl', $cPageUrl)
     ->assign('cPageIdHash', $cPageIdHash)
+    ->assign('oCMSPage', $oCMSPage)
     ->display('cms-live-editor.tpl');

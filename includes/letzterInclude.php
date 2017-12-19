@@ -182,10 +182,7 @@ pruefeKampagnenParameter();
 setzeSpracheUndWaehrungLink();
 $linkGroups = $pagetType ? $linkHelper->activate($pagetType) : $smarty->getTemplateVars('linkGroups');
 // Extension Point
-if (!isset($cParameter_arr)) {
-    $cParameter_arr = [];
-}
-$oExtension = (new ExtensionPoint($pagetType, $cParameter_arr, Shop::getLanguageID(), $kKundengruppe))->load();
+$oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $kKundengruppe))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Boxen::getInstance();
 $boxesToShow = $boxes->build($pagetType)->render();

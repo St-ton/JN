@@ -3252,13 +3252,13 @@ class Artikel
                             Session::Currency(),
                             1,
                             $nGenauigkeit
-                        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $oArtikelTMP->cVPEEinheit;
+                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $oArtikelTMP->cVPEEinheit;
                         $this->oVariationDetailPreis_arr[$oVariationDetailPreis->kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
                             $oArtikelTMP->Preise->fVKNetto / $oArtikelTMP->fVPEWert,
                             Session::Currency(),
                             1,
                             $nGenauigkeit
-                        ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $oArtikelTMP->cVPEEinheit;
+                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $oArtikelTMP->cVPEEinheit;
                     }
                 }
             }
@@ -3979,7 +3979,7 @@ class Artikel
                     $this->oKonfig_arr = Konfigurator::getKonfig($this->kArtikel, $kSprache);
                 } else {
                     Jtllog::writeLog('Konfigurator für Artikel (Art.Nr.: ' .
-                        $this->cArtNr . ') konnte nicht geladen werden.', JTLLOG_LEVEL_ERROR);
+                        $this->cArtNr . ') konnte nicht geladen werden.');
                 }
             }
         }
@@ -4131,7 +4131,7 @@ class Artikel
             $conf['bewertung']['bewertung_anzeigen'] === 'Y'
         ) {
             $this->holehilfreichsteBewertung($kSprache)
-                 ->holeBewertung($kSprache, -1, 1, 0, $conf['bewertung']['bewertung_freischalten'], 0);
+                 ->holeBewertung($kSprache, -1, 1, 0, $conf['bewertung']['bewertung_freischalten']);
         }
         if (isset($oArtikelOptionen->nLanguageURLs) &&
             $oArtikelOptionen->nLanguageURLs === 1 &&
@@ -4139,7 +4139,7 @@ class Artikel
         ) {
             $this->baueArtikelSprachURL();
         }
-        $this->cKurzbezeichnung = (!empty($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]))
+        $this->cKurzbezeichnung = !empty($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME])
             ? $this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]
             : $this->cName;
 
@@ -4423,47 +4423,47 @@ class Artikel
         if ($this->cLagerBeachten === 'Y') {
             if ($this->fLagerbestand > 0) {
                 $this->Lageranzeige->cLagerhinweis['genau']          = $this->fLagerbestand . ' ' .
-                    $this->cEinheit . ' ' . Shop::Lang()->get('inStock', 'global');
-                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable', 'global');
+                    $this->cEinheit . ' ' . Shop::Lang()->get('inStock');
+                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable');
                 if (isset($conf['artikeldetails']['artikel_lagerbestandsanzeige']) &&
                     $conf['artikeldetails']['artikel_lagerbestandsanzeige'] === 'verfuegbarkeit'
                 ) {
-                    $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen', 'global');
+                    $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
                 }
             } elseif ($this->cLagerKleinerNull === 'Y') {
-                $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen', 'global');
-                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen', 'global');
+                $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen');
+                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
             } else {
-                $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable', 'global');
-                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable', 'global');
+                $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable');
+                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable');
             }
         } else {
-            $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen', 'global');
-            $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen', 'global');
+            $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen');
+            $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
         }
         if ($this->cLagerBeachten === 'Y') {
             // ampel
             $this->Lageranzeige->nStatus   = 1;
-            $this->Lageranzeige->AmpelText = (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB]))
+            $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB])
                 ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB]
-                : Shop::Lang()->get('ampelGelb', 'global');
+                : Shop::Lang()->get('ampelGelb');
 
             if ($this->fLagerbestand <= (int)$conf['global']['artikel_lagerampel_rot']) {
                 $this->Lageranzeige->nStatus   = 0;
-                $this->Lageranzeige->AmpelText = (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT]))
+                $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT])
                     ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT]
-                    : Shop::Lang()->get('ampelRot', 'global');
+                    : Shop::Lang()->get('ampelRot');
             }
-            if ($this->cLagerBeachten !== 'Y' ||
-                $this->fLagerbestand >= (int)$conf['global']['artikel_lagerampel_gruen'] ||
-                ($this->cLagerBeachten === 'Y' &&
-                    $this->cLagerKleinerNull === 'Y' &&
-                    $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
+            if ($this->cLagerBeachten !== 'Y'
+                || $this->fLagerbestand >= (int)$conf['global']['artikel_lagerampel_gruen']
+                || ($this->cLagerBeachten === 'Y'
+                    && $this->cLagerKleinerNull === 'Y'
+                    && $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
             ) {
                 $this->Lageranzeige->nStatus   = 2;
-                $this->Lageranzeige->AmpelText = (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN]))
+                $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN])
                     ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN]
-                    : Shop::Lang()->get('ampelGruen', 'global');
+                    : Shop::Lang()->get('ampelGruen');
             }
         } else {
             $this->Lageranzeige->nStatus = (int)$conf['global']['artikel_lagerampel_keinlager'];
@@ -4473,19 +4473,19 @@ class Artikel
 
             switch ($this->Lageranzeige->nStatus) {
                 case 1:
-                    $this->Lageranzeige->AmpelText = (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB]))
+                    $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB])
                         ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB]
-                        : Shop::Lang()->get('ampelGelb', 'global');
+                        : Shop::Lang()->get('ampelGelb');
                     break;
                 case 0:
-                    $this->Lageranzeige->AmpelText = (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT]))
+                    $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT])
                         ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT]
-                        : Shop::Lang()->get('ampelRot', 'global');
+                        : Shop::Lang()->get('ampelRot');
                     break;
                 case 2:
-                    $this->Lageranzeige->AmpelText = (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN]))
+                    $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN])
                         ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN]
-                        : Shop::Lang()->get('ampelGruen', 'global');
+                        : Shop::Lang()->get('ampelGruen');
                     break;
             }
         }
@@ -4509,13 +4509,13 @@ class Artikel
             'artikel_lagerampel_gruen'      => $conf['global']['artikel_lagerampel_gruen'],
             'artikel_lagerampel_keinlager'  => $conf['global']['artikel_lagerampel_keinlager'],
             'artikel_ampel_lagernull_gruen' => $conf['global']['artikel_ampel_lagernull_gruen'],
-            'attribut_ampeltext_gelb'       => (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB]))
+            'attribut_ampeltext_gelb'       => !empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB])
                 ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB]
                 : Shop::Lang()->get('ampelGelb'),
-            'attribut_ampeltext_gruen'      => (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN]))
+            'attribut_ampeltext_gruen'      => !empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN])
                 ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN]
                 : Shop::Lang()->get('ampelGruen'),
-            'attribut_ampeltext_rot'        => (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT]))
+            'attribut_ampeltext_rot'        => !empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT])
                 ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT]
                 : Shop::Lang()->get('ampelRot')
         ];

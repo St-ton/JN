@@ -56,9 +56,7 @@ class FilterItemRating extends AbstractFilter
     {
         $this->setName(Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .
-            ($this->getValue() > 0
-                ? Shop::Lang()->get('starPlural')
-                : Shop::Lang()->get('starSingular'))
+            Shop::Lang()->get($this->getValue() > 0 ? 'starPlural' : 'starSingular')
         );
 
         return $this;

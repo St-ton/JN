@@ -231,6 +231,8 @@ class SimpleMail
      * @param array $cBCC_arr
      * @param array $cReply_arr
      * @return bool
+     * @throws Exception
+     * @throws phpmailerException
      */
     public function send(array $cEmpfaenger_arr, $cCC_arr = [], $cBCC_arr = [], $cReply_arr = [])
     {

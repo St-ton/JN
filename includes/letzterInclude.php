@@ -202,4 +202,4 @@ $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('boxes', $boxesToShow)
        ->assign('linkgroups', $linkGroups)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
-       ->assign('Besucherzaehler', (!empty($besucherzaehler->nZaehler)) ? (int)$besucherzaehler->nZaehler : 0);
+       ->assign('Besucherzaehler', !empty($besucherzaehler->nZaehler) ? (int)$besucherzaehler->nZaehler : 0);

@@ -37,11 +37,7 @@ class CacheFactory
      */
     public static function getInstance($method = null, array $options = null)
     {
-        if (self::$_instance === null) {
-            self::$_instance = new self($method, $options);
-        }
-
-        return self::$_instance;
+        return new self($method, $options);
     }
 
     /**

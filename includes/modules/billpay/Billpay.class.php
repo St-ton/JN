@@ -106,7 +106,7 @@ class Billpay extends PaymentMethod
             return null;
         }
 
-        if (isset($oResult['responseStatus'], $oResult['responseStatus']['errorCode'])) {
+        if (isset($oResult['responseStatus']['errorCode'])) {
             if ((int)$oResult['responseStatus']['errorCode'] === 0) {
                 $_SESSION['za_billpay_jtl']['oOptions_arr'][$cOptionsHash] = $oResult;
 
@@ -1291,8 +1291,8 @@ class Billpay extends PaymentMethod
     public function getCachedRate($oBasketInfo)
     {
         $cHash = $this->getRateHash($oBasketInfo);
-        if (isset($_SESSION['za_billpay_jtl']['oCashedRates_arr'], $_SESSION['za_billpay_jtl']['oCashedRates_arr'][$cHash]) &&
-            is_array($_SESSION['za_billpay_jtl']['oCashedRates_arr'])
+        if (isset($_SESSION['za_billpay_jtl']['oCashedRates_arr'][$cHash])
+            && is_array($_SESSION['za_billpay_jtl']['oCashedRates_arr'])
         ) {
             $_SESSION['za_billpay_jtl']['oCashedRates_arr'][$cHash]->bFromCache = true;
 

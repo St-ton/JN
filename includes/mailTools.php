@@ -477,14 +477,8 @@ function sendeMail($ModulId, $Object, $mail = null)
     $bodyText = $mailSmarty->fetch('db:text_' . $Emailvorlage->kEmailvorlage . '_' . $Sprache->kSprache . $cPluginBody);
     // AKZ, AGB und WRB anhängen falls eingestellt
     if ($Emailvorlage->nAKZ == 1) {
-        if (!isset($akzHtml)) {
-            $akzHtml = '';
-        }
-        if (!isset($akzText)) {
-            $akzText = '';
-        }
-        $akzHtml .= $mailSmarty->fetch('db:html_core_jtl_anbieterkennzeichnung_' . $Sprache->kSprache . $cPluginBody);
-        $akzText .= $mailSmarty->fetch('db:text_core_jtl_anbieterkennzeichnung_' . $Sprache->kSprache . $cPluginBody);
+        $akzHtml = $mailSmarty->fetch('db:html_core_jtl_anbieterkennzeichnung_' . $Sprache->kSprache . $cPluginBody);
+        $akzText = $mailSmarty->fetch('db:text_core_jtl_anbieterkennzeichnung_' . $Sprache->kSprache . $cPluginBody);
 
         if (strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br />' . $akzHtml;

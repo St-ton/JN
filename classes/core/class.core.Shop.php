@@ -933,7 +933,7 @@ final class Shop
             }
             // change Opera Fix
             if (substr($seo, strlen($seo) - 1, 1) === '?') {
-                $seo = substr($seo, 0, strlen($seo) - 1);
+                $seo = substr($seo, 0, -1);
             }
             $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $cMatch_arr, PREG_OFFSET_CAPTURE);
             if ($nMatch === 1) {

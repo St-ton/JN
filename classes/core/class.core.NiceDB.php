@@ -871,8 +871,8 @@ class NiceDB implements Serializable
                 (' WHERE ' . implode(' AND ', $kv)) :
                 ''
             ) .
-            ((!empty($orderBy)) ? (' ORDER BY ' . $orderBy) : '') .
-            ((!empty($limit)) ? (' LIMIT ' . $limit) : '');
+            (!empty($orderBy) ? (' ORDER BY ' . $orderBy) : '') .
+            (!empty($limit) ? (' LIMIT ' . $limit) : '');
 
         return $this->executeQueryPrepared($stmt, array_combine($keys, $values), 2);
     }

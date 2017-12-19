@@ -36,7 +36,8 @@ class MigrationHelper
 
     /**
      * Gets an array of all the existing migration class names.
-     * @return string
+     *
+     * @return array
      */
     public static function getExistingMigrationClassNames()
     {

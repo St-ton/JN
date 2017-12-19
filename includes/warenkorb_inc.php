@@ -232,11 +232,11 @@ function uebernehmeWarenkorbAenderungen()
                 $nLast = 0;
                 for ($j = 1; $j <= 5; $j++) {
                     $cStaffel = 'nAnzahl' . $j;
-                    if (isset($position->Artikel->Preise->$cStaffel) &&
-                        $position->Artikel->Preise->$cStaffel > 0) {
-                        if ($position->Artikel->Preise->$cStaffel <= $position->nAnzahl) {
-                            $nLast = $j;
-                        }
+                    if (isset($position->Artikel->Preise->$cStaffel)
+                        && $position->Artikel->Preise->$cStaffel > 0
+                        && $position->Artikel->Preise->$cStaffel <= $position->nAnzahl
+                    ) {
+                        $nLast = $j;
                     }
                 }
                 if ($nLast > 0) {

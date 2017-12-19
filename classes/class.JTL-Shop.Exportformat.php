@@ -1395,7 +1395,7 @@ class Exportformat
                  ->setSpecial(0)
                  ->setKodierung($post['cKodierung'])
                  ->setPlugin(isset($post['kPlugin']) ? $post['kPlugin'] : 0)
-                 ->setExportformat((!empty($post['kExportformat'])) ? $post['kExportformat'] : 0)
+                 ->setExportformat(!empty($post['kExportformat']) ? $post['kExportformat'] : 0)
                  ->setKampagne(isset($post['kKampagne']) ? $post['kKampagne'] : 0);
             if (isset($post['cFusszeile'])) {
                 $this->setFusszeile(str_replace('<tab>', "\t", $post['cFusszeile']));

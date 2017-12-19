@@ -13,6 +13,9 @@ class RemoteService
 
     const URI = 'https://api.jtl-software.de/shop';
 
+    /**
+     *
+     */
     protected function init()
     {
         if (!isset($_SESSION['rs'])) {
@@ -20,6 +23,9 @@ class RemoteService
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function getSubscription()
     {
         if (!isset($_SESSION['rs']['subscription'])) {
@@ -37,6 +43,9 @@ class RemoteService
         return $_SESSION['rs']['subscription'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getAvailableVersions()
     {
         if (!isset($_SESSION['rs']['versions'])) {
@@ -46,6 +55,9 @@ class RemoteService
         return $_SESSION['rs']['versions'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getLatestVersion()
     {
         $nVersion = Shop::getVersion();
@@ -53,7 +65,7 @@ class RemoteService
         $oVersions = $this->getAvailableVersions();
 
         $oStableVersions = array_filter((array)$oVersions, function($v) use($nVersion, $nMinorVersion) {
-            return $v->channel == 'Stable' && (int)$v->version >= $nVersion;
+            return $v->channel === 'Stable' && (int)$v->version >= $nVersion;
         });
 
         if (count($oStableVersions) > 0) {
@@ -63,6 +75,9 @@ class RemoteService
         return end($oVersions);
     }
 
+    /**
+     * @return bool
+     */
     public function hasNewerVersion()
     {
         if (JTL_MINOR_VERSION === '#JTL_MINOR_VERSION#') {
@@ -73,18 +88,21 @@ class RemoteService
         $nMinorVersion = (int)JTL_MINOR_VERSION;
         $oVersion = $this->getLatestVersion();
 
-        return $oVersion &&
-            ((int)$oVersion->version > $nVersion ||
-                ((int)$oVersion->version == $nVersion && $oVersion->build > $nMinorVersion));
+        return $oVersion
+            && ((int)$oVersion->version > $nVersion
+                || ((int)$oVersion->version == $nVersion && $oVersion->build > $nMinorVersion));
     }
 
+    /**
+     * @param string $uri
+     * @param null   $data
+     * @return mixed|null
+     */
     protected function call($uri, $data = null)
     {
-        $uri = self::URI . '/' . ltrim($uri, '/');
+        $uri     = self::URI . '/' . ltrim($uri, '/');
         $content = http_get_contents($uri, 10, $data);
-        if (!is_null($content) && !empty($content)) {
-            return json_decode($content);
-        }
-        return null;
+
+        return empty($content) ? null : json_decode($content);
     }
 }

@@ -107,7 +107,7 @@ class UstIDvies
             try {
                 $oViesResult = $oSoapClient->checkVat(['countryCode' => $szCountryCode, 'vatNumber' => $szVatNumber]);
             } catch (Exception $e) {
-                Jtllog::writeLog('MwStID Problem: '.$e->getMessage(), JTLLOG_LEVEL_ERROR);
+                Jtllog::writeLog('MwStID Problem: '.$e->getMessage());
             }
 
             if (null !== $oViesResult && true === $oViesResult->valid) {

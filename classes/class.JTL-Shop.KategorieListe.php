@@ -421,7 +421,7 @@ class KategorieListe
             self::setCategoryList($categoryList, $kKundengruppe, $kSprache);
         }
 
-        return (!empty($oKategorie_arr)) ? $oKategorie_arr : [];
+        return !empty($oKategorie_arr) ? $oKategorie_arr : [];
     }
 
     /**

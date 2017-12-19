@@ -37,7 +37,7 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
  * @param object   $NaviFilter
  * @param bool     $bExtern
  * @param stdClass $oSuchergebnisse
- * @return array
+ * @return stdClass
  * @deprecated since 4.07
  */
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)

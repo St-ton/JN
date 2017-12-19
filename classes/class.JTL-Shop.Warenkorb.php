@@ -52,7 +52,7 @@ class Warenkorb
     /**
      * @var Versandart
      */
-    public $oFavourableShipping = null;
+    public $oFavourableShipping;
 
     /**
      * @var array
@@ -284,7 +284,7 @@ class Warenkorb
                 $NeuePosition->Artikel->baueVPE();
             }
         }
-        $this->setzeKonfig($NeuePosition, false, true);
+        $this->setzeKonfig($NeuePosition, false);
         if (is_array($NeuePosition->Artikel->Variationen) && count($NeuePosition->Artikel->Variationen) > 0) {
             //foreach ($ewerte as $eWert)
             foreach ($NeuePosition->Artikel->Variationen as $eWert) {

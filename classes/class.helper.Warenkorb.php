@@ -318,7 +318,7 @@ class WarenkorbHelper
                 if ($fAnzahl <= 0) {
                     $fAnzahl = 1;
                 }
-                header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
+                header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .
                     '?a=' . $kArtikel .
                     '&n=' . $fAnzahl .
                     '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
@@ -395,7 +395,7 @@ class WarenkorbHelper
                             Shop::Smarty()->assign('hinweis', Shop::Lang()->get('wishlistProductadded', 'messages'));
                             // Weiterleiten?
                             if ($conf['global']['global_wunschliste_weiterleitung'] === 'Y') {
-                                header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true), true, 302);
+                                header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php'), true, 302);
                                 exit;
                             }
                         }

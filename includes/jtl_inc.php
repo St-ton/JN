@@ -199,7 +199,7 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                     [],
                     null,
                     null,
-                    (int)C_WARENKORBPOS_TYP_GRATISGESCHENK
+                    C_WARENKORBPOS_TYP_GRATISGESCHENK
                 );
             }
         } else {

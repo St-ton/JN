@@ -289,8 +289,7 @@ class TrustedShops
         $returnValue = '';
         $wsdlUrl     = TS_SERVER_PROTECTION;
         if (pruefeSOAP($wsdlUrl)) {
-            $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
-            //call WS method
+            $client      = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             $returnValue = $client->requestForProtectionV2(
                 $this->tsId,
                 $this->tsProductId,
@@ -345,8 +344,7 @@ class TrustedShops
         ini_set('soap.wsdl_cache_enabled', 1);
 
         if (pruefeSOAP($wsdlUrl)) {
-            $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
-            //call WS method
+            $client      = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             $returnValue = $client->getRequestState($this->tsId);
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
@@ -378,10 +376,8 @@ class TrustedShops
         ini_set('soap.wsdl_cache_enabled', 1);
         $wsdlUrl = TS_SERVER;
         if (pruefeSOAP($wsdlUrl)) {
-            $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
-            //call WS method
+            $client      = new SoapClient($wsdlUrl, ['exceptions' => 0]);
             $returnValue = $client->getProtectionItems($this->tsId);
-
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
                 writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
@@ -597,10 +593,7 @@ class TrustedShops
             $cTSID   = $this->tsId;
 
             if (pruefeSOAP($wsdlUrl)) {
-                $client = new SoapClient($wsdlUrl, ['exceptions' => 0]);
-                //set return value for the case if a SOAP exception occurs
-                $returnValue = SOAP_ERROR;
-                //call WS method
+                $client      = new SoapClient($wsdlUrl, ['exceptions' => 0]);
                 $returnValue = $client->checkCertificate($cTSID);
                 if (is_soap_fault($returnValue)) {
                     $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";

@@ -117,7 +117,7 @@ interface IFilter
      * get list of available filter options in the current view
      *
      * @param mixed|null $mixed - additional data that might be needed
-     * @return []
+     * @return array
      */
     public function getOptions($mixed = null);
 

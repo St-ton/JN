@@ -1110,7 +1110,7 @@ function plausiIban($iban)
     $len   = strlen($iban1);
     for ($i = 0; $i < $len; $i++) {
         if (ord($iban1{$i}) > 64 && ord($iban1{$i}) < 91) {
-            $iban1 = substr($iban1, 0, $i) . strval(ord($iban1{$i}) - 55) . substr($iban1, $i + 1);
+            $iban1 = substr($iban1, 0, $i) . (string)(ord($iban1{$i}) - 55) . substr($iban1, $i + 1);
         }
     }
 
@@ -2269,7 +2269,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         && $data['editRechnungsadresse'] != 1
         && $conf['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
     ) {
-        $dRegZeit = (!isset($_SESSION['dRegZeit'])) ? 0 : $_SESSION['dRegZeit'];
+        $dRegZeit = !isset($_SESSION['dRegZeit']) ? 0 : $_SESSION['dRegZeit'];
         if (!($dRegZeit + 5 < time())) {
             $ret['formular_zeit'] = 1;
         }

@@ -607,9 +607,7 @@ class Bestellung
                     foreach ($this->Positionen as $nPos => $_pos) {
                         if ($position->cUnique === $_pos->cUnique) {
                             $fPreisNetto += $_pos->fPreis * $_pos->nAnzahl;
-                            $ust = isset($_pos->kSteuerklasse)
-                                ? gibUst($_pos->kSteuerklasse)
-                                : gibUst(null);
+                            $ust = gibUst(isset($_pos->kSteuerklasse) ? $_pos->kSteuerklasse : null);
                             $fPreisBrutto += berechneBrutto($_pos->fPreis * $_pos->nAnzahl, $ust);
                             if ((int)$_pos->kKonfigitem === 0 &&
                                 is_string($_pos->cUnique) &&
@@ -862,9 +860,9 @@ class Bestellung
     }
 
     /**
-     * @param int    $kBestellung
-     * @param bool   $bAssoc
-     * @param string $nPosTyp
+     * @param int  $kBestellung
+     * @param bool $bAssoc
+     * @param int  $nPosTyp
      * @return array
      */
     public static function getOrderPositions($kBestellung, $bAssoc = true, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)

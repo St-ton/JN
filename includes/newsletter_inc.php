@@ -179,7 +179,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                     Shop::DB()->update(
                         'tnewsletterempfaengerhistory',
                         'kNewsletterEmpfaengerHistory',
-                        (int)$kNewsletterEmpfaengerHistory,
+                        $kNewsletterEmpfaengerHistory,
                         $_upd
                     );
 

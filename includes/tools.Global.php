@@ -2618,7 +2618,7 @@ function gibVerfuegbarkeitsformularAnzeigen($Artikel, $einstellung)
  */
 function makeHTTPHeader($nStatusCode)
 {
-    $proto = (!empty($_SERVER['SERVER_PROTOCOL'])) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
+    $proto = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
     $codes = [
         100 => $proto . ' 100 Continue',
         101 => $proto . ' 101 Switching Protocols',
@@ -3142,7 +3142,7 @@ function parseNewsText($cText)
                     if (isset($oArtikel->kArtikel) && $oArtikel->kArtikel > 0) {
                         $bVorhanden     = true;
                         $oObjekt->cSeo  = $oArtikel->cSeo;
-                        $oObjekt->cName = (!empty($oArtikel->cName)) ? $oArtikel->cName : 'Link';
+                        $oObjekt->cName = !empty($oArtikel->cName) ? $oArtikel->cName : 'Link';
                     }
                     break;
 
@@ -3168,7 +3168,7 @@ function parseNewsText($cText)
                     if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
                         $bVorhanden     = true;
                         $oObjekt->cSeo  = $oKategorie->cSeo;
-                        $oObjekt->cName = (!empty($oKategorie->cName)) ? $oKategorie->cName : 'Link';
+                        $oObjekt->cName = !empty($oKategorie->cName) ? $oKategorie->cName : 'Link';
                     }
                     break;
 
@@ -3189,7 +3189,7 @@ function parseNewsText($cText)
                     if (isset($oHersteller->kHersteller) && $oHersteller->kHersteller > 0) {
                         $bVorhanden     = true;
                         $oObjekt->cSeo  = $oHersteller->cSeo;
-                        $oObjekt->cName = (!empty($oHersteller->cName)) ? $oHersteller->cName : 'Link';
+                        $oObjekt->cName = !empty($oHersteller->cName) ? $oHersteller->cName : 'Link';
                     }
                     break;
 
@@ -3210,7 +3210,7 @@ function parseNewsText($cText)
                     if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
                         $bVorhanden     = true;
                         $oObjekt->cSeo  = $oMerkmalWert->cSeo;
-                        $oObjekt->cName = (!empty($oMerkmalWert->cWert)) ? $oMerkmalWert->cWert : 'Link';
+                        $oObjekt->cName = !empty($oMerkmalWert->cWert) ? $oMerkmalWert->cWert : 'Link';
                     }
                     break;
 
@@ -3230,7 +3230,7 @@ function parseNewsText($cText)
                     if (isset($oNews->kNews) && $oNews->kNews > 0) {
                         $bVorhanden     = true;
                         $oObjekt->cSeo  = $oNews->cSeo;
-                        $oObjekt->cName = (!empty($oNews->cBetreff)) ? $oNews->cBetreff : 'Link';
+                        $oObjekt->cName = !empty($oNews->cBetreff) ? $oNews->cBetreff : 'Link';
                     }
                     break;
 
@@ -3250,7 +3250,7 @@ function parseNewsText($cText)
                     if (isset($oUmfrage->kUmfrage) && $oUmfrage->kUmfrage > 0) {
                         $bVorhanden     = true;
                         $oObjekt->cSeo  = $oUmfrage->cSeo;
-                        $oObjekt->cName = (!empty($oUmfrage->cName)) ? $oUmfrage->cName : 'Link';
+                        $oObjekt->cName = !empty($oUmfrage->cName) ? $oUmfrage->cName : 'Link';
                     }
                     break;
 
@@ -3269,7 +3269,7 @@ function parseNewsText($cText)
                     if (isset($oTag->kTag) && $oTag->kTag > 0) {
                         $bVorhanden     = true;
                         $oObjekt->cSeo  = $oTag->cSeo;
-                        $oObjekt->cName = (!empty($oTag->cName)) ? $oTag->cName : 'Link';
+                        $oObjekt->cName = !empty($oTag->cName) ? $oTag->cName : 'Link';
                     }
                     break;
 
@@ -3288,7 +3288,7 @@ function parseNewsText($cText)
                     if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {
                         $bVorhanden     = true;
                         $oObjekt->cSeo  = $oSuchanfrage->cSeo;
-                        $oObjekt->cName = (!empty($oSuchanfrage->cSuche)) ? $oSuchanfrage->cSuche : 'Link';
+                        $oObjekt->cName = !empty($oSuchanfrage->cSuche) ? $oSuchanfrage->cSuche : 'Link';
                     }
                     break;
             }

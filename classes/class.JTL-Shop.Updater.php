@@ -73,6 +73,7 @@ class Updater
      *
      * @param string $file
      * @param bool $compress
+     * @throws Exception
      */
     public function createSqlDump($file, $compress = true)
     {
@@ -137,6 +138,7 @@ class Updater
 
     /**
      * @return int
+     * @throws Exception
      */
     public function getCurrentDatabaseVersion()
     {
@@ -240,6 +242,7 @@ class Updater
 
     /**
      * @return int|mixed
+     * @throws Exception
      */
     protected function updateToNextVersion()
     {

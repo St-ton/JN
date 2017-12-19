@@ -1678,14 +1678,14 @@ class Warenkorb
                 $oFavourableShipping->cPriceLocalized[1] = gibPreisStringLocalized(
                     berechneNetto(
                         $oFavourableShipping->fPreis,
-                        $_SESSION['Steuersatz'][(int)$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse()]
+                        $_SESSION['Steuersatz'][(int)Session::Cart()->gibVersandkostenSteuerklasse()]
                     )
                 );
             } else {
                 $oFavourableShipping->cPriceLocalized[0] = gibPreisStringLocalized(
                     berechneBrutto(
                         $oFavourableShipping->fPreis,
-                        $_SESSION['Steuersatz'][(int)$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse()]
+                        $_SESSION['Steuersatz'][(int)Session::Cart()->gibVersandkostenSteuerklasse()]
                     )
                 );
                 $oFavourableShipping->cPriceLocalized[1] = gibPreisStringLocalized($oFavourableShipping->fPreis);

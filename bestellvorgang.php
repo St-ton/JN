@@ -52,18 +52,18 @@ if (class_exists('Download') && Download::hasDownloads($cart)) {
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
 }
 // oneClick? Darf nur einmal ausgeführt werden und nur dann, wenn man vom Warenkorb kommt.
-if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO' &&
-    verifyGPCDataInteger('wk') === 1
+if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
+    && verifyGPCDataInteger('wk') === 1
 ) {
     $kKunde = 0;
     if (isset($_SESSION['Kunde']->kKunde)) {
         $kKunde = $_SESSION['Kunde']->kKunde;
     }
     $oWarenkorbPers = new WarenkorbPers($kKunde);
-    if (!(isset($_POST['login']) && (int)$_POST['login'] === 1 &&
-        $Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' &&
-        $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P' &&
-        count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0)
+    if (!(isset($_POST['login']) && (int)$_POST['login'] === 1
+        && $Einstellungen['global']['warenkorbpers_nutzen'] === 'Y'
+        && $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
+        && count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0)
     ) {
         pruefeAjaxEinKlick();
     }
@@ -71,14 +71,15 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
 if (verifyGPCDataInteger('wk') === 1) {
     resetNeuKundenKupon();
 }
-if (isset($_FILES['vcard']) &&
-    $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y' &&
-    validateToken()
+if (isset($_FILES['vcard'])
+    && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
+    && validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
-if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
-    $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+if (isset($_POST['unreg_form'])
+    && (int)$_POST['unreg_form'] === 1
+    && $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
 ) {
     pruefeUnregistriertBestellen($_POST);
 }
@@ -118,7 +119,7 @@ if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
     }
     unset($_SESSION['tmpShipping']);
 }
-if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1 || isset($_GET['kVersandart'])) {
+if ((isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) || isset($_GET['kVersandart'])) {
     unset($_SESSION['Zahlungsart']);
     $kVersandart = null;
 
@@ -130,8 +131,9 @@ if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1 || is
 
     pruefeVersandartWahl($kVersandart);
 }
-if (isset($_GET['unreg']) && (int)$_GET['unreg'] === 1 &&
-    $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+if (isset($_GET['unreg'])
+    && (int)$_GET['unreg'] === 1
+    && $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
 ) {
     $step = 'edit_customer_address';
 }

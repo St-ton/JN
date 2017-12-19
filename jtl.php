@@ -238,7 +238,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         if ($kWunschliste) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-            if (!empty($oWunschliste->kKunde) && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
+            if (!empty($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
                 $step                    = 'wunschliste anzeigen';
                 $cHinweis               .= wunschlisteAktualisieren($kWunschliste);
                 $_SESSION['Wunschliste'] = new Wunschliste(
@@ -323,7 +323,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);
 
-            if ($oWunschliste->kKunde > 0 && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
+            if ($oWunschliste->kKunde > 0 && $oWunschliste->kKunde === Session::Customer()->getID()) {
                 $step = 'wunschliste anzeigen';
                 $oWunschliste->entferneAllePos();
                 if ($_SESSION['Wunschliste']->kWunschliste == $oWunschliste->kWunschliste) {
@@ -346,7 +346,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $kWunschliste = verifyGPCDataInteger('wl');
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);
-            if ($oWunschliste->kKunde && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
+            if ($oWunschliste->kKunde && $oWunschliste->kKunde === Session::Customer()->getID()) {
                 $step = 'wunschliste anzeigen';
                 $oWunschlistePosSuche_arr          = $oWunschliste->sucheInWunschliste($cSuche);
                 $oWunschliste->CWunschlistePos_arr = $oWunschlistePosSuche_arr;
@@ -368,7 +368,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', (int)$kWunschliste);
             if (isset($_SESSION['Kunde']->kKunde, $oWunschliste->kKunde)
-                && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde
+                && (int)$oWunschliste->kKunde === Session::Customer()->getID()
             ) {
                 // Wurde nOeffentlich verändert
                 if (isset($_REQUEST['nstd']) && validateToken()) {
@@ -567,7 +567,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 
         if (isset($bestellung->kKunde, $_SESSION['Kunde']->kKunde)
             && (int)$bestellung->kKunde > 0
-            && $bestellung->kKunde == $_SESSION['Kunde']->kKunde
+            && $bestellung->kKunde == Session::Customer()->getID()
         ) {
             // Download wurde angefordert?
             if (verifyGPCDataInteger('dl') > 0) {
@@ -621,7 +621,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                         AND kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
             );
 
-            if (isset($oBestellung->countBestellung) && $oBestellung->countBestellung == 0) {
+            if (isset($oBestellung->countBestellung) && (int)$oBestellung->countBestellung === 0) {
                 // Keine Bestellungen die noch nicht verschickt oder storniert wurden mehr vorhanden - die Kundendaten werden gelöscht
                 $cText = 'Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
                     $_SESSION['Kunde']->cNachname . ' (' . $_SESSION['Kunde']->kKunde . ') hat am ' . date('d.m.Y') .

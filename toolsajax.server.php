@@ -235,7 +235,7 @@ function loescheWarenkorbPosAjax($nPos)
  * @deprecated since 4.05
  * @param int       $kArtikel
  * @param int|float $anzahl
- * @param string    $oEigenschaftwerte_arr
+ * @param string|array    $oEigenschaftwerte_arr
  * @return xajaxResponse
  */
 function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
@@ -1314,8 +1314,8 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
             }
         }
         // Alle Variationen ausgewaehlt? => Ajax Call und Kind laden
-        if (count($oParam_arr) === 0 &&
-            $_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl ==
+        if (count($oParam_arr) === 0
+            && $_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl ==
                 count($_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr)
         ) {
             $objResponse->script("doSwitchVarkombi('{$kEigenschaft}', '{$kEigenschaftWert}');");

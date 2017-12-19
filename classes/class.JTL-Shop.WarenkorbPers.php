@@ -419,7 +419,7 @@ class WarenkorbPers
         if (!is_array($_SESSION['Warenkorb']->PositionenArr) || count($_SESSION['Warenkorb']->PositionenArr) === 0) {
             return $this;
         }
-        foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
+        foreach (Session::Cart()->PositionenArr as $oPosition) {
             if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL) {
                 continue;
             }

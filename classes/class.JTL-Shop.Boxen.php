@@ -1254,9 +1254,7 @@ class Boxen
     {
         $smarty          = Shop::Smarty();
         $originalArticle = $smarty->getTemplateVars('Artikel');
-        if (isset($_SESSION['Kundengruppe'])) {
-            $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
-        }
+        $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
         //check whether filters should be displayed after a box
         $filterAfter = (!empty($this->boxConfig) && isset($GLOBALS['NaviFilter'], $GLOBALS['oSuchergebnisse']))
             ? $this->gibBoxenFilterNach(Shop::getProductFilter(), $GLOBALS['oSuchergebnisse'])

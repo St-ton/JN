@@ -262,7 +262,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
             foreach ($Suchanfragenerfolglos as $Suchanfrageerfolglos) {
                 if (isset($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]) &&
                     strlen($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]) > 0) {
-                    if (strtolower($Suchanfrageerfolglos->cSuche) != strtolower($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos])) {
+                    if (strtolower($Suchanfrageerfolglos->cSuche) !== strtolower($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos])) {
                         if (strlen($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]) > 0) {
                             $suchanfragemapping_obj                 = new stdClass();
                             $suchanfragemapping_obj->kSprache       = $_SESSION['kSprache'];
@@ -296,7 +296,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         if (is_array($kSuchanfrageErfolglos_arr) && count($kSuchanfrageErfolglos_arr) > 0) {
             foreach ($kSuchanfrageErfolglos_arr as $kSuchanfrageErfolglos) {
                 $kSuchanfrageErfolglos = (int)$kSuchanfrageErfolglos;
-                Shop::DB()->delete('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', (int)$kSuchanfrageErfolglos);
+                Shop::DB()->delete('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', $kSuchanfrageErfolglos);
             }
             $hinweis = 'Ihre markierten Suchanfragen wurden erfolgreich gel&ouml;scht.';
         } else {

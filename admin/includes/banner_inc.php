@@ -72,8 +72,6 @@ function holeBannerDateien()
  */
 function saveBannerAreasIO($cData)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ImageMap.php';
-
     $oBanner  = new ImageMap();
     $response = new IOResponse();
     $oData    = json_decode($cData);

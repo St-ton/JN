@@ -117,7 +117,7 @@ class ImageStorage
             ? trim($_SERVER['HTTP_IF_NONE_MATCH'])
             : null;
 
-        if ($httpModifiedSince == $lastModifiedDate || $httpNoneMatch == $tagHash) {
+        if ($httpModifiedSince === $lastModifiedDate || $httpNoneMatch === $tagHash) {
             header(makeHTTPHeader(304));
             exit;
         }

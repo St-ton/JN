@@ -12,7 +12,7 @@ class IO
     /**
      * @var static
      */
-    protected static $instance = null;
+    protected static $instance;
 
     /**
      * @var array
@@ -64,13 +64,14 @@ class IO
 
     /**
      * @param string $reqString
-     * @return mixed
+     * @return IOError|mixed
+     * @throws Exception
      */
     public function handleRequest($reqString)
     {
         $request = json_decode($reqString, true);
 
-        if (($errno = json_last_error()) != JSON_ERROR_NONE) {
+        if (($errno = json_last_error()) !== JSON_ERROR_NONE) {
             return new IOError("Error {$errno} while decoding data");
         }
 
@@ -91,15 +92,18 @@ class IO
     }
 
     /**
-     * @param $data
+     * @param object $data
+     * @throws Exception
      */
     public function respondAndExit($data)
     {
         // respond with an error?
-        if (is_object($data) && get_class($data) === 'IOError') {
-            header(makeHTTPHeader($data->code), true, $data->code);
-        } elseif (is_object($data) && get_class($data) === 'IOFile') {
-            $this->pushFile($data->filename, $data->mimetype);
+        if (is_object($data)) {
+            if (get_class($data) === 'IOError') {
+                header(makeHTTPHeader($data->code), true, $data->code);
+            } elseif (get_class($data) === 'IOFile') {
+                $this->pushFile($data->filename, $data->mimetype);
+            }
         }
 
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');

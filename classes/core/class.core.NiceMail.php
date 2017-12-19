@@ -20,9 +20,9 @@ function SendNiceMailReply($FromName, $FromMail, $ReplyAdresse, $To, $Subject, $
 {
     //endl definieren
     $eol = "\n";
-    if (strpos(strtoupper(PHP_OS), 'WIN') === 0) {
+    if (stripos(PHP_OS, 'WIN') === 0) {
         $eol = "\r\n";
-    } elseif (strpos(strtoupper(PHP_OS), 'MAC') === 0) {
+    } elseif (stripos(PHP_OS, 'MAC') === 0) {
         $eol = "\r";
     }
 

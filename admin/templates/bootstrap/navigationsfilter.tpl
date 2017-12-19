@@ -68,8 +68,8 @@
 
             $priceRows
                 .sort(function(a, b) {
-                    var aVon = parseFloat($(a).find('[id^=nVon_]').val());
-                    var bVon = parseFloat($(b).find('[id^=nVon_]').val());
+                    var aVon = parseFloat($(a).find('[id^=nVon_]').val()),
+                        bVon = parseFloat($(b).find('[id^=nVon_]').val());
                     return aVon < bVon ? -1 : +1;
                 })
                 .each(function(i, row) {

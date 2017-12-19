@@ -6,7 +6,6 @@
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global JTLSmarty $smarty */
 $smarty->setForceCompile(true);
-require PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.JSONAPI.php';
 
 $oAccount->permission('BOXES_VIEW', true, true);
 

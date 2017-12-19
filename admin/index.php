@@ -6,6 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global JTLSmarty $smarty */
+/** @global AdminAccount $oAccount */
 $oUpdater = new Updater();
 $cFehler  = '';
 
@@ -58,10 +59,9 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
 
             case -3:
             case -1:
+                $cFehler = 'Benutzername oder Passwort falsch';
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Auth-Code abgelaufen';
-                } else {
-                    $cFehler = 'Benutzername oder Passwort falsch';
                 }
                 break;
 
@@ -160,15 +160,13 @@ function openDashboard()
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 
-        $oFsCheck      = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
-        $cDirAssoc_arr = $oFsCheck->getFoldersChecked();
+        $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
+        $oFsCheck->getFoldersChecked();
 
-        $oTpl        = Template::getInstance();
-        $nTplVersion = $oTpl->getShopVersion();
         $smarty->assign('bDashboard', true)
                ->assign('oPermissionStat', $oFsCheck->getFolderStats())
                ->assign('bUpdateError', ((isset($_POST['shopupdate']) && $_POST['shopupdate'] === '1') ? '1' : false))
-               ->assign('bTemplateDiffers', JTL_VERSION != $nTplVersion)
+               ->assign('bTemplateDiffers', JTL_VERSION !== Template::getInstance()->getShopVersion())
                ->assign('oActiveWidget_arr', getWidgets(true))
                ->assign('oAvailableWidget_arr', getWidgets(false))
                ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
@@ -184,8 +182,7 @@ function openDashboard()
  */
 function redirectToURI($szURI)
 {
-    $url = base64_decode($szURI);
-    header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . $url);
+    header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . base64_decode($szURI));
     exit;
 }
 
@@ -215,17 +212,17 @@ if ($oAccount->getIsAuthenticated()) {
         // "redirect" to the "login not valid"
         // (we've received a wrong code and give the user the chance to retry)
         $oAccount->redirectOnUrl();
-        if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
-            $smarty->assign('uri', trim($_REQUEST['uri']));
-        }
-        $smarty->display('login.tpl');
+        $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0
+            ? trim($_REQUEST['uri'])
+            : '')
+               ->display('login.tpl');
         exit();
     }
     openDashboard();
 } else {
     $oAccount->redirectOnUrl();
-    if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
-        $smarty->assign('uri', trim($_REQUEST['uri']));
-    }
-    $smarty->display('login.tpl');
+    $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0
+        ? trim($_REQUEST['uri'])
+        : '')
+           ->display('login.tpl');
 }

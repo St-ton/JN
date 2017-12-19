@@ -50,7 +50,7 @@ class Preise
     public $cPreis5Localized;
 
     /**
-     * @var string
+     * @var array
      */
     public $cVKLocalized;
 
@@ -423,7 +423,6 @@ class Preise
     /**
      * Setzt Preise mit Daten aus der DB mit spezifizierten Primary Keys
      *
-     * @access public
      * @param int $kKundengruppe
      * @param int $kArtikel
      * @return $this
@@ -552,34 +551,31 @@ class Preise
      */
     public function berechneVKs()
     {
-        $waehrung = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
-        if (!isset($waehrung->kWaehrung)) {
-            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-        }
+        $factor = Session::Currency()->getConversionFactor(); 
 
         $this->fVKBrutto = berechneBrutto($this->fVKNetto, $this->fUst);
 
-        $this->fVK[0] = berechneBrutto($this->fVKNetto * $waehrung->fFaktor, $this->fUst);
-        $this->fVK[1] = $this->fVKNetto * $waehrung->fFaktor;
+        $this->fVK[0] = berechneBrutto($this->fVKNetto * $factor, $this->fUst);
+        $this->fVK[1] = $this->fVKNetto * $factor;
 
-        $this->alterVK[0] = berechneBrutto($this->alterVKNetto * $waehrung->fFaktor, $this->fUst);
-        $this->alterVK[1] = $this->alterVKNetto * $waehrung->fFaktor;
+        $this->alterVK[0] = berechneBrutto($this->alterVKNetto * $factor, $this->fUst);
+        $this->alterVK[1] = $this->alterVKNetto * $factor;
 
-        $this->fStaffelpreis1[0] = berechneBrutto($this->fPreis1 * $waehrung->fFaktor, $this->fUst);
-        $this->fStaffelpreis1[1] = $this->fPreis1 * $waehrung->fFaktor;
-        $this->fStaffelpreis2[0] = berechneBrutto($this->fPreis2 * $waehrung->fFaktor, $this->fUst);
-        $this->fStaffelpreis2[1] = $this->fPreis2 * $waehrung->fFaktor;
-        $this->fStaffelpreis3[0] = berechneBrutto($this->fPreis3 * $waehrung->fFaktor, $this->fUst);
-        $this->fStaffelpreis3[1] = $this->fPreis3 * $waehrung->fFaktor;
-        $this->fStaffelpreis4[0] = berechneBrutto($this->fPreis4 * $waehrung->fFaktor, $this->fUst);
-        $this->fStaffelpreis4[1] = $this->fPreis4 * $waehrung->fFaktor;
-        $this->fStaffelpreis5[0] = berechneBrutto($this->fPreis5 * $waehrung->fFaktor, $this->fUst);
-        $this->fStaffelpreis5[1] = $this->fPreis5 * $waehrung->fFaktor;
+        $this->fStaffelpreis1[0] = berechneBrutto($this->fPreis1 * $factor, $this->fUst);
+        $this->fStaffelpreis1[1] = $this->fPreis1 * $factor;
+        $this->fStaffelpreis2[0] = berechneBrutto($this->fPreis2 * $factor, $this->fUst);
+        $this->fStaffelpreis2[1] = $this->fPreis2 * $factor;
+        $this->fStaffelpreis3[0] = berechneBrutto($this->fPreis3 * $factor, $this->fUst);
+        $this->fStaffelpreis3[1] = $this->fPreis3 * $factor;
+        $this->fStaffelpreis4[0] = berechneBrutto($this->fPreis4 * $factor, $this->fUst);
+        $this->fStaffelpreis4[1] = $this->fPreis4 * $factor;
+        $this->fStaffelpreis5[0] = berechneBrutto($this->fPreis5 * $factor, $this->fUst);
+        $this->fStaffelpreis5[1] = $this->fPreis5 * $factor;
 
         foreach ($this->fPreis_arr as $fPreis) {
             $this->fStaffelpreis_arr[] = [
-                berechneBrutto($fPreis * $waehrung->fFaktor, $this->fUst),
-                $fPreis * $waehrung->fFaktor
+                berechneBrutto($fPreis * $factor, $this->fUst),
+                $fPreis * $factor
             ];
         }
 
@@ -589,7 +585,6 @@ class Preise
     /**
      * Fuegt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @retun int
      */
     public function insertInDB()

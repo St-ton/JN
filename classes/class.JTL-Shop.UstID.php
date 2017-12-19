@@ -450,14 +450,10 @@ class UstID
      * Trims and encodes parameter for use with XML-RPC-API.
      * Requirements for special chars: http://evatr.bff-online.de/eVatR/xmlrpc/faq_xmlrpc#f11
      *
-     * @param the $param to encode
-     * @return urlencoded param with some specials
+     * @param string $param
+     * @return string - urlencoded param with some specials
      */
-    function urlencode_special($param) {
-        $param = str_replace('+', '%2B', trim($param));
-        $param = urlencode($param);
-        $param = str_replace('.', '%2E', $param);
-        $param = str_replace('-', '%2D', $param);
-        return $param;
+    public function urlencode_special($param) {
+        return str_replace(['.', '-'], ['%2E', '%2D'], urlencode(str_replace('+', '%2B', trim($param))));
     }
 }

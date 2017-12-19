@@ -120,7 +120,7 @@ class Hersteller
     public function loadFromDB($kHersteller, $kSprache = 0, $noCache = false)
     {
         //noCache param to avoid problem with de-serialization of class properties with jtl search
-        $kSprache = ((int)$kSprache > 0) ? (int)$kSprache : Shop::getLanguage();
+        $kSprache = (int)$kSprache > 0 ? (int)$kSprache : Shop::getLanguageID();
         if ($kSprache === 0) {
             $oSprache = gibStandardsprache();
             $kSprache = (int)$oSprache->kSprache;
@@ -198,18 +198,18 @@ class Hersteller
     public static function getAll($productLookup = true)
     {
         $sqlWhere = '';
-        $kSprache = isset($_SESSION['kSprache']) ? (int)$_SESSION['kSprache'] : Shop::getLanguage();
+        $kSprache = Shop::getLanguage();
         if ($productLookup) {
             $sqlWhere = "WHERE EXISTS (
                             SELECT 1
                             FROM tartikel
                             WHERE tartikel.kHersteller = thersteller.kHersteller
-                                " . gibLagerfilter() . "
+                                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
                                 AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                                    AND tartikelsichtbarkeit.kKundengruppe = {$_SESSION['Kundengruppe']->kKundengruppe}
-							)
+                                    AND tartikelsichtbarkeit.kKundengruppe = ". Session::CustomerGroup()->getID() .
+                            ")
                         )";
         }
         $objs = Shop::DB()->query(
@@ -235,5 +235,13 @@ class Hersteller
         }
 
         return $results;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->cName;
     }
 }

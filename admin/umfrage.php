@@ -433,10 +433,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 );
                 if ($oUmfrage->kUmfrage > 0) {
                     $oUmfrage->cKundengruppe_arr = [];
-                    $kKundengruppe_arr           = [];
 
                     $kKundengruppe_arr = gibKeyArrayFuerKeyString($oUmfrage->cKundengruppe, ';');
-
                     foreach ($kKundengruppe_arr as $kKundengruppe) {
                         if ($kKundengruppe == -1) {
                             $oUmfrage->cKundengruppe_arr[] = 'Alle';
@@ -447,8 +445,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                             }
                         }
                     }
-
-                    $oUmfrage->oUmfrageFrage_arr = [];
                     $oUmfrage->oUmfrageFrage_arr = Shop::DB()->selectAll(
                         'tumfragefrage',
                         'kUmfrage',
@@ -461,7 +457,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                             // Mappe Fragentyp
                             $oUmfrage->oUmfrageFrage_arr[$i]->cTypMapped = mappeFragenTyp($oUmfrageFrage->cTyp);
 
-                            $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = [];
                             $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = Shop::DB()->selectAll(
                                 'tumfragefrageantwort',
                                 'kUmfrageFrage',
@@ -491,7 +486,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $smarty->assign('oUmfrageFrage_arr', Shop::DB()->selectAll(
                 'tumfragefrage',
                 'kUmfrage',
-                (int)$kUmfrageTMP,
+                $kUmfrageTMP,
                 '*',
                 'nSort')
             )->assign('kUmfrageTMP', $kUmfrageTMP);
@@ -525,7 +520,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         if (is_array($oUmfrage_arr) && count($oUmfrage_arr) > 0) {
             foreach ($oUmfrage_arr as $i => $oUmfrage) {
                 $oUmfrage_arr[$i]->cKundengruppe_arr = [];
-                $kKundengruppe_arr                   = [];
                 $kKundengruppe_arr                   = gibKeyArrayFuerKeyString($oUmfrage->cKundengruppe, ";");
 
                 foreach ($kKundengruppe_arr as $kKundengruppe) {

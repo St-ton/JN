@@ -8,11 +8,10 @@ if (!defined('PFAD_ROOT')) {
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
 /** @global JTLSmarty $smarty */
 $AktuelleSeite = 'ARTIKEL';
 Shop::setPageType(PAGE_ARTIKEL);
-$Einstellungen = Shop::getSettings([
+$Einstellungen                = Shop::getSettings([
     CONF_GLOBAL,
     CONF_ARTIKELUEBERSICHT,
     CONF_NAVIGATIONSFILTER,
@@ -26,7 +25,7 @@ $Einstellungen = Shop::getSettings([
     CONF_KONTAKTFORMULAR,
     CONF_CACHING
 ]);
-$oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben();
+$oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
 // Bewertungsguthaben
 $fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
 // Hinweise und Fehler sammeln - Nur wenn bisher kein Fehler gesetzt wurde!
@@ -47,9 +46,8 @@ if (isset($_POST['a']) &&
     $cHinweis       = Shop::Lang()->get('basketAllAdded', 'messages');
     Shop::$kArtikel = (int)$_POST['aBundle'];
 }
-$AktuellerArtikel = new Artikel();
-$AktuellerArtikel->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
-if ($AktuellerArtikel->nIstVater === 1) {
+$AktuellerArtikel = (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
+if ($AktuellerArtikel !== null && $AktuellerArtikel->nIstVater === 1) {
     $_SESSION['oVarkombiAuswahl']                               = new stdClass();
     $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr  = [];
     $_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl = $AktuellerArtikel->nVariationOhneFreifeldAnzahl;
@@ -76,7 +74,7 @@ if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'])
         $AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'];
 }
 //404
-if (!$AktuellerArtikel->kArtikel) {
+if (empty($AktuellerArtikel->kArtikel)) {
     //#6317 - send 301 redirect when filtered
     if (((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) ||
         ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL)
@@ -86,7 +84,6 @@ if (!$AktuellerArtikel->kArtikel) {
         exit;
     }
     //404 otherwise
-    $cParameter_arr['is404'] = true;
     Shop::$is404             = true;
     Shop::$kLink             = 0;
     Shop::$kArtikel          = 0;
@@ -98,10 +95,9 @@ $similarArticles = (int)$Einstellungen['artikeldetails']['artikeldetails_aehnlic
     : [];
 // Lade VariationKombiKind
 if (Shop::$kVariKindArtikel > 0) {
-    $oVariKindArtikel                            = new Artikel();
     $oArtikelOptionen                            = Artikel::getDetailOptions();
     $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-    $oVariKindArtikel->fuelleArtikel(Shop::$kVariKindArtikel, $oArtikelOptionen);
+    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $oArtikelOptionen);
     $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
         $oVariKindArtikel,
         $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
@@ -112,13 +108,11 @@ if (Shop::$kVariKindArtikel > 0) {
            ->assign('reset_button', '<ul><li><button type="button" ' .
                'class="btn submit reset_selection" onclick="location.href=\'' .
                $shopURL . $AktuellerArtikel->cVaterURL . '\';">' .
-               Shop::Lang()->get('resetSelection', 'global') . '</button></li></ul>');
+               Shop::Lang()->get('resetSelection') . '</button></li></ul>');
 }
 // Hat Artikel einen Preisverlauf?
-$smarty->assign('bPreisverlauf', !empty($_SESSION['Kundengruppe']->darfPreiseSehen));
-if (!empty($_SESSION['Kundengruppe']->darfPreiseSehen) &&
-    $Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y'
-) {
+$smarty->assign('bPreisverlauf', Session::CustomerGroup()->mayViewPrices());
+if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && Session::CustomerGroup()->mayViewPrices()) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0
         ? Shop::$kVariKindArtikel
         : $AktuellerArtikel->kArtikel;
@@ -145,16 +139,15 @@ if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
 } elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
     bearbeiteBenachrichtigung();
 }
-// url
 $requestURL = baueURL($AktuellerArtikel, URLART_ARTIKEL);
 $sprachURL  = $AktuellerArtikel->getLanguageURLs();
 // hole aktuelle Kategorie, falls eine gesetzt
 $kKategorie             = $AktuellerArtikel->gibKategorie();
 $AktuelleKategorie      = new Kategorie($kKategorie);
 $AufgeklappteKategorien = new KategorieListe();
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
 // Bewertungen holen
 $bewertung_seite    = verifyGPCDataInteger('btgseite');
 $bewertung_sterne   = verifyGPCDataInteger('btgsterne');
@@ -180,15 +173,16 @@ if ($AktuellerArtikel->Bewertungen === null || $bewertung_sterne > 0) {
     $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
 }
 
-if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
-    isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung) &&
-    (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
+if (isset(
+        $AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich,
+        $AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung)
+    && (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
 ) {
     $oBewertung_arr = array_filter(
         $AktuellerArtikel->Bewertungen->oBewertung_arr,
         function ($oBewertung) use (&$AktuellerArtikel) {
-            return
-                (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung !== (int)$oBewertung->kBewertung;
+            return (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung
+                !== (int)$oBewertung->kBewertung;
         }
     );
 } else {
@@ -208,7 +202,7 @@ $pagination = (new Pagination('ratings'))
 
 $AktuellerArtikel->Bewertungen->Sortierung = $nSortierung;
 
-$nAnzahlBewertungen = ($bewertung_sterne === 0)
+$nAnzahlBewertungen = $bewertung_sterne === 0
     ? $AktuellerArtikel->Bewertungen->nAnzahlSprache
     : $AktuellerArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
 // Baue Blaetter Navigation
@@ -233,7 +227,6 @@ if ($AktuellerArtikel->Variationen) {
         }
     }
 }
-//specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKategorien, $AktuellerArtikel))
        ->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $arNichtErlaubteEigenschaftswerte)
@@ -263,9 +256,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('fehler', $cFehler)
        ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
        ->assign('PFAD_FLASHPLAYER', $shopURL . PFAD_FLASHPLAYER)
-       ->assign('PFAD_IMAGESLIDER', PFAD_IMAGESLIDER)
        ->assign('PFAD_BILDER', PFAD_BILDER)
-       ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)
        ->assign('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', FKT_ATTRIBUT_ATTRIBUTEANHAENGEN)
        ->assign('FKT_ATTRIBUT_WARENKORBMATRIX', FKT_ATTRIBUT_WARENKORBMATRIX)
        ->assign('FKT_ATTRIBUT_INHALT', FKT_ATTRIBUT_INHALT)

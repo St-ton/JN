@@ -7,7 +7,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.PlausiKundenfeld.php';
 /** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings([CONF_KUNDENFELD]);
 $cHinweis      = '';
@@ -122,7 +121,13 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     if ($kKundenfeld > 0) {
         $oKundenfeld = Shop::DB()->select('tkundenfeld', 'kKundenfeld', $kKundenfeld);
         if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {
-            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$kKundenfeld, '*', 'nSort, kKundenfeldWert ASC');
+            $oKundenfeldWert_arr = Shop::DB()->selectAll(
+                'tkundenfeldwert',
+                'kKundenfeld',
+                (int)$kKundenfeld,
+                '*',
+                'nSort, kKundenfeldWert ASC'
+            );
 
             $oKundenfeld->oKundenfeldWert_arr = $oKundenfeldWert_arr;
             $smarty->assign('oKundenfeld', $oKundenfeld);
@@ -158,7 +163,13 @@ if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
     // tkundenfeldwert nachschauen ob dort Werte fuer tkundenfeld enthalten sind
     foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
         if ($oKundenfeld->cTyp === 'auswahl') {
-            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$oKundenfeld->kKundenfeld, '*', 'nSort, kKundenfeldWert ASC');
+            $oKundenfeldWert_arr = Shop::DB()->selectAll(
+                'tkundenfeldwert',
+                'kKundenfeld',
+                (int)$oKundenfeld->kKundenfeld,
+                '*',
+                'nSort, kKundenfeldWert ASC'
+            );
             $oKundenfeld_arr[$i]->oKundenfeldWert_arr = $oKundenfeldWert_arr;
         }
     }

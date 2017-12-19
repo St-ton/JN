@@ -149,16 +149,19 @@ class Kategorie
         $oSpracheTmp            = null;
         $oKategorieAttribut_arr = null;
         if (!$kKundengruppe) {
+            $kKundengruppe = Session::CustomerGroup()->getID();
+        }
+        if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
-            if (!isset($_SESSION['Kundengruppe'])) { //auswahlassistent admin fix
+            if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) { //auswahlassistent admin fix
                 $_SESSION['Kundengruppe'] = new stdClass();
+                $_SESSION['Kundengruppe']->kKundengruppe = $kKundengruppe;
             }
-            $_SESSION['Kundengruppe']->kKundengruppe = $kKundengruppe;
         }
         if (!$kSprache) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
             if (!$kSprache) {
-                $oSpracheTmp = gibStandardsprache(true);
+                $oSpracheTmp = gibStandardsprache();
                 $kSprache    = $oSpracheTmp->kSprache;
             }
         }
@@ -239,7 +242,7 @@ class Kategorie
                 $oSeo = Shop::DB()->select(
                     'tseo',
                     'cKey', 'kKategorie',
-                    'kSprache', (int)$kDefaultLang,
+                    'kSprache', $kDefaultLang,
                     'kKey', (int)$oKategorie->kKategorie
                 );
                 if (isset($oSeo->cSeo)) {
@@ -253,11 +256,12 @@ class Kategorie
             $this->mapData($oKategorie);
         }
         $shopURL = Shop::getURL() . '/';
+        $helper  = KategorieHelper::getInstance($kSprache, $kKundengruppe);
         // URL bauen
         $this->cURL     = baueURL($this, URLART_KATEGORIE);
         $this->cURLFull = baueURL($this, URLART_KATEGORIE, 0, false, true);
         // Baue Kategoriepfad
-        $this->cKategoriePfad_arr = gibKategoriepfad($this, $kKundengruppe, $kSprache, false);
+        $this->cKategoriePfad_arr = $helper->getPath($this, false);
         $this->cKategoriePfad     = implode(' > ', $this->cKategoriePfad_arr);
         // Bild holen
         $this->cBildURL       = BILD_KEIN_KATEGORIEBILD_VORHANDEN;
@@ -501,6 +505,15 @@ class Kategorie
      */
     public static function isVisible($categoryId, $customerGroupId)
     {
+        if (!Shop::has('checkCategoryVisibility')) {
+            Shop::set(
+                'checkCategoryVisibility',
+                Shop::DB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', 3) > 0
+            );
+        }
+        if (!Shop::get('checkCategoryVisibility')) {
+            return true;
+        }
         $obj = Shop::DB()->select(
             'tkategoriesichtbarkeit',
             'kKategorie', (int)$categoryId,
@@ -508,5 +521,13 @@ class Kategorie
         );
 
         return empty($obj->kKategorie);
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->cName;
     }
 }

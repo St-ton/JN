@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
 
 /**
  * @param string $nDatei
@@ -177,8 +176,13 @@ function generateSitemapXML()
 {
     Jtllog::writeLog('Sitemap wird erstellt', JTLLOG_LEVEL_NOTICE);
     $nStartzeit = microtime(true);
-    $conf       = Shop::getSettings([CONF_ARTIKELUEBERSICHT, CONF_SITEMAP, CONF_GLOBAL]);
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
+    $conf       = Shop::getSettings([
+        CONF_ARTIKELUEBERSICHT,
+        CONF_SITEMAP,
+        CONF_GLOBAL,
+        CONF_NAVIGATIONSFILTER,
+        CONF_BOXEN
+    ]);
     require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
     if (!isset($conf['sitemap']['sitemap_insert_lastmod'])) {
         $conf['sitemap']['sitemap_insert_lastmod'] = 'N';
@@ -231,10 +235,11 @@ function generateSitemapXML()
     $Sprache                 = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
     $_SESSION['kSprache']    = $Sprache->kSprache;
     $_SESSION['cISOSprache'] = $Sprache->cISO;
+    setzeSteuersaetze();
     if (!isset($_SESSION['Kundengruppe'])) {
-        $_SESSION['Kundengruppe'] = new stdClass();
+        $_SESSION['Kundengruppe'] = new Kundengruppe();
     }
-    $_SESSION['Kundengruppe']->kKundengruppe = $stdKundengruppe->kKundengruppe;
+    $_SESSION['Kundengruppe']->setID($stdKundengruppe->kKundengruppe);
     // Stat Array
     $nStat_arr = [
         'artikel'          => 0,
@@ -254,26 +259,26 @@ function generateSitemapXML()
         'newskategorie'    => 0,
     ];
     // Artikelübersicht - max. Artikel pro Seite
-    $nArtikelProSeite = ((int) $conf['artikeluebersicht']['artikeluebersicht_artikelproseite'] > 0)
-        ? (int) $conf['artikeluebersicht']['artikeluebersicht_artikelproseite']
+    $nArtikelProSeite = ((int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite'] > 0)
+        ? (int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite']
         : 20;
     if (isset($conf['artikeluebersicht']['artikeluebersicht_erw_darstellung']) &&
         $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'Y'
     ) {
-        $nStdDarstellung = (isset($conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
-                (int) $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0)
-            ? (int) $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']
+        $nStdDarstellung = (isset($conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'])
+            && (int)$conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0)
+            ? (int)$conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']
             : ERWDARSTELLUNG_ANSICHT_LISTE;
         if ($nStdDarstellung > 0) {
             switch ($nStdDarstellung) {
                 case ERWDARSTELLUNG_ANSICHT_LISTE:
-                    $nArtikelProSeite = (int) $conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
+                    $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                     break;
                 case ERWDARSTELLUNG_ANSICHT_GALERIE:
-                    $nArtikelProSeite = (int) $conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
+                    $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                     break;
                 case ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                    $nArtikelProSeite = (int) $conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
+                    $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
                     break;
             }
         }
@@ -297,18 +302,18 @@ function generateSitemapXML()
         $andWhere .= ' AND tartikel.kVaterArtikel = 0';
     }
     // Artikelanzeigefilter
-    if ((int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
+    if ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
         // 'Nur Artikel mit Lagerbestand>0 anzeigen'
         $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.fLagerbestand > 0)";
-    } elseif ((int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
+    } elseif ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
         // 'Nur Artikel mit Lagerbestand>0 oder deren Lagerbestand<0 werden darf'
         $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.cLagerKleinerNull = 'Y' OR
             tartikel.fLagerbestand > 0)";
     }
     //Artikel STD Sprache
-    $modification = ($conf['sitemap']['sitemap_insert_lastmod'] === 'Y') ?
-        ', tartikel.dLetzteAktualisierung' :
-        '';
+    $modification = $conf['sitemap']['sitemap_insert_lastmod'] === 'Y'
+        ? ', tartikel.dLetzteAktualisierung'
+        : '';
     $strSQL = 'SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr' . $modification .
             ' FROM tartikel
             LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
@@ -461,7 +466,7 @@ function generateSitemapXML()
                         $link = $tlink->cSeo;
                     }
                     if (!isSitemapBlocked($link)) {
-                        $sitemap_data .= makeURL($link, null, FREQ_MONTHLY, PRIO_LOW, '', (int) $tlink->bSSL === 2);
+                        $sitemap_data .= makeURL($link, null, FREQ_MONTHLY, PRIO_LOW, '', (int)$tlink->bSSL === 2);
                         ++$nSitemap;
                         ++$nAnzahlURL_arr[$nDatei];
                         ++$nStat_arr['link'];
@@ -487,7 +492,7 @@ function generateSitemapXML()
                  WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                  ORDER BY tkategorie.kKategorie';
         $res = Shop::DB()->query($strSQL, 10);
-        while ($tkategorie = $res->fetch(PDO::FETCH_OBJ)) {
+        while (($tkategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if (($seoAktiv && strlen($tkategorie->cSeo) > 0) || !$seoAktiv) {
                 $cURL_arr = baueExportURL(
                     $tkategorie->kKategorie,
@@ -495,7 +500,8 @@ function generateSitemapXML()
                     date_format(date_create($tkategorie->dLetzteAktualisierung), 'c'),
                     $Sprachen,
                     $Sprache->kSprache,
-                    $nArtikelProSeite
+                    $nArtikelProSeite,
+                    $conf
                 );
                 if (is_array($cURL_arr) && count($cURL_arr) > 0) {
                     foreach ($cURL_arr as $cURL) {
@@ -545,7 +551,8 @@ function generateSitemapXML()
                         date_format(date_create($tkategorie->dLetzteAktualisierung), 'c'),
                         $Sprachen,
                         $SpracheTMP->kSprache,
-                        $nArtikelProSeite
+                        $nArtikelProSeite,
+                        $conf
                     );
                     if (is_array($cURL_arr) && count($cURL_arr) > 0) {
                         foreach ($cURL_arr as $cURL) { // X viele Seiten durchlaufen
@@ -588,8 +595,15 @@ function generateSitemapXML()
         );
         while ($oTag = $res->fetch(PDO::FETCH_OBJ)) {
             if (($seoAktiv && strlen($oTag->cSeo) > 0) || !$seoAktiv) {
-                $cURL_arr = baueExportURL($oTag->kTag, 'kTag', null, $Sprachen, $Sprache->kSprache, $nArtikelProSeite);
-
+                $cURL_arr = baueExportURL(
+                    $oTag->kTag,
+                    'kTag',
+                    null,
+                    $Sprachen,
+                    $Sprache->kSprache,
+                    $nArtikelProSeite,
+                    $conf
+                );
                 if (is_array($cURL_arr) && count($cURL_arr) > 0) {
                     foreach ($cURL_arr as $cURL) {
                         if ($nSitemap > $nSitemapLimit) {
@@ -621,15 +635,22 @@ function generateSitemapXML()
                       LEFT JOIN tseo 
                           ON tseo.cKey = 'kTag'
                           AND tseo.kKey = ttag.kTag
-                          AND tseo.kSprache = " . (int) $SpracheTMP->kSprache . '
-                      WHERE ttag.kSprache = ' . (int) $SpracheTMP->kSprache . '
+                          AND tseo.kSprache = " . (int)$SpracheTMP->kSprache . '
+                      WHERE ttag.kSprache = ' . (int)$SpracheTMP->kSprache . '
                           AND ttag.nAktiv = 1
                       ORDER BY ttag.kTag', 10
             );
             while ($oTag = $res->fetch(PDO::FETCH_OBJ)) {
                 if (($seoAktiv && strlen($oTag->cSeo) > 0) || !$seoAktiv) {
-                    $cURL_arr = baueExportURL($oTag->kTag, 'kTag', null, $Sprachen, $SpracheTMP->kSprache,
-                        $nArtikelProSeite);
+                    $cURL_arr = baueExportURL(
+                        $oTag->kTag,
+                        'kTag',
+                        null,
+                        $Sprachen,
+                        $SpracheTMP->kSprache,
+                        $nArtikelProSeite,
+                        $conf
+                    );
                     if (is_array($cURL_arr) && count($cURL_arr) > 0) {
                         foreach ($cURL_arr as $cURL) {
                             // X viele Seiten durchlaufen
@@ -661,14 +682,21 @@ function generateSitemapXML()
                  FROM thersteller
                  LEFT JOIN tseo ON tseo.cKey = 'kHersteller'
                     AND tseo.kKey = thersteller.kHersteller
-                    AND tseo.kSprache = " . (int) $Sprache->kSprache . '
+                    AND tseo.kSprache = " . (int)$Sprache->kSprache . '
                  ORDER BY thersteller.kHersteller', 10
         );
 
         while ($oHersteller = $res->fetch(PDO::FETCH_OBJ)) {
             if (($seoAktiv && strlen($oHersteller->cSeo) > 0) || !$seoAktiv) {
-                $cURL_arr = baueExportURL($oHersteller->kHersteller, 'kHersteller', null, $Sprachen, $Sprache->kSprache,
-                    $nArtikelProSeite);
+                $cURL_arr = baueExportURL(
+                    $oHersteller->kHersteller,
+                    'kHersteller',
+                    null,
+                    $Sprachen,
+                    $Sprache->kSprache,
+                    $nArtikelProSeite,
+                    $conf
+                );
                 if (is_array($cURL_arr) && count($cURL_arr) > 0) {
                     foreach ($cURL_arr as $cURL) {
                         if ($nSitemap > $nSitemapLimit) {
@@ -698,16 +726,22 @@ function generateSitemapXML()
                  FROM tsuchanfrage
                  LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
                     AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                    AND tseo.kSprache = " . (int) $Sprache->kSprache . '
-                 WHERE tsuchanfrage.kSprache = ' . (int) $Sprache->kSprache . '
+                    AND tseo.kSprache = " . (int)$Sprache->kSprache . '
+                 WHERE tsuchanfrage.kSprache = ' . (int)$Sprache->kSprache . '
                     AND tsuchanfrage.nAktiv = 1
                  ORDER BY tsuchanfrage.kSuchanfrage', 10
         );
         while ($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) {
             if (($seoAktiv && strlen($oSuchanfrage->cSeo) > 0) || !$seoAktiv) {
-                $cURL_arr = baueExportURL($oSuchanfrage->kSuchanfrage, 'kSuchanfrage', null, $Sprachen,
-                    $Sprache->kSprache, $nArtikelProSeite);
-
+                $cURL_arr = baueExportURL(
+                    $oSuchanfrage->kSuchanfrage,
+                    'kSuchanfrage',
+                    null,
+                    $Sprachen,
+                    $Sprache->kSprache,
+                    $nArtikelProSeite,
+                    $conf
+                );
                 if (is_array($cURL_arr) && count($cURL_arr) > 0) {
                     foreach ($cURL_arr as $cURL) {
                         if ($nSitemap > $nSitemapLimit) {
@@ -738,16 +772,22 @@ function generateSitemapXML()
                      FROM tsuchanfrage
                      LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
                         AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                        AND tseo.kSprache = " . (int) $SpracheTMP->kSprache . '
-                     WHERE tsuchanfrage.kSprache = ' . (int) $SpracheTMP->kSprache . '
+                        AND tseo.kSprache = " . (int)$SpracheTMP->kSprache . '
+                     WHERE tsuchanfrage.kSprache = ' . (int)$SpracheTMP->kSprache . '
                         AND tsuchanfrage.nAktiv = 1
                      ORDER BY tsuchanfrage.kSuchanfrage', 10
             );
             while ($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) {
                 if (($seoAktiv && strlen($oSuchanfrage->cSeo) > 0) || !$seoAktiv) {
-                    $cURL_arr = baueExportURL($oSuchanfrage->kSuchanfrage, 'kSuchanfrage', null, $Sprachen,
-                        $SpracheTMP->kSprache, $nArtikelProSeite);
-
+                    $cURL_arr = baueExportURL(
+                        $oSuchanfrage->kSuchanfrage,
+                        'kSuchanfrage',
+                        null,
+                        $Sprachen,
+                        $SpracheTMP->kSprache,
+                        $nArtikelProSeite,
+                        $conf
+                    );
                     if (is_array($cURL_arr) && count($cURL_arr) > 0) {
                         foreach ($cURL_arr as $cURL) { // X viele Seiten durchlaufen
                             if ($nSitemap > $nSitemapLimit) {
@@ -769,12 +809,12 @@ function generateSitemapXML()
             }
         }
     }
-    if (isset($conf['sitemap']['sitemap_globalemerkmale_anzeigen']) &&
-        $conf['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y'
+    if (isset($conf['sitemap']['sitemap_globalemerkmale_anzeigen'])
+        && $conf['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y'
     ) {
         // Merkmale STD Sprache
-        $res = Shop::DB()->query("
-            SELECT tmerkmal.cName, tmerkmal.kMerkmal, tmerkmalwertsprache.cWert, 
+        $res = Shop::DB()->query(
+            "SELECT tmerkmal.cName, tmerkmal.kMerkmal, tmerkmalwertsprache.cWert, 
                 tseo.cSeo, tmerkmalwert.kMerkmalWert
                 FROM tmerkmal
                 JOIN tmerkmalwert 
@@ -793,8 +833,15 @@ function generateSitemapXML()
 
         while ($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) {
             if (($seoAktiv && strlen($oMerkmalWert->cSeo) > 0) || !$seoAktiv) {
-                $cURL_arr = baueExportURL($oMerkmalWert->kMerkmalWert, 'kMerkmalWert', null, $Sprachen,
-                    $Sprache->kSprache, $nArtikelProSeite);
+                $cURL_arr = baueExportURL(
+                    $oMerkmalWert->kMerkmalWert,
+                    'kMerkmalWert',
+                    null,
+                    $Sprachen,
+                    $Sprache->kSprache,
+                    $nArtikelProSeite,
+                    $conf
+                );
                 if (is_array($cURL_arr) && count($cURL_arr) > 0) {
                     foreach ($cURL_arr as $cURL) {
                         if ($nSitemap > $nSitemapLimit) {
@@ -819,8 +866,8 @@ function generateSitemapXML()
             if ($SpracheTMP->kSprache == $Sprache->kSprache) {
                 continue;
             }
-            $res = Shop::DB()->query("
-                    SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
+            $res = Shop::DB()->query(
+                    "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
                         tseo.cSeo, tmerkmalwert.kMerkmalWert
                         FROM tmerkmalsprache
                         JOIN tmerkmal 
@@ -837,16 +884,22 @@ function generateSitemapXML()
                             AND tseo.kKey = tmerkmalwert.kMerkmalWert
                             AND tseo.kSprache = tmerkmalsprache.kSprache
                         WHERE tmerkmal.nGlobal = 1
-                            AND tmerkmalsprache.kSprache = " . (int) $SpracheTMP->kSprache . '
+                            AND tmerkmalsprache.kSprache = " . (int)$SpracheTMP->kSprache . '
                         GROUP BY tmerkmalwert.kMerkmalWert
                         ORDER BY tmerkmal.kMerkmal, tmerkmal.cName', 10
             );
 
             while ($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) {
                 if (($seoAktiv && strlen($oMerkmalWert->cSeo) > 0) || !$seoAktiv) {
-                    $cURL_arr = baueExportURL($oMerkmalWert->kMerkmalWert, 'kMerkmalWert', null, $Sprachen,
-                        $Sprache->kSprache, $nArtikelProSeite);
-
+                    $cURL_arr = baueExportURL(
+                        $oMerkmalWert->kMerkmalWert,
+                        'kMerkmalWert',
+                        null,
+                        $Sprachen,
+                        $Sprache->kSprache,
+                        $nArtikelProSeite,
+                        $conf
+                    );
                     if (is_array($cURL_arr) && count($cURL_arr) > 0) {
                         foreach ($cURL_arr as $cURL) {
                             if ($nSitemap > $nSitemapLimit) {
@@ -870,8 +923,8 @@ function generateSitemapXML()
     }
     // News
     if (isset($conf['sitemap']['sitemap_news_anzeigen']) && $conf['sitemap']['sitemap_news_anzeigen'] === 'Y') {
-        $res = Shop::DB()->query("
-            SELECT tnews.*, tseo.cSeo
+        $res = Shop::DB()->query(
+            "SELECT tnews.*, tseo.cSeo
                 FROM tnews
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kNews'
@@ -880,14 +933,17 @@ function generateSitemapXML()
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
-                    OR FIND_IN_SET('" . (int) $_SESSION['Kundengruppe']->kKundengruppe . "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
+                    OR FIND_IN_SET('" . Session::CustomerGroup()->getID() . "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
                     ORDER BY tnews.dErstellt", 10
         );
         while ($oNews = $res->fetch(PDO::FETCH_OBJ)) {
             if (($seoAktiv && strlen($oNews->cSeo) > 0) || !$seoAktiv) {
-                $cURL = makeURL(baueURL($oNews, URLART_NEWS), date_format(date_create($oNews->dGueltigVon), 'c'),
-                    FREQ_DAILY, PRIO_HIGH);
-
+                $cURL = makeURL(
+                    baueURL($oNews, URLART_NEWS),
+                    date_format(date_create($oNews->dGueltigVon), 'c'),
+                    FREQ_DAILY,
+                    PRIO_HIGH
+                );
                 if ($nSitemap > $nSitemapLimit) {
                     $nSitemap = 1;
                     baueSitemap($nDatei, $sitemap_data);
@@ -920,9 +976,12 @@ function generateSitemapXML()
 
         while ($oNewsKategorie = $res->fetch(PDO::FETCH_OBJ)) {
             if (($seoAktiv && strlen($oNewsKategorie->cSeo) > 0) || !$seoAktiv) {
-                $cURL = makeURL(baueURL($oNewsKategorie, URLART_NEWSKATEGORIE),
-                    date_format(date_create($oNewsKategorie->dLetzteAktualisierung), 'c'), FREQ_DAILY, PRIO_HIGH);
-
+                $cURL = makeURL(
+                    baueURL($oNewsKategorie, URLART_NEWSKATEGORIE),
+                    date_format(date_create($oNewsKategorie->dLetzteAktualisierung), 'c'),
+                    FREQ_DAILY,
+                    PRIO_HIGH
+                );
                 if ($nSitemap > $nSitemapLimit) {
                     $nSitemap = 1;
                     baueSitemap($nDatei, $sitemap_data);
@@ -1017,17 +1076,19 @@ function holeGoogleImage($artikel)
     }
 
     if (empty($oBild->cPfad)) {
-        $oBild = Shop::DB()->query('
-            SELECT cPfad 
+        $oBild = Shop::DB()->query(
+            'SELECT cPfad 
                 FROM tartikelpict 
-                WHERE kArtikel = ' . (int) $oArtikel->kArtikel . ' 
+                WHERE kArtikel = ' . (int)$oArtikel->kArtikel . ' 
                 GROUP BY cPfad 
                 ORDER BY nNr 
                 LIMIT 1', 1
         );
     }
 
-    return isset($oBild->cPfad) ? $oBild->cPfad : null;
+    return (isset($oBild->cPfad))
+        ? $oBild->cPfad
+        : null;
 }
 
 /**
@@ -1088,221 +1149,118 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 }
 
 /**
- * @param int    $kKey
- * @param string $cKey
- * @param string $dLetzteAktualisierung
- * @param array  $oSprach_arr
- * @param int    $kSprache
- * @param int    $nArtikelProSeite
- *
+ * @param int        $kKey
+ * @param string     $cKey
+ * @param string     $dLetzteAktualisierung
+ * @param array      $oSprach_arr
+ * @param int        $kSprache
+ * @param int        $nArtikelProSeite
+ * @param array|null $config
  * @return array
  */
-function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSprache, $nArtikelProSeite)
+function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSprache, $nArtikelProSeite, $config = null)
 {
-    $GLOBALS['kKategorie']       = 0;
-    $GLOBALS['kHersteller']      = 0;
-    $GLOBALS['kSuchanfrage']     = 0;
-    $GLOBALS['kMerkmalWert']     = 0;
-    $GLOBALS['kTag']             = 0;
-    $GLOBALS['kSuchspecial']     = 0;
-    $NaviFilter                  = new stdClass();
-    $FilterSQL                   = new stdClass();
-    $GLOBALS['oSuchergebnisse']  = new stdClass();
-    $GLOBALS['nArtikelProSeite'] = $nArtikelProSeite;
-    $cURL_arr                    = [];
-    $bSeoCheck                   = true;
-    Shop::$kSprache              = $kSprache;
-    Shop::$nArtikelProSeite      = $nArtikelProSeite;
-    Shop::$bSeo                  = true;
+    $cURL_arr       = [];
+    $params         = [];
+    $kKey           = (int)$kKey;
 
-    $NaviFilter->oSprache_arr = $oSprach_arr;
-
+    Shop::setLanguage($kSprache);
+    $naviFilter = new ProductFilter($oSprach_arr, $kSprache, $config);
     switch ($cKey) {
         case 'kKategorie':
-            $GLOBALS['kKategorie']        = $kKey;
-            $cParameter_arr['kKategorie'] = $kKey;
-            $NaviFilter                   = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->Kategorie->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oKategorieFilterSQL = gibKategorieFilterSQL($NaviFilter);
+            $params['kKategorie'] = $kKey;
+            $naviFilter->initStates($params);
+            $filterSeo = $naviFilter->getCategory()->getSeo($kSprache);
             break;
 
         case 'kHersteller':
-            $GLOBALS['kHersteller']        = $kKey;
-            $cParameter_arr['kHersteller'] = $kKey;
-            $NaviFilter                    = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->Hersteller->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oHerstellerFilterSQL = gibHerstellerFilterSQL($NaviFilter);
+            $params['kHersteller'] = $kKey;
+            $naviFilter->initStates($params);
+            $filterSeo = $naviFilter->getManufacturer()->getSeo($kSprache);
             break;
 
         case 'kSuchanfrage':
-            $GLOBALS['kSuchanfrage']        = $kKey;
-            $cParameter_arr['kSuchanfrage'] = $kKey;
-            if ($GLOBALS['kSuchanfrage'] > 0) {
+            $params['kSuchanfrage'] = $kKey;
+            $naviFilter->initStates($params);
+            if ($kKey > 0) {
                 $oSuchanfrage = Shop::DB()->query(
-                    'SELECT cSuche
+                    "SELECT cSuche
                         FROM tsuchanfrage
-                        WHERE kSuchanfrage = ' . (int) $GLOBALS['kSuchanfrage'] . '
-                        ORDER BY kSuchanfrage', 1
+                        WHERE kSuchanfrage = " . $kKey . "
+                        ORDER BY kSuchanfrage", 1
                 );
-
-                if (strlen($oSuchanfrage->cSuche) > 0) {
-                    if (!isset($NaviFilter->Suche)) {
-                        $NaviFilter->Suche = new stdClass();
+                if (!empty($oSuchanfrage->cSuche)) {
+                    // @todo
+                    if (!$naviFilter->hasSearch()) {
+                        $naviFilter->Suche = new stdClass();
                     }
-                    $NaviFilter->Suche->kSuchanfrage = $GLOBALS['kSuchanfrage'];
-                    $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
+                    $naviFilter->Suche->kSuchanfrage = $kKey;
+                    $naviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
                 }
             }
-            $NaviFilter = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->Suchanfrage->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oSuchFilterSQL = gibSuchFilterSQL($NaviFilter);
+            $filterSeo = $naviFilter->getSearchQuery()->getSeo($kSprache);
             break;
 
         case 'kMerkmalWert':
-            $GLOBALS['kMerkmalWert']        = $kKey;
-            $cParameter_arr['kMerkmalWert'] = $kKey;
-            $NaviFilter                     = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->MerkmalWert->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oMerkmalFilterSQL = gibMerkmalFilterSQL($NaviFilter);
+            $params['kMerkmalWert'] = $kKey;
+            $naviFilter->initStates($params);
+            $filterSeo = $naviFilter->getAttributeValue()->getSeo($kSprache);
             break;
 
         case 'kTag':
-            $GLOBALS['kTag']        = $kKey;
-            $cParameter_arr['kTag'] = $kKey;
-            $NaviFilter             = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->Tag->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oTagFilterSQL = gibTagFilterSQL($NaviFilter);
+            $params['kTag'] = $kKey;
+            $naviFilter->initStates($params);
+            $filterSeo = $naviFilter->getTag()->getSeo($kSprache);
             break;
 
         case 'kSuchspecial':
-            $GLOBALS['kSuchspecial']        = $kKey;
-            $cParameter_arr['kSuchspecial'] = $kKey;
-            $NaviFilter                     = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->Suchspecial->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oSuchspecialFilterSQL = gibSuchspecialFilterSQL($NaviFilter);
+            $params['kSuchspecial'] = $kKey;
+            $naviFilter->initStates($params);
+            $filterSeo = $naviFilter->getSearchSpecial()->getSeo($kSprache);
             break;
+
+        default :
+            return $cURL_arr;
     }
-
-    baueArtikelAnzahl($FilterSQL, $GLOBALS['oSuchergebnisse'], $nArtikelProSeite, 0);
-
-    $shopURL    = Shop::getURL();
-    $shopURLSSL = Shop::getURL(true);
-    $search     = [$shopURL . '/', $shopURLSSL . '/'];
-    $replace    = ['', ''];
-    if ($GLOBALS['oSuchergebnisse']->GesamtanzahlArtikel > 0) {
-        if ($GLOBALS['oSuchergebnisse']->Seitenzahlen->MaxSeiten > 1) {
-            for ($i = 1; $i <= $GLOBALS['oSuchergebnisse']->Seitenzahlen->MaxSeiten; ++$i) {
-                if ($bSeoCheck) {
-                    if ($i > 1) {
-                        $cURL_arr[] = makeURL(
-                            str_replace(
-                                $search,
-                                $replace,
-                                gibNaviURL($NaviFilter, true, null, $kSprache)
-                            ) . '_s' . $i,
-                            $dLetzteAktualisierung,
-                            FREQ_WEEKLY,
-                            PRIO_NORMAL
-                        );
-                    } else {
-                        $cURL_arr[] = makeURL(
-                            str_replace(
-                                $search,
-                                $replace,
-                                gibNaviURL($NaviFilter, true, null, $kSprache)
-                            ),
-                            $dLetzteAktualisierung,
-                            FREQ_WEEKLY,
-                            PRIO_NORMAL
-                        );
-                    }
+    $oSuchergebnisse = $naviFilter->getProducts(true, null, false, (int)$nArtikelProSeite);
+    $shopURL         = Shop::getURL();
+    $shopURLSSL      = Shop::getURL(true);
+    $search          = [$shopURL . '/', $shopURLSSL . '/'];
+    $replace         = ['', ''];
+    if ($oSuchergebnisse->GesamtanzahlArtikel > 0) {
+        if ($oSuchergebnisse->Seitenzahlen->MaxSeiten > 1) {
+            for ($i = 1; $i <= $oSuchergebnisse->Seitenzahlen->MaxSeiten; ++$i) {
+                if ($i > 1) {
+                    $cURL_arr[] = makeURL(
+                        str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()) . '_s' . $i,
+                        $dLetzteAktualisierung,
+                        FREQ_WEEKLY,
+                        PRIO_NORMAL
+                    );
                 } else {
-                    if ($i > 1) {
-                        $cURL_arr[] = makeURL(
-                            str_replace(
-                                $search,
-                                $replace,
-                                gibNaviURL($NaviFilter, false, null, $kSprache)
-                            ) . '&seite=' . $i,
-                            $dLetzteAktualisierung,
-                            FREQ_WEEKLY,
-                            PRIO_NORMAL
-                        );
-                    } else {
-                        $cURL_arr[] = makeURL(
-                            str_replace(
-                                $search,
-                                $replace,
-                                gibNaviURL($NaviFilter, false, null, $kSprache)
-                            ),
-                            $dLetzteAktualisierung,
-                            FREQ_WEEKLY,
-                            PRIO_NORMAL
-                        );
-                    }
+                    $cURL_arr[] = makeURL(
+                        str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
+                        $dLetzteAktualisierung,
+                        FREQ_WEEKLY,
+                        PRIO_NORMAL
+                    );
                 }
             }
         } else {
-            if ($bSeoCheck) {
-                $cURL_arr[] = makeURL(
-                    str_replace(
-                        $search,
-                        $replace,
-                        gibNaviURL($NaviFilter, true, null, $kSprache)
-                    ),
-                    $dLetzteAktualisierung,
-                    FREQ_WEEKLY,
-                    PRIO_NORMAL
-                );
-            } else {
-                $cURL_arr[] = makeURL(
-                    str_replace(
-                        $search,
-                        $replace,
-                        gibNaviURL($NaviFilter, false, null, $kSprache)
-                    ),
-                    $dLetzteAktualisierung,
-                    FREQ_WEEKLY,
-                    PRIO_NORMAL
-                );
-            }
-        }
-    } elseif (isset($GLOBALS['kKategorie']) && $GLOBALS['kKategorie'] > 0) {
-        if ($bSeoCheck) {
             $cURL_arr[] = makeURL(
-                str_replace(
-                    $search,
-                    $replace,
-                    gibNaviURL($NaviFilter, true, null, $kSprache)
-                ),
-                $dLetzteAktualisierung,
-                FREQ_WEEKLY,
-                PRIO_NORMAL
-            );
-        } else {
-            $cURL_arr[] = makeURL(
-                str_replace(
-                    $search,
-                    $replace,
-                    gibNaviURL($NaviFilter, false, null, $kSprache)
-                ),
+                str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
                 $dLetzteAktualisierung,
                 FREQ_WEEKLY,
                 PRIO_NORMAL
             );
         }
+    } elseif ($cKey === 'kKategorie' && $kKey > 0) {
+        $cURL_arr[] = makeURL(
+            str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
+            $dLetzteAktualisierung,
+            FREQ_WEEKLY,
+            PRIO_NORMAL
+        );
     }
 
     return $cURL_arr;

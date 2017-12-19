@@ -5,8 +5,7 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
+
 Shop::setPageType(PAGE_VERGLEICHSLISTE);
 $AktuelleSeite    = 'VERGLEICHSLISTE';
 $oVergleichsliste = null;
@@ -25,13 +24,12 @@ if (isset($Link)) {
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
+$startKat               = new Kategorie();
+$startKat->kKategorie   = -1;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = -1;
 // VergleichslistePos in den Warenkorb adden
 if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     $kArtikel = verifyGPCDataInteger('a');
-
     if ($kArtikel > 0) {
         //redirekt zum artikel, um variation/en zu wählen / MBM beachten
         header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel);
@@ -50,14 +48,13 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     }
 }
 
-if (isset($oVergleichsliste->oArtikel_arr)) {
+if ($oVergleichsliste !== null) {
     $oArtikel_arr     = [];
     $defaultOptions   = Artikel::getDefaultOptions();
     $linkHelper       = LinkHelper::getInstance();
     $baseURL          = $linkHelper->getStaticRoute('vergleichsliste.php');
     foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
-        $artikel = new Artikel();
-        $artikel->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
+        $artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
         $artikel->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
         if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
             $artikel->Variationen = $oArtikel->oVariationen_arr;
@@ -74,22 +71,19 @@ $nBreiteAttribut = ($conf['vergleichsliste']['vergleichsliste_spaltengroesseattr
 $nBreiteArtikel = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesse']
     : 200;
-$nBreiteTabelle = $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut;
-//specific assigns
-$smarty->assign('nBreiteTabelle', $nBreiteTabelle)
-       ->assign('cPrioSpalten_arr', $cExclude)
-       ->assign('oMerkmale_arr', $oMerkVaria_arr[0])
-       ->assign('oVariationen_arr', $oMerkVaria_arr[1])
-       ->assign('print', (isset($_GET['print']) && (int)$_GET['print'] === 1) ? 1 : 0)
-       ->assign('oVergleichsliste', $oVergleichsliste)
-       ->assign('Navigation', createNavigation($AktuelleSeite, 0, 0))
-       ->assign('Einstellungen', $GLOBALS['GlobaleEinstellungen'])
-       ->assign('Einstellungen_Vergleichsliste', $conf);
+Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut)
+    ->assign('cPrioSpalten_arr', $cExclude)
+    ->assign('oMerkmale_arr', $oMerkVaria_arr[0])
+    ->assign('oVariationen_arr', $oMerkVaria_arr[1])
+    ->assign('print', (isset($_GET['print']) && (int)$_GET['print'] === 1) ? 1 : 0)
+    ->assign('oVergleichsliste', $oVergleichsliste)
+    ->assign('Navigation', createNavigation($AktuelleSeite))
+    ->assign('Einstellungen_Vergleichsliste', $conf);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
 executeHook(HOOK_VERGLEICHSLISTE_PAGE);
 
-$smarty->display('comparelist/index.tpl');
+Shop::Smarty()->display('comparelist/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

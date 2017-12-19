@@ -98,18 +98,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         {
             $oDownload = Shop::DB()->select('tdownload', 'kDownload', (int)$kDownload);
             $kBestellung = (int)$kBestellung;
-            if (isset($oDownload->kDownload) && (int)$oDownload->kDownload > 0) {
+            if ($oDownload !== null && isset($oDownload->kDownload) && (int)$oDownload->kDownload > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownload));
                 if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                     foreach ($cMember_arr as &$cMember) {
                         $this->$cMember = $oDownload->$cMember;
                     }
                 }
-
                 if ($bInfo) {
                     // Sprache
                     if (!$kSprache) {
-                        $kSprache = $_SESSION['kSprache'];
+                        $kSprache = Shop::getLanguageID();
                     }
                     $this->oDownloadSprache = new DownloadSprache($oDownload->kDownload, $kSprache);
                     // History
@@ -129,8 +128,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         false,
                         'kBestellung, dBezahltDatum'
                     );
-                    if (isset($oBestellung->kBestellung) && $oBestellung->kBestellung > 0 &&
-                        $oBestellung->dBezahltDatum !== '0000-00-00' && $this->getTage() > 0) {
+                    if ($oBestellung !== null
+                        && $oBestellung->kBestellung > 0
+                        && $oBestellung->dBezahltDatum !== '0000-00-00'
+                        && $this->getTage() > 0
+                    ) {
                         $paymentDate = new DateTime($oBestellung->dBezahltDatum);
                         $modifyBy    = $this->getTage() + 1;
                         $paymentDate->modify('+' . $modifyBy . ' day');
@@ -221,49 +223,47 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             $kSprache      = isset($kSprache) ? (int)$kSprache : 0;
             $oDownload_arr = [];
             if (($kArtikel > 0 || $kBestellung > 0 || $kKunde > 0) && $kSprache > 0) {
-                $cSQLSelect = "tartikeldownload.kDownload";
-                $cSQLWhere  = "kArtikel = " . $kArtikel;
-                $cSQLJoin   = "LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload";
+                $cSQLSelect = 'tartikeldownload.kDownload';
+                $cSQLWhere  = 'kArtikel = ' . $kArtikel;
+                $cSQLJoin   = 'LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload';
                 if ($kBestellung > 0) {
-                    $cSQLSelect = "tbestellung.kBestellung, tbestellung.kKunde, tartikeldownload.kDownload";
-                    $cSQLWhere  = "tartikeldownload.kArtikel = twarenkorbpos.kArtikel";
-                    $cSQLJoin   = "JOIN tbestellung ON tbestellung.kBestellung = " . $kBestellung . "
+                    $cSQLSelect = 'tbestellung.kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
+                    $cSQLWhere  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
+                    $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kBestellung = ' . $kBestellung . '
                                    JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                    JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                                        AND twarenkorbpos.nPosTyp = " . C_WARENKORBPOS_TYP_ARTIKEL;
+                                        AND twarenkorbpos.nPosTyp = ' . C_WARENKORBPOS_TYP_ARTIKEL;
                 } elseif ($kKunde > 0) {
-                    $cSQLSelect = "MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, tartikeldownload.kDownload";
-                    $cSQLWhere  = "tartikeldownload.kArtikel = twarenkorbpos.kArtikel";
-                    $cSQLJoin   = "JOIN tbestellung ON tbestellung.kKunde = " . $kKunde . "
+                    $cSQLSelect = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
+                    $cSQLWhere  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
+                    $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kKunde = ' . $kKunde . '
                                    JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                    JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                                        AND twarenkorbpos.nPosTyp = " . C_WARENKORBPOS_TYP_ARTIKEL;
+                                        AND twarenkorbpos.nPosTyp = ' . C_WARENKORBPOS_TYP_ARTIKEL;
                 }
                 $oDown_arr = Shop::DB()->query(
-                    "SELECT " . $cSQLSelect . "
+                    'SELECT ' . $cSQLSelect . '
                         FROM tartikeldownload
-                        " . $cSQLJoin . "
-                        WHERE " . $cSQLWhere . "
+                        ' . $cSQLJoin . '
+                        WHERE ' . $cSQLWhere . '
                         GROUP BY tartikeldownload.kDownload
-                        ORDER BY tdownload.nSort, tdownload.dErstellt DESC", 2
+                        ORDER BY tdownload.nSort, tdownload.dErstellt DESC', 2
                 );
-                if (is_array($oDown_arr) && count($oDown_arr) > 0) {
-                    foreach ($oDown_arr as $i => &$oDown) {
-                        $oDownload_arr[$i] = new self(
-                            $oDown->kDownload,
-                            $kSprache,
-                            true,
-                            (isset($oDown->kBestellung) ? $oDown->kBestellung : 0)
-                        );
-                        if (($kBestellung > 0 || $kKunde > 0) && $oDownload_arr[$i]->getAnzahl() > 0) {
-                            $oDownloadHistory_arr = DownloadHistory::getOrderHistory($oDown->kKunde, $oDown->kBestellung);
-                            $kDownload            = $oDownload_arr[$i]->getDownload();
-                            $count                = isset($oDownloadHistory_arr[$kDownload])
-                                ? count($oDownloadHistory_arr[$kDownload])
-                                : 0;
-                            $oDownload_arr[$i]->cLimit      = $count . ' / ' . $oDownload_arr[$i]->getAnzahl();
-                            $oDownload_arr[$i]->kBestellung = $oDown->kBestellung;
-                        }
+                foreach ($oDown_arr as $i => &$oDown) {
+                    $oDownload_arr[$i] = new self(
+                        $oDown->kDownload,
+                        $kSprache,
+                        true,
+                        (isset($oDown->kBestellung) ? $oDown->kBestellung : 0)
+                    );
+                    if (($kBestellung > 0 || $kKunde > 0) && $oDownload_arr[$i]->getAnzahl() > 0) {
+                        $oDownloadHistory_arr = DownloadHistory::getOrderHistory($oDown->kKunde, $oDown->kBestellung);
+                        $kDownload            = $oDownload_arr[$i]->getDownload();
+                        $count                = isset($oDownloadHistory_arr[$kDownload])
+                            ? count($oDownloadHistory_arr[$kDownload])
+                            : 0;
+                        $oDownload_arr[$i]->cLimit      = $count . ' / ' . $oDownload_arr[$i]->getAnzahl();
+                        $oDownload_arr[$i]->kBestellung = $oDown->kBestellung;
                     }
                 }
             }
@@ -277,13 +277,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         public static function hasDownloads($oWarenkorb)
         {
-            if (count($oWarenkorb->PositionenArr) > 0) {
-                foreach ($oWarenkorb->PositionenArr as &$oPosition) {
-                    if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                        if (isset($oPosition->Artikel->oDownload_arr) && count($oPosition->Artikel->oDownload_arr) > 0) {
-                            return true;
-                        }
-                    }
+            foreach ($oWarenkorb->PositionenArr as &$oPosition) {
+                if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                    && isset($oPosition->Artikel->oDownload_arr)
+                    && count($oPosition->Artikel->oDownload_arr) > 0
+                ) {
+                    return true;
                 }
             }
 
@@ -305,12 +304,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 $oDownload = new self($kDownload, 0, false);
                 $nReturn   = $oDownload::checkFile($oDownload->kDownload, $kKunde, $kBestellung);
                 if ($nReturn === 1) {
-                    $oDownloadHistory = new DownloadHistory();
-                    $oDownloadHistory->setDownload($kDownload);
-                    $oDownloadHistory->setKunde($kKunde);
-                    $oDownloadHistory->setBestellung($kBestellung);
-                    $oDownloadHistory->setErstellt('now()');
-                    $oDownloadHistory->save();
+                    (new DownloadHistory())
+                        ->setDownload($kDownload)
+                        ->setKunde($kKunde)
+                        ->setBestellung($kBestellung)
+                        ->setErstellt('now()')
+                        ->save();
 
                     self::send_file_to_browser(
                         PFAD_DOWNLOADS . $oDownload->getPfad(),
@@ -349,47 +348,46 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             if ($kDownload > 0 && $kKunde > 0 && $kBestellung > 0) {
                 $oBestellung = new Bestellung($kBestellung);
                 // Existiert die Bestellung und wurde Sie bezahlt?
-                if ($oBestellung->kBestellung > 0 &&
-                    (!empty($oBestellung->dBezahltDatum) && $oBestellung->dBezahltDatum !== '0000-00-00')
+                if ($oBestellung->kBestellung <= 0
+                    || empty($oBestellung->dBezahltDatum)
+                    || $oBestellung->dBezahltDatum === '0000-00-00'
                 ) {
-                    // Stimmt der Kunde?
-                    if ((int)$oBestellung->kKunde === $kKunde) {
-                        $oBestellung->fuelleBestellung();
-                        $oDownload = new self($kDownload, 0, false);
-                        // Gibt es einen Artikel der zum Download passt?
-                        if (is_array($oDownload->oArtikelDownload_arr) && count($oDownload->oArtikelDownload_arr) > 0) {
-                            foreach ($oBestellung->Positionen as &$oPosition) {
-                                foreach ($oDownload->oArtikelDownload_arr as &$oArtikelDownload) {
-                                    if ($oPosition->kArtikel == $oArtikelDownload->kArtikel) {
-                                        // Check Anzahl
-                                        if ($oDownload->getAnzahl() > 0) {
-                                            $oDownloadHistory_arr = DownloadHistory::getOrderHistory(
-                                                $kKunde,
-                                                $kBestellung
-                                            );
-                                            if (count($oDownloadHistory_arr[$oDownload->kDownload]) >= $oDownload->getAnzahl()) {
-                                                return 5;
-                                            }
-                                        }
-                                        // Check Datum
-                                        $paymentDate = new DateTime($oBestellung->dBezahltDatum);
-                                        $paymentDate->modify('+' . ($oDownload->getTage() + 1) . ' day');
-                                        if ($oDownload->getTage() > 0 && $paymentDate < new DateTime()) {
-                                            return 6;
-                                        }
-
-                                        return 1;
-                                    }
-                                }
-                            }
-                        } else {
-                            return 4;
-                        }
-                    } else {
-                        return 3;
-                    }
-                } else {
                     return 2;
+                }
+                // Stimmt der Kunde?
+                if ((int)$oBestellung->kKunde !== $kKunde) {
+                    return 3;
+                }
+                $oBestellung->fuelleBestellung();
+                $oDownload = new self($kDownload, 0, false);
+                // Gibt es einen Artikel der zum Download passt?
+                if (!is_array($oDownload->oArtikelDownload_arr) || count($oDownload->oArtikelDownload_arr) === 0) {
+                    return 4;
+                }
+                foreach ($oBestellung->Positionen as &$oPosition) {
+                    foreach ($oDownload->oArtikelDownload_arr as &$oArtikelDownload) {
+                        if ($oPosition->kArtikel != $oArtikelDownload->kArtikel) {
+                            continue;
+                        }
+                        // Check Anzahl
+                        if ($oDownload->getAnzahl() > 0) {
+                            $oDownloadHistory_arr = DownloadHistory::getOrderHistory(
+                                $kKunde,
+                                $kBestellung
+                            );
+                            if (count($oDownloadHistory_arr[$oDownload->kDownload]) >= $oDownload->getAnzahl()) {
+                                return 5;
+                            }
+                        }
+                        // Check Datum
+                        $paymentDate = new DateTime($oBestellung->dBezahltDatum);
+                        $paymentDate->modify('+' . ($oDownload->getTage() + 1) . ' day');
+                        if ($oDownload->getTage() > 0 && $paymentDate < new DateTime()) {
+                            return 6;
+                        }
+
+                        return 1;
+                    }
                 }
             }
 
@@ -414,22 +412,22 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             if ((int)$nErrorCode > 0) {
                 switch ((int)$nErrorCode) {
                     case 2: // Bestellung nicht gefunden
-                        $cError = Shop::Lang()->get('dlErrorOrderNotFound', 'global');
+                        $cError = Shop::Lang()->get('dlErrorOrderNotFound');
                         break;
                     case 3: // Kunde stimmt nicht
-                        $cError = Shop::Lang()->get('dlErrorCustomerNotMatch', 'global');
+                        $cError = Shop::Lang()->get('dlErrorCustomerNotMatch');
                         break;
                     case 4: // Kein Artikel mit Downloads gefunden
-                        $cError = Shop::Lang()->get('dlErrorDownloadNotFound', 'global');
+                        $cError = Shop::Lang()->get('dlErrorDownloadNotFound');
                         break;
                     case 5: // Maximales Downloadlimit wurde erreicht
-                        $cError = Shop::Lang()->get('dlErrorDownloadLimitReached', 'global');
+                        $cError = Shop::Lang()->get('dlErrorDownloadLimitReached');
                         break;
                     case 6: // Maximales Datum wurde erreicht
-                        $cError = Shop::Lang()->get('dlErrorValidityReached', 'global');
+                        $cError = Shop::Lang()->get('dlErrorValidityReached');
                         break;
                     case 7: // Paramter fehlen
-                        $cError = Shop::Lang()->get('dlErrorWrongParameter', 'global');
+                        $cError = Shop::Lang()->get('dlErrorWrongParameter');
                         break;
                 }
             }
@@ -679,12 +677,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @param string $filename
          * @param string $mimetype
-         * @param bool $bEncode
          */
         private static function send_file_to_browser($filename, $mimetype)
         {
             $browser_agent   = 'other';
-            $HTTP_USER_AGENT = (!empty($_SERVER['HTTP_USER_AGENT']))
+            $HTTP_USER_AGENT = !empty($_SERVER['HTTP_USER_AGENT'])
                 ? $_SERVER['HTTP_USER_AGENT']
                 : '';
             if (preg_match('/Opera\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {

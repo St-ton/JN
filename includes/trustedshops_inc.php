@@ -10,12 +10,10 @@
 function gibTrustedShops()
 {
     unset($_SESSION['TrustedShops'], $oTrustedShops);
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
     $oTrustedShops->holeKaeuferschutzProdukteDB(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), true);
     // Hole alle Käuferschutzprodukte, die in der DB hinterlegt sind
     $oTrustedShopsTMP = new stdClass();
-    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $cLandISO = $_SESSION['Lieferadresse']->cLand;
     if (!$cLandISO) {
         $cLandISO = $_SESSION['Kunde']->cLand;
@@ -32,8 +30,8 @@ function gibTrustedShops()
         if (isset($oTrustedShopsTMP->oKaeuferschutzProdukte->item)) {
             $oTrustedShopsTMP->oKaeuferschutzProdukte->item = filterNichtGebrauchteKaeuferschutzProdukte(
                 $oTrustedShops->oKaeuferschutzProdukte->item,
-                $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) *
-                ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
+                Session::Cart()->gibGesamtsummeWaren(false) *
+                ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
             );
         }
         $oTrustedShopsTMP->cLogoURL                 = $oTrustedShops->cLogoURL;
@@ -43,8 +41,8 @@ function gibTrustedShops()
         $oTrustedShopsTMP->cVorausgewaehltesProdukt = isset($oTrustedShops->oKaeuferschutzProdukte->item)
             ? gibVorausgewaehltesProdukt(
                 $oTrustedShops->oKaeuferschutzProdukte->item,
-                $_SESSION['Warenkorb']->gibGesamtsummeWaren(false) *
-                ((100 + (float)$_SESSION['Steuersatz'][$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
+                Session::Cart()->gibGesamtsummeWaren(false) *
+                ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
             )
             : '';
     }

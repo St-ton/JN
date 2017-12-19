@@ -88,8 +88,7 @@ function getDBStruct($extended = false)
  */
 function getDBFileStruct()
 {
-    $cDateiPfad  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5;
-    $cDateiListe = $cDateiPfad . 'dbstruct_' . JTL_VERSION . '.json';
+    $cDateiListe = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . JTL_VERSION . '.json';
     if (!file_exists($cDateiListe)) {
         return false;
     }

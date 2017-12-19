@@ -16,14 +16,14 @@ final class EventDispatcher
      *
      * @var array
      */
-    protected $listeners = [];
+    private $listeners = [];
 
     /**
      * The wildcard listeners.
      *
      * @var array
      */
-    protected $wildcards = [];
+    private $wildcards = [];
 
     /**
      * Determine if a given event has listeners.
@@ -58,12 +58,12 @@ final class EventDispatcher
      * Fire an event and call the listeners.
      *
      * @param string|object $eventName
-     * @param mixed $arguments
+     * @param array|object $arguments
      */
-    public function fire($eventName, array $arguments = [])
+    public function fire($eventName, $arguments = [])
     {
         foreach ($this->getListeners($eventName) as $listener) {
-            call_user_func_array($listener, $arguments);
+            $listener($arguments);
         }
     }
 
@@ -79,10 +79,8 @@ final class EventDispatcher
             if (isset($this->wildcards[$eventName])) {
                 unset($this->wildcards[$eventName]);
             }
-        } else {
-            if (isset($this->listeners[$eventName])) {
-                unset($this->listeners[$eventName]);
-            }
+        } elseif (isset($this->listeners[$eventName])) {
+            unset($this->listeners[$eventName]);
         }
     }
 
@@ -96,8 +94,7 @@ final class EventDispatcher
     {
         $listeners = $this->getWildcardListeners($eventName);
         if (isset($this->listeners[$eventName])) {
-            $listeners = array_merge($listeners,
-                $this->listeners[$eventName]);
+            $listeners = array_merge($listeners, $this->listeners[$eventName]);
         }
 
         return $listeners;
@@ -109,7 +106,7 @@ final class EventDispatcher
      * @param  string  $eventName
      * @return array
      */
-    protected function getWildcardListeners($eventName)
+    private function getWildcardListeners($eventName)
     {
         $wildcards = [];
         foreach ($this->wildcards as $key => $listeners) {

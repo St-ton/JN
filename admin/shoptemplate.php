@@ -49,7 +49,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && validateToken()) {
     $oCSS           = new SimpleCSS();
     $cOrdner        = basename($_POST['ordner']);
     $cCustomCSSFile = $oCSS->getCustomCSSFile($cOrdner);
-    $bReset         = (isset($_POST['reset']) && $_POST['reset'] == 1);
+    $bReset         = isset($_POST['reset']) && (int)$_POST['reset'] === 1;
     if ($bReset) {
         $bOk = false;
         if (file_exists($cCustomCSSFile)) {

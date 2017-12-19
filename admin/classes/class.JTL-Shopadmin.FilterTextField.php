@@ -3,10 +3,25 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+/**
+ * Class FilterTextField
+ */
 class FilterTextField extends FilterField
 {
-    protected $nTestOp       = 0;
-    protected $nDataType     = 0;
+    /**
+     * @var int
+     */
+    protected $nTestOp = 0;
+
+    /**
+     * @var int
+     */
+    protected $nDataType = 0;
+
+    /**
+     * @var bool
+     */
     protected $bCustomTestOp = true;
 
     /**
@@ -36,7 +51,7 @@ class FilterTextField extends FilterField
 
         $this->nTestOp       = (int)$nTestOp;
         $this->nDataType     = (int)$nDataType;
-        $this->bCustomTestOp = $this->nTestOp == 0;
+        $this->bCustomTestOp = $this->nTestOp === 0;
 
         if ($this->bCustomTestOp) {
             $this->nTestOp =
@@ -53,12 +68,10 @@ class FilterTextField extends FilterField
      */
     public function getWhereClause()
     {
-        if ($this->cValue !== '' || ($this->nDataType === 0 && ($this->nTestOp == 4 || $this->nTestOp == 9))) {
-            if (is_array($this->cColumn)) {
-                $cColumn_arr = $this->cColumn;
-            } else {
-                $cColumn_arr = [$this->cColumn];
-            }
+        if ($this->cValue !== '' || ($this->nDataType === 0 && ($this->nTestOp === 4 || $this->nTestOp === 9))) {
+            $cColumn_arr = is_array($this->cColumn)
+                ? $this->cColumn
+                : [$this->cColumn];
             $cClausePart_arr = [];
             foreach ($cColumn_arr as $cColumn) {
                 switch ($this->nTestOp) {
@@ -85,7 +98,7 @@ class FilterTextField extends FilterField
      */
     public function getTestOp()
     {
-        return $this->nTestOp;
+        return (int)$this->nTestOp;
     }
 
     /**

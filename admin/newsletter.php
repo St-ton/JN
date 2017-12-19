@@ -25,10 +25,7 @@ $cAktiveSucheSQL->cJOIN    = '';
 $cAktiveSucheSQL->cWHERE   = '';
 // Standardkundengruppe Work Around
 $oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
-if (!isset($_SESSION['Kundengruppe'])) {
-    $_SESSION['Kundengruppe'] = new stdClass();
-}
-$_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
+$_SESSION['Kundengruppe'] = new Kundengruppe($oKundengruppe->kKundengruppe);
 
 setzeSprache();
 // Tabs
@@ -189,9 +186,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     }
     $smarty->assign('oNewsletterVorlage', $oNewsletterVorlage)
            ->assign('cFehler', is_string($preview) ? $preview : null)
-           ->assign('NettoPreise', isset($_SESSION['Kundengruppe']->nNettoPreise)
-               ? $_SESSION['Kundengruppe']->nNettoPreise
-               : null);
+           ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
 } elseif (verifyGPCDataInteger('newslettervorlagenstd') === 1) { // Vorlagen Std
     $oKundengruppe_arr = Shop::DB()->query(
         "SELECT kKundengruppe, cName

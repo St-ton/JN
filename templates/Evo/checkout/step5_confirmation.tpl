@@ -150,10 +150,15 @@
     <form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}">
         {$jtl_token}
         {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen == 1}
-            {lang key="cancellationPolicyNotice" section="checkout" assign="cancellationPolicyNotice"}
-            {lang key="wrb" section="checkout" assign="wrb"}
+            {lang key='cancellationPolicyNotice' section='checkout' assign='cancellationPolicyNotice'}
+            {lang key='wrb' section='checkout' assign='wrb'}
             {if isset($AGB->kLinkWRB) && $AGB->kLinkWRB > 0}
-                {assign var='linkWRB' value='<a href="navi.php?s='|cat:$AGB->kLinkWRB|cat:'" class="popup">'|cat:$wrb|cat:'</a>'}
+                {if !empty($AGB->cURLWRB)}
+                    {assign var=wrbURL value=$AGB->cURLWRB}
+                {else}
+                    {assign var=wrbURL value='index.php?s='|cat:$AGB->kLinkWRB}
+                {/if}
+                {assign var='linkWRB' value='<a href="'|cat:$wrbURL|cat:'" class="popup">'|cat:$wrb|cat:'</a>'}
 
                 <div class="alert alert-info">{$cancellationPolicyNotice|replace:"#LINK_WRB#":$linkWRB}</div>
             {elseif !empty($AGB->cWRBContentHtml)}

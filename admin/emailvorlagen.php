@@ -268,8 +268,6 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $bestellung->fWaehrungsFaktor = 1;
 
     //Lieferschein
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Lieferschein.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Versand.php';
     $bestellung->oLieferschein_arr = [];
 
     $oLieferschein = new Lieferschein();
@@ -688,13 +686,12 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
             ? $_POST['cContentText_' . $Sprache->kSprache]
             : null;
 
+        $Emailvorlagesprache->cPDFS = '';
         if (count($cPDFS_arr) > 0) {
             $Emailvorlagesprache->cPDFS = ';' . implode(';', $cPDFS_arr) . ';';
         } elseif (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) &&
             strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) > 0) {
             $Emailvorlagesprache->cPDFS = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS;
-        } else {
-            $Emailvorlagesprache->cPDFS = '';
         }
         if (count($cDateiname_arr) > 0) {
             $Emailvorlagesprache->cDateiname = ';' . implode(';', $cDateiname_arr) . ';';
@@ -742,15 +739,15 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
     Shop::DB()->delete($cTableSetting, 'kEmailvorlage', $kEmailvorlage);
     // Email Ausgangsadresse
     if (isset($_POST['cEmailOut']) && strlen($_POST['cEmailOut']) > 0) {
-        saveEmailSetting($cTableSetting, $kEmailvorlage, "cEmailOut", $_POST['cEmailOut']);
+        saveEmailSetting($cTableSetting, $kEmailvorlage, 'cEmailOut', $_POST['cEmailOut']);
     }
     // Email Absendername
     if (isset($_POST['cEmailSenderName']) && strlen($_POST['cEmailSenderName']) > 0) {
-        saveEmailSetting($cTableSetting, $kEmailvorlage, "cEmailSenderName", $_POST['cEmailSenderName']);
+        saveEmailSetting($cTableSetting, $kEmailvorlage, 'cEmailSenderName', $_POST['cEmailSenderName']);
     }
     // Email Kopie
     if (isset($_POST['cEmailCopyTo']) && strlen($_POST['cEmailCopyTo']) > 0) {
-        saveEmailSetting($cTableSetting, $kEmailvorlage, "cEmailCopyTo", $_POST['cEmailCopyTo']);
+        saveEmailSetting($cTableSetting, $kEmailvorlage, 'cEmailCopyTo', $_POST['cEmailCopyTo']);
     }
 
     if ($nFehler == 1) {
@@ -842,7 +839,7 @@ if ((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $cont
         // PDF Name und Dateiname vorbereiten
         $cPDFS_arr      = [];
         $cDateiname_arr = [];
-        if (!empty($Emailvorlagesprache[$Sprache->kSprache]->cPDFS) > 0) {
+        if (!empty($Emailvorlagesprache[$Sprache->kSprache]->cPDFS)) {
             $cPDFSTMP_arr = bauePDFArray($Emailvorlagesprache[$Sprache->kSprache]->cPDFS);
             foreach ($cPDFSTMP_arr as $cPDFSTMP) {
                 $cPDFS_arr[] = $cPDFSTMP;

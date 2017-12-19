@@ -163,7 +163,7 @@ class UstIDviesVatParser
     /**
      * @var string
      */
-    private $szVATid = '';
+    private $szVATid;
 
     /**
      * @var array

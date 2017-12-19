@@ -189,12 +189,12 @@ function filter_tables(value) {
 function highlight_sql($base) {
     var $elm = $base.find('code.sql');
     $elm.each(function () {
-        var $sql = $(this);
-        var $div = $sql.find('div');
+        var $sql = $(this),
+            $div = $sql.find('div');
         if ($div.is(":visible")) {
             var $highlight = $('<div class="sql-highlight cm-s-default"></div>');
             $sql.append($highlight);
-            if (typeof CodeMirror != 'undefined') {
+            if (typeof CodeMirror !== 'undefined') {
                 CodeMirror.runMode($sql.text(), 'text/x-mysql', $highlight[0]);
                 $div.hide();
             }
@@ -204,7 +204,6 @@ function highlight_sql($base) {
 
 function get_sql_editor($textarea, options, resize, lintOptions) {
     if ($textarea.length > 0 && typeof CodeMirror !== 'undefined') {
-
         // merge options for CodeMirror
         var defaults = {
             lineNumbers: true,
@@ -267,13 +266,13 @@ function get_sql_editor($textarea, options, resize, lintOptions) {
 }
 
 CodeMirror.runMode = function(string, modespec, callback, options) {
-    var mode = CodeMirror.getMode(CodeMirror.defaults, modespec);
-    var ie = /MSIE \d/.test(navigator.userAgent);
-    var ie_lt9 = ie && (document.documentMode == null || document.documentMode < 9);
+    var mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
+        ie = /MSIE \d/.test(navigator.userAgent),
+        ie_lt9 = ie && (document.documentMode === null || document.documentMode < 9);
 
     if (callback.nodeType == 1) {
-        var tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize;
-        var node = callback, col = 0;
+        var tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
+            node = callback, col = 0;
         node.innerHTML = "";
         callback = function(text, style) {
             if (text == "\n") {
@@ -284,7 +283,7 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
             var content = "";
             for (var pos = 0;;) {
                 var idx = text.indexOf("\t", pos);
-                if (idx == -1) {
+                if (idx === -1) {
                     content += text.slice(pos);
                     col += text.length - pos;
                     break;

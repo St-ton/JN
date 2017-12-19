@@ -95,7 +95,7 @@
     }
 
     function selectCheck(selectBox) {
-        if (selectBox.selectedIndex == 3) {
+        if (selectBox.selectedIndex === 3) {
             startKundenfeldwertEdit();
         } else {
             stopKundenfeldwertEdit();

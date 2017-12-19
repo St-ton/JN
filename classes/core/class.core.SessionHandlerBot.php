@@ -57,8 +57,7 @@ class SessionHandlerBot extends \JTL\core\SessionHandler implements SessionHandl
             $sessionData = (($sessionData = Shop::Cache()->get($this->sessionID)) !== false) ? $sessionData : '';
         }
         if ($sessionData === '') {
-            $session = Session::getInstance();
-            $session->setStandardSessionVars();
+            Session::getInstance()->setStandardSessionVars();
         }
 
         return $sessionData;

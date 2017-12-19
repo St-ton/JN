@@ -102,7 +102,7 @@ class Exportformat
     /**
      * @var object|null
      */
-    protected $oldSession;
+    private $oldSession;
 
     /**
      * @var array
@@ -248,7 +248,6 @@ class Exportformat
      * Update the class in the database
      *
      * @return int
-     * @access public
      */
     public function update()
     {
@@ -288,7 +287,6 @@ class Exportformat
      * Delete the class in the database
      *
      * @return int
-     * @access public
      */
     public function delete()
     {
@@ -504,9 +502,6 @@ class Exportformat
     }
 
     /**
-     * Gets the kKampagne
-     *
-     * @access public
      * @return int
      */
     public function getKampagne()
@@ -515,9 +510,6 @@ class Exportformat
     }
 
     /**
-     * Gets the kPlugin
-     *
-     * @access public
      * @return int
      */
     public function getPlugin()
@@ -526,9 +518,6 @@ class Exportformat
     }
 
     /**
-     * Gets the cName
-     *
-     * @access public
      * @return string
      */
     public function getName()
@@ -537,9 +526,6 @@ class Exportformat
     }
 
     /**
-     * Gets the cDateiname
-     *
-     * @access public
      * @return string
      */
     public function getDateiname()
@@ -548,9 +534,6 @@ class Exportformat
     }
 
     /**
-     * Gets the cKopfzeile
-     *
-     * @access public
      * @return string
      */
     public function getKopfzeile()
@@ -559,9 +542,6 @@ class Exportformat
     }
 
     /**
-     * Gets the cContent
-     *
-     * @access public
      * @return string
      */
     public function getContent()
@@ -693,7 +673,7 @@ class Exportformat
                      ->setConfigDir($this->smarty->getTemplateDir($this->smarty->context) . 'lang/')
                      ->registerResource('db', new SmartyResourceNiceDB('export'))
                      ->assign('URL_SHOP', Shop::getURL())
-                     ->assign('Waehrung', $_SESSION['Waehrung'])
+                     ->assign('Waehrung', Session::Currency())
                      ->assign('Einstellungen', $this->getConfig());
 
         return $this;
@@ -708,24 +688,22 @@ class Exportformat
             $this->oldSession               = new stdClass();
             $this->oldSession->Kundengruppe = $_SESSION['Kundengruppe'];
             $this->oldSession->kSprache     = $_SESSION['kSprache'];
-            $this->oldSession->Waehrung     = $_SESSION['Waehrung'];
-        } else {
-            $_SESSION['Kundengruppe'] = new stdClass();
+            $this->oldSession->Waehrung     = Session::Currency();
         }
-        $this->currency = ($this->kWaehrung > 0)
-            ? Shop::DB()->select('twaehrung', 'kWaehrung', $this->kWaehrung)
-            : Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+        $this->currency = $this->kWaehrung > 0
+            ? new Currency($this->kWaehrung)
+            : (new Currency())->getDefault();
         setzeSteuersaetze();
         $net = Shop::DB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
 
-        $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
-        $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
-        $_SESSION['Kundengruppe']->kKundengruppe              = $this->getKundengruppe();
-        $_SESSION['Kundengruppe']->nNettoPreise               = (int)$net->nNettoPreise;
-        $_SESSION['kKundengruppe']                            = $this->getKundengruppe();
-        $_SESSION['kSprache']                                 = $this->getSprache();
-        $_SESSION['Sprachen']                                 = Shop::DB()->query("SELECT * FROM tsprache", 2);
-        $_SESSION['Waehrung']                                 = $this->currency;
+        $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))
+            ->setMayViewPrices(1)
+            ->setMayViewCategories(1)
+            ->setIsMerchant($net !== null ? $net->nNettoPreise : 0);
+        $_SESSION['kKundengruppe'] = $this->getKundengruppe();
+        $_SESSION['kSprache']      = $this->getSprache();
+        $_SESSION['Sprachen']      = Shop::DB()->query("SELECT * FROM tsprache", 2);
+        $_SESSION['Waehrung']      = $this->currency;
 
         return $this;
     }
@@ -1008,9 +986,10 @@ class Exportformat
     public function startExport($queueObject, $isAsync = false, $back = false, $isCron = false, $max = null)
     {
         if (!$this->isOK()) {
-            Jtllog::cronLog('Export is not ok.', 1);
+            Jtllog::cronLog('Export is not ok.');
             return false;
         }
+        $started = false;
         $this->setQueue($queueObject)->initSession()->initSmarty();
         if ($this->getPlugin() > 0 && strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             Jtllog::cronLog('Starting plugin exportformat "' . $this->getName() .
@@ -1089,7 +1068,6 @@ class Exportformat
         }
         $content                                     = $this->getContent();
         $categoryFallback                            = (strpos($content, '->oKategorie_arr') !== false);
-        $articles                                    = Shop::DB()->query($this->getExportSQL(), 2);
         $oArtikelOptionen                            = new stdClass();
         $oArtikelOptionen->nMerkmale                 = 1;
         $oArtikelOptionen->nAttribute                = 1;
@@ -1098,6 +1076,7 @@ class Exportformat
         $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
         $oArtikelOptionen->nMedienDatei              = 1;
 
+        $helper     = KategorieHelper::getInstance($this->getSprache(), $this->getKundengruppe());
         $shopURL    = Shop::getURL();
         $find       = ['<br />', '<br>', '</'];
         $replace    = [' ', ' ', ' </'];
@@ -1126,10 +1105,11 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach ($articles as $articleObj) {
+        foreach (Shop::DB()->query($this->getExportSQL(), 10) as $iterArticle) {
+            $started = true;
             $Artikel = new Artikel();
             $Artikel->fuelleArtikel(
-                $articleObj->kArtikel,
+                $iterArticle['kArtikel'],
                 $oArtikelOptionen,
                 $this->kKundengruppe,
                 $this->kSprache,
@@ -1190,7 +1170,7 @@ class Exportformat
                 );
                 $Artikel->fUst                  = gibUst($Artikel->kSteuerklasse);
                 $Artikel->Preise->fVKBrutto     = berechneBrutto(
-                    $Artikel->Preise->fVKNetto * $this->currency->fFaktor,
+                    $Artikel->Preise->fVKNetto * $this->currency->getConversionFactor(),
                     $Artikel->fUst
                 );
                 $Artikel->Preise->fVKNetto      = round($Artikel->Preise->fVKNetto, 2);
@@ -1201,9 +1181,9 @@ class Exportformat
                     !$this->useCache()
                 );
                 // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
-                $Artikel->Kategoriepfad         = isset($Artikel->Kategorie->cKategoriePfad)
+                $Artikel->Kategoriepfad         = $Artikel->Kategorie->cKategoriePfad !== null
                     ? $Artikel->Kategorie->cKategoriePfad
-                    : gibKategoriepfad($Artikel->Kategorie, $this->kKundengruppe, $this->kSprache);
+                    : $helper->getPath($Artikel->Kategorie);
                 $Artikel->Versandkosten         = gibGuenstigsteVersandkosten(
                     isset($this->config['exportformate_lieferland'])
                         ? $this->config['exportformate_lieferland']
@@ -1261,8 +1241,8 @@ class Exportformat
                       SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " 
                       WHERE kExportqueue = " . (int)$this->queue->kExportqueue, 4
                 );
-                $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
-                    function_exists('pruefeSSL') && pruefeSSL() === 2)
+                $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+                    || (function_exists('pruefeSSL') && pruefeSSL() === 2))
                     ? 'https://'
                     : 'http://';
                 if ($isAsync) {
@@ -1328,7 +1308,7 @@ class Exportformat
             $queueObject->updateExportformatQueueBearbeitet();
             $queueObject->setDZuletztGelaufen(date('Y-m-d H:i'))->setNInArbeit(0)->updateJobInDB();
             //finalize job when there are no more articles to export
-            if (($queueObject->nLimitN >= $max) || !(is_array($articles) && count($articles) > 0)) {
+            if (($queueObject->nLimitN >= $max) || $started === false) {
                 Jtllog::cronLog('Finalizing job.', 2);
                 Shop::DB()->update(
                     'texportformat',
@@ -1415,7 +1395,7 @@ class Exportformat
                  ->setSpecial(0)
                  ->setKodierung($post['cKodierung'])
                  ->setPlugin(isset($post['kPlugin']) ? $post['kPlugin'] : 0)
-                 ->setExportformat((!empty($post['kExportformat'])) ? $post['kExportformat'] : 0)
+                 ->setExportformat(!empty($post['kExportformat']) ? $post['kExportformat'] : 0)
                  ->setKampagne(isset($post['kKampagne']) ? $post['kKampagne'] : 0);
             if (isset($post['cFusszeile'])) {
                 $this->setFusszeile(str_replace('<tab>', "\t", $post['cFusszeile']));

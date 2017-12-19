@@ -44,12 +44,12 @@ class Callback implements ICallbackNamed
     /**
      * @var null
      */
-    public $callback = null;
+    public $callback;
 
     /**
      * @var array|null
      */
-    public $params = null;
+    public $params;
 
     /**
      * @var
@@ -91,17 +91,16 @@ class Callback implements ICallbackNamed
         return isset($this->name) && $this->name;
     }
 
+    /**
+     * @param $name
+     * @return $this
+     */
     public function setName($name)
     {
         $this->name = $name;
 
         return $this;
     }
-    // TODO test me
-//	public function addParams() {
-//		$params = func_get_args();
-//		return new Callback($this->callback, $this->params+$params);
-//	}
 }
 
 /**
@@ -133,7 +132,7 @@ class CallbackBody extends Callback
  *
  * @author Tobiasz Cudnik <tobiasz.cudnik/gmail.com>
  */
-class CallbackReturnReference extends Callback implements ICallbackNamed
+class CallbackReturnReference extends Callback
 {
     /**
      * @var
@@ -148,7 +147,7 @@ class CallbackReturnReference extends Callback implements ICallbackNamed
     public function __construct(&$reference, $name = null)
     {
         $this->reference =& $reference;
-        $this->callback  = array($this, 'callback');
+        $this->callback  = [$this, 'callback'];
     }
 
     /**
@@ -158,22 +157,6 @@ class CallbackReturnReference extends Callback implements ICallbackNamed
     {
         return $this->reference;
     }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return 'Callback: ' . $this->name;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasName()
-    {
-        return isset($this->name) && $this->name;
-    }
 }
 
 /**
@@ -181,12 +164,16 @@ class CallbackReturnReference extends Callback implements ICallbackNamed
  *
  * @author Tobiasz Cudnik <tobiasz.cudnik/gmail.com>
  */
-class CallbackReturnValue extends Callback implements ICallbackNamed
+class CallbackReturnValue extends Callback
 {
     /**
      * @var
      */
     protected $value;
+
+    /**
+     * @var null
+     */
     public $name;
 
     /**
@@ -198,7 +185,7 @@ class CallbackReturnValue extends Callback implements ICallbackNamed
     {
         $this->value    =& $value;
         $this->name     = $name;
-        $this->callback = array($this, 'callback');
+        $this->callback = [$this, 'callback'];
     }
 
     /**
@@ -215,22 +202,6 @@ class CallbackReturnValue extends Callback implements ICallbackNamed
     public function __toString()
     {
         return $this->getName();
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return 'Callback: ' . $this->name;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasName()
-    {
-        return isset($this->name) && $this->name;
     }
 }
 

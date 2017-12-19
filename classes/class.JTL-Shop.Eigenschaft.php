@@ -68,7 +68,6 @@ class Eigenschaft
     /**
      * Fuegt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int
      */
     public function insertInDB()
@@ -82,7 +81,6 @@ class Eigenschaft
     /**
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
-     * @access public
      * @return int
      */
     public function updateInDB()

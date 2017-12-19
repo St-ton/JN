@@ -40,31 +40,31 @@ class DOMDocumentWrapper
     /**
      * @var array
      */
-    public $data = array();
+    public $data = [];
 
     /**
      * @var array
      */
-    public $dataNodes = array();
+    public $dataNodes = [];
 
     /**
      * @var array
      */
-    public $events = array();
+    public $events = [];
 
     /**
      * @var array
      */
-    public $eventsNodes = array();
+    public $eventsNodes = [];
 
     /**
      * @var array
      */
-    public $eventsGlobal = array();
+    public $eventsGlobal = [];
     /**
      * @var array
      */
-    public $frames = array();
+    public $frames = [];
     /**
      * Document root, by default equals to document itself.
      * Used by documentFragments.
@@ -358,18 +358,11 @@ class DOMDocumentWrapper
             // TODO test LIBXML_COMPACT for performance improvement
             // create document
             $this->documentCreate($charset);
-            if (phpversion() < 5.1) {
-                $this->document->resolveExternals = true;
-                $return                           = phpQuery::$debug === 2
-                    ? $this->document->loadXML($markup)
-                    : @$this->document->loadXML($markup);
-            } else {
-                /** @link http://pl2.php.net/manual/en/libxml.constants.php */
-                $libxmlStatic = phpQuery::$debug === 2
-                    ? LIBXML_DTDLOAD | LIBXML_DTDATTR | LIBXML_NONET
-                    : LIBXML_DTDLOAD | LIBXML_DTDATTR | LIBXML_NONET | LIBXML_NOWARNING | LIBXML_NOERROR;
-                $return       = $this->document->loadXML($markup, $libxmlStatic);
-            }
+            /** @link http://pl2.php.net/manual/en/libxml.constants.php */
+            $libxmlStatic = phpQuery::$debug === 2
+                ? LIBXML_DTDLOAD | LIBXML_DTDATTR | LIBXML_NONET
+                : LIBXML_DTDLOAD | LIBXML_DTDATTR | LIBXML_NONET | LIBXML_NOWARNING | LIBXML_NOERROR;
+            $return       = $this->document->loadXML($markup, $libxmlStatic);
             if ($return) {
                 $this->root = $this->document;
             }
@@ -384,9 +377,8 @@ class DOMDocumentWrapper
             }
 
             return $return;
-        } else {
-            throw new Exception("Error loading XML markup");
         }
+        throw new Exception("Error loading XML markup");
     }
 
     /**
@@ -417,7 +409,7 @@ class DOMDocumentWrapper
      */
     protected function contentTypeToArray($contentType)
     {
-        $matches = explode(';', trim(strtolower($contentType)));
+        $matches = explode(';', strtolower(trim($contentType)));
         if (isset($matches[1])) {
             $matches[1] = explode('=', $matches[1]);
             // strip 'charset='
@@ -437,19 +429,19 @@ class DOMDocumentWrapper
      */
     protected function contentTypeFromHTML($markup)
     {
-        $matches = array();
+        $matches = [];
         // find meta tag
         preg_match(
             '@<meta[^>]+http-equiv\\s*=\\s*(["|\'])Content-Type\\1([^>]+?)>@i',
             $markup, $matches
         );
         if (!isset($matches[0])) {
-            return array(null, null);
+            return [null, null];
         }
         // get attr 'content'
         preg_match('@content\\s*=\\s*(["|\'])(.+?)\\1@', $matches[0], $matches);
         if (!isset($matches[0])) {
-            return array(null, null);
+            return [null, null];
         }
 
         return $this->contentTypeToArray($matches[2]);
@@ -488,11 +480,11 @@ class DOMDocumentWrapper
      *
      * @link http://code.google.com/p/phpquery/issues/detail?id=80
      * @param $markup
-     * @return string|void
+     * @return string|null
      */
     protected function charsetFixHTML($markup)
     {
-        $matches = array();
+        $matches = [];
         // find meta tag
         preg_match(
             '@\s*<meta[^>]+http-equiv\\s*=\\s*(["|\'])Content-Type\\1([^>]+?)>@i',
@@ -505,10 +497,10 @@ class DOMDocumentWrapper
         $markup          = substr($markup, 0, $matches[0][1])
             . substr($markup, $matches[0][1] + strlen($metaContentType));
         $headStart       = stripos($markup, '<head>');
-        $markup          = substr($markup, 0, $headStart + 6) . $metaContentType
-            . substr($markup, $headStart + 6);
 
-        return $markup;
+        return substr($markup, 0, $headStart + 6) .
+            $metaContentType .
+            substr($markup, $headStart + 6);
     }
 
     /**
@@ -528,20 +520,19 @@ class DOMDocumentWrapper
         if (strpos($html, '<head') === false) {
             if (strpos($html, '<html') === false) {
                 return $meta . $html;
-            } else {
-                return preg_replace(
-                    '@<html(.*?)(?(?<!\?)>)@s',
-                    "<html\\1><head>{$meta}</head>",
-                    $html
-                );
             }
-        } else {
             return preg_replace(
-                '@<head(.*?)(?(?<!\?)>)@s',
-                '<head\\1>' . $meta,
+                '@<html(.*?)(?(?<!\?)>)@s',
+                "<html\\1><head>{$meta}</head>",
                 $html
             );
         }
+
+        return preg_replace(
+            '@<head(.*?)(?(?<!\?)>)@s',
+            '<head\\1>' . $meta,
+            $html
+        );
     }
 
     /**
@@ -551,9 +542,7 @@ class DOMDocumentWrapper
      */
     protected function charsetAppendToXML($markup, $charset)
     {
-        $declaration = '<' . '?xml version="1.0" encoding="' . $charset . '"?' . '>';
-
-        return $declaration . $markup;
+        return '<' . '?xml version="1.0" encoding="' . $charset . '"?' . '>' . $markup;
     }
 
     /**
@@ -599,9 +588,9 @@ class DOMDocumentWrapper
      */
     public function import($source, $sourceCharset = null)
     {
-        $return = array();
+        $return = [];
         if ($source instanceof DOMNode && !($source instanceof DOMNodeList)) {
-            $source = array($source);
+            $source = [$source];
         }
         if (is_array($source) || $source instanceof DOMNodeList) {
             // dom nodes
@@ -613,9 +602,9 @@ class DOMDocumentWrapper
             $fake = $this->documentFragmentCreate($source, $sourceCharset);
             if ($fake === false) {
                 throw new Exception("Error loading documentFragment markup");
-            } else {
-                return $this->import($fake->root->childNodes);
             }
+
+            return $this->import($fake->root->childNodes);
         }
 
         return $return;
@@ -640,7 +629,7 @@ class DOMDocumentWrapper
             $charset = $this->charset;
         }
         if ($source instanceof DOMNode && !($source instanceof DOMNodeList)) {
-            $source = array($source);
+            $source = [$source];
         }
         if (is_array($source) || $source instanceof DOMNodeList) {
             // dom nodes
@@ -750,7 +739,7 @@ class DOMDocumentWrapper
         if (isset($nodes)) {
             $markup = '';
             if (!is_array($nodes) && !($nodes instanceof DOMNodeList)) {
-                $nodes = array($nodes);
+                $nodes = [$nodes];
             }
             if ($this->isDocumentFragment && !$innerMarkup) {
                 foreach ($nodes as $i => $node) {
@@ -768,7 +757,7 @@ class DOMDocumentWrapper
                     $markup .= $this->document->saveXML($node);
                 }
             } else {
-                $loop = array();
+                $loop = [];
                 if ($innerMarkup) {
                     foreach ($nodes as $node) {
                         if ($node->childNodes) {
@@ -845,8 +834,8 @@ class DOMDocumentWrapper
         while ($indice < strlen($xml)) {
             $pos = strpos($xml, "<$tag ", $indice);
             if ($pos) {
-                $posCierre = strpos($xml, ">", $pos);
-                if ($xml[$posCierre - 1] == "/") {
+                $posCierre = strpos($xml, '>', $pos);
+                if ($xml[$posCierre - 1] === '/') {
                     $xml = substr_replace($xml, "></$tag>", $posCierre - 1, 2);
                 }
                 $indice = $posCierre;

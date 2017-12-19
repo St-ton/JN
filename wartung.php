@@ -4,17 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
+
 $AktuelleSeite = 'WARTUNG';
-$Einstellungen = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_KUNDEN,
-    CONF_KUNDENFELD,
-    CONF_KUNDENWERBENKUNDEN,
-    CONF_NEWSLETTER
-]);
+$Einstellungen = Shop::getSettings([CONF_GLOBAL]);
 if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
     header('Location: ' . Shop::getURL(), true, 307);
     exit;
@@ -29,14 +21,13 @@ if (isset($Link)) {
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = -1;
-$smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0))
-       ->assign('Einstellungen', $Einstellungen);
+Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
-$smarty->display('snippets/maintenance.tpl');
+Shop::Smarty()->display('snippets/maintenance.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

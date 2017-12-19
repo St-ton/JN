@@ -17,8 +17,7 @@ class MediaImageCompatibility implements IMedia
      */
     public function isValid($request)
     {
-        return in_array((int)IMAGE_COMPATIBILITY_LEVEL, [1, 2], true)
-            && $this->parse($request) !== null;
+        return in_array(IMAGE_COMPATIBILITY_LEVEL, [1, 2], true) && $this->parse($request) !== null;
     }
 
     /**
@@ -41,7 +40,7 @@ class MediaImageCompatibility implements IMedia
 
         if (is_object($fallback)) {
             $req['number'] = (int)$fallback->nNr;
-        } elseif ((int)IMAGE_COMPATIBILITY_LEVEL === 2) {
+        } elseif (IMAGE_COMPATIBILITY_LEVEL === 2) {
             $name = $req['name'];
             // remove number
             if (preg_match('/^(.*)_b?(\d+)$/', $name, $matches)) {
@@ -78,8 +77,15 @@ class MediaImageCompatibility implements IMedia
         }
 
         if (is_object($fallback) && (int)$fallback->kArtikel > 0) {
-            $number   = isset($req['number']) ? (int)$req['number'] : 1;
-            $thumbUrl = Shop::getURL() . '/' . MediaImage::getThumb(Image::TYPE_PRODUCT, $fallback->kArtikel, $fallback, Image::mapSize($req['size']), $number);
+            $number   = isset($req['number']) ? $req['number'] : 1;
+            $thumbUrl = Shop::getURL() . '/' .
+                MediaImage::getThumb(
+                    Image::TYPE_PRODUCT,
+                    $fallback->kArtikel,
+                    $fallback,
+                    Image::mapSize($req['size']),
+                    $number
+                );
 
             http_response_code(301);
             header("Location: {$thumbUrl}");
@@ -107,7 +113,7 @@ class MediaImageCompatibility implements IMedia
      */
     private function parse($request)
     {
-        if (!is_string($request) || strlen($request) == 0) {
+        if (!is_string($request) || $request === '') {
             return null;
         }
 

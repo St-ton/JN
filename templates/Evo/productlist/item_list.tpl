@@ -196,7 +196,7 @@
                         <input type="hidden" name="a" value="{if !empty({$Artikel->kVariKindArtikel})}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}" />
                     </form>
                     <div class="expandable">
-                        <form id="buy_form_{$Artikel->kArtikel}" action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
+                        <form id="buy_form_{$Artikel->kArtikel}" action="{$ShopURL}" method="post" class="form form-basket" data-toggle="basket-add">
                             {block name="form-expandable"}
                             {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0}
                                 <div class="hidden-xs basket-variations">
@@ -223,7 +223,6 @@
                                             {else}
                                                 <div class="input-group input-group-sm">
                                                     <input type="number" min="0"{if $Artikel->fAbnahmeintervall > 0} step="{$Artikel->fAbnahmeintervall}"{/if} size="2" onfocus="this.setAttribute('autocomplete', 'off');" id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl" value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}" />
-
                                                     <span class="change_quantity input-group-btn">
                                                         <button type="submit" class="btn btn-primary" id="submit{$Artikel->kArtikel}" title="{lang key="addToCart" section="global"}"><span><i class="fa fa-shopping-cart"></i> {lang key="addToCart" section="global"}</span></button>
                                                     </span>

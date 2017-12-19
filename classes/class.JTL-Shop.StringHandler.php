@@ -74,11 +74,9 @@ class StringHandler
      */
     public static function gethtmltranslationtable($cFlag = ENT_QUOTES, $cEncoding = JTL_CHARSET)
     {
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            return get_html_translation_table(HTML_ENTITIES, $cFlag, $cEncoding);
-        }
-
-        return get_html_translation_table(HTML_ENTITIES);
+        return version_compare(PHP_VERSION, '5.4.0', '>=')
+            ? get_html_translation_table(HTML_ENTITIES, $cFlag, $cEncoding)
+            : get_html_translation_table(HTML_ENTITIES);
     }
 
     /**
@@ -96,11 +94,11 @@ class StringHandler
             return $input;
         }
         $cString = trim(strip_tags($input));
-        $cString = ($nSuche == 1) ?
-            str_replace(['\\\'', '\\'], '', $cString) :
-            str_replace(['\"', '\\\'', '\\', '"', '\''], '', $cString);
+        $cString = (int)$nSuche === 1
+            ? str_replace(['\\\'', '\\'], '', $cString)
+            : str_replace(['\"', '\\\'', '\\', '"', '\''], '', $cString);
 
-        if (strlen($cString) > 10 && $nSuche == 1) {
+        if ((int)$nSuche === 1 && strlen($cString) > 10) {
             $cString = substr(str_replace(['(', ')', ';'], '', $cString), 0, 50);
         }
 
@@ -221,7 +219,7 @@ class StringHandler
     {
         $cISO_arr = self::getISOMappings();
         foreach ($cISO_arr as $cISO639 => $cISO) {
-            if (strtolower($cISO) == strtolower($ISO)) {
+            if (strtolower($cISO) === strtolower($ISO)) {
                 return $cISO639;
             }
         }
@@ -234,7 +232,7 @@ class StringHandler
      */
     public static function getISOMappings()
     {
-        $cIso639_2To639_1 = [
+        return [
             'aar' => 'aa', // Afar
             'abk' => 'ab', // Abkhazian
             'afr' => 'af', // Afrikaans
@@ -420,8 +418,6 @@ class StringHandler
             'zha' => 'za', // Zhuang; Chuang
             'zul' => 'zu'
         ];
-
-        return $cIso639_2To639_1;
     }
 
     /**

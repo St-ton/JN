@@ -39,9 +39,6 @@ if (!empty($_FILES['file_data'])) {
 
         return 1;
     }
-
-    require_once PFAD_ROOT . PFAD_PCLZIP . 'pclzip.lib.php';
-
     $response                 = new stdClass();
     $response->status         = 'OK';
     $response->error          = null;
@@ -143,10 +140,10 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
         $smarty->assign('oPlugin', $oPlugin)
                ->assign('kPlugin', $kPlugin);
         Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
-    } elseif (isset($_POST['lizenzkeyadd']) &&
-        (int)$_POST['lizenzkeyadd'] === 1 &&
-        (int)$_POST['kPlugin'] > 0 &&
-        validateToken()
+    } elseif (isset($_POST['lizenzkeyadd'])
+        && (int)$_POST['lizenzkeyadd'] === 1
+        && (int)$_POST['kPlugin'] > 0
+        && validateToken()
     ) { // Lizenzkey eingeben
         $step    = 'pluginverwaltung_lizenzkey';
         $kPlugin = (int)$_POST['kPlugin'];
@@ -183,16 +180,16 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                 $nReturnValue = aktivierePlugin($kPlugin);
 
                 switch ($nReturnValue) {
-                    case 1: // Alles O.K. Plugin wurde aktiviert
+                    case PLUGIN_CODE_OK:
                         if ($cHinweis !== 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich aktiviert.') {
                             $cHinweis .= 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich aktiviert.';
                         }
                         $reload = true;
                         break;
-                    case 2: // $kPlugin wurde nicht uebergeben
+                    case PLUGIN_CODE_WRONG_PARAM:
                         $cFehler = 'Fehler: Bitte w&auml;hlen Sie mindestens ein Plugin aus.';
                         break;
-                    case 3: // SQL Fehler bzw. Plugin nicht gefunden
+                    case PLUGIN_CODE_NO_PLUGIN_FOUND:
                         $cFehler = 'Fehler: Ihr ausgew&auml;hltes Plugin konnte nicht in der Datenbank gefunden werden oder ist schon aktiv.';
                         break;
                 }
@@ -204,16 +201,16 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                 $nReturnValue = deaktivierePlugin($kPlugin);
 
                 switch ($nReturnValue) {
-                    case 1: // Alles O.K. Plugin wurde deaktiviert
+                    case PLUGIN_CODE_OK: // Alles O.K. Plugin wurde deaktiviert
                         if ($cHinweis !== 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich deaktiviert.') {
                             $cHinweis .= 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich deaktiviert.';
                         }
                         $reload = true;
                         break;
-                    case 2: // $kPlugin wurde nicht uebergeben
+                    case PLUGIN_CODE_WRONG_PARAM: // $kPlugin wurde nicht uebergeben
                         $cFehler = 'Fehler: Bitte w&auml;hlen Sie mindestens ein Plugin aus.';
                         break;
-                    case 3: // SQL Fehler bzw. Plugin nicht gefunden
+                    case PLUGIN_CODE_NO_PLUGIN_FOUND: // SQL Fehler bzw. Plugin nicht gefunden
                         $cFehler = 'Fehler: Ihr ausgew&auml;hltes Plugin konnte nicht in der Datenbank gefunden werden.';
                         break;
                 }
@@ -223,18 +220,20 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                     $nReturnValue = deinstallierePlugin($kPlugin, $oPlugin->nXMLVersion);
 
                     switch ($nReturnValue) {
-                        case 1: // Alles O.K. Plugin wurde deinstalliert
-                            $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich deinstalliert.';
-                            $reload   = true;
-                            break;
-                        case 2: // $kPlugin wurde nicht uebergeben
+                        case PLUGIN_CODE_WRONG_PARAM: // $kPlugin wurde nicht uebergeben
                             $cFehler = 'Fehler: Bitte w&auml;hlen Sie mindestens ein Plugin aus.';
                             break;
+                            // @todo: 3 is never returned
                         case 3: // SQL Fehler bzw. Plugin nicht gefunden
                             $cFehler = 'Fehler: Plugin konnte aufgrund eines SQL-Fehlers nicht deinstalliert werden.';
                             break;
-                        case 4: // SQL Fehler bzw. Plugin nicht gefunden
+                        case PLUGIN_CODE_NO_PLUGIN_FOUND: // SQL Fehler bzw. Plugin nicht gefunden
                             $cFehler = 'Fehler: Plugin wurde nicht in der Datenbank gefunden.';
+                            break;
+                        case PLUGIN_CODE_OK: // Alles O.K. Plugin wurde deinstalliert
+                        default:
+                            $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich deinstalliert.';
+                            $reload   = true;
                             break;
                     }
                 } else {
@@ -246,7 +245,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
                     $nReturnValue = reloadPlugin($oPlugin, true);
 
-                    if ($nReturnValue === 1 || $nReturnValue === 126) {
+                    if ($nReturnValue === PLUGIN_CODE_OK || $nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE) {
                         $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich neu geladen.';
                         $reload = true;
                     } else {
@@ -272,142 +271,14 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
     } elseif (verifyGPCDataInteger('sprachvariablen') === 1) { // Sprachvariablen editieren
         $step = 'pluginverwaltung_sprachvariablen';
     } elseif (isset($_POST['installieren']) && validateToken()) {
-        // Installieren
-        // ### pluginPlausiIntern
-        // 1    = Alles O.K.
-        // 2    = $cVerzeichnis wurde nicht uebergeben
-        // 3    = info.xml existiert nicht
-        // 4    = Plugin wurde schon installiert
-        // 6    = Der Pluginname entspricht nicht der Konvention
-        // 7    = Die PluginID entspricht nicht der Konvention
-        // 8    = Der Installationsknoten ist nicht vorhanden
-        // 9    = Erste Versionsnummer entspricht nicht der Konvention
-        // 10   = Die Versionsnummer entspricht nicht der Konvention
-        // 11   = Das Versionsdatum entspricht nicht der Konvention
-        // 12   = SQL Datei fuer die aktuelle Version existiert nicht
-        // 13   = Keine Hooks vorhanden
-        // 14   = Die Hook Werte entsprechen nicht den Konventionen
-        // 15   = CustomLink Name entspricht nicht der Konvention
-        // 16   = CustomLink Dateiname entspricht nicht der Konvention
-        // 17   = CustomLink Datei existiert nicht
-        // 18   = EinstellungsLink Name entspricht nicht der Konvention
-        // 19   = Einstellungen fehlen
-        // 20   = Einstellungen type entspricht nicht der Konvention
-        // 21   = Einstellungen initialValue entspricht nicht der Konvention
-        // 22   = Einstellungen sort entspricht nicht der Konvention
-        // 23   = Einstellungen Name entspricht nicht der Konvention
-        // 24   = Keine SelectboxOptionen vorhanden
-        // 25   = Die Option entspricht nicht der Konvention
-        // 26   = Keine Sprachvariablen vorhanden
-        // 27   = Variable Name entspricht nicht der Konvention
-        // 28   = Keine lokalisierte Sprachvariable vorhanden
-        // 29   = Die ISO der lokalisierten Sprachvariable entspricht nicht der Konvention
-        // 30   = Der Name der lokalisierten Sprachvariable entspricht nicht der Konvention
-        // 31   = Die Hook Datei ist nicht vorhanden
-        // 32   = Version existiert nicht im Versionsordner
-        // 33   = Einstellungen conf entspricht nicht der Konvention
-        // 34   = Einstellungen ValueName entspricht nicht der Konvention
-        // 35   = XML Version entspricht nicht der Konvention
-        // 36   = Shop Version entspricht nicht der Konvention
-        // 37   = Shop Version ist zu niedrig
-        // 38   = Keine Frontendlinks vorhanden, obwohl der Node angelegt wurde
-        // 39   = Link Filename entspricht nicht der Konvention
-        // 40   = LinkName entspricht nicht der Konvention
-        // 41   = Angabe ob erst Sichtbar nach Login entspricht nicht der Konvention
-        // 42   = Abgabe ob eine Druckbutton gezeigt werden soll entspricht nicht der Konvention
-        // 43   = Die ISO der Linksprache entspricht nicht der Konvention
-        // 44   = Der Seo Name entspricht nicht der Konvention
-        // 45   = Der Name entspricht nicht der Konvention
-        // 46   = Der Title entspricht nicht der Konvention
-        // 47   = Der MetaTitle entspricht nicht der Konvention
-        // 48   = Die MetaKeywords entsprechen nicht der Konvention
-        // 49   = Die MetaDescription entspricht nicht der Konvention
-        // 50   = Der Name in den Zahlungsmethoden entspricht nicht der Konvention
-        // 51   = Sende Mail in den Zahlungsmethoden entspricht nicht der Konvention
-        // 52   = TSCode in den Zahlungsmethoden entspricht nicht der Konvention
-        // 53   = PreOrder in den Zahlungsmethoden entspricht nicht der Konvention
-        // 54   = ClassFile in den Zahlungsmethoden entspricht nicht der Konvention
-        // 55   = Die Datei fuer die Klasse der Zahlungsmethode existiert nicht
-        // 56   = TemplateFile in den Zahlungsmethoden entspricht nicht der Konvention
-        // 57   = Die Datei fuer das Template der Zahlungsmethode existiert nicht
-        // 58   = Keine Sprachen in den Zahlungsmethoden hinterlegt
-        // 59   = Die ISO der Sprache in der Zahlungsmethode entspricht nicht der Konvention
-        // 60   = Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-        // 61   = Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-        // 62   = Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention
-        // 63   = Zahlungsmethode Einstellungen type entspricht nicht der Konvention
-        // 64   = Zahlungsmethode Einstellungen initialValue entspricht nicht der Konvention
-        // 65   = Zahlungsmethode Einstellungen sort entspricht nicht der Konvention
-        // 66   = Zahlungsmethode Einstellungen conf entspricht nicht der Konvention
-        // 67   = Zahlungsmethode Einstellungen Name entspricht nicht der Konvention
-        // 68   = Zahlungsmethode Einstellungen ValueName entspricht nicht der Konvention
-        // 69   = Keine SelectboxOptionen vorhanden
-        // 70   = Die Option entspricht nicht der Konvention
-        // 71   = Die Sortierung in den Zahlungsmethoden entspricht nicht der Konvention
-        // 72   = Soap in den Zahlungsmethoden entspricht nicht der Konvention
-        // 73   = Curl in den Zahlungsmethoden entspricht nicht der Konvention
-        // 74 	= Sockets in den Zahlungsmethoden entspricht nicht der Konvention
-        // 75	= ClassName in den Zahlungsmethoden entspricht nicht der Konvention
-        // 76	= Der Templatename entspricht nicht der Konvention
-        // 77	= Die Templatedatei fuer den Frontend Link existiert nicht
-        // 78	= Es darf nur ein Templatename oder ein Fullscreen Templatename existieren
-        // 79	= Der Fullscreen Templatename entspricht nicht der Konvention
-        // 80	= Die Fullscreen Templatedatei fuer den Frontend Link existiert nicht
-        // 81	= fuer ein Frontend Link muss ein Templatename oder Fullscreen Templatename angegeben werden
-        // 82 	= Keine Box vorhanden
-        // 83 	= Box Name entspricht nicht der Konvention
-        // 84 	= Box Templatedatei entspricht nicht der Konvention
-        // 85 	= Box Templatedatei existiert nicht
-        // 86	= Lizenzklasse existiert nicht
-        // 87	= Name der Lizenzklasse entspricht nicht der konvention
-        // 88	= Lizenklasse ist nicht definiert
-        // 89	= Methode checkLicence in der Lizenzklasse ist nicht definiert
-        // 90	= PluginID bereits in der Datenbank vorhanden
-        // 91	= Keine Emailtemplates vorhanden, obwohl der Node angelegt wurde
-        // 92	= Template Name entspricht nicht der Konvention
-        // 93	= Template Type entspricht nicht der Konvention
-        // 94 	= Template ModulId entspricht nicht der Konvention
-        // 95 	= Template Active entspricht nicht der Konvention
-        // 96 	= Template AKZ entspricht nicht der Konvention
-        // 97 	= Template AGB entspricht nicht der Konvention
-        // 98	= Template WRB entspricht nicht der Konvention
-        // 99	= Die ISO der Emailtemplate Sprache entspricht nicht der Konvention
-        // 100	= Der Subject Name entspricht nicht der Konvention
-        // 101	= Keine Templatesprachen vorhanden
-
-        // ### installierePlugin
-        // 152  = Main Plugindaten nicht korrekt
-        // 153  = Ein Hook konnte nicht in die Datenbank gespeichert werden
-        // 154  = Ein Adminmenue Customlink konnte nicht in die Datenbank gespeichert werden
-        // 155  = Ein Adminmenue Settingslink konnte nicht in die Datenbank gespeichert werden
-        // 156  = Eine Einstellung konnte nicht in die Datenbank gespeichert werden
-        // 157  = Eine Sprachvariable konnte nicht in die Datenbank gespeichert werden
-        // 158  = Ein Link konnte nicht in die Datenbank gespeichert werden
-        // 159  = Eine Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
-        // 160  = Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank gespeichert werden
-        // 161  = Eine Einstellung der Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
-        // 162	= Es konnte keine Linkgruppe im Shop gefunden werden
-        // 163 	= Eine Boxvorlage konnte nicht in die Datenbank gespeichert werden
-        // 164	= Eine Emailvorlage konnte nicht in die Datenbank gespeichert werden
-        // 165	= Ein AdminWidget konnte nicht in die Datenbank gespeichert werden
-
-        // ### logikSQLDatei
-        // 202  = Plugindaten fehlen
-        // 203  = SQL hat einen Fehler verursacht
-        // 204  = Versuch eine nicht Plugintabelle zu loeschen
-        // 205  = Versuch eine nicht Plugintabelle anzulegen
-        // 206  = SQL Datei ist leer oder konnte nicht geparsed werden
-        // 207  = Sync Uebergabeparameter nicht korrekt
-        // 208  = Update konnte nicht gesynct werden
         $cVerzeichnis_arr = $_POST['cVerzeichnis'];
-
         if (is_array($cVerzeichnis_arr) && count($cVerzeichnis_arr) > 0) {
             foreach ($cVerzeichnis_arr as $cVerzeichnis) {
                 $nReturnValue = installierePluginVorbereitung(basename($cVerzeichnis));
-                if ($nReturnValue === 1 || $nReturnValue === 126) {
+                if ($nReturnValue === PLUGIN_CODE_OK || $nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE) {
                     $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich installiert.';
                     $reload   = true;
-                } elseif ($nReturnValue > 1 && $nReturnValue !== 126) {
+                } elseif ($nReturnValue > PLUGIN_CODE_OK && $nReturnValue !== PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE) {
                     $cFehler = 'Fehler: Bei der Installation ist ein Fehler aufgetreten. Fehlercode: ' . $nReturnValue;
                 }
             }
@@ -446,31 +317,27 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
         } else { // Editieren
             $oSprache_arr              = Shop::DB()->query("SELECT * FROM tsprache", 2);
             $oPluginSprachvariable_arr = gibSprachVariablen($kPlugin);
-            if (count($oSprache_arr) > 0) {
-                foreach ($oSprache_arr as $oSprache) {
-                    if (count($oPluginSprachvariable_arr) > 0) {
-                        foreach ($oPluginSprachvariable_arr as $oPluginSprachvariable) {
-                            $kPluginSprachvariable = $oPluginSprachvariable->kPluginSprachvariable;
-                            $cSprachvariable       = $oPluginSprachvariable->cName;
-                            $cISO                  = strtoupper($oSprache->cISO);
-
-                            if (strlen($_POST[$kPluginSprachvariable . '_' . $cISO]) >= 0) {
-                                Shop::DB()->delete(
-                                    'tpluginsprachvariablecustomsprache',
-                                    ['kPlugin', 'cSprachvariable', 'cISO'],
-                                    [$kPlugin, $cSprachvariable, $cISO]
-                                );
-                                $oPluginSprachvariableCustomSprache                        = new stdClass();
-                                $oPluginSprachvariableCustomSprache->kPlugin               = $kPlugin;
-                                $oPluginSprachvariableCustomSprache->cSprachvariable       = $cSprachvariable;
-                                $oPluginSprachvariableCustomSprache->cISO                  = $cISO;
-                                $oPluginSprachvariableCustomSprache->kPluginSprachvariable = $kPluginSprachvariable;
-                                $oPluginSprachvariableCustomSprache->cName                 = $_POST[$kPluginSprachvariable . '_' . $cISO];
-
-                                Shop::DB()->insert('tpluginsprachvariablecustomsprache', $oPluginSprachvariableCustomSprache);
-                            }
-                        }
+            foreach ($oSprache_arr as $oSprache) {
+                foreach ($oPluginSprachvariable_arr as $oPluginSprachvariable) {
+                    $kPluginSprachvariable = $oPluginSprachvariable->kPluginSprachvariable;
+                    $cSprachvariable       = $oPluginSprachvariable->cName;
+                    $cISO                  = strtoupper($oSprache->cISO);
+                    if (!isset($_POST[$kPluginSprachvariable . '_' . $cISO])) {
+                        continue;
                     }
+                    Shop::DB()->delete(
+                        'tpluginsprachvariablecustomsprache',
+                        ['kPlugin', 'cSprachvariable', 'cISO'],
+                        [$kPlugin, $cSprachvariable, $cISO]
+                    );
+                    $oPluginSprachvariableCustomSprache                        = new stdClass();
+                    $oPluginSprachvariableCustomSprache->kPlugin               = $kPlugin;
+                    $oPluginSprachvariableCustomSprache->cSprachvariable       = $cSprachvariable;
+                    $oPluginSprachvariableCustomSprache->cISO                  = $cISO;
+                    $oPluginSprachvariableCustomSprache->kPluginSprachvariable = $kPluginSprachvariable;
+                    $oPluginSprachvariableCustomSprache->cName                 = $_POST[$kPluginSprachvariable . '_' . $cISO];
+
+                    Shop::DB()->insert('tpluginsprachvariablecustomsprache', $oPluginSprachvariableCustomSprache);
                 }
             }
             $cHinweis = 'Ihre &Auml;nderungen wurden erfolgreich &uuml;bernommen.';
@@ -506,10 +373,10 @@ if ($step === 'pluginverwaltung_uebersicht') {
         foreach ($PluginInstalliert_arr as $i => $PluginInstalliert) {
             $nVersion = $PluginInstalliert->getCurrentVersion();
             if ($nVersion > $PluginInstalliert->nVersion) {
-                $nReturnValue                       = pluginPlausi($PluginInstalliert->kPlugin);
-                $PluginInstalliert_arr[$i]->dUpdate = number_format((float)$nVersion / 100, 2);
-
-                $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue === 1 || $nReturnValue === 90)
+                $nReturnValue                             = pluginPlausi($PluginInstalliert->kPlugin);
+                $PluginInstalliert_arr[$i]->dUpdate       = number_format((float)$nVersion / 100, 2);
+                $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue === PLUGIN_CODE_OK
+                    || $nReturnValue === PLUGIN_CODE_DUPLICATE_PLUGIN_ID)
                     ? 1
                     : StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
             }

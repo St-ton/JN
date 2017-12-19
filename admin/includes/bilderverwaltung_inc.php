@@ -7,14 +7,15 @@
 /**
  * @param bool $filesize
  * @return array
+ * @throws Exception
  */
 function getItems($filesize = false)
 {
     $smarty = JTLSmarty::getInstance(false, true);
-    $smarty->configLoad("german.conf", 'bilderverwaltung');
+    $smarty->configLoad('german.conf', 'bilderverwaltung');
 
     $item = (object) [
-        'name'  => $smarty->config_vars["typeProduct"],
+        'name'  => $smarty->config_vars['typeProduct'],
         'type'  => Image::TYPE_PRODUCT,
         'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
     ];
@@ -23,8 +24,9 @@ function getItems($filesize = false)
 }
 
 /**
- * @param $type
+ * @param string $type
  * @return IOError
+ * @throws Exception
  */
 function loadStats($type)
 {
@@ -38,8 +40,8 @@ function loadStats($type)
 }
 
 /**
- * @param $index
- * @return object
+ * @param int $index
+ * @return stdClass
  */
 function cleanupStorage($index)
 {
@@ -109,22 +111,28 @@ function cleanupStorage($index)
 }
 
 /**
- * @param $type
- * @param $isAjax
+ * @param string $type
+ * @param bool   $isAjax
  * @return array
  */
-function clearImageCache($type, $isAjax)
+function clearImageCache($type, $isAjax = false)
 {
     if ($type !== null && preg_match('/[a-z]*/', $type)) {
         MediaImage::clearCache($type);
         unset($_SESSION['image_count'], $_SESSION['renderedImages']);
-        if (isset($isAjax) && $isAjax === true) {
+        if ($isAjax === true) {
             return ['success' => 'Cache wurde erfolgreich zur&uuml;ckgesetzt'];
         }
         Shop::Smarty()->assign('success', 'Cache wurde erfolgreich zur&uuml;ckgesetzt');
     }
 }
 
+/**
+ * @param string $type
+ * @param int    $index
+ * @return IOError|object
+ * @throws Exception
+ */
 function generateImageCache($type, $index)
 {
     $index = (int)$index;
@@ -174,9 +182,10 @@ function generateImageCache($type, $index)
 }
 
 /**
- * @param $type
- * @param $limit
+ * @param string $type
+ * @param int    $limit
  * @return array
+ * @throws Exception
  */
 function getCorruptedImages($type, $limit)
 {

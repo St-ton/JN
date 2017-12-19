@@ -18,15 +18,9 @@
 
                     {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt tplscope=$tplscope}
 
-                    {if isset($Artikel->oSuchspecialBild)}
-                        <img class="overlay-img"
-                             srcset="{$Artikel->oSuchspecialBild->cPfadKlein},
-                                     {$Artikel->oSuchspecialBild->cPfadNormal} 2x,
-                                     {$Artikel->oSuchspecialBild->cPfadGross} 3x,
-                                     {$Artikel->oSuchspecialBild->cPfadRetina} 4x"
-                             src="{$Artikel->oSuchspecialBild->cPfadKlein}"
-                             alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}"/>
-                    {/if}
+                    {block name="searchspecial-overlay"}
+                        {include file="snippets/searchspecials.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt}
+                    {/block}
 
                     {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
                         <span class="quickview badge hidden-xs" data-src="{$Artikel->cURL}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>

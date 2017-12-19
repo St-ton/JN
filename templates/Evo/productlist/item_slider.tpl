@@ -10,10 +10,9 @@
 
         {*include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadKlein alt=$alt*}
         <img src="{$Artikel->Bilder[0]->cPfadKlein}" alt="{$alt}" />
-        {if isset($Artikel->oSuchspecialBild) && !isset($hideOverlays)}
-            <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
-                 alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
-        {/if}
+        {block name="searchspecial-overlay"}
+            {include file="snippets/searchspecials.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt}
+        {/block}
     </a>
     <div class="caption">
         <h4 class="title word-break">

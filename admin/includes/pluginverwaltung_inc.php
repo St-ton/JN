@@ -70,8 +70,8 @@ function gibAllePlugins($PluginInstalliert_arr)
                 $cXML = $cPfad . $cVerzeichnis . '/' . PLUGIN_INFO_FILE;
                 // Ist eine info.xml Datei vorhanden? Wenn nicht, ist das Plugin fehlerhaft und wird nicht angezeigt
                 if (file_exists($cXML)) {
-                    $xml          = StringHandler::convertISO(file_get_contents($cXML));
-                    $XML_arr      = XML_unserialize($xml, 'ISO-8859-1');
+                    $xml          = file_get_contents($cXML);
+                    $XML_arr      = XML_unserialize($xml, 'UTF-8');
                     $XML_arr      = getArrangedArray($XML_arr);
                     $nReturnValue = pluginPlausi(0, $cPfad . $cVerzeichnis);
                     if ($nReturnValue === 90 && in_array($cVerzeichnis, $cInstalledPlugins, true)) {
@@ -257,8 +257,8 @@ function pluginPlausi($kPlugin, $cVerzeichnis = '')
             if (is_dir($cPfad)) {
                 $cInfofile = "{$cPfad}/" . PLUGIN_INFO_FILE;
                 if (file_exists($cInfofile)) {
-                    $xml     = StringHandler::convertISO(file_get_contents($cInfofile));
-                    $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
+                    $xml     = file_get_contents($cInfofile);
+                    $XML_arr = XML_unserialize($xml, 'UTF-8');
                     $XML_arr = getArrangedArray($XML_arr);
                     // Interne Plugin Plausi
                     return pluginPlausiIntern($XML_arr, PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis);
@@ -275,8 +275,8 @@ function pluginPlausi($kPlugin, $cVerzeichnis = '')
         if (is_dir($cVerzeichnis)) {
             $cInfofile = "{$cVerzeichnis}/" . PLUGIN_INFO_FILE;
             if (file_exists($cInfofile)) {
-                $xml     = StringHandler::convertISO(file_get_contents($cInfofile));
-                $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
+                $xml     = file_get_contents($cInfofile);
+                $XML_arr = XML_unserialize($xml, 'UTF-8');
                 $XML_arr = getArrangedArray($XML_arr);
                 // Interne Plugin Plausi
                 return pluginPlausiIntern($XML_arr, $cVerzeichnis);
@@ -497,7 +497,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     }
     // Prüfe Pluginname
     preg_match(
-        "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\)_ -]+/",
+        "/[a-zA-Z0-9äÄüÜöÖß\(\)_ -]+/",
         $XML_arr['jtlshop3plugin'][0]['Name'],
         $cTreffer_arr
     );
@@ -685,7 +685,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                             } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
                                 // Name prüfen
                                 preg_match(
-                                    "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\_\- ]+/",
+                                    "/[a-zA-Z0-9äÄüÜöÖß\_\- ]+/",
                                     $Customlink_arr['Name'],
                                     $cTreffer_arr
                                 );
@@ -904,7 +904,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 }
                                 // LinkName prüfen
                                 preg_match(
-                                    "/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\_\- ]+/",
+                                    "/[a-zA-Z0-9äÄöÖüÜß\_\- ]+/",
                                     $Link_arr['Name'],
                                     $cTreffer1_arr
                                 );
@@ -1002,7 +1002,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                             }
                                             // Name prüfen
                                             preg_match(
-                                                "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\- ]+/",
+                                                "/[a-zA-Z0-9äÄüÜöÖß\- ]+/",
                                                 $LinkLanguage_arr['Name'],
                                                 $cTreffer1_arr
                                             );
@@ -1013,7 +1013,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                             }
                                             // Title prüfen
                                             preg_match(
-                                                "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\- ]+/",
+                                                "/[a-zA-Z0-9äÄüÜöÖß\- ]+/",
                                                 $LinkLanguage_arr['Title'],
                                                 $cTreffer1_arr
                                             );
@@ -1024,7 +1024,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                             }
                                             // MetaTitle prüfen
                                             preg_match(
-                                                "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\,\.\- ]+/",
+                                                "/[a-zA-Z0-9äÄüÜöÖß\,\.\- ]+/",
                                                 $LinkLanguage_arr['MetaTitle'],
                                                 $cTreffer1_arr
                                             );
@@ -1037,7 +1037,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                             }
                                             // MetaKeywords prüfen
                                             preg_match(
-                                                "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\,\- ]+/",
+                                                "/[a-zA-Z0-9äÄüÜöÖß\,\- ]+/",
                                                 $LinkLanguage_arr['MetaKeywords'],
                                                 $cTreffer1_arr
                                             );
@@ -1048,7 +1048,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                             }
                                             // MetaDescription prüfen
                                             preg_match(
-                                                "/[a-zA-Z0-9äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\,\.\- ]+/",
+                                                "/[a-zA-Z0-9äÄüÜöÖß\,\.\- ]+/",
                                                 $LinkLanguage_arr['MetaDescription'],
                                                 $cTreffer1_arr
                                             );
@@ -1081,7 +1081,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                         if (strlen($cTreffer2_arr[0]) === strlen($u)) {
                             // Name prüfen
                             preg_match(
-                                "/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
+                                "/[a-zA-Z0-9äÄöÖüÜß\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
                                 $Method_arr['Name'],
                                 $cTreffer1_arr
                             );
@@ -1226,7 +1226,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                             return 60;// Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention
                                         }
                                         preg_match(
-                                            "/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
+                                            "/[a-zA-Z0-9äÄöÖüÜß\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
                                             $MethodLanguage_arr['Name'],
                                             $cTreffer1_arr
                                         );
@@ -1238,7 +1238,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                             return 61;// Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention
                                         }
                                         preg_match(
-                                            "/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
+                                            "/[a-zA-Z0-9äÄöÖüÜß\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
                                             $MethodLanguage_arr['ChargeName'],
                                             $cTreffer1_arr
                                         );
@@ -1250,7 +1250,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                             return 62;// Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention
                                         }
                                         preg_match(
-                                            "/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
+                                            "/[a-zA-Z0-9äÄöÖüÜß\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
                                             $MethodLanguage_arr['InfoText'],
                                             $cTreffer1_arr
                                         );
@@ -1446,7 +1446,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                             if (strlen($cTreffer2_arr[0]) === strlen($u)) {
                                 // Template Name prüfen
                                 preg_match(
-                                    "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . " ]+/",
+                                    "/[a-zA-Z0-9\/_\-äÄüÜöÖß ]+/",
                                     $Template_arr['Name'],
                                     $cTreffer1_arr
                                 );
@@ -1615,7 +1615,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                             if (strlen($cTreffer2_arr[0]) === strlen($u)) {
                                 // Widget Title prüfen
                                 preg_match(
-                                    "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                                    "/[a-zA-Z0-9\/_\-äÄüÜöÖß\(\) ]+/",
                                     $Widget_arr['Title'],
                                     $cTreffer1_arr
                                 );
@@ -1836,8 +1836,8 @@ function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
         if (!isset($oPluginTMP->kPlugin) || !$oPluginTMP->kPlugin || $oPluginOld->kPlugin > 0) {
             $cPfad = realpath(PFAD_ROOT . PFAD_PLUGIN . basename($cVerzeichnis));
             if (file_exists($cPfad . '/' . PLUGIN_INFO_FILE)) {
-                $xml     = StringHandler::convertISO(file_get_contents($cPfad . '/' . PLUGIN_INFO_FILE));
-                $XML_arr = XML_unserialize($xml, 'ISO-8859-1');
+                $xml     = file_get_contents($cPfad . '/' . PLUGIN_INFO_FILE);
+                $XML_arr = XML_unserialize($xml, 'UTF-8');
                 $XML_arr = getArrangedArray($XML_arr);
                 // Interne Plugin Plausi
                 $nReturnValue = pluginPlausiIntern($XML_arr, $cPfad);
@@ -4754,5 +4754,5 @@ function mappePlausiFehler($nFehlerCode, $oPlugin)
     $replace = array_values((array)$oPlugin);
     $return  = str_replace($search, $replace, $return);
 
-    return utf8_decode($return);
+    return $return;
 }

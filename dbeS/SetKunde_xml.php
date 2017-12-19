@@ -54,7 +54,7 @@ if ($return === 2) {
 }
 
 if (is_array($res)) {
-    echo $return . ";\n" . XML_serialize($res);
+    echo $return . ";\n" . StringHandler::convertISO(XML_serialize($res));
 } else {
     echo $return . ';' . $res;
 }

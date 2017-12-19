@@ -59,7 +59,7 @@ if (isset($_POST['path']) && validateToken()) {
     if ($path !== false && strpos($path . '/', PFAD_ROOT . PFAD_PLUGIN) === 0) {
         $info = pathinfo($path);
         if (strtolower($info['extension']) === 'md') {
-            $szFileContent = file_get_contents(utf8_decode($path));
+            $szFileContent = StringHandler::convertUTF8(file_get_contents($path));
             if (class_exists('Parsedown')) {
                 $oParseDown       = new Parsedown();
                 $szLicenseContent = $oParseDown->text($szFileContent);

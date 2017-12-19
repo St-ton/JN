@@ -2,10 +2,10 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
-vielen Dank für Ihre Bewertung eines Artikels. Ihr Guthaben Bonus in Höhe von {$oBewertungGuthabenBonus->fGuthabenBonusLocalized} steht Ihnen ab sofort zur Verfügung.<br>
-Sie können Ihr Guthaben jederzeit bei einem Ihrer nächsten Einkäufe einlösen.<br>
+vielen Dank fÃ¼r Ihre Bewertung eines Artikels. Ihr Guthaben Bonus in HÃ¶he von {$oBewertungGuthabenBonus->fGuthabenBonusLocalized} steht Ihnen ab sofort zur VerfÃ¼gung.<br>
+Sie kÃ¶nnen Ihr Guthaben jederzeit bei einem Ihrer nÃ¤chsten EinkÃ¤ufe einlÃ¶sen.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem GruÃŸ,<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

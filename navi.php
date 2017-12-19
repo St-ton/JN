@@ -66,9 +66,10 @@ if (strlen($cParameter_arr['cSuche']) > 0 || (isset($_GET['qs']) && strlen($_GET
         (int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] :
         3;
     preg_match(
-        "/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $nMindestzeichen . ",}/",
+        "/[\w'äÄüÜöÖß\.\-]{" . $nMindestzeichen . ",}/",
         str_replace(' ', '', $cParameter_arr['cSuche']),
-        $cTreffer_arr);
+        $cTreffer_arr
+    );
     if (count($cTreffer_arr) === 0) {
         $cFehler                 = Shop::Lang()->get('expressionHasTo', 'global') . ' ' .
             $nMindestzeichen . ' ' .

@@ -242,6 +242,7 @@ class SimpleMail
     {
         if ($this->validate() === true) {
             $oPHPMailer            = new PHPMailer();
+            $oPHPMailer->CharSet   = JTL_CHARSET;
             $oPHPMailer->Timeout   = SOCKET_TIMEOUT;
             $oPHPMailer->PluginDir = PFAD_ROOT . PFAD_PHPMAILER;
             $oPHPMailer->From      = $this->cVerfasserMail;

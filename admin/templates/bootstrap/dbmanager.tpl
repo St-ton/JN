@@ -398,7 +398,7 @@ $(function() {
 
         <div class="col-md-10">
             <ol class="simple-menu">
-                <li><a href="dbmanager.php">Übersicht</a></li>
+                <li><a href="dbmanager.php">Ãœbersicht</a></li>
                 <li><a href="dbmanager.php?command"><span class="glyphicon glyphicon-flash"></span> SQL Kommando</a></li>
                 <li><a href="dbcheck.php">Konsistenz</a></li>
             </ol>
@@ -408,7 +408,7 @@ $(function() {
 
                 <p class="text-muted">
                     <i class="fa fa-keyboard-o" aria-hidden="true"></i>
-                    Code-Vervollständigung via <span class="label label-default">STRG+Leertaste</span> ausführen
+                    Code-VervollstÃ¤ndigung via <span class="label label-default">STRG+Leertaste</span> ausfÃ¼hren
                 </p>
                 
                 {if isset($error)}
@@ -423,7 +423,7 @@ $(function() {
                         <textarea name="query" id="query" class="codemirror sql" data-hint='{$jsTypo|json_encode}'>{if isset($info) && isset($info.statement)}{$info.statement}{/if}</textarea>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> Ausführen</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> AusfÃ¼hren</button>
                     </div>
                 </form>
                 
@@ -466,7 +466,7 @@ $(function() {
                                 <th class="text-center">Aktion</th>
                                 <th class="text-center">Typ</th>
                                 <th class="text-center">Kollation</th>
-                                <th class="text-right">Datensätze</th>
+                                <th class="text-right">DatensÃ¤tze</th>
                                 <th class="text-right">Auto-Inkrement</th>
                             </tr>
                             </thead>

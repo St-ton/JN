@@ -292,13 +292,6 @@ class JSONAPI
 
     public function itemsToJson($items)
     {
-        // deep UTF-8 encode
-        foreach ($items as $item) {
-            foreach (get_object_vars($item) as $key => $val) {
-                $item->$key = utf8_encode($val);
-            }
-        }
-
         return json_encode($items);
     }
 }

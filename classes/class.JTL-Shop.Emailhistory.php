@@ -205,7 +205,7 @@ class Emailhistory
     public function deleteAll()
     {
         // log that event!
-        Jtllog::writeLog(utf8_decode('eMail-History gelöscht'), JTLLOG_LEVEL_NOTICE, true, 'Emailhistory');
+        Jtllog::writeLog('eMail-History gelöscht', JTLLOG_LEVEL_NOTICE, true, 'Emailhistory');
         return !(Shop::DB()->query('TRUNCATE TABLE temailhistory', 3));
     }
 

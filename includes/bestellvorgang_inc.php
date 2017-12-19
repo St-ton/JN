@@ -697,10 +697,11 @@ function gibStepZahlung()
             }
         } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
             if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                Jtllog::writeLog(utf8_decode(
+                Jtllog::writeLog(
                     'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
-                    $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe
-                ), JTLLOG_LEVEL_ERROR);
+                    $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe,
+                    JTLLOG_LEVEL_ERROR
+                );
             }
         }
 
@@ -1682,7 +1683,7 @@ function zahlungsartGueltig($Zahlungsart)
             }
             if ($oZahlungsart && !$oZahlungsart->isValidIntern()) {
                 Jtllog::writeLog(
-                    utf8_decode('Die Zahlungsartprüfung (' . $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).'),
+                    'Die Zahlungsartprüfung (' . $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).',
                     JTLLOG_LEVEL_DEBUG,
                     false,
                     'cModulId',
@@ -1707,8 +1708,8 @@ function zahlungsartGueltig($Zahlungsart)
         }
         if ($oZahlungsart && !$oZahlungsart->isValidIntern()) {
             Jtllog::writeLog(
-                utf8_decode('Die Zahlungsartprüfung (' .
-                    $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).'),
+                'Die Zahlungsartprüfung (' .
+                    $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).',
                 JTLLOG_LEVEL_DEBUG,
                 false,
                 'cModulId',
@@ -3124,7 +3125,7 @@ function valid_plzort($plz, $ort, $land)
  */
 function umlauteUmschreibenA2AE($str)
 {
-    $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß'), utf8_decode('Ä'), utf8_decode('Ö'), utf8_decode('Ü')];
+    $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
     $rpl = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue', 'ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
 
     return str_replace($src, $rpl, $str);
@@ -3136,8 +3137,8 @@ function umlauteUmschreibenA2AE($str)
  */
 function umlauteUmschreibenAE2A($str)
 {
-    $rpl = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß'), utf8_decode('Ä'), utf8_decode('Ö'), utf8_decode('Ü')];
-    $src = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue', 'ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
+    $rpl = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
+    $src = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
 
     return str_replace($src, $rpl, $str);
 }

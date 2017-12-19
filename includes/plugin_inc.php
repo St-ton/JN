@@ -91,8 +91,8 @@ function pluginLizenzpruefung(&$oPlugin, $xParam_arr = [])
             $oPlugin->cFehler = 'Lizenzschl&uuml;ssel ist ung&uuml;ltig';
             $oPlugin->updateInDB();
             Jtllog::writeLog(
-                utf8_decode('Plugin Lizenzprüfung: Das Plugin "' . $oPlugin->cName .
-                    '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!'),
+                'Plugin Lizenzprüfung: Das Plugin "' . $oPlugin->cName .
+                    '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!',
                 JTLLOG_LEVEL_ERROR,
                 false,
                 'kPlugin',

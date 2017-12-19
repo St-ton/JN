@@ -329,8 +329,8 @@ class TemplateHelper
         $oTemplate->bHasError    = false;
         $oTemplate->eTyp         = '';
         $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? (string)trim($oXMLTemplate->Description) : '';
-        if (StringHandler::is_utf8($oTemplate->cDescription)) {
-            $oTemplate->cDescription = utf8_decode($oTemplate->cDescription);
+        if (!StringHandler::is_utf8($oTemplate->cDescription)) {
+            $oTemplate->cDescription = StringHandler::convertISO($oTemplate->cDescription);
         }
 
         if (!empty($oXMLTemplate->Parent)) {

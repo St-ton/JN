@@ -119,7 +119,7 @@ class NiceDB
             'database' => $dbName,
             'username' => $dbUser,
             'password' => $dbPass,
-            'charset'  => 'latin1',
+            'charset'  => DB_CHARSET,
         ];
         if (defined('DB_SOCKET')) {
             $dsn .= ';unix_socket=' . DB_SOCKET;
@@ -136,8 +136,10 @@ class NiceDB
         if (defined('DB_PERSISTENT_CONNECTIONS') && is_bool(DB_PERSISTENT_CONNECTIONS)) {
             $options[PDO::ATTR_PERSISTENT] = DB_PERSISTENT_CONNECTIONS;
         }
-        if (JTL_CHARSET === 'iso-8859-1') {
-            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'latin1'";
+        if (defined('DB_CHARSET') && defined('DB_COLLATE')) {
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '" . DB_CHARSET . "' COLLATE '" . DB_COLLATE . "'";
+        } elseif (defined('DB_CHARSET')) {
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '" . DB_CHARSET . "'";
         }
         $this->pdo = new PDO($dsn, $dbUser, $dbPass, $options);
         if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
@@ -220,8 +222,10 @@ class NiceDB
             $dsn .= ';host=' . $this->config['host'];
         }
         $this->pdo = new PDO($dsn, $this->config['username'], $this->config['password']);
-        if (JTL_CHARSET === 'iso-8859-1') {
-            $this->pdo->exec("SET NAMES 'latin1'");
+        if (defined('DB_CHARSET') && defined('DB_COLLATE')) {
+            $this->pdo->exec("SET NAMES '" . DB_CHARSET . "' COLLATE '" . DB_COLLATE . "'");
+        } elseif (defined('DB_CHARSET')) {
+            $this->pdo->exec("SET NAMES '" . DB_CHARSET . "'");
         }
 
         return $this;

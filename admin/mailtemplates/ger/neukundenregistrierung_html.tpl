@@ -2,7 +2,7 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
-vielen Dank für die Registrierung in unserem Onlineshop unter <a href="{$ShopURL}" target="_blank"><strong>{$ShopURL}</strong></a><br>
+vielen Dank fÃ¼r die Registrierung in unserem Onlineshop unter <a href="{$ShopURL}" target="_blank"><strong>{$ShopURL}</strong></a><br>
 <br>
 Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 <br>
@@ -165,13 +165,13 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 	</tr>
 	{/if}
 </table><br>
-Mit diesen Daten können Sie sich ab sofort in Ihrem persönlichen Kundenkonto anmelden und den aktuellen Status Ihrer Bestellungen verfolgen.<br>
+Mit diesen Daten kÃ¶nnen Sie sich ab sofort in Ihrem persÃ¶nlichen Kundenkonto anmelden und den aktuellen Status Ihrer Bestellungen verfolgen.<br>
 <br>
-Wir freuen uns sehr, Sie als neuen Kunden bei uns begrüßen zu dürfen. Wenn sie Fragen zu unserem Angebot oder speziellen Produkten haben, nehmen Sie einfach Kontakt mit uns auf.<br>
+Wir freuen uns sehr, Sie als neuen Kunden bei uns begrÃ¼ÃŸen zu dÃ¼rfen. Wenn sie Fragen zu unserem Angebot oder speziellen Produkten haben, nehmen Sie einfach Kontakt mit uns auf.<br>
 <br>
-Wir wünschen Ihnen viel Spaß beim Stöbern in unserem Sortiment.<br>
+Wir wÃ¼nschen Ihnen viel SpaÃŸ beim StÃ¶bern in unserem Sortiment.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem GruÃŸ,<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

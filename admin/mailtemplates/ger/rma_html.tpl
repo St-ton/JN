@@ -1,8 +1,8 @@
 {includeMailTemplate template=header type=html}
 
-vielen Dank für Ihre Warenrücksendung bei {$Einstellungen.global.global_shopname}.<br>
+vielen Dank fÃ¼r Ihre WarenrÃ¼cksendung bei {$Einstellungen.global.global_shopname}.<br>
 <br>
-Ihre Warenrücksendung mit der RMA Nummer {$oRMA->cRMANumber} umfasst folgende Positionen:<br>
+Ihre WarenrÃ¼cksendung mit der RMA Nummer {$oRMA->cRMANumber} umfasst folgende Positionen:<br>
 <br>
 {if isset($oRMA->oRMAArtikel_arr) && $oRMA->oRMAArtikel_arr|@count > 0}
         <table cellpadding="5" cellspacing="0" border="0" width="100%">
@@ -41,8 +41,8 @@ Ihre Warenrücksendung mit der RMA Nummer {$oRMA->cRMANumber} umfasst folgende Po
         </table>
 {/if}<br>
 <br>
-Sobald Ihre Rücksendung eintrifft, werden wir eine Erstattung über den Warenwert veranlassen. Dieser Betrag wird auf das bei Ihrer Bestellung genutzte Bankkonto zurückgebucht. Die Erstattung kann einige Tage dauern. Wir bitten um Ihr Verständnis.<br>
+Sobald Ihre RÃ¼cksendung eintrifft, werden wir eine Erstattung Ã¼ber den Warenwert veranlassen. Dieser Betrag wird auf das bei Ihrer Bestellung genutzte Bankkonto zurÃ¼ckgebucht. Die Erstattung kann einige Tage dauern. Wir bitten um Ihr VerstÃ¤ndnis.<br>
 <br>
-Sollten Sie noch weitere Fragen haben, zögern Sie nicht, uns zu schreiben.
+Sollten Sie noch weitere Fragen haben, zÃ¶gern Sie nicht, uns zu schreiben.
 
 {includeMailTemplate template=footer type=html}

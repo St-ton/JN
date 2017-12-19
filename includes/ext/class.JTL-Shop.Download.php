@@ -677,12 +677,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @param string $filename
          * @param string $mimetype
-         * @param bool $bEncode
          */
         private static function send_file_to_browser($filename, $mimetype)
         {
             $browser_agent   = 'other';
-            $HTTP_USER_AGENT = (!empty($_SERVER['HTTP_USER_AGENT']))
+            $HTTP_USER_AGENT = !empty($_SERVER['HTTP_USER_AGENT'])
                 ? $_SERVER['HTTP_USER_AGENT']
                 : '';
             if (preg_match('/Opera\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {

@@ -219,11 +219,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         private static function langComponent($bPlural = false, $bSpace = true)
         {
             $cComponent = $bSpace ? ' ' : '';
-            $cComponent .= $bPlural
-                ? Shop::Lang()->get('configComponents', 'productDetails')
-                : Shop::Lang()->get('configComponent', 'productDetails');
 
-            return $cComponent;
+            return $cComponent . Shop::Lang()->get($bPlural ? 'configComponents' : 'configComponent', 'productDetails');
         }
     }
 }

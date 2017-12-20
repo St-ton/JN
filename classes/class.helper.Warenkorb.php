@@ -482,7 +482,7 @@ class WarenkorbHelper
         ) { //warenkorbeingang?
             // VariationsBox ist vorhanden => Prüfen ob Anzahl gesetzt wurde
             if (isset($_POST['variBox']) && (int)$_POST['variBox'] === 1) {
-                if (pruefeVariBoxAnzahl($_POST['variBoxAnzahl'])) {
+                if (self::checkVariboxAmount($_POST['variBoxAnzahl'])) {
                     fuegeVariBoxInWK(
                         $_POST['variBoxAnzahl'],
                         $kArtikel,
@@ -490,7 +490,7 @@ class WarenkorbHelper
                         isset($_POST['varimatrix'])
                     );
                 } else {
-                    header('Location: index.php?a=' . $kArtikel . '&r=' . R_EMPTY_VARIBOX, true, 303);
+                    header('Location: ' . Shop::getURL() . '?a=' . $kArtikel . '&r=' . R_EMPTY_VARIBOX, true, 303);
                     exit;
                 }
             } else {
@@ -822,5 +822,24 @@ class WarenkorbHelper
         }
 
         return $redirectParam;
+    }
+
+    /**
+     * @param array $amounts
+     * @return bool
+     * @former pruefeVariBoxAnzahl
+     */
+    public static function checkVariboxAmount($amounts)
+    {
+        if (is_array($amounts) && count($amounts) > 0) {
+            // Wurde die variBox überhaupt mit einer Anzahl gefüllt?
+            foreach (array_keys($amounts) as $cKeys) {
+                if ((float)$amounts[$cKeys] > 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

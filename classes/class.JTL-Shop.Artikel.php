@@ -6413,7 +6413,7 @@ class Artikel
     {
         $cValue_arr = [];
         if (($fDimension_arr = $this->getDimension()) !== null) {
-            $kSprache   = Shop::getLanguageID();
+            $kSprache = Shop::getLanguageID();
             foreach ($fDimension_arr as $key => $val) {
                 if (!empty($val)) {
                     $cValue_arr[Shop::Lang()->get('dimension_' . $key, 'productDetails')] =

@@ -4,26 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-$smarty                = Shop::Smarty();
-$oBrowser              = getBrowser();
-$linkHelper            = LinkHelper::getInstance();
-$oTemplate             = Template::getInstance();
-$bMobilAktiv           = $oTemplate->isMobileTemplateActive();
-$currentTemplateFolder = $oTemplate->getDir();
-$currentTemplateDir    = PFAD_TEMPLATES . $currentTemplateFolder . '/';
-$bMobile               = false;
-$shopLogo              = Shop::getLogo();
-$shopURL               = Shop::getURL();
-$cart                  = isset($_SESSION['Warenkorb']) ? $_SESSION['Warenkorb'] : new Warenkorb();
-$EinstellungenTmp      = Shopsetting::getInstance()->getAll();
-$Einstellungen         = isset($Einstellungen) ? array_merge($Einstellungen, $EinstellungenTmp) : $EinstellungenTmp;
-$themeDir              = empty($Einstellungen['template']['theme']['theme_default'])
+$smarty        = Shop::Smarty();
+$oBrowser      = getBrowser();
+$linkHelper    = LinkHelper::getInstance();
+$oTemplate     = Template::getInstance();
+$bMobilAktiv   = $oTemplate->isMobileTemplateActive();
+$tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
+$bMobile       = false;
+$shopLogo      = Shop::getLogo();
+$shopURL       = Shop::getURL();
+$cart          = isset($_SESSION['Warenkorb']) ? $_SESSION['Warenkorb'] : new Warenkorb();
+$Einstellungen = Shopsetting::getInstance()->getAll();
+$themeDir      = empty($Einstellungen['template']['theme']['theme_default'])
     ? 'evo'
     : $Einstellungen['template']['theme']['theme_default'];
-$cShopName             = empty($Einstellungen['global']['global_shopname'])
+$cShopName     = empty($Einstellungen['global']['global_shopname'])
     ? 'JTL-Shop'
     : $Einstellungen['global']['global_shopname'];
-//Wechsel auf Mobil-Template
 if (!$bMobilAktiv && $oBrowser->bMobile && !isset($_SESSION['bAskMobil']) && $oTemplate->hasMobileTemplate()) {
     $_SESSION['bAskMobil'] = true;
     $bMobile               = true;
@@ -90,11 +87,11 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('cCSS_arr', $cCSS_arr)
        ->assign('cJS_arr', $cJS_arr)
        ->assign('nTemplateVersion', $oTemplate->getVersion())
-       ->assign('currentTemplateDir', $currentTemplateDir)
-       ->assign('currentTemplateDirFull', $shopURL . '/' . $currentTemplateDir)
-       ->assign('currentTemplateDirFullPath', PFAD_ROOT . $currentTemplateDir)
-       ->assign('currentThemeDir', $currentTemplateDir . 'themes/' . $themeDir . '/')
-       ->assign('currentThemeDirFull', $shopURL . '/' . $currentTemplateDir . 'themes/' . $themeDir . '/')
+       ->assign('currentTemplateDir', $tplDir)
+       ->assign('currentTemplateDirFull', $shopURL . '/' . $tplDir)
+       ->assign('currentTemplateDirFullPath', PFAD_ROOT . $tplDir)
+       ->assign('currentThemeDir', $tplDir . 'themes/' . $themeDir . '/')
+       ->assign('currentThemeDirFull', $shopURL . '/' . $tplDir . 'themes/' . $themeDir . '/')
        ->assign('session_name', session_name())
        ->assign('session_id', session_id())
        ->assign('SID', SID)

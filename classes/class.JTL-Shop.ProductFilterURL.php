@@ -234,7 +234,7 @@ class ProductFilterURL
             if ($_mmwSeo !== $url->cAlleKategorien) {
                 $_url                                                            = $_mmwSeo;
                 $url->cAlleMerkmalWerte[$this->productFilter->getAttributeValue()->getValue()] = $_url;
-                $this->attributeValue->setUnsetFilterURL($_url);
+                $this->productFilter->getAttributeValue()->setUnsetFilterURL($_url);
             }
         }
         $extraFilter                  = (new FilterItemPriceRange($this->productFilter))->init(null)->setDoUnset(true);

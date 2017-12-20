@@ -4,13 +4,13 @@
 
 Dieses Update enthält Bugfixes und Sicherheitsupdates
 
-[SHOP-1877] - Bugfix: Anführungsstriche in Variationswertnamen erzeugen Fehler
-[SHOP-1881] - Bugfix: Exception in jtl.io.js, wenn im DOM ein iFrame enthalten ist (z.B. Recaptcha)
-[SHOP-1882] - Bugfix: Markup-Fehler, wenn über JTL-Search Kindartikel in Listenansicht angezeigt werden
-[SHOP-1893] - Bugfix: Prozentuale Kupons gewähren keinen Rabatt, wenn diese vor 4.06 angelegt wurden
-[SHOP-1896] - Bugfix: Artikelbox behält Höhe nach Variationsauswahl
-[SHOP-1900] - Bugfix: undefined Index in Einstellungen zu Preisspannenfilter
-[SHOP-1935] - Bugfix: Doppelte Form- / Input-IDs in Listenansicht
+* [SHOP-1877] - Bugfix: Anführungsstriche in Variationswertnamen erzeugen Fehler
+* [SHOP-1881] - Bugfix: Exception in jtl.io.js, wenn im DOM ein iFrame enthalten ist (z.B. Recaptcha)
+* [SHOP-1882] - Bugfix: Markup-Fehler, wenn über JTL-Search Kindartikel in Listenansicht angezeigt werden
+* [SHOP-1893] - Bugfix: Prozentuale Kupons gewähren keinen Rabatt, wenn diese vor 4.06 angelegt wurden
+* [SHOP-1896] - Bugfix: Artikelbox behält Höhe nach Variationsauswahl
+* [SHOP-1900] - Bugfix: undefined Index in Einstellungen zu Preisspannenfilter
+* [SHOP-1935] - Bugfix: Doppelte Form- / Input-IDs in Listenansicht
 
 ## [4.06.2]
 

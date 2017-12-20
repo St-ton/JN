@@ -30,7 +30,7 @@
             <ul class="pagination pagination-ajax">
                 {if $Suchergebnisse->Seitenzahlen->AktuelleSeite > 1}
                     <li class="prev">
-                        <a href="{$oNaviSeite_arr.zurueck->getURL()}">&laquo; {lang key="previous" section="productOverview"}</a>
+                        <a href="{$oNaviSeite_arr.zurueck->cURL}">&laquo; {lang key="previous" section="productOverview"}</a>
                     </li>
                 {/if}
 

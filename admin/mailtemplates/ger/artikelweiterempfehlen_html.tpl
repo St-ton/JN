@@ -8,7 +8,7 @@ Schau ihn dir doch mal an: <a href="{$ShopURL}/{$Artikel->cURL}">{$Artikel->cNam
 <br>
 Vielen Dank.<br>
 <br>
-Mit freundlichem Gruﬂ,<br>
+Mit freundlichem Gru√ü,<br>
 {$VonKunde->cVorname} {$VonKunde->cNachname}
 
 {includeMailTemplate template=footer type=html}

@@ -15,7 +15,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->redirectOnFailure();
 
-if (validateToken()) {
+if (isset($_POST['path']) && validateToken()) {
     $szMdStyle = '
         <style>
             div.markdown {
@@ -55,10 +55,11 @@ if (validateToken()) {
                 border-bottom-width: 2px;
             }
         </style>';
-    if (file_exists($_POST['path'])) {
-        $info = pathinfo($_POST['path']);
+    $path = realpath($_POST['path']);
+    if ($path !== false && strpos($path . '/', PFAD_ROOT . PFAD_PLUGIN) === 0) {
+        $info = pathinfo($path);
         if (strtolower($info['extension']) === 'md') {
-            $szFileContent = file_get_contents(utf8_decode($_POST['path']));
+            $szFileContent = StringHandler::convertUTF8(file_get_contents($path));
             if (class_exists('Parsedown')) {
                 $oParseDown       = new Parsedown();
                 $szLicenseContent = $oParseDown->text($szFileContent);

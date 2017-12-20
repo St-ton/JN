@@ -23,7 +23,7 @@
     </div>
     {if isset($oPlugin)}
         <p><strong>{#pluginAuthor#}:</strong> {$oPlugin->cAutor}</p>
-        <p><strong>{#pluginHomepage#}:</strong> <a href="{$oPlugin->cURL}" target="_blank"><i class="fa fa-external-link"></i> {$oPlugin->cURL}</a></p>
+        <p><strong>{#pluginHomepage#}:</strong> <a href="{$oPlugin->cURL}" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> {$oPlugin->cURL}</a></p>
         <p><strong>{#pluginVersion#}:</strong> {$oPlugin->nVersion}</p>
         <p><strong>{#pluginDesc#}:</strong> {$oPlugin->cBeschreibung}</p>
     {/if}

@@ -106,9 +106,7 @@ $smarty->assign('bWaehrungsCheck', $bWaehrungsCheck)
 function setzeEinstellung($cPost_arr, $kWaehrung)
 {
     if ($cPost_arr['cName'] && (int)$cPost_arr['kSprache'] && (int)$kWaehrung && (int)$cPost_arr['kKundengruppe']) {
-        if (!isset($exportformat)) {
-            $exportformat = new stdClass();
-        }
+        $exportformat                  = new stdClass();
         $exportformat->cName           = $cPost_arr['cName'];
         $exportformat->cContent        = isset($cPost_arr['cContent'])
             ? str_replace("<tab>", "\t", $cPost_arr['cContent'])

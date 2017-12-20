@@ -421,13 +421,15 @@ class Profiler
     private static function getProfile($type = 'plugin', $combined = false)
     {
         if ($combined === true) {
-            return Shop::DB()->query("
-                SELECT *
+            return Shop::DB()->queryPrepared(
+                "SELECT *
                     FROM tprofiler
                     JOIN tprofiler_runs 
                         ON tprofiler.runID = tprofiler_runs.runID
-                    WHERE ptype = '" . $type . "'
-                    ORDER BY runID DESC", 2
+                    WHERE ptype = :type
+                    ORDER BY tprofiler.runID DESC",
+                ['type' => $type],
+                2
             );
         }
         $profiles = Shop::DB()->selectAll('tprofiler', 'ptype', $type, '*', 'runID DESC');
@@ -502,7 +504,7 @@ class Profiler
     public static function finish()
     {
         if (self::$enabled === true && self::$functional === true) {
-            self::$data = (self::$method === 'xhprof')
+            self::$data = self::$method === 'xhprof'
                 ? xhprof_disable()
                 : tideways_disable();
 
@@ -573,6 +575,25 @@ class Profiler
                     }
                 }
                 ++$totalQueries;
+            }
+            if (defined('FILTER_SQL_QUERIES') && FILTER_SQL_QUERIES === true) {
+                $hashes = [];
+                self::$sqlProfile = array_filter(self::$sqlProfile, function ($e) use (&$hashes) {
+                    if (!in_array($e->hash, $hashes, true)) {
+                        $hashes[] = $e->hash;
+
+                        return true;
+                    }
+
+                    return false;
+                });
+                uasort(self::$sqlProfile, function ($a, $b) {
+                    if ($a->time === $b->time) {
+                        return 0;
+                    }
+
+                    return $a->time < $b->time ? -1 : 1;
+                });
             }
             echo '
                 <style>

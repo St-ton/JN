@@ -10,61 +10,51 @@
 class Lieferschein
 {
     /**
-     * @access protected
      * @var int
      */
     protected $kLieferschein;
 
     /**
-     * @access protected
      * @var int
      */
     protected $kInetBestellung;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cLieferscheinNr;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cHinweis;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nFulfillment;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nStatus;
 
     /**
-     * @access protected
      * @var string
      */
     protected $dErstellt;
 
     /**
-     * @access protected
      * @var bool
      */
     protected $bEmailVerschickt;
 
     /**
-     * @access protected
      * @var array
      */
     public $oLieferscheinPos_arr = [];
 
     /**
-     * @access protected
      * @var array
      */
     public $oVersand_arr = [];
@@ -79,7 +69,6 @@ class Lieferschein
      *
      * @param int    $kLieferschein
      * @param object $oData
-     * @access public
      */
     public function __construct($kLieferschein = 0, $oData = null)
     {
@@ -94,13 +83,12 @@ class Lieferschein
      * @param int    $kLieferschein primary key
      * @param object $oData
      * @return $this
-     * @access private
      */
     private function loadFromDB($kLieferschein = 0, $oData = null)
     {
         $kLieferschein = (int)$kLieferschein;
         $oObj          = Shop::DB()->select('tlieferschein', 'kLieferschein', $kLieferschein);
-        if ($oObj->kLieferschein > 0) {
+        if ($oObj !== null && $oObj->kLieferschein > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $oObj->$cMember;
@@ -142,7 +130,6 @@ class Lieferschein
      *
      * @param bool $bPrim Controls the return of the method
      * @return bool|int
-     * @access public
      */
     public function save($bPrim = true)
     {
@@ -166,7 +153,6 @@ class Lieferschein
      * Update the class in the database
      *
      * @return int
-     * @access public
      */
     public function update()
     {
@@ -186,7 +172,6 @@ class Lieferschein
      * Delete the class in the database
      *
      * @return int
-     * @access public
      */
     public function delete()
     {
@@ -194,9 +179,6 @@ class Lieferschein
     }
 
     /**
-     * Sets the kLieferschein
-     *
-     * @access public
      * @param int $kLieferschein
      * @return $this
      */
@@ -208,9 +190,6 @@ class Lieferschein
     }
 
     /**
-     * Sets the kInetBestellung
-     *
-     * @access public
      * @param int $kInetBestellung
      * @return $this
      */
@@ -222,9 +201,6 @@ class Lieferschein
     }
 
     /**
-     * Sets the cLieferscheinNr
-     *
-     * @access public
      * @param string $cLieferscheinNr
      * @return $this
      */
@@ -236,9 +212,6 @@ class Lieferschein
     }
 
     /**
-     * Sets the cHinweis
-     *
-     * @access public
      * @param string $cHinweis
      * @return $this
      */
@@ -250,9 +223,6 @@ class Lieferschein
     }
 
     /**
-     * Sets the nFulfillment
-     *
-     * @access public
      * @param int $nFulfillment
      * @return $this
      */
@@ -264,9 +234,6 @@ class Lieferschein
     }
 
     /**
-     * Sets the nStatus
-     *
-     * @access public
      * @param int $nStatus
      * @return $this
      */
@@ -278,9 +245,6 @@ class Lieferschein
     }
 
     /**
-     * Sets the dErstellt
-     *
-     * @access public
      * @param string $dErstellt
      * @return $this
      */
@@ -292,9 +256,6 @@ class Lieferschein
     }
 
     /**
-     * Sets the bEmaiLVerschickt
-     *
-     * @access public
      * @param bool $bEmailVerschickt
      * @return $this
      */
@@ -306,9 +267,6 @@ class Lieferschein
     }
 
     /**
-     * Gets the kLieferschein
-     *
-     * @access public
      * @return int
      */
     public function getLieferschein()
@@ -317,9 +275,6 @@ class Lieferschein
     }
 
     /**
-     * Gets the kInetBestellung
-     *
-     * @access public
      * @return int
      */
     public function getInetBestellung()
@@ -328,9 +283,6 @@ class Lieferschein
     }
 
     /**
-     * Gets the cLieferscheinNr
-     *
-     * @access public
      * @return string
      */
     public function getLieferscheinNr()
@@ -339,9 +291,6 @@ class Lieferschein
     }
 
     /**
-     * Gets the cHinweis
-     *
-     * @access public
      * @return string
      */
     public function getHinweis()
@@ -350,9 +299,6 @@ class Lieferschein
     }
 
     /**
-     * Gets the nFulfillment
-     *
-     * @access public
      * @return int
      */
     public function getFulfillment()
@@ -361,9 +307,6 @@ class Lieferschein
     }
 
     /**
-     * Gets the nStatus
-     *
-     * @access public
      * @return int
      */
     public function getStatus()
@@ -372,9 +315,6 @@ class Lieferschein
     }
 
     /**
-     * Gets the dErstellt
-     *
-     * @access public
      * @return string
      */
     public function getErstellt()
@@ -383,9 +323,6 @@ class Lieferschein
     }
 
     /**
-     * Gets the bEmailVerschickt
-     *
-     * @access public
      * @return string
      */
     public function getEmailVerschickt()

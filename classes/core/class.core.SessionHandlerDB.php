@@ -24,7 +24,6 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
      */
     public function open($savePath, $sessName)
     {
-        //get session lifetime
         $this->lifeTime = get_cfg_var('session.gc_maxlifetime');
 
         return Shop::DB()->isConnected();
@@ -63,11 +62,11 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
     public function write($sessID, $sessData)
     {
         $sessID = Shop::DB()->escape($sessID);
-        //set new session expiration
+        // set new session expiration
         $newExp = time() + $this->lifeTime;
-        //is a session with this id already in the database?
+        // is a session with this id already in the database?
         $res = Shop::DB()->select('tsession', 'cSessionId', $sessID);
-        //if yes,
+        // if yes,
         if (!empty($res)) {
             //...update session data
             $update                  = new stdClass();
@@ -77,7 +76,7 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
             if (Shop::DB()->update('tsession', 'cSessionId', $sessID, $update) > 0) {
                 return true;
             }
-        } else { //if no session was found, create a new row
+        } else { // if no session was found, create a new row
             $session                  = new stdClass();
             $session->cSessionId      = $sessID;
             $session->nSessionExpires = $newExp;
@@ -88,7 +87,7 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
             }
         }
 
-        //an unknown error occured
+        // an unknown error occured
         return false;
     }
 
@@ -100,7 +99,7 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
      */
     public function destroy($sessID)
     {
-        //if session was deleted, return true,
+        // if session was deleted, return true,
         return Shop::DB()->delete('tsession', 'cSessionId', $sessID) > 0;
     }
 

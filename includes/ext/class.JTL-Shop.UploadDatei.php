@@ -144,18 +144,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param string $filename
          * @param string $mimetype
-         * @param bool   $bEncode
          * @param string $downloadName
          */
-        public static function send_file_to_browser($filename, $mimetype, $bEncode = false, $downloadName)
+        public static function send_file_to_browser($filename, $mimetype, $downloadName)
         {
-            if ($bEncode) {
-                $file     = basename($filename);
-                $filename = str_replace($file, '', $filename);
-                $filename .= utf8_encode($file);
-            }
             $browser_agent   = 'other';
-            $HTTP_USER_AGENT = (!empty($_SERVER['HTTP_USER_AGENT']))
+            $HTTP_USER_AGENT = !empty($_SERVER['HTTP_USER_AGENT'])
                 ? $_SERVER['HTTP_USER_AGENT']
                 : '';
             if (preg_match('/Opera\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {

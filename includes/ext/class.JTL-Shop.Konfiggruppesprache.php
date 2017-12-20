@@ -11,25 +11,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
     class Konfiggruppesprache implements JsonSerializable
     {
         /**
-         * @access protected
          * @var int
          */
         protected $kKonfiggruppe;
 
         /**
-         * @access protected
          * @var int
          */
         protected $kSprache;
 
         /**
-         * @access protected
          * @var string
          */
         protected $cName;
 
         /**
-         * @access protected
          * @var string
          */
         protected $cBeschreibung;
@@ -39,7 +35,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param int $kKonfiggruppe
          * @param int $kSprache
-         * @access public
          */
         public function __construct($kKonfiggruppe = 0, $kSprache = 0)
         {
@@ -50,6 +45,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
         /**
          * Specify data which should be serialized to JSON
+         *
+         * @return array|object|string
          */
         public function jsonSerialize()
         {
@@ -64,7 +61,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param int $kKonfiggruppe primarykey
          * @param int $kSprache primarykey
-         * @access private
          */
         private function loadFromDB($kKonfiggruppe = 0, $kSprache = 0)
         {
@@ -75,9 +71,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'kSprache',
                 (int)$kSprache
             );
-            if (isset($oObj->kKonfiggruppe, $oObj->kSprache) &&
-                $oObj->kKonfiggruppe > 0 &&
-                $oObj->kSprache > 0
+            if (isset($oObj->kKonfiggruppe, $oObj->kSprache)
+                && $oObj->kKonfiggruppe > 0
+                && $oObj->kSprache > 0
             ) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
@@ -93,7 +89,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param bool $bPrim Controls the return of the method
          * @return bool|int
-         * @access public
          */
         public function save($bPrim = true)
         {
@@ -119,7 +114,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Update the class in the database
          *
          * @return int
-         * @access public
          */
         public function update()
         {
@@ -140,7 +134,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Delete the class in the database
          *
          * @return int
-         * @access public
          */
         public function delete()
         {
@@ -152,9 +145,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the kKonfiggruppe
-         *
-         * @access public
          * @param int $kKonfiggruppe
          * @return $this
          */
@@ -166,9 +156,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the kSprache
-         *
-         * @access public
          * @param int $kSprache
          * @return $this
          */
@@ -180,9 +167,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the cName
-         *
-         * @access public
          * @param string $cName
          * @return $this
          */
@@ -194,9 +178,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the cBeschreibung
-         *
-         * @access public
          * @param string $cBeschreibung
          * @return $this
          */
@@ -208,9 +189,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the kKonfiggruppe
-         *
-         * @access public
          * @return int
          */
         public function getKonfiggruppe()
@@ -219,9 +197,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the kSprache
-         *
-         * @access public
          * @return int
          */
         public function getSprache()
@@ -230,9 +205,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the cName
-         *
-         * @access public
          * @return string
          */
         public function getName()
@@ -241,9 +213,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the cBeschreibung
-         *
-         * @access public
          * @return string
          */
         public function getBeschreibung()
@@ -252,9 +221,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the cBeschreibung
-         *
-         * @access public
          * @return bool
          */
         public function hatBeschreibung()

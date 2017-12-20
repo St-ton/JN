@@ -10,7 +10,7 @@
  */
 function speicherTrennzeichen($cPostAssoc_arr)
 {
-    $nEinheit_arr = [JTLSEPARATER_WEIGHT, JTLSEPARATER_AMOUNT];
+    $nEinheit_arr = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT];
 
     foreach ($nEinheit_arr as $nEinheit) {
         if (isset($cPostAssoc_arr['nDezimal_' . $nEinheit], $cPostAssoc_arr['cDezZeichen_' . $nEinheit], $cPostAssoc_arr['cTausenderZeichen_' . $nEinheit])) {

@@ -40,24 +40,38 @@
             {/foreach}
             </tbody>
             <tfoot>
-            {if $NettoPreise}
-                <tr class="total total-net">
-                    <td colspan="3">{lang key="totalSum"} ({lang key="net" section="global"}):</td>
-                    <td class="text-nowrap text-right"><strong>{$WarensummeLocalized[$NettoPreise]}</strong></td>
-                </tr>
-            {/if}
-            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|@count > 0}
-                {foreach name=steuerpositionen from=$Steuerpositionen item=Steuerposition}
-                    <tr class="text-muted tax">
-                        <td colspan="3">{$Steuerposition->cName}</td>
-                        <td class="text-nowrap text-right">{$Steuerposition->cPreisLocalized}</td>
+                {if $NettoPreise}
+                    <tr class="total total-net">
+                        <td colspan="3">{lang key="totalSum"} ({lang key="net" section="global"}):</td>
+                        <td class="text-nowrap text-right"><strong>{$WarensummeLocalized[$NettoPreise]}</strong></td>
                     </tr>
-                {/foreach}
-            {/if}
-            <tr class="total">
-                <td colspan="3">{lang key="totalSum"}:</td>
-                <td class="text-nowrap text-right total"><strong>{$WarensummeLocalized[0]}</strong></td>
-            </tr>
+                {/if}
+                {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|@count > 0}
+                    {foreach name=steuerpositionen from=$Steuerpositionen item=Steuerposition}
+                        <tr class="text-muted tax">
+                            <td colspan="3">{$Steuerposition->cName}</td>
+                            <td class="text-nowrap text-right">{$Steuerposition->cPreisLocalized}</td>
+                        </tr>
+                    {/foreach}
+                {/if}
+                <tr class="total">
+                    <td colspan="3">{lang key="totalSum"}:</td>
+                    <td class="text-nowrap text-right total"><strong>{$WarensummeLocalized[0]}</strong></td>
+                </tr>
+                {if isset($FavourableShipping)}
+                    {if $NettoPreise}
+                        {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key="plus" section="basket"} {lang key="vat" section="productDetails"}"}
+                    {else}
+                        {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
+                    {/if}
+                    <tr class="shipping-costs">
+                        <td colspan="4"><small>{lang|sprintf:$oSpezialseiten_arr[6]->cURL:$shippingCosts:$FavourableShipping->cCountryCode key="shippingInformationSpecific" section="basket"}</small></td>
+                    </tr>
+                {elseif empty($FavourableShipping)}
+                    <tr class="shipping-costs text-right">
+                        <td colspan="4"><small>{lang|sprintf:$oSpezialseiten_arr[6]->cURL key="shippingInformation" section="basket"}</small></td>
+                    </tr>
+                {/if}
             </tfoot>
         </table>
         {if !empty($WarenkorbVersandkostenfreiHinweis)}

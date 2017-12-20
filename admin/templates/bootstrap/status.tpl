@@ -124,7 +124,6 @@
                     <h4 class="panel-title">Subscription</h4>
                 </div>
                 <div class="panel-body">
-                    {$sub = $status->getSubscription()}
                     {if $sub === null}
                         <div class="alert alert-danger alert-sm">
                             <p><i class="fa fa-exclamation-circle"></i> Vor&uuml;bergehend keine Informationen verf&uuml;gbar.</p>
@@ -268,9 +267,9 @@
                                     <td>
                                         <div class="test-name">
                                             {if $test->getDescription()|@count_characters > 0}
-                                                <abbr title="{$test->getDescription()|utf8_decode|escape:'html'}">{$test->getName()|utf8_decode}</abbr>
+                                                <abbr title="{$test->getDescription()|escape:'html'}">{$test->getName()}</abbr>
                                             {else}
-                                                {$test->getName()|utf8_decode}
+                                                {$test->getName()}
                                             {/if}
                                         </div>
                                     </td>

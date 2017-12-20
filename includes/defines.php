@@ -5,7 +5,9 @@
  */
 
 // Charset
-ifndef('JTL_CHARSET', 'iso-8859-1');
+ifndef('JTL_CHARSET', 'utf-8');
+ifndef('DB_CHARSET', 'utf8');
+ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
 date_default_timezone_set('Europe/Berlin');
 // Log-Levels
@@ -60,17 +62,12 @@ ifndef('PFAD_SMARTY', PFAD_INCLUDES . 'vendor/smarty/smarty/libs/');
 ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
 ifndef('PFAD_XAJAX', PFAD_INCLUDES_LIBS . 'xajax_0.5_standard/');
 ifndef('PFAD_FLASHCHART', PFAD_INCLUDES_LIBS . 'flashchart/');
-ifndef('PFAD_FLASHCLOUD', PFAD_INCLUDES_LIBS . 'flashcloud/');
 ifndef('PFAD_PHPQUERY', PFAD_INCLUDES_LIBS . 'phpQuery/');
-ifndef('PFAD_PCLZIP', PFAD_INCLUDES_LIBS . 'pclzip-2-8-2/');
+ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/pclzip/pclzip/');
 ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
 ifndef('PFAD_GRAPHCLASS', PFAD_INCLUDES_LIBS . 'graph-2005-08-28/');
-ifndef('PFAD_AJAXCHECKOUT', PFAD_INCLUDES_LIBS . 'ajaxcheckout/');
-ifndef('PFAD_AJAXSUGGEST', PFAD_INCLUDES_LIBS . 'ajaxsuggest/');
-ifndef('PFAD_ART_ABNAHMEINTERVALL', PFAD_INCLUDES_LIBS . 'artikel_abnahmeintervall/');
 ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'xtea/');
 ifndef('PFAD_FLASHPLAYER', PFAD_INCLUDES_LIBS . 'flashplayer/');
-ifndef('PFAD_IMAGESLIDER', PFAD_INCLUDES_LIBS . 'slideitmoo_image_slider/');
 ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');
 ifndef('PFAD_OBJECT_CACHING', 'caching/');
 ifndef('PFAD_GFX', 'gfx/');
@@ -183,56 +180,6 @@ function ifndef($constant, $value)
 {
     defined($constant) || define($constant, $value);
 }
-
-/*$shop_writeable_paths = array(
-    // Directories
-    //PFAD_BILDER_SLIDER,
-    PFAD_GFX_TRUSTEDSHOPS, // ifndef('PFAD_GFX_TRUSTEDSHOPS', PFAD_BILDER_INTERN . 'trustedshops/');
-    PFAD_NEWSBILDER, // ifndef('PFAD_NEWSBILDER', PFAD_BILDER . 'news/');
-    PFAD_SHOPLOGO, // ifndef('PFAD_SHOPLOGO', PFAD_BILDER_INTERN . 'shoplogo/');
-    PFAD_MEDIAFILES . 'Bilder',
-    PFAD_MEDIAFILES . 'Musik',
-    PFAD_MEDIAFILES . 'Sonstiges',
-    PFAD_MEDIAFILES . 'Videos',
-    PFAD_IMAGEMAP,
-    PFAD_PRODUKTBILDER_MINI,
-    PFAD_PRODUKTBILDER_KLEIN,
-    PFAD_PRODUKTBILDER_NORMAL,
-    PFAD_PRODUKTBILDER_GROSS,
-    PFAD_KATEGORIEBILDER,
-    PFAD_VARIATIONSBILDER_MINI,
-    PFAD_VARIATIONSBILDER_NORMAL,
-    PFAD_VARIATIONSBILDER_GROSS,
-    PFAD_HERSTELLERBILDER_NORMAL,
-    PFAD_HERSTELLERBILDER_KLEIN,
-    PFAD_MERKMALBILDER_NORMAL,
-    PFAD_MERKMALBILDER_KLEIN,
-    PFAD_MERKMALWERTBILDER_NORMAL,
-    PFAD_MERKMALWERTBILDER_KLEIN,
-    PFAD_BRANDINGBILDER,
-    PFAD_SUCHSPECIALOVERLAY_KLEIN,
-    PFAD_SUCHSPECIALOVERLAY_NORMAL,
-    PFAD_SUCHSPECIALOVERLAY_GROSS,
-    PFAD_KONFIGURATOR_KLEIN,
-    PFAD_BILDER . PFAD_LINKBILDER,
-    PFAD_BILDER . PFAD_NEWSLETTERBILDER,
-    PFAD_LOGFILES,
-    PFAD_EXPORT,
-    PFAD_EXPORT_BACKUP,
-    PFAD_EXPORT_YATEGO,
-    PFAD_COMPILEDIR,
-    PFAD_DBES_TMP,
-    PFAD_UPLOADS,
-    PFAD_MEDIA_IMAGE,
-    PFAD_MEDIA_IMAGE_STORAGE,
-    PFAD_SYNC_LOGS,
-    PFAD_ADMIN . PFAD_COMPILEDIR,
-    PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS,
-    // Files
-    FILE_RSS_FEED,
-    FILE_SHOP_FEED
-);
-*/
 
 /**
  * @deprecated

@@ -45,14 +45,13 @@ final class Communication
      * @param array  $xData_arr
      * @param bool   $bPost
      * @return string
+     * @throws Exception
      */
     public static function postData($cURL, $xData_arr = [], $bPost = true)
     {
-        if (is_array($xData_arr)) {
-            return self::doCall($cURL, $xData_arr, $bPost);
-        }
-
-        return '';
+        return is_array($xData_arr)
+            ? self::doCall($cURL, $xData_arr, $bPost)
+            : '';
     }
 
     /**
@@ -60,6 +59,7 @@ final class Communication
      * @param string $cFile
      * @param bool   $bDeleteFile
      * @return mixed|string
+     * @throws Exception
      */
     public static function sendFile($cURL, $cFile, $bDeleteFile = false)
     {

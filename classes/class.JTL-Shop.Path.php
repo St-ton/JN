@@ -6,21 +6,18 @@
 
 /**
  * Path Class
- *
- * @access public
- * @author Daniel Böhmer
  */
 class Path
 {
     /**
-     * @return mixed
+     * @return string
      * @throws InvalidArgumentException
      */
     public static function combine()
     {
         $paths = func_get_args();
 
-        if (!is_array($paths) || count($paths) == 0) {
+        if (!is_array($paths) || count($paths) === 0) {
             throw new InvalidArgumentException('empty or invalid paths');
         }
 
@@ -71,6 +68,6 @@ class Path
      */
     public static function hasExtension($path)
     {
-        return (strlen(self::getExtension($path)) > 0);
+        return strlen(self::getExtension($path)) > 0;
     }
 }

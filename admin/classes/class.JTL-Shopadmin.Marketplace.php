@@ -3,8 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Communication.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.MarketplaceQuery.php';
 
 /**
  * Class Marketplace
@@ -36,6 +34,6 @@ final class Marketplace
             throw new UnexpectedValueException('Empty api response');
         }
 
-        return utf8_convert_recursive(json_decode($response), false);
+        return json_decode($response);
     }
 }

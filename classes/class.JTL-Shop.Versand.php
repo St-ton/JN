@@ -6,49 +6,41 @@
 class Versand
 {
     /**
-     * @access protected
      * @var int
      */
     protected $kVersand;
 
     /**
-     * @access protected
      * @var int
      */
     protected $kLieferschein;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cLogistik;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cLogistikURL;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cIdentCode;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cHinweis;
 
     /**
-     * @access protected
      * @var string
      */
     protected $dErstellt;
 
     /**
-     * @access protected
      * @var object
      */
     protected $oData;
@@ -58,7 +50,6 @@ class Versand
      *
      * @param int         $kVersand
      * @param null|object $oData
-     * @access public
      */
     public function __construct($kVersand = 0, $oData = null)
     {
@@ -72,7 +63,6 @@ class Versand
      *
      * @param int         $kVersand
      * @param null|object $oData
-     * @access private
      */
     private function loadFromDB($kVersand = 0, $oData = null)
     {
@@ -93,7 +83,6 @@ class Versand
      *
      * @param bool $bPrim - Controls the return of the method
      * @return bool|int
-     * @access public
      */
     public function save($bPrim = true)
     {
@@ -120,7 +109,6 @@ class Versand
      * Update the class in the database
      *
      * @return int
-     * @access public
      */
     public function update()
     {
@@ -139,7 +127,6 @@ class Versand
      * Delete the class in the database
      *
      * @return int
-     * @access public
      */
     public function delete()
     {
@@ -147,9 +134,6 @@ class Versand
     }
 
     /**
-     * Sets the kVersand
-     *
-     * @access public
      * @param int $kVersand
      * @return $this
      */
@@ -161,9 +145,6 @@ class Versand
     }
 
     /**
-     * Sets the kLieferschein
-     *
-     * @access public
      * @param int $kLieferschein
      * @return $this
      */
@@ -175,9 +156,6 @@ class Versand
     }
 
     /**
-     * Sets the cLogistik
-     *
-     * @access public
      * @param string $cLogistik
      * @return $this
      */
@@ -189,9 +167,6 @@ class Versand
     }
 
     /**
-     * Sets the cLogistikURL
-     *
-     * @access public
      * @param string $cLogistikURL
      * @return $this
      */
@@ -203,9 +178,6 @@ class Versand
     }
 
     /**
-     * Sets the cIdentCode
-     *
-     * @access public
      * @param string $cIdentCode
      * @return $this
      */
@@ -217,9 +189,6 @@ class Versand
     }
 
     /**
-     * Sets the cHinweis
-     *
-     * @access public
      * @param string $cHinweis
      * @return $this
      */
@@ -231,9 +200,6 @@ class Versand
     }
 
     /**
-     * Sets the dErstellt
-     *
-     * @access public
      * @param string $dErstellt
      * @return $this
      */
@@ -245,9 +211,6 @@ class Versand
     }
 
     /**
-     * Gets the kVersand
-     *
-     * @access public
      * @return int
      */
     public function getVersand()
@@ -256,9 +219,6 @@ class Versand
     }
 
     /**
-     * Gets the kLieferschein
-     *
-     * @access public
      * @return int
      */
     public function getLieferschein()
@@ -267,9 +227,6 @@ class Versand
     }
 
     /**
-     * Gets the cLogistik
-     *
-     * @access public
      * @return string
      */
     public function getLogistik()
@@ -278,9 +235,6 @@ class Versand
     }
 
     /**
-     * Gets the cLogistikURL
-     *
-     * @access public
      * @return string
      */
     public function getLogistikURL()
@@ -289,9 +243,6 @@ class Versand
     }
 
     /**
-     * Gets the cIdentCode
-     *
-     * @access public
      * @return string
      */
     public function getIdentCode()
@@ -300,9 +251,6 @@ class Versand
     }
 
     /**
-     * Gets the cHinweis
-     *
-     * @access public
      * @return string
      */
     public function getHinweis()
@@ -311,9 +259,6 @@ class Versand
     }
 
     /**
-     * Gets the dErstellt
-     *
-     * @access public
      * @return string
      */
     public function getErstellt()
@@ -322,9 +267,6 @@ class Versand
     }
 
     /**
-     * Gets the Replaced Logistic Url
-     *
-     * @access public
      * @return string
      */
     public function getLogistikVarUrl()

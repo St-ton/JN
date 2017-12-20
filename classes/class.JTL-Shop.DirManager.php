@@ -6,9 +6,6 @@
 
 /**
  * Class DirManager
- *
- * @access public
- * @author Daniel Böhmer
  */
 class DirManager
 {

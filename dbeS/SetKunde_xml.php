@@ -54,7 +54,7 @@ if ($return === 2) {
 }
 
 if (is_array($res)) {
-    echo $return . ";\n" . XML_serialize($res);
+    echo $return . ";\n" . StringHandler::convertISO(XML_serialize($res));
 } else {
     echo $return . ';' . $res;
 }
@@ -161,7 +161,6 @@ function bearbeite($xml)
 
             $Kunde->updateInDB();
             // Kundendatenhistory
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kundendatenhistory.php';
             Kundendatenhistory::saveHistory($oKundeAlt, $Kunde, Kundendatenhistory::QUELLE_DBES);
 
             if (count($oKundenattribut_arr) > 0) {

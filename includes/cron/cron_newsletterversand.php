@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kampagne.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'newsletter_inc.php';
 
 /**
@@ -15,6 +14,9 @@ function bearbeiteNewsletterversand($oJobQueue)
 {
     $oJobQueue->nInArbeit = 1;
     $oNewsletter          = $oJobQueue->holeJobArt();
+    if ($oNewsletter === null) {
+        return false;
+    }
     $Einstellungen        = Shop::getSettings([CONF_NEWSLETTER]);
     $mailSmarty           = bereiteNewsletterVor($Einstellungen);
     // Baue Arrays mit kKeys
@@ -28,7 +30,6 @@ function bearbeiteNewsletterversand($oJobQueue)
         $oJobQueue->deleteJobInDB();
         // NewsletterQueue löschen
         Shop::DB()->delete('tnewsletterqueue', 'kNewsletter', $oJobQueue->kKey);
-        unset($oJobQueue);
 
         return false;
     }
@@ -85,7 +86,6 @@ function bearbeiteNewsletterversand($oJobQueue)
     );
 
     if (is_array($oNewsletterEmpfaenger_arr) && count($oNewsletterEmpfaenger_arr) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';
         $shopURL = Shop::getURL();
         foreach ($oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger) {
             unset($oKunde);
@@ -126,7 +126,6 @@ function bearbeiteNewsletterversand($oJobQueue)
         $oJobQueue->deleteJobInDB();
         // NewsletterQueue löschen
         Shop::DB()->delete('tnewsletterqueue', 'kNewsletter', (int)$oJobQueue->kKey);
-        unset($oJobQueue);
     }
 
     return true;

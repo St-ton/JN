@@ -516,8 +516,6 @@ function mappeDatenMember($cMemberRow_arr, $cMapping_arr)
  */
 function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Linechart.php';
-
     $chart = new Linechart(['active' => false]);
 
     if (is_array($stats) && count($stats) > 0) {
@@ -554,10 +552,7 @@ function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
  */
 function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Piechart.php';
-
     $chart = new Piechart(['active' => false]);
-
     if (is_array($stats) && count($stats) > 0) {
         $chart->setActive(true);
         $data = [];
@@ -603,8 +598,6 @@ function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
  */
 function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Linechart.php';
-
     $chart = new Linechart(['active' => false]);
     if (is_array($Series) && count($Series) > 0) {
         $i = 0;

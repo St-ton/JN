@@ -50,7 +50,6 @@ class AdminFavorite
     /**
      * Setzt AdminFavorite mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kAdminfav Primary Key
      * @return $this
      */
@@ -68,7 +67,6 @@ class AdminFavorite
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return mixed
      */
     public function insertInDB()

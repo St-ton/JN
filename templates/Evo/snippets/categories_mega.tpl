@@ -11,8 +11,8 @@
     {get_category_array categoryId=0 assign='categories'}
     {if !empty($categories)}
         {if !isset($activeId)}
-            {if isset($NaviFilter->Kategorie) && intval($NaviFilter->Kategorie->kKategorie) > 0}
-                {$activeId = $NaviFilter->Kategorie->kKategorie}
+            {if $NaviFilter->hasCategory()}
+                {$activeId = $NaviFilter->getCategory()->getValue()}
             {elseif $nSeitenTyp == 1 && isset($Artikel)}
                 {assign var='activeId' value=$Artikel->gibKategorie()}
             {elseif $nSeitenTyp == 1 && isset($smarty.session.LetzteKategorie)}
@@ -138,7 +138,7 @@
 {if isset($Einstellungen.template.megamenu.show_manufacturers) && $Einstellungen.template.megamenu.show_manufacturers !== 'N' && isset($Einstellungen.global.global_sichtbarkeit) && ($Einstellungen.global.global_sichtbarkeit != 3 || isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde != 0)}
     {get_manufacturers assign='manufacturers'}
     {if !empty($manufacturers)}
-        <li class="dropdown megamenu-fw{if (isset($NaviFilter->Hersteller) && !empty($NaviFilter->Hersteller->kHersteller)) || $nSeitenTyp == PAGE_HERSTELLER} active{/if}">
+        <li class="dropdown megamenu-fw{if $NaviFilter->hasManufacturer() || $nSeitenTyp == PAGE_HERSTELLER} active{/if}">
             {assign var="linkKeyHersteller" value=LinkHelper::getInstance()->getSpecialPageLinkKey(LINKTYP_HERSTELLER)}
             {if !empty($linkKeyHersteller)}{assign var="linkSEOHersteller" value=LinkHelper::getInstance()->getPageLinkLanguage($linkKeyHersteller)}{/if}
             {if isset($linkSEOHersteller)}
@@ -168,7 +168,7 @@
                                 <div class="row row-eq-height row-eq-img-height">
                                     {foreach name=hersteller from=$manufacturers item=hst}
                                         <div class="col-xs-6 col-sm-3 col-lg-3">
-                                            <div class="category-wrapper manufacturer top15{if isset($NaviFilter->Hersteller) && $NaviFilter->Hersteller->kHersteller == $hst->kHersteller} active{/if}">
+                                            <div class="category-wrapper manufacturer top15{if $NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() == $hst->kHersteller} active{/if}">
                                                 {if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                     <div class="img text-center">
                                                         <a href="{$hst->cSeo}"><img src="{$hst->cBildpfadNormal}" class=image alt="{$hst->cName|escape:'html'}"></a>

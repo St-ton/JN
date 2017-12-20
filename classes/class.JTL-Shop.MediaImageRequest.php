@@ -74,13 +74,13 @@ class MediaImageRequest
      */
     public function copy(&$mixed, MediaImageRequest $new)
     {
-        $mixed = (object) $mixed;
+        $mixed = (object)$mixed;
         foreach ($mixed as $property => &$value) {
             $new->$property = &$value;
             unset($mixed->$property);
         }
         unset($value);
-        $mixed = (unset) $mixed;
+        $mixed = null;
 
         return $new;
     }
@@ -244,7 +244,7 @@ class MediaImageRequest
         $type   = $this->getType();
         $number = $this->getNumber();
 
-        if ($path = $this->cachedPath()) {
+        if (($path = $this->cachedPath()) !== null) {
             return $path;
         }
 
@@ -264,22 +264,21 @@ class MediaImageRequest
     }
 
     /**
+     * @param string|null $path
      * @return string|null
      */
     protected function cachedPath($path = null)
     {
-        $hash = sprintf('%s-%s-%s', $this->getId(),
-            $this->getNumber(), $this->getType());
-
+        $hash = sprintf('%s-%s-%s', $this->getId(), $this->getNumber(), $this->getType());
         if ($path === null) {
-            if (array_key_exists($hash, static::$cache)) {
-                return static::$cache[$hash];
-            }
-
-            return;
+            return array_key_exists($hash, static::$cache)
+                ? static::$cache[$hash]
+                : null;
         }
 
         static::$cache[$hash] = $path;
+
+        return $path;
     }
 
     /**

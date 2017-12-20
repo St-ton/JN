@@ -53,13 +53,11 @@ class LastJob
 
     /**
      * @param int $nJob
-     * @return false|stdClass
+     * @return null|stdClass
      */
     public function getJob($nJob)
     {
-        $result = Shop::DB()->select('tlastjob', 'nJob', (int)$nJob);
-
-        return $result === 0 ? false : $result;
+        return Shop::DB()->select('tlastjob', 'nJob', (int)$nJob);
     }
 
     /**
@@ -70,8 +68,7 @@ class LastJob
     public function run($nJob, $cJobName = null)
     {
         $job = $this->getJob($nJob);
-
-        if (!isset($job) || $job === false) {
+        if ($job === null) {
             $job = (object)[
                 'cType'     => 'STD',
                 'nJob'      => (int)$nJob,

@@ -1169,7 +1169,7 @@ function sendStatusMail()
         $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
 
         if ($oMailObjekt) {
-            $oMailObjekt->cIntervall = utf8_decode($cIntervalAdj . ' Status-Email');
+            $oMailObjekt->cIntervall = (JTL_CHARSET !== 'UTF-8' ? StringHandler::convertISO($cIntervalAdj) : $cIntervalAdj) . ' Status-Email';
 
             sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $oMailObjekt->mail);
 

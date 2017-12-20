@@ -4,13 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/syncinclude.php';
-//smarty lib
-global $smarty;
-
-if ($smarty === null) {
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-    $smarty = Shop::Smarty();
-}
 
 $return = 3;
 if (auth()) {
@@ -230,15 +223,13 @@ function bearbeiteInsert($xml)
             }
         }
 
-        $cache = Shop::Cache();
 //        $flushArray = [];
 //        $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kKategorie;
 //        if (isset($Kategorie->kOberKategorie) && $Kategorie->kOberKategorie > 0) {
 //            $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kOberKategorie;
 //        }
-//        $cache->flushTags($flushArray);
+//        Shop::Cache()->flushTags($flushArray);
         //@todo: the above does not really work on parent categories when adding/deleting child categories
-        $cache->flushTags([CACHING_GROUP_CATEGORY]);
     }
 }
 
@@ -262,7 +253,6 @@ function loescheKategorie($kKategorie)
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Kategorie geloescht: ' . $kKategorie, JTLLOG_LEVEL_DEBUG, false, 'Kategorien_xml');
     }
-    Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY]);
 }
 
 /**

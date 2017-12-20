@@ -7,7 +7,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.PlausiKundenfeld.php';
 /** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings([CONF_KUNDENFELD]);
 $cHinweis      = '';
@@ -41,7 +40,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         }
     } elseif (isset($_POST['aktualisieren']) && validateToken()) { // Aktualisieren
         // Kundenfelder auslesen und in Smarty assignen
-        $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nSort DESC');
+        $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*');
 
         if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
             foreach ($oKundenfeld_arr as $oKundenfeld) {
@@ -59,6 +58,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         $nPflicht        = $_POST['nPflicht'];
         $nEdit           = $_POST['nEdit'];
         $cWert_arr       = isset($_POST['cWert']) ? $_POST['cWert'] : null;
+        $nWertSort_arr   = isset($_POST['nWertSort']) ? $_POST['nWertSort'] : null;
         $oKundenfeld_arr = [];
 
         // Plausi
@@ -92,18 +92,24 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             }
 
             if ($cTyp === 'auswahl' && is_array($cWert_arr) && count($cWert_arr) > 0) {
-                foreach ($cWert_arr as $cWert) {
+                for($i = 0; $i < count($cWert_arr); $i++) {
                     unset($oKundenfeldWert);
                     $oKundenfeldWert              = new stdClass();
                     $oKundenfeldWert->kKundenfeld = $kKundenfeld;
-                    $oKundenfeldWert->cWert       = $cWert;
+                    $oKundenfeldWert->cWert       = $cWert_arr[$i];
+                    $oKundenfeldWert->nSort       = $nWertSort_arr[$i];
 
                     Shop::DB()->insert('tkundenfeldwert', $oKundenfeldWert);
                 }
             }
             $cHinweis .= 'Ihr Kundenfeld wurde erfolgreich gespeichert.<br />';
         } else {
-            $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
+            $vWrongFields = $oPlausi->getPlausiVar();
+            if (isset($vWrongFields['cName']) && 2 === $vWrongFields['cName']) {
+                $cFehler = 'Ein Feld mit diesen Namen existiert bereits!';
+            } else {
+                $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
+            }
             $smarty->assign('xPlausiVar_arr', $oPlausi->getPlausiVar())
                    ->assign('xPostVar_arr', $oPlausi->getPostVar())
                    ->assign('kKundenfeld', verifyGPCDataInteger('kKundenfeld'));
@@ -115,7 +121,13 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     if ($kKundenfeld > 0) {
         $oKundenfeld = Shop::DB()->select('tkundenfeld', 'kKundenfeld', $kKundenfeld);
         if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {
-            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$kKundenfeld);
+            $oKundenfeldWert_arr = Shop::DB()->selectAll(
+                'tkundenfeldwert',
+                'kKundenfeld',
+                (int)$kKundenfeld,
+                '*',
+                'nSort, kKundenfeldWert ASC'
+            );
 
             $oKundenfeld->oKundenfeldWert_arr = $oKundenfeldWert_arr;
             $smarty->assign('oKundenfeld', $oKundenfeld);
@@ -146,21 +158,47 @@ for ($i = 0; $i < $configCount; $i++) {
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert) ? $oSetValue->cWert : null);
 }
 // Kundenfelder auslesen und in Smarty assignen
-$oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nSort DESC');
+$oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nSort ASC');
 if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
     // tkundenfeldwert nachschauen ob dort Werte fuer tkundenfeld enthalten sind
     foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
         if ($oKundenfeld->cTyp === 'auswahl') {
-            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$oKundenfeld->kKundenfeld);
+            $oKundenfeldWert_arr = Shop::DB()->selectAll(
+                'tkundenfeldwert',
+                'kKundenfeld',
+                (int)$oKundenfeld->kKundenfeld,
+                '*',
+                'nSort, kKundenfeldWert ASC'
+            );
             $oKundenfeld_arr[$i]->oKundenfeldWert_arr = $oKundenfeldWert_arr;
         }
     }
 }
 
+// calculate the highest sort-order number (based on the 'ORDER BY' above)
+// to recommend the user the next sort-order-value, instead of a placeholder
+$oLastElement       =  end($oKundenfeld_arr);
+$nHighestSortValue  =  (false !== $oLastElement) ? $oLastElement->nSort : 0;
+$oPreLastElement    =  prev($oKundenfeld_arr);
+if (false === $oPreLastElement) {
+    if (false !== $oLastElement) {
+        $nHighestSortDiff = (0 !== $oLastElement->nSort) ? $oLastElement->nSort : 1;
+    } else {
+        $nHighestSortDiff = 1;
+    }
+} else {
+    $nHighestSortDiff = $oLastElement->nSort - $oPreLastElement->nSort;
+}
+reset($oKundenfeld_arr); // we leave the array in a safe state
+
+
 $smarty->assign('oKundenfeld_arr', $oKundenfeld_arr)
+       ->assign('nHighestSortValue', $nHighestSortValue)
+       ->assign('nHighestSortDiff', $nHighestSortDiff)
        ->assign('oConfig_arr', $oConfig_arr)
        ->assign('Sprachen', gibAlleSprachen())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('kundenfeld.tpl');
+

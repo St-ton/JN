@@ -39,7 +39,6 @@ class KategorieArtikel
     /**
      * Setzt KategorieArtikel mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kKategorieArtikel
      * @return $this
      */
@@ -56,7 +55,6 @@ class KategorieArtikel
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int
      */
     public function insertInDB()
@@ -67,7 +65,6 @@ class KategorieArtikel
     /**
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
-     * @access public
      * @return int
      */
     public function updateInDB()

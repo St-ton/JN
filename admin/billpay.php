@@ -35,7 +35,7 @@ if (strlen($oBillpay->getSetting('pid')) > 0 &&
             try {
                 $oConfig->send();
                 if ($oConfig->has_error()) {
-                    $oItem->cFehler = utf8_decode($oConfig->get_merchant_error_message());
+                    $oItem->cFehler = $oConfig->get_merchant_error_message();
                 } else {
                     $oRechnung          = new stdClass();
                     $oRechnung->bAktiv  = $oConfig->is_invoice_allowed();

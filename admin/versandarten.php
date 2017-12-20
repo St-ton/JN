@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Versandart.php';
 
 $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
 
@@ -35,7 +34,7 @@ if (isset($_POST['del']) && (int)$_POST['del'] > 0 && validateToken() && Versand
     $cHinweis .= 'Versandart erfolgreich gel&ouml;scht!';
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 }
-if (isset($_POST['edit']) && intval($_POST['edit']) > 0 && validateToken()) {
+if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && validateToken()) {
     $step                        = 'neue Versandart';
     $Versandart                  = Shop::DB()->select('tversandart', 'kVersandart', (int)$_POST['edit']);
     $VersandartZahlungsarten     = Shop::DB()->selectAll('tversandartzahlungsart', 'kVersandart', (int)$_POST['edit'], '*', 'kZahlungsart');

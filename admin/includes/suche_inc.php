@@ -13,13 +13,9 @@
  */
 function adminSearch($query, $data = false)
 {
-    define('JTL_CHARSET', 'utf-8');
-
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
-
-    Shop::DB()->executeQuery('SET NAMES ' . str_replace('-', '', JTL_CHARSET), 3);
 
     $settings       = bearbeiteEinstellungsSuche($query);
     $shippings      = getShippingByName($query);
@@ -49,7 +45,7 @@ function adminSearch($query, $data = false)
                ->assign('shippings', count($shippings) > 0 ? $shippings : null)
                ->assign('paymentMethods', count($paymentMethods) > 0 ? $paymentMethods : null);
         $template = Shop::Smarty()->fetch('suche.tpl');
-        $result   = (object)['data' => (object)['tpl' => utf8_encode($template)]];
+        $result   = (object)['data' => (object)['tpl' => $template]];
     }
 
     $result->type = 'search';

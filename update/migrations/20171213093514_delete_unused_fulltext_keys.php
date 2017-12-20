@@ -32,11 +32,11 @@ class Migration_20171213093514 extends Migration implements IMigration
                 "SHOW INDEX FROM `{$table}` 
                     WHERE Index_type = 'FULLTEXT' 
 	                    AND Column_name IN ('cBeschreibung', 'cKurzBeschreibung')
-                        AND Key_name != 'idx_tartikel_fulltext'"
+                        AND Key_name != 'idx_{$table}_fulltext'"
             );
             if (is_array($oKeys)) {
                 foreach ($oKeys as $key) {
-                    $this->execute("ALTER IGNORE TABLE $table DROP KEY {$key->Key_name}");
+                    $this->execute("ALTER TABLE $table DROP KEY {$key->Key_name}");
                 }
             }
         }

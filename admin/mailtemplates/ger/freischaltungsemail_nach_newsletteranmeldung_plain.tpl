@@ -6,14 +6,14 @@
 	Sehr {if $NewsletterEmpfaenger->cAnrede=="w"}geehrte Frau{else}geehrter Herr{/if} {$NewsletterEmpfaenger->cNachname},
 {/if}
 
-wir freuen uns, Sie als Newsletter-Abonnent bei {$Firma->cName} begrüßen zu können.
+wir freuen uns, Sie als Newsletter-Abonnent bei {$Firma->cName} begrÃ¼ÃŸen zu kÃ¶nnen.
 
 Bitte klicken Sie den folgenden Freischaltcode, um Newsletter zu empfangen:
 {$NewsletterEmpfaenger->cFreischaltURL}
 
-Sie können sich jederzeit vom Newsletter abmelden indem Sie entweder den Löschcode <a href="{$NewsletterEmpfaenger->cLoeschURL}">{$NewsletterEmpfaenger->cLoeschURL}</a>} eingeben oder den Link Newsletter im Shop besuchen.
+Sie kÃ¶nnen sich jederzeit vom Newsletter abmelden indem Sie entweder den LÃ¶schcode <a href="{$NewsletterEmpfaenger->cLoeschURL}">{$NewsletterEmpfaenger->cLoeschURL}</a>} eingeben oder den Link Newsletter im Shop besuchen.
 
-Mit freundlichem Gruß,
+Mit freundlichem GruÃŸ,
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

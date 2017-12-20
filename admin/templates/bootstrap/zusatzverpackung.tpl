@@ -178,8 +178,8 @@
                     </div>
                     <div class="panel-footer">
                         <div class="btn-group">
-                            <button name="loeschen" type="submit" value="{#zusatzverpackungDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#zusatzverpackungDelete#}</button>
-                            <button name="aktualisieren" type="submit" value="{#zusatzverpackungUpdate#}" class="btn btn-default"><i class="fa fa-refresh"></i> {#zusatzverpackungUpdate#}</button>
+                            <button name="loeschen" type="submit" value="delete" class="btn btn-danger"><i class="fa fa-trash"></i> {#zusatzverpackungDelete#}</button>
+                            <button name="aktualisieren" type="submit" value="refresh" class="btn btn-default"><i class="fa fa-refresh"></i> {#zusatzverpackungUpdate#}</button>
                         </div>
                     </div>
                 </div>

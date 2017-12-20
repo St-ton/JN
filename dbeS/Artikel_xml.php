@@ -6,13 +6,6 @@
 
 require_once __DIR__ . '/syncinclude.php';
 
-global $smarty;
-
-if ($smarty === null) {
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-    $smarty = Shop::Smarty();
-}
-
 $return  = 3;
 $archive = null;
 if (auth()) {
@@ -93,8 +86,6 @@ function bearbeiteDeletes($xml, $conf)
     if (!is_array($xml['del_artikel']['kArtikel'])) {
         $xml['del_artikel']['kArtikel'] = [$xml['del_artikel']['kArtikel']];
     }
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-
     foreach ($xml['del_artikel']['kArtikel'] as $kArtikel) {
         $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
@@ -131,7 +122,6 @@ function bearbeiteDeletes($xml, $conf)
  */
 function bearbeiteInsert($xml, array $conf)
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
     $res = [];
 
     $Artikel           = new stdClass();

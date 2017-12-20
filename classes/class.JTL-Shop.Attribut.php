@@ -50,7 +50,6 @@ class Attribut
     /**
      * Setzt Attribut mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kAttribut Primary Key
      * @return $this
      */
@@ -68,7 +67,6 @@ class Attribut
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return mixed
      */
     public function insertInDB()

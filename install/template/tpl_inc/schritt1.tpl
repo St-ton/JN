@@ -21,7 +21,7 @@
         </div>
         <div class="panel-body">
             <div class="well">
-                <p>Für das Backend des Shops (<code>http://www.mein-shop.de/admin</code>), wo Sie Shop-Einstellungen durchführen und Statistiken einsehen können, wird jetzt ein Administrator-Benutzer angelegt.</p>
+                <p>FÃ¼r das Backend des Shops (<code>http://www.mein-shop.de/admin</code>), wo Sie Shop-Einstellungen durchfÃ¼hren und Statistiken einsehen kÃ¶nnen, wird jetzt ein Administrator-Benutzer angelegt.</p>
             </div>
             <div class="col-xs-12">
                 <div class="form-group">
@@ -52,8 +52,8 @@
         </div>
         <div class="panel-body">
             <p class="well">
-                Für die Synchronisation zwischen JTL-Wawi und JTL-Shop wird ein Synchronisations-Benutzer benötigt.<br>
-                Diese Daten werden in den Webshop-Einstellungen der JTL-Wawi eingetragen (Näheres dazu im nächsten Schritt).
+                FÃ¼r die Synchronisation zwischen JTL-Wawi und JTL-Shop wird ein Synchronisations-Benutzer benÃ¶tigt.<br>
+                Diese Daten werden in den Webshop-Einstellungen der JTL-Wawi eingetragen (NÃ¤heres dazu im nÃ¤chsten Schritt).
             </p>
 
             <div class="col-xs-12">
@@ -80,6 +80,6 @@
     </div>
 
     <p class="tcenter">
-        <button type="submit" class="submit btn btn-primary pull-right"><i class="fa fa-share"></i> Installation abschließen</button>
+        <button type="submit" class="submit btn btn-primary pull-right"><i class="fa fa-share"></i> Installation abschlieÃŸen</button>
     </p>
 </form>

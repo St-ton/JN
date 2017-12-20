@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.WidgetBase.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Template.php';
 
 /**
  * Class WidgetShopinfo

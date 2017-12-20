@@ -78,7 +78,7 @@
       $this.monthsFullNames = new Array(12);
       $this.monthsFullNames[0] = "Januar";
       $this.monthsFullNames[1] = "Februar";
-      $this.monthsFullNames[2] = "März";
+      $this.monthsFullNames[2] = "MÃ¤rz";
       $this.monthsFullNames[3] = "April";
       $this.monthsFullNames[4] = "Mai";
       $this.monthsFullNames[5] = "Juni";

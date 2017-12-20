@@ -5,7 +5,7 @@
  */
 
 /**
- * @global JTLSmarty $smarty
+ * @global JTLSmarty    $smarty
  * @global AdminAccount $oAccount
  */
 
@@ -17,5 +17,5 @@ use JMS\Serializer\SerializerBuilder;
 
 \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
 
-$smarty->assign('data', sslcheckGetData());
-$smarty->display('sslcheck.tpl');
+$smarty->assign('data', sslcheckGetData())
+       ->display('sslcheck.tpl');

@@ -8,7 +8,6 @@
  * @global JTLSmarty $smarty
  * @global AdminAccount $oAccount
  */
-
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
 

@@ -4,14 +4,4 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-/**
- * Interface PluginLizenz
- */
-interface PluginLizenz
-{
-    /**
-     * @param string $cLicence
-     * @return mixed
-     */
-    public function checkLicence($cLicence);
-}
+// this class was moved to interface.JTL-Shop.IPluginLizenz.php

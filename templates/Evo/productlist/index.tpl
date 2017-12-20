@@ -11,7 +11,12 @@
         {/block}
     
         {assign var='style' value='gallery'}
-        {assign var='grid' value='col-xs-6 col-lg-4'}
+
+        {if isset($boxes.left) && !$bExclusive && !empty($boxes.left)}
+            {assign var='grid' value='col-xs-6 col-lg-4'}
+        {else}
+            {assign var='grid' value='col-xs-6 col-md-4'}
+        {/if}
         {*Prio: -> Funktionsattribut -> Benutzereingabe -> Standarddarstellung*}
         {if (!empty($AktuelleKategorie->categoryFunctionAttributes['darstellung']) &&
         $AktuelleKategorie->categoryFunctionAttributes['darstellung'] == 1) ||
@@ -54,7 +59,7 @@
         {/block}
         
         {block name="productlist-footer"}
-        {include file='productlist/footer.tpl'}
+            {include file='productlist/footer.tpl'}
         {/block}
     </div>
 {/block}

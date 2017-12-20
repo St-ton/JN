@@ -120,9 +120,9 @@
                         <tr>
                             <td>
                                 <div class="test-name">
-                                    <strong>{$test->getName()|utf8_decode}</strong><br>
+                                    <strong>{$test->getName()}</strong><br>
                                     {if $test->getDescription()|@count_characters > 0}
-                                        <p class="hidden-xs expandable">{$test->getDescription()|utf8_decode}</p>
+                                        <p class="hidden-xs expandable">{$test->getDescription()}</p>
                                     {/if}
                                 </div>
                             </td>
@@ -154,9 +154,9 @@
                             <tr>
                                 <td>
                                     <div class="test-name">
-                                        <strong>{$test->getName()|utf8_decode}</strong><br>
+                                        <strong>{$test->getName()}</strong><br>
                                         {if $test->getDescription()|@count_characters > 0}
-                                            <p class="hidden-xs expandable">{$test->getDescription()|utf8_decode}</p>
+                                            <p class="hidden-xs expandable">{$test->getDescription()}</p>
                                         {/if}
                                     </div>
                                 </td>
@@ -188,9 +188,9 @@
                                 <tr>
                                     <td>
                                         <div class="test-name">
-                                            <strong>{$test->getName()|utf8_decode}</strong><br>
+                                            <strong>{$test->getName()}</strong><br>
                                             {if $test->getDescription()|@count_characters > 0}
-                                                <p class="hidden-xs expandable">{$test->getDescription()|utf8_decode}</p>
+                                                <p class="hidden-xs expandable">{$test->getDescription()}</p>
                                             {/if}
                                         </div>
                                     </td>
@@ -222,9 +222,9 @@
                                 <tr>
                                     <td>
                                         <div class="test-name">
-                                            <strong>{$test->getName()|utf8_decode}</strong><br>
+                                            <strong>{$test->getName()}</strong><br>
                                             {if $test->getDescription()|@count_characters > 0}
-                                                <p class="hidden-xs expandable">{$test->getDescription()|utf8_decode}</p>
+                                                <p class="hidden-xs expandable">{$test->getDescription()}</p>
                                             {/if}
                                         </div>
                                     </td>

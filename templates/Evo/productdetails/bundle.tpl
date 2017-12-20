@@ -26,7 +26,7 @@
                     </ul>
                 </div>
                 <div class="col-xs-12 col-md-4">
-                    {if $smarty.session.Kundengruppe->darfPreiseSehen}
+                    {if $smarty.session.Kundengruppe->mayViewPrices()}
                         <p class="bundle-price">
                             <strong>{lang key="priceForAll" section="productDetails"}:</strong>
                             <strong class="price price-sm">{$ProduktBundle->cPriceLocalized[$NettoPreise]}</strong>

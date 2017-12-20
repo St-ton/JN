@@ -26,39 +26,20 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
 
 $shop = Shop::getInstance();
 error_reporting(SYNC_LOG_LEVEL);
 if (!is_writable(PFAD_SYNC_TMP)) {
     syncException('Fehler beim Abgleich: Das Shop-Verzeichnis dbeS/' . PFAD_SYNC_TMP . ' ist nicht durch den Web-User beschreibbar!', 8);
 }
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ImageCloud.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Path.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.StringHandler.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Synclogin.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Shopsetting.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Lieferadresse.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Rechnungsadresse.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Template.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Sprache.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
 require_once PFAD_ROOT . PFAD_DBES . 'xml_tools.php';
-require_once PFAD_ROOT . PFAD_PCLZIP . 'pclzip.lib.php';
 require_once PFAD_ROOT . PFAD_DBES . 'mappings.php';
 
-//datenbankverbindung aufbauen
-$DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.JTLCache.php';
-$cache = JTLCache::getInstance();
-$cache->setJtlCacheConfig();
+$DB    = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$cache = JTLCache::getInstance()->setJtlCacheConfig();
 
 $GLOBALS['bSeo'] = true; //compatibility!
 // Liste aller Hooks, die momentan im Shop gebraucht werden könnten
@@ -344,7 +325,7 @@ function buildAttributes(&$arr, $cExclude_arr = [])
 function zipRedirect($zip, $xml_obj)
 {
     $xmlfile = fopen(PFAD_SYNC_TMP . FILENAME_XML, 'w');
-    fwrite($xmlfile, strtr(XML_serialize($xml_obj), "\0", ' '));
+    fwrite($xmlfile, strtr(StringHandler::convertISO(XML_serialize($xml_obj)), "\0", ' '));
     fclose($xmlfile);
     if (file_exists(PFAD_SYNC_TMP . FILENAME_XML)) {
         $archive = new PclZip(PFAD_SYNC_TMP . $zip);
@@ -460,11 +441,11 @@ function JTLMapArr($oXmlTree, $cMapping_arr)
 {
     $oMapped = new stdClass();
     foreach ($oXmlTree->Attributes() as $cKey => $cVal) {
-        $oMapped->{$cKey} = utf8_decode((string)$cVal);
+        $oMapped->{$cKey} = (string)$cVal;
     }
     foreach ($cMapping_arr as $cMap) {
         if (isset($oXmlTree->{$cMap})) {
-            $oMapped->{$cMap} = utf8_decode((string)$oXmlTree->{$cMap});
+            $oMapped->{$cMap} = (string)$oXmlTree->{$cMap};
         }
     }
 
@@ -506,7 +487,6 @@ function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
 /**
  * @param object $oArtikel
  * @param array  $oKundengruppe_arr
- * @global JTLSmarty $smarty
  */
 function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
 {
@@ -557,13 +537,9 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
         );
         if (is_array($Benachrichtigungen) && count($Benachrichtigungen) > 0) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
             require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kampagne.php';
 
-            $Artikel = new Artikel();
-            $Artikel->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
+            $Artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
             // Kampagne
             $oKampagne = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
             if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
@@ -680,10 +656,10 @@ function translateError($cMessage)
 {
     if (preg_match('/Maximum execution time of (\d+) second.? exceeded/', $cMessage, $cMatch_arr)) {
         $nSeconds = (int)$cMatch_arr[1];
-        $cMessage = utf8_decode("Maximale Ausführungszeit von $nSeconds Sekunden überschritten");
+        $cMessage = "Maximale Ausführungszeit von $nSeconds Sekunden überschritten";
     } elseif (preg_match("/Allowed memory size of (\d+) bytes exhausted/", $cMessage, $cMatch_arr)) {
         $nLimit   = (int)$cMatch_arr[1];
-        $cMessage = utf8_decode("Erlaubte Speichergröße von $nLimit Bytes erschöpft");
+        $cMessage = "Erlaubte Speichergröße von $nLimit Bytes erschöpft";
     }
 
     return $cMessage;
@@ -828,7 +804,6 @@ function checkDbeSXmlRedirect($cSeoOld, $cSeoNew)
 {
     // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
     if ($cSeoOld !== $cSeoNew && strlen($cSeoOld) > 0 && strlen($cSeoNew) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Redirect.php';
         $oRedirect = new Redirect();
         $xPath_arr = parse_url(Shop::getURL());
         if (isset($xPath_arr['path'])) {
@@ -998,7 +973,7 @@ function handleNewPriceFormat($xml)
             $kKundengruppen_arr = Kundengruppe::getGroups();
             /** @var Kundengruppe $customergroup */
             foreach ($kKundengruppen_arr as $customergroup) {
-                $kKundengruppe = $customergroup->getKundengruppe();
+                $kKundengruppe = $customergroup->getID();
                 if (isset($xml['fStandardpreisNetto']) && !in_array($kKundengruppe, $customerGroupHandled, true)) {
                     $kPreis = handlePriceFormat($kArtikel, $kKundengruppe);
                     $o      = (object)[

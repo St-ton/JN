@@ -259,11 +259,12 @@ function gibLivesucheTop($conf)
         : 0;
     foreach ($suchwolke_objs as $suchwolke) {
         if ($suchwolke->kSuchanfrage > 0) {
-            $suchwolke->Klasse = ($prio_step < 1) ?
+            $suchwolke->Klasse   = ($prio_step < 1) ?
                 rand(1, 10) :
                 (round(($suchwolke->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
-            $suchwolke->cURL = baueURL($suchwolke, URLART_LIVESUCHE);
-            $Suchwolke_arr[] = $suchwolke;
+            $suchwolke->cURL     = baueURL($suchwolke, URLART_LIVESUCHE);
+            $suchwolke->cURLFull = baueURL($suchwolke, URLART_LIVESUCHE, 0, false, true);
+            $Suchwolke_arr[]     = $suchwolke;
         }
     }
 
@@ -318,11 +319,12 @@ function gibLivesucheLast($conf)
         0;
     foreach ($suchwolke_objs as $suchwolke) {
         if ($suchwolke->kSuchanfrage > 0) {
-            $suchwolke->Klasse = ($prio_step < 1) ?
+            $suchwolke->Klasse   = ($prio_step < 1) ?
                 rand(1, 10) :
                 round(($suchwolke->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / $prio_step) + 1;
-            $suchwolke->cURL = baueURL($suchwolke, URLART_LIVESUCHE);
-            $Suchwolke_arr[] = $suchwolke;
+            $suchwolke->cURL     = baueURL($suchwolke, URLART_LIVESUCHE);
+            $suchwolke->cURLFull = baueURL($suchwolke, URLART_LIVESUCHE, 0, false, true);
+            $Suchwolke_arr[]     = $suchwolke;
         }
     }
 
@@ -359,15 +361,14 @@ function gibTagging($conf)
     $prio_step    = ($count > 0) ?
         (($tagwolke_objs[0]->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / 9) :
         0;
-    if (is_array($tagwolke_objs) && count($tagwolke_objs) > 0) {
-        foreach ($tagwolke_objs as $tagwolke) {
-            if ($tagwolke->kTag > 0) {
-                $tagwolke->Klasse = ($prio_step < 1) ?
-                    rand(1, 10) :
-                    (round(($tagwolke->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / $prio_step) + 1);
-                $tagwolke->cURL = baueURL($tagwolke, URLART_TAG);
-                $Tagwolke_arr[] = $tagwolke;
-            }
+    foreach ($tagwolke_objs as $tagwolke) {
+        if ($tagwolke->kTag > 0) {
+            $tagwolke->Klasse   = ($prio_step < 1) ?
+                rand(1, 10) :
+                (round(($tagwolke->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / $prio_step) + 1);
+            $tagwolke->cURL     = baueURL($tagwolke, URLART_TAG);
+            $tagwolke->cURLFull = baueURL($tagwolke, URLART_TAG, 0, false, true);
+            $Tagwolke_arr[]     = $tagwolke;
         }
     }
     if (count($Tagwolke_arr) > 0) {
@@ -393,7 +394,8 @@ function gibNewsletterHistory()
     );
     // URLs bauen
     foreach ($oNewsletterHistory_arr as $oNewsletterHistory) {
-        $oNewsletterHistory->cURL = baueURL($oNewsletterHistory, URLART_NEWS);
+        $oNewsletterHistory->cURL     = baueURL($oNewsletterHistory, URLART_NEWS);
+        $oNewsletterHistory->cURLFull = baueURL($oNewsletterHistory, URLART_NEWS, 0, false, true);
     }
 
     return $oNewsletterHistory_arr;

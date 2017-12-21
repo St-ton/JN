@@ -12,7 +12,7 @@
 
         {if $attributeValue->isActive()}
             <li class="active">
-                <a rel="nofollow" href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"{if $Merkmal->getData('cTyp') === 'BILD'} title="{$attributeValue->getValue()}"{/if}>
+                <a rel="nofollow" href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"{if $Merkmal->getData('cTyp') === 'BILD'} title="{$attributeValue->getValue()|escape:'html'}"{/if}>
                     <span class="badge pull-right">{$attributeValue->getCount()}</span>
                     <span class="value">
                         <i class="fa fa-check-square-o text-muted"></i>

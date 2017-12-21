@@ -1250,7 +1250,7 @@ class Artikel
             $image->cURLGross   = $shopURL . $image->cPfadGross;
 
             if ($i === 0) {
-                $this->cVorschaubild = $image->cPfadKlein;
+                $this->cVorschaubild = $image->cURLKlein;
             }
             // Lookup image alt attribute
             $idx                 = 'img_alt_' . $imgNo;
@@ -6151,10 +6151,11 @@ class Artikel
                 GROUP BY ttag.kTag 
                 ORDER BY ttagartikel.nAnzahlTagging DESC {$tag_limit}", 2
         );
-        foreach ($tags as $i => $tag) {
-            $tags[$i]->kTag   = (int)$tags[$i]->kTag;
-            $tags[$i]->Anzahl = (int)$tags[$i]->Anzahl;
-            $tags[$i]->cURL   = baueURL($tags[$i], URLART_TAG);
+        foreach ($tags as $tag) {
+            $tag->kTag     = (int)$tag->kTag;
+            $tag->Anzahl   = (int)$tag->Anzahl;
+            $tag->cURL     = baueURL($tag, URLART_TAG);
+            $tag->cURLFull = baueURL($tag, URLART_TAG, 0, false, true);
         }
         executeHook(HOOK_ARTIKEL_INC_PRODUKTTAGGING, [
                 'kArtikel' => $this->kArtikel,

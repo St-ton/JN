@@ -767,7 +767,7 @@ class ProductFilter
      */
     public function registerFilter(IFilter $filter)
     {
-        $this->filters[] = $filter->setData($this);
+        $this->filters[] = $filter->setBaseData($this);
 
         return $this;
     }
@@ -798,7 +798,7 @@ class ProductFilter
      */
     public function addActiveFilter(IFilter $filter, $filterValue)
     {
-        $this->activeFilters[] = $filter->setData($this)->init($filterValue)->generateActiveFilterData();
+        $this->activeFilters[] = $filter->setBaseData($this)->init($filterValue)->generateActiveFilterData();
 
         return $filter;
     }

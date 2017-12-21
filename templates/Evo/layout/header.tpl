@@ -35,15 +35,15 @@
     {block name="head-icons"}
         {if !empty($Einstellungen.template.theme.favicon)}
             {if file_exists("{$currentTemplateDir}{$Einstellungen.template.theme.favicon}")}
-                <link type="image/x-icon" href="{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
+                <link type="image/x-icon" href="{$ShopURL}/{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
                     rel="shortcut icon">
             {else}
                 <link type="image/x-icon"
-                    href="{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}"
+                    href="{$ShopURL}/{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}"
                         rel="shortcut icon">
             {/if}
         {else}
-            <link type="image/x-icon" href="favicon-default.ico" rel="shortcut icon">
+            <link type="image/x-icon" href="{$ShopURL}/favicon-default.ico" rel="shortcut icon">
         {/if}
         {if $nSeitenTyp == 1 && isset($Artikel) && !empty($Artikel->Bilder)}
             <link rel="image_src" href="{$ShopURL}/{$Artikel->Bilder[0]->cPfadGross}">
@@ -68,7 +68,7 @@
         {/if}
         {* RSS *}
         {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}
-            <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="rss.xml">
+            <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="{$ShopURL}/rss.xml">
         {/if}
         {* Languages *}
         {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}

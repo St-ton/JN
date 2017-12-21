@@ -189,7 +189,7 @@ abstract class AbstractFilter implements IFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
-        $this->setData($productFilter)->setClassName(get_class($this));
+        $this->setBaseData($productFilter)->setClassName(get_class($this));
     }
 
     /**
@@ -202,6 +202,17 @@ abstract class AbstractFilter implements IFilter
             $this->isInitialized = true;
             $this->setValue($value)->setSeo($this->availableLanguages);
         }
+
+        return $this;
+    }
+
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function setIsInitialized($value)
+    {
+        $this->isInitialized = $value;
 
         return $this;
     }
@@ -448,7 +459,7 @@ abstract class AbstractFilter implements IFilter
      * @param ProductFilter $productFilter
      * @return $this
      */
-    public function setData($productFilter)
+    public function setBaseData($productFilter)
     {
         $this->productFilter      = $productFilter;
         $this->languageID         = $productFilter->getLanguageID();

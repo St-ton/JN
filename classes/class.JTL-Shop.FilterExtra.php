@@ -253,6 +253,27 @@ class FilterExtra extends AbstractFilter
 
     /**
      * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
+    public function setData($name, $value)
+    {
+        $this->data[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getData($name)
+    {
+        return isset($this->data[$name]) ? $this->data[$name] : null;
+    }
+
+    /**
+     * @param string $name
      * @param mixed  $value
      * @return $this
      */

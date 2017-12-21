@@ -10,23 +10,23 @@
 {/if}
 
 {if isset($Suchergebnisse->SucheErfolglos) && $Suchergebnisse->SucheErfolglos == 1}
-    <div class="alert alert-info">{lang key="noResults" section="productOverview"}</div>
-    <form id="suche2" action="index.php" method="get" class="form">
+    <div class="alert alert-info">{lang key='noResults' section='productOverview'}</div>
+    <form id="suche2" action="{$ShopURL}" method="get" class="form">
         <fieldset>
             <ul class="list-unstyled">
                 <li class="form-group">
-                    <label for="searchkey">{lang key="searchText" section="global"}</label>
+                    <label for="searchkey">{lang key='searchText'}</label>
                     <input type="text" class="form-control" name="suchausdruck" value="{if isset($Suchergebnisse->cSuche)}{$Suchergebnisse->cSuche|escape:'htmlall'}{/if}" id="searchkey" />
                 </li>
                 <li class="form-group">
-                    <input type="submit" value="{lang key="searchAgain" section="productOverview"}" class="submit btn btn-primary" />
+                    <input type="submit" value="{lang key='searchAgain' section='productOverview'}" class="submit btn btn-primary" />
                 </li>
             </ul>
         </fieldset>
     </form>
 {/if}
 
-{include file="snippets/extension.tpl"}
+{include file='snippets/extension.tpl'}
 
 {block name="productlist-header"}
 {if $oNavigationsinfo->hasData()}
@@ -34,7 +34,7 @@
     <div class="desc clearfix">
         {if $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif' && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
           <div class="img pull-left">
-            <img class="img-responsive" src="{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
+            <img class="img-responsive" src="{$ShopURL}/{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
           </div>
         {/if}
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
@@ -67,12 +67,12 @@
                 <div class="thumbnail">
                     <a href="{$Unterkat->cURL}">
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
-                            <img src="{$Unterkat->cBildURL}" alt="{$Unterkat->cName}"/>
+                            <img src="{$Unterkat->cBildURLFull}" alt="{$Unterkat->cName}"/>
                         {/if}
                     </a>
                     {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
                         <div class="caption text-center">
-                            <a href="{$Unterkat->cURL}">
+                            <a href="{$Unterkat->cURLFull}">
                                 {$Unterkat->cName}
                             </a>
                         </div>
@@ -86,7 +86,7 @@
                             <ul class="list-unstyled small subsub">
                                 {foreach from=$Unterkat->Unterkategorien item=UnterUnterKat}
                                     <li>
-                                        <a href="{$UnterUnterKat->cURL}" title="{$UnterUnterKat->cName}">{$UnterUnterKat->cName}</a>
+                                        <a href="{$UnterUnterKat->cURLFull}" title="{$UnterUnterKat->cName}">{$UnterUnterKat->cName}</a>
                                     </li>
                                 {/foreach}
                             </ul>
@@ -102,7 +102,7 @@
 {include file="productwizard/index.tpl"}
 
 {if count($Suchergebnisse->Artikel->elemente) > 0}
-    <form id="improve_search" action="index.php" method="get" class="form-inline clearfix">
+    <form id="improve_search" action="{$ShopURL}" method="get" class="form-inline clearfix">
         {if $NaviFilter->hasCategory()}
             <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />
         {/if}
@@ -166,12 +166,12 @@
 
 {if $Suchergebnisse->Artikel->elemente|@count <= 0 && isset($KategorieInhalt)}
     {if isset($KategorieInhalt->TopArtikel->elemente)}
-        {lang key="topOffer" section="global" assign='slidertitle'}
+        {lang key='topOffer' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}
     {/if}
 
     {if isset($KategorieInhalt->BestsellerArtikel->elemente)}
-        {lang key="bestsellers" section="global" assign='slidertitle'}
+        {lang key='bestsellers' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-bestseller-products' productlist=$KategorieInhalt->BestsellerArtikel->elemente title=$slidertitle}
     {/if}
 {/if}
@@ -179,10 +179,10 @@
 {if $Suchergebnisse->GesamtanzahlArtikel > 0}
     <div class="row list-pageinfo top10">
         <div class="col-xs-4 page-current">
-            <strong>{lang key="page" section="productOverview"} {$Suchergebnisse->Seitenzahlen->AktuelleSeite}</strong> {lang key="of" section="productOverview"} {$Suchergebnisse->Seitenzahlen->MaxSeiten}
+            <strong>{lang key='page' section='productOverview'} {$Suchergebnisse->Seitenzahlen->AktuelleSeite}</strong> {lang key='of' section='productOverview'} {$Suchergebnisse->Seitenzahlen->MaxSeiten}
         </div>
         <div class="col-xs-8 page-total text-right">
-            {lang key="products" section="global"} {$Suchergebnisse->ArtikelVon} - {$Suchergebnisse->ArtikelBis} {lang key="of" section="productOverview"} {$Suchergebnisse->GesamtanzahlArtikel}
+            {lang key='products'} {$Suchergebnisse->ArtikelVon} - {$Suchergebnisse->ArtikelBis} {lang key='of' section='productOverview'} {$Suchergebnisse->GesamtanzahlArtikel}
         </div>
     </div>
 {/if}

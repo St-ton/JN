@@ -19,12 +19,12 @@
                     {foreach name=vergleich from=$oVergleichsliste->oArtikel_arr item=oArtikel}
                         <td style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center">
                             <div class="thumbnail">
-                                <a href="{$oArtikel->cURL}">
+                                <a href="{$oArtikel->cURLFull}">
                                     {image src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
                                 </a>
                             </div>
                             <p>
-                                <a href="{$oArtikel->cURL}">{$oArtikel->cName}</a>
+                                <a href="{$oArtikel->cURLFull}">{$oArtikel->cName}</a>
                             </p>
     
                             {if $oArtikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}

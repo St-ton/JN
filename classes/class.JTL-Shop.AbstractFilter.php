@@ -207,6 +207,17 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
+     * @param bool $value
+     * @return $this
+     */
+    public function setIsInitialized($value)
+    {
+        $this->isInitialized = $value;
+
+        return $this;
+    }
+
+    /**
      * @return $this
      */
     public function generateActiveFilterData()

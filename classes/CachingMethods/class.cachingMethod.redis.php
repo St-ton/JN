@@ -81,9 +81,9 @@ class cache_redis implements ICachingMethod
             if ($res === false) {
                 return false;
             }
-            //set custom prefix
+            // set custom prefix
             $redis->setOption(Redis::OPT_PREFIX, $this->options['prefix']);
-            //set php serializer for objects and arrays
+            // set php serializer for objects and arrays
             $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
 
             $this->_redis = $redis;

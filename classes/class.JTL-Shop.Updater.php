@@ -10,11 +10,6 @@
 class Updater
 {
     /**
-     * @var array
-     */
-    protected static $availableVersions;
-
-    /**
      * @var boolean
      */
     protected static $isVerified = false;
@@ -78,6 +73,7 @@ class Updater
      *
      * @param string $file
      * @param bool $compress
+     * @throws Exception
      */
     public function createSqlDump($file, $compress = true)
     {
@@ -142,6 +138,7 @@ class Updater
 
     /**
      * @return int
+     * @throws Exception
      */
     public function getCurrentDatabaseVersion()
     {
@@ -188,34 +185,6 @@ class Updater
         }
 
         return $previousVersion;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLatestVersion()
-    {
-        $versions = $this->getAvailableVersions();
-
-        return (int)end($versions);
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getAvailableVersions()
-    {
-        if (static::$availableVersions === null || !is_array(static::$availableVersions)) {
-            $content = http_get_contents('http://api.jtl-software.de/shop/versions');
-            if ($content !== null && !empty($content)) {
-                $versions = json_decode($content);
-                if (is_array($versions)) {
-                    static::$availableVersions = $versions;
-                }
-            }
-        }
-
-        return static::$availableVersions;
     }
 
     /**
@@ -273,6 +242,7 @@ class Updater
 
     /**
      * @return int|mixed
+     * @throws Exception
      */
     protected function updateToNextVersion()
     {
@@ -358,34 +328,6 @@ class Updater
         $manager->executeMigration($migration, IMigration::UP);
 
         return $migration;
-    }
-
-    /**
-     * @return array
-     */
-    public function getPendingMigrations2()
-    {
-        /*
-        $migrations    = [];
-        
-        $migrationDirs = array_filter($this->getUpdateDirs(), function ($v) {
-            return (int)$v >= 402;
-        });
-
-        foreach ($migrationDirs as $version) {
-            $migration = new MigrationManager((int)$version);
-            $pending   = $migration->getPendingMigrations();
-            if (count($pending) > 0) {
-                $migrations[(int)$version] = $pending;
-            }
-        }
-        
-        return $migrations;
-        */
-
-        $manager = new MigrationManager();
-
-        return $manager->getPendingMigrations();
     }
 
     /**

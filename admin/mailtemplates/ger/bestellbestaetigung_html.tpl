@@ -2,7 +2,7 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
-vielen Dank für Ihre Bestellung bei {$Einstellungen.global.global_shopname}.<br>
+vielen Dank fÃ¼r Ihre Bestellung bei {$Einstellungen.global.global_shopname}.<br>
 <br>
 {if $Verfuegbarkeit_arr.cArtikelName_arr|@count > 0}
 {$Verfuegbarkeit_arr.cHinweis}
@@ -24,7 +24,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 {if $Position->nPosTyp==1}
                     {if !empty($Position->kKonfigitem)} * {/if}<strong>{$Position->cName}</strong> {if $Position->cArtNr}({$Position->cArtNr}){/if}
                     {if isset($Position->Artikel->nErscheinendesProdukt) && $Position->Artikel->nErscheinendesProdukt}
-                        <br>Verfügbar ab: <strong>{$Position->Artikel->Erscheinungsdatum_de}</strong>
+                        <br>VerfÃ¼gbar ab: <strong>{$Position->Artikel->Erscheinungsdatum_de}</strong>
                     {/if}
                     {if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === "Y" && $Position->cLieferstatus}
                         <br><small>Lieferzeit: {$Position->cLieferstatus}</small>
@@ -412,10 +412,10 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
         </tr>
     </table><br>
 {/if}
-Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
+Sie haben folgende Zahlungsart gewÃ¤hlt: {$Bestellung->cZahlungsartName}<br>
 <br>
 {if $Bestellung->Zahlungsart->cModulId === "za_ueberweisung_jtl"}
-    <strong>Bitte führen Sie die folgende Überweisung durch:</strong><br>
+    <strong>Bitte fÃ¼hren Sie die folgende Ãœberweisung durch:</strong><br>
     <br>
     <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
         <tr>
@@ -577,7 +577,7 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 {/if}
 {if $Bestellung->Zahlungsart->cModulId === "za_rechnung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId === "za_lastschrift_jtl"}
-    Wir belasten in Kürze folgendes Bankkonto um die fällige Summe:<br>
+    Wir belasten in KÃ¼rze folgendes Bankkonto um die fÃ¤llige Summe:<br>
     <br>
     Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}<br>
     IBAN: {$Bestellung->Zahlungsinfo->cIBAN}<br>
@@ -586,10 +586,10 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
     <br>
 {elseif $Bestellung->Zahlungsart->cModulId === "za_barzahlung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId === "za_paypal_jtl"}
-    Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende Emailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
+    Falls Sie Ihre Zahlung per PayPal noch nicht durchgefÃ¼hrt haben, nutzen Sie folgende Emailadresse als EmpfÃ¤nger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
 {elseif $Bestellung->Zahlungsart->cModulId === "za_moneybookers_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_invoice_jtl" || $Bestellung->Zahlungsart->cModulId=="za_billpay_rate_payment_jtl"}
-    <strong>Bitte überweisen Sie den Gesamtbetrag auf folgendes Konto:</strong><br>
+    <strong>Bitte Ã¼berweisen Sie den Gesamtbetrag auf folgendes Konto:</strong><br>
     <br>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
         <tr>
@@ -715,23 +715,23 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
     </table>
     <br>
 {elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_direct_debit_jtl"}
-Vielen Dank, dass Sie sich beim Kauf der Ware für die BillPay Lastschrift entschieden haben.<br />
-Wir buchen den Rechnungsbetrag in den nächsten Tagen von dem bei der Bestellung angegebenen Konto ab.<br />
+Vielen Dank, dass Sie sich beim Kauf der Ware fÃ¼r die BillPay Lastschrift entschieden haben.<br />
+Wir buchen den Rechnungsbetrag in den nÃ¤chsten Tagen von dem bei der Bestellung angegebenen Konto ab.<br />
 <br />
 {elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_paylater_jtl"}
-Vielen Dank, dass Sie sich für die Zahlung mit PayLater entschieden haben.<br />
-Die fälligen Beträge werden von dem bei der Bestellung angegebenen Konto abgebucht.<br />
-Zusätzlich zu dieser Rechnung bekommen Sie von BillPay in Kürze einen Teilzahlungsplan mit detaillierten Informationen über Ihre Teilzahlung.<br />
+Vielen Dank, dass Sie sich fÃ¼r die Zahlung mit PayLater entschieden haben.<br />
+Die fÃ¤lligen BetrÃ¤ge werden von dem bei der Bestellung angegebenen Konto abgebucht.<br />
+ZusÃ¤tzlich zu dieser Rechnung bekommen Sie von BillPay in KÃ¼rze einen Teilzahlungsplan mit detaillierten Informationen Ã¼ber Ihre Teilzahlung.<br />
 <br />
 {/if}
-Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.<br>
+Ãœber den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.<br>
 <br>
 {if !empty($oTrustedShopsBewertenButton->cURL)}
-    Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.<br>
+    Waren Sie mit Ihrer Bestellung zufrieden? Dann wÃ¼rden wir uns Ã¼ber eine Empfehlung freuen ... es dauert auch nur eine Minute.<br>
     <a href="{$oTrustedShopsBewertenButton->cURL}"><img src="{$oTrustedShopsBewertenButton->cPicURL}" alt="Bewerten Sie uns!"></a><br><br>
 {/if}<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem GruÃŸ,<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

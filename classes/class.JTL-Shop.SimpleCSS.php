@@ -52,8 +52,7 @@ class SimpleCSS
             if ($i % 2 === 0) {
                 $cCSSBaseAttr_arr = [];
                 $cSelector_arr    = explode(',', $cData_arr[$i]);
-            }
-            if ($i % 2 === 1) {
+            } else {
                 $cAttr_arr = explode(';', $cData_arr[$i]);
                 $cAttr_arr = $this->trimCSSData($cAttr_arr);
                 foreach ($cAttr_arr as $cAttr) {
@@ -162,16 +161,16 @@ class SimpleCSS
     }
 
     /**
-     * @param $cOrdner
+     * @param string $cOrdner
      * @return string
      */
     public function getTemplatePath($cOrdner)
     {
-        return PFAD_ROOT . 'templates/' . $cOrdner . '/';
+        return realpath(PFAD_ROOT . 'templates/' . basename($cOrdner)) . '/';
     }
 
     /**
-     * @param $cOrdner
+     * @param string $cOrdner
      * @return string
      */
     public function getCustomCSSFile($cOrdner)

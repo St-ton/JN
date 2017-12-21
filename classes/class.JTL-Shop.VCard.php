@@ -101,8 +101,9 @@ class VCard
 
     /**
      * VCard constructor.
-     * @param string $vcardData
+     * @param  string     $vcardData
      * @param array|null $options
+     * @throws Exception
      */
     public function __construct($vcardData, array $options = null)
     {
@@ -302,10 +303,7 @@ class VCard
                 switch ($paramKey) {
                     case 'encoding':
                         $encoding = $paramValue;
-
-                        if (in_array($paramValue, ['b', 'base64'], true)) {
-                            //$rawValue = base64_decode($Value);
-                        } elseif ($paramValue === 'quoted-printable') { // v2.1
+                        if ($paramValue === 'quoted-printable') { // v2.1
                             $rawValue = quoted_printable_decode($rawValue);
                         }
                         break;
@@ -323,14 +321,14 @@ class VCard
 
         // prüfe auf zusätzliche Doppelpunk getrennte parameter (z.B. Apples "X-ABCROP-RECTANGLE" für photos)
         if (isset($params['encoding'])
+            && strpos($rawValue, ':') !== false
             && in_array($key, self::$elementsFile, true)
             && in_array($params['encoding'], ['b', 'base64'], true)
         ) {
             // wenn ein Doppelpunkt vorhanden ist, dann gibt es zusätzliche Address Book paremeter,
             // da ein ":" kein gültiges Zeichen in Base64 ist
-            if (strpos($rawValue, ':') !== false) {
-                $rawValue = array_pop(explode(':', $rawValue));
-            }
+            $exploded = explode(':', $rawValue);
+            $rawValue = array_pop($exploded);
         }
 
         if (isset(self::$elementsStructured[$key])) {
@@ -585,28 +583,30 @@ class VCard
      */
     public function asKunde()
     {
-        $Kunde = new stdClass();
+        $Einstellungen = Shop::getSettings([
+            CONF_KUNDEN
+        ]);
 
+        $Kunde = new stdClass();
         if (isset($this->GENDER)) {
             $Kunde->cAnrede = $this->GENDER === 'F' ? 'w' : 'm';
         }
-
         if (isset($this->N)) {
             if (!empty($this->N->Prefixes)) {
                 if (is_array($this->N->Prefixes)) {
                     // Workaround fals prefix für Anrede genutzt wird
-                    if (in_array(Shop::Lang()->get('salutationM', 'global'), $this->N->Prefixes, true)) {
+                    if (in_array(Shop::Lang()->get('salutationM'), $this->N->Prefixes, true)) {
                         $Kunde->cAnrede = 'm';
-                    } elseif (in_array(Shop::Lang()->get('salutationW', 'global'), $this->N->Prefixes, true)) {
+                    } elseif (in_array(Shop::Lang()->get('salutationW'), $this->N->Prefixes, true)) {
                         $Kunde->cAnrede = 'w';
                     } else {
                         $Kunde->cTitel = implode(' ', $this->N->Prefixes);
                     }
                 } else {
                     // Workaround fals prefix für Anrede genutzt wird
-                    if (Shop::Lang()->get('salutationM', 'global') === $this->N->Prefixes) {
+                    if (Shop::Lang()->get('salutationM') === $this->N->Prefixes) {
                         $Kunde->cAnrede = 'm';
-                    } elseif (Shop::Lang()->get('salutationW', 'global') === $this->N->Prefixes) {
+                    } elseif (Shop::Lang()->get('salutationW') === $this->N->Prefixes) {
                         $Kunde->cAnrede = 'w';
                     } else {
                         $Kunde->cTitel = $this->N->Prefixes;
@@ -617,9 +617,11 @@ class VCard
             $Kunde->cVorname  = isset($this->N->FirstName) ? $this->N->FirstName : '';
             $Kunde->cNachname = isset($this->N->LastName) ? $this->N->LastName : '';
         }
-
+        if (empty($Kunde->cVorname) && isset($this->FN)) {
+            $Kunde->cVorname = $this->FN;
+        }
         if (isset($this->ADR)) {
-            $adr = self::getValue($this->ADR, ['home', 'work', '*'], null, true);
+            $adr = self::getValue($this->ADR, ['home', 'work', '*']);
 
             $Kunde->cStrasse      = isset($adr->StreetAddress) ? $adr->StreetAddress : '';
             $Kunde->cAdressZusatz = isset($adr->ExtendedAddress) ? $adr->ExtendedAddress : '';
@@ -627,7 +629,12 @@ class VCard
             $Kunde->cOrt          = isset($adr->Locality) ? $adr->Locality : '';
             $Kunde->cBundesland   = isset($adr->Region) ? $adr->Region : '';
             $Kunde->cLand         = isset($adr->Country) ? landISO($adr->Country) : '';
-
+            if (empty($adr->Country) && !empty($adr->Region)) {
+                $Kunde->cLand = landISO($adr->Region);
+            }
+            if ($Kunde->cLand == 'noISO') {
+                $Kunde->cLand = $Einstellungen['kunden']['kundenregistrierung_standardland'];
+            }
             if (preg_match('/^(.*)[\. ]*([0-9]+[a-zA-Z]?)$/U', $Kunde->cStrasse, $hits)) {
                 $Kunde->cStrasse    = $hits[1];
                 $Kunde->cHausnummer = $hits[2];
@@ -635,28 +642,23 @@ class VCard
                 $Kunde->cHausnummer = '';
             }
         }
-
         if (isset($this->TEL)) {
             $Kunde->cMobil = self::getValue($this->TEL, ['cell'], '', false);
             $Kunde->cFax   = self::getValue($this->TEL, ['fax', 'home_fax', 'fax_home', 'work_fax', 'fax_work'], '', false);
-            $Kunde->cTel   = self::getValue($this->TEL, ['home', 'work', '*'], '', true);
+            $Kunde->cTel   = self::getValue($this->TEL, ['home', 'work', '*'], '');
         }
-
         if (isset($this->EMAIL)) {
-            $Kunde->cMail = self::getValue($this->EMAIL, ['home', 'work', '*'], '', true);
+            $Kunde->cMail = self::getValue($this->EMAIL, ['home', 'work', '*'], '');
         }
-
         if (isset($this->URL)) {
-            $Kunde->cWWW = self::getValue($this->URL, ['home', 'work', '*'], '', true);
+            $Kunde->cWWW = self::getValue($this->URL, ['home', 'work', '*'], '');
         }
-
         if (isset($this->BDAY)) {
             $Kunde->dGeburtstag = $this->BDAY->format('d.m.Y');
         }
-
         // vCard-Daten liegen hier immer in UTF8 vor
         foreach ($Kunde as $property => $data) {
-            $Kunde->$property = StringHandler::filterXSS(utf8_decode($data));
+            $Kunde->$property = StringHandler::filterXSS($data);
         }
 
         return $Kunde;

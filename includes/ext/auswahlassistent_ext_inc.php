@@ -21,94 +21,82 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $kAuswahlAssistentFrage = null;
         $nFrage                 = null;
         $kKategorie             = null;
-        if ($Einstellungen['auswahlassistent_nutzen'] === 'Y' && class_exists('AuswahlAssistent')) {
-            // Work Around falls schon einmal der Auswahlassistent durchlaufen wurde
-            if (Shop::getProductFilter()->getFilterCount() > 0) {
-                return false;
-            }
-            if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
-                $Einstellungen = Shop::getSettings([
-                    CONF_GLOBAL, 
-                    CONF_RSS, 
-                    CONF_ARTIKELUEBERSICHT, 
-                    CONF_AUSWAHLASSISTENT
-                ]);
-                if (isset($_GET['aaParams']) && strlen($_GET['aaParams']) > 0) {
-                    // a href geklickt
-                    extract(extractAAURL($_GET['aaParams']));
-                    setSelectionWizardAnswer($kMerkmalWert, $kAuswahlAssistentFrage, $nFrage, $kKategorie);
-                } elseif (isset($_POST['aaParams']) && (int)$_POST['aaParams'] === 1) {
-                    // Selectbox geklickt
-                    $kMerkmalWert           = StringHandler::filterXSS($_POST['kMerkmalWert']);
-                    $kAuswahlAssistentFrage = StringHandler::filterXSS($_POST['kAuswahlAssistentFrage']);
-                    $nFrage                 = StringHandler::filterXSS($_POST['nFrage']);
-                    $kKategorie             = StringHandler::filterXSS($_POST['kKategorie']);
-                    setSelectionWizardAnswer($kMerkmalWert, $kAuswahlAssistentFrage, $nFrage, $kKategorie);
-                } elseif (isset($_GET['aaReset']) && strlen($_GET['aaReset']) > 0) {
-                    // Antwort resetten
-                    extract(extractAAURL($_GET['aaReset']));
-                    resetSelectionWizard($nFrage, $kKategorie);
-                } else {
-                    unset($_SESSION['AuswahlAssistent']);
-                    $oAuswahlAssistent = AuswahlAssistent::getGroupsByLocation($cKey, $kKey, $kSprache);
-                    if (!isset($_SESSION['AuswahlAssistent']) || !is_object($_SESSION['AuswahlAssistent'])) {
-                        $_SESSION['AuswahlAssistent'] = new stdClass();
+        if ($Einstellungen['auswahlassistent_nutzen'] !== 'Y' || !class_exists('AuswahlAssistent')) {
+            return true;
+        }
+        // Work Around falls schon einmal der Auswahlassistent durchlaufen wurde
+        if (Shop::getProductFilter()->getFilterCount() > 0) {
+            return false;
+        }
+        if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
+            $Einstellungen = Shop::getSettings([
+                CONF_GLOBAL,
+                CONF_RSS,
+                CONF_ARTIKELUEBERSICHT,
+                CONF_AUSWAHLASSISTENT
+            ]);
+            if (isset($_GET['aaParams']) && strlen($_GET['aaParams']) > 0) {
+                // a href geklickt
+                extract(extractAAURL($_GET['aaParams']));
+                setSelectionWizardAnswer($kMerkmalWert, $kAuswahlAssistentFrage, $nFrage, $kKategorie);
+            } elseif (isset($_POST['aaParams']) && (int)$_POST['aaParams'] === 1) {
+                // Selectbox geklickt
+                $kMerkmalWert           = StringHandler::filterXSS($_POST['kMerkmalWert']);
+                $kAuswahlAssistentFrage = StringHandler::filterXSS($_POST['kAuswahlAssistentFrage']);
+                $nFrage                 = StringHandler::filterXSS($_POST['nFrage']);
+                $kKategorie             = StringHandler::filterXSS($_POST['kKategorie']);
+                setSelectionWizardAnswer($kMerkmalWert, $kAuswahlAssistentFrage, $nFrage, $kKategorie);
+            } elseif (isset($_GET['aaReset']) && strlen($_GET['aaReset']) > 0) {
+                // Antwort resetten
+                extract(extractAAURL($_GET['aaReset']));
+                resetSelectionWizard($nFrage, $kKategorie);
+            } else {
+                unset($_SESSION['AuswahlAssistent']);
+                $oAuswahlAssistent = AuswahlAssistent::getGroupsByLocation($cKey, $kKey, $kSprache);
+                if (!isset($_SESSION['AuswahlAssistent']) || !is_object($_SESSION['AuswahlAssistent'])) {
+                    $_SESSION['AuswahlAssistent'] = new stdClass();
+                }
+                $_SESSION['AuswahlAssistent']->nFrage               = 0;
+                $_SESSION['AuswahlAssistent']->oAuswahl_arr         = [];
+                $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr  = [];
+                $_SESSION['AuswahlAssistent']->oAuswahlAssistent    = $oAuswahlAssistent;
+                $_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt = AuswahlAssistentOrt::getLocation(
+                    $cKey,
+                    $kKey,
+                    $_SESSION['kSprache']
+                );
+                if ($_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt !== null) {
+                    if (!isset($bMerkmalFilterVorhanden)) {
+                        $bMerkmalFilterVorhanden = null;
                     }
-                    $_SESSION['AuswahlAssistent']->nFrage               = 0;
-                    $_SESSION['AuswahlAssistent']->oAuswahl_arr         = [];
-                    $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr  = [];
-                    $_SESSION['AuswahlAssistent']->oAuswahlAssistent    = $oAuswahlAssistent;
-                    $_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt = AuswahlAssistentOrt::getLocation(
-                        $cKey,
-                        $kKey,
-                        $_SESSION['kSprache']
-                    );
-                    if ($_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt !== null) {
-                        if (!isset($bMerkmalFilterVorhanden)) {
-                            $bMerkmalFilterVorhanden = null;
+                    if ($cKey === AUSWAHLASSISTENT_ORT_KATEGORIE && (int)$kKey > 0) {
+                        filterSelectionWizard($GLOBALS['oSuchergebnisse']->MerkmalFilter, $bMerkmalFilterVorhanden);
+                    } else {
+                        require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
+                        global $AktuelleKategorie, $NaviFilter, $oSuchergebnisse;
+                        $bMerkmalFilterVorhanden = false;
+                        if ($NaviFilter === null) {
+                            $NaviFilter = Shop::buildProductFilter([]);
                         }
-                        if ($cKey == AUSWAHLASSISTENT_ORT_KATEGORIE && (int)$kKey > 0) {
-                            filterSelectionWizard($GLOBALS['oSuchergebnisse']->MerkmalFilter, $bMerkmalFilterVorhanden);
-                        } else {
-                            require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
-
-                            $bMerkmalFilterVorhanden = false;
-                            if (!isset($NaviFilter)) {
-                                $NaviFilter = Shop::buildProductFilter([]);
-                            }
-                            if (!isset($AktuelleKategorie)) {
-                                $AktuelleKategorie = null;
-                            } else {
-                                die('exists?');
-                            }
-
-                            if (!isset($oSuchergebnisse)) {
-                                $oSuchergebnisse                      = new stdClass();
-                                $oSuchergebnisse->GesamtanzahlArtikel = 0;
-                            }
-
-                            $oSuchergebnisse = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie, true);
-//                            Shop::dbg($test->MerkmalFilter, true, 'MerkmalFilter:');
-//                            $oSuchergebnisse->MerkmalFilter = gibMerkmalFilterOptionen(
-//                                $FilterSQL,
-//                                $NaviFilter,
-//                                $AktuelleKategorie,
-//                                true
-//                            );
-                            filterSelectionWizard($oSuchergebnisse->MerkmalFilter, $bMerkmalFilterVorhanden);
+                        if ($oSuchergebnisse === null) {
+                            $oSuchergebnisse                      = new stdClass();
+                            $oSuchergebnisse->GesamtanzahlArtikel = 0;
                         }
+
+                        $oSuchergebnisse = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie, true);
+                        filterSelectionWizard($oSuchergebnisse->MerkmalFilter, $bMerkmalFilterVorhanden);
                     }
                 }
-                $cRequestURI = $_SERVER['REQUEST_URI'];
-                if (strpos($cRequestURI, '?') !== false) {
-                    $cRequestURI .= '&';
-                } else {
-                    $cRequestURI .= '?';
-                }
-                $smarty->assign('oAuswahlAssistent', $_SESSION['AuswahlAssistent']->oAuswahlAssistent)
-                       ->assign('Einstellungen', $Einstellungen)
-                       ->assign('cRequestURI', $cRequestURI);
             }
+            $cRequestURI = $_SERVER['REQUEST_URI'];
+            if (strpos($cRequestURI, '?') !== false) {
+                $cRequestURI .= '&';
+            } else {
+                $cRequestURI .= '?';
+            }
+            $smarty->assign('oAuswahlAssistent', $_SESSION['AuswahlAssistent']->oAuswahlAssistent)
+                   ->assign('Einstellungen', $Einstellungen)
+                   ->assign('cRequestURI', $cRequestURI);
         }
 
         return true;
@@ -141,10 +129,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $_SESSION['AuswahlAssistent']->oAuswahl_arr[0]->kMerkmalWert
                 : null;
         }
-        if (!isset($NaviFilter)) {
+        if ($NaviFilter === null) {
             $NaviFilter = new stdClass();
         }
-        if (!isset($oSuchergebnisse)) {
+        if ($oSuchergebnisse === null) {
             $oSuchergebnisse = new stdClass();
             $oSuchergebnisse->GesamtanzahlArtikel = 0;
         }
@@ -171,12 +159,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             if (!isset($bFragenEnde)) {
                 $bFragenEnde = false;
             }
-            if (!$bFragenEnde &&
-                isset($_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr) &&
-                !in_array($MerkmalFilter->kMerkmal, $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr, true) &&
-                isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal) &&
-                $MerkmalFilter->kMerkmal == $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal &&
-                isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->oMerkmalWert_arr)
+            if (!$bFragenEnde
+                && isset($_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr)
+                && !in_array($MerkmalFilter->kMerkmal, $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr, true)
+                && isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal)
+                && $MerkmalFilter->kMerkmal == $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal
+                && isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->oMerkmalWert_arr)
             ) {
                 $kMerkmalWertDrin_arr = [];
                 foreach ($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->oMerkmalWert_arr as $i => $oMerkmalWertAlle) {
@@ -238,8 +226,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         if (isset($_SESSION['AuswahlAssistent'])) {
             $_SESSION['AuswahlAssistent']->nFrage = $nFrage + 1;
         }
-        if (!isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr) ||
-            count($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr) == $_SESSION['AuswahlAssistent']->nFrage) {
+        if (!isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr)
+            || count($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr)
+            == $_SESSION['AuswahlAssistent']->nFrage
+        ) {
             $bFragenEnde = true;
         }
         // Filter
@@ -272,7 +262,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $bFragenEnde             = false;
         $oSuchergebnisse         = null;
         $NaviFilter              = null;
-        processSelectionWizard($kMerkmalWert, $nFrage, $kKategorie, $bFragenEnde, $oSuchergebnisse, $NaviFilter, $bMerkmalFilterVorhanden);
+        processSelectionWizard(
+            $kMerkmalWert,
+            $nFrage,
+            $kKategorie,
+            $bFragenEnde,
+            $oSuchergebnisse,
+            $NaviFilter,
+            $bMerkmalFilterVorhanden
+        );
 
         if (!$bFragenEnde && $bMerkmalFilterVorhanden && $oSuchergebnisse->GesamtanzahlArtikel > 1) {
             $smarty->assign('NaviFilter', $NaviFilter);
@@ -283,7 +281,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
             $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
             $NaviFilter                          = Shop::buildProductFilter($cParameter_arr);
-            header('Location: ' . StringHandler::htmlentitydecode($NaviFilter->getURL()));
+            header('Location: ' . StringHandler::htmlentitydecode($NaviFilter->getFilterURL()->getURL()));
             exit();
         }
     }

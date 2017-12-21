@@ -93,17 +93,17 @@ $oGlobal_arr['shopkategorien'] = getCats($KategorieListe);
 
 if ($exportformat->cKodierung === 'UTF-8') {
     $cHeader = "\xEF\xBB\xBF";
-    writeFile(PATH . 'varianten.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['varianten']) .
-            CRLF . makecsv($oGlobal_arr['variantenwerte'])));
-    writeFile(PATH . 'artikel.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['artikel'])));
-    writeFile(PATH . 'shopkategorien.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['shopkategorien'])));
-    writeFile(PATH . 'lager.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['lager'])));
+    writeFile(PATH . 'varianten.csv', $cHeader . makecsv($oGlobal_arr['varianten']) .
+            CRLF . makecsv($oGlobal_arr['variantenwerte']));
+    writeFile(PATH . 'artikel.csv', $cHeader . makecsv($oGlobal_arr['artikel']));
+    writeFile(PATH . 'shopkategorien.csv', $cHeader . makecsv($oGlobal_arr['shopkategorien']));
+    writeFile(PATH . 'lager.csv', $cHeader . makecsv($oGlobal_arr['lager']));
 } else {
-    writeFile(PATH . 'varianten.csv', makecsv($oGlobal_arr['varianten']) .
-        CRLF . makecsv($oGlobal_arr['variantenwerte']));
-    writeFile(PATH . 'artikel.csv', makecsv($oGlobal_arr['artikel']));
-    writeFile(PATH . 'shopkategorien.csv', makecsv($oGlobal_arr['shopkategorien']));
-    writeFile(PATH . 'lager.csv', makecsv($oGlobal_arr['lager']));
+    writeFile(PATH . 'varianten.csv', StringHandler::convertISO(makecsv($oGlobal_arr['varianten']) .
+        CRLF . makecsv($oGlobal_arr['variantenwerte'])));
+    writeFile(PATH . 'artikel.csv', StringHandler::convertISO(makecsv($oGlobal_arr['artikel'])));
+    writeFile(PATH . 'shopkategorien.csv', StringHandler::convertISO(makecsv($oGlobal_arr['shopkategorien'])));
+    writeFile(PATH . 'lager.csv', StringHandler::convertISO(makecsv($oGlobal_arr['lager'])));
 }
 
 $max_artikel = Shop::DB()->query(

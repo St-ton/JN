@@ -8,7 +8,6 @@ if (!defined('PFAD_ROOT')) {
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
 /** @global JTLSmarty $smarty */
 $AktuelleSeite = 'ARTIKEL';
 Shop::setPageType(PAGE_ARTIKEL);
@@ -85,7 +84,6 @@ if (empty($AktuellerArtikel->kArtikel)) {
         exit;
     }
     //404 otherwise
-    $cParameter_arr['is404'] = true;
     Shop::$is404             = true;
     Shop::$kLink             = 0;
     Shop::$kArtikel          = 0;
@@ -99,8 +97,10 @@ $similarArticles = (int)$Einstellungen['artikeldetails']['artikeldetails_aehnlic
 if (Shop::$kVariKindArtikel > 0) {
     $oArtikelOptionen                            = Artikel::getDetailOptions();
     $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-
     $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $oArtikelOptionen);
+    $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
+        $oVariKindArtikel,
+        $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
     $AktuellerArtikel = fasseVariVaterUndKindZusammen($AktuellerArtikel, $oVariKindArtikel);
     $bCanonicalURL    = ($Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N');
     $cCanonicalURL    = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
@@ -173,8 +173,9 @@ if ($AktuellerArtikel->Bewertungen === null || $bewertung_sterne > 0) {
     $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
 }
 
-if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich)
-    && isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung)
+if (isset(
+        $AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich,
+        $AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung)
     && (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
 ) {
     $oBewertung_arr = array_filter(

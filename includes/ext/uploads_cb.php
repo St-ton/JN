@@ -13,34 +13,37 @@ require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.UploadDatei.php';
  */
 function retCode($bOk)
 {
-    die($bOk ? json_encode(['status' => 'ok']) : json_encode(['status' => 'error']));
+    die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
-
-// session
-if (!isset($_REQUEST['sid'])) {
-    retCode(0);
-}
-
-$_COOKIE['JTLSHOP'] = $_REQUEST['sid'];
-$session            = Session::getInstance();
-
+$session = Session::getInstance();
 if (!validateToken()) {
     retCode(0);
 }
 // upload file
 if (!empty($_FILES)) {
-    $cUnique     = isset($_REQUEST['uniquename'])
-        ? $_REQUEST['uniquename']
-        : null;
+    if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])) {
+        retCode(0);
+    }
+    $cUnique     = $_REQUEST['uniquename'];
     $cTargetFile = PFAD_UPLOADS . $cUnique;
     $fileData    = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
     $cTempFile   = $fileData['tmp_name'];
-
-    if (isset($fileData['error']) && (int)$fileData['error'] === 0 && move_uploaded_file($cTempFile, $cTargetFile)) {
+    $targetInfo  = pathinfo($cTargetFile);
+    $sourceInfo  = pathinfo($fileData['name']);
+    $realPath    = realpath($targetInfo['dirname']);
+    // legitimate uploads do not have an extension for the destination file name - but for the originally uploaded file
+    if (!isset($sourceInfo['extension']) || isset($targetInfo['extension'])) {
+        retCode(0);
+    }
+    if (isset($fileData['error'], $fileData['name'])
+        && (int)$fileData['error'] === UPLOAD_ERR_OK
+        && strpos($realPath . '/', PFAD_UPLOADS) === 0
+        && move_uploaded_file($cTempFile, $cTargetFile)
+    ) {
         $oFile         = new stdClass();
-        $oFile->cName = !empty($_REQUEST['variation'])
+        $oFile->cName  = !empty($_REQUEST['variation'])
             ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name']
             : $_REQUEST['cname'] . '_' . $fileData['name'];
         $oFile->nBytes = $fileData['size'];
@@ -55,23 +58,34 @@ if (!empty($_FILES)) {
         }
         retCode(1);
     }
+    retCode(0);
 }
+
 // handle file
 if (!empty($_REQUEST['action'])) {
     switch ($_REQUEST['action']) {
         case 'remove':
-            $cUnique   = $_REQUEST['uniquename'];
-            $cFilePath = PFAD_UPLOADS . $cUnique;
-
-            unset($_SESSION['Uploader'][$cUnique]);
-            if (file_exists($cFilePath)) {
-                retCode(@unlink($cFilePath));
+            $cUnique    = $_REQUEST['uniquename'];
+            $cFilePath  = PFAD_UPLOADS . $cUnique;
+            $targetInfo = pathinfo($cFilePath);
+            $realPath   = realpath($targetInfo['dirname']);
+            if (!isset($targetInfo['extension'])
+                && isset($_SESSION['Uploader'][$cUnique])
+                && strpos($realPath . '/', PFAD_UPLOADS) === 0
+            ) {
+                unset($_SESSION['Uploader'][$cUnique]);
+                if (file_exists($cFilePath)) {
+                    retCode(@unlink($cFilePath));
+                }
+            } else {
+                retCode(0);
             }
             break;
 
         case 'exists':
             $cFilePath = PFAD_UPLOADS . $_REQUEST['uniquename'];
-            retCode(file_exists($cFilePath));
+            $info      = pathinfo($cFilePath);
+            retCode(!isset($info['extension']) && file_exists(realpath($cFilePath)));
             break;
 
         case 'preview':

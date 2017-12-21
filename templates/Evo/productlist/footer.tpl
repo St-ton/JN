@@ -6,7 +6,7 @@
             <div class="panel-heading">{lang key="productsTaggedAs" section="productOverview"}</div>
             <div class="panel-body">
                 {foreach name=tagfilter from=$Suchergebnisse->Tags item=oTag}
-                    <a href="{$oTag->cURL}" class="label label-primary tag{$oTag->Klasse}">{$oTag->cName}</a>
+                    <a href="{$oTag->getURL()}" class="label label-primary tag{$oTag->getClass()}">{$oTag->getName()}</a>
                 {/foreach}
             </div>
         </div>
@@ -17,7 +17,7 @@
             <div class="panel-heading">{lang key="productsSearchTerm" section="productOverview"}</div>
             <div class="panel-body">
                 {foreach name=suchfilter from=$Suchergebnisse->SuchFilter item=oSuchFilter}
-                    <a href="{$oSuchFilter->cURL}" class="label label-primary tag{$oSuchFilter->Klasse}">{$oSuchFilter->cSuche}</a>
+                    <a href="{$oSuchFilter->getURL()}" class="label label-primary tag{$oSuchFilter->getClass()}">{$oSuchFilter->cSuche}</a>
                 {/foreach}
             </div>
         </div>

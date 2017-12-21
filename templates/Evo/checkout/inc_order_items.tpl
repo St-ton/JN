@@ -296,44 +296,63 @@
 
     </tbody>
     <tfoot>
-    {if $NettoPreise}
-        <tr class="total-net">
-            {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-                <td class="hidden-xs"></td>
-            {/if}
-            <td class="text-right" colspan="2"><span class="price_label"><strong>{lang key="totalSum" section="global"} ({lang key="net" section="global"}):</strong></span></td>
-            <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}"><strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong></td>
-        </tr>
-    {/if}
-
-    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
-        {foreach name=steuerpositionen from=$Steuerpositionen item=Steuerposition}
-            <tr class="tax">
+        {if $NettoPreise}
+            <tr class="total-net">
                 {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                     <td class="hidden-xs"></td>
                 {/if}
-                <td class="text-right" colspan="2"><span class="tax_label">{$Steuerposition->cName}:</span></td>
-                <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}"><span class="tax_label">{$Steuerposition->cPreisLocalized}</span></td>
+                <td class="text-right" colspan="2"><span class="price_label"><strong>{lang key="totalSum" section="global"} ({lang key="net" section="global"}):</strong></span></td>
+                <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}"><strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong></td>
             </tr>
-        {/foreach}
-    {/if}
-
-    {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
-         <tr class="customer-credit">
-             {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-                 <td class="hidden-xs"></td>
-             {/if}
-             <td class="text-right" colspan="2">{lang key="useCredit" section="account data"}</td>
-             <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}">{$smarty.session.Bestellung->GutscheinLocalized}</td>
-         </tr>
-    {/if}
-
-    <tr class="total info">
-        {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-            <td class="hidden-xs"></td>
         {/if}
-        <td class="text-right" colspan="2"><span class="price_label"><strong>{lang key="totalSum" section="global"}:</strong></span></td>
-        <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}"><strong class="price total-sum">{$WarensummeLocalized[0]}</strong></td>
-    </tr>
+
+        {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
+            {foreach name=steuerpositionen from=$Steuerpositionen item=Steuerposition}
+                <tr class="tax">
+                    {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                        <td class="hidden-xs"></td>
+                    {/if}
+                    <td class="text-right" colspan="2"><span class="tax_label">{$Steuerposition->cName}:</span></td>
+                    <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}"><span class="tax_label">{$Steuerposition->cPreisLocalized}</span></td>
+                </tr>
+            {/foreach}
+        {/if}
+
+        {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
+             <tr class="customer-credit">
+                 {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                     <td class="hidden-xs"></td>
+                 {/if}
+                 <td class="text-right" colspan="2">{lang key="useCredit" section="account data"}</td>
+                 <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}">{$smarty.session.Bestellung->GutscheinLocalized}</td>
+             </tr>
+        {/if}
+
+        <tr class="total info">
+            {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                <td class="hidden-xs"></td>
+            {/if}
+            <td class="text-right" colspan="2"><span class="price_label"><strong>{lang key="totalSum" section="global"}:</strong></span></td>
+            <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}"><strong class="price total-sum">{$WarensummeLocalized[0]}</strong></td>
+        </tr>
+        {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+            {$colspan= ($tplscope === 'cart') ? 7 :6}
+        {else}
+            {$colspan= ($tplscope === 'cart') ? 6 :5}
+        {/if}
+        {if isset($FavourableShipping)}
+            {if $NettoPreise}
+                {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key="plus" section="basket"} {lang key="vat" section="productDetails"}"}
+            {else}
+                {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
+            {/if}
+            <tr class="shipping-costs text-right">
+                <td colspan="{$colspan}"><small>{lang|sprintf:$oSpezialseiten_arr[6]->cURL:$shippingCosts:$FavourableShipping->cCountryCode key="shippingInformationSpecific" section="basket"}</small></td>
+            </tr>
+        {elseif empty($FavourableShipping)}
+            <tr class="shipping-costs text-right">
+                <td colspan="{$colspan}"><small>{lang|sprintf:$oSpezialseiten_arr[6]->cURL key="shippingInformation" section="basket"}</small></td>
+            </tr>
+        {/if}
     </tfoot>
 </table>

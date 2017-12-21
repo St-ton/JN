@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_CLASSES . 'interface.JTL-Shop.PluginLizenz.php';
 
 /**
  * @param int   $nHook
@@ -90,8 +89,8 @@ function pluginLizenzpruefung(&$oPlugin, $xParam_arr = [])
             $oPlugin->cFehler = 'Lizenzschl&uuml;ssel ist ung&uuml;ltig';
             $oPlugin->updateInDB();
             Jtllog::writeLog(
-                utf8_decode('Plugin Lizenzprüfung: Das Plugin "' . $oPlugin->cName .
-                    '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!'),
+                'Plugin Lizenzprüfung: Das Plugin "' . $oPlugin->cName .
+                    '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!',
                 JTLLOG_LEVEL_ERROR,
                 false,
                 'kPlugin',
@@ -263,6 +262,7 @@ function gibkPluginAuscPluginID($cPluginID)
  */
 function gibPluginExtendedTemplates()
 {
+    $cTemplate_arr = [];
     $oTemplate_arr = Shop::DB()->query(
         "SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
             FROM tplugintemplate

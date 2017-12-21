@@ -7,7 +7,11 @@
         <li>
             <a href="{$filter->getUnsetFilterURL()}" rel="nofollow" class="active {$itemClass}">
                 <span class="value">
-                    <i class="fa fa-check-square-o text-muted"></i> {$filter->getType()} {$filter->getName()}
+                    <i class="fa fa-check-square-o text-muted"></i>
+                    {if $filter->getClassName() === 'FilterItemRating'}
+                        {include file='productdetails/rating.tpl' stars=$filter->getValue()}
+                    {/if}
+                    {$filter->getName()}
                 </span>
             </a>
         </li>

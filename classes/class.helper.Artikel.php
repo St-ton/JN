@@ -85,21 +85,18 @@ class ArtikelHelper
         $properties          = self::getChildPropertiesForParent($kArtikel, $kKundengruppe);
         $kVariationKombi_arr = [];
         $nGueltig            = 1;
-        if (count($properties) > 0) {
-            foreach ($properties as $i => $kAlleEigenschaftWerteProEigenschaft) {
-                if (!self::hasSelectedVariationValue($i)) {
-                    $nGueltig = 0;
-                    break;
-                }
-                $kVariationKombi_arr[$i] = self::getSelectedVariationValue($i);
+        foreach ($properties as $i => $kAlleEigenschaftWerteProEigenschaft) {
+            if (!self::hasSelectedVariationValue($i)) {
+                $nGueltig = 0;
+                break;
             }
+            $kVariationKombi_arr[$i] = self::getSelectedVariationValue($i);
         }
         if ($nGueltig) {
             $cSQL1       = '';
             $cSQL2       = '';
-            $oArtikelTMP = new stdClass();
             $j           = 0;
-            if (is_array($kVariationKombi_arr) && count($kVariationKombi_arr) > 0) {
+            if (count($kVariationKombi_arr) > 0) {
                 foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
                     if ($j > 0) {
                         $cSQL1 .= ',' . $i;
@@ -125,14 +122,14 @@ class ArtikelHelper
                         GROUP BY tartikel.kArtikel
                         HAVING count(*) = " . count($kVariationKombi_arr), 1
                 );
-            }
-            if (isset($oArtikelTMP->kArtikel) && $oArtikelTMP->kArtikel > 0) {
-                return $oArtikelTMP->kArtikel;
+                if (isset($oArtikelTMP->kArtikel) && $oArtikelTMP->kArtikel > 0) {
+                    return (int)$oArtikelTMP->kArtikel;
+                }
             }
             if (!isset($_SESSION['variBoxAnzahl_arr'])) {
                 //redirekt zum artikel, um variation/en zu waehlen / MBM beachten
                 header('Location: ' . Shop::getURL() .
-                    '/index.php?a=' . $kArtikel .
+                    '/?a=' . $kArtikel .
                     '&n=' . $_POST['anzahl'] .
                     '&r=' . R_VARWAEHLEN, true, 302);
                 exit();
@@ -213,177 +210,182 @@ class ArtikelHelper
      */
     public static function getSelectedPropertiesForVarCombiArticle($kArtikel, $nArtikelVariAufbau = 0)
     {
+        if ($kArtikel <= 0) {
+            return [];
+        }
+        $customerGroup  = Session::CustomerGroup()->getID();
         $oProperties    = [];
         $propertyValues = [];
         $nVorhanden     = 1;
         $kArtikel       = (int)$kArtikel;
-        if ($kArtikel > 0) {
-            // Hole EigenschaftWerte zur gewaehlten VariationKombi
-            $oVariationKombiKind_arr = Shop::DB()->query(
-                "SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
-                    FROM teigenschaftkombiwert
-                    JOIN tartikel
-                        ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                        AND tartikel.kArtikel = " . (int)$kArtikel . "
-                    LEFT JOIN tartikelsichtbarkeit
-                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
-                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    ORDER BY tartikel.kArtikel", 2
-            );
-            $kVaterArtikel = 0;
-            if (is_array($oVariationKombiKind_arr) && count($oVariationKombiKind_arr) > 0) {
-                $kVaterArtikel = (int)$oVariationKombiKind_arr[0]->kVaterArtikel;
+        // Hole EigenschaftWerte zur gewaehlten VariationKombi
+        $oVariationKombiKind_arr = Shop::DB()->query(
+            "SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
+                FROM teigenschaftkombiwert
+                JOIN tartikel
+                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                    AND tartikel.kArtikel = " . (int)$kArtikel . "
+                LEFT JOIN tartikelsichtbarkeit
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = " . $customerGroup . "
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                ORDER BY tartikel.kArtikel", 2
+        );
+        if (!is_array($oVariationKombiKind_arr) || count($oVariationKombiKind_arr) === 0) {
+            return [];
+        }
+        $kVaterArtikel = (int)$oVariationKombiKind_arr[0]->kVaterArtikel;
 
-                foreach ($oVariationKombiKind_arr as $oVariationKombiKind) {
-                    if (!isset($propertyValues[$oVariationKombiKind->kEigenschaft]) ||
-                        !is_array($propertyValues[$oVariationKombiKind->kEigenschaft])
-                    ) {
-                        $propertyValues[$oVariationKombiKind->kEigenschaft] = $oVariationKombiKind->kEigenschaftWert;
-                    }
-                }
+        foreach ($oVariationKombiKind_arr as $oVariationKombiKind) {
+            if (!isset($propertyValues[$oVariationKombiKind->kEigenschaft]) ||
+                !is_array($propertyValues[$oVariationKombiKind->kEigenschaft])
+            ) {
+                $propertyValues[$oVariationKombiKind->kEigenschaft] = $oVariationKombiKind->kEigenschaftWert;
             }
-            $cSQL1 = '';
-            $cSQL2 = '';
-            $j     = 0;
-            foreach ($propertyValues as $i => $kEigenschaftWertProEigenschaft) {
-                if ($j > 0) {
-                    $cSQL1 .= ',' . $i;
-                    $cSQL2 .= ',' . $propertyValues[$i];
-                } else {
-                    $cSQL1 .= $i;
-                    $cSQL2 .= $propertyValues[$i];
-                }
-                $j++;
+        }
+        $cSQL1 = '';
+        $cSQL2 = '';
+        $j     = 0;
+        foreach ($propertyValues as $i => $kEigenschaftWertProEigenschaft) {
+            if ($j > 0) {
+                $cSQL1 .= ',' . $i;
+                $cSQL2 .= ',' . $propertyValues[$i];
+            } else {
+                $cSQL1 .= $i;
+                $cSQL2 .= $propertyValues[$i];
             }
-            $kSprache                     = Shop::getLanguage();
-            $oSQLEigenschaft              = new stdClass();
-            $oSQLEigenschaft->cSELECT     = '';
-            $oSQLEigenschaft->cJOIN       = '';
-            $oSQLEigenschaftWert          = new stdClass();
-            $oSQLEigenschaftWert->cSELECT = '';
-            $oSQLEigenschaftWert->cJOIN   = '';
-            if ($kSprache > 0 && !standardspracheAktiv()) {
-                $oSQLEigenschaft->cSELECT = "teigenschaftsprache.cName AS cName_teigenschaftsprache, ";
-                $oSQLEigenschaft->cJOIN   = "LEFT JOIN teigenschaftsprache 
-                                            ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
-                                            AND teigenschaftsprache.kSprache = " . $kSprache;
+            $j++;
+        }
+        $kSprache         = Shop::getLanguage();
+        $attr             = new stdClass();
+        $attr->cSELECT    = '';
+        $attr->cJOIN      = '';
+        $attrVal          = new stdClass();
+        $attrVal->cSELECT = '';
+        $attrVal->cJOIN   = '';
+        if ($kSprache > 0 && !standardspracheAktiv()) {
+            $attr->cSELECT = "teigenschaftsprache.cName AS cName_teigenschaftsprache, ";
+            $attr->cJOIN   = "LEFT JOIN teigenschaftsprache 
+                                        ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
+                                        AND teigenschaftsprache.kSprache = " . $kSprache;
 
-                $oSQLEigenschaftWert->cSELECT = "teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ";
-                $oSQLEigenschaftWert->cJOIN   = "LEFT JOIN teigenschaftwertsprache 
-                                                ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                                AND teigenschaftwertsprache.kSprache = " . $kSprache;
+            $attrVal->cSELECT = "teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ";
+            $attrVal->cJOIN   = "LEFT JOIN teigenschaftwertsprache 
+                                            ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                                            AND teigenschaftwertsprache.kSprache = " . $kSprache;
+        }
+
+        $oEigenschaft_arr = Shop::DB()->query(
+            "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, " . $attrVal->cSELECT . "
+                teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, " .
+            $attr->cSELECT . " teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
+                FROM teigenschaftwert
+                LEFT JOIN teigenschaftwertsichtbarkeit
+                    ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                    AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $customerGroup . "
+                JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
+                LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
+                    AND teigenschaftsichtbarkeit.kKundengruppe = " . $customerGroup . "
+                " . $attr->cJOIN . "
+                " . $attrVal->cJOIN . "
+                WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
+                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
+                    AND teigenschaftwert.kEigenschaft IN (" . $cSQL1 . ")
+                    AND teigenschaftwert.kEigenschaftWert IN (" . $cSQL2 . ")", 2
+        );
+
+        $oEigenschaftTMP_arr = Shop::DB()->query(
+            "SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
+                FROM teigenschaft
+                LEFT JOIN teigenschaftsichtbarkeit
+                    ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
+                    AND teigenschaftsichtbarkeit.kKundengruppe = " . $customerGroup . "
+                WHERE (teigenschaft.kArtikel = " . $kVaterArtikel . "
+                    OR teigenschaft.kArtikel = " . $kArtikel . ")
+                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
+                    AND (teigenschaft.cTyp = 'FREIFELD'
+                    OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')", 2
+        );
+
+        if (is_array($oEigenschaft_arr) && count($oEigenschaft_arr) > 0) {
+            if (is_array($oEigenschaftTMP_arr)) {
+                $oEigenschaft_arr = array_merge($oEigenschaft_arr, $oEigenschaftTMP_arr);
             }
 
-            $oEigenschaft_arr = Shop::DB()->query(
-                "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, " . $oSQLEigenschaftWert->cSELECT . "
-                    teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, " .
-                    $oSQLEigenschaft->cSELECT . " teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
-                    FROM teigenschaftwert
-                    LEFT JOIN teigenschaftwertsichtbarkeit
-                        ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        AND teigenschaftwertsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
-                    JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
-                    LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
-                    " . $oSQLEigenschaft->cJOIN . "
-                    " . $oSQLEigenschaftWert->cJOIN . "
-                    WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-                        AND teigenschaftwert.kEigenschaft IN (" . $cSQL1 . ")
-                        AND teigenschaftwert.kEigenschaftWert IN (" . $cSQL2 . ")", 2
-            );
+            foreach ($oEigenschaft_arr as $oEigenschaft) {
+                if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
+                    // Ist kEigenschaft zu eigenschaftwert vorhanden
+                    if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
+                        $oEigenschaftWertVorhanden = Shop::DB()->query(
+                            "SELECT teigenschaftwert.kEigenschaftWert
+                                FROM teigenschaftwert
+                                LEFT JOIN teigenschaftwertsichtbarkeit
+                                    ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                                    AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $customerGroup . "
+                                WHERE teigenschaftwert.kEigenschaftWert = " . (int)$oEigenschaft->kEigenschaftWert . "
+                                    AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
+                                    AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft, 1
+                        );
 
-            $oEigenschaftTMP_arr = Shop::DB()->query(
-                "SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
-                    FROM teigenschaft
-                    LEFT JOIN teigenschaftsichtbarkeit
-                        ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
-                    WHERE (teigenschaft.kArtikel = " . $kVaterArtikel . "
-                        OR teigenschaft.kArtikel = " . $kArtikel . ")
-                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-                        AND (teigenschaft.cTyp = 'FREIFELD'
-                        OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')", 2
-            );
+                        if ($oEigenschaftWertVorhanden->kEigenschaftWert) {
+                            unset($oEigenschaftwerte);
+                            $oEigenschaftwerte                   = new stdClass();
+                            $oEigenschaftwerte->kEigenschaftWert = $oEigenschaft->kEigenschaftWert;
+                            $oEigenschaftwerte->kEigenschaft     = $oEigenschaft->kEigenschaft;
+                            $oEigenschaftwerte->cTyp             = $oEigenschaft->cTyp;
 
-            if (is_array($oEigenschaft_arr) && count($oEigenschaft_arr) > 0) {
-                if (is_array($oEigenschaftTMP_arr)) {
-                    $oEigenschaft_arr = array_merge($oEigenschaft_arr, $oEigenschaftTMP_arr);
-                }
-
-                foreach ($oEigenschaft_arr as $oEigenschaft) {
-                    if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
-                        // Ist kEigenschaft zu eigenschaftwert vorhanden
-                        if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
-                            $oEigenschaftWertVorhanden = Shop::DB()->query(
-                                "SELECT teigenschaftwert.kEigenschaftWert
-                                    FROM teigenschaftwert
-                                    LEFT JOIN teigenschaftwertsichtbarkeit
-                                        ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                        AND teigenschaftwertsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
-                                    WHERE teigenschaftwert.kEigenschaftWert = " . (int)$oEigenschaft->kEigenschaftWert . "
-                                        AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                                        AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft, 1
-                            );
-
-                            if ($oEigenschaftWertVorhanden->kEigenschaftWert) {
-                                unset($oEigenschaftwerte);
-                                $oEigenschaftwerte                   = new stdClass();
-                                $oEigenschaftwerte->kEigenschaftWert = $oEigenschaft->kEigenschaftWert;
-                                $oEigenschaftwerte->kEigenschaft     = $oEigenschaft->kEigenschaft;
-                                $oEigenschaftwerte->cTyp             = $oEigenschaft->cTyp;
-
-                                if ($kSprache > 0 && !standardspracheAktiv()) {
-                                    $oEigenschaftwerte->cEigenschaftName     = $oEigenschaft->cName_teigenschaftsprache;
-                                    $oEigenschaftwerte->cEigenschaftWertName = $oEigenschaft->cName_teigenschaftwertsprache;
-                                } else {
-                                    $oEigenschaftwerte->cEigenschaftName     = $oEigenschaft->cNameEigenschaft;
-                                    $oEigenschaftwerte->cEigenschaftWertName = $oEigenschaft->cName;
-                                }
-                                $oProperties[] = $oEigenschaftwerte;
+                            if ($kSprache > 0 && !standardspracheAktiv()) {
+                                $oEigenschaftwerte->cEigenschaftName     = $oEigenschaft->cName_teigenschaftsprache;
+                                $oEigenschaftwerte->cEigenschaftWertName = $oEigenschaft->cName_teigenschaftwertsprache;
                             } else {
-                                $nVorhanden = 0;
-                                break;
+                                $oEigenschaftwerte->cEigenschaftName     = $oEigenschaft->cNameEigenschaft;
+                                $oEigenschaftwerte->cEigenschaftWertName = $oEigenschaft->cName;
                             }
+                            $oProperties[] = $oEigenschaftwerte;
                         } else {
-                            if (!isset($_SESSION['variBoxAnzahl_arr'])) {
-                                //redirekt zum artikel, um variation/en zu waehlen / MBM beachten
-                                header('Location: ' . Shop::getURL() .
-                                    '/index.php?a=' . $kArtikel .
-                                    '&n=' . (int)$_POST['anzahl'] .
-                                    '&r=' . R_VARWAEHLEN, true, 302);
-                                exit();
-                            }
+                            $nVorhanden = 0;
+                            break;
                         }
                     } else {
-                        unset($oEigenschaftwerte);
-                        if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD'
-                                && self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)
-                                && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0) {
+                        if (!isset($_SESSION['variBoxAnzahl_arr'])) {
+                            //redirekt zum artikel, um variation/en zu waehlen / MBM beachten
                             header('Location: ' . Shop::getURL() .
-                                '/index.php?a=' . $kArtikel .
+                                '/?a=' . $kArtikel .
                                 '&n=' . (int)$_POST['anzahl'] .
                                 '&r=' . R_VARWAEHLEN, true, 302);
                             exit();
                         }
-                        $oEigenschaftwerte                = new stdClass();
-                        $oEigenschaftwerte->cFreifeldWert = StringHandler::filterXSS(self::getSelectedVariationValue($oEigenschaft->kEigenschaft));
-                        $oEigenschaftwerte->kEigenschaft  = $oEigenschaft->kEigenschaft;
-                        $oEigenschaftwerte->cTyp          = $oEigenschaft->cTyp;
-                        $oProperties[]                    = $oEigenschaftwerte;
                     }
+                } else {
+                    unset($oEigenschaftwerte);
+                    if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD'
+                            && self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)
+                            && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0
+                    ) {
+                        header('Location: ' . Shop::getURL() .
+                            '/?a=' . $kArtikel .
+                            '&n=' . (int)$_POST['anzahl'] .
+                            '&r=' . R_VARWAEHLEN, true, 302);
+                        exit();
+                    }
+                    $oEigenschaftwerte                = new stdClass();
+                    $oEigenschaftwerte->cFreifeldWert = StringHandler::filterXSS(
+                        self::getSelectedVariationValue($oEigenschaft->kEigenschaft)
+                    );
+                    $oEigenschaftwerte->kEigenschaft  = $oEigenschaft->kEigenschaft;
+                    $oEigenschaftwerte->cTyp          = $oEigenschaft->cTyp;
+                    $oProperties[]                    = $oEigenschaftwerte;
                 }
             }
+        }
 
-            if (!$nVorhanden && !isset($_SESSION['variBoxAnzahl_arr'])) {
-                //redirekt zum artikel, weil variation nicht vorhanden
-                header('Location: ' . Shop::getURL() .
-                    '/index.php?a=' . $kArtikel .
-                    '&n=' . (int)$_POST['anzahl'] .
-                    '&r=' . R_VARWAEHLEN, true, 301);
-                exit();
-            }
+        if (!$nVorhanden && !isset($_SESSION['variBoxAnzahl_arr'])) {
+            //redirekt zum artikel, weil variation nicht vorhanden
+            header('Location: ' . Shop::getURL() .
+                '/?a=' . $kArtikel .
+                '&n=' . (int)$_POST['anzahl'] .
+                '&r=' . R_VARWAEHLEN, true, 301);
+            exit();
         }
         // Wie beim Artikel die Variationen aufbauen
         if ($nArtikelVariAufbau > 0) {
@@ -435,68 +437,74 @@ class ArtikelHelper
         // $oProperties anlegen
         $oProperties = [];
         $nVorhanden  = 1;
-        if (is_array($oEigenschaft_arr) && count($oEigenschaft_arr) > 0) {
-            foreach ($oEigenschaft_arr as $oEigenschaft) {
-                if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
-                    // Ist kEigenschaft zu eigenschaftwert vorhanden
-                    if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
-                        $oEigenschaftWertVorhanden = Shop::DB()->query(
-                            "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, 
-                                teigenschaftwertsichtbarkeit.kKundengruppe
-                                FROM teigenschaftwert
-                                LEFT JOIN teigenschaftwertsichtbarkeit
-                                    ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                    AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                                WHERE teigenschaftwert.kEigenschaftWert = " . (int)self::getSelectedVariationValue($oEigenschaft->kEigenschaft) . "
-                                    AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                                    AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft, 1
-                        );
+        if (!is_array($oEigenschaft_arr) || count($oEigenschaft_arr) === 0) {
+            return [];
+        }
+        foreach ($oEigenschaft_arr as $oEigenschaft) {
+            if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
+                // Ist kEigenschaft zu eigenschaftwert vorhanden
+                if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
+                    $oEigenschaftWertVorhanden = Shop::DB()->query(
+                        "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, 
+                            teigenschaftwertsichtbarkeit.kKundengruppe
+                            FROM teigenschaftwert
+                            LEFT JOIN teigenschaftwertsichtbarkeit
+                                ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                                AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                            WHERE teigenschaftwert.kEigenschaftWert = " . 
+                                (int)self::getSelectedVariationValue($oEigenschaft->kEigenschaft) . "
+                                AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
+                                AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft, 1
+                    );
 
-                        if ($oEigenschaftWertVorhanden->kEigenschaftWert) {
-                            $oEigenschaftwerte                       = new stdClass();
-                            $oEigenschaftwerte->kEigenschaftWert     = (int)self::getSelectedVariationValue($oEigenschaft->kEigenschaft);
-                            $oEigenschaftwerte->kEigenschaft         = $oEigenschaft->kEigenschaft;
-                            $oEigenschaftwerte->cEigenschaftName     = $oEigenschaft->cName;
-                            $oEigenschaftwerte->cEigenschaftWertName = $oEigenschaftWertVorhanden->cName;
-                            $oEigenschaftwerte->cTyp                 = $oEigenschaft->cTyp;
-                            $oProperties[]                           = $oEigenschaftwerte;
-                        } else {
-                            $nVorhanden = 0;
-                            break;
-                        }
+                    if ($oEigenschaftWertVorhanden->kEigenschaftWert) {
+                        $val                       = new stdClass();
+                        $val->kEigenschaftWert     = (int)self::getSelectedVariationValue($oEigenschaft->kEigenschaft);
+                        $val->kEigenschaft         = $oEigenschaft->kEigenschaft;
+                        $val->cEigenschaftName     = $oEigenschaft->cName;
+                        $val->cEigenschaftWertName = $oEigenschaftWertVorhanden->cName;
+                        $val->cTyp                 = $oEigenschaft->cTyp;
+                        $oProperties[]                           = $val;
                     } else {
-                        if (!isset($_SESSION['variBoxAnzahl_arr']) && $bRedirect) {
-                            //redirekt zum artikel, um variation/en zu waehlen  MBM beachten
-                            header('Location: ' . Shop::getURL() .
-                                '/index.php?a=' . $kArtikel .
-                                '&n=' . (int)$_POST['anzahl'] .
-                                '&r=' . R_VARWAEHLEN, true, 302);
-                            exit();
-                        }
+                        $nVorhanden = 0;
+                        break;
                     }
                 } else {
-                    if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD' && $bRedirect
-                            && self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)
-                            && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0) {
+                    if (!isset($_SESSION['variBoxAnzahl_arr']) && $bRedirect) {
+                        //redirekt zum artikel, um variation/en zu waehlen  MBM beachten
                         header('Location: ' . Shop::getURL() .
-                            '/index.php?a=' . $kArtikel .
+                            '/?a=' . $kArtikel .
                             '&n=' . (int)$_POST['anzahl'] .
                             '&r=' . R_VARWAEHLEN, true, 302);
                         exit();
                     }
-                    $oEigenschaftwerte                = new stdClass();
-                    $oEigenschaftwerte->cFreifeldWert = Shop::DB()->escape(StringHandler::filterXSS(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)));
-                    $oEigenschaftwerte->kEigenschaft  = $oEigenschaft->kEigenschaft;
-                    $oEigenschaftwerte->cTyp          = $oEigenschaft->cTyp;
-                    $oProperties[]                    = $oEigenschaftwerte;
                 }
+            } else {
+                if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD' 
+                    && $bRedirect
+                    && self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)
+                    && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0
+                ) {
+                    header('Location: ' . Shop::getURL() .
+                        '/?a=' . $kArtikel .
+                        '&n=' . (int)$_POST['anzahl'] .
+                        '&r=' . R_VARWAEHLEN, true, 302);
+                    exit();
+                }
+                $val                = new stdClass();
+                $val->cFreifeldWert = Shop::DB()->escape(
+                    StringHandler::filterXSS(self::getSelectedVariationValue($oEigenschaft->kEigenschaft))
+                );
+                $val->kEigenschaft  = $oEigenschaft->kEigenschaft;
+                $val->cTyp          = $oEigenschaft->cTyp;
+                $oProperties[]      = $val;
             }
         }
 
         if (!$nVorhanden && $bRedirect && !isset($_SESSION['variBoxAnzahl_arr'])) {
             //redirect zum artikel, weil variation nicht vorhanden
             header('Location: ' . Shop::getURL() .
-                '/index.php?a=' . $kArtikel .
+                '/?a=' . $kArtikel .
                 '&n=' . (int)$_POST['anzahl'] .
                 '&r=' . R_VARWAEHLEN, true, 302);
             exit();
@@ -514,17 +522,14 @@ class ArtikelHelper
      */
     public static function getChildren($kVaterArtikel)
     {
-        $oVariationsKind_arr = [];
-        if ($kVaterArtikel > 0) {
-            $oVariationsKind_arr = Shop::DB()->selectAll(
+        return $kVaterArtikel > 0
+            ? Shop::DB()->selectAll(
                 'tartikel',
                 'kVaterArtikel',
                 (int)$kVaterArtikel,
                 'kArtikel, kEigenschaftKombi'
-            );
-        }
-
-        return $oVariationsKind_arr;
+            )
+            : [];
     }
 
     /**
@@ -662,7 +667,8 @@ class ArtikelHelper
                 $result->fMassMenge       /= $fFactor;
                 $result->fVPEWert         = $result->fMassMenge / $nAnzahl / $result->fGrundpreisMenge;
                 $result->fBasePreis       = $fPreis / $result->fVPEWert;
-                $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' . UnitsOfMeasure::getPrintAbbreviation($mappedCode);
+                $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' . 
+                    UnitsOfMeasure::getPrintAbbreviation($mappedCode);
             }
         }
 

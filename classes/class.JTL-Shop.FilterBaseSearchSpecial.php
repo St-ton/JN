@@ -23,7 +23,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
      *
      * @param ProductFilter $productFilter
      */
-    public function __construct($productFilter)
+    public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
         $this->isCustom    = false;
@@ -84,7 +84,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                 $this->setName(Shop::Lang()->get('topReviews'));
                 break;
             default:
-                //invalid search special ID
+                // invalid search special ID
                 Shop::$is404        = true;
                 Shop::$kSuchspecial = 0;
                 break;
@@ -123,12 +123,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                 return $tasp . " .kArtikel = tartikel.kArtikel
                                     AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= now()
                                     AND (" . $tasp . ".dEnde >= curdate() OR " . $tasp . ".dEnde = '0000-00-00')
-                                    AND " . $tsp . " .kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
-//@todo:
-//                $oFilter->tasp = $tasp;
-//                $oFilter->tsp  = $tsp;
-
-                break;
+                                    AND " . $tsp . " .kKundengruppe = " . Session::CustomerGroup()->getID();
 
             case SEARCHSPECIALS_NEWPRODUCTS:
                 $alter_tage = (($age = $this->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)

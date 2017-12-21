@@ -30,9 +30,9 @@ function speicherBewertung($kArtikel, $kKunde, $kSprache, $cTitel, $cText, $nSte
     $cTitel  = StringHandler::htmlentities(StringHandler::filterXSS($cTitel));
     $cText   = StringHandler::htmlentities(StringHandler::filterXSS($cText));
     $article = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
-    $url = !empty($article->cURLFull)
-        ? ($article->cURLFull . '?')
-        : (Shop::getURL() . '/?a=' . $kArtikel . '&');
+    $url     = ($article === null || empty($article->cURLFull))
+        ? (Shop::getURL() . '/?a=' . $kArtikel . '&')
+        : ($article->cURLFull . '?');
 
     if ($kArtikel > 0 && $kSprache > 0 && $cTitel !== '' && $cText !== '' && $nSterne > 0) {
         unset($oBewertungBereitsVorhanden);
@@ -54,7 +54,7 @@ function speicherBewertung($kArtikel, $kKunde, $kSprache, $cTitel, $cText, $nSte
         $oBewertung->nNichtHilfreich = 0;
         $oBewertung->nSterne         = $nSterne;
         $oBewertung->nAktiv          = ($conf['bewertung']['bewertung_freischalten'] === 'N') ? 1 : 0;
-        $oBewertung->dDatum          = date('Y-m-d H:i:s', time());
+        $oBewertung->dDatum          = date('Y-m-d H:i:s');
 
         executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG, ['rating' => &$oBewertung]);
         // Speicher Bewertung
@@ -140,7 +140,7 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
             if ((int)$oBewertungHilfreich->kKunde === 0) {
                 unset($oBewertungHilfreich);
                 $oBewertung = Shop::DB()->select('tbewertung', 'kBewertung', $kBewertung);
-                if ($oBewertung->kKunde != $_SESSION['Kunde']->kKunde) {
+                if ($oBewertung !== null && (int)$oBewertung->kKunde !== (int)$_SESSION['Kunde']->kKunde) {
                     $oBewertungHilfreich             = new stdClass();
                     $oBewertungHilfreich->kBewertung = $kBewertung;
                     $oBewertungHilfreich->kKunde     = $kKunde;
@@ -220,9 +220,9 @@ function aktualisiereDurchschnitt($kArtikel, $cFreischalten)
             WHERE kArtikel = " . $kArtikel . $cFreiSQL, 1
     );
 
-    if (isset($oAnzahlBewertung->nAnzahl) && $oAnzahlBewertung->nAnzahl == 1) {
+    if ((int)$oAnzahlBewertung->nAnzahl === 1) {
         $cFreiSQL = '';
-    } elseif (isset($oAnzahlBewertung->nAnzahl) && $oAnzahlBewertung->nAnzahl == 0) {
+    } elseif ((int)$oAnzahlBewertung->nAnzahl === 0) {
         Shop::DB()->delete('tartikelext', 'kArtikel', $kArtikel);
 
         return false;
@@ -403,33 +403,32 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
 function BewertungsGuthabenBonusLoeschen($kBewertung)
 {
     $kBewertung = (int)$kBewertung;
-    if ($kBewertung > 0) {
-        $oBewertung = Shop::DB()->select('tbewertung', 'kBewertung', $kBewertung);
-        if (isset($oBewertung->kBewertung) && $oBewertung->kBewertung > 0) {
-            $oBewertungGuthabenBonus = Shop::DB()->select(
-                'tbewertungguthabenbonus',
-                'kBewertung',
-                (int)$oBewertung->kBewertung,
-                'kKunde',
-                (int)$oBewertung->kKunde
-            );
-            if (isset($oBewertungGuthabenBonus->kBewertungGuthabenBonus)
-                && $oBewertungGuthabenBonus->kBewertungGuthabenBonus > 0
-            ) {
-                $oKunde = Shop::DB()->select('tkunde', 'kKunde', (int)$oBewertung->kKunde);
-                if (isset($oKunde->kKunde)) {
-                    Shop::DB()->delete(
-                        'tbewertungguthabenbonus',
-                        'kBewertungGuthabenBonus',
-                        $oBewertungGuthabenBonus->kBewertungGuthabenBonus
-                    );
-                    $fGuthaben      = $oKunde->fGuthaben - (float)$oBewertungGuthabenBonus->fGuthabenBonus;
-                    $upd            = new stdClass();
-                    $upd->fGuthaben = (($fGuthaben > 0) ? $fGuthaben : 0);
-                    Shop::DB()->update('tkunde', 'kKunde', (int)$oBewertung->kKunde, $upd);
+    if ($kBewertung <= 0) {
+        return false;
+    }
+    $oBewertung = Shop::DB()->select('tbewertung', 'kBewertung', $kBewertung);
+    if ($oBewertung !== null && $oBewertung->kBewertung > 0) {
+        $oBewertungGuthabenBonus = Shop::DB()->select(
+            'tbewertungguthabenbonus',
+            'kBewertung',
+            (int)$oBewertung->kBewertung,
+            'kKunde',
+            (int)$oBewertung->kKunde
+        );
+        if ($oBewertungGuthabenBonus !== null && $oBewertungGuthabenBonus->kBewertungGuthabenBonus > 0) {
+            $oKunde = Shop::DB()->select('tkunde', 'kKunde', (int)$oBewertung->kKunde);
+            if ($oKunde !== null && $oKunde->kKunde > 0) {
+                Shop::DB()->delete(
+                    'tbewertungguthabenbonus',
+                    'kBewertungGuthabenBonus',
+                    $oBewertungGuthabenBonus->kBewertungGuthabenBonus
+                );
+                $fGuthaben      = $oKunde->fGuthaben - (float)$oBewertungGuthabenBonus->fGuthabenBonus;
+                $upd            = new stdClass();
+                $upd->fGuthaben = (($fGuthaben > 0) ? $fGuthaben : 0);
+                Shop::DB()->update('tkunde', 'kKunde', (int)$oBewertung->kKunde, $upd);
 
-                    return true;
-                }
+                return true;
             }
         }
     }

@@ -4,14 +4,4 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-/**
- * Interface IExtensionPoint
- */
-interface IExtensionPoint
-{
-    /**
-     * @param int $kInitial
-     * @return mixed
-     */
-    public function init($kInitial);
-}
+// this class was moved to interface.JTL-Shop.IExtensionpoint.php

@@ -204,12 +204,12 @@ class Hersteller
                             SELECT 1
                             FROM tartikel
                             WHERE tartikel.kHersteller = thersteller.kHersteller
-                                " . gibLagerfilter() . "
+                                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
                                 AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                                     AND tartikelsichtbarkeit.kKundengruppe = ". Session::CustomerGroup()->getID() .
-							")
+                            ")
                         )";
         }
         $objs = Shop::DB()->query(

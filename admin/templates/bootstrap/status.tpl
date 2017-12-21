@@ -2,29 +2,27 @@
 {config_load file="$lang.conf" section='systemcheck'}
 
 <script>
-{literal}
-$(function() {
-    $('.table tr[data-href]').each(function(){
-        $(this).css('cursor','pointer').hover(
-            function(){
-                $(this).addClass('active');
-            },
-            function(){
-                $(this).removeClass('active');
-            }).click( function(){
-                document.location = $(this).attr('data-href');
-            }
-        );
-    });
+    $(function() {
+        $('.table tr[data-href]').each(function(){
+            $(this).css('cursor','pointer').hover(
+                function(){
+                    $(this).addClass('active');
+                },
+                function(){
+                    $(this).removeClass('active');
+                }).click( function(){
+                    document.location = $(this).attr('data-href');
+                }
+            );
+        });
 
-    $('.grid').masonry({
-        itemSelector: '.grid-item',
-        columnWidth: '.grid-item',
-        percentPosition: true
-    });
+        $('.grid').masonry({
+            itemSelector: '.grid-item',
+            columnWidth: '.grid-item',
+            percentPosition: true
+        });
 
-});
-{/literal}
+    });
 </script>
 
 {function render_item title=null desc=null val=null more=null}
@@ -126,7 +124,6 @@ $(function() {
                     <h4 class="panel-title">Subscription</h4>
                 </div>
                 <div class="panel-body">
-                    {$sub = $status->getSubscription()}
                     {if $sub === null}
                         <div class="alert alert-danger alert-sm">
                             <p><i class="fa fa-exclamation-circle"></i> Vor&uuml;bergehend keine Informationen verf&uuml;gbar.</p>
@@ -270,9 +267,9 @@ $(function() {
                                     <td>
                                         <div class="test-name">
                                             {if $test->getDescription()|@count_characters > 0}
-                                                <abbr title="{$test->getDescription()|utf8_decode|escape:'html'}">{$test->getName()|utf8_decode}</abbr>
+                                                <abbr title="{$test->getDescription()|escape:'html'}">{$test->getName()}</abbr>
                                             {else}
-                                                {$test->getName()|utf8_decode}
+                                                {$test->getName()}
                                             {/if}
                                         </div>
                                     </td>

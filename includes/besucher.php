@@ -104,45 +104,39 @@ function gibReferer()
  */
 function gibBot()
 {
-    $bot   = '';
     $agent = strtolower($_SERVER['HTTP_USER_AGENT']);
-    if (
-        strpos($agent, 'googlebot') !== false
-        || strpos($agent, 'bingbot') !== false
-        || strpos($agent, 'inktomi.com') !== false
-        || strpos($agent, 'yahoo! slurp') !== false
-        || strpos($agent, 'msnbot') !== false
-        || strpos($agent, 'teoma') !== false
-        || strpos($agent, 'crawler') !== false
-        || strpos($agent, 'scooter') !== false
-        || strpos($agent, 'ask jeeves') !== false
-        || strpos($agent, 'fireball')
-    ) {
-        $bot = 'unbekannter Bot';
-        if (strpos($agent, 'googlebot') !== false) {
-            $bot = 'Google';
-        } elseif (strpos($agent, 'bingbot') !== false) {
-            $bot = 'Bing';
-        } elseif (strpos($agent, 'inktomi.com') !== false) {
-            $bot = 'Inktomi';
-        } elseif (strpos($agent, 'yahoo! slurp') !== false) {
-            $bot = 'Yahoo!';
-        } elseif (strpos($agent, 'msnbot') !== false) {
-            $bot = 'MSN';
-        } elseif (strpos($agent, 'teoma') !== false) {
-            $bot = 'Teoma';
-        } elseif (strpos($agent, 'crawler') !== false) {
-            $bot = 'Crawler';
-        } elseif (strpos($agent, 'scooter') !== false) {
-            $bot = 'Scooter';
-        } elseif (strpos($agent, 'fireball') !== false) {
-            $bot = 'Fireball';
-        } elseif (strpos($agent, 'ask jeeves') !== false) {
-            $bot = 'Ask';
-        }
+    if (strpos($agent, 'googlebot') !== false) {
+        return 'Google';
+    }
+    if (strpos($agent, 'bingbot') !== false) {
+        return 'Bing';
+    }
+    if (strpos($agent, 'inktomi.com') !== false) {
+        return 'Inktomi';
+    }
+    if (strpos($agent, 'yahoo! slurp') !== false) {
+        return 'Yahoo!';
+    }
+    if (strpos($agent, 'msnbot') !== false) {
+        return 'MSN';
+    }
+    if (strpos($agent, 'teoma') !== false) {
+        return 'Teoma';
+    }
+    if (strpos($agent, 'crawler') !== false) {
+        return 'Crawler';
+    }
+    if (strpos($agent, 'scooter') !== false) {
+        return 'Scooter';
+    }
+    if (strpos($agent, 'fireball') !== false) {
+        return 'Fireball';
+    }
+    if (strpos($agent, 'ask jeeves') !== false) {
+        return 'Ask';
     }
 
-    return $bot;
+    return '';
 }
 
 /**
@@ -179,7 +173,7 @@ function werteRefererAus($kBesucher, $referer)
     }
     if ($param !== '') {
         preg_match("/(\?$param|&$param)=[^&]+/i", $roh, $treffer);
-        $ausdruck->cSuchanfrage = isset($treffer[0]) ? utf8_decode(urldecode(substr($treffer[0], 3))) : null;
+        $ausdruck->cSuchanfrage = isset($treffer[0]) ? urldecode(substr($treffer[0], 3)) : null;
         if ($ausdruck->cSuchanfrage) {
             Shop::DB()->insert('tbesuchersuchausdruecke', $ausdruck);
         }
@@ -222,13 +216,11 @@ function istSpider($cUserAgent)
     $cSpider_arr       = getSpiderArr();
     $oBesucherBot      = null;
     $cBotUserAgent_arr = array_keys($cSpider_arr);
-    if (is_array($cBotUserAgent_arr) && count($cBotUserAgent_arr) > 0) {
-        foreach ($cBotUserAgent_arr as $i => $cBotUserAgent) {
-            if (strpos($cUserAgent, $cBotUserAgent) !== false) {
-                $oBesucherBot = Shop::DB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
+    foreach ($cBotUserAgent_arr as $cBotUserAgent) {
+        if (strpos($cUserAgent, $cBotUserAgent) !== false) {
+            $oBesucherBot = Shop::DB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
 
-                break;
-            }
+            break;
         }
     }
 

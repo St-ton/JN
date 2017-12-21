@@ -39,7 +39,8 @@ class Status
     }
 
     /**
-     * @return object
+     * @return stdClass
+     * @throws Exception
      */
     protected function getImageCache()
     {
@@ -47,7 +48,7 @@ class Status
     }
 
     /**
-     * @return object
+     * @return stdClass
      */
     protected function getSystemLogInfo()
     {
@@ -70,12 +71,10 @@ class Status
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
-        $current  = getDBStruct();
+        $current  = getDBStruct(true);
         $original = getDBFileStruct();
 
-        return (is_array($current) && is_array($original))
-            ? count(compareDBStruct($original, $current)) === 0
-            : false;
+        return is_array($current) && is_array($original) && count(compareDBStruct($original, $current)) === 0;
     }
 
     /**
@@ -117,14 +116,10 @@ class Status
                 GROUP BY nHook
                 HAVING COUNT(DISTINCT kPlugin) > 1", 2
         );
-
-        array_walk($sharedHookIds, function (&$val, $key) {
-            $val = (int)$val->nHook;
-        });
-
-        foreach ($sharedHookIds as $hookId) {
+        foreach ($sharedHookIds as $hookData) {
+            $hookId                 = (int)$hookData->nHook;
             $sharedPlugins[$hookId] = [];
-            $plugins                = Shop::DB()->executeQuery(
+            $plugins                = Shop::DB()->query(
                 "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
                     FROM tpluginhook
                     INNER JOIN tplugin
@@ -178,8 +173,8 @@ class Status
     protected function hasMobileTemplateIssue()
     {
         $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
-        if (isset($oTemplate->cTemplate)) {
-            $oTplData = TemplateHelper::getInstance(false)->getData($oTemplate->cTemplate);
+        if ($oTemplate !== null && isset($oTemplate->cTemplate)) {
+            $oTplData = TemplateHelper::getInstance()->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($oMobileTpl !== null) {
@@ -204,21 +199,6 @@ class Status
     protected function hasStandardTemplateIssue()
     {
         return Shop::DB()->select('ttemplate', 'eTyp', 'standard') === null;
-    }
-
-    /**
-     * @return mixed|null
-     */
-    protected function getSubscription()
-    {
-        if (!isset($_SESSION['subscription'])) {
-            $_SESSION['subscription'] = jtlAPI::getSubscription();
-        }
-        return (is_object($_SESSION['subscription'])
-            && isset($_SESSION['subscription']->kShop)
-            && (int)$_SESSION['subscription']->kShop > 0)
-            ? $_SESSION['subscription']
-            : null;
     }
 
     /**
@@ -258,14 +238,12 @@ class Status
         $lines = explode('  ', $stats);
 
         $lines = array_map(function ($v) {
-            @list($key, $value) = @explode(':', $v, 2);
+            list($key, $value) = explode(':', $v, 2);
 
             return ['key' => trim($key), 'value' => trim($value)];
         }, $lines);
 
-        $lines = array_merge([['key' => 'Version', 'value' => $info]], $lines);
-
-        return $lines;
+        return array_merge([['key' => 'Version', 'value' => $info]], $lines);
     }
 
     /**
@@ -281,13 +259,10 @@ class Status
             '*',
             'cAnbieter, cName, nSort, kZahlungsart'
         );
-
-        if (is_array($paymentMethods)) {
-            foreach ($paymentMethods as $i => $method) {
-                if (($logCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR)) > 0) {
-                    $method->logCount = $logCount;
-                    $incorrectPaymentMethods[] = $method;
-                }
+        foreach ($paymentMethods as $method) {
+            if (($logCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR)) > 0) {
+                $method->logCount = $logCount;
+                $incorrectPaymentMethods[] = $method;
             }
         }
 
@@ -301,23 +276,21 @@ class Status
     {
         $aPollCoupons        = Shop::DB()->selectAll('tumfrage', 'nAktiv', 1);
         $invalidCouponsFound = false;
+        foreach ($aPollCoupons as $Kupon) {
+            if ($Kupon->kKupon > 0) {
+                $kKupon = Shop::DB()->select(
+                    'tkupon',
+                    'kKupon',
+                    $Kupon->kKupon,
+                    'cAktiv',
+                    'Y',
+                    null,
+                    null,
+                    false,
+                    'kKupon'
+                );
 
-        if (count($aPollCoupons) > 0) {
-            foreach ($aPollCoupons as $Kupon) {
-                if ($Kupon->kKupon > 0){
-                    $kKupon = Shop::DB()->select(
-                        'tkupon',
-                        'kKupon',
-                        $Kupon->kKupon,
-                        'cAktiv',
-                        'Y',
-                        null,
-                        null,
-                        false,
-                        'kKupon'
-                    );
-                    $invalidCouponsFound = empty($kKupon);
-                }
+                $invalidCouponsFound = empty($kKupon);
             }
         }
 
@@ -358,4 +331,15 @@ class Status
             : $categories;
     }
 
+    /**
+     * @return bool
+     */
+    protected function hasFullTextIndexError()
+    {
+        $conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+
+        return $conf['artikeluebersicht']['suche_fulltext'] === 'Y'
+            && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
+                || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1));
+    }
 }

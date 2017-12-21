@@ -317,9 +317,9 @@ class Session
         Kampagne::getAvailable();
         if (!isset($_SESSION['cISOSprache'])) {
             session_destroy();
-            die(utf8_decode('<h1>Ihr Shop wurde installiert. Lesen Sie in unserem Guide ' .
+            die('<h1>Ihr Shop wurde installiert. Lesen Sie in unserem Guide ' .
                 '<a href="https://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte#Einrichtung_und_Grundkonfiguration">' .
-                'mehr zu ersten Schritten mit JTL-Shop, der Grundkonfiguration und dem erstem Abgleich mit JTL-Wawi</a>.</h1>'));
+                'mehr zu ersten Schritten mit JTL-Shop, der Grundkonfiguration und dem erstem Abgleich mit JTL-Wawi</a>.</h1>');
         }
 
         //wurde kunde über wawi aktualisiert?
@@ -494,7 +494,9 @@ class Session
      */
     public static function Customer()
     {
-        return $_SESSION['Kunde'];
+        return isset($_SESSION['Kunde'])
+            ? $_SESSION['Kunde']
+            : new Kunde();
     }
 
     /**
@@ -523,9 +525,11 @@ class Session
     /**
      * @return array
      */
-    public function Languages()
+    public static function Languages()
     {
-        return $_SESSION['Sprachen'];
+        return isset($_SESSION['Sprachen'])
+            ? $_SESSION['Sprachen']
+            : [];
     }
 
     /**
@@ -555,11 +559,23 @@ class Session
     }
 
     /**
+     * @return Warenkorb
+     */
+    public static function Cart()
+    {
+        return isset($_SESSION['Warenkorb'])
+            ? $_SESSION['Warenkorb']
+            : new Warenkorb();
+    }
+
+    /**
      * @return Currency[]
      */
     public static function Currencies()
     {
-        return $_SESSION['Waehrungen'];
+        return isset($_SESSION['Waehrungen'])
+            ? $_SESSION['Waehrungen']
+            : [];
     }
 
     /**
@@ -568,6 +584,22 @@ class Session
     public function Basket()
     {
         return $_SESSION['Warenkorb'];
+    }
+
+    /**
+     * @return Wunschliste
+     */
+    public static function WishList()
+    {
+        return $_SESSION['Wunschliste'];
+    }
+
+    /**
+     * @return Vergleichsliste
+     */
+    public static function CompareList()
+    {
+        return $_SESSION['Vergleichsliste'];
     }
 
     /**

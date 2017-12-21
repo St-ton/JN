@@ -354,14 +354,14 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                     '</a>';
             }
         }
-        $cMetaTitle       = (strlen($cMetaDescription) < 1)
+        $cMetaTitle       = strlen($cMetaDescription) < 1
             ? Shop::Lang()->get('news', 'news') . ' ' .
                 Shop::Lang()->get('from', 'global') . ' ' . $Einstellungen['global']['global_shopname']
             : $cMetaTitle;
-        $cMetaDescription = (strlen($cMetaDescription) < 1)
+        $cMetaDescription = strlen($cMetaDescription) < 1
             ? Shop::Lang()->get('newsMetaDesc', 'news')
             : $cMetaDescription;
-        $cMetaKeywords    = (strlen($cMetaKeywords) < 1)
+        $cMetaKeywords    = strlen($cMetaKeywords) < 1
             ? baueNewsMetaKeywords($_SESSION['NewsNaviFilter'], $oNewsUebersicht_arr)
             : $cMetaKeywords;
 

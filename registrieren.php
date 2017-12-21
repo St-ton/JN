@@ -49,12 +49,11 @@ if (isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] =
 if ($step === 'formular') {
     gibFormularDaten(verifyGPCDataInteger('checkout'));
 }
-if (isset($_FILES['vcard']) &&
-    $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y' &&
-    validateToken()
+if (isset($_FILES['vcard'])
+    && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
+    && validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
-    @unlink($_FILES['vcard']['tmp_name']);
 }
 // hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
@@ -79,8 +78,8 @@ $cMetaKeywords    = $oMeta->cKeywords;
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 //Zum prüfen wie lange ein User/Bot gebraucht hat um das Registrieren-Formular auszufüllen
-if (isset($Einstellungen['kunden']['kundenregistrierung_pruefen_zeit']) &&
-    $Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
+if (isset($Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'])
+    && $Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
 ) {
     $_SESSION['dRegZeit'] = time();
 }

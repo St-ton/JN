@@ -9,8 +9,6 @@
  */
 class FilterItemRating extends AbstractFilter
 {
-    use FilterItemTrait;
-
     /**
      * @var int
      */
@@ -21,7 +19,7 @@ class FilterItemRating extends AbstractFilter
      *
      * @param ProductFilter $productFilter
      */
-    public function __construct($productFilter)
+    public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
         $this->isCustom    = false;
@@ -58,9 +56,7 @@ class FilterItemRating extends AbstractFilter
     {
         $this->setName(Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .
-            ($this->getValue() > 0
-                ? Shop::Lang()->get('starPlural')
-                : Shop::Lang()->get('starSingular'))
+            Shop::Lang()->get($this->getValue() > 0 ? 'starPlural' : 'starSingular')
         );
 
         return $this;
@@ -117,22 +113,19 @@ class FilterItemRating extends AbstractFilter
 
             return $this->options;
         }
-        $options    = [];
-        $order      = $this->productFilter->getOrder();
-        $state      = $this->productFilter->getCurrentStateData();
+        $options = [];
+        $state   = $this->productFilter->getCurrentStateData();
 
-        $state->joins[] = $order->join;
         $state->joins[] = $this->getSQLJoin();
 
-        $query = $this->productFilter->getBaseQuery(
+        $query = $this->productFilter->getFilterSQL()->getBaseQuery(
             [
                 'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
                 'tartikel.kArtikel'
             ],
             $state->joins,
             $state->conditions,
-            $state->having,
-            $order->orderBy
+            $state->having
         );
         $res              = Shop::DB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
@@ -152,13 +145,11 @@ class FilterItemRating extends AbstractFilter
                 ->setName(
                     Shop::Lang()->get('from', 'productDetails') . ' ' .
                     $row->nSterne . ' ' .
-                    ($row->nSterne > 1
-                        ? Shop::Lang()->get('starPlural')
-                        : Shop::Lang()->get('starSingular'))
+                    Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
                 )
                 ->setValue((int)$row->nSterne)
                 ->setCount($nSummeSterne)
-                ->setURL($this->productFilter->getURL(
+                ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$row->nSterne)
                 ));
             $fe->nStern = (int)$row->nSterne;

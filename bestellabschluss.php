@@ -23,6 +23,8 @@ Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $linkHelper    = LinkHelper::getInstance();
 $AktuelleSeite = 'BESTELLVORGANG';
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
+$cart          = Session::Cart();
+$smarty        = Shop::Smarty();
 if (isset($_GET['i'])) {
     $bestellung = null;
     $bestellid  = Shop::DB()->select('tbestellid', 'cId', Shop::DB()->escape($_GET['i']));
@@ -56,21 +58,21 @@ if (isset($_GET['i'])) {
         exit;
     }
     //pruefen, ob von jedem Artikel im WK genug auf Lager sind. Wenn nicht, WK verkleinern und Redirect zum WK
-    $_SESSION['Warenkorb']->pruefeLagerbestaende();
+    $cart->pruefeLagerbestaende();
 
-    if ($_SESSION['Warenkorb']->checkIfCouponIsStillValid() === false) {
+    if ($cart->checkIfCouponIsStillValid() === false) {
         $_SESSION['checkCouponResult']['ungueltig'] = 3;
         header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
         exit;
     }
 
     if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung)) {
-        $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
-        $wkChecksum = Warenkorb::getChecksum($_SESSION['Warenkorb']);
-        if (!empty($_SESSION['Warenkorb']->cChecksumme)
-            && $wkChecksum !== $_SESSION['Warenkorb']->cChecksumme
+        $cart->loescheDeaktiviertePositionen();
+        $wkChecksum = Warenkorb::getChecksum($cart);
+        if (!empty($cart->cChecksumme)
+            && $wkChecksum !== $cart->cChecksumme
         ) {
-            if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
+            if (!$cart->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
                 loescheAlleSpezialPos();
             }
             $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('yourbasketismutating', 'checkout');
@@ -104,7 +106,6 @@ $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // Trusted Shops Kaeuferschutz Classic
 if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
 
     if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {
@@ -114,7 +115,7 @@ if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellung
 
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Firma', Shop::DB()->query("SELECT * FROM tfirma", 1))
-       ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
+       ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Bestellung', $bestellung)
        ->assign('Kunde', isset($_SESSION['Kunde']) ? $_SESSION['Kunde'] : null)
        ->assign('bOrderConf', true)

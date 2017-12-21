@@ -90,6 +90,15 @@ class NiceDB implements Serializable
      */
     private $transactionCount = 0;
 
+    const RET_SINGLE_OBJECT         = 1;
+    const RET_ARRAY_OF_OBJECTS      = 2;
+    const RET_AFFECTED_ROWS         = 3;
+    const RET_LAST_INSERTED_ID      = 7;
+    const RET_SINGLE_ASSOC_ARRAY    = 8;
+    const RET_ARRAY_OF_ASSOC_ARRAYS = 9;
+    const RET_QUERYSINGLE           = 10;
+    const RET_ARRAY_OF_BOTH_ARRAYS  = 11;
+
     /**
      * create DB Connection with default parameters
      *
@@ -102,16 +111,16 @@ class NiceDB implements Serializable
      */
     public function __construct($dbHost, $dbUser, $dbPass, $dbName, $debugOverride = false)
     {
+        $options      = [];
+        $dsn          = 'mysql:dbname=' . $dbName;
         $this->config = [
             'driver'   => 'mysql',
             'host'     => $dbHost,
             'database' => $dbName,
             'username' => $dbUser,
             'password' => $dbPass,
-            'charset'  => 'latin1',
+            'charset'  => DB_CHARSET,
         ];
-        $options = [];
-        $dsn     = 'mysql:dbname=' . $dbName;
         if (defined('DB_SOCKET')) {
             $dsn .= ';unix_socket=' . DB_SOCKET;
         } else {
@@ -127,8 +136,10 @@ class NiceDB implements Serializable
         if (defined('DB_PERSISTENT_CONNECTIONS') && is_bool(DB_PERSISTENT_CONNECTIONS)) {
             $options[PDO::ATTR_PERSISTENT] = DB_PERSISTENT_CONNECTIONS;
         }
-        if (JTL_CHARSET === 'iso-8859-1') {
-            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'latin1'";
+        if (defined('DB_CHARSET') && defined('DB_COLLATE')) {
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '" . DB_CHARSET . "' COLLATE '" . DB_COLLATE . "'";
+        } elseif (defined('DB_CHARSET')) {
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '" . DB_CHARSET . "'";
         }
         $this->pdo = new PDO($dsn, $dbUser, $dbPass, $options);
         if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
@@ -146,7 +157,7 @@ class NiceDB implements Serializable
                     $this->debugLevel = DEBUG_LEVEL;
                 }
                 if (defined('PROFILE_QUERIES_ACTIVATION_FUNCTION') && is_callable(PROFILE_QUERIES_ACTIVATION_FUNCTION)) {
-                    $this->collectData = (bool) call_user_func(PROFILE_QUERIES_ACTIVATION_FUNCTION);
+                    $this->collectData = (bool)call_user_func(PROFILE_QUERIES_ACTIVATION_FUNCTION);
                 } elseif (PROFILE_QUERIES === true) {
                     $this->debug = true;
                 }
@@ -211,8 +222,10 @@ class NiceDB implements Serializable
             $dsn .= ';host=' . $this->config['host'];
         }
         $this->pdo = new PDO($dsn, $this->config['username'], $this->config['password']);
-        if (JTL_CHARSET === 'iso-8859-1') {
-            $this->pdo->exec("SET NAMES 'latin1'");
+        if (defined('DB_CHARSET') && defined('DB_COLLATE')) {
+            $this->pdo->exec("SET NAMES '" . DB_CHARSET . "' COLLATE '" . DB_COLLATE . "'");
+        } elseif (defined('DB_CHARSET')) {
+            $this->pdo->exec("SET NAMES '" . DB_CHARSET . "'");
         }
 
         return $this;
@@ -293,7 +306,7 @@ class NiceDB implements Serializable
      * @param null|array $backtrace
      * @return $this
      */
-    private function analyzeQuery($type = '', $stmt, $time = 0, $backtrace = null)
+    private function analyzeQuery($type, $stmt, $time = 0, $backtrace = null)
     {
         $explain = 'EXPLAIN ' . $stmt;
         try {
@@ -314,8 +327,7 @@ class NiceDB implements Serializable
                 if (!isset($_bt['function'])) {
                     $_bt['function'] = '';
                 }
-                if (
-                    isset($_bt['file']) &&
+                if (isset($_bt['file']) &&
                     !($_bt['class'] === 'NiceDB' && $_bt['function'] === '__call') &&
                     strpos($_bt['file'], 'class.core.NiceDB.php') === false
                 ) {
@@ -651,7 +663,7 @@ class NiceDB implements Serializable
             $keynamePrepared = array_map(function ($_v) {
                 return $_v . '=?';
             }, $keyname);
-            $where   = ' WHERE ' . implode(' AND ', $keynamePrepared);
+            $where = ' WHERE ' . implode(' AND ', $keynamePrepared);
             foreach ($keyvalue as $_v) {
                 $assigns[] = $_v;
             }
@@ -744,8 +756,7 @@ class NiceDB implements Serializable
         $keyvalue2 = null,
         $echo = false,
         $select = '*'
-    )
-    {
+    ) {
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
             : 0;
@@ -755,7 +766,7 @@ class NiceDB implements Serializable
         $i       = 0;
         foreach ($keys as &$_key) {
             if ($_key !== null) {
-                $_key .= '=?';
+                $_key     .= '=?';
                 $assigns[] = $values[$i];
             } else {
                 unset($keys[$i]);
@@ -804,9 +815,9 @@ class NiceDB implements Serializable
             if ($this->debug === true || $this->collectData === true) {
                 $start = microtime(true);
             }
-            $keys    = is_array($keyname) ? $keyname : [$keyname, $keyname1, $keyname2];
-            $values  = is_array($keyvalue) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
-            $i       = 0;
+            $keys   = is_array($keyname) ? $keyname : [$keyname, $keyname1, $keyname2];
+            $values = is_array($keyvalue) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
+            $i      = 0;
             foreach ($keys as &$k) {
                 if ($k !== null) {
                     $k .= '=';
@@ -845,9 +856,9 @@ class NiceDB implements Serializable
      */
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
-        $keys         = is_array($keys) ? $keys : [$keys];
-        $values       = is_array($values) ? $values : [$values];
-        $kv           = [];
+        $keys   = is_array($keys) ? $keys : [$keys];
+        $values = is_array($values) ? $values : [$values];
+        $kv     = [];
         if (count($keys) !== count($values)) {
             throw new InvalidArgumentException('Number of keys must be equal to number of given keys. Got ' .
                 count($keys) . ' key(s) and ' . count($values) . ' value(s).');
@@ -860,8 +871,8 @@ class NiceDB implements Serializable
                 (' WHERE ' . implode(' AND ', $kv)) :
                 ''
             ) .
-            ((!empty($orderBy)) ? (' ORDER BY ' . $orderBy) : '') .
-            ((!empty($limit)) ? (' LIMIT ' . $limit) : '');
+            (!empty($orderBy) ? (' ORDER BY ' . $orderBy) : '') .
+            (!empty($limit) ? (' LIMIT ' . $limit) : '');
 
         return $this->executeQueryPrepared($stmt, array_combine($keys, $values), 2);
     }
@@ -874,9 +885,11 @@ class NiceDB implements Serializable
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
+     * 7  - last inserted id
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
+     * 11 - fetch both arrays
      * @param int|bool $echo print current stmt
      * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
@@ -897,9 +910,11 @@ class NiceDB implements Serializable
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
+     * 7  - last inserted id
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
+     * 11 - fetch both arrays
      * @param int|bool $echo print current stmt
      * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
@@ -925,7 +940,7 @@ class NiceDB implements Serializable
                 $this->_bind($res, $k, $v);
             }
             if ($res->execute() === false) {
-                return 0;
+                return;
             }
         } catch (PDOException $e) {
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
@@ -941,7 +956,7 @@ class NiceDB implements Serializable
                 throw $e;
             }
 
-            return 0;
+            return;
         }
         while (($row = $res->fetchObject()) !== false) {
             yield $row;
@@ -965,6 +980,7 @@ class NiceDB implements Serializable
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
+     * 11 - fetch both arrays
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws InvalidArgumentException
      */
@@ -1052,23 +1068,23 @@ class NiceDB implements Serializable
         }
 
         switch ($return) {
-            case 1:
+            case self::RET_SINGLE_OBJECT:
                 $ret = $res->fetchObject();
                 break;
-            case 2:
+            case self::RET_ARRAY_OF_OBJECTS:
                 $ret = [];
                 while (($row = $res->fetchObject()) !== false) {
                     $ret[] = $row;
                 }
                 break;
-            case 3:
+            case self::RET_AFFECTED_ROWS:
                 $ret = $res->rowCount();
                 break;
-            case 7:
-                $id = $this->pdo->lastInsertId();
+            case self::RET_LAST_INSERTED_ID:
+                $id  = $this->pdo->lastInsertId();
                 $ret = ($id > 0) ? $id : 1;
                 break;
-            case 8:
+            case self::RET_SINGLE_ASSOC_ARRAY:
                 $ret = $res->fetchAll(PDO::FETCH_NAMED);
                 if (is_array($ret) && isset($ret[0])) {
                     $ret = $ret[0];
@@ -1076,13 +1092,13 @@ class NiceDB implements Serializable
                     $ret = null;
                 }
                 break;
-            case 9:
+            case self::RET_ARRAY_OF_ASSOC_ARRAYS:
                 $ret = $res->fetchAll(PDO::FETCH_ASSOC);
                 break;
-            case 10:
+            case self::RET_QUERYSINGLE:
                 $ret = $res;
                 break;
-            case 11:
+            case self::RET_ARRAY_OF_BOTH_ARRAYS:
                 $ret = $res->fetchAll(PDO::FETCH_BOTH);
                 break;
             default:
@@ -1123,7 +1139,8 @@ class NiceDB implements Serializable
         if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('deleteRow: ' .
+                    $this->writeLog(
+                        'deleteRow: ' .
                         'Anzahl an Schluesseln passt nicht zu Anzahl an Werten - ' .
                         'Tablename:' . $tableName
                     );
@@ -1134,7 +1151,7 @@ class NiceDB implements Serializable
             $keyname = array_map(function ($_v) {
                 return $_v . '=?';
             }, $keyname);
-            $where   = implode(' AND ', $keyname);
+            $where = implode(' AND ', $keyname);
             foreach ($keyvalue as $_v) {
                 $assigns[] = $_v;
             }

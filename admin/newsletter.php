@@ -186,9 +186,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     }
     $smarty->assign('oNewsletterVorlage', $oNewsletterVorlage)
            ->assign('cFehler', is_string($preview) ? $preview : null)
-           ->assign('NettoPreise', isset($_SESSION['Kundengruppe'])
-               ? $_SESSION['Kundengruppe']->getIsMerchant()
-               : null);
+           ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
 } elseif (verifyGPCDataInteger('newslettervorlagenstd') === 1) { // Vorlagen Std
     $oKundengruppe_arr = Shop::DB()->query(
         "SELECT kKundengruppe, cName

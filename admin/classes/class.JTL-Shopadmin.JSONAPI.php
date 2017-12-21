@@ -10,9 +10,9 @@
 class JSONAPI
 {
     /**
-     * @var self
+     * @var JSONAPI
      */
-    private static $instance = null;
+    private static $instance;
 
     /**
      * ctor
@@ -25,7 +25,7 @@ class JSONAPI
     private function __clone() { }
 
     /**
-     * @return self
+     * @return JSONAPI
      */
     public static function getInstance()
     {
@@ -33,21 +33,19 @@ class JSONAPI
     }
 
     /**
-     * @param null $search
-     * @param int $limit
-     * @param string $keyName
+     * @param string|array|null $search
+     * @param int               $limit
+     * @param string            $keyName
      * @return mixed|string
      */
     public function getSeos($search = null, $limit = 0, $keyName = 'cSeo')
     {
+        $searchIn = null;
         if (is_string($search)) {
             $searchIn = ['cSeo'];
         } elseif (is_array($search)) {
             $searchIn = $keyName;
-        } else {
-            $searchIn = null;
         }
-
         $items = $this->getItems('tseo', ['cSeo', 'cKey', 'kKey'], null, $searchIn, $search, $limit);
 
         return $this->itemsToJson($items);
@@ -61,12 +59,11 @@ class JSONAPI
      */
     public function getPages($search = null, $limit = 0, $keyName = 'kLink')
     {
+        $searchIn = null;
         if (is_string($search)) {
             $searchIn = ['cName'];
         } elseif (is_array($search)) {
             $searchIn = $keyName;
-        } else {
-            $searchIn = null;
         }
 
         return $this->itemsToJson($this->getItems('tlink', ['kLink', 'cName'], null, $searchIn, $search, $limit));
@@ -80,12 +77,11 @@ class JSONAPI
      */
     public function getCategories($search = null, $limit = 0, $keyName = 'kKategorie')
     {
+        $searchIn = null;
         if (is_string($search)) {
             $searchIn = ['cName'];
         } elseif (is_array($search)) {
             $searchIn = $keyName;
-        } else {
-            $searchIn = null;
         }
 
         return $this->itemsToJson($this->getItems(
@@ -101,12 +97,11 @@ class JSONAPI
      */
     public function getProducts($search = null, $limit = 0, $keyName = 'kArtikel')
     {
+        $searchIn = null;
         if (is_string($search)) {
             $searchIn = ['cName', 'cArtNr'];
         } elseif (is_array($search)) {
             $searchIn = $keyName;
-        } else {
-            $searchIn = null;
         }
 
         return $this->itemsToJson(
@@ -124,12 +119,11 @@ class JSONAPI
      */
     public function getManufacturers($search = null, $limit = 0, $keyName = 'kHersteller')
     {
+        $searchIn = null;
         if (is_string($search)) {
             $searchIn = ['cName'];
         } elseif (is_array($search)) {
             $searchIn = $keyName;
-        } else {
-            $searchIn = null;
         }
 
         return $this->itemsToJson($this->getItems(
@@ -145,12 +139,11 @@ class JSONAPI
      */
     public function getCustomers($search = null, $limit = 0, $keyName = 'kKunde')
     {
+        $searchIn = null;
         if (is_string($search)) {
             $searchIn = ['cVorname', 'cMail', 'cOrt', 'cPLZ'];
         } elseif (is_array($search)) {
             $searchIn = $keyName;
-        } else {
-            $searchIn = null;
         }
 
         $items = $this->getItems(
@@ -174,12 +167,11 @@ class JSONAPI
      */
     public function getTags($search = null, $limit = 0, $keyName = 'kTag')
     {
+        $searchIn = null;
         if (is_string($search)) {
             $searchIn = ['cName'];
         } elseif (is_array($search)) {
             $searchIn = $keyName;
-        } else {
-            $searchIn = null;
         }
 
         return $this->itemsToJson($this->getItems(
@@ -195,12 +187,11 @@ class JSONAPI
      */
     public function getAttributes($search = null, $limit = 0, $keyName = 'kMerkmalWert')
     {
+        $searchIn = null;
         if (is_string($search)) {
             $searchIn = ['cWert'];
         } elseif (is_array($search)) {
             $searchIn = $keyName;
-        } else {
-            $searchIn = null;
         }
 
         return $this->itemsToJson($this->getItems(
@@ -290,15 +281,12 @@ class JSONAPI
         return $result;
     }
 
+    /**
+     * @param array $items
+     * @return string
+     */
     public function itemsToJson($items)
     {
-        // deep UTF-8 encode
-        foreach ($items as $item) {
-            foreach (get_object_vars($item) as $key => $val) {
-                $item->$key = utf8_encode($val);
-            }
-        }
-
         return json_encode($items);
     }
 }

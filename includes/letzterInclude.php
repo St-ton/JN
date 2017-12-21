@@ -4,26 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-$smarty                = Shop::Smarty();
-$oBrowser              = getBrowser();
-$linkHelper            = LinkHelper::getInstance();
-$oTemplate             = Template::getInstance();
-$bMobilAktiv           = $oTemplate->isMobileTemplateActive();
-$currentTemplateFolder = $oTemplate->getDir();
-$currentTemplateDir    = PFAD_TEMPLATES . $currentTemplateFolder . '/';
-$bMobile               = false;
-$shopLogo              = Shop::getLogo();
-$shopURL               = Shop::getURL();
-$cart                  = isset($_SESSION['Warenkorb']) ? $_SESSION['Warenkorb'] : new Warenkorb();
-$EinstellungenTmp      = Shopsetting::getInstance()->getAll();
-$Einstellungen         = isset($Einstellungen) ? array_merge($Einstellungen, $EinstellungenTmp) : $EinstellungenTmp;
-$themeDir              = empty($Einstellungen['template']['theme']['theme_default'])
+$smarty        = Shop::Smarty();
+$oBrowser      = getBrowser();
+$linkHelper    = LinkHelper::getInstance();
+$oTemplate     = Template::getInstance();
+$bMobilAktiv   = $oTemplate->isMobileTemplateActive();
+$tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
+$bMobile       = false;
+$shopLogo      = Shop::getLogo();
+$shopURL       = Shop::getURL();
+$cart          = isset($_SESSION['Warenkorb']) ? $_SESSION['Warenkorb'] : new Warenkorb();
+$Einstellungen = Shopsetting::getInstance()->getAll();
+$themeDir      = empty($Einstellungen['template']['theme']['theme_default'])
     ? 'evo'
     : $Einstellungen['template']['theme']['theme_default'];
-$cShopName             = empty($Einstellungen['global']['global_shopname'])
+$cShopName     = empty($Einstellungen['global']['global_shopname'])
     ? 'JTL-Shop'
     : $Einstellungen['global']['global_shopname'];
-//Wechsel auf Mobil-Template
 if (!$bMobilAktiv && $oBrowser->bMobile && !isset($_SESSION['bAskMobil']) && $oTemplate->hasMobileTemplate()) {
     $_SESSION['bAskMobil'] = true;
     $bMobile               = true;
@@ -52,8 +49,8 @@ $warensumme[1]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([
 $gesamtsumme[0]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(true, true));
 $gesamtsumme[1]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(false, true));
 $oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
-$oGlobaleMetaAngaben   = isset($oGlobaleMetaAngabenAssoc_arr[Shop::getLanguage()])
-    ? $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguage()]
+$oGlobaleMetaAngaben   = isset($oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()])
+    ? $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()]
     : null;
 $pagetType             = Shop::getPageType();
 
@@ -69,17 +66,20 @@ if (is_object($oGlobaleMetaAngaben)) {
     }
 }
 // Kategorielisten aufbauen
-if (isset($AktuelleKategorie)) {
-    baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie);
-    baueUnterkategorieListeHTML($AktuelleKategorie);
-} else {
+if (!isset($AktuelleKategorie)) {
     $AktuelleKategorie = null;
 }
 if (!isset($NaviFilter)) {
-    $smarty->assign('NaviFilter', Shop::run());
+    $NaviFilter = Shop::run();
 }
-// Standardassigns
-$smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
+if ($smarty->getTemplateVars('NaviFilter') === null) {
+    $smarty->assign('NaviFilter', $NaviFilter);
+}
+// assign variables moved from $_SESSION to cache to smarty
+$smarty->assign('linkgroups', $linkHelper->getLinkGroups())
+       ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
+       ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
+       ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie, false))
        ->assign('bMobilMoeglich', $bMobile)
        ->assign('cPluginCssConditional_arr', $cMinify_arr['plugin_css_conditional'])
        ->assign('cPluginJsHead_arr', $cMinify_arr['plugin_js_head'])
@@ -87,11 +87,11 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('cCSS_arr', $cCSS_arr)
        ->assign('cJS_arr', $cJS_arr)
        ->assign('nTemplateVersion', $oTemplate->getVersion())
-       ->assign('currentTemplateDir', $currentTemplateDir)
-       ->assign('currentTemplateDirFull', $shopURL . '/' . $currentTemplateDir)
-       ->assign('currentTemplateDirFullPath', PFAD_ROOT . $currentTemplateDir)
-       ->assign('currentThemeDir', $currentTemplateDir . 'themes/' . $themeDir . '/')
-       ->assign('currentThemeDirFull', $shopURL . '/' . $currentTemplateDir . 'themes/' . $themeDir . '/')
+       ->assign('currentTemplateDir', $tplDir)
+       ->assign('currentTemplateDirFull', $shopURL . '/' . $tplDir)
+       ->assign('currentTemplateDirFullPath', PFAD_ROOT . $tplDir)
+       ->assign('currentThemeDir', $tplDir . 'themes/' . $themeDir . '/')
+       ->assign('currentThemeDirFull', $shopURL . '/' . $tplDir . 'themes/' . $themeDir . '/')
        ->assign('session_name', session_name())
        ->assign('session_id', session_id())
        ->assign('SID', SID)
@@ -104,8 +104,8 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('PFAD_BILDER_BANNER', PFAD_BILDER_BANNER)
        ->assign('Anrede_m', Shop::Lang()->get('salutationM'))
        ->assign('Anrede_w', Shop::Lang()->get('salutationW'))
-       ->assign('oTrennzeichenGewicht', Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, Shop::getLanguage()))
-       ->assign('oTrennzeichenMenge', Trennzeichen::getUnit(JTL_SEPARATOR_AMOUNT, Shop::getLanguage()))
+       ->assign('oTrennzeichenGewicht', Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, Shop::getLanguageID()))
+       ->assign('oTrennzeichenMenge', Trennzeichen::getUnit(JTL_SEPARATOR_AMOUNT, Shop::getLanguageID()))
        ->assign('cShopName', $cShopName)
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
        ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
@@ -137,7 +137,7 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('PFAD_MINIFY', PFAD_MINIFY)
        ->assign('PFAD_UPLOADIFY', PFAD_UPLOADIFY)
        ->assign('PFAD_UPLOAD_CALLBACK', PFAD_UPLOAD_CALLBACK)
-       ->assign('oSuchspecialoverlay_arr', holeAlleSuchspecialOverlays(Shop::getLanguage()))
+       ->assign('oSuchspecialoverlay_arr', holeAlleSuchspecialOverlays(Shop::getLanguageID()))
        ->assign('oSuchspecial_arr', baueAlleSuchspecialURLs())
        ->assign('ShopLogoURL', $shopLogo)
        ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
@@ -150,9 +150,10 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('CHECKBOX_ORT_KONTAKT', CHECKBOX_ORT_KONTAKT)
        ->assign('nSeitenTyp', $pagetType)
        ->assign('bExclusive', isset($_GET['exclusive_content']))
-       ->assign('bAdminWartungsmodus', (isset($bAdminWartungsmodus) ? $bAdminWartungsmodus : false))
+       ->assign('bAdminWartungsmodus', isset($bAdminWartungsmodus) && $bAdminWartungsmodus)
        ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
+       ->assign('FavourableShipping', $cart->getFavourableShipping())
        ->assign('Einstellungen', $Einstellungen)
        ->assign('deletedPositions', Warenkorb::$deletedPositions)
        ->assign('updatedPositions', Warenkorb::$updatedPositions)
@@ -163,7 +164,7 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
        ->assign('cCanonicalURL', isset($cCanonicalURL) ? $cCanonicalURL : null)
        ->assign('AktuelleKategorie', $AktuelleKategorie)
-       ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) ? $_SESSION['showLoginCaptcha'] : false)
+       ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
        ->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE)
        ->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE)
@@ -178,10 +179,7 @@ pruefeKampagnenParameter();
 setzeSpracheUndWaehrungLink();
 $linkGroups = $pagetType ? $linkHelper->activate($pagetType) : $smarty->getTemplateVars('linkGroups');
 // Extension Point
-if (!isset($cParameter_arr)) {
-    $cParameter_arr = [];
-}
-$oExtension = (new ExtensionPoint($pagetType, $cParameter_arr, Shop::getLanguage(), $kKundengruppe))->load();
+$oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $kKundengruppe))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Boxen::getInstance();
 $boxesToShow = $boxes->build($pagetType)->render();
@@ -198,4 +196,4 @@ $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('boxes', $boxesToShow)
        ->assign('linkgroups', $linkGroups)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
-       ->assign('Besucherzaehler', (!empty($besucherzaehler->nZaehler)) ? (int)$besucherzaehler->nZaehler : 0);
+       ->assign('Besucherzaehler', !empty($besucherzaehler->nZaehler) ? (int)$besucherzaehler->nZaehler : 0);

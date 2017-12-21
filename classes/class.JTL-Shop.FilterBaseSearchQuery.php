@@ -9,20 +9,22 @@
  */
 class FilterBaseSearchQuery extends AbstractFilter
 {
-    use FilterItemTrait;
     use MagicCompatibilityTrait;
 
     /**
      * @var array
      */
     private static $mapping = [
-        'kSuchanfrage' => 'ValueCompat'
+        'kSuchanfrage' => 'ID',
+        'cSuche'       => 'Name',
+        'Fehler'       => 'Error'
     ];
 
     /**
-     * @var string
+     * @former kSuchanfrage
+     * @var int
      */
-    public $cSuche;
+    private $id = 0;
 
     /**
      * @var int
@@ -30,11 +32,16 @@ class FilterBaseSearchQuery extends AbstractFilter
     public $kSuchCache = 0;
 
     /**
+     * @var string
+     */
+    public $error;
+
+    /**
      * FilterBaseSearchQuery constructor.
      *
      * @param ProductFilter $productFilter
      */
-    public function __construct($productFilter)
+    public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
         $this->isCustom    = false;
@@ -54,15 +61,55 @@ class FilterBaseSearchQuery extends AbstractFilter
     }
 
     /**
+     * @param string $name
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->error = null;
+        $minChars = ((int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen'] > 0)
+            ? (int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen']
+            : 3;
+        if (strlen($name) > 0 || (isset($_GET['qs']) && strlen($_GET['qs']) === 0)) {
+            preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $minChars . ",}/",
+                str_replace(' ', '', $name), $cTreffer_arr);
+            if (count($cTreffer_arr) === 0) {
+                $this->error = Shop::Lang()->get('expressionHasTo') . ' ' .
+                    $minChars . ' ' .
+                    Shop::Lang()->get('lettersDigits');
+            }
+        }
+
+        return parent::setName($name);
+    }
+
+    /**
      * @return int
      */
     public function getValue()
     {
-        if ($this->productFilter->getRealSearch() !== null && !$this->productFilter->hasSearchQuery()) {
-            return urlencode($this->productFilter->getRealSearch()->cSuche);
-        }
+        return ($this->productFilter->getRealSearch() !== null && !$this->productFilter->hasSearchQuery())
+            ? urlencode($this->productFilter->getRealSearch()->cSuche)
+            : $this->value;
+    }
 
-        return $this->value;
+    /**
+     * @param int $id
+     * @return $this
+     */
+    public function setID($id)
+    {
+        $this->id = (int)$id;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getID()
+    {
+        return $this->id;
     }
 
     /**
@@ -75,6 +122,24 @@ class FilterBaseSearchQuery extends AbstractFilter
         }
 
         return parent::getUrlParam();
+    }
+
+    /**
+     * @param string $errorMsg
+     * @return $this
+     */
+    public function setError($errorMsg) {
+        $this->error = $errorMsg;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getError()
+    {
+        return $this->error;
     }
 
     /**
@@ -105,14 +170,6 @@ class FilterBaseSearchQuery extends AbstractFilter
         }
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->cSuche;
     }
 
     /**
@@ -184,16 +241,15 @@ class FilterBaseSearchQuery extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        $options = [];
-        if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
-            $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) &&
-                ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
+        $options  = [];
+        $naviConf = $this->getConfig()['navigationsfilter'];
+        if ($naviConf['suchtrefferfilter_nutzen'] !== 'N') {
+            $nLimit     = (isset($naviConf['suchtrefferfilter_anzahl'])
+                && ($limit = (int)$naviConf['suchtrefferfilter_anzahl']) > 0)
                 ? ' LIMIT ' . $limit
                 : '';
-            $order      = $this->productFilter->getOrder();
             $state      = $this->productFilter->getCurrentStateData();
 
-            $state->joins[] = $order->join;
             $state->joins[] = (new FilterJoin())
                 ->setComment('join1 from getSearchFilterOptions')
                 ->setType('JOIN')
@@ -216,12 +272,12 @@ class FilterBaseSearchQuery extends AbstractFilter
 
             $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 
-            $query         = $this->productFilter->getBaseQuery(
+            $query         = $this->productFilter->getFilterSQL()->getBaseQuery(
                 ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
                 $state->having,
-                $order->orderBy,
+                null,
                 '',
                 ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
             );
@@ -271,7 +327,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     ->setName($searchFilter->cSuche)
                     ->setValue((int)$searchFilter->kSuchanfrage)
                     ->setCount($searchFilter->nAnzahl)
-                    ->setURL($this->productFilter->getURL(
+                    ->setURL($this->productFilter->getFilterURL()->getURL(
                         $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                     ))
                     ->setClass(rand(1, 10));
@@ -296,7 +352,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      * @return string
      * @former mappingBeachten
      */
-    private function getMapping($Suchausdruck, $kSpracheExt = 0)
+    private function getQueryMapping($Suchausdruck, $kSpracheExt = 0)
     {
         $kSprache = $kSpracheExt > 0
             ? (int)$kSpracheExt
@@ -338,8 +394,8 @@ class FilterBaseSearchQuery extends AbstractFilter
     {
         require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
         // Mapping beachten
-        $cSuche       = $this->getMapping($this->cSuche, $kSpracheExt);
-        $this->cSuche = $cSuche;
+        $cSuche       = $this->getQueryMapping($this->getName(), $kSpracheExt);
+        $this->setName($cSuche);
         $kSprache     = $kSpracheExt > 0
             ? (int)$kSpracheExt
             : $this->getLanguageID();
@@ -377,7 +433,7 @@ class FilterBaseSearchQuery extends AbstractFilter
             : 3;
         if (strlen($cSuche) < $nMindestzeichen) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-            $this->Fehler = lang_suche_mindestanzahl($cSuche, $nMindestzeichen);
+            $this->error = lang_suche_mindestanzahl($cSuche, $nMindestzeichen);
 
             return 0;
         }
@@ -809,7 +865,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
                     $match AS score
                     FROM tartikel
-                    WHERE $match " . gibLagerfilter() . " ";
+                    WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . " ";
 
             if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
                 $match  = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ") 
@@ -820,7 +876,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     $match AS score
                     FROM tartikel
                     INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
-                    WHERE $match " . gibLagerfilter() . " ";
+                    WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . " ";
             }
 
             $cISQL = "INSERT INTO tsuchcachetreffer

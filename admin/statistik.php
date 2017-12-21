@@ -53,8 +53,10 @@ $nDateStampBis = strtotime($oDateRange->getEnd());
 
 $oStat_arr = gibBackendStatistik($_SESSION['Statistik']->nTyp, $nDateStampVon, $nDateStampBis, $nAnzeigeIntervall);
 // Highchart
-if ($_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_KUNDENHERKUNFT ||
-    $_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_SUCHMASCHINE || $_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_EINSTIEGSSEITEN) {
+if ($_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_KUNDENHERKUNFT
+    || $_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_SUCHMASCHINE
+    || $_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_EINSTIEGSSEITEN
+) {
     $smarty->assign('piechart', preparePieChartStats(
         $oStat_arr,
         GetTypeNameStats($_SESSION['Statistik']->nTyp),

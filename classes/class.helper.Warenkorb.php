@@ -9,7 +9,7 @@
  */
 class WarenkorbHelper
 {
-    const NET   = 0;
+    const NET = 0;
     const GROSS = 1;
 
     /**
@@ -29,10 +29,11 @@ class WarenkorbHelper
         $info->items     = [];
         $info->currency  = $this->getCurrency();
 
-        foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
+        foreach (Session::Cart()->PositionenArr as $oPosition) {
             $amountItem = $oPosition->fPreisEinzelNetto;
-            if (isset($oPosition->WarenkorbPosEigenschaftArr) && is_array($oPosition->WarenkorbPosEigenschaftArr) &&
-                (!isset($oPosition->Artikel->kVaterArtikel) || (int)$oPosition->Artikel->kVaterArtikel === 0)
+            if (isset($oPosition->WarenkorbPosEigenschaftArr)
+                && is_array($oPosition->WarenkorbPosEigenschaftArr)
+                && (!isset($oPosition->Artikel->kVaterArtikel) || (int)$oPosition->Artikel->kVaterArtikel === 0)
             ) {
                 foreach ($oPosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                     if ($oWarenkorbPosEigenschaft->fAufpreis != 0) {
@@ -59,15 +60,14 @@ class WarenkorbHelper
                         $item->name = $oPosition->cName;
                     }
 
-                    $item->name = html_entity_decode($item->name);
-
+                    $item->name   = html_entity_decode($item->name);
                     $item->amount = [
                         self::NET   => $amount,
                         self::GROSS => $amountGross
                     ];
 
                     if ((int)$oPosition->nAnzahl != $oPosition->nAnzahl) {
-                        $item->amount[self::NET] *= $oPosition->nAnzahl;
+                        $item->amount[self::NET]   *= $oPosition->nAnzahl;
                         $item->amount[self::GROSS] *= $oPosition->nAnzahl;
 
                         $item->name = sprintf(
@@ -80,7 +80,7 @@ class WarenkorbHelper
                         $item->quantity = (int)$oPosition->nAnzahl;
                     }
 
-                    $info->article[self::NET] += $item->amount[self::NET] * $item->quantity;
+                    $info->article[self::NET]   += $item->amount[self::NET] * $item->quantity;
                     $info->article[self::GROSS] += $item->amount[self::GROSS] * $item->quantity;
 
                     $info->items[] = $item;
@@ -90,48 +90,50 @@ class WarenkorbHelper
                 case C_WARENKORBPOS_TYP_VERSANDZUSCHLAG:
                 case C_WARENKORBPOS_TYP_VERPACKUNG:
                 case C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG:
-                    $info->shipping[self::NET] += $amount * $oPosition->nAnzahl;
+                    $info->shipping[self::NET]   += $amount * $oPosition->nAnzahl;
                     $info->shipping[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
 
                 case C_WARENKORBPOS_TYP_KUPON:
                 case C_WARENKORBPOS_TYP_GUTSCHEIN:
                 case C_WARENKORBPOS_TYP_NEUKUNDENKUPON:
-                    $info->discount[self::NET] += $amount * $oPosition->nAnzahl;
+                    $info->discount[self::NET]   += $amount * $oPosition->nAnzahl;
                     $info->discount[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
 
                 case C_WARENKORBPOS_TYP_ZAHLUNGSART:
                     if ($amount >= 0) {
-                        $info->surcharge[self::NET] += $amount * $oPosition->nAnzahl;
+                        $info->surcharge[self::NET]   += $amount * $oPosition->nAnzahl;
                         $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     } else {
-                        $amount *= -1;
-                        $info->discount[self::NET] += $amount * $oPosition->nAnzahl;
+                        $amount                      *= -1;
+                        $info->discount[self::NET]   += $amount * $oPosition->nAnzahl;
                         $info->discount[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     }
                     break;
 
                 case C_WARENKORBPOS_TYP_TRUSTEDSHOPS:
                 case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
-                    $info->surcharge[self::NET] += $amount * $oPosition->nAnzahl;
+                    $info->surcharge[self::NET]   += $amount * $oPosition->nAnzahl;
                     $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
+                    break;
+                default:
                     break;
             }
         }
 
-        if (isset($_SESSION['Bestellung'], $_SESSION['Bestellung']->GuthabenNutzen) &&
-            $_SESSION['Bestellung']->GuthabenNutzen === 1
+        if (isset($_SESSION['Bestellung'], $_SESSION['Bestellung']->GuthabenNutzen)
+            && $_SESSION['Bestellung']->GuthabenNutzen === 1
         ) {
             $amountGross = $_SESSION['Bestellung']->fGuthabenGenutzt * -1;
             $amount      = $amountGross;
 
-            $info->discount[self::NET] += $amount;
+            $info->discount[self::NET]   += $amount;
             $info->discount[self::GROSS] += $amountGross;
         }
 
         // positive discount
-        $info->discount[self::NET] *= -1;
+        $info->discount[self::NET]   *= -1;
         $info->discount[self::GROSS] *= -1;
 
         // total
@@ -232,7 +234,7 @@ class WarenkorbHelper
 
     /**
      * @param WarenkorbPos $wkPos
-     * @param object $variation
+     * @param object       $variation
      * @return void
      */
     public static function setVariationPicture(WarenkorbPos $wkPos, $variation)
@@ -241,7 +243,7 @@ class WarenkorbHelper
             $wkPos->variationPicturesArr = [];
         }
 
-        $oPicture = (object)[
+        $oPicture              = (object)[
             'isVariation'  => true,
             'cPfadMini'    => $variation->cPfadMini,
             'cPfadKlein'   => $variation->cPfadKlein,
@@ -318,7 +320,7 @@ class WarenkorbHelper
                 if ($fAnzahl <= 0) {
                     $fAnzahl = 1;
                 }
-                header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
+                header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .
                     '?a=' . $kArtikel .
                     '&n=' . $fAnzahl .
                     '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
@@ -353,7 +355,7 @@ class WarenkorbHelper
                             // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde, muss zum Artikel weitergeleitet werden
                             // um Variationen zu wählen
                             if (verifyGPCDataInteger('overview') === 1) {
-                                header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel .
+                                header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel .
                                     '&n=' . $fAnzahl .
                                     '&r=' . R_VARWAEHLEN, true, 303);
                                 exit;
@@ -381,7 +383,11 @@ class WarenkorbHelper
                             );
                             // Kampagne
                             if (isset($_SESSION['Kampagnenbesucher'])) {
-                                setzeKampagnenVorgang(KAMPAGNE_DEF_WUNSCHLISTE, $kWunschlistePos, $fAnzahl); // Wunschliste
+                                setzeKampagnenVorgang(
+                                    KAMPAGNE_DEF_WUNSCHLISTE,
+                                    $kWunschlistePos,
+                                    $fAnzahl
+                                );
                             }
 
                             $obj           = new stdClass();
@@ -395,7 +401,7 @@ class WarenkorbHelper
                             Shop::Smarty()->assign('hinweis', Shop::Lang()->get('wishlistProductadded', 'messages'));
                             // Weiterleiten?
                             if ($conf['global']['global_wunschliste_weiterleitung'] === 'Y') {
-                                header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true), true, 302);
+                                header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php'), true, 302);
                                 exit;
                             }
                         }
@@ -404,8 +410,8 @@ class WarenkorbHelper
             }
         } elseif (isset($_POST['Vergleichsliste']) && $kArtikel > 0) { // Vergleichsliste?
             // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
-            if (!isset($_SESSION['Vergleichsliste']->oArtikel_arr) ||
-                (int)$conf['vergleichsliste']['vergleichsliste_anzahl'] >
+            if (!isset($_SESSION['Vergleichsliste']->oArtikel_arr)
+                || (int)$conf['vergleichsliste']['vergleichsliste_anzahl'] >
                 count($_SESSION['Vergleichsliste']->oArtikel_arr)
             ) {
                 // Prüfe auf kArtikel
@@ -459,9 +465,11 @@ class WarenkorbHelper
                                         $oVergleichsliste->oArtikel_arr[] = $oArtikel;
                                     }
                                     $_SESSION['Vergleichsliste'] = $oVergleichsliste;
-                                    Shop::Smarty()->assign('hinweis', Shop::Lang()->get('comparelistProductadded', 'messages'));
+                                    Shop::Smarty()->assign('hinweis',
+                                        Shop::Lang()->get('comparelistProductadded', 'messages'));
                                 } else {
-                                    Shop::Smarty()->assign('fehler', Shop::Lang()->get('comparelistProductexists', 'messages'));
+                                    Shop::Smarty()->assign('fehler',
+                                        Shop::Lang()->get('comparelistProductexists', 'messages'));
                                 }
                             }
                         } else {
@@ -482,7 +490,7 @@ class WarenkorbHelper
         ) { //warenkorbeingang?
             // VariationsBox ist vorhanden => Prüfen ob Anzahl gesetzt wurde
             if (isset($_POST['variBox']) && (int)$_POST['variBox'] === 1) {
-                if (pruefeVariBoxAnzahl($_POST['variBoxAnzahl'])) {
+                if (self::checkVariboxAmount($_POST['variBoxAnzahl'])) {
                     fuegeVariBoxInWK(
                         $_POST['variBoxAnzahl'],
                         $kArtikel,
@@ -490,12 +498,12 @@ class WarenkorbHelper
                         isset($_POST['varimatrix'])
                     );
                 } else {
-                    header('Location: index.php?a=' . $kArtikel . '&r=' . R_EMPTY_VARIBOX, true, 303);
+                    header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel . '&r=' . R_EMPTY_VARIBOX, true, 303);
                     exit;
                 }
             } else {
                 if (ArtikelHelper::isParent($kArtikel)) { // Varikombi
-                    $kArtikel              = ArtikelHelper::getArticleForParent($kArtikel);
+                    $kArtikel   = ArtikelHelper::getArticleForParent($kArtikel);
                     $attributes = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel);
                 } else {
                     $attributes = ArtikelHelper::getSelectedPropertiesForArticle($kArtikel);
@@ -575,10 +583,12 @@ class WarenkorbHelper
                                 $oKonfigitem->oEigenschaftwerte_arr = [];
                                 $oTmpArtikel                        = $oKonfigitem->getArtikel();
 
-                                if ($oTmpArtikel->kVaterArtikel > 0) {
-                                    if (isset($oTmpArtikel->kEigenschaftKombi) && $oTmpArtikel->kEigenschaftKombi > 0) {
-                                        $oKonfigitem->oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($oTmpArtikel->kArtikel, false);
-                                    }
+                                if ($oTmpArtikel->kVaterArtikel > 0
+                                    && isset($oTmpArtikel->kEigenschaftKombi)
+                                    && $oTmpArtikel->kEigenschaftKombi > 0
+                                ) {
+                                    $oKonfigitem->oEigenschaftwerte_arr =
+                                        gibVarKombiEigenschaftsWerte($oTmpArtikel->kArtikel, false);
                                 }
                                 if ($oTmpArtikel->cTeilbar !== 'Y' && (int)$fAnzahl != $fAnzahl) {
                                     $fAnzahl = (int)$fAnzahl;
@@ -605,10 +615,10 @@ class WarenkorbHelper
                         }
                     }
                     // Komplette Konfiguration validieren
-                    if (!$bIgnoreLimits) {
-                        if (($aError_arr = Konfigurator::validateBasket($kArtikel, $oKonfigitem_arr)) !== true) {
-                            $bValid = false;
-                        }
+                    if (!$bIgnoreLimits
+                        && (($aError_arr = Konfigurator::validateBasket($kArtikel, $oKonfigitem_arr)) !== true)
+                    ) {
+                        $bValid = false;
                     }
                     // Alle Konfigurationsartikel können in den WK gelegt werden
                     if ($bValid) {
@@ -617,12 +627,11 @@ class WarenkorbHelper
                         // Hauptartikel in den WK legen
                         fuegeEinInWarenkorb($kArtikel, $fAnzahl, $attributes, 0, $cUnique);
                         // Konfigartikel in den WK legen
-                        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                         foreach ($oKonfigitem_arr as $oKonfigitem) {
                             $oKonfigitem->isKonfigItem = true;
                             switch ($oKonfigitem->getPosTyp()) {
                                 case KONFIG_ITEM_TYP_ARTIKEL:
-                                    $_SESSION['Warenkorb']->fuegeEin(
+                                    Session::Cart()->fuegeEin(
                                         $oKonfigitem->getArtikelKey(),
                                         $oKonfigitem->fAnzahlWK,
                                         $oKonfigitem->oEigenschaftwerte_arr,
@@ -633,7 +642,7 @@ class WarenkorbHelper
                                     break;
 
                                 case KONFIG_ITEM_TYP_SPEZIAL:
-                                    $_SESSION['Warenkorb']->erstelleSpezialPos(
+                                    Session::Cart()->erstelleSpezialPos(
                                         $oKonfigitem->getName(),
                                         $oKonfigitem->fAnzahlWK,
                                         $oKonfigitem->getPreis(),
@@ -658,7 +667,7 @@ class WarenkorbHelper
                             );
                         }
                         // Warenkorb weiterleiten
-                        $_SESSION['Warenkorb']->redirectTo();
+                        Session::Cart()->redirectTo();
                     } else {
                         // Gesammelte Fehler anzeigen
                         Shop::Smarty()->assign('aKonfigerror_arr', $aError_arr)
@@ -691,7 +700,7 @@ class WarenkorbHelper
      */
     public static function addToCartCheck($article, $qty, $attributes, $accuracy = 2)
     {
-        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
+        $cart          = Session::Cart();
         $kArtikel      = $article->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
         $conf          = Shop::getSettings([CONF_GLOBAL]);
@@ -708,14 +717,14 @@ class WarenkorbHelper
             $qty = max((int)$qty, 1);
         }
         // mbm
-        if ($article->fMindestbestellmenge > $qty + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels($kArtikel)) {
+        if ($article->fMindestbestellmenge > $qty + $cart->gibAnzahlEinesArtikels($kArtikel)) {
             $redirectParam[] = R_MINDESTMENGE;
         }
         // lager beachten
-        if ($article->cLagerBeachten === 'Y' &&
-            $article->cLagerVariation !== 'Y' &&
-            $article->cLagerKleinerNull !== 'Y' &&
-            $article->fPackeinheit * ($qty + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels($kArtikel)) > $article->fLagerbestand
+        if ($article->cLagerBeachten === 'Y'
+            && $article->cLagerVariation !== 'Y'
+            && $article->cLagerKleinerNull !== 'Y'
+            && $article->fPackeinheit * ($qty + $cart->gibAnzahlEinesArtikels($kArtikel)) > $article->fLagerbestand
         ) {
             $redirectParam[] = R_LAGER;
         }
@@ -730,17 +739,15 @@ class WarenkorbHelper
         // Die maximale Bestellmenge des Artikels wurde überschritten
         if (isset($article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE])
             && $article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] > 0
+            && ($qty > $article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]
+                || ($cart->gibAnzahlEinesArtikels($kArtikel) + $qty) >
+                $article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE])
         ) {
-            if ($qty > $article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] ||
-                ($_SESSION['Warenkorb']->gibAnzahlEinesArtikels($kArtikel) + $qty) >
-                $article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]
-            ) {
-                $redirectParam[] = R_MAXBESTELLMENGE;
-            }
+            $redirectParam[] = R_MAXBESTELLMENGE;
         }
         // Der Artikel ist unverkäuflich
-        if (isset($article->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) &&
-            $article->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH] == 1
+        if (isset($article->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])
+            && $article->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH] == 1
         ) {
             $redirectParam[] = R_UNVERKAEUFLICH;
         }
@@ -803,7 +810,7 @@ class WarenkorbHelper
                             }
                             if ($EigenschaftWert->fPackeinheit *
                                 ($qty +
-                                    $_SESSION['Warenkorb']->gibAnzahlEinerVariation(
+                                    $cart->gibAnzahlEinerVariation(
                                         $kArtikel,
                                         $EigenschaftWert->kEigenschaftWert
                                     )
@@ -823,5 +830,24 @@ class WarenkorbHelper
         }
 
         return $redirectParam;
+    }
+
+    /**
+     * @param array $amounts
+     * @return bool
+     * @former pruefeVariBoxAnzahl
+     */
+    public static function checkVariboxAmount($amounts)
+    {
+        if (is_array($amounts) && count($amounts) > 0) {
+            // Wurde die variBox überhaupt mit einer Anzahl gefüllt?
+            foreach (array_keys($amounts) as $cKeys) {
+                if ((float)$amounts[$cKeys] > 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

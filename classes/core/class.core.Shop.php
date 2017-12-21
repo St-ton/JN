@@ -424,6 +424,16 @@ final class Shop
     }
 
     /**
+     * get remote service instance
+     *
+     * @return RemoteService
+     */
+    public function RS()
+    {
+        return RemoteService::getInstance();
+    }
+
+    /**
      * get session instance
      *
      * @return Session
@@ -923,7 +933,7 @@ final class Shop
             }
             // change Opera Fix
             if (substr($seo, strlen($seo) - 1, 1) === '?') {
-                $seo = substr($seo, 0, strlen($seo) - 1);
+                $seo = substr($seo, 0, -1);
             }
             $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $cMatch_arr, PREG_OFFSET_CAPTURE);
             if ($nMatch === 1) {
@@ -1252,9 +1262,10 @@ final class Shop
                 exit;
             }
             if ($cRequestFile === '/') {
-                //special case: home page is accessible without seo url
+                // special case: home page is accessible without seo url
                 $link        = null;
                 $linkHelper  = LinkHelper::getInstance();
+                self::setPageType(PAGE_STARTSEITE);
                 if (Session::CustomerGroup()->getID() > 0) {
                     $cKundengruppenSQL = " AND (FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(cKundengruppen, ';', ',')) > 0
@@ -1274,6 +1285,7 @@ final class Shop
                 self::Media()->handleRequest($cPath);
             } else {
                 self::$is404         = true;
+                self::$fileName      = null;
                 self::$AktuelleSeite = '404';
                 self::setPageType(PAGE_404);
             }
@@ -1283,7 +1295,39 @@ final class Shop
                 $link       = $linkHelper->getPageLink(self::$kLink);
                 $oSeite     = null;
                 if (isset($link->nLinkart)) {
+                    if ($link->nLinkart === LINKTYP_EXTERNE_URL) {
+                        header('Location: ' . $link->cURL, true, 303);
+                        exit;
+                    }
+                    self::setPageType(PAGE_EIGENE);
                     $oSeite = self::DB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
+                    if ($link->nLinkart === LINKTYP_STARTSEITE) {
+                        self::setPageType(PAGE_STARTSEITE);
+                    } elseif ($link->nLinkart === LINKTYP_DATENSCHUTZ) {
+                        self::setPageType(PAGE_DATENSCHUTZ);
+                    } elseif ($link->nLinkart === LINKTYP_AGB) {
+                        self::setPageType(PAGE_AGB);
+                    } elseif ($link->nLinkart === LINKTYP_WRB) {
+                        self::setPageType(PAGE_WRB);
+                    } elseif ($link->nLinkart === LINKTYP_VERSAND) {
+                        self::setPageType(PAGE_VERSAND);
+                    } elseif ($link->nLinkart === LINKTYP_LIVESUCHE) {
+                        self::setPageType(PAGE_LIVESUCHE);
+                    } elseif ($link->nLinkart === LINKTYP_TAGGING) {
+                        self::setPageType(PAGE_TAGGING);
+                    } elseif ($link->nLinkart === LINKTYP_HERSTELLER) {
+                        self::setPageType(PAGE_HERSTELLER);
+                    } elseif ($link->nLinkart === LINKTYP_NEWSLETTERARCHIV) {
+                        self::setPageType(PAGE_NEWSLETTERARCHIV);
+                    } elseif ($link->nLinkart === LINKTYP_SITEMAP) {
+                        self::setPageType(PAGE_SITEMAP);
+                    } elseif ($link->nLinkart === LINKTYP_GRATISGESCHENK) {
+                        self::setPageType(PAGE_GRATISGESCHENK);
+                    } elseif ($link->nLinkart === LINKTYP_AUSWAHLASSISTENT) {
+                        self::setPageType(PAGE_AUSWAHLASSISTENT);
+                    } elseif ($link->nLinkart === LINKTYP_404) {
+                        self::setPageType(PAGE_404);
+                    }
                 }
                 if (!empty($oSeite->cDateiname)) {
                     self::$fileName = $oSeite->cDateiname;
@@ -1328,11 +1372,27 @@ final class Shop
                             break;
                     }
                 }
-            }
-            if (self::$fileName === null) {
+            } elseif (self::$fileName === null) {
                 self::$fileName      = 'seite.php';
                 self::$AktuelleSeite = 'SEITE';
                 self::setPageType(PAGE_EIGENE);
+            }
+        }
+        if (self::$is404 === true) {
+            if (!isset($seo)) {
+                $seo = null;
+            }
+            executeHook(HOOK_INDEX_SEO_404, ['seo' => $seo]);
+            if (!self::$kLink) {
+                $hookInfos     = urlNotFoundRedirect([
+                    'key'   => 'kLink',
+                    'value' => self::$kLink
+                ]);
+                $kLink         = $hookInfos['value'];
+                $bFileNotFound = $hookInfos['isFileNotFound'];
+                if (!$kLink) {
+                    self::$kLink = LinkHelper::getInstance()->getSpecialPageLinkKey(LINKTYP_404);
+                }
             }
         }
     }
@@ -1385,6 +1445,10 @@ final class Shop
      */
     public static function getProductFilter()
     {
+        if (self::$productFilter === null) {
+            self::$productFilter = self::buildProductFilter([]);
+        }
+
         return self::$productFilter;
     }
 

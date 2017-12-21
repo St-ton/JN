@@ -250,7 +250,7 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
     ->assign('Firma', Shop::DB()->query("SELECT * FROM tfirma", 1))
-    ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
+    ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
     ->assign('Bestellung', $bestellung);
 
 unset(

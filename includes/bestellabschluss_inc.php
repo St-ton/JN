@@ -9,7 +9,6 @@
  */
 function bestellungKomplett()
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     // CheckBox Plausi
     $oCheckBox               = new CheckBox();
     $_SESSION['cPlausi_arr'] = $oCheckBox->validateCheckBox(CHECKBOX_ORT_BESTELLABSCHLUSS, Session::CustomerGroup()->getID(), $_POST, true);
@@ -71,7 +70,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     //erstelle neue Bestellung
     $Bestellung = new Bestellung();
     //setze InetBestellNummer
-    $Bestellung->cBestellNr = empty($cBestellNr) ? baueBestellnummer() : $cBestellNr;
+    $Bestellung->cBestellNr   = empty($cBestellNr) ? baueBestellnummer() : $cBestellNr;
+    $oWarenkorbpositionen_arr = [];
     //füge Kunden ein, falls er nicht schon existiert ( loginkunde)
     if (!$_SESSION['Kunde']->kKunde) {
         // Kundenattribute sichern
@@ -146,7 +146,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $nArtikelAnzeigefilter = (int)$conf['global']['artikel_artikelanzeigefilter'];
         /** @var WarenkorbPos $Position */
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $Position) {
-            if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+            if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 $Position->fLagerbestandVorAbschluss = isset($Position->Artikel->fLagerbestand)
                     ? (double)$Position->Artikel->fLagerbestand
                     : 0;
@@ -186,7 +186,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                 }
             }
             //bestseller tabelle füllen
-            if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+            if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 //Lagerbestand verringern
                 aktualisiereLagerbestand(
                     $Position->Artikel,
@@ -197,14 +197,14 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                 aktualisiereBestseller($Position->kArtikel, $Position->nAnzahl);
                 //xsellkauf füllen
                 foreach ($_SESSION['Warenkorb']->PositionenArr as $pos) {
-                    if ($pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && $pos->kArtikel != $Position->kArtikel) {
+                    if ($pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $pos->kArtikel != $Position->kArtikel) {
                         aktualisiereXselling($Position->kArtikel, $pos->kArtikel);
                     }
                 }
                 $oWarenkorbpositionen_arr[] = $Position;
                 // Clear Cache
                 Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel]);
-            } elseif ($Position->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+            } elseif ($Position->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 aktualisiereLagerbestand(
                     $Position->Artikel,
                     $Position->nAnzahl,
@@ -221,7 +221,6 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         // Falls die Einstellung global_wunschliste_artikel_loeschen_nach_kauf auf Y (Ja) steht und
         // Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
         if (isset($_SESSION['Wunschliste']->kWunschliste) && $_SESSION['Wunschliste']->kWunschliste > 0) {
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Wunschliste.php';
             Wunschliste::pruefeArtikelnachBestellungLoeschen($_SESSION['Wunschliste']->kWunschliste, $oWarenkorbpositionen_arr);
         }
     }
@@ -266,7 +265,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->kVersandart       = $_SESSION['Versandart']->kVersandart;
     $Bestellung->kSprache          = Shop::getLanguage();
     $Bestellung->kWaehrung         = Session::Currency()->getID();
-    $Bestellung->fGesamtsumme      = $_SESSION['Warenkorb']->gibGesamtsummeWaren(1);
+    $Bestellung->fGesamtsumme      = Session::Cart()->gibGesamtsummeWaren(1);
     $Bestellung->cVersandartName   = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cZahlungsartName  = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cSession          = session_id();
@@ -309,7 +308,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     ) {
         $oTrustedShops                    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
         $oTrustedShops->tsProductId       = $_SESSION['TrustedShops']->cKaeuferschutzProdukt;
-        $oTrustedShops->amount            = Session::Currency()->getConversionFactor() * $_SESSION['Warenkorb']->gibGesamtsummeWaren(true);
+        $oTrustedShops->amount            = Session::Currency()->getConversionFactor() * Session::Cart()->gibGesamtsummeWaren(true);
         $oTrustedShops->currency          = Session::Currency()->getCode();
         $oTrustedShops->paymentType       = $_SESSION['Zahlungsart']->cTSCode;
         $oTrustedShops->buyerEmail        = $_SESSION['Kunde']->cMail;
@@ -318,13 +317,13 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $oTrustedShops->orderDate         = date('Y-m-d') . 'T' . date('H:i:s');
         $oTrustedShops->shopSystemVersion = 'JTL-Shop ' . JTL_VERSION;
 
-        if (strlen($oTrustedShops->tsProductId) > 0 &&
-            strlen($oTrustedShops->amount) > 0 &&
-            strlen($oTrustedShops->currency) > 0 &&
-            strlen($oTrustedShops->paymentType) > 0 &&
-            strlen($oTrustedShops->buyerEmail) > 0 &&
-            strlen($oTrustedShops->shopCustomerID) > 0 &&
-            strlen($oTrustedShops->shopOrderID) > 0
+        if (strlen($oTrustedShops->tsProductId) > 0
+            && strlen($oTrustedShops->amount) > 0
+            && strlen($oTrustedShops->currency) > 0
+            && strlen($oTrustedShops->paymentType) > 0
+            && strlen($oTrustedShops->buyerEmail) > 0
+            && strlen($oTrustedShops->shopCustomerID) > 0
+            && strlen($oTrustedShops->shopOrderID) > 0
         ) {
             $oTrustedShops->sendeBuchung();
         }
@@ -378,9 +377,6 @@ function saveZahlungsInfo($kKunde, $kBestellung, $bZahlungAgain = false)
 
     if (!$kKunde || !$kBestellung) {
         return false;
-    }
-    if (!class_exists('ZahlungsInfo')) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsInfo.php';
     }
     $_SESSION['ZahlungsInfo']               = new ZahlungsInfo();
     $_SESSION['ZahlungsInfo']->kBestellung  = $kBestellung;
@@ -658,7 +654,11 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
                 }
                 // Stücklisten Komponente
                 if (ArtikelHelper::isStuecklisteKomponente($Artikel->kArtikel)) {
-                    aktualisiereKomponenteLagerbestand($Artikel->kArtikel, $artikelBestand, isset($Artikel->cLagerKleinerNull) && $Artikel->cLagerKleinerNull === 'Y' ? true : false);
+                    aktualisiereKomponenteLagerbestand(
+                        $Artikel->kArtikel,
+                        $artikelBestand,
+                        isset($Artikel->cLagerKleinerNull) && $Artikel->cLagerKleinerNull === 'Y'
+                    );
                 }
             }
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
@@ -699,6 +699,8 @@ function aktualisiereStuecklistenLagerbestand($oStueckListeArtikel, $nAnzahl)
             // wenn ja, dann wird für diese auch der Bestand aktualisiert
             $options = Artikel::getDefaultOptions();
 
+            $options->nKeineSichtbarkeitBeachten = 1;
+
             foreach ($oKomponente_arr as $oKomponente) {
                 $tmpArtikel = new Artikel();
                 $tmpArtikel->fuelleArtikel($oKomponente->kArtikel, $options);
@@ -721,7 +723,7 @@ function aktualisiereStuecklistenLagerbestand($oStueckListeArtikel, $nAnzahl)
             if ($bestandUeberverkauf === $bestandNeu) {
                 // Es gibt auch keine Komponenten mit Überverkäufen, die den Bestand verringern, deshalb wird
                 // der Bestand des Stücklistenartikels anhand des Verkaufs verringert
-                $bestandNeu = $bestandNeu - $nAnzahl * $oStueckListeArtikel->fPackeinheit;
+                $bestandNeu -= $nAnzahl * $oStueckListeArtikel->fPackeinheit;
             } else {
                 // Da keine lagerrelevanten Komponenten vorhanden sind, wird der kleinste Bestand der
                 // Komponentent mit Überverkauf verwendet.
@@ -1121,7 +1123,7 @@ function fakeBestellung()
     $bestellung->kVersandart      = $_SESSION['Versandart']->kVersandart;
     $bestellung->kSprache         = Shop::getLanguage();
     $bestellung->kWaehrung        = Session::Currency()->getID();
-    $bestellung->fGesamtsumme     = $_SESSION['Warenkorb']->gibGesamtsummeWaren(1);
+    $bestellung->fGesamtsumme     = Session::Cart()->gibGesamtsummeWaren(1);
     $bestellung->fWarensumme      = $bestellung->fGesamtsumme;
     $bestellung->cVersandartName  = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $bestellung->cZahlungsartName = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
@@ -1236,19 +1238,17 @@ function gibLieferadresseAusSession()
  */
 function pruefeVerfuegbarkeit()
 {
-    $xResult_arr   = ['cArtikelName_arr' => []];
-    $Einstellungen = Shop::getSettings([CONF_GLOBAL]);
-    if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
-        foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $oPosition) {
-            if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                // Mit Lager arbeiten und Lagerbestand darf < 0 werden?
-                if (isset($oPosition->Artikel->cLagerBeachten) && $oPosition->Artikel->cLagerBeachten === 'Y' &&
-                    $oPosition->Artikel->cLagerKleinerNull === 'Y' &&
-                    $Einstellungen['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
-                ) {
-                    if ($oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand) {
-                        $xResult_arr['cArtikelName_arr'][] = $oPosition->Artikel->cName;
-                    }
+    $xResult_arr = ['cArtikelName_arr' => []];
+    $conf        = Shop::getSettings([CONF_GLOBAL]);
+    foreach (Session::Cart()->PositionenArr as $i => $oPosition) {
+        if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
+            // Mit Lager arbeiten und Lagerbestand darf < 0 werden?
+            if (isset($oPosition->Artikel->cLagerBeachten) && $oPosition->Artikel->cLagerBeachten === 'Y'
+                && $oPosition->Artikel->cLagerKleinerNull === 'Y'
+                && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
+            ) {
+                if ($oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand) {
+                    $xResult_arr['cArtikelName_arr'][] = $oPosition->Artikel->cName;
                 }
             }
         }
@@ -1317,7 +1317,6 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     }
     $_SESSION['Kunde'] = $oKunde;
     $kKundengruppe     = Session::CustomerGroup()->getID();
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox = new CheckBox();
     // CheckBox Spezialfunktion ausführen
     $oCheckBox->triggerSpecialFunction(

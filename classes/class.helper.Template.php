@@ -101,8 +101,6 @@ class TemplateHelper
     }
 
     /**
-     * todo
-     *
      * @return array
      */
     public function getStoredTemplates()
@@ -165,10 +163,10 @@ class TemplateHelper
 
     /**
      * @param string $path
-     * @param int    $depht
+     * @param int    $depth
      * @return array
      */
-    public function getFolders($path, $depht = 0)
+    public function getFolders($path, $depth = 0)
     {
         $result = [];
 
@@ -176,10 +174,10 @@ class TemplateHelper
             return $result;
         }
 
-        foreach (scandir($path, SCANDIR_SORT_ASCENDING) as $key => $value) {
+        foreach (scandir($path, SCANDIR_SORT_ASCENDING) as $value) {
             if (!in_array($value, ['.', '..'], true) && is_dir($path . DIRECTORY_SEPARATOR . $value)) {
-                $result[$value] = $depht > 1
-                    ? $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depht - 1)
+                $result[$value] = $depth > 1
+                    ? $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depth - 1)
                     : [];
             }
         }
@@ -195,45 +193,34 @@ class TemplateHelper
      */
     public function getFrontendTemplateFolders($path = false)
     {
-        $cOrdner_arr = [];
-        if (($nHandle = opendir(PFAD_ROOT . PFAD_TEMPLATES)) !== false) {
-            while (false !== ($cFile = readdir($nHandle))) {
-                if ($cFile !== '.' && $cFile !== '..' && $cFile[0] !== '.') {
-                    $cOrdner_arr[] = $path ? (PFAD_ROOT . PFAD_TEMPLATES . $cFile) : $cFile;
-                }
+        $res      = [];
+        $iterator = new DirectoryIterator(PFAD_ROOT . PFAD_TEMPLATES);
+        foreach ($iterator as $fileinfo) {
+            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
+                $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
             }
-            closedir($nHandle);
         }
 
-        return $cOrdner_arr;
+        return $res;
     }
 
     /**
      * get all potential admin template folder names
      *
-     * @param bool $bPfad
+     * @param bool $path
      * @return array
      */
-    public function getAdminTemplateFolders($bPfad = false)
+    public function getAdminTemplateFolders($path = false)
     {
-        $cOrdner_arr = [];
-        if (($nHandle = opendir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)) !== false) {
-            while (false !== ($cFile = readdir($nHandle))) {
-                if (
-                    $cFile !== '.' &&
-                    $cFile !== '..' &&
-                    $cFile[0] !== '.' &&
-                    is_dir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cFile)
-                ) {
-                    $cOrdner_arr[] = $bPfad
-                        ? (PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cFile)
-                        : $cFile;
-                }
+        $res      = [];
+        $iterator = new DirectoryIterator(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES);
+        foreach ($iterator as $fileinfo) {
+            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
+                $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
             }
-            closedir($nHandle);
         }
 
-        return $cOrdner_arr;
+        return $res;
     }
 
     /**
@@ -328,9 +315,9 @@ class TemplateHelper
             : (strtolower((string)$oXMLTemplate['isFullResponsive']) === 'true');
         $oTemplate->bHasError    = false;
         $oTemplate->eTyp         = '';
-        $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? trim($oXMLTemplate->Description) : '';
+        $oTemplate->cDescription = !empty($oXMLTemplate->Description) ? trim($oXMLTemplate->Description) : '';
         if (StringHandler::is_utf8($oTemplate->cDescription)) {
-            $oTemplate->cDescription = utf8_decode($oTemplate->cDescription);
+            $oTemplate->cDescription = StringHandler::convertISO($oTemplate->cDescription);
         }
 
         if (!empty($oXMLTemplate->Parent)) {

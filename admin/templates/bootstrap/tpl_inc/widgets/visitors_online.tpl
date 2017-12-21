@@ -13,7 +13,7 @@
     {if is_array($oVisitors_arr) && $oVisitors_arr|@count > 0}
         <table class="table table-condensed table-hover table-blank">
             <thead>
-                <th>Kunde</th><th>Info</th><th class="text-center">Letzte Aktivit‰t</th><th class="text-right">Warenkorb (Netto)</th>
+                <th>Kunde</th><th>Info</th><th class="text-center">Letzte Aktivit√§t</th><th class="text-right">Warenkorb (Netto)</th>
             </thead>
             <tbody>
             {foreach from=$oVisitors_arr item=oVisitor}

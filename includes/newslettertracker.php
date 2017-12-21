@@ -7,9 +7,9 @@ require_once __DIR__ . '/globalinclude.php';
 
 $session = Session::getInstance();
 
-// kK	= kKampagne
-// kN	= kNewsletter
-// kNE 	= kNewsletterEmpfaenger
+// kK   = kKampagne
+// kN   = kNewsletter
+// kNE  = kNewsletterEmpfaenger
 if (verifyGPCDataInteger('kK') > 0 && verifyGPCDataInteger('kN') > 0 && verifyGPCDataInteger('kNE') > 0) {
     $kKampagne             = verifyGPCDataInteger('kK');
     $kNewsletter           = verifyGPCDataInteger('kN');

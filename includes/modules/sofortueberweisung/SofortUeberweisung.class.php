@@ -69,11 +69,6 @@ class SofortUeberweisung extends PaymentMethod
     /**
      * @var string
      */
-    public $name = '';
-
-    /**
-     * @var string
-     */
     public $strAmount = '';
 
     /**
@@ -178,21 +173,24 @@ class SofortUeberweisung extends PaymentMethod
                 echo "currency_id: " . $order->Waehrung->cISO . "<br/>";
             }
 
-            if (!($this->sofortueberweisung_id && $this->sofortueberweisung_project_id &&
-                $this->name && $this->strSenderCountryID && $this->strAmount && $order->Waehrung->cISO)
+            if (!($this->sofortueberweisung_id
+                && $this->sofortueberweisung_project_id
+                && $this->name
+                && $this->strSenderCountryID
+                && $this->strAmount
+                && $order->Waehrung->cISO)
             ) {
                 if ($this->bDebug === false) {
                     return 'Es ist ein Datenbankfehler aufgetreten!';
-                } else {
-                    if (!$this->sofortueberweisung_id) {
-                        echo "\$this->sofortueberweisung_id is null<br/>";
-                    }
-                    if (!$this->sofortueberweisung_project_id) {
-                        echo "\$this->sofortueberweisung_project_id is null<br/>";
-                    }
-                    if (!$this->getProjectPassword()) {
-                        echo "\$this->getProjectPassword() is null<br/>";
-                    }
+                }
+                if (!$this->sofortueberweisung_id) {
+                    echo "\$this->sofortueberweisung_id is null<br/>";
+                }
+                if (!$this->sofortueberweisung_project_id) {
+                    echo "\$this->sofortueberweisung_project_id is null<br/>";
+                }
+                if (!$this->getProjectPassword()) {
+                    echo "\$this->getProjectPassword() is null<br/>";
                 }
             }
 

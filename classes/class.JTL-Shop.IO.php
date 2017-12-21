@@ -64,7 +64,8 @@ class IO
 
     /**
      * @param string $reqString
-     * @return mixed
+     * @return IOError|mixed
+     * @throws Exception
      */
     public function handleRequest($reqString)
     {
@@ -91,7 +92,8 @@ class IO
     }
 
     /**
-     * @param $data
+     * @param object $data
+     * @throws Exception
      */
     public function respondAndExit($data)
     {

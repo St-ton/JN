@@ -475,7 +475,7 @@ $fileShopFeed = basename(FILE_SHOP_FEED);
 $bWrite       = is_writable(PFAD_ROOT . $fileShopFeed);
 
 if ($bWrite) {
-    if (isset($_REQUEST['update']) && $_REQUEST['update'] == '1') {
+    if (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
         $file = fopen(PFAD_ROOT . $fileShopFeed, "w+");
 
         fwrite(
@@ -490,7 +490,7 @@ if ($bWrite) {
         fclose($file);
     }
 
-    if (isset($_REQUEST['update']) && $_REQUEST['update'] == '1') {
+    if (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
         header('location: shopinfoexport.php');
     } else {
         header('Cache-Control: no-cache, must-revalidate');

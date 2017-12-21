@@ -73,7 +73,7 @@ function lang_warenkorb_bestellungEnthaeltXArtikel($warenkorb)
     } else {
         $ret .= Shop::Lang()->get('positions');
     }
-    $positionCount = isset($_SESSION['Warenkorb']->kWarenkorb)
+    $positionCount = !empty($warenkorb->kWarenkorb)
         ? $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
         : 0;
 

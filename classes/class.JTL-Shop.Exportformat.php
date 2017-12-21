@@ -854,7 +854,7 @@ class Exportformat
                 fwrite($handle, "\xEF\xBB\xBF");
             }
             if ($encoding === 'UTF-8' || $encoding === 'UTF-8noBOM') {
-                $header = utf8_encode($header);
+                $header = StringHandler::convertUTF8($header);
             }
 
             return fwrite($handle, $header . "\n");
@@ -873,7 +873,7 @@ class Exportformat
         if (strlen($footer) > 0) {
             $encoding = $this->getKodierung();
             if ($encoding === 'UTF-8' || $encoding === 'UTF-8noBOM') {
-                $footer = utf8_encode($footer);
+                $footer = StringHandler::convertUTF8($footer);
             }
 
             return fwrite($handle, $footer);
@@ -1058,7 +1058,7 @@ class Exportformat
             $max = (int)$max;
         }
 
-        Jtllog::cronLog('Starting exportformat "' . utf8_encode($this->getName()) .
+        Jtllog::cronLog('Starting exportformat "' . StringHandler::convertUTF8($this->getName()) .
             '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
             ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
              ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
@@ -1076,6 +1076,7 @@ class Exportformat
         $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
         $oArtikelOptionen->nMedienDatei              = 1;
 
+        $helper     = KategorieHelper::getInstance($this->getSprache(), $this->getKundengruppe());
         $shopURL    = Shop::getURL();
         $find       = ['<br />', '<br>', '</'];
         $replace    = [' ', ' ', ' </'];
@@ -1182,7 +1183,7 @@ class Exportformat
                 // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
                 $Artikel->Kategoriepfad         = $Artikel->Kategorie->cKategoriePfad !== null
                     ? $Artikel->Kategorie->cKategoriePfad
-                    : gibKategoriepfad($Artikel->Kategorie, $this->kKundengruppe, $this->kSprache);
+                    : $helper->getPath($Artikel->Kategorie);
                 $Artikel->Versandkosten         = gibGuenstigsteVersandkosten(
                     isset($this->config['exportformate_lieferland'])
                         ? $this->config['exportformate_lieferland']
@@ -1228,7 +1229,7 @@ class Exportformat
         }
         if (strlen($cOutput) > 0) {
             fwrite($datei, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM')
-                ? utf8_encode($cOutput)
+                ? StringHandler::convertUTF8($cOutput)
                 : $cOutput));
         }
 
@@ -1394,7 +1395,7 @@ class Exportformat
                  ->setSpecial(0)
                  ->setKodierung($post['cKodierung'])
                  ->setPlugin(isset($post['kPlugin']) ? $post['kPlugin'] : 0)
-                 ->setExportformat((!empty($post['kExportformat'])) ? $post['kExportformat'] : 0)
+                 ->setExportformat(!empty($post['kExportformat']) ? $post['kExportformat'] : 0)
                  ->setKampagne(isset($post['kKampagne']) ? $post['kKampagne'] : 0);
             if (isset($post['cFusszeile'])) {
                 $this->setFusszeile(str_replace('<tab>', "\t", $post['cFusszeile']));

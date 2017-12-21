@@ -192,7 +192,6 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             } else {
                 ContentAuthor::getInstance()->clearAuthor('NEWS', $kNews);
             }
-            $kNews           = (int)$kNews;
             $oAlteBilder_arr = [];
             // Bilder hochladen
             if (!is_dir($cUploadVerzeichnis . $kNews)) {
@@ -282,9 +281,9 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     'kSprache',
                     (int)$_SESSION['kSprache'],
                     'nMonat',
-                    (int)$dMonat,
+                    $dMonat,
                     'nJahr',
-                    (int)$dJahr
+                    $dJahr
                 );
                 // Falls dies die erste News des Monats ist, neuen Eintrag in tnewsmonatsuebersicht, ansonsten updaten
                 if (isset($oNewsMonatsUebersicht->kNewsMonatsUebersicht) && $oNewsMonatsUebersicht->kNewsMonatsUebersicht > 0) {
@@ -306,7 +305,6 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     $oSeo->kSprache = $_SESSION['kSprache'];
                     Shop::DB()->insert('tseo', $oSeo);
                 } else {
-                    $oNewsMonatsPraefix = new stdClass();
                     $oNewsMonatsPraefix = Shop::DB()->select('tnewsmonatspraefix', 'kSprache', (int)$_SESSION['kSprache']);
                     if (empty($oNewsMonatsPraefix->cPraefix)) {
                         $oNewsMonatsPraefix->cPraefix = 'Newsuebersicht';
@@ -314,21 +312,21 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     $oNewsMonatsUebersichtTMP           = new stdClass();
                     $oNewsMonatsUebersichtTMP->kSprache = (int)$_SESSION['kSprache'];
                     $oNewsMonatsUebersichtTMP->cName    = mappeDatumName((string)$dMonat, $dJahr, $oSpracheNews->cISO);
-                    $oNewsMonatsUebersichtTMP->nMonat   = (int)$dMonat;
-                    $oNewsMonatsUebersichtTMP->nJahr    = (int)$dJahr;
+                    $oNewsMonatsUebersichtTMP->nMonat   = $dMonat;
+                    $oNewsMonatsUebersichtTMP->nJahr    = $dJahr;
 
                     $kNewsMonatsUebersicht = Shop::DB()->insert('tnewsmonatsuebersicht', $oNewsMonatsUebersichtTMP);
 
                     Shop::DB()->delete(
                         'tseo',
                         ['cKey', 'kKey', 'kSprache'],
-                        ['kNewsMonatsUebersicht', (int)$kNewsMonatsUebersicht, (int)$_SESSION['kSprache']]
+                        ['kNewsMonatsUebersicht', $kNewsMonatsUebersicht, (int)$_SESSION['kSprache']]
                     );
                     // SEO tseo eintragen
                     $oSeo           = new stdClass();
                     $oSeo->cSeo     = checkSeo(getSeo($oNewsMonatsPraefix->cPraefix . '-' . (string)$dMonat . '-' . $dJahr));
                     $oSeo->cKey     = 'kNewsMonatsUebersicht';
-                    $oSeo->kKey     = (int)$kNewsMonatsUebersicht;
+                    $oSeo->kKey     = $kNewsMonatsUebersicht;
                     $oSeo->kSprache = (int)$_SESSION['kSprache'];
                     Shop::DB()->insert('tseo', $oSeo);
                 }
@@ -435,7 +433,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNewsKategorie->kSprache              = (int)$_SESSION['kSprache'];
             $oNewsKategorie->cName                 = $cName;
             $oNewsKategorie->cBeschreibung         = $cBeschreibung;
-            $oNewsKategorie->nSort                 = ((int)$nSort > -1) ? (int)$nSort : 0;
+            $oNewsKategorie->nSort                 = $nSort > -1 ? $nSort : 0;
             $oNewsKategorie->nAktiv                = $nAktiv;
             $oNewsKategorie->cMetaTitle            = $cMetaTitle;
             $oNewsKategorie->cMetaDescription      = $cMetaDescription;
@@ -454,7 +452,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             Shop::DB()->delete(
                 'tseo',
                 ['cKey', 'kKey', 'kSprache'],
-                ['kNewsKategorie', (int)$kNewsKategorie, (int)$oNewsKategorie->kSprache]
+                ['kNewsKategorie', $kNewsKategorie, $oNewsKategorie->kSprache]
             );
             // SEO tseo eintragen
             $oSeo           = new stdClass();

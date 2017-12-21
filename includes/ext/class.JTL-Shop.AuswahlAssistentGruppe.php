@@ -85,8 +85,8 @@ class AuswahlAssistentGruppe
             if ($bAktiv) {
                 $cAktivSQL = " AND nAktiv = 1";
             }
-            $oGruppe = Shop::DB()->query("
-                SELECT *
+            $oGruppe = Shop::DB()->query(
+                "SELECT *
                     FROM tauswahlassistentgruppe
                     WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe .
                     $cAktivSQL, 1
@@ -124,8 +124,8 @@ class AuswahlAssistentGruppe
                         }
                     }
                 }
-                $oSprache       = Shop::DB()->query("
-                    SELECT cNameDeutsch 
+                $oSprache       = Shop::DB()->query(
+                    "SELECT cNameDeutsch 
                         FROM tsprache 
                         WHERE kSprache = " . (int)$this->kSprache, 1
                 );
@@ -154,10 +154,8 @@ class AuswahlAssistentGruppe
                 WHERE kSprache = " . (int)$kSprache .
                 $cAktivSQL, 2
         );
-        if (count($oGruppeTMP_arr) > 0) {
-            foreach ($oGruppeTMP_arr as $oGruppeTMP) {
-                $oGruppe_arr[] = new self($oGruppeTMP->kAuswahlAssistentGruppe, $bAktiv, $bAktivFrage, $bBackend);
-            }
+        foreach ($oGruppeTMP_arr as $oGruppeTMP) {
+            $oGruppe_arr[] = new self($oGruppeTMP->kAuswahlAssistentGruppe, $bAktiv, $bAktivFrage, $bBackend);
         }
 
         return $oGruppe_arr;
@@ -258,12 +256,13 @@ class AuswahlAssistentGruppe
      */
     public static function deleteGroup($cParam_arr)
     {
-        if (isset($cParam_arr['kAuswahlAssistentGruppe_arr']) &&
-            is_array($cParam_arr['kAuswahlAssistentGruppe_arr']) &&
-            count($cParam_arr['kAuswahlAssistentGruppe_arr']) > 0) {
+        if (isset($cParam_arr['kAuswahlAssistentGruppe_arr'])
+            && is_array($cParam_arr['kAuswahlAssistentGruppe_arr'])
+            && count($cParam_arr['kAuswahlAssistentGruppe_arr']) > 0
+        ) {
             foreach ($cParam_arr['kAuswahlAssistentGruppe_arr'] as $kAuswahlAssistentGruppe) {
-                Shop::DB()->query("
-                    DELETE tag, taf, tao
+                Shop::DB()->query(
+                    "DELETE tag, taf, tao
                         FROM tauswahlassistentgruppe tag
                         LEFT JOIN tauswahlassistentfrage taf
                             ON taf.kAuswahlAssistentGruppe = tag.kAuswahlAssistentGruppe

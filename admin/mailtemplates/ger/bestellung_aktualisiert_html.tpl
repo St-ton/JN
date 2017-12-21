@@ -404,11 +404,11 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
     Lieferadresse ist gleich Rechnungsadresse.<br>
     <br>
 {/if}
-Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
+Sie haben folgende Zahlungsart gewÃ¤hlt: {$Bestellung->cZahlungsartName}<br>
 <br>
 {if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
-    <strong>Wir belasten in Kürze folgendes Bankkonto um die fällige Summe:</strong><br>
+    <strong>Wir belasten in KÃ¼rze folgendes Bankkonto um die fÃ¤llige Summe:</strong><br>
     <br>
     <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
         <tr>
@@ -510,7 +510,7 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
     </table>
 {elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
-    Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende Emailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}<br>
+    Falls Sie Ihre Zahlung per PayPal noch nicht durchgefÃ¼hrt haben, nutzen Sie folgende Emailadresse als EmpfÃ¤nger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}<br>
     <br>
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
@@ -519,15 +519,15 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
     {$Zahlungsart->cHinweisText}<br>
     <br>
 {/if}
-Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.
+Ãœber den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.
 
 {if $oTrustedShopsBewertenButton->cURL|strlen > 0}
     <br><br>
-    Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.<br>
+    Waren Sie mit Ihrer Bestellung zufrieden? Dann wÃ¼rden wir uns Ã¼ber eine Empfehlung freuen ... es dauert auch nur eine Minute.<br>
     <a href="{$oTrustedShopsBewertenButton->cURL}"><img src="{$oTrustedShopsBewertenButton->cPicURL}" alt="Bewerten Sie uns!"></a>
 {/if}<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem GruÃŸ,<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

@@ -420,7 +420,7 @@ class Metadata
                 '',
                 0,
                 $this->productFilter->getMetaData()->getBreadCrumbName(),
-                $this->productFilter->getURL()
+                $this->productFilter->getFilterURL()->getURL()
             );
         } elseif ($this->productFilter->hasAttributeValue()) {
             $this->attributeValue = new MerkmalWert($this->productFilter->getAttributeValue()->getValue());
@@ -444,13 +444,13 @@ class Metadata
     }
 
     /**
-     * @param array          $oArtikel_arr
-     * @param stdClass       $oSuchergebnisse
+     * @param array          $products
+     * @param stdClass       $searchResults
      * @param array          $globalMeta
-     * @param Kategorie|null $oKategorie
+     * @param Kategorie|null $category
      * @return string
      */
-    public function generateMetaDescription($oArtikel_arr, $oSuchergebnisse, $globalMeta, $oKategorie = null)
+    public function generateMetaDescription($products, $searchResults, $globalMeta, $category = null)
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
         $maxLength = !empty($this->conf['metaangaben']['global_meta_maxlaenge_description'])
@@ -468,43 +468,43 @@ class Metadata
         $cKatDescription = '';
         $languageID      = $this->productFilter->getLanguageID();
         if ($this->productFilter->hasCategory()) {
-            $oKategorie = $oKategorie !== null
-                ? $oKategorie
+            $category = $category !== null
+                ? $category
                 : new Kategorie($this->productFilter->getCategory()->getValue());
-            if (!empty($oKategorie->cMetaDescription)) {
+            if (!empty($category->cMetaDescription)) {
                 // meta description via new method
                 return prepareMeta(
-                    strip_tags($oKategorie->cMetaDescription),
+                    strip_tags($category->cMetaDescription),
                     null,
                     $maxLength
                 );
             }
-            if (!empty($oKategorie->categoryAttributes['meta_description']->cWert)) {
+            if (!empty($category->categoryAttributes['meta_description']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
                 return prepareMeta(
-                    strip_tags($oKategorie->categoryAttributes['meta_description']->cWert),
+                    strip_tags($category->categoryAttributes['meta_description']->cWert),
                     null,
                     $maxLength
                 );
             }
-            if (!empty($oKategorie->KategorieAttribute['meta_description'])) {
+            if (!empty($category->KategorieAttribute['meta_description'])) {
                 /** @deprecated since 4.05 - this is for compatibilty only! */
                 return prepareMeta(
-                    strip_tags($oKategorie->KategorieAttribute['meta_description']),
+                    strip_tags($category->KategorieAttribute['meta_description']),
                     null,
                     $maxLength
                 );
             }
             // Hat die aktuelle Kategorie eine Beschreibung?
-            if (!empty($oKategorie->cBeschreibung)) {
-                $cKatDescription = strip_tags(str_replace(['<br>', '<br />'], [' ', ' '], $oKategorie->cBeschreibung));
-            } elseif ($oKategorie->bUnterKategorien) {
+            if (!empty($category->cBeschreibung)) {
+                $cKatDescription = strip_tags(str_replace(['<br>', '<br />'], [' ', ' '], $category->cBeschreibung));
+            } elseif ($category->bUnterKategorien) {
                 // Hat die aktuelle Kategorie Unterkategorien?
-                $oKategorieListe = new KategorieListe();
-                $oKategorieListe->getAllCategoriesOnLevel($oKategorie->kKategorie);
+                $categoryListe = new KategorieListe();
+                $categoryListe->getAllCategoriesOnLevel($category->kKategorie);
 
-                if (!empty($oKategorieListe->elemente) && count($oKategorieListe->elemente) > 0) {
-                    foreach ($oKategorieListe->elemente as $i => $oUnterkat) {
+                if (!empty($categoryListe->elemente) && count($categoryListe->elemente) > 0) {
+                    foreach ($categoryListe->elemente as $i => $oUnterkat) {
                         if (!empty($oUnterkat->cName)) {
                             $cKatDescription .= $i > 0
                                 ? ', ' . strip_tags($oUnterkat->cName)
@@ -525,12 +525,12 @@ class Metadata
                     )
                     : trim($cKatDescription);
                 // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-                if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1
-                    && $oSuchergebnisse->ArtikelVon > 0
-                    && $oSuchergebnisse->ArtikelBis > 0
+                if ($searchResults->Seitenzahlen->AktuelleSeite > 1
+                    && $searchResults->ArtikelVon > 0
+                    && $searchResults->ArtikelBis > 0
                 ) {
                     $cMetaDescription .= ', ' . Shop::Lang()->get('products') .
-                        " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
+                        " {$searchResults->ArtikelVon} - {$searchResults->ArtikelBis}";
                 }
 
                 return prepareMeta($cMetaDescription, null, $maxLength);
@@ -538,32 +538,32 @@ class Metadata
         }
         // Keine eingestellten Metas vorhanden => generiere Standard Metas
         $cMetaDescription = '';
-        if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
-            shuffle($oArtikel_arr);
-            $nCount       = min(12, count($oArtikel_arr));
+        if (is_array($products) && count($products) > 0) {
+            shuffle($products);
+            $nCount       = min(12, count($products));
             $cArtikelName = '';
             for ($i = 0; $i < $nCount; ++$i) {
                 $cArtikelName .= $i > 0
-                    ? ' - ' . $oArtikel_arr[$i]->cName
-                    : $oArtikel_arr[$i]->cName;
+                    ? ' - ' . $products[$i]->cName
+                    : $products[$i]->cName;
             }
             $cArtikelName = str_replace('"', '', $cArtikelName);
             $cArtikelName = StringHandler::htmlentitydecode($cArtikelName, ENT_NOQUOTES);
 
             $cMetaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
-                ? $this->getMetaStart($oSuchergebnisse) .
+                ? $this->getMetaStart($searchResults) .
                 ': ' .
                 $globalMeta[$languageID]->Meta_Description_Praefix .
                 ' ' . $cArtikelName
-                : $this->getMetaStart($oSuchergebnisse) . ': ' . $cArtikelName;
+                : $this->getMetaStart($searchResults) . ': ' . $cArtikelName;
             // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
             if (
-                $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 &&
-                $oSuchergebnisse->ArtikelVon > 0 &&
-                $oSuchergebnisse->ArtikelBis > 0
+                $searchResults->Seitenzahlen->AktuelleSeite > 1 &&
+                $searchResults->ArtikelVon > 0 &&
+                $searchResults->ArtikelBis > 0
             ) {
                 $cMetaDescription .= ', ' . Shop::Lang()->get('products') . ' ' .
-                    $oSuchergebnisse->ArtikelVon . ' - ' . $oSuchergebnisse->ArtikelBis;
+                    $searchResults->ArtikelVon . ' - ' . $searchResults->ArtikelBis;
             }
         }
 
@@ -571,11 +571,11 @@ class Metadata
     }
 
     /**
-     * @param array          $oArtikel_arr
-     * @param Kategorie|null $oKategorie
+     * @param array          $products
+     * @param Kategorie|null $category
      * @return mixed|string
      */
-    public function generateMetaKeywords($oArtikel_arr, $oKategorie = null)
+    public function generateMetaKeywords($products, $category = null)
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETAKEYWORDS);
         // Prüfen ob bereits eingestellte Metas gesetzt sind
@@ -585,28 +585,28 @@ class Metadata
         // Kategorieattribut?
         $cKatKeywords = '';
         if ($this->productFilter->hasCategory()) {
-            $oKategorie = $oKategorie !== null
-                ? $oKategorie
+            $category = $category !== null
+                ? $category
                 : new Kategorie($this->productFilter->getCategory()->getValue());
-            if (!empty($oKategorie->cMetaKeywords)) {
+            if (!empty($category->cMetaKeywords)) {
                 // meta keywords via new method
-                return strip_tags($oKategorie->cMetaKeywords);
+                return strip_tags($category->cMetaKeywords);
             }
-            if (!empty($oKategorie->categoryAttributes['meta_keywords']->cWert)) {
+            if (!empty($category->categoryAttributes['meta_keywords']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Keywords gesetzt?
-                return strip_tags($oKategorie->categoryAttributes['meta_keywords']->cWert);
+                return strip_tags($category->categoryAttributes['meta_keywords']->cWert);
             }
-            if (!empty($oKategorie->KategorieAttribute['meta_keywords'])) {
+            if (!empty($category->KategorieAttribute['meta_keywords'])) {
                 /** @deprecated since 4.05 - this is for compatibilty only! */
 
-                return strip_tags($oKategorie->KategorieAttribute['meta_keywords']);
+                return strip_tags($category->KategorieAttribute['meta_keywords']);
             }
         }
         // Keine eingestellten Metas vorhanden => baue Standard Metas
         $cMetaKeywords = '';
-        if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
-            shuffle($oArtikel_arr); // Shuffle alle Artikel
-            $nCount                = min(6, count($oArtikel_arr));
+        if (is_array($products) && count($products) > 0) {
+            shuffle($products); // Shuffle alle Artikel
+            $nCount                = min(6, count($products));
             $cArtikelName          = '';
             $excludes              = self::getExcludes();
             $oExcludesKeywords_arr = isset($excludes[$_SESSION['cISOSprache']]->cKeywords)
@@ -614,7 +614,7 @@ class Metadata
                 : [];
             for ($i = 0; $i < $nCount; ++$i) {
                 $cExcArtikelName = self::getFilteredString(
-                    $oArtikel_arr[$i]->cName,
+                    $products[$i]->cName,
                     $oExcludesKeywords_arr
                 ); // Filter nicht erlaubte Keywords
                 if (strpos($cExcArtikelName, ' ') !== false) {
@@ -633,9 +633,9 @@ class Metadata
                     }
                     $cArtikelName .= $cSubName;
                 } elseif ($i > 0) {
-                    $cArtikelName .= ', ' . $oArtikel_arr[$i]->cName;
+                    $cArtikelName .= ', ' . $products[$i]->cName;
                 } else {
-                    $cArtikelName .= $oArtikel_arr[$i]->cName;
+                    $cArtikelName .= $products[$i]->cName;
                 }
             }
             $cMetaKeywords = $cArtikelName;
@@ -650,13 +650,13 @@ class Metadata
                 }
                 $cMetaKeywords = implode(', ', $cMetaKeywordsUnique_arr);
             }
-        } elseif (!empty($oKategorie->kKategorie)) {
+        } elseif (!empty($category->kKategorie)) {
             // Hat die aktuelle Kategorie Unterkategorien?
-            if ($oKategorie->bUnterKategorien) {
-                $oKategorieListe = new KategorieListe();
-                $oKategorieListe->getAllCategoriesOnLevel($oKategorie->kKategorie);
-                if (!empty($oKategorieListe->elemente) && count($oKategorieListe->elemente) > 0) {
-                    foreach ($oKategorieListe->elemente as $i => $oUnterkat) {
+            if ($category->bUnterKategorien) {
+                $categoryListe = new KategorieListe();
+                $categoryListe->getAllCategoriesOnLevel($category->kKategorie);
+                if (!empty($categoryListe->elemente) && count($categoryListe->elemente) > 0) {
+                    foreach ($categoryListe->elemente as $i => $oUnterkat) {
                         if (!empty($oUnterkat->cName)) {
                             $cKatKeywords .= $i > 0
                                 ? ', ' . $oUnterkat->cName
@@ -664,8 +664,8 @@ class Metadata
                         }
                     }
                 }
-            } elseif (!empty($oKategorie->cBeschreibung)) { // Hat die aktuelle Kategorie eine Beschreibung?
-                $cKatKeywords = $oKategorie->cBeschreibung;
+            } elseif (!empty($category->cBeschreibung)) { // Hat die aktuelle Kategorie eine Beschreibung?
+                $cKatKeywords = $category->cBeschreibung;
             }
             $cKatKeywords  = str_replace('"', '', $cKatKeywords);
             $cMetaKeywords = $cKatKeywords;
@@ -677,12 +677,12 @@ class Metadata
     }
 
     /**
-     * @param stdClass       $oSuchergebnisse
+     * @param stdClass       $searchResults
      * @param array          $globalMeta
-     * @param Kategorie|null $oKategorie
+     * @param Kategorie|null $category
      * @return string
      */
-    public function generateMetaTitle($oSuchergebnisse, $globalMeta, $oKategorie = null)
+    public function generateMetaTitle($searchResults, $globalMeta, $category = null)
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
         $languageID = $this->productFilter->getLanguageID();
@@ -701,35 +701,35 @@ class Metadata
             return $this->truncateMetaTitle($metaTitle);
         }
         // Set Default Titles
-        $cMetaTitle = $this->getMetaStart($oSuchergebnisse);
+        $cMetaTitle = $this->getMetaStart($searchResults);
         $cMetaTitle = str_replace('"', "'", $cMetaTitle);
         $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
         // Kategorieattribute koennen Standard-Titles ueberschreiben
         if ($this->productFilter->hasCategory()) {
-            $oKategorie = $oKategorie !== null
-                ? $oKategorie
+            $category = $category !== null
+                ? $category
                 : new Kategorie($this->productFilter->getCategory()->getValue());
-            if (!empty($oKategorie->cTitleTag)) {
+            if (!empty($category->cTitleTag)) {
                 // meta title via new method
-                $cMetaTitle = strip_tags($oKategorie->cTitleTag);
+                $cMetaTitle = strip_tags($category->cTitleTag);
                 $cMetaTitle = str_replace('"', "'", $cMetaTitle);
                 $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
-            } elseif (!empty($oKategorie->categoryAttributes['meta_title']->cWert)) {
+            } elseif (!empty($category->categoryAttributes['meta_title']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Title gesetzt?
-                $cMetaTitle = strip_tags($oKategorie->categoryAttributes['meta_title']->cWert);
+                $cMetaTitle = strip_tags($category->categoryAttributes['meta_title']->cWert);
                 $cMetaTitle = str_replace('"', "'", $cMetaTitle);
                 $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
-            } elseif (!empty($oKategorie->KategorieAttribute['meta_title'])) {
+            } elseif (!empty($category->KategorieAttribute['meta_title'])) {
                 /** @deprecated since 4.05 - this is for compatibilty only! */
-                $cMetaTitle = strip_tags($oKategorie->KategorieAttribute['meta_title']);
+                $cMetaTitle = strip_tags($category->KategorieAttribute['meta_title']);
                 $cMetaTitle = str_replace('"', "'", $cMetaTitle);
                 $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
             }
         }
         // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
-        if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
+        if ($searchResults->Seitenzahlen->AktuelleSeite > 1) {
             $cMetaTitle .= ', ' . Shop::Lang()->get('page') . ' ' .
-                $oSuchergebnisse->Seitenzahlen->AktuelleSeite;
+                $searchResults->Seitenzahlen->AktuelleSeite;
         }
         // Globalen Meta Title ueberall anhaengen
         if ($append === true && !empty($globalMeta[$languageID]->Title)) {
@@ -744,10 +744,10 @@ class Metadata
     /**
      * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.
      *
-     * @param stdClass $oSuchergebnisse
+     * @param stdClass $searchResults
      * @return string
      */
-    public function getMetaStart($oSuchergebnisse)
+    public function getMetaStart($searchResults)
     {
         $cMetaTitle = '';
         // @todo: simplify
@@ -774,7 +774,7 @@ class Metadata
             $cMetaTitle .= ' ' . $this->productFilter->getCategoryFilter()->getName();
         }
         // Herstellerfilter
-        if (!empty($oSuchergebnisse->Herstellerauswahl[0]->cName)
+        if (!empty($searchResults->Herstellerauswahl[0]->cName)
             && $this->productFilter->hasManufacturerFilter()
         ) {
             $cMetaTitle .= ' ' . $this->productFilter->getManufacturerFilter()->getName();
@@ -787,9 +787,9 @@ class Metadata
         }
         // Suchbegrifffilter
         if ($this->productFilter->hasSearchFilter()) {
-            foreach ($this->productFilter->getSearchFilter() as $i => $oSuchFilter) {
-                if ($oSuchFilter->cName !== null) {
-                    $cMetaTitle .= ' ' . $oSuchFilter->getName();
+            foreach ($this->productFilter->getSearchFilter() as $searchFilter) {
+                if ($searchFilter->getName() !== null) {
+                    $cMetaTitle .= ' ' . $searchFilter->getName();
                 }
             }
         }
@@ -882,8 +882,8 @@ class Metadata
         } elseif ($this->productFilter->getSearchQuery()->isInitialized()) {
             $this->breadCrumb = $this->productFilter->getSearchQuery()->getName();
         }
-        if (!empty($this->productFilter->getSearch()->cSuche)
-            || !empty($this->productFilter->getSearchQuery()->cSuche)
+        if (!empty($this->productFilter->getSearch()->getName())
+            || !empty($this->productFilter->getSearchQuery()->getName())
         ) {
             return Shop::Lang()->get('for') . ' ' . $this->breadCrumb;
         }
@@ -916,7 +916,7 @@ class Metadata
         $oSeite_arr = [];
         $nVon       = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
         $nBis       = 0; // Begrenzt durch $nMaxAnzeige.
-        $naviURL    = $this->productFilter->getURL();
+        $naviURL    = $this->productFilter->getFilterURL()->getURL();
         $bSeo       = $bSeo && strpos($naviURL, '?') === false;
         if (isset($oSeitenzahlen->MaxSeiten, $oSeitenzahlen->AktuelleSeite)
             && $oSeitenzahlen->MaxSeiten > 0
@@ -1048,9 +1048,9 @@ class Metadata
             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
 
             if ($this->productFilter->hasCategory()) {
-                $oKategorie = new Kategorie($this->productFilter->getCategory()->getValue());
-                if (!empty($oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
-                    $nStdDarstellung = (int)$oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
+                $category = new Kategorie($this->productFilter->getCategory()->getValue());
+                if (!empty($category->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
+                    $nStdDarstellung = (int)$category->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
                 }
             }
             if ($nDarstellung === 0
@@ -1146,7 +1146,7 @@ class Metadata
             }
         }
         if (isset($_SESSION['oErweiterteDarstellung'])) {
-            $naviURL = $this->productFilter->getURL();
+            $naviURL = $this->productFilter->getFilterURL()->getURL();
             $naviURL .= strpos($naviURL, '?') === false ? '?ed=' : '&amp;ed=';
 
             $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL .
@@ -1349,7 +1349,7 @@ class Metadata
         }
         // Kategorie Funktionsattribut
         if (!empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
-            $_SESSION['Usersortierung'] = $this->mapUserSorting(
+            $_SESSION['Usersortierung'] = static::mapUserSorting(
                 $currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]
             );
         }
@@ -1380,7 +1380,7 @@ class Metadata
      * @param int|string $sort
      * @return int
      */
-    public function mapUserSorting($sort)
+    public static function mapUserSorting($sort)
     {
         // Ist die Usersortierung ein Integer => Return direkt den Integer
         preg_match('/\d+/', $sort, $cTreffer_arr);
@@ -1390,8 +1390,6 @@ class Metadata
         // Usersortierung ist ein String aus einem Kategorieattribut
         switch (strtolower($sort)) {
             case SEARCH_SORT_CRITERION_NAME:
-                return SEARCH_SORT_NAME_ASC;
-
             case SEARCH_SORT_CRITERION_NAME_ASC:
                 return SEARCH_SORT_NAME_ASC;
 
@@ -1407,10 +1405,8 @@ class Metadata
             case SEARCH_SORT_CRITERION_WEIGHT:
                 return SEARCH_SORT_WEIGHT;
 
-            case SEARCH_SORT_CRITERION_PRICE:
-                return SEARCH_SORT_PRICE_ASC;
-
             case SEARCH_SORT_CRITERION_PRICE_ASC:
+            case SEARCH_SORT_CRITERION_PRICE:
                 return SEARCH_SORT_PRICE_ASC;
 
             case SEARCH_SORT_CRITERION_PRICE_DESC:
@@ -1434,5 +1430,28 @@ class Metadata
             default:
                 return SEARCH_SORT_STANDARD;
         }
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getProductsPerPageLimit()
+    {
+        if ($this->productFilter->getProductLimit() > 0) {
+            $limit = (int)$this->productFilter->getProductLimit();
+        } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
+            $limit = (int)$_SESSION['ArtikelProSeite'];
+        } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel)
+            && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0
+        ) {
+            $limit = (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
+        } else {
+            $limit = ($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0
+                ? (int)$max
+                : 20;
+        }
+
+        return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
     }
 }

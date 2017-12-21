@@ -41,21 +41,23 @@ $DB      = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
 $cache   = JTLCache::getInstance()->setJtlCacheConfig();
 $session = AdminSession::getInstance();
 
-Shop::bootstrap();
-Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
-
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
-if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && validateToken()) {
-    $revision = new Revision();
-    if ($_POST['revision-action'] === 'restore') {
-        $revision->restoreRevision(
-            $_POST['revision-type'],
-            $_POST['revision-id'],
-            isset($_POST['revision-secondary']) && $_POST['revision-secondary'] === '1',
-            empty($_POST['restore-utf8']) || ($_POST['restore-utf8'] === '1')
-        );
-    } elseif ($_POST['revision-action'] === 'delete') {
-        $revision->deleteRevision($_POST['revision-id']);
+Shop::bootstrap();
+
+if ($oAccount->logged()) {
+    Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
+    if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && validateToken()) {
+        $revision = new Revision();
+        if ($_POST['revision-action'] === 'restore') {
+            $revision->restoreRevision(
+                $_POST['revision-type'],
+                $_POST['revision-id'],
+                isset($_POST['revision-secondary']) && $_POST['revision-secondary'] === '1',
+                empty($_POST['restore-utf8']) || ($_POST['restore-utf8'] === '1')
+            );
+        } elseif ($_POST['revision-action'] === 'delete') {
+            $revision->deleteRevision($_POST['revision-id']);
+        }
     }
 }

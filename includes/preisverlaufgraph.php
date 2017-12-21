@@ -6,7 +6,6 @@
 
 if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET['kSteuerklasse'] > 0) {
     require_once __DIR__ . '/globalinclude.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.PreisverlaufGraph.php';
     //session starten
     $session       = Session::getInstance();
     $Einstellungen = Shop::getSettings([CONF_PREISVERLAUF]);

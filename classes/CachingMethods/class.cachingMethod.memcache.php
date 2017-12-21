@@ -48,9 +48,8 @@ class cache_memcache implements ICachingMethod
         if ($this->_memcache !== null) {
             $this->_memcache->close();
         }
-        $m = new Memcache();
-        $m->addServer($host, (int)$port);
-        $this->_memcache = $m;
+        $this->_memcache = new Memcache();
+        $this->_memcache->addServer($host, (int)$port);
 
         return $this;
     }
@@ -103,8 +102,7 @@ class cache_memcache implements ICachingMethod
             $prefixedKeys[] = $this->options['prefix'] . $_cid;
         }
         $res = $this->dePrefixArray($this->_memcache->get($prefixedKeys));
-
-        //fill up result
+        // fill up result
         return array_merge(array_fill_keys($cacheIDs, false), $res);
     }
 

@@ -257,9 +257,9 @@ class AuswahlAssistentOrt
             }
         }
         // Ort Spezialseite
-        if (isset($cParam_arr['kLink_arr']) &&
-            is_array($cParam_arr['kLink_arr']) &&
-            count($cParam_arr['kLink_arr']) > 0
+        if (isset($cParam_arr['kLink_arr'])
+            && is_array($cParam_arr['kLink_arr'])
+            && count($cParam_arr['kLink_arr']) > 0
         ) {
             foreach ($cParam_arr['kLink_arr'] as $kLink) {
                 if ((int)$kLink > 0) {

@@ -308,17 +308,6 @@ class JTLSmarty extends SmartyBC
 
             if ($isAdmin === false) {
                 $this->cache_lifetime = 86400;
-                // assign variables moved from $_SESSION to cache to smarty
-                $linkHelper = LinkHelper::getInstance();
-                $linkGroups = $linkHelper->getLinkGroups();
-                if ($linkGroups === null) {
-                    // this can happen when there is a $_SESSION active and object cache is being flushed
-                    // since setzeLinks() is only executed in class.core.Session.php
-                    $linkGroups = setzeLinks();
-                }
-                require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Hersteller.php';
-                $this->assign('linkgroups', $linkGroups)
-                     ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers());
                 $this->template_class = 'jtlTplClass';
             }
             if (!$isAdmin) {
@@ -389,7 +378,9 @@ class JTLSmarty extends SmartyBC
             )
         ) {
             $this->unregisterFilter('output', [$this, '__outputFilter']);
-            $doc = phpQuery::newDocumentHTML($tplOutput, JTL_CHARSET);
+            /** Workaround to force DOMDocumentWrapper doing mb_convert_encoding
+             * (because: DOMDocument::loadHTML can't load UTF-8 markup correctly) */
+            $doc = phpQuery::newDocumentHTML($tplOutput, 'HTML-ENTITIES');
             executeHook($isMobile ? HOOK_SMARTY_OUTPUTFILTER_MOBILE : HOOK_SMARTY_OUTPUTFILTER);
             $tplOutput = $doc->htmlOuter();
         }

@@ -305,7 +305,7 @@ class Boxen
                                                 'cName'
                                             );
                                         }
-                                        $filterEntry['name'] = (!empty($name->cName)) ? $name->cName : '???';
+                                        $filterEntry['name'] = !empty($name->cName) ? $name->cName : '???';
                                         $filterOptions[]     = $filterEntry;
                                     }
                                     $oBox->cFilter = $filterOptions;
@@ -1236,7 +1236,6 @@ class Boxen
     private function cachecheck($filename_cache, $timeout = 10800)
     {
         $filename_cache = PFAD_ROOT . PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
-
         if (file_exists($filename_cache)) {
             $timestamp = filemtime($filename_cache);
             // Seconds
@@ -1247,21 +1246,21 @@ class Boxen
     }
 
     /**
-     * @return string
+     * @return array
+     * @throws Exception
+     * @throws SmartyException
      */
     public function render()
     {
         $smarty          = Shop::Smarty();
         $originalArticle = $smarty->getTemplateVars('Artikel');
-        if (isset($_SESSION['Kundengruppe'])) {
-            $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
-        }
+        $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
         //check whether filters should be displayed after a box
         $filterAfter = (!empty($this->boxConfig) && isset($GLOBALS['NaviFilter'], $GLOBALS['oSuchergebnisse']))
             ? $this->gibBoxenFilterNach(Shop::getProductFilter(), $GLOBALS['oSuchergebnisse'])
             : 0;
         $path              = 'boxes/';
-        $this->lagerFilter = gibLagerfilter();
+        $this->lagerFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $htmlArray         = [
             'top'    => null,
             'right'  => null,
@@ -1738,7 +1737,7 @@ class Boxen
             $bOk = true;
             for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
                 $oBox = Shop::DB()->select('tboxensichtbar', 'kBox', $kBox);
-                $bOk  = (!empty($oBox))
+                $bOk  = !empty($oBox)
                     ? (Shop::DB()->query(
                         "UPDATE tboxensichtbar 
                             SET nSort = " . $nSort . ",

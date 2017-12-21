@@ -231,11 +231,14 @@ class SimpleMail
      * @param array $cBCC_arr
      * @param array $cReply_arr
      * @return bool
+     * @throws Exception
+     * @throws phpmailerException
      */
     public function send(array $cEmpfaenger_arr, $cCC_arr = [], $cBCC_arr = [], $cReply_arr = [])
     {
         if ($this->validate() === true) {
             $oPHPMailer            = new PHPMailer();
+            $oPHPMailer->CharSet   = JTL_CHARSET;
             $oPHPMailer->Timeout   = SOCKET_TIMEOUT;
             $oPHPMailer->From      = $this->cVerfasserMail;
             $oPHPMailer->Sender    = $this->cVerfasserMail;

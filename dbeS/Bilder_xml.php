@@ -855,23 +855,8 @@ function gibArtikelbildname($img, $Bildformat)
  */
 function gibAusgeschriebeneUmlaute($str)
 {
-    $src = [
-        'ä',
-        'ö',
-        'ü',
-        'ß',
-        'Ä',
-        'Ö',
-        'Ü',
-        utf8_decode('ä'),
-        utf8_decode('ö'),
-        utf8_decode('ü'),
-        utf8_decode('ß'),
-        utf8_decode('Ä'),
-        utf8_decode('Ö'),
-        utf8_decode('Ü')
-    ];
-    $rpl = ['ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE', 'ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE'];
+    $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
+    $rpl = ['ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE'];
 
     return str_replace($src, $rpl, $str);
 }

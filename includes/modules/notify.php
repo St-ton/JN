@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/../../includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -164,14 +163,13 @@ if (strlen($cSh) > 0) {
                     }
                     header($header);
                     exit();
+                }
+                if (strlen($cEditZahlungHinweis) > 0) {
+                    echo $linkHelper->getStaticRoute('bestellvorgang.php') .
+                        '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
                 } else {
-                    if (strlen($cEditZahlungHinweis) > 0) {
-                        echo $linkHelper->getStaticRoute('bestellvorgang.php') .
-                            '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
-                    } else {
-                        echo $linkHelper->getStaticRoute('bestellvorgang.php') .
-                            '?editZahlungsart=1';
-                    }
+                    echo $linkHelper->getStaticRoute('bestellvorgang.php') .
+                        '?editZahlungsart=1';
                 }
             }
         }

@@ -167,6 +167,9 @@ header {
     #shop-nav-xs .navbar-collapse {
         margin-bottom: 3px;
     }
+    a.shipment.popup {
+        color: @link-color;
+    }
 }
 
 @media (min-width: @screen-md-min) {
@@ -570,7 +573,7 @@ hr.hr-sm {
 #menu-content {
     position: absolute;
     left: 97px;
-    z-index: 9999;
+    z-index: @zindex-overtop;
     max-width: none;
 }
 
@@ -792,30 +795,43 @@ ul.filter_state {
     opacity: 0.9;
 }
 
-@media (min-width: @screen-md-min) {
-    .quickview.badge {
-        position: absolute;
-        top: @input-height-large;
-        left: 50%;
-        width: 40%;
-        min-width: 80px;
-        margin-left: -20%;
-        padding: 1em;
-        border-radius: @border-radius-small;
-        background-color: @body-bg;
-        color: @text-color;
-        border: 1px solid @btn-default-border;
-        opacity: 0.8;
+.quickview.badge {
+    position: absolute;
+    top: @input-height-large;
+    left: 50%;
+    width: 40%;
+    min-width: 80px;
+    margin-left: -20%;
+    padding: 1em;
+    border-radius: @border-radius-small;
+    background-color: @body-bg;
+    color: @text-color;
+    border: 1px solid @btn-default-border;
+    opacity: 0.8;
+    display: none;
+}
+
+[data-touchcapable="true"] .quickview.badge {
+    display: inline-block;
+}
+
+[data-touchcapable="false"] .quickview.badge {
+    display: inline-block;
+    transition: 0.5s;
+    opacity: 0;
+}
+
+.gallery .product-cell,
+.list .product-cell {
+    &.hover-enabled {
+        .expandable {
+            display: none;
+        }
     }
 }
 
-[data-touchcapable="false"] .gallery .product-cell {
-    @media (min-width: @screen-md-min) {
-        .quickview.badge {
-            transition: 0.5s;
-            opacity: 0;
-        }
-
+.gallery .product-cell {
+    @media (min-width: @screen-sm-min) {
         .image-wrapper:hover .quickview.badge {
             opacity: 0.8;
         }
@@ -823,21 +839,13 @@ ul.filter_state {
         &.hover-enabled {
             transition: none;
 
-            .expandable {
-                display: none;
-            }
-
-            .quickview.badge {
-                display: none;
-            }
-
             form {
                 margin-bottom: @line-height-computed;
             }
 
             &:hover, &.active {
                 position: absolute;
-                z-index: @zindex-navbar - 10;
+                z-index: @zindex-menu - 1;
                 left: 0;
                 top: 0;
                 height: auto !important;
@@ -864,17 +872,67 @@ ul.filter_state {
             }
         }
     }
+    @media (max-width: @screen-xs-max) {
+
+    }
 }
 
-[data-touchcapable="false"] .list .product-cell {
-    @media (min-width: @screen-md-min) {
-        .quickview.badge {
-            transition: 0.5s;
-            opacity: 0;
-        }
+.list .product-cell {
+    .quickview.badge {
+        width: 80%;
+        margin-left: -40%;
+        top: auto;
+        bottom: 20%;
+    }
 
-        .image-wrapper:hover .quickview.badge {
-            opacity: 0.8;
+    .image-wrapper:hover .quickview.badge {
+        opacity: 0.8;
+    }
+
+    .image-content img {
+        vertical-align: top;
+    }
+
+    @media (min-width: @screen-sm-min) {
+        &.hover-enabled {
+            .product-detail {
+                position: relative;
+                padding: @grid-gutter-width / 2;
+                padding-bottom: 0;
+            }
+
+            .product-detail-cell {
+                transition: none;
+
+                form {
+                    margin-bottom: @line-height-computed;
+                }
+            }
+
+            &:hover, &.active {
+                .quickview.badge {
+                    display: inline-block;
+                    opacity: 0.8;
+                }
+
+                .product-detail-cell {
+                    position: absolute;
+                    z-index: @zindex-menu - 1;
+                    left: 0;
+                    top: 0;
+                    height: auto !important;
+                    min-height: 100%;
+                    width: 100%;
+                    padding: @grid-gutter-width / 2;
+                    .box-shadow(0 0 @margin-base rgba(0, 0, 0, 0.45));
+                    transition: box-shadow 0.3s;
+                    background-color: @detail-hover-bg;
+
+                    .expandable {
+                        display: block;
+                    }
+                }
+            }
         }
     }
 }
@@ -1108,8 +1166,8 @@ aside {
 }
 
 .updatingStockInfo{
-    position: absolute;
     display: none;
+    margin-bottom: -20px;
 }
 
 #sortierenID {
@@ -1763,7 +1821,7 @@ fieldset {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1060;
+    z-index: @zindex-popover;
     display: none;
     max-width: @screen-lg-min;
     padding: 1px;
@@ -1847,6 +1905,14 @@ fieldset {
 @media (max-width: @screen-md-max) {
     .row.gallery .product-wrapper.col-xs-6:nth-child(2n) {
         border-right-color: transparent;
+    }
+    .row.gallery .product-wrapper.col-md-4 {
+        &:nth-child(2n) {
+            border-right-color: @panel-default-border;
+        }
+        &:nth-child(3n) {
+            border-right-color: transparent;
+        }
     }
 }
 
@@ -2026,7 +2092,7 @@ fieldset {
         max-width: 100%;
         left: -250px;
         top: 0;
-        z-index: 999;
+        z-index: @zindex-navbar - 1;
         -webkit-overflow-scrolling: touch;
         -webkit-transition: all 0.15s ease-in;
         -moz-transition: all 0.15s ease-in;
@@ -2206,7 +2272,7 @@ fieldset {
         padding: 30px 30px;
         max-height: 62rem;
         overflow-y: auto;
-        z-index: 20;
+        z-index: @zindex-menu;
         .category-title {
             font-size: 2em;
         }
@@ -3001,7 +3067,7 @@ div#add-to-cart {
 
 #evo-main-nav {
     margin-bottom: 0;
-    z-index: 20;
+    z-index: @zindex-menu;
 
     .dropdown-cart-items {
         word-break: break-word;
@@ -3032,7 +3098,7 @@ header.fixed-navbar {
         position: fixed;
         top: 0;
         width: 100%;
-        z-index: 20;
+        z-index: @zindex-menu;
         left: 0;
     }
     .navbar-container {
@@ -3363,11 +3429,11 @@ header.fixed-navbar {
 // Fix for #513 - backdrop was not visible
 .modal-backdrop {
     bottom: 0;
-    z-index: 1040;
+    z-index: @zindex-modal - 10;
 }
 
 .modal {
-    z-index: 1050;
+    z-index: @zindex-modal;
 }
 
 .notification-alert {

@@ -10,7 +10,6 @@ define('SHOP_SOFTWARE', 'JTL');
 
 $oAccount->permission('ORDER_TRUSTEDSHOPS_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
 /** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
@@ -100,9 +99,9 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
             //$oTrustedShops = new TrustedShops($oZertifikat->cTSID, $_SESSION['TrustedShops']->oSprache->cISOSprache);
             $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
 
-            $nReturnValue = (strlen($oTrustedShops->kTrustedShopsZertifikat) > 0) ?
-                $oTrustedShops->speicherTrustedShopsZertifikat($oZertifikat, $oTrustedShops->kTrustedShopsZertifikat) :
-                $oTrustedShops->speicherTrustedShopsZertifikat($oZertifikat);
+            $nReturnValue = (strlen($oTrustedShops->kTrustedShopsZertifikat) > 0)
+                ? $oTrustedShops->speicherTrustedShopsZertifikat($oZertifikat, $oTrustedShops->kTrustedShopsZertifikat)
+                : $oTrustedShops->speicherTrustedShopsZertifikat($oZertifikat);
 
             mappeTSFehlerCode($cHinweis, $cFehler, $nReturnValue);
         } elseif ($cPreStatus === 'Y') {
@@ -377,40 +376,40 @@ $smarty->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
  */
 function mappeTSFehlerCode(&$cHinweis, &$cFehler, $nReturnValue)
 {
-    if ($nReturnValue == -1) {
+    if ($nReturnValue === -1) {
         $cHinweis .= 'Das Trusted Shops Zertifikat wurde erfolgreich gespeichert.<br />
             Bitte Besuchen Sie unter dem Backend Men&uuml;punkt "Admin" die "Boxenverwaltung" und f&uuml;gen Sie die Trusted Shops Siegelbox hinzu.<br />';
-    } elseif ($nReturnValue == 1) {
+    } elseif ($nReturnValue === 1) {
         // Fehlende Sprache + TSID
         $cFehler .= 'Fehler: Bitte f&uuml;llen Sie alle Felder aus.';
-    } elseif ($nReturnValue == 2) {
+    } elseif ($nReturnValue === 2) {
         // Das Zertifikat existiert nich
         $cFehler .= 'Fehler: Das Zertifikat zu Ihrer Trusted Shops ID existiert nicht.';
-    } elseif ($nReturnValue == 3) {
+    } elseif ($nReturnValue === 3) {
         // Das Zertifikat ist abgelaufen
         $cFehler .= 'Fehler: Das Zertifikat zu Ihrer Trusted Shops ID ist abgelaufen.';
-    } elseif ($nReturnValue == 4) {
+    } elseif ($nReturnValue === 4) {
         // Das Zertifikat ist gesperrt
         $cFehler .= 'Fehler: Das Zertifikat zu Ihrer Trusted Shops ID ist gesperrt.';
-    } elseif ($nReturnValue == 5) {
+    } elseif ($nReturnValue === 5) {
         // Shop befindet sich in der Zertifizierung
         $cFehler .= 'Fehler: Das Zertifikat befindet sich in der Zertifzierung.';
-    } elseif ($nReturnValue == 6) {
+    } elseif ($nReturnValue === 6) {
         // Keine Excellence-Variante mit Kaeuferschutz im Checkout-Prozess
         $cFehler .= 'Fehler: Das Zertifikat hat keine Excellence-Variante mit K&auml;uferschutz im Checkout-Prozess.';
-    } elseif ($nReturnValue == 7) {
+    } elseif ($nReturnValue === 7) {
         // Ungueltige Sprache fuer gewaehlte TS-ID
         $cFehler .= 'Fehler: Ihre gew&auml;hlte Sprache stimmt nicht mit Ihrer Trusted Shops ID &uuml;berein.';
-    } elseif ($nReturnValue == 8) {
+    } elseif ($nReturnValue === 8) {
         // Benutzername & Passwort ungueltig
         $cFehler .= 'Fehler: Ihre WebService User ID (wsUser) und Ihr WebService Passwort (wsPassword) konnten nicht verifiziert werden.';
-    } elseif ($nReturnValue == 9) {
+    } elseif ($nReturnValue === 9) {
         // Zertifikat konnte nicht gespeichert werden
         $cFehler .= 'Fehler: Das Zertifikat konnte nicht gespeichert werden.';
-    } elseif ($nReturnValue == 10) {
+    } elseif ($nReturnValue === 10) {
         // Falsche Kaeuferschutzvariante
         $cFehler .= 'Fehler: Ihre Trusted Shops ID entspricht nicht dem ausgew&auml;hlten K&auml;uferschutz Typ.';
-    } elseif ($nReturnValue == 11) {
+    } elseif ($nReturnValue === 11) {
         // SOAP Fehler
         $cFehler .= 'Fehler: Interner SOAP Fehler. Entweder ist das Netzwerkprotokoll SOAP nicht eingebunden oder der Trusted Shops Service ist momentan nicht erreichbar.';
     }

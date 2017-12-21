@@ -129,7 +129,7 @@ class Rechnungsadresse extends Adresse
     public function gibRechnungsadresseAssoc()
     {
         if ($this->kRechnungsadresse > 0) {
-            //wawi needs these attributes in exactly this order
+            // wawi needs these attributes in exactly this order
             return [
                 'cAnrede'          => $this->cAnrede,
                 'cTitel'           => $this->cTitel,
@@ -150,6 +150,7 @@ class Rechnungsadresse extends Adresse
                 'cMail'            => $this->cMail,
                 'cZusatz'          => $this->cZusatz,
                 'cAnredeLocalized' => $this->cAnredeLocalized,
+                'cHausnummer'      => $this->cHausnummer
             ];
         }
 

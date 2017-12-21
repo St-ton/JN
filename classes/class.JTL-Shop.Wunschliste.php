@@ -211,7 +211,7 @@ class Wunschliste
         ) {
             return false;
         }
-        foreach ($oWunschzettel->CWunschlistePos_arr as $i => $oWunschlistePos) {
+        foreach ($oWunschzettel->CWunschlistePos_arr as $oWunschlistePos) {
             foreach ($oWarenkorbpositionen_arr as $oArtikel) {
                 if ($oWunschlistePos->kArtikel != $oArtikel->kArtikel) {
                     continue;
@@ -560,14 +560,8 @@ class Wunschliste
                 $this->delWunschlistePosSess($CWunschlistePos->kArtikel);
             }
         }
-        // Artikel die nicht mehr Gültig sind aufführen und an den Hinweis hängen
-        $tmp_str = '';
-        foreach ($cArtikel_arr as $cArtikel) {
-            $tmp_str .= $cArtikel . ', ';
-        }
-        $hinweis .= substr($tmp_str, 0, strlen($tmp_str) - 2);
 
-        return $hinweis;
+        return $hinweis . implode(', ', $cArtikel_arr);
     }
 
     /**
@@ -580,7 +574,6 @@ class Wunschliste
         if (!$kArtikel) {
             return false;
         }
-
         // Positionen und Eigenschaften der Wunschliste welche nicht mehr Gültig sind in der Session durchgehen, löschen und unsetten
         foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $i => $CWunschlistePosSESS) {
             if ($kArtikel === (int)$CWunschlistePosSESS->kArtikel) {
@@ -603,7 +596,6 @@ class Wunschliste
     public function umgebungsWechsel()
     {
         if (count($_SESSION['Wunschliste']->CWunschlistePos_arr) > 0) {
-            //$_SESSION['Wunschliste'] = new Wunschliste($_SESSION['Wunschliste']->kWunschliste);
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $i => $oWunschlistePos) {
                 $oArtikel = new Artikel();

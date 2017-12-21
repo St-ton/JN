@@ -115,7 +115,7 @@ class Template
 
             return $this;
         }
-        $bMobil  = isset($_COOKIE['bMobil']) && $_COOKIE['bMobil'];
+        $bMobil  = (isset($_SESSION['bMobil']) && $_SESSION['bMobil']);
         $cacheID = 'current_template_' . ($bMobil === true
                 ? 'mobile'
                 : 'nonmobile') .
@@ -140,7 +140,7 @@ class Template
         }
         if (!empty($oTemplate)) {
             self::$cTemplate   = $oTemplate->cTemplate;
-            self::$parent      = (!empty($oTemplate->parent)) ? $oTemplate->parent : null;
+            self::$parent      = !empty($oTemplate->parent) ? $oTemplate->parent : null;
             $this->name        = $oTemplate->name;
             $this->author      = $oTemplate->author;
             $this->url         = $oTemplate->url;
@@ -539,7 +539,7 @@ class Template
         if (!$this->hasMobileTemplate()) {
             $bMobil = false;
         }
-        setcookie('bMobil', $bMobil);
+        $_SESSION['bMobil'] = $bMobil;
         self::$bMobil = $bMobil;
         unset($_SESSION['template'], $_SESSION['cTemplate']);
         $this->init();
@@ -564,133 +564,134 @@ class Template
         $ignoredSettings = []; //list of settings that are overridden by child
         foreach ($folders as $cOrdner) {
             $oXML = self::$helper->getXML($cOrdner);
-            if ($oXML && isset($oXML->Settings, $oXML->Settings->Section)) {
-                /** @var SimpleXMLElement $oXMLSection */
-                foreach ($oXML->Settings->Section as $oXMLSection) {
-                    $oSection  = null;
-                    $sectionID = (string)$oXMLSection->attributes()->Key;
-                    $exists    = false;
-                    foreach ($oSection_arr as &$_section) {
-                        if ($_section->cKey === $sectionID) {
-                            $exists   = true;
-                            $oSection = $_section;
+            if (!$oXML || !isset($oXML->Settings, $oXML->Settings->Section)) {
+                continue;
+            }
+            /** @var SimpleXMLElement $oXMLSection */
+            foreach ($oXML->Settings->Section as $oXMLSection) {
+                $oSection  = null;
+                $sectionID = (string)$oXMLSection->attributes()->Key;
+                $exists    = false;
+                foreach ($oSection_arr as &$_section) {
+                    if ($_section->cKey === $sectionID) {
+                        $exists   = true;
+                        $oSection = $_section;
+                        break;
+                    }
+                }
+                if (!$exists) {
+                    $oSection                = new stdClass();
+                    $oSection->cName         = (string)$oXMLSection->attributes()->Name;
+                    $oSection->cKey          = $sectionID;
+                    $oSection->oSettings_arr = [];
+                }
+                /** @var SimpleXMLElement $XMLSetting */
+                foreach ($oXMLSection->Setting as $XMLSetting) {
+                    $key                     = (string)$XMLSetting->attributes()->Key;
+                    $oSetting                = new stdClass();
+                    $oSetting->rawAttributes = [];
+                    $settingExists           = false;
+                    $atts                    = $XMLSetting->attributes();
+                    if (in_array($key, $ignoredSettings, true)) {
+                        continue;
+                    }
+                    foreach ($atts as $_k => $_attr) {
+                        $oSetting->rawAttributes[$_k] = (string)$_attr;
+                    }
+                    if ((string)$XMLSetting->attributes()->override === 'true') {
+                        $ignoredSettings[] = $key;
+                    }
+                    $oSetting->cName        = (string)$XMLSetting->attributes()->Description;
+                    $oSetting->cKey         = $key;
+                    $oSetting->cType        = (string)$XMLSetting->attributes()->Type;
+                    $oSetting->cValue       = (string)$XMLSetting->attributes()->Value;
+                    $oSetting->bEditable    = (string)$XMLSetting->attributes()->Editable;
+                    $oSetting->cPlaceholder = (string)$XMLSetting->attributes()->Placeholder;
+                    // negative values for the 'toggle'-attributes of textarea(resizable), check-boxes and radio-buttons
+                    $vToggleValues = ['0', 'no', 'none', 'off', 'false'];
+                    // special handling for textarea-type settings
+                    if ('textarea' === $oSetting->cType) {
+                        // inject the tag-attributes of the TextAreaValue in our oSetting
+                        $oSetting->vTextAreaAttr_arr = [];
+                        // get the SimpleXMLElement-array
+                        $attr = $XMLSetting->TextAreaValue->attributes();
+                        // we insert our default "no resizable"
+                        $oSetting->vTextAreaAttr_arr['Resizable'] = 'none';
+                        foreach ($attr as $_key => $_val) {
+                            $_val                               = (string)$_val; // cast the value(!)
+                            $oSetting->vTextAreaAttr_arr[$_key] = $_val;
+                            // multiple values of 'disable resizing' are allowed,
+                            // but only vertical is ok, if 'resizable' is required
+                            if ('Resizable' === (string)$_key) {
+                                in_array($_val, $vToggleValues, true)
+                                    ? $oSetting->vTextAreaAttr_arr[$_key] = 'none'
+                                    : $oSetting->vTextAreaAttr_arr[$_key] = 'vertical';
+                                // only vertical, because horizontal breaks the layout
+                            } else {
+                                $oSetting->vTextAreaAttr_arr[$_key] = $_val;
+                            }
+                        }
+                        // get the tag-content of "TextAreaValue"; trim leading and trailing spaces
+                        $vszTextLines = mb_split("\n", (string)$XMLSetting->TextAreaValue);
+                        array_walk($vszTextLines, function (&$szLine) { $szLine = trim($szLine); });
+                        $oSetting->cTextAreaValue = implode("\n", $vszTextLines);
+                    }
+                    foreach ($oSection->oSettings_arr as $_setting) {
+                        if ($_setting->cKey === $oSetting->cKey) {
+                            $settingExists = true;
+                            $oSetting      = $_setting;
                             break;
                         }
                     }
-                    if (!$exists) {
-                        $oSection                = new stdClass();
-                        $oSection->cName         = utf8_decode((string)$oXMLSection->attributes()->Name);
-                        $oSection->cKey          = $sectionID;
-                        $oSection->oSettings_arr = [];
+                    $oSetting->bEditable = strlen($oSetting->bEditable) === 0
+                        ? true
+                        : (boolean)(int)$oSetting->bEditable;
+                    if ($oSetting->bEditable && isset($oDBSettings[$oSection->cKey][$oSetting->cKey])) {
+                        $oSetting->cValue = $oDBSettings[$oSection->cKey][$oSetting->cKey];
                     }
-                    /** @var SimpleXMLElement $XMLSetting */
-                    foreach ($oXMLSection->Setting as $XMLSetting) {
-                        $key                     = (string)$XMLSetting->attributes()->Key;
-                        $oSetting                = new stdClass();
-                        $oSetting->rawAttributes = [];
-                        $settingExists           = false;
-                        $atts                    = $XMLSetting->attributes();
-                        if (in_array($key, $ignoredSettings, true)) {
-                            continue;
+                    if (isset($XMLSetting->Option)) {
+                        if (!isset($oSetting->oOptions_arr)) {
+                            $oSetting->oOptions_arr = [];
                         }
-                        foreach ($atts as $_k => $_attr) {
-                            $oSetting->rawAttributes[$_k] = (string)$_attr;
-                        }
-                        if ((string)$XMLSetting->attributes()->override === 'true') {
-                            $ignoredSettings[] = $key;
-                        }
-                        $oSetting->cName        = utf8_decode((string)$XMLSetting->attributes()->Description);
-                        $oSetting->cKey         = utf8_decode($key);
-                        $oSetting->cType        = (string)$XMLSetting->attributes()->Type;
-                        $oSetting->cValue       = (string)$XMLSetting->attributes()->Value;
-                        $oSetting->bEditable    = (string)$XMLSetting->attributes()->Editable;
-                        $oSetting->cPlaceholder = (string)$XMLSetting->attributes()->Placeholder;
-                        // negative values for the 'toggle'-attributes of textarea(resizable), check-boxes and radio-buttons
-                        $vToggleValues = ['0', 'no', 'none', 'off', 'false'];
-                        // special handling for textarea-type settings
-                        if ('textarea' === $oSetting->cType) {
-                            // inject the tag-attributes of the TextAreaValue in our oSetting
-                            $oSetting->vTextAreaAttr_arr = [];
-                            // get the SimpleXMLElement-array
-                            $attr = $XMLSetting->TextAreaValue->attributes();
-                            // we insert our default "no resizable"
-                            $oSetting->vTextAreaAttr_arr['Resizable'] = 'none';
-                            foreach ($attr as $_key => $_val) {
-                                $_val                               = (string)$_val; // cast the value(!)
-                                $oSetting->vTextAreaAttr_arr[$_key] = $_val;
-                                // multiple values of 'disable resizing' are allowed,
-                                // but only vertical is ok, if 'resizable' is required
-                                if ('Resizable' === (string)$_key) {
-                                    in_array($_val, $vToggleValues, true)
-                                        ? $oSetting->vTextAreaAttr_arr[$_key] = 'none'
-                                        : $oSetting->vTextAreaAttr_arr[$_key] = 'vertical';
-                                    // only vertical, because horizontal breaks the layout
-                                } else {
-                                    $oSetting->vTextAreaAttr_arr[$_key] = $_val;
-                                }
+                        /** @var SimpleXMLElement $XMLOption */
+                        foreach ($XMLSetting->Option as $XMLOption) {
+                            $oOption          = new stdClass();
+                            $oOption->cName   = (string)$XMLOption;
+                            $oOption->cValue  = (string)$XMLOption->attributes()->Value;
+                            $oOption->cOrdner = $cOrdner; //add current folder to option - useful for theme previews
+                            if ('' === (string)$XMLOption && '' !== (string)$XMLOption->attributes()->Name) {
+                                // overwrite the cName (which defaults to the tag-content),
+                                // if it's empty, with the Option-attribute "Name", if we got that
+                                $oOption->cName = (string)$XMLOption->attributes()->Name;
                             }
-                            // get the tag-content of "TextAreaValue"; trim leading and trailing spaces
-                            $vszTextLines = mb_split("\n", (string)$XMLSetting->TextAreaValue);
-                            array_walk($vszTextLines, function (&$szLine) { $szLine = trim($szLine); });
-                            $oSetting->cTextAreaValue = implode("\n", $vszTextLines);
-                        }
-                        foreach ($oSection->oSettings_arr as $_setting) {
-                            if ($_setting->cKey === $oSetting->cKey) {
-                                $settingExists = true;
-                                $oSetting      = $_setting;
-                                break;
-                            }
-                        }
-                        $oSetting->bEditable = strlen($oSetting->bEditable) === 0
-                            ? true
-                            : (boolean)(int)$oSetting->bEditable;
-                        if ($oSetting->bEditable && isset($oDBSettings[$oSection->cKey][$oSetting->cKey])) {
-                            $oSetting->cValue = $oDBSettings[$oSection->cKey][$oSetting->cKey];
-                        }
-                        if (isset($XMLSetting->Option)) {
-                            if (!isset($oSetting->oOptions_arr)) {
-                                $oSetting->oOptions_arr = [];
-                            }
-                            /** @var SimpleXMLElement $XMLOption */
-                            foreach ($XMLSetting->Option as $XMLOption) {
-                                $oOption          = new stdClass();
-                                $oOption->cName   = (string)$XMLOption;
-                                $oOption->cValue  = (string)$XMLOption->attributes()->Value;
-                                $oOption->cOrdner = $cOrdner; //add current folder to option - useful for theme previews
-                                if ('' === (string)$XMLOption && '' !== (string)$XMLOption->attributes()->Name) {
-                                    // overwrite the cName (which defaults to the tag-content),
-                                    // if it's empty, with the Option-attribute "Name", if we got that
-                                    $oOption->cName = (string)$XMLOption->attributes()->Name;
-                                }
-                                $oSetting->oOptions_arr[] = $oOption;
-                            }
-                        }
-                        if (isset($XMLSetting->Optgroup)) {
-                            if (!isset($oSetting->oOptgroup_arr)) {
-                                $oSetting->oOptgroup_arr = [];
-                            }
-                            /** @var SimpleXMLElement $XMLOptgroup */
-                            foreach ($XMLSetting->Optgroup as $XMLOptgroup) {
-                                $oOptgroup              = new stdClass();
-                                $oOptgroup->cName       = (string)$XMLOptgroup->attributes()->label;
-                                $oOptgroup->oValues_arr = [];
-                                /** @var SimpleXMLElement $XMLOptgroupOption */
-                                foreach ($XMLOptgroup->Option as $XMLOptgroupOption) {
-                                    $oOptgroupValues          = new stdClass();
-                                    $oOptgroupValues->cName   = (string)$XMLOptgroupOption;
-                                    $oOptgroupValues->cValue  = (string)$XMLOptgroupOption->attributes()->Value;
-                                    $oOptgroup->oValues_arr[] = $oOptgroupValues;
-                                }
-                                $oSetting->oOptgroup_arr[] = $oOptgroup;
-                            }
-                        }
-                        if (!$settingExists) {
-                            $oSection->oSettings_arr[] = $oSetting;
+                            $oSetting->oOptions_arr[] = $oOption;
                         }
                     }
-                    if (!$exists) {
-                        $oSection_arr[] = $oSection;
+                    if (isset($XMLSetting->Optgroup)) {
+                        if (!isset($oSetting->oOptgroup_arr)) {
+                            $oSetting->oOptgroup_arr = [];
+                        }
+                        /** @var SimpleXMLElement $XMLOptgroup */
+                        foreach ($XMLSetting->Optgroup as $XMLOptgroup) {
+                            $oOptgroup              = new stdClass();
+                            $oOptgroup->cName       = (string)$XMLOptgroup->attributes()->label;
+                            $oOptgroup->oValues_arr = [];
+                            /** @var SimpleXMLElement $XMLOptgroupOption */
+                            foreach ($XMLOptgroup->Option as $XMLOptgroupOption) {
+                                $oOptgroupValues          = new stdClass();
+                                $oOptgroupValues->cName   = (string)$XMLOptgroupOption;
+                                $oOptgroupValues->cValue  = (string)$XMLOptgroupOption->attributes()->Value;
+                                $oOptgroup->oValues_arr[] = $oOptgroupValues;
+                            }
+                            $oSetting->oOptgroup_arr[] = $oOptgroup;
+                        }
                     }
+                    if (!$settingExists) {
+                        $oSection->oSettings_arr[] = $oSetting;
+                    }
+                }
+                if (!$exists) {
+                    $oSection_arr[] = $oSection;
                 }
             }
         }
@@ -710,7 +711,6 @@ class Template
 
         foreach ($cOrdner_arr as $dir) {
             $oXML = self::$helper->getXML($dir);
-
             if ($oXML && isset($oXML->Boxes) && count($oXML->Boxes) === 1) {
                 $oXMLBoxes_arr = $oXML->Boxes[0];
                 /** @var SimpleXMLElement $oXMLContainer */
@@ -732,26 +732,25 @@ class Template
      */
     public function leseLessXML($cOrdner)
     {
-        $oXML = self::$helper->getXML($cOrdner);
-        if ($oXML && isset($oXML->Lessfiles)) {
-            $oLessFiles_arr = [];
-            /** @var SimpleXMLElement $oXMLTheme */
-            foreach ($oXML->Lessfiles->THEME as $oXMLTheme) {
-                $oTheme             = new stdClass();
-                $oTheme->cName      = (string)$oXMLTheme->attributes()->Name;
-                $oTheme->oFiles_arr = [];
-                foreach ($oXMLTheme->File as $cFile) {
-                    $oThemeFiles          = new stdClass();
-                    $oThemeFiles->cPath   = (string)$cFile->attributes()->Path;
-                    $oTheme->oFiles_arr[] = $oThemeFiles;
-                }
-                $oLessFiles_arr[$oTheme->cName] = $oTheme;
-            }
-
+        $oXML           = self::$helper->getXML($cOrdner);
+        $oLessFiles_arr = [];
+        if (!$oXML || !isset($oXML->Lessfiles)) {
             return $oLessFiles_arr;
         }
+        /** @var SimpleXMLElement $oXMLTheme */
+        foreach ($oXML->Lessfiles->THEME as $oXMLTheme) {
+            $oTheme             = new stdClass();
+            $oTheme->cName      = (string)$oXMLTheme->attributes()->Name;
+            $oTheme->oFiles_arr = [];
+            foreach ($oXMLTheme->File as $cFile) {
+                $oThemeFiles          = new stdClass();
+                $oThemeFiles->cPath   = (string)$cFile->attributes()->Path;
+                $oTheme->oFiles_arr[] = $oThemeFiles;
+            }
+            $oLessFiles_arr[$oTheme->cName] = $oTheme;
+        }
 
-        return [];
+        return $oLessFiles_arr;
     }
 
     /**
@@ -838,14 +837,12 @@ class Template
             'cSektion', $cSektion,
             'cName', $cName
         );
-        if (isset($oSetting->cTemplate)) {
-            $_upd        = new stdClass();
-            $_upd->cWert = $cWert;
+        if ($oSetting !== null && isset($oSetting->cTemplate)) {
             Shop::DB()->update(
                 'ttemplateeinstellungen',
                 ['cTemplate', 'cSektion', 'cName'],
                 [$cOrdner, $cSektion, $cName],
-                $_upd
+                (object)['cWert' => $cWert]
             );
         } else {
             $_ins            = new stdClass();
@@ -951,12 +948,11 @@ class Template
             $cUrlShop_arr    = parse_url(Shop::getURL());
             $ref             = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
             $cUrlReferer_arr = parse_url($ref);
-            if ($bRedirect &&
-                $ref !== '' &&
-                (strtolower($cUrlShop_arr['host']) === strtolower($cUrlReferer_arr['host']))
+            if ($bRedirect
+                && $ref !== ''
+                && strcasecmp($cUrlShop_arr['host'], $cUrlReferer_arr['host']) === 0
             ) {
-                $cReferer = preg_replace('/&?mt=[^&]*/', '', $_SERVER['HTTP_REFERER']);
-                header('Location: ' . $cReferer);
+                header('Location: ' . preg_replace('/&?mt=[^&]*/', '', $_SERVER['HTTP_REFERER']));
                 exit;
             }
         }

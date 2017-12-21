@@ -191,12 +191,10 @@ class Trennzeichen
             $oObjAssoc_arr = [];
             if ($kSprache > 0) {
                 $oObjTMP_arr = Shop::DB()->selectAll('ttrennzeichen', 'kSprache', $kSprache, 'kTrennzeichen', 'nEinheit');
-                if (is_array($oObjTMP_arr) && count($oObjTMP_arr) > 0) {
-                    foreach ($oObjTMP_arr as $oObjTMP) {
-                        if (isset($oObjTMP->kTrennzeichen) && $oObjTMP->kTrennzeichen > 0) {
-                            $oTrennzeichen = new self($oObjTMP->kTrennzeichen);
-                            $oObjAssoc_arr[$oTrennzeichen->getEinheit()] = $oTrennzeichen;
-                        }
+                foreach ($oObjTMP_arr as $oObjTMP) {
+                    if (isset($oObjTMP->kTrennzeichen) && $oObjTMP->kTrennzeichen > 0) {
+                        $oTrennzeichen = new self($oObjTMP->kTrennzeichen);
+                        $oObjAssoc_arr[$oTrennzeichen->getEinheit()] = $oTrennzeichen;
                     }
                 }
             }

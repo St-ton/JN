@@ -56,8 +56,12 @@ class cache_advancedfile implements ICachingMethod
         if ($fileName === false || (!is_dir($dir) && mkdir($dir) === false && !is_dir($dir))) {
             return false;
         }
+        $info = pathinfo($fileName);
+        if (strpos(realpath($info['dirname']) . '/', $dir) !== 0) {
+            return false;
+        }
 
-        return (file_put_contents(
+        return file_put_contents(
                 $fileName,
                 serialize(
                     [
@@ -67,7 +71,7 @@ class cache_advancedfile implements ICachingMethod
                             : $expiration
                     ]
                 )
-            ) !== false);
+            ) !== false;
     }
 
     /**
@@ -136,12 +140,12 @@ class cache_advancedfile implements ICachingMethod
      */
     public function test()
     {
-        return $this->traitTest() &&
-            touch($this->options['cache_dir'] . 'check') &&
-            symlink($this->options['cache_dir'] . 'check', $this->options['cache_dir'] . 'link') &&
-            readlink($this->options['cache_dir'] . 'link') === $this->options['cache_dir'] . 'check' &&
-            unlink($this->options['cache_dir'] . 'link') &&
-            unlink($this->options['cache_dir'] . 'check');
+        return $this->traitTest()
+            && touch($this->options['cache_dir'] . 'check')
+            && symlink($this->options['cache_dir'] . 'check', $this->options['cache_dir'] . 'link')
+            && readlink($this->options['cache_dir'] . 'link') === $this->options['cache_dir'] . 'check'
+            && unlink($this->options['cache_dir'] . 'link')
+            && unlink($this->options['cache_dir'] . 'check');
     }
 
     /**
@@ -213,7 +217,7 @@ class cache_advancedfile implements ICachingMethod
     public function setCacheTag($tags = [], $cacheID)
     {
         $fileName = $this->getFileName($cacheID);
-        if ($fileName === false || !file_exists($fileName)) {
+        if ($fileName === false || !file_exists($fileName) || is_link($fileName)) {
             return false;
         }
         $res = false;
@@ -226,11 +230,12 @@ class cache_advancedfile implements ICachingMethod
                 $dirs = explode('_', $tag);
                 $path = $this->options['cache_dir'];
                 foreach ($dirs as $dir) {
-                    if (strlen($dir) > 0) {
-                        $path .= $dir . '/';
-                        if (!file_exists($path) && !mkdir($path) && !is_dir($path)) {
-                            return false;
-                        }
+                    if ($dir === '') {
+                        return false;
+                    }
+                    $path .= $dir . '/';
+                    if (!file_exists($path) && !mkdir($path) && !is_dir($path)) {
+                        return false;
                     }
                 }
                 if (file_exists($path . $cacheID) || !file_exists($fileName) || !symlink($fileName, $path . $cacheID)) {
@@ -255,35 +260,33 @@ class cache_advancedfile implements ICachingMethod
         if (is_string($tags)) {
             $tags = [$tags];
         }
-        if (is_array($tags)) {
-            foreach ($tags as $tag) {
-                $dirs = explode('_', $tag);
-                $path = $this->options['cache_dir'];
-                foreach ($dirs as $dir) {
-                    $path .= $dir . '/';
-                }
-                if (is_dir($path)) {
-                    $rdi = new RecursiveDirectoryIterator(
-                        $path,
-                        FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
-                    );
-                    foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
-                        $res = false;
-                        if ($value->isLink()) {
-                            //cache entries may have multiple tags - so check if the real entry still exists
-                            if (($target = readlink($value)) !== false) {
-                                if (is_file($target)) {
-                                    //delete real cache entry
-                                    $res = unlink($target);
-                                }
+        foreach ($tags as $tag) {
+            $dirs = explode('_', $tag);
+            $path = $this->options['cache_dir'];
+            foreach ($dirs as $dir) {
+                $path .= $dir . '/';
+            }
+            if (is_dir($path)) {
+                $rdi = new RecursiveDirectoryIterator(
+                    $path,
+                    FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+                );
+                foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
+                    $res = false;
+                    if ($value->isLink()) {
+                        //cache entries may have multiple tags - so check if the real entry still exists
+                        if (($target = readlink($value)) !== false) {
+                            if (is_file($target)) {
+                                //delete real cache entry
+                                $res = unlink($target);
                             }
-                            //delete symlink to the entry
-                            unlink($value);
                         }
-                        if ($res === true) {
-                            //only count cache files, not symlinks
-                            ++$deleted;
-                        }
+                        // delete symlink to the entry
+                        unlink($value);
+                    }
+                    if ($res === true) {
+                        // only count cache files, not symlinks
+                        ++$deleted;
                     }
                 }
             }
@@ -335,8 +338,7 @@ class cache_advancedfile implements ICachingMethod
                     }
                 }
             }
-
-            //remove duplicate keys from array and return it
+            // remove duplicate keys from array and return it
             return array_unique($res);
         }
 

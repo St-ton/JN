@@ -37,7 +37,7 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
  * @param object   $NaviFilter
  * @param bool     $bExtern
  * @param stdClass $oSuchergebnisse
- * @return array
+ * @return stdClass
  * @deprecated since 4.07
  */
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)
@@ -331,7 +331,7 @@ function checkMerkmalWertVorhanden($oMerkmalauswahl_arr, $kMerkmalWert)
 function gibArtikelsortierung($NaviFilter)
 {
     trigger_error('filter_inc.php: calling gibArtikelsortierung() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getProductFilter()->getOrder()->orderBy;
+    return Shop::getProductFilter()->getFilterSQL()->getOrder()->orderBy;
 }
 
 /**
@@ -356,7 +356,7 @@ function mappeUsersortierung($nUsersortierung)
 function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonical = false)
 {
     trigger_error('filter_inc.php: calling gibNaviURL() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getProductFilter()->getURL($oZusatzFilter, $bCanonical);
+    return Shop::getProductFilter()->getFilterURL()->getURL($oZusatzFilter, $bCanonical);
 }
 
 /**
@@ -414,7 +414,7 @@ function gibHeaderAnzeige()
 function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling erstelleFilterLoesenURLs() is deprecated.', E_USER_DEPRECATED);
-    Shop::getProductFilter()->createUnsetFilterURLs($oSuchergebnisse);
+    Shop::getProductFilter()->getFilterURL()->createUnsetFilterURLs(new stdClass(), $oSuchergebnisse);
 }
 
 /**
@@ -439,8 +439,7 @@ function truncateMetaTitle($cTitle)
 function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
     trigger_error('filter_inc.php: calling gibNaviMetaTitle() is deprecated.', E_USER_DEPRECATED);
-    global $oMeta;
-    return (new Metadata(Shop::getProductFilter()))->getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
+    return (new Metadata(Shop::getProductFilter()))->generateMetaTitle($oSuchergebnisse, $GlobaleMetaAngaben_arr);
 }
 
 /**
@@ -454,8 +453,7 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
 function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
     trigger_error('filter_inc.php: calling gibNaviMetaDescription() is deprecated.', E_USER_DEPRECATED);
-    global $oMeta;
-    return (new Metadata(Shop::getProductFilter()))->getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
+    return (new Metadata(Shop::getProductFilter()))->generateMetaDescription($oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
 }
 
 /**
@@ -468,8 +466,7 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
 function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr = [])
 {
     trigger_error('filter_inc.php: calling gibNaviMetaKeywords() is deprecated.', E_USER_DEPRECATED);
-    global $oMeta;
-    return (new Metadata(Shop::getProductFilter()))->getMetaKeywords($oMeta, $oArtikel_arr);
+    return (new Metadata(Shop::getProductFilter()))->generateMetaKeywords($oArtikel_arr);
 }
 
 /**
@@ -541,6 +538,10 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
 }
 
 /**
+ * @param stdClass $oSuchCache
+ * @param array    $cSuchspalten_arr
+ * @param array    $cSuch_arr
+ * @param int      $nLimit
  * @throws Exception
  * @deprecated since 4.07
  */

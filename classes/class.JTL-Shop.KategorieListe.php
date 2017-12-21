@@ -421,7 +421,7 @@ class KategorieListe
             self::setCategoryList($categoryList, $kKundengruppe, $kSprache);
         }
 
-        return (!empty($oKategorie_arr)) ? $oKategorie_arr : [];
+        return !empty($oKategorie_arr) ? $oKategorie_arr : [];
     }
 
     /**
@@ -496,7 +496,7 @@ class KategorieListe
      */
     public function artikelVorhanden($kKategorie, $kKundengruppe)
     {
-        $lagerfilter   = gibLagerfilter();
+        $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $kKategorie    = (int)$kKategorie;
         $kKundengruppe = (int)$kKundengruppe;
         $obj           = Shop::DB()->query(

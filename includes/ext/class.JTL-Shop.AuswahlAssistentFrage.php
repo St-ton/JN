@@ -201,9 +201,10 @@ class AuswahlAssistentFrage
      */
     public static function deleteQuestion($cParam_arr)
     {
-        if (isset($cParam_arr['kAuswahlAssistentFrage_arr']) &&
-            is_array($cParam_arr['kAuswahlAssistentFrage_arr']) &&
-            count($cParam_arr['kAuswahlAssistentFrage_arr']) > 0) {
+        if (isset($cParam_arr['kAuswahlAssistentFrage_arr'])
+            && is_array($cParam_arr['kAuswahlAssistentFrage_arr'])
+            && count($cParam_arr['kAuswahlAssistentFrage_arr']) > 0
+        ) {
             foreach ($cParam_arr['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
                 Shop::DB()->delete(
                     'tauswahlassistentfrage',
@@ -286,10 +287,9 @@ class AuswahlAssistentFrage
     public static function getMerkmal($kMerkmal, $bMMW = false)
     {
         $kMerkmal = (int)$kMerkmal;
-        if ($kMerkmal > 0) {
-            return new Merkmal($kMerkmal, $bMMW);
-        }
 
-        return new stdClass();
+        return $kMerkmal > 0
+            ? new Merkmal($kMerkmal, $bMMW)
+            : new stdClass();
     }
 }

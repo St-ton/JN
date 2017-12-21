@@ -28,7 +28,6 @@ $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
 $cHinweis      = '';
 $hinweis       = '';
 $cFehler       = '';
-
 if (verifyGPCDataInteger('wlidmsg') > 0) {
     $cHinweis .= mappeWunschlisteMSG(verifyGPCDataInteger('wlidmsg'));
 }
@@ -59,7 +58,6 @@ if (isset($_POST['kUpload'])
     UploadDatei::send_file_to_browser(
         PFAD_UPLOADS . $oUploadDatei->cPfad,
         'application/octet-stream',
-        true,
         $oUploadDatei->cName
     );
 }
@@ -240,7 +238,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         if ($kWunschliste) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-            if (!empty($oWunschliste->kKunde) && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
+            if (!empty($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
                 $step                    = 'wunschliste anzeigen';
                 $cHinweis               .= wunschlisteAktualisieren($kWunschliste);
                 $_SESSION['Wunschliste'] = new Wunschliste(
@@ -325,7 +323,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);
 
-            if ($oWunschliste->kKunde > 0 && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
+            if ($oWunschliste->kKunde > 0 && $oWunschliste->kKunde === Session::Customer()->getID()) {
                 $step = 'wunschliste anzeigen';
                 $oWunschliste->entferneAllePos();
                 if ($_SESSION['Wunschliste']->kWunschliste == $oWunschliste->kWunschliste) {
@@ -348,7 +346,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $kWunschliste = verifyGPCDataInteger('wl');
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);
-            if ($oWunschliste->kKunde && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
+            if ($oWunschliste->kKunde && $oWunschliste->kKunde === Session::Customer()->getID()) {
                 $step = 'wunschliste anzeigen';
                 $oWunschlistePosSuche_arr          = $oWunschliste->sucheInWunschliste($cSuche);
                 $oWunschliste->CWunschlistePos_arr = $oWunschlistePosSuche_arr;
@@ -364,13 +362,13 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
         }
     } elseif (verifyGPCDataInteger('wl') > 0 && verifyGPCDataInteger('wlvm') === 0) { // Wunschliste anzeigen
-        $step         = (!empty($_SESSION['Kunde']->kKunde)) ? 'mein Konto' : 'login';
+        $step         = !empty($_SESSION['Kunde']->kKunde) ? 'mein Konto' : 'login';
         $kWunschliste = verifyGPCDataInteger('wl');
         if ($kWunschliste > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', (int)$kWunschliste);
             if (isset($_SESSION['Kunde']->kKunde, $oWunschliste->kKunde)
-                && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde
+                && (int)$oWunschliste->kKunde === Session::Customer()->getID()
             ) {
                 // Wurde nOeffentlich verändert
                 if (isset($_REQUEST['nstd']) && validateToken()) {
@@ -495,10 +493,10 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             // $step = 'mein Konto';
             $cHinweis .= Shop::Lang()->get('dataEditSuccessful', 'login');
             setzeSteuersaetze();
-            if (isset($_SESSION['Warenkorb']->kWarenkorb) &&
-                $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+            if (isset($_SESSION['Warenkorb']->kWarenkorb)
+                && Session::Cart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
             ) {
-                $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized();
+                Session::Cart()->gibGesamtsummeWarenLocalized();
             }
         } else {
             Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
@@ -518,8 +516,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         ) {
             $cFehler .= Shop::Lang()->get('changepasswordPassesNotEqual', 'login');
         }
-        if (isset($_POST['neuesPasswort1']) &&
-            strlen($_POST['neuesPasswort1']) < $Einstellungen['kunden']['kundenregistrierung_passwortlaenge']
+        if (isset($_POST['neuesPasswort1'])
+            && strlen($_POST['neuesPasswort1']) < $Einstellungen['kunden']['kundenregistrierung_passwortlaenge']
         ) {
             $cFehler .= Shop::Lang()->get('changepasswordPassTooShort', 'login') . ' ' .
                 lang_passwortlaenge($Einstellungen['kunden']['kundenregistrierung_passwortlaenge']);
@@ -569,7 +567,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 
         if (isset($bestellung->kKunde, $_SESSION['Kunde']->kKunde)
             && (int)$bestellung->kKunde > 0
-            && $bestellung->kKunde == $_SESSION['Kunde']->kKunde
+            && $bestellung->kKunde == Session::Customer()->getID()
         ) {
             // Download wurde angefordert?
             if (verifyGPCDataInteger('dl') > 0) {
@@ -623,11 +621,11 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                         AND kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
             );
 
-            if (isset($oBestellung->countBestellung) && $oBestellung->countBestellung == 0) {
+            if (isset($oBestellung->countBestellung) && (int)$oBestellung->countBestellung === 0) {
                 // Keine Bestellungen die noch nicht verschickt oder storniert wurden mehr vorhanden - die Kundendaten werden gelöscht
-                $cText = utf8_decode('Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
+                $cText = 'Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
                     $_SESSION['Kunde']->cNachname . ' (' . $_SESSION['Kunde']->kKunde . ') hat am ' . date('d.m.Y') .
-                    ' um ' . date('H:m:i') . ' Uhr sein Kundenkonto gelöscht. Es gab keine offenen Bestellungen mehr');
+                    ' um ' . date('H:m:i') . ' Uhr sein Kundenkonto gelöscht. Es gab keine offenen Bestellungen mehr';
 
                 Shop::DB()->delete('tlieferadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                 Shop::DB()->delete('trechnungsadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
@@ -635,11 +633,11 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 Shop::DB()->delete('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
             } else {
                 // Es gibt noch Bestellungen, die noch nicht versandt oder storniert wurden - der Account wird in einen Gastzugang umgewandelt
-                $cText = utf8_decode('Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
+                $cText = 'Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
                     $_SESSION['Kunde']->cNachname . ' (' . $_SESSION['Kunde']->kKunde . ') hat am ' . date('d.m.Y') .
                     ' um ' . date('H:m:i') . ' Uhr sein Kundenkonto gelöscht. Es gab noch ' .
                     $oBestellung->countBestellung . ' offene Bestellungen.' .
-                    ' Der Account wurde deshalb in einen temporären Gastzugang umgewandelt.');
+                    ' Der Account wurde deshalb in einen temporären Gastzugang umgewandelt.';
 
                 Shop::DB()->update('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde, (object)[
                     'cPasswort'    => '',
@@ -682,9 +680,9 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             Shop::DB()->query(
                 "DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
                     FROM twarenkorbpers
-                    LEFT JOIN twarenkorbperspos 
+                    LEFT JOIN twarenkorbperspos
                         ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-                    LEFT JOIN twarenkorbpersposeigenschaft 
+                    LEFT JOIN twarenkorbpersposeigenschaft
                         ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
                     WHERE twarenkorbpers.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
             );
@@ -836,9 +834,11 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
                 if ($oKundenfeld->cTyp === 'auswahl') {
                     $oKundenfeld_arr[$i]->oKundenfeldWert_arr = Shop::DB()->selectAll(
-                        'tkundenfeldwert',
-                        'kKundenfeld',
-                        (int)$oKundenfeld->kKundenfeld
+                          'tkundenfeldwert'
+                        , 'kKundenfeld'
+                        , (int)$oKundenfeld->kKundenfeld
+                        , '*'
+                        , '`kKundenfeld`, `nSort`, `kKundenfeldWert` ASC'
                     );
                 }
             }

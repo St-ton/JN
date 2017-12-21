@@ -77,7 +77,6 @@ $shop = Shop::getInstance();
 require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES_LIBS . 'password_compat/password.php';
 require_once PFAD_ROOT . PFAD_INSTALL . PFAD_INCLUDES . 'install_inc.php';
 
 
@@ -227,4 +226,3 @@ $smarty->assign('cHinweis', $cHinweis)
        ->assign('PFAD_ADMIN_TEMPLATE', PFAD_ADMIN . PFAD_TEMPLATES . 'bootstrap/')
        ->assign('oTests', $vTests)
        ->display('install.tpl');
-

@@ -124,7 +124,7 @@ trait JTLCacheTrait
      */
     public function must_be_serialized($data)
     {
-        return (is_object($data) || is_array($data));
+        return is_object($data) || is_array($data);
     }
 
     /**
@@ -141,26 +141,17 @@ trait JTLCacheTrait
         }
         $this->journalHasChanged = true;
         if (is_string($tags)) {
-            if (isset($this->journal[$tags])) {
-                if (!in_array($cacheID, $this->journal[$tags], true)) {
-                    $this->journal[$tags][] = $cacheID;
+            $tags = [$tags];
+        }
+        foreach ($tags as $tag) {
+            if (isset($this->journal[$tag])) {
+                if (!in_array($cacheID, $this->journal[$tag], true)) {
+                    $this->journal[$tag][] = $cacheID;
                 }
             } else {
-                $journalEntry         = [];
-                $journalEntry[]       = $cacheID;
-                $this->journal[$tags] = $journalEntry;
-            }
-        } elseif (is_array($tags)) {
-            foreach ($tags as $tag) {
-                if (isset($this->journal[$tag])) {
-                    if (!in_array($cacheID, $this->journal[$tag], true)) {
-                        $this->journal[$tag][] = $cacheID;
-                    }
-                } else {
-                    $journalEntry        = [];
-                    $journalEntry[]      = $cacheID;
-                    $this->journal[$tag] = $journalEntry;
-                }
+                $journalEntry        = [];
+                $journalEntry[]      = $cacheID;
+                $this->journal[$tag] = $journalEntry;
             }
         }
 
@@ -175,7 +166,7 @@ trait JTLCacheTrait
      */
     public function getKeysByTag($tags)
     {
-        //load journal from extra cache
+        // load journal from extra cache
         $this->getJournal();
         if (is_string($tags)) {
             return isset($this->journal[$tags])
@@ -191,8 +182,7 @@ trait JTLCacheTrait
                     }
                 }
             }
-
-            //remove duplicate keys from array and return it
+            // remove duplicate keys from array and return it
             return array_unique($res);
         }
 
@@ -289,8 +279,8 @@ trait JTLCacheTrait
     public function getJournal()
     {
         if ($this->journal === null) {
-            $this->journal = ($journal = $this->load($this->journalID)) !== false
-                ? $journal
+            $this->journal = ($j = $this->load($this->journalID)) !== false
+                ? $j
                 : [];
         }
 

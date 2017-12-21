@@ -26,7 +26,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
 
 $shop = Shop::getInstance();
 error_reporting(SYNC_LOG_LEVEL);
@@ -328,7 +327,7 @@ function buildAttributes(&$arr, $cExclude_arr = [])
 function zipRedirect($zip, $xml_obj)
 {
     $xmlfile = fopen(PFAD_SYNC_TMP . FILENAME_XML, 'w');
-    fwrite($xmlfile, strtr(XML_serialize($xml_obj), "\0", ' '));
+    fwrite($xmlfile, strtr(StringHandler::convertISO(XML_serialize($xml_obj)), "\0", ' '));
     fclose($xmlfile);
     if (file_exists(PFAD_SYNC_TMP . FILENAME_XML)) {
         if (class_exists('ZipArchive')) {
@@ -455,11 +454,11 @@ function JTLMapArr($oXmlTree, $cMapping_arr)
 {
     $oMapped = new stdClass();
     foreach ($oXmlTree->Attributes() as $cKey => $cVal) {
-        $oMapped->{$cKey} = utf8_decode((string)$cVal);
+        $oMapped->{$cKey} = (string)$cVal;
     }
     foreach ($cMapping_arr as $cMap) {
         if (isset($oXmlTree->{$cMap})) {
-            $oMapped->{$cMap} = utf8_decode((string)$oXmlTree->{$cMap});
+            $oMapped->{$cMap} = (string)$oXmlTree->{$cMap};
         }
     }
 
@@ -551,13 +550,9 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
         );
         if (is_array($Benachrichtigungen) && count($Benachrichtigungen) > 0) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
             require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kampagne.php';
 
-            $Artikel = new Artikel();
-            $Artikel->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
+            $Artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
             // Kampagne
             $oKampagne = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
             if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
@@ -674,10 +669,10 @@ function translateError($cMessage)
 {
     if (preg_match('/Maximum execution time of (\d+) second.? exceeded/', $cMessage, $cMatch_arr)) {
         $nSeconds = (int)$cMatch_arr[1];
-        $cMessage = utf8_decode("Maximale Ausführungszeit von $nSeconds Sekunden überschritten");
+        $cMessage = "Maximale Ausführungszeit von $nSeconds Sekunden überschritten";
     } elseif (preg_match("/Allowed memory size of (\d+) bytes exhausted/", $cMessage, $cMatch_arr)) {
         $nLimit   = (int)$cMatch_arr[1];
-        $cMessage = utf8_decode("Erlaubte Speichergröße von $nLimit Bytes erschöpft");
+        $cMessage = "Erlaubte Speichergröße von $nLimit Bytes erschöpft";
     }
 
     return $cMessage;
@@ -822,7 +817,6 @@ function checkDbeSXmlRedirect($cSeoOld, $cSeoNew)
 {
     // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
     if ($cSeoOld !== $cSeoNew && strlen($cSeoOld) > 0 && strlen($cSeoNew) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Redirect.php';
         $oRedirect = new Redirect();
         $xPath_arr = parse_url(Shop::getURL());
         if (isset($xPath_arr['path'])) {
@@ -1100,7 +1094,7 @@ function syncException($msg, $wawiExceptionCode = null)
 {
     $output = '';
     if ($wawiExceptionCode !== null) {
-        $output .= $wawiExceptionCode . '\n';
+        $output .= $wawiExceptionCode . "\n";
     }
     $output .= $msg;
     die(mb_convert_encoding($output, 'ISO-8859-1', 'auto'));

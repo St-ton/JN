@@ -70,14 +70,14 @@ class AuswahlAssistent
     private $kSelection_arr = [];
 
     /**
-     * @var stdClass
+     * @var ProductFilter
      */
     private $oNaviFilter;
 
     /**
      * @var array
      */
-    private $config = [];
+    private $config;
 
     /**
      * AuswahlAssistent constructor.
@@ -95,7 +95,7 @@ class AuswahlAssistent
         $this->config = Shop::getSettings(CONF_AUSWAHLASSISTENT)['auswahlassistent'];
 
         if ($kSprache === 0) {
-            $kSprache = Shop::getLanguage();
+            $kSprache = Shop::getLanguageID();
         }
 
         if ($kKey > 0 && $kSprache > 0 && !empty($cKey) && $oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
@@ -201,8 +201,8 @@ class AuswahlAssistent
 
         foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
             /** @var FilterItemAttribute $oMerkmalFilter */
-            if (array_key_exists((int)$oMerkmalFilter->kMerkmal, $this->oFrage_assoc)) {
-                $oFrage                    = $this->oFrage_assoc[(int)$oMerkmalFilter->kMerkmal];
+            if (array_key_exists($oMerkmalFilter->getValue(), $this->oFrage_assoc)) {
+                $oFrage                    = $this->oFrage_assoc[$oMerkmalFilter->getValue()];
                 $oFrage->oWert_arr         = $oMerkmalFilter->getOptions();
                 $oFrage->nTotalResultCount = 0;
 
@@ -211,8 +211,6 @@ class AuswahlAssistent
                     $oFrage->oMerkmalWert_arr = $oFrage->oWert_arr;
                 }
                 foreach ($oMerkmalFilter->getOptions() as $oWert) {
-                    $oWert->kMerkmalWert                       = (int)$oWert->kMerkmalWert;
-                    $oWert->nAnzahl                            = (int)$oWert->nAnzahl;
                     $oFrage->nTotalResultCount                += $oWert->nAnzahl;
                     $oFrage->oWert_assoc[$oWert->kMerkmalWert] = $oWert;
                 }
@@ -386,32 +384,34 @@ class AuswahlAssistent
      * @param int       $kKey
      * @param int       $kSprache
      * @param JTLSmarty $smarty
-     * @param array     $nSelection_arr
+     * @param array     $selected
+     * @param ProductFilter|null $pf
      * @return self|null
      */
-    public static function startIfRequired($cKey, $kKey, $kSprache = 0, $smarty = null, $nSelection_arr = [])
+    public static function startIfRequired($cKey, $kKey, $kSprache = 0, $smarty = null, $selected = [], $pf = null)
     {
         // only start if enabled in the backend settings
-        if (self::isRequired()) {
-            $nAnzahlFilter = isset($GLOBALS['NaviFilter']) ? (int)$GLOBALS['NaviFilter']->getFilterCount() : 0;
-            // only start if no filters are already set
-            if ($nAnzahlFilter === 0) {
-                $AWA = new self($cKey, $kKey, $kSprache, true);
-
-                // only start if the respective selection wizard group is enabled (active)
-                if ($AWA->isActive()) {
-                    foreach ($nSelection_arr as $kMerkmalWert) {
-                        $AWA->setNextSelection($kMerkmalWert);
-                    }
-
-                    $AWA->filter();
-
-                    if ($smarty !== null) {
-                        $smarty->assign('AWA', $AWA);
-                    }
-
-                    return $AWA;
+        if (!self::isRequired()) {
+            return null;
+        }
+        $productFilter = $pf !== null ? $pf : $GLOBALS['NaviFilter'];
+        $filterCount   = $productFilter !== null ? (int)$GLOBALS['NaviFilter']->getFilterCount() : 0;
+        // only start if no filters are already set
+        if ($filterCount === 0) {
+            $AWA = new self($cKey, $kKey, $kSprache, true);
+            // only start if the respective selection wizard group is enabled (active)
+            if ($AWA->isActive()) {
+                foreach ($selected as $kMerkmalWert) {
+                    $AWA->setNextSelection($kMerkmalWert);
                 }
+
+                $AWA->filter();
+
+                if ($smarty !== null) {
+                    $smarty->assign('AWA', $AWA);
+                }
+
+                return $AWA;
             }
         }
 

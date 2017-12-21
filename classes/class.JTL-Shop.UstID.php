@@ -7,6 +7,7 @@ require_once PFAD_ROOT . PFAD_DBES . 'xml_tools.php';
 
 /**
  * Class UstID
+ * @deprecated since 4.07 - we're now using the VIES-system of the European Commission
  */
 class UstID
 {
@@ -99,12 +100,12 @@ class UstID
                     // Uhrzeit pruefen da die API Ruhezeit hat -.-
                     // Taeglich von 5 Uhr - 23 Uhr
                     if ((int)date('H') >= 5 && (int)date('H') < 23) {
-                        $cURL = 'http://evatr.bff-online.de/evatrRPC?UstId_1=' . $this->urlencode_special($this->cUstId_1) . 
-                            '&UstId_2=' . $this->urlencode_special($this->cUstId_2) . 
-                            '&Firmenname=' . $this->urlencode_special($this->cFirmenname) . 
-                            '&Ort=' . $this->urlencode_special($this->cOrt) . 
-                            '&PLZ=' . $this->urlencode_special($this->cPLZ) . 
-                            '&Strasse=' . $this->urlencode_special($this->cStrasse . ' ' . $this->cHausnummer) . 
+                        $cURL = 'https://evatr.bff-online.de/evatrRPC?UstId_1=' . $this->urlencode_special($this->cUstId_1) .
+                            '&UstId_2=' . $this->urlencode_special($this->cUstId_2) .
+                            '&Firmenname=' . $this->urlencode_special($this->cFirmenname) .
+                            '&Ort=' . $this->urlencode_special($this->cOrt) .
+                            '&PLZ=' . $this->urlencode_special($this->cPLZ) .
+                            '&Strasse=' . $this->urlencode_special($this->cStrasse . ' ' . $this->cHausnummer) .
                             '&Druck=' . $this->urlencode_special($this->cDruck);
                         $xml = file_get_contents(str_replace(' ', '%20', $cURL));
                         $this->cAntwort = XML_unserialize($xml);
@@ -121,7 +122,7 @@ class UstID
                         if ($nFehlerCode > 200) {
                             Jtllog::writeLog("Ust-ID-Pr&uuml;fung ErrorCode {$nFehlerCode} (" . $this->cAntwortInfo_arr['cFehlerNachricht'] . ")\n <br>Anfrage-URL: " . htmlentities($cURL), JTLLOG_LEVEL_DEBUG);
                         }
-                        
+
                         return $nFehlerCode;
                     }
                     $this->mappeFehlerCode(999);
@@ -220,7 +221,6 @@ class UstID
                 $this->cAntwortInfo_arr['cFehlerNachricht'] = 'Eine Bearbeitung Ihrer Anfrage ist zurzeit nicht möglich. Bitte versuchen Sie es später noch einmal.';
                 break;
         }
-        $this->cAntwortInfo_arr['cFehlerNachricht'] = utf8_decode($this->cAntwortInfo_arr['cFehlerNachricht']);
 
         return $this;
     }
@@ -445,11 +445,11 @@ class UstID
 
         return $oReturn;
     }
-    
+
     /**
-     * Trims and encodes parameter for use with XML-RPC-API. 
+     * Trims and encodes parameter for use with XML-RPC-API.
      * Requirements for special chars: http://evatr.bff-online.de/eVatR/xmlrpc/faq_xmlrpc#f11
-     * 
+     *
      * @param string $param
      * @return string - urlencoded param with some specials
      */

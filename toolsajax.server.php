@@ -235,7 +235,7 @@ function loescheWarenkorbPosAjax($nPos)
  * @deprecated since 4.05
  * @param int       $kArtikel
  * @param int|float $anzahl
- * @param string    $oEigenschaftwerte_arr
+ * @param string|array    $oEigenschaftwerte_arr
  * @return xajaxResponse
  */
 function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
@@ -245,7 +245,6 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
     require_once PFAD_ROOT . PFAD_INCLUDES . 'boxen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $oResponse           = new stdClass();
     $objResponse         = new xajaxResponse();
     $GLOBALS['oSprache'] = Sprache::getInstance();
@@ -288,16 +287,16 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
 
             return $objResponse;
         }
-        $_SESSION['Warenkorb']->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+        Session::Cart()->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr)
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                       ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
 
         unset(
             $_SESSION['VersandKupon'],
@@ -313,12 +312,13 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
         if (!isset($_POST['login'])) {
             fuegeEinInWarenkorbPers($kArtikel, $anzahl, $oEigenschaftwerte_arr);
         }
+        $cart        = Session::Cart();
         $boxes       = Boxen::getInstance();
         $pageType    = (Shop::getPageType() !== null) ? Shop::getPageType() : PAGE_UNBEKANNT;
         $boxesToShow = $boxes->build($pageType, true)->render();
         $smarty->assign('Boxen', $boxesToShow);
-        $warensumme[0] = gibPreisStringLocalized($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
-        $warensumme[1] = gibPreisStringLocalized($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
+        $warensumme[0] = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
+        $warensumme[1] = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
         $smarty->assign('WarenkorbWarensumme', $warensumme);
 
         $kKundengruppe = Session::CustomerGroup()->getID();
@@ -329,7 +329,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
 
         $smarty->assign('WarenkorbVersandkostenfreiHinweis',
             baueVersandkostenfreiString(gibVersandkostenfreiAb($kKundengruppe),
-                $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
+                $cart->gibGesamtsummeWarenExt(
                     [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
                     true)
             ))
@@ -341,8 +341,8 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
                ->assign('Xselling', $oXSelling);
 
         $oResponse->nType           = 2;
-        $oResponse->cWarenkorbText  = utf8_encode(lang_warenkorb_warenkorbEnthaeltXArtikel($_SESSION['Warenkorb']));
-        $oResponse->cWarenkorbLabel = utf8_encode(lang_warenkorb_warenkorbLabel($_SESSION['Warenkorb']));
+        $oResponse->cWarenkorbText  = utf8_encode(lang_warenkorb_warenkorbEnthaeltXArtikel($cart));
+        $oResponse->cWarenkorbLabel = utf8_encode(lang_warenkorb_warenkorbLabel($cart));
         $oResponse->cPopup          = utf8_encode($smarty->fetch('productdetails/pushed.tpl'));
         $oResponse->cWarenkorbMini  = utf8_encode($smarty->fetch('basket/cart_dropdown.tpl'));
         $oResponse->oArtikel        = utf8_convert_recursive($Artikel, true);
@@ -662,7 +662,6 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
             $oArtikelTMP = gibArtikelByVariationen($oVaterArtikel->kArtikel, $kVariationKombi_arr);
             if (isset($oArtikelTMP->kArtikel) && $oArtikelTMP->kArtikel > 0) {
                 require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
-                require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
                 $bKindVorhanden = true;
                 // Bewertungsguthaben
                 $fBelohnung = 0.0;
@@ -1104,7 +1103,7 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
         }
         $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
         $NaviFilter                          = Shop::buildProductFilter($cParameter_arr, $NaviFilter);
-        $objResponse->script("window.location.href='" . StringHandler::htmlentitydecode($NaviFilter->getURL()) . "';");
+        $objResponse->script("window.location.href='" . StringHandler::htmlentitydecode($NaviFilter->getFilterURL()->getURL()) . "';");
         unset($_SESSION['AuswahlAssistent']);
     }
 
@@ -1315,8 +1314,8 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
             }
         }
         // Alle Variationen ausgewaehlt? => Ajax Call und Kind laden
-        if (count($oParam_arr) === 0 &&
-            $_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl ==
+        if (count($oParam_arr) === 0
+            && $_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl ==
                 count($_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr)
         ) {
             $objResponse->script("doSwitchVarkombi('{$kEigenschaft}', '{$kEigenschaftWert}');");

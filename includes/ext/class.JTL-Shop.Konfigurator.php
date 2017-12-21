@@ -21,7 +21,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kArtikel
          * @param int $kSprache
          * @return array
-         * @access public
          */
         public static function getKonfig($kArtikel, $kSprache = 0)
         {
@@ -40,7 +39,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 return [];
             }
             if (!$kSprache) {
-                $kSprache = Shop::getLanguage();
+                $kSprache = Shop::getLanguageID();
             }
             foreach ($oGruppen_arr as &$oGruppe) {
                 $oGruppe = new Konfiggruppe($oGruppe->kKonfigGruppe, $kSprache);
@@ -65,7 +64,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                      ORDER BY tartikelkonfiggruppe.nSort ASC", 2
             );
 
-            return (is_array($oGruppen_arr) && count($oGruppen_arr) > 0);
+            return is_array($oGruppen_arr) && count($oGruppen_arr) > 0;
         }
 
         /**
@@ -94,7 +93,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $beDeletednPos_arr = [];
                 foreach ($oBasket->PositionenArr as $nPos => $oPosition) {
                     $bDeleted = false;
-                    if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+                    if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                         // Konfigvater
                         if ($oPosition->cUnique && $oPosition->kKonfigitem == 0) {
                             $oKonfigitem_arr = [];
@@ -102,8 +101,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                             // Alle Kinder suchen
                             foreach ($oBasket->PositionenArr as $oChildPosition) {
                                 if ($oChildPosition->cUnique &&
-                                    $oChildPosition->cUnique == $oPosition->cUnique &&
-                                    $oChildPosition->kKonfigitem > 0
+                                    $oChildPosition->cUnique === $oPosition->cUnique
+                                    && $oChildPosition->kKonfigitem > 0
                                 ) {
                                     $oKonfigitem_arr[] = new Konfigitem($oChildPosition->kKonfigitem);
                                 }
@@ -129,7 +128,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                             // $Warenkorbhinweise
                             $cISO = $_SESSION['cISOSprache'];
                             Jtllog::writeLog('Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
-                                $oPosition->cName[$cISO] . '(' . $oPosition->kArtikel . ')', JTLLOG_LEVEL_ERROR);
+                                $oPosition->cName[$cISO] . '(' . $oPosition->kArtikel . ')');
                         }
                     }
                 }
@@ -145,7 +144,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public static function validateBasket($kArtikel, $oKonfigitem_arr)
         {
             if ((int)$kArtikel === 0 || !is_array($oKonfigitem_arr)) {
-                Jtllog::writeLog(utf8_decode('Validierung der Konfiguration fehlgeschlagen - Ungültige Daten'), JTLLOG_LEVEL_ERROR);
+                Jtllog::writeLog('Validierung der Konfiguration fehlgeschlagen - Ungültige Daten');
 
                 return false;
             }
@@ -204,7 +203,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     "Negative Konfigurationssumme für Artikel '%s' (Art.Nr.: %s, Netto: %s) - Vorgang wurde abgebrochen",
                     $oArtikel->cName, $oArtikel->cArtNr, gibPreisStringLocalized($fFinalPrice)
                 );
-                Jtllog::writeLog($cError, JTLLOG_LEVEL_ERROR);
+                Jtllog::writeLog($cError);
 
                 return false;
             }
@@ -220,11 +219,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         private static function langComponent($bPlural = false, $bSpace = true)
         {
             $cComponent = $bSpace ? ' ' : '';
-            $cComponent .= $bPlural
-                ? Shop::Lang()->get('configComponents', 'productDetails')
-                : Shop::Lang()->get('configComponent', 'productDetails');
 
-            return $cComponent;
+            return $cComponent . Shop::Lang()->get($bPlural ? 'configComponents' : 'configComponent', 'productDetails');
         }
     }
 }

@@ -11,25 +11,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
     class Konfigitempreis
     {
         /**
-         * @access protected
          * @var int
          */
         protected $kKonfigitem;
 
         /**
-         * @access protected
          * @var int
          */
         protected $kKundengruppe;
 
         /**
-         * @access protected
          * @var int
          */
         protected $kSteuerklasse;
 
         /**
-         * @access protected
          * @var float
          */
         protected $fPreis;
@@ -44,7 +40,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param int $kKonfigitem
          * @param int $kKundengruppe
-         * @access public
          */
         public function __construct($kKonfigitem = 0, $kKundengruppe = 0)
         {
@@ -58,7 +53,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param int $kKonfigitem
          * @param int $kKundengruppe
-         * @access private
          */
         private function loadFromDB($kKonfigitem = 0, $kKundengruppe = 0)
         {
@@ -90,7 +84,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param bool $bPrim - Controls the return of the method
          * @return bool|int
-         * @access public
          */
         public function save($bPrim = true)
         {
@@ -116,7 +109,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Update the class in the database
          *
          * @return int
-         * @access public
          */
         public function update()
         {
@@ -137,7 +129,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Delete the class in the database
          *
          * @return int
-         * @access public
          */
         public function delete()
         {
@@ -149,9 +140,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the kKonfigitem
-         *
-         * @access public
          * @param int $kKonfigitem
          * @return $this
          */
@@ -163,9 +151,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the kKundengruppe
-         *
-         * @access public
          * @param int $kKundengruppe
          * @return $this
          */
@@ -177,9 +162,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the kSteuerklasse
-         *
-         * @access public
          * @param int $kSteuerklasse
          * @return $this
          */
@@ -191,9 +173,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the fPreis
-         *
-         * @access public
          * @param float $fPreis
          * @return $this
          */
@@ -205,9 +184,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the kKonfigitem
-         *
-         * @access public
          * @return int
          */
         public function getKonfigitem()
@@ -216,9 +192,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the kKundengruppe
-         *
-         * @access public
          * @return int
          */
         public function getKundengruppe()
@@ -227,9 +200,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the kSteuerklasse
-         *
-         * @access public
          * @return int
          */
         public function getSteuerklasse()
@@ -238,9 +208,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the fPreis
          * @param bool $bConvertCurrency
-         * @access public
          * @return float
          */
         public function getPreis($bConvertCurrency = false)

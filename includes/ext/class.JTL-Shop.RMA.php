@@ -11,45 +11,35 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
     /**
      * Class RMA
-     *
-     * @access public
-     * @author
-     * @copyright
      */
     class RMA
     {
         /**
-         * @access public
          * @var int
          */
         public $kRMA;
 
         /**
-         * @access public
          * @var int
          */
         public $kKunde;
 
         /**
-         * @access public
          * @var int
          */
         public $kRMAStatus;
 
         /**
-         * @access public
          * @var string
          */
         public $cRMANumber;
 
         /**
-         * @access public
          * @var string
          */
         public $dErstellt;
 
         /**
-         * @access public
          * @var array
          */
         public $oRMAArtikel_arr;
@@ -70,10 +60,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         /**
          * Loads database member into class member
          *
-         * @param $kRMA
-         * @param $bCustomer
-         * @param $bRMAArtikel
-         * @param $kSprache
+         * @param int  $kRMA
+         * @param bool $bCustomer
+         * @param bool $bRMAArtikel
+         * @param int  $kSprache
          */
         private function loadFromDB($kRMA, $bCustomer, $bRMAArtikel, $kSprache)
         {
@@ -87,7 +77,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 $this->oRMAStatus = new RMAStatus($this->kRMAStatus);
 
                 if ($bCustomer) {
-                    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';
                     $this->oKunde = new Kunde($this->kKunde);
                 }
 
@@ -120,7 +109,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          *
          * @param bool $bPrim - Controls the return of the method
          * @return bool|int
-         * @access public
          */
         public function save($bPrim = true)
         {
@@ -152,7 +140,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          * Update the class in the database
          *
          * @return int
-         * @access public
          */
         public function update()
         {
@@ -171,7 +158,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          * Delete the class in the database
          *
          * @return int
-         * @access public
          */
         public function delete()
         {
@@ -179,9 +165,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the kRMA
-         *
-         * @access public
          * @param int $kRMA
          * @return $this
          */
@@ -193,9 +176,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the kKunde
-         *
-         * @access public
          * @param int $kKunde
          * @return $this
          */
@@ -207,9 +187,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the kRMAStatus
-         *
-         * @access public
          * @param int $kRMAStatus
          * @return $this
          */
@@ -221,9 +198,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the cRMANumber
-         *
-         * @access public
          * @param string $cRMANumber
          * @return $this
          */
@@ -235,9 +209,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the dErstellt
-         *
-         * @access public
          * @param string $dErstellt
          * @return $this
          */
@@ -253,9 +224,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the kRMA
-         *
-         * @access public
          * @return int
          */
         public function getRMA()
@@ -264,9 +232,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the kKunde
-         *
-         * @access public
          * @return int
          */
         public function getKunde()
@@ -275,9 +240,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the kRMAStatus
-         *
-         * @access public
          * @return int
          */
         public function getRMAStatus()
@@ -286,9 +248,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the cRMANumber
-         *
-         * @access public
          * @return string
          */
         public function getRMANumber()
@@ -297,9 +256,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the dErstellt
-         *
-         * @access public
          * @return string
          */
         public function getErstellt()
@@ -383,30 +339,31 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function getOrderProducts($kBestellung)
         {
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Trennzeichen.php';
-
             $kBestellung = (int)$kBestellung;
             $oBestellung = new Bestellung();
 
             if ($kBestellung > 0) {
                 $oBestellung = new Bestellung($kBestellung, true);
 
-                if (isset($oBestellung->kBestellung, $oBestellung->Positionen) &&
-                    $oBestellung->kBestellung > 0 &&
-                    is_array($oBestellung->Positionen) &&
-                    count($oBestellung->Positionen) > 0
+                if (isset($oBestellung->kBestellung, $oBestellung->Positionen)
+                    && $oBestellung->kBestellung > 0
+                    && is_array($oBestellung->Positionen)
+                    && count($oBestellung->Positionen) > 0
                 ) {
                     $kArtikel_arr = RMAArtikel::getProductsByOrder($kBestellung);
                     foreach ($oBestellung->Positionen as $i => $oPosition) {
-                        $oBestellung->Positionen[$i]->cAnzahl = Trennzeichen::getUnit(JTL_SEPARATOR_AMOUNT, $_SESSION['kSprache'], $oPosition->nAnzahl);
-                        $oBestellung->Positionen[$i]->bRMA    = false;
+                        $oPosition->kArtikel = (int)$oPosition->kArtikel;
+                        $oPosition->cAnzahl  = Trennzeichen::getUnit(JTL_SEPARATOR_AMOUNT, $_SESSION['kSprache'], $oPosition->nAnzahl);
+                        $oPosition->bRMA     = false;
 
-                        if ($oPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL || !isset($oPosition->Artikel->kArtikel) || !$oPosition->Artikel->kArtikel) {
+                        if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL
+                            || !isset($oPosition->Artikel->kArtikel)
+                            || !$oPosition->Artikel->kArtikel
+                        ) {
                             unset($oBestellung->Positionen[$i]);
                         } elseif (count($kArtikel_arr) > 0) {
                             // Pruefe ob Artikel bereits vollstaendig zurueckgeschickt wurde
-                            if (in_array($oPosition->kArtikel, $kArtikel_arr)) {
+                            if (in_array($oPosition->kArtikel, $kArtikel_arr, true)) {
                                 $fRMAArtikelQuantity = RMAArtikel::getRMAQuantity($kBestellung, $oPosition->kArtikel);
                                 if ($fRMAArtikelQuantity && $fRMAArtikelQuantity > 0) {
                                     $fAnzahlBestellung = Bestellung::getProductAmount($kBestellung, $oPosition->kArtikel);
@@ -785,9 +742,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 $kBestellung = (int)$kBestellung;
 
                 if ($kBestellung > 0) {
-                    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
                     $oPositionAssoc_arr = Bestellung::getOrderPositions($kBestellung);
-
                     foreach ($kArtikel_arr as $kArtikel) {
                         $kArtikel            = (int)$kArtikel;
                         $fRMAArtikelQuantity = RMAArtikel::getRMAQuantity($kBestellung, $kArtikel);
@@ -881,9 +836,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     if (!is_array($cEinstellung_arr) || count($cEinstellung_arr) === 0) {
                         $cEinstellung_arr = Shop::getSettings([CONF_RMA]);
                     }
-                    if (!isset($oObj)) {
-                        $oObj = new stdClass();
-                    }
+                    $oObj = new stdClass();
                     $oObj->tkunde              = $_SESSION['Kunde'];
                     $oObj->cRMAEinstellung_arr = $cEinstellung_arr['rma'];
                     $oObj->oRMA                = $oRMA;

@@ -25,7 +25,7 @@ class FilterBaseAttribute extends AbstractFilter
      *
      * @param ProductFilter $productFilter
      */
-    public function __construct($productFilter)
+    public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
         $this->isCustom = false;
@@ -87,10 +87,10 @@ class FilterBaseAttribute extends AbstractFilter
                 ' . $oSQL->cMMJOIN . '
                 WHERE ' . $oSQL->cMMWhere, 2
         );
-        if (is_array($oMerkmalWert_arr) && count($oMerkmalWert_arr) > 0) {
+        if (count($oMerkmalWert_arr) > 0) {
             $oMerkmalWert = $oMerkmalWert_arr[0];
             unset($oMerkmalWert_arr[0]);
-            if (isset($oMerkmalWert->cWert) && strlen($oMerkmalWert->cWert) > 0) {
+            if (strlen($oMerkmalWert->cWert) > 0) {
                 if (!empty($this->getName())) {
                     $this->setName($oMerkmalWert->cName . ': ' . $oMerkmalWert->cWert);
                 } elseif (isset($oMerkmalWert->cMMName) && strlen($oMerkmalWert->cMMName) > 0) {

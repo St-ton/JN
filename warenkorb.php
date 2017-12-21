@@ -23,7 +23,7 @@ $Schnellkaufhinweis       = checkeSchnellkauf();
 $linkHelper               = LinkHelper::getInstance();
 $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
-$cart                     = $_SESSION['Warenkorb'];
+$cart                     = Session::Cart();
 $kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 // Warenkorbaktualisierung?
 uebernehmeWarenkorbAenderungen();
@@ -59,7 +59,7 @@ if ($cart !== null
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
             } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
                 // Aktiven Kupon aus der Session löschen und dessen Warenkorbposition
-                $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
+                $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                 // Versandfrei Kupon
                 $_SESSION['oVersandfreiKupon'] = $Kupon;
                 $smarty->assign('cVersandfreiKuponLieferlaender_arr', explode(';', $Kupon->cLieferlaender));
@@ -105,7 +105,7 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST
             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
                  ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
-            fuegeEinInWarenkorbPers($kArtikelGeschenk, 1, [], null, null, (int)C_WARENKORBPOS_TYP_GRATISGESCHENK);
+            fuegeEinInWarenkorbPers($kArtikelGeschenk, 1, [], null, null, C_WARENKORBPOS_TYP_GRATISGESCHENK);
         }
     }
 }

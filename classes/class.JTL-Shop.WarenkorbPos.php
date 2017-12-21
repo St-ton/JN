@@ -207,7 +207,8 @@ class WarenkorbPos
         );
         if (!empty($Aufpreis_obj->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
-                $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto - (($this->Artikel->Preise->rabatt / 100) * $Aufpreis_obj->fAufpreisNetto);
+                $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto -
+                    (($this->Artikel->Preise->rabatt / 100) * $Aufpreis_obj->fAufpreisNetto);
                 $Aufpreis_obj->fAufpreisNetto           = $NeueWarenkorbPosEigenschaft->fAufpreis;
             } else {
                 $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto;
@@ -259,11 +260,11 @@ class WarenkorbPos
      */
     public function gibGesetztenEigenschaftsWert($kEigenschaft)
     {
-        if (is_array($this->WarenkorbPosEigenschaftArr) && count($this->WarenkorbPosEigenschaftArr) > 0) {
-            foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
-                if ($WKPosEigenschaft->kEigenschaft == $kEigenschaft) {
-                    return $WKPosEigenschaft->kEigenschaftWert;
-                }
+        $kEigenschaft = (int)$kEigenschaft;
+        foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
+            $WKPosEigenschaft->kEigenschaft = (int)$WKPosEigenschaft->kEigenschaft;
+            if ($WKPosEigenschaft->kEigenschaft === $kEigenschaft) {
+                return $WKPosEigenschaft->kEigenschaftWert;
             }
         }
 
@@ -278,11 +279,9 @@ class WarenkorbPos
     public function gibGesamtAufpreis()
     {
         $aufpreis = 0;
-        if (is_array($this->WarenkorbPosEigenschaftArr) && count($this->WarenkorbPosEigenschaftArr) > 0) {
-            foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
-                if ($WKPosEigenschaft->fAufpreis != 0) {
-                    $aufpreis += $WKPosEigenschaft->fAufpreis;
-                }
+        foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
+            if ($WKPosEigenschaft->fAufpreis != 0) {
+                $aufpreis += $WKPosEigenschaft->fAufpreis;
             }
         }
 
@@ -298,7 +297,7 @@ class WarenkorbPos
     {
         $gewicht = $this->Artikel->fGewicht * $this->nAnzahl;
 
-        if (!$this->Artikel->kVaterArtikel && is_array($this->WarenkorbPosEigenschaftArr) && count($this->WarenkorbPosEigenschaftArr) > 0) {
+        if (!$this->Artikel->kVaterArtikel) {
             foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
                 if ($WKPosEigenschaft->fGewichtsdifferenz != 0) {
                     $gewicht += $WKPosEigenschaft->fGewichtsdifferenz * $this->nAnzahl;
@@ -355,7 +354,7 @@ class WarenkorbPos
                 $fPreisBrutto = 0;
                 $nVaterPos    = null;
                 /** @var WarenkorbPos $oPosition */
-                foreach ($_SESSION['Warenkorb']->PositionenArr as $nPos => $oPosition) {
+                foreach (Session::Cart()->PositionenArr as $nPos => $oPosition) {
                     if ($this->cUnique === $oPosition->cUnique) {
                         $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
                         $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, gibUst($oPosition->kSteuerklasse), 4);
@@ -366,7 +365,7 @@ class WarenkorbPos
                     }
                 }
                 if ($nVaterPos !== null) {
-                    $oVaterPos = $_SESSION['Warenkorb']->PositionenArr[$nVaterPos];
+                    $oVaterPos = Session::Cart()->PositionenArr[$nVaterPos];
                     if (is_object($oVaterPos)) {
                         if (!$this->isIgnoreMultiplier()) {
                             $this->nAnzahlEinzel = $this->nAnzahl / $oVaterPos->nAnzahl;
@@ -485,8 +484,8 @@ class WarenkorbPos
             $oWarenkorbPos->oEstimatedDelivery->longestMin = (int)$nMinDelivery;
             $oWarenkorbPos->oEstimatedDelivery->longestMax = (int)$nMaxDelivery;
 
-            $oWarenkorbPos->oEstimatedDelivery->localized = (!empty($oWarenkorbPos->oEstimatedDelivery->longestMin) &&
-                !empty($oWarenkorbPos->oEstimatedDelivery->longestMax))
+            $oWarenkorbPos->oEstimatedDelivery->localized = (!empty($oWarenkorbPos->oEstimatedDelivery->longestMin)
+                && !empty($oWarenkorbPos->oEstimatedDelivery->longestMax))
                 ? getDeliverytimeEstimationText(
                     $oWarenkorbPos->oEstimatedDelivery->longestMin,
                     $oWarenkorbPos->oEstimatedDelivery->longestMax

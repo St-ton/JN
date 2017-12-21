@@ -28,12 +28,12 @@
             {elseif (!empty($smarty.get.frontedit) && !empty($smarty.get.cAction) && $smarty.get.cAction === 'replace')}
                 {include file='snippets/live_edit.tpl' id='editor_replace_all'}
             {else}
-            {include file='snippets/extension.tpl'}
-            {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]) && $currentTemplateDirFullPath|cat:'productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]|file_exists}
-                {include file='productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]}
-            {else}
-                {include file='productdetails/details.tpl'}
-
+                {include file='snippets/extension.tpl'}
+                {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]) && $currentTemplateDirFullPath|cat:'productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]|file_exists}
+                    {include file='productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]}
+                {else}
+                    {include file='productdetails/details.tpl'}
+                {/if}
             {/if}
         </div>
     {/if}

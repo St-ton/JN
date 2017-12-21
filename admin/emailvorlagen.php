@@ -624,8 +624,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
                             $cUploadDatei = $cUploadVerzeichnis . $Emailvorlagesprache->kEmailvorlage .
                                 '_' . $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
                             if (!move_uploaded_file($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['tmp_name'], $cUploadDatei)) {
-                                $cFehler .= 'Fehler: Die Dateien konnte nicht geschrieben werden. ' .
-                                    'Pr&uuml;fen Sie bitte ob das PDF Verzeichnis Schreibrechte besitzt.<br />';
+                                $cFehler .= 'Fehler: Die Dateien konnten nicht geschrieben werden. ' .
+                                    'Pr&uuml;fen Sie bitte, ob das PDF Verzeichnis Schreibrechte besitzt.<br />';
                                 $nFehler = 1;
                                 break;
                             }

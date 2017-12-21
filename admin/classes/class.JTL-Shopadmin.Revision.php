@@ -42,6 +42,10 @@ class Revision
             'news' => [
                 'table' => 'tnews',
                 'id'    => 'kNews'
+            ],
+            'cmspage' => [
+                'table' => 'tcmspage',
+                'id'    => 'kPage'
             ]
         ];
     }

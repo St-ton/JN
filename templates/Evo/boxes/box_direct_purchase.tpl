@@ -8,12 +8,13 @@
                 {$jtl_token}
                 <input type="hidden" name="schnellkauf" value="1">
                 <div class="input-group">
-                    <div class="form-group float-label-control">
-                        <input aria-label="{lang key='quickBuy'}" type="text" placeholder="{lang key='productNoEAN'}" class="form-control" name="ean" id="quick-purchase">
-                    </div>
-                    <div class="input-group-btn">
-                        <button type="submit" class="btn btn-default" title="{lang key='intoBasket'}"><span class="fa fa-shopping-cart"></span></button>
-                    </div>
+                    <input aria-label="{lang key='quickBuy'}" type="text" placeholder="{lang key='productNoEAN'}"
+                           class="form-control" name="ean" id="quick-purchase">
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-default" title="{lang key='intoBasket'}">
+                            <span class="fa fa-shopping-cart"></span>
+                        </button>
+                    </span>
                 </div>
             </form>
         </div>

@@ -22,11 +22,12 @@
     <script src="{$templateUrl}js/searchpicker.js"></script>
     <script src="{$templateUrl}js/ckeditor_4.7.3_basic/ckeditor.js"></script>
     <script src="{$templateUrl}js/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
-    <script src="{$templateUrl}js/cms-live-editor.js"></script>
     <script src="{$templateUrl}js/moment.js"></script>
+    <script src="{$templateUrl}js/cms-live-editor/EditorIO.js"></script>
+    <script src="{$templateUrl}js/cms-live-editor/Editor.js"></script>
 
     <script>
-        var cmsLiveEditor = new CmsLiveEditor({
+        var editor = new Editor({
             jtlToken: '{$smarty.session.jtl_token}',
             templateUrl: '{$templateUrl}',
             kcfinderUrl: '{$PFAD_KCFINDER}',
@@ -86,6 +87,7 @@
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#elements" data-toggle="tab">Elemente</a></li>
                 <li><a href="#templates" data-toggle="tab">Templates</a></li>
+                <li><a href="#revisions" data-toggle="tab">Revisionen</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="elements">
@@ -102,6 +104,17 @@
                 </div>
                 <div class="tab-pane" id="templates">
                     Coming soon...
+                </div>
+                <div class="tab-pane" id="revisions">
+                    <div class="list-group">
+                        {if isset($oCMSPage)}
+                            {foreach $oCMSPage->getRevisions() as $oRevision}
+                                <a class="list-group-item" href="#">
+                                    {$oRevision->timestamp}
+                                </a>
+                            {/foreach}
+                        {/if}
+                    </div>
                 </div>
             </div>
         </div>

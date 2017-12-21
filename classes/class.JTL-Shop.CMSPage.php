@@ -98,6 +98,8 @@ class CMSPage
             ];
             $this->kPage = Shop::DB()->insert('tcmspage', $oCmsPageDB);
         } else {
+            $revision = new Revision();
+            $revision->addRevision('cmspage', (int)$oCmsPageDB->kPage);
             $oCmsPageDB->cJson         = json_encode($this->data);
             $oCmsPageDB->dLastModified = date('Y-m-d H:i:s');
             Shop::DB()->update(
@@ -115,5 +117,15 @@ class CMSPage
     public function remove()
     {
         Shop::DB()->delete('tcmspage', 'cIdHash', $this->cIdHash);
+    }
+
+    /**
+     * @return array
+     */
+    public function getRevisions()
+    {
+        $revision = new Revision();
+
+        return $revision->getRevisions('cmspage', $this->kPage);
     }
 }

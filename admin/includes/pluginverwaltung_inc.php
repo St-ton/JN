@@ -1398,7 +1398,6 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                     preg_match("/[A-Z]{3}/", $TemplateLanguage_arr['iso'], $cTreffer_arr);
                     if (strlen($TemplateLanguage_arr['iso']) === 0
                         || strlen($cTreffer_arr[0]) !== strlen($TemplateLanguage_arr['iso'])
->>>>>>> master
                     ) {
                         return PLUGIN_CODE_INVALID_EMAIL_TEMPLATE_ISO;
                     }

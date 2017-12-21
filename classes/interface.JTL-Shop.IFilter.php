@@ -163,7 +163,7 @@ interface IFilter
      * @param ProductFilter|null $productFilter
      * @return $this
      */
-    public function setData($productFilter);
+    public function setBaseData($productFilter);
 
     /**
      * the language ID currently active in the shop

@@ -12,13 +12,13 @@
     {foreach name="checkboxes" from=$checkboxes item='cb'}
         <div class="form-group{if !empty($cb->cErrormsg)} has-error{/if}{if $cb->nPflicht == 1} required{/if}">
             <div class="checkbox">
-                <label class="control-label" for="{$cb->cID}">
+                <label class="control-label" for="{if isset($cIDPrefix)}{$cIDPrefix}_{/if}{$cb->cID}">
                     <input type="checkbox"
                            name="{$cb->cID}"
                             {if $cb->nPflicht == 1}
                                 required
                             {/if}
-                           value="Y" id="{$cb->cID}"
+                           value="Y" id="{if isset($cIDPrefix)}{$cIDPrefix}_{/if}{$cb->cID}"
                             {if $cb->isActive}
                                 checked
                             {/if}

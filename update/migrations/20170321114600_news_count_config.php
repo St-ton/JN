@@ -28,10 +28,10 @@ class Migration_20170321114600 extends Migration implements IMigration
     public function up()
     {
         $this->setConfig(
-            'news_anzahl_uebersicht', '10', 113, 'Anzahl News in der Übersicht', 'number', 30,
+            'news_anzahl_uebersicht', '10', 113, 'Anzahl News in der Ãœbersicht', 'number', 30,
             (object)[
                 'cBeschreibung' =>
-                    'Wieviele News sollen standardmäßig in der Newsübersicht angezeigt werden? 0 = standard'
+                    'Wieviele News sollen standardmÃ¤ÃŸig in der NewsÃ¼bersicht angezeigt werden? 0 = standard'
             ]
         );
     }

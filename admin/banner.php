@@ -102,7 +102,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
 
         $ins = Shop::DB()->insert('textensionpoint', $oExtension);
         // saved?
-        if ($kImageMap && (int)$ins > 0) {
+        if ($kImageMap && $ins > 0) {
             $cAction  = 'view';
             $cHinweis = 'Banner wurde erfolgreich gespeichert.';
         } else {
@@ -134,13 +134,7 @@ switch ($cAction) {
             $cAction = 'view';
             break;
         }
-        $oBanner->cTitel = utf8_encode($oBanner->cTitel);
-        foreach ($oBanner->oArea_arr as &$oArea) {
-            $oArea->cTitel        = utf8_encode($oArea->cTitel);
-            $oArea->cUrl          = utf8_encode($oArea->cUrl);
-            $oArea->cBeschreibung = utf8_encode($oArea->cBeschreibung);
-            $oArea->cStyle        = utf8_encode($oArea->cStyle);
-        }
+
         $smarty->assign('oBanner', $oBanner)
                ->assign('cBannerLocation', Shop::getURL() . '/' . PFAD_BILDER_BANNER);
         break;

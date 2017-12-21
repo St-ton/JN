@@ -2,7 +2,7 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
-möchten Sie Ihre Erfahrungen mit Ihren kürzlich bei uns erworbenen Produkten mit anderen teilen, so würden wir uns sehr freuen, wenn Sie eine Bewertung abgeben.
+mÃ¶chten Sie Ihre Erfahrungen mit Ihren kÃ¼rzlich bei uns erworbenen Produkten mit anderen teilen, so wÃ¼rden wir uns sehr freuen, wenn Sie eine Bewertung abgeben.
 
 Zur Abgabe einer Bewertung klicken Sie einfach auf eines Ihrer erworbenen Produkte:
 
@@ -18,14 +18,14 @@ Zur Abgabe einer Bewertung klicken Sie einfach auf eines Ihrer erworbenen Produk
 {/if}
 {/foreach}
 
-Vielen Dank für Ihre Mühe.
+Vielen Dank fÃ¼r Ihre MÃ¼he.
 
 {if !empty($oTrustedShopsBewertenButton->cURL)}
-Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.
+Waren Sie mit Ihrer Bestellung zufrieden? Dann wÃ¼rden wir uns Ã¼ber eine Empfehlung freuen ... es dauert auch nur eine Minute.
 Bewerten Sie uns unter {$oTrustedShopsBewertenButton->cURL}
 {/if}
 
-Mit freundlichem Gruß,
+Mit freundlichem GruÃŸ,
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

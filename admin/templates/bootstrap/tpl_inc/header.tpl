@@ -1,10 +1,9 @@
 {assign var='bForceFluid' value=$bForceFluid|default:false}
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta charset="windows-1252" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
     <title>JTL Shop Administration</title>
@@ -15,16 +14,13 @@
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/hint/show-hint.css" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/display/fullscreen.css" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css" />
-
     {$admin_js}
     <script type="text/javascript" src="{$PFAD_CKEDITOR}ckeditor.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}lib/codemirror.js"></script>
-
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/show-hint.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/sql-hint.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/display/fullscreen.js"></script>
-
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/css/css.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/javascript/javascript.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/xml/xml.js"></script>
@@ -33,14 +29,13 @@
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/sql/sql.js"></script>
-
     <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js"></script>
     <script type="text/javascript">
         var bootstrapButton = $.fn.button.noConflict();
         $.fn.bootstrapBtn = bootstrapButton;
     </script>
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     {if isset($xajax_javascript)}
@@ -48,7 +43,7 @@
     {/if}
 </head>
 <body>
-{if $account !== false && isset($smarty.session.loginIsValid) && true ===  $smarty.session.loginIsValid }
+{if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
     {if permission('SETTINGS_SEARCH_VIEW')}
         <div id="main-search" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -63,39 +58,36 @@
             </div>
         </div>
         <script>
-        var $grid    = null;
-
-        setJtlToken('{$smarty.session.jtl_token}');
+        var $grid    = null,
+            jtlToken = '{$smarty.session.jtl_token}';
 
         $(function () {
-            var lastQuery = null;
-            var $search_frame = $('#main-search');
-            var $search_input = $search_frame.find('input[type="search"]');
-            var $search_result = $search_frame.find('div.modal-body');
+            var lastQuery = null,
+                $search_frame = $('#main-search'),
+                $search_input = $search_frame.find('input[type="search"]'),
+                $search_result = $search_frame.find('div.modal-body');
 
             function searchEvent(event) {
                 var setResult = function(content) {
-                    content = content || '';
+                        content = content || '';
 
-                    if ($grid) {
-                        $grid.masonry('destroy');
-                    }
+                        if ($grid) {
+                            $grid.masonry('destroy');
+                        }
 
-                    $search_result.html(content);
+                        $search_result.html(content);
 
-                    $grid = $search_result.masonry({
-                        itemSelector: '.grid-item',
-                        columnWidth: '.grid-item',
-                        percentPosition: true
-                    });
-                };
-
-                var query = $(event.target).val() || '';
-                if (query.length < 3 || event.keyCode == 27) {
+                        $grid = $search_result.masonry({
+                            itemSelector: '.grid-item',
+                            columnWidth: '.grid-item',
+                            percentPosition: true
+                        });
+                    },
+                    query = $(event.target).val() || '';
+                if (query.length < 3 || event.keyCode === 27) {
                     setResult(null);
                     lastQuery = null;
-                }
-                else if(query !== lastQuery) {
+                } else if(query !== lastQuery) {
                     lastQuery = query;
                     ioCall('adminSearch', [query], function (data) {
                         setResult(data.data.tpl);
@@ -112,16 +104,16 @@
                 $search_input.off('keyup', searchEvent);
             });
 
-            $(document).on("keydown", function (event) {
+            $(document).on('keydown', function (event) {
                 if (event.keyCode === 71 && event.ctrlKey) {
                     event.preventDefault();
                     $search_frame.modal('toggle');
                 }
                 if (event.keyCode === 13) {
                     szSearchString = $("[name$=cSuche]").val();
-                        if ('' !== szSearchString) {
-                            document.location.href = 'einstellungen.php?cSuche=' + szSearchString + '&einstellungen_suchen=1';
-                        }
+                    if ('' !== szSearchString) {
+                        document.location.href = 'einstellungen.php?cSuche=' + szSearchString + '&einstellungen_suchen=1';
+                    }
                 }
             });
         });
@@ -211,11 +203,11 @@
                             </a>
                             <ul class="dropdown-menu" role="main">
                                 <li>
-                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte" target="_blank">Erste Schritte</a>
-                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop" target="_blank">JTL Guide</a>
-                                    <a href="https://forum.jtl-software.de" target="_blank">JTL Forum</a>
-                                    <a href="https://www.jtl-software.de/Training" target="_blank">Training</a>
-                                    <a href="https://www.jtl-software.de/Servicepartner" target="_blank">Servicepartner</a>
+                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte" target="_blank" rel="noopener">Erste Schritte</a>
+                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop" target="_blank" rel="noopener">JTL Guide</a>
+                                    <a href="https://forum.jtl-software.de" target="_blank" rel="noopener">JTL Forum</a>
+                                    <a href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">Training</a>
+                                    <a href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">Servicepartner</a>
                                 </li>
                             </ul>
                         </li>
@@ -233,7 +225,6 @@
                                 </li>
                             </ul>
                         </li>
-
                         {*
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
@@ -260,4 +251,3 @@
         </nav>
         <div id="content_wrapper" class="container-fluid">
 {/if}
-

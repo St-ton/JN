@@ -481,53 +481,48 @@ function loescheNewsletterempfaenger($kNewsletterEmpfaenger_arr)
  */
 function mappeLiveSuche($kSuchanfrage_arr, $cMapping)
 {
-    if (is_array($kSuchanfrage_arr) && count($kSuchanfrage_arr) > 0 && strlen($cMapping) > 0) {
-        foreach ($kSuchanfrage_arr as $kSuchanfrage) {
-            $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
-            if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {
-                if (strtolower($oSuchanfrage->cSuche) !== strtolower($cMapping)) {
-                    $oSuchanfrageNeu = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($cMapping));
-                    if (isset($oSuchanfrageNeu->kSuchanfrage) && $oSuchanfrageNeu->kSuchanfrage > 0) {
-                        $oSuchanfrageMapping                 = new stdClass();
-                        $oSuchanfrageMapping->kSprache       = $_SESSION['kSprache'];
-                        $oSuchanfrageMapping->cSuche         = $oSuchanfrage->cSuche;
-                        $oSuchanfrageMapping->cSucheNeu      = $cMapping;
-                        $oSuchanfrageMapping->nAnzahlGesuche = $oSuchanfrage->nAnzahlGesuche;
-
-                        $kSuchanfrageMapping = Shop::DB()->insert('tsuchanfragemapping', $oSuchanfrageMapping);
-
-                        if ($kSuchanfrageMapping > 0) {
-                            Shop::DB()->query(
-                                "UPDATE tsuchanfrage
-                                    SET nAnzahlGesuche = nAnzahlGesuche+" . $oSuchanfrage->nAnzahlGesuche . "
-                                    WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                                        AND kSuchanfrage = " . (int)$oSuchanfrageNeu->kSuchanfrage, 4
-                            );
-                            Shop::DB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage);
-                            Shop::DB()->query(
-                                "UPDATE tseo
-                                    SET kKey = " . (int)$oSuchanfrageNeu->kSuchanfrage . "
-                                    WHERE cKey = 'kSuchanfrage'
-                                        AND kKey = " . (int)$oSuchanfrage->kSuchanfrage, 4
-                            );
-                        } else {
-                            return 4;
-                        }   // Mapping konnte nicht gespeichert werden
-                    } else {
-                        return 5;
-                    }   // Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen
-                } else {
-                    return 6;
-                } // Es kann nicht auf sich selbst gemappt werden
-            } else {
-                return 3;
-            }   // Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden.
+    if (!is_array($kSuchanfrage_arr) || count($kSuchanfrage_arr) === 0 || strlen($cMapping) === 0) {
+        return 2; // Leere Übergabe
+    }
+    foreach ($kSuchanfrage_arr as $kSuchanfrage) {
+        $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
+        if ($oSuchanfrage === null || empty($oSuchanfrage->kSuchanfrage)) {
+            return 3; // Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden.
         }
+        if (strtolower($oSuchanfrage->cSuche) === strtolower($cMapping)) {
+            return 6; // Es kann nicht auf sich selbst gemappt werden
+        }
+        $oSuchanfrageNeu = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($cMapping));
+        if ($oSuchanfrageNeu === null || empty($oSuchanfrageNeu->kSuchanfrage)) {
+            return 5; // Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen
+        }
+        $oSuchanfrageMapping                 = new stdClass();
+        $oSuchanfrageMapping->kSprache       = $_SESSION['kSprache'];
+        $oSuchanfrageMapping->cSuche         = $oSuchanfrage->cSuche;
+        $oSuchanfrageMapping->cSucheNeu      = $cMapping;
+        $oSuchanfrageMapping->nAnzahlGesuche = $oSuchanfrage->nAnzahlGesuche;
 
-        return 1; // Alles O.K.
-    } else {
-        return 2;
-    }   // Leere Übergabe
+        $kSuchanfrageMapping = Shop::DB()->insert('tsuchanfragemapping', $oSuchanfrageMapping);
+
+        if (empty($kSuchanfrageMapping)) {
+            return 4; // Mapping konnte nicht gespeichert werden
+        }
+        Shop::DB()->query(
+            "UPDATE tsuchanfrage
+                SET nAnzahlGesuche = nAnzahlGesuche+" . $oSuchanfrage->nAnzahlGesuche . "
+                WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+                    AND kSuchanfrage = " . (int)$oSuchanfrageNeu->kSuchanfrage, 4
+        );
+        Shop::DB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage);
+        Shop::DB()->query(
+            "UPDATE tseo
+                SET kKey = " . (int)$oSuchanfrageNeu->kSuchanfrage . "
+                WHERE cKey = 'kSuchanfrage'
+                    AND kKey = " . (int)$oSuchanfrage->kSuchanfrage, 4
+        );
+    }
+
+    return 1; // Alles O.K.
 }
 
 /**

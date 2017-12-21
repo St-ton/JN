@@ -11,37 +11,31 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
     class Konfiggruppe implements JsonSerializable
     {
         /**
-         * @access protected
          * @var int
          */
         protected $kKonfiggruppe;
 
         /**
-         * @access protected
          * @var string
          */
         protected $cBildPfad;
 
         /**
-         * @access protected
          * @var int
          */
         protected $nMin;
 
         /**
-         * @access protected
          * @var int
          */
         protected $nMax;
 
         /**
-         * @access protected
          * @var int
          */
         protected $nTyp;
 
         /**
-         * @access protected
          * @var int
          */
         protected $nSort;
@@ -71,7 +65,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param int $kKonfiggruppe
          * @param int $kSprache
-         * @access public
          */
         public function __construct($kKonfiggruppe = 0, $kSprache = 0)
         {
@@ -121,7 +114,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $this->$cMember = $oObj->$cMember;
                 }
                 if (!$kSprache) {
-                    $kSprache = $_SESSION['kSprache'];
+                    $kSprache = Shop::getLanguageID();
                 }
                 $this->oSprache  = new Konfiggruppesprache($this->kKonfiggruppe, $kSprache);
                 $this->oItem_arr = Konfigitem::fetchAll($this->kKonfiggruppe);
@@ -135,7 +128,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param bool $bPrim Controls the return of the method
          * @return bool|int
-         * @access public
          */
         public function save($bPrim = true)
         {
@@ -159,7 +151,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Update the class in the database
          *
          * @return int
-         * @access public
          */
         public function update()
         {
@@ -178,7 +169,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Delete the class in the database
          *
          * @return int
-         * @access public
          */
         public function delete()
         {
@@ -186,9 +176,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the kKonfiggruppe
-         *
-         * @access public
          * @param int
          * @return $this
          */
@@ -200,9 +187,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the cBildPfad
-         *
-         * @access public
          * @param string $cBildPfad
          * @return $this
          */
@@ -214,9 +198,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the nTyp
-         *
-         * @access public
          * @param int $nTyp
          * @return $this
          */
@@ -228,9 +209,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the nSort
-         *
-         * @access public
          * @param int $nSort
          * @return $this
          */
@@ -242,9 +220,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the kKonfiggruppe
-         *
-         * @access public
          * @return int
          */
         public function getKonfiggruppe()
@@ -253,9 +228,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the cBildPfad
-         *
-         * @access public
          * @return string|null
          */
         public function getBildPfad()
@@ -268,9 +240,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the nMin
-         *
-         * @access public
          * @return int
          */
         public function getMin()
@@ -279,9 +248,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the nMax
-         *
-         * @access public
          * @return int
          */
         public function getMax()
@@ -290,9 +256,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the nAuswahlTyp
-         *
-         * @access public
          * @return int
          */
         public function getAuswahlTyp()
@@ -301,9 +264,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the nTyp
-         *
-         * @access public
          * @return int
          */
         public function getAnzeigeTyp()
@@ -312,9 +272,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the nSort
-         *
-         * @access public
          * @return int
          */
         public function getSort()

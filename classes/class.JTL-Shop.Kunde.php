@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
-require_once PFAD_ROOT . PFAD_INCLUDES_LIBS . 'password_compat/password.php';
 
 /**
  * Class Kunde
@@ -871,5 +870,21 @@ class Kunde
         }
 
         return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function getID()
+    {
+        return (int)$this->kKunde;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoggedIn()
+    {
+        return $this->kKunde > 0;
     }
 }

@@ -10,19 +10,16 @@
 class Nummern
 {
     /**
-     * @access protected
      * @var int
      */
     protected $nNummer;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nArt;
 
     /**
-     * @access protected
      * @var string
      */
     protected $dAktualisiert;
@@ -31,7 +28,6 @@ class Nummern
      * Constructor
      *
      * @param int $nArt
-     * @access public
      */
     public function __construct($nArt = 0)
     {
@@ -45,12 +41,11 @@ class Nummern
      *
      * @param int $nArt
      * @return $this
-     * @access private
      */
     private function loadFromDB($nArt = 0)
     {
         $oObj = Shop::DB()->select('tnummern', 'nArt', (int)$nArt);
-        if (isset($oObj->nArt) && $oObj->nArt > 0) {
+        if ($oObj !== null && $oObj->nArt > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $oObj->$cMember;
@@ -65,7 +60,6 @@ class Nummern
      *
      * @param bool $bPrim - Controls the return of the method
      * @return bool|int
-     * @access public
      */
     public function save($bPrim = true)
     {
@@ -87,7 +81,6 @@ class Nummern
     /**
      * Update the class in the database
      *
-     * @access public
      * @param bool $bDate
      * @return int
      */
@@ -107,7 +100,6 @@ class Nummern
      * Delete the class in the database
      *
      * @return int
-     * @access public
      */
     public function delete()
     {
@@ -115,9 +107,6 @@ class Nummern
     }
 
     /**
-     * Sets the nNummer
-     *
-     * @access public
      * @param int $nNummer
      * @return $this
      */
@@ -129,9 +118,6 @@ class Nummern
     }
 
     /**
-     * Sets the nArt
-     *
-     * @access public
      * @param int $nArt
      * @return $this
      */
@@ -143,9 +129,6 @@ class Nummern
     }
 
     /**
-     * Sets the dAktualisiert
-     *
-     * @access public
      * @param string $dAktualisiert
      * @return $this
      */
@@ -159,9 +142,6 @@ class Nummern
     }
 
     /**
-     * Gets the nNummer
-     *
-     * @access public
      * @return int
      */
     public function getNummer()
@@ -170,9 +150,6 @@ class Nummern
     }
 
     /**
-     * Gets the nArt
-     *
-     * @access public
      * @return int
      */
     public function getArt()
@@ -181,9 +158,6 @@ class Nummern
     }
 
     /**
-     * Gets the dAktualisiert
-     *
-     * @access public
      * @return string
      */
     public function getAktualisiert()

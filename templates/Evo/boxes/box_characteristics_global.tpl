@@ -43,7 +43,7 @@
                 <ul class="nav nav-list">
                     {foreach name=globalmerkmalwert from=$oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
                         <li>
-                            <a href="{$oMerkmalWert->cURL}"{if isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0 && isset($oMerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert == $oMerkmalWert->kMerkmalWert} class="active"{/if}>
+                            <a href="{$oMerkmalWert->cURL}"{if $NaviFilter->hasAttributeValue() && isset($oMerkmalWert->kMerkmalWert) && $NaviFilter->getAttributeValue()->getValue() == $oMerkmalWert->kMerkmalWert} class="active"{/if}>
                                 {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && !empty($oMerkmalWert->cBildpfadKlein) && $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
                                    <img src="{$oMerkmalWert->cBildpfadKlein}" alt="{$oMerkmalWert->cWert|escape:"quotes"}" />
                                 {/if}

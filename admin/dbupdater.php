@@ -5,7 +5,7 @@
  */
 
 /**
- * @global JTLSmarty $smarty
+ * @global JTLSmarty    $smarty
  * @global AdminAccount $oAccount
  */
 
@@ -32,12 +32,11 @@ if (defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
     $smarty->assign('manager', new MigrationManager());
 }
 
-$smarty
-    ->assign('updatesAvailable', $updatesAvailable)
-    ->assign('currentFileVersion', $currentFileVersion)
-    ->assign('currentDatabaseVersion', $currentDatabaseVersion)
-    ->assign('version', $version)
-    ->assign('updateError', $updateError)
-    ->assign('currentTemplateFileVersion', $template->xmlData->cShopVersion)
-    ->assign('currentTemplateDatabaseVersion', $template->shopVersion)
-    ->display('dbupdater.tpl');
+$smarty->assign('updatesAvailable', $updatesAvailable)
+       ->assign('currentFileVersion', $currentFileVersion)
+       ->assign('currentDatabaseVersion', $currentDatabaseVersion)
+       ->assign('version', $version)
+       ->assign('updateError', $updateError)
+       ->assign('currentTemplateFileVersion', $template->xmlData->cShopVersion)
+       ->assign('currentTemplateDatabaseVersion', $template->shopVersion)
+       ->display('dbupdater.tpl');

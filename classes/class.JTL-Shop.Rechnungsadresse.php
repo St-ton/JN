@@ -10,7 +10,6 @@
 class Rechnungsadresse extends Adresse
 {
     /**
-     * @access public
      * @var int
      */
     public $kRechnungsadresse;
@@ -55,7 +54,6 @@ class Rechnungsadresse extends Adresse
     /**
      * Setzt Rechnungsadresse mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kRechnungsadresse
      * @return int|Rechnungsadresse
      */
@@ -63,7 +61,7 @@ class Rechnungsadresse extends Adresse
     {
         $obj = Shop::DB()->select('trechnungsadresse', 'kRechnungsadresse', (int)$kRechnungsadresse);
 
-        if (!$obj->kRechnungsadresse) {
+        if ($obj === null || $obj->kRechnungsadresse < 1) {
             return 0;
         }
 
@@ -84,7 +82,6 @@ class Rechnungsadresse extends Adresse
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int - Key von eingefügter Rechnungsadresse
      */
     public function insertInDB()
@@ -107,7 +104,6 @@ class Rechnungsadresse extends Adresse
     /**
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
-     * @access public
      * @return int
      */
     public function updateInDB()

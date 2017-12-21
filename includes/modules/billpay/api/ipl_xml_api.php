@@ -132,7 +132,7 @@ function ipl_core_send_curl_request($requestUrl, $requestData)
         return false;
     }
 
-    // 	set CURL options
+    // set CURL options
     curl_setopt($ch, CURLOPT_URL, $requestUrl);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $requestData);

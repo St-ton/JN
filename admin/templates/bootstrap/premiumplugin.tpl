@@ -170,13 +170,13 @@
         </div>
         <div class="row">
             <div class="col-md-8" id="plugin-main-description">
-                <h1>{$sd->title|utf8_decode}</h1>
+                <h1>{$sd->title}</h1>
                 <p class="plugin-short-description">
-                    {$sd->html|utf8_decode}
+                    {$sd->html}
                 </p>
-                <h2>{$ld->title|utf8_decode}</h2>
+                <h2>{$ld->title}</h2>
                 <p class="plugin-description">
-                    {$ld->html|utf8_decode}
+                    {$ld->html}
                 </p>
                 <hr>
                 <div class="row" id="plugin-screenshots">
@@ -260,7 +260,7 @@
                     <div class="panel-body">
                         <ul class="advantages list-unstyled">
                             {foreach from=$pp->getAdvantages() item=advantage}
-                                <li class="advantage"><i class="fa fa-check fake-list-style-image"></i> {$advantage|utf8_decode}</li>
+                                <li class="advantage"><i class="fa fa-check fake-list-style-image"></i> {$advantage}</li>
                             {/foreach}
                         </ul>
                     </div>
@@ -274,7 +274,7 @@
                     <div class="panel-body">
                         <ul class="howtos list-unstyled">
                             {foreach from=$pp->getHowTos() item=howTo}
-                                <li class="howto"><i class="fa fa-check fake-list-style-image"></i> {$howTo|utf8_decode}
+                                <li class="howto"><i class="fa fa-check fake-list-style-image"></i> {$howTo}
                                 </li>
                             {/foreach}
                         </ul>

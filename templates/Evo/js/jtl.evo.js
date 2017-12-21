@@ -217,7 +217,7 @@
         },
         
         popupDep: function() {
-            $('.popup-dep').click(function(e) {
+            $('#main-wrapper').on('click', '.popup-dep', function(e) {
                 var id    = '#popup' + $(this).attr('id'),
                     title = $(this).attr('title'),
                     html  = $(id).html();

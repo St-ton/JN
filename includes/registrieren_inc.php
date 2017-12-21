@@ -20,9 +20,9 @@ function kundeSpeichern($cPost_arr)
            $cKundenattribut_arr;
 
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
-    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-    $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
+    $cart = Session::Cart();
+    $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+         ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
     $editRechnungsadresse = (int)$cPost_arr['editRechnungsadresse'];
     $step                 = 'formular';
@@ -32,9 +32,8 @@ function kundeSpeichern($cPost_arr)
         : checkKundenFormular(1, 0);
     $knd                 = getKundendaten($cPost_arr, 1, 0);
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
-    $kKundengruppe       = Kundengruppe::getCurrent();
+    $kKundengruppe       = Session::CustomerGroup()->getID();
     // CheckBox Plausi
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox       = new CheckBox();
     $fehlendeAngaben = array_merge(
         $fehlendeAngaben,
@@ -98,21 +97,21 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
-            if ($oNeukunde->kKundenWerbenKunden > 0 &&
-                isset($oNeukunde->kKundenWerbenKunden, $Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) &&
-                (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'] > 0
+            $oNeukunde     = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
+            $kKundengruppe = Session::CustomerGroup()->getID();
+            if (isset($oNeukunde->kKundenWerbenKunden, $Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'])
+                && $oNeukunde->kKundenWerbenKunden > 0
+                && (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'] > 0
             ) {
                 $kKundengruppe = (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'];
             }
 
             $knd->kKundengruppe = $kKundengruppe;
-            $knd->kSprache      = $_SESSION['kSprache'];
+            $knd->kSprache      = Shop::getLanguage();
             $knd->cAbgeholt     = 'N';
             $knd->cSperre       = 'N';
             //konto sofort aktiv?
-            $knd->cAktiv = ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] === 'A')
+            $knd->cAktiv = $GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] === 'A'
                 ? 'N'
                 : 'Y';
             $customer             = new Kunde();
@@ -159,8 +158,8 @@ function kundeSpeichern($cPost_arr)
             }
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
             if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0) {
-                Shop::DB()->query("
-                    UPDATE tkunde
+                Shop::DB()->query(
+                    "UPDATE tkunde
                         SET fGuthaben = fGuthaben + " . (float)$Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben'] . "
                         WHERE kKunde = " . (int)$knd->kKunde, 3
                 );
@@ -169,20 +168,20 @@ function kundeSpeichern($cPost_arr)
                 Shop::DB()->update('tkundenwerbenkunden', 'cEmail', $knd->cMail, $_upd);
             }
         }
-        if (isset($_SESSION['Warenkorb']->kWarenkorb) &&
-            $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
-        ) {
+        if (isset($cart->kWarenkorb) && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
             setzeSteuersaetze();
-            $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized();
+            $cart->gibGesamtsummeWarenLocalized();
         }
         if ((int)$cPost_arr['checkout'] === 1) {
             //weiterleitung zum chekout
             $linkHelper = LinkHelper::getInstance();
             header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
-        } elseif (isset($cPost_arr['ajaxcheckout_return']) && (int)$cPost_arr['ajaxcheckout_return'] === 1) {
+        }
+        if (isset($cPost_arr['ajaxcheckout_return']) && (int)$cPost_arr['ajaxcheckout_return'] === 1) {
             return 1;
-        } elseif ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
+        }
+        if ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
             //weiterleitung zu mein Konto
             $linkHelper = LinkHelper::getInstance();
             header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
@@ -230,7 +229,7 @@ function gibFormularDaten($nCheckout = 0)
     $smarty->assign('herkunfte', $herkunfte)
            ->assign('Kunde', $Kunde)
            ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-           ->assign('laender', gibBelieferbareLaender($_SESSION['Kundengruppe']->kKundengruppe))
+           ->assign('laender', gibBelieferbareLaender(Session::CustomerGroup()->getID()))
            ->assign('warning_passwortlaenge', lang_passwortlaenge($Einstellungen['kunden']['kundenregistrierung_passwortlaenge']))
            ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
 
@@ -269,7 +268,7 @@ function gibKundeFromVCard($vCardFile)
             $Kunde = $vCard->selectVCard(0)->asKunde();
             $smarty->assign('Kunde', $Kunde);
         } catch (Exception $e) {
-            $hinweis = Shop::Lang()->get('uploadError', 'global');
+            $hinweis = Shop::Lang()->get('uploadError');
         }
     }
 }

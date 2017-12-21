@@ -44,8 +44,8 @@
         }
         {/literal}
     </script>
-    {if !empty($NaviFilter->Kategorie->kKategorie)}
-        {assign var=kKategorie value=$NaviFilter->Kategorie->kKategorie}
+    {if $NaviFilter->hasCategory()}
+        {assign var=kKategorie value=$NaviFilter->getCategory()->getValue()}
     {else}
         {assign var=kKategorie value=0}
     {/if}

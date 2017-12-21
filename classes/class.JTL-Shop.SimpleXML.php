@@ -103,8 +103,8 @@ class SimpleXML
                 }
             }
         }
-        $n = count($repeats_count);
-        for ($i = 0; $i < $n; $i++) {
+        $r = count($repeats_count);
+        for ($i = 0; $i < $r; $i++) {
             if ($repeats_count[$i] > 1) {
                 $repeats[] = $repeats_temp[$i];
             }
@@ -167,14 +167,13 @@ class SimpleXML
         if (is_array($array)) {
             if ($array[0] && count($array) === 1) {
                 return $this->array_reindex($array[0]);
-            } else {
-                foreach ($array as $keys => $items) {
-                    if (is_array($items)) {
-                        if (is_numeric($keys)) {
-                            $array[$keys] = $this->array_reindex($items);
-                        } else {
-                            $array[$keys] = $this->array_reindex(array_merge([], $items));
-                        }
+            }
+            foreach ($array as $keys => $items) {
+                if (is_array($items)) {
+                    if (is_numeric($keys)) {
+                        $array[$keys] = $this->array_reindex($items);
+                    } else {
+                        $array[$keys] = $this->array_reindex(array_merge([], $items));
                     }
                 }
             }
@@ -216,7 +215,7 @@ class SimpleXML
                         }
                     }
 
-                    if (isset($array[$i]['attributes']) && $array[$i]['attributes'] && $array[$i]['level'] != $this->ignore_level) {
+                    if (!empty($array[$i]['attributes']) && $array[$i]['level'] != $this->ignore_level) {
                         $tags[] = '@attributes';
                         foreach ($array[$i]['attributes'] as $attrkey => $attr) {
                             $tags[] = $attrkey;
@@ -251,7 +250,7 @@ class SimpleXML
                     }
 
                     if (isset($array[$i]['value']) && ($array[$i]['value'] || !$this->skip_empty_values)) {
-                        if (isset($array[$i]['attributes']) && $array[$i]['attributes']) {
+                        if (!empty($array[$i]['attributes'])) {
                             $tags[] = '@content';
                             $this->array_insert(count($tags), $tags, $array[$i]['value'], "complete");
                             array_pop($tags);
@@ -260,7 +259,7 @@ class SimpleXML
                         }
                     }
 
-                    if (isset($array[$i]['attributes']) && $array[$i]['attributes']) {
+                    if (!empty($array[$i]['attributes'])) {
                         $tags[] = '@attributes';
                         foreach ($array[$i]['attributes'] as $attrkey => $attr) {
                             $tags[] = $attrkey;

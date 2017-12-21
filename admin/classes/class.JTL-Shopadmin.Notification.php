@@ -79,7 +79,9 @@ class Notification implements IteratorAggregate, Countable
 
     /**
      * Build default system notifications.
+     *
      * @todo Remove translated messages
+     * @return $this
      */
     public function buildDefault()
     {
@@ -148,5 +150,7 @@ class Notification implements IteratorAggregate, Countable
                 'Sie nutzen Grafikpreise. Diese Funktion ist als "deprecated" markiert.<br/>Bitte beachten Sie die Hinweise unter "Storefront->Artikel->Preisanzeige".',
                 'preisanzeige.php');
         }
+
+        return $this;
     }
 }

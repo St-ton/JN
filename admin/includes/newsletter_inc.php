@@ -822,7 +822,6 @@ function holeArtikel($cArtNr_arr)
     // Artikel holen
     $oArtikel_arr = [];
     if (is_array($cArtNr_arr) && count($cArtNr_arr) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($cArtNr_arr as $cArtNr) {
             if ($cArtNr !== '') {
@@ -847,8 +846,8 @@ function holeArtikel($cArtNr_arr)
 //                    }
                     // Wenn der Artikel fuer diese Kundengruppen sichtbar ist
                     if ($nSichtbar) {
-                        $_SESSION['Kundengruppe']->darfPreiseSehen = 1;
-                        $oArtikel                                  = new Artikel();
+                        $_SESSION['Kundengruppe']->setMayViewPrices(1);
+                        $oArtikel = new Artikel();
                         $oArtikel->fuelleArtikel($oArtikel_tmp->kArtikel, $defaultOptions);
 
                         $oArtikel_arr[] = $oArtikel;
@@ -1164,7 +1163,6 @@ function gibAbonnent($cPost_arr)
             ORDER BY Datum DESC", 1
     );
     if (isset($oAbonnent->kNewsletterEmpfaenger) && $oAbonnent->kNewsletterEmpfaenger > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';
         $oKunde               = new Kunde($oAbonnent->kKunde);
         $oAbonnent->cNachname = $oKunde->cNachname;
 
@@ -1203,7 +1201,6 @@ function baueNewsletterVorschau(&$oNewsletterVorlage)
     $kHersteller_arr = gibAHKKeys($oNewsletterVorlage->cHersteller);
     $kKategorie_arr  = gibAHKKeys($oNewsletterVorlage->cKategorie);
     // Baue Kampagnenobjekt, falls vorhanden in der Newslettervorlage
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kampagne.php';
     $oKampagne = new Kampagne((int)$oNewsletterVorlage->kKampagne);
     // Baue Arrays von Objekten
     $oArtikel_arr    = gibArtikelObjekte($kArtikel_arr, $oKampagne);
@@ -1307,12 +1304,11 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
     $oArtikel_arr = [];
     if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
         $shopURL = Shop::getURL() . '/';
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($kArtikel_arr as $kArtikel) {
             if ((int)$kArtikel > 0) {
-                $_SESSION['Kundengruppe']->darfPreiseSehen = 1;
-                $oArtikel                                  = new Artikel();
+                $_SESSION['Kundengruppe']->setMayViewPrices(1);
+                $oArtikel = new Artikel();
                 $oArtikel->fuelleArtikel($kArtikel, $defaultOptions, $kKundengruppe, $kSprache);
 
                 if (!$oArtikel->kArtikel > 0) {
@@ -1365,7 +1361,6 @@ function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
     $oHersteller_arr = [];
     $shopURL         = Shop::getURL() . '/';
     if (is_array($kHersteller_arr) && count($kHersteller_arr) > 0) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Hersteller.php';
         foreach ($kHersteller_arr as $kHersteller) {
             $kHersteller = (int)$kHersteller;
             if ($kHersteller > 0) {
@@ -1403,7 +1398,6 @@ function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
 function gibKategorieObjekte($kKategorie_arr, $oKampagne = 0)
 {
     $oKategorie_arr = [];
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kategorie.php';
 
     if (is_array($kKategorie_arr) && count($kKategorie_arr) > 0) {
         $shopURL = Shop::getURL() . '/';

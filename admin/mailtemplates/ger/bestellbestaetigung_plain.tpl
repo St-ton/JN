@@ -2,7 +2,7 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
-vielen Dank für Ihre Bestellung bei {$Einstellungen.global.global_shopname}.
+vielen Dank fÃ¼r Ihre Bestellung bei {$Einstellungen.global.global_shopname}.
 
 {if $Verfuegbarkeit_arr.cArtikelName_arr|@count > 0}
 {$Verfuegbarkeit_arr.cHinweis}
@@ -17,7 +17,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
 {foreach name=pos from=$Bestellung->Positionen item=Position}
 {if $Position->nPosTyp==1}
 {if !empty($Position->kKonfigitem)} * {/if}{$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{if isset($Position->Artikel->nErscheinendesProdukt) && $Position->Artikel->nErscheinendesProdukt}
-Verfügbar ab: {$Position->Artikel->Erscheinungsdatum_de}{/if}{if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen=="Y" && $Position->cLieferstatus}
+VerfÃ¼gbar ab: {$Position->Artikel->Erscheinungsdatum_de}{/if}{if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen=="Y" && $Position->cLieferstatus}
 
 Lieferzeit: {$Position->cLieferstatus}{/if}
 {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
@@ -75,10 +75,10 @@ Ihre Lieferadresse:
 Lieferadresse ist gleich Rechnungsadresse.
 {/if}
 
-Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}
+Sie haben folgende Zahlungsart gewÃ¤hlt: {$Bestellung->cZahlungsartName}
 
 {if $Bestellung->Zahlungsart->cModulId=="za_ueberweisung_jtl"}
-Bitte führen Sie die folgende Überweisung durch:
+Bitte fÃ¼hren Sie die folgende Ãœberweisung durch:
 
 Kontoinhaber:{$Firma->cKontoinhaber}
 Bankinstitut:{$Firma->cBank}
@@ -104,7 +104,7 @@ Gesamtsumme:{$Bestellung->WarensummeLocalized[0]}
 
 {if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
-Wir belasten in Kürze folgendes Bankkonto um die fällige Summe:
+Wir belasten in KÃ¼rze folgendes Bankkonto um die fÃ¤llige Summe:
 
 Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}
 IBAN: {$Bestellung->Zahlungsinfo->cIBAN}
@@ -113,10 +113,10 @@ Bank: {$Bestellung->Zahlungsinfo->cBankName}
 
 {elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
-Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende Emailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
+Falls Sie Ihre Zahlung per PayPal noch nicht durchgefÃ¼hrt haben, nutzen Sie folgende Emailadresse als EmpfÃ¤nger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_invoice_jtl" || $Bestellung->Zahlungsart->cModulId=="za_billpay_rate_payment_jtl"}
-Bitte überweisen Sie den Gesamtbetrag auf folgendes Konto:
+Bitte Ã¼berweisen Sie den Gesamtbetrag auf folgendes Konto:
 
 Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}
 Bankinstitut: {$Bestellung->Zahlungsinfo->cBankName}
@@ -124,22 +124,22 @@ IBAN: {$Bestellung->Zahlungsinfo->cIBAN}
 BIC: {$Bestellung->Zahlungsinfo->cBIC}
 Verwendungszweck: {$Bestellung->Zahlungsinfo->cVerwendungszweck}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_direct_debit_jtl"}
-Vielen Dank, dass Sie sich beim Kauf der Ware für die BillPay Lastschrift entschieden haben.
-Wir buchen den Rechnungsbetrag in den nächsten Tagen von dem bei der Bestellung angegebenen Konto ab.
+Vielen Dank, dass Sie sich beim Kauf der Ware fÃ¼r die BillPay Lastschrift entschieden haben.
+Wir buchen den Rechnungsbetrag in den nÃ¤chsten Tagen von dem bei der Bestellung angegebenen Konto ab.
 {elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_paylater_jtl"}
-Vielen Dank, dass Sie sich für die Zahlung mit PayLater entschieden haben.
-Die fälligen Beträge werden von dem bei der Bestellung angegebenen Konto abgebucht. 
-Zusätzlich zu dieser Rechnung bekommen Sie von BillPay in Kürze einen Teilzahlungsplan mit detaillierten Informationen über Ihre Teilzahlung.
+Vielen Dank, dass Sie sich fÃ¼r die Zahlung mit PayLater entschieden haben.
+Die fÃ¤lligen BetrÃ¤ge werden von dem bei der Bestellung angegebenen Konto abgebucht. 
+ZusÃ¤tzlich zu dieser Rechnung bekommen Sie von BillPay in KÃ¼rze einen Teilzahlungsplan mit detaillierten Informationen Ã¼ber Ihre Teilzahlung.
 {/if}
 
-Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.
+Ãœber den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.
 
 {if !empty($oTrustedShopsBewertenButton->cURL)}
-Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.
+Waren Sie mit Ihrer Bestellung zufrieden? Dann wÃ¼rden wir uns Ã¼ber eine Empfehlung freuen ... es dauert auch nur eine Minute.
 {$oTrustedShopsBewertenButton->cURL}
 {/if}
 
-Mit freundlichem Gruß,
+Mit freundlichem GruÃŸ,
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

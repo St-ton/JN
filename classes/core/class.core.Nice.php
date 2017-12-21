@@ -39,7 +39,7 @@ class Nice
      */
     public static function getInstance()
     {
-        return (self::$instance !== null) ? self::$instance : new self();
+        return self::$instance !== null ? self::$instance : new self();
     }
 
     /**
@@ -98,11 +98,10 @@ class Nice
      */
     public function checkErweiterung($kShopModulCheck)
     {
-        return ($this->cAPIKey !== '' &&
-            strlen($this->cAPIKey) > 0 &&
-            !empty($this->cDomain) &&
-            count($this->kShopModul_arr) > 0
-        )
+        return ($this->cAPIKey !== ''
+            && strlen($this->cAPIKey) > 0
+            && !empty($this->cDomain)
+            && count($this->kShopModul_arr) > 0)
             ? in_array((int)$kShopModulCheck, $this->kShopModul_arr, true)
             : false;
     }

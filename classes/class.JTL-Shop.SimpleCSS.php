@@ -52,8 +52,7 @@ class SimpleCSS
             if ($i % 2 === 0) {
                 $cCSSBaseAttr_arr = [];
                 $cSelector_arr    = explode(',', $cData_arr[$i]);
-            }
-            if ($i % 2 === 1) {
+            } else {
                 $cAttr_arr = explode(';', $cData_arr[$i]);
                 $cAttr_arr = $this->trimCSSData($cAttr_arr);
                 foreach ($cAttr_arr as $cAttr) {
@@ -76,7 +75,7 @@ class SimpleCSS
             }
         }
 
-        return (boolean) (count($this->cCSS_arr) > 0);
+        return count($this->cCSS_arr) > 0;
     }
 
     /**
@@ -194,7 +193,7 @@ class SimpleCSS
                 if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $cValue, $cMatch_arr)) {
                     return $this->rgb2html((int)$cMatch_arr[2], (int)$cMatch_arr[3], (int)$cMatch_arr[4]);
                 } // #fff or #ffffff
-                elseif (preg_match('/#([\w\d]+)/', $cValue, $cMatch_arr)) {
+                if (preg_match('/#([\w\d]+)/', $cValue, $cMatch_arr)) {
                     return trim($cMatch_arr[0]);
                 }
                 break;

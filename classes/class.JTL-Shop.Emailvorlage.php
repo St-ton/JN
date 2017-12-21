@@ -6,79 +6,65 @@
 
 /**
  * Class Emailvorlage
- *
- * @author Daniel Böhmer JTL-Software GmbH
  */
 class Emailvorlage
 {
     /**
-     * @access protected
      * @var int
      */
     protected $kEmailvorlage;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cName;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cBeschreibung;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cMailTyp;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cModulId;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cDateiname;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cAktiv;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nAKZ;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nAGB;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nWRB;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nWRBForm;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nFehlerhaft;
@@ -96,7 +82,7 @@ class Emailvorlage
     /**
      * Constructor
      *
-     * @param int  $kEmailvorlage - primary key
+     * @param int  $kEmailvorlage
      * @param bool $bPlugin
      */
     public function __construct($kEmailvorlage = 0, $bPlugin = false)
@@ -140,9 +126,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the kEmailvorlage
-     *
-     * @var int
+     * @param int
      * @return $this
      */
     public function setEmailvorlage($kEmailvorlage)
@@ -153,9 +137,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the cName
-     *
-     * @var string
+     * @param string
      * @return $this
      */
     public function setName($cName)
@@ -166,9 +148,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the cBeschreibung
-     *
-     * @var string
+     * @param string
      * @return $this
      */
     public function setBeschreibung($cBeschreibung)
@@ -179,9 +159,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the cMailTyp
-     *
-     * @var string
+     * @param string
      * @return $this
      */
     public function setMailTyp($cMailTyp)
@@ -192,9 +170,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the cModulId
-     *
-     * @var string
+     * @param string
      * @return $this
      */
     public function setModulId($cModulId)
@@ -205,9 +181,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the cDateiname
-     *
-     * @var string
+     * @param string
      * @return $this
      */
     public function setDateiname($cDateiname)
@@ -218,9 +192,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the cAktiv
-     *
-     * @var string
+     * @param string
      * @return $this
      */
     public function setAktiv($cAktiv)
@@ -231,9 +203,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the nAKZ
-     *
-     * @var int
+     * @param int
      * @return $this
      */
     public function setAKZ($nAKZ)
@@ -244,9 +214,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the nAGB
-     *
-     * @var int
+     * @param int
      * @return $this
      */
     public function setAGB($nAGB)
@@ -257,9 +225,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the nWRB
-     *
-     * @var int
+     * @param int
      * @return $this
      */
     public function setWRB($nWRB)
@@ -270,9 +236,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the nWRBForm
-     *
-     * @var int
+     * @param int
      * @return $this
      */
     public function setWRBForm($nWRBForm)
@@ -283,9 +247,7 @@ class Emailvorlage
     }
 
     /**
-     * Sets the nFehlerhaft
-     *
-     * @var int
+     * @param int
      * @return $this
      */
     public function setFehlerhaft($nFehlerhaft)
@@ -296,9 +258,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the kEmailvorlage
-     *
-     * @access public
      * @return int
      */
     public function getEmailvorlage()
@@ -307,9 +266,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the cName
-     *
-     * @access public
      * @return string
      */
     public function getName()
@@ -318,9 +274,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the cBeschreibung
-     *
-     * @access public
      * @return string
      */
     public function getBeschreibung()
@@ -329,9 +282,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the cMailTyp
-     *
-     * @access public
      * @return string
      */
     public function getMailTyp()
@@ -340,9 +290,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the cModulId
-     *
-     * @access public
      * @return string
      */
     public function getModulId()
@@ -351,8 +298,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the cDateiname
-     *
      * @return string
      */
     public function getDateiname()
@@ -361,8 +306,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the cAktiv
-     *
      * @return string
      */
     public function getAktiv()
@@ -371,8 +314,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the nAKZ
-     *
      * @return int
      */
     public function getAKZ()
@@ -381,8 +322,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the nAGB
-     *
      * @return int
      */
     public function getAGB()
@@ -391,8 +330,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the nWRB
-     *
      * @return int
      */
     public function getWRB()
@@ -401,8 +338,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the nWRBForm
-     *
      * @return int
      */
     public function getWRBForm()
@@ -411,8 +346,6 @@ class Emailvorlage
     }
 
     /**
-     * Gets the nFehlerhaft
-     *
      * @return int
      */
     public function getFehlerhaft()
@@ -428,14 +361,18 @@ class Emailvorlage
     public static function load($modulId, $isPlugin = false)
     {
         $modulId = StringHandler::filterXSS($modulId);
+        $table   = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
+        $obj     = Shop::DB()->select(
+            $table,
+            'cModulId', Shop::DB()->escape($modulId),
+            null, null,
+            null, null,
+            false,
+            'kEmailvorlage'
+        );
 
-        $table = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
-        $obj   = Shop::DB()->select($table, 'cModulId', Shop::DB()->escape($modulId), null, null, null, null, false, 'kEmailvorlage');
-
-        if (is_object($obj) && isset($obj->kEmailvorlage) && (int)$obj->kEmailvorlage > 0) {
-            return new self($obj->kEmailvorlage, $isPlugin);
-        }
-
-        return null;
+        return ($obj !== null && isset($obj->kEmailvorlage) && (int)$obj->kEmailvorlage > 0)
+            ? new self($obj->kEmailvorlage, $isPlugin)
+            : null;
     }
 }

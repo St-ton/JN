@@ -18,11 +18,6 @@ define('URL_LIVE', 'https://www.united-online-transfer.com/interfaces/payment.ph
 class UT extends PaymentMethod
 {
     /**
-     * @var
-     */
-    public $cModulId;
-
-    /**
      * @param int $nAgainCheckout
      * @return $this
      */
@@ -347,7 +342,8 @@ class UT extends PaymentMethod
         if ($cRes['status'] === 'OK') {
             header('Location: ' . $this->getNotificationURL($paymentHash), true, 303);
             exit();
-        } elseif ($cRes['status'] === 'REDIRECT') {
+        }
+        if ($cRes['status'] === 'REDIRECT') {
             parse_str($cRes['params'], $data);
             $iframe_url = $data['redirect_url'] . '&lang=' . $this->getISOLang($customer->kSprache);
             Shop::Smarty()->assign('iFrame', '<iframe src="' . $iframe_url .
@@ -506,9 +502,9 @@ class UT extends PaymentMethod
             $enc = implode('', $string);
 
             return @!((ord($enc[0]) != 239) && (ord($enc[1]) != 187) && (ord($enc[2]) != 191));
-        } else {
-            return (utf8_encode(utf8_decode($string)) === $string);
         }
+
+        return (utf8_encode(utf8_decode($string)) === $string);
     }
 
     /**

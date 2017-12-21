@@ -87,7 +87,7 @@ class Revision
      * @param int         $key
      * @param bool        $secondary
      * @param null|string $author
-     * @param bool        $utf8
+     * @param bool        $utf8 - @deprecated since 4.07
      * @return bool
      * @throws InvalidArgumentException
      */
@@ -126,9 +126,6 @@ class Revision
                 foreach ($referencedRevisions as $referencedRevision) {
                     $revision->content->references[$referencedRevision->$field] = $referencedRevision;
                 }
-            }
-            if ($utf8 === true) {
-                $revision->content = utf8_convert_recursive($revision->content);
             }
             $revision->content = json_encode($revision->content);
             $this->storeRevision($revision);
@@ -178,7 +175,7 @@ class Revision
      * @param string $type
      * @param int    $id
      * @param bool   $secondary
-     * @param bool   $utf8
+     * @param bool   $utf8 - @deprecated since 4.07
      * @return bool
      */
     public function restoreRevision($type, $id, $secondary = false, $utf8 = true)
@@ -194,9 +191,6 @@ class Revision
             $primaryRow = $mapping['id'];
             $primaryKey = $oldCOntent->$primaryRow;
             unset($oldCOntent->$primaryRow);
-            if ($utf8 === true) {
-                $oldCOntent = utf8_convert_recursive($oldCOntent, false);
-            }
             if ($secondary === false) {
                 return Shop::DB()->update($mapping['table'], $primaryRow, $primaryKey, $oldCOntent) === 1;
             }
@@ -206,9 +200,6 @@ class Revision
                 foreach ($oldCOntent->references as $key => $value) {
                     //$key is the index in the reference array - which corresponds to the foreign key
                     unset($value->$primaryRow, $value->$secondaryRow);
-                    if ($utf8 === true) {
-                        $value = utf8_convert_recursive($value, false);
-                    }
                     Shop::DB()->update($tableToUpdate, [$primaryRow, $secondaryRow], [$primaryKey, $key], $value);
                 }
 

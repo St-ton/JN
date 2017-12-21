@@ -157,11 +157,9 @@ if (isset($_REQUEST['action']) && validateToken()) {
             Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
             Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
 
-            if (count($cChanged_arr) > 0) {
-                $cHinweis = 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr);
-            } else {
-                $cHinweis = 'Keine Variable wurde ge&auml;ndert';
-            }
+            $cHinweis = count($cChanged_arr) > 0
+                ? 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr)
+                : 'Keine Variable wurde ge&auml;ndert';
 
             break;
         case 'clearlog':

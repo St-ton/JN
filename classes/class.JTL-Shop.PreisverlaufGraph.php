@@ -10,96 +10,326 @@
 class PreisverlaufGraph
 {
     /**
-     * PreisverlaufGraph Members
+     * Zeitdifferenz (Unix Timestamp) zwischen dem ältesten Preisverlaufseintrag und dem jüngsten
      *
-     * @access public
      * @var int
      */
-    public $nDiffStamp; // Zeitdifferenz (Unix Timestamp) zwischen dem ältesten Preisverlaufseintrag und dem jüngsten
-    public $nAnzahlPreise; // Anzahl an Preisen für die Y-Achsen Legende
-    public $nAnzahlTage; // Anzahl Tage in der es Preisverlaufseinträge für den Aritkel gibt
-    public $nStepX; // Aktueller Schritt für den jeweiligen X-Achsen Legendeneintrag
-    public $nStepY; // Aktueller Schritt für den jeweiligen Y-Achsen Legendeneintrag
-    public $nHoehe; // Maximale Höhe des Bildes
-    public $nBreite; // Maximale Breite des Bildes
-    public $nStep; // Der Preisschritt für die Y-Achsen Legendenbeschriftung
-    public $nMaxTimestamp; // Jüngster Preisverlaufseintrag (Unix Timestamp)
-    public $nMinTimestamp; // Ältester Preisverlaufseintrag (Unix Timestamp)
-    public $nSchriftgroesse; // Schriftgröße für die Legendenbeschriftung bzw. allen Schriften im Bild
-
-    // Paddings
-    public $nPolsterLinks; // Linke Polster zwischen dem Bildanfang und der äusseren Box
-    public $nPolsterRechts; // Rechte Polster zwischen dem Bildanfang und der äusseren Box
-    public $nPolsterOben; // Oberes Polster zwischen dem Bildanfang und der äusseren Box
-    public $nPolsterUnten; // Unteres Polster zwischen dem Bildanfang und der äusseren Box
-    public $nInternPolsterX; // X-Achsen Polster zwischen der äusseren Box und der inneren Box
-    public $nInternPolsterY; // Y-Achsen Polster zwischen der äusseren Box und der inneren Box
-
-    // Signi Punkte
-    public $nBreiteRahmen; // Breite der äusseren Box
-    public $nHoeheRahmen; // Höhe der äusseren Box
-    public $nInternPolsterXPixel; // X-Achsen Polster zwischen der äusseren Box und der inneren Box in Pixel
-    public $nInternPolsterYPixel; // Y-Achsen Polster zwischen der äusseren Box und der inneren Box in Pixel
-    public $nInnenRahmenBreite; // Breite der inneren Box
-    public $nInnenRahmenHoehe; // Höhe der inneren Box
-    public $nAussenRahmenOben; // Y-Position der oberen Aussenbox
-    public $nAussenRahmenLinks; // X-Position der linken Aussenbox
-    public $nAussenRahmenUnten; // Y-Position der unteren Aussenbox
-    public $nAussenRahmenRechts; // X-Position der rechten Aussenbox
-    public $nInnenRahmenOben; // Y-Position der oberen Innenbox
-    public $nInnenRahmenLinks; // X-Position der linken Innenbox
-    public $nInnenRahmenUnten; // Y-Position der unteren Innenbox
-    public $nInnenRahmenRechts; // X-Position der rechten Innenbox
+    public $nDiffStamp;
 
     /**
-     * PreisverlaufGraph Members
+     * Anzahl an Preisen für die Y-Achsen Legende
      *
-     * @access public
+     * @var int
+     */
+    public $nAnzahlPreise;
+
+    /**
+     * Anzahl Tage in der es Preisverlaufseinträge für den Aritkel gibt
+     *
+     * @var int
+     */
+    public $nAnzahlTage;
+
+    /**
+     * Aktueller Schritt für den jeweiligen X-Achsen Legendeneintrag
+     *
+     * @var int
+     */
+    public $nStepX;
+
+    /**
+     * Aktueller Schritt für den jeweiligen Y-Achsen Legendeneintrag
+     *
+     * @var int
+     */
+    public $nStepY;
+
+    /**
+     * Maximale Höhe des Bildes
+     *
+     * @var int
+     */
+    public $nHoehe;
+
+    /**
+     * Maximale Breite des Bildes
+     *
+     * @var int
+     */
+    public $nBreite;
+
+    /**
+     * Der Preisschritt für die Y-Achsen Legendenbeschriftung
+     *
+     * @var int
+     */
+    public $nStep;
+
+    /**
+     * Jüngster Preisverlaufseintrag (Unix Timestamp)
+     *
+     * @var int
+     */
+    public $nMaxTimestamp;
+
+    /**
+     * Ältester Preisverlaufseintrag (Unix Timestamp)
+     *
+     * @var int
+     */
+    public $nMinTimestamp;
+
+    /**
+     * Schriftgröße für die Legendenbeschriftung bzw. allen Schriften im Bild
+     *
+     * @var int
+     */
+    public $nSchriftgroesse;
+
+    /**
+     * Linke Polster zwischen dem Bildanfang und der äusseren Box
+     *
+     * @var int
+     */
+    public $nPolsterLinks;
+
+    /**
+     * Rechte Polster zwischen dem Bildanfang und der äusseren Box
+     *
+     * @var int
+     */
+    public $nPolsterRechts;
+
+    /**
+     * Oberes Polster zwischen dem Bildanfang und der äusseren Box
+     *
+     * @var int
+     */
+    public $nPolsterOben;
+
+    /**
+     * Unteres Polster zwischen dem Bildanfang und der äusseren Box
+     *
+     * @var int
+     */
+    public $nPolsterUnten;
+
+    /**
+     * X-Achsen Polster zwischen der äusseren Box und der inneren Box
+     *
+     * @var int
+     */
+    public $nInternPolsterX;
+
+    /**
+     * Y-Achsen Polster zwischen der äusseren Box und der inneren Box
+     *
+     * @var int
+     */
+    public $nInternPolsterY;
+
+    /**
+     * Breite der äusseren Box
+     *
+     * @var int
+     */
+    public $nBreiteRahmen;
+
+    /**
+     * Höhe der äusseren Box
+     *
+     * @var int
+     */
+    public $nHoeheRahmen;
+
+    /**
+     * X-Achsen Polster zwischen der äusseren Box und der inneren Box in Pixel
+     *
+     * @var int
+     */
+    public $nInternPolsterXPixel;
+
+    /**
+     * Y-Achsen Polster zwischen der äusseren Box und der inneren Box in Pixel
+     *
+     * @var int
+     */
+    public $nInternPolsterYPixel;
+
+    /**
+     * Breite der inneren Box
+     *
+     * @var int
+     */
+    public $nInnenRahmenBreite;
+
+    /**
+     * Höhe der inneren Box
+     *
+     * @var int
+     */
+    public $nInnenRahmenHoehe;
+
+    /**
+     * Y-Position der oberen Aussenbox
+     *
+     * @var int
+     */
+    public $nAussenRahmenOben;
+
+    /**
+     * X-Position der linken Aussenbox
+     *
+     * @var int
+     */
+    public $nAussenRahmenLinks;
+
+    /**
+     * Y-Position der unteren Aussenbox
+     *
+     * @var int
+     */
+    public $nAussenRahmenUnten;
+
+    /**
+     * X-Position der rechten Aussenbox
+     *
+     * @var int
+     */
+    public $nAussenRahmenRechts;
+
+    /**
+     * Y-Position der oberen Innenbox
+     *
+     * @var int
+     */
+    public $nInnenRahmenOben;
+
+    /**
+     * X-Position der linken Innenbox
+     *
+     * @var int
+     */
+    public $nInnenRahmenLinks;
+
+    /**
+     * Y-Position der unteren Innenbox
+     *
+     * @var int
+     */
+    public $nInnenRahmenUnten;
+
+    /**
+     * X-Position der rechten Innenbox
+     *
+     * @var int
+     */
+    public $nInnenRahmenRechts;
+
+    /**
+     * Größter Preis vom aktuellen Preisverlauf
+     *
      * @var float
      */
-    public $fMaxPreis; // Größter Preis vom aktuellen Preisverlauf
-    public $fMinPreis; // Kleinster Preis vom aktuellen Preisverlauf
-    public $fDiffPreis; // Differenz zwischen dem kleinsten und größten Preisverlaufspreis
-    public $fStepWert_arr; // Array von Preissteps für die Berechnung der Y-Achsen Legende
+    public $fMaxPreis;
 
     /**
-     * PreisverlaufGraph Members
+     * Kleinster Preis vom aktuellen Preisverlauf
      *
-     * @access public
+     * @var float
+     */
+    public $fMinPreis;
+
+    /**
+     * Differenz zwischen dem kleinsten und größten Preisverlaufspreis
+     *
+     * @var float
+     */
+    public $fDiffPreis;
+
+    /**
+     * Array von Preissteps für die Berechnung der Y-Achsen Legende
+     *
+     * @var float
+     */
+    public $fStepWert_arr;
+
+    /**
+     * Schriftart für die Legendenbeschriftung bzw. allen Schriften im Bild
+     *
      * @var string
      */
-    public $cSchriftart; // Schriftart für die Legendenbeschriftung bzw. allen Schriften im Bild
-    public $cSchriftverzeichnis; // Schriftverzeichnis der Schriftart
+    public $cSchriftart;
 
     /**
-     * PreisverlaufGraph Members
+     * Schriftverzeichnis der Schriftart
      *
-     * @access public
+     * @var string
+     */
+    public $cSchriftverzeichnis;
+
+    /**
+     * Daten vom Preisverlauf aus der Datenbank
+     *
      * @var array
      */
-    public $oPreisverlaufData_arr; // Daten vom Preisverlauf aus der Datenbank
-    public $oConfig_arr; // Daten vom Backend für die Einstellung von Farben, Padding, Größe etc.
-    public $oPreisConfig; // Währung und Steuersatz der Preise
+    public $oPreisverlaufData_arr;
 
     /**
-     * PreisverlaufGraph Members
+     * Daten vom Backend für die Einstellung von Farben, Padding, Größe etc.
      *
-     * @access public
+     * @var array
+     */
+    public $oConfig_arr;
+
+    /**
+     * Währung und Steuersatz der Preise
+     *
+     * @var array
+     */
+    public $oPreisConfig;
+
+    /**
+     * Bild vom Graphen
+     *
      * @var string image
      */
-    public $image; // Bild vom Graphen
+    public $image;
 
     /**
-     * PreisverlaufGraph Members
+     * Hintergrundfarbe des Bildes
      *
-     * @access public
      * @var string
      */
-    public $ColorBackground; // Hintergrundfarbe des Bildes
-    public $ColorGrid; // Gridfarbe
-    public $ColorGraph; // Graphenfarbe
-    public $ColorBox; // Boxfarbe
-    public $ColorText; // Textfarbe
+    public $ColorBackground;
+
+    /**
+     * Gridfarbe
+     *
+     * @var string
+     */
+    public $ColorGrid;
+
+    /**
+     * Graphenfarbe
+     *
+     * @var string
+     */
+    public $ColorGraph;
+
+    /**
+     * Boxfarbe
+     *
+     * @var string
+     */
+    public $ColorBox;
+
+    /**
+     * Textfarbe
+     *
+     * @var string
+     */
+    public $ColorText;
 
     /**
      * @param int    $kArtikel
@@ -144,15 +374,29 @@ class PreisverlaufGraph
         $this->fMinPreis       = 0.0;
         $this->fDiffPreis      = 0.0;
         $this->nStep           = 0;
-        $this->fStepWert_arr   = [0.25, 0.5, 1.0, 2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 25.0, 50.0, 100.0, 250.0, 2500.0, 25000.0];
+        $this->fStepWert_arr   = [
+            0.25,
+            0.5,
+            1.0,
+            2.5,
+            5.0,
+            7.5,
+            10.0,
+            12.5,
+            15.0,
+            25.0,
+            50.0,
+            100.0,
+            250.0,
+            2500.0,
+            25000.0
+        ];
         $this->ColorBackground = [255, 255, 255];
         $this->ColorGrid       = [255, 255, 255];
         $this->ColorGraph      = [255, 255, 255];
         $this->ColorBox        = [255, 255, 255];
         $this->ColorText       = [255, 255, 255];
         $this->nSchriftgroesse = 8;
-        //$this->cSchriftart = 'arial.ttf';
-        //$this->cSchriftverzeichnis = dirname(__FILE__) . '/';
         $this->cSchriftart         = 'GeosansLight.ttf';
         $this->cSchriftverzeichnis = PFAD_ROOT . PFAD_FONTS . '/';
 
@@ -162,7 +406,8 @@ class PreisverlaufGraph
         $this->berechneSigniPunkte();
         $this->image = @imagecreate($this->nBreite, $this->nHoehe);
         $this->berechneFarbHexNachDec();
-        imagecolorallocate($this->image, $this->ColorBackground[0], $this->ColorBackground[1], $this->ColorBackground[2]);
+        imagecolorallocate($this->image, $this->ColorBackground[0], $this->ColorBackground[1],
+            $this->ColorBackground[2]);
 
         if ($this->berechneMinMaxPreis((int)$kArtikel, (int)$kKundegruppe, (int)$nMonat)) {
             $this->berechneYPreisStep();
@@ -187,7 +432,7 @@ class PreisverlaufGraph
                     AND DATE_SUB(now(), INTERVAL " . (int)$nMonat . " MONTH) < dDate
                 ORDER BY dDate DESC", 2
         );
-        if ($oPreisverlauf_arr !== false && count($oPreisverlauf_arr) > 0) {
+        if (count($oPreisverlauf_arr) > 0) {
             $this->nAnzahlTage = count($oPreisverlauf_arr);
 
             if ($this->oPreisConfig->Netto > 0) {
@@ -272,14 +517,14 @@ class PreisverlaufGraph
                 );
                 $this->fMinPreis = round(
                     (($this->fMinPreis * 100) - (($this->fMinPreis * 100) % ($this->fStepWert_arr[$this->nStep] * 100)))
-                     / 100,
+                    / 100,
                     2
                 );
 
                 $this->fDiffPreis    = $this->fMaxPreis - $this->fMinPreis;
                 $this->nAnzahlPreise = (int)($this->fDiffPreis / $this->fStepWert_arr[$this->nStep]);
             }
-        } elseif ($this->nAnzahlTage == 1) {
+        } elseif ($this->nAnzahlTage === 1) {
             $this->nAnzahlPreise = 1;
         }
     }
@@ -379,7 +624,7 @@ class PreisverlaufGraph
             $this->nStepX = $this->nInnenRahmenRechts;
 
             for ($i = 1; $i < $nLoop; $i++) {
-                $this->nStepX -= $nPixelProSchrittX;
+                $this->nStepX    -= $nPixelProSchrittX;
                 $nTimestampXWert -= $nTimestampXSchritt;
 
                 imagefttext(
@@ -426,7 +671,7 @@ class PreisverlaufGraph
 
             for ($i = 0; $i < $this->nAnzahlPreise; $i++) {
                 $this->nStepY += $nPixelProSchrittY;
-                $fPreis -= $this->fStepWert_arr[$this->nStep];
+                $fPreis       -= $this->fStepWert_arr[$this->nStep];
                 imagefttext(
                     $this->image,
                     $this->nSchriftgroesse,
@@ -446,7 +691,7 @@ class PreisverlaufGraph
                     $GridColor
                 );
             }
-        } elseif ($this->nAnzahlPreise == 1) {
+        } elseif ($this->nAnzahlPreise === 1) {
             // Grid X
             imagefttext(
                 $this->image,
@@ -492,7 +737,8 @@ class PreisverlaufGraph
         // Aktueller X Wert
         $nXWertNow = $nXStartWert;
         // Farben
-        $GraphColor = imagecolorallocate($this->image, $this->ColorGraph[0], $this->ColorGraph[1], $this->ColorGraph[2]);
+        $GraphColor = imagecolorallocate($this->image, $this->ColorGraph[0], $this->ColorGraph[1],
+            $this->ColorGraph[2]);
 
         if (is_array($this->oPreisverlaufData_arr) && count($this->oPreisverlaufData_arr) > 1) {
             $nSecProPixel = $this->nDiffStamp / ($nXStartWert - $this->nStepX);
@@ -533,7 +779,7 @@ class PreisverlaufGraph
                 $GraphColor
             ); // Rechts
             imageline($this->image, $nXEnd, $nYEnd, $nXEnd - 5, $nYEnd, $GraphColor); // Links
-        } elseif (is_array($this->oPreisverlaufData_arr) && count($this->oPreisverlaufData_arr) == 1) {
+        } elseif (is_array($this->oPreisverlaufData_arr) && count($this->oPreisverlaufData_arr) === 1) {
             imageline(
                 $this->image,
                 $this->nAussenRahmenLinks,
@@ -570,7 +816,7 @@ class PreisverlaufGraph
                 if (preg_match("/#[A-Fa-f0-9]{6}/", $oConfig->cWert) == 1) {
                     $nDecZahl_arr = [];
 
-                    $cWertSub       = substr($oConfig->cWert, 1, strlen($oConfig->cWert) - 1);
+                    $cWertSub       = substr($oConfig->cWert, 1);
                     $nDecZahl_arr[] = hexdec(substr($cWertSub, 0, 2));
                     $nDecZahl_arr[] = hexdec(substr($cWertSub, 2, 2));
                     $nDecZahl_arr[] = hexdec(substr($cWertSub, 4, 2));

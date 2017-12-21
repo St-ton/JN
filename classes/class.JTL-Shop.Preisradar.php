@@ -67,7 +67,7 @@ class Preisradar
                       )
                   ) as x
                   WHERE x.{$cArtikelSQL}
-                  LIMIT " . (int)($nLimit * 2), 2
+                  LIMIT " . ($nLimit * 2), 2
             );
             // Hilfs Array bauen, welches nur die letzten zwei Preisänderungen pro Artikel speichert
             // Um damit hinterher die Differenz zu ermitteln

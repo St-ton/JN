@@ -21,7 +21,6 @@ function bearbeiteClearCache($oJobQueue)
         $oJobQueue->updateJobInDB();
     } else {
         $oJobQueue->deleteJobInDB();
-        unset($oJobQueue);
     }
 }
 

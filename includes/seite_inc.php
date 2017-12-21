@@ -531,10 +531,12 @@ function gibSitemapGlobaleMerkmale()
  */
 function verarbeiteMerkmalBild(&$oMerkmal)
 {
-    $oMerkmal->cBildpfadKlein      = BILD_KEIN_MERKMALBILD_VORHANDEN;
-    $oMerkmal->nBildKleinVorhanden = 0;
-    $oMerkmal->cBildpfadGross      = BILD_KEIN_MERKMALBILD_VORHANDEN;
-    $oMerkmal->nBildGrossVorhanden = 0;
+    $shopURL = Shop::getURL() . '/';
+
+    $oMerkmal->cBildpfadKlein       = BILD_KEIN_MERKMALBILD_VORHANDEN;
+    $oMerkmal->nBildKleinVorhanden  = 0;
+    $oMerkmal->cBildpfadNormal      = BILD_KEIN_MERKMALBILD_VORHANDEN;
+    $oMerkmal->nBildNormalVorhanden = 0;
     if (strlen($oMerkmal->cBildpfad) > 0) {
         if (file_exists(PFAD_MERKMALBILDER_KLEIN . $oMerkmal->cBildpfad)) {
             $oMerkmal->cBildpfadKlein      = PFAD_MERKMALBILDER_KLEIN . $oMerkmal->cBildpfad;
@@ -545,6 +547,8 @@ function verarbeiteMerkmalBild(&$oMerkmal)
             $oMerkmal->nBildGrossVorhanden = 1;
         }
     }
+    $oMerkmal->cBildURLKlein  = $shopURL . $oMerkmal->cBildpfadKlein;
+    $oMerkmal->cBildURLNormal = $shopURL . $oMerkmal->cBildpfadNormal;
 }
 
 /**
@@ -552,6 +556,8 @@ function verarbeiteMerkmalBild(&$oMerkmal)
  */
 function verarbeiteMerkmalWertBild(&$oMerkmalWert)
 {
+    $shopURL = Shop::getURL() . '/';
+
     $oMerkmalWert->cBildpfadKlein       = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
     $oMerkmalWert->nBildKleinVorhanden  = 0;
     $oMerkmalWert->cBildpfadNormal      = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
@@ -566,6 +572,8 @@ function verarbeiteMerkmalWertBild(&$oMerkmalWert)
             $oMerkmalWert->nBildNormalVorhanden = 1;
         }
     }
+    $oMerkmalWert->cBildURLKlein  = $shopURL . $oMerkmalWert->cBildpfadKlein;
+    $oMerkmalWert->cBildURLNormal = $shopURL . $oMerkmalWert->cBildpfadNormal;
 }
 
 /**

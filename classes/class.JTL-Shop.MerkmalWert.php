@@ -62,6 +62,11 @@ class MerkmalWert
     /**
      * @var string
      */
+    public $cURLFull;
+
+    /**
+     * @var string
+     */
     public $cBildpfad;
 
     /**
@@ -165,7 +170,8 @@ class MerkmalWert
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $oMerkmalWert->$cMember;
             }
-            $this->cURL = baueURL($this, URLART_MERKMAL);
+            $this->cURL     = baueURL($this, URLART_MERKMAL);
+            $this->cURLFull = baueURL($this, URLART_MERKMAL, 0, false, true);
             executeHook(HOOK_MERKMALWERT_CLASS_LOADFROMDB, ['oMerkmalWert' => &$this]);
         }
         $shopURL = Shop::getURL() . '/';

@@ -1233,6 +1233,7 @@ class Artikel
                     ORDER BY nNr", 2
             );
         }
+        $shopURL    = Shop::getURL() . '/';
         $imageCount = count($bilder_arr);
         $id         = $this->kArtikel;
         for ($i = 0; $i < $imageCount; ++$i) {
@@ -1243,6 +1244,10 @@ class Artikel
             $image->cPfadNormal = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_MD, $imgNo);
             $image->cPfadGross  = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_LG, $imgNo);
             $image->nNr         = $imgNo;
+            $image->cURLMini    = $shopURL . $image->cPfadMini;
+            $image->cURLKlein   = $shopURL . $image->cPfadKlein;
+            $image->cURLNormal  = $shopURL . $image->cPfadNormal;
+            $image->cURLGross   = $shopURL . $image->cPfadGross;
 
             if ($i === 0) {
                 $this->cVorschaubild = $image->cPfadKlein;
@@ -4308,8 +4313,11 @@ class Artikel
             }
             $this->bSuchspecial_arr = $bSuchspecial_arr;
             // SuchspecialBild anhand der hächsten Prio und des gesetzten Suchspecials festlegen
+            $shopURL = Shop::getURL() . '/';
             foreach ($searchSpecial_arr as $oSuchspecialoverlay) {
-                if (isset($oSuchspecialoverlay->kSuchspecialOverlay) && $this->bSuchspecial_arr[$oSuchspecialoverlay->kSuchspecialOverlay]) {
+                if (isset($oSuchspecialoverlay->kSuchspecialOverlay)
+                    && $this->bSuchspecial_arr[$oSuchspecialoverlay->kSuchspecialOverlay]
+                ) {
                     if ($this->oSuchspecialBild === null) {
                         $this->oSuchspecialBild = new stdClass();
                     }
@@ -4321,6 +4329,9 @@ class Artikel
                     $this->oSuchspecialBild->nTransparenz = $oSuchspecialoverlay->nTransparenz;
                     $this->oSuchspecialBild->nGroesse     = $oSuchspecialoverlay->nGroesse;
                     $this->oSuchspecialBild->nPosition    = $oSuchspecialoverlay->nPosition;
+                    $this->oSuchspecialBild->cURLGross    = $shopURL . $this->oSuchspecialBild->cPfadGross;
+                    $this->oSuchspecialBild->cURLNormal   = $shopURL . $this->oSuchspecialBild->cPfadNormal;
+                    $this->oSuchspecialBild->cURLKlein    = $shopURL . $this->oSuchspecialBild->cPfadKlein;
                     break;
                 }
             }

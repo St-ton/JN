@@ -300,7 +300,7 @@
                 </td>
                 <td class="tcenter"><img
                             src="templates/bootstrap/gfx/layout/upload.png"
-                            id="{$kSlide}-img" onclick="cmsLiveEditor.onOpenKCFinder(kcfinderCallback.bind(this, '{$kSlide}'));"
+                            id="{$kSlide}-img" onclick="editor.onOpenKCFinder(kcfinderCallback.bind(this, '{$kSlide}'));"
                             alt="Slidergrafik" class="img-responsive" role="button"/></td>
                 <td class="tcenter">
                     <input class="form-control margin2" id="cTitle{$kSlide}" type="text"
@@ -349,7 +349,7 @@
                                            </td>
                                            <td class="tcenter"><img
                                                        src="{if isset($slide['url'])}{$slide['url']}{else}templates/bootstrap/gfx/layout/upload.png{/if}"
-                                                       id="slide{$slide.nSort}-img" onclick="cmsLiveEditor.onOpenKCFinder(kcfinderCallback.bind(this, '{$slide.nSort}'));"
+                                                       id="slide{$slide.nSort}-img" onclick="editor.onOpenKCFinder(kcfinderCallback.bind(this, '{$slide.nSort}'));"
                                                        alt="Slidergrafik" class="img-responsive" role="button"/></td>
                                            <td class="tcenter">
                                                <input class="form-control margin2" id="title{$slide.nSort}" type="text"

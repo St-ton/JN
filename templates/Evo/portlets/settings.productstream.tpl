@@ -57,7 +57,7 @@
         });
     });
 
-    cmsLiveEditor.configSaveCallback = function ()
+    editor.configSaveCallback = function ()
     {
         console.log(articlePicker.getSelection());
         $('#articleIds').val(articlePicker.getSelection().join(','));

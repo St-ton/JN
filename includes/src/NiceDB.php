@@ -572,7 +572,9 @@ class NiceDB implements Serializable
     public function updateRow($tableName, $keyname, $keyvalue, $object, $echo = false)
     {
         $this->validateEntityName($tableName);
-        $this->validateEntityName($keyname);
+        foreach((array)$keyname as $x) {
+            $this->validateEntityName($x);
+        }
         $this->validateDbObject($object);
 
         $start   = ($this->debug === true || $this->collectData === true)
@@ -722,7 +724,9 @@ class NiceDB implements Serializable
         $select = '*'
     ) {
         $this->validateEntityName($tableName);
-        $this->validateEntityName($keyname);
+        foreach((array)$keyname as $x) {
+            $this->validateEntityName($x);
+        }
         if($keyname1 !== null) {
             $this->validateEntityName($keyname1);
         }

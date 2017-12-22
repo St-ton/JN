@@ -538,7 +538,7 @@ class NiceDB implements Serializable
                     } elseif ($object->$property === 'now()') {
                         $values .= $object->$property . ')';
                     } else {
-                        $values .= '"' . $this->pdoEscape($object->$property) . '")';
+                        $values .= $this->pdo->quote($object->$property) . ')';
                     }
                 } else {
                     $columns .= $property . ', ';
@@ -547,7 +547,7 @@ class NiceDB implements Serializable
                     } elseif ($object->$property === 'now()') {
                         $values .= $object->$property . ', ';
                     } else {
-                        $values .= '"' . $this->pdoEscape($object->$property) . '", ';
+                        $values .= $this->pdo->quote($object->$property) . ', ';
                     }
                 }
             }
@@ -793,12 +793,7 @@ class NiceDB implements Serializable
             $i      = 0;
             foreach ($keys as &$k) {
                 if ($k !== null) {
-                    $k .= '=';
-                    if (is_string($values[$i])) {
-                        $k .= '\'' . $values[$i] . '\'';
-                    } else {
-                        $k .= $values[$i];
-                    }
+                    $k .= '=' . $this->pdo->quote($values[$i]);
                 } else {
                     unset($keys[$i]);
                 }
@@ -1174,7 +1169,7 @@ class NiceDB implements Serializable
                 $backtrace = debug_backtrace();
             }
             if (!is_int($keyvalue)) {
-                $keyvalue = $this->pdoEscape($keyvalue);
+                $keyvalue = $this->pdo->quote($keyvalue);
             }
             $stmt = 'DELETE FROM ' . $tableName . ' WHERE ' . $keyname . '=' . $keyvalue;
             $this->analyzeQuery('delete', $stmt, $end - $start, $backtrace);

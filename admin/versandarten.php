@@ -110,16 +110,18 @@ if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && validateToken()) {
 
 if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && validateToken()) {
     $step        = 'Zuschlagsliste';
-    $ZuschlagPLZ = new stdClass();
+
+    $oZipValidator = new ZipValidator($_POST['cISO']);
+    $ZuschlagPLZ   = new stdClass();
     $ZuschlagPLZ->kVersandzuschlag = (int)$_POST['kVersandzuschlag'];
-    $ZuschlagPLZ->cPLZ             = validatePost('postcode', $_POST['cPLZ']);
+    $ZuschlagPLZ->cPLZ             = $oZipValidator->validateZip($_POST['cPLZ']);
     if (!empty($_POST['cPLZAb']) && !empty($_POST['cPLZBis'])) {
         unset($ZuschlagPLZ->cPLZ);
-        $ZuschlagPLZ->cPLZAb  = validatePost('postcode', $_POST['cPLZAb']);
-        $ZuschlagPLZ->cPLZBis = validatePost('postcode', $_POST['cPLZBis']);
+        $ZuschlagPLZ->cPLZAb  = $oZipValidator->validateZip($_POST['cPLZAb']);
+        $ZuschlagPLZ->cPLZBis = $oZipValidator->validateZip($_POST['cPLZBis']);
         if ($ZuschlagPLZ->cPLZAb > $ZuschlagPLZ->cPLZBis) {
-            $ZuschlagPLZ->cPLZAb  = validatePost('postcode', $_POST['cPLZBis']);
-            $ZuschlagPLZ->cPLZBis = validatePost('postcode', $_POST['cPLZAb']);
+            $ZuschlagPLZ->cPLZAb  = $oZipValidator->validateZip($_POST['cPLZBis']);
+            $ZuschlagPLZ->cPLZBis = $oZipValidator->validateZip($_POST['cPLZAb']);
         }
     }
 
@@ -620,53 +622,4 @@ $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]])
        ->assign('oWaehrung', Shop::DB()->select('twaehrung', 'cStandard', 'Y'))
        ->assign('step', $step)
        ->display('versandarten.tpl');
-
-
-
-/**
- * parse the input-string (mainly _POST) and
- * if it was valide by our tests, return this input (unchanged),
- * otherwise return "the empty string" to signalize an error.
- *
- * @param string  what we want to validate. currently possible values:
- *                'postcode' = check (any) international postal code (ZIP)
- * @param string  (_POST-)field input-strings
- * @return string  the input-string if all was fine OR the empty string, if there where errors
- */
-function validatePost($szType, $szSubject) {
-    $szResult = $szSubject;
-    $nError   = 0;
-    switch ($szType) {
-        case 'postcode' :
-            // limit the length of the ZIP for 15 characters at all
-            $nError += (15 < strlen($szSubject));
-
-            // examine each "word" of our ZIP
-            preg_match_all('/[0-9]+|[a-z]+/ui', $szSubject, $vHits);
-            foreach ($vHits[0] as $szPiece) {
-                $nPieceLen = strlen($szPiece);
-                // numbers can have a length of 8 digits
-                if (0 !== (int)$szPiece && 0 < $nPieceLen) {
-                    $nError += (8 < $nPieceLen);
-                }
-                // words can have a length of 10 letters
-                if (0 === (int)$szPiece && 0 < $nPieceLen) {
-                    $nError += (10 < $nPieceLen);
-                }
-            }
-            // "regex-lookaround" for possible ("invisible") cut-positions.
-            // potentially unsafe strings can be divided into more pieces than correct strings.
-            preg_match_all('/(?![0-9]+|[a-z]+)/ui', $szSubject, $vInvisibles);
-            $nError += (count($vInvisibles[0]) > count($vHits[0]));
-
-            break;
-        default :
-            return ''; // no type given, so we return nothing to signalize a error
-            break;
-    }
-    if (0 < $nError) {
-        return '';
-    }
-    return $szResult;
-}
 

@@ -11,7 +11,7 @@
                     {assign var=from value=$Boxen.Tagwolke->Tagbegriffe}
                 {/if}
                 {foreach name=suchwolken from=$from item=Wolke}
-                    <a href="{$Wolke->cURL}" class="tag{$Wolke->Klasse}">{$Wolke->cName}</a>
+                    <a href="{$Wolke->cURLFull}" class="tag{$Wolke->Klasse}">{$Wolke->cName}</a>
                 {/foreach}
             </div>
         </div>

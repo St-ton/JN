@@ -55,7 +55,7 @@
         {foreach name=headlinks from=$linkgroups->Kopf->Links item=Link}
             {if $Link->cLocalizedName|has_trans}
                 <li class="{if isset($Link->aktiv) && $Link->aktiv == 1}active{/if}">
-                    <a href="{$Link->URL}"{if $Link->cNoFollow == 'Y'} rel="nofollow"{/if} title="{$Link->cLocalizedName|trans}">{$Link->cLocalizedName|trans}</a>
+                    <a href="{if !empty($Link->cURLFull)}{$Link->cURLFull}{else}{$Link->URL}{/if}"{if $Link->cNoFollow == 'Y'} rel="nofollow"{/if} title="{$Link->cLocalizedName|trans}">{$Link->cLocalizedName|trans}</a>
                 </li>
             {/if}
         {/foreach}

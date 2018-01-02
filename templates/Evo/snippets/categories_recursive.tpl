@@ -41,7 +41,7 @@
                     {assign var='activeParent' value=$activeParents[$i]}
                 {/if}
                 <li{if $category->kKategorie == $activeId || ((isset($activeParent) && isset($activeParent->kKategorie)) && $activeParent->kKategorie == $category->kKategorie)} class="active"{/if}>
-                    <a href="{$category->cURL}"{if $hasItems} class="nav-sub"{/if} data-ref="{$category->kKategorie}">
+                    <a href="{$category->cURLFull}"{if $hasItems} class="nav-sub"{/if} data-ref="{$category->kKategorie}">
                         {$category->cKurzbezeichnung}
                         {if $hasItems}<i class="fa fa-caret-{$caret} nav-toggle pull-right"></i>{/if}
                     </a>

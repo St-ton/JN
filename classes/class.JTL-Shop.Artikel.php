@@ -1233,6 +1233,7 @@ class Artikel
                     ORDER BY nNr", 2
             );
         }
+        $shopURL    = Shop::getURL() . '/';
         $imageCount = count($bilder_arr);
         $id         = $this->kArtikel;
         for ($i = 0; $i < $imageCount; ++$i) {
@@ -1243,9 +1244,13 @@ class Artikel
             $image->cPfadNormal = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_MD, $imgNo);
             $image->cPfadGross  = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_LG, $imgNo);
             $image->nNr         = $imgNo;
+            $image->cURLMini    = $shopURL . $image->cPfadMini;
+            $image->cURLKlein   = $shopURL . $image->cPfadKlein;
+            $image->cURLNormal  = $shopURL . $image->cPfadNormal;
+            $image->cURLGross   = $shopURL . $image->cPfadGross;
 
             if ($i === 0) {
-                $this->cVorschaubild = $image->cPfadKlein;
+                $this->cVorschaubild = $image->cURLKlein;
             }
             // Lookup image alt attribute
             $idx                 = 'img_alt_' . $imgNo;
@@ -4308,8 +4313,11 @@ class Artikel
             }
             $this->bSuchspecial_arr = $bSuchspecial_arr;
             // SuchspecialBild anhand der hächsten Prio und des gesetzten Suchspecials festlegen
+            $shopURL = Shop::getURL() . '/';
             foreach ($searchSpecial_arr as $oSuchspecialoverlay) {
-                if (isset($oSuchspecialoverlay->kSuchspecialOverlay) && $this->bSuchspecial_arr[$oSuchspecialoverlay->kSuchspecialOverlay]) {
+                if (isset($oSuchspecialoverlay->kSuchspecialOverlay)
+                    && $this->bSuchspecial_arr[$oSuchspecialoverlay->kSuchspecialOverlay]
+                ) {
                     if ($this->oSuchspecialBild === null) {
                         $this->oSuchspecialBild = new stdClass();
                     }
@@ -4321,6 +4329,9 @@ class Artikel
                     $this->oSuchspecialBild->nTransparenz = $oSuchspecialoverlay->nTransparenz;
                     $this->oSuchspecialBild->nGroesse     = $oSuchspecialoverlay->nGroesse;
                     $this->oSuchspecialBild->nPosition    = $oSuchspecialoverlay->nPosition;
+                    $this->oSuchspecialBild->cURLGross    = $shopURL . $this->oSuchspecialBild->cPfadGross;
+                    $this->oSuchspecialBild->cURLNormal   = $shopURL . $this->oSuchspecialBild->cPfadNormal;
+                    $this->oSuchspecialBild->cURLKlein    = $shopURL . $this->oSuchspecialBild->cPfadKlein;
                     break;
                 }
             }
@@ -6140,10 +6151,11 @@ class Artikel
                 GROUP BY ttag.kTag 
                 ORDER BY ttagartikel.nAnzahlTagging DESC {$tag_limit}", 2
         );
-        foreach ($tags as $i => $tag) {
-            $tags[$i]->kTag   = (int)$tags[$i]->kTag;
-            $tags[$i]->Anzahl = (int)$tags[$i]->Anzahl;
-            $tags[$i]->cURL   = baueURL($tags[$i], URLART_TAG);
+        foreach ($tags as $tag) {
+            $tag->kTag     = (int)$tag->kTag;
+            $tag->Anzahl   = (int)$tag->Anzahl;
+            $tag->cURL     = baueURL($tag, URLART_TAG);
+            $tag->cURLFull = baueURL($tag, URLART_TAG, 0, false, true);
         }
         executeHook(HOOK_ARTIKEL_INC_PRODUKTTAGGING, [
                 'kArtikel' => $this->kArtikel,

@@ -40,14 +40,14 @@
                                 {strip}
                                     {foreach name="attr_characteristics" from=$oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
                                         {if $oMerkmal->cTyp === 'TEXT' || $oMerkmal->cTyp === 'SELECTBOX' || $oMerkmal->cTyp === ''}
-                                            <span class="value"><a href="{$oMerkmalWert->cURL}" class="label label-primary">{$oMerkmalWert->cWert|escape:"html"}</a> </span>
+                                            <span class="value"><a href="{$oMerkmalWert->cURLFull}" class="label label-primary">{$oMerkmalWert->cWert|escape:'html'}</a> </span>
                                         {else}
                                             <span class="value">
-                                            <a href="{$oMerkmalWert->cURL}" data-toggle="tooltip" data-placement="top" title="{$oMerkmalWert->cWert|escape:"html"}">
+                                            <a href="{$oMerkmalWert->cURLFull}" data-toggle="tooltip" data-placement="top" title="{$oMerkmalWert->cWert|escape:'html'}">
                                                 {if $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
-                                                    <img src="{$oMerkmalWert->cBildpfadKlein}" title="{$oMerkmalWert->cWert|escape:"html"}" alt="{$oMerkmalWert->cWert|escape:"html"}" />
+                                                    <img src="{$oMerkmalWert->cBildURLKlein}" title="{$oMerkmalWert->cWert|escape:'html'}" alt="{$oMerkmalWert->cWert|escape:'html'}" />
                                                 {else}
-                                                    <span class="value"><a href="{$oMerkmalWert->cURL}" class="label label-primary">{$oMerkmalWert->cWert|escape:"html"}</a> </span>
+                                                    <span class="value"><a href="{$oMerkmalWert->cURLFull}" class="label label-primary">{$oMerkmalWert->cWert|escape:'html'}</a> </span>
                                                 {/if}
                                             </a>
                                         </span>

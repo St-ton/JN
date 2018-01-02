@@ -69,6 +69,22 @@ class Merkmal
      */
     public $cTyp;
 
+
+    /**
+     * @var string
+     */
+    public $cBildURLKlein;
+
+    /**
+     * @var string
+     */
+    public $cBildURLGross;
+
+    /**
+     * @var string
+     */
+    public $cBildURLNormal;
+
     /**
      * Konstruktor
      *
@@ -166,6 +182,8 @@ class Merkmal
                 }
             }
         }
+        $shopURL = Shop::getURL() . '/';
+
         $this->cBildpfadKlein      = BILD_KEIN_MERKMALBILD_VORHANDEN;
         $this->nBildKleinVorhanden = 0;
         $this->cBildpfadGross      = BILD_KEIN_MERKMALBILD_VORHANDEN;
@@ -181,6 +199,9 @@ class Merkmal
                 $this->nBildGrossVorhanden = 1;
             }
         }
+        $this->cBildURLGross  = $shopURL . $this->cBildpfadGross;
+        $this->cBildURLNormal = $shopURL . $this->cBildpfadNormal;
+        $this->cBildURLKlein  = $shopURL . $this->cBildpfadKlein;
 
         executeHook(HOOK_MERKMAL_CLASS_LOADFROMDB);
         Shop::set($id, $this);
@@ -234,6 +255,7 @@ class Merkmal
             );
 
             if ($bMMW && is_array($oMerkmal_arr) && count($oMerkmal_arr) > 0) {
+                $shopURL = Shop::getURL() . '/';
                 foreach ($oMerkmal_arr as $i => $oMerkmal) {
                     $oMerkmalWert                       = new MerkmalWert();
                     $oMerkmal_arr[$i]->oMerkmalWert_arr = $oMerkmalWert->holeAlleMerkmalWerte($oMerkmal->kMerkmal);
@@ -242,9 +264,11 @@ class Merkmal
                         $oMerkmal_arr[$i]->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmal->cBildpfad;
                         $oMerkmal_arr[$i]->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmal->cBildpfad;
                     } else {
-                        $oMerkmal_arr[$i]->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                        $oMerkmal_arr[$i]->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
+                        $oMerkmal_arr[$i]->cBildpfadKlein  = BILD_KEIN_MERKMALBILD_VORHANDEN;
+                        $oMerkmal_arr[$i]->cBildpfadNormal = BILD_KEIN_MERKMALBILD_VORHANDEN;
                     }
+                    $oMerkmal_arr[$i]->cBildURLKlein  = $shopURL . $oMerkmal_arr[$i]->cBildpfadKlein;
+                    $oMerkmal_arr[$i]->cBildURLNormal = $shopURL . $oMerkmal_arr[$i]->cBildpfadNormal;
                 }
             }
         }

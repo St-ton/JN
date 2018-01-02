@@ -189,7 +189,7 @@ Editor.prototype = {
 
     onPortletBtnDragStart: function(e)
     {
-        var elm = this.hostJq(e.target);
+        var elm = this.hostJq(e.target).closest('.portlet-button');
         var newElm = this.iframeJq(elm.data('content'));
 
         newElm.attr('data-portletid', elm.data('portletid'));

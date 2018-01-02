@@ -19,7 +19,7 @@
                             baseFloatZIndex: 9000,
                         });
 
-                        cmsLiveEditor.configSaveCallback = function() {
+                        editor.configSaveCallback = function() {
                             $('#settingsText').val(CKEDITOR.instances.settingsText.getData());
                         };
                     </script>

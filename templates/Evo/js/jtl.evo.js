@@ -151,9 +151,11 @@
                                 img.css('max-height', square);
                                 box.css('line-height', square)
                                     .css('max-height', square)
+                                    .removeClass('loading')
                                     .addClass('loaded');
                             }).error(function() {
-                                box.addClass('error');
+                                box.removeClass('loading')
+                                    .addClass('error');
                             });
                         });
                     //}

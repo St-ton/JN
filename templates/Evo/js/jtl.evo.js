@@ -138,8 +138,7 @@
                     src = img.data('src');
 
                 img.css('max-height', square);
-                box.css('max-height', square)
-                    .addClass('loading');
+                box.css('max-height', square);
 
                 if (src && src.length > 0) {
                     //if (src === 'gfx/keinBild.gif') {

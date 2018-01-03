@@ -63,6 +63,8 @@ Editor.prototype = {
         this.loaderModal = this.hostJq('#loader-modal');
         this.errorModal  = this.hostJq('#error-modal');
         this.errorAlert  = this.hostJq('#error-alert');
+        this.labelElm    = this.hostJq('#portlet-label').hide();
+        this.pinbarElm   = this.hostJq('#pinbar').hide();
 
         if(this.pageUrl !== '') {
             var pageUrlLink = document.createElement('a');
@@ -112,8 +114,6 @@ Editor.prototype = {
             });
 
         this.rootElm = this.iframeJq('.cle-area');
-        this.labelElm = this.iframeJq('<div>', { 'class': 'cle-label' }).appendTo('body').hide();
-        this.pinbarElm = this.hostJq('#pinbar');
         this.btnTrashElm = this.hostJq('#btn-trash');
         this.btnCloneElm = this.hostJq('#btn-clone');
         this.btnConfigElm = this.hostJq('#btn-config');
@@ -129,6 +129,9 @@ Editor.prototype = {
             .click(this.togglePreview.bind(this));
 
         this.pinbarElm
+            .appendTo(this.iframeCtx.document.body);
+
+        this.labelElm
             .appendTo(this.iframeCtx.document.body);
 
         this.btnTrashElm

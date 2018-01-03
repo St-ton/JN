@@ -179,6 +179,6 @@
         <button class="btn btn-default" id="btn-clone"><i class="fa fa-clone"></i></button>
         <button class="btn btn-default" id="btn-config"><i class="fa fa-cog"></i></button>
     </div>
-    <div class="cle-label"></div>
+    <div class="cle-label" id="portlet-label"></div>
 </body>
 </html>

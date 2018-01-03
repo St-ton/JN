@@ -68,7 +68,7 @@ class Tag
     }
 
     /**
-     * Setzt Tag mit Daten aus der DB mit spezifiziertem cName
+     * Gibt Tagobjekt anhand der Sprache und des Namens zurück
      *
      * @access public
      * @param string $cName

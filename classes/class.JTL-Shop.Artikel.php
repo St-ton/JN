@@ -5208,22 +5208,21 @@ class Artikel
             foreach ($this->oKonfig_arr as $gruppe) {
                 /** @var Konfigitem $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
-                    if ($piece->getSelektiert() === 1){
-                        $konfigItemArticle = $piece->getArtikel();
-                        if (!empty($konfigItemArticle)) {
-                            $konfigItemArticle->getDeliveryTime(
-                                $countryCode,
-                                $purchaseQuantity * (float)$piece->getInitial(),
-                                null,
-                                null,
-                                $shippingID
-                            );
-                            if (isset($konfigItemArticle->nMaxDeliveryDays)) {
-                                $maxDeliveryDays = max($maxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
-                            }
-                            if (isset($konfigItemArticle->nMinDeliveryDays)) {
-                                $minDeliveryDays = max($minDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
-                            }
+                    $konfigItemArticle = $piece->getArtikel();
+                    if (!empty($konfigItemArticle)) {
+                        $konfigItemArticle->getDeliveryTime(
+                            $countryCode,
+                            $purchaseQuantity * (float)$piece->getInitial(),
+                            null,
+                            null,
+                            $shippingID
+                        );
+                        // find shortest shipping time in configuration
+                        if (isset($konfigItemArticle->nMaxDeliveryDays)) {
+                            $maxDeliveryDays = min($maxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
+                        }
+                        if (isset($konfigItemArticle->nMinDeliveryDays)) {
+                            $minDeliveryDays = min($minDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
                         }
                     }
                 }

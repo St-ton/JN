@@ -2,11 +2,11 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
-wir haben Ihre Kundengruppe geändert. Sie müßten ab sofort andere Preise als den Standardpreis angezeigt bekommen.<br>
+wir haben Ihre Kundengruppe geÃ¤ndert. Sie mÃ¼ÃŸten ab sofort andere Preise als den Standardpreis angezeigt bekommen.<br>
 <br>
 Momentan haben wir es noch nicht geschafft, alle Preise anzupassen.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem GruÃŸ,<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

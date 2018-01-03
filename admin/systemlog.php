@@ -3,88 +3,98 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
 
-$oAccount->permission('SYSTEMLOG_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$cHinweis          = '';
-$cFehler           = '';
-$cSuche            = '';
-$nLevel            = 0;
-$step              = 'systemlog_uebersicht';
-
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
-}
-if (strlen(verifyGPDataString('cSucheEncode')) > 0) {
-    $cSuche = urldecode(verifyGPDataString('cSucheEncode'));
-}
-if (strlen(verifyGPDataString('cSuche')) > 0) {
-    $cSuche = verifyGPDataString('cSuche');
-}
-if (strlen(verifyGPCDataInteger('nLevel')) > 0) {
-    $nLevel = verifyGPCDataInteger('nLevel');
-}
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && validateToken()) {
-    Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [1, 'systemlog_flag']);
-    $ins                        = new stdClass();
-    $ins->kEinstellungenSektion = 1;
-    $ins->cName                 = 'systemlog_flag';
-    $ins->cWert                 = (isset($_POST['nFlag']) && count($_POST['nFlag']) > 0)
-        ? Jtllog::setBitFlag(array_map('cleanSystemFlag', $_POST['nFlag']))
-        : 0;
-    Shop::DB()->insert('teinstellungen', $ins);
-    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
-
-    $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
-} elseif (isset($_POST['a']) && $_POST['a'] === 'del' && validateToken()) {
-    Jtllog::deleteAll();
-    $cHinweis = 'Ihr Systemlog wurde erfolgreich gel&ouml;scht.';
-}
-
-if ($step === 'systemlog_uebersicht') {
-    $nLogCount = Jtllog::getLogCount($cSuche, $nLevel);
-    // Pagination
-    $oPagination = (new Pagination())
-        ->setItemCount($nLogCount)
-        ->assemble();
-    // Log
-    $oLog_arr = Jtllog::getLog($cSuche, $nLevel, $oPagination->getFirstPageItem(), $oPagination->getPageItemCount());
-    /** @var Jtllog $oLog */
-    foreach ($oLog_arr as &$oLog) {
-        $cLog = $oLog->getcLog();
-        $cLog = preg_replace('/\[(.*)\] => (.*)/', '<span class="hl_key">$1</span>: <span class="hl_value">$2</span>', $cLog);
-        $cLog = str_replace(['(', ')'], ['<span class="hl_brace">(</span>', '<span class="hl_brace">)</span>'], $cLog);
-
-        $oLog->setcLog($cLog, false);
-    }
-
-    $nSystemlogFlag                 = getSytemlogFlag(false);
-    $nFlag_arr[JTLLOG_LEVEL_ERROR]  = Jtllog::isBitFlagSet(JTLLOG_LEVEL_ERROR, $nSystemlogFlag);
-    $nFlag_arr[JTLLOG_LEVEL_NOTICE] = Jtllog::isBitFlagSet(JTLLOG_LEVEL_NOTICE, $nSystemlogFlag);
-    $nFlag_arr[JTLLOG_LEVEL_DEBUG]  = Jtllog::isBitFlagSet(JTLLOG_LEVEL_DEBUG, $nSystemlogFlag);
-
-    $smarty->assign('oLog_arr', $oLog_arr)
-           ->assign('oPagination', $oPagination)
-           ->assign('nFlag_arr', $nFlag_arr)
-           ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
-           ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
-           ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG);
-}
 /**
- * @param $nFlag
- * @return int
+ * @global JTLSmarty $smarty
+ * @global AdminAccount $oAccount
  */
-function cleanSystemFlag($nFlag)
-{
-    return (int)$nFlag;
+require_once __DIR__ . '/includes/admininclude.php';
+$oAccount->permission('SYSTEMLOG_VIEW', true, true);
+
+$cHinweis = '';
+$cFehler  = '';
+
+if (validateToken()) {
+    if (verifyGPDataString('action') === 'clearsyslog') {
+        Jtllog::deleteAll();
+        $cHinweis = 'Ihr Systemlog wurde erfolgreich gel&ouml;scht.';
+    } elseif (verifyGPDataString('action') === 'save') {
+        $obj = (object)[
+            'cWert' => isset($_REQUEST['nLevelFlags']) ? Jtllog::setBitFlag($_REQUEST['nLevelFlags']) : 0
+        ];
+        Shop::DB()->update('teinstellungen', 'cName', 'systemlog_flag', $obj);
+        Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+        $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
+        $smarty->assign('cTab', 'config');
+    } elseif (verifyGPDataString('action') === 'delselected') {
+        if (isset($_REQUEST['selected'])) {
+            foreach ($_REQUEST['selected'] as $kLog) {
+                $oLog = new Jtllog($kLog);
+                if ($oLog->delete() === -1) {
+                    $cFehler .= 'Log-Eintrag vom ' . $oLog->getErstellt() . ' konnte nicht gel&ouml;scht werden.<br>';
+                }
+            }
+
+            if ($cFehler === '') {
+                $cHinweis = 'Alle markierten Log-Eintr&auml;ge wurden gel&ouml;scht.';
+            }
+        }
+    }
 }
 
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('cSucheEncode', (isset($cSucheEncode) ? urlencode($cSucheEncode) : null))
-       ->assign('cSuche', $cSuche)
-       ->assign('nLevel', $nLevel)
-       ->assign('step', $step)
-       ->display('systemlog.tpl');
+$oFilter      = new Filter('syslog');
+$oLevelSelect = $oFilter->addSelectfield('Loglevel', 'nLevel');
+$oLevelSelect->addSelectOption('alle', '');
+$oLevelSelect->addSelectOption('Fehler', '1', 4);
+$oLevelSelect->addSelectOption('Hinweis', '2', 4);
+$oLevelSelect->addSelectOption('Debug', '4', 4);
+$oFilter->addDaterangefield('Zeitraum', 'dErstellt');
+$oSearchfield = $oFilter->addTextfield('Suchtext', 'cLog', 1);
+$oFilter->assemble();
+
+$cSearchString     = $oSearchfield->getValue();
+$nSelectedLevel    = $oLevelSelect->getSelectedOption()->getValue();
+$nTotalLogCount    = Jtllog::getLogCount('');
+$nFilteredLogCount = Jtllog::getLogCount($cSearchString, $nSelectedLevel);
+
+$oPagination = (new Pagination('syslog'))
+    ->setItemsPerPageOptions([10, 20, 50, 100, -1])
+    ->setItemCount($nFilteredLogCount)
+    ->assemble();
+
+$oLog_arr       = Jtllog::getLogWhere($oFilter->getWhereSQL(), $oPagination->getLimitSQL());
+$nSystemlogFlag = getSytemlogFlag(false);
+$nLevelFlag_arr = [
+    JTLLOG_LEVEL_ERROR => Jtllog::isBitFlagSet(JTLLOG_LEVEL_ERROR, $nSystemlogFlag),
+    JTLLOG_LEVEL_NOTICE => Jtllog::isBitFlagSet(JTLLOG_LEVEL_NOTICE, $nSystemlogFlag),
+    JTLLOG_LEVEL_DEBUG => Jtllog::isBitFlagSet(JTLLOG_LEVEL_DEBUG, $nSystemlogFlag),
+];
+
+foreach ($oLog_arr as $oLog) {
+    $oLog->cLog = preg_replace(
+        '/\[(.*)\] => (.*)/',
+        '<span class="text-primary">$1</span>: <span class="text-success">$2</span>',
+        $oLog->cLog
+    );
+
+    if ($oSearchfield->getValue()) {
+        $oLog->cLog = preg_replace(
+            '/(' . preg_quote($oSearchfield->getValue(), '/') . ')/i',
+            '<mark>$1</mark>',
+            $oLog->cLog
+        );
+    }
+}
+
+$smarty
+    ->assign('cHinweis', $cHinweis)
+    ->assign('cFehler', $cFehler)
+    ->assign('oFilter', $oFilter)
+    ->assign('oPagination', $oPagination)
+    ->assign('oLog_arr', $oLog_arr)
+    ->assign('nLevelFlag_arr', $nLevelFlag_arr)
+    ->assign('nTotalLogCount', $nTotalLogCount)
+    ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
+    ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
+    ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG)
+    ->display('systemlog.tpl');

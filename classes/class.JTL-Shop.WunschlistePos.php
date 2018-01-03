@@ -140,7 +140,9 @@ class WunschlistePos
     public function istEigenschaftEnthalten($kEigenschaft, $kEigenschaftWert)
     {
         foreach ($this->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft) {
-            if ($CWunschlistePosEigenschaft->kEigenschaft == $kEigenschaft && $CWunschlistePosEigenschaft->kEigenschaftWert == $kEigenschaftWert) {
+            if ($CWunschlistePosEigenschaft->kEigenschaft == $kEigenschaft
+                && $CWunschlistePosEigenschaft->kEigenschaftWert == $kEigenschaftWert
+            ) {
                 return true;
             }
         }

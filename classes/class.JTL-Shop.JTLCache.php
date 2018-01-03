@@ -143,7 +143,7 @@ class JTLCache
      */
     public static function getInstance($options = [])
     {
-        return (self::$instance !== null) ? self::$instance : new self($options);
+        return self::$instance !== null ? self::$instance : new self($options);
     }
 
     /**
@@ -155,9 +155,9 @@ class JTLCache
      */
     public function __call($method, $arguments)
     {
-        $mapping = self::map($method);
-
-        return ($mapping !== null) ? call_user_func_array([$this, $mapping], $arguments) : null;
+        return ($mapping = self::map($method)) !== null
+            ? call_user_func_array([$this, $mapping], $arguments)
+            : null;
     }
 
     /**
@@ -170,9 +170,9 @@ class JTLCache
      */
     public static function __callStatic($method, $arguments)
     {
-        $mapping = self::map($method);
-
-        return ($mapping !== null) ? call_user_func_array([self::$instance, $mapping], $arguments) : null;
+        return ($mapping = self::map($method)) !== null
+            ? call_user_func_array([self::$instance, $mapping], $arguments)
+            : null;
     }
 
     /**
@@ -183,7 +183,7 @@ class JTLCache
      */
     private static function map($method)
     {
-        $mapping = [
+        static $mapping = [
             'get'                => '_get',
             'fetch'              => '_get',
             'set'                => '_set',
@@ -305,35 +305,35 @@ class JTLCache
     public function setOptions($options = [])
     {
         $defaults = [
-            'activated'        => false, //main switch
-            'method'           => 'null', //caching method to use - init with null to avoid errors after installation
+            'activated'        => false, // main switch
+            'method'           => 'null', // caching method to use - init with null to avoid errors after installation
             'redis_port'       => self::DEFAULT_REDIS_PORT, //port of redis server
-            'redis_pass'       => null, //password for redis server
+            'redis_pass'       => null, // password for redis server
             'redis_host'       => self::DEFAULT_REDIS_HOST, //host of redis server
-            'redis_db'         => null, //optional redis database id, null or 0 for default
-            'redis_persistent' => false, //optional redis database id, null or 0 for default
-            'memcache_port'    => self::DEFAULT_MEMCACHE_PORT, //port for memcache(d) server
-            'memcache_host'    => self::DEFAULT_MEMCACHE_HOST, //host of memcache(d) server
-            'prefix'           => 'jc_' . (defined('DB_NAME') ? DB_NAME . '_' : ''), //try to make a quite unique prefix if multiple shops are used
-            'lifetime'         => self::DEFAULT_LIFETIME, //cache lifetime in seconds
-            'collect_stats'    => false, //used to tell caching methods to collect statistical data or not (if not provided transparently)
-            'debug'            => false, //enable or disable collecting of debug data
-            'debug_method'     => 'echo', //'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
+            'redis_db'         => null, // optional redis database id, null or 0 for default
+            'redis_persistent' => false, // optional redis database id, null or 0 for default
+            'memcache_port'    => self::DEFAULT_MEMCACHE_PORT, // port for memcache(d) server
+            'memcache_host'    => self::DEFAULT_MEMCACHE_HOST, // host of memcache(d) server
+            'prefix'           => 'jc_' . (defined('DB_NAME') ? DB_NAME . '_' : ''), // try to make a quite unique prefix if multiple shops are used
+            'lifetime'         => self::DEFAULT_LIFETIME, // cache lifetime in seconds
+            'collect_stats'    => false, // used to tell caching methods to collect statistical data or not (if not provided transparently)
+            'debug'            => false, // enable or disable collecting of debug data
+            'debug_method'     => 'echo', // 'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
             'cache_dir'        => OBJECT_CACHE_DIR, //file cache directory
-            'file_extension'   => '.fc', //file extension for file cache
-            'page_cache'       => false, //smarty page cache switch
-            'types_disabled'   => [] //disabled cache groups
+            'file_extension'   => '.fc', // file extension for file cache
+            'page_cache'       => false, // smarty page cache switch
+            'types_disabled'   => [] // disabled cache groups
         ];
-        //merge defaults with assigned options and set them
+        // merge defaults with assigned options and set them
         $this->options = array_merge($defaults, $options);
-        //always add trailing slash
+        // always add trailing slash
         if (substr($this->options['cache_dir'], strlen($this->options['cache_dir']) - 1) !== '/') {
             $this->options['cache_dir'] .= '/';
         }
         if ($this->options['method'] !== 'redis' && (int)$this->options['lifetime'] < 0) {
             $this->options['lifetime'] = 0;
         }
-        //accept only valid integer lifetime values
+        // accept only valid integer lifetime values
         $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int)$this->options['lifetime'] === 0)
             ? self::DEFAULT_LIFETIME
             : (int)$this->options['lifetime'];
@@ -362,13 +362,13 @@ class JTLCache
             $className = 'cache_' . $methodName;
             $cache     = $className::getInstance($this->options);
         }
-        //check method's health
+        // check method's health
         if (!empty($cache) && $cache instanceof ICachingMethod && $cache->isInitialized() && $cache->isAvailable()) {
             $this->setMethod($cache);
 
             return true;
         }
-        //fallback to null method
+        // fallback to null method
         if (file_exists(CACHING_METHODS_DIR . 'class.cachingMethod.null.php')) {
             require_once CACHING_METHODS_DIR . 'class.cachingMethod.null.php';
             $this->setMethod(cache_null::getInstance($this->options));
@@ -397,7 +397,7 @@ class JTLCache
      */
     public function getJtlCacheConfig()
     {
-        //the DB class is needed for this
+        // the DB class is needed for this
         if (!class_exists('Shop')) {
             return [];
         }
@@ -416,14 +416,14 @@ class JTLCache
                 } else {
                     $value = $_conf->cWert;
                 }
-                //naming convention is 'caching_'<var-name> for options saved in database
+                // naming convention is 'caching_'<var-name> for options saved in database
                 $cacheInit[str_replace('caching_', '', $_conf->cName)] = $value;
             }
         }
-        //disabled cache types are saved as serialized string in db
-        if (isset($cacheInit['types_disabled']) &&
-            is_string($cacheInit['types_disabled']) &&
-            $cacheInit['types_disabled'] !== ''
+        // disabled cache types are saved as serialized string in db
+        if (isset($cacheInit['types_disabled'])
+            && is_string($cacheInit['types_disabled'])
+            && $cacheInit['types_disabled'] !== ''
         ) {
             $cacheInit['types_disabled'] = unserialize($cacheInit['types_disabled']);
         }
@@ -451,14 +451,14 @@ class JTLCache
     public function init()
     {
         if ($this->options['activated'] === true) {
-            //set the configure caching method
+            // set the configure caching method
             $this->setCache($this->options['method']);
-            //preload shop settings and lang vars to avoid single cache/mysql requests
+            // preload shop settings and lang vars to avoid single cache/mysql requests
             $settings = Shopsetting::getInstance();
             $settings->preLoad();
             Shop::Lang()->preLoad();
         } else {
-            //set fallback null method
+            // set fallback null method
             $this->setCache('null');
         }
 
@@ -531,7 +531,7 @@ class JTLCache
      */
     public function _get($cacheID, $callback = null, $customData = null)
     {
-        $res              = ($this->options['activated'] === true)
+        $res              = $this->options['activated'] === true
             ? $this->_method->load($cacheID)
             : false;
         $this->resultCode = ($res !== false || $this->_method->keyExists($cacheID))
@@ -589,7 +589,7 @@ class JTLCache
                 Profiler::setCacheProfile('set', (($res !== false) ? 'success' : 'failure'), $cacheID);
             }
         }
-        $this->resultCode = ($res === false) ? self::RES_FAIL : self::RES_SUCCESS;
+        $this->resultCode = $res === false ? self::RES_FAIL : self::RES_SUCCESS;
 
         return $res;
     }
@@ -611,7 +611,7 @@ class JTLCache
                     $this->_setCacheTag($tags, $_cacheID);
                 }
             }
-            $this->resultCode = self::RES_UNDEF; //for now, let's not check every part of the result
+            $this->resultCode = self::RES_UNDEF; // for now, let's not check every part of the result
 
             return $res;
         }
@@ -628,7 +628,7 @@ class JTLCache
      */
     public function _getMulti($cacheIDs)
     {
-        $this->resultCode = self::RES_UNDEF; //for now, let's not check every part of the result
+        $this->resultCode = self::RES_UNDEF; // for now, let's not check every part of the result
 
         return $this->_method->loadMulti($cacheIDs);
     }
@@ -643,12 +643,12 @@ class JTLCache
     public function _isCacheGroupActive($groupID)
     {
         if ($this->options['activated'] === false) {
-            //if the cache is disabled, every tag is inactive
+            // if the cache is disabled, every tag is inactive
             return false;
         }
-        if (is_string($groupID) &&
-            is_array($this->options['types_disabled']) &&
-            in_array($groupID, $this->options['types_disabled'], true)
+        if (is_string($groupID)
+            && is_array($this->options['types_disabled'])
+            && in_array($groupID, $this->options['types_disabled'], true)
         ) {
             return false;
         }
@@ -681,7 +681,7 @@ class JTLCache
      */
     public function _setCacheTag($tags, $cacheID)
     {
-        return ($this->options['activated'] === true)
+        return $this->options['activated'] === true
             ? $this->_method->setCacheTag($tags, $cacheID)
             : false;
     }
@@ -694,7 +694,7 @@ class JTLCache
      */
     public function _setCacheLifetime($lifetime)
     {
-        $this->options['lifetime'] = ((int)$lifetime > 0)
+        $this->options['lifetime'] = (int)$lifetime > 0
             ? (int)$lifetime
             : self::DEFAULT_LIFETIME;
 
@@ -863,17 +863,19 @@ class JTLCache
      */
     public function _getAllMethods()
     {
-        $methodNames = [];
-        $files       = scandir(CACHING_METHODS_DIR);
-        if (is_array($files)) {
-            foreach ($files as $_file) {
-                if (strpos($_file, 'class.cachingMethod') !== false) {
-                    $methodNames[] = str_replace(['class.cachingMethod.', '.php'], '', $_file);
-                }
-            }
+        $files = scandir(CACHING_METHODS_DIR, SCANDIR_SORT_ASCENDING);
+        if (!is_array($files)) {
+            return [];
         }
 
-        return $methodNames;
+        return array_filter(array_map(
+            function ($m) {
+                return strpos($m, 'class.cachingMethod') !== false
+                    ? str_replace(['class.cachingMethod.', '.php'], '', $m)
+                    : false;
+            },
+            $files
+        ));
     }
 
     /**
@@ -919,46 +921,40 @@ class JTLCache
     public function _getBaseID($hash = false, $customerID = false, $customerGroup = true, $languageID = true, $currencyID = true, $sslStatus = true)
     {
         $baseID = 'b';
-        //add customer ID
+        // add customer ID
         if ($customerID === true) {
             $baseID .= '_cid';
             $baseID .= isset($_SESSION['Kunde']->kKunde)
                 ? $_SESSION['Kunde']->kKunde
                 : '-1';
         }
-        //add customer group
+        // add customer group
         if ($customerGroup === true) {
-            $baseID .= '_cgid';
-            $baseID .= isset($_SESSION['Kundengruppe']->kKundengruppe)
-                ? $_SESSION['Kundengruppe']->kKundengruppe
-                : Kundengruppe::getDefaultGroupID();
+            $baseID .= '_cgid' . Session::CustomerGroup()->getID();
         } elseif (is_numeric($customerGroup)) {
             $baseID .= '_cgid' . (int)$customerGroup;
         }
-        //add language ID
+        // add language ID
         if ($languageID === true) {
             $baseID .= '_lid';
             $lang = Shop::getLanguage();
             if ($lang > 0) {
                 $baseID .= $lang;
-            } elseif (isset($_SESSION['kSprache'])) {
-                $baseID .= $_SESSION['kSprache'];
+            } elseif (Shop::getLanguage() > 0) {
+                $baseID .= Shop::getLanguage();
             } else {
                 $baseID .= '0';
             }
         } elseif (is_numeric($languageID)) {
             $baseID .= '_lid' . (int)$languageID;
         }
-        //add currency ID
+        // add currency ID
         if ($currencyID === true) {
-            $baseID .= '_curid';
-            $baseID .= isset($_SESSION['Waehrung']->kWaehrung)
-                ? $_SESSION['Waehrung']->kWaehrung
-                : '0';
+            $baseID .= '_curid' . Session::Currency()->getID();
         } elseif (is_numeric($currencyID)) {
             $baseID .= '_curid' . (int)$currencyID;
         }
-        //add current SSL status
+        // add current SSL status
         if ($sslStatus === true && function_exists('pruefeSSL')) {
             $baseID .= '_ssl' . pruefeSSL();
         }
@@ -967,7 +963,7 @@ class JTLCache
             echo '<br>generated $baseID ' . $baseID;
         }
 
-        return ($hash === true) ? md5($baseID) : $baseID;
+        return $hash === true ? md5($baseID) : $baseID;
     }
 
     /**
@@ -985,7 +981,7 @@ class JTLCache
     {
         $this->options['activated'] = true;
         $this->options['lifetime']  = self::DEFAULT_LIFETIME;
-        //sanitize input
+        // sanitize input
         if (!is_int($runCount) || $runCount < 1) {
             $runCount = 1;
         }
@@ -1017,7 +1013,7 @@ class JTLCache
             ];
             if ($cacheSetRes !== false) {
                 for ($i = 0; $i < $repeat; ++$i) {
-                    //set testing
+                    // set testing
                     $start = microtime(true);
                     for ($j = 0; $j < $runCount; ++$j) {
                         $cacheID = 'c_' . $j;
@@ -1026,7 +1022,7 @@ class JTLCache
                     $end          = microtime(true);
                     $runTimingSet = ($end - $start);
                     $timesSet += $runTimingSet;
-                    //get testing
+                    // get testing
                     $start = microtime(true);
                     for ($j = 0; $j < $runCount; ++$j) {
                         $cacheID = 'c_' . $j;
@@ -1048,7 +1044,7 @@ class JTLCache
                 return $result;
             }
             if ($timesSet > 0.0 && $timesGet > 0.0 && $validResults !== false) {
-                //calculate averages
+                // calculate averages
                 $rpsGet   = ($runCount * $repeat / $timesGet);
                 $rpsSet   = ($runCount * $repeat / $timesSet);
                 $timesSet /= $repeat;
@@ -1059,7 +1055,7 @@ class JTLCache
                     $rpsSet   = number_format($rpsSet, 2, ',', '.');
                     $rpsGet   = number_format($rpsGet, 2, ',', '.');
                 }
-                //output averages
+                // output averages
                 if ($echo === true) {
                     echo '<br />Avg. time for setting: ' . $timesSet . 's (' . $rpsSet . ' requests per second)';
                     echo '<br />Avg. time for getting: ' . $timesGet . 's (' . $rpsGet . ' requests per second)';

@@ -6,46 +6,36 @@
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
     /**
-     * RMAGrund Class
-     *
-     * @access public
-     * @author
-     * @copyright
+     * Class RMAGrund
      */
     class RMAGrund
     {
         /**
-         * @access protected
          * @var int
          */
         protected $kRMAGrund;
 
         /**
-         * @access protected
          * @var int
          */
         protected $kSprache;
 
         /**
-         * @access protected
          * @var int
          */
         protected $nSort;
 
         /**
-         * @access protected
          * @var string
          */
         protected $cGrund;
 
         /**
-         * @access protected
          * @var string
          */
         protected $cKommentar;
 
         /**
-         * @access protected
          * @var int
          */
         protected $nAktiv;
@@ -54,7 +44,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          * Constructor
          *
          * @param int $kRMAGrund primary key
-         * @access public
          */
         public function __construct($kRMAGrund = 0)
         {
@@ -67,7 +56,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          * Loads database member into class member
          *
          * @param int $kRMAGrund primary key
-         * @access private
          */
         private function loadFromDB($kRMAGrund = 0)
         {
@@ -90,7 +78,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          *
          * @param bool $bPrim - Controls the return of the method
          * @return bool|int
-         * @access public
          */
         public function save($bPrim = true)
         {
@@ -117,7 +104,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          * Update the class in the database
          *
          * @return int
-         * @access public
          */
         public function update()
         {
@@ -137,7 +123,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          * Delete the class in the database
          *
          * @return int
-         * @access public
          */
         public function delete()
         {
@@ -145,9 +130,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the kRMAGrund
-         *
-         * @access public
          * @param int $kRMAGrund
          * @return $this
          */
@@ -159,9 +141,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the kSprache
-         *
-         * @access public
          * @param int $kSprache
          * @return $this
          */
@@ -173,9 +152,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the nSort
-         *
-         * @access public
          * @param int $nSort
          * @return $this
          */
@@ -187,9 +163,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the cGrund
-         *
-         * @access public
          * @param string $cGrund
          * @return $this
          */
@@ -201,9 +174,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the cKommentar
-         *
-         * @access public
          * @param string $cKommentar
          * @return $this
          */
@@ -215,9 +185,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the nAktiv
-         *
-         * @access public
          * @param int $nAktiv
          * @return $this
          */
@@ -229,9 +196,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the kRMAGrund
-         *
-         * @access public
          * @return int
          */
         public function getRMAGrund()
@@ -240,9 +204,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the kSprache
-         *
-         * @access public
          * @return int
          */
         public function getSprache()
@@ -251,9 +212,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the nSort
-         *
-         * @access public
          * @return int
          */
         public function getSort()
@@ -262,9 +220,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the cGrund
-         *
-         * @access public
          * @return string
          */
         public function getGrund()
@@ -273,9 +228,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the cKommentar
-         *
-         * @access public
          * @return string
          */
         public function getKommentar()
@@ -284,9 +236,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the nAktiv
-         *
-         * @access public
          * @return int
          */
         public function getAktiv()
@@ -303,7 +252,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $cPlausi_arr = $this->checkReason();
 
             if (count($cPlausi_arr) === 0) {
-                $kRMAGrund = $this->save(true);
+                $kRMAGrund = $this->save();
 
                 if ($kRMAGrund > 0) {
                     return $bPrimary ? $kRMAGrund : true;

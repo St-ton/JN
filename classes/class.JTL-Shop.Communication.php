@@ -29,8 +29,6 @@ final class Communication
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
             curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, DEFAULT_CURL_OPT_VERIFYPEER);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, DEFAULT_CURL_OPT_VERIFYHOST);
 
             $cContent = curl_exec_follow($ch);
 
@@ -47,14 +45,13 @@ final class Communication
      * @param array  $xData_arr
      * @param bool   $bPost
      * @return string
+     * @throws Exception
      */
     public static function postData($cURL, $xData_arr = [], $bPost = true)
     {
-        if (is_array($xData_arr)) {
-            return self::doCall($cURL, $xData_arr, $bPost);
-        }
-
-        return '';
+        return is_array($xData_arr)
+            ? self::doCall($cURL, $xData_arr, $bPost)
+            : '';
     }
 
     /**
@@ -62,6 +59,7 @@ final class Communication
      * @param string $cFile
      * @param bool   $bDeleteFile
      * @return mixed|string
+     * @throws Exception
      */
     public static function sendFile($cURL, $cFile, $bDeleteFile = false)
     {

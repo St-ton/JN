@@ -39,7 +39,7 @@
     function checkCombination() {
         var remove = false;
         $("select[name='Versandklassen']").each(function (index) {
-            if (index == 0) {
+            if (index === 0) {
                 if ($.inArray("-1", $(this).val()) != -1) {
                     if (!confirmAllCombi()) {
                         var valSelected = $(this).val();
@@ -663,4 +663,4 @@
             </div>
         </div>
     </form>
-</div><!-- #content -->
+</div>

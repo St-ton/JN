@@ -2,7 +2,7 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
-der Versandstatus Ihrer Bestellung mit der Bestell-Nr. {$Bestellung->cBestellNr} hat sich ge‰ndert.<br>
+der Versandstatus Ihrer Bestellung mit der Bestell-Nr. {$Bestellung->cBestellNr} hat sich ge√§ndert.<br>
 <br>
 {foreach name=pos from=$Bestellung->oLieferschein_arr item=oLieferschein}
     {if !$oLieferschein->getEmailVerschickt()}
@@ -56,9 +56,9 @@ der Versandstatus Ihrer Bestellung mit der Bestell-Nr. {$Bestellung->cBestellNr}
     {/if}
 {/foreach}<br>
 <br>
-‹ber den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.<br>
+√úber den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.<br>
 <br>
-Mit freundlichem Gruﬂ,<br>
+Mit freundlichem Gru√ü,<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

@@ -94,7 +94,7 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && validateToken())
             Shop::DB()->delete(
                 'tkontaktbetreffsprache',
                 ['kKontaktBetreff', 'cISOSprache'],
-                [(int)$kKontaktBetreff, $sprache->cISO]
+                [$kKontaktBetreff, $sprache->cISO]
             );
             Shop::DB()->insert('tkontaktbetreffsprache', $neuerBetreffSprache);
         }

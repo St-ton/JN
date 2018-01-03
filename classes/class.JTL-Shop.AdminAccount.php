@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_INCLUDES_LIBS . 'password_compat/password.php';
 
 /**
  * Class AdminAccount
@@ -55,18 +54,17 @@ class AdminAccount
                 $timeStamp    = $timestampAndHash[0];
                 $originalHash = $timestampAndHash[1];
                 //check if the link is not expired (=24 hours valid)
-                $createdAt = new DateTime();
-                $createdAt->setTimestamp((int)$timeStamp);
-                $now  = new DateTime();
-                $diff = $now->diff($createdAt);
-                $secs = ($diff->format('%a') * (60 * 60 * 24)); //total days
-                $secs += (int)$diff->format('%h') * (60 * 60); //hours
-                $secs += (int)$diff->format('%i') * 60; //minutes
-                $secs += (int)$diff->format('%s'); //seconds
+                $createdAt = (new DateTime())->setTimestamp((int)$timeStamp);
+                $now       = new DateTime();
+                $diff      = $now->diff($createdAt);
+                $secs      = ($diff->format('%a') * (60 * 60 * 24)); //total days
+                $secs      += (int)$diff->format('%h') * (60 * 60); //hours
+                $secs      += (int)$diff->format('%i') * 60; //minutes
+                $secs      += (int)$diff->format('%s'); //seconds
                 if ($secs > (60 * 60 * 24)) {
                     return false;
                 }
-                //check the submitted hash against the saved one
+                // check the submitted hash against the saved one
                 return password_verify($hash, $originalHash);
             }
         }
@@ -126,10 +124,11 @@ class AdminAccount
         if (!is_object($oAdmin)) {
             return -3;
         }
-        if (!$oAdmin->bAktiv && $oAdmin->kAdminlogingruppe != ADMINGROUP) {
+        $oAdmin->kAdminlogingruppe = (int)$oAdmin->kAdminlogingruppe;
+        if (!$oAdmin->bAktiv && $oAdmin->kAdminlogingruppe !== ADMINGROUP) {
             return -4;
         }
-        if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe != ADMINGROUP) {
+        if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== ADMINGROUP) {
             if ($oAdmin->dGueltigTS < time()) {
                 return -5;
             }
@@ -248,7 +247,7 @@ class AdminAccount
     public function redirectOnFailure()
     {
         if (!$this->logged()) {
-            $url = (strpos(basename($_SERVER['REQUEST_URI']), 'logout.php') === false)
+            $url = strpos(basename($_SERVER['REQUEST_URI']), 'logout.php') === false
                 ? '?uri=' . base64_encode(basename($_SERVER['REQUEST_URI']))
                 : '';
             header('Location: index.php' . $url);
@@ -276,12 +275,12 @@ class AdminAccount
             $this->redirectOnFailure();
         }
         // grant full access to admin
-        if ($this->account() !== false && $this->account()->oGroup->kAdminlogingruppe == ADMINGROUP) {
+        if ($this->account() !== false && (int)$this->account()->oGroup->kAdminlogingruppe === ADMINGROUP) {
             return true;
         }
-        $bAccess = (isset($_SESSION['AdminAccount']->oGroup) && is_object($_SESSION['AdminAccount']->oGroup) &&
-            is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr) &&
-            in_array($cRecht, $_SESSION['AdminAccount']->oGroup->oPermission_arr));
+        $bAccess = (isset($_SESSION['AdminAccount']->oGroup) && is_object($_SESSION['AdminAccount']->oGroup)
+            && is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr)
+            && in_array($cRecht, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true));
         if ($bShowNoAccessPage && !$bAccess) {
             Shop::Smarty()->display('tpl_inc/berechtigung.tpl');
             exit;
@@ -404,7 +403,7 @@ class AdminAccount
     private function _toSession($oAdmin)
     {
         $oGroup = $this->_getPermissionsByGroup($oAdmin->kAdminlogingruppe);
-        if (is_object($oGroup) || $oAdmin->kAdminlogingruppe == ADMINGROUP) {
+        if (is_object($oGroup) || (int)$oAdmin->kAdminlogingruppe === ADMINGROUP) {
             $_SESSION['AdminAccount']              = new stdClass();
             $_SESSION['AdminAccount']->cURL        = Shop::getURL();
             $_SESSION['AdminAccount']->kAdminlogin = $oAdmin->kAdminlogin;
@@ -436,9 +435,7 @@ class AdminAccount
      */
     private function _setLastLogin($cLogin)
     {
-        $_upd                = new stdClass();
-        $_upd->dLetzterLogin = 'now()';
-        Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, $_upd);
+        Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'now()']);
 
         return $this;
     }
@@ -451,9 +448,7 @@ class AdminAccount
     private function _setRetryCount($cLogin, $bReset = false)
     {
         if ($bReset) {
-            $_upd                = new stdClass();
-            $_upd->nLoginVersuch = 0;
-            Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, $_upd);
+            Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, (object)['nLoginVersuch' => 0]);
         } else {
             Shop::DB()->executeQueryPrepared("
                 UPDATE tadminlogin
@@ -511,9 +506,9 @@ class AdminAccount
     private function checkAndUpdateHash($password)
     {
         //only update hash if the db update to 4.00+ was already executed
-        if (isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin) &&
-            password_needs_rehash($_SESSION['AdminAccount']->cPass, PASSWORD_DEFAULT) &&
-            version_compare(Shop::getShopVersion(), 400, '>=') === true
+        if (isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin)
+            && password_needs_rehash($_SESSION['AdminAccount']->cPass, PASSWORD_DEFAULT)
+            && version_compare(Shop::getShopVersion(), 400, '>=') === true
         ) {
             $_upd        = new stdClass();
             $_upd->cPass = password_hash($password, PASSWORD_DEFAULT);

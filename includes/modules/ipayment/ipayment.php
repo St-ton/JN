@@ -35,7 +35,7 @@ function gib_ipayment_form($Bestellung, $trxaccount_id, $trxuser_id, $trxpasswor
         <input type="hidden" name="redirect_action" value="POST">
         <input type="submit" value="' . Shop::Lang()->get('payWithIpayment', 'global') . '">
         </form>
-	';
+    ';
     }
 
     return 'iPayment-zahlung nicht m&ouml;glich.';

@@ -100,9 +100,9 @@ if ($step === 'plugin_uebersicht') {
         $fAddAsDocTab = false;
         $szReadmeFile = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/README.md';
         if ('' !== $oPlugin->cTextReadmePath) {
-            $szReadmeContent = utf8_decode(file_get_contents($szReadmeFile)); // slurp in the file-content
+            $szReadmeContent = StringHandler::convertUTF8(file_get_contents($szReadmeFile)); // slurp in the file-content
             // check, if we got a Markdown-parser
-            $fMarkDown     = false;
+            $fMarkDown = false;
             if (class_exists('Parsedown')) {
                 $fMarkDown       = true;
                 $oParseDown      = new Parsedown();
@@ -127,14 +127,14 @@ if ($step === 'plugin_uebersicht') {
             $fAddAsDocTab = true;
         }
         // check, if there is a LICENSE.md too
-        $fAddAsLicenseTab  = false;
+        $fAddAsLicenseTab = false;
         if ('' !== $oPlugin->cTextLicensePath) {
-            $szLicenseContent = utf8_decode(file_get_contents($oPlugin->cTextLicensePath)); // slurp in the file content
+            $szLicenseContent = StringHandler::convertUTF8(file_get_contents($oPlugin->cTextLicensePath)); // slurp in the file content
             // check, if we got a Markdown-parser
-            $fMarkDown     = false;
+            $fMarkDown = false;
             if (class_exists('Parsedown')) {
-                $fMarkDown       = true;
-                $oParseDown      = new Parsedown();
+                $fMarkDown        = true;
+                $oParseDown       = new Parsedown();
                 $szLicenseContent = $oParseDown->text($szLicenseContent);
             }
             // set, what we found, into the smarty-object

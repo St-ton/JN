@@ -794,7 +794,7 @@ define('HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG', 109);
 /**
  * after loading an article
  *
- * @file class.JTL-Shop.Attribut.php
+ * @file class.JTL-Shop.Artikel.php
  * @param Artikel - oArtikel
  * @param array   - cacheTags - list of associated cache tags (since 4.0)
  * @param bool    - cached - true when fetched from object cache (since 4.0)
@@ -1690,3 +1690,57 @@ define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);
  * @file admin/shopzuruecksetzen.php
  */
 define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
+
+/**
+ * on removing a cart position that has been deactivated / deleted in the meantime
+ *
+ * @since 4.07
+ * @file classes/class.JTL-Shop.Warenkorb.php
+ * @param WarenkorbPos - oPosition
+ * @param bool         - &delete
+ */
+define('HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS', 230);
+
+/**
+ * in ProductFilter::initBaseStates() after initializing the base filters
+ *
+ * @since 4.07
+ * @file class.JTL-Shop.ProductFilter.php
+ * @param ProductFilter productFilter
+ */
+define('HOOK_PRODUCTFILTER_INIT', 250);
+
+/**
+ * in ProductFilter::initStates() after initializing the active filters
+ *
+ * @since 4.07
+ * @file class.JTL-Shop.ProductFilter.php
+ * @param ProductFilter productFilter
+ * @param array params
+ */
+define('HOOK_PRODUCTFILTER_INIT_STATES', 251);
+
+/**
+ * in ProductFilter::construct() when creating the instance
+ *
+ * @since 4.07
+ * @file class.JTL-Shop.ProductFilter.php
+ * @param ProductFilter productFilter
+ */
+define('HOOK_PRODUCTFILTER_CREATE', 252);
+
+/**
+ * in ProductFilter::construct() when creating the instance
+ *
+ * @since 4.07
+ * @file class.JTL-Shop.ProductFilter.php
+ * @param array select
+ * @param array joins
+ * @param array conditions
+ * @param array groupBy
+ * @param array having
+ * @param array order
+ * @param array limit
+ * @param ProductFilter productFilter
+ */
+define('HOOK_PRODUCTFILTER_GET_BASE_QUERY', 253);

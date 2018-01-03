@@ -11,25 +11,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
     class Konfigitemsprache
     {
         /**
-         * @access protected
          * @var int
          */
         protected $kKonfigitem;
 
         /**
-         * @access protected
          * @var int
          */
         protected $kSprache;
 
         /**
-         * @access protected
          * @var string
          */
         protected $cName;
 
         /**
-         * @access protected
          * @var string
          */
         protected $cBeschreibung;
@@ -39,7 +35,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param int $kKonfigitem
          * @param int $kSprache
-         * @access public
          */
         public function __construct($kKonfigitem = 0, $kSprache = 0)
         {
@@ -53,7 +48,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param int $kKonfigitem
          * @param int $kSprache
-         * @access private
          */
         private function loadFromDB($kKonfigitem = 0, $kSprache = 0)
         {
@@ -96,7 +90,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param bool $bPrim - Controls the return of the method
          * @return bool|int
-         * @access public
          */
         public function save($bPrim = true)
         {
@@ -122,7 +115,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Update the class in the database
          *
          * @return int
-         * @access public
          */
         public function update()
         {
@@ -142,7 +134,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Delete the class in the database
          *
          * @return int
-         * @access public
          */
         public function delete()
         {
@@ -154,9 +145,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the kKonfigitem
-         *
-         * @access public
          * @param int $kKonfigitem
          * @return $this
          */
@@ -168,9 +156,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the kSprache
-         *
-         * @access public
          * @param int $kSprache
          * @return $this
          */
@@ -182,9 +167,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the cName
-         *
-         * @access public
          * @param string $cName
          * @return $this
          */
@@ -196,9 +178,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Sets the cBeschreibung
-         *
-         * @access public
          * @param string $cBeschreibung
          * @return $this
          */
@@ -210,9 +189,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the kKonfigitem
-         *
-         * @access public
          * @return int
          */
         public function getKonfigitem()
@@ -221,9 +197,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the kSprache
-         *
-         * @access public
          * @return int
          */
         public function getSprache()
@@ -232,9 +205,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the cName
-         *
-         * @access public
          * @return string
          */
         public function getName()
@@ -243,9 +213,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the cBeschreibung
-         *
-         * @access public
          * @return string
          */
         public function getBeschreibung()

@@ -2,18 +2,18 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
-wie von Ihnen gewünscht haben wir heute Ihr Kundenkonto mit der
-Emailadresse {$Kunde->cMail} gelöscht.
+wie von Ihnen gewÃ¼nscht haben wir heute Ihr Kundenkonto mit der
+Emailadresse {$Kunde->cMail} gelÃ¶scht.
 
 Sollten Sie mit unserem Service nicht zufrieden gewesen sein, so
 teilen Sie uns dies bitte mit, damit wir unseren Service verbessern
-können.
+kÃ¶nnen.
 
-Falls Sie zu einem späteren Zeitpunkt wieder bei uns einkaufen
-möchten, melden Sie sich einfach erneut an und eröffnen Sie ein neues
+Falls Sie zu einem spÃ¤teren Zeitpunkt wieder bei uns einkaufen
+mÃ¶chten, melden Sie sich einfach erneut an und erÃ¶ffnen Sie ein neues
 Kundenkonto bei uns.
 
-Mit freundlichem Gruß,
+Mit freundlichem GruÃŸ,
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

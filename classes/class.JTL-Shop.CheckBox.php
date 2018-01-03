@@ -215,7 +215,7 @@ class CheckBox
     {
         if (!$kKundengruppe) {
             if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-                $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+                $kKundengruppe = Session::CustomerGroup()->getID();
             } else {
                 $kKundengruppe = Kundengruppe::getDefaultGroupID();
             }
@@ -404,17 +404,14 @@ class CheckBox
      */
     public function aktivateCheckBox($kCheckBox_arr)
     {
-        if (is_array($kCheckBox_arr) && count($kCheckBox_arr) > 0) {
-            foreach ($kCheckBox_arr as $kCheckBox) {
-                $upd = new stdClass();
-                $upd->nAktiv = 1;
-                Shop::DB()->update('tcheckbox', 'kCheckBox', (int)$kCheckBox, $upd);
-            }
-
-            return true;
+        if (!is_array($kCheckBox_arr) || count($kCheckBox_arr) === 0) {
+            return false;
+        }
+        foreach ($kCheckBox_arr as $kCheckBox) {
+            Shop::DB()->update('tcheckbox', 'kCheckBox', (int)$kCheckBox, (object)['nAktiv' => 1]);
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -423,17 +420,14 @@ class CheckBox
      */
     public function deaktivateCheckBox($kCheckBox_arr)
     {
-        if (is_array($kCheckBox_arr) && count($kCheckBox_arr) > 0) {
-            foreach ($kCheckBox_arr as $kCheckBox) {
-                $upd = new stdClass();
-                $upd->nAktiv = 0;
-                Shop::DB()->update('tcheckbox', 'kCheckBox', (int)$kCheckBox, $upd);
-            }
-
-            return true;
+        if (!is_array($kCheckBox_arr) || count($kCheckBox_arr) === 0) {
+            return false;
+        }
+        foreach ($kCheckBox_arr as $kCheckBox) {
+            Shop::DB()->update('tcheckbox', 'kCheckBox', (int)$kCheckBox, (object)['nAktiv' => 0]);
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -442,25 +436,24 @@ class CheckBox
      */
     public function deleteCheckBox($kCheckBox_arr)
     {
-        if (is_array($kCheckBox_arr) && count($kCheckBox_arr) > 0) {
-            foreach ($kCheckBox_arr as $kCheckBox) {
-                Shop::DB()->query("
-                    DELETE tcheckbox, tcheckboxsprache
-                        FROM tcheckbox
-                        LEFT JOIN tcheckboxsprache 
-                            ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
-                        WHERE tcheckbox.kCheckBox = " . (int)$kCheckBox, 3
-                );
-            }
-
-            return true;
+        if (!is_array($kCheckBox_arr) || count($kCheckBox_arr) === 0) {
+            return false;
+        }
+        foreach ($kCheckBox_arr as $kCheckBox) {
+            Shop::DB()->query(
+                "DELETE tcheckbox, tcheckboxsprache
+                    FROM tcheckbox
+                    LEFT JOIN tcheckboxsprache 
+                        ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
+                    WHERE tcheckbox.kCheckBox = " . (int)$kCheckBox, 3
+            );
         }
 
-        return false;
+        return true;
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getCheckBoxFunctions()
     {
@@ -533,7 +526,7 @@ class CheckBox
     {
         if (strlen($cISO) > 0) {
             $oSprache = Shop::DB()->select('tsprache', 'cISO', StringHandler::filterXSS($cISO));
-            if (isset($oSprache->kSprache) && (int)$oSprache->kSprache > 0) {
+            if ($oSprache !== null && (int)$oSprache->kSprache > 0) {
                 return (int)$oSprache->kSprache;
             }
         }

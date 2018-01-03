@@ -11,13 +11,12 @@
  */
 function getAllFiles(&$oDatei_arr, &$nStat_arr)
 {
-    $cDateiPfad  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5;
-    $cDateiListe = JTL_VERSION . '.csv';
+    $md5file = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . JTL_VERSION . '.csv';
     if (!is_array($oDatei_arr)) {
         return 4;
     }
-    if (file_exists($cDateiPfad . $cDateiListe)) {
-        $cShopFileAll = file_get_contents($cDateiPfad . $cDateiListe);  // kompletter String der md5sum.csv
+    if (file_exists($md5file)) {
+        $cShopFileAll = file_get_contents($md5file);
         if (strlen($cShopFileAll) > 0) {
             $cShopFile_arr = explode("\n", $cShopFileAll);
             if (is_array($cShopFile_arr) && count($cShopFile_arr) > 0) {
@@ -25,7 +24,7 @@ function getAllFiles(&$oDatei_arr, &$nStat_arr)
                 $nStat_arr['nFehler'] = 0;
 
                 array_multisort($cShopFile_arr);
-                foreach ($cShopFile_arr as $i => $cShopFile) {
+                foreach ($cShopFile_arr as $cShopFile) {
                     if (strlen($cShopFile) === 0) {
                         continue;
                     }

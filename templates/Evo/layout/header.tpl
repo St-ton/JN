@@ -5,7 +5,7 @@
 {block name="head"}
 <head>
     {block name="head-meta"}
-        <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+        <meta http-equiv="content-type" content="text/html; charset={if isset($smarty.const.JTL_CHARSET)}{$smarty.const.JTL_CHARSET}{else}utf-8{/if}">
         <meta name="description" itemprop="description" content={block name="head-meta-description"}"{$meta_description|truncate:1000:"":true}{/block}">
         <meta name="keywords" itemprop="keywords" content="{block name="head-meta-keywords"}{$meta_keywords|truncate:255:"":true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -35,19 +35,19 @@
     {block name="head-icons"}
         {if !empty($Einstellungen.template.theme.favicon)}
             {if file_exists("{$currentTemplateDir}{$Einstellungen.template.theme.favicon}")}
-                <link type="image/x-icon" href="{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
+                <link type="image/x-icon" href="{$ShopURL}/{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
                     rel="shortcut icon">
             {else}
                 <link type="image/x-icon"
-                    href="{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}"
+                    href="{$ShopURL}/{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}"
                         rel="shortcut icon">
             {/if}
         {else}
-            <link type="image/x-icon" href="favicon-default.ico" rel="shortcut icon">
+            <link type="image/x-icon" href="{$ShopURL}/favicon-default.ico" rel="shortcut icon">
         {/if}
         {if $nSeitenTyp == 1 && isset($Artikel) && !empty($Artikel->Bilder)}
-            <link rel="image_src" href="{$ShopURL}/{$Artikel->Bilder[0]->cPfadGross}">
-            <meta property="og:image" content="{$ShopURL}/{$Artikel->Bilder[0]->cPfadGross}">
+            <link rel="image_src" href="{$Artikel->Bilder[0]->cURLGross}">
+            <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
         {/if}
     {/block}
 
@@ -64,19 +64,19 @@
                 {/foreach}
             {/if}
         {else}
-            <link type="text/css" href="asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
+            <link type="text/css" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
         {/if}
         {* RSS *}
         {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}
-            <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="rss.xml">
+            <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="{$ShopURL}/rss.xml">
         {/if}
         {* Languages *}
         {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
             {foreach item=oSprache from=$smarty.session.Sprachen}
                 {if $oSprache->kSprache != $smarty.session.kSprache}
-                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURL}">
+                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
                 {elseif $oSprache->kSprache == $smarty.session.kSprache && $oSprache->cStandard === 'Y' && isset($oSprache->cURL)}
-                    <link rel="alternate" hreflang="x-default" href="{$oSprache->cURL}">
+                    <link rel="alternate" hreflang="x-default" href="{$oSprache->cURLFull}">
                 {/if}
             {/foreach}
         {/if}
@@ -98,7 +98,7 @@
         </style>
     {/if}
     {block name="head-resources-jquery"}
-        <script src="{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
+        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
 </head>
@@ -229,7 +229,7 @@
     {/block}
     
     {block name="content-starttag"}
-    <div id="content" class="col-xs-12{if isset($boxes.left) && !$bExclusive && !empty($boxes.left)} {if $nSeitenTyp === 2} col-md-8 col-md-push-4 {/if} col-lg-9 col-lg-push-3{/if}">
+    <div id="content" class="col-xs-12{if !$bExclusive && !empty($boxes.left)} {if $nSeitenTyp === 2} col-md-8 col-md-push-4 {/if} col-lg-9 col-lg-push-3{/if}">
     {/block}
     
     {block name="header-breadcrumb"}

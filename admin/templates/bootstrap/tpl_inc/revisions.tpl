@@ -37,7 +37,7 @@
                                                 {if isset($ref->$attribute)}
                                                     <h4>{$attribute} ({$secondaryKey}):</h4>
                                                     <div id="diff-{$revision@iteration}-{$attribute}-{$secondaryKey}"></div>
-                                                    <div class="hidden" data-references="{$attribute}" data-references-secondary="{$secondaryKey}">{$ref->$attribute|utf8_decode}</div>
+                                                    <div class="hidden" data-references="{$attribute}" data-references-secondary="{$secondaryKey}">{$ref->$attribute}</div>
                                                 {/if}
                                             {/foreach}
                                         {/foreach}
@@ -46,7 +46,7 @@
                                             {if isset($revision->content->$attribute)}
                                                 <h4>{$attribute}</h4>
                                                 <div id="diff-{$revision@iteration}-{$attribute}"></div>
-                                                <div class="hidden" data-references="{$attribute}" data-references-secondary="">{$revision->content->$attribute|utf8_decode}</div>
+                                                <div class="hidden" data-references="{$attribute}" data-references-secondary="">{$revision->content->$attribute}</div>
                                             {/if}
                                         {/foreach}
                                     {/if}

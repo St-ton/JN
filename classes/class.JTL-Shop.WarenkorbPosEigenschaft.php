@@ -102,7 +102,6 @@ class WarenkorbPosEigenschaft
     /**
      * Setzt WarenkorbPosEigenschaft mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kWarenkorbPosEigenschaft
      * @return $this
      */
@@ -113,9 +112,11 @@ class WarenkorbPosEigenschaft
             'kWarenkorbPosEigenschaft',
             (int)$kWarenkorbPosEigenschaft
         );
-        $members = array_keys(get_object_vars($obj));
-        foreach ($members as $member) {
-            $this->$member = $obj->$member;
+        if ($obj !== null) {
+            $members = array_keys(get_object_vars($obj));
+            foreach ($members as $member) {
+                $this->$member = $obj->$member;
+            }
         }
 
         return $this;
@@ -124,7 +125,6 @@ class WarenkorbPosEigenschaft
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return $this
      */
     public function insertInDB()
@@ -143,7 +143,6 @@ class WarenkorbPosEigenschaft
     /**
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
-     * @access public
      * @return int
      */
     public function updateInDB()

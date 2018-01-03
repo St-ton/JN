@@ -345,8 +345,8 @@ class Image
     {
         $filename = strtolower($filename);
 
-        $source   = ['.', ' ', '/', 'ä', 'ö', 'ü', 'ß', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß')];
-        $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss', 'ae', 'oe', 'ue', 'ss'];
+        $source   = ['.', ' ', '/', 'ä', 'ö', 'ü', 'ß'];
+        $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss'];
         $filename = str_replace($source, $replace, $filename);
 
         return preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $filename);

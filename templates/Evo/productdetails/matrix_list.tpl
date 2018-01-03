@@ -14,7 +14,7 @@
                     {/foreach}
                     <tr class="row">
                         <td class="hidden-xs col-sm-1">
-                            <img class="img-responsive" src="{$child->Bilder[0]->cPfadMini}" alt="{$child->Bilder[0]->cAltAttribut}">
+                            <img class="img-responsive" src="{$child->Bilder[0]->cURLMini}" alt="{$child->Bilder[0]->cAltAttribut}">
                         </td>
                         <td class="col-xs-6">
                             <div >

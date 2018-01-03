@@ -19,11 +19,11 @@ $format = [
     'cNewsletter', 'dGeburtstag', 'fRabatt', 'cHerkunft', 'dErstellt', 'cAktiv'
 ];
 
-if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name']) &&
-    $_POST['kundenimport'] == 1 &&
-    $_FILES['csv'] &&
-    validateToken() &&
-    strlen($_FILES['csv']['tmp_name']) > 0
+if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
+    && (int)$_POST['kundenimport'] === 1
+    && $_FILES['csv']
+    && validateToken()
+    && strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $delimiter = guessCsvDelimiter($_FILES['csv']['tmp_name']);
     $file = fopen($_FILES['csv']['tmp_name'], 'r');

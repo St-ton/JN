@@ -83,11 +83,8 @@ class UnitsOfMeasure
                     FROM tmasseinheit
                     WHERE cCode IN ('" . implode("', '", array_keys(self::$UCUMcodeToPrint)) . "')", 2
             );
-
-            if (isset($units_tmp)) {
-                foreach ($units_tmp as $unit) {
-                    $units[$unit->kMassEinheit] = $unit;
-                }
+            foreach ($units_tmp as $unit) {
+                $units[$unit->kMassEinheit] = $unit;
             }
         }
 

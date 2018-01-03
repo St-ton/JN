@@ -168,7 +168,9 @@ class Filter
      */
     public function loadSessionStore()
     {
-        $this->cSession_arr = isset($_SESSION['filter_' . $this->cId]) ? $_SESSION['filter_' . $this->cId] : [];
+        $idx = 'filter_' . $this->cId;
+
+        $this->cSession_arr = isset($_SESSION[$idx]) ? $_SESSION[$idx] : [];
     }
 
     /**

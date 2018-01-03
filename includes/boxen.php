@@ -9,6 +9,7 @@
  */
 function boxen_generieren()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
 }
 
@@ -17,6 +18,7 @@ function boxen_generieren()
  */
 function box_schnellkauf()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -24,6 +26,7 @@ function box_schnellkauf()
  */
 function box_warenkorb()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -31,6 +34,7 @@ function box_warenkorb()
  */
 function box_zuletztangesehen()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -40,6 +44,7 @@ function box_zuletztangesehen()
  */
 function box_topangebot($BoxenEinstellungen, $cVaterSQL)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -49,6 +54,7 @@ function box_topangebot($BoxenEinstellungen, $cVaterSQL)
  */
 function box_neuimsortiment($BoxenEinstellungen, $cVaterSQL)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -58,6 +64,7 @@ function box_neuimsortiment($BoxenEinstellungen, $cVaterSQL)
  */
 function box_sonderangebote($BoxenEinstellungen, $cVaterSQL)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -67,6 +74,7 @@ function box_sonderangebote($BoxenEinstellungen, $cVaterSQL)
  */
 function box_bestseller($BoxenEinstellungen, $cVaterSQL)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -76,6 +84,7 @@ function box_bestseller($BoxenEinstellungen, $cVaterSQL)
  */
 function box_erscheinendeProdukte($BoxenEinstellungen, $cVaterSQL)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -84,6 +93,7 @@ function box_erscheinendeProdukte($BoxenEinstellungen, $cVaterSQL)
  */
 function box_suchwolke($BoxenEinstellungen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -92,6 +102,7 @@ function box_suchwolke($BoxenEinstellungen)
  */
 function box_tagwolke($BoxenEinstellungen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -100,6 +111,7 @@ function box_tagwolke($BoxenEinstellungen)
  */
 function box_wunschzettel($BoxenEinstellungen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -108,6 +120,7 @@ function box_wunschzettel($BoxenEinstellungen)
  */
 function box_vergleichsliste($BoxenEinstellungen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -116,6 +129,7 @@ function box_vergleichsliste($BoxenEinstellungen)
  */
 function box_topbewertet($BoxenEinstellungen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -124,6 +138,7 @@ function box_topbewertet($BoxenEinstellungen)
  */
 function box_news($BoxenEinstellungen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -132,6 +147,7 @@ function box_news($BoxenEinstellungen)
  */
 function box_newskategorie($BoxenEinstellungen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -140,6 +156,7 @@ function box_newskategorie($BoxenEinstellungen)
  */
 function box_preisradar($BoxenEinstellungen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -148,6 +165,7 @@ function box_preisradar($BoxenEinstellungen)
  */
 function box_umfrage($BoxenEinstellungen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -155,6 +173,7 @@ function box_umfrage($BoxenEinstellungen)
  */
 function box_trustedshops_kundenbewertung()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -162,6 +181,7 @@ function box_trustedshops_kundenbewertung()
  */
 function box_trustedshosp_siegelbox()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -172,6 +192,7 @@ function box_trustedshosp_siegelbox()
  */
 function cachecheck($filename_cache, $timeout = 10800)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
 }
 
@@ -181,6 +202,7 @@ function cachecheck($filename_cache, $timeout = 10800)
  */
 function baueLeereBox()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $oObj           = new stdClass();
     $oObj->anzeigen = 'N';
 

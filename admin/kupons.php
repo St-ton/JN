@@ -43,7 +43,7 @@ $res = handleCsvImportAction('kupon', function ($obj) {
     foreach ($couponNames as $key => $val) {
         $res = Shop::DB()->insert(
             'tkuponsprache',
-            (object)['kKupon' => (int)$kKupon, 'cISOSprache' => $key, 'cName' => $val]
+            (object)['kKupon' => $kKupon, 'cISOSprache' => $key, 'cName' => $val]
         );
 
         if ($res === 0) {

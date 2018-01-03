@@ -4,11 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
+
 Shop::setPageType(PAGE_BESTELLSTATUS);
+$smarty        = Shop::Smarty();
 $AktuelleSeite = 'BESTELLSTATUS';
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
@@ -16,9 +15,9 @@ $Einstellungen = Shop::getSettings([
     CONF_KUNDEN,
     CONF_KAUFABWICKLUNG
 ]);
-$hinweis    = '';
-$requestURL = '';
-$linkHelper = LinkHelper::getInstance();
+$hinweis       = '';
+$requestURL    = '';
+$linkHelper    = LinkHelper::getInstance();
 
 if (strlen($_GET['uid']) === 40) {
     $status = Shop::DB()->executeQueryPrepared("
@@ -30,38 +29,32 @@ if (strlen($_GET['uid']) === 40) {
         1
     );
     if (empty($status->kBestellung)) {
-        header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
         exit;
-    } else {
-        $bestellung = new Bestellung($status->kBestellung);
-        $bestellung->fuelleBestellung();
-        $Kunde = new Kunde($bestellung->kKunde);
-        $smarty->assign('Bestellung', $bestellung)
-               ->assign('Kunde', $Kunde)
-               ->assign('Lieferadresse', $bestellung->Lieferadresse);
     }
+    $bestellung = (new Bestellung($status->kBestellung))->fuelleBestellung();
+    $smarty->assign('Bestellung', $bestellung)
+           ->assign('Kunde', new Kunde($bestellung->kKunde))
+           ->assign('Lieferadresse', $bestellung->Lieferadresse);
 } else {
-    header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
     exit;
 }
 
-$step = 'bestellung';
-//hole alle OberKategorien
+$step                   = 'bestellung';
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
 
-//specific assigns
 $smarty->assign('step', $step)
        ->assign('hinweis', $hinweis)
        ->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('requestURL', $requestURL)
        ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
        ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
-       ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)
-       ->assign('Einstellungen', $Einstellungen);
+       ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

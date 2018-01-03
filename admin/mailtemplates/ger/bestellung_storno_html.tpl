@@ -5,7 +5,7 @@ Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{e
 Ihre Bestellung bei {$Einstellungen.global.global_shopname} wurde soeben storniert.
 <strong>Bestellnummer:</strong> {$Bestellung->cBestellNr}<br>
 <br>
-Mit freundlichem Gruﬂ,<br>
+Mit freundlichem Gru√ü,<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

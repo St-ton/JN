@@ -35,7 +35,7 @@ if (strlen($oBillpay->getSetting('pid')) > 0 &&
             try {
                 $oConfig->send();
                 if ($oConfig->has_error()) {
-                    $oItem->cFehler = utf8_decode($oConfig->get_merchant_error_message());
+                    $oItem->cFehler = $oConfig->get_merchant_error_message();
                 } else {
                     $oRechnung          = new stdClass();
                     $oRechnung->bAktiv  = $oConfig->is_invoice_allowed();
@@ -102,7 +102,7 @@ if (strlen($oBillpay->getSetting('pid')) > 0 &&
         ->assign('oPagiLog', $oPagiLog);
 } else {
     $cFehler = 'Billpay wurde bisher nicht konfiguriert. ' .
-        '<a href="http://guide.jtl-software.de/index.php?title=Kaufabwicklung:Billpay#Billpay" target="_blank">' .
+        '<a href="https://guide.jtl-software.de/BillPay_in_JTL-Shop_einrichten" rel="noopener" target="_blank">' .
         '<i class="fa fa-external-link"></i> Zur Dokumentation</a>';
 }
 

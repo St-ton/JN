@@ -12,7 +12,7 @@
         <div class="panel-heading">
             <h5 class="panel-title">
             {if !empty($oMerkmal->cBildpfadKlein) && $oMerkmal->cBildpfadKlein !== $BILD_KEIN_MERKMALBILD_VORHANDEN}
-                <img src="{$oMerkmal->cBildpfadKlein}" alt="" class="vmiddle" />
+                <img src="{$oMerkmal->cBildURLKlein}" alt="" class="vmiddle" />
             {/if}
             {$oMerkmal->cName}
             </h5>
@@ -28,8 +28,8 @@
                         {foreach name=merkmalwertfilter from=$oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
                             <li role="presentation">
                                 <a role="menuitem" tabindex="-1" href="{$oMerkmalWert->cSeo}">
-                                    {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && !empty($oMerkmalWert->cBildpfadKlein) && $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
-                                       <img src="{$oMerkmalWert->cBildpfadKlein}" alt="{$oMerkmalWert->cWert|escape:"quotes"}" />
+                                    {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && $oMerkmalWert->nBildKleinVorhanden === 1}
+                                       <img src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:"quotes"}" />
                                     {/if}
                                     {if $oMerkmal->cTyp !== 'BILD'}
                                         {$oMerkmalWert->cWert}
@@ -43,9 +43,9 @@
                 <ul class="nav nav-list">
                     {foreach name=globalmerkmalwert from=$oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
                         <li>
-                            <a href="{$oMerkmalWert->cURL}"{if isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0 && isset($oMerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert == $oMerkmalWert->kMerkmalWert} class="active"{/if}>
-                                {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && !empty($oMerkmalWert->cBildpfadKlein) && $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
-                                   <img src="{$oMerkmalWert->cBildpfadKlein}" alt="{$oMerkmalWert->cWert|escape:"quotes"}" />
+                            <a href="{$oMerkmalWert->cURL}"{if $NaviFilter->hasAttributeValue() && isset($oMerkmalWert->kMerkmalWert) && $NaviFilter->getAttributeValue()->getValue() == $oMerkmalWert->kMerkmalWert} class="active"{/if}>
+                                {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && $oMerkmalWert->nBildKleinVorhanden === 1}
+                                   <img src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:"quotes"}" />
                                 {/if}
                                 {if $oMerkmal->cTyp !== 'BILD'}
                                     {$oMerkmalWert->cWert}

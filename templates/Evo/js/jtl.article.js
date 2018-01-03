@@ -345,8 +345,37 @@
                 $('#content a[href="#tab-votes"]').tab('show');
             });
 
-            if ($('.switch-variations', $wrapper).length === 1) {
-                this.variationSwitch($('.switch-variations', $wrapper), false, '#' + $wrapper.attr('id'));
+            if (this.isSingleArticle()) {
+                if ($('.switch-variations .form-group', $wrapper).length === 1) {
+                    var wrapper = '#' + $($wrapper).attr('id');
+                    this.variationSwitch($('.switch-variations', $wrapper), false, wrapper);
+                }
+            }
+            else {
+                var that = this;
+
+                $('.product-cell.hover-enabled')
+                    .on('click', function (event) {
+                        if (isTouchCapable() && ResponsiveBootstrapToolkit.current() !== 'xs') {
+                            var $this = $(this);
+
+                            if (!$this.hasClass('active')) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                $('.product-cell').removeClass('active');
+                                $this.addClass('active');
+                            }
+                        }
+                    })
+                    .on('mouseenter', function (event) {
+                        var $this = $(this),
+                            wrapper = '#' + $this.attr('id');
+
+                        if (!$this.data('varLoaded') && $('.switch-variations .form-group', $this).length === 1) {
+                            that.variationSwitch($('.switch-variations', $this), false, wrapper);
+                        }
+                        $this.data('varLoaded', true);
+                    });
             }
 
             this.registerProductActions($wrapper);
@@ -998,57 +1027,55 @@
         },
 
         variationInfo: function(value, status, note) {
-            if (this.isSingleArticle()) {
-                var $item = $('[data-value="' + value + '"].variation'),
-                    type = $item.attr('data-type'),
-                    text,
-                    content,
-                    $wrapper,
-                    label;
+            var $item = $('[data-value="' + value + '"].variation'),
+                type = $item.attr('data-type'),
+                text,
+                content,
+                $wrapper,
+                label;
 
-                $item.attr('data-stock', _stock_info[status]);
+            $item.attr('data-stock', _stock_info[status]);
 
-                switch (type) {
-                    case 'option':
-                        text     = ' (' + note + ')';
-                        content  = $item.data('content');
-                        $wrapper = $('<div />');
+            switch (type) {
+                case 'option':
+                    text     = ' (' + note + ')';
+                    content  = $item.data('content');
+                    $wrapper = $('<div />');
 
-                        $wrapper.append(content);
-                        $wrapper
-                            .find('.label-not-available')
-                            .remove();
+                    $wrapper.append(content);
+                    $wrapper
+                        .find('.label-not-available')
+                        .remove();
 
-                        label = $('<span />')
-                            .addClass('label label-default label-not-available')
-                            .text(note);
+                    label = $('<span />')
+                        .addClass('label label-default label-not-available')
+                        .text(note);
 
-                        $wrapper.append(label);
+                    $wrapper.append(label);
 
-                        $item.data('content', $wrapper.html())
-                            .attr('data-content', $wrapper.html());
+                    $item.data('content', $wrapper.html())
+                        .attr('data-content', $wrapper.html());
 
-                        $item.closest('select')
-                            .selectpicker('refresh');
-                        break;
-                    case 'radio':
-                        $item.find('.label-not-available')
-                            .remove();
+                    $item.closest('select')
+                        .selectpicker('refresh');
+                    break;
+                case 'radio':
+                    $item.find('.label-not-available')
+                        .remove();
 
-                        label = $('<span />')
-                            .addClass('label label-default label-not-available')
-                            .text(note);
+                    label = $('<span />')
+                        .addClass('label label-default label-not-available')
+                        .text(note);
 
-                        $item.append(label);
-                        break;
-                    case 'swatch':
-                        $item.tooltip({
-                            title: note,
-                            trigger: 'hover',
-                            container: 'body'
-                        });
-                        break;
-                }
+                    $item.append(label);
+                    break;
+                case 'swatch':
+                    $item.tooltip({
+                        title: note,
+                        trigger: 'hover',
+                        container: 'body'
+                    });
+                    break;
             }
         },
 
@@ -1067,7 +1094,7 @@
                     $wrapper.addClass('loading');
                     $spinner = $.evo.extended().spinner();
                 } else {
-                    $('.variations .updatingStockInfo').show();
+                    $('.updatingStockInfo', $wrapper).show();
                 }
 
                 $current.addClass('loading');
@@ -1081,7 +1108,7 @@
                     if (animation) {
                         $spinner.stop();
                     }
-                    $('.variations .updatingStockInfo').hide();
+                    $('.updatingStockInfo', $wrapper).hide();
                     if (error) {
                         $.evo.error('checkVarkombiDependencies');
                     }

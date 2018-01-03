@@ -149,12 +149,12 @@ final class Shop
     public static $nSort;
 
     /**
-     * @var
+     * @var int
      */
     public static $show;
 
     /**
-     * @var
+     * @var int
      */
     public static $vergleichsliste;
 
@@ -174,17 +174,17 @@ final class Shop
     public static $is404;
 
     /**
-     * @var
+     * @var array
      */
     public static $MerkmalFilter;
 
     /**
-     * @var
+     * @var array
      */
     public static $SuchFilter;
 
     /**
-     * @var
+     * @var array
      */
     public static $TagFilter;
 
@@ -219,9 +219,9 @@ final class Shop
     private static $_instance;
 
     /**
-     * @var object
+     * @var ProductFilter
      */
-    public static $NaviFilter;
+    public static $productFilter;
 
     /**
      * @var string
@@ -229,7 +229,7 @@ final class Shop
     public static $fileName;
 
     /**
-     * @var
+     * @var string
      */
     public static $AktuelleSeite;
 
@@ -304,9 +304,34 @@ final class Shop
     private static $_logged;
 
     /**
+     * @var array
+     */
+    private static $url = [];
+
+    /**
      * @var Shopsetting
      */
     private static $_settings;
+
+    /**
+     * @var IFilter[]
+     */
+    public static $customFilters = [];
+
+    /**
+     * @var array
+     */
+    private static $mapping = [
+        'DB'       => '_DB',
+        'Cache'    => '_Cache',
+        'Lang'     => '_Language',
+        'Smarty'   => '_Smarty',
+        'Media'    => '_Media',
+        'Event'    => '_Event',
+        'has'      => '_has',
+        'set'      => '_set',
+        'get'      => '_get'
+    ];
 
     /**
      *
@@ -322,7 +347,7 @@ final class Shop
      */
     public static function getInstance()
     {
-        return (self::$_instance === null) ? new self() : self::$_instance;
+        return self::$_instance === null ? new self() : self::$_instance;
     }
 
     /**
@@ -334,7 +359,7 @@ final class Shop
      */
     public function __call($method, $arguments)
     {
-        return (($mapping = self::map($method))!== null)
+        return ($mapping = self::map($method)) !== null
             ? call_user_func_array([$this, $mapping], $arguments)
             : null;
     }
@@ -348,7 +373,7 @@ final class Shop
      */
     public static function __callStatic($method, $arguments)
     {
-        return (($mapping = self::map($method)) !== null)
+        return ($mapping = self::map($method)) !== null
             ? call_user_func_array([self::getInstance(), $mapping], $arguments)
             : null;
     }
@@ -393,21 +418,19 @@ final class Shop
      */
     private static function map($method)
     {
-        $mapping = [
-            'DB'       => '_DB',
-            'Cache'    => '_Cache',
-            'Lang'     => '_Language',
-            'Smarty'   => '_Smarty',
-            'Media'    => '_Media',
-            'Event'    => '_Event',
-            'has'      => '_has',
-            'set'      => '_set',
-            'get'      => '_get'
-        ];
-
-        return isset($mapping[$method])
-            ? $mapping[$method]
+        return isset(self::$mapping[$method])
+            ? self::$mapping[$method]
             : null;
+    }
+
+    /**
+     * get remote service instance
+     *
+     * @return RemoteService
+     */
+    public function RS()
+    {
+        return RemoteService::getInstance();
     }
 
     /**
@@ -521,13 +544,12 @@ final class Shop
     }
 
     /**
-     * @param string $eventName
-     * @param array  $arguments
-     * @return array|null
+     * @param string       $eventName
+     * @param array|object $arguments
      */
-    public static function fire($eventName, array $arguments = [])
+    public static function fire($eventName, $arguments = [])
     {
-        return self::Event()->fire($eventName, $arguments);
+        self::Event()->fire($eventName, $arguments);
     }
 
     /**
@@ -563,7 +585,29 @@ final class Shop
      */
     public static function getLanguage($iso = false)
     {
-        return ($iso === false) ? (int)self::$kSprache : self::$cISO;
+        return $iso === false ? (int)self::$kSprache : self::$cISO;
+    }
+
+    /**
+     * get current language/language ISO
+     *
+     * @var bool $iso
+     * @return int
+     */
+    public static function getLanguageID()
+    {
+        return (int)self::$kSprache;
+    }
+
+    /**
+     * get current language/language ISO
+     *
+     * @var bool $iso
+     * @return string
+     */
+    public static function getLanguageCode()
+    {
+        return self::$cISO;
     }
 
     /**
@@ -625,12 +669,12 @@ final class Shop
     {
         $cacheID = 'plgnbtsrp';
         if (($plugins = self::Cache()->get($cacheID)) === false) {
-            $plugins = self::DB()->executeQuery("
-                SELECT kPlugin 
+            $plugins = self::DB()->query(
+                'SELECT kPlugin 
                   FROM tplugin 
                   WHERE nStatus = 2 
                     AND bBootstrap = 1 
-                  ORDER BY nPrio ASC", 2) ?: [];
+                  ORDER BY nPrio ASC', 2) ?: [];
             self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
 
@@ -646,22 +690,21 @@ final class Shop
      */
     public static function run()
     {
-        self::$kKonfigPos            = verifyGPCDataInteger('ek');
-        self::$kKategorie            = verifyGPCDataInteger('k');
-        self::$kArtikel              = verifyGPCDataInteger('a');
-        self::$kVariKindArtikel      = verifyGPCDataInteger('a2');
-        self::$kSeite                = verifyGPCDataInteger('s');
-        self::$kLink                 = verifyGPCDataInteger('s');
-        self::$kHersteller           = verifyGPCDataInteger('h');
-        self::$kSuchanfrage          = verifyGPCDataInteger('l');
-        self::$kMerkmalWert          = verifyGPCDataInteger('m');
-        self::$kTag                  = verifyGPCDataInteger('t');
-        self::$kSuchspecial          = verifyGPCDataInteger('q');
-        self::$kNews                 = verifyGPCDataInteger('n');
-        self::$kNewsMonatsUebersicht = verifyGPCDataInteger('nm');
-        self::$kNewsKategorie        = verifyGPCDataInteger('nk');
-        self::$kUmfrage              = verifyGPCDataInteger('u');
-
+        self::$kKonfigPos             = verifyGPCDataInteger('ek');
+        self::$kKategorie             = verifyGPCDataInteger('k');
+        self::$kArtikel               = verifyGPCDataInteger('a');
+        self::$kVariKindArtikel       = verifyGPCDataInteger('a2');
+        self::$kSeite                 = verifyGPCDataInteger('s');
+        self::$kLink                  = verifyGPCDataInteger('s');
+        self::$kHersteller            = verifyGPCDataInteger('h');
+        self::$kSuchanfrage           = verifyGPCDataInteger('l');
+        self::$kMerkmalWert           = verifyGPCDataInteger('m');
+        self::$kTag                   = verifyGPCDataInteger('t');
+        self::$kSuchspecial           = verifyGPCDataInteger('q');
+        self::$kNews                  = verifyGPCDataInteger('n');
+        self::$kNewsMonatsUebersicht  = verifyGPCDataInteger('nm');
+        self::$kNewsKategorie         = verifyGPCDataInteger('nk');
+        self::$kUmfrage               = verifyGPCDataInteger('u');
         self::$nBewertungSterneFilter = verifyGPCDataInteger('bf');
         self::$cPreisspannenFilter    = verifyGPDataString('pf');
         self::$kHerstellerFilter      = verifyGPCDataInteger('hf');
@@ -680,7 +723,7 @@ final class Shop
         self::$is404           = false;
 
         self::$nSterne = verifyGPCDataInteger('nSterne');
-
+        // @todo:
         self::$isSeoMainword = !(!isset($oSeo) || !is_object($oSeo) || !isset($oSeo->cSeo) || trim($oSeo->cSeo) === '');
 
         self::$kWunschliste = checkeWunschlisteParameter();
@@ -696,7 +739,7 @@ final class Shop
         } else {
             self::$cSuche = StringHandler::xssClean(verifyGPDataString('suche'));
         }
-        //avoid redirect loops for surveys that require logged in customers
+        // avoid redirect loops for surveys that require logged in customers
         if (self::$kUmfrage > 0 && empty($_SESSION['Kunde']->kKunde) && verifyGPCDataInteger('r') !== 0) {
             self::$kUmfrage = 0;
         }
@@ -707,27 +750,53 @@ final class Shop
         }
 
         self::$isInitialized = true;
-
         $redirect = verifyGPDataString('r');
-        if (self::$kNews > 0 && self::$kArtikel > 0 && !empty($redirect)) {
-            //GET param "n" is often misused as "amount of article"
-            self::$kNews    = 0;
-            if ((int)$redirect === R_LOGIN_WUNSCHLISTE) {
-                //login redirect on wishlist add when not logged in uses get param "n" as amount and "a" for the article ID
-                //but we wont to go to the login page, not to the article page
+        if (self::$kArtikel > 0) {
+            if (!empty($redirect)
+                && (self::$kNews > 0 // get param "n" was used a article amount
+                    || (isset($_GET['n']) && (float)$_GET['n'] > 0)) // article amount was a float >0 and <1
+            ){
+                // GET param "n" is often misused as "amount of article"
+                self::$kNews = 0;
+                if ((int)$redirect === R_LOGIN_WUNSCHLISTE) {
+                    // login redirect on wishlist add when not logged in uses get param "n" as amount
+                    // and "a" for the article ID - but we want to go to the login page, not to the article page
+                    self::$kArtikel = 0;
+                }
+            } elseif (((int)$redirect === R_LOGIN_BEWERTUNG || (int)$redirect === R_LOGIN_TAG)
+                && empty($_SESSION['Kunde']->kKunde)
+            ) {
+                // avoid redirect to article page for ratings that require logged in customers
                 self::$kArtikel = 0;
             }
-        } elseif (self::$kArtikel > 0 &&
-            ((int)$redirect === R_LOGIN_BEWERTUNG || (int)$redirect === R_LOGIN_TAG) &&
-            empty($_SESSION['Kunde']->kKunde)
-        ) {
-            //avoid redirect to article page for ratings that require logged in customers
-            self::$kArtikel = 0;
         }
-
         $_SESSION['cTemplate'] = Template::$cTemplate;
 
+        if (self::$kWunschliste === 0
+            && verifyGPDataString('error') === ''
+            && strlen(verifyGPDataString('wlid')) > 0
+        ) {
+            header(
+                'Location: ' . LinkHelper::getInstance()->getStaticRoute('wunschliste.php') .
+                '?wlid=' . StringHandler::filterXSS(verifyGPDataString('wlid')) . '&error=1',
+                true,
+                303
+            );
+            exit();
+        }
+        if ((self::$kArtikel > 0 || self::$kKategorie > 0) && !Session::CustomerGroup()->mayViewCategories()) {
+            // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
+            header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
+            exit;
+        }
+        self::$productFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
+
+        self::seoCheck();
         self::Event()->fire('shop.run');
+
+        self::$productFilter->initStates(self::getParameters());
+
+        return self::$productFilter;
     }
 
     /**
@@ -737,11 +806,10 @@ final class Shop
      */
     public static function getParameters()
     {
-        self::seoCheck();
-        if (self::$kKategorie > 0 && !Kategorie::isVisible(self::$kKategorie, $_SESSION['Kundengruppe']->kKundengruppe)) {
+        if (self::$kKategorie > 0 && !Kategorie::isVisible(self::$kKategorie, Session::CustomerGroup()->getID())) {
             self::$kKategorie = 0;
         }
-        //check variation combination
+        // check variation combination
         if (ArtikelHelper::isVariChild(self::$kArtikel)) {
             self::$kVariKindArtikel = self::$kArtikel;
             self::$kArtikel         = ArtikelHelper::getParent(self::$kArtikel);
@@ -773,9 +841,9 @@ final class Shop
             'MerkmalFilter_arr'      => self::$MerkmalFilter,
             'TagFilter_arr'          => self::$TagFilter !== null ? self::$TagFilter : [],
             'SuchFilter_arr'         => self::$SuchFilter !== null ? self::$SuchFilter : [],
-            'nArtikelProSeite'       => self::$nArtikelProSeite !== null ? self::$nArtikelProSeite : null,
-            'cSuche'                 => self::$cSuche !== null ? self::$cSuche : null,
-            'seite'                  => self::$seite !== null ? self::$seite : null,
+            'nArtikelProSeite'       => self::$nArtikelProSeite,
+            'cSuche'                 => self::$cSuche,
+            'seite'                  => self::$seite,
             'show'                   => self::$show,
             'is404'                  => self::$is404,
             'kSuchFilter'            => self::$kSuchFilter,
@@ -790,6 +858,7 @@ final class Shop
             'cDatum'                 => self::$cDatum,
             'nAnzahl'                => self::$nAnzahl,
             'nSterne'                => self::$nSterne,
+            'customFilters'          => self::$customFilters
         ];
     }
 
@@ -798,193 +867,320 @@ final class Shop
      */
     public static function seoCheck()
     {
-        $uri = $_SERVER['REQUEST_URI'];
-        if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
-            $uri = $_SERVER['HTTP_X_REWRITE_URL'];
-        }
+        $uri                             = isset($_SERVER['HTTP_X_REWRITE$'])
+            ? $_SERVER['HTTP_X_REWRITE_URL']
+            : $_SERVER['REQUEST_URI'];
         self::$uri                       = $uri;
         self::$bSEOMerkmalNotFound       = false;
         self::$bKatFilterNotFound        = false;
         self::$bHerstellerFilterNotFound = false;
+        executeHook(HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
+        $seite        = 0;
+        $hstseo       = '';
+        $katseo       = '';
+        $customSeo    = [];
+        $xShopurl_arr = parse_url(self::getURL());
+        $xBaseurl_arr = parse_url($uri);
+        $seo          = isset($xBaseurl_arr['path'])
+            ? substr($xBaseurl_arr['path'], isset($xShopurl_arr['path'])
+                ? (strlen($xShopurl_arr['path']) + 1)
+                : 1)
+            : false;
+        // Fremdparameter
+        $seo = extFremdeParameter($seo);
+        if ($seo) {
+            foreach (self::$productFilter->getCustomFilters() as $customFilter) {
+                $seoParam = $customFilter->getUrlParamSEO();
+                if (empty($seoParam)) {
+                    continue;
+                }
+                $customFilterArr = explode($seoParam, $seo);
+                if (count($customFilterArr) > 1) {
+                    list($seo, $customFilterSeo) = $customFilterArr;
+                    if (strpos($customFilterSeo, SEP_HST) !== false) {
+                        $arr             = explode(SEP_HST, $customFilterSeo);
+                        $customFilterSeo = $arr[0];
+                        $seo             .= SEP_HST . $arr[1];
+                    }
+                    if (($idx = strpos($customFilterSeo, SEP_KAT)) !== false
+                        && $idx !== strpos($customFilterSeo, SEP_HST)
+                    ) {
+                        $oHersteller_arr = explode(SEP_KAT, $customFilterSeo);
+                        $customFilterSeo = $oHersteller_arr[0];
+                        $seo             .= SEP_KAT . $oHersteller_arr[1];
+                    }
+                    if (strpos($customFilterSeo, SEP_MERKMAL) !== false) {
+                        $arr             = explode(SEP_MERKMAL, $customFilterSeo);
+                        $customFilterSeo = $arr[0];
+                        $seo             .= SEP_MERKMAL . $arr[1];
+                    }
+                    if (strpos($customFilterSeo, SEP_MM_MMW) !== false) {
+                        $arr             = explode(SEP_MM_MMW, $customFilterSeo);
+                        $customFilterSeo = $arr[0];
+                        $seo             .= SEP_MM_MMW . $arr[1];
+                    }
+                    if (strpos($customFilterSeo, SEP_SEITE) !== false) {
+                        $arr             = explode(SEP_SEITE, $customFilterSeo);
+                        $customFilterSeo = $arr[0];
+                        $seo             .= SEP_SEITE . $arr[1];
+                    }
 
-        if (strpos($uri, 'index.php') === false) {
-            executeHook(HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
-            $seite        = 0;
-            $hstseo       = '';
-            $katseo       = '';
-            $xShopurl_arr = parse_url(self::getURL());
-            $xBaseurl_arr = parse_url($uri);
-            $seo          = isset($xBaseurl_arr['path'])
-                ? substr($xBaseurl_arr['path'], isset($xShopurl_arr['path'])
-                    ? (strlen($xShopurl_arr['path']) + 1)
-                    : 1)
-                : false;
-            //Fremdparameter
-            $seo = extFremdeParameter($seo);
-            if ($seo) {
-                //change Opera Fix
-                if (substr($seo, strlen($seo) - 1, 1) === '?') {
-                    $seo = substr($seo, 0, strlen($seo) - 1);
+                    $customSeo[$customFilter->getClassName()] = [
+                        'cSeo'  => $customFilterSeo,
+                        'table' => $customFilter->getTableName()
+                    ];
                 }
-                $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $cMatch_arr, PREG_OFFSET_CAPTURE);
-                if ($nMatch === 1) {
-                    $seite = (int)$cMatch_arr[2][0];
-                    $seo   = substr($seo, 0, $cMatch_arr[1][1]);
+            }
+            // change Opera Fix
+            if (substr($seo, strlen($seo) - 1, 1) === '?') {
+                $seo = substr($seo, 0, -1);
+            }
+            $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $cMatch_arr, PREG_OFFSET_CAPTURE);
+            if ($nMatch === 1) {
+                $seite = (int)$cMatch_arr[2][0];
+                $seo   = substr($seo, 0, $cMatch_arr[1][1]);
+            }
+            // duplicate content work around
+            if ($seite === 1 && strlen($seo) > 0) {
+                http_response_code(301);
+                header('Location: ' . self::getURL() . '/' . $seo);
+                exit();
+            }
+            $cSEOMerkmal_arr = explode(SEP_MERKMAL, $seo);
+            $seo             = $cSEOMerkmal_arr[0];
+            foreach ($cSEOMerkmal_arr as $i => &$merkmal) {
+                if ($i === 0) {
+                    continue;
                 }
-                //double content work around
-                if ($seite === 1 && strlen($seo) > 0) {
-                    http_response_code(301);
-                    header('Location: ' . self::getURL() . '/' . $seo);
-                    exit();
+                if (($idx = strpos($merkmal, SEP_KAT)) !== false && $idx !== strpos($merkmal, SEP_HST)) {
+                    $arr     = explode(SEP_KAT, $merkmal);
+                    $merkmal = $arr[0];
+                    $seo     .= SEP_KAT . $arr[1];
                 }
-                $cSEOMerkmal_arr = explode(SEP_MERKMAL, $seo);
-                $seo             = $cSEOMerkmal_arr[0];
-                $oHersteller_arr = explode(SEP_HST, $seo);
-                $nMerkmalZaehler = 0;
-                if (is_array($oHersteller_arr) && count($oHersteller_arr) > 1) {
-                    $seo    = $oHersteller_arr[0];
-                    $hstseo = $oHersteller_arr[1];
+                if (strpos($merkmal, SEP_HST) !== false) {
+                    $arr     = explode(SEP_HST, $merkmal);
+                    $merkmal = $arr[0];
+                    $seo     .= SEP_HST . $arr[1];
+                }
+                if (strpos($merkmal, SEP_MM_MMW) !== false) {
+                    $arr     = explode(SEP_MM_MMW, $merkmal);
+                    $merkmal = $arr[0];
+                    $seo     .= SEP_MM_MMW . $arr[1];
+                }
+                if (strpos($merkmal, SEP_SEITE) !== false) {
+                    $arr     = explode(SEP_SEITE, $merkmal);
+                    $merkmal = $arr[0];
+                    $seo     .= SEP_SEITE . $arr[1];
+                }
+            }
+            unset($merkmal);
+            $oHersteller_arr = explode(SEP_HST, $seo);
+            if (is_array($oHersteller_arr) && count($oHersteller_arr) > 1) {
+                list($seo, $hstseo) = $oHersteller_arr;
+                if (($idx = strpos($hstseo, SEP_KAT)) !== false && $idx !== strpos($hstseo, SEP_HST)) {
+                    $oHersteller_arr = explode(SEP_KAT, $hstseo);
+                    $hstseo          = $oHersteller_arr[0];
+                    $seo             .= SEP_KAT . $oHersteller_arr[1];
+                }
+                if (strpos($hstseo, SEP_MERKMAL) !== false) {
+                    $arr    = explode(SEP_MERKMAL, $hstseo);
+                    $hstseo = $arr[0];
+                    $seo    .= SEP_MERKMAL . $arr[1];
+                }
+                if (strpos($hstseo, SEP_MM_MMW) !== false) {
+                    $arr    = explode(SEP_MM_MMW, $hstseo);
+                    $hstseo = $arr[0];
+                    $seo    .= SEP_MM_MMW . $arr[1];
+                }
+                if (strpos($hstseo, SEP_SEITE) !== false) {
+                    $arr    = explode(SEP_SEITE, $hstseo);
+                    $hstseo = $arr[0];
+                    $seo    .= SEP_SEITE . $arr[1];
+                }
+            } else {
+                $seo = $oHersteller_arr[0];
+            }
+            $oKategorie_arr = explode(SEP_KAT, $seo);
+            if (is_array($oKategorie_arr) && count($oKategorie_arr) > 1) {
+                list($seo, $katseo) = $oKategorie_arr;
+                if (strpos($katseo, SEP_HST) !== false) {
+                    $arr    = explode(SEP_HST, $katseo);
+                    $katseo = $arr[0];
+                    $seo    .= SEP_HST . $arr[1];
+                }
+                if (strpos($katseo, SEP_MERKMAL) !== false) {
+                    $arr    = explode(SEP_MERKMAL, $katseo);
+                    $katseo = $arr[0];
+                    $seo    .= SEP_MERKMAL . $arr[1];
+                }
+                if (strpos($katseo, SEP_MM_MMW) !== false) {
+                    $arr    = explode(SEP_MM_MMW, $katseo);
+                    $katseo = $arr[0];
+                    $seo    .= SEP_MM_MMW . $arr[1];
+                }
+                if (strpos($katseo, SEP_SEITE) !== false) {
+                    $arr    = explode(SEP_SEITE, $katseo);
+                    $katseo = $arr[0];
+                    $seo    .= SEP_SEITE . $arr[1];
+                }
+            } else {
+                $seo = $oKategorie_arr[0];
+            }
+            if ($seite > 0) {
+                $_GET['seite'] = $seite;
+                self::$kSeite  = $seite;
+            }
+            // split attribute/attribute value
+            $oMerkmal_arr = explode(SEP_MM_MMW, $seo);
+            if (is_array($oMerkmal_arr) && count($oMerkmal_arr) > 1) {
+                $seo = $oMerkmal_arr[1];
+                //$mmseo = $oMerkmal_arr[0];
+            }
+            // custom filter
+            foreach ($customSeo as $className => $data) {
+                $oSeo = self::DB()->select($data['table'], 'cSeo', $data['cSeo']);
+                if (isset($oSeo->filterval)) {
+                    self::$customFilters[$className] = (int)$oSeo->filterval;
                 } else {
-                    $seo = $oHersteller_arr[0];
+                    self::$bKatFilterNotFound = true;
                 }
-                $oKategorie_arr = explode(SEP_KAT, $seo);
-                if (is_array($oKategorie_arr) && count($oKategorie_arr) > 1) {
-                    $seo    = $oKategorie_arr[0];
-                    $katseo = $oKategorie_arr[1];
+                if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
+                    self::updateLanguage($oSeo->kSprache);
+                }
+            }
+            // category filter
+            if (strlen($katseo) > 0) {
+                $oSeo = self::DB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
+                if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $katseo) === 0) {
+                    self::$kKategorieFilter = (int)$oSeo->kKey;
                 } else {
-                    $seo = $oKategorie_arr[0];
+                    self::$bKatFilterNotFound = true;
                 }
-                if ((int)$seite > 0) {
-                    $_GET['seite'] = (int)$seite;
+            }
+            // manufacturer filter
+            if (strlen($hstseo) > 0) {
+                $oSeo = self::DB()->select('tseo', 'cKey', 'kHersteller', 'cSeo', $hstseo);
+                if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $hstseo) === 0) {
+                    self::$kHerstellerFilter = (int)$oSeo->kKey;
+                } else {
+                    self::$bHerstellerFilterNotFound = true;
                 }
-                //split attribute/attribute value
-                $oMerkmal_arr = explode(SEP_MM_MMW, $seo);
-                if (is_array($oMerkmal_arr) && count($oMerkmal_arr) > 1) {
-                    $seo = $oMerkmal_arr[1];
-                    //$mmseo = $oMerkmal_arr[0];
+            }
+            // attribute filter
+            if (count($cSEOMerkmal_arr) > 1) {
+                if (!isset($_GET['mf'])) {
+                    $_GET['mf'] = [];
+                } elseif (!is_array($_GET['mf'])) {
+                    $_GET['mf'] = [(int)$_GET['mf']];
                 }
-                //category filter
-                if (strlen($katseo) > 0) {
-                    $oSeo = self::DB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
-                    if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $katseo) === 0) {
-                        self::$kKategorieFilter = $oSeo->kKey;
-                    } else {
-                        self::$bKatFilterNotFound = true;
-                    }
-                }
-                //manufacturer filter
-                if (strlen($hstseo) > 0) {
-                    $oSeo = self::DB()->select('tseo', 'cKey', 'kHersteller', 'cSeo', $hstseo);
-                    if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $hstseo) === 0) {
-                        self::$kHerstellerFilter = $oSeo->kKey;
-                    } else {
-                        self::$bHerstellerFilterNotFound = true;
-                    }
-                }
-                //attribute filter
-                if (count($cSEOMerkmal_arr) > 1) {
-                    $nMerkmalZaehler = 1;
-                    foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
-                        if ($i > 0 && strlen($cSEOMerkmal) > 0) {
-                            $oSeo = self::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
-                            if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
-                                //hänge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann im NAvifilter.
-                                $_GET['mf' . $nMerkmalZaehler] = $oSeo->kKey;
-                                ++$nMerkmalZaehler;
-                                self::$bSEOMerkmalNotFound = false;
-                            } else {
-                                self::$bSEOMerkmalNotFound = true;
-                            }
+                self::$bSEOMerkmalNotFound = false;
+                foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
+                    if ($i > 0 && strlen($cSEOMerkmal) > 0) {
+                        $oSeo = self::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
+                        if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
+                            //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
+                            $_GET['mf'][] = (int)$oSeo->kKey;
+                        } else {
+                            self::$bSEOMerkmalNotFound = true;
                         }
                     }
                 }
-                $oSeo = self::DB()->select('tseo', 'cSeo', $seo);
-                //EXPERIMENTAL_MULTILANG_SHOP
-                if (isset($oSeo->kSprache) && self::$kSprache !== $oSeo->kSprache &&
-                    defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
-                    $oSeo->kSprache = self::$kSprache;
-                }
-                //EXPERIMENTAL_MULTILANG_SHOP END
-                //Link active?
-                if (isset($oSeo->cKey) && $oSeo->cKey === 'kLink') {
-                    $bIsActive = self::DB()->select('tlink', 'kLink', (int)$oSeo->kKey);
-                    if ($bIsActive->bIsActive === '0') {
-                        $oSeo = false;
-                    }
-                }
-                //mainwords
-                if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $seo) === 0) {
-                    //canonical
-                    self::$cCanonicalURL = self::getURL() . '/' . $oSeo->cSeo;
-
-                    switch ($oSeo->cKey) {
-                        case 'kKategorie':
-                            self::$kKategorie = (int)$oSeo->kKey;
-                            break;
-
-                        case 'kHersteller':
-                            self::$kHersteller = (int)$oSeo->kKey;
-                            break;
-
-                        case 'kArtikel':
-                            self::$kArtikel = (int)$oSeo->kKey;
-                            break;
-
-                        case 'kLink':
-                            self::$kLink = (int)$oSeo->kKey;
-                            break;
-
-                        case 'kSuchanfrage':
-                            self::$kSuchanfrage = (int)$oSeo->kKey;
-                            break;
-
-                        case 'kMerkmalWert':
-                            self::$kMerkmalWert = (int)$oSeo->kKey;
-                            break;
-
-                        case 'kTag':
-                            self::$kTag = (int)$oSeo->kKey;
-                            break;
-
-                        case 'suchspecial':
-                            self::$kSuchspecial = (int)$oSeo->kKey;
-                            break;
-
-                        case 'kNews':
-                            self::$kNews = (int)$oSeo->kKey;
-                            break;
-
-                        case 'kNewsMonatsUebersicht':
-                            self::$kNewsMonatsUebersicht = (int)$oSeo->kKey;
-                            break;
-
-                        case 'kNewsKategorie':
-                            self::$kNewsKategorie = (int)$oSeo->kKey;
-                            break;
-
-                        case 'kUmfrage':
-                            self::$kUmfrage = (int)$oSeo->kKey;
-                            break;
-
-                    }
-                }
-                if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
-                    $kSprache = (int)$oSeo->kSprache;
-                    $spr      = class_exists('Sprache')
-                        ? self::Lang()->getIsoFromLangID($kSprache)
-                        : self::DB()->select('tsprache', 'kSprache', $kSprache);
-                    $cLang = isset($spr->cISO) ? $spr->cISO : null;
-                    if ($cLang !== $_SESSION['cISOSprache']) {
-                        checkeSpracheWaehrung($cLang);
-                        setzeSteuersaetze();
-                    }
+            }
+            $oSeo = self::DB()->select('tseo', 'cSeo', $seo);
+            // EXPERIMENTAL_MULTILANG_SHOP
+            if (isset($oSeo->kSprache) && self::$kSprache !== $oSeo->kSprache &&
+                defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
+                $oSeo->kSprache = self::$kSprache;
+            }
+            // EXPERIMENTAL_MULTILANG_SHOP END
+            // Link active?
+            if (isset($oSeo->cKey) && $oSeo->cKey === 'kLink') {
+                $bIsActive = self::DB()->select('tlink', 'kLink', (int)$oSeo->kKey);
+                if ($bIsActive !== null && (int)$bIsActive->bIsActive === 0) {
+                    $oSeo = false;
                 }
             }
-            self::$MerkmalFilter = setzeMerkmalFilter();
-            self::$SuchFilter    = setzeSuchFilter();
-            self::$TagFilter     = setzeTagFilter();
+            // mainwords
+            if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $seo) === 0) {
+                // canonical
+                self::$cCanonicalURL = self::getURL() . '/' . $oSeo->cSeo;
+                $oSeo->kKey          = (int)$oSeo->kKey;
+                switch ($oSeo->cKey) {
+                    case 'kKategorie':
+                        self::$kKategorie = (int)$oSeo->kKey;
+                        break;
 
-            executeHook(HOOK_SEOCHECK_ENDE);
+                    case 'kHersteller':
+                        self::$kHersteller = (int)$oSeo->kKey;
+                        break;
+
+                    case 'kArtikel':
+                        self::$kArtikel = (int)$oSeo->kKey;
+                        break;
+
+                    case 'kLink':
+                        self::$kLink = (int)$oSeo->kKey;
+                        break;
+
+                    case 'kSuchanfrage':
+                        self::$kSuchanfrage = (int)$oSeo->kKey;
+                        break;
+
+                    case 'kMerkmalWert':
+                        self::$kMerkmalWert = (int)$oSeo->kKey;
+                        break;
+
+                    case 'kTag':
+                        self::$kTag = (int)$oSeo->kKey;
+                        break;
+
+                    case 'suchspecial':
+                        self::$kSuchspecial = (int)$oSeo->kKey;
+                        break;
+
+                    case 'kNews':
+                        self::$kNews = (int)$oSeo->kKey;
+                        break;
+
+                    case 'kNewsMonatsUebersicht':
+                        self::$kNewsMonatsUebersicht = (int)$oSeo->kKey;
+                        break;
+
+                    case 'kNewsKategorie':
+                        self::$kNewsKategorie = (int)$oSeo->kKey;
+                        break;
+
+                    case 'kUmfrage':
+                        self::$kUmfrage = (int)$oSeo->kKey;
+                        break;
+
+                }
+            }
+            if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
+                self::updateLanguage($oSeo->kSprache);
+            }
+        }
+        self::$MerkmalFilter = setzeMerkmalFilter();
+        self::$SuchFilter    = setzeSuchFilter();
+        self::$TagFilter     = setzeTagFilter();
+
+        executeHook(HOOK_SEOCHECK_ENDE);
+    }
+
+    /**
+     * @param int $languageID
+     */
+    private static function updateLanguage($languageID)
+    {
+        $languageID = (int)$languageID;
+        if (self::$productFilter->getLanguageID() !== $languageID) {
+            self::$productFilter->setLanguageID($languageID);
+        }
+        $spr   = self::Lang()->getIsoFromLangID($languageID);
+        $cLang = isset($spr->cISO) ? $spr->cISO : null;
+        if ($cLang !== $_SESSION['cISOSprache']) {
+            checkeSpracheWaehrung($cLang);
+            setzeSteuersaetze();
         }
     }
 
@@ -994,8 +1190,8 @@ final class Shop
     public static function getEntryPoint()
     {
         self::setPageType(PAGE_UNBEKANNT);
-        if ((self::$kArtikel > 0 && !self::$kKategorie) ||
-            (self::$kArtikel > 0 && self::$kKategorie > 0 && self::$show === 1)
+        if ((self::$kArtikel > 0 && !self::$kKategorie)
+            || (self::$kArtikel > 0 && self::$kKategorie > 0 && self::$show === 1)
         ) {
             $kVaterArtikel = ArtikelHelper::getParent(self::$kArtikel);
             if ($kVaterArtikel > 0) {
@@ -1011,22 +1207,28 @@ final class Shop
                     $cRP = '&cRP=' . base64_encode($cRP);
                 }
                 http_response_code(301);
-                header('Location: ' . self::getURL() . '/navi.php?a=' . $kArtikel . $cRP);
+                header('Location: ' . self::getURL() . '/index.php?a=' . $kArtikel . $cRP);
                 exit();
             }
 
             self::setPageType(PAGE_ARTIKEL);
             self::$fileName = 'artikel.php';
-        } elseif ((!isset(self::$bSEOMerkmalNotFound) || self::$bSEOMerkmalNotFound === false) &&
-            (!isset(self::$bKatFilterNotFound) || self::$bKatFilterNotFound === false) &&
-            (!isset(self::$bHerstellerFilterNotFound) || self::$bHerstellerFilterNotFound === false) &&
-            ((self::$isSeoMainword || self::$NaviFilter->nAnzahlFilter == 0) || !self::$bSeo) &&
-            (self::$kHersteller > 0 || self::$kSuchanfrage > 0 || self::$kMerkmalWert > 0 || self::$kTag > 0 || self::$kKategorie > 0 ||
-                (isset(self::$cPreisspannenFilter) && self::$cPreisspannenFilter > 0) ||
-                (isset(self::$nBewertungSterneFilter) && self::$nBewertungSterneFilter > 0) || self::$kHerstellerFilter > 0 ||
-                self::$kKategorieFilter > 0 || self::$kSuchspecial > 0 || self::$kSuchFilter > 0)
+        } elseif ((self::$bSEOMerkmalNotFound === null || self::$bSEOMerkmalNotFound === false)
+            && (self::$bKatFilterNotFound === null || self::$bKatFilterNotFound === false)
+            && (self::$bHerstellerFilterNotFound === null || self::$bHerstellerFilterNotFound === false)
+            && ((self::$kHersteller > 0 
+                || self::$kSuchanfrage > 0 
+                || self::$kMerkmalWert > 0 
+                || self::$kTag > 0 
+                || self::$kKategorie > 0 
+                || self::$nBewertungSterneFilter > 0
+                || self::$kHerstellerFilter > 0
+                || self::$kKategorieFilter > 0
+                || self::$kSuchspecial > 0
+                || self::$kSuchFilter > 0)
+                || (self::$cPreisspannenFilter !== null && self::$cPreisspannenFilter > 0))
+            && (self::$isSeoMainword || self::$productFilter->getFilterCount() === 0 || !self::$bSeo)
         ) {
-            //these are some serious changes! - create 404 if attribute or filtered category is empty
             self::$fileName      = 'filter.php';
             self::$AktuelleSeite = 'ARTIKEL';
             self::setPageType(PAGE_ARTIKELLISTE);
@@ -1046,29 +1248,34 @@ final class Shop
             self::$fileName      = 'umfrage.php';
             self::$AktuelleSeite = 'UMFRAGE';
             self::setPageType(PAGE_UMFRAGE);
+        } elseif (!empty(self::$cSuche)) {
+            self::$fileName      = 'filter.php';
+            self::$AktuelleSeite = 'ARTIKEL';
+            self::setPageType(PAGE_ARTIKELLISTE);
         } elseif (!self::$kLink) {
             //check path
             $cPath        = self::getRequestUri();
             $cRequestFile = '/' . ltrim($cPath, '/');
             if ($cRequestFile === '/index.php') {
                 // special case: /index.php shall be redirected to Shop-URL
-                header('Location: ' . Shop::getURL(), true, 301);
+                header('Location: ' . self::getURL(), true, 301);
                 exit;
             }
             if ($cRequestFile === '/') {
-                //special case: home page is accessible without seo url
+                // special case: home page is accessible without seo url
                 $link        = null;
                 $linkHelper  = LinkHelper::getInstance();
-                if (!empty($_SESSION['Kundengruppe']->kKundengruppe)) {
-                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . (int)$_SESSION['Kundengruppe']->kKundengruppe
+                self::setPageType(PAGE_STARTSEITE);
+                if (Session::CustomerGroup()->getID() > 0) {
+                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(cKundengruppen, ';', ',')) > 0
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
                         OR tlink.cKundengruppen = '')";
-                    $link = Shop::DB()->query("
-                        SELECT kLink 
+                    $link              = self::DB()->query(
+                        'SELECT kLink 
                             FROM tlink
-                            WHERE nLinkart = " . LINKTYP_STARTSEITE . $cKundengruppenSQL, 1
+                            WHERE nLinkart = ' . LINKTYP_STARTSEITE . $cKundengruppenSQL, 1
                     );
                 }
                 self::$kLink = isset($link->kLink)
@@ -1078,6 +1285,7 @@ final class Shop
                 self::Media()->handleRequest($cPath);
             } else {
                 self::$is404         = true;
+                self::$fileName      = null;
                 self::$AktuelleSeite = '404';
                 self::setPageType(PAGE_404);
             }
@@ -1087,7 +1295,39 @@ final class Shop
                 $link       = $linkHelper->getPageLink(self::$kLink);
                 $oSeite     = null;
                 if (isset($link->nLinkart)) {
+                    if ($link->nLinkart === LINKTYP_EXTERNE_URL) {
+                        header('Location: ' . $link->cURL, true, 303);
+                        exit;
+                    }
+                    self::setPageType(PAGE_EIGENE);
                     $oSeite = self::DB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
+                    if ($link->nLinkart === LINKTYP_STARTSEITE) {
+                        self::setPageType(PAGE_STARTSEITE);
+                    } elseif ($link->nLinkart === LINKTYP_DATENSCHUTZ) {
+                        self::setPageType(PAGE_DATENSCHUTZ);
+                    } elseif ($link->nLinkart === LINKTYP_AGB) {
+                        self::setPageType(PAGE_AGB);
+                    } elseif ($link->nLinkart === LINKTYP_WRB) {
+                        self::setPageType(PAGE_WRB);
+                    } elseif ($link->nLinkart === LINKTYP_VERSAND) {
+                        self::setPageType(PAGE_VERSAND);
+                    } elseif ($link->nLinkart === LINKTYP_LIVESUCHE) {
+                        self::setPageType(PAGE_LIVESUCHE);
+                    } elseif ($link->nLinkart === LINKTYP_TAGGING) {
+                        self::setPageType(PAGE_TAGGING);
+                    } elseif ($link->nLinkart === LINKTYP_HERSTELLER) {
+                        self::setPageType(PAGE_HERSTELLER);
+                    } elseif ($link->nLinkart === LINKTYP_NEWSLETTERARCHIV) {
+                        self::setPageType(PAGE_NEWSLETTERARCHIV);
+                    } elseif ($link->nLinkart === LINKTYP_SITEMAP) {
+                        self::setPageType(PAGE_SITEMAP);
+                    } elseif ($link->nLinkart === LINKTYP_GRATISGESCHENK) {
+                        self::setPageType(PAGE_GRATISGESCHENK);
+                    } elseif ($link->nLinkart === LINKTYP_AUSWAHLASSISTENT) {
+                        self::setPageType(PAGE_AUSWAHLASSISTENT);
+                    } elseif ($link->nLinkart === LINKTYP_404) {
+                        self::setPageType(PAGE_404);
+                    }
                 }
                 if (!empty($oSeite->cDateiname)) {
                     self::$fileName = $oSeite->cDateiname;
@@ -1132,11 +1372,27 @@ final class Shop
                             break;
                     }
                 }
-            }
-            if (self::$fileName === null) {
+            } elseif (self::$fileName === null) {
                 self::$fileName      = 'seite.php';
                 self::$AktuelleSeite = 'SEITE';
                 self::setPageType(PAGE_EIGENE);
+            }
+        }
+        if (self::$is404 === true) {
+            if (!isset($seo)) {
+                $seo = null;
+            }
+            executeHook(HOOK_INDEX_SEO_404, ['seo' => $seo]);
+            if (!self::$kLink) {
+                $hookInfos     = urlNotFoundRedirect([
+                    'key'   => 'kLink',
+                    'value' => self::$kLink
+                ]);
+                $kLink         = $hookInfos['value'];
+                $bFileNotFound = $hookInfos['isFileNotFound'];
+                if (!$kLink) {
+                    self::$kLink = LinkHelper::getInstance()->getSpecialPageLinkKey(LINKTYP_404);
+                }
             }
         }
     }
@@ -1144,689 +1400,72 @@ final class Shop
     /**
      * build navigation filter object from parameters
      *
-     * @param array         $cParameter_arr
-     * @param stdClass|null $NaviFilter
-     *
-     * @return mixed
+     * @param array                     $cParameter_arr
+     * @param object|null|ProductFilter $productFilter
+     * @return ProductFilter
+     * @deprecated since 4.07
      */
-    public static function buildNaviFilter($cParameter_arr, $NaviFilter = null)
+    public static function buildNaviFilter($cParameter_arr, $productFilter = null)
     {
-        if ($NaviFilter === null) {
-            $NaviFilter = new stdClass();
-        }
-        $NaviFilter->oSprache_arr = self::Lang()->getLangArray();
-        $oSeo                     = null;
-        //get active languages
-        $oSprache_arr = $NaviFilter->oSprache_arr;
-        $bSprache     = (is_array($oSprache_arr) && count($oSprache_arr) > 0);
-        //mainwords
-        if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
-            if (!isset($NaviFilter->Kategorie)) {
-                $NaviFilter->Kategorie = new stdClass();
-            }
-            $NaviFilter->Kategorie->kKategorie = (int)$cParameter_arr['kKategorie'];
-            $oSeo_arr                          = self::DB()->query("
-                SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
-                    FROM tseo
-                        LEFT JOIN tkategorie
-                            ON tkategorie.kKategorie = tseo.kKey
-                        LEFT JOIN tkategoriesprache
-                            ON tkategoriesprache.kKategorie = tkategorie.kKategorie
-                            AND tkategoriesprache.kSprache = tseo.kSprache
-                    WHERE cKey = 'kKategorie' 
-                        AND kKey = " . $NaviFilter->Kategorie->kKategorie . "
-                    ORDER BY tseo.kSprache", 2
-            );
-            if ($bSprache) {
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->Kategorie->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr)) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->Kategorie->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
-                    }
-                }
-            }
-            foreach ($oSeo_arr as $item) {
-                if ((int)$item->kSprache === (int)self::$kSprache) {
-                    if (!empty($item->cName)) {
-                        $NaviFilter->Kategorie->cName = $item->cName;
-                    } elseif (!empty($item->cKatName)) {
-                        $NaviFilter->Kategorie->cName = $item->cKatName;
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (isset($cParameter_arr['kHersteller']) && $cParameter_arr['kHersteller'] > 0) {
-            if (!isset($NaviFilter->Hersteller)) {
-                $NaviFilter->Hersteller = new stdClass();
-            }
-            $NaviFilter->Hersteller->kHersteller = (int)$cParameter_arr['kHersteller'];
-            $oSeo_arr                            = self::DB()->query("
-                SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
-                    FROM tseo
-                        LEFT JOIN thersteller
-                        ON thersteller.kHersteller = tseo.kKey
-                    WHERE cKey = 'kHersteller' 
-                        AND kKey = " . (int)$NaviFilter->Hersteller->kHersteller . "
-                    ORDER BY kSprache", 2
-            );
-            if ($bSprache) {
-                $NaviFilter->Hersteller->cSeo = [];
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->Hersteller->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr)) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->Hersteller->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
-                    }
-                }
-            }
-            if (isset($oSeo_arr[0]->cName)) {
-                $NaviFilter->Hersteller->cName = $oSeo_arr[0]->cName;
-            } else {
-                //invalid manufacturer ID
-                self::$kHersteller = 0;
-                unset($NaviFilter->Hersteller);
-                self::$is404 = true;
-            }
-        }
-
-        if (isset($cParameter_arr['kSuchanfrage']) && $cParameter_arr['kSuchanfrage'] > 0) {
-            if (!isset($NaviFilter->Suchanfrage)) {
-                $NaviFilter->Suchanfrage = new stdClass();
-            }
-            $NaviFilter->Suchanfrage->kSuchanfrage = $cParameter_arr['kSuchanfrage'];
-            $oSeo_obj                              = self::DB()->query("
-                SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
-                    FROM tseo
-                    LEFT JOIN tsuchanfrage
-                        ON tsuchanfrage.kSuchanfrage = tseo.kKey
-                        AND tsuchanfrage.kSprache = tseo.kSprache
-                    WHERE cKey = 'kSuchanfrage' 
-                        AND kKey = " . (int)$NaviFilter->Suchanfrage->kSuchanfrage, 1
-            );
-            if ($bSprache) {
-                $NaviFilter->Suchanfrage->cSeo = [];
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->Suchanfrage->cSeo[$oSprache->kSprache] = '';
-                    if ($oSprache->kSprache == $oSeo_obj->kSprache) {
-                        $NaviFilter->Suchanfrage->cSeo[$oSprache->kSprache] = $oSeo_obj->cSeo;
-                    }
-                }
-            }
-            if (!empty($oSeo_obj->cSuche)) {
-                $NaviFilter->Suchanfrage->cName = $oSeo_obj->cSuche;
-            }
-        }
-
-        if (isset($cParameter_arr['kMerkmalWert']) && $cParameter_arr['kMerkmalWert'] > 0) {
-            if (!isset($NaviFilter->MerkmalWert)) {
-                $NaviFilter->MerkmalWert = new stdClass();
-            }
-            $NaviFilter->MerkmalWert->kMerkmalWert = (int)$cParameter_arr['kMerkmalWert'];
-            $oSeo_arr                              = self::DB()->query("
-                SELECT cSeo, kSprache
-                    FROM tseo
-                    WHERE cKey = 'kMerkmalWert' 
-                        AND kKey = " . $NaviFilter->MerkmalWert->kMerkmalWert . "
-                    ORDER BY kSprache", 2
-            );
-            if ($bSprache) {
-                $NaviFilter->MerkmalWert->cSeo = [];
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->MerkmalWert->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr)) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->MerkmalWert->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
-                    }
-                }
-            }
-            $oSQL            = new stdClass();
-            $oSQL->cMMSelect = "tmerkmal.cName";
-            $oSQL->cMMJOIN   = '';
-            $oSQL->cMMWhere  = '';
-            if (self::$kSprache > 0 && !standardspracheAktiv()) {
-                $oSQL->cMMSelect = "tmerkmalsprache.cName, tmerkmal.cName AS cMMName";
-                $oSQL->cMMJOIN   = " JOIN tmerkmalsprache 
-                                        ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                        AND tmerkmalsprache.kSprache = " . (int)self::$kSprache;
-            }
-            $oSQL->cMMWhere = "tmerkmalwert.kMerkmalWert = '" . $NaviFilter->MerkmalWert->kMerkmalWert . "'";
-            if (isset($cParameter_arr['MerkmalFilter_arr']) && is_array($cParameter_arr['MerkmalFilter_arr']) && count($cParameter_arr['MerkmalFilter_arr']) > 0) {
-                foreach ($cParameter_arr['MerkmalFilter_arr'] as $kMerkmalWert) {
-                    $oSQL->cMMWhere .= " OR tmerkmalwert.kMerkmalWert = " . (int)$kMerkmalWert . " ";
-                }
-            }
-            $oMerkmalWert_arr = self::DB()->query(
-                "SELECT tmerkmalwertsprache.cWert, " . $oSQL->cMMSelect . "
-                FROM tmerkmalwert
-                JOIN tmerkmalwertsprache 
-                    ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    AND kSprache = " . self::$kSprache . "
-                JOIN tmerkmal 
-                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                " . $oSQL->cMMJOIN . "
-                WHERE " . $oSQL->cMMWhere, 2
-            );
-            if (is_array($oMerkmalWert_arr) && count($oMerkmalWert_arr) > 0) {
-                $oMerkmalWert = $oMerkmalWert_arr[0];
-                unset($oMerkmalWert_arr[0]);
-                if (isset($oMerkmalWert->cWert) && strlen($oMerkmalWert->cWert) > 0) {
-                    if (!isset($NaviFilter->MerkmalWert)) {
-                        $NaviFilter->MerkmalWert = new stdClass();
-                    }
-                    if (isset($oMerkmalWert->cName) && strlen($oMerkmalWert->cName) > 0) {
-                        $NaviFilter->MerkmalWert->cName = $oMerkmalWert->cName . ': ' . $oMerkmalWert->cWert;
-                    } elseif (isset($oMerkmalWert->cMMName) && strlen($oMerkmalWert->cMMName) > 0) {
-                        $NaviFilter->MerkmalWert->cName = $oMerkmalWert->cMMName . ': ' . $oMerkmalWert->cWert;
-                    }
-                    if (count($oMerkmalWert_arr) > 0) {
-                        foreach ($oMerkmalWert_arr as $oTmpMerkmal) {
-                            if (isset($oTmpMerkmal->cName) && strlen($oTmpMerkmal->cName) > 0) {
-                                $NaviFilter->MerkmalWert->cName .= ', ' . $oTmpMerkmal->cName . ': ' . $oTmpMerkmal->cWert;
-                            } elseif (isset($oTmpMerkmal->cMMName) && strlen($oTmpMerkmal->cMMName) > 0) {
-                                $NaviFilter->MerkmalWert->cName .= ', ' . $oTmpMerkmal->cMMName . ': ' . $oTmpMerkmal->cWert;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (isset($cParameter_arr['kTag']) && $cParameter_arr['kTag'] > 0) {
-            if (!isset($NaviFilter->Tag)) {
-                $NaviFilter->Tag = new stdClass();
-            }
-            $NaviFilter->Tag->kTag = (int)$cParameter_arr['kTag'];
-            $oSeo_obj              = self::DB()->query("
-                SELECT tseo.cSeo, tseo.kSprache, ttag.cName
-                    FROM tseo
-                    LEFT JOIN ttag
-                        ON tseo.kKey = ttag.kTag
-                    WHERE tseo.cKey = 'kTag' 
-                        AND tseo.kKey = " . $NaviFilter->Tag->kTag, 1
-            );
-            if (isset($bSprache)) {
-                $NaviFilter->Tag->cSeo = [];
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->Tag->cSeo[$oSprache->kSprache] = '';
-                    if ($oSprache->kSprache == $oSeo_obj->kSprache) {
-                        $NaviFilter->Tag->cSeo[$oSprache->kSprache] = $oSeo_obj->cSeo;
-                    }
-                }
-            }
-            if (!empty($oSeo_obj->cName)) {
-                $NaviFilter->Tag->cName = $oSeo_obj->cName;
-            }
-        }
-
-        if (isset($cParameter_arr['kNews']) && $cParameter_arr['kNews'] > 0) {
-            if (!isset($NaviFilter->News)) {
-                $NaviFilter->News = new stdClass();
-            }
-            $NaviFilter->News->kNews = (int)$cParameter_arr['kNews'];
-            $oSeo_obj                = self::DB()->query("
-                SELECT tseo.cSeo, tseo.kSprache, tnews.cBetreff
-                    FROM tseo
-                    LEFT JOIN tnews
-                        ON tnews.kNews = tseo.kKey                        
-                    WHERE cKey = 'kNews'
-                        AND kKey = " . $NaviFilter->News->kNews . "
-                    ORDER BY kSprache", 1
-            );
-            if ($bSprache && $oSeo_obj !== null) {
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->News->cSeo[$oSprache->kSprache] = '';
-                    if ($oSprache->kSprache == $oSeo_obj->kSprache) {
-                        $NaviFilter->News->cSeo[$oSprache->kSprache] = $oSeo_obj->cSeo;
-                    }
-                }
-            }
-            if (!empty($oSeo_obj->cBetreff)) {
-                $NaviFilter->News->cName = $oSeo_obj->cBetreff;
-            }
-        }
-
-        if (isset($cParameter_arr['kNewsMonatsUebersicht']) && $cParameter_arr['kNewsMonatsUebersicht'] > 0) {
-            if (!isset($NaviFilter->NewsMonat)) {
-                $NaviFilter->NewsMonat = new stdClass();
-            }
-            $NaviFilter->NewsMonat->kNewsMonatsUebersicht = (int)$cParameter_arr['kNewsMonatsUebersicht'];
-            $oSeo_obj                                     = self::DB()->query("
-                SELECT tseo.cSeo, tseo.kSprache, tnewsmonatsuebersicht.cName
-                    FROM tseo
-                    LEFT JOIN tnewsmonatsuebersicht
-                        ON tnewsmonatsuebersicht.kNewsMonatsUebersicht = tseo.kKey
-                    WHERE tseo.cKey = 'kNewsMonatsUebersicht'
-                        AND tseo.kKey = " . $NaviFilter->NewsMonat->kNewsMonatsUebersicht, 1
-            );
-            if ($bSprache) {
-                $NaviFilter->NewsMonat->cSeo = [];
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->NewsMonat->cSeo[$oSprache->kSprache] = '';
-                    if ($oSprache->kSprache == $oSeo_obj->kSprache) {
-                        $NaviFilter->NewsMonat->cSeo[$oSprache->kSprache] = $oSeo_obj->cSeo;
-                    }
-                }
-            }
-            if (!empty($oSeo_obj->cName)) {
-                $NaviFilter->NewsMonat->cName = $oSeo_obj->cName;
-            }
-        }
-
-        if (isset($cParameter_arr['kNewsKategorie']) && $cParameter_arr['kNewsKategorie'] > 0) {
-            if (!isset($NaviFilter->NewsKategorie)) {
-                $NaviFilter->NewsKategorie = new stdClass();
-            }
-            $NaviFilter->NewsKategorie->kNewsKategorie = (int)$cParameter_arr['kNewsKategorie'];
-            $oSeo_obj                                  = self::DB()->query("
-                SELECT tseo.cSeo, tseo.kSprache, tnewskategorie.cName
-                    FROM tseo
-                    LEFT JOIN tnewskategorie
-                        ON tnewskategorie.kNewsKategorie = tseo.kKey
-                    WHERE cKey = 'kNewsKategorie'
-                        AND kKey = " . $NaviFilter->NewsKategorie->kNewsKategorie, 1
-            );
-            if ($bSprache && $oSeo_obj !== null) {
-                $NaviFilter->NewsKategorie->cSeo = [];
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->NewsKategorie->cSeo[$oSprache->kSprache] = '';
-                    if ($oSprache->kSprache == $oSeo_obj->kSprache) {
-                        $NaviFilter->NewsKategorie->cSeo[$oSprache->kSprache] = $oSeo_obj->cSeo;
-                    }
-                }
-            }
-            if (!empty($oSeo_obj->cName)) {
-                $NaviFilter->NewsKategorie->cName = $oSeo_obj->cName;
-            }
-        }
-        //search specials
-        if (isset($cParameter_arr['kSuchspecial']) && $cParameter_arr['kSuchspecial'] > 0) {
-            if (!isset($NaviFilter->Suchspecial)) {
-                $NaviFilter->Suchspecial = new stdClass();
-            }
-            $NaviFilter->Suchspecial->kKey = (int)$cParameter_arr['kSuchspecial'];
-            $oSeo_arr                      = self::DB()->query("
-                SELECT cSeo, kSprache
-                    FROM tseo
-                    WHERE cKey = 'suchspecial'
-                        AND kKey = " . $NaviFilter->Suchspecial->kKey . "
-                    ORDER BY kSprache", 2
-            );
-
-            if ($bSprache) {
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->Suchspecial->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr)) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->Suchspecial->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
-                    }
-                }
-            }
-            switch ($NaviFilter->Suchspecial->kKey) {
-                case SEARCHSPECIALS_BESTSELLER:
-                    $NaviFilter->Suchspecial->cName = self::Lang()->get('bestsellers', 'global');
-                    break;
-                case SEARCHSPECIALS_SPECIALOFFERS:
-                    $NaviFilter->Suchspecial->cName = self::Lang()->get('specialOffers', 'global');
-                    break;
-                case SEARCHSPECIALS_NEWPRODUCTS:
-                    $NaviFilter->Suchspecial->cName = self::Lang()->get('newProducts', 'global');
-                    break;
-                case SEARCHSPECIALS_TOPOFFERS:
-                    $NaviFilter->Suchspecial->cName = self::Lang()->get('topOffers', 'global');
-                    break;
-                case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                    $NaviFilter->Suchspecial->cName = self::Lang()->get('upcomingProducts', 'global');
-                    break;
-                case SEARCHSPECIALS_TOPREVIEWS:
-                    $NaviFilter->Suchspecial->cName = self::Lang()->get('topReviews', 'global');
-                    break;
-                default:
-                    //invalid search special ID
-                    self::$is404               = true;
-                    self::$kSuchspecial        = 0;
-                    $NaviFilter->nAnzahlFilter = 0;
-                    unset($NaviFilter->Suchspecial);
-                    break;
-            }
-        }
-        //filter
-        if (isset($cParameter_arr['kKategorieFilter']) && $cParameter_arr['kKategorieFilter'] > 0 &&
-            (!isset($NaviFilter->Kategorie->kKategorie) || $cParameter_arr['kKategorieFilter'] != $NaviFilter->Kategorie->kKategorie)
-        ) {
-            if (!isset($NaviFilter->KategorieFilter)) {
-                $NaviFilter->KategorieFilter = new stdClass();
-            }
-            $NaviFilter->KategorieFilter->kKategorie = $cParameter_arr['kKategorieFilter'];
-            $oSeo_arr                                = self::DB()->query("
-                SELECT cSeo, kSprache
-                    FROM tseo
-                    WHERE cKey = 'kKategorie' 
-                        AND kKey = " . (int)$NaviFilter->KategorieFilter->kKategorie . "
-                    ORDER BY kSprache", 2
-            );
-
-            if ($bSprache) {
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->KategorieFilter->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr)) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->KategorieFilter->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
-                    }
-                }
-            }
-            $seo_obj = (self::$kSprache > 0 && !standardspracheAktiv())
-                ? self::DB()->select(
-                    'tkategoriesprache',
-                    'kKategorie', $NaviFilter->KategorieFilter->kKategorie,
-                    'kSprache', self::$kSprache,
-                    null, null,
-                    false,
-                    'cName'
-                )
-                : self::DB()->select(
-                    'tkategorie',
-                    'kKategorie', $NaviFilter->KategorieFilter->kKategorie,
-                    null, null,
-                    null, null,
-                    false,
-                    'cName'
-                );
-            if (isset($seo_obj->cName) && strlen($seo_obj->cName) > 0) {
-                $NaviFilter->KategorieFilter->cName = $seo_obj->cName;
-            }
-        }
-
-        if ((isset($cParameter_arr['kHerstellerFilter']) && $cParameter_arr['kHerstellerFilter'] > 0) &&
-            (!isset($NaviFilter->Hersteller->kHersteller) ||
-                $cParameter_arr['kHerstellerFilter'] != $NaviFilter->Hersteller->kHersteller)
-        ) {
-            if (!isset($NaviFilter->HerstellerFilter)) {
-                $NaviFilter->HerstellerFilter = new stdClass();
-            }
-            $NaviFilter->HerstellerFilter->kHersteller = (int)$cParameter_arr['kHerstellerFilter'];
-            $oSeo_arr                                  = self::DB()->query("
-                SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
-                    FROM tseo
-                        LEFT JOIN thersteller
-                        ON thersteller.kHersteller = tseo.kKey
-                    WHERE cKey = 'kHersteller' 
-                        AND kKey = " . (int)$NaviFilter->HerstellerFilter->kHersteller . "
-                    ORDER BY kSprache", 2
-            );
-
-            if ($bSprache) {
-                $NaviFilter->HerstellerFilter->cSeo = [];
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->HerstellerFilter->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr)) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->HerstellerFilter->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
-                    }
-                }
-            }
-            if (isset($oSeo_arr[0]->cName)) {
-                $NaviFilter->HerstellerFilter->cName = $oSeo_arr[0]->cName;
-            }
-        }
-        $NaviFilter->MerkmalFilter = [];
-        if (isset($cParameter_arr['MerkmalFilter_arr']) && is_array($cParameter_arr['MerkmalFilter_arr']) &&
-            (($paramCount = count($cParameter_arr['MerkmalFilter_arr'])) > 0)) {
-            for ($i = 0; $i < $paramCount; ++$i) {
-                $oMerkmalWert               = new stdClass();
-                $oMerkmalWert->kMerkmalWert = (int)$cParameter_arr['MerkmalFilter_arr'][$i];
-                $oMerkmalWert->cSeo         = [];
-                if ($oMerkmalWert->kMerkmalWert > 0) {
-                    $oSeo_arr = self::DB()->query("
-                        SELECT cSeo, kSprache
-                            FROM tseo
-                            WHERE cKey = 'kMerkmalWert' 
-                                AND kKey = " . $oMerkmalWert->kMerkmalWert . "
-                            ORDER BY kSprache", 2
-                    );
-
-                    if ($bSprache) {
-                        foreach ($oSprache_arr as $oSprache) {
-                            $oMerkmalWert->cSeo[$oSprache->kSprache] = '';
-                            if (is_array($oSeo_arr)) {
-                                foreach ($oSeo_arr as $oSeo) {
-                                    if ($oSprache->kSprache == $oSeo->kSprache) {
-                                        $oMerkmalWert->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    $seo_obj = self::DB()->query("
-                        SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
-                            FROM tmerkmalwertsprache
-                            JOIN tmerkmalwert 
-                                ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                            WHERE tmerkmalwertsprache.kSprache = " . self::$kSprache . "
-                               AND tmerkmalwertsprache.kMerkmalWert = " . $oMerkmalWert->kMerkmalWert, 1
-                    );
-                    if (!empty($seo_obj->kMerkmal)) {
-                        $oMerkmalWert->kMerkmal = $seo_obj->kMerkmal;
-                        $oMerkmalWert->cWert    = $seo_obj->cWert;
-                        $oMerkmalWert->cName    = $seo_obj->cWert;
-                    }
-                    $NaviFilter->MerkmalFilter[] = $oMerkmalWert;
-                }
-            }
-        }
-        //tag filter
-        $tagCount = isset($cParameter_arr['TagFilter_arr']) ? count($cParameter_arr['TagFilter_arr']) : 0;
-        if ($tagCount > 0 && isset($cParameter_arr['TagFilter_arr']) && is_array($cParameter_arr['TagFilter_arr'])) {
-            $NaviFilter->TagFilter = [];
-            for ($i = 0; $i < $tagCount; ++$i) {
-                $oTag       = new stdClass();
-                $oTag->kTag = $cParameter_arr['TagFilter_arr'][$i];
-                $seo_obj    = new stdClass();
-                if (self::$kSprache > 0 && $oTag->kTag > 0) {
-                    $seo_obj = self::DB()->select('ttag', 'nAktiv', 1, 'kSprache', self::$kSprache, 'kTag', $oTag->kTag, false, 'cName');
-                }
-                if (!empty($seo_obj->cName)) {
-                    $oTag->cName = $seo_obj->cName;
-                }
-                $NaviFilter->TagFilter[] = $oTag;
-            }
-        }
-        //search filter
-        $NaviFilter->SuchFilter = [];
-        $sfCount                = isset($cParameter_arr['SuchFilter_arr']) ? count($cParameter_arr['SuchFilter_arr']) : 0;
-        if ($sfCount > 0 && isset($cParameter_arr['SuchFilter_arr']) && is_array($cParameter_arr['SuchFilter_arr'])) {
-            for ($i = 0; $i < $sfCount; $i++) {
-                if (!isset($NaviFilter->SuchFilter[$i])) {
-                    if (!isset($NaviFilter->SuchFilter)) {
-                        $NaviFilter->SuchFilter = [];
-                    }
-                    $NaviFilter->SuchFilter[$i] = new stdClass();
-                }
-                $NaviFilter->SuchFilter[$i]->kSuchanfrage = (int)$cParameter_arr['SuchFilter_arr'][$i];
-                // Namen holen
-                $oSuchanfrage = self::DB()->select(
-                    'tsuchanfrage',
-                    'kSuchanfrage', $NaviFilter->SuchFilter[$i]->kSuchanfrage,
-                    'kSprache', self::$kSprache,
-                    null, null,
-                    false,
-                    'cSuche'
-                );
-                if (!empty($oSuchanfrage->cSuche)) {
-                    $NaviFilter->SuchFilter[$i]->cName = $oSuchanfrage->cSuche;
-                }
-            }
-        }
-        //rating stars filter
-        if (isset($cParameter_arr['nBewertungSterneFilter']) && $cParameter_arr['nBewertungSterneFilter'] > 0) {
-            if (!isset($NaviFilter->BewertungFilter)) {
-                $NaviFilter->BewertungFilter = new stdClass();
-            }
-            $NaviFilter->BewertungFilter->nSterne = (int)$cParameter_arr['nBewertungSterneFilter'];
-        }
-        //price span filter
-        if (isset($cParameter_arr['cPreisspannenFilter']) && strlen($cParameter_arr['cPreisspannenFilter']) > 0) {
-            if (!isset($NaviFilter->PreisspannenFilter)) {
-                $NaviFilter->PreisspannenFilter = new stdClass();
-            }
-            list($fVon, $fBis) = explode('_', $cParameter_arr['cPreisspannenFilter']);
-            if (!isset($NaviFilter->PreisspannenFilter)) {
-                $NaviFilter->PreisspannenFilter = new stdClass();
-            }
-            $NaviFilter->PreisspannenFilter->fVon  = (float)$fVon;
-            $NaviFilter->PreisspannenFilter->fBis  = (float)$fBis;
-            $NaviFilter->PreisspannenFilter->cWert = $NaviFilter->PreisspannenFilter->fVon . '_' . $NaviFilter->PreisspannenFilter->fBis;
-            //localize prices
-            $NaviFilter->PreisspannenFilter->cVonLocalized = gibPreisLocalizedOhneFaktor($NaviFilter->PreisspannenFilter->fVon);
-            $NaviFilter->PreisspannenFilter->cBisLocalized = gibPreisLocalizedOhneFaktor($NaviFilter->PreisspannenFilter->fBis);
-        }
-        //search special filter
-        if (!empty($cParameter_arr['kSuchspecialFilter'])) {
-            if (!isset($NaviFilter->SuchspecialFilter)) {
-                $NaviFilter->SuchspecialFilter = new stdClass();
-            }
-            $oSeo_arr = self::DB()->query(
-                "SELECT cSeo, kSprache
-                    FROM tseo
-                    WHERE cKey = 'suchspecial'
-                        AND kKey = " . (int)$cParameter_arr['kSuchspecialFilter'] . "
-                    ORDER BY kSprache", 2
-            );
-
-            if ($bSprache) {
-                foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->SuchspecialFilter->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr)) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->SuchspecialFilter->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
-                    }
-                }
-            }
-            $NaviFilter->SuchspecialFilter->kKey = $cParameter_arr['kSuchspecialFilter'];
-            //get names
-            switch ($NaviFilter->SuchspecialFilter->kKey) {
-                case SEARCHSPECIALS_BESTSELLER:
-                    $NaviFilter->SuchspecialFilter->cName = self::Lang()->get('bestsellers', 'global');
-                    break;
-
-                case SEARCHSPECIALS_SPECIALOFFERS:
-                    $NaviFilter->SuchspecialFilter->cName = self::Lang()->get('specialOffers', 'global');
-                    break;
-
-                case SEARCHSPECIALS_NEWPRODUCTS:
-                    $NaviFilter->SuchspecialFilter->cName = self::Lang()->get('newProducts', 'global');
-                    break;
-
-                case SEARCHSPECIALS_TOPOFFERS:
-                    $NaviFilter->SuchspecialFilter->cName = self::Lang()->get('topOffers', 'global');
-                    break;
-
-                case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                    $NaviFilter->SuchspecialFilter->cName = self::Lang()->get('upcomingProducts', 'global');
-                    break;
-
-                default:
-                    $NaviFilter->SuchspecialFilter->cName = '';
-                    break;
-
-            }
-        }
-        //sorting
-        if (isset($cParameter_arr['nSortierung']) && $cParameter_arr['nSortierung'] > 0) {
-            $NaviFilter->nSortierung = (int)$cParameter_arr['nSortierung'];
-        }
-        //number of products per page
-        if (isset($cParameter_arr['nArtikelProSeite']) && $cParameter_arr['nArtikelProSeite'] > 0) {
-            $NaviFilter->nAnzahlProSeite = (int)$cParameter_arr['nArtikelProSeite'];
-        }
-        //search
-        if (isset($cParameter_arr['cSuche']) && strlen($cParameter_arr['cSuche']) > 0) {
-            $cParameter_arr['cSuche'] = StringHandler::filterXSS($cParameter_arr['cSuche']);
-            if (!isset($NaviFilter->Suche)) {
-                $NaviFilter->Suche = new stdClass();
-            }
-            $NaviFilter->Suche->cSuche = $cParameter_arr['cSuche'];
-            if (!isset($NaviFilter->EchteSuche)) {
-                $NaviFilter->EchteSuche = new stdClass();
-            }
-            $NaviFilter->EchteSuche->cSuche = $cParameter_arr['cSuche'];
-        }
-        //page
-        $NaviFilter->nSeite = verifyGPCDataInteger('seite');
-        if (!isset($NaviFilter->nSeite) || !$NaviFilter->nSeite) {
-            $NaviFilter->nSeite = 1;
-        }
-        if (!function_exists('gibAnzahlFilter')) {
-            require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
-        }
-        $NaviFilter->nAnzahlFilter = gibAnzahlFilter($NaviFilter);
-        self::$NaviFilter = $NaviFilter;
-
-        return $NaviFilter;
+        trigger_error('class.core.Shop.php: calling buildNaviFilter() is deprecated.', E_USER_DEPRECATED);
+        return self::buildProductFilter($cParameter_arr, $productFilter);
     }
 
     /**
-     * @param stdClass $NaviFilter
+     * build navigation filter object from parameters
+     *
+     * @param array                     $cParameter_arr
+     * @param object|null|ProductFilter $productFilter
+     * @return ProductFilter
      */
-    public static function checkNaviFilter($NaviFilter)
+    public static function buildProductFilter($cParameter_arr, $productFilter = null)
     {
-        if ($NaviFilter->nAnzahlFilter > 0) {
-            if (empty($NaviFilter->Hersteller->kHersteller) && empty($NaviFilter->Kategorie->kKategorie) &&
-                empty($NaviFilter->Tag->kTag) && empty($NaviFilter->Suchanfrage->kSuchanfrage) &&
-                empty($NaviFilter->News->kNews) && empty($NaviFilter->Newsmonat->kNewsMonatsUebersicht) &&
-                empty($NaviFilter->NewsKategorie->kNewsKategorie) &&
-                !isset($NaviFilter->Suche->cSuche) && empty($NaviFilter->MerkmalWert->kMerkmalWert) &&
-                empty($NaviFilter->Suchspecial->kKey)
-            ) {
-                //we have a manufacturer filter that doesn't filter anything
-                if (!empty($NaviFilter->HerstellerFilter->cSeo[self::$kSprache])) {
-                    http_response_code(301);
-                    header('Location: ' . self::getURL() . '/' . $NaviFilter->HerstellerFilter->cSeo[self::$kSprache]);
-                    exit();
-                }
-                //we have a category filter that doesn't filter anything
-                if (!empty($NaviFilter->KategorieFilter->cSeo[self::$kSprache])) {
-                    http_response_code(301);
-                    header('Location: ' . self::getURL() . '/' . $NaviFilter->KategorieFilter->cSeo[self::$kSprache]);
-                    exit();
-                }
-            } elseif (!empty($NaviFilter->Hersteller->kHersteller) && !empty($NaviFilter->HerstellerFilter->kHersteller) &&
-                !empty($NaviFilter->Hersteller->cSeo[self::$kSprache])) {
-                //we have a manufacturer page with some manufacturer filter
-                http_response_code(301);
-                header('Location: ' . self::getURL() . '/' . $NaviFilter->Hersteller->cSeo[self::$kSprache]);
-                exit();
-            } elseif (!empty($NaviFilter->Kategorie->kKategorie) && !empty($NaviFilter->KategorieFilter->kKategorie) &&
-                !empty($NaviFilter->Kategorie->cSeo[self::$kSprache])) {
-                //we have a category page with some category filter
-                http_response_code(301);
-                header('Location: ' . self::getURL() . '/' . $NaviFilter->Kategorie->cSeo[self::$kSprache]);
-                exit();
+        $nf = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
+        if ($productFilter !== null) {
+            foreach (get_object_vars($productFilter) as $k => $v) {
+                $nf->$k = $v;
             }
         }
+
+        return $nf->initStates($cParameter_arr);
+    }
+
+    /**
+     * @return ProductFilter
+     * @deprecated since 4.07
+     */
+    public static function getNaviFilter()
+    {
+        trigger_error('class.core.Shop.php: calling getNaviFilter() is deprecated.', E_USER_DEPRECATED);
+        return self::getProductFilter();
+    }
+
+    /**
+     * @return ProductFilter
+     */
+    public static function getProductFilter()
+    {
+        if (self::$productFilter === null) {
+            self::$productFilter = self::buildProductFilter([]);
+        }
+
+        return self::$productFilter;
+    }
+
+    /**
+     * @param ProductFilter $productFilter
+     */
+    public static function setProductFilter(ProductFilter $productFilter)
+    {
+        self::$productFilter = $productFilter;
+    }
+
+    /**
+     * @param null|ProductFilter $productFilter
+     * @deprecated since 4.07 - this is done in ProductFilter:validate()
+     */
+    public static function checkNaviFilter($productFilter = null)
+    {
     }
 
     /**
@@ -1834,7 +1473,7 @@ final class Shop
      */
     public static function getShopVersion()
     {
-        $oVersion = self::DB()->query("SELECT nVersion FROM tversion", 1);
+        $oVersion = self::DB()->query('SELECT nVersion FROM tversion', 1);
 
         return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
             ? (int)$oVersion->nVersion
@@ -1877,7 +1516,11 @@ final class Shop
             }
         }
 
-        return ($ret === null) ? null : (($fullUrl === true) ? self::getURL() . '/' : '') . $ret;
+        return $ret === null
+            ? null
+            : ($fullUrl === true
+                ? self::getURL() . '/'
+                : '') . $ret;
     }
 
     /**
@@ -1887,13 +1530,15 @@ final class Shop
      */
     public static function getURL($bForceSSL = false, $bMultilang = true)
     {
-        $cShopURL = URL_SHOP;
-        //EXPERIMENTAL_MULTILANG_SHOP
-        if ($bMultilang === true && isset($_SESSION['cISOSprache']) &&
-            defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))
-        ) {
-            $cShopURL = constant('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']));
+        $idx = (int)$bForceSSL;
+        if (isset(self::$url[self::$kSprache][$idx])) {
+            return self::$url[self::$kSprache][$idx];
         }
+        // EXPERIMENTAL_MULTILANG_SHOP
+        $cShopURL = ($bMultilang === true && isset($_SESSION['cISOSprache'])
+            && defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache'])))
+            ? constant('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))
+            : URL_SHOP;
         $sslStatus = pruefeSSL();
         if ($sslStatus === 2) {
             $cShopURL = str_replace('http://', 'https://', $cShopURL);
@@ -1901,7 +1546,10 @@ final class Shop
             $cShopURL = str_replace('http://', 'https://', $cShopURL);
         }
 
-        return rtrim($cShopURL, '/');
+        $url = rtrim($cShopURL, '/');
+        self::$url[self::$kSprache][$idx] = $url;
+
+        return $url;
     }
 
     /**
@@ -1910,9 +1558,7 @@ final class Shop
      */
     public static function getAdminURL($bForceSSL = false)
     {
-        $cShopURL = static::getURL($bForceSSL, false) . '/' . PFAD_ADMIN;
-
-        return rtrim($cShopURL, '/');
+        return rtrim(static::getURL($bForceSSL, false) . '/' . PFAD_ADMIN, '/');
     }
 
     /**
@@ -1930,7 +1576,7 @@ final class Shop
      */
     public static function getPageType()
     {
-        return (self::$pageType !== null) ? self::$pageType : PAGE_UNBEKANNT;
+        return self::$pageType !== null ? self::$pageType : PAGE_UNBEKANNT;
     }
 
     /**
@@ -1938,11 +1584,9 @@ final class Shop
      */
     public static function getRequestUri()
     {
-        $uri = $_SERVER['REQUEST_URI'];
-        if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
-            $uri = $_SERVER['HTTP_X_REWRITE_URL'];
-        }
-
+        $uri          = isset($_SERVER['HTTP_X_REWRITE_URL'])
+            ? $_SERVER['HTTP_X_REWRITE_URL']
+            : $_SERVER['REQUEST_URI'];
         $xShopurl_arr = parse_url(self::getURL());
         $xBaseurl_arr = parse_url($uri);
 
@@ -1950,11 +1594,9 @@ final class Shop
             $xShopurl_arr['path'] = '/';
         }
 
-        $cPath = isset($xBaseurl_arr['path'])
+        return isset($xBaseurl_arr['path'])
             ? substr($xBaseurl_arr['path'], strlen($xShopurl_arr['path']))
             : '';
-
-        return $cPath;
     }
 
     /**
@@ -1967,9 +1609,7 @@ final class Shop
         }
         $result   = false;
         $isLogged = function () {
-            $oAccount = new AdminAccount(true);
-
-            return $oAccount->logged();
+            return (new AdminAccount(true))->logged();
         };
         if (isset($_COOKIE['eSIdAdm'])) {
             if (session_name() !== 'eSIdAdm') {

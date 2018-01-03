@@ -2,12 +2,12 @@
 /* Written by Milian Wolff (mail@milianw.de). */
 jQuery(function($){
 	$.datepicker.regional['de'] = {
-		closeText: 'schlieﬂen',
-		prevText: '&#x3c;zur¸ck',
+		closeText: 'schlie√üen',
+		prevText: '&#x3c;zur√ºck',
 		nextText: 'Vor&#x3e;',
 		currentText: 'heute',
-		monthNames: ['Januar','Februar','M‰rz','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
-		monthNamesShort: ['Jan','Feb','M‰r','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'],
+		monthNames: ['Januar','Februar','M√§rz','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+		monthNamesShort: ['Jan','Feb','M√§r','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'],
 		dayNames: ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
 		dayNamesShort: ['So','Mo','Di','Mi','Do','Fr','Sa'],
 		dayNamesMin: ['So','Mo','Di','Mi','Do','Fr','Sa'],

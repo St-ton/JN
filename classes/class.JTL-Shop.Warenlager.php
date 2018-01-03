@@ -341,15 +341,14 @@ class Warenlager extends MainModel
     /**
      * @param bool $bPrim
      * @return bool|int
+     * @throws Exception
      */
     public function save($bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $oObj->$cMember = $this->$cMember;
-            }
+        foreach ($cMember_arr as $cMember) {
+            $oObj->$cMember = $this->$cMember;
         }
 
         if ($this->getWarenlager() === null) {
@@ -370,7 +369,7 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return mixed
+     * @return int
      * @throws Exception
      */
     public function update()
@@ -382,10 +381,10 @@ class Warenlager extends MainModel
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $mValue = "'" . Shop::DB()->escape(call_user_func([&$this, $cMethod])) . "'";
-                    if (call_user_func([&$this, $cMethod]) === null) {
-                        $mValue = 'NULL';
-                    }
+                    $val        = $this->$cMethod();
+                    $mValue     = $val === null
+                        ? 'NULL'
+                        : ("'" . Shop::DB()->escape($val) . "'");
                     $cSet_arr[] = "{$cMember} = {$mValue}";
                 }
             }
@@ -394,25 +393,22 @@ class Warenlager extends MainModel
             $cQuery .= " WHERE kWarenlager = {$this->kWarenlager}";
 
             return Shop::DB()->query($cQuery, 3);
-        } else {
-            throw new Exception('ERROR: Object has no members!');
         }
+        throw new Exception('ERROR: Object has no members!');
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function delete()
     {
-        $nRows = Shop::DB()->query(
+        return Shop::DB()->query(
             "DELETE twarenlager, twarenlagersprache
                 FROM twarenlager
                 LEFT JOIN twarenlagersprache 
                     ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
                 WHERE twarenlager.kWarenlager = " . (int)$this->kWarenlager, 3
         );
-
-        return $nRows;
     }
 
     /**
@@ -532,23 +528,23 @@ class Warenlager extends MainModel
         if ($xOption_arr['cLagerBeachten'] === 'Y') {
             if ($fBestand > 0) {
                 $this->oLageranzeige->cLagerhinweis['genau']          = $fBestand . ' ' .
-                    $xOption_arr['cEinheit'] . ' ' . Shop::Lang()->get('inStock', 'global');
-                $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable', 'global');
+                    $xOption_arr['cEinheit'] . ' ' . Shop::Lang()->get('inStock');
+                $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable');
                 if (isset($conf['artikeldetails']['artikel_lagerbestandsanzeige']) &&
                     $conf['artikeldetails']['artikel_lagerbestandsanzeige'] === 'verfuegbarkeit'
                 ) {
-                    $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen', 'global');
+                    $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
                 }
             } elseif ($xOption_arr['cLagerKleinerNull'] === 'Y') {
-                $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen', 'global');
-                $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen', 'global');
+                $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen');
+                $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
             } else {
-                $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable', 'global');
-                $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable', 'global');
+                $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable');
+                $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable');
             }
         } else {
-            $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen', 'global');
-            $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen', 'global');
+            $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen');
+            $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
         }
         if ($xOption_arr['cLagerBeachten'] === 'Y') {
             // ampel

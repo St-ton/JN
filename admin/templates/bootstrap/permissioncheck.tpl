@@ -52,7 +52,7 @@
         function colorLines() {
             var mod = 1;
             $('.req li:not(:hidden)').each(function () {
-                if (mod == 1) {
+                if (mod === 1) {
                     $(this).removeClass('mod0');
                     $(this).removeClass('mod1');
                     $(this).addClass('mod1');

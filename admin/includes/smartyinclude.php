@@ -7,12 +7,10 @@ $smarty                    = JTLSmarty::getInstance(false, true);
 $templateDir               = $smarty->getTemplateDir($smarty->context);
 $template                  = AdminTemplate::getInstance();
 $Einstellungen             = Shop::getSettings([CONF_GLOBAL]);
-$Einstellungen['template'] = $template->getConfig();
-$currentTheme              = isset($Einstellungen['template']['theme_default']) ?: '';
 $shopURL                   = Shop::getURL();
 $currentTemplateDir        = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDir);
-$resourcePaths             = $template->getResources(isset($Einstellungen['template']['general']['use_minify']) &&
-    $Einstellungen['template']['general']['use_minify'] === 'Y');
+$resourcePaths             = $template->getResources(isset($Einstellungen['template']['general']['use_minify'])
+    && $Einstellungen['template']['general']['use_minify'] === 'Y');
 $oAccount                  = new AdminAccount();
 // Account
 if (!isset($oAccount) || get_class_methods($oAccount) === null) {
@@ -21,22 +19,26 @@ if (!isset($oAccount) || get_class_methods($oAccount) === null) {
 }
 $adminLoginGruppe          = !empty($oAccount->account()->oGroup->kAdminlogingruppe) ? (int)$oAccount->account()->oGroup->kAdminlogingruppe : -1;
 // Einstellungen
-$configSections = Shop::DB()->query("SELECT * FROM teinstellungensektion ORDER BY cName", 2);
-$sectionCount   = count($configSections);
-for ($i = 0; $i < $sectionCount; $i++) {
-    $anz_einstellunen = Shop::DB()->query("
-        SELECT count(*) AS anz
-            FROM teinstellungenconf
-            WHERE kEinstellungenSektion = " . (int)$configSections[$i]->kEinstellungenSektion . "
-            AND cConf = 'Y'", 1
-    );
-    $configSections[$i]->anz       = $anz_einstellunen->anz;
-    $configSections[$i]->cLinkname = $configSections[$i]->cName;
-    $configSections[$i]->cURL      = 'einstellungen.php?kSektion=' . $configSections[$i]->kEinstellungenSektion;
+$configSections = Shop::DB()->query(
+    "SELECT teinstellungensektion.*, COUNT(teinstellungenconf.kEinstellungenSektion) AS anz
+        FROM teinstellungensektion 
+        LEFT JOIN teinstellungenconf
+            ON teinstellungenconf.kEinstellungenSektion = teinstellungensektion.kEinstellungenSektion
+            AND teinstellungenconf.cConf = 'Y'        
+        GROUP BY teinstellungensektion.kEinstellungenSektion
+        ORDER BY teinstellungensektion.cName", 2
+);
+foreach ($configSections as $configSection) {
+    $configSection->kEinstellungenSektion = (int)$configSection->kEinstellungenSektion;
+    $configSection->kAdminmenueGruppe     = (int)$configSection->kAdminmenueGruppe;
+    $configSection->nSort                 = (int)$configSection->nSort;
+    $configSection->anz                   = (int)$configSection->anz;
+    $configSection->cLinkname             = $configSection->cName;
+    $configSection->cURL                  = 'einstellungen.php?kSektion=' . $configSection->kEinstellungenSektion;
 }
 $oLinkOberGruppe_arr = Shop::DB()->selectAll('tadminmenugruppe', 'kAdminmenueOberGruppe', 0, '*', 'nSort');
 
-if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
+if (count($oLinkOberGruppe_arr) > 0) {
     // JTL Search Plugin aktiv?
     $oPluginSearch = Shop::DB()->query(
         "SELECT kPlugin, cName
@@ -62,9 +64,9 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
                 $oLinkGruppe_arr[$j]->oLink_arr = $oAccount->getVisibleMenu((int)$adminLoginGruppe,
                     (int)$oLinkGruppe->kAdminmenueGruppe);
                 foreach ($configSections as $_k => $_configSection) {
-                    if (isset($_configSection->kAdminmenueGruppe) &&
-                        $_configSection->kAdminmenueGruppe == $oLinkGruppe->kAdminmenueGruppe &&
-                        $oAccount->permission($_configSection->cRecht)
+                    if (isset($_configSection->kAdminmenueGruppe)
+                        && $_configSection->kAdminmenueGruppe == $oLinkGruppe->kAdminmenueGruppe
+                        && $oAccount->permission($_configSection->cRecht)
                     ) {
                         $oLinkGruppe->oLink_arr[] = $_configSection;
                         unset($configSections[$_k]);
@@ -144,7 +146,7 @@ if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];
 }
 
-$smarty->assign('SID', (defined('SID') ? SID : null))
+$smarty->assign('SID', SID)
        ->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', getTokenInput())
        ->assign('shopURL', $shopURL)
@@ -153,7 +155,6 @@ $smarty->assign('SID', (defined('SID') ? SID : null))
        ->assign('session_name', session_name())
        ->assign('session_id', session_id())
        ->assign('currentTemplateDir', $currentTemplateDir)
-       ->assign('currentTheme', $currentTheme)
        ->assign('lang', 'german')
        ->assign('admin_css', $resourcePaths['css'])
        ->assign('admin_js', $resourcePaths['js'])
@@ -165,5 +166,5 @@ $smarty->assign('SID', (defined('SID') ? SID : null))
        ->assign('oLinkOberGruppe_arr', $oLinkOberGruppe_arr)
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('kAdminmenuEinstellungen', KADMINMENU_EINSTELLUNGEN)
-       ->assign('notifications', $notify)
+       ->assign('notifications', Notification::getInstance())
        ->assign('favorites', $oAccount->favorites());

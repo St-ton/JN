@@ -2,9 +2,9 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
-die Zahlung für Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} vom {$Bestellung->dErstelldatum_de} in Höhe von {$Bestellung->WarensummeLocalized[0]} ist per {$Bestellung->Zahlungsart->cName} bei uns eingegangen.
+die Zahlung fÃ¼r Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} vom {$Bestellung->dErstelldatum_de} in HÃ¶he von {$Bestellung->WarensummeLocalized[0]} ist per {$Bestellung->Zahlungsart->cName} bei uns eingegangen.
 
-Nachfolgend erhalten Sie nochmals einen Überblick über Ihre Bestellung:
+Nachfolgend erhalten Sie nochmals einen Ãœberblick Ã¼ber Ihre Bestellung:
 
 {foreach name=pos from=$Bestellung->Positionen item=Position}
 {if $Position->nPosTyp==1}
@@ -28,9 +28,9 @@ Gutschein: -{$GutscheinLocalized}
 Gesamtsumme: {$Bestellung->WarensummeLocalized[0]}
 
 
-Über den Versand der Ware werden wir Sie gesondert informieren.
+Ãœber den Versand der Ware werden wir Sie gesondert informieren.
 
-Mit freundlichem Gruß,
+Mit freundlichem GruÃŸ,
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

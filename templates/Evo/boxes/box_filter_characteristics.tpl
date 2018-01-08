@@ -2,7 +2,6 @@
     {foreach name=merkmalfilter from=$Suchergebnisse->MerkmalFilter item=Merkmal}
         {assign var=kMerkmal value=$Merkmal->kMerkmal}
         <section class="panel panel-default box box-filter-characteristics">
-            class: {get_class($Merkmal)}
             {if ($Merkmal->getData('cTyp') === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
                 <div class="panel-heading dropdown">
                     <h5 class="panel-title">

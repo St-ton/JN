@@ -113,7 +113,11 @@ if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
     include PFAD_ROOT . 'registrieren.php';
 } elseif (isset($_SESSION['tmpShipping'])) {
     // restore delivery address after registering customer
-    $_SESSION['Lieferadresse'] = $_SESSION['tmpShipping']['Lieferadresse'];
+    if ((int)$_POST['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {
+        setzeLieferadresseAusRechnungsadresse();
+    } else {
+        $_SESSION['Lieferadresse'] = $_SESSION['tmpShipping']['Lieferadresse'];
+    }
     if (is_array($_SESSION['tmpShipping']['fehlendeAngaben'])) {
         setzeFehlendeAngaben($_SESSION['tmpShipping']['fehlendeAngaben'], 'shipping_address');
     }

@@ -183,6 +183,11 @@ abstract class AbstractFilter implements IFilter
     protected $tableName = '';
 
     /**
+     * @var bool
+     */
+    protected $isActive = false;
+
+    /**
      * AbstractFilter constructor
      *
      * @param ProductFilter $productFilter
@@ -202,6 +207,25 @@ abstract class AbstractFilter implements IFilter
             $this->isInitialized = true;
             $this->setValue($value)->setSeo($this->availableLanguages);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * @param bool $active
+     * @return $this
+     */
+    public function setIsActive($active)
+    {
+        $this->isActive = $active;
 
         return $this;
     }
@@ -234,6 +258,7 @@ abstract class AbstractFilter implements IFilter
                                                        ->setName($this->getFrontendName())
                                                        ->setType($this->getType());
         }
+        $this->isActive = true;
 
         return $this;
     }

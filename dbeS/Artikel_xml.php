@@ -162,6 +162,7 @@ function bearbeiteInsert($xml, array $conf)
             foreach ($newArticleCategoriesObject as $newArticleCategory) {
                 $newArticleCategories[] = (int)$newArticleCategory->kKategorie;
             }
+            $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             foreach ($newArticleCategories as $newArticleCategory) {
                 if (!in_array($newArticleCategory, $currentArticleCategories, true)) {
                     // the article was previously not associated with this category
@@ -170,7 +171,7 @@ function bearbeiteInsert($xml, array $conf)
                             FROM tkategorieartikel
                             LEFT JOIN tartikel
                                 ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                            WHERE tkategorieartikel.kKategorie = {$newArticleCategory} " . gibLagerfilter(), 1
+                            WHERE tkategorieartikel.kKategorie = {$newArticleCategory} " . $stockFilter, 1
                     );
                     if (isset($articleCount->count) && (int)$articleCount->count === 0) {
                         // the category was previously empty - flush cache
@@ -190,7 +191,7 @@ function bearbeiteInsert($xml, array $conf)
                                 FROM tkategorieartikel
                                 LEFT JOIN tartikel
                                     ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                                WHERE tkategorieartikel.kKategorie = {$category} " . gibLagerfilter(), 1
+                                WHERE tkategorieartikel.kKategorie = {$category} " . $stockFilter, 1
                         );
                         if (!isset($articleCount->count) || (int)$articleCount->count === 1) {
                             // the category only had this article in it - flush cache
@@ -213,19 +214,15 @@ function bearbeiteInsert($xml, array $conf)
                     'cLagerBeachten, cLagerKleinerNull, fLagerbestand'
                 );
                 if (isset($currentStatus->cLagerBeachten)) {
-                    if ($currentStatus->fLagerbestand <= 0 && $xml['tartikel']['fLagerbestand'] > 0) {
+                    if (($currentStatus->fLagerbestand <= 0 && $xml['tartikel']['fLagerbestand'] > 0)
                         // article was not in stock before but is now - check if flush is necessary
-                        $check = true;
-                    } elseif ($currentStatus->fLagerbestand > 0 && $xml['tartikel']['fLagerbestand'] <= 0) {
+                        || ($currentStatus->fLagerbestand > 0 && $xml['tartikel']['fLagerbestand'] <= 0)
                         // article was in stock before but is not anymore - check if flush is necessary
-                        $check = true;
-                    } elseif ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
-                        && $currentStatus->cLagerKleinerNull !== $xml['tartikel']['cLagerKleinerNull']
-                    ) {
+                        || ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                            && $currentStatus->cLagerKleinerNull !== $xml['tartikel']['cLagerKleinerNull'])
                         // overselling status changed - check if flush is necessary
-                        $check = true;
-                    } elseif ($currentStatus->cLagerBeachten !== $xml['tartikel']['cLagerBeachten']
-                        && $xml['tartikel']['fLagerbestand'] <= 0
+                        || ($currentStatus->cLagerBeachten !== $xml['tartikel']['cLagerBeachten']
+                            && $xml['tartikel']['fLagerbestand'] <= 0)
                     ) {
                         $check = true;
                     }
@@ -237,22 +234,21 @@ function bearbeiteInsert($xml, array $conf)
                                 LEFT JOIN tartikel
                                     ON tartikel.kArtikel = tkategorieartikel.kArtikel
                                 WHERE tkategorieartikel.kKategorie IN (" . implode(',', $newArticleCategories) . ") " .
-                            gibLagerfilter() . " 
-                                GROUP BY tkategorieartikel.kKategorie", 2
+                            $stockFilter .
+                            " GROUP BY tkategorieartikel.kKategorie", 2
                         );
                         if (is_array($newArticleCategories) && !empty($newArticleCategories)) {
                             foreach ($newArticleCategories as $nac) {
                                 if (is_array($articleCount) && !empty($articleCount)) {
                                     foreach ($articleCount as $ac) {
-                                        if ($ac->kKategorie == $nac) {
-                                            if (($currentStatus->cLagerBeachten !== 'Y' && $ac->count == 1) ||
-                                                ($currentStatus->cLagerBeachten === 'Y' && $ac->count == 0)
-                                            ) {
-                                                // there was just one product that is now sold out
-                                                // or there were just sold out products and now it's not sold out anymore
-                                                $flush = true;
-                                                break;
-                                            }
+                                        if ($ac->kKategorie == $nac
+                                            && (($currentStatus->cLagerBeachten !== 'Y' && $ac->count == 1)
+                                                || ($currentStatus->cLagerBeachten === 'Y' && $ac->count == 0))
+                                        ) {
+                                            // there was just one product that is now sold out
+                                            // or there were just sold out products and now it's not sold out anymore
+                                            $flush = true;
+                                            break;
                                         }
                                     }
                                 } else {
@@ -997,10 +993,11 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
     $kArtikel = (int)$kArtikel;
     // get list of all categories the article was associated with
     $articleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
-    if ($bForce === false &&
-        isset($conf['global']['kategorien_anzeigefilter']) &&
-        $conf['global']['kategorien_anzeigefilter'] === '2'
+    if ($bForce === false
+        && isset($conf['global']['kategorien_anzeigefilter'])
+        && $conf['global']['kategorien_anzeigefilter'] === '2'
     ) {
+        $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         foreach ($articleCategories as $category) {
             // check if the article was the only one in at least one of these categories
             $categoryCount = Shop::DB()->query(
@@ -1008,7 +1005,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
                     FROM tkategorieartikel
                     LEFT JOIN tartikel
                         ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                    WHERE tkategorieartikel.kKategorie = " . (int)$category->kKategorie . " " . gibLagerfilter(), 1
+                    WHERE tkategorieartikel.kKategorie = " . (int)$category->kKategorie . " " . $stockFilter, 1
             );
             if (!isset($categoryCount->count) || (int)$categoryCount->count === 1) {
                 // the category only had this article in it - flush cache

@@ -447,8 +447,15 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attributeFilterCollection[$attributeValue->kMerkmal]->attributeValues[] = $attributeValue;
             }
         }
-
+        $shopURL = Shop::getURL() . '/';
         foreach ($attributeFilterCollection as $attributeFilter) {
+            $baseSrcSmall  = strlen($attributeFilter->cMMBildPfad) > 0
+                ? PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
+                : BILD_KEIN_MERKMALBILD_VORHANDEN;
+            $baseSrcNormal = strlen($attributeFilter->cMMBildPfad) > 0
+                ? PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
+                : BILD_KEIN_MERKMALBILD_VORHANDEN;
+
             $attribute = (new FilterExtra())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
@@ -461,12 +468,10 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setData('cTyp', $attributeFilter->cTyp)
                 ->setData('kMerkmal', $attributeFilter->kMerkmal)
                 ->setData('oMerkmalWerte_arr', [])
-                ->setData('cBildpfadKlein', strlen($attributeFilter->cMMBildPfad) > 0
-                    ? PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
-                    : BILD_KEIN_MERKMALBILD_VORHANDEN)
-                ->setData('cBildpfadNormal', strlen($attributeFilter->cMMBildPfad) > 0
-                    ? PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
-                    : BILD_KEIN_MERKMALBILD_VORHANDEN)
+                ->setData('cBildpfadKlein', $baseSrcSmall)
+                ->setData('cBildpfadNormal', $baseSrcNormal)
+                ->setData('cBildURLKlein', $shopURL . $baseSrcSmall)
+                ->setData('cBildURLNormal', $shopURL . $baseSrcNormal)
                 ->setType($attributeFilter->nMehrfachauswahl === 1
                     ? AbstractFilter::FILTER_TYPE_OR
                     : AbstractFilter::FILTER_TYPE_AND

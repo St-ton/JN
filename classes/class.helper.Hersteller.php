@@ -95,16 +95,18 @@ class HerstellerHelper
                         )
                     ORDER BY thersteller.nSortNr, thersteller.cName", 2
             );
-            if (is_array($manufacturers) && count($manufacturers) > 0) {
-                foreach ($manufacturers as $i => $oHersteller) {
-                    if (isset($oHersteller->cBildpfad) && strlen($oHersteller->cBildpfad) > 0) {
-                        $manufacturers[$i]->cBildpfadKlein  = PFAD_HERSTELLERBILDER_KLEIN . $oHersteller->cBildpfad;
-                        $manufacturers[$i]->cBildpfadNormal = PFAD_HERSTELLERBILDER_NORMAL . $oHersteller->cBildpfad;
-                    } else {
-                        $manufacturers[$i]->cBildpfadKlein  = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-                        $manufacturers[$i]->cBildpfadNormal = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-                    }
+            $shopURL = Shop::getURL() . '/';
+            foreach ($manufacturers as $manufacturer) {
+                if (!empty($manufacturer->cBildpfad)) {
+                    $manufacturer->cBildpfadKlein  = PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildpfad;
+                    $manufacturer->cBildpfadNormal = PFAD_HERSTELLERBILDER_NORMAL . $manufacturer->cBildpfad;
+                } else {
+                    $manufacturer->cBildpfadKlein  = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
+                    $manufacturer->cBildpfadNormal = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
                 }
+                $manufacturer->cBildURLKlein  = $shopURL . $manufacturer->cBildpfadKlein;
+                $manufacturer->cBildURLNormal = $shopURL . $manufacturer->cBildpfadKlein;
+                $manufacturer->cURLFull        = $shopURL . $manufacturer->cSeo;
             }
             $cacheTags = [CACHING_GROUP_MANUFACTURER, CACHING_GROUP_CORE];
             executeHook(HOOK_GET_MANUFACTURERS, [

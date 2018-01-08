@@ -523,11 +523,9 @@ class Boxen
                             GROUP BY tumfrage.kUmfrage
                             ORDER BY tumfrage.dGueltigVon DESC" . $cSQL, 2
                     );
-
-                    if (is_array($oUmfrage_arr) && count($oUmfrage_arr) > 0) {
-                        foreach ($oUmfrage_arr as $i => $oUmfrage) {
-                            $oUmfrage_arr[$i]->cURL = baueURL($oUmfrage, URLART_UMFRAGE);
-                        }
+                    foreach ($oUmfrage_arr as $i => $oUmfrage) {
+                        $oUmfrage_arr[$i]->cURL     = baueURL($oUmfrage, URLART_UMFRAGE);
+                        $oUmfrage_arr[$i]->cURLFull = baueURL($oUmfrage, URLART_UMFRAGE, 0, false, true);
                     }
                     $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_CORE];
                     executeHook(HOOK_BOXEN_INC_UMFRAGE, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
@@ -609,10 +607,9 @@ class Boxen
                             GROUP BY tnewskategorienews.kNewsKategorie
                             ORDER BY tnewskategorie.nSort DESC" . $cSQL, 2
                     );
-                    if (is_array($oNewsKategorie_arr) && count($oNewsKategorie_arr) > 0) {
-                        foreach ($oNewsKategorie_arr as $i => $oNewsKategorie) {
-                            $oNewsKategorie_arr[$i]->cURL = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
-                        }
+                    foreach ($oNewsKategorie_arr as $i => $oNewsKategorie) {
+                        $oNewsKategorie_arr[$i]->cURL     = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
+                        $oNewsKategorie_arr[$i]->cURLFull = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false, true);
                     }
                     $oBox->anzeigen           = 'Y';
                     $oBox->oNewsKategorie_arr = $oNewsKategorie_arr;
@@ -653,10 +650,9 @@ class Boxen
                         GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
                         ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
                 );
-                if (is_array($oNewsMonatsUebersicht_arr) && count($oNewsMonatsUebersicht_arr) > 0) {
-                    foreach ($oNewsMonatsUebersicht_arr as $i => $oNewsMonatsUebersicht) {
-                        $oNewsMonatsUebersicht_arr[$i]->cURL = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
-                    }
+                foreach ($oNewsMonatsUebersicht_arr as $i => $oNewsMonatsUebersicht) {
+                    $oNewsMonatsUebersicht_arr[$i]->cURL     = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
+                    $oNewsMonatsUebersicht_arr[$i]->cURLFull = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT, 0, false, true);
                 }
                 $oBox->anzeigen                  = 'Y';
                 $oBox->oNewsMonatsUebersicht_arr = $oNewsMonatsUebersicht_arr;
@@ -892,7 +888,8 @@ class Boxen
                             $tagwolke->Klasse = ($prio_step < 1) ?
                                 rand(1, 10) :
                                 (round(($tagwolke->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / $prio_step) + 1);
-                            $tagwolke->cURL = baueURL($tagwolke, URLART_TAG);
+                            $tagwolke->cURL     = baueURL($tagwolke, URLART_TAG);
+                            $tagwolke->cURLFull = baueURL($tagwolke, URLART_TAG, 0, false, true);
                             $Tagwolke_arr[] = $tagwolke;
                         }
                     }
@@ -936,11 +933,12 @@ class Boxen
                     $prio_step = ($oSuchwolke_arr[0]->nAnzahlGesuche - $oSuchwolke_arr[$count - 1]->nAnzahlGesuche) / 9;
                     foreach ($oSuchwolke_arr as $i => $oSuchwolke) {
                         if ($oSuchwolke->kSuchanfrage > 0) {
-                            $oSuchwolke->Klasse = ($prio_step < 1) ?
+                            $oSuchwolke->Klasse   = ($prio_step < 1) ?
                                 rand(1, 10) :
                                 (round(($oSuchwolke->nAnzahlGesuche - $oSuchwolke_arr[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
-                            $oSuchwolke->cURL   = baueURL($oSuchwolke, URLART_LIVESUCHE);
-                            $oSuchwolke_arr[$i] = $oSuchwolke;
+                            $oSuchwolke->cURL     = baueURL($oSuchwolke, URLART_LIVESUCHE);
+                            $oSuchwolke->cURLFull = baueURL($oSuchwolke, URLART_LIVESUCHE, 0, false, true);
+                            $oSuchwolke_arr[$i]   = $oSuchwolke;
                         }
                     }
                     $oBox->anzeigen = 'Y';

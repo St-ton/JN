@@ -17,7 +17,10 @@
                         <div class="row">
                             <div class="col-xs-4 col-xs-offset-4">
                                 {counter assign=imgcounter print=0}
-                                <img src="{$pushedArtikel->Bilder[0]->cPfadNormal}" alt="{if isset($pushedArtikel->Bilder[0]->cAltAttribut)}{$pushedArtikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:"html"}{else}{$pushedArtikel->cName}{/if}" id="image{$pushedArtikel->kArtikel}_{$imgcounter}" class="image img-responsive" />
+                                <img src="{$pushedArtikel->Bilder[0]->cURLNormal}"
+                                     alt="{if isset($pushedArtikel->Bilder[0]->cAltAttribut)}{$pushedArtikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}{else}{$pushedArtikel->cName}{/if}"
+                                     id="image{$pushedArtikel->kArtikel}_{$imgcounter}"
+                                     class="image img-responsive" />
                             </div>
                             <div class="col-xs-12">
                                 <div class="caption">
@@ -28,7 +31,7 @@
                     </div>{* /product-cell *}
                     <hr>
                     <p class="btn-group btn-group-justified btn-group-full" role="group">
-                        <a href="{get_static_route id='warenkorb.php'}" class="btn btn-default btn-basket"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>
+                        <a href="{get_static_route id='warenkorb.php'}" class="btn btn-default btn-basket"><i class="fa fa-shopping-cart"></i> {lang key='gotoBasket'}</a>
                         <a href="{$pushedArtikel->cURL}" class="btn btn-primary btn-checkout" data-dismiss="{if isset($type)}{$type}{else}modal{/if}" aria-label="Close"><i class="fa fa-arrow-circle-right"></i> {lang key="continueShopping" section="checkout"}</a>
                     </p>
 {*

@@ -7,13 +7,13 @@
                     {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL}
                         <tr>
                             <td class="item-image">
-                                {if $oPosition->Artikel->Bilder[0]->cPfadNormal !== $BILD_KEIN_ARTIKELBILD_VORHANDEN}
-                                    <img src="{$oPosition->Artikel->Bilder[0]->cPfadMini}" alt="" class="img-sm" />
+                                {if $oPosition->Artikel->Bilder[0]->cPfadMini !== $BILD_KEIN_ARTIKELBILD_VORHANDEN}
+                                    <img src="{$oPosition->Artikel->Bilder[0]->cURLMini}" alt="" class="img-sm" />
                                 {/if}
                             </td>
                             <td class="item-name" colspan="2">
                                 {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;
-                                <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans|escape:"html"}">
+                                <a href="{$oPosition->Artikel->cURLFull}" title="{$oPosition->cName|trans|escape:"html"}">
                                     {$oPosition->cName|trans}
                                 </a>
                             </td>

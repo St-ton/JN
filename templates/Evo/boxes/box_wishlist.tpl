@@ -20,9 +20,9 @@
                     {if $smarty.foreach.wunschzettel.iteration <= $maxItems}
                         <li>
                             <a class="remove pull-right" href="{$oWunschlistePos->cURL}"><span class="fa fa-trash-o"></span></a>
-                            <a href="{$oWunschlistePos->Artikel->cURL}" title="{$oWunschlistePos->cArtikelName|escape:'quotes'}">
+                            <a href="{$oWunschlistePos->Artikel->cURLFull}" title="{$oWunschlistePos->cArtikelName|escape:'quotes'}">
                                 {if (isset($Boxen.Wunschliste->nBilderAnzeigen) && $Boxen.Wunschliste->nBilderAnzeigen === 'Y') || (isset($oBox) && $oBox->nBilderAnzeigen === 'Y')}
-                                    <img alt="" src="{$oWunschlistePos->Artikel->Bilder[0]->cPfadMini}" class="img-xs">
+                                    <img alt="" src="{$oWunschlistePos->Artikel->Bilder[0]->cURLMini}" class="img-xs">
                                 {/if}
                                 {$oWunschlistePos->fAnzahl|replace_delim} &times; {$oWunschlistePos->cArtikelName|truncate:25:"..."}
                             </a>

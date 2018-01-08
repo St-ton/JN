@@ -606,8 +606,7 @@ function bearbeiteSet($xml)
             if (((!$oBestellungShop->dVersandDatum || $oBestellungShop->dVersandDatum === '0000-00-00') && $oBestellungWawi->dVersandt) ||
                 ((!$oBestellungShop->dBezahltDatum || $oBestellungShop->dBezahltDatum === '0000-00-00') && $oBestellungWawi->dBezahltDatum)
             ) {
-                $b     = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . (int)$oBestellungWawi->kBestellung,
-                    1);
+                $b     = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . (int)$oBestellungWawi->kBestellung, 1);
                 $kunde = new Kunde((int)$b->kKunde);
             }
 

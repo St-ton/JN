@@ -2722,7 +2722,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         'vorname'           => 'cVorname',
         'nachname'          => 'cNachname',
         'strasse'           => 'cStrasse',
-        'hausenummer'       => 'cHausnummer',
+        'hausnummer'        => 'cHausnummer',
         'plz'               => 'cPLZ',
         'ort'               => 'cOrt',
         'land'              => 'cLand',
@@ -2746,16 +2746,16 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
     }
 
     //erstelle neuen Kunden
-    $kKunde    = isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 ? (int)$_SESSION['Kunde']->kKunde : 0;
-    $customer  = new Kunde($kKunde);
+    $kKunde   = isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 ? (int)$_SESSION['Kunde']->kKunde : 0;
+    $customer = new Kunde($kKunde);
 
     foreach ($mapping as $external => $internal) {
         if (isset($post[$external])) {
-            $val                   = StringHandler::filterXSS($post[$external]);
+            $val = StringHandler::filterXSS($post[$external]);
             if ($htmlentities) {
                 $val = StringHandler::htmlentities($val);
             }
-            $customer->$internal   = $val;
+            $customer->$internal = $val;
         }
     }
 

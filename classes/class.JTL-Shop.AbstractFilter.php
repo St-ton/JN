@@ -125,7 +125,7 @@ abstract class AbstractFilter implements IFilter
     protected $inputType = self::INPUT_SELECT;
 
     /**
-     * @var FilterExtra[]
+     * @var FilterOption[]
      */
     protected $activeValues;
 
@@ -252,7 +252,7 @@ abstract class AbstractFilter implements IFilter
             $values = [$values];
         }
         foreach ($values as $value) {
-            $this->activeValues[] = (new FilterExtra())->setFrontendName($this->getName())
+            $this->activeValues[] = (new FilterOption())->setFrontendName($this->getName())
                                                        ->setURL($this->getSeo($this->languageID))
                                                        ->setValue($value)
                                                        ->setName($this->getFrontendName())
@@ -584,11 +584,11 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return FilterExtra
+     * @return FilterOption
      */
     public function getExtraFilter()
     {
-        return new FilterExtra();
+        return new FilterOption();
     }
 
     /**
@@ -677,7 +677,7 @@ abstract class AbstractFilter implements IFilter
 
     /**
      * @param null|int $idx
-     * @return FilterExtra|FilterExtra[]|IFilter
+     * @return FilterOption|FilterOption[]|IFilter
      */
     public function getActiveValues($idx = null)
     {

@@ -320,7 +320,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $nPrioStep = ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9;
             }
             foreach ($searchFilters as $searchFilter) {
-                $fe = (new FilterExtra())
+                $fe = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())

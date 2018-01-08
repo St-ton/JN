@@ -291,7 +291,7 @@ interface IFilter
     public function getIcon();
 
     /**
-     * @return FilterExtra|FilterExtra[]
+     * @return FilterOption|FilterOption[]
      */
     public function getActiveValues();
 

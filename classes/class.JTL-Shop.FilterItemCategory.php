@@ -192,7 +192,7 @@ class FilterItemCategory extends FilterBaseCategory
             if ($categoryFilterType === 'KP') {
                 $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
             }
-            $fe             = (new FilterExtra())
+            $fe             = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
@@ -208,8 +208,8 @@ class FilterItemCategory extends FilterBaseCategory
         // neue Sortierung
         if ($categoryFilterType === 'KP') {
             usort($options, function ($a, $b) {
-                /** @var FilterExtra $a */
-                /** @var FilterExtra $b */
+                /** @var FilterOption $a */
+                /** @var FilterOption $b */
                 return strcmp($a->getName(), $b->getName());
             });
         }

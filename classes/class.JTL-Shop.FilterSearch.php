@@ -431,7 +431,7 @@ class FilterSearch extends AbstractFilter
                             $nPrioStep
                         ) + 1;
                 }
-                $fe = (new FilterExtra())
+                $fe = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setClass($class)

@@ -456,7 +456,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ? PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
                 : BILD_KEIN_MERKMALBILD_VORHANDEN;
 
-            $attribute = (new FilterExtra())
+            $attribute = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
@@ -478,7 +478,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 );
             foreach ($attributeFilter->attributeValues as $filterValue) {
                 $filterValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
-                $attributeValue            = (new FilterExtra())
+                $attributeValue            = (new FilterOption())
                     ->setType($attributeFilter->nMehrfachauswahl === 1
                         ? AbstractFilter::FILTER_TYPE_OR
                         : AbstractFilter::FILTER_TYPE_AND)
@@ -518,7 +518,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             }
         }
         foreach ($attributeFilters as &$af) {
-            /** @var FilterExtra $af */
+            /** @var FilterOption $af */
             // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
             $options = $af->getOptions();
             if (!is_array($options)) {
@@ -527,15 +527,15 @@ class FilterItemAttribute extends FilterBaseAttribute
             $numeric = array_reduce(
                 $options,
                 function($carry, $option) {
-                    /** @var FilterExtra $option */
+                    /** @var FilterOption $option */
                     return $carry && is_numeric($option->getValue());
                 },
                 true
             );
             if ($numeric) {
                 usort($options, function ($a, $b) {
-                    /** @var FilterExtra $a */
-                    /** @var FilterExtra $b */
+                    /** @var FilterOption $a */
+                    /** @var FilterOption $b */
                     return $a === $b
                         ? 0
                         : (($a->getValue() < $b->getValue())
@@ -551,7 +551,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                     $nMinAnzahl = 999999;
                     $nIndex     = -1;
                     foreach ($options as $l => $attributeValues) {
-                        /** @var FilterExtra $attributeValues */
+                        /** @var FilterOption $attributeValues */
                         if ($attributeValues->nAnzahl < $nMinAnzahl) {
                             $nMinAnzahl = $attributeValues->getCount();
                             $nIndex     = $l;

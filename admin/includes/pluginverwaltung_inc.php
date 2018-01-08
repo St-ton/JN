@@ -150,6 +150,97 @@ define('PLUGIN_CODE_SQL_INVALID_FILE_CONTENT', 6);
 
 
 /**
+ * sanitize names from plugins downloaded via gitlab
+ *
+ * @param array $p_event
+ * @param array $p_header
+ * @return int
+ */
+function pluginPreExtractCallBack ($p_event, &$p_header) {
+    //plugins downloaded from gitlab have -[BRANCHNAME]-[COMMIT_ID] in their name.
+    //COMMIT_ID should be 40 characters
+    preg_match('/(.*)-master-([a-zA-Z0-9]{40})\/(.*)/', $p_header['filename'], $hits);
+    if (count($hits) >= 3) {
+        $p_header['filename'] = str_replace('-master-' . $hits[2], '', $p_header['filename']);
+    }
+
+    return 1;
+}
+
+/**
+ * @param string $zipFile
+ * @return stdClass
+ */
+function extractPlugin($zipFile)
+{
+    $response                 = new stdClass();
+    $response->status         = 'OK';
+    $response->error          = null;
+    $response->files_unpacked = [];
+    $response->files_failed   = [];
+    $response->messages       = [];
+
+    $unzipPath = PFAD_ROOT . PFAD_PLUGIN;
+
+    if (class_exists('ZipArchive')) {
+        $zip = new ZipArchive();
+        if (!$zip->open($zipFile) || $zip->numFiles === 0) {
+            $response->status     = 'FAILED';
+            $response->messages[] = 'Cannot open archive';
+        } else {
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                if ($i === 0 && strpos($zip->getNameIndex($i), '.') !== false) {
+                    $response->status     = 'FAILED';
+                    $response->messages[] = 'Invalid archive';
+
+                    return $response;
+                }
+                $filename = $zip->getNameIndex($i);
+                preg_match('/(.*)-master-([a-zA-Z0-9]{40})\/(.*)/', $filename, $hits);
+                if (count($hits) >= 3) {
+                    $zip->renameIndex($i, str_replace('-master-' . $hits[2], '', $filename));
+                }
+                $filename = $zip->getNameIndex($i);
+                if ($zip->extractTo($unzipPath, $filename)) {
+                    $response->files_unpacked[] = $filename;
+                } else {
+                    $response->files_failed = $filename;
+                }
+            }
+            $zip->close();
+        }
+
+        return $response;
+    }
+
+    $zip     = new PclZip($zipFile);
+    $content = $zip->listContent();
+    if (!is_array($content) || !isset($content[0]['filename']) || strpos($content[0]['filename'], '.') !== false) {
+        $response->status     = 'FAILED';
+        $response->messages[] = 'Invalid archive';
+    } else {
+        $res     = $zip->extract(PCLZIP_OPT_PATH, $unzipPath, PCLZIP_CB_PRE_EXTRACT, 'pluginPreExtractCallBack');
+        $success = [];
+        $fail    = [];
+        if ($res !== 0) {
+            foreach ($res as $_file) {
+                if ($_file['status'] === 'ok' || $_file['status'] === 'already_a_directory') {
+                    $response->files_unpacked[] = $_file;
+                } else {
+                    $response->files_failed[] = $_file;
+                }
+            }
+        } else {
+            $response->status   = 'FAILED';
+            $response->errors[] = 'Got unzip error code: ' . $zip->errorCode();
+        }
+    }
+
+    return $response;
+}
+
+
+/**
  * @return array
  */
 function gibInstalliertePlugins()

@@ -7,39 +7,35 @@
 ob_start();
 require_once __DIR__ . '/syncinclude.php';
 
-$return = 3;
+$return  = 3;
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
+    $zipFile = checkFile();
     $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'img_link_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'img_link_xml');
+    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'img_link');
         }
-        if ($archive->extract(PCLZIP_OPT_PATH, PFAD_SYNC_TMP)) {
-            $return = 0;
-            foreach ($list as $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] .
-                        ' size: ' . filesize(PFAD_SYNC_TMP . $zip['filename']),
-                        JTLLOG_LEVEL_DEBUG, false, 'img_link_xml');
-                }
-                $xml = simplexml_load_file(PFAD_SYNC_TMP . $zip['filename']);
-                if ($zip['filename'] === 'bildartikellink.xml') {
-                    bildartikellink_xml($xml);
-                } elseif ($zip['filename'] === 'del_bildartikellink.xml') {
-                    del_bildartikellink_xml($xml);
-                }
-                removeTemporaryFiles(PFAD_SYNC_TMP . $zip['filename']);
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $xmlFile) {
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog(
+                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'img_link_xml'
+                );
             }
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error: ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'img_link_xml');
+            $xml = simplexml_load_file($xmlFile);
+            if (strpos($xmlFile, 'bildartikellink.xml') !== false) {
+                bildartikellink_xml($xml);
+            } elseif (strpos($xmlFile, 'del_bildartikellink.xml') !== false) {
+                del_bildartikellink_xml($xml);
+            }
+            removeTemporaryFiles($xmlFile);
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error: ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'img_link_xml');
     }
 }
 

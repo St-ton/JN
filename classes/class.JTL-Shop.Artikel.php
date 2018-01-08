@@ -243,6 +243,10 @@ class Artikel
     /**
      * @var string
      */
+    public $cVorschaubildURL;
+    /**
+     * @var string
+     */
     public $cHerstellerMetaTitle;
 
     /**
@@ -1197,14 +1201,20 @@ class Artikel
         if ($this->kArtikel === 0 || $this->kArtikel === null) {
             return;
         }
-        //fill first image
+        $shopURL = Shop::getURL() . '/';
+        // fill first image
         $this->Bilder[0]              = new stdClass();
         $this->Bilder[0]->cPfadMini   = BILD_KEIN_ARTIKELBILD_VORHANDEN;
         $this->Bilder[0]->cPfadKlein  = BILD_KEIN_ARTIKELBILD_VORHANDEN;
         $this->Bilder[0]->cPfadNormal = BILD_KEIN_ARTIKELBILD_VORHANDEN;
         $this->Bilder[0]->cPfadGross  = BILD_KEIN_ARTIKELBILD_VORHANDEN;
-        $this->cVorschaubild          = BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->Bilder[0]->cURLMini    = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->Bilder[0]->cURLKlein   = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->Bilder[0]->cURLNormal  = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->Bilder[0]->cURLGross   = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
         $this->Bilder[0]->nNr         = 1;
+        $this->cVorschaubild          = BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->cVorschaubildURL       = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
         // pruefe ob Funktionsattribut "artikelbildlink" ART_ATTRIBUT_BILDLINK gesetzt ist
         // Falls ja, lade die Bilder des anderen Artikels
         $bilder_arr = [];
@@ -1233,7 +1243,6 @@ class Artikel
                     ORDER BY nNr", 2
             );
         }
-        $shopURL    = Shop::getURL() . '/';
         $imageCount = count($bilder_arr);
         $id         = $this->kArtikel;
         for ($i = 0; $i < $imageCount; ++$i) {

@@ -61,11 +61,6 @@ class FilterExtra extends AbstractFilter
     private $data = [];
 
     /**
-     * @var bool
-     */
-    protected $isActive = false;
-
-    /**
      * @var array
      */
     private static $mapping = [
@@ -95,14 +90,6 @@ class FilterExtra extends AbstractFilter
         return isset(self::$mapping[$value])
             ? self::$mapping[$value]
             : null;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActive()
-    {
-        return $this->isActive;
     }
 
     /**

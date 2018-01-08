@@ -518,9 +518,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             }
         }
         foreach ($attributeFilters as &$af) {
-            if ($af->getCount() === 1 && $af->getType() !== AbstractFilter::FILTER_TYPE_OR && $af->isActive()) {
-                $af->hide();
-            }
+            /** @var FilterExtra $af */
             // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
             $options = $af->getOptions();
             if (!is_array($options)) {

@@ -876,7 +876,7 @@ final class Shop
         self::$bHerstellerFilterNotFound = false;
         executeHook(HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
         $seite        = 0;
-        $hstseo       = '';
+        $manufSeo     = [];
         $katseo       = '';
         $customSeo    = [];
         $xShopurl_arr = parse_url(self::getURL());
@@ -976,26 +976,34 @@ final class Shop
             unset($merkmal);
             $oHersteller_arr = explode(SEP_HST, $seo);
             if (is_array($oHersteller_arr) && count($oHersteller_arr) > 1) {
-                list($seo, $hstseo) = $oHersteller_arr;
-                if (($idx = strpos($hstseo, SEP_KAT)) !== false && $idx !== strpos($hstseo, SEP_HST)) {
-                    $oHersteller_arr = explode(SEP_KAT, $hstseo);
-                    $hstseo          = $oHersteller_arr[0];
-                    $seo             .= SEP_KAT . $oHersteller_arr[1];
+                foreach ($oHersteller_arr as $i => $manufacturer) {
+                    if ($i === 0) {
+                        $seo = $manufacturer;
+                    } else {
+                        $manufSeo[] = $manufacturer;
+                    }
                 }
-                if (strpos($hstseo, SEP_MERKMAL) !== false) {
-                    $arr    = explode(SEP_MERKMAL, $hstseo);
-                    $hstseo = $arr[0];
-                    $seo    .= SEP_MERKMAL . $arr[1];
-                }
-                if (strpos($hstseo, SEP_MM_MMW) !== false) {
-                    $arr    = explode(SEP_MM_MMW, $hstseo);
-                    $hstseo = $arr[0];
-                    $seo    .= SEP_MM_MMW . $arr[1];
-                }
-                if (strpos($hstseo, SEP_SEITE) !== false) {
-                    $arr    = explode(SEP_SEITE, $hstseo);
-                    $hstseo = $arr[0];
-                    $seo    .= SEP_SEITE . $arr[1];
+                foreach ($manufSeo as $i => $hstseo) {
+                    if (($idx = strpos($hstseo, SEP_KAT)) !== false && $idx !== strpos($hstseo, SEP_HST)) {
+                        $oHersteller_arr[] = explode(SEP_KAT, $hstseo);
+                        $manufSeo[$i]      = $oHersteller_arr[0];
+                        $seo             .= SEP_KAT . $oHersteller_arr[1];
+                    }
+                    if (strpos($hstseo, SEP_MERKMAL) !== false) {
+                        $arr    = explode(SEP_MERKMAL, $hstseo);
+                        $manufSeo[$i] = $arr[0];
+                        $seo    .= SEP_MERKMAL . $arr[1];
+                    }
+                    if (strpos($hstseo, SEP_MM_MMW) !== false) {
+                        $arr    = explode(SEP_MM_MMW, $hstseo);
+                        $manufSeo[$i] = $arr[0];
+                        $seo    .= SEP_MM_MMW . $arr[1];
+                    }
+                    if (strpos($hstseo, SEP_SEITE) !== false) {
+                        $arr    = explode(SEP_SEITE, $hstseo);
+                        $manufSeo[$i] = $arr[0];
+                        $seo    .= SEP_SEITE . $arr[1];
+                    }
                 }
             } else {
                 $seo = $oHersteller_arr[0];
@@ -1058,12 +1066,32 @@ final class Shop
                 }
             }
             // manufacturer filter
-            if (strlen($hstseo) > 0) {
-                $oSeo = self::DB()->select('tseo', 'cKey', 'kHersteller', 'cSeo', $hstseo);
-                if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $hstseo) === 0) {
-                    self::$kHerstellerFilter = (int)$oSeo->kKey;
+            if (($seoCount = count($manufSeo)) > 0) {
+                if ($seoCount === 1) {
+                    $oSeo = self::DB()->selectAll('tseo', ['cKey', 'cSeo'], ['kHersteller', $manufSeo[0]], 'kKey');
                 } else {
+                    $bindValues = [];
+                    // PDO::bindValue() is 1-based
+                    foreach ($manufSeo as $i => $t) {
+                        $bindValues[$i + 1] = $t;
+                    }
+                    $oSeo = self::DB()->queryPrepared(
+                        "SELECT kKey 
+                            FROM tseo 
+                            WHERE cKey = 'kHersteller' 
+                            AND cSeo IN (" . implode(',', array_fill(0, $seoCount, '?')) . ")",
+                        $bindValues,
+                        2);
+                }
+                $results = count($oSeo);
+                if ($results === 1) {
+                    self::$kHerstellerFilter = (int)$oSeo[0]->kKey;
+                } elseif ($results === 0) {
                     self::$bHerstellerFilterNotFound = true;
+                } else {
+                    self::$kHerstellerFilter = array_map(function ($e) {
+                        return (int)$e->kKey;
+                    }, $oSeo);
                 }
             }
             // attribute filter

@@ -30,7 +30,10 @@ class FilterItemSearchSpecial extends AbstractFilter
         $this->isCustom = false;
         $this->urlParam = 'qf';
         $this->setFrontendName(Shop::Lang()->get('specificProducts'))
-             ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen']);
+             ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'])
+             ->setType($this->getConfig()['navigationsfilter']['search_special_filter_type'] === 'O'
+                 ? AbstractFilter::FILTER_TYPE_OR
+                 : AbstractFilter::FILTER_TYPE_AND);
     }
 
     /**
@@ -238,8 +241,8 @@ class FilterItemSearchSpecial extends AbstractFilter
         $name             = '';
         $options          = [];
         $additionalFilter = new self($this->productFilter);
-        $state            = $this->productFilter->getCurrentStateData();
         for ($i = 1; $i < 7; ++$i) {
+            $state = $this->productFilter->getCurrentStateData();
             switch ($i) {
                 case SEARCHSPECIALS_BESTSELLER:
                     $name    = Shop::Lang()->get('bestsellers');
@@ -314,13 +317,12 @@ class FilterItemSearchSpecial extends AbstractFilter
                 default:
                     break;
             }
-            $qry    = $this->productFilter->getFilterSQL()->getBaseQuery(
+            $qryRes  = Shop::DB()->query($this->productFilter->getFilterSQL()->getBaseQuery(
                 ['tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
                 $state->having
-            );
-            $qryRes  = Shop::DB()->query($qry, 2);
+            ), 2);
 
             if (($count = count($qryRes)) > 0) {
                 $options[$i] = (new FilterOption())

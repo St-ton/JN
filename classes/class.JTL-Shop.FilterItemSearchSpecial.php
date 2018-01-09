@@ -12,7 +12,7 @@ class FilterItemSearchSpecial extends AbstractFilter
     /**
      * @var int
      */
-    public $kKey = 0;
+    public $kKey;
 
     /**
      * @var array

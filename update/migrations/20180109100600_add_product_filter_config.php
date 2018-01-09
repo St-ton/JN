@@ -27,8 +27,8 @@ class Migration_20180109100600 extends Migration implements IMigration
             (object) [
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
-                    'A' => 'AND',
-                    'O' => 'OR'
+                    'A' => 'Verundung',
+                    'O' => 'Veroderung'
                 ]
             ]
         );
@@ -42,8 +42,8 @@ class Migration_20180109100600 extends Migration implements IMigration
             (object) [
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
-                    'A' => 'AND',
-                    'O' => 'OR'
+                    'A' => 'Verundung',
+                    'O' => 'Veroderung'
                 ]
             ]
         );
@@ -57,8 +57,8 @@ class Migration_20180109100600 extends Migration implements IMigration
             (object) [
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
-                    'A' => 'AND',
-                    'O' => 'OR'
+                    'A' => 'Verundung',
+                    'O' => 'Veroderung'
                 ]
             ]
         );
@@ -72,8 +72,8 @@ class Migration_20180109100600 extends Migration implements IMigration
             (object) [
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
-                    'A' => 'AND',
-                    'O' => 'OR'
+                    'A' => 'Verundung',
+                    'O' => 'Veroderung'
                 ]
             ]
         );
@@ -83,12 +83,27 @@ class Migration_20180109100600 extends Migration implements IMigration
             CONF_NAVIGATIONSFILTER,
             'Typ des Herstellerfilters',
             'selectbox',
-            231,
+            121,
             (object) [
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
-                    'A' => 'AND',
-                    'O' => 'OR'
+                    'A' => 'Verundung',
+                    'O' => 'Veroderung'
+                ]
+            ]
+        );
+        $this->setConfig(
+            'search_special_filter_type',
+            'A',
+            CONF_NAVIGATIONSFILTER,
+            'Typ des Suchspezialfilters',
+            'selectbox',
+            141,
+            (object) [
+                'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
+                'inputOptions'  => [
+                    'A' => 'Verundung',
+                    'O' => 'Veroderung'
                 ]
             ]
         );
@@ -104,5 +119,6 @@ class Migration_20180109100600 extends Migration implements IMigration
         $this->removeConfig('rating_filter_type');
         $this->removeConfig('price_range_filter_type');
         $this->removeConfig('manufacturer_filter_type');
+        $this->removeConfig('search_special_filter_type');
     }
 }

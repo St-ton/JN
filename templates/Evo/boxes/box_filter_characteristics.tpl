@@ -2,11 +2,11 @@
     {foreach name=merkmalfilter from=$Suchergebnisse->MerkmalFilter item=Merkmal}
         {assign var=kMerkmal value=$Merkmal->kMerkmal}
         <section class="panel panel-default box box-filter-characteristics">
-            {if ($Merkmal->cTyp === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
+            {if ($Merkmal->getData('cTyp') === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
                 <div class="panel-heading dropdown">
                     <h5 class="panel-title">
-                        {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && !empty($Merkmal->cBildpfadKlein) && $Merkmal->cBildpfadKlein !== $BILD_KEIN_MERKMALBILD_VORHANDEN}
-                            <img src="{$Merkmal->cBildpfadKlein}" alt="" class="vmiddle" />
+                        {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein') !== $BILD_KEIN_MERKMALBILD_VORHANDEN}
+                            <img src="{$Merkmal->getData('cBildURLKlein')}" alt="" class="vmiddle" />
                         {/if}
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
                             &nbsp;{$Merkmal->cName}
@@ -22,8 +22,8 @@
             {else}
                 <div class="panel-heading">
                     <h5 class="panel-title">
-                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && !empty($Merkmal->cBildpfadKlein) && $Merkmal->cBildpfadKlein !== $BILD_KEIN_MERKMALBILD_VORHANDEN}
-                        <img src="{$Merkmal->cBildpfadKlein}" alt="" class="vmiddle" />
+                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein') !== $BILD_KEIN_MERKMALBILD_VORHANDEN}
+                        <img src="{$Merkmal->getData('cBildURLKlein')}" alt="" class="vmiddle" />
                     {/if}
                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
                         &nbsp;{$Merkmal->cName}

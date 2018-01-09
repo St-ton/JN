@@ -16,10 +16,10 @@
                     {if $smarty.foreach.vergleich.iteration <= $nAnzahl}
                         <tr class="item" data-id="{$oArtikel->kArtikel}">
                             <td>
-                                <a href="{$oArtikel->cURL}" class="image"><img src="{$oArtikel->Bilder[0]->cPfadMini}" alt="{$oArtikel->cName|strip_tags|truncate:60|escape:"html"}" class="img-xs" /></a><br>
+                                <a href="{$oArtikel->cURLFull}" class="image"><img src="{$oArtikel->Bilder[0]->cURLMini}" alt="{$oArtikel->cName|strip_tags|truncate:60|escape:"html"}" class="img-xs" /></a><br>
                             </td>
                             <td>
-                                <a href="{$oArtikel->cURL}" class="name">{$oArtikel->cName|truncate:25:"..."}</a>
+                                <a href="{$oArtikel->cURLFull}" class="name">{$oArtikel->cName|truncate:25:"..."}</a>
                             </td>
                             <td class="text-right">
                                 <a href="{$oArtikel->cURLDEL}" class="remove pull-right" data-name="Vergleichsliste.remove" data-toggle="product-actions" data-value='{ldelim}"a":{$oArtikel->kArtikel}{rdelim}'><span class="fa fa-trash-o"></span></a>

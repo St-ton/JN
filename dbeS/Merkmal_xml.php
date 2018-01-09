@@ -6,66 +6,50 @@
 
 require_once __DIR__ . '/syncinclude.php';
 
-$return = 3;
+$return  = 3;
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
-    $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
+    $zipFile   = checkFile();
+    $return    = 2;
+    $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
+    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Merkmal_xml');
         }
-        $entzippfad = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
-        mkdir($entzippfad);
-        $entzippfad .= '/';
-        if ($archive->extract(PCLZIP_OPT_PATH, $entzippfad)) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Zip entpackt in ' . $entzippfad, JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
-            }
-            $return = 0;
-            foreach ($list as $zip) {
-                $d   = file_get_contents($entzippfad . $zip['filename']);
-                $xml = XML_unserialize($d);
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $xmlFile) {
+            $d        = file_get_contents($xmlFile);
+            $xml      = XML_unserialize($d);
+            $fileName = pathinfo($xmlFile)['basename'];
 
-                if ($zip['filename'] === 'del_merkmal.xml' || $zip['filename'] === 'del_merkmalwert.xml') {
-                    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
-                            filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
-                    }
-                    bearbeiteDeletes($xml);
+            if ($fileName === 'del_merkmal.xml' || $fileName === 'del_merkmalwert.xml') {
+                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                    Jtllog::writeLog(
+                        'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
+                        JTLLOG_LEVEL_DEBUG,
+                        false,
+                        'Merkmal_xml'
+                    );
                 }
-            }
-
-            foreach ($list as $zip) {
-                $d   = file_get_contents($entzippfad . $zip['filename']);
-                $xml = XML_unserialize($d);
-
-                if ($zip['filename'] === 'merkmal.xml') {
-                    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
-                            filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
-                    }
-                    bearbeiteInsert($xml);
+                bearbeiteDeletes($xml);
+            } elseif ($fileName === 'merkmal.xml') {
+                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                    Jtllog::writeLog(
+                        'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
+                        JTLLOG_LEVEL_DEBUG,
+                        false,
+                        'Merkmal_xml'
+                    );
                 }
-
-                removeTemporaryFiles($entzippfad . $zip['filename']);
+                bearbeiteInsert($xml);
             }
 
-            removeTemporaryFiles(substr($entzippfad, 0, -1), true);
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Merkmal_xml');
+            removeTemporaryFiles($xmlFile);
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Merkmal_xml');
+        removeTemporaryFiles(substr($unzipPath, 0, -1), true);
     }
-}
-
-if ($return == 1) {
-    syncException('Error : ' . $archive->errorInfo(true));
 }
 
 echo $return;

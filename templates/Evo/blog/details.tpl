@@ -25,7 +25,7 @@
             {else}
                 <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
                     <span itemprop="name">{$meta_publisher}</span>
-                    <meta itemprop="logo" content="{$ShopUrl}/{$ShopLogoURL}" />
+                    <meta itemprop="logo" content="{$ShopURL}/{$ShopLogoURL}" />
                 </div>
             {/if}
             {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
@@ -43,7 +43,7 @@
         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
             <div class="top10 news-categorylist">
                 {foreach name=newskategorie from=$oNewsKategorie_arr item=oNewsKategorie}
-                    <a itemprop="articleSection" href="{$oNewsKategorie->cURL}" title="{$oNewsKategorie->cBeschreibung|strip_tags|escape:"html"|truncate:60}" class="badge">{$oNewsKategorie->cName}</a>
+                    <a itemprop="articleSection" href="{$oNewsKategorie->cURLFull}" title="{$oNewsKategorie->cBeschreibung|strip_tags|escape:'html'|truncate:60}" class="badge">{$oNewsKategorie->cName}</a>
                 {/foreach}
             </div>
         {/if}

@@ -5,16 +5,19 @@
 
 <ul {if $is_dropdown}class="dropdown-menu" role="menu" {elseif isset($class)}class="{$class}" {else}class="nav nav-list"{/if}>
     {foreach $Merkmal->getOptions() as $attributeValue}
-        {if $attributeValue->nAktiv}
+        {assign var=attributeImageURL value=''}
+        {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $attributeValue->getData('cBildpfadKlein') !== $BILD_KEIN_MERKMALWERTBILD_VORHANDEN}
+            {assign var=attributeImageURL value=$attributeValue->getData('cBildURLKlein')}
+        {/if}
+
+        {if $attributeValue->isActive()}
             <li class="active">
-                <a rel="nofollow" href="{if !empty($attributeValue->cURL)}{$attributeValue->getURL()}{else}#{/if}"{if $Merkmal->cTyp === 'BILD'} title="{$attributeValue->getValue()}"{/if}>
+                <a rel="nofollow" href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"{if $Merkmal->getData('cTyp') === 'BILD'} title="{$attributeValue->getValue()|escape:'html'}"{/if}>
                     <span class="badge pull-right">{$attributeValue->getCount()}</span>
                     <span class="value">
                         <i class="fa fa-check-square-o text-muted"></i>
-                        {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T'
-                        && !empty($attributeValue->cBildpfadKlein)
-                        && $attributeValue->cBildpfadKlein !== $BILD_KEIN_MERKMALWERTBILD_VORHANDEN}
-                            <img src="{$attributeValue->cBildpfadKlein}" alt="{$attributeValue->getValue()|escape:'html'}" class="vmiddle" />
+                        {if !empty($aattributeImageURL)}
+                            <img src="{$attributeImageURL}" alt="{$attributeValue->getValue()|escape:'html'}" class="vmiddle" />
                         {/if}
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
                             <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
@@ -24,14 +27,12 @@
             </li>
         {else}
             <li>
-                <a rel="nofollow" href="{$attributeValue->cURL}"{if $Merkmal->cTyp === 'BILD'} title="{$attributeValue->getValue()|escape:'html'}"{/if}>
+                <a rel="nofollow" href="{$attributeValue->getURL()}"{if $Merkmal->getData('cTyp') === 'BILD'} title="{$attributeValue->getValue()|escape:'html'}"{/if}>
                     <span class="badge pull-right">{$attributeValue->getCount()}</span>
                     <span class="value">
                         <i class="fa fa-square-o text-muted"></i>
-                        {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T'
-                        && !empty($attributeValue->cBildpfadKlein)
-                        && $attributeValue->cBildpfadKlein !== $BILD_KEIN_MERKMALWERTBILD_VORHANDEN}
-                            <img src="{$attributeValue->cBildpfadKlein}" alt="{$attributeValue->getValue()|escape:'html'}" class="vmiddle" />
+                        {if !empty($attributeImageURL)}
+                            <img src="{$attributeImageURL}" alt="{$attributeValue->getValue()|escape:'html'}" class="vmiddle" />
                         {/if}
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
                             <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>

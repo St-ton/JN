@@ -8,68 +8,56 @@ require_once __DIR__ . '/syncinclude.php';
 
 $return  = 3;
 $archive = null;
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
     $articleIDs = [];
-    checkFile();
-    $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
+    $zipFile    = checkFile();
+    $return     = 2;
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+        Jtllog::writeLog('Artikel - Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
     }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
-        }
-        $entzippfad = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
-        mkdir($entzippfad);
-        $entzippfad .= '/';
-        if ($archive->extract(PCLZIP_OPT_PATH, $entzippfad)) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Zip entpackt in ' . $entzippfad, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
-            }
-            $return = 0;
-            $conf   = Shop::getSettings([CONF_GLOBAL]);
-            foreach ($list as $i => $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
-                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
-                }
-                $d   = file_get_contents($entzippfad . $zip['filename']);
-                $xml = XML_unserialize($d);
+    $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
 
-                if ($zip['filename'] === 'artdel.xml') {
-                    $articleIDs = array_merge($articleIDs, bearbeiteDeletes($xml, $conf));
-                } else {
-                    foreach (bearbeiteInsert($xml, $conf) as $articleID) {
-                        $articleIDs[] = $articleID;
-                    }
-                }
-                if ($i === 0) {
-                    // Suchcachetimer setzen.
-                    Shop::DB()->query(
-                        "UPDATE tsuchcache
-                            SET dGueltigBis = DATE_ADD(now(), INTERVAL " . SUCHCACHE_LEBENSDAUER . " MINUTE)
-                            WHERE dGueltigBis IS NULL", 3
-                    );
-                }
-                removeTemporaryFiles($entzippfad . $zip['filename']);
-            }
-            removeTemporaryFiles(substr($entzippfad, 0, -1), true);
-            clearProductCaches($articleIDs);
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
+    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        $conf   = Shop::getSettings([CONF_GLOBAL]);
+        foreach ($syncFiles as $i => $xmlFile) {
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog('bearbeite: ' . $xmlFile . ' size: ' .
+                    filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+            }
+            $d   = file_get_contents($xmlFile);
+            $xml = XML_unserialize($d);
+
+            if (strpos($xmlFile, 'artdel.xml') !== false) {
+                $articleIDs = array_merge($articleIDs, bearbeiteDeletes($xml, $conf));
+            } else {
+                foreach (bearbeiteInsert($xml, $conf) as $articleID) {
+                    $articleIDs[] = $articleID;
+                }
+            }
+            if ($i === 0) {
+                // Suchcachetimer setzen.
+                Shop::DB()->query(
+                    "UPDATE tsuchcache
+                        SET dGueltigBis = DATE_ADD(now(), INTERVAL " . SUCHCACHE_LEBENSDAUER . " MINUTE)
+                        WHERE dGueltigBis IS NULL", 3
+                );
+            }
+        }
+        removeTemporaryFiles(substr($unzipPath, 0, -1), true);
+        clearProductCaches($articleIDs);
     }
-}
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
 }
 
 echo $return;
 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+    Jtllog::writeLog('BEENDE: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
 }
 
 /**
@@ -169,10 +157,12 @@ function bearbeiteInsert($xml, array $conf)
                 $currentArticleCategories[] = (int)$obj->kKategorie;
             }
             // get list of all categories the article will be associated with after this update
-            $newArticleCategoriesObject = mapArray($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel']);
+            $newArticleCategoriesObject = mapArray($xml['tartikel'], 'tkategorieartikel',
+                $GLOBALS['mKategorieArtikel']);
             foreach ($newArticleCategoriesObject as $newArticleCategory) {
                 $newArticleCategories[] = (int)$newArticleCategory->kKategorie;
             }
+            $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             foreach ($newArticleCategories as $newArticleCategory) {
                 if (!in_array($newArticleCategory, $currentArticleCategories, true)) {
                     // the article was previously not associated with this category
@@ -181,7 +171,7 @@ function bearbeiteInsert($xml, array $conf)
                             FROM tkategorieartikel
                             LEFT JOIN tartikel
                                 ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                            WHERE tkategorieartikel.kKategorie = {$newArticleCategory} " . gibLagerfilter(), 1
+                            WHERE tkategorieartikel.kKategorie = {$newArticleCategory} " . $stockFilter, 1
                     );
                     if (isset($articleCount->count) && (int)$articleCount->count === 0) {
                         // the category was previously empty - flush cache
@@ -201,7 +191,7 @@ function bearbeiteInsert($xml, array $conf)
                                 FROM tkategorieartikel
                                 LEFT JOIN tartikel
                                     ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                                WHERE tkategorieartikel.kKategorie = {$category} " . gibLagerfilter(), 1
+                                WHERE tkategorieartikel.kKategorie = {$category} " . $stockFilter, 1
                         );
                         if (!isset($articleCount->count) || (int)$articleCount->count === 1) {
                             // the category only had this article in it - flush cache
@@ -224,19 +214,15 @@ function bearbeiteInsert($xml, array $conf)
                     'cLagerBeachten, cLagerKleinerNull, fLagerbestand'
                 );
                 if (isset($currentStatus->cLagerBeachten)) {
-                    if ($currentStatus->fLagerbestand <= 0 && $xml['tartikel']['fLagerbestand'] > 0) {
+                    if (($currentStatus->fLagerbestand <= 0 && $xml['tartikel']['fLagerbestand'] > 0)
                         // article was not in stock before but is now - check if flush is necessary
-                        $check = true;
-                    } elseif ($currentStatus->fLagerbestand > 0 && $xml['tartikel']['fLagerbestand'] <= 0) {
+                        || ($currentStatus->fLagerbestand > 0 && $xml['tartikel']['fLagerbestand'] <= 0)
                         // article was in stock before but is not anymore - check if flush is necessary
-                        $check = true;
-                    } elseif ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
-                        && $currentStatus->cLagerKleinerNull !== $xml['tartikel']['cLagerKleinerNull']
-                    ) {
+                        || ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                            && $currentStatus->cLagerKleinerNull !== $xml['tartikel']['cLagerKleinerNull'])
                         // overselling status changed - check if flush is necessary
-                        $check = true;
-                    } elseif ($currentStatus->cLagerBeachten !== $xml['tartikel']['cLagerBeachten']
-                        && $xml['tartikel']['fLagerbestand'] <= 0
+                        || ($currentStatus->cLagerBeachten !== $xml['tartikel']['cLagerBeachten']
+                            && $xml['tartikel']['fLagerbestand'] <= 0)
                     ) {
                         $check = true;
                     }
@@ -248,22 +234,21 @@ function bearbeiteInsert($xml, array $conf)
                                 LEFT JOIN tartikel
                                     ON tartikel.kArtikel = tkategorieartikel.kArtikel
                                 WHERE tkategorieartikel.kKategorie IN (" . implode(',', $newArticleCategories) . ") " .
-                                gibLagerfilter() . " 
-                                GROUP BY tkategorieartikel.kKategorie", 2
+                            $stockFilter .
+                            " GROUP BY tkategorieartikel.kKategorie", 2
                         );
                         if (is_array($newArticleCategories) && !empty($newArticleCategories)) {
                             foreach ($newArticleCategories as $nac) {
                                 if (is_array($articleCount) && !empty($articleCount)) {
                                     foreach ($articleCount as $ac) {
-                                        if ($ac->kKategorie == $nac) {
-                                            if (($currentStatus->cLagerBeachten !== 'Y' && $ac->count == 1) ||
-                                                ($currentStatus->cLagerBeachten === 'Y' && $ac->count == 0)
-                                            ) {
-                                                // there was just one product that is now sold out
-                                                // or there were just sold out products and now it's not sold out anymore
-                                                $flush = true;
-                                                break;
-                                            }
+                                        if ($ac->kKategorie == $nac
+                                            && (($currentStatus->cLagerBeachten !== 'Y' && $ac->count == 1)
+                                                || ($currentStatus->cLagerBeachten === 'Y' && $ac->count == 0))
+                                        ) {
+                                            // there was just one product that is now sold out
+                                            // or there were just sold out products and now it's not sold out anymore
+                                            $flush = true;
+                                            break;
                                         }
                                     }
                                 } else {
@@ -327,7 +312,7 @@ function bearbeiteInsert($xml, array $conf)
             if (isset($artikel_arr[0]->kVPEEinheit) && is_array($artikel_arr[0]->kVPEEinheit)) {
                 $artikel_arr[0]->kVPEEinheit = $artikel_arr[0]->kVPEEinheit[0];
             }
-            
+
             //any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
             if (isset($artikel_arr[0]->fLagerbestand) && $artikel_arr[0]->fLagerbestand > 0) {
                 $delta = Shop::DB()->query(
@@ -351,7 +336,7 @@ function bearbeiteInsert($xml, array $conf)
                     }
                 }
             }
-            
+
             DBUpdateInsert('tartikel', $artikel_arr, 'kArtikel');
             executeHook(HOOK_ARTIKEL_XML_BEARBEITEINSERT, ['oArtikel' => $artikel_arr[0]]);
             // Insert into tredirect weil sich das SEO vom Artikel geändert hat
@@ -405,7 +390,8 @@ function bearbeiteInsert($xml, array $conf)
                 Shop::DB()->insert('tseo', $oSeo);
                 // Insert into tredirect weil sich das SEO vom Artikel geändert hat
                 if (isset($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache])) {
-                    checkDbeSXmlRedirect($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo, $artikelsprache_arr[$i]->cSeo);
+                    checkDbeSXmlRedirect($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo,
+                        $artikelsprache_arr[$i]->cSeo);
                 }
             }
         }
@@ -634,7 +620,8 @@ function bearbeiteInsert($xml, array $conf)
         updateXMLinDB($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis'], 'kArtikelSonderpreis');
         updateXMLinDB($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel'], 'kKategorieArtikel');
         updateXMLinDB($xml['tartikel'], 'tartikelattribut', $GLOBALS['mArtikelAttribut'], 'kArtikelAttribut');
-        updateXMLinDB($xml['tartikel'], 'tartikelsichtbarkeit', $GLOBALS['mArtikelSichtbarkeit'], 'kKundengruppe', 'kArtikel');
+        updateXMLinDB($xml['tartikel'], 'tartikelsichtbarkeit', $GLOBALS['mArtikelSichtbarkeit'], 'kKundengruppe',
+            'kArtikel');
         updateXMLinDB($xml['tartikel'], 'txsell', $GLOBALS['mXSell'], 'kXSell');
         updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', $GLOBALS['mArtikelSichtbarkeit'], 'kMermalWert');
         if ($artikel_arr[0]->nIstVater == 1) {
@@ -727,7 +714,8 @@ function bearbeiteInsert($xml, array $conf)
         }
         $bTesteSonderpreis = false;
         if (isset($xml['tartikel']['tartikelsonderpreis']) && is_array($xml['tartikel']['tartikelsonderpreis'])) {
-            $ArtikelSonderpreis_arr = mapArray($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis']);
+            $ArtikelSonderpreis_arr = mapArray($xml['tartikel'], 'tartikelsonderpreis',
+                $GLOBALS['mArtikelSonderpreis']);
             if ($ArtikelSonderpreis_arr[0]->cAktiv === 'Y') {
                 $specialPriceStart = explode('-', $ArtikelSonderpreis_arr[0]->dStart);
                 if (count($specialPriceStart) > 2) {
@@ -1005,10 +993,11 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
     $kArtikel = (int)$kArtikel;
     // get list of all categories the article was associated with
     $articleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
-    if ($bForce === false &&
-        isset($conf['global']['kategorien_anzeigefilter']) &&
-        $conf['global']['kategorien_anzeigefilter'] === '2'
+    if ($bForce === false
+        && isset($conf['global']['kategorien_anzeigefilter'])
+        && $conf['global']['kategorien_anzeigefilter'] === '2'
     ) {
+        $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         foreach ($articleCategories as $category) {
             // check if the article was the only one in at least one of these categories
             $categoryCount = Shop::DB()->query(
@@ -1016,7 +1005,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
                     FROM tkategorieartikel
                     LEFT JOIN tartikel
                         ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                    WHERE tkategorieartikel.kKategorie = " . (int)$category->kKategorie . " " . gibLagerfilter(), 1
+                    WHERE tkategorieartikel.kKategorie = " . (int)$category->kKategorie . " " . $stockFilter, 1
             );
             if (!isset($categoryCount->count) || (int)$categoryCount->count === 1) {
                 // the category only had this article in it - flush cache
@@ -1026,7 +1015,8 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         }
     }
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('kArtikel: ' . $kArtikel . ' - nIstVater: ' . $nIstVater, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml loescheArtikel');
+        Jtllog::writeLog('kArtikel: ' . $kArtikel . ' - nIstVater: ' . $nIstVater, JTLLOG_LEVEL_DEBUG, false,
+            'Artikel_xml loescheArtikel');
     }
     if ($kArtikel > 0) {
         $manufacturerID = Shop::DB()->query("SELECT kHersteller FROM tartikel WHERE kArtikel = " . $kArtikel, 1);

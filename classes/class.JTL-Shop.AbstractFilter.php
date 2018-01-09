@@ -125,7 +125,7 @@ abstract class AbstractFilter implements IFilter
     protected $inputType = self::INPUT_SELECT;
 
     /**
-     * @var FilterExtra[]
+     * @var FilterOption[]
      */
     protected $activeValues;
 
@@ -183,13 +183,18 @@ abstract class AbstractFilter implements IFilter
     protected $tableName = '';
 
     /**
+     * @var bool
+     */
+    protected $isActive = false;
+
+    /**
      * AbstractFilter constructor
      *
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
-        $this->setData($productFilter)->setClassName(get_class($this));
+        $this->setBaseData($productFilter)->setClassName(get_class($this));
     }
 
     /**
@@ -207,6 +212,36 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * @param bool $active
+     * @return $this
+     */
+    public function setIsActive($active)
+    {
+        $this->isActive = $active;
+
+        return $this;
+    }
+
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function setIsInitialized($value)
+    {
+        $this->isInitialized = $value;
+
+        return $this;
+    }
+
+    /**
      * @return $this
      */
     public function generateActiveFilterData()
@@ -217,12 +252,13 @@ abstract class AbstractFilter implements IFilter
             $values = [$values];
         }
         foreach ($values as $value) {
-            $this->activeValues[] = (new FilterExtra())->setFrontendName($this->getName())
+            $this->activeValues[] = (new FilterOption())->setFrontendName($this->getName())
                                                        ->setURL($this->getSeo($this->languageID))
                                                        ->setValue($value)
                                                        ->setName($this->getFrontendName())
                                                        ->setType($this->getType());
         }
+        $this->isActive = true;
 
         return $this;
     }
@@ -448,7 +484,7 @@ abstract class AbstractFilter implements IFilter
      * @param ProductFilter $productFilter
      * @return $this
      */
-    public function setData($productFilter)
+    public function setBaseData($productFilter)
     {
         $this->productFilter      = $productFilter;
         $this->languageID         = $productFilter->getLanguageID();
@@ -548,11 +584,11 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return FilterExtra
+     * @return FilterOption
      */
     public function getExtraFilter()
     {
-        return new FilterExtra();
+        return new FilterOption();
     }
 
     /**
@@ -641,7 +677,7 @@ abstract class AbstractFilter implements IFilter
 
     /**
      * @param null|int $idx
-     * @return FilterExtra|FilterExtra[]|IFilter
+     * @return FilterOption|FilterOption[]|IFilter
      */
     public function getActiveValues($idx = null)
     {

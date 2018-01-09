@@ -142,7 +142,7 @@ class Notification implements IteratorAggregate, Countable
         }
 
         if ($status->hasFullTextIndexError()) {
-            $this->add(NotificationEntry::TYPE_WARNING, 'Der Volltextindex ist nicht vorhanden!', 'sucheinstellungen.php');
+            $this->add(NotificationEntry::TYPE_WARNING, 'Volltextsuche', 'Der Volltextindex ist nicht vorhanden!', 'sucheinstellungen.php');
         }
 
         if ($status->usesDeprecatedPriceImages()) {

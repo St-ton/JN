@@ -5,7 +5,7 @@
  */
 
 /**
- * Class FilterExtra
+ * Class FilterOption
  *
  * @property $kHersteller
  * @property $nAnzahlTagging
@@ -21,7 +21,7 @@
  * @property $cSuche
  * @property $kSuchanfrage
  */
-class FilterExtra extends AbstractFilter
+class FilterOption extends AbstractFilter
 {
     /**
      * @var string
@@ -61,11 +61,6 @@ class FilterExtra extends AbstractFilter
     private $data = [];
 
     /**
-     * @var bool
-     */
-    protected $isActive = false;
-
-    /**
      * @var array
      */
     private static $mapping = [
@@ -78,7 +73,7 @@ class FilterExtra extends AbstractFilter
     ];
 
     /**
-     * FilterExtra constructor.
+     * FilterOption constructor.
      * @param null $productFilter
      */
     public function __construct($productFilter = null)
@@ -95,14 +90,6 @@ class FilterExtra extends AbstractFilter
         return isset(self::$mapping[$value])
             ? self::$mapping[$value]
             : null;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActive()
-    {
-        return $this->isActive;
     }
 
     /**
@@ -241,7 +228,7 @@ class FilterExtra extends AbstractFilter
     }
 
     /**
-     * @param FilterExtra $option
+     * @param FilterOption $option
      * @return $this
      */
     public function addOption($option)
@@ -249,6 +236,27 @@ class FilterExtra extends AbstractFilter
         $this->options[] = $option;
 
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
+    public function setData($name, $value)
+    {
+        $this->data[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getData($name)
+    {
+        return isset($this->data[$name]) ? $this->data[$name] : null;
     }
 
     /**

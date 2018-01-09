@@ -7,7 +7,7 @@
 /**
  * Interface PluginLizenz
  */
-interface PluginLizenz
+interface IPluginLizenz
 {
     /**
      * @param string $cLicence

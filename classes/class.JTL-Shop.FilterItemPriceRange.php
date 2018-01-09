@@ -458,7 +458,7 @@ class FilterItemPriceRange extends AbstractFilter
                 $nStep            = $oPreis->fStep;
                 $additionalFilter = new self($this->productFilter);
                 foreach ($priceRanges as $i => $count) {
-                    $fe   = new FilterExtra();
+                    $fe   = new FilterOption();
                     $nVon = $nPreisMin + $i * $nStep;
                     $nBis = $nPreisMin + ($i + 1) * $nStep;
                     if ($nBis > $nPreisMax) {
@@ -547,7 +547,7 @@ class FilterItemPriceRange extends AbstractFilter
                 }
                 $additionalFilter = new self($this->productFilter);
                 foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
-                    $fe                 = new FilterExtra();
+                    $fe                 = new FilterOption();
                     $fe->nVon           = $oPreisspannenfilter->nVon;
                     $fe->nBis           = $oPreisspannenfilter->nBis;
                     $fe->nAnzahlArtikel = (int)$priceRanges;
@@ -579,7 +579,7 @@ class FilterItemPriceRange extends AbstractFilter
             $options = array_filter(
                 $options,
                 function($e) {
-                    /** @var FilterExtra $e */
+                    /** @var FilterOption $e */
                     return $e->getCount() > 0;
                 }
             );

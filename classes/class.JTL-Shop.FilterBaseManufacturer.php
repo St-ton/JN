@@ -192,8 +192,9 @@ class FilterBaseManufacturer extends AbstractFilter
                 $manufacturer->cURL        = $this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($manufacturer->kHersteller)
                 );
-                $fe                        = (new FilterOption())
+                $fo                        = (new FilterOption())
                     ->setType($this->getType())
+                    ->setFrontendName($manufacturer->cName)
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())
                     ->setName($manufacturer->cName)
@@ -203,7 +204,7 @@ class FilterBaseManufacturer extends AbstractFilter
                     ->setURL($manufacturer->cURL)
                     ->setIsActive($this->manufacturerFilterIsActive($manufacturer->kHersteller));
 
-                $options[] = $fe;
+                $options[] = $fo;
             }
         }
         $this->options = $options;

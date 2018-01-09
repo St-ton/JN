@@ -11,6 +11,9 @@ class FilterItemRating extends AbstractFilter
 {
     use MagicCompatibilityTrait;
 
+    /**
+     * @var array
+     */
     private static $mapping = [
         'nSterne' => 'Value'
     ];
@@ -109,7 +112,7 @@ class FilterItemRating extends AbstractFilter
 
         $state->joins[] = $this->getSQLJoin();
 
-        $query = $this->productFilter->getFilterSQL()->getBaseQuery(
+        $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
             [
                 'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
                 'tartikel.kArtikel'

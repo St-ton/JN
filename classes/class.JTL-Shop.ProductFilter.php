@@ -1813,7 +1813,8 @@ class ProductFilter
             ));
         }
         if (!isset($searchResults->Suchspecialauswahl)) {
-            $searchResults->Suchspecialauswahl = empty($this->params['kSuchspecial']) && empty($this->params['kSuchspecialFilter'])
+            $searchResults->Suchspecialauswahl = empty($this->params['kSuchspecial'])
+            && empty($this->params['kSuchspecialFilter'])
                 ? $this->searchSpecialFilter->getOptions()
                 : null;
         }
@@ -1833,7 +1834,9 @@ class ProductFilter
         }
         if (empty($searchResults->Herstellerauswahl) || count($searchResults->Herstellerauswahl) === 0
             || $this->manufacturer->isInitialized()
-            || ($this->manufacturerFilter->isInitialized() && count($searchResults->Herstellerauswahl) === 1 && $filterAllActive)
+            || ($this->manufacturerFilter->isInitialized()
+                && count($searchResults->Herstellerauswahl) === 1
+                && $hideActiveOnly)
         ) {
             // hide manufacturer filter when browsing manufacturer products
             $this->manufacturerFilter->hide();

@@ -320,7 +320,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $nPrioStep = ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9;
             }
             foreach ($searchFilters as $searchFilter) {
-                $fe = (new FilterOption())
+                $fo = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())
@@ -332,13 +332,13 @@ class FilterBaseSearchQuery extends AbstractFilter
                     ))
                     ->setClass(rand(1, 10));
                 if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
-                    $fe->setClass(round(
+                    $fo->setClass(round(
                             ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                             $nPrioStep
                         ) + 1
                     );
                 }
-                $options[] = $fe;
+                $options[] = $fo;
             }
         }
         $this->options = $options;

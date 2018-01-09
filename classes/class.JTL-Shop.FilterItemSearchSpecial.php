@@ -330,7 +330,7 @@ class FilterItemSearchSpecial extends AbstractFilter
             );
             $qryRes  = Shop::DB()->query($qry, 2);
 
-            $fe = (new FilterOption())
+            $fo = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
@@ -341,9 +341,9 @@ class FilterItemSearchSpecial extends AbstractFilter
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($i)
                 ));
-            $fe->kKey = $i;
-            if ($fe->getCount() > 0) {
-                $options[$i] = $fe;
+            $fo->kKey = $i;
+            if ($fo->getCount() > 0) {
+                $options[$i] = $fo;
             }
         }
         $this->options = $options;

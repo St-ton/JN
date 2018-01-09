@@ -184,7 +184,7 @@ class FilterBaseTag extends AbstractFilter
                 $nPrioStep = ($tags[0]->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) / 9;
             }
             foreach ($tags as $tag) {
-                $fe                 = (new FilterOption())
+                $fo                 = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())
@@ -194,15 +194,15 @@ class FilterBaseTag extends AbstractFilter
                     ->setURL($this->productFilter->getFilterURL()->getURL(
                         $additionalFilter->init((int)$tag->kTag)
                     ));
-                $fe->nAnzahlTagging = (int)$tag->nAnzahlTagging;
+                $fo->nAnzahlTagging = (int)$tag->nAnzahlTagging;
                 // generic attributes for new filter templates
                 $class = $nPrioStep < 1
                     ? rand(1, 10)
                     : round(
-                        ($fe->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
+                        ($fo->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
                         $nPrioStep
                     ) + 1;
-                $options[] = $fe->setClass($class);
+                $options[] = $fo->setClass($class);
             }
         }
         $this->options = $options;

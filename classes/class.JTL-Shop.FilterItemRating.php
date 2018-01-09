@@ -138,7 +138,7 @@ class FilterItemRating extends AbstractFilter
         foreach ($res as $row) {
             $nSummeSterne += (int)$row->nAnzahl;
 
-            $fe         = (new FilterOption())
+            $fo         = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
@@ -152,8 +152,8 @@ class FilterItemRating extends AbstractFilter
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$row->nSterne)
                 ));
-            $fe->nStern = (int)$row->nSterne;
-            $options[] = $fe;
+            $fo->nStern = (int)$row->nSterne;
+            $options[] = $fo;
         }
         $this->options = $options;
         if (count($options) === 0) {

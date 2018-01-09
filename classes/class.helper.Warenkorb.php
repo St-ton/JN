@@ -242,7 +242,7 @@ class WarenkorbHelper
         if ($wkPos->variationPicturesArr === null) {
             $wkPos->variationPicturesArr = [];
         }
-        $shopURL = Shop::getURL();
+        $shopURL = Shop::getURL() . '/';
 
         $oPicture = (object)[
             'isVariation'  => true,

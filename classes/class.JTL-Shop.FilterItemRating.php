@@ -9,10 +9,11 @@
  */
 class FilterItemRating extends AbstractFilter
 {
-    /**
-     * @var int
-     */
-    public $nSterne = 0;
+    use MagicCompatibilityTrait;
+
+    private static $mapping = [
+        'nSterne' => 'Value'
+    ];
 
     /**
      * FilterItemRating constructor.
@@ -35,17 +36,7 @@ class FilterItemRating extends AbstractFilter
      */
     public function setValue($id)
     {
-        $this->nSterne = (int)$id;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getValue()
-    {
-        return $this->nSterne;
+        return parent::setValue((int)$id);
     }
 
     /**
@@ -101,7 +92,7 @@ class FilterItemRating extends AbstractFilter
 
     /**
      * @param null $data
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -138,7 +129,7 @@ class FilterItemRating extends AbstractFilter
         foreach ($res as $row) {
             $nSummeSterne += (int)$row->nAnzahl;
 
-            $fo         = (new FilterOption())
+            $options[] = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
@@ -152,8 +143,6 @@ class FilterItemRating extends AbstractFilter
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$row->nSterne)
                 ));
-            $fo->nStern = (int)$row->nSterne;
-            $options[] = $fo;
         }
         $this->options = $options;
         if (count($options) === 0) {

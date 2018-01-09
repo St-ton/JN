@@ -9,6 +9,8 @@
  */
 class FilterItemPriceRange extends AbstractFilter
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var float
      */

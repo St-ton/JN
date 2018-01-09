@@ -32,6 +32,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
+                    <label for="config-row-layout">Layout</label>
                     <input type="text" id="config-row-layout" name="layout" class="form-control" placeholder="6+6"
                            value="{$properties.layout}">
                     <span class="help-block">

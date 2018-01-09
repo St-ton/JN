@@ -9,16 +9,14 @@
  */
 class FilterItemSearchSpecial extends AbstractFilter
 {
-    /**
-     * @var int
-     */
-    public $kKey;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
      */
     private static $mapping = [
-        'cName' => 'Name'
+        'cName' => 'Name',
+        'kKey'  => 'Value'
     ];
 
     /**
@@ -33,25 +31,6 @@ class FilterItemSearchSpecial extends AbstractFilter
         $this->urlParam = 'qf';
         $this->setFrontendName(Shop::Lang()->get('specificProducts'))
              ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen']);
-    }
-
-    /**
-     * @param int $id
-     * @return $this
-     */
-    public function setValue($id)
-    {
-        $this->kKey = (int)$id;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getValue()
-    {
-        return $this->kKey;
     }
 
     /**
@@ -119,7 +98,7 @@ class FilterItemSearchSpecial extends AbstractFilter
     public function getSQLCondition()
     {
         $conf = $this->getConfig();
-        switch ($this->kKey) {
+        switch ($this->getValue()) {
             case SEARCHSPECIALS_BESTSELLER:
                 $nAnzahl = (isset($conf['global']['global_bestseller_minanzahl'])
                     && (int)$conf['global']['global_bestseller_minanzahl'] > 0)
@@ -184,7 +163,7 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        switch ($this->kKey) {
+        switch ($this->getValue()) {
             case SEARCHSPECIALS_BESTSELLER:
                 return (new FilterJoin())
                     ->setType('JOIN')

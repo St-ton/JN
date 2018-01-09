@@ -431,7 +431,7 @@ class FilterSearch extends AbstractFilter
                             $nPrioStep
                         ) + 1;
                 }
-                $fo = (new FilterOption())
+                $options[] = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setClass($class)
@@ -442,10 +442,6 @@ class FilterSearch extends AbstractFilter
                     ->setURL($this->productFilter->getFilterURL()->getURL(
                         $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                     ));
-                $fo->cSuche       = $searchFilter->cSuche;
-                $fo->kSuchanfrage = $searchFilter->kSuchanfrage;
-
-                $options[] = $fo;
             }
         }
         $this->options = $options;

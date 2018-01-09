@@ -33,12 +33,12 @@ class FilterBaseManufacturer extends AbstractFilter
     }
 
     /**
-     * @param int $id
+     * @param array|int $id
      * @return $this
      */
     public function setValue($id)
     {
-        $this->value = (int)$id;
+        $this->value = is_array($id) ? $id : (int)$id;
 
         return $this;
     }
@@ -49,14 +49,18 @@ class FilterBaseManufacturer extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        if (($val = $this->getValue()) > 0) {
+        $val = $this->getValue();
+        if ((is_array($val) && count($val) > 0) || $val > 0) {
+            if (!is_array($val)) {
+                $val = [$val];
+            }
             $oSeo_arr = Shop::DB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                         JOIN thersteller
                             ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
-                        AND kKey = " . $val . "
+                        AND kKey IN (" . implode(', ', $val). ")
                     ORDER BY kSprache",
                 2
             );
@@ -64,7 +68,8 @@ class FilterBaseManufacturer extends AbstractFilter
                 $this->cSeo[$language->kSprache] = '';
                 foreach ($oSeo_arr as $oSeo) {
                     if ($language->kSprache === (int)$oSeo->kSprache) {
-                        $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+                        $sep = $this->cSeo[$language->kSprache] === '' ? '' : SEP_HST;
+                        $this->cSeo[$language->kSprache] .= $sep . $oSeo->cSeo;
                     }
                 }
             }
@@ -101,7 +106,15 @@ class FilterBaseManufacturer extends AbstractFilter
      */
     public function getSQLCondition()
     {
-        return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $this->getValue();
+        $val = $this->getValue();
+        if (!is_array($val)) {
+            $val = [$val];
+        }
+        return $this->getType() === AbstractFilter::FILTER_TYPE_OR
+            ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . implode(', ', $val) . ')'
+            : implode(' AND ', array_map(function($e) {
+                return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
+            }, $val));
     }
 
     /**
@@ -110,6 +123,17 @@ class FilterBaseManufacturer extends AbstractFilter
     public function getSQLJoin()
     {
         return [];
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    private function manufacturerFilterIsActive($id)
+    {
+        $activeValue = $this->productFilter->getManufacturerFilter()->getValue();
+
+        return (is_array($activeValue) && in_array($id, $activeValue, true)) || $activeValue === $id;
     }
 
     /**
@@ -123,7 +147,10 @@ class FilterBaseManufacturer extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
-            $state = $this->productFilter->getCurrentStateData();
+            $state = $this->productFilter->getCurrentStateData($this->getType() === AbstractFilter::FILTER_TYPE_OR
+                ? $this->getClassName()
+                : null
+            );
 
             $state->joins[] = (new FilterJoin())
                 ->setComment('join from FilterManufacturer::getOptions()')
@@ -173,7 +200,8 @@ class FilterBaseManufacturer extends AbstractFilter
                     ->setValue($manufacturer->kHersteller)
                     ->setCount($manufacturer->nAnzahl)
                     ->setSort($manufacturer->nSortNr)
-                    ->setURL($manufacturer->cURL);
+                    ->setURL($manufacturer->cURL)
+                    ->setIsActive($this->manufacturerFilterIsActive($manufacturer->kHersteller));
 
                 $options[] = $fe;
             }

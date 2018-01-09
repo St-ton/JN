@@ -69,7 +69,8 @@ class FilterOption extends AbstractFilter
         'nAnzahlArtikel' => 'Count',
         'cURL'           => 'URL',
         'Klasse'         => 'Class',
-        'nSortNr'        => 'Sort'
+        'nSortNr'        => 'Sort',
+        'kKey'           => 'Value'
     ];
 
     /**

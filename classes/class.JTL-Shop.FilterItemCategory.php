@@ -71,7 +71,7 @@ class FilterItemCategory extends FilterBaseCategory
 
     /**
      * @param null $data
-     * @return array|int|stdClass
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {

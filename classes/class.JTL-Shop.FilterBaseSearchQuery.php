@@ -234,7 +234,7 @@ class FilterBaseSearchQuery extends AbstractFilter
 
     /**
      * @param null $data
-     * @return array|int|object
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {

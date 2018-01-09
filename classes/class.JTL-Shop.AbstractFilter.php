@@ -462,7 +462,7 @@ abstract class AbstractFilter implements IFilter
 
     /**
      * @param null|mixed $data
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {

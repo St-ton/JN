@@ -232,7 +232,7 @@ class FilterItemAttribute extends FilterBaseAttribute
 
     /**
      * @param mixed|null $data
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {

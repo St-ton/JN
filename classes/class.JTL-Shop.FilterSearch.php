@@ -344,7 +344,7 @@ class FilterSearch extends AbstractFilter
 
     /**
      * @param null $data
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {

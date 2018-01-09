@@ -138,7 +138,7 @@ class FilterBaseManufacturer extends AbstractFilter
 
     /**
      * @param null $data
-     * @return array|int|object
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -192,7 +192,8 @@ class FilterBaseManufacturer extends AbstractFilter
                 $manufacturer->cURL        = $this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($manufacturer->kHersteller)
                 );
-                $fo                        = (new FilterOption())
+
+                $options[] = (new FilterOption())
                     ->setType($this->getType())
                     ->setFrontendName($manufacturer->cName)
                     ->setClassName($this->getClassName())
@@ -203,8 +204,6 @@ class FilterBaseManufacturer extends AbstractFilter
                     ->setSort($manufacturer->nSortNr)
                     ->setURL($manufacturer->cURL)
                     ->setIsActive($this->manufacturerFilterIsActive($manufacturer->kHersteller));
-
-                $options[] = $fo;
             }
         }
         $this->options = $options;

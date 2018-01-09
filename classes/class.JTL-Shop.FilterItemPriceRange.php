@@ -295,7 +295,7 @@ class FilterItemPriceRange extends AbstractFilter
 
     /**
      * @param int $data - product count
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {

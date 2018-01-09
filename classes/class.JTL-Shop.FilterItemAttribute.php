@@ -9,6 +9,8 @@
  */
 class FilterItemAttribute extends FilterBaseAttribute
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var string
      */

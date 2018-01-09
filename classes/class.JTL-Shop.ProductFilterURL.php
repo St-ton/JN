@@ -108,24 +108,37 @@ class ProductFilterURL
                 }
                 $urlParams[$urlParam][0]->seo[] = $filter->getSeo($this->productFilter->getLanguageID());
             } else {
-                $filterSeoData          = new stdClass();
-                $filterSeoData->value   = $filterValue;
-                $filterSeoData->sep     = $filter->getUrlParamSEO();
-                $filterSeoData->seo     = $filter->getSeo($this->productFilter->getLanguageID());
-                $filterSeoData->param   = $urlParam;
-                $urlParams[$urlParam][] = $filterSeoData;
+                $createEntry = true;
+                foreach ($urlParams[$urlParam] as $i => $filterSeoData) {
+                    // when adding a value that already is active, we acutally create an unset url
+                    if ($filterSeoData->value === $filterValue) {
+                        $createEntry = false;
+                        unset($urlParams[$urlParam][$i]);
+                    }
+                }
+                if ($createEntry === true) {
+                    $filterSeoData          = new stdClass();
+                    $filterSeoData->value   = $filterValue;
+                    $filterSeoData->sep     = $filter->getUrlParamSEO();
+                    $filterSeoData->seo     = $filter->getSeo($this->productFilter->getLanguageID());
+                    $filterSeoData->param   = $urlParam;
 
-                $activeValues = $filter->getActiveValues();
-                if (is_array($activeValues) && count($activeValues) > 0) {
-                    $filterSeoData->value = [];
-                    $filterSeoData->seo   = [];
-                    foreach ($activeValues as $activeValue) {
-                        $val = $activeValue->getValue();
-                        if ($ignore === null || $ignore !== $urlParam || $ignoreValue === 0 || $ignoreValue !== $val) {
-                            $filterSeoData->value[] = $activeValue->getValue();
-                            $filterSeoData->seo[]   = $activeValue->getURL();
+                    $urlParams[$urlParam][] = $filterSeoData;
+
+                    $activeValues = $filter->getActiveValues();
+                    if (is_array($activeValues) && count($activeValues) > 0) {
+                        $filterSeoData->value = [];
+                        $filterSeoData->seo   = [];
+                        foreach ($activeValues as $activeValue) {
+                            $val = $activeValue->getValue();
+                            if ($ignore === null || $ignore !== $urlParam || $ignoreValue === 0 || $ignoreValue !== $val) {
+                                $filterSeoData->value[] = $activeValue->getValue();
+                                $filterSeoData->seo[]   = $activeValue->getURL();
+                            }
                         }
                     }
+                } elseif ($debug) {
+                    Shop::dbg($filterValue, false, 'Skipping ' . $filter->getUrlParamSEO());
                 }
             }
         }

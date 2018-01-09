@@ -504,13 +504,6 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attributeValueURL = $this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($filterValue->kMerkmalWert)
                 );
-                $seoURL            = $additionalFilter->getSeo($this->getLanguageID());
-                if (!empty($seoURL) && $attributeValue->isActive()) {
-                    // remove '__attrY' from '<url>attrX__attrY'
-                    $attributeValueURL = str_replace('__' . $seoURL, '', $attributeValueURL);
-                    // remove 'attrY__' from '<url>attrY__attrX'
-                    $attributeValueURL = str_replace($seoURL . '__', '', $attributeValueURL);
-                }
                 $attribute->addOption($attributeValue->setURL($attributeValueURL));
             }
             if (($optionsCount = count($attribute->getOptions())) > 0) {

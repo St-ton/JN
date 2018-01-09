@@ -34,6 +34,15 @@ class FilterItemSearchSpecial extends AbstractFilter
     }
 
     /**
+     * @param array|int|string $value
+     * @return $this
+     */
+    public function setValue($value)
+    {
+        return parent::setValue((int)$value);
+    }
+
+    /**
      * @param array $languages
      * @return $this
      */
@@ -97,15 +106,16 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function getSQLCondition()
     {
-        $conf = $this->getConfig();
+        $conf      = $this->getConfig();
+        $condition = '';
         switch ($this->getValue()) {
             case SEARCHSPECIALS_BESTSELLER:
-                $nAnzahl = (isset($conf['global']['global_bestseller_minanzahl'])
-                    && (int)$conf['global']['global_bestseller_minanzahl'] > 0)
-                    ? (int)$conf['global']['global_bestseller_minanzahl']
+                $nAnzahl = ($min = (int)$conf['global']['global_bestseller_minanzahl']) > 0
+                    ? $min
                     : 100;
 
-                return 'ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl;
+                $condition = 'ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl;
+                break;
 
             case SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
@@ -114,40 +124,39 @@ class FilterItemSearchSpecial extends AbstractFilter
                     $tasp = 'tasp';
                     $tsp  = 'tsp';
                 }
-                return $tasp . " .kArtikel = tartikel.kArtikel
+                $condition = $tasp . " .kArtikel = tartikel.kArtikel
                                     AND " . $tasp . ".cAktiv = 'Y' 
                                     AND " . $tasp . ".dStart <= now()
                                     AND (" . $tasp . ".dEnde >= curdate() 
                                         OR " . $tasp . ".dEnde = '0000-00-00')
                                     AND " . $tsp . " .kKundengruppe = " . Session::CustomerGroup()->getID();
-//@todo:
-//                $oFilter->tasp = $tasp;
-//                $oFilter->tsp  = $tsp;
-
                 break;
 
             case SEARCHSPECIALS_NEWPRODUCTS:
-                $alter_tage = ($conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
-                    ? (int)$conf['boxen']['box_neuimsortiment_alter_tage']
+                $days = ($d = $conf['boxen']['box_neuimsortiment_alter_tage']) > 0
+                    ? (int)$d
                     : 30;
 
-                return "tartikel.cNeu = 'Y' 
-                            AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt 
+                $condition = "tartikel.cNeu = 'Y' 
+                            AND DATE_SUB(now(),INTERVAL $days DAY) < tartikel.dErstellt 
                             AND tartikel.cNeu = 'Y'";
+                break;
 
             case SEARCHSPECIALS_TOPOFFERS:
-                return "tartikel.cTopArtikel = 'Y'";
+                $condition = "tartikel.cTopArtikel = 'Y'";
+                break;
 
             case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                return 'now() < tartikel.dErscheinungsdatum';
+                $condition = 'now() < tartikel.dErscheinungsdatum';
+                break;
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!$this->productFilter->hasPriceRangeFilter()) {
-                    $nMindestSterne = ((int)$conf['boxen']['boxen_topbewertet_minsterne'] > 0)
-                        ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
+                    $minStars = ($m = $conf['boxen']['boxen_topbewertet_minsterne']) > 0
+                        ? (int)$m
                         : 4;
 
-                    return 'ROUND(taex.fDurchschnittsBewertung) >= ' . $nMindestSterne;
+                    $condition = 'ROUND(taex.fDurchschnittsBewertung) >= ' . $minStars;
                 }
                 break;
 
@@ -155,26 +164,28 @@ class FilterItemSearchSpecial extends AbstractFilter
                 break;
         }
 
-        return '';
+        return $condition;
     }
 
     /**
-     * @return string
+     * @return FilterJoin[]
      */
     public function getSQLJoin()
     {
+        $joins = [];
         switch ($this->getValue()) {
             case SEARCHSPECIALS_BESTSELLER:
-                return (new FilterJoin())
+                $joins = (new FilterJoin())
                     ->setType('JOIN')
                     ->setTable('tbestseller')
                     ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
                     ->setComment('JOIN from FilterItemSearchSpecial bestseller')
                     ->setOrigin(__CLASS__);
+                break;
 
             case SEARCHSPECIALS_SPECIALOFFERS:
                 if (!$this->productFilter->hasPriceRangeFilter()) {
-                    return [
+                    $joins = [
                         (new FilterJoin())
                             ->setType('JOIN')
                             ->setTable('tartikelsonderpreis AS tasp')
@@ -189,16 +200,10 @@ class FilterItemSearchSpecial extends AbstractFilter
                             ->setOrigin(__CLASS__)
                     ];
                 }
-
-                return [];
-
-            case SEARCHSPECIALS_NEWPRODUCTS:
-            case SEARCHSPECIALS_TOPOFFERS:
-            case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                return [];
+                break;
 
             case SEARCHSPECIALS_TOPREVIEWS:
-                return $this->productFilter->hasRatingFilter()
+                $joins = $this->productFilter->hasRatingFilter()
                     ? []
                     : (new FilterJoin())
                         ->setType('JOIN')
@@ -206,15 +211,21 @@ class FilterItemSearchSpecial extends AbstractFilter
                         ->setOn('taex.kArtikel = tartikel.kArtikel')
                         ->setComment('JOIN from FilterItemSearchSpecial top reviews')
                         ->setOrigin(__CLASS__);
+                break;
 
+            case SEARCHSPECIALS_NEWPRODUCTS:
+            case SEARCHSPECIALS_TOPOFFERS:
+            case SEARCHSPECIALS_UPCOMINGPRODUCTS:
             default:
-                return [];
+                break;
         }
+
+        return $joins;
     }
 
     /**
      * @param null $data
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -227,8 +238,8 @@ class FilterItemSearchSpecial extends AbstractFilter
         $name             = '';
         $options          = [];
         $additionalFilter = new self($this->productFilter);
+        $state            = $this->productFilter->getCurrentStateData();
         for ($i = 1; $i < 7; ++$i) {
-            $state = $this->productFilter->getCurrentStateData();
             switch ($i) {
                 case SEARCHSPECIALS_BESTSELLER:
                     $name    = Shop::Lang()->get('bestsellers');
@@ -300,6 +311,8 @@ class FilterItemSearchSpecial extends AbstractFilter
                     $state->conditions[] = 'ROUND(tartikelext.fDurchschnittsBewertung) >= ' .
                         (int)$this->getConfig()['boxen']['boxen_topbewertet_minsterne'];
                     break;
+                default:
+                    break;
             }
             $qry    = $this->productFilter->getFilterSQL()->getBaseQuery(
                 ['tartikel.kArtikel'],
@@ -309,20 +322,16 @@ class FilterItemSearchSpecial extends AbstractFilter
             );
             $qryRes  = Shop::DB()->query($qry, 2);
 
-            $fo = (new FilterOption())
-                ->setType($this->getType())
-                ->setClassName($this->getClassName())
-                ->setParam($this->getUrlParam())
-                ->setName($name)
-                ->setValue($i)
-                ->setCount(count($qryRes))
-                ->setSort(0)
-                ->setURL($this->productFilter->getFilterURL()->getURL(
-                    $additionalFilter->init($i)
-                ));
-            $fo->kKey = $i;
-            if ($fo->getCount() > 0) {
-                $options[$i] = $fo;
+            if (($count = count($qryRes)) > 0) {
+                $options[$i] = (new FilterOption())
+                    ->setType($this->getType())
+                    ->setClassName($this->getClassName())
+                    ->setParam($this->getUrlParam())
+                    ->setName($name)
+                    ->setValue($i)
+                    ->setCount($count)
+                    ->setSort(0)
+                    ->setURL($this->productFilter->getFilterURL()->getURL($additionalFilter->init($i)));
             }
         }
         $this->options = $options;

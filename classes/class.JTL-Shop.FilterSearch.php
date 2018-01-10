@@ -422,6 +422,11 @@ class FilterSearch extends AbstractFilter
             $nPrioStep        = $nCount > 0
                 ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
                 : 0;
+            $activeValues     = array_map(function($f) { // @todo: create method for this logic
+                /** @var FilterSearch $f */
+                return $f->getValue();
+            }, $this->productFilter->getSearchFilter());
+
             foreach ($searchFilters as $searchFilter) {
                 $class = rand(1, 10);
                 if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
@@ -440,7 +445,8 @@ class FilterSearch extends AbstractFilter
                     ->setCount($searchFilter->nAnzahl)
                     ->setURL($this->productFilter->getFilterURL()->getURL(
                         $additionalFilter->init((int)$searchFilter->kSuchanfrage)
-                    ));
+                    ))
+                    ->setIsActive(in_array((int)$searchFilter->kSuchanfrage, $activeValues, true));
                 $fe->cSuche       = $searchFilter->cSuche;
                 $fe->kSuchanfrage = $searchFilter->kSuchanfrage;
 

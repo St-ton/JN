@@ -471,7 +471,7 @@ class FilterBaseSearchQuery extends AbstractFilter
 
         if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
             $cSQL = 'SELECT ' . $kSuchCache . ', IF(tartikel.kVaterArtikel > 0, 
-                        tartikel.kVaterArtikel, tartikelsprache.kArtikel) AS kArtikelTMP, ';
+                        tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, ';
         } else {
             $cSQL = 'SELECT ' . $kSuchCache . ', IF(kVaterArtikel > 0, 
                         kVaterArtikel, kArtikel) AS kArtikelTMP, ';
@@ -480,9 +480,10 @@ class FilterBaseSearchQuery extends AbstractFilter
         if (count($cSuch_arr) > 3) {
             $cSQL .= " 1 ";
             if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-                $cSQL .= ' FROM tartikelsprache
-                                LEFT JOIN tartikel 
-                                    ON tartikelsprache.kArtikel = tartikel.kArtikel';
+                $cSQL .= ' FROM tartikel
+                                LEFT JOIN tartikelsprache
+                                    ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                    AND tartikelsprache.kSprache = ' . $this->getLanguageID();
             } else {
                 $cSQL .= ' FROM tartikel ';
             }
@@ -767,16 +768,15 @@ class FilterBaseSearchQuery extends AbstractFilter
             }
 
             if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-                $cSQL .= ' FROM tartikelsprache
-                            LEFT JOIN tartikel 
-                                ON tartikelsprache.kArtikel = tartikel.kArtikel';
+                $cSQL .= ' FROM tartikel
+                            LEFT JOIN tartikelsprache
+                                ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                AND tartikelsprache.kSprache = ' . $this->getLanguageID();
             } else {
                 $cSQL .= ' FROM tartikel ';
             }
             $cSQL .= " WHERE ";
-            if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-                $cSQL .= " tartikelsprache.kSprache = " . $this->getLanguageID() . " AND ";
-            }
+
             foreach ($searchColumnn_arr as $i => $searchColumnn) {
                 if ($i > 0) {
                     $cSQL .= ' OR';

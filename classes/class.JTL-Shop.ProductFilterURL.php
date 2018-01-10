@@ -164,6 +164,9 @@ class ProductFilterURL
                 }
             }
         }
+        if ($debug === true) {
+            Shop::dbg($urlParams, false, '$urlParams:');
+        }
         // build url string from data array
         if ($debug) {
             Shop::dbg($urlParams, false, '$urlParams:');
@@ -301,17 +304,17 @@ class ProductFilterURL
         foreach ($this->productFilter->getTagFilter() as $tagFilter) {
             $tagFilter->setUnsetFilterURL($url->cAlleTags);
         }
-
         $extraFilter            = (new FilterItemSearchSpecial($this->productFilter))->init(null)->setDoUnset(true);
         $url->cAlleSuchspecials = $this->getURL($extraFilter);
         $this->productFilter->getSearchSpecialFilter()->setUnsetFilterURL($url->cAlleSuchspecials);
 
         $extraFilter = (new FilterBaseSearchQuery($this->productFilter))->init(null)->setDoUnset(true);
-        foreach ($this->productFilter->getSearchFilter() as $oSuchFilter) {
-            if ($oSuchFilter->getValue() > 0) {
-                $_url                                             = $this->getURL($extraFilter);
-                $url->cAlleSuchFilter[$oSuchFilter->kSuchanfrage] = $_url;
-                $oSuchFilter->setUnsetFilterURL($_url);
+        foreach ($this->productFilter->getSearchFilter() as $searchFilter) {
+            /** @var FilterOption $option */
+            if (($value = $searchFilter->getValue()) > 0) {
+                $_url                         = $this->getURL($extraFilter);
+                $url->cAlleSuchFilter[$value] = $_url;
+                $searchFilter->setUnsetFilterURL($_url);
             }
         }
 

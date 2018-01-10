@@ -5226,11 +5226,12 @@ class Artikel
                             null,
                             $shippingID
                         );
+                        // find shortest shipping time in configuration
                         if (isset($konfigItemArticle->nMaxDeliveryDays)) {
-                            $maxDeliveryDays = max($maxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
+                            $maxDeliveryDays = min($maxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
                         }
                         if (isset($konfigItemArticle->nMinDeliveryDays)) {
-                            $minDeliveryDays = max($minDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
+                            $minDeliveryDays = min($minDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
                         }
                     }
                 }

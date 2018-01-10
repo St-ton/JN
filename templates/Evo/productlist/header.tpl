@@ -109,7 +109,7 @@
         {if $NaviFilter->hasManufacturer()}
             <input type="hidden" name="h" value="{$NaviFilter->getManufacturer()->getValue()}" />
         {/if}
-        {if $NaviFilter->hasSearchQuery()}
+        {if $NaviFilter->hasSearchQuery() && $NaviFilter->getSearchQuery()->getValue() > 0}
             <input type="hidden" name="l" value="{$NaviFilter->getSearchQuery()->getValue()}" />
         {/if}
         {if $NaviFilter->hasAttributeValue()}
@@ -156,7 +156,7 @@
             {/foreach}
         {/if}
         {if $NaviFilter->hasSearchFilter()}
-            {foreach name=suchfilter from=$NaviFilter->getSearchFilters() item=searchFilter}
+            {foreach name=suchfilter from=$NaviFilter->getSearchFilter() item=searchFilter}
                 <input type="hidden" name="sf{$smarty.foreach.suchfilter.iteration}" value="{$searchFilter->getValue()}" />
             {/foreach}
         {/if}

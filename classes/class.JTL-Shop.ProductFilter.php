@@ -609,24 +609,19 @@ class ProductFilter
         $params = array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
             $this->baseState = $this->category->init($params['kKategorie']);
-        }
-        if ($params['kHersteller'] > 0) {
+        } elseif ($params['kHersteller'] > 0) {
             $this->manufacturer->init($params['kHersteller']);
             $this->baseState = $this->manufacturer;
-        }
-        if ($params['kMerkmalWert'] > 0) {
+        } elseif ($params['kMerkmalWert'] > 0) {
             $this->attributeValue = (new FilterBaseAttribute($this))->init($params['kMerkmalWert']);
             $this->baseState      = $this->attributeValue;
-        }
-        if ($params['kTag'] > 0) {
+        } elseif ($params['kTag'] > 0) {
             $this->tag->init($params['kTag']);
             $this->baseState = $this->tag;
-        }
-        if ($params['kSuchspecial'] > 0) {
+        } elseif ($params['kSuchspecial'] > 0) {
             $this->searchSpecial->init($params['kSuchspecial']);
             $this->baseState = $this->searchSpecial;
         }
-        
         
         if ($params['kKategorieFilter'] > 0) {
             $this->addActiveFilter($this->categoryFilter, $params['kKategorieFilter']);
@@ -652,7 +647,6 @@ class ProductFilter
         foreach ($params['SuchFilter_arr'] as $sf) {
             $this->searchFilter[] = $this->addActiveFilter(new FilterSearch($this), $sf);
         }
-
         if ($params['nSortierung'] > 0) {
             $this->nSortierung = (int)$params['nSortierung'];
         }
@@ -663,7 +657,7 @@ class ProductFilter
         if ($params['kSuchanfrage'] > 0) {
             $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
-                $this->search->cSuche = $oSuchanfrage->cSuche;
+                $this->search->setName($oSuchanfrage->cSuche);
             }
             // Suchcache beachten / erstellen
             $searchName = $this->search->getName();
@@ -671,8 +665,10 @@ class ProductFilter
                 $this->search->kSuchCache = $this->searchQuery->editSearchCache();
                 $this->searchQuery->init($oSuchanfrage->kSuchanfrage);
                 $this->searchQuery->kSuchCache = $this->search->kSuchCache;
-                $this->searchQuery->cSuche     = $this->search->getName();
-                $this->baseState               = $this->searchQuery;
+                $this->searchQuery->setName($this->search->getName());
+                if (!$this->baseState->isInitialized()) {
+                    $this->baseState = $this->searchQuery;
+                }
             }
         } elseif (strlen($params['cSuche']) > 0) {
             $params['cSuche'] = StringHandler::filterXSS($params['cSuche']);
@@ -695,7 +691,9 @@ class ProductFilter
             $this->searchQuery->init($kSuchAnfrage)->setName($params['cSuche']);
             $this->EchteSuche          = new stdClass();
             $this->EchteSuche->cSuche  = $params['cSuche'];
-            $this->baseState           = $this->searchQuery;
+            if (!$this->baseState->isInitialized()) {
+                $this->baseState = $this->searchQuery;
+            }
         }
         $this->nSeite = max(1, verifyGPCDataInteger('seite'));
         foreach ($this->getCustomFilters() as $filter) {

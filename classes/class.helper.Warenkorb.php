@@ -775,62 +775,60 @@ class WarenkorbHelper
         if ($xReturn !== null) {
             $redirectParam[] = $xReturn;
         }
-        if (is_array($article->Variationen) && count($article->Variationen) > 0) {
-            //fehlen zu einer Variation werte?
-            foreach ($article->Variationen as $var) {
-                //min. 1 Problem?
-                if (count($redirectParam) > 0) {
-                    break;
-                }
-                if ($var->cTyp === 'FREIFELD') {
-                    continue;
-                }
-                //schau, ob diese Eigenschaft auch gewählt wurde
-                $bEigenschaftWertDa = false;
-                foreach ($attributes as $oEigenschaftwerte) {
-                    $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
-                    if ($var->cTyp === 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
-                        if (strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
-                            $bEigenschaftWertDa = true;
-                        } else {
-                            $redirectParam[] = R_VARWAEHLEN;
-                            break;
-                        }
-                    } elseif ($var->cTyp !== 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
+        // fehlen zu einer Variation werte?
+        foreach ($article->Variationen as $var) {
+            //min. 1 Problem?
+            if (count($redirectParam) > 0) {
+                break;
+            }
+            if ($var->cTyp === 'FREIFELD') {
+                continue;
+            }
+            //schau, ob diese Eigenschaft auch gewählt wurde
+            $bEigenschaftWertDa = false;
+            foreach ($attributes as $oEigenschaftwerte) {
+                $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
+                if ($var->cTyp === 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
+                    if (strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
                         $bEigenschaftWertDa = true;
-                        //schau, ob auch genug davon auf Lager
-                        $EigenschaftWert = new EigenschaftWert($oEigenschaftwerte->kEigenschaftWert);
-                        //ist der Eigenschaftwert überhaupt gültig?
-                        if ($EigenschaftWert->kEigenschaft !== $oEigenschaftwerte->kEigenschaft) {
-                            $redirectParam[] = R_VARWAEHLEN;
-                            break;
-                        }
-                        //schaue, ob genug auf Lager von jeder var
-                        if ($article->cLagerBeachten === 'Y'
-                            && $article->cLagerVariation === 'Y'
-                            && $article->cLagerKleinerNull !== 'Y'
-                        ) {
-                            if ($EigenschaftWert->fPackeinheit == 0) {
-                                $EigenschaftWert->fPackeinheit = 1;
-                            }
-                            if ($EigenschaftWert->fPackeinheit *
-                                ($qty +
-                                    $cart->gibAnzahlEinerVariation(
-                                        $kArtikel,
-                                        $EigenschaftWert->kEigenschaftWert
-                                    )
-                                ) > $EigenschaftWert->fLagerbestand
-                            ) {
-                                $redirectParam[] = R_LAGERVAR;
-                            }
-                        }
+                    } else {
+                        $redirectParam[] = R_VARWAEHLEN;
                         break;
                     }
-                }
-                if (!$bEigenschaftWertDa) {
-                    $redirectParam[] = R_VARWAEHLEN;
+                } elseif ($var->cTyp !== 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
+                    $bEigenschaftWertDa = true;
+                    //schau, ob auch genug davon auf Lager
+                    $EigenschaftWert = new EigenschaftWert($oEigenschaftwerte->kEigenschaftWert);
+                    //ist der Eigenschaftwert überhaupt gültig?
+                    if ($EigenschaftWert->kEigenschaft !== $oEigenschaftwerte->kEigenschaft) {
+                        $redirectParam[] = R_VARWAEHLEN;
+                        break;
+                    }
+                    //schaue, ob genug auf Lager von jeder var
+                    if ($article->cLagerBeachten === 'Y'
+                        && $article->cLagerVariation === 'Y'
+                        && $article->cLagerKleinerNull !== 'Y'
+                    ) {
+                        if ($EigenschaftWert->fPackeinheit == 0) {
+                            $EigenschaftWert->fPackeinheit = 1;
+                        }
+                        if ($EigenschaftWert->fPackeinheit *
+                            ($qty +
+                                $cart->gibAnzahlEinerVariation(
+                                    $kArtikel,
+                                    $EigenschaftWert->kEigenschaftWert
+                                )
+                            ) > $EigenschaftWert->fLagerbestand
+                        ) {
+                            $redirectParam[] = R_LAGERVAR;
+                        }
+                    }
                     break;
                 }
+            }
+            if (!$bEigenschaftWertDa) {
+                $redirectParam[] = R_VARWAEHLEN;
+                break;
             }
         }
 

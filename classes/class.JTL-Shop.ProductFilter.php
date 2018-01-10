@@ -1234,7 +1234,7 @@ class ProductFilter
      */
     public function hasSearch()
     {
-        return $this->search->getValue() > 0;
+        return $this->search->getName() !== null;
     }
 
     /**

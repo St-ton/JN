@@ -46,13 +46,18 @@
             <div class="row">
                 <div class="col-sm-12">
                     <label for="video-yt-width">Abmessung</label>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="video-yt-responsive" name="video-yt-responsive" value="1" {if $properties['video-yt-responsive'] === '1'} checked="checked"{/if}> Größe an vorhandenen Platz anpassen?
+                        </label>
+                    </div>
                     <div class="form-group form-inline">
                         <div class="form-group">
-                            <input type="number" class="form-control" id="video-yt-width" name="video-yt-width" value="{$properties['video-yt-width']}">
+                            <input type="number" class="form-control" id="video-yt-width" name="video-yt-width" value="{$properties['video-yt-width']}" {if $properties['video-yt-responsive'] === '1'} disabled{/if}>
                         </div>
                         x
                         <div class="form-group">
-                            <input type="number" class="form-control" id="video-yt-height" name="video-yt-height" value="{$properties['video-yt-height']}">
+                            <input type="number" class="form-control" id="video-yt-height" name="video-yt-height" value="{$properties['video-yt-height']}" {if $properties['video-yt-responsive'] === '1'} disabled{/if}>
                         </div>
                         Pixel
                     </div>
@@ -139,13 +144,18 @@
             <div class="row">
                 <div class="col-sm-12">
                     <label for="video-vim-width">Abmessung</label>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="video-vim-responsive" name="video-vim-responsive" value="1" {if $properties['video-vim-responsive'] === '1'} checked="checked"{/if}> Größe an vorhandenen Platz anpassen?
+                        </label>
+                    </div>
                     <div class="form-group form-inline">
                         <div class="form-group">
-                            <input type="number" class="form-control" id="video-vim-width" name="video-vim-width" value="{$properties['video-vim-width']}">
+                            <input type="number" class="form-control" id="video-vim-width" name="video-vim-width" value="{$properties['video-vim-width']}" {if $properties['video-vim-responsive'] === '1'} disabled{/if}>
                         </div>
                         x
                         <div class="form-group">
-                            <input type="number" class="form-control" id="video-vim-height" name="video-vim-height" value="{$properties['video-vim-height']}">
+                            <input type="number" class="form-control" id="video-vim-height" name="video-vim-height" value="{$properties['video-vim-height']}" {if $properties['video-vim-responsive'] === '1'} disabled{/if}>
                         </div>
                         Pixel
                     </div>
@@ -206,6 +216,22 @@
                 }else{
                     $('#youtube-container').hide();
                     $('#vimeo-container').show();
+                }
+            });
+
+            $('input[name="video-yt-responsive"]').click(function(){
+                if ($(this).prop('checked')){
+                    $('input[name="video-yt-width"], input[name="video-yt-height"]').prop('disabled', true);
+                } else {
+                    $('input[name="video-yt-width"], input[name="video-yt-height"]').prop('disabled', false);
+                }
+            });
+
+            $('input[name="video-vim-responsive"]').click(function(){
+                if ($(this).prop('checked')){
+                    $('input[name="video-vim-width"], input[name="video-vim-height"]').prop('disabled', true);
+                } else {
+                    $('input[name="video-vim-width"], input[name="video-vim-height"]').prop('disabled', false);
                 }
             });
 

@@ -313,14 +313,13 @@ class FilterSearch extends AbstractFilter
     {
         $count        = 0;
         $searchCache  = [];
-        $searchFilter = $this->productFilter->getBaseState();
+        $searchFilter = $this->productFilter->getSearchFilter();
         if (is_array($searchFilter)) {
-            $count = count($searchFilter);
-            foreach ($searchFilter as $oSuchFilter) {
-                if (isset($oSuchFilter->kSuchCache)) {
-                    $searchCache[] = (int)$oSuchFilter->kSuchCache;
-                }
-            }
+            $count       = count($searchFilter);
+            $searchCache = array_map(function ($f) {
+                /** @var FilterSearch $f */
+                return $f->getValue();
+            }, $searchFilter);
         } elseif (isset($searchFilter->kSuchCache)) {
             $searchCache[] = (int)$searchFilter->kSuchCache;
             $count         = 1;
@@ -418,7 +417,7 @@ class FilterSearch extends AbstractFilter
             if (is_array($searchFilters)) {
                 $searchFilters = array_merge($searchFilters);
             }
-            $additionalFilter = new FilterBaseSearchQuery($this->productFilter);
+            $additionalFilter = new self($this->productFilter);
             $nCount           = count($searchFilters);
             $nPrioStep        = $nCount > 0
                 ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9

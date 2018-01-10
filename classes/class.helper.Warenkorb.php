@@ -339,8 +339,8 @@ class WarenkorbHelper
     }
 
     /**
-     * @param int   $articleID
-     * @param float $count
+     * @param int       $articleID
+     * @param int|float $count
      * @return bool
      */
     private static function checkCart($articleID, $count)
@@ -547,15 +547,15 @@ class WarenkorbHelper
     }
 
     /**
-     * @param int $kArtikel
-     * @param int $count
+     * @param int       $kArtikel
+     * @param int|float $qty
      * @return bool
      */
-    private static function checkCompareList($kArtikel, $count)
+    private static function checkCompareList($kArtikel, $qty)
     {
         // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
         if (!isset($_SESSION['Vergleichsliste']->oArtikel_arr)
-            || $count > count($_SESSION['Vergleichsliste']->oArtikel_arr)
+            || $qty > count($_SESSION['Vergleichsliste']->oArtikel_arr)
         ) {
             // Prüfe auf kArtikel
             $productExists = Shop::DB()->select(
@@ -632,9 +632,9 @@ class WarenkorbHelper
     }
 
     /**
-     * @param int   $articleID
-     * @param float $qty
-     * @param bool  $redirect
+     * @param int       $articleID
+     * @param float|int $qty
+     * @param bool      $redirect
      * @return bool
      */
     private static function checkWishlist($articleID, $qty, $redirect)

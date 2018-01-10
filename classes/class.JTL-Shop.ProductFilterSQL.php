@@ -241,7 +241,10 @@ class ProductFilterSQL
         if ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
             || $filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
         ) {
-            $filterSQL = ($withAnd === true ? 'AND ' : '') .
+            $or = $filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                ? " OR tartikel.cLagerKleinerNull = 'Y'"
+                : '';
+            $filterSQL = ($withAnd === true ? ' AND ' : '') .
                 "(tartikel.cLagerBeachten != 'Y'
                     OR tartikel.fLagerbestand > 0
                     OR (tartikel.cLagerVariation = 'Y'
@@ -250,10 +253,9 @@ class ProductFilterSQL
                             FROM teigenschaft
                             INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                             WHERE teigenschaft.kArtikel = tartikel.kArtikel
-                        ) > 0))";
-        }
-        if ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-            $filterSQL .= " OR tartikel.cLagerKleinerNull = 'Y'";
+                        ) > 0
+                    )" . $or .
+                ")";
         }
         executeHook(HOOK_STOCK_FILTER, [
             'conf'      => $filterType,

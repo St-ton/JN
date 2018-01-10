@@ -23,7 +23,7 @@ $hasError           = false;
 $cParameter_arr     = Shop::getParameters();
 if ($NaviFilter->hasCategory()) {
     $AktuelleSeite               = 'PRODUKTE';
-    $kKategorie                  = $NaviFilter->getBaseState()->getValue();
+    $kKategorie                  = $NaviFilter->getCategory()->getValue();
     $AktuelleKategorie           = new Kategorie($kKategorie);
     $_SESSION['LetzteKategorie'] = $kKategorie;
     if ($AktuelleKategorie->kKategorie === null) {
@@ -40,6 +40,7 @@ if ($NaviFilter->hasCategory()) {
     $expandedCategories = new KategorieListe();
     $expandedCategories->getOpenCategories($AktuelleKategorie);
 }
+
 // Usersortierung
 $NaviFilter->getMetaData()->setUserSort($AktuelleKategorie);
 // Erweiterte Darstellung Artikelübersicht

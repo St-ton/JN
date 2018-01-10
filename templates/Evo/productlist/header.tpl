@@ -109,7 +109,7 @@
         {if $NaviFilter->hasManufacturer()}
             <input type="hidden" name="h" value="{$NaviFilter->getManufacturer()->getValue()}" />
         {/if}
-        {if $NaviFilter->hasSearchQuery()}
+        {if $NaviFilter->hasSearchQuery() && $NaviFilter->getSearchQuery()->getValue() > 0}
             <input type="hidden" name="l" value="{$NaviFilter->getSearchQuery()->getValue()}" />
         {/if}
         {if $NaviFilter->hasAttributeValue()}

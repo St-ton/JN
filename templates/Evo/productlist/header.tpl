@@ -156,7 +156,7 @@
             {/foreach}
         {/if}
         {if $NaviFilter->hasSearchFilter()}
-            {foreach name=suchfilter from=$NaviFilter->getSearchFilters() item=searchFilter}
+            {foreach name=suchfilter from=$NaviFilter->getSearchFilter() item=searchFilter}
                 <input type="hidden" name="sf{$smarty.foreach.suchfilter.iteration}" value="{$searchFilter->getValue()}" />
             {/foreach}
         {/if}

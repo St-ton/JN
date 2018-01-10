@@ -2,7 +2,8 @@
     <label>{$properties['video-title']}</label>
     <div>
         {if $properties['video-vendor'] === 'youtube'}
-            <iframe class="embed-responsive-item" type="text/html" width="{$properties['video-yt-width']}" height="{$properties['video-yt-height']}"
+            <iframe class="embed-responsive-item" type="text/html" width="{$properties['video-yt-width']}"
+                height="{$properties['video-yt-height']}"
                 {strip}src="https://www.youtube.com/embed/{$properties['video-yt-id']}
                 ?autoplay={$properties['video-yt-autoplay']}
                 &controls={$properties['video-yt-controls']}

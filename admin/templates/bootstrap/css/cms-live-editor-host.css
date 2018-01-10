@@ -38,11 +38,11 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 #iframe-panel {
 	text-align: center;
 	background: #ddd;
+    border-top: 4px solid #5aafd6;
 }
 
 #iframe-panel iframe {
 	border: 0;
-    border-top: 4px solid #5aafd6;
 	width: 100%;
 	transition: all .2s ease-in-out;
 }

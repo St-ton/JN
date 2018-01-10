@@ -30,27 +30,36 @@ class CMSPage
     public $dLastModified = '';
 
     /**
+     * @var string
+     */
+    public $cLockedBy = '';
+
+    /**
+     * @var string
+     */
+    public $dLockedAt = '0000-00-00 00:00:00';
+
+    /**
      * @var array
      */
     public $cFinalHtml_arr = null;
 
     /**
      * @param int $kPage
-     * @throws Exception
      */
     public function __construct($kPage = 0)
     {
         if ($kPage > 0) {
             $oCMSPageDB = Shop::DB()->select('tcmspage', 'kPage', $kPage);
 
-            if ($oCMSPageDB === null) {
-                throw new Exception('No CMS Page found with the given page id.');
+            if ($oCMSPageDB !== null) {
+                $this->kPage         = $oCMSPageDB->kPage;
+                $this->cIdHash       = $oCMSPageDB->cIdHash;
+                $this->data          = json_decode($oCMSPageDB->cJson, true);
+                $this->dLastModified = $oCMSPageDB->dLastModified;
+                $this->cLockedBy     = $oCMSPageDB->cLockedBy;
+                $this->dLockedAt     = $oCMSPageDB->dLockedAt;
             }
-
-            $this->kPage         = $oCMSPageDB->kPage;
-            $this->cIdHash       = $oCMSPageDB->cIdHash;
-            $this->data          = json_decode($oCMSPageDB->cJson, true);
-            $this->dLastModified = $oCMSPageDB->dLastModified;
         }
     }
 
@@ -66,7 +75,7 @@ class CMSPage
 
             foreach ($areaPortlets as $portlet) {
                 try {
-                    $cHtml .= CMS::createPortlet($portlet['portletId'])
+                    $cHtml .= CMS::getInstance()->createPortlet($portlet['portletId'])
                         ->setProperties($portlet['properties'])
                         ->setSubAreas($portlet['subAreas'])
                         ->getFinalHtml();
@@ -84,17 +93,14 @@ class CMSPage
      */
     public function save()
     {
-        $oCmsPageDB = Shop::DB()->select(
-            'tcmspage',
-            'cIdHash',
-            $this->cIdHash
-        );
+        $oCmsPageDB = Shop::DB()->select('tcmspage', 'cIdHash', $this->cIdHash);
 
         if ($oCmsPageDB === null) {
-            $oCmsPageDB = (object)[
+            $oCmsPageDB  = (object)[
                 'cIdHash' => $this->cIdHash,
                 'cJson' => json_encode($this->data),
-                'dLastModified' => date('Y-m-d H:i:s')
+                'dLastModified' => date('Y-m-d H:i:s'),
+                'cLockedBy' => $this->cLockedBy
             ];
             $this->kPage = Shop::DB()->insert('tcmspage', $oCmsPageDB);
         } else {
@@ -102,12 +108,8 @@ class CMSPage
             $revision->addRevision('cmspage', (int)$oCmsPageDB->kPage);
             $oCmsPageDB->cJson         = json_encode($this->data);
             $oCmsPageDB->dLastModified = date('Y-m-d H:i:s');
-            Shop::DB()->update(
-                'tcmspage',
-                'cIdHash',
-                $this->cIdHash,
-                $oCmsPageDB
-            );
+            $oCmsPageDB->cLockedBy     = $this->cLockedBy;
+            Shop::DB()->update('tcmspage', 'cIdHash', $this->cIdHash, $oCmsPageDB);
         }
     }
 
@@ -127,5 +129,45 @@ class CMSPage
         $revision = new Revision();
 
         return $revision->getRevisions('cmspage', $this->kPage);
+    }
+
+    public function lock($cLogin)
+    {
+        if (
+            $this->cLockedBy !== ''
+            && $this->cLockedBy !== $cLogin
+            && strtotime($this->dLockedAt) + 60 > time()
+        ) {
+            throw new Exception("CMS Page is already locked by {$this->cLockedBy}.");
+        }
+
+        $this->cLockedBy = $cLogin;
+        $pageUpdate      = (object)[
+            'cIdHash'   => $this->cIdHash,
+            'cLockedBy' => $this->cLockedBy,
+            'dLockedAt' => date('Y-m-d H:i:s'),
+        ];
+
+        if (Shop::DB()->select('tcmspage', 'cIdHash', $this->cIdHash) === null) {
+            $this->kPage = Shop::DB()->insert('tcmspage', $pageUpdate);
+        } else {
+            Shop::DB()->update('tcmspage', 'cIdHash', $this->cIdHash, $pageUpdate);
+        }
+    }
+
+    public function unlock()
+    {
+        $this->cLockedBy = '';
+        $pageUpdate      = (object)[
+            'cIdHash'   => $this->cIdHash,
+            'cLockedBy' => $this->cLockedBy,
+            'dLockedAt' => null,
+        ];
+
+        if (Shop::DB()->select('tcmspage', 'cIdHash', $this->cIdHash) === null) {
+            $this->kPage = Shop::DB()->insert('tcmspage', $pageUpdate);
+        } else {
+            Shop::DB()->update('tcmspage', 'cIdHash', $this->cIdHash, $pageUpdate);
+        }
     }
 }

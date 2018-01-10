@@ -47,7 +47,7 @@ class PortletRow extends CMSPortlet
             $res     .= '<div class="col-xs-' . $col . '">';
 
             foreach ($subArea as $subPortlet) {
-                $portlet        = CMS::createPortlet($subPortlet['portletId'])
+                $portlet        = CMS::getInstance()->createPortlet($subPortlet['portletId'])
                     ->setProperties($subPortlet['properties'])
                     ->setSubAreas($subPortlet['subAreas']);
                 $subPortletHtml = $portlet->getFinalHtml();

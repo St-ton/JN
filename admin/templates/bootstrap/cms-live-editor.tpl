@@ -28,6 +28,8 @@
 
     <script>
         var editor = new Editor({
+            notice: '{$cHinweis|escape:'htmlall'}',
+            error: '{$cFehler|escape:'htmlall'}',
             jtlToken: '{$smarty.session.jtl_token}',
             templateUrl: '{$templateUrl}',
             kcfinderUrl: '{$PFAD_KCFINDER}',
@@ -73,7 +75,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{$cPageUrl}" data-toggle="tooltip" data-placement="bottom"
+                        <a href="{$cPageUrl}" id="cle-btn-close-editor" data-toggle="tooltip" data-placement="bottom"
                            title="Editor schlie&szlig;en">
                             <i class="fa fa-close"></i>
                         </a>

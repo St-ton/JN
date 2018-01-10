@@ -9,40 +9,91 @@
  */
 class CMS
 {
-    public static $cPageIdHash = '';
+    /**
+     * @var CMS
+     */
+    private static $instance = null;
 
-    public static function getCmsPage($cPageIdHash)
+    /**
+     * @var array
+     */
+    public $curPageParameters = [];
+
+    /**
+     * @var string
+     */
+    public $curPageID = '';
+
+    /**
+     * @var AdminAccount|null
+     */
+    public $oAccount = null;
+
+    /**
+     * CMS constructor initializes the current page id hash
+     */
+    private function __construct()
     {
-        $oCMSPageDB = Shop::DB()->select('tcmspage', 'cIdHash', $cPageIdHash, null, null, null, null, false, 'kPage');
+        $this->curPageParameters = Shop::getParameters();
+        $this->curPageID         = md5(serialize($this->curPageParameters));
+    }
 
-        if ($oCMSPageDB === null) {
-            return null;
+    /**
+     * @return CMS
+     */
+    public static function getInstance()
+    {
+        return self::$instance === null ? (self::$instance = new self()) : self::$instance;
+    }
+
+    /**
+     * @param $pageID - current page ID
+     * @return CMSPage
+     */
+    public function getPage($pageID)
+    {
+        $pageDB = Shop::DB()->select('tcmspage', 'cIdHash', $pageID, null, null, null, null, false, 'kPage');
+
+        if ($pageDB === null) {
+            $page          = new CMSPage();
+            $page->cIdHash = $pageID;
+            return $page;
         }
 
-        return new CMSPage($oCMSPageDB->kPage);
+        return new CMSPage($pageDB->kPage);
     }
 
-    public static function getCurrentCmsPage()
+    /**
+     * @return CMSPage
+     */
+    public function getCurrentPage()
     {
-
-        return self::getCmsPage(self::getCurrentPageIdHash());
+        return $this->getPage($this->curPageID);
     }
 
-    public static function getCurrentPageIdHash()
-    {
-        if (self::$cPageIdHash === '') {
-            self::$cPageIdHash = md5(serialize(Shop::getParameters()));
-        }
-
-        return self::$cPageIdHash;
-    }
-
-    public static function saveCmsPage($cIdHash, $oCmsPageData)
+    /**
+     * @param $pageID string
+     * @param $pageData array
+     */
+    public function savePage($pageID, $pageData)
     {
         $oCmsPage          = new CMSPage();
-        $oCmsPage->cIdHash = $cIdHash;
-        $oCmsPage->data    = $oCmsPageData;
+        $oCmsPage->cIdHash = $pageID;
+        $oCmsPage->data    = $pageData;
         $oCmsPage->save();
+    }
+
+    /**
+     * @param $pageID string
+     */
+    public function lockPage($pageID)
+    {
+        $this->getPage($pageID)->lock($this->oAccount->account()->cLogin);
+    }
+
+    public function unlockPage($pageID)
+    {
+        $this->getPage($pageID)->unlock();
     }
 
     /**
@@ -50,7 +101,7 @@ class CMS
      * @return CMSPortlet
      * @throws Exception
      */
-    public static function createPortlet($kPortlet)
+    public function createPortlet($kPortlet)
     {
         $oDbPortlet = Shop::DB()->select('tcmsportlet', 'kPortlet', $kPortlet);
 
@@ -64,7 +115,7 @@ class CMS
             $cClassPath = $oPlugin->oPluginEditorPortletAssoc_arr[$kPortlet]->cClassAbs;
             require_once $cClassPath;
         } else {
-            $cClass     = 'Portlet' . $oDbPortlet->cClass;
+            $cClass = 'Portlet' . $oDbPortlet->cClass;
         }
 
         return new $cClass($kPortlet);
@@ -73,13 +124,13 @@ class CMS
     /**
      * @return CMSPortlet[]
      */
-    public static function getPortlets()
+    public function getPortlets()
     {
         $oDbPortlet_arr = Shop::DB()->selectAll('tcmsportlet', [], []);
         $oPortlet_arr   = [];
 
         foreach ($oDbPortlet_arr as $i => $oDbPortlet) {
-            $oPortlet_arr[] = self::createPortlet($oDbPortlet->kPortlet);
+            $oPortlet_arr[] = $this->createPortlet($oDbPortlet->kPortlet);
         }
 
         return $oPortlet_arr;
@@ -90,9 +141,9 @@ class CMS
      * @param array $properties
      * @return string
      */
-    public static function getPortletPreviewHtml($kPortlet, $properties)
+    public function getPortletPreviewHtml($kPortlet, $properties)
     {
-        return self::createPortlet($kPortlet)
+        return $this->createPortlet($kPortlet)
             ->setProperties($properties)
             ->getPreviewHtml();
     }
@@ -102,9 +153,9 @@ class CMS
      * @param array $properties
      * @return string
      */
-    public static function getPortletConfigPanelHtml($kPortlet, $properties)
+    public function getPortletConfigPanelHtml($kPortlet, $properties)
     {
-        return self::createPortlet($kPortlet)
+        return $this->createPortlet($kPortlet)
             ->setProperties($properties)
             ->getConfigPanelHtml();
     }
@@ -113,9 +164,16 @@ class CMS
      * @param $kPortlet
      * @return array
      */
-    public static function getPortletDefaultProps($kPortlet)
+    public function getPortletDefaultProps($kPortlet)
     {
-        return self::createPortlet($kPortlet)
+        return $this->createPortlet($kPortlet)
             ->getDefaultProps();
+    }
+
+    public function setAdminAccount($oAccount)
+    {
+        $this->oAccount = $oAccount;
+
+        return $this;
     }
 }

@@ -37,7 +37,7 @@ if (strlen(verifyGPDataString('cSuche')) > 0) {
 
 // Einstellungen
 if (verifyGPCDataInteger('einstellungen') === 1) {
-    $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
+    $hinweis .= saveAdminSettings($settingsIDs, $_POST);
     $smarty->assign('tab', 'einstellungen');
 }
 

@@ -1,0 +1,14 @@
+<div{$attribString}{$styleString}>
+    <label>{$properties['video-title']}</label>
+    <div>
+        {if $properties['video-vendor'] === 'youtube'}
+            <iframe class="embed-responsive-item" type="text/html" width="{$properties['video-yt-width']}" height="{$properties['video-yt-height']}"
+                    src="https://www.youtube.com/embed/{$properties['video-yt-id']}?autoplay={$properties['video-yt-autoplay']}&controls={$properties['video-yt-controls']}&loop={$properties['video-yt-loop']}&rel={$properties['video-yt-rel']}&showinfo=0&color={$properties['video-yt-color']}&iv_load_policy=3&playlist={$properties['video-yt-playlist']}{if !empty($properties['video-yt-start'])}&start={$properties['video-yt-start']}{/if}{if !empty($properties['video-yt-end'])}&end={$properties['video-yt-end']}{/if}"
+                    frameborder="0" allowfullscreen></iframe>
+        {else}
+            <iframe src="https://player.vimeo.com/video/{$properties['video-vim-id']}?color={$properties['video-vim-color']|replace:'#':''}&portrait={$properties['video-vim-img']}&autoplay={$properties['video-vim-autoplay']}&title={$properties['video-vim-title']}&byline={$properties['video-vim-byline']}&loop={$properties['video-vim-loop']}"
+                    width="{$properties['video-vim-width']}" height="{$properties['video-vim-height']}" frameborder="0"
+                    webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        {/if}
+    </div>
+</div>

@@ -13,10 +13,19 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
+$cHinweis    = '';
+$cFehler     = '';
 $cPageIdHash = verifyGPDataString('cCmsPageIdHash');
 $cAction     = verifyGPDataString('cAction');
 $cPageUrl    = verifyGPDataString('cPageUrl');
-$oCMSPage    = CMS::getCmsPage($cPageIdHash);
+$oCMS        = CMS::getInstance();
+$oCMSPage    = $oCMS->getPage($cPageIdHash);
+
+try {
+    $oCMSPage->lock($oAccount->account()->cLogin);
+} catch (Exception $e) {
+    $cFehler = "Diese Seite wird bereits von '{$oCMSPage->cLockedBy}' bearbeitet.";
+}
 
 if ($cAction === 'restore_default') {
     $oCMSPage->remove();
@@ -24,10 +33,12 @@ if ($cAction === 'restore_default') {
     exit();
 }
 
-$oPortlet_arr  = CMS::getPortlets();
+$oPortlet_arr  = $oCMS->getPortlets();
 $oTemplate_arr = CMS::getTemplates();
 
 $smarty
+    ->assign('cHinweis', $cHinweis)
+    ->assign('cFehler', $cFehler)
     ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
     ->assign('oPortlet_arr', $oPortlet_arr)
     ->assign('oTemplate_arr', $oTemplate_arr)

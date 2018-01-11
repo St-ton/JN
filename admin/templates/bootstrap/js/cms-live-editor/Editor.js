@@ -4,6 +4,8 @@
  */
 
 /**
+ * @param env.notice - Notice message by the server
+ * @param env.error - Error message by the server
  * @param env.jtlToken - the current valid CSRF token
  * @param env.templateUrl - the URL to the current admin template
  * @param env.kcfinderUrl - the URL to the KCFinder installation
@@ -13,6 +15,9 @@
  */
 function Editor(env)
 {
+    this.notice = env.notice;
+    this.error = env.error;
+
     this.jtlToken = env.jtlToken;
     this.templateUrl = env.templateUrl;
     this.kcfinderUrl = env.kcfinderUrl;
@@ -66,7 +71,10 @@ Editor.prototype = {
         this.labelElm    = this.hostJq('#portlet-label').hide();
         this.pinbarElm   = this.hostJq('#pinbar').hide();
 
-        if(this.pageUrl !== '') {
+        if(this.error !== '') {
+            this.errorAlert.html(this.error);
+            this.errorModal.modal('show');
+        } else if(this.pageUrl !== '') {
             var pageUrlLink = document.createElement('a');
             pageUrlLink.href = this.pageUrl;
 
@@ -120,9 +128,11 @@ Editor.prototype = {
         this.btnConfigElm = this.hostJq('#btn-config');
         this.portletBtnElms = this.hostJq('.portlet-button');
         this.editorSaveBtnElm = this.hostJq('#cle-btn-save-editor');
+        this.editorCloseBtnElm = this.hostJq('#cle-btn-close-editor');
         this.configModalElm = this.hostJq('#config-modal');
         this.configModalBodyElm = this.hostJq('#config-modal-body');
         this.configFormElm = this.hostJq('#config-form');
+        this.revisionBtnElms = this.hostJq('.revision-btn');
 
         this.enableEvents();
 
@@ -158,8 +168,14 @@ Editor.prototype = {
         this.editorSaveBtnElm
             .click(this.onEditorSave.bind(this));
 
+        this.editorCloseBtnElm
+            .click(this.onEditorClose.bind(this));
+
         this.loaderModal
             .modal('hide');
+
+        this.revisionBtnElms
+            .click(this.onRevisionClick.bind(this));
 
         this.io.loadPage();
     },
@@ -247,6 +263,11 @@ Editor.prototype = {
         );
 
         e.preventDefault();
+    },
+
+    onEditorClose: function (e)
+    {
+        ioCall('unlockCmsPage', [this.cPageIdHash]);
     },
 
     onSettingsSave: function (e)
@@ -437,6 +458,11 @@ Editor.prototype = {
             this.selectedElm.data('portletid'),
             this.selectedElm.data('properties')
         );
+    },
+
+    onRevisionClick: function(e)
+    {
+        var elm = $(e.target);
     },
 
     setHovered: function(elm)

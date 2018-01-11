@@ -175,14 +175,14 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 
-$oCMSPage = CMS::getCurrentCmsPage();
+$oCMSPage = CMS::getInstance()->getCurrentPage();
 
 if ($oCMSPage !== null) {
     $oCMSPage->renderFinal();
     $smarty->assign('oCMSPage', $oCMSPage);
 }
 
-$smarty->assign('cCmsPageIdHash', CMS::getCurrentPageIdHash());
+$smarty->assign('cCmsPageIdHash', CMS::getInstance()->curPageID);
 
 // Kampagnen
 pruefeKampagnenParameter();

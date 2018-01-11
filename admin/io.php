@@ -15,6 +15,7 @@ if (!$oAccount->getIsAuthenticated()) {
 
 $jsonApi             = JSONAPI::getInstance();
 $io                  = AdminIO::getInstance()->setAccount($oAccount);
+$cms                 = CMS::getInstance()->setAdminAccount($oAccount);
 $dashboardInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 $accountInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 $bannerInc           = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
@@ -72,12 +73,15 @@ $io
     ->register('redirectCheckAvailability', ['Redirect', 'checkAvailability'])
     ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
     // CMS Live Editor
-    ->register('getPortletPreviewHtml', ['CMS', 'getPortletPreviewHtml'], null, 'CONTENT_PAGE_VIEW')
-    ->register('getPortletConfigPanelHtml', ['CMS', 'getPortletConfigPanelHtml'], null, 'CONTENT_PAGE_VIEW')
-    ->register('getPortletDefaultProps', ['CMS', 'getPortletDefaultProps'], null, 'CONTENT_PAGE_VIEW')
-    ->register('saveCmsPage', ['CMS', 'saveCmsPage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('getPortletPreviewHtml', [$cms, 'getPortletPreviewHtml'], null, 'CONTENT_PAGE_VIEW')
+    ->register('getPortletConfigPanelHtml', [$cms, 'getPortletConfigPanelHtml'], null, 'CONTENT_PAGE_VIEW')
+    ->register('getPortletDefaultProps', [$cms, 'getPortletDefaultProps'], null, 'CONTENT_PAGE_VIEW')
+    ->register('saveCmsPage', [$cms, 'savePage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('getCmsPage', [$cms, 'getPage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('getCmsPageRevision', [$cms, 'getPage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('lockCmsPage', [$cms, 'lockPage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('unlockCmsPage', [$cms, 'unlockPage'], null, 'CONTENT_PAGE_VIEW')
     ->register('storeTemplate', ['CMS', 'storeTemplate'], null, 'CONTENT_PAGE_VIEW')
-    ->register('getCmsPage', ['CMS', 'getCmsPage'], null, 'CONTENT_PAGE_VIEW')
     // Other
     ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
     ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')

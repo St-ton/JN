@@ -17,18 +17,6 @@
 </ul>
 <div class="tab-content" id="portlet-design-tab-content">
     <div id="general" class="tab-pane fade active in" role="general" aria-labelledby="general-tab">
-        <label for="config-row-layout">Layout</label>
-        <div class="row">
-            {foreach '+'|explode:$properties.layout as $col}
-                <div class="col-xs-{$col}" data-col="{$col}">
-                    <div style="background:#ccc;padding:1em;">
-                        <button type="button" class="btn btn-sm btn-default">-</button>
-                        <span>{$col}</span>
-                        <button type="button" class="btn btn-sm btn-default">+</button>
-                    </div>
-                </div>
-            {/foreach}
-        </div>
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">

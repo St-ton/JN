@@ -3,10 +3,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * @param editor Editor
+ * @constructor
+ */
 function EditorIO(editor)
 {
     this.editor = editor;
     this.noop   = function() {};
+
+    setInterval(function() {
+        ioCall('lockCmsPage', [this.editor.cPageIdHash]);
+    }, 1000 * 60);
 }
 
 EditorIO.prototype = {

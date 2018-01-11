@@ -9,6 +9,7 @@
             </div>
             <div class="switcher-content">
                 <form id="start-editor" action="admin/cms-live-editor.php" method="get" class="form-group">
+                    <input type="hidden" name="token" value="{$smarty.session.jtl_token}">
                     <input type="hidden" name="cCmsPageIdHash" value="{$cCmsPageIdHash}">
                     <input type="hidden" name="cPageUrl" value="{$smarty.server.REQUEST_URI}">
                     {if !empty($oCMSPage->cFinalHtml_arr)}

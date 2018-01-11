@@ -31,7 +31,9 @@ class Migration_20171102121900 extends Migration implements IMigration
             kPage INT AUTO_INCREMENT PRIMARY KEY,
             cIdHash CHAR(32) NOT NULL,
             cJson LONGTEXT,
-            dLastModified DATETIME
+            dLastModified DATETIME,
+            cLockedBy VARCHAR(255),
+            dLockedAt DATETIME
         )");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)

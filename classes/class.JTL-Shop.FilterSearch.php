@@ -68,12 +68,12 @@ class FilterSearch extends AbstractFilter
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->searchID = (int)$id;
+        $this->searchID = (int)$value;
 
         return $this;
     }

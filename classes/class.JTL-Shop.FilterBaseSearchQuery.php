@@ -50,12 +50,12 @@ class FilterBaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->value = (int)$id;
+        $this->value = (int)$value;
 
         return $this;
     }

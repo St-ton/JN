@@ -28,12 +28,12 @@ class FilterNews extends AbstractFilter
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->kNews = (int)$id;
+        $this->kNews = (int)$value;
 
         return $this;
     }

@@ -28,12 +28,12 @@ class FilterNewsOverview extends AbstractFilter
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->kNewsMonatsUebersicht = (int)$id;
+        $this->kNewsMonatsUebersicht = (int)$value;
 
         return $this;
     }

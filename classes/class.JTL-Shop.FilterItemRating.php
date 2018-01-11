@@ -34,12 +34,12 @@ class FilterItemRating extends AbstractFilter
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        return parent::setValue((int)$id);
+        return parent::setValue((int)$value);
     }
 
     /**

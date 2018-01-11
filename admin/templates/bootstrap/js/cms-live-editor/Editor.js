@@ -131,6 +131,7 @@ Editor.prototype = {
         this.configModalElm = this.hostJq('#config-modal');
         this.configModalBodyElm = this.hostJq('#config-modal-body');
         this.configFormElm = this.hostJq('#config-form');
+        this.revisionBtnElms = this.hostJq('.revision-btn');
 
         this.enableEvents();
 
@@ -168,6 +169,9 @@ Editor.prototype = {
 
         this.loaderModal
             .modal('hide');
+
+        this.revisionBtnElms
+            .click(this.onRevisionClick.bind(this));
 
         this.io.loadPage();
     },
@@ -432,6 +436,11 @@ Editor.prototype = {
             this.selectedElm.data('portletid'),
             this.selectedElm.data('properties')
         );
+    },
+
+    onRevisionClick: function(e)
+    {
+        var elm = $(e.target);
     },
 
     setHovered: function(elm)

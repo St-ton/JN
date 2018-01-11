@@ -32,7 +32,7 @@ class PortletProductSlider extends CMSPortlet
 
         foreach ($articleIds as $kArtikel) {
             $kArtikel = (int)$kArtikel;
-            $p = new Artikel($kArtikel);
+            $p        = new Artikel($kArtikel);
             $p->fuelleArtikel($kArtikel, null);
             $oArtikel_arr[] = $p;
         }

@@ -64,6 +64,14 @@ class CMS
     }
 
     /**
+     * @param $pageID string
+     * @param $revisionID string
+     */
+    public function getPageRevision($pageID, $revisionID)
+    {
+    }
+
+    /**
      * @return CMSPage
      */
     public function getCurrentPage()
@@ -91,6 +99,9 @@ class CMS
         $this->getPage($pageID)->lock($this->oAccount->account()->cLogin);
     }
 
+    /**
+     * @param $pageID string
+     */
     public function unlockPage($pageID)
     {
         $this->getPage($pageID)->unlock();

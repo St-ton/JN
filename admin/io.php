@@ -78,6 +78,7 @@ $io
     ->register('getPortletDefaultProps', [$cms, 'getPortletDefaultProps'], null, 'CONTENT_PAGE_VIEW')
     ->register('saveCmsPage', [$cms, 'savePage'], null, 'CONTENT_PAGE_VIEW')
     ->register('getCmsPage', [$cms, 'getPage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('getCmsPageRevision', [$cms, 'getPage'], null, 'CONTENT_PAGE_VIEW')
     ->register('lockCmsPage', [$cms, 'lockPage'], null, 'CONTENT_PAGE_VIEW')
     ->register('unlockCmsPage', [$cms, 'unlockPage'], null, 'CONTENT_PAGE_VIEW')
     // Other

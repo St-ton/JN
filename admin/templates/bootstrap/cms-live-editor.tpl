@@ -111,7 +111,7 @@
                     <div class="list-group">
                         {if isset($oCMSPage)}
                             {foreach $oCMSPage->getRevisions() as $oRevision}
-                                <a class="list-group-item" href="#">
+                                <a class="list-group-item revision-btn" href="#" data-revision-id="{$oRevision->id}">
                                     {$oRevision->timestamp}
                                 </a>
                             {/foreach}

@@ -133,8 +133,7 @@ class CMSPage
 
     public function lock($cLogin)
     {
-        if (
-            $this->cLockedBy !== ''
+        if ($this->cLockedBy !== ''
             && $this->cLockedBy !== $cLogin
             && strtotime($this->dLockedAt) + 60 > time()
         ) {

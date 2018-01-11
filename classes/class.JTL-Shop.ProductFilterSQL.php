@@ -244,7 +244,7 @@ class ProductFilterSQL
             $or = $filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
                 ? " OR tartikel.cLagerKleinerNull = 'Y'"
                 : '';
-            $filterSQL = ($withAnd === true ? ' AND ' : '') .
+            $filterSQL = ($withAnd === true ? ' AND ' : ' ') .
                 "(tartikel.cLagerBeachten != 'Y'
                     OR tartikel.fLagerbestand > 0
                     OR (tartikel.cLagerVariation = 'Y'

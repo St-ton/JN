@@ -424,4 +424,53 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     {
         unset($this->items[$key]);
     }
+
+    /**
+     * Get and remove the last item from the collection.
+     *
+     * @return mixed
+     */
+    public function pop()
+    {
+        return array_pop($this->items);
+    }
+
+    /**
+     * Push an item onto the beginning of the collection.
+     *
+     * @param  mixed  $value
+     * @param  mixed  $key
+     * @return $this
+     */
+    public function prepend($value, $key = null)
+    {
+        $this->items = Arr::prepend($this->items, $value, $key);
+
+        return $this;
+    }
+
+    /**
+     * Push an item onto the end of the collection.
+     *
+     * @param  mixed  $value
+     * @return $this
+     */
+    public function push($value)
+    {
+        $this->offsetSet(null, $value);
+
+        return $this;
+    }
+
+    /**
+     * Get and remove an item from the collection.
+     *
+     * @param  mixed  $key
+     * @param  mixed  $default
+     * @return mixed
+     */
+    public function pull($key, $default = null)
+    {
+        return Arr::pull($this->items, $key, $default);
+    }
 }

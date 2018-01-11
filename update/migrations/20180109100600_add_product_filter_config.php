@@ -48,21 +48,6 @@ class Migration_20180109100600 extends Migration implements IMigration
             ]
         );
         $this->setConfig(
-            'rating_filter_type',
-            'A',
-            CONF_NAVIGATIONSFILTER,
-            'Typ des Bewertungsfilters',
-            'selectbox',
-            163,
-            (object) [
-                'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
-                'inputOptions'  => [
-                    'A' => 'Verundung',
-                    'O' => 'Veroderung'
-                ]
-            ]
-        );
-        $this->setConfig(
             'price_range_filter_type',
             'A',
             CONF_NAVIGATIONSFILTER,
@@ -116,7 +101,6 @@ class Migration_20180109100600 extends Migration implements IMigration
     {
         $this->removeConfig('tag_filter_type');
         $this->removeConfig('category_filter_type');
-        $this->removeConfig('rating_filter_type');
         $this->removeConfig('price_range_filter_type');
         $this->removeConfig('manufacturer_filter_type');
         $this->removeConfig('search_special_filter_type');

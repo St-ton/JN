@@ -63,12 +63,12 @@ class FilterItemPriceRange extends AbstractFilter
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->cWert = (int)$id;
+        $this->cWert = (int)$value;
 
         return $this;
     }
@@ -102,8 +102,8 @@ class FilterItemPriceRange extends AbstractFilter
         list($fVon, $fBis) = explode('_', $id);
         $this->fVon  = (float)$fVon;
         $this->fBis  = (float)$fBis;
-        $this->cWert = ($id === '0_0') ? 0 : ($this->fVon . '_' . $this->fBis);
-        //localize prices
+        $this->cWert = $id === '0_0' ? 0 : ($this->fVon . '_' . $this->fBis);
+        // localize prices
         $this->cVonLocalized = gibPreisLocalizedOhneFaktor($this->fVon);
         $this->cBisLocalized = gibPreisLocalizedOhneFaktor($this->fBis);
         $this->setName($this->cVonLocalized . ' - ' . $this->cBisLocalized);
@@ -528,10 +528,10 @@ class FilterItemPriceRange extends AbstractFilter
                             SELECT ' . $this->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr) . '
                                 FROM tartikel ' . implode("\n", $state->joins) . '
                                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                                    AND tartikel.kVaterArtikel = 0
-                                    ' . $this->productFilter->getFilterSQL()->getStockFilterSQL() . '
-                                    ' . $state->conditions . '
-                                GROUP BY tartikel.kArtikel
+                                    AND tartikel.kVaterArtikel = 0 ' .
+                                    $this->productFilter->getFilterSQL()->getStockFilterSQL() .
+                                    $state->conditions .
+                                ' GROUP BY tartikel.kArtikel
                                 ' . implode("\n", $state->having) . '
                         ) AS ssMerkmal
                     ', 1

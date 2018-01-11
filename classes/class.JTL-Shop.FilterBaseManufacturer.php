@@ -33,12 +33,12 @@ class FilterBaseManufacturer extends AbstractFilter
     }
 
     /**
-     * @param array|int $id
+     * @param array|int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->value = is_array($id) ? $id : (int)$id;
+        $this->value = is_array($value) ? $value : (int)$value;
 
         return $this;
     }
@@ -50,7 +50,7 @@ class FilterBaseManufacturer extends AbstractFilter
     public function setSeo($languages)
     {
         $val = $this->getValue();
-        if ((is_array($val) && count($val) > 0) || $val > 0) {
+        if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {
             if (!is_array($val)) {
                 $val = [$val];
             }
@@ -126,17 +126,6 @@ class FilterBaseManufacturer extends AbstractFilter
     }
 
     /**
-     * @param int $id
-     * @return bool
-     */
-    private function manufacturerFilterIsActive($id)
-    {
-        $activeValue = $this->productFilter->getManufacturerFilter()->getValue();
-
-        return (is_array($activeValue) && in_array($id, $activeValue, true)) || $activeValue === $id;
-    }
-
-    /**
      * @param null $data
      * @return FilterOption[]
      */
@@ -203,7 +192,10 @@ class FilterBaseManufacturer extends AbstractFilter
                     ->setCount($manufacturer->nAnzahl)
                     ->setSort($manufacturer->nSortNr)
                     ->setURL($manufacturer->cURL)
-                    ->setIsActive($this->manufacturerFilterIsActive($manufacturer->kHersteller));
+                    ->setIsActive($this->productFilter->filterOptionIsActive(
+                        $this->getClassName(),
+                        $manufacturer->kHersteller)
+                    );
             }
         }
         $this->options = $options;

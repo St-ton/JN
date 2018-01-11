@@ -137,7 +137,7 @@
                     <div class="form-group">
                         <label for="video-vim-id">VideoID</label>
                         <input type="text" class="form-control" id="video-vim-id" name="video-vim-id" placeholder="" value="{$properties['video-vim-id']}">
-                        <span class="help-block">Bitte nur die ID des Videos eingeben. Bsp.: 239593389</span>
+                        <span class="help-block">Bitte nur die ID des Videos eingeben. Bsp.: 141374353</span>
                     </div>
                 </div>
             </div>

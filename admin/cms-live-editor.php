@@ -24,11 +24,13 @@ if ($cAction === 'restore_default') {
     exit();
 }
 
-$oPortlet_arr = CMS::getPortlets();
+$oPortlet_arr  = CMS::getPortlets();
+$oTemplate_arr = CMS::getTemplates();
 
 $smarty
     ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
     ->assign('oPortlet_arr', $oPortlet_arr)
+    ->assign('oTemplate_arr', $oTemplate_arr)
     ->assign('cAction', $cAction)
     ->assign('cPageUrl', $cPageUrl)
     ->assign('cPageIdHash', $cPageIdHash)

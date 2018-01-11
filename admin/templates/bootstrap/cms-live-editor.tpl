@@ -103,7 +103,13 @@
                     {/foreach}
                 </div>
                 <div class="tab-pane" id="templates">
-                    Coming soon...
+                    {foreach $oTemplate_arr as $oTemplate}
+                        {$oTemplate|@var_dump}
+                        <a href="#" class="portlet-button btn btn-default btn-lg"
+                           title="{$oTemplate->cName}">
+                            <i class="fa fa-puzzle-piece"></i> {$oTemplate->cName}
+                        </a>
+                    {/foreach}
                 </div>
                 <div class="tab-pane" id="revisions">
                     <div class="list-group">
@@ -175,6 +181,7 @@
         </div>
     </div>
     <div class="cle-pinbar btn-group" id="pinbar">
+        <button class="btn btn-default" id="btn-template"><i class="fa fa-star"></i></button>
         <button class="btn btn-default" id="btn-trash"><i class="fa fa-trash"></i></button>
         <button class="btn btn-default" id="btn-clone"><i class="fa fa-clone"></i></button>
         <button class="btn btn-default" id="btn-config"><i class="fa fa-cog"></i></button>

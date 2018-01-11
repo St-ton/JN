@@ -66,7 +66,7 @@ class PortletVideo extends CMSPortlet
             'video-yt-color'       => 'white',
             'video-yt-playlist'    => '',
 
-            'video-vim-id'         => '249632916',
+            'video-vim-id'         => '141374353',
             'video-vim-responsive' => '1',
             'video-vim-width'      => '600',
             'video-vim-height'     => '338',

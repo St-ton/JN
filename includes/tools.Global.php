@@ -461,6 +461,26 @@ function hasGPCDataInteger($var)
 
 /**
  * @param string $var
+ * @return array
+ */
+function verifyGPDataIntegerArray($var)
+{
+    if (isset($_REQUEST[$var])) {
+        $val = $_REQUEST[$var];
+
+        return is_numeric($val)
+            ? [(int)$val]
+            : array_map(function ($e) {
+                return (int)$e;
+            }, $val);
+    }
+
+    return [];
+}
+
+
+/**
+ * @param string $var
  * @return int
  */
 function verifyGPCDataInteger($var)

@@ -129,6 +129,11 @@ final class Shop
     public static $kSuchspecialFilter;
 
     /**
+     * @var array
+     */
+    public static $searchSpecialFilterIDs;
+
+    /**
      * @var int
      */
     public static $kSuchFilter;
@@ -709,8 +714,11 @@ final class Shop
         self::$cPreisspannenFilter    = verifyGPDataString('pf');
         self::$kHerstellerFilter      = verifyGPCDataInteger('hf');
         self::$kKategorieFilter       = verifyGPCDataInteger('kf');
-        self::$kSuchspecialFilter     = verifyGPCDataInteger('qf');
+        self::$searchSpecialFilterIDs = verifyGPDataIntegerArray('qf');
         self::$kSuchFilter            = verifyGPCDataInteger('sf');
+        self::$kSuchspecialFilter     = count(self::$searchSpecialFilterIDs) > 0
+            ? self::$searchSpecialFilterIDs[0]
+            : 0;
 
         self::$nDarstellung = verifyGPCDataInteger('ed');
         self::$nSortierung  = verifyGPCDataInteger('sortierreihenfolge');
@@ -858,7 +866,8 @@ final class Shop
             'cDatum'                 => self::$cDatum,
             'nAnzahl'                => self::$nAnzahl,
             'nSterne'                => self::$nSterne,
-            'customFilters'          => self::$customFilters
+            'customFilters'          => self::$customFilters,
+            'searchSpecialFilters'   => self::$searchSpecialFilterIDs
         ];
     }
 

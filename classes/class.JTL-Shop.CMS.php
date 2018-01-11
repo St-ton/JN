@@ -91,6 +91,14 @@ class CMS
         $oCmsPage->save();
     }
 
+    public static function storeTemplate($cTemplateName, $cTemplateData)
+    {
+        $oCmsTemplate        = new CMSTemplate();
+        $oCmsTemplate->cName = $cTemplateName;
+        $oCmsTemplate->data  = $cTemplateData;
+        $oCmsTemplate->save();
+    }
+
     /**
      * @param $pageID string
      */
@@ -145,6 +153,14 @@ class CMS
         }
 
         return $oPortlet_arr;
+    }
+
+    /**
+     * @return CMSTemplate[]
+     */
+    public static function getTemplates()
+    {
+        return Shop::DB()->selectAll('tcmstemplate', [], []);
     }
 
     /**

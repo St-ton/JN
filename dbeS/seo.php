@@ -10,7 +10,7 @@
  */
 function getSeo($cSeo)
 {
-    return iso2ascii($cSeo);
+    return iso2ascii(StringHandler::convertISO($cSeo));
 }
 
 /**

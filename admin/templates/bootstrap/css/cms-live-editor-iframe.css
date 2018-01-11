@@ -6,7 +6,7 @@
     min-height: 2em;
     outline: 2px dashed #eee;
     position: relative;
-    z-index: 100;
+    z-index: 19;
 }
 
 .cle-area {
@@ -55,12 +55,12 @@
     font-size: 0.75em;
     padding: 0.5em;
     border-radius: 4px;
-    z-index: 200;
+    z-index: 19;
 }
 
 .cle-pinbar {
     position: absolute;
     min-width: 1em;
     min-height: 1em;
-    z-index: 200;
+    z-index: 19;
 }

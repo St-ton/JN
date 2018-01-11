@@ -243,6 +243,10 @@ class Artikel
     /**
      * @var string
      */
+    public $cVorschaubildURL;
+    /**
+     * @var string
+     */
     public $cHerstellerMetaTitle;
 
     /**
@@ -1197,14 +1201,20 @@ class Artikel
         if ($this->kArtikel === 0 || $this->kArtikel === null) {
             return;
         }
-        //fill first image
+        $shopURL = Shop::getURL() . '/';
+        // fill first image
         $this->Bilder[0]              = new stdClass();
         $this->Bilder[0]->cPfadMini   = BILD_KEIN_ARTIKELBILD_VORHANDEN;
         $this->Bilder[0]->cPfadKlein  = BILD_KEIN_ARTIKELBILD_VORHANDEN;
         $this->Bilder[0]->cPfadNormal = BILD_KEIN_ARTIKELBILD_VORHANDEN;
         $this->Bilder[0]->cPfadGross  = BILD_KEIN_ARTIKELBILD_VORHANDEN;
-        $this->cVorschaubild          = BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->Bilder[0]->cURLMini    = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->Bilder[0]->cURLKlein   = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->Bilder[0]->cURLNormal  = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->Bilder[0]->cURLGross   = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
         $this->Bilder[0]->nNr         = 1;
+        $this->cVorschaubild          = BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->cVorschaubildURL       = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
         // pruefe ob Funktionsattribut "artikelbildlink" ART_ATTRIBUT_BILDLINK gesetzt ist
         // Falls ja, lade die Bilder des anderen Artikels
         $bilder_arr = [];
@@ -1243,9 +1253,13 @@ class Artikel
             $image->cPfadNormal = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_MD, $imgNo);
             $image->cPfadGross  = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_LG, $imgNo);
             $image->nNr         = $imgNo;
+            $image->cURLMini    = $shopURL . $image->cPfadMini;
+            $image->cURLKlein   = $shopURL . $image->cPfadKlein;
+            $image->cURLNormal  = $shopURL . $image->cPfadNormal;
+            $image->cURLGross   = $shopURL . $image->cPfadGross;
 
             if ($i === 0) {
-                $this->cVorschaubild = $image->cPfadKlein;
+                $this->cVorschaubild = $image->cURLKlein;
             }
             // Lookup image alt attribute
             $idx                 = 'img_alt_' . $imgNo;
@@ -4308,8 +4322,11 @@ class Artikel
             }
             $this->bSuchspecial_arr = $bSuchspecial_arr;
             // SuchspecialBild anhand der hächsten Prio und des gesetzten Suchspecials festlegen
+            $shopURL = Shop::getURL() . '/';
             foreach ($searchSpecial_arr as $oSuchspecialoverlay) {
-                if (isset($oSuchspecialoverlay->kSuchspecialOverlay) && $this->bSuchspecial_arr[$oSuchspecialoverlay->kSuchspecialOverlay]) {
+                if (isset($oSuchspecialoverlay->kSuchspecialOverlay)
+                    && $this->bSuchspecial_arr[$oSuchspecialoverlay->kSuchspecialOverlay]
+                ) {
                     if ($this->oSuchspecialBild === null) {
                         $this->oSuchspecialBild = new stdClass();
                     }
@@ -4321,6 +4338,9 @@ class Artikel
                     $this->oSuchspecialBild->nTransparenz = $oSuchspecialoverlay->nTransparenz;
                     $this->oSuchspecialBild->nGroesse     = $oSuchspecialoverlay->nGroesse;
                     $this->oSuchspecialBild->nPosition    = $oSuchspecialoverlay->nPosition;
+                    $this->oSuchspecialBild->cURLGross    = $shopURL . $this->oSuchspecialBild->cPfadGross;
+                    $this->oSuchspecialBild->cURLNormal   = $shopURL . $this->oSuchspecialBild->cPfadNormal;
+                    $this->oSuchspecialBild->cURLKlein    = $shopURL . $this->oSuchspecialBild->cPfadKlein;
                     break;
                 }
             }
@@ -5206,11 +5226,12 @@ class Artikel
                             null,
                             $shippingID
                         );
+                        // find shortest shipping time in configuration
                         if (isset($konfigItemArticle->nMaxDeliveryDays)) {
-                            $maxDeliveryDays = max($maxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
+                            $maxDeliveryDays = min($maxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
                         }
                         if (isset($konfigItemArticle->nMinDeliveryDays)) {
-                            $minDeliveryDays = max($minDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
+                            $minDeliveryDays = min($minDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
                         }
                     }
                 }
@@ -6140,10 +6161,11 @@ class Artikel
                 GROUP BY ttag.kTag 
                 ORDER BY ttagartikel.nAnzahlTagging DESC {$tag_limit}", 2
         );
-        foreach ($tags as $i => $tag) {
-            $tags[$i]->kTag   = (int)$tags[$i]->kTag;
-            $tags[$i]->Anzahl = (int)$tags[$i]->Anzahl;
-            $tags[$i]->cURL   = baueURL($tags[$i], URLART_TAG);
+        foreach ($tags as $tag) {
+            $tag->kTag     = (int)$tag->kTag;
+            $tag->Anzahl   = (int)$tag->Anzahl;
+            $tag->cURL     = baueURL($tag, URLART_TAG);
+            $tag->cURLFull = baueURL($tag, URLART_TAG, 0, false, true);
         }
         executeHook(HOOK_ARTIKEL_INC_PRODUKTTAGGING, [
                 'kArtikel' => $this->kArtikel,

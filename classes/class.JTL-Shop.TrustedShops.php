@@ -921,7 +921,9 @@ class TrustedShops
                 Shop::DB()->escape($cISOSprache)
             );
             
-            return isset($rating->kTrustedshopsKundenbewertung) && $rating->kTrustedshopsKundenbewertung > 0;
+            return isset($rating->kTrustedshopsKundenbewertung) && $rating->kTrustedshopsKundenbewertung > 0
+                ? $rating
+                : false;
         }
 
         return false;

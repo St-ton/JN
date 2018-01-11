@@ -653,7 +653,7 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
         $articleID = $bIstVater
             ? $kVaterArtikel
             : $kArtikel;
-        header('Location: ' . Shop::getURL() . '/?a=' . $articleID . 
+        header('Location: ' . Shop::getURL() . '/?a=' . $articleID .
             '&r=' . implode(',', $nRedirectErr_arr), true, 302);
         exit();
     }
@@ -992,10 +992,10 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
                 AND dGueltigAb <= now()
                 AND (dGueltigBis > now() OR dGueltigBis = '0000-00-00 00:00:00')
                 AND fMindestbestellwert <= " . Session::Cart()->gibGesamtsummeWaren(true, false) . "
-                AND (kKundengruppe = -1 
-                    OR kKundengruppe = 0 
+                AND (kKundengruppe = -1
+                    OR kKundengruppe = 0
                     OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
-                AND (nVerwendungen = 0 
+                AND (nVerwendungen = 0
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' {$Artikel_qry})
                 AND (cHersteller = '-1' {$Hersteller_qry})
@@ -1096,8 +1096,8 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
                 AND dGueltigAb <= now()
                 AND (dGueltigBis > now() OR dGueltigBis = '0000-00-00 00:00:00')
                 AND fMindestbestellwert <= " . Session::Cart()->gibGesamtsummeWaren(true, false) . "
-                AND (kKundengruppe = -1 
-                    OR kKundengruppe = 0 
+                AND (kKundengruppe = -1
+                    OR kKundengruppe = 0
                     OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
                 AND (nVerwendungen = 0 OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' {$Artikel_qry})
@@ -1231,6 +1231,41 @@ function setzeSteuersaetze($steuerland = 0)
             WHERE tsteuerzoneland.cISO = '" . $deliveryCountryCode . "'
                 AND tsteuerzoneland.kSteuerzone = tsteuerzone.kSteuerzone", 2
     );
+    if (count($steuerzonen) === 0) {
+        // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
+        $redirURL  = LinkHelper::getInstance()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
+        $urlHelper = new UrlHelper(Shop::getURL() . $_SERVER['REQUEST_URI']);
+        $country   = ISO2land($deliveryCountryCode);
+
+        Jtllog::writeLog('Keine Steuerzone f&uuml;r "' . $country . '" hinterlegt!', JTLLOG_LEVEL_ERROR);
+
+        if (isAjaxRequest()) {
+            $link                  = new stdClass();
+            $link->nLinkart        = LINKTYP_STARTSEITE;
+            $link->Sprache         = new stdClass();
+            $link->Sprache->cTitle = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
+
+            Shop::Smarty()
+                ->assign('cFehler', Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country))
+                ->assign('Link', $link);
+            Shop::Smarty()->display('layout/index.tpl');
+            exit;
+        }
+
+        if ($redirURL === $urlHelper->normalize()) {
+            Shop::Smarty()->assign(
+                'cFehler',
+                Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages')
+                    . '<br/>'
+                    . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country)
+            );
+
+            return;
+        }
+
+        header('Location: ' . $redirURL);
+        exit;
+    }
     $steuerklassen = Shop::DB()->query("SELECT * FROM tsteuerklasse", 2);
     $qry           = '';
     foreach ($steuerzonen as $i => $steuerzone) {
@@ -1360,7 +1395,7 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
                 }
                 // Hole aktuelle Spezialseite und gib den URL Dateinamen zurück
                 $oSpezialseite = Shop::DB()->select('tspezialseite', 'nLinkart', (int)$obj->nLinkart);
-                
+
                 return !empty($oSpezialseite->cDateiname)
                     ? $prefix . $oSpezialseite->cDateiname
                     : $prefix . $cDatei . '?s=' . $obj->kLink . $lang . $sid;
@@ -1833,10 +1868,10 @@ function standardspracheAktiv($bShop = false, $kSprache = null)
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     return true;
 }
 
@@ -1938,10 +1973,10 @@ function gibMoeglicheVerpackungen($kKundengruppe)
     $fSummeWarenkorb = Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
     $oVerpackung_arr = Shop::DB()->query(
         "SELECT * FROM tverpackung
-            JOIN tverpackungsprache 
+            JOIN tverpackungsprache
                 ON tverpackung.kVerpackung = tverpackungsprache.kVerpackung
             WHERE tverpackungsprache.cISOSprache = '" . Shop::getLanguageCode() . "'
-            AND (tverpackung.cKundengruppe = '-1' 
+            AND (tverpackung.cKundengruppe = '-1'
                 OR FIND_IN_SET('" . (int)$kKundengruppe . "', REPLACE(tverpackung.cKundengruppe, ';', ',')) > 0)
             AND " . $fSummeWarenkorb . " >= tverpackung.fMindestbestellwert
             AND tverpackung.nAktiv = 1
@@ -1983,9 +2018,9 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
         //ist plz enthalten?
         $plz_x = Shop::DB()->query(
             "SELECT * FROM tversandzuschlagplz
-                WHERE ((cPLZAb <= '" . $plz . "' 
-                    AND cPLZBis >= '" . $plz . "') 
-                    OR cPLZ = '" . $plz . "') 
+                WHERE ((cPLZAb <= '" . $plz . "'
+                    AND cPLZBis >= '" . $plz . "')
+                    OR cPLZ = '" . $plz . "')
                     AND kVersandzuschlag = " . (int)$versandzuschlag->kVersandzuschlag, 1
         );
         if (isset($plz_x->kVersandzuschlagPlz) && $plz_x->kVersandzuschlagPlz > 0) {
@@ -2087,9 +2122,9 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             $artikelanzahl += $oZusatzArtikel->fAnzahl;
             $versand        = Shop::DB()->query(
                 "SELECT *
-                    FROM tversandartstaffel 
-                    WHERE kVersandart = " . (int)$versandart->kVersandart . " 
-                        AND fBis >= " . $artikelanzahl . " 
+                    FROM tversandartstaffel
+                    WHERE kVersandart = " . (int)$versandart->kVersandart . "
+                        AND fBis >= " . $artikelanzahl . "
                     ORDER BY fBis ASC", 1
             );
             if (isset($versand->kVersandartStaffel)) {
@@ -2178,11 +2213,11 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
     $versandpreis = 99999;
     $query        = "SELECT *
             FROM tversandart
-            WHERE cIgnoreShippingProposal != 'Y' 
+            WHERE cIgnoreShippingProposal != 'Y'
                 AND cLaender LIKE '%" . $cISO . "%'
-                AND (cVersandklassen = '-1' 
+                AND (cVersandklassen = '-1'
                     OR cVersandklassen RLIKE '^([0-9 -]* )?" . $Artikel->kVersandklasse . " ')
-                AND (cKundengruppen = '-1' 
+                AND (cKundengruppen = '-1'
                     OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)";
     // artikelabhaengige Versandarten nur laden und prüfen wenn der Artikel das entsprechende Funktionasattribut hat
     if (empty($Artikel->FunktionsAttribute['versandkosten'])
@@ -2234,9 +2269,9 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
     if (!$bForceAll && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $bIgnoreSetting)) {
         $laender_arr = [];
         $ll_obj_arr  = Shop::DB()->query(
-            "SELECT cLaender 
-                FROM tversandart 
-                WHERE (cKundengruppen = '-1' 
+            "SELECT cLaender
+                FROM tversandart
+                WHERE (cKundengruppen = '-1'
                   OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)", 2
         );
         foreach ($ll_obj_arr as $cLaender) {
@@ -2724,10 +2759,10 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
             $cKundeSQLWhere = " AND cLaender LIKE '%" . StringHandler::filterXSS($cLand) . "%'";
         } else {
             $landIso        = Shop::DB()->query(
-                "SELECT cISO 
-                    FROM tfirma 
-                    JOIN tland 
-                        ON tfirma.cLand = tland.cDeutsch 
+                "SELECT cISO
+                    FROM tfirma
+                    JOIN tland
+                        ON tfirma.cLand = tland.cDeutsch
                     LIMIT 0,1", 1
             );
             $cKundeSQLWhere = '';
@@ -2736,15 +2771,15 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
             }
         }
         $oVersandart = Shop::DB()->query(
-            "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized 
+            "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized
                 FROM tversandart
                 LEFT JOIN tversandartsprache
                     ON tversandart.kVersandart = tversandartsprache.kVersandart
                     AND tversandartsprache.cISOSprache = '" . Shop::getLanguageCode() . "'
                 WHERE fVersandkostenfreiAbX > 0
-                    AND (cVersandklassen = '-1' 
+                    AND (cVersandklassen = '-1'
                         OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')
-                    AND (cKundengruppen = '-1' 
+                    AND (cKundengruppen = '-1'
                         OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)
                     " . $cKundeSQLWhere . "
                 ORDER BY fVersandkostenfreiAbX
@@ -2993,7 +3028,7 @@ function parseNewsText($cText)
                 $oArtikel = Shop::DB()->query(
                     "SELECT {$cTabellenname}.kArtikel, {$cTabellenname}.cName, tseo.cSeo
                         FROM {$cTabellenname}
-                        LEFT JOIN tseo 
+                        LEFT JOIN tseo
                             ON tseo.cKey = 'kArtikel'
                             AND tseo.kKey = {$cTabellenname}.kArtikel
                             AND tseo.kSprache = {$kSprache}
@@ -3019,7 +3054,7 @@ function parseNewsText($cText)
                 $oKategorie = Shop::DB()->query(
                     "SELECT {$cTabellenname}.kKategorie, {$cTabellenname}.cName, tseo.cSeo
                         FROM {$cTabellenname}
-                        LEFT JOIN tseo 
+                        LEFT JOIN tseo
                             ON tseo.cKey = 'kKategorie'
                             AND tseo.kKey = {$cTabellenname}.kKategorie
                             AND tseo.kSprache = {$kSprache}
@@ -3040,7 +3075,7 @@ function parseNewsText($cText)
                 $oHersteller          = Shop::DB()->query(
                     "SELECT thersteller.kHersteller, thersteller.cName, tseo.cSeo
                         FROM thersteller
-                        LEFT JOIN tseo 
+                        LEFT JOIN tseo
                             ON tseo.cKey = 'kHersteller'
                             AND tseo.kKey = {$cTabellenname}.kHersteller
                             AND tseo.kSprache = {$kSprache}
@@ -3060,7 +3095,7 @@ function parseNewsText($cText)
                 $oMerkmalWert          = Shop::DB()->query(
                     "SELECT tmerkmalwertsprache.kMerkmalWert, tmerkmalwertsprache.cWert, tseo.cSeo
                         FROM tmerkmalwertsprache
-                        LEFT JOIN tseo 
+                        LEFT JOIN tseo
                             ON tseo.cKey = 'kMerkmalWert'
                             AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
                             AND tseo.kSprache = {$kSprache}
@@ -3081,7 +3116,7 @@ function parseNewsText($cText)
                 $oNews          = Shop::DB()->query(
                     "SELECT tnews.kNews, tnews.cBetreff, tseo.cSeo
                         FROM tnews
-                        LEFT JOIN tseo 
+                        LEFT JOIN tseo
                             ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
                             AND tseo.kSprache = {$kSprache}
@@ -3101,7 +3136,7 @@ function parseNewsText($cText)
                 $oUmfrage       = Shop::DB()->query(
                     "SELECT tumfrage.kUmfrage, tumfrage.cName, tseo.cSeo
                         FROM tumfrage
-                        LEFT JOIN tseo 
+                        LEFT JOIN tseo
                             ON tseo.cKey = 'kUmfrage'
                             AND tseo.kKey = tumfrage.kUmfrage
                             AND tseo.kSprache = {$kSprache}
@@ -3246,13 +3281,13 @@ function holeAlleSuchspecialOverlays($kSprache = 0)
     $cacheID  = 'haso_' . $kSprache;
     if (($overlays = Shop::Cache()->get($cacheID)) === false) {
         $ssoList = Shop::DB()->query(
-            "SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, 
+            "SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache,
                 tsuchspecialoverlaysprache.cBildPfad, tsuchspecialoverlaysprache.nAktiv,
-                tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin, 
+                tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin,
                 tsuchspecialoverlaysprache.nTransparenz,
                 tsuchspecialoverlaysprache.nGroesse, tsuchspecialoverlaysprache.nPosition
                 FROM tsuchspecialoverlay
-                JOIN tsuchspecialoverlaysprache 
+                JOIN tsuchspecialoverlaysprache
                     ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
                     AND tsuchspecialoverlaysprache.kSprache = " . $kSprache . "
                 WHERE tsuchspecialoverlaysprache.nAktiv = 1
@@ -3605,7 +3640,7 @@ function setzeSpracheUndWaehrungLink()
             $currency->setURLFull($url);
         }
     }
-    
+
     executeHook(HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
         'oNaviFilter'       => &$NaviFilter,
         'oZusatzFilter'     => &$oZusatzFilter,
@@ -3981,7 +4016,7 @@ function mappeKundenanrede($cAnrede, $kSprache, $kKunde = 0)
         $oSprachWert = Shop::DB()->query(
             "SELECT tsprachwerte.cWert
                 FROM tsprachwerte
-                JOIN tsprachiso 
+                JOIN tsprachiso
                     ON tsprachiso.cISO = '" . $cISOSprache . "'
                 WHERE tsprachwerte.kSprachISO = tsprachiso.kSprachISO
                     AND tsprachwerte.cName = '" . $cName . "'", 1
@@ -4193,7 +4228,7 @@ function archiviereBesucher()
               cAusstiegsseite, nBesuchsdauer, kBesucherBot, dZeit)
             SELECT kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser, cAusstiegsseite,
             (UNIX_TIMESTAMP(dLetzteAktivitaet) - UNIX_TIMESTAMP(dZeit)) AS nBesuchsdauer, kBesucherBot, dZeit
-              FROM tbesucher 
+              FROM tbesucher
               WHERE dLetzteAktivitaet <= date_sub(now(),INTERVAL 3 HOUR)", 4
     );
     Shop::DB()->query("DELETE FROM tbesucher WHERE dLetzteAktivitaet <= date_sub(now(),INTERVAL 3 HOUR)", 4);
@@ -4233,7 +4268,7 @@ function optionaleRundung($gesamtsumme)
     if (isset($conf['kaufabwicklung']['bestellabschluss_runden5'])
         && (int)$conf['kaufabwicklung']['bestellabschluss_runden5'] === 1
     ) {
-        $int          = (int)$gesamtsumme * 100;
+        $int          = (int)($gesamtsumme * 100); // FIRST multiply, THEN cast to int!
         $letzteStelle = $int % 10;
         if ($letzteStelle < 3) {
             $int -= $letzteStelle;
@@ -5430,7 +5465,7 @@ function gibURLzuNewsArchiv()
         "SELECT tnewsmonatsuebersicht.kNewsMonatsUebersicht, tnewsmonatsuebersicht.kSprache, tseo.cSeo,
             tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.nMonat, tnewsmonatsuebersicht.nJahr
             FROM tnewsmonatsuebersicht
-            LEFT JOIN tseo 
+            LEFT JOIN tseo
                 ON tseo.cKey = 'kNewsMonatsUebersicht'
                 AND tseo.kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                 AND tseo.kSprache = " . Shop::getLanguageID() . "
@@ -5444,7 +5479,7 @@ function gibURLzuNewsArchiv()
             "SELECT tnewsmonatsuebersicht.kNewsMonatsUebersicht, tnewsmonatsuebersicht.kSprache, tseo.cSeo,
                 tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.nMonat, tnewsmonatsuebersicht.nJahr
                 FROM tnewsmonatsuebersicht
-                LEFT JOIN tseo 
+                LEFT JOIN tseo
                     ON tseo.cKey = 'kNewsMonatsUebersicht'
                     AND tseo.kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                     AND tseo.kSprache = " . Shop::getLanguageID() . "

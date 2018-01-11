@@ -778,7 +778,8 @@ function bearbeiteProdukttags($AktuellerArtikel)
 {
     // Wurde etwas von der Tag Form gepostet?
     if (verifyGPCDataInteger('produktTag') === 1) {
-        $tag = StringHandler::filterXSS(verifyGPDataString('tag'));
+        $tag             = StringHandler::filterXSS(verifyGPDataString('tag'));
+        $variKindArtikel = verifyGPDataString('variKindArtikel');
         // Wurde ein Tag gepostet?
         if (strlen($tag) > 0) {
             $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
@@ -802,11 +803,13 @@ function bearbeiteProdukttags($AktuellerArtikel)
                 $ip = gibIP();
                 // Ist eine Kunde eingeloggt?
                 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-                    $count_tag_postings = Shop::DB()->query(
+                    $count_tag_postings = Shop::DB()->executeQueryPrepared(
                         "SELECT count(kTagKunde) AS Anzahl
                             FROM ttagkunde
                             WHERE dZeit > DATE_SUB(now(),INTERVAL 1 DAY)
-                                AND kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
+                                AND kKunde = :kKunde",
+                        ['kKunde' => (int)$_SESSION['Kunde']->kKunde],
+                        1
                     );
                     $kKunde = (int)$_SESSION['Kunde']->kKunde;
                 } else { // Wenn nicht, dann hat ein anonymer Besucher ein Tag gepostet
@@ -838,38 +841,63 @@ function bearbeiteProdukttags($AktuellerArtikel)
                         $tag = $tagmapping_obj->cNameNeu;
                     }
                     // Prüfe ob der Tag bereits vorhanden ist
-                    $tag_obj = Shop::DB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $tag);
+                    $tag_obj = new Tag();
+                    $tag_obj->getByName($tag);
                     $kTag    = isset($tag_obj->kTag) ? (int)$tag_obj->kTag : null;
-                    if ($kTag > 0) {
-                        $count = Shop::DB()->query(
-                            "UPDATE ttagartikel
-                                SET nAnzahlTagging = nAnzahlTagging+1
-                                WHERE kTag = " . $kTag . "
-                                    AND kArtikel = " . (int)$AktuellerArtikel->kArtikel, 3
-                        );
-                        if (!$count) {
-                            $neuerTag                 = new stdClass();
-                            $neuerTag->kTag           = $kTag;
-                            $neuerTag->kArtikel       = (int)$AktuellerArtikel->kArtikel;
-                            $neuerTag->nAnzahlTagging = 1;
-                            Shop::DB()->insert('ttagartikel', $neuerTag);
+                    if (!empty($kTag)) {
+                        // Tag existiert bereits, TagArtikel updaten/anlegen
+                        $tagArticle = new TagArticle($kTag,(int)$AktuellerArtikel->kArtikel);
+                        if (!empty($tagArticle->kTag)){
+                            // TagArticle hinzufügen
+                            $tagArticle->nAnzahlTagging = (int)$tagArticle->nAnzahlTagging + 1;
+                            $tagArticle->updateInDB();
+                        } else {
+                            // TagArticle neu anlegen
+                            $tagArticle->kTag           = $kTag;
+                            $tagArticle->kArtikel       = (int)$AktuellerArtikel->kArtikel;
+                            $tagArticle->nAnzahlTagging = 1;
+                            $tagArticle->insertInDB();
+                        }
+
+                        if (!empty($variKindArtikel)) {
+                            $childTag                 = new TagArticle($kTag, (int)$variKindArtikel);
+                            if (!empty($childTag->kTag)){
+                                // TagArticle hinzufügen
+                                $childTag->nAnzahlTagging = (int)$childTag->nAnzahlTagging + 1;
+                                $childTag->updateInDB();
+                            } else {
+                                // TagArticle neu anlegen
+                                $childTag->kTag           = $kTag;
+                                $childTag->kArtikel       = (int)$variKindArtikel;
+                                $childTag->nAnzahlTagging = 1;
+                                $childTag->insertInDB();
+                            }
                         }
                     } else {
+                        // Tag muss angelegt werden
                         require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-                        $neuerTag           = new stdClass();
+                        $neuerTag           = new Tag();
                         $neuerTag->kSprache = Shop::getLanguage();
                         $neuerTag->cName    = $tag;
                         $neuerTag->cSeo     = getSeo($tag);
                         $neuerTag->cSeo     = checkSeo($neuerTag->cSeo);
                         $neuerTag->nAktiv   = 0;
-                        $kTag               = Shop::DB()->insert('ttag', $neuerTag);
-
+                        $kTag               = (int)$neuerTag->insertInDB();
+                        $newTag = new Tag($kTag);
                         if ($kTag > 0) {
-                            $neuerTag                 = new stdClass();
-                            $neuerTag->kTag           = $kTag;
-                            $neuerTag->kArtikel       = $AktuellerArtikel->kArtikel;
-                            $neuerTag->nAnzahlTagging = 1;
-                            Shop::DB()->insert('ttagartikel', $neuerTag);
+                            $tagArticle           = new TagArticle();
+                            $tagArticle->kTag     = $kTag;
+                            $tagArticle->kArtikel = (int)$AktuellerArtikel->kArtikel;
+                            $tagArticle->nAnzahlTagging = 1;
+                            $tagArticle->insertInDB();
+                            if (!empty($variKindArtikel)) {
+                                $childTag                 = new TagArticle();
+                                // TagArticle neu anlegen
+                                $childTag->kTag           = $kTag;
+                                $childTag->kArtikel       = (int)$variKindArtikel;
+                                $childTag->nAnzahlTagging = 1;
+                                $childTag->insertInDB();
+                            }
                         }
                     }
                     $neuerTagKunde         = new stdClass();

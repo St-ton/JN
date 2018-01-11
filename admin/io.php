@@ -81,6 +81,7 @@ $io
     ->register('getCmsPageRevision', [$cms, 'getPage'], null, 'CONTENT_PAGE_VIEW')
     ->register('lockCmsPage', [$cms, 'lockPage'], null, 'CONTENT_PAGE_VIEW')
     ->register('unlockCmsPage', [$cms, 'unlockPage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('storeTemplate', ['CMS', 'storeTemplate'], null, 'CONTENT_PAGE_VIEW')
     // Other
     ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
     ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')

@@ -51,7 +51,6 @@ class PortletProductStream extends CMSPortlet
             ->assign('styleString', $this->getStyleString())
             ->assign('style', $style)
             ->assign('grid', $grid)
-            ->assign('Einstellungen', Shop::getConfig([CONF_BEWERTUNG, CONF_ARTIKELUEBERSICHT, CONF_TEMPLATE, CONF_ARTIKELDETAILS, CONF_GLOBAL]))
             ->fetch('portlets/final.productstream.tpl');
     }
 

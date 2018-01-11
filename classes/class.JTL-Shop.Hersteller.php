@@ -74,6 +74,15 @@ class Hersteller
      * @var string
      */
     public $cBildpfadNormal;
+    /**
+     * @var string
+     */
+    public $cBildURLKlein;
+
+    /**
+     * @var string
+     */
+    public $cBildURLNormal;
 
     /**
      * Konstruktor
@@ -173,11 +182,12 @@ class Hersteller
      */
     public function getExtras(stdClass $obj)
     {
+        $shopURL = Shop::getURL() . '/';
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
             $this->cURL = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
-                ? Shop::getURL() . '/' . $obj->cSeo
-                : Shop::getURL() . '/index.php?h=' . $obj->kHersteller;
+                ? $shopURL . $obj->cSeo
+                : $shopURL . '?h=' . $obj->kHersteller;
             $this->cBeschreibung = parseNewsText($this->cBeschreibung);
         }
         if (strlen($this->cBildpfad) > 0) {
@@ -187,6 +197,8 @@ class Hersteller
             $this->cBildpfadKlein  = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
             $this->cBildpfadNormal = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
         }
+        $this->cBildURLKlein  = $shopURL . $this->cBildpfadKlein;
+        $this->cBildURLNormal = $shopURL . $this->cBildpfadNormal;
 
         return $this;
     }

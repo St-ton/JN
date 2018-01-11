@@ -165,7 +165,7 @@ class FilterBaseManufacturer extends AbstractFilter
                 $manufacturer->cURL        = $this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($manufacturer->kHersteller)
                 );
-                $fe                        = (new FilterExtra())
+                $fe                        = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())

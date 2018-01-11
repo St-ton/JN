@@ -119,10 +119,10 @@
                         {assign var=activeValues value=$activeFilter->getActiveValues()}
                         {if $activeFilterValue !== null}
                             {if $activeValues|is_array}
-                                {foreach $activeValues as $filterExtra}
+                                {foreach $activeValues as $filterOption}
                                     {strip}
-                                        <a href="{$activeFilter->getUnsetFilterURL($filterExtra->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
-                                            {$filterExtra->getFrontendName()|html_entity_decode} &nbsp;<span class="fa fa-trash-o"></span>
+                                        <a href="{$activeFilter->getUnsetFilterURL($filterOption->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
+                                            {$filterOption->getFrontendName()|html_entity_decode} &nbsp;<span class="fa fa-trash-o"></span>
                                         </a>
                                     {/strip}
                                 {/foreach}

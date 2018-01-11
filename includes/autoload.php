@@ -79,7 +79,11 @@ function ShopAutoload($class)
             }
         }
     }
+    if ($class === 'PluginLizenz') {
+        require PFAD_ROOT . PFAD_CLASSES . 'interface.JTL-Shop.PluginLizenz.php';
 
+        return true;
+    }
     return false;
 }
 

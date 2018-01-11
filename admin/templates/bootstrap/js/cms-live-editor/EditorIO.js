@@ -171,4 +171,12 @@ EditorIO.prototype = {
 
         this.editor.setUnsaved(true);
     },
+
+    storePortletAsTemplate: function(portlElem, templateName, success, error)
+    {
+        success = success || this.noop;
+        error = error || this.noop;
+
+        ioCall('storeTemplate', [templateName, this.portletToJson(portlElem)], success.bind(this), error.bind(this));
+    },
 };

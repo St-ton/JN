@@ -21,6 +21,12 @@ class Migration_20171102121900 extends Migration implements IMigration
             bActive TINYINT NOT NULL DEFAULT 1
         )");
 
+        $this->execute("CREATE TABLE tcmstemplate (
+            kTemplate INT AUTO_INCREMENT PRIMARY KEY,
+            cName VARCHAR(255) NOT NULL,
+            cJson LONGTEXT
+        )");
+
         $this->execute("CREATE TABLE tcmspage (
             kPage INT AUTO_INCREMENT PRIMARY KEY,
             cIdHash CHAR(32) NOT NULL,
@@ -56,6 +62,9 @@ class Migration_20171102121900 extends Migration implements IMigration
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Text', 'Text', 'Elements')");
+
+        $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
+            VALUES (0, 'Video', 'Video', 'Elements')");
     }
 
     public function down()

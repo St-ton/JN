@@ -122,6 +122,7 @@ Editor.prototype = {
             });
 
         this.rootElm = this.iframeJq('.cle-area');
+        this.btnStoreTemplate = this.hostJq('#btn-template');
         this.btnTrashElm = this.hostJq('#btn-trash');
         this.btnCloneElm = this.hostJq('#btn-clone');
         this.btnConfigElm = this.hostJq('#btn-config');
@@ -143,6 +144,9 @@ Editor.prototype = {
 
         this.labelElm
             .appendTo(this.iframeCtx.document.body);
+
+        this.btnStoreTemplate
+            .click(this.onStoreTemplate.bind(this));
 
         this.btnTrashElm
             .click(this.onTrash.bind(this));
@@ -407,15 +411,33 @@ Editor.prototype = {
         this.cleanUpDrag();
     },
 
-    onTrash: function(e)
+    openTemplateStoreDialog: function(portletId, properties)
+    {
+        // todo editor: .tpl in popup laden (zukünftig erweiterbar)
+    },
+
+    onStoreTemplate: function(e)
     {
         if(this.selectedElm !== null) {
-            this.selectedElm.remove();
-            this.setSelected();
-            this.updateDropTargets();
-            this.io.savePageToWebStorage();
+            // todo editor: define name of template, check if exists, confirm save
+            /*this.openTemplateStoreDialog(
+                this.selectedElm.data('portletid'),
+                this.selectedElm.data('properties')
+            );*/
+            // todo Editor: Namen übergeben
+            this.io.storePortletAsTemplate(this.selectedElm, 'neuesTemplate');
         }
     },
+
+    onTrash: function(e)
+        {
+            if(this.selectedElm !== null) {
+                this.selectedElm.remove();
+                this.setSelected();
+                this.updateDropTargets();
+                this.io.savePageToWebStorage();
+            }
+        },
 
     onClone: function(e)
     {

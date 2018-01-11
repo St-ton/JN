@@ -42,7 +42,6 @@ class PortletProductSlider extends CMSPortlet
             ->assign('productlist', $oArtikel_arr)
             ->assign('styleString', $this->getStyleString())
             ->assign('title', $this->properties['title'])
-            ->assign('Einstellungen', Shop::getConfig([CONF_BEWERTUNG]))
             ->fetch('portlets/final.productslider.tpl');
     }
 

@@ -93,10 +93,9 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 : '';
             $oNewsKategorie_arr = getNewsCategory($kNews);
 
-            if (is_array($oNewsKategorie_arr) && count($oNewsKategorie_arr) > 0) {
-                foreach ($oNewsKategorie_arr as $j => $oNewsKategorie) {
-                    $oNewsKategorie_arr[$j]->cURL = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
-                }
+            foreach ($oNewsKategorie_arr as $j => $oNewsKategorie) {
+                $oNewsKategorie_arr[$j]->cURL     = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
+                $oNewsKategorie_arr[$j]->cURLFull = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false, true);
             }
             Shop::Smarty()->assign('R_LOGIN_NEWSCOMMENT', R_LOGIN_NEWSCOMMENT)
                 ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);

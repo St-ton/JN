@@ -138,7 +138,7 @@ class FilterItemRating extends AbstractFilter
         foreach ($res as $row) {
             $nSummeSterne += (int)$row->nAnzahl;
 
-            $fe         = (new FilterExtra())
+            $fe         = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())

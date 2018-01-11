@@ -447,9 +447,16 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attributeFilterCollection[$attributeValue->kMerkmal]->attributeValues[] = $attributeValue;
             }
         }
-
+        $shopURL = Shop::getURL() . '/';
         foreach ($attributeFilterCollection as $attributeFilter) {
-            $attribute                    = (new FilterExtra())
+            $baseSrcSmall  = strlen($attributeFilter->cMMBildPfad) > 0
+                ? PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
+                : BILD_KEIN_MERKMALBILD_VORHANDEN;
+            $baseSrcNormal = strlen($attributeFilter->cMMBildPfad) > 0
+                ? PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
+                : BILD_KEIN_MERKMALBILD_VORHANDEN;
+
+            $attribute = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
@@ -457,25 +464,21 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setFrontendName($attributeFilter->cName)
                 ->setValue($attributeFilter->kMerkmal)
                 ->setCount(0)
-                ->setURL('');
-            $attribute->cTyp              = $attributeFilter->cTyp;
-            $attribute->kMerkmal          = $attributeFilter->kMerkmal;
-            $attribute->isInitialized     = in_array($attribute->kMerkmalWert, $activeValues, true);
-            $attribute->oMerkmalWerte_arr = [];
-            if (strlen($attributeFilter->cMMBildPfad) > 0) {
-                $attribute->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad;
-                $attribute->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad;
-            } else {
-                $attribute->cBildpfadKlein = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                $attribute->cBildpfadGross = BILD_KEIN_MERKMALBILD_VORHANDEN;
-            }
-            $attribute->setType($attributeFilter->nMehrfachauswahl === 1
-                ? AbstractFilter::FILTER_TYPE_OR
-                : AbstractFilter::FILTER_TYPE_AND
-            );
+                ->setURL('')
+                ->setData('cTyp', $attributeFilter->cTyp)
+                ->setData('kMerkmal', $attributeFilter->kMerkmal)
+                ->setData('oMerkmalWerte_arr', [])
+                ->setData('cBildpfadKlein', $baseSrcSmall)
+                ->setData('cBildpfadNormal', $baseSrcNormal)
+                ->setData('cBildURLKlein', $shopURL . $baseSrcSmall)
+                ->setData('cBildURLNormal', $shopURL . $baseSrcNormal)
+                ->setType($attributeFilter->nMehrfachauswahl === 1
+                    ? AbstractFilter::FILTER_TYPE_OR
+                    : AbstractFilter::FILTER_TYPE_AND
+                );
             foreach ($attributeFilter->attributeValues as $filterValue) {
                 $filterValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
-                $attributeValue = (new FilterExtra())
+                $attributeValue            = (new FilterOption())
                     ->setType($attributeFilter->nMehrfachauswahl === 1
                         ? AbstractFilter::FILTER_TYPE_OR
                         : AbstractFilter::FILTER_TYPE_AND)
@@ -483,29 +486,25 @@ class FilterItemAttribute extends FilterBaseAttribute
                     ->setParam($this->getUrlParam())
                     ->setName(htmlentities($filterValue->cWert))
                     ->setValue($filterValue->cWert)
-                    ->setCount($filterValue->nAnzahl);
-
-                $attributeValue->kMerkmalWert = $filterValue->kMerkmalWert;
-                $attributeValue->kMerkmal     = (int)$attributeFilter->kMerkmal;
-                $attributeValue->cWert        = $filterValue->cWert;
-                $attributeValue->setIsActive($currentAttributeValue === $filterValue->kMerkmalWert
-                    || $this->attributeValueIsActive($filterValue->kMerkmalWert));
+                    ->setCount($filterValue->nAnzahl)
+                    ->setData('kMerkmalWert', $filterValue->kMerkmalWert)
+                    ->setData('kMerkmal', (int)$attributeFilter->kMerkmal)
+                    ->setData('cWert', $filterValue->cWert)
+                    ->setIsActive($currentAttributeValue === $filterValue->kMerkmalWert
+                        || $this->attributeValueIsActive($filterValue->kMerkmalWert))
+                    ->setData('cBildpfadKlein', strlen($filterValue->cMMWBildPfad) > 0
+                        ? PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
+                        : BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
+                    ->setData('cBildpfadNormal', strlen($filterValue->cMMWBildPfad) > 0
+                        ? PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
+                        : BILD_KEIN_MERKMALWERTBILD_VORHANDEN);
                 if ($attributeValue->isActive()) {
                     $attribute->setIsActive(true);
                 }
-                if (strlen($filterValue->cMMWBildPfad) > 0) {
-                    $attributeValue->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad;
-                    $attributeValue->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad;
-                } else {
-                    $attributeValue->cBildpfadKlein = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                    $attributeValue->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                }
-                // baue URL
                 $attributeValueURL = $this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($filterValue->kMerkmalWert)
                 );
-                // hack for #4815
-                $seoURL = $additionalFilter->getSeo($this->getLanguageID());
+                $seoURL            = $additionalFilter->getSeo($this->getLanguageID());
                 if (!empty($seoURL) && $attributeValue->isActive()) {
                     // remove '__attrY' from '<url>attrX__attrY'
                     $attributeValueURL = str_replace('__' . $seoURL, '', $attributeValueURL);
@@ -519,9 +518,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             }
         }
         foreach ($attributeFilters as &$af) {
-            if ($af->getCount() === 1 && $af->getType() !== AbstractFilter::FILTER_TYPE_OR && $af->isActive()) {
-                $af->hide();
-            }
+            /** @var FilterOption $af */
             // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
             $options = $af->getOptions();
             if (!is_array($options)) {
@@ -530,15 +527,15 @@ class FilterItemAttribute extends FilterBaseAttribute
             $numeric = array_reduce(
                 $options,
                 function($carry, $option) {
-                    /** @var FilterExtra $option */
+                    /** @var FilterOption $option */
                     return $carry && is_numeric($option->getValue());
                 },
                 true
             );
             if ($numeric) {
                 usort($options, function ($a, $b) {
-                    /** @var FilterExtra $a */
-                    /** @var FilterExtra $b */
+                    /** @var FilterOption $a */
+                    /** @var FilterOption $b */
                     return $a === $b
                         ? 0
                         : (($a->getValue() < $b->getValue())
@@ -554,7 +551,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                     $nMinAnzahl = 999999;
                     $nIndex     = -1;
                     foreach ($options as $l => $attributeValues) {
-                        /** @var FilterExtra $attributeValues */
+                        /** @var FilterOption $attributeValues */
                         if ($attributeValues->nAnzahl < $nMinAnzahl) {
                             $nMinAnzahl = $attributeValues->getCount();
                             $nIndex     = $l;

@@ -12,7 +12,7 @@ class FilterItemSearchSpecial extends AbstractFilter
     /**
      * @var int
      */
-    public $kKey = 0;
+    public $kKey;
 
     /**
      * @var array
@@ -330,7 +330,7 @@ class FilterItemSearchSpecial extends AbstractFilter
             );
             $qryRes  = Shop::DB()->query($qry, 2);
 
-            $fe = (new FilterExtra())
+            $fe = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())

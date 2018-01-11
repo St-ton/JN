@@ -91,7 +91,7 @@ function html2rgb($color)
 }
 
 /**
- *
+ * @return bool|string
  */
 function checkFile()
 {
@@ -131,12 +131,14 @@ function checkFile()
                 $cFehler = 'Dateiendung nicht akzeptiert, bitte an Hoster werden! [8]';
                 break;
         }
-
         syncException($cFehler . "\n" . print_r($_FILES, true), 8);
-    } else {
-        move_uploaded_file($_FILES['data']['tmp_name'], PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']));
-        $_FILES['data']['tmp_name'] = PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']);
+
+        return false;
     }
+    move_uploaded_file($_FILES['data']['tmp_name'], PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']));
+    $_FILES['data']['tmp_name'] = PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']);
+
+    return PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']);
 }
 
 /**
@@ -328,12 +330,23 @@ function zipRedirect($zip, $xml_obj)
     fwrite($xmlfile, strtr(StringHandler::convertISO(XML_serialize($xml_obj)), "\0", ' '));
     fclose($xmlfile);
     if (file_exists(PFAD_SYNC_TMP . FILENAME_XML)) {
-        $archive = new PclZip(PFAD_SYNC_TMP . $zip);
-        if ($archive->create(PFAD_SYNC_TMP . FILENAME_XML, PCLZIP_OPT_REMOVE_ALL_PATH)) {
-            //unlink(PFAD_SYNC_TMP . FILENAME_XML);
-            readfile(PFAD_SYNC_TMP . $zip);
-            exit;
+        if (class_exists('ZipArchive')) {
+            $archive = new ZipArchive();
+            if ($archive->open(PFAD_SYNC_TMP . $zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== false
+                && $archive->addFile(PFAD_SYNC_TMP . FILENAME_XML)
+            ) {
+                $archive->close();
+                readfile(PFAD_SYNC_TMP . $zip);
+                exit;
+            }
+            $archive->close();
+            syncException($archive->getStatusString());
         } else {
+            $archive = new PclZip(PFAD_SYNC_TMP . $zip);
+            if ($archive->create(PFAD_SYNC_TMP . FILENAME_XML, PCLZIP_OPT_REMOVE_ALL_PATH)) {
+                readfile(PFAD_SYNC_TMP . $zip);
+                exit;
+            }
             syncException($archive->errorInfo(true));
         }
     }
@@ -1104,6 +1117,74 @@ function flushCategoryTreeCache()
 function flushCustomerPriceCache($kKunde)
 {
     return Shop::Cache()->flush('custprice_' . (int)$kKunde);
+}
+
+/**
+ * @param string $zipFile
+ * @param string $targetPath
+ * @param string $source
+ * @return array|bool
+ */
+function unzipSyncFiles($zipFile, $targetPath, $source = '')
+{
+    if ($zipFile === false) {
+        return false;
+    }
+    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+        Jtllog::writeLog('Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'syncinclude');
+    }
+    if (class_exists('ZipArchive')) {
+        $archive = new ZipArchive();
+        $open    = $archive->open($zipFile);
+        if (!$open) {
+            return false;
+        }
+        $filenames = [];
+        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog('unzipSyncFiles: Anzahl Dateien im Zip: ' . $archive->numFiles, JTLLOG_LEVEL_DEBUG, false,
+                'syncinclude');
+        }
+        if (is_dir($targetPath) || (mkdir($targetPath) && is_dir($targetPath))) {
+            for ($i = 0; $i < $archive->numFiles; ++$i) {
+                $filenames[] = $targetPath . $archive->getNameIndex($i);
+            }
+            if ($archive->numFiles > 0 && !$archive->extractTo($targetPath)) {
+                return false;
+            }
+            $archive->close();
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog('unzipSyncFiles: Zip entpackt in ' . $targetPath, JTLLOG_LEVEL_DEBUG, false,
+                    'syncinclude');
+            }
+
+            return array_filter(array_map(function ($e) {
+                return file_exists($e)
+                    ? $e
+                    : null;
+            }, $filenames));
+        }
+
+    } else {
+        if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
+            Jtllog::writeLog(
+                utf8_decode('Achtung: Klasse ZipArchive wurde nicht gefunden, bitte PHP-Konfiguration überprüfen.'),
+                JTLLOG_LEVEL_NOTICE,
+                false,
+                'syncinclude'
+            );
+        }
+        $archive = new PclZip($zipFile);
+        if (($list = $archive->listContent()) !== 0 && $archive->extract(PCLZIP_OPT_PATH, $targetPath)) {
+            $filenames = [];
+            foreach ($list as $file) {
+                $filenames[] = $targetPath . $file['filename'];
+            }
+
+            return $filenames;
+        }
+    }
+
+    return false;
 }
 
 ob_start('handleError');

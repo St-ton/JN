@@ -9,22 +9,22 @@
     <div class="product-body row {if $tplscope !== 'list'} text-center{/if}">
         <div class="col-xs-3 text-center">
             {block name="image-wrapper"}
-                <a class="image-wrapper" href="{$Artikel->cURL}">
+                <a class="image-wrapper" href="{$Artikel->cURLFull}">
                     {if isset($Artikel->Bilder[0]->cAltAttribut)}
                         {assign var="alt" value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:"html"}
                     {else}
                         {assign var="alt" value=$Artikel->cName}
                     {/if}
 
-                    {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt tplscope=$tplscope}
+                    {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cURLNormal alt=$alt tplscope=$tplscope}
 
                     {if isset($Artikel->oSuchspecialBild)}
-                        <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
+                        <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cURLKlein}"
                              alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
                     {/if}
 
                     {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
-                        <span class="quickview badge hidden-xs" data-src="{$Artikel->cURL}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
+                        <span class="quickview badge hidden-xs" data-src="{$Artikel->cURLFull}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
                     {/if}
                 </a>
             {/block}
@@ -35,9 +35,9 @@
         <div class="col-xs-5 product-detail">
             {block name="product-title"}
                 <h4 class="title" itemprop="name">
-                    <a href="{$Artikel->cURL}">{$Artikel->cName}</a>
+                    <a href="{$Artikel->cURLFull}">{$Artikel->cName}</a>
                 </h4>
-                <meta itemprop="url" content="{$ShopURL}/{$Artikel->cURL}">
+                <meta itemprop="url" content="{$Artikel->cURLFull}">
             {/block}
             {block name="product-manufacturer"}
                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
@@ -162,7 +162,7 @@
                         {/block}
                     </div>
                     <div class="top7 form-group">
-                        <a class="btn btn-default btn-sm btn-block" role="button" href="{$Artikel->cURL}">{lang key="details"}</a>
+                        <a class="btn btn-default btn-sm btn-block" role="button" href="{$Artikel->cURLFull}">{lang key="details"}</a>
                     </div>
                     <form action="" method="post" class="hidden-xs product-actions" data-toggle="product-actions">
                         {$jtl_token}

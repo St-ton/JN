@@ -9,7 +9,7 @@
             <div class="thumbnail">
                 <div class="caption">
                     <a href="{$Hersteller->cURL}" class="text-center" title="{$Hersteller->cMetaTitle}">
-                        <img src="{$Hersteller->cBildpfadNormal}" alt="{$Hersteller->cName}" />
+                        <img src="{$Hersteller->cBildURLNormal}" alt="{$Hersteller->cName}" />
                         {$Hersteller->cName}
                     </a>
                 </div>

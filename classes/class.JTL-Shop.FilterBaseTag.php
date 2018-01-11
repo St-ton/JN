@@ -184,7 +184,7 @@ class FilterBaseTag extends AbstractFilter
                 $nPrioStep = ($tags[0]->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) / 9;
             }
             foreach ($tags as $tag) {
-                $fe                 = (new FilterExtra())
+                $fe                 = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())

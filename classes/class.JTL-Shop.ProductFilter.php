@@ -767,7 +767,7 @@ class ProductFilter
      */
     public function registerFilter(IFilter $filter)
     {
-        $this->filters[] = $filter->setData($this);
+        $this->filters[] = $filter->setBaseData($this);
 
         return $this;
     }
@@ -798,7 +798,7 @@ class ProductFilter
      */
     public function addActiveFilter(IFilter $filter, $filterValue)
     {
-        $this->activeFilters[] = $filter->setData($this)->init($filterValue)->generateActiveFilterData();
+        $this->activeFilters[] = $filter->setBaseData($this)->init($filterValue)->generateActiveFilterData();
 
         return $filter;
     }
@@ -926,9 +926,7 @@ class ProductFilter
             function ($f) {
                 /** @var IFilter $f */
                 return ($f->getVisibility() === AbstractFilter::SHOW_ALWAYS
-                        || $f->getVisibility() === AbstractFilter::SHOW_CONTENT)
-                    && count($f->getOptions()) > 0
-                    && (!$f->isInitialized() || $f->getType() === AbstractFilter::FILTER_TYPE_OR);
+                        || $f->getVisibility() === AbstractFilter::SHOW_CONTENT);
             }
         );
     }
@@ -1744,6 +1742,8 @@ class ProductFilter
      */
     public function setFilterOptions($searchResults, $currentCategory = null, $selectionWizard = false)
     {
+        // @todo: make option
+        $hideActiveOnly = true;
         if (!isset($searchResults->Herstellerauswahl)) {
             $searchResults->Herstellerauswahl = $this->manufacturerFilter->getOptions();
         }
@@ -1759,7 +1759,7 @@ class ProductFilter
         ) {
             $searchResults->TagsJSON = Boxen::gibJSONString(array_map(
                 function ($e) {
-                    /** @var FilterExtra $e */
+                    /** @var FilterOption $e */
                     return $e->setURL(StringHandler::htmlentitydecode($e->getURL()));
                 },
                 $searchResults->Tags
@@ -1771,7 +1771,25 @@ class ProductFilter
                 'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
             ]);
             if (count($searchResults->MerkmalFilter) < 1) {
-                $this->attributeFilterCollection->setVisibility(AbstractFilter::SHOW_NEVER);
+                $this->attributeFilterCollection->hide();
+            } elseif ($hideActiveOnly === true) {
+                foreach ($searchResults->MerkmalFilter as $mmf) {
+                    /** @var FilterOption $mmf */
+                    $options = $mmf->getOptions();
+                    if (is_array($options)
+                        && $mmf->getVisibility() !== AbstractFilter::SHOW_NEVER
+                        && array_reduce(
+                            $options,
+                            function ($carry, $option) {
+                                /** @var FilterOption $option */
+                                return $carry && $option->isActive();
+                            },
+                            true
+                        ) === true
+                    ) {
+                        $mmf->hide();
+                    }
+                }
             }
         }
         $this->attributeFilterCollection->setFilterCollection($searchResults->MerkmalFilter);
@@ -1795,7 +1813,8 @@ class ProductFilter
             ));
         }
         if (!isset($searchResults->Suchspecialauswahl)) {
-            $searchResults->Suchspecialauswahl = empty($this->params['kSuchspecial']) && empty($this->params['kSuchspecialFilter'])
+            $searchResults->Suchspecialauswahl = empty($this->params['kSuchspecial'])
+            && empty($this->params['kSuchspecialFilter'])
                 ? $this->searchSpecialFilter->getOptions()
                 : null;
         }
@@ -1810,12 +1829,14 @@ class ProductFilter
             $this->categoryFilter->hide();
         }
         if (empty($searchResults->Preisspanne) || count($searchResults->Preisspanne) === 0) {
-            // hide manufacturer filter when browsing manufacturer products
+            // hide empty price ranges
             $this->priceRangeFilter->hide();
         }
         if (empty($searchResults->Herstellerauswahl) || count($searchResults->Herstellerauswahl) === 0
             || $this->manufacturer->isInitialized()
-            || ($this->manufacturerFilter->isInitialized() && count($searchResults->Herstellerauswahl) === 1)
+            || ($this->manufacturerFilter->isInitialized()
+                && count($searchResults->Herstellerauswahl) === 1
+                && $hideActiveOnly)
         ) {
             // hide manufacturer filter when browsing manufacturer products
             $this->manufacturerFilter->hide();

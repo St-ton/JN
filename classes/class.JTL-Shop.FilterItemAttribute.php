@@ -46,10 +46,10 @@ class FilterItemAttribute extends FilterBaseAttribute
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'mf';
-        $this->urlParamSEO = SEP_MERKMAL;
-        $this->setVisibility($this->getConfig()['navigationsfilter']['merkmalfilter_verwenden']);
+        $this->setIsCustom(false)
+             ->setUrlParam('mf')
+             ->setUrlParamSEO(SEP_MERKMAL)
+             ->setVisibility($this->getConfig()['navigationsfilter']['merkmalfilter_verwenden']);
     }
 
     /**

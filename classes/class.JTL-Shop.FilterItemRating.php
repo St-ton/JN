@@ -26,10 +26,10 @@ class FilterItemRating extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'bf';
-        $this->urlParamSEO = null;
-        $this->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
+        $this->setIsCustom(false)
+             ->setUrlParam('bf')
+             ->setUrlParamSEO(null)
+             ->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
              ->setFrontendName(Shop::Lang()->get('Votes'));
     }
 

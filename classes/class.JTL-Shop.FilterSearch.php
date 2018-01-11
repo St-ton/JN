@@ -44,9 +44,9 @@ class FilterSearch extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'sf';
-        $this->urlParamSEO = null;
+        $this->setIsCustom(false)
+             ->setUrlParam('sf')
+             ->setUrlParamSEO(null);
     }
 
     /**

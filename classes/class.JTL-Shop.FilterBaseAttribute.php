@@ -28,8 +28,8 @@ class FilterBaseAttribute extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom = false;
-        $this->urlParam = 'm';
+        $this->setIsCustom(false)
+             ->setUrlParam('m');
     }
 
     /**

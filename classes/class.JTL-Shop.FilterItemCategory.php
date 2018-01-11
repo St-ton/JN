@@ -17,10 +17,10 @@ class FilterItemCategory extends FilterBaseCategory
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'kf';
-        $this->urlParamSEO = SEP_KAT;
-        $this->setVisibility($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'])
+        $this->setIsCustom(false)
+             ->setUrlParam('kf')
+             ->setUrlParamSEO(SEP_KAT)
+             ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'])
              ->setFrontendName(Shop::Lang()->get('allCategories'));
     }
 

@@ -26,9 +26,9 @@ class FilterBaseSearchSpecial extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'q';
-        $this->urlParamSEO = null;
+        $this->setIsCustom(false)
+             ->setUrlParam('q')
+             ->setUrlParamSEO(null);
     }
 
     /**

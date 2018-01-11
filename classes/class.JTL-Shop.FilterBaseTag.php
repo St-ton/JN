@@ -27,8 +27,9 @@ class FilterBaseTag extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 't';
+        $this->setFrontendName(Shop::Lang()->get('tags'))
+             ->setIsCustom(false)
+             ->setUrlParam('t');
     }
 
     /**
@@ -37,9 +38,7 @@ class FilterBaseTag extends AbstractFilter
      */
     public function setValue($value)
     {
-        $this->value = (int)$value;
-
-        return $this;
+        return parent::setValue((int)$value);
     }
 
     /**

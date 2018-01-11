@@ -22,9 +22,9 @@ class FilterNewsCategory extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'nk';
-        $this->urlParamSEO = null;
+        $this->setIsCustom(false)
+             ->setUrlParam('nk')
+             ->setUrlParamSEO(null);
     }
 
     /**

@@ -27,9 +27,9 @@ class FilterItemSearchSpecial extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom = false;
-        $this->urlParam = 'qf';
-        $this->setFrontendName(Shop::Lang()->get('specificProducts'))
+        $this->setIsCustom(false)
+             ->setUrlParam('qf')
+             ->setFrontendName(Shop::Lang()->get('specificProducts'))
              ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'])
              ->setType($this->getConfig()['navigationsfilter']['search_special_filter_type'] === 'O'
                  ? AbstractFilter::FILTER_TYPE_OR

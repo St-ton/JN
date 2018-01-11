@@ -56,9 +56,9 @@ class FilterItemPriceRange extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'pf';
-        $this->setVisibility($this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'])
+        $this->setIsCustom(false)
+             ->setUrlParam('pf')
+             ->setVisibility($this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'])
              ->setFrontendName(Shop::Lang()->get('rangeOfPrices'));
     }
 

@@ -27,20 +27,18 @@ class FilterBaseManufacturer extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'h';
-        $this->urlParamSEO = SEP_HST;
+        $this->setIsCustom(false)
+             ->setUrlParam('h')
+             ->setUrlParamSEO(SEP_HST);
     }
 
     /**
-     * @param array|int $value
+     * @param int $value
      * @return $this
      */
     public function setValue($value)
     {
-        $this->value = is_array($value) ? $value : (int)$value;
-
-        return $this;
+        return parent::setValue((int)$value);
     }
 
     /**

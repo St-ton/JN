@@ -32,9 +32,9 @@ class FilterBaseCategory extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'k';
-        $this->urlParamSEO = SEP_KAT;
+        $this->setIsCustom(false)
+             ->setUrlParam('k')
+             ->setUrlParamSEO(SEP_KAT);
     }
 
     /**

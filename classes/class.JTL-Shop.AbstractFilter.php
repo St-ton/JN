@@ -549,6 +549,17 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
+     * @param bool $custom
+     * @return $this
+     */
+    public function setIsCustom($custom)
+    {
+        $this->isCustom = $custom;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getLanguageID()

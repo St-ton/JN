@@ -294,8 +294,11 @@ class ProductFilterURL
         $url->cAlleTags = $this->getURL($extraFilter);
         $this->productFilter->getTag()->setUnsetFilterURL($url->cAlleTags);
         $this->productFilter->tagFilterCompat->setUnsetFilterURL($url->cAlleTags);
+
+        $additionalFilter = (new FilterItemTag($this->productFilter))->setDoUnset(true);
         foreach ($this->productFilter->getTagFilter() as $tagFilter) {
-            $tagFilter->setUnsetFilterURL($url->cAlleTags);
+            $additionalFilter->init($tagFilter->getValue());
+            $tagFilter->setUnsetFilterURL($this->getURL($additionalFilter));
         }
 
         $extraFilter               = (new FilterItemSearchSpecial($this->productFilter))->init(null)->setDoUnset(true);
@@ -308,7 +311,7 @@ class ProductFilterURL
             $urls             = [];
             $additionalFilter = (new FilterItemSearchSpecial($this->productFilter))->setDoUnset(true);
             foreach ($searchSpecialFilterValues as $value) {
-                $additionalFilter->init($value)->setValue($value);
+                $additionalFilter->init($value);
                 $urls[$value] = $this->getURL($additionalFilter);
             }
             $searchSpecialFilter->setUnsetFilterURL($urls);

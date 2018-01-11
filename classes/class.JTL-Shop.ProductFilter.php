@@ -547,7 +547,8 @@ class ProductFilter
             'cDatum'                 => '',
             'nAnzahl'                => 0,
             'nSterne'                => 0,
-            'customFilters'          => []
+            'customFilters'          => [],
+            'searchSpecialFilters'   => []
         ];
     }
 
@@ -639,8 +640,13 @@ class ProductFilter
         foreach ($params['TagFilter_arr'] as $tf) {
             $this->tagFilter[] = $this->addActiveFilter(new FilterItemTag($this), $tf);
         }
-        if ($params['kSuchspecialFilter'] > 0) {
-            $this->addActiveFilter($this->searchSpecialFilter, $params['kSuchspecialFilter']);
+
+        if ($params['kSuchspecialFilter'] > 0 && count($params['searchSpecialFilters']) === 0) {
+            // backwards compatibility
+            $params['searchSpecialFilters'][] = $params['kSuchspecialFilter'];
+        }
+        if (count($params['searchSpecialFilters']) > 0) {
+            $this->addActiveFilter($this->searchSpecialFilter, $params['searchSpecialFilters']);
         }
 
         // @todo - same as suchfilter?
@@ -1457,21 +1463,48 @@ class ProductFilter
     public function getProductKeys()
     {
         $state = $this->getCurrentStateData();
+        $qry   = $this->getFilterSQL()->getBaseQuery(
+            ['tartikel.kArtikel'],
+            $state->joins,
+            $state->conditions,
+            $state->having
+        );
 
         return array_map(
             function ($e) {
                 return (int)$e->kArtikel;
             },
-            Shop::DB()->query(
-                $this->getFilterSQL()->getBaseQuery(
-                    ['tartikel.kArtikel'],
-                    $state->joins,
-                    $state->conditions,
-                    $state->having
-                ),
-                2
-            )
+            Shop::DB()->query($qry, 2)
         );
+    }
+
+    /**
+     * checks if a given combination of filter class and filter value is currently active
+     *
+     * @param string $class
+     * @param mixed  $value
+     * @return bool
+     */
+    public function filterOptionIsActive($class, $value)
+    {
+        foreach ($this->getActiveFilters() as $filter) {
+            if ($filter->getClassName() !== $class) {
+                continue;
+            }
+            $filterValue = $filter->getValue();
+            if ($value === $filterValue) {
+                return true;
+            }
+            if (is_array($filterValue)) {
+                foreach ($filterValue as $val) {
+                    if ($val === $value) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -1638,6 +1671,7 @@ class ProductFilter
         if (!empty($stateCondition)) {
             $data->conditions[] = $stateCondition;
         }
+        /** @var IFilter $filter */
         foreach ($this->getActiveFilters(true) as $type => $active) {
             $count = count($active);
             if ($count > 1 && $type !== 'misc' && $type !== 'custom') {
@@ -1811,11 +1845,13 @@ class ProductFilter
             ));
         }
         if (!isset($searchResults->Suchspecialauswahl)) {
-            $searchResults->Suchspecialauswahl = empty($this->params['kSuchspecial'])
-            && empty($this->params['kSuchspecialFilter'])
-                ? $this->searchSpecialFilter->getOptions()
-                : null;
+            $searchResults->Suchspecialauswahl = $this->searchSpecialFilter->getOptions();
+//            $searchResults->Suchspecialauswahl = empty($this->params['kSuchspecial'])
+//            && empty($this->params['kSuchspecialFilter'])
+//                ? $this->searchSpecialFilter->getOptions()
+//                : null;
         }
+
         if (empty($searchResults->Suchspecialauswahl)) {
             // hide category filter when a category is being browsed
             $this->searchSpecialFilter->hide();

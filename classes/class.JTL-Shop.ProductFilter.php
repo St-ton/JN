@@ -640,7 +640,6 @@ class ProductFilter
         foreach ($params['TagFilter_arr'] as $tf) {
             $this->tagFilter[] = $this->addActiveFilter(new FilterItemTag($this), $tf);
         }
-
         if ($params['kSuchspecialFilter'] > 0 && count($params['searchSpecialFilters']) === 0) {
             // backwards compatibility
             $params['searchSpecialFilters'][] = $params['kSuchspecialFilter'];
@@ -1595,6 +1594,30 @@ class ProductFilter
         $this->url = $this->filterURL->createUnsetFilterURLs($this->url);
         $_SESSION['oArtikelUebersichtKey_arr']   = $this->searchResults->Artikel->productKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
+
+        if ($forProductListing === true) {
+            //Weiterleitung, falls nur 1 Artikel rausgeholt
+            $hasSubCategories = false;
+            if (($categoryID = $this->getCategory()->getValue()) > 0) {
+                $hasSubCategories = (new Kategorie($categoryID))->existierenUnterkategorien();
+            }
+
+            if ($this->searchResults->Artikel->elemente->count() === 1
+                && $this->getConfig()['navigationsfilter']['allgemein_weiterleitung'] === 'Y'
+                && ($this->getFilterCount() > 0
+                    || ($this->getCategory()->getValue() > 0 && !$hasSubCategories)
+                    || !empty($this->EchteSuche->cSuche))
+            ) {
+                http_response_code(301);
+                $product = $this->searchResults->Artikel->elemente->pop();
+                // Weiterleitung zur Artikeldetailansicht da nur ein Artikel gefunden wurde und die Einstellung gesetzt ist.
+                $url = empty($product->cURL)
+                    ? (Shop::getURL() . '/?a=' . $product->kArtikel)
+                    : (Shop::getURL() . '/' . $product->cURL);
+                header('Location: ' . $url);
+                exit;
+            }
+        }
 
         return $forProductListing === true
             ? $this->searchResults

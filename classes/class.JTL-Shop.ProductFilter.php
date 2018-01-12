@@ -191,6 +191,11 @@ class ProductFilter
     private $filterURL;
 
     /**
+     * @var bool
+     */
+    private $bExtendedJTLSearch;
+
+    /**
      * @var array
      * @todo: fix working with arrays
      * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
@@ -699,6 +704,30 @@ class ProductFilter
             if (!$this->baseState->isInitialized()) {
                 $this->baseState = $this->searchQuery;
             }
+            $oExtendedJTLSearchResponse = null;
+            $this->bExtendedJTLSearch         = false;
+
+            executeHook(HOOK_NAVI_PRESUCHE, [
+                'cValue'             => &$this->EchteSuche->cSuche,
+                'bExtendedJTLSearch' => &$this->bExtendedJTLSearch
+            ]);
+            if (empty($params['cSuche'])) {
+                $this->bExtendedJTLSearch = false;
+            }
+            $this->search->bExtendedJTLSearch = $this->bExtendedJTLSearch;
+
+            executeHook(HOOK_NAVI_SUCHE, [
+                'bExtendedJTLSearch'         => $this->bExtendedJTLSearch,
+                'oExtendedJTLSearchResponse' => &$oExtendedJTLSearchResponse,
+                'cValue'                     => &$this->EchteSuche->cSuche,
+                'nArtikelProSeite'           => &$params['nArtikelProSeite'],
+                'nSeite'                     => &$this->nSeite,
+                'nSortierung'                => isset($_SESSION['Usersortierung'])
+                    ? $_SESSION['Usersortierung']
+                    : null,
+                'bLagerbeachten'             => (int)$this->getConfig()['global']['artikel_artikelanzeigefilter'] ===
+                    EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+            ]);
         }
         $this->nSeite = max(1, verifyGPCDataInteger('seite'));
         foreach ($this->getCustomFilters() as $filter) {
@@ -1595,13 +1624,17 @@ class ProductFilter
         $_SESSION['oArtikelUebersichtKey_arr']   = $this->searchResults->Artikel->productKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
+        $bEchteSuche = !$this->bExtendedJTLSearch && !empty($params['cSuche']);
+        if (!$this->bExtendedJTLSearch && !empty($this->search->getName())) {
+            $this->search->saveQuery($this->search->getName(), $this->searchResults->GesamtanzahlArtikel, $bEchteSuche);
+        }
+
         if ($forProductListing === true) {
             //Weiterleitung, falls nur 1 Artikel rausgeholt
-            $hasSubCategories = false;
-            if (($categoryID = $this->getCategory()->getValue()) > 0) {
-                $hasSubCategories = (new Kategorie($categoryID))->existierenUnterkategorien();
-            }
-
+            $hasSubCategories = ($categoryID = $this->getCategory()->getValue()) > 0
+                ? (new Kategorie($categoryID, $this->languageID, $this->customerGroupID))
+                    ->existierenUnterkategorien()
+                : false;
             if ($this->searchResults->Artikel->elemente->count() === 1
                 && $this->getConfig()['navigationsfilter']['allgemein_weiterleitung'] === 'Y'
                 && ($this->getFilterCount() > 0
@@ -1610,7 +1643,6 @@ class ProductFilter
             ) {
                 http_response_code(301);
                 $product = $this->searchResults->Artikel->elemente->pop();
-                // Weiterleitung zur Artikeldetailansicht da nur ein Artikel gefunden wurde und die Einstellung gesetzt ist.
                 $url = empty($product->cURL)
                     ? (Shop::getURL() . '/?a=' . $product->kArtikel)
                     : (Shop::getURL() . '/' . $product->cURL);

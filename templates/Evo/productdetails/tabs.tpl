@@ -176,7 +176,9 @@
                     <hr>
                 {/if}
                 {block name="tab-description-attributes"}
-                    {include file="productdetails/attributes.tpl" tplscope="details"}
+                    {include file="productdetails/attributes.tpl" tplscope="details"
+                        showShippingWeight=$showShippingWeight showShippingWeight=$showShippingWeight
+                        dimension=$dimension showAttributesTable=$showAttributesTable}
                 {/block}
             </div>
             {if $tabanzeige}

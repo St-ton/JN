@@ -28,6 +28,11 @@ class FilterSearch extends AbstractFilter
     private $searchID;
 
     /**
+     * @var bool
+     */
+    public $bExtendedJTLSearch = false;
+
+    /**
      * @var array
      */
     private static $mapping = [

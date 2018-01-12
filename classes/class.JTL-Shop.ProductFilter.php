@@ -704,8 +704,9 @@ class ProductFilter
             if (!$this->baseState->isInitialized()) {
                 $this->baseState = $this->searchQuery;
             }
+            $limit                      = $this->metaData->getProductsPerPageLimit();
             $oExtendedJTLSearchResponse = null;
-            $this->bExtendedJTLSearch         = false;
+            $this->bExtendedJTLSearch   = false;
 
             executeHook(HOOK_NAVI_PRESUCHE, [
                 'cValue'             => &$this->EchteSuche->cSuche,
@@ -720,7 +721,7 @@ class ProductFilter
                 'bExtendedJTLSearch'         => $this->bExtendedJTLSearch,
                 'oExtendedJTLSearchResponse' => &$oExtendedJTLSearchResponse,
                 'cValue'                     => &$this->EchteSuche->cSuche,
-                'nArtikelProSeite'           => &$params['nArtikelProSeite'],
+                'nArtikelProSeite'           => &$limit,
                 'nSeite'                     => &$this->nSeite,
                 'nSortierung'                => isset($_SESSION['Usersortierung'])
                     ? $_SESSION['Usersortierung']

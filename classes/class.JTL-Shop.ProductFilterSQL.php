@@ -52,9 +52,9 @@ class ProductFilterSQL
                     $sort->orderBy = 'tartikel.nSort, tartikel.cName';
                 } elseif (isset($_SESSION['Usersortierung'])
                     && $_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD
-                    && $this->productFilter->getSearch()->isInitialized()
+                    && $this->productFilter->getSearch()->kSuchCache > 0
                 ) {
-                    $sort->orderBy = 'tsuchcachetreffer.nSort';
+                    $sort->orderBy = 'jSuche.nSort'; // was tsuchcachetreffer in 4.06, but is aliased to jSuche
                 }
                 break;
             case SEARCH_SORT_NAME_ASC:
@@ -244,7 +244,7 @@ class ProductFilterSQL
             $or = $filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
                 ? " OR tartikel.cLagerKleinerNull = 'Y'"
                 : '';
-            $filterSQL = ($withAnd === true ? ' AND ' : '') .
+            $filterSQL = ($withAnd === true ? ' AND ' : ' ') .
                 "(tartikel.cLagerBeachten != 'Y'
                     OR tartikel.fLagerbestand > 0
                     OR (tartikel.cLagerVariation = 'Y'

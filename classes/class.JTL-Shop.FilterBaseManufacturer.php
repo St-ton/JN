@@ -27,20 +27,18 @@ class FilterBaseManufacturer extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'h';
-        $this->urlParamSEO = SEP_HST;
+        $this->setIsCustom(false)
+             ->setUrlParam('h')
+             ->setUrlParamSEO(SEP_HST);
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->value = (int)$id;
-
-        return $this;
+        return parent::setValue((int)$value);
     }
 
     /**
@@ -49,14 +47,18 @@ class FilterBaseManufacturer extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        if (($val = $this->getValue()) > 0) {
+        $val = $this->getValue();
+        if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {
+            if (!is_array($val)) {
+                $val = [$val];
+            }
             $oSeo_arr = Shop::DB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                         JOIN thersteller
                             ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
-                        AND kKey = " . $val . "
+                        AND kKey IN (" . implode(', ', $val). ")
                     ORDER BY kSprache",
                 2
             );
@@ -64,7 +66,8 @@ class FilterBaseManufacturer extends AbstractFilter
                 $this->cSeo[$language->kSprache] = '';
                 foreach ($oSeo_arr as $oSeo) {
                     if ($language->kSprache === (int)$oSeo->kSprache) {
-                        $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+                        $sep = $this->cSeo[$language->kSprache] === '' ? '' : SEP_HST;
+                        $this->cSeo[$language->kSprache] .= $sep . $oSeo->cSeo;
                     }
                 }
             }
@@ -101,7 +104,15 @@ class FilterBaseManufacturer extends AbstractFilter
      */
     public function getSQLCondition()
     {
-        return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $this->getValue();
+        $val = $this->getValue();
+        if (!is_array($val)) {
+            $val = [$val];
+        }
+        return $this->getType() === AbstractFilter::FILTER_TYPE_OR
+            ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . implode(', ', $val) . ')'
+            : implode(' AND ', array_map(function($e) {
+                return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
+            }, $val));
     }
 
     /**
@@ -114,7 +125,7 @@ class FilterBaseManufacturer extends AbstractFilter
 
     /**
      * @param null $data
-     * @return array|int|object
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -123,7 +134,10 @@ class FilterBaseManufacturer extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
-            $state = $this->productFilter->getCurrentStateData();
+            $state = $this->productFilter->getCurrentStateData($this->getType() === AbstractFilter::FILTER_TYPE_OR
+                ? $this->getClassName()
+                : null
+            );
 
             $state->joins[] = (new FilterJoin())
                 ->setComment('join from FilterManufacturer::getOptions()')
@@ -165,17 +179,21 @@ class FilterBaseManufacturer extends AbstractFilter
                 $manufacturer->cURL        = $this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($manufacturer->kHersteller)
                 );
-                $fe                        = (new FilterOption())
+
+                $options[] = (new FilterOption())
                     ->setType($this->getType())
+                    ->setFrontendName($manufacturer->cName)
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())
                     ->setName($manufacturer->cName)
                     ->setValue($manufacturer->kHersteller)
                     ->setCount($manufacturer->nAnzahl)
                     ->setSort($manufacturer->nSortNr)
-                    ->setURL($manufacturer->cURL);
-
-                $options[] = $fe;
+                    ->setURL($manufacturer->cURL)
+                    ->setIsActive($this->productFilter->filterOptionIsActive(
+                        $this->getClassName(),
+                        $manufacturer->kHersteller)
+                    );
             }
         }
         $this->options = $options;

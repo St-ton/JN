@@ -44,9 +44,9 @@ class FilterSearch extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'sf';
-        $this->urlParamSEO = null;
+        $this->setIsCustom(false)
+             ->setUrlParam('sf')
+             ->setUrlParamSEO(null);
     }
 
     /**
@@ -68,12 +68,12 @@ class FilterSearch extends AbstractFilter
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->searchID = (int)$id;
+        $this->searchID = (int)$value;
 
         return $this;
     }
@@ -343,7 +343,7 @@ class FilterSearch extends AbstractFilter
 
     /**
      * @param null $data
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -435,7 +435,7 @@ class FilterSearch extends AbstractFilter
                             $nPrioStep
                         ) + 1;
                 }
-                $fe = (new FilterOption())
+                $fo = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setClass($class)
@@ -447,10 +447,10 @@ class FilterSearch extends AbstractFilter
                         $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                     ))
                     ->setIsActive(in_array((int)$searchFilter->kSuchanfrage, $activeValues, true));
-                $fe->cSuche       = $searchFilter->cSuche;
-                $fe->kSuchanfrage = $searchFilter->kSuchanfrage;
+                $fo->cSuche       = $searchFilter->cSuche;
+                $fo->kSuchanfrage = $searchFilter->kSuchanfrage;
 
-                $options[] = $fe;
+                $options[] = $fo;
             }
         }
         $this->options = $options;

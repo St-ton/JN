@@ -27,19 +27,18 @@ class FilterBaseTag extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 't';
+        $this->setFrontendName(Shop::Lang()->get('tags'))
+             ->setIsCustom(false)
+             ->setUrlParam('t');
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->value = (int)$id;
-
-        return $this;
+        return parent::setValue((int)$value);
     }
 
     /**
@@ -118,7 +117,7 @@ class FilterBaseTag extends AbstractFilter
 
     /**
      * @param null $data
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -184,7 +183,7 @@ class FilterBaseTag extends AbstractFilter
                 $nPrioStep = ($tags[0]->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) / 9;
             }
             foreach ($tags as $tag) {
-                $fe                 = (new FilterOption())
+                $fo                 = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())
@@ -194,15 +193,15 @@ class FilterBaseTag extends AbstractFilter
                     ->setURL($this->productFilter->getFilterURL()->getURL(
                         $additionalFilter->init((int)$tag->kTag)
                     ));
-                $fe->nAnzahlTagging = (int)$tag->nAnzahlTagging;
+                $fo->nAnzahlTagging = (int)$tag->nAnzahlTagging;
                 // generic attributes for new filter templates
                 $class = $nPrioStep < 1
                     ? rand(1, 10)
                     : round(
-                        ($fe->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
+                        ($fo->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
                         $nPrioStep
                     ) + 1;
-                $options[] = $fe->setClass($class);
+                $options[] = $fo->setClass($class);
             }
         }
         $this->options = $options;

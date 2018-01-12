@@ -9,10 +9,14 @@
  */
 class FilterItemRating extends AbstractFilter
 {
+    use MagicCompatibilityTrait;
+
     /**
-     * @var int
+     * @var array
      */
-    public $nSterne = 0;
+    private static $mapping = [
+        'nSterne' => 'Value'
+    ];
 
     /**
      * FilterItemRating constructor.
@@ -22,30 +26,20 @@ class FilterItemRating extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'bf';
-        $this->urlParamSEO = null;
-        $this->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
+        $this->setIsCustom(false)
+             ->setUrlParam('bf')
+             ->setUrlParamSEO(null)
+             ->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
              ->setFrontendName(Shop::Lang()->get('Votes'));
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->nSterne = (int)$id;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getValue()
-    {
-        return $this->nSterne;
+        return parent::setValue((int)$value);
     }
 
     /**
@@ -101,7 +95,7 @@ class FilterItemRating extends AbstractFilter
 
     /**
      * @param null $data
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -118,7 +112,7 @@ class FilterItemRating extends AbstractFilter
 
         $state->joins[] = $this->getSQLJoin();
 
-        $query = $this->productFilter->getFilterSQL()->getBaseQuery(
+        $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
             [
                 'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
                 'tartikel.kArtikel'
@@ -138,7 +132,7 @@ class FilterItemRating extends AbstractFilter
         foreach ($res as $row) {
             $nSummeSterne += (int)$row->nAnzahl;
 
-            $fe         = (new FilterOption())
+            $options[] = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
@@ -152,8 +146,6 @@ class FilterItemRating extends AbstractFilter
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$row->nSterne)
                 ));
-            $fe->nStern = (int)$row->nSterne;
-            $options[] = $fe;
         }
         $this->options = $options;
         if (count($options) === 0) {

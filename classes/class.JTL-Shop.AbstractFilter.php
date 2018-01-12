@@ -248,15 +248,23 @@ abstract class AbstractFilter implements IFilter
     {
         $this->activeValues = [];
         $values             = $this->getValue();
+        $split              = true;
         if (!is_array($values)) {
+            $split  = false;
             $values = [$values];
         }
         foreach ($values as $value) {
-            $this->activeValues[] = (new FilterOption())->setFrontendName($this->getName())
-                                                       ->setURL($this->getSeo($this->languageID))
-                                                       ->setValue($value)
-                                                       ->setName($this->getFrontendName())
-                                                       ->setType($this->getType());
+            if ($split === true) {
+                $class    = $this->getClassName();
+                $instance = (new $class($this->getProductFilter()))->init($value);
+            } else {
+                $instance = $this;
+            }
+            $this->activeValues[] = (new FilterOption())->setFrontendName($instance->getName())
+                                                        ->setURL($this->getSeo($this->languageID))
+                                                        ->setValue($value)
+                                                        ->setName($instance->getFrontendName())
+                                                        ->setType($this->getType());
         }
         $this->isActive = true;
 
@@ -454,7 +462,7 @@ abstract class AbstractFilter implements IFilter
 
     /**
      * @param null|mixed $data
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -538,6 +546,17 @@ abstract class AbstractFilter implements IFilter
     public function isCustom()
     {
         return $this->isCustom;
+    }
+
+    /**
+     * @param bool $custom
+     * @return $this
+     */
+    public function setIsCustom($custom)
+    {
+        $this->isCustom = $custom;
+
+        return $this;
     }
 
     /**

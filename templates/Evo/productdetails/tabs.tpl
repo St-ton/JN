@@ -1,6 +1,25 @@
 {$tabanzeige = $Einstellungen.artikeldetails.artikeldetails_tabs_nutzen !== 'N'}
-{$useDescription = ($Artikel->cBeschreibung|strlen > 0 || $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'
-    && $Artikel->oMerkmale_arr|count > 1)}
+{$showProductWeight = false}
+{$showShippingWeight = false}
+{if isset($Artikel->cArtikelgewicht) && $Artikel->fArtikelgewicht > 0
+    && $Einstellungen.artikeldetails.artikeldetails_artikelgewicht_anzeigen === 'Y'}
+    {$showProductWeight = true}
+{/if}
+{if isset($Artikel->cGewicht) && $Artikel->fGewicht > 0
+    && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y'}
+    {$showShippingWeight = true}
+{/if}
+{$dimension = $Artikel->getDimension()}
+{$showAttributesTable = ($Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'
+    && !empty($Artikel->oMerkmale_arr) || $showProductWeight || $showShippingWeight
+    || $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'
+    && (!empty($dimension['length']) || !empty($dimension['width']) || !empty($dimension['height']))
+    || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0
+    && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
+    || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y'
+    || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN])
+    && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)) && !empty($Artikel->Attribute))}
+{$useDescription = ($Artikel->cBeschreibung|strlen > 0 || $showAttributesTable)}
 {$useDownloads = (isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0)}
 {$useMediaFiles = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
     && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung')
@@ -152,6 +171,10 @@
                         {/if}
                     </div>
                 {/block}
+                {if (!empty($Artikel->cBeschreibung) || ($useMediaFiles && !empty($Artikel->cMedienTyp_arr)))
+                    && $showAttributesTable}
+                    <hr>
+                {/if}
                 {block name="tab-description-attributes"}
                     {include file="productdetails/attributes.tpl" tplscope="details"}
                 {/block}

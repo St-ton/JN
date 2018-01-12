@@ -2788,7 +2788,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
         Shop::Cache()->set($cacheID, $oVersandart, [CACHING_GROUP_OPTION]);
     }
 
-    return $oVersandart !== null && $oVersandart->fVersandkostenfreiAbX > 0
+    return !empty($oVersandart) && $oVersandart->fVersandkostenfreiAbX > 0
         ? $oVersandart
         : 0;
 }

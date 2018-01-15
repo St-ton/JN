@@ -133,6 +133,8 @@ EditorIO.prototype = {
         result.portletTitle = portletElm.data('portlettitle');
         result.properties = portletElm.data('properties');
         result.subAreas = [];
+        // todo Editor: wenn portlet eine property "calculated Width" hat die Breite des Portletcontainers speichern
+        // wichtig um bei Bildern die srcsets korrekt zu berechnen
 
         var children = portletElm
         // select direct descendant subareas or non-nested subareas

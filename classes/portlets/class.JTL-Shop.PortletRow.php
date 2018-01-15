@@ -19,14 +19,28 @@ class PortletRow extends CMSPortlet
 
     public function getPreviewHtml()
     {
-        $layout = $this->properties['layout'];
-        $layout = explode('+', $layout);
-
         $this->properties['attr']['class'] .= " row";
         $res = '<div' . $this->getAttribString() . $this->getStyleString() . '>';
 
-        foreach ($layout as $i => $col) {
-            $res .= '<div class="col-xs-' . $col . ' cle-area"></div>';
+        $layoutLg = explode('+', $this->properties['layout-lg']);
+        $layoutMd = explode('+', $this->properties['layout-md']);
+        $layoutSm = explode('+', $this->properties['layout-sm']);
+        $layoutXs = explode('+', $this->properties['layout-xs']);
+
+        foreach ($layoutLg as $i => $col) {
+            $res     .= '<div class="';
+            $res     .= 'cle-area col-lg-' . $col;
+            if (!empty($layoutMd[$i])){
+                $res .= ' col-md-' . $layoutMd[$i];
+            }
+            if (!empty($layoutSm[$i])){
+                $res .= ' col-sm-' . $layoutSm[$i];
+            }
+            if (!empty($layoutXs[$i])){
+                $res .= ' col-xs-' . $layoutXs[$i];
+            }
+            $res     .= '">';
+            $res     .= '</div>';
         }
 
         $res .= '</div>';
@@ -36,15 +50,28 @@ class PortletRow extends CMSPortlet
 
     public function getFinalHtml()
     {
-        $layout = $this->properties['layout'];
-        $layout = explode('+', $layout);
-
         $this->properties['attr']['class'] .= " row";
         $res = '<div' . $this->getAttribString() . $this->getStyleString() . '>';
 
-        foreach ($layout as $i => $col) {
+        $layoutLg = explode('+', $this->properties['layout-lg']);
+        $layoutMd = explode('+', $this->properties['layout-md']);
+        $layoutSm = explode('+', $this->properties['layout-sm']);
+        $layoutXs = explode('+', $this->properties['layout-xs']);
+
+        foreach ($layoutLg as $i => $col) {
             $subArea  = $this->subAreas[$i];
-            $res     .= '<div class="col-xs-' . $col . '">';
+            $res     .= '<div class="';
+            $res     .= 'col-lg-' . $col;
+            if (!empty($layoutMd[$i])){
+                $res .= ' col-md-' . $layoutMd[$i];
+            }
+            if (!empty($layoutSm[$i])){
+                $res .= ' col-sm-' . $layoutSm[$i];
+            }
+            if (!empty($layoutXs[$i])){
+                $res .= ' col-xs-' . $layoutXs[$i];
+            }
+            $res     .= '">';
 
             foreach ($subArea as $subPortlet) {
                 $portlet        = CMS::getInstance()->createPortlet($subPortlet['portletId'])
@@ -54,7 +81,7 @@ class PortletRow extends CMSPortlet
                 $res           .= $subPortletHtml;
             }
 
-            $res .= '</div>';
+            $res     .= '</div>';
         }
 
         $res .= '</div>';
@@ -73,7 +100,11 @@ class PortletRow extends CMSPortlet
     {
         return [
             // general
-            'layout' => '6+6',
+            'layout-xs' => '',
+            'layout-sm' => '',
+            'layout-md' => '',
+            'layout-lg' => '6+6',
+
             // animation
             'animation-style'     => '',
             // attributes

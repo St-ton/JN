@@ -67,7 +67,7 @@ class TagArticle
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->insert('ttagartikel', $obj, true);
+        return Shop::DB()->insert('ttagartikel', $obj);
     }
 
     /**

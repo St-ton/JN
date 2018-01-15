@@ -24,9 +24,6 @@ $loginDaten = new Synclogin();
 $version    = '';
 $oVersion   = null;
 
-Jtllog::writeLog(print_r($loginDaten, true), JTLLOG_LEVEL_DEBUG, false, 'Sync_xml');
-Jtllog::writeLog("{$cName} - {$cPass}", JTLLOG_LEVEL_DEBUG, false, 'Sync_xml');
-
 if ($cName && $cPass && $cName === $loginDaten->cName && $cPass === $loginDaten->cPass) {
     $return = 0;
     if (isset($_POST['kKunde']) && (int)$_POST['kKunde'] > 0) {

@@ -11,9 +11,12 @@ $cFehler  = '';
 $cHinweis = '';
 
 if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
-    $upd = new stdClass();
+    $passInfo   = password_get_info($_POST['wawi-pass']);
+    $upd        = new stdClass();
     $upd->cName = $_POST['wawi-user'];
-    $upd->cPass = password_hash($_POST['wawi-pass'], PASSWORD_DEFAULT);
+    $upd->cPass = $passInfo['algo'] > 0
+        ? $_POST['wawi-pass'] // new clear text password was given
+        : password_hash($_POST['wawi-pass'], PASSWORD_DEFAULT); // hashed password was not changed
     Shop::DB()->update('tsynclogin', 1, 1, $upd);
     $cHinweis = 'Erfolgreich gespeichert.';
 }

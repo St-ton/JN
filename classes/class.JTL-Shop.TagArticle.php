@@ -25,10 +25,9 @@ class TagArticle
     public $nAnzahlTagging;
 
     /**
-     * Konstruktor
-     *
+     * TagArticle constructor.
      * @param int $kTag
-     * @param int $kArtikel - Falls angegeben, wird TagArtikel mit angegebenem kTag und kArtikel aus der DB geholt
+     * @param int $kArtikel
      */
     public function __construct($kTag = 0, $kArtikel = 0)
     {
@@ -42,7 +41,6 @@ class TagArticle
     /**
      * Setzt Tag mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kTag
      * @param int $kArtikel
      * @return $this
@@ -50,8 +48,10 @@ class TagArticle
     private function loadFromDB($kTag, $kArtikel)
     {
         $obj = Shop::DB()->select('ttagartikel', 'kTag', (int)$kTag, 'kArtikel', (int)$kArtikel);
-        foreach (get_object_vars($obj) as $k => $v) {
-            $this->$k = $v;
+        if ($obj !== null) {
+            foreach (get_object_vars($obj) as $k => $v) {
+                $this->$k = $v;
+            }
         }
 
         return $this;
@@ -60,7 +60,6 @@ class TagArticle
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return mixed
      */
     public function insertInDB()

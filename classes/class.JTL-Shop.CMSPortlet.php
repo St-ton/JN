@@ -11,6 +11,17 @@ use Imanee\Imanee;
 abstract class CMSPortlet
 {
     /**
+     * @var array -
+     */
+    private static $dirSizes = [
+        '.xs/' => WIDTH_CMS_IMAGE_XS,
+        '.sm/' => WIDTH_CMS_IMAGE_SM,
+        '.md/' => WIDTH_CMS_IMAGE_MD,
+        '.lg/' => WIDTH_CMS_IMAGE_LG,
+        '.xl/' => WIDTH_CMS_IMAGE_XL
+    ];
+
+    /**
      * @var int
      */
     public $kPortlet = 0;
@@ -66,7 +77,7 @@ abstract class CMSPortlet
     }
 
     /**
-     * @return string - sidepanel button
+     * @return string - side panel button HTML
      */
     public function getButton()
     {
@@ -187,37 +198,36 @@ abstract class CMSPortlet
         if (empty($src)) {
             return ' src="' . BILD_KEIN_ARTIKELBILD_VORHANDEN . '"';
         }
+
         // EVO specific CSS styles
         $containerWidth = 1140;
-        $finalWidth = (int)($containerWidth/100*$calcWidth);
+        $finalWidth     = (int)($containerWidth / 100 * $calcWidth);
 
-        $settings = Shop::getSettings([CONF_BILDER]);
-
-        $size_arr = [
-            '.xs/' => WIDTH_CMS_IMAGE_XS,
-            '.sm/' => WIDTH_CMS_IMAGE_SM,
-            '.md/' => WIDTH_CMS_IMAGE_MD,
-            '.lg/' => WIDTH_CMS_IMAGE_LG,
-            '.xl/' => WIDTH_CMS_IMAGE_XL
-        ];
-        $name = explode('/', $src);
-        $name = end($name);
+        $settings  = Shop::getSettings([CONF_BILDER]);
+        $name      = explode('/', $src);
+        $name      = end($name);
         $srcString = ' srcset="';
 
-        foreach ($size_arr as $size => $width){
-            if (!file_exists(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name) === true){
-                $image = new Imanee(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $name);
+        foreach (static::$dirSizes as $sizeDir => $width) {
+            if (!file_exists(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $sizeDir . $name) === true) {
+                $image     = new Imanee(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $name);
                 $imageSize = $image->getSize();
-                $factor = $width/$imageSize['width'];
-                $image->resize((int)$width, (int)($imageSize['height']*$factor))
-                    ->write(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name, $settings['bilder']['bilder_jpg_quali']);
+                $factor    = $width / $imageSize['width'];
+
+                $image
+                    ->resize((int)$width, (int)($imageSize['height'] * $factor))
+                    ->write(
+                        PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $sizeDir . $name,
+                        $settings['bilder']['bilder_jpg_quali']
+                    );
 
                 unset($image);
             }
-            $srcString .= PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
+            $srcString .= PFAD_MEDIAFILES . 'Bilder/' . $sizeDir . $name . ' ' . $width . 'w,';
         }
 
-        $srcString = substr($srcString, 0, -1) . '" sizes="' . $finalWidth . 'px" src="' . PFAD_MEDIAFILES . 'Bilder/.lg/' . $name . '"';
+        $srcString = substr($srcString, 0, -1) . '" sizes="' . $finalWidth . 'px" src="' . PFAD_MEDIAFILES
+            . 'Bilder/.lg/' . $name . '"';
 
         return $srcString;
     }

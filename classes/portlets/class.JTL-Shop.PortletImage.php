@@ -17,7 +17,6 @@ class PortletImage extends CMSPortlet
         return '<i class="fa fa-image"></i> Bild';
     }
 
-
     public function getPreviewHtml($renderLinks = false)
     {
         // general
@@ -30,7 +29,9 @@ class PortletImage extends CMSPortlet
 
         $this->properties['attr']['class'] .= " img-responsive $shape";
 
-        $content = "<img" . $this->getAttribString() . $this->getStyleString() . $this->getSrcString($this->properties['src'],$this->properties['calculatedWidth']) . ">";
+        $content = '<img' . $this->getAttribString() . $this->getStyleString()
+            . $this->getSrcString($this->properties['src'], $this->properties['calculatedWidth'])
+            . '>';
 
         if ($renderLinks && $linkFlag === 'yes' && !empty($linkUrl)) {
             if ($linkNewTabFlag) {

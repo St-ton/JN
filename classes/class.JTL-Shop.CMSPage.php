@@ -69,22 +69,23 @@ class CMSPage
     public function renderFinal()
     {
         $this->cFinalHtml_arr = [];
+        if (!empty($this->data)) {
+            foreach ($this->data as $areaId => $areaPortlets) {
+                $cHtml = '';
 
-        foreach ($this->data as $areaId => $areaPortlets) {
-            $cHtml = '';
-
-            foreach ($areaPortlets as $portlet) {
-                try {
-                    $cHtml .= CMS::getInstance()->createPortlet($portlet['portletId'])
-                        ->setProperties($portlet['properties'])
-                        ->setSubAreas($portlet['subAreas'])
-                        ->getFinalHtml();
-                } catch (Exception $e) {
-                    $cHtml .= '';
+                foreach ($areaPortlets as $portlet) {
+                    try {
+                        $cHtml .= CMS::getInstance()->createPortlet($portlet['portletId'])
+                            ->setProperties($portlet['properties'])
+                            ->setSubAreas($portlet['subAreas'])
+                            ->getFinalHtml();
+                    } catch (Exception $e) {
+                        $cHtml .= '';
+                    }
                 }
-            }
 
-            $this->cFinalHtml_arr[$areaId] = $cHtml;
+                $this->cFinalHtml_arr[$areaId] = $cHtml;
+            }
         }
     }
 

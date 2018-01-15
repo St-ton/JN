@@ -1,5 +1,7 @@
 <div{$attribString}{$styleString}>
-    <label>{$properties['video-title']}</label>
+    {if !empty($properties['video-title'])}
+        <label>{$properties['video-title']}</label>
+    {/if}
     {if $properties['video-vendor'] === 'youtube'}
         <div{if $properties['video-yt-responsive']} class="embed-responsive embed-responsive-16by9"{/if}>
             <iframe {strip}src="https://www.youtube.com/embed/{$properties['video-yt-id']}

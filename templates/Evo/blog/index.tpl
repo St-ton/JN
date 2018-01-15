@@ -18,7 +18,7 @@
         {if !empty($oCMSPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.editpage)}
             {$oCMSPage->cFinalHtml_arr['editor_replace_all']}
         {elseif !empty($smarty.get.editpage) && !empty($smarty.get.cAction) && $smarty.get.cAction === 'replace'}
-            {include file='snippets/live_edit.tpl' id='editor_replace_all'}
+            {include file='snippets/live_content_area.tpl' id='editor_replace_all'}
         {else}
             {include file='blog/details.tpl'}
         {/if}

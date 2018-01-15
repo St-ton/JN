@@ -13,28 +13,29 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-$cHinweis    = '';
-$cFehler     = '';
-$cPageIdHash = verifyGPDataString('cCmsPageIdHash');
-$cAction     = verifyGPDataString('cAction');
-$cPageUrl    = verifyGPDataString('cPageUrl');
-$oCMS        = CMS::getInstance();
-$oCMSPage    = $oCMS->getPage($cPageIdHash);
-
-try {
-    $oCMSPage->lock($oAccount->account()->cLogin);
-} catch (Exception $e) {
-    $cFehler = "Diese Seite wird bereits von '{$oCMSPage->cLockedBy}' bearbeitet.";
-}
-
-if ($cAction === 'restore_default') {
-    $oCMSPage->remove();
-    header('Location: ' . $cPageUrl);
-    exit();
-}
-
+$cHinweis      = '';
+$cFehler       = '';
+$oCMS          = CMS::getInstance()->setAdminAccount($oAccount);
+$oCMSPage      = null;
 $oPortlet_arr  = $oCMS->getPortlets();
-$oTemplate_arr = CMS::getTemplates();
+$oTemplate_arr = $oCMS->getTemplates();
+$cPageIdHash   = verifyGPDataString('cCmsPageIdHash');
+$cAction       = verifyGPDataString('cAction');
+$cPageUrl      = verifyGPDataString('cPageUrl');
+
+if (empty($cPageIdHash) || empty($cAction) || empty($cPageUrl)) {
+    $cFehler = 'Einige Parameter für den Editor wurden nicht gesetzt.';
+} else {
+    $oCMSPage = $oCMS->getPage($cPageIdHash);
+
+    if ($oCMSPage->lock($oAccount->account()->cLogin) === false) {
+        $cFehler = "Diese Seite wird bereits von '{$oCMSPage->cLockedBy}' bearbeitet.";
+    } elseif ($cAction === 'restore_default') {
+        $oCMSPage->remove();
+        header('Location: ' . $cPageUrl);
+        exit();
+    }
+}
 
 $smarty
     ->assign('cHinweis', $cHinweis)

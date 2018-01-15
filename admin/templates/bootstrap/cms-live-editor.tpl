@@ -24,6 +24,7 @@
     <script src="{$templateUrl}js/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
     <script src="{$templateUrl}js/moment.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/EditorIO.js"></script>
+    <script src="{$templateUrl}js/cms-live-editor/EditorGUI.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/Editor.js"></script>
 
     <script>
@@ -99,7 +100,7 @@
                            data-portletid="{$oPortlet->kPortlet}"
                            data-portlettitle="{$oPortlet->cTitle}"
                            data-defaultprops="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}"
-                           title="{$oPortlet->cTitle}">
+                           title="{$oPortlet->cTitle}" draggable="true">
                             {$oPortlet->getButton()}
                         </a>
                     {/foreach}
@@ -182,12 +183,12 @@
             </div>
         </div>
     </div>
-    <div class="cle-pinbar btn-group" id="pinbar">
+    <div class="cle-pinbar btn-group" id="pinbar" style="display:none">
         <button class="btn btn-default" id="btn-template"><i class="fa fa-star"></i></button>
         <button class="btn btn-default" id="btn-trash"><i class="fa fa-trash"></i></button>
         <button class="btn btn-default" id="btn-clone"><i class="fa fa-clone"></i></button>
         <button class="btn btn-default" id="btn-config"><i class="fa fa-cog"></i></button>
     </div>
-    <div class="cle-label" id="portlet-label"></div>
+    <div class="cle-label" id="portlet-label" style="display:none"></div>
 </body>
 </html>

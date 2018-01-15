@@ -22,9 +22,9 @@
                                     baseFloatZIndex: 9000,
                                 });
 
-                                editor.configSaveCallback = function() {
+                                editor.setConfigSaveCallback(function() {
                                     $('#settingsText').val(CKEDITOR.instances.settingsText.getData());
-                                };
+                                });
                             </script>
                         </dd>
                     </dl>

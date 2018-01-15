@@ -65,11 +65,15 @@ class Migration_20171102121900 extends Migration implements IMigration
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Video', 'Video', 'Elements')");
+
+        $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
+            VALUES (0, 'Panel', 'Panel', 'Elements')");
     }
 
     public function down()
     {
         $this->execute("DROP TABLE tcmsportlet");
+        $this->execute("DROP TABLE tcmstemplate");
         $this->execute("DROP TABLE tcmspage");
     }
 }

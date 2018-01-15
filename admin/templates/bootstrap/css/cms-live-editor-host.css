@@ -7,7 +7,7 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 #editor-top-nav {
     margin-bottom: 0;
     height: 5rem;
-    background: #cbcbcb;
+    border: none;
 }
 
 #main-frame {
@@ -25,14 +25,7 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 
 #sidebar-panel {
     padding: 10px 15px;
-    background-color: #cbcbcb;
-    /* background-image: -webkit-linear-gradient(top, #cbcbcb 0, #222 100%); */
-    background-image: -o-linear-gradient(top, #cbcbcb 0, #777 100%);
-    /* background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #cbcbcb), to(#777)); */
-    background-image: linear-gradient(to bottom, #cbcbcb 0, #777 100%);
-    /* background-repeat: repeat-x; */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcbcbcb', endColorstr='#ff777777', GradientType=0);
-    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    background-color: #222;
 }
 
 #iframe-panel {
@@ -93,6 +86,11 @@ tr.text-vcenter > td, tr.text-vcenter > th{
 
 #elements a.btn{
     margin-bottom: 15px;
+}
+
+#elements ul li{
+    list-style: none;
+    display: grid;
 }
 
 .modal-backdrop {

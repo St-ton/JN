@@ -14,7 +14,7 @@ class PortletImage extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-image"></i>';
+        return '<i class="fa fa-image"></i> Bild';
     }
 
 

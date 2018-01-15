@@ -13,11 +13,11 @@
     {/if}
     {if $Einstellungen.navigationsfilter.suchtrefferfilter_nutzen === 'Y' && $Suchergebnisse->SuchFilter|@count > 0 && $Suchergebnisse->SuchFilterJSON && !$NaviFilter->hasSearchFilter()}
         <hr>
-        <div class="panel panel-default tags">
+        <div class="panel panel-default tags search-terms">
             <div class="panel-heading">{lang key="productsSearchTerm" section="productOverview"}</div>
             <div class="panel-body">
                 {foreach name=suchfilter from=$Suchergebnisse->SuchFilter item=oSuchFilter}
-                    <a href="{$oSuchFilter->getURL()}" class="label label-primary tag{$oSuchFilter->getClass()}">{$oSuchFilter->cSuche}</a>
+                    <a href="{$oSuchFilter->getURL()}" class="label label-primary tag{$oSuchFilter->getClass()}">{$oSuchFilter->getName()}</a>
                 {/foreach}
             </div>
         </div>

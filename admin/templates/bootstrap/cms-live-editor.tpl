@@ -41,7 +41,7 @@
     </script>
 </head>
 <body>
-    <nav id="editor-top-nav" class="navbar">
+    <nav id="editor-top-nav" class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="collapsed navbar-toggle" data-toggle="collapse"
@@ -95,7 +95,7 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="elements">
                     {foreach $oPortlet_arr as $oPortlet}
-                        <a href="#" class="portlet-button btn btn-default btn-lg"
+                        <a href="#" class="portlet-button btn btn-default btn-lg btn-block"
                            data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
                            data-portletid="{$oPortlet->kPortlet}"
                            data-portlettitle="{$oPortlet->cTitle}"

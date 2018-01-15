@@ -338,7 +338,8 @@ class Status
     {
         $conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
 
-        return $conf['artikeluebersicht']['suche_fulltext'] === 'Y'
+        return isset($conf['artikeluebersicht']['suche_fulltext'])
+            && $conf['artikeluebersicht']['suche_fulltext'] === 'Y'
             && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
                 || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1));
     }

@@ -144,10 +144,8 @@ abstract class CMSPortlet
 
         if (!empty($this->properties['attr']) && is_array($this->properties['attr'])) {
             foreach ($this->properties['attr'] as $name => $value) {
-                if (trim($value) !== '' && $name !== 'src') {
+                if (trim($value) !== '') {
                     $attr_str .= $name . '="' . htmlspecialchars($value, ENT_QUOTES) . '" ';
-                } elseif ($name === 'src') {
-                    $attr_str .= $this->getSrcString($value);
                 }
             }
         }
@@ -184,11 +182,15 @@ abstract class CMSPortlet
      * @param String $src
      * @return string
      */
-    protected function getSrcString($src)
+    protected function getSrcString($src, $calcWidth = 100)
     {
         if (empty($src)) {
             return ' src="' . BILD_KEIN_ARTIKELBILD_VORHANDEN . '"';
         }
+        // EVO specific CSS styles
+        $containerWidth = 1140;
+        $finalWidth = (int)($containerWidth/100*$calcWidth);
+
         $settings = Shop::getSettings([CONF_BILDER]);
 
         $size_arr = [
@@ -215,7 +217,7 @@ abstract class CMSPortlet
             $srcString .= PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
-        $srcString = substr($srcString, 0, -1) . '" sizes="100vw" src="' . PFAD_MEDIAFILES . 'Bilder/.lg/' . $name . '"';
+        $srcString = substr($srcString, 0, -1) . '" sizes="' . $finalWidth . 'px" src="' . PFAD_MEDIAFILES . 'Bilder/.lg/' . $name . '"';
 
         return $srcString;
     }

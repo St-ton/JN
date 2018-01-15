@@ -139,6 +139,8 @@ EditorIO.prototype = {
         result.portletTitle = portlet.data('portlettitle');
         result.properties = portlet.data('properties');
         result.subAreas = [];
+        // todo Editor: wenn portlet eine property "calculated Width" hat die Breite des Portletcontainers speichern
+        // wichtig um bei Bildern die srcsets korrekt zu berechnen
 
         var children = portlet
         // select direct descendant subareas or non-nested subareas

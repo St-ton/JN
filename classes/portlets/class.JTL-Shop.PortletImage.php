@@ -30,7 +30,7 @@ class PortletImage extends CMSPortlet
 
         $this->properties['attr']['class'] .= " img-responsive $shape";
 
-        $content = "<img" . $this->getAttribString() . $this->getStyleString() .">";
+        $content = "<img" . $this->getAttribString() . $this->getStyleString() . $this->getSrcString($this->properties['src'],$this->properties['calculatedWidth']) . ">";
 
         if ($renderLinks && $linkFlag === 'yes' && !empty($linkUrl)) {
             if ($linkNewTabFlag) {
@@ -70,7 +70,6 @@ class PortletImage extends CMSPortlet
             // attributes
             'attr' => [
                 'class'              => '',
-                'src'                => '',
                 'alt'                => '',
                 'title'              => '',
                 'data-wow-duration'  => '',
@@ -78,6 +77,9 @@ class PortletImage extends CMSPortlet
                 'data-wow-offset'    => '',
                 'data-wow-iteration' => '',
             ],
+            'src'                => '',
+            // todo editor: richtigen wert eintragen
+            'calculatedWidth' => '100',
             // style
             'style' => [
                 'color'               => '',

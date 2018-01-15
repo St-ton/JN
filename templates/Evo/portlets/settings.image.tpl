@@ -8,7 +8,7 @@
     <div id="general" class="tab-pane fade active in" role="general" aria-labelledby="general-tab">
         <div class="form-group">
             <label for="image-btn-img">Bild</label>
-            <input type="hidden" id="img-url" name="attr[src]" value="{$properties.attr['src']}">
+            <input type="hidden" id="img-url" name="src" value="{$properties['src']}">
             <button type="button" class="btn btn-default cle-image-btn" onclick="editor.onOpenKCFinder(kcfinderCallback);">
                 {if !empty($properties.attr['src'])}
                     <img src="{$properties.attr['src']}" id="image-btn-img" alt="einzufügendes Bild">

@@ -170,7 +170,15 @@ class ProductFilterSQL
         );
         // default base conditions
         $conditions[] = 'tartikelsichtbarkeit.kArtikel IS NULL';
-        $conditions[] = 'tartikel.kVaterArtikel = 0';
+
+        $showChildProducts = $this->productFilter->showChildProducts();
+        if ($showChildProducts === 2 || ($showChildProducts === 1 && $this->productFilter->getFilterCount() > 0)) {
+            $conditions[] = '(tartikel.kVaterArtikel > 0 
+                                OR NOT EXISTS 
+                                    (SELECT 1 FROM tartikel cps WHERE cps.kVaterArtikel = tartikel.kArtikel))';
+        } else {
+            $conditions[] = 'tartikel.kVaterArtikel = 0';
+        }
         $conditions[] = $this->getStockFilterSQL(false);
         // remove empty conditions
         $conditions = array_filter($conditions);

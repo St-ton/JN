@@ -196,6 +196,11 @@ class ProductFilter
     private $bExtendedJTLSearch;
 
     /**
+     * @var bool
+     */
+    private $showChildProducts;
+
+    /**
      * @var array
      * @todo: fix working with arrays
      * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
@@ -242,23 +247,45 @@ class ProductFilter
         $urls->cAlleSuchFilter   = [];
         $urls->cNoFilter         = null;
 
-        $this->url             = $urls;
-        $this->languages       = $languages === null
+        $this->url               = $urls;
+        $this->languages         = $languages === null
             ? Sprache::getInstance()->getLangArray()
             : $languages;
-        $this->conf            = $config === null
+        $this->conf              = $config === null
             ? Shopsetting::getInstance()->getAll()
             : $config;
-        $this->languageID      = $currentLanguageID === null
+        $this->languageID        = $currentLanguageID === null
             ? Shop::getLanguageID()
             : (int)$currentLanguageID;
-        $this->customerGroupID = Session::CustomerGroup()->getID();
-        $this->baseURL         = Shop::getURL() . '/';
-        $this->metaData        = new Metadata($this);
-        $this->filterSQL       = new ProductFilterSQL($this);
-        $this->filterURL       = new ProductFilterURL($this);
+        $this->customerGroupID   = Session::CustomerGroup()->getID();
+        $this->baseURL           = Shop::getURL() . '/';
+        $this->metaData          = new Metadata($this);
+        $this->filterSQL         = new ProductFilterSQL($this);
+        $this->filterURL         = new ProductFilterURL($this);
+        $this->showChildProducts = defined('SHOW_CHILD_PRODUCTS')
+            ? SHOW_CHILD_PRODUCTS
+            : false;
         executeHook(HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
         $this->initBaseStates();
+    }
+
+    /**
+     * @return bool
+     */
+    public function showChildProducts()
+    {
+        return $this->showChildProducts;
+    }
+
+    /**
+     * @param bool $showChildProducts
+     * @return ProductFilter
+     */
+    public function setShowChildProducts($showChildProducts)
+    {
+        $this->showChildProducts = $showChildProducts;
+
+        return $this;
     }
 
     /**

@@ -177,7 +177,7 @@
                 {/if}
                 {block name="tab-description-attributes"}
                     {include file="productdetails/attributes.tpl" tplscope="details"
-                        showShippingWeight=$showShippingWeight showShippingWeight=$showShippingWeight
+                        showProductWeight=$showProductWeight showShippingWeight=$showShippingWeight
                         dimension=$dimension showAttributesTable=$showAttributesTable}
                 {/block}
             </div>

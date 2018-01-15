@@ -191,7 +191,7 @@ switch ($step) {
         $syncLogin        = new stdClass();
         $syncLogin->cMail = '';
         $syncLogin->cName = $_POST['syncuser'];
-        $syncLogin->cPass = $_POST['syncpass'];
+        $syncLogin->cPass = password_hash($_POST['syncpass'], PASSWORD_DEFAULT);
 
         if (!$DB->insertRow('tsynclogin', $syncLogin)) {
             $cHinweis .= '<br />' . $DB->getError() . ' Nr: ' . $DB->getErrorCode();

@@ -172,6 +172,8 @@ ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
 // show child products in product listings? 0 - never, 1 - only when at least 1 filter is active, 2 - always
 ifndef('SHOW_CHILD_PRODUCTS', 0);
+// redis connect timeout in seconds
+ifndef('REDIS_CONNECT_TIMEOUT', 3);
 
 /**
  * @param string     $constant

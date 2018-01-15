@@ -420,7 +420,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 WHERE kSprache =  :lang
                     AND cSuche = :search
                     AND (dGueltigBis > now() OR dGueltigBis IS NULL)',
-            ['lang' => $kSprache, 'search' => Shop::DB()->escape($keySuche)],
+            ['lang' => $kSprache, 'search' => Shop::DB()->escape($cSuche)],
             1
         );
 

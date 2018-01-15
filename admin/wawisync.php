@@ -13,7 +13,7 @@ $cHinweis = '';
 if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
     $upd = new stdClass();
     $upd->cName = $_POST['wawi-user'];
-    $upd->cPass = $_POST['wawi-pass'];
+    $upd->cPass = password_hash($_POST['wawi-pass'], PASSWORD_DEFAULT);
     Shop::DB()->update('tsynclogin', 1, 1, $upd);
     $cHinweis = 'Erfolgreich gespeichert.';
 }

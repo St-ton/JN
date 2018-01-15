@@ -37,7 +37,20 @@ class Synclogin
                 $this->$member = $obj->$member;
             }
         } else {
-            Jtllog::writeLog('Kein Sync-Login gefunden.', JTLLOG_LEVEL_ERROR);
+            Jtllog::writeLog('Kein Sync-Login gefunden.');
         }
+    }
+
+    /**
+     * @param string $user
+     * @param string $pass
+     * @return bool
+     */
+    public function checkLogin($user, $pass)
+    {
+        return $this->cName !== null
+            && $this->cPass !== null
+            && $this->cName === $user
+            && password_verify($pass, $this->cPass) === true;
     }
 }

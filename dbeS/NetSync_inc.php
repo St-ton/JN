@@ -330,7 +330,7 @@ class NetSyncHandler
         $bAuthed = false;
         if (strlen($cName) > 0 && strlen($cPass) > 0) {
             $oSync   = new Synclogin();
-            $bAuthed = ($cName === $oSync->cName && $cPass === $oSync->cPass);
+            $bAuthed = $cName === $oSync->cName && password_verify($cPass, $oSync->cPass) === true;
         }
         if ($bAuthed) {
             session_start();

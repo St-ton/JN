@@ -1,11 +1,11 @@
-{if $bBoxenFilterNach && !empty($Suchergebnisse->Tags)}
+{if $bBoxenFilterNach && !empty($Suchergebnisse->getTagFilterOptions())}
     <section class="panel panel-default box box-filter-tag" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
             <h5 class="panel-title">{lang key="tagFilter" section="global"}</h5>
         </div>
         <div class="box-body">
             <ul class="nav nav-list">
-             {foreach $Suchergebnisse->Tags as $oTag}
+             {foreach $Suchergebnisse->getTagFilterOptions() as $oTag}
                  {if $NaviFilter->hasTagFilter() && $NaviFilter->getTagFilter(0)->getValue() === $oTag->kTag}
                      <li>
                          {* @todo: use getter *}

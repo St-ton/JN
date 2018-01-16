@@ -677,9 +677,9 @@ class Metadata
     }
 
     /**
-     * @param stdClass       $searchResults
-     * @param array          $globalMeta
-     * @param Kategorie|null $category
+     * @param ProductFilterSearchResults $searchResults
+     * @param array                      $globalMeta
+     * @param Kategorie|null             $category
      * @return string
      */
     public function generateMetaTitle($searchResults, $globalMeta, $category = null)
@@ -727,9 +727,9 @@ class Metadata
             }
         }
         // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
-        if ($searchResults->Seitenzahlen->AktuelleSeite > 1) {
+        if ($searchResults->getPages()->AktuelleSeite > 1) {
             $cMetaTitle .= ', ' . Shop::Lang()->get('page') . ' ' .
-                $searchResults->Seitenzahlen->AktuelleSeite;
+                $searchResults->getPages()->AktuelleSeite;
         }
         // Globalen Meta Title ueberall anhaengen
         if ($append === true && !empty($globalMeta[$languageID]->Title)) {
@@ -744,7 +744,7 @@ class Metadata
     /**
      * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.
      *
-     * @param stdClass $searchResults
+     * @param ProductFilterSearchResults $searchResults
      * @return string
      */
     public function getMetaStart($searchResults)
@@ -774,9 +774,8 @@ class Metadata
             $cMetaTitle .= ' ' . $this->productFilter->getCategoryFilter()->getName();
         }
         // Herstellerfilter
-        if (!empty($searchResults->Herstellerauswahl[0]->cName)
-            && $this->productFilter->hasManufacturerFilter()
-        ) {
+        $manufacturerFilterOptions = $searchResults->getManufacturerFilterOptions();
+        if (!empty($manufacturerFilterOptions[0]->cName) && $this->productFilter->hasManufacturerFilter()) {
             $cMetaTitle .= ' ' . $this->productFilter->getManufacturerFilter()->getName();
         }
         // Tagfilter

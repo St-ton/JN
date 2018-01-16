@@ -214,8 +214,8 @@ class ProductFilterURL
     /**
      * URLs generieren, die Filter lösen
      *
-     * @param stdClass $url
-     * @param stdClass $searchResults
+     * @param stdClass                   $url
+     * @param ProductFilterSearchResults $searchResults
      * @return stdClass
      */
     public function createUnsetFilterURLs($url, $searchResults = null)
@@ -353,8 +353,9 @@ class ProductFilterURL
             $filter->setUnsetFilterURL($url->$idx);
         }
         // Filter reset
-        $cSeite = $searchResults->Seitenzahlen->AktuelleSeite > 1
-            ? SEP_SEITE . $searchResults->Seitenzahlen->AktuelleSeite
+        $pages  = $searchResults->getPages();
+        $cSeite = $pages->AktuelleSeite > 1
+            ? SEP_SEITE . $pages->AktuelleSeite
             : '';
 
         $url->cNoFilter = $this->getURL(null, true) . $cSeite;

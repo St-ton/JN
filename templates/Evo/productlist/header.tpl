@@ -9,14 +9,14 @@
     <div class="alert alert-danger">{$fehler}</div>
 {/if}
 
-{if isset($Suchergebnisse->SucheErfolglos) && $Suchergebnisse->SucheErfolglos == 1}
+{if $Suchergebnisse->isSearchUnsuccessful() == true}
     <div class="alert alert-info">{lang key='noResults' section='productOverview'}</div>
     <form id="suche2" action="{$ShopURL}" method="get" class="form">
         <fieldset>
             <ul class="list-unstyled">
                 <li class="form-group">
                     <label for="searchkey">{lang key='searchText'}</label>
-                    <input type="text" class="form-control" name="suchausdruck" value="{if isset($Suchergebnisse->cSuche)}{$Suchergebnisse->cSuche|escape:'htmlall'}{/if}" id="searchkey" />
+                    <input type="text" class="form-control" name="suchausdruck" value="{if $Suchergebnisse->getSearchTerm()}{$Suchergebnisse->cSuche|escape:'htmlall'}{/if}" id="searchkey" />
                 </li>
                 <li class="form-group">
                     <input type="submit" value="{lang key='searchAgain' section='productOverview'}" class="submit btn btn-primary" />
@@ -99,9 +99,9 @@
 {/if}
 {/block}
 
-{include file="productwizard/index.tpl"}
+{include file='productwizard/index.tpl'}
 
-{if count($Suchergebnisse->Artikel->elemente) > 0}
+{if count($Suchergebnisse->getProducts()->elemente) > 0}
     <form id="improve_search" action="{$ShopURL}" method="get" class="form-inline clearfix">
         {if $NaviFilter->hasCategory()}
             <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />
@@ -164,7 +164,7 @@
     </form>
 {/if}
 
-{if $Suchergebnisse->Artikel->elemente|@count <= 0 && isset($KategorieInhalt)}
+{if $Suchergebnisse->getProducts()->elemente|@count <= 0 && isset($KategorieInhalt)}
     {if isset($KategorieInhalt->TopArtikel->elemente)}
         {lang key='topOffer' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}
@@ -176,13 +176,13 @@
     {/if}
 {/if}
 
-{if $Suchergebnisse->GesamtanzahlArtikel > 0}
+{if $Suchergebnisse->getProductCount() > 0}
     <div class="row list-pageinfo top10">
         <div class="col-xs-4 page-current">
-            <strong>{lang key='page' section='productOverview'} {$Suchergebnisse->Seitenzahlen->AktuelleSeite}</strong> {lang key='of' section='productOverview'} {$Suchergebnisse->Seitenzahlen->MaxSeiten}
+            <strong>{lang key='page' section='productOverview'} {$Suchergebnisse->getPages()->AktuelleSeite}</strong> {lang key='of' section='productOverview'} {$Suchergebnisse->getPages()->MaxSeiten}
         </div>
         <div class="col-xs-8 page-total text-right">
-            {lang key='products'} {$Suchergebnisse->ArtikelVon} - {$Suchergebnisse->ArtikelBis} {lang key='of' section='productOverview'} {$Suchergebnisse->GesamtanzahlArtikel}
+            {lang key='products'} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
         </div>
     </div>
 {/if}

@@ -1,4 +1,4 @@
-{if $bBoxenFilterNach && $NaviFilter->searchFilterCompat->getOptions()|@count > 0 && empty($Suchergebnisse->Suche->kSuchanfrage)}
+{if $bBoxenFilterNach && $NaviFilter->searchFilterCompat->getOptions()|@count > 0 && empty($Suchergebnisse->getSearch()->kSuchanfrage)}
     <section class="panel panel-default box box-filter-price" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
             <h5 class="panel-title">{lang key='searchFilter'}</h5>

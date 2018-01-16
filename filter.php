@@ -46,7 +46,7 @@ $NaviFilter->getMetaData()->setUserSort($AktuelleKategorie);
 // Erweiterte Darstellung Artikelübersicht
 $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
 // Umleiten falls SEO keine Artikel ergibt
-doMainwordRedirect($NaviFilter, $oSuchergebnisse->Artikel->elemente->count(), true);
+doMainwordRedirect($NaviFilter, $oSuchergebnisse->getProducts()->elemente->count(), true);
 // Bestsellers
 if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
     $productsIDs = $oSuchergebnisse->Artikel->elemente->map(function ($article) {
@@ -84,7 +84,7 @@ if (!isset($_SESSION['ArtikelProSeite'])
     );
 }
 // Verfügbarkeitsbenachrichtigung pro Artikel
-$oSuchergebnisse->Artikel->elemente->transform(function ($article) use ($Einstellungen) {
+$oSuchergebnisse->getProducts()->elemente->transform(function ($article) use ($Einstellungen) {
     $article->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
         $article,
         $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
@@ -93,7 +93,7 @@ $oSuchergebnisse->Artikel->elemente->transform(function ($article) use ($Einstel
     return $article;
 });
 
-if ($oSuchergebnisse->Artikel->elemente->count() === 0) {
+if ($oSuchergebnisse->getProducts()->elemente->count() === 0) {
     if ($NaviFilter->hasCategory()) {
         // hole alle enthaltenen Kategorien
         $KategorieInhalt                  = new stdClass();
@@ -124,9 +124,10 @@ if ($oSuchergebnisse->Artikel->elemente->count() === 0) {
 $oNavigationsinfo = $NaviFilter->getMetaData()->getNavigationInfo($AktuelleKategorie, $expandedCategories);
 // Canonical
 if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
-    $cSeite        = isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite)
-    && $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1
-        ? SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite
+    $pages         = $oSuchergebnisse->getPages();
+    $cSeite        = isset($pages->AktuelleSeite)
+    && $pages->AktuelleSeite > 1
+        ? SEP_SEITE . $pages->AktuelleSeite
         : '';
     $cCanonicalURL = $NaviFilter->getFilterURL()->getURL(null, true) . $cSeite;
 }
@@ -143,7 +144,7 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
            generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
        ->assign('oNaviSeite_arr', $oNavigationsinfo->buildPageNavigation(
            true,
-           $oSuchergebnisse->Seitenzahlen,
+           $oSuchergebnisse->getPages(),
            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
        ->assign('ArtikelProSeite', $productsPerPage)
        ->assign('Navigation', $oNavigationsinfo->getBreadCrumb())
@@ -153,7 +154,7 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
        ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null)
        ->assign('oNavigationsinfo', $oNavigationsinfo)
        ->assign('SEO', true)
-       ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->GesamtanzahlArtikel >=
+       ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->getProductCount() >=
            (int)$Einstellungen['artikeluebersicht']['suche_max_treffer']))
        ->assign('SESSION_NOTWENDIG', false);
 
@@ -170,7 +171,7 @@ $smarty->assign(
 )->assign(
     'meta_description',
     $oNavigationsinfo->generateMetaDescription(
-        $oSuchergebnisse->Artikel->elemente->getItems(),
+        $oSuchergebnisse->getProducts()->elemente->getItems(),
         $oSuchergebnisse,
         $oGlobaleMetaAngabenAssoc_arr,
         $AktuelleKategorie
@@ -178,7 +179,7 @@ $smarty->assign(
 )->assign(
     'meta_keywords',
     $oNavigationsinfo->generateMetaKeywords(
-        $oSuchergebnisse->Artikel->elemente->getItems(),
+        $oSuchergebnisse->getProducts()->elemente->getItems(),
         $AktuelleKategorie
     )
 );

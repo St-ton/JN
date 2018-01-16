@@ -1,4 +1,4 @@
-{if $bBoxenFilterNach && !empty($Suchergebnisse->getTagFilterOptions())}
+{if $bBoxenFilterNach && $Suchergebnisse !== null && !empty($Suchergebnisse->getTagFilterOptions())}
     <section class="panel panel-default box box-filter-tag" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
             <h5 class="panel-title">{lang key="tagFilter" section="global"}</h5>

@@ -193,50 +193,7 @@ abstract class CMSPortlet
      * @param String $src
      * @return string
      */
-    /*protected function getSrcString($src, $calcWidth = 100)
-    {
-        if (empty($src)) {
-            return ' src="' . BILD_KEIN_ARTIKELBILD_VORHANDEN . '"';
-        }
-
-        // EVO specific CSS styles
-        $containerWidth = 1140;
-        $finalWidth     = (int)($containerWidth / 100 * $calcWidth);
-
-        $settings  = Shop::getSettings([CONF_BILDER]);
-        $name      = explode('/', $src);
-        $name      = end($name);
-        $srcString = ' srcset="';
-
-        foreach (static::$dirSizes as $sizeDir => $width) {
-            if (!file_exists(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $sizeDir . $name) === true) {
-                $image     = new Imanee(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $name);
-                $imageSize = $image->getSize();
-                $factor    = $width / $imageSize['width'];
-
-                $image
-                    ->resize((int)$width, (int)($imageSize['height'] * $factor))
-                    ->write(
-                        PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $sizeDir . $name,
-                        $settings['bilder']['bilder_jpg_quali']
-                    );
-
-                unset($image);
-            }
-            $srcString .= PFAD_MEDIAFILES . 'Bilder/' . $sizeDir . $name . ' ' . $width . 'w,';
-        }
-
-        $srcString = substr($srcString, 0, -1) . '" sizes="' . $finalWidth . 'px" src="' . PFAD_MEDIAFILES
-            . 'Bilder/.lg/' . $name . '"';
-
-        return $srcString;
-    }*/
-
-    /**
-     * @param String $src
-     * @return string
-     */
-    protected function getSrcString($src, $colWidths = false)
+    protected function getSrcString($src, $widthHeuristics = false)
     {
         if (empty($src)) {
             return ' src="' . BILD_KEIN_ARTIKELBILD_VORHANDEN . '"';
@@ -271,27 +228,31 @@ abstract class CMSPortlet
         $srcString .= ' sizes="';
         // Reihenfolge wird über die Defaultwerte des ImagePortlets definiert.
         // zwingend notwendig die Reihenfolge wie folgt einzuhalten: lg, md, sm, xs
-        if (!empty($colWidths)) {
-            foreach ($colWidths as $breakpoint => $col) {
-                switch ($breakpoint){
-                    case 'xs':
-                        $breakpoint = 767;
-                        $srcString .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col/12*$breakpoint) . 'px, ' ;
-                        break;
-                    case 'sm':
-                        $breakpoint = 768;
-                        $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col/12*$breakpoint) . 'px, ' ;
-                        break;
-                    case 'md':
-                        $breakpoint = 992;
-                        $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col/12*$breakpoint) . 'px, ' ;
-                        break;
-                    case 'lg':
-                        $breakpoint = 1200;
-                        $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col/12*$breakpoint) . 'px, ' ;
-                        break;
-                    default:
-                        break;
+
+        if (!empty($widthHeuristics)) {
+            ksort($widthHeuristics);
+            foreach ($widthHeuristics as $breakpoint => $col) {
+                if (!empty($col)) {
+                    switch ($breakpoint){
+                        case 'xs':
+                            $breakpoint = 767;
+                            $srcString .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col*100) . 'vw, ' ;
+                            break;
+                        case 'sm':
+                            $breakpoint = 768;
+                            $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col*$breakpoint) . 'px, ' ;
+                            break;
+                        case 'md':
+                            $breakpoint = 992;
+                            $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col*$breakpoint) . 'px, ' ;
+                            break;
+                        case 'lg':
+                            $breakpoint = 1200;
+                            $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col*$breakpoint) . 'px, ' ;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }

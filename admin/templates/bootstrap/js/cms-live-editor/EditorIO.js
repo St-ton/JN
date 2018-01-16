@@ -144,20 +144,31 @@ EditorIO.prototype = {
         // wenn portlet eine property "calculatedWidth" hat => die Breite des Portletcontainers speichern
         // wichtig um bei Bildern die srcsets korrekt zu berechnen
 
-        if(result.properties.calculatedWidth !== undefined) {
-            var elm = portlet;
+        var elm = portlet;
+        var widthHeuristics = {
+            lg: null, md: null, sm: null, xs: 1,
+        };
 
-            var i=10;
-            while(!elm.is(this.rootAreas) && i-- > 0) {
-                elm
-                    .attr('class')
-                    .split(/\s+/)
-                    .forEach(function(x) { console.log(x.match(/col-(xs|sm|md|lg)-([0-9]+)/)) });
-                elm = elm.parent();
+        while(!elm.is(this.gui.rootAreas)) {
+            var cls = elm.attr('class').split(/\s+/);
+
+            for(var i=0; i < cls.length; i++) {
+                var match = cls[i].match(/col-(xs|sm|md|lg)-([0-9]+)/);
+
+                if(Array.isArray(match)) {
+                    var size = match[1];
+                    var cols = parseFloat(match[2]);
+
+                    widthHeuristics[size] = widthHeuristics[size] === null ? 1 : widthHeuristics[size];
+                    widthHeuristics[size] *= cols / 12;
+                }
             }
 
-            // console.log(portlet.outerWidth() / this.gui.rootAreas.outerWidth())
+            elm = elm.parent();
         }
+
+        result.properties.widthHeuristics = widthHeuristics;
+
 
         var children = portlet
         // select direct descendant subareas or non-nested subareas

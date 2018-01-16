@@ -1,4 +1,8 @@
-<input type="hidden" name="calculatedWidth" value="100">
+<input type="hidden" name="widthHeuristics[lg]" value="1">
+<input type="hidden" name="widthHeuristics[md]" value="1">
+<input type="hidden" name="widthHeuristics[sm]" value="1">
+<input type="hidden" name="widthHeuristics[xs]" value="1">
+
 <ul role="tablist" class="nav nav-tabs" id="portlet-design-tab">
     <li class="active" role="presentation"><a aria-expanded="true" aria-controls="general" data-toggle="tab" role="tab" id="general-tab" href="#general">General</a></li>
     <li role="presentation" class=""><a aria-controls="url-link" data-toggle="tab" id="url-link-tab" role="tab" href="#url-link" aria-expanded="false">Url (link)</a></li>

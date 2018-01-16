@@ -32,7 +32,7 @@ class PortletImage extends CMSPortlet
 
         // todo Editor: in preview nur kleinste bilder laden?
         $content = "<img" . $this->getAttribString() . $this->getStyleString()
-            . $this->getSrcString($this->properties['src'], $this->properties['colWidths'])
+            . $this->getSrcString($this->properties['src'], $this->properties['widthHeuristics'])
             . ">";
 
         if ($renderLinks && $linkFlag === 'yes' && !empty($linkUrl)) {
@@ -82,11 +82,7 @@ class PortletImage extends CMSPortlet
             ],
             'src'                => '',
             // todo editor: richtigen wert eintragen
-            // Reihenfolge zwingend einhalten!
-            'colWidths' => [
-
-            ],
-            //'calculatedWidth' => '100',
+            'widthHeuristics' => ['lg' => 1, 'md' => 1, 'sm' => 1, 'xs' => 1],
             // style
             'style' => [
                 'color'               => '',

@@ -117,6 +117,7 @@ class PortletBanner extends CMSPortlet
                 'data-wow-offset'    => '',
                 'data-wow-iteration' => '',
             ],
+            'widthHeuristics' => ['xs' => 1, 'sm' => 1, 'md' => 1, 'lg' => 1],
             // style
             'style' => [
                 'color'               => '',

@@ -1523,7 +1523,11 @@ class ProductFilter
             ['tartikel.kArtikel'],
             $state->joins,
             $state->conditions,
-            $state->having
+            $state->having,
+            null,
+            '',
+            ['tartikel.kArtikel'],
+            'listing'
         );
 
         return array_map(

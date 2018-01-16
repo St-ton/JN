@@ -136,7 +136,8 @@ class ProductFilterSQL
         array $having = [],
         $order = null,
         $limit = '',
-        array $groupBy = ['tartikel.kArtikel']
+        array $groupBy = ['tartikel.kArtikel'],
+        $type = 'filter'
     ) {
         if ($order === null) {
             $orderData = $this->getOrder();
@@ -172,7 +173,10 @@ class ProductFilterSQL
         $conditions[] = 'tartikelsichtbarkeit.kArtikel IS NULL';
 
         $showChildProducts = $this->productFilter->showChildProducts();
-        if ($showChildProducts === 2 || ($showChildProducts === 1 && $this->productFilter->getFilterCount() > 0)) {
+        if ($showChildProducts === 2
+            || ($showChildProducts === 1
+                && ($type === 'filter' || $this->productFilter->getFilterCount() > 0))
+        ) {
             $conditions[] = '(tartikel.kVaterArtikel > 0 
                                 OR NOT EXISTS 
                                     (SELECT 1 FROM tartikel cps WHERE cps.kVaterArtikel = tartikel.kArtikel))';

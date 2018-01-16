@@ -444,10 +444,10 @@ class Metadata
     }
 
     /**
-     * @param array          $products
-     * @param stdClass       $searchResults
-     * @param array          $globalMeta
-     * @param Kategorie|null $category
+     * @param array                      $products
+     * @param ProductFilterSearchResults $searchResults
+     * @param array                      $globalMeta
+     * @param Kategorie|null             $category
      * @return string
      */
     public function generateMetaDescription($products, $searchResults, $globalMeta, $category = null)
@@ -525,12 +525,12 @@ class Metadata
                     )
                     : trim($cKatDescription);
                 // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-                if ($searchResults->Seitenzahlen->AktuelleSeite > 1
-                    && $searchResults->ArtikelVon > 0
-                    && $searchResults->ArtikelBis > 0
+                if ($searchResults->getPages()->AktuelleSeite > 1
+                    && $searchResults->getOffsetStart()> 0
+                    && $searchResults->getOffsetEnd()> 0
                 ) {
                     $cMetaDescription .= ', ' . Shop::Lang()->get('products') .
-                        " {$searchResults->ArtikelVon} - {$searchResults->ArtikelBis}";
+                        " {$searchResults->getOffsetStart()} - {$searchResults->getOffsetEnd()}";
                 }
 
                 return prepareMeta($cMetaDescription, null, $maxLength);
@@ -557,13 +557,12 @@ class Metadata
                 ' ' . $cArtikelName
                 : $this->getMetaStart($searchResults) . ': ' . $cArtikelName;
             // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-            if (
-                $searchResults->Seitenzahlen->AktuelleSeite > 1 &&
-                $searchResults->ArtikelVon > 0 &&
-                $searchResults->ArtikelBis > 0
+            if ($searchResults->getPages()->AktuelleSeite > 1
+                && $searchResults->getOffsetStart() > 0
+                && $searchResults->getOffsetEnd()> 0
             ) {
                 $cMetaDescription .= ', ' . Shop::Lang()->get('products') . ' ' .
-                    $searchResults->ArtikelVon . ' - ' . $searchResults->ArtikelBis;
+                    $searchResults->getOffsetStart() . ' - ' . $searchResults->getOffsetEnd();
             }
         }
 

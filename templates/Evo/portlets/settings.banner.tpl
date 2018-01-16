@@ -14,10 +14,10 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="image-btn-img">Bild</label>
-                    <input type="hidden" id="img-url" name="attr[src]" value="{$properties.attr['src']}">
+                    <input type="hidden" id="img-url" name="src" value="{$properties['src']}">
                     <button type="button" class="btn btn-default cle-image-btn" onclick="editor.onOpenKCFinder(kcfinderCallback);">
-                        {if isset($properties.attr['src'])}
-                            <img src="{$properties.attr['src']}" id="image-btn-img" alt="einzufügendes Bild">
+                        {if isset($properties['src'])}
+                            <img src="{$properties['src']}" id="image-btn-img" alt="einzufügendes Bild">
                         {else}
                             Bild auswählen
                         {/if}
@@ -31,13 +31,13 @@
                 </div>
             </div>
         </div>
-        <div id="banner-zones-container" {if strpos($properties.attr['src'], 'gfx/keinBild.gif') !== false }style="display:none;"{/if}>
+        <div id="banner-zones-container" {if strpos($properties['src'], 'gfx/keinBild.gif') !== false }style="display:none;"{/if}>
             <div class="row">
                 <div class="col-xs-12">
                     <label>Zonen</label>
                     <div id="area_container" class="form-group">
                         <div id="area_wrapper">
-                            <img src="{$properties.attr['src']}" title="" id="clickarea" class="img-responsive"/>
+                            <img src="{$properties['src']}" title="" id="clickarea" class="img-responsive"/>
                         </div>
                     </div>
                     <div class="save_wrapper btn-group form-group">

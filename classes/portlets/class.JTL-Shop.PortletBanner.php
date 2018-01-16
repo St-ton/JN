@@ -32,11 +32,11 @@ class PortletBanner extends CMSPortlet
         $zones = !empty($this->properties['zones']) ? json_decode($this->properties['zones']) : '';
         $oImageMap = new stdClass();
         $oImageMap->cTitel    = $this->properties['data']['kImageMap'];
-        $oImageMap->cBildPfad = $this->properties['attr']['src'];
+        $oImageMap->cBildPfad = $this->properties['src'];
         $oImageMap->oArea_arr = !empty($zones->oArea_arr) ? $zones->oArea_arr : null;
         $isFluid   = false;
 
-        $cBildPfad            = PFAD_ROOT . $this->properties['attr']['src'];
+        $cBildPfad            = PFAD_ROOT . $this->properties['src'];
         $oImageMap->cBildPfad = Shop::getURL() . $oImageMap->cBildPfad;
         $cParse_arr           = parse_url($oImageMap->cBildPfad);
         $oImageMap->cBild     = substr($cParse_arr['path'], strrpos($cParse_arr['path'], '/') + 1);
@@ -81,6 +81,7 @@ class PortletBanner extends CMSPortlet
             ->assign('oBanner', $oImageMap)
             ->assign('isFluidBanner', false)
             ->assign('attribString', $this->getAttribString())
+            ->assign('srcString', $this->getSrcString($this->properties['src'], $this->properties['widthHeuristics']))
             ->assign('isFluid', $isFluid)
             ->fetch('portlets/final.banner.tpl');
     }
@@ -104,12 +105,12 @@ class PortletBanner extends CMSPortlet
                 'kImageMap' => uniqid(),
                 'oArea_arr' => [],
             ],
+            'src'                => '',
             // animation
             'animation-style'     => '',
             // attributes
             'attr' => [
                 'class'              => '',
-                'src'                => '',
                 'alt'                => '',
                 'title'              => '',
                 'data-wow-duration'  => '',

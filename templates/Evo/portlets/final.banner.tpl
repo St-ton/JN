@@ -1,7 +1,7 @@
 {if isset($oBanner)}
     <div class="banner">
         {block name="banner-map"}
-            <img alt="{$oBanner->cTitel}" {$attribString} class="img-responsive" />
+            <img alt="{$oBanner->cTitel}" {$attribString} class="img-responsive" {$srcString} />
             {foreach from=$oBanner->oArea_arr item=oImageMapArea}
                 {strip}
                     <a href="{$oImageMapArea->cUrl}" class="area {$oImageMapArea->cStyle}" style="left:{math equation="100/bWidth*posX" bWidth=$oBanner->fWidth posX=$oImageMapArea->oCoords->x}%;top:{math equation="100/bHeight*posY" bHeight=$oBanner->fHeight posY=$oImageMapArea->oCoords->y}%;width:{math equation="100/bWidth*aWidth" bWidth=$oBanner->fWidth aWidth=$oImageMapArea->oCoords->w}%;height:{math equation="100/bHeight*aHeight" bHeight=$oBanner->fHeight aHeight=$oImageMapArea->oCoords->h}%" title="{$oImageMapArea->cTitel|strip_tags|escape:"html"|escape:"quotes"}">

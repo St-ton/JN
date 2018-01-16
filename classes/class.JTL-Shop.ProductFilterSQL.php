@@ -126,6 +126,7 @@ class ProductFilterSQL
      * @param string $order
      * @param string $limit
      * @param array  $groupBy
+     * @param string $type
      * @return string
      * @throws InvalidArgumentException
      */

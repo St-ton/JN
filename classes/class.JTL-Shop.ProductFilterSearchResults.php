@@ -171,6 +171,7 @@ class ProductFilterSearchResults
         if (get_class($legacy) === __CLASS__) {
             return $legacy;
         }
+        trigger_error('Using a stdClass object for search results is deprecated', E_USER_DEPRECATED);
         foreach (get_object_vars($legacy) as $var => $value) {
             $this->$var = $value;
         }

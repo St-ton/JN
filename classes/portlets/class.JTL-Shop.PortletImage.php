@@ -30,7 +30,8 @@ class PortletImage extends CMSPortlet
 
         $this->properties['attr']['class'] .= " img-responsive $shape";
 
-        $content = "<img" . $this->getAttribString() . $this->getStyleString() . $this->getSrcString($this->properties['src'],$this->properties['calculatedWidth']) . ">";
+        // todo Editor: in preview nur kleinste bilder laden?
+        $content = "<img" . $this->getAttribString() . $this->getStyleString() . $this->getSrcString($this->properties['src'],$this->properties['colWidths']) . ">";
 
         if ($renderLinks && $linkFlag === 'yes' && !empty($linkUrl)) {
             if ($linkNewTabFlag) {
@@ -79,7 +80,14 @@ class PortletImage extends CMSPortlet
             ],
             'src'                => '',
             // todo editor: richtigen wert eintragen
-            'calculatedWidth' => '100',
+            // Reihenfolge zwingend einhalten!
+            'colWidths' => [
+                'lg' => 12,
+                'md' => 11,
+                'sm' => 10,
+                'xs' => 9,
+            ],
+            //'calculatedWidth' => '100',
             // style
             'style' => [
                 'color'               => '',

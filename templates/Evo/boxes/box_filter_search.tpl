@@ -1,18 +1,11 @@
-{if $bBoxenFilterNach && $NaviFilter->searchFilterCompat->getOptions()|@count > 0}
-    {if $Suchergebnisse->getSearchTerm() === null}
-        {assign var=searchID value=0}
-    {else}
-        {assign var=searchID value=$Suchergebnisse->getSearchTerm()->kSuchanfrage}
-    {/if}
-    {if empty($searchID)}
-        <section class="panel panel-default box box-filter-price" id="sidebox{$oBox->kBox}">
-            <div class="panel-heading">
-                <h5 class="panel-title">{lang key='searchFilter'}</h5>
-            </div>
-            <div class="box-body">
-                {include file='snippets/filter/search.tpl'}
-                {*{include file='snippets/filter/genericFilterItem.tpl' filter=$NaviFilter->getSearchFilter()}*}
-            </div>
-        </section>
-    {/if}
+{if $bBoxenFilterNach && $NaviFilter->searchFilterCompat->getOptions()|@count > 0 && empty($NaviFilter->getSearch()->getValue())}
+    <section class="panel panel-default box box-filter-price" id="sidebox{$oBox->kBox}">
+        <div class="panel-heading">
+            <h5 class="panel-title">{lang key='searchFilter'}</h5>
+        </div>
+        <div class="box-body">
+            {include file='snippets/filter/search.tpl'}
+            {*{include file='snippets/filter/genericFilterItem.tpl' filter=$NaviFilter->getSearchFilter()}*}
+        </div>
+    </section>
 {/if}

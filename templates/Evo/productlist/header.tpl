@@ -1,5 +1,5 @@
 {if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
-    <h1>{$Suchergebnisse->SuchausdruckWrite}</h1>
+    <h1>{$Suchergebnisse->getSearchTermWrite()}</h1>
 {/if}
 
 {if !empty($hinweis)}

@@ -119,7 +119,7 @@
                                 <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                 <div class="panel-body">
                                     <p>{$oMedienDatei->cBeschreibung}</p>
-                                    {if $oMedienDatei->oEmbed->code}
+                                    {if isset($oMedienDatei->oEmbed) && $oMedienDatei->oEmbed->code}
                                         {$oMedienDatei->oEmbed->code}
                                     {/if}
                                     {if !empty($oMedienDatei->cPfad)}

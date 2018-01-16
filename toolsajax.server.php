@@ -1073,7 +1073,7 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
         $NaviFilter,
         $bMerkmalFilterVorhanden
     );
-    if (!$bFragenEnde && $bMerkmalFilterVorhanden && $oSuchergebnisse->GesamtanzahlArtikel > 1) {
+    if (!$bFragenEnde && $bMerkmalFilterVorhanden && $oSuchergebnisse->getProductCount() > 1) {
         $smarty->assign('Einstellungen', $Einstellungen)
                ->assign('NaviFilter', $NaviFilter)
                ->assign('oAuswahlAssistent', $_SESSION['AuswahlAssistent']->oAuswahlAssistent);
@@ -1093,7 +1093,7 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
                 );
             }
         }
-    } elseif (!$bFragenEnde || $oSuchergebnisse->GesamtanzahlArtikel === 1 || !$bMerkmalFilterVorhanden) { // Abbruch
+    } elseif (!$bFragenEnde || $oSuchergebnisse->getProductCount() === 1 || !$bMerkmalFilterVorhanden) { // Abbruch
         if (!$kKategorie) {
             unset($_POST['mf1']);
         }
@@ -1146,7 +1146,7 @@ function resetSelectionWizardAnswerAjax($nFrage, $kKategorie)
     // Filter
     //@todo: undefined vars..:
     baueFilterSelectionWizard($kKategorie, $NaviFilter, $FilterSQL, $oSuchergebnisse, $nArtikelProSeite, $nLimitN);
-    filterSelectionWizard($oSuchergebnisse->MerkmalFilter, $bMerkmalFilterVorhanden);
+    filterSelectionWizard($oSuchergebnisse->getAttributeFilterOptions(), $bMerkmalFilterVorhanden);
     $smarty->assign('Einstellungen', $Einstellungen)
            ->assign('NaviFilter', $NaviFilter)
            ->assign('oAuswahlAssistent', $_SESSION['AuswahlAssistent']->oAuswahlAssistent);

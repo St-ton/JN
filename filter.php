@@ -17,7 +17,6 @@ $bestsellers        = [];
 $suchanfrage        = '';
 $doSearch           = true;
 $AktuelleKategorie  = new stdClass();
-$oSuchergebnisse    = new stdClass();
 $expandedCategories = new stdClass();
 $hasError           = false;
 $cParameter_arr     = Shop::getParameters();
@@ -49,7 +48,7 @@ $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
 doMainwordRedirect($NaviFilter, $oSuchergebnisse->getProducts()->elemente->count(), true);
 // Bestsellers
 if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-    $productsIDs = $oSuchergebnisse->Artikel->elemente->map(function ($article) {
+    $productsIDs = $oSuchergebnisse->getProducts()->elemente->map(function ($article) {
         return (int)$article->kArtikel;
     });
     $limit       = isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])
@@ -66,7 +65,7 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
         $limit,
         $minsells
     );
-    $products = $oSuchergebnisse->Artikel->elemente->getItems();
+    $products = $oSuchergebnisse->getProducts()->elemente->getItems();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
 $smarty->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']))
@@ -117,7 +116,7 @@ if ($oSuchergebnisse->getProducts()->elemente->count() === 0) {
         $smarty->assign('KategorieInhalt', $KategorieInhalt);
     } else {
         // Suchfeld anzeigen
-        $oSuchergebnisse->SucheErfolglos = 1;
+        $oSuchergebnisse->setSearchUnsuccessful(true);
     }
 }
 // Navigation

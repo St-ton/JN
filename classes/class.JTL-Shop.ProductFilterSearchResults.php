@@ -146,13 +146,36 @@ class ProductFilterSearchResults
         'TagJSON'             => 'TagFilterJSON'
     ];
 
-    public function __construct()
+    /**
+     * ProductFilterSearchResults constructor.
+     * @param null $legacy - optional stdClass object to convert to instance
+     */
+    public function __construct($legacy = null)
     {
         $this->pages                = new stdClass();
         $this->pages->AktuelleSeite = 0;
         $this->pages->MaxSeiten     = 0;
         $this->pages->minSeite      = 0;
         $this->pages->maxSeite      = 0;
+        if ($legacy !== null) {
+            $this->convert($legacy);
+        }
+    }
+
+    /**
+     * @param stdClass $legacy
+     * @return $this
+     */
+    public function convert($legacy)
+    {
+        if (get_class($legacy) === __CLASS__) {
+            return $legacy;
+        }
+        foreach (get_object_vars($legacy) as $var => $value) {
+            $this->$var = $value;
+        }
+
+        return $this;
     }
 
     /**

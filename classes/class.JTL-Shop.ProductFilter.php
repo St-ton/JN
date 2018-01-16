@@ -1564,11 +1564,11 @@ class ProductFilter
     }
 
     /**
-     * @param bool           $forProductListing - if true, return $oSuchergebnisse object, otherwise keys only
+     * @param bool           $forProductListing - if true, return ProductFilterSearchResults instance, otherwise keys only
      * @param Kategorie|null $currentCategory
      * @param bool           $fillProducts - if true, return Artikel class instances, otherwise keys only
      * @param int            $limit
-     * @return stdClass|Collection
+     * @return ProductFilterSearchResults|Collection
      */
     public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = 0)
     {
@@ -1967,122 +1967,6 @@ class ProductFilter
         $this->attributeFilterCollection->setFilterCollection($attribtuteFilterOptions);
 
         return $searchResults;
-//        if (!isset($searchResults->Herstellerauswahl)) {
-//            $searchResults->Herstellerauswahl = $this->manufacturerFilter->getOptions();
-//        }
-//        if (!isset($searchResults->Bewertung)) {
-//            $searchResults->Bewertung = $this->ratingFilter->getOptions();
-//        }
-//        if (!isset($searchResults->Tags)) {
-//            $searchResults->Tags = $this->tag->getOptions();
-//        }
-//
-//        if (!isset($searchResults->TagsJSON)
-//            && $this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y'
-//        ) {
-//            $searchResults->TagsJSON = Boxen::gibJSONString(array_map(
-//                function ($e) {
-//                    /** @var FilterOption $e */
-//                    return $e->setURL(StringHandler::htmlentitydecode($e->getURL()));
-//                },
-//                $searchResults->Tags
-//            ));
-//        }
-//        if (!isset($searchResults->MerkmalFilter)) {
-//            $searchResults->MerkmalFilter = $this->attributeFilterCollection->getOptions([
-//                'oAktuelleKategorie' => $currentCategory,
-//                'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
-//            ]);
-//            if (count($searchResults->MerkmalFilter) < 1) {
-//                $this->attributeFilterCollection->hide();
-//            } elseif ($hideActiveOnly === true) {
-//                foreach ($searchResults->MerkmalFilter as $mmf) {
-//                    /** @var FilterOption $mmf */
-//                    $options = $mmf->getOptions();
-//                    if (is_array($options)
-//                        && $mmf->getVisibility() !== AbstractFilter::SHOW_NEVER
-//                        && array_reduce(
-//                            $options,
-//                            function ($carry, $option) {
-//                                /** @var FilterOption $option */
-//                                return $carry && $option->isActive();
-//                            },
-//                            true
-//                        ) === true
-//                    ) {
-//                        $mmf->hide();
-//                    }
-//                }
-//            }
-//        }
-//        $this->attributeFilterCollection->setFilterCollection($searchResults->MerkmalFilter);
-//
-//        if (!isset($searchResults->Preisspanne)) {
-//            $searchResults->Preisspanne = $this->priceRangeFilter->getOptions($searchResults->GesamtanzahlArtikel);
-//        }
-//        if (!isset($searchResults->Kategorieauswahl)) {
-//            $searchResults->Kategorieauswahl = $this->categoryFilter->getOptions();
-//        }
-//        if (!isset($searchResults->SuchFilter)) {
-//            $searchResults->SuchFilter = $this->searchFilterCompat->getOptions();
-//        }
-//        if (!isset($searchResults->SuchFilterJSON)) {
-//            $searchResults->SuchFilterJSON = Boxen::gibJSONString(array_map(
-//                function ($e) {
-//                    $e->cURL = StringHandler::htmlentitydecode($e->cURL);
-//                    return $e;
-//                },
-//                $searchResults->SuchFilter
-//            ));
-//        }
-//        if (!isset($searchResults->Suchspecialauswahl)) {
-//            $searchResults->Suchspecialauswahl = $this->searchSpecialFilter->getOptions();
-////            $searchResults->Suchspecialauswahl = empty($this->params['kSuchspecial'])
-////            && empty($this->params['kSuchspecialFilter'])
-////                ? $this->searchSpecialFilter->getOptions()
-////                : null;
-//        }
-//
-//        if (empty($searchResults->Suchspecialauswahl)) {
-//            // hide category filter when a category is being browsed
-//            $this->searchSpecialFilter->hide();
-//        }
-//        $searchResults->customFilters = [];
-//
-//        if (empty($searchResults->Kategorieauswahl) || count($searchResults->Kategorieauswahl) <= 1) {
-//            // hide category filter when a category is being browsed
-//            $this->categoryFilter->hide();
-//        }
-//        if (empty($searchResults->Preisspanne) || count($searchResults->Preisspanne) === 0) {
-//            // hide empty price ranges
-//            $this->priceRangeFilter->hide();
-//        }
-//        if (empty($searchResults->Herstellerauswahl) || count($searchResults->Herstellerauswahl) === 0
-//            || $this->manufacturer->isInitialized()
-//            || ($this->manufacturerFilter->isInitialized()
-//                && count($searchResults->Herstellerauswahl) === 1
-//                && $hideActiveOnly)
-//        ) {
-//            // hide manufacturer filter when browsing manufacturer products
-//            $this->manufacturerFilter->hide();
-//        }
-//        if (empty($searchResults->Bewertung)) {
-//            $this->ratingFilter->hide();
-//        }
-//        $searchResults->customFilters = array_filter(
-//            $this->filters,
-//            function ($e) {
-//                /** @var IFilter $e */
-//                $isCustom = $e->isCustom();
-//                if ($isCustom && count($e->getOptions()) === 0) {
-//                    $e->hide();
-//                }
-//
-//                return $isCustom;
-//            }
-//        );
-//
-//        return $searchResults;
     }
 
     /**

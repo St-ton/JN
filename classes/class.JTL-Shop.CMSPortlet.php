@@ -241,9 +241,6 @@ abstract class CMSPortlet
         if (empty($src)) {
             return ' src="' . BILD_KEIN_ARTIKELBILD_VORHANDEN . '"';
         }
-        // EVO specific CSS styles
-        $containerWidth = 1140;
-        $finalWidth = (int)($containerWidth*0.9);
         $settings = Shop::getSettings([CONF_BILDER]);
 
         $size_arr = [
@@ -272,7 +269,8 @@ abstract class CMSPortlet
 
         $srcString = substr($srcString, 0, -1) . '"';
         $srcString .= ' sizes="';
-        // todo editor: mit kleinster größe anfangen?
+        // Reihenfolge wird über die Defaultwerte des ImagePortlets definiert.
+        // zwingend notwendig die Reihenfolge wie folgt einzuhalten: lg, md, sm, xs
         if (!empty($colWidths)) {
             foreach ($colWidths as $breakpoint => $col) {
                 switch ($breakpoint){
@@ -297,7 +295,7 @@ abstract class CMSPortlet
                 }
             }
         }
-        $srcString .= $finalWidth . 'px" src="' . PFAD_MEDIAFILES . 'Bilder/.md/' . $name . '"';
+        $srcString .= '100vw" src="' . PFAD_MEDIAFILES . 'Bilder/.md/' . $name . '"';
 
         return $srcString;
     }

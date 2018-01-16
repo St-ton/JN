@@ -62,7 +62,7 @@ class PortletImage extends CMSPortlet
     {
         return [
             'shape' => '',
-
+            'image-responsive' => '1',
             // URL
             'link-flag'           => 'no',
             'link-url'            => '',
@@ -84,10 +84,7 @@ class PortletImage extends CMSPortlet
             // todo editor: richtigen wert eintragen
             // Reihenfolge zwingend einhalten!
             'colWidths' => [
-                'lg' => 12,
-                'md' => 11,
-                'sm' => 10,
-                'xs' => 9,
+
             ],
             //'calculatedWidth' => '100',
             // style

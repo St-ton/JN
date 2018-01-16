@@ -54,7 +54,10 @@
             <div class="collapse navbar-collapse" id="le-navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="#" onclick="$('#iframe').width('100%');"><i class="fa fa-television"></i></a>
+                        <a href="#" onclick="$('#iframe').width('100%');"><i class="fa fa-desktop"></i></a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="$('#iframe').width('992px');"><i class="fa fa-laptop"></i></a>
                     </li>
                     <li>
                         <a href="#" onclick="$('#iframe').width('768px');"><i class="fa fa-tablet"></i></a>

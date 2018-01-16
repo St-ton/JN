@@ -1876,7 +1876,6 @@ class ProductFilter
             'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
         ]);
 
-
         $searchResults->setManufacturerFilterOptions($manufacturerOptions)
                       ->setRatingFilterOptions($ratingOptions)
                       ->setTagFilterOptions($tagOptions)

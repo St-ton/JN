@@ -36,9 +36,9 @@ EditorGUI.prototype = {
         this.trashBtn           = this.hostJq('#btn-trash')             .click(this.onTrash.bind(this));
         this.cloneBtn           = this.hostJq('#btn-clone')             .click(this.onClone.bind(this));
         this.configBtn          = this.hostJq('#btn-config')            .click(this.onConfig.bind(this));
-        this.configModal        = this.hostJq('#config-modal')          .submit(this.onConfigSave.bind(this));
+        this.configForm         = this.hostJq('#config-form')           .submit(this.onConfigSave.bind(this));
+        this.configModal        = this.hostJq('#config-modal');
         this.configModalBody    = this.hostJq('#config-modal-body');
-        this.configForm         = this.hostJq('#config-form');
 
         this.portletBtns
             .on('dragstart', this.onPortletBtnDragStart.bind(this))

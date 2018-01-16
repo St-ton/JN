@@ -13,7 +13,7 @@ abstract class CMSPortlet
     /**
      * @var array -
      */
-    private static $dirSizes = [
+    protected static $dirSizes = [
         '.xs/' => WIDTH_CMS_IMAGE_XS,
         '.sm/' => WIDTH_CMS_IMAGE_SM,
         '.md/' => WIDTH_CMS_IMAGE_MD,

@@ -34,18 +34,19 @@ EditorIO.prototype = {
 
     onGetCmsPageResponse: function(cmsPage)
     {
-        var serverLastModified = cmsPage && cmsPage.dLastModified || '0000-00-00';
-        var localLastModified = this.getPageWebStorageLastModified();
+        // var serverLastModified = cmsPage && cmsPage.dLastModified || '0000-00-00';
+        // var localLastModified = this.getPageWebStorageLastModified();
+        //
+        // var locallyModified = localLastModified > serverLastModified;
+        // var data =
+        //     locallyModified ? JSON.parse(window.localStorage.getItem(this.getPageStorageId())) :
+        //     cmsPage         ? cmsPage.data :
+        //     {};
 
-        var locallyModified = localLastModified > serverLastModified;
-        var data = locallyModified
-            ? JSON.parse(window.localStorage.getItem(this.getPageStorageId()))
-            : cmsPage
-                ? cmsPage.data
-                : {};
+        var data = cmsPage ? cmsPage.data : {};
 
         this.pageFromJson(data);
-        this.gui.setUnsaved(locallyModified);
+        //this.gui.setUnsaved(locallyModified);
     },
 
     getPageWebStorageLastModified: function()
@@ -139,8 +140,24 @@ EditorIO.prototype = {
         result.portletTitle = portlet.data('portlettitle');
         result.properties = portlet.data('properties');
         result.subAreas = [];
-        // todo Editor: wenn portlet eine property "calculated Width" hat die Breite des Portletcontainers speichern
+
+        // wenn portlet eine property "calculatedWidth" hat => die Breite des Portletcontainers speichern
         // wichtig um bei Bildern die srcsets korrekt zu berechnen
+
+        if(result.properties.calculatedWidth !== undefined) {
+            var elm = portlet;
+
+            var i=10;
+            while(!elm.is(this.rootAreas) && i-- > 0) {
+                elm
+                    .attr('class')
+                    .split(/\s+/)
+                    .forEach(function(x) { console.log(x.match(/col-(xs|sm|md|lg)-([0-9]+)/)) });
+                elm = elm.parent();
+            }
+
+            // console.log(portlet.outerWidth() / this.gui.rootAreas.outerWidth())
+        }
 
         var children = portlet
         // select direct descendant subareas or non-nested subareas
@@ -167,17 +184,17 @@ EditorIO.prototype = {
 
     savePageToWebStorage: function()
     {
-        window.localStorage.setItem(
-            this.getPageStorageId(),
-            JSON.stringify(this.pageToJson())
-        );
-
-        window.localStorage.setItem(
-            this.getPageStorageId() + '.lastmodified',
-            moment().format("YYYY-MM-DD HH:mm:ss")
-        );
-
-        this.gui.setUnsaved(true);
+        // window.localStorage.setItem(
+        //     this.getPageStorageId(),
+        //     JSON.stringify(this.pageToJson())
+        // );
+        //
+        // window.localStorage.setItem(
+        //     this.getPageStorageId() + '.lastmodified',
+        //     moment().format("YYYY-MM-DD HH:mm:ss")
+        // );
+        //
+        // this.gui.setUnsaved(true);
     },
 
     storePortletAsTemplate: function(portlet, templateName, success, error)

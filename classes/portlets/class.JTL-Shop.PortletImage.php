@@ -81,6 +81,7 @@ class PortletImage extends CMSPortlet
             'src'                => '',
             // todo editor: richtigen wert eintragen
             'calculatedWidth' => '100',
+            'widthHeuristics' => ['xs' => 1, 'sm' => 1, 'md' => 1, 'lg' => 1],
             // style
             'style' => [
                 'color'               => '',

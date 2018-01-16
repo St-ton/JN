@@ -146,17 +146,33 @@ EditorIO.prototype = {
 
         if(result.properties.calculatedWidth !== undefined) {
             var elm = portlet;
+            var widthHeuristics = {
+                xs: 1, sm: null, md: null, lg: null,
+            };
 
-            var i=10;
-            while(!elm.is(this.rootAreas) && i-- > 0) {
-                elm
-                    .attr('class')
-                    .split(/\s+/)
-                    .forEach(function(x) { console.log(x.match(/col-(xs|sm|md|lg)-([0-9]+)/)) });
+            while(!elm.is(this.gui.rootAreas)) {
+                var cls = elm.attr('class').split(/\s+/);
+
+                for(var i=0; i < cls.length; i++) {
+                    var match = cls[i].match(/col-(xs|sm|md|lg)-([0-9]+)/);
+
+                    if(Array.isArray(match)) {
+                        var size = match[1];
+                        var cols = parseFloat(match[2]);
+
+                        widthHeuristics[size] = widthHeuristics[size] === null ? 1 : widthHeuristics[size];
+                        widthHeuristics[size] *= cols / 12;
+                    }
+                }
+
                 elm = elm.parent();
             }
 
-            // console.log(portlet.outerWidth() / this.gui.rootAreas.outerWidth())
+            if(widthHeuristics.sm === null) widthHeuristics.sm = widthHeuristics.xs;
+            if(widthHeuristics.md === null) widthHeuristics.md = widthHeuristics.sm;
+            if(widthHeuristics.lg === null) widthHeuristics.lg = widthHeuristics.md;
+
+            result.properties.widthHeuristics = widthHeuristics;
         }
 
         var children = portlet

@@ -1686,7 +1686,7 @@ class ProductFilter
 
         return $forProductListing === true
             ? $this->searchResults
-            : $productList>elemente;
+            : $productList->elemente;
     }
 
     /**

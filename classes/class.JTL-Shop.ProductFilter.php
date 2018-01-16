@@ -1884,21 +1884,27 @@ class ProductFilter
                       ->setCategoryFilterOptions($categoryOptions)
                       ->setSearchFilterOptions($searchFilterOptions)
                       ->setSearchSpecialFilterOptions($searchSpecialFilters)
-                      ->setAttributeFilterOptions($attribtuteFilterOptions);
+                      ->setAttributeFilterOptions($attribtuteFilterOptions)
+                      ->setCustomFilterOptions(array_filter(
+                          $this->filters,
+                          function ($e) {
+                              /** @var IFilter $e */
+                              $isCustom = $e->isCustom();
+                              if ($isCustom && count($e->getOptions()) === 0) {
+                                  $e->hide();
+                              }
 
+                              return $isCustom;
+                          }
+                      ))
+                      ->setSearchFilterJSON(Boxen::gibJSONString(array_map(
+                          function ($e) {
+                              $e->cURL = StringHandler::htmlentitydecode($e->cURL);
 
-        $searchResults->setCustomFilterOptions(array_filter(
-            $this->filters,
-            function ($e) {
-                /** @var IFilter $e */
-                $isCustom = $e->isCustom();
-                if ($isCustom && count($e->getOptions()) === 0) {
-                    $e->hide();
-                }
-
-                return $isCustom;
-            }
-        ));
+                              return $e;
+                          },
+                          $searchFilterOptions
+                      )));
 
         if ($this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
             $searchResults->setTagFilterJSON(Boxen::gibJSONString(array_map(
@@ -1910,20 +1916,11 @@ class ProductFilter
             )));
         }
 
-        $searchResults->setSearchFilterJSON(Boxen::gibJSONString(array_map(
-            function ($e) {
-                $e->cURL = StringHandler::htmlentitydecode($e->cURL);
-
-                return $e;
-            },
-            $searchFilterOptions
-        )));
-
         if (empty($searchSpecialFilters)) {
             // hide category filter when a category is being browsed
             $this->searchSpecialFilter->hide();
         }
-        if (empty($categoryOptions) || count($categoryOptions) <= 1) {
+        if (empty($categoryOptions) || count($categoryOptions) === 0) {
             // hide category filter when a category is being browsed
             $this->categoryFilter->hide();
         }

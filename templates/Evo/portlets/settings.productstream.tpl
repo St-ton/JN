@@ -57,9 +57,8 @@
         });
     });
 
-    editor.configSaveCallback = function ()
-    {
+    editor.setConfigSaveCallback(function () {
         console.log(articlePicker.getSelection());
         $('#articleIds').val(articlePicker.getSelection().join(','));
-    };
+    });
 </script>

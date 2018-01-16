@@ -49,6 +49,7 @@ class CMS
     /**
      * @param $pageID - current page ID
      * @return CMSPage
+     * @throws Exception
      */
     public function getPage($pageID)
     {
@@ -101,10 +102,11 @@ class CMS
 
     /**
      * @param $pageID string
+     * @return bool - true if lock was granted
      */
     public function lockPage($pageID)
     {
-        $this->getPage($pageID)->lock($this->oAccount->account()->cLogin);
+        return $this->getPage($pageID)->lock($this->oAccount->account()->cLogin);
     }
 
     /**
@@ -158,7 +160,7 @@ class CMS
     /**
      * @return CMSTemplate[]
      */
-    public static function getTemplates()
+    public function getTemplates()
     {
         return Shop::DB()->selectAll('tcmstemplate', [], []);
     }

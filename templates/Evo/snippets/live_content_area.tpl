@@ -5,6 +5,6 @@
         </div>
     {/if}
 {else}
-    <div id="{$id}" class="cle-area"></div>
+    <div id="{$id}" class="cle-area cle-rootarea"></div>
 {/if}
 

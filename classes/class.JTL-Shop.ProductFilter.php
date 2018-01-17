@@ -1923,7 +1923,10 @@ class ProductFilter
             // hide category filter when a category is being browsed
             $this->searchSpecialFilter->hide();
         }
-        if (empty($categoryOptions) || count($categoryOptions) === 0) {
+        if (empty($categoryOptions)
+            || count($categoryOptions) === 0
+            || $this->baseState->getClassName() === 'FilterBaseCategory'
+        ) {
             // hide category filter when a category is being browsed
             $this->categoryFilter->hide();
         }

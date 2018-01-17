@@ -1925,7 +1925,7 @@ class ProductFilter
         }
         if (empty($categoryOptions)
             || count($categoryOptions) === 0
-            || $this->baseState->getClassName() === 'FilterBaseCategory'
+            || ($this->category->isInitialized() && $this->category->getValue() !== null)
         ) {
             // hide category filter when a category is being browsed
             $this->categoryFilter->hide();

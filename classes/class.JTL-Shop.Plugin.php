@@ -908,12 +908,12 @@ class Plugin
      */
     private function checkFileExistence($szCanonicalFileName)
     {
-        static $vfDone = [];
-        if (false === array_key_exists($szCanonicalFileName, $vfDone)) {
+        static $vChecked = [];
+        if (false === array_key_exists($szCanonicalFileName, $vChecked)) {
             // only if we did not know that file (in our "remember-array"), we perform this check
-            $vfDone[$szCanonicalFileName] = file_exists($szCanonicalFileName); // do the actual check
+            $vChecked[$szCanonicalFileName] = file_exists($szCanonicalFileName); // do the actual check
         }
 
-        return $vfDone[$szCanonicalFileName];
+        return $vChecked[$szCanonicalFileName];
     }
 }

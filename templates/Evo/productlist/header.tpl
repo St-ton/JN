@@ -16,7 +16,7 @@
             <ul class="list-unstyled">
                 <li class="form-group">
                     <label for="searchkey">{lang key='searchText'}</label>
-                    <input type="text" class="form-control" name="suchausdruck" value="{if $Suchergebnisse->getSearchTerm()}{$Suchergebnisse->cSuche|escape:'htmlall'}{/if}" id="searchkey" />
+                    <input type="text" class="form-control" name="suchausdruck" value="{if $Suchergebnisse->getSearchTerm()}{$Suchergebnisse->getSearchTerm()|escape:'htmlall'}{/if}" id="searchkey" />
                 </li>
                 <li class="form-group">
                     <input type="submit" value="{lang key='searchAgain' section='productOverview'}" class="submit btn btn-primary" />

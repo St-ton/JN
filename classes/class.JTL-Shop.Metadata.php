@@ -408,7 +408,7 @@ class Metadata
                 $this->name     = $this->manufacturer->getName();
                 $this->imageURL = $this->manufacturer->cBildpfadNormal;
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'B') {
-                $this->imageURL = $this->manufacturer > cBildpfadNormal;
+                $this->imageURL = $this->manufacturer->cBildpfadNormal;
             }
             if ($this->manufacturer !== null) {
                 $this->setMetaTitle($this->manufacturer->cMetaTitle)

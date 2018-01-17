@@ -420,7 +420,7 @@ class Plugin
         $this->oPluginEinstellung_arr = Shop::DB()->query(
             "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugineinstellungen
-                LEFT JOIN tplugineinstellungenconf 
+                LEFT JOIN tplugineinstellungenconf
                     ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
                 WHERE tplugineinstellungen.kPlugin = " . $kPlugin, 2
@@ -769,7 +769,7 @@ class Plugin
         $oPluginHook_arr      = Shop::DB()->query(
             "SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
                 FROM tplugin
-                JOIN tpluginhook 
+                JOIN tpluginhook
                     ON tpluginhook.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = 2
                 ORDER BY tpluginhook.nPriority, tplugin.kPlugin", 2
@@ -924,13 +924,12 @@ class Plugin
      */
     private function checkFileExistence($szCanonicalFileName)
     {
-        static $vfDone = [];
-        if (false === array_key_exists($szCanonicalFileName, $vfDone)) {
+        static $vChecked = [];
+        if (false === array_key_exists($szCanonicalFileName, $vChecked)) {
             // only if we did not know that file (in our "remember-array"), we perform this check
-            $vfDone[$szCanonicalFileName] = true; // we're using always a hash here, for speed-up reasons!
-            return file_exists($szCanonicalFileName); // do the actual check
+            $vChecked[$szCanonicalFileName] = file_exists($szCanonicalFileName); // do the actual check
         }
 
-        return false;
+        return $vChecked[$szCanonicalFileName];
     }
 }

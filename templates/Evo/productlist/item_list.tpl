@@ -242,8 +242,8 @@
                             <input type="hidden" name="wke" value="1" />
                             <input type="hidden" name="overview" value="1" />
                             <input type="hidden" name="Sortierung" value="{if !empty($Suchergebnisse->Sortierung)}{$Suchergebnisse->Sortierung}{/if}" />
-                            {if isset($Suchergebnisse->Seitenzahlen->AktuelleSeite) && $Suchergebnisse->Seitenzahlen->AktuelleSeite > 1}
-                                <input type="hidden" name="seite" value="{$Suchergebnisse->Seitenzahlen->AktuelleSeite}" />
+                            {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
+                                <input type="hidden" name="seite" value="{$Suchergebnisse->getPages()->AktuelleSeite}" />
                             {/if}
                             {if $NaviFilter->hasCategory()}
                                 <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />

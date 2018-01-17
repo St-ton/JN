@@ -56,7 +56,10 @@ class ProductFilterURL
                 $seoParam->seo     = $filterSeoUrl;
                 $seoFilterParams[] = $seoParam;
             } else {
-                $nonSeoFilterParams[] = [$base->getUrlParam() => $base->getValue()];
+                $filterValue = get_class($base) === 'FilterBaseSearchQuery'
+                    ? $base->getName()
+                    : $base->getValue();
+                $nonSeoFilterParams[$base->getUrlParam()] = $filterValue;
             }
         }
         if ($bCanonical === true) {

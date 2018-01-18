@@ -396,7 +396,7 @@ class LinkHelper
                 $links                                           = array_merge($links);
                 $linkGroups->{$Linkgruppe->cTemplatename}->Links = $links;
             }
-            $cDatei = 'navi.php';
+            $cDatei = 'index.php';
             // startseite
             $start_arr = Shop::DB()->query(
                 "SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink

@@ -270,10 +270,10 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
             $oResponse->cPopup = utf8_encode($smarty->fetch('productdetails/redirect.tpl'));
             //redirekt zum artikel, um variation/en zu wählen / MBM beachten
             if ($Artikel->nIstVater === 1) {
-                $location = 'navi.php?a=' . $Artikel->kArtikel .
+                $location = 'index.php?a=' . $Artikel->kArtikel .
                     '&n=' . $anzahl . '&r=' . implode(',', $redirectParam);
             } elseif ($Artikel->kEigenschaftKombi > 0) {
-                $location = 'navi.php?a=' . $Artikel->kVaterArtikel . '&a2=' .
+                $location = 'index.php?a=' . $Artikel->kVaterArtikel . '&a2=' .
                     $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam);
             } else {
                 $location = 'index.php?a=' . $Artikel->kArtikel . '&n=' .

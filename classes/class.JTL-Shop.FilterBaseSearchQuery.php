@@ -45,7 +45,7 @@ class FilterBaseSearchQuery extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('l')
+             ->setUrlParam('suche')
              ->setUrlParamSEO(null);
     }
 

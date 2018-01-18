@@ -1592,7 +1592,7 @@ class ProductFilter
             $this->searchResults->setProductCount($productCount);
             if (!empty($this->search->getName())) {
                 if ($this->searchQuery->getError() === null) {
-                    $this->search->saveQuery($productCount);
+                    $this->search->saveQuery($productCount, $this->search->getName(), !$this->bExtendedJTLSearch);
                     $this->search->setQueryID($this->search->getName(), $this->getLanguageID());
                     $this->searchQuery->setValue($this->search->getValue())->setSeo($this->languages);
                 } else {
@@ -1628,6 +1628,7 @@ class ProductFilter
         }
         if ($error !== false) {
             $this->searchResults->setProductCount(0)
+                                ->setProducts($productList)
                                 ->setSearchUnsuccessful(true)
                                 ->setSearchTerm(strip_tags(trim($this->params['cSuche'])))
                                 ->setError($error);
@@ -1660,10 +1661,6 @@ class ProductFilter
         $_SESSION['oArtikelUebersichtKey_arr']   = $productList->productKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
-        $bEchteSuche = !$this->bExtendedJTLSearch && !empty($params['cSuche']);
-        if (!$this->bExtendedJTLSearch && !empty($this->search->getName())) {
-            $this->search->saveQuery($this->search->getName(), $this->searchResults->getProductCount(), $bEchteSuche);
-        }
         $this->searchResults->setProducts($productList);
 
         if ($forProductListing === true) {

@@ -45,7 +45,7 @@ $NaviFilter->getMetaData()->setUserSort($AktuelleKategorie);
 // Erweiterte Darstellung Artikelübersicht
 $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
 // Umleiten falls SEO keine Artikel ergibt
-doMainwordRedirect($NaviFilter, $oSuchergebnisse->getProducts()->elemente->count(), true);
+doMainwordRedirect($NaviFilter, $oSuchergebnisse->getProductCount(), true);
 // Bestsellers
 if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
     $productsIDs = $oSuchergebnisse->getProducts()->elemente->map(function ($article) {

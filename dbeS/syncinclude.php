@@ -1137,12 +1137,23 @@ function unzipSyncFiles($zipFile, $targetPath, $source = '')
         $archive = new ZipArchive();
         $open    = $archive->open($zipFile);
         if (!$open) {
+            Jtllog::writeLog(
+                'unzipSyncFiles: Kann Datei nicht öffnen: ' . $zipFile,
+                JTLLOG_LEVEL_ERROR,
+                false,
+                'syncinclude'
+            );
+
             return false;
         }
         $filenames = [];
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('unzipSyncFiles: Anzahl Dateien im Zip: ' . $archive->numFiles, JTLLOG_LEVEL_DEBUG, false,
-                'syncinclude');
+            Jtllog::writeLog(
+                'unzipSyncFiles: Anzahl Dateien im Zip: ' . $archive->numFiles,
+                JTLLOG_LEVEL_DEBUG,
+                false,
+                'syncinclude'
+            );
         }
         if (is_dir($targetPath) || (mkdir($targetPath) && is_dir($targetPath))) {
             for ($i = 0; $i < $archive->numFiles; ++$i) {
@@ -1167,7 +1178,7 @@ function unzipSyncFiles($zipFile, $targetPath, $source = '')
     } else {
         if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
             Jtllog::writeLog(
-                utf8_decode('Achtung: Klasse ZipArchive wurde nicht gefunden, bitte PHP-Konfiguration überprüfen.'),
+                'Achtung: Klasse ZipArchive wurde nicht gefunden, bitte PHP-Konfiguration überprüfen.',
                 JTLLOG_LEVEL_NOTICE,
                 false,
                 'syncinclude'

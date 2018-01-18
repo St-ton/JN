@@ -6,7 +6,7 @@
             <div class="panel">
                 <div class="panel-body">
                     {foreach name=produktTaggings from=$ProduktTagging item=produktTagging}
-                        <a href="{$produktTagging->cURLFull}" title="{$produktTagging->cName}"><span class="badge pull-right">{$produktTagging->cName}</span></a>
+                        <a href="{$produktTagging->cURLFull}" title="{$produktTagging->cName}"><span class="badge">{$produktTagging->cName}</span></a>
                     {/foreach}
                 </div>
             </div>

@@ -9,6 +9,8 @@
  */
 class FilterItemAttribute extends FilterBaseAttribute
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var string
      */
@@ -44,10 +46,10 @@ class FilterItemAttribute extends FilterBaseAttribute
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'mf';
-        $this->urlParamSEO = SEP_MERKMAL;
-        $this->setVisibility($this->getConfig()['navigationsfilter']['merkmalfilter_verwenden']);
+        $this->setIsCustom(false)
+             ->setUrlParam('mf')
+             ->setUrlParamSEO(SEP_MERKMAL)
+             ->setVisibility($this->getConfig()['navigationsfilter']['merkmalfilter_verwenden']);
     }
 
     /**
@@ -232,7 +234,7 @@ class FilterItemAttribute extends FilterBaseAttribute
 
     /**
      * @param mixed|null $data
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -504,13 +506,6 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attributeValueURL = $this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($filterValue->kMerkmalWert)
                 );
-                $seoURL            = $additionalFilter->getSeo($this->getLanguageID());
-                if (!empty($seoURL) && $attributeValue->isActive()) {
-                    // remove '__attrY' from '<url>attrX__attrY'
-                    $attributeValueURL = str_replace('__' . $seoURL, '', $attributeValueURL);
-                    // remove 'attrY__' from '<url>attrY__attrX'
-                    $attributeValueURL = str_replace($seoURL . '__', '', $attributeValueURL);
-                }
                 $attribute->addOption($attributeValue->setURL($attributeValueURL));
             }
             if (($optionsCount = count($attribute->getOptions())) > 0) {

@@ -26,18 +26,18 @@ class FilterBaseSearchSpecial extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'q';
-        $this->urlParamSEO = null;
+        $this->setIsCustom(false)
+             ->setUrlParam('q')
+             ->setUrlParamSEO(null);
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->value = (int)$id;
+        $this->value = (int)$value;
 
         return $this;
     }

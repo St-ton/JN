@@ -44,18 +44,18 @@ class FilterBaseSearchQuery extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'l';
-        $this->urlParamSEO = null;
+        $this->setIsCustom(false)
+             ->setUrlParam('l')
+             ->setUrlParamSEO(null);
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->value = (int)$id;
+        $this->value = (int)$value;
 
         return $this;
     }
@@ -234,7 +234,7 @@ class FilterBaseSearchQuery extends AbstractFilter
 
     /**
      * @param null $data
-     * @return array|int|object
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -320,7 +320,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $nPrioStep = ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9;
             }
             foreach ($searchFilters as $searchFilter) {
-                $fe = (new FilterOption())
+                $fo = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())
@@ -332,13 +332,13 @@ class FilterBaseSearchQuery extends AbstractFilter
                     ))
                     ->setClass(rand(1, 10));
                 if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
-                    $fe->setClass(round(
+                    $fo->setClass(round(
                             ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                             $nPrioStep
                         ) + 1
                     );
                 }
-                $options[] = $fe;
+                $options[] = $fo;
             }
         }
         $this->options = $options;

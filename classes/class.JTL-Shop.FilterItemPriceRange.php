@@ -9,6 +9,8 @@
  */
 class FilterItemPriceRange extends AbstractFilter
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var float
      */
@@ -54,19 +56,19 @@ class FilterItemPriceRange extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'pf';
-        $this->setVisibility($this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'])
+        $this->setIsCustom(false)
+             ->setUrlParam('pf')
+             ->setVisibility($this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'])
              ->setFrontendName(Shop::Lang()->get('rangeOfPrices'));
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->cWert = (int)$id;
+        $this->cWert = (int)$value;
 
         return $this;
     }
@@ -100,8 +102,8 @@ class FilterItemPriceRange extends AbstractFilter
         list($fVon, $fBis) = explode('_', $id);
         $this->fVon  = (float)$fVon;
         $this->fBis  = (float)$fBis;
-        $this->cWert = ($id === '0_0') ? 0 : ($this->fVon . '_' . $this->fBis);
-        //localize prices
+        $this->cWert = $id === '0_0' ? 0 : ($this->fVon . '_' . $this->fBis);
+        // localize prices
         $this->cVonLocalized = gibPreisLocalizedOhneFaktor($this->fVon);
         $this->cBisLocalized = gibPreisLocalizedOhneFaktor($this->fBis);
         $this->setName($this->cVonLocalized . ' - ' . $this->cBisLocalized);
@@ -295,7 +297,7 @@ class FilterItemPriceRange extends AbstractFilter
 
     /**
      * @param int $data - product count
-     * @return array
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -458,7 +460,7 @@ class FilterItemPriceRange extends AbstractFilter
                 $nStep            = $oPreis->fStep;
                 $additionalFilter = new self($this->productFilter);
                 foreach ($priceRanges as $i => $count) {
-                    $fe   = new FilterOption();
+                    $fo   = new FilterOption();
                     $nVon = $nPreisMin + $i * $nStep;
                     $nBis = $nPreisMin + ($i + 1) * $nStep;
                     if ($nBis > $nPreisMax) {
@@ -475,12 +477,12 @@ class FilterItemPriceRange extends AbstractFilter
                         $nBis,
                         $currency
                     );
-                    $fe->nVon          = $nVon;
-                    $fe->nBis          = $nBis;
-                    $fe->cVonLocalized = $cVonLocalized;
-                    $fe->cBisLocalized = $cBisLocalized;
+                    $fo->nVon          = $nVon;
+                    $fo->nBis          = $nBis;
+                    $fo->cVonLocalized = $cVonLocalized;
+                    $fo->cBisLocalized = $cBisLocalized;
 
-                    $options[] = $fe->setType($this->getType())
+                    $options[] = $fo->setType($this->getType())
                                     ->setClassName($this->getClassName())
                                     ->setParam($this->getUrlParam())
                                     ->setName($cVonLocalized . ' - ' . $cBisLocalized)
@@ -526,10 +528,10 @@ class FilterItemPriceRange extends AbstractFilter
                             SELECT ' . $this->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr) . '
                                 FROM tartikel ' . implode("\n", $state->joins) . '
                                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                                    AND tartikel.kVaterArtikel = 0
-                                    ' . $this->productFilter->getFilterSQL()->getStockFilterSQL() . '
-                                    ' . $state->conditions . '
-                                GROUP BY tartikel.kArtikel
+                                    AND tartikel.kVaterArtikel = 0 ' .
+                                    $this->productFilter->getFilterSQL()->getStockFilterSQL() .
+                                    $state->conditions .
+                                ' GROUP BY tartikel.kArtikel
                                 ' . implode("\n", $state->having) . '
                         ) AS ssMerkmal
                     ', 1
@@ -547,27 +549,27 @@ class FilterItemPriceRange extends AbstractFilter
                 }
                 $additionalFilter = new self($this->productFilter);
                 foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
-                    $fe                 = new FilterOption();
-                    $fe->nVon           = $oPreisspannenfilter->nVon;
-                    $fe->nBis           = $oPreisspannenfilter->nBis;
-                    $fe->nAnzahlArtikel = (int)$priceRanges;
-                    $fe->cVonLocalized  = gibPreisLocalizedOhneFaktor(
-                        $fe->nVon,
+                    $fo                 = new FilterOption();
+                    $fo->nVon           = $oPreisspannenfilter->nVon;
+                    $fo->nBis           = $oPreisspannenfilter->nBis;
+                    $fo->nAnzahlArtikel = (int)$priceRanges;
+                    $fo->cVonLocalized  = gibPreisLocalizedOhneFaktor(
+                        $fo->nVon,
                         $currency
                     );
-                    $fe->cBisLocalized  = gibPreisLocalizedOhneFaktor(
-                        $fe->nBis,
+                    $fo->cBisLocalized  = gibPreisLocalizedOhneFaktor(
+                        $fo->nBis,
                         $currency
                     );
-                    $options[] = $fe->setType($this->getType())
+                    $options[] = $fo->setType($this->getType())
                                     ->setClassName($this->getClassName())
                                     ->setParam($this->getUrlParam())
-                                    ->setName($fe->cVonLocalized . ' - ' . $fe->cBisLocalized)
+                                    ->setName($fo->cVonLocalized . ' - ' . $fo->cBisLocalized)
                                     ->setValue($i)
-                                    ->setCount($fe->nAnzahlArtikel)
+                                    ->setCount($fo->nAnzahlArtikel)
                                     ->setSort(0)
                                     ->setURL($this->productFilter->getFilterURL()->getURL(
-                                        $additionalFilter->init($fe->nVon . '_' . $fe->nBis)
+                                        $additionalFilter->init($fo->nVon . '_' . $fo->nBis)
                                     ));
                 }
             }

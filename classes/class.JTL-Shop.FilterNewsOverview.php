@@ -22,18 +22,18 @@ class FilterNewsOverview extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'nm';
-        $this->urlParamSEO = null;
+        $this->setIsCustom(false)
+             ->setUrlParam('nm')
+             ->setUrlParamSEO(null);
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->kNewsMonatsUebersicht = (int)$id;
+        $this->kNewsMonatsUebersicht = (int)$value;
 
         return $this;
     }

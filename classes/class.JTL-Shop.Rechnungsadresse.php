@@ -150,7 +150,10 @@ class Rechnungsadresse extends Adresse
                 'cMail'            => $this->cMail,
                 'cZusatz'          => $this->cZusatz,
                 'cAnredeLocalized' => $this->cAnredeLocalized,
-                'cHausnummer'      => $this->cHausnummer
+                'cHausnummer'      => $this->cHausnummer,
+                // kXXX variables will be set as attribute nodes by syncinclude.php::buildAttributes
+                'kRechnungsadresse' => $this->kRechnungsadresse,
+                'kKunde'            => $this->kKunde,
             ];
         }
 

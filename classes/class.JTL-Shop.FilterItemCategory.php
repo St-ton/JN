@@ -17,10 +17,10 @@ class FilterItemCategory extends FilterBaseCategory
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'kf';
-        $this->urlParamSEO = SEP_KAT;
-        $this->setVisibility($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'])
+        $this->setIsCustom(false)
+             ->setUrlParam('kf')
+             ->setUrlParamSEO(SEP_KAT)
+             ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'])
              ->setFrontendName(Shop::Lang()->get('allCategories'));
     }
 
@@ -71,7 +71,7 @@ class FilterItemCategory extends FilterBaseCategory
 
     /**
      * @param null $data
-     * @return array|int|stdClass
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -192,7 +192,7 @@ class FilterItemCategory extends FilterBaseCategory
             if ($categoryFilterType === 'KP') {
                 $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
             }
-            $fe             = (new FilterOption())
+            $options[] = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
@@ -203,7 +203,6 @@ class FilterItemCategory extends FilterBaseCategory
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$category->kKategorie)
                 ));
-            $options[]      = $fe;
         }
         // neue Sortierung
         if ($categoryFilterType === 'KP') {

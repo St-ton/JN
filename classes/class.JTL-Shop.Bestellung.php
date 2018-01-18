@@ -564,7 +564,11 @@ class Bestellung
                     }
                 }
 
-                WarenkorbPos::setEstimatedDelivery($position, $position->nLongestMinDelivery, $position->nLongestMaxDelivery);
+                WarenkorbPos::setEstimatedDelivery(
+                    $position,
+                    $position->nLongestMinDelivery,
+                    $position->nLongestMaxDelivery
+                );
             }
             if (!isset($position->kSteuerklasse)) {
                 $taxClass = Shop::DB()->select('tsteuersatz', 'fSteuersatz', $position->fMwSt);
@@ -621,10 +625,22 @@ class Bestellung
                         $oVaterPos = $this->Positionen[$nVaterPos];
                         if (is_object($oVaterPos)) {
                             $position->nAnzahlEinzel       = $position->nAnzahl / $oVaterPos->nAnzahl;
-                            $oVaterPos->cKonfigpreisLocalized[0]       = gibPreisStringLocalized($fPreisBrutto, $this->Waehrung);
-                            $oVaterPos->cKonfigpreisLocalized[1]       = gibPreisStringLocalized($fPreisNetto, $this->Waehrung);
-                            $oVaterPos->cKonfigeinzelpreisLocalized[0] = gibPreisStringLocalized($fPreisBrutto / $oVaterPos->nAnzahl, $this->Waehrung);
-                            $oVaterPos->cKonfigeinzelpreisLocalized[1] = gibPreisStringLocalized($fPreisNetto / $oVaterPos->nAnzahl, $this->Waehrung);
+                            $oVaterPos->cKonfigpreisLocalized[0]       = gibPreisStringLocalized(
+                                $fPreisBrutto,
+                                $this->Waehrung
+                            );
+                            $oVaterPos->cKonfigpreisLocalized[1]       = gibPreisStringLocalized(
+                                $fPreisNetto,
+                                $this->Waehrung
+                            );
+                            $oVaterPos->cKonfigeinzelpreisLocalized[0] = gibPreisStringLocalized(
+                                $fPreisBrutto / $oVaterPos->nAnzahl,
+                                $this->Waehrung
+                            );
+                            $oVaterPos->cKonfigeinzelpreisLocalized[1] = gibPreisStringLocalized(
+                                $fPreisNetto / $oVaterPos->nAnzahl,
+                                $this->Waehrung
+                            );
                         }
                     }
                 }
@@ -650,7 +666,12 @@ class Bestellung
             : $this->Lieferadresse->cPLZ;
         $this->oLieferschein_arr = [];
         if ((int)$this->kBestellung > 0) {
-            $kLieferschein_arr = Shop::DB()->selectAll('tlieferschein', 'kInetBestellung', (int)$this->kBestellung, 'kLieferschein');
+            $kLieferschein_arr = Shop::DB()->selectAll(
+                'tlieferschein',
+                'kInetBestellung',
+                (int)$this->kBestellung,
+                'kLieferschein'
+            );
             foreach ($kLieferschein_arr as $_lieferschein) {
                 $_lieferschein                = new Lieferschein($_lieferschein->kLieferschein, $oData);
                 $_lieferschein->oPosition_arr = [];
@@ -677,7 +698,7 @@ class Bestellung
                                 $oPosition->bAusgeliefert = true;
                             }
                         }
-                        $this->oLieferschein_arr[] = $oLieferschein;
+                        $this->oLieferschein_arr[] = $_lieferschein;
                     }
                     unset($oPosition);
                     // Charge, MDH & Seriennummern
@@ -963,8 +984,8 @@ class Bestellung
             $this->oEstimatedDelivery->longestMin = (int)$nMinDelivery;
             $this->oEstimatedDelivery->longestMax = (int)$nMaxDelivery;
 
-            $this->oEstimatedDelivery->localized = (!empty($this->oEstimatedDelivery->longestMin) &&
-                !empty($this->oEstimatedDelivery->longestMax))
+            $this->oEstimatedDelivery->localized = (!empty($this->oEstimatedDelivery->longestMin)
+                && !empty($this->oEstimatedDelivery->longestMax))
                 ? getDeliverytimeEstimationText(
                     $this->oEstimatedDelivery->longestMin,
                     $this->oEstimatedDelivery->longestMax
@@ -997,11 +1018,19 @@ class Bestellung
                         isset($lang->cISOSprache) ? $lang->cISOSprache : null,
                         $this->kVersandart
                     );
-                    WarenkorbPos::setEstimatedDelivery($oPosition, $oPosition->Artikel->nMinDeliveryDays, $oPosition->Artikel->nMaxDeliveryDays);
-                    if (isset($oPosition->Artikel->nMinDeliveryDays) && $oPosition->Artikel->nMinDeliveryDays > $longestMinDeliveryDays) {
+                    WarenkorbPos::setEstimatedDelivery(
+                        $oPosition,
+                        $oPosition->Artikel->nMinDeliveryDays,
+                        $oPosition->Artikel->nMaxDeliveryDays
+                    );
+                    if (isset($oPosition->Artikel->nMinDeliveryDays)
+                        && $oPosition->Artikel->nMinDeliveryDays > $longestMinDeliveryDays
+                    ) {
                         $longestMinDeliveryDays = $oPosition->Artikel->nMinDeliveryDays;
                     }
-                    if (isset($oPosition->Artikel->nMaxDeliveryDays) && $oPosition->Artikel->nMaxDeliveryDays > $longestMaxDeliveryDays) {
+                    if (isset($oPosition->Artikel->nMaxDeliveryDays)
+                        && $oPosition->Artikel->nMaxDeliveryDays > $longestMaxDeliveryDays
+                    ) {
                         $longestMaxDeliveryDays = $oPosition->Artikel->nMaxDeliveryDays;
                     }
                 }

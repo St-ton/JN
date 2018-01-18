@@ -378,9 +378,7 @@ class JTLSmarty extends SmartyBC
             )
         ) {
             $this->unregisterFilter('output', [$this, '__outputFilter']);
-            /** Workaround to force DOMDocumentWrapper doing mb_convert_encoding
-             * (because: DOMDocument::loadHTML can't load UTF-8 markup correctly) */
-            $doc = phpQuery::newDocumentHTML($tplOutput, 'HTML-ENTITIES');
+            $doc = phpQuery::newDocumentHTML($tplOutput, JTL_CHARSET);
             executeHook($isMobile ? HOOK_SMARTY_OUTPUTFILTER_MOBILE : HOOK_SMARTY_OUTPUTFILTER);
             $tplOutput = $doc->htmlOuter();
         }

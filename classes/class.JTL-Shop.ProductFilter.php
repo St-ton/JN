@@ -1920,11 +1920,17 @@ class ProductFilter
             // hide category filter when a category is being browsed
             $this->searchSpecialFilter->hide();
         }
-        if (empty($categoryOptions) || count($categoryOptions) === 0) {
+        if (empty($categoryOptions)
+            || count($categoryOptions) === 0
+            || ($this->category->isInitialized() && $this->category->getValue() !== null)
+        ) {
             // hide category filter when a category is being browsed
             $this->categoryFilter->hide();
         }
-        if (empty($priceRangeOptions) || count($priceRangeOptions) === 0) {
+        if (empty($priceRangeOptions)
+            || count($priceRangeOptions) === 0
+            || ($this->priceRangeFilter->isInitialized() && $this->priceRangeFilter->getValue() !== null)
+       ) {
             // hide empty price ranges
             $this->priceRangeFilter->hide();
         }

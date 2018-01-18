@@ -140,9 +140,6 @@ class ProductFilterURL
                     }
                 }
                 if ($createEntry === true) {
-                    if ($debug) {
-                        Shop::dbg($filterValue, false, 'creating entry for $filterValue');
-                    }
                     $filterSeoData          = new stdClass();
                     $filterSeoData->value   = $filterValue;
                     $filterSeoData->sep     = $filter->getUrlParamSEO();
@@ -181,6 +178,8 @@ class ProductFilterURL
                         $nonSeoFilterParams[$filterID] = $f->value;
                     } elseif (!is_array($nonSeoFilterParams[$filterID])) {
                         $nonSeoFilterParams[$filterID]   = [$nonSeoFilterParams[$filterID]];
+                        $nonSeoFilterParams[$filterID][] = $f->value;
+                    } else {
                         $nonSeoFilterParams[$filterID][] = $f->value;
                     }
                 }

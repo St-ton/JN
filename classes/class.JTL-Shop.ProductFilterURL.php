@@ -31,6 +31,7 @@ class ProductFilterURL
      */
     public function getURL($extraFilter = null, $bCanonical = false, $debug = false)
     {
+        $languageID         = $this->productFilter->getLanguageID();
         $extraFilter        = $this->convertExtraFilter($extraFilter);
         $base               = $this->productFilter->getBaseState();
         $nonSeoFilterParams = [];
@@ -47,7 +48,7 @@ class ProductFilterURL
             'misc'   => []
         ];
         if ($base->isInitialized()) {
-            $filterSeoUrl = $base->getSeo($this->productFilter->getLanguageID());
+            $filterSeoUrl = $base->getSeo($languageID);
             if (!empty($filterSeoUrl)) {
                 $seoParam          = new stdClass();
                 $seoParam->value   = '';
@@ -127,7 +128,7 @@ class ProductFilterURL
                     if (!is_array($urlParams[$urlParam][0]->seo)) {
                         $urlParams[$urlParam][0]->seo = [];
                     }
-                    $urlParams[$urlParam][0]->seo[] = $filter->getSeo($this->productFilter->getLanguageID());
+                    $urlParams[$urlParam][0]->seo[] = $filter->getSeo($languageID);
                 }
             } else {
                 $createEntry = true;
@@ -145,7 +146,7 @@ class ProductFilterURL
                     $filterSeoData          = new stdClass();
                     $filterSeoData->value   = $filterValue;
                     $filterSeoData->sep     = $filter->getUrlParamSEO();
-                    $filterSeoData->seo     = $filter->getSeo($this->productFilter->getLanguageID());
+                    $filterSeoData->seo     = $filter->getSeo($languageID);
                     $filterSeoData->param   = $urlParam;
 
                     $urlParams[$urlParam][] = $filterSeoData;
@@ -183,6 +184,17 @@ class ProductFilterURL
                         $nonSeoFilterParams[$filterID][] = $f->value;
                     }
                 }
+            }
+        }
+        if ($languageID !== Shop::getLanguageID()) {
+            $languageCode = null;
+            foreach (Session::Languages() as $language) {
+                if ($language->kSprache === $languageID) {
+                    $languageCode = $language->cISO;
+                }
+            }
+            if ($languageCode !== null) {
+                $nonSeoFilterParams['lang'] = $languageCode;
             }
         }
         $url .= $this->buildURLString($seoFilterParams, $nonSeoFilterParams);

@@ -20,7 +20,8 @@ class PortletRow extends CMSPortlet
     public function getPreviewHtml()
     {
         $this->properties['attr']['class'] .= " row";
-        $res = '<div' . $this->getAttribString() . $this->getStyleString() . '>';
+
+        $res = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>';
 
         $layoutLg = explode('+', $this->properties['layout-lg']);
         $layoutMd = explode('+', $this->properties['layout-md']);
@@ -51,7 +52,8 @@ class PortletRow extends CMSPortlet
     public function getFinalHtml()
     {
         $this->properties['attr']['class'] .= " row";
-        $res = '<div' . $this->getAttribString() . $this->getStyleString() . '>';
+
+        $res = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>';
 
         $layoutLg = explode('+', $this->properties['layout-lg']);
         $layoutMd = explode('+', $this->properties['layout-md']);

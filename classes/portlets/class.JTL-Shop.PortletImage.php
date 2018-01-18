@@ -29,11 +29,10 @@ class PortletImage extends CMSPortlet
 
         $this->properties['attr']['class'] .= " img-responsive $shape";
 
-
         // todo Editor: in preview nur kleinste bilder laden?
-        $content = "<img" . $this->getAttribString() . $this->getStyleString()
-            . $this->getSrcString($this->properties['src'], $this->properties['widthHeuristics'])
-            . ">";
+        $content =
+            '<img ' . $this->getAttribString() . ' ' . $this->getStyleString() . ' ' .
+            $this->getSrcString($this->properties['src'], $this->properties['widthHeuristics']) . '>';
 
         if ($renderLinks && $linkFlag === 'yes' && !empty($linkUrl)) {
             if ($linkNewTabFlag) {

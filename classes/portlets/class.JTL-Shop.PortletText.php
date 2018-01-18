@@ -21,7 +21,7 @@ class PortletText extends CMSPortlet
     {
         $text = $this->properties['text'];
 
-        return "<div" . $this->getAttribString() . $this->getStyleString() . ">$text</div>";
+        return '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . ">$text</div>";
     }
 
     public function getFinalHtml()

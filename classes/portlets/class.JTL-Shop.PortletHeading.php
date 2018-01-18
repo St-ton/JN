@@ -25,7 +25,7 @@ class PortletHeading extends CMSPortlet
         $level = $this->properties['level'];
         $text  = $this->properties['text'];
 
-        return "<h$level" . $this->getAttribString() . $this->getStyleString() . ">$text</h$level>";
+        return "<h$level " . $this->getAttribString() . ' ' . $this->getStyleString() . ">$text</h$level>";
     }
 
     /**

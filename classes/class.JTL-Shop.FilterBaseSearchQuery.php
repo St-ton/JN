@@ -394,9 +394,9 @@ class FilterBaseSearchQuery extends AbstractFilter
     {
         require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
         // Mapping beachten
-        $cSuche       = $this->getQueryMapping($this->getName(), $kSpracheExt);
+        $cSuche = $this->getQueryMapping($this->getName(), $kSpracheExt);
         $this->setName($cSuche);
-        $kSprache     = $kSpracheExt > 0
+        $kSprache = $kSpracheExt > 0
             ? (int)$kSpracheExt
             : $this->getLanguageID();
         // Suchcache wurde zwar gefunden, ist jedoch nicht mehr gültig
@@ -405,14 +405,10 @@ class FilterBaseSearchQuery extends AbstractFilter
                 FROM tsuchcache
                 LEFT JOIN tsuchcachetreffer 
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
-                WHERE tsuchcache.kSprache = ' . $kSprache . '
-                    AND tsuchcache.dGueltigBis IS NOT NULL
+                WHERE tsuchcache.dGueltigBis IS NOT NULL
                     AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()', 3
         );
 
-        $keySuche = $cSuche . ';' .
-            $this->getConfig()['global']['artikel_artikelanzeigefilter'] . ';' .
-            Session::CustomerGroup()->getID();
         // Suchcache checken, ob bereits vorhanden
         $oSuchCache = Shop::DB()->executeQueryPrepared(
             'SELECT kSuchCache

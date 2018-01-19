@@ -23,21 +23,19 @@ class MediaImage implements IMedia
      * @param object $mixed
      * @param string $size
      * @param int    $number
-     *
      * @return MediaImageRequest
      */
     public static function getRequest($type, $id, $mixed, $size, $number = 1)
     {
         $name = Image::getCustomName($type, $mixed);
-        $req  = MediaImageRequest::create([
+
+        return MediaImageRequest::create([
             'id'     => $id,
             'type'   => $type,
             'number' => $number,
             'name'   => $name,
             'size'   => $size,
         ]);
-
-        return $req;
     }
 
     /**
@@ -77,7 +75,6 @@ class MediaImage implements IMedia
      * @param string $id
      * @param string $size
      * @param int    $number
-     *
      * @return string
      */
     public static function getThumbUrl($type, $id, $size, $number = 1)
@@ -94,9 +91,7 @@ class MediaImage implements IMedia
     /**
      * @param string $type
      * @param bool   $filesize
-     *
-     * @return object
-     *
+     * @return stdClass
      * @throws Exception
      */
     public static function getStats($type, $filesize = false)
@@ -120,8 +115,7 @@ class MediaImage implements IMedia
             ],
         ];
 
-        $images = self::getImages($type);
-        foreach ($images as $image) {
+        foreach (self::getImages($type) as $image) {
             $raw = $image->getRaw(true);
             ++$result->total;
             if (!file_exists($raw)) {
@@ -156,7 +150,7 @@ class MediaImage implements IMedia
     {
         $directory = PFAD_ROOT . MediaImageRequest::getCachePath($type);
         if ($id !== null) {
-            $directory = $directory . '/' . (int) $id;
+            $directory = $directory . '/' . (int)$id;
         }
 
         try {
@@ -164,12 +158,12 @@ class MediaImage implements IMedia
 
             foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                 $value->isFile()
-                    ? @unlink($value)
-                    : @rmdir($value);
+                    ? unlink($value)
+                    : rmdir($value);
             }
 
             if ($id !== null) {
-                @rmdir($directory);
+                rmdir($directory);
             }
         } catch (Exception $e) {
         }
@@ -177,7 +171,6 @@ class MediaImage implements IMedia
 
     /**
      * @param string $request
-     *
      * @return bool
      */
     public function isValid($request)
@@ -187,7 +180,6 @@ class MediaImage implements IMedia
 
     /**
      * @param string $imageUrl
-     *
      * @return MediaImageRequest
      */
     public static function toRequest($imageUrl)
@@ -199,9 +191,7 @@ class MediaImage implements IMedia
 
     /**
      * @param string $request
-     *
      * @return mixed|void
-     *
      * @throws Exception
      */
     public function handle($request)
@@ -225,10 +215,11 @@ class MediaImage implements IMedia
                 throw new Exception("No such product id: " . (int)$mediaReq->id);
             }
 
+            $thumbPath  = null;
             $matchFound = false;
 
             foreach ($imgNames as $imgName) {
-                $imgName->imgPath = MediaImage::getThumb(
+                $imgName->imgPath = self::getThumb(
                     $mediaReq->type, $mediaReq->id, $imgName, $mediaReq->size, $mediaReq->number
                 );
 
@@ -252,8 +243,8 @@ class MediaImage implements IMedia
 
             self::writeHttp($imanee);
         } catch (Exception $e) {
-            $display = (string) strtolower(ini_get('display_errors'));
-            if (in_array($display, ['on', '1', 'true'])) {
+            $display = strtolower(ini_get('display_errors'));
+            if (in_array($display, ['on', '1', 'true'], true)) {
                 $imanee = Image::error($mediaReq, $e->getMessage());
 
                 self::writeHttp($imanee, true);
@@ -300,7 +291,6 @@ class MediaImage implements IMedia
     /**
      * @param MediaImageRequest $req
      * @param bool              $overwrite
-     *
      * @return array
      */
     public static function cacheImage(MediaImageRequest $req, $overwrite = false)
@@ -357,9 +347,7 @@ class MediaImage implements IMedia
      * @param bool     $notCached
      * @param int|null $offset
      * @param int|null $limit
-     *
      * @return MediaImageRequest[]
-     *
      * @throws Exception
      */
     public static function getImages($type, $notCached = false, $offset = null, $limit = null)
@@ -392,22 +380,22 @@ class MediaImage implements IMedia
                 if ($limit !== null) {
                     $limitStmt = ' LIMIT ';
                     if ($offset !== null) {
-                        $limitStmt .= (int) $offset . ', ';
+                        $limitStmt .= (int)$offset . ', ';
                     }
-                    $limitStmt .= (int) $limit;
+                    $limitStmt .= (int)$limit;
                 }
-                $images = Shop::DB()->query('
-                    SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
+                $images = Shop::DB()->query(
+                    'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
                         FROM tartikelpict
                         INNER JOIN tartikel
                           ON tartikelpict.kArtikel = tartikel.kArtikel' . $limitStmt, 10);
                 break;
 
             default:
-                throw new Exception('Not implemented');
+                throw new InvalidArgumentException('Image type not implemented');
         }
 
-        while ($image = $images->fetch(PDO::FETCH_OBJ)) {
+        while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             $req = MediaImageRequest::create([
                 'id'     => $image->kArtikel,
                 'type'   => $type,
@@ -433,10 +421,10 @@ class MediaImage implements IMedia
      */
     public static function isCached(MediaImageRequest $req)
     {
-        return file_exists($req->getThumb(Image::SIZE_XS, true)) &&
-                file_exists($req->getThumb(Image::SIZE_SM, true)) &&
-                file_exists($req->getThumb(Image::SIZE_MD, true)) &&
-                file_exists($req->getThumb(Image::SIZE_LG, true));
+        return file_exists($req->getThumb(Image::SIZE_XS, true))
+            && file_exists($req->getThumb(Image::SIZE_SM, true))
+            && file_exists($req->getThumb(Image::SIZE_MD, true))
+            && file_exists($req->getThumb(Image::SIZE_LG, true));
     }
 
     /**
@@ -447,18 +435,16 @@ class MediaImage implements IMedia
     private function parse($request)
     {
         if (!is_string($request) || strlen($request) === 0) {
-            return;
+            return null;
         }
 
         if ($request[0] === '/') {
             $request = substr($request, 1);
         }
 
-        if (preg_match(MEDIAIMAGE_REGEX, $request, $matches)) {
-            return array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')));
-        }
-
-        return;
+        return preg_match(MEDIAIMAGE_REGEX, $request, $matches)
+            ? array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')))
+            : null;
     }
 
     /**
@@ -473,72 +459,96 @@ class MediaImage implements IMedia
         return MediaImageRequest::create($matches);
     }
 
+    /**
+     * @param string $type
+     * @param int    $id
+     * @return int|null
+     */
     public static function getPrimaryNumber($type, $id)
     {
         $prepared = self::getImageStmt($type, $id);
         if ($prepared !== null) {
             $primary = Shop::DB()->queryPrepared($prepared->stmt, $prepared->bind, 1);
             if (is_object($primary)) {
-                return max(1, (int) $primary->number);
+                return max(1, (int)$primary->number);
             }
         }
 
-        return;
+        return null;
     }
 
     /**
      * @param string $type
      * @param int    $id
-     *
-     * @return bool
+     * @return stdClass
      */
     public static function getImageStmt($type, $id)
     {
-        $id = (int) $id;
+        $id = (int)$id;
         switch ($type) {
             case Image::TYPE_PRODUCT:
-                $res = ['stmt' => 'SELECT kArtikel, nNr as number FROM tartikelpict WHERE kArtikel = :kArtikel GROUP BY cPfad ORDER BY nNr ASC', 'bind' => ['kArtikel' => $id]];
+                $res = [
+                    'stmt' => 'SELECT kArtikel, nNr AS number FROM tartikelpict WHERE kArtikel = :kArtikel GROUP BY cPfad ORDER BY nNr ASC',
+                    'bind' => ['kArtikel' => $id]
+                ];
                 break;
             case Image::TYPE_CATEGORY:
-                $res = ['stmt' => 'SELECT kKategorie, 0 as number FROM tkategoriepict WHERE kKategorie = :kKategorie', 'bind' => ['kKategorie' => $id]];
+                $res = [
+                    'stmt' => 'SELECT kKategorie, 0 AS number FROM tkategoriepict WHERE kKategorie = :kKategorie',
+                    'bind' => ['kKategorie' => $id]
+                ];
                 break;
             case Image::TYPE_CONFIGGROUP:
-                $res = ['stmt' => 'SELECT cBildpfad, 0 as number FROM tkonfiggruppe WHERE kKonfiggruppe = :kKonfiggruppe ORDER BY nSort ASC', 'bind' => ['kKonfiggruppe' => $id]];
+                $res = [
+                    'stmt' => 'SELECT cBildpfad, 0 AS number FROM tkonfiggruppe WHERE kKonfiggruppe = :kKonfiggruppe ORDER BY nSort ASC',
+                    'bind' => ['kKonfiggruppe' => $id]
+                ];
                 break;
             case Image::TYPE_VARIATION:
-                $res = ['stmt' => 'SELECT kEigenschaftWert, 0 as number FROM teigenschaftwertpict WHERE kEigenschaftWert = :kEigenschaftWert', 'bind' => ['kEigenschaftWert' => $id]];
+                $res = [
+                    'stmt' => 'SELECT kEigenschaftWert, 0 AS number FROM teigenschaftwertpict WHERE kEigenschaftWert = :kEigenschaftWert',
+                    'bind' => ['kEigenschaftWert' => $id]
+                ];
                 break;
             case Image::TYPE_MANUFACTURER:
-                $res = ['stmt' => 'SELECT cBildpfad FROM thersteller, 0 as number WHERE kHersteller = :kHersteller', 'bind' => ['kHersteller' => $id]];
+                $res = [
+                    'stmt' => 'SELECT cBildpfad FROM thersteller, 0 AS number WHERE kHersteller = :kHersteller',
+                    'bind' => ['kHersteller' => $id]
+                ];
                 break;
             case Image::TYPE_ATTRIBUTE:
-                $res = ['stmt' => 'SELECT cBildpfad FROM tmerkmal, 0 as number WHERE kMerkmal = :kMerkmal ORDER BY nSort ASC', 'bind' => ['kMerkmal' => $id]];
+                $res = [
+                    'stmt' => 'SELECT cBildpfad FROM tmerkmal, 0 AS number WHERE kMerkmal = :kMerkmal ORDER BY nSort ASC',
+                    'bind' => ['kMerkmal' => $id]
+                ];
                 break;
             case Image::TYPE_ATTRIBUTE_VALUE:
-                $res = ['stmt' => 'SELECT cBildpfad FROM tmerkmalwert, 0 as number WHERE kMerkmalWert = :kMerkmalWert ORDER BY nSort ASC', 'bind' => ['kMerkmalWert' => $id]];
+                $res = [
+                    'stmt' => 'SELECT cBildpfad FROM tmerkmalwert, 0 AS number WHERE kMerkmalWert = :kMerkmalWert ORDER BY nSort ASC',
+                    'bind' => ['kMerkmalWert' => $id]
+                ];
                 break;
             default:
-                return;
+                return null;
         }
 
-        return (object) $res;
+        return (object)$res;
     }
 
     /**
      * @param string $type
      * @param int    $id
-     *
      * @return bool
      */
     public static function imageCount($type, $id)
     {
-        $id       = (int) $id;
+        $id       = (int)$id;
         $prepared = static::getImageStmt($type, $id);
 
         if ($prepared !== null) {
             $imageCount = Shop::DB()->queryPrepared($prepared->stmt, $prepared->bind, 3);
 
-            return is_numeric($imageCount) ? (int) $imageCount : 0;
+            return is_numeric($imageCount) ? (int)$imageCount : 0;
         }
 
         return 0;
@@ -547,7 +557,6 @@ class MediaImage implements IMedia
     /**
      * @param string $type
      * @param int    $id
-     *
      * @return bool
      */
     public static function hasImage($type, $id)
@@ -561,7 +570,6 @@ class MediaImage implements IMedia
      * @param object $mixed
      * @param string $size
      * @param int    $number
-     *
      * @return string
      */
     public static function getRawOrFilesize($type, $id, $mixed, $size, $number = 1)

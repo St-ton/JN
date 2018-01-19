@@ -556,8 +556,6 @@ function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID
 function addFav($title, $url)
 {
     $success     = false;
-    $title       = utf8_decode($title);
-    $url         = utf8_decode($url);
     $kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
 
     if (!empty($title) && !empty($url)) {

@@ -70,7 +70,7 @@ class ExtensionPoint
                 $oHandle = new $cClass();
                 $oHandle->init($oExtension->kInitial);
             } else {
-                Jtllog::writeLog("Extension '{$cClass}' not found", JTLLOG_LEVEL_ERROR);
+                Jtllog::writeLog("Extension '{$cClass}' not found");
             }
         }
 
@@ -119,31 +119,31 @@ class ExtensionPoint
                 break;
 
             case PAGE_ARTIKELLISTE:
-                $oNaviFilter = $this->getNaviFilter();
+                $productFilter = Shop::getProductFilter();
                 // MerkmalWert
-                if (isset($oNaviFilter->MerkmalWert->kMerkmalWert) && $oNaviFilter->MerkmalWert->kMerkmalWert > 0) {
+                if ($productFilter->hasAttributeValue()) {
                     $oKey->cKey   = 'kMerkmalWert';
-                    $oKey->cValue = (int)$oNaviFilter->MerkmalWert->kMerkmalWert;
-                } elseif (isset($oNaviFilter->Kategorie->kKategorie) && $oNaviFilter->Kategorie->kKategorie > 0) {
+                    $oKey->cValue = $productFilter->getAttributeValue()->getValue();
+                } elseif ($productFilter->hasCategory()) {
                     // Kategorie
                     $oKey->cKey   = 'kKategorie';
-                    $oKey->cValue = (int)$oNaviFilter->Kategorie->kKategorie;
-                } elseif (isset($oNaviFilter->Hersteller->kHersteller) && $oNaviFilter->Hersteller->kHersteller > 0) {
+                    $oKey->cValue = $productFilter->getCategory()->getValue();
+                } elseif ($productFilter->hasManufacturer()) {
                     // Hersteller
                     $oKey->cKey   = 'kHersteller';
-                    $oKey->cValue = (int)$oNaviFilter->Hersteller->kHersteller;
-                } elseif (isset($oNaviFilter->Tag->kTag) && $oNaviFilter->Tag->kTag > 0) {
+                    $oKey->cValue = $productFilter->getManufacturer()->getValue();
+                } elseif ($productFilter->hasTag()) {
                     // Tag
                     $oKey->cKey   = 'kTag';
-                    $oKey->cValue = (int)$oNaviFilter->Tag->kTag;
-                } elseif (isset($oNaviFilter->Suche->cSuche) && strlen($oNaviFilter->Suche->cSuche) > 0) {
+                    $oKey->cValue = $productFilter->getTag()->getValue();
+                } elseif ($productFilter->hasSearch()) {
                     // Suchbegriff
                     $oKey->cKey   = 'cSuche';
-                    $oKey->cValue = $oNaviFilter->Suche->cSuche;
-                } elseif (isset($oNaviFilter->Suchspecial->kKey) && $oNaviFilter->Suchspecial->kKey > 0) {
+                    $oKey->cValue = $productFilter->getSearch()->getValue();
+                } elseif ($productFilter->hasSearchSpecial()) {
                     // Suchspecial
                     $oKey->cKey   = 'kSuchspecial';
-                    $oKey->cValue = (int)$oNaviFilter->Suchspecial->kKey;
+                    $oKey->cValue = $productFilter->getSearchSpecial()->getValue();
                 }
 
                 break;
@@ -181,22 +181,5 @@ class ExtensionPoint
         }
 
         return $oKey;
-    }
-
-    /**
-     * @return stdClass
-     */
-    public function getNaviFilter()
-    {
-        if (isset($GLOBALS['NaviFilter'])) {
-            return $GLOBALS['NaviFilter'];
-        }
-        $oNaviFilter                           = new stdClass();
-        $oNaviFilter->oSprache_arr             = new stdClass();
-        $oNaviFilter->oSprache_arr             = $_SESSION['Sprachen'];
-        $this->cParam_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
-        $oNaviFilter                           = Shop::buildNaviFilter($this->cParam_arr);
-
-        return $oNaviFilter;
     }
 }

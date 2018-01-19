@@ -169,14 +169,14 @@ class PayPal extends PaymentMethod
                 }
             }
 
-            $b       = Shop::DB()->query("
-                SELECT kKunde 
+            $b       = Shop::DB()->query(
+                "SELECT kKunde 
                     FROM tbestellung 
                     WHERE kBestellung = " . (int)$zahlungsid->kBestellung, 1
             );
             $kunde   = new Kunde($b->kKunde);
-            $Sprache = Shop::DB()->query("
-                SELECT cISO 
+            $Sprache = Shop::DB()->query(
+                "SELECT cISO 
                     FROM tsprache 
                     WHERE kSprache = " . (int)$kunde->kSprache, 1
             );
@@ -300,7 +300,7 @@ class PayPal extends PaymentMethod
                     // check that payment_amount/payment_currency are correct
 
                     if ($_POST['custom']{0} === '_') {
-                        checkeExterneZahlung($args['custom']);
+                        $this->checkeExterneZahlung($args['custom']);
                     } else {
                         $zahlungsid = Shop::DB()->select('tzahlungsid', 'cId', $args['custom']);
                         if (!$zahlungsid->kBestellung) {
@@ -318,12 +318,45 @@ class PayPal extends PaymentMethod
 
         if ($verified) {
             return true;
-        } elseif (PP_D_MODE === 1) {
+        }
+        if (PP_D_MODE === 1) {
             writeLog(PP_D_PFAD, 'PayPal verifyNotification fehlgeschlagen!', 1);
         }
 
         return false;
     }
+
+    /**
+     * @param string $cZahlungsID
+     */
+    private function checkeExterneZahlung($cZahlungsID)
+    {
+        $cZahlungsID = Shop::DB()->escape(substr($cZahlungsID, 1));
+        // cZahlungsID / SessionID / z
+        list($cZahlungsID, $SessionID, $z) = explode(';', $cZahlungsID);
+        $oZahlungSession                   = Shop::DB()->select('tzahlungsession', 'cZahlungsID', $cZahlungsID);
+        if (isset($oZahlungSession->kBestellung) && $oZahlungSession->kBestellung > 0 && !$oZahlungSession->dNotify) {
+            $_upd                = new stdClass();
+            $_upd->dBezahltDatum = 'now()';
+            $_upd->cStatus       = BESTELLUNG_STATUS_BEZAHLT;
+            Shop::DB()->update('tbestellung', 'kBestellung', (int)$oZahlungSession->kBestellung, $_upd);
+            $bestellung = new Bestellung($oZahlungSession->kBestellung);
+            $bestellung->fuelleBestellung(0);
+            // process payment
+            $zahlungseingang                    = new stdClass();
+            $zahlungseingang->kBestellung       = $bestellung->kBestellung;
+            $zahlungseingang->cZahlungsanbieter = 'PayPal';
+            $zahlungseingang->fBetrag           = $_POST['mc_gross'];
+            $zahlungseingang->fZahlungsgebuehr  = $_POST['payment_fee'];
+            $zahlungseingang->cISO              = $_POST['mc_currency'];
+            $zahlungseingang->cEmpfaenger       = $_POST['receiver_email'];
+            $zahlungseingang->cZahler           = $_POST['payer_email'];
+            $zahlungseingang->cAbgeholt         = 'N';
+            $zahlungseingang->dZeit             = date_format(date_create($_POST['payment_date']), 'Y-m-d H:m:s');
+            Shop::DB()->insert('tzahlungseingang', $zahlungseingang);
+        }
+    }
+
 
     /**
      * @param Bestellung $order

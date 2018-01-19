@@ -2,8 +2,8 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
-wunschgemäß haben wir für Sie in unserem Onlineshop unter {$ShopURL}
-ein Kundenkonto für Sie eingerichtet.
+wunschgemÃ¤ÃŸ haben wir fÃ¼r Sie in unserem Onlineshop unter {$ShopURL}
+ein Kundenkonto fÃ¼r Sie eingerichtet.
 
 Zur Kontrolle hier noch einmal Ihre Kundendaten: 
 
@@ -21,17 +21,17 @@ Passwort: {$Kunde->cPasswortKlartext}
 {if $Kunde->cUSTID}UstID: {$Kunde->cUSTID}
 {/if}
 
-Mit diesen Daten können Sie sich ab sofort in Ihrem persönlichen
+Mit diesen Daten kÃ¶nnen Sie sich ab sofort in Ihrem persÃ¶nlichen
 Kundenkonto anmelden und den aktuellen Status Ihrer Bestellungen
 verfolgen.
 
-Wir freuen uns sehr, Sie als neuen Kunden bei uns begrüßen zu dürfen.
+Wir freuen uns sehr, Sie als neuen Kunden bei uns begrÃ¼ÃŸen zu dÃ¼rfen.
 Wenn sie Fragen zu unserem Angebot oder speziellen Produkten haben,
 nehmen Sie einfach Kontakt mit uns auf.
 
-Wir wünschen Ihnen viel Spaß beim Stöbern in unserem Sortiment.
+Wir wÃ¼nschen Ihnen viel SpaÃŸ beim StÃ¶bern in unserem Sortiment.
 
-Mit freundlichem Gruß,
+Mit freundlichem GruÃŸ,
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

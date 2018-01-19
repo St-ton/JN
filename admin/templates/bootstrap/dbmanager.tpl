@@ -189,12 +189,12 @@ function filter_tables(value) {
 function highlight_sql($base) {
     var $elm = $base.find('code.sql');
     $elm.each(function () {
-        var $sql = $(this);
-        var $div = $sql.find('div');
+        var $sql = $(this),
+            $div = $sql.find('div');
         if ($div.is(":visible")) {
             var $highlight = $('<div class="sql-highlight cm-s-default"></div>');
             $sql.append($highlight);
-            if (typeof CodeMirror != 'undefined') {
+            if (typeof CodeMirror !== 'undefined') {
                 CodeMirror.runMode($sql.text(), 'text/x-mysql', $highlight[0]);
                 $div.hide();
             }
@@ -204,7 +204,6 @@ function highlight_sql($base) {
 
 function get_sql_editor($textarea, options, resize, lintOptions) {
     if ($textarea.length > 0 && typeof CodeMirror !== 'undefined') {
-
         // merge options for CodeMirror
         var defaults = {
             lineNumbers: true,
@@ -267,13 +266,13 @@ function get_sql_editor($textarea, options, resize, lintOptions) {
 }
 
 CodeMirror.runMode = function(string, modespec, callback, options) {
-    var mode = CodeMirror.getMode(CodeMirror.defaults, modespec);
-    var ie = /MSIE \d/.test(navigator.userAgent);
-    var ie_lt9 = ie && (document.documentMode == null || document.documentMode < 9);
+    var mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
+        ie = /MSIE \d/.test(navigator.userAgent),
+        ie_lt9 = ie && (document.documentMode === null || document.documentMode < 9);
 
     if (callback.nodeType == 1) {
-        var tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize;
-        var node = callback, col = 0;
+        var tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
+            node = callback, col = 0;
         node.innerHTML = "";
         callback = function(text, style) {
             if (text == "\n") {
@@ -284,7 +283,7 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
             var content = "";
             for (var pos = 0;;) {
                 var idx = text.indexOf("\t", pos);
-                if (idx == -1) {
+                if (idx === -1) {
                     content += text.slice(pos);
                     col += text.length - pos;
                     break;
@@ -398,7 +397,7 @@ $(function() {
 
         <div class="col-md-10">
             <ol class="simple-menu">
-                <li><a href="dbmanager.php">Übersicht</a></li>
+                <li><a href="dbmanager.php">Ãœbersicht</a></li>
                 <li><a href="dbmanager.php?command"><span class="glyphicon glyphicon-flash"></span> SQL Kommando</a></li>
                 <li><a href="dbcheck.php">Konsistenz</a></li>
             </ol>
@@ -408,7 +407,7 @@ $(function() {
 
                 <p class="text-muted">
                     <i class="fa fa-keyboard-o" aria-hidden="true"></i>
-                    Code-Vervollständigung via <span class="label label-default">STRG+Leertaste</span> ausführen
+                    Code-VervollstÃ¤ndigung via <span class="label label-default">STRG+Leertaste</span> ausfÃ¼hren
                 </p>
                 
                 {if isset($error)}
@@ -423,7 +422,7 @@ $(function() {
                         <textarea name="query" id="query" class="codemirror sql" data-hint='{$jsTypo|json_encode}'>{if isset($info) && isset($info.statement)}{$info.statement}{/if}</textarea>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> Ausführen</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> AusfÃ¼hren</button>
                     </div>
                 </form>
                 
@@ -466,7 +465,7 @@ $(function() {
                                 <th class="text-center">Aktion</th>
                                 <th class="text-center">Typ</th>
                                 <th class="text-center">Kollation</th>
-                                <th class="text-right">Datensätze</th>
+                                <th class="text-right">DatensÃ¤tze</th>
                                 <th class="text-right">Auto-Inkrement</th>
                             </tr>
                             </thead>

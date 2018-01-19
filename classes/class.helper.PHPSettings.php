@@ -97,12 +97,14 @@ class PHPSettingsHelper
     }
     
     /**
-     * @param int $limit - in MB
+     * @param int $limit - in bytes
      * @return bool
      */
     public function hasMinLimit($limit)
     {
-        return ($this->limit() >= $limit || $this->limit() === 0);
+        $value = $this->limit();
+
+        return $value === -1 || $value === 0 || $value >= $limit;
     }
     
     /**
@@ -115,7 +117,7 @@ class PHPSettingsHelper
     }
     
     /**
-     * @param int $limit - in MB
+     * @param int $limit - in bytes
      * @return bool
      */
     public function hasMinPostSize($limit)
@@ -124,7 +126,7 @@ class PHPSettingsHelper
     }
     
     /**
-     * @param int $limit - in MB
+     * @param int $limit - in bytes
      * @return bool
      */
     public function hasMinUploadSize($limit)

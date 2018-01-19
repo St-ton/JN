@@ -9,6 +9,9 @@
  */
 class SettingSectionWarenkorbKaufabwicklung extends SettingSection
 {
+    /**
+     * SettingSectionWarenkorbKaufabwicklung constructor.
+     */
     public function __construct()
     {
         $this->hasSectionMarkup = true;

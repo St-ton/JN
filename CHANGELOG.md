@@ -1,6 +1,36 @@
 # JTL-Shop Changelog
 
-## [4.06]
+## [4.06.3]
+
+Dieses Update enthält Bugfixes und Sicherheitsupdates.
+
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter [diesem Link](https://issues.jtl-software.de/issues?project=JTL-Shop&status=done&version=4.06.3).
+
+## [4.06.2]
+
+* Sicherheitsupdate
+
+## [4.06.1]
+
+* [SHOP-1345] - Kupon-Statistikfilter liefert inkorrekte Ergebnisse
+* [SHOP-1579] - VarKombi Artikeldetails des Kinds nicht erreichbar, wenn Kind nicht in Warenkorb legbar
+* [SHOP-1610] - Upload geht nach Login verloren
+* [SHOP-1784] - Lieferzeitraum-Angaben in Bestelldetails (Mein Konto) und Bestellbestätigung zu hoch bei > 14 Tagen
+* [SHOP-1788] - Billpay Ratenzahlung Zahlung wird nicht vollständig gesetzt
+* [SHOP-1789] - Bei 1 dimensionalen Varkombis fehlt die direkte Verfügbarkeitsinfo an den Variationen
+* [SHOP-1803] - Falsche Berechnung von Lieferzeit bei Stücklisten
+* [SHOP-1809] - Umlautproblem in der Suchvorschau
+* [SHOP-1824] - Plugins, die den EventListener nutzen, lassen sich nicht aktualisieren
+* [SHOP-1829] - Merkmalwertfilter prüfen auf falsche Bild-URL
+* [SHOP-1836] - Die Formularvalidierung bei der Registrierung im Checkout leitet auf die falsche Seite
+* [SHOP-1837] - Mailbenachrichtigung / Verfügbarkeitsanfrage bei nichtvorhandener Varkombi in Listenansicht nicht möglich
+* [SHOP-1849] - Kupons nach "Zuletzt verwendet"-Sortieren nicht möglich
+* [SHOP-1858] - Verfügbarkeitsanfrage bei ausverkauften Artikeln wird nicht in der DB gespeichert
+* [SHOP-1860] - Fehlende Lagerbestands-Neuberechnung bei Stücklisten mit unsichtbaren Komponenten
+* [SHOP-1760] - Label in Variationswahl nicht sichtbar
+
+
+## [4.06] - 2017-10-17
 
 ### Wichtige Änderungen
 
@@ -254,6 +284,19 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1667] - Backend Weiterleitungen nach Aufrufen filtern
 * [SHOP-1674] - Neue Smarty Blocks in snippets/shipping_tax_info.tpl und productdetails/price.tpl
 * [SHOP-1694] - Backstretch-Hintergrundbild verursacht Fehler bei geringer Netzgeschwindigkeit
+
+## [4.05.6]
+
+* Sicherheitsupdate
+
+## [4.05.5]
+
+* Sicherheitsupdate
+
+## [4.05.4]
+
+* Schutzfunktion im Uploadmodul verbessert
+
 
 ## [4.05.3]
 

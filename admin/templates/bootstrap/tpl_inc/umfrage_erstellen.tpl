@@ -1,6 +1,6 @@
 <script type="text/javascript">
 $(document).ready(function () {ldelim}
-    if(document.getElementById("kupon").selectedIndex == 0) {ldelim}
+    if(document.getElementById("kupon").selectedIndex === 0) {ldelim}
         document.getElementById('fGuthaben').disabled = false;
         document.getElementById('nBonuspunkte').disabled = false;
     {rdelim} else {ldelim}
@@ -9,7 +9,7 @@ $(document).ready(function () {ldelim}
     {rdelim}
 {rdelim});
 function selectCheck(selectBox) {ldelim}
-    if(selectBox.selectedIndex == 0) {ldelim}
+    if(selectBox.selectedIndex === 0) {ldelim}
         document.getElementById('fGuthaben').disabled = false;
         document.getElementById('nBonuspunkte').disabled = false;
         document.getElementById('fGuthaben').value = '';
@@ -34,7 +34,7 @@ function checkInput(inputField, cFeld) {ldelim}
 {rdelim}
 
 function clearInput(inputField) {ldelim}
-    if(inputField.value.length == 0)  {ldelim}
+    if(inputField.value.length === 0)  {ldelim}
         document.getElementById('kupon').disabled = false;
         document.getElementById('fGuthaben').disabled = false;
         document.getElementById('nBonuspunkte').disabled = false;

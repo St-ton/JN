@@ -58,7 +58,7 @@ class Chartdata
     public function __set($name, $value)
     {
         $method = 'set' . $name;
-        if (('mapper' == $name) || !method_exists($this, $method)) {
+        if (('mapper' === $name) || !method_exists($this, $method)) {
             throw new Exception('Invalid Query property');
         }
         $this->$method($value);
@@ -74,7 +74,7 @@ class Chartdata
     public function __get($name)
     {
         $method = 'get' . $name;
-        if (('mapper' == $name) || !method_exists($this, $method)) {
+        if (('mapper' === $name) || !method_exists($this, $method)) {
             throw new Exception('Invalid Query property');
         }
 
@@ -118,7 +118,7 @@ class Chartdata
      */
     public function setActive($active)
     {
-        $this->_bActive = (bool) $active;
+        $this->_bActive = (bool)$active;
 
         return $this;
     }

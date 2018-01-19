@@ -7,7 +7,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.WarenkorbPers.php';
 /** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
@@ -34,7 +33,7 @@ if (strlen(verifyGPDataString('cSuche')) > 0) {
 }
 // Einstellungen
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-    if (isset($_POST['speichern']) || isset($_POST['a']) && $_POST['a'] === 'speichern') {
+    if (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern')) {
         $step = 'uebersicht';
         $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
         $smarty->assign('tab', 'einstellungen');

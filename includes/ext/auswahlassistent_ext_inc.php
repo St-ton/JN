@@ -16,96 +16,89 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function starteAuswahlAssistent($cKey, $kKey, $kSprache, &$smarty, $Einstellungen)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         $kMerkmalWert           = null;
         $kAuswahlAssistentFrage = null;
         $nFrage                 = null;
         $kKategorie             = null;
-        if ($Einstellungen['auswahlassistent_nutzen'] === 'Y' && class_exists('AuswahlAssistent')) {
-            // Work Around falls schon einmal der Auswahlassistent durchlaufen wurde
-            if (isset($GLOBALS['NaviFilter']) && function_exists('gibAnzahlFilter')) {
-                if (gibAnzahlFilter($GLOBALS['NaviFilter']) > 0) {
-                    return false;
+        if ($Einstellungen['auswahlassistent_nutzen'] !== 'Y' || !class_exists('AuswahlAssistent')) {
+            return true;
+        }
+        // Work Around falls schon einmal der Auswahlassistent durchlaufen wurde
+        if (Shop::getProductFilter()->getFilterCount() > 0) {
+            return false;
+        }
+        if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
+            $Einstellungen = Shop::getSettings([
+                CONF_GLOBAL,
+                CONF_RSS,
+                CONF_ARTIKELUEBERSICHT,
+                CONF_AUSWAHLASSISTENT
+            ]);
+            if (isset($_GET['aaParams']) && strlen($_GET['aaParams']) > 0) {
+                // a href geklickt
+                extract(extractAAURL($_GET['aaParams']));
+                setSelectionWizardAnswer($kMerkmalWert, $kAuswahlAssistentFrage, $nFrage, $kKategorie);
+            } elseif (isset($_POST['aaParams']) && (int)$_POST['aaParams'] === 1) {
+                // Selectbox geklickt
+                $kMerkmalWert           = StringHandler::filterXSS($_POST['kMerkmalWert']);
+                $kAuswahlAssistentFrage = StringHandler::filterXSS($_POST['kAuswahlAssistentFrage']);
+                $nFrage                 = StringHandler::filterXSS($_POST['nFrage']);
+                $kKategorie             = StringHandler::filterXSS($_POST['kKategorie']);
+                setSelectionWizardAnswer($kMerkmalWert, $kAuswahlAssistentFrage, $nFrage, $kKategorie);
+            } elseif (isset($_GET['aaReset']) && strlen($_GET['aaReset']) > 0) {
+                // Antwort resetten
+                extract(extractAAURL($_GET['aaReset']));
+                resetSelectionWizard($nFrage, $kKategorie);
+            } else {
+                unset($_SESSION['AuswahlAssistent']);
+                $oAuswahlAssistent = AuswahlAssistent::getGroupsByLocation($cKey, $kKey, $kSprache);
+                if (!isset($_SESSION['AuswahlAssistent']) || !is_object($_SESSION['AuswahlAssistent'])) {
+                    $_SESSION['AuswahlAssistent'] = new stdClass();
                 }
-            }
-            if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
-                $Einstellungen = Shop::getSettings([
-                    CONF_GLOBAL, 
-                    CONF_RSS, 
-                    CONF_ARTIKELUEBERSICHT, 
-                    CONF_AUSWAHLASSISTENT
-                ]);
-                if (isset($_GET['aaParams']) && strlen($_GET['aaParams']) > 0) {
-                    // a href geklickt
-                    extract(extractAAURL($_GET['aaParams']));
-                    setSelectionWizardAnswer($kMerkmalWert, $kAuswahlAssistentFrage, $nFrage, $kKategorie);
-                } elseif (isset($_POST['aaParams']) && (int)$_POST['aaParams'] === 1) {
-                    // Selectbox geklickt
-                    $kMerkmalWert           = StringHandler::filterXSS($_POST['kMerkmalWert']);
-                    $kAuswahlAssistentFrage = StringHandler::filterXSS($_POST['kAuswahlAssistentFrage']);
-                    $nFrage                 = StringHandler::filterXSS($_POST['nFrage']);
-                    $kKategorie             = StringHandler::filterXSS($_POST['kKategorie']);
-                    setSelectionWizardAnswer($kMerkmalWert, $kAuswahlAssistentFrage, $nFrage, $kKategorie);
-                } elseif (isset($_GET['aaReset']) && strlen($_GET['aaReset']) > 0) {
-                    // Antwort resetten
-                    extract(extractAAURL($_GET['aaReset']));
-                    resetSelectionWizard($nFrage, $kKategorie);
-                } else {
-                    unset($_SESSION['AuswahlAssistent']);
-                    $oAuswahlAssistent = AuswahlAssistent::getGroupsByLocation($cKey, $kKey, $kSprache);
-                    if (!isset($_SESSION['AuswahlAssistent']) || !is_object($_SESSION['AuswahlAssistent'])) {
-                        $_SESSION['AuswahlAssistent'] = new stdClass();
+                $_SESSION['AuswahlAssistent']->nFrage               = 0;
+                $_SESSION['AuswahlAssistent']->oAuswahl_arr         = [];
+                $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr  = [];
+                $_SESSION['AuswahlAssistent']->oAuswahlAssistent    = $oAuswahlAssistent;
+                $_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt = AuswahlAssistentOrt::getLocation(
+                    $cKey,
+                    $kKey,
+                    $_SESSION['kSprache']
+                );
+                if ($_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt !== null) {
+                    if (!isset($bMerkmalFilterVorhanden)) {
+                        $bMerkmalFilterVorhanden = null;
                     }
-                    $_SESSION['AuswahlAssistent']->nFrage               = 0;
-                    $_SESSION['AuswahlAssistent']->oAuswahl_arr         = [];
-                    $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr  = [];
-                    $_SESSION['AuswahlAssistent']->oAuswahlAssistent    = $oAuswahlAssistent;
-                    $_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt = AuswahlAssistentOrt::getLocation(
-                        $cKey,
-                        $kKey,
-                        $_SESSION['kSprache']
-                    );
-                    if ($_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt !== null) {
-                        if (!isset($bMerkmalFilterVorhanden)) {
-                            $bMerkmalFilterVorhanden = null;
+                    if ($cKey === AUSWAHLASSISTENT_ORT_KATEGORIE && (int)$kKey > 0) {
+                        filterSelectionWizard($GLOBALS['oSuchergebnisse']->getAttributeFilterOptions(), $bMerkmalFilterVorhanden);
+                    } else {
+                        require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
+                        global $AktuelleKategorie, $NaviFilter, $oSuchergebnisse;
+                        $bMerkmalFilterVorhanden = false;
+                        if ($NaviFilter === null) {
+                            $NaviFilter = Shop::buildProductFilter([]);
                         }
-                        if ($cKey == AUSWAHLASSISTENT_ORT_KATEGORIE && (int)$kKey > 0) {
-                            filterSelectionWizard($GLOBALS['oSuchergebnisse']->MerkmalFilter, $bMerkmalFilterVorhanden);
-                        } else {
-                            require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
+                        if ($oSuchergebnisse === null) {
+                            $oSuchergebnisse = new ProductFilterSearchResults();
+                            $oSuchergebnisse->setProductCount(0);
+                        } elseif (get_class($oSuchergebnisse) === 'stdClass') {
+                            $oSuchergebnisse = new ProductFilterSearchResults($oSuchergebnisse);
+                        }
 
-                            $bMerkmalFilterVorhanden = false;
-                            if (!isset($NaviFilter)) {
-                                $NaviFilter = new stdClass();
-                            }
-                            if (!isset($FilterSQL)) {
-                                $FilterSQL = bauFilterSQL($NaviFilter);
-                            }
-                            if (!isset($AktuelleKategorie)) {
-                                $AktuelleKategorie = null;
-                            }
-                            if (!isset($oSuchergebnisse)) {
-                                $oSuchergebnisse = new stdClass();
-                            }
-                            $oSuchergebnisse->MerkmalFilter = gibMerkmalFilterOptionen(
-                                $FilterSQL,
-                                $NaviFilter,
-                                $AktuelleKategorie,
-                                true
-                            );
-                            filterSelectionWizard($oSuchergebnisse->MerkmalFilter, $bMerkmalFilterVorhanden);
-                        }
+                        $oSuchergebnisse = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie, true);
+                        filterSelectionWizard($oSuchergebnisse->getAttributeFilterOptions(), $bMerkmalFilterVorhanden);
                     }
                 }
-                $cRequestURI = $_SERVER['REQUEST_URI'];
-                if (strpos($cRequestURI, '?') !== false) {
-                    $cRequestURI .= '&';
-                } else {
-                    $cRequestURI .= '?';
-                }
-                $smarty->assign('oAuswahlAssistent', $_SESSION['AuswahlAssistent']->oAuswahlAssistent)
-                       ->assign('Einstellungen', $Einstellungen)
-                       ->assign('cRequestURI', $cRequestURI);
             }
+            $cRequestURI = $_SERVER['REQUEST_URI'];
+            if (strpos($cRequestURI, '?') !== false) {
+                $cRequestURI .= '&';
+            } else {
+                $cRequestURI .= '?';
+            }
+            $smarty->assign('oAuswahlAssistent', $_SESSION['AuswahlAssistent']->oAuswahlAssistent)
+                   ->assign('Einstellungen', $Einstellungen)
+                   ->assign('cRequestURI', $cRequestURI);
         }
 
         return true;
@@ -113,15 +106,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 
     /**
      * @deprecated since 4.05
-     * @param int      $kKategorie
-     * @param stdClass $NaviFilter
-     * @param stdClass $FilterSQL
-     * @param stdClass $oSuchergebnisse
-     * @param int      $nArtikelProSeite
-     * @param int      $nLimitN
+     * @param int                                 $kKategorie
+     * @param stdClass|ProductFilter              $NaviFilter
+     * @param stdClass                            $FilterSQL
+     * @param stdClass|ProductFilterSearchResults $oSuchergebnisse
+     * @param int                                 $nArtikelProSeite
+     * @param int                                 $nLimitN
      */
     function baueFilterSelectionWizard($kKategorie, &$NaviFilter, &$FilterSQL, &$oSuchergebnisse, &$nArtikelProSeite, &$nLimitN)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
         if (isset($_SESSION['AuswahlAssistent']->oAuswahl_arr)) {
             foreach ($_SESSION['AuswahlAssistent']->oAuswahl_arr as $i => $oAuswahl) {
@@ -137,25 +131,26 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $_SESSION['AuswahlAssistent']->oAuswahl_arr[0]->kMerkmalWert
                 : null;
         }
-        if (!isset($NaviFilter)) {
+        if ($NaviFilter === null) {
             $NaviFilter = new stdClass();
         }
-        if (!isset($FilterSQL)) {
-            $FilterSQL = new stdClass();
+        if ($oSuchergebnisse === null) {
+            $oSuchergebnisse = new ProductFilterSearchResults();
+            $oSuchergebnisse->setProductCount(0);
         }
-        if (!isset($oSuchergebnisse)) {
-            $oSuchergebnisse = new stdClass();
-        }
-        $NaviFilter->oSprache_arr            = new stdClass();
-        $NaviFilter->oSprache_arr            = $_SESSION['Sprachen'];
         $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
-        $NaviFilter                          = Shop::buildNaviFilter($cParameter_arr, $NaviFilter);
-        $FilterSQL->oMerkmalFilterSQL        = gibMerkmalFilterSQL($NaviFilter);
-        $FilterSQL->oKategorieFilterSQL      = gibKategorieFilterSQL($NaviFilter);
+        $NaviFilter                          = Shop::buildProductFilter($cParameter_arr);
         $AktuelleKategorie                   = new Kategorie($kKategorie);
-        $oSuchergebnisse->MerkmalFilter      = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $AktuelleKategorie, true);
 
-        $nLimitN = ($NaviFilter->nSeite - 1) * $nArtikelProSeite;
+        $oSuchergebnisse->setAttributeFilterOptions(
+            $NaviFilter->setFilterOptions(
+                $oSuchergebnisse,
+                $AktuelleKategorie,
+                true
+            )->MerkmalFilter
+        );
+
+        $nLimitN = ($NaviFilter->getPage() - 1) * $nArtikelProSeite;
     }
 
     /**
@@ -165,18 +160,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function filterSelectionWizard($oMerkmalFilter_arr, &$bMerkmalFilterVorhanden)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         // Naechste Antwortmoeglichkeiten in Abhaengigkeit der vorher ausgewaehlten
         foreach ($oMerkmalFilter_arr as $MerkmalFilter) {
             $MerkmalFilter->kMerkmal = (int)$MerkmalFilter->kMerkmal;
             if (!isset($bFragenEnde)) {
                 $bFragenEnde = false;
             }
-            if (!$bFragenEnde &&
-                isset($_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr) &&
-                !in_array($MerkmalFilter->kMerkmal, $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr, true) &&
-                isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal) &&
-                $MerkmalFilter->kMerkmal == $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal &&
-                isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->oMerkmalWert_arr)
+            if (!$bFragenEnde
+                && isset($_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr)
+                && !in_array($MerkmalFilter->kMerkmal, $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr, true)
+                && isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal)
+                && $MerkmalFilter->kMerkmal == $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal
+                && isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->oMerkmalWert_arr)
             ) {
                 $kMerkmalWertDrin_arr = [];
                 foreach ($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->oMerkmalWert_arr as $i => $oMerkmalWertAlle) {
@@ -219,6 +215,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function processSelectionWizard($kMerkmalWert, $nFrage, $kKategorie, &$bFragenEnde, &$oSuchergebnisse, &$NaviFilter, &$bMerkmalFilterVorhanden)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         $kMerkmalWert = (int)$kMerkmalWert;
         $nFrage       = (int)$nFrage;
         if (isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$nFrage]->oMerkmal->oMerkmalWert_arr)) {
@@ -237,8 +234,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         if (isset($_SESSION['AuswahlAssistent'])) {
             $_SESSION['AuswahlAssistent']->nFrage = $nFrage + 1;
         }
-        if (!isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr) ||
-            count($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr) == $_SESSION['AuswahlAssistent']->nFrage) {
+        if (!isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr)
+            || count($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr)
+            == $_SESSION['AuswahlAssistent']->nFrage
+        ) {
             $bFragenEnde = true;
         }
         // Filter
@@ -250,8 +249,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $nLimitN = null;
         baueFilterSelectionWizard($kKategorie, $NaviFilter, $FilterSQL, $oSuchergebnisse, $nArtikelProSeite, $nLimitN);
         filterSelectionWizard($oSuchergebnisse->MerkmalFilter, $bMerkmalFilterVorhanden);
-        // Artikelanzahl nach Filterung
-        baueArtikelAnzahl($FilterSQL, $oSuchergebnisse, $nArtikelProSeite, $nLimitN);
+        $currentCat                           = new Kategorie($kKategorie);
+        $searchResults                        = $NaviFilter->getProducts(true, $currentCat, false, $nLimitN);
+        $oSuchergebnisse->GesamtanzahlArtikel = $searchResults->GesamtanzahlArtikel;
     }
 
     /**
@@ -263,13 +263,22 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function setSelectionWizardAnswer($kMerkmalWert, $kAuswahlAssistentFrage, $nFrage, $kKategorie)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         global $smarty;
 
         $bMerkmalFilterVorhanden = false;
         $bFragenEnde             = false;
         $oSuchergebnisse         = null;
         $NaviFilter              = null;
-        processSelectionWizard($kMerkmalWert, $nFrage, $kKategorie, $bFragenEnde, $oSuchergebnisse, $NaviFilter, $bMerkmalFilterVorhanden);
+        processSelectionWizard(
+            $kMerkmalWert,
+            $nFrage,
+            $kKategorie,
+            $bFragenEnde,
+            $oSuchergebnisse,
+            $NaviFilter,
+            $bMerkmalFilterVorhanden
+        );
 
         if (!$bFragenEnde && $bMerkmalFilterVorhanden && $oSuchergebnisse->GesamtanzahlArtikel > 1) {
             $smarty->assign('NaviFilter', $NaviFilter);
@@ -279,8 +288,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 unset($_POST['mf1']);
             }
             $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
-            $NaviFilter                          = Shop::buildNaviFilter($cParameter_arr);
-            header('Location: ' . StringHandler::htmlentitydecode(gibNaviURL($NaviFilter, true, null)));
+            $NaviFilter                          = Shop::buildProductFilter($cParameter_arr);
+            header('Location: ' . StringHandler::htmlentitydecode($NaviFilter->getFilterURL()->getURL()));
             exit();
         }
     }
@@ -292,6 +301,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function resetSelectionWizard($nFrage, $kKategorie)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         global $smarty, $bMerkmalFilterVorhanden;
 
         $_SESSION['AuswahlAssistent']->nFrage            = $nFrage;
@@ -325,6 +335,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      */
     function extractAAURL($aaParams)
     {
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         $cParams         = base64_decode($aaParams);
         $cParams_arr     = explode(';', $cParams);
         $cParamAssoc_arr = [];

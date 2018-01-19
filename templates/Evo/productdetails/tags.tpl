@@ -6,7 +6,7 @@
             <div class="panel">
                 <div class="panel-body">
                     {foreach name=produktTaggings from=$ProduktTagging item=produktTagging}
-                        <a href="{$produktTagging->cURL}" title="{$produktTagging->cName}"><span class="badge">{$produktTagging->cName}</span></a>
+                        <a href="{$produktTagging->cURLFull}" title="{$produktTagging->cName}"><span class="badge">{$produktTagging->cName}</span></a>
                     {/foreach}
                 </div>
             </div>
@@ -16,6 +16,9 @@
     {if $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'}
         <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
         <input type="hidden" name="produktTag" value="1" />
+        {if !empty($Artikel->kVariKindArtikel)}
+            <input type="hidden" name="variKindArtikel" value="{$Artikel->kVariKindArtikel}" />
+        {/if}
         {if ($Einstellungen.artikeldetails.tagging_freischaltung === 'Y' && !empty($smarty.session.Kunde->kKunde)) || $Einstellungen.artikeldetails.tagging_freischaltung === 'O'}
             <div class="row">
                 <div class="col-sm-12 col-md-6">

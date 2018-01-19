@@ -124,14 +124,13 @@ class Versandart
     /**
      * Setzt Versandart mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kVersandart
      * @return int
      */
     public function loadFromDB($kVersandart)
     {
         $obj = Shop::DB()->select('tversandart', 'kVersandart', (int)$kVersandart);
-        if (!isset($obj->kVersandart) || !$obj->kVersandart) {
+        if ($obj === null || !$obj->kVersandart) {
             return 0;
         }
         $members = array_keys(get_object_vars($obj));
@@ -158,7 +157,6 @@ class Versandart
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int - Key von eingefügter Versandart
      */
     public function insertInDB()
@@ -179,7 +177,6 @@ class Versandart
     /**
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
-     * @access public
      * @return int
      */
     public function updateInDB()
@@ -301,7 +298,7 @@ class Versandart
                 }
                 $kKey = Shop::DB()->insert($table, $Obj);
 
-                if ((int)$kKey > 0 && $table === 'tversandzuschlag') {
+                if ($kKey > 0 && $table === 'tversandzuschlag') {
                     self::cloneShippingSectionSpecial($kKeyPrim, $kKey);
                 }
             }

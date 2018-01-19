@@ -71,16 +71,16 @@ class SessionStorage
             $lifetime       = isset($cookieDefaults['lifetime'])
                 ? $cookieDefaults['lifetime']
                 : 0;
-            $path = isset($cookieDefaults['path'])
+            $path           = isset($cookieDefaults['path'])
                 ? $cookieDefaults['path']
                 : '';
-            $domain = isset($cookieDefaults['domain'])
+            $domain         = isset($cookieDefaults['domain'])
                 ? $cookieDefaults['domain']
                 : '';
-            $secure = isset($cookieDefaults['secure'])
+            $secure         = isset($cookieDefaults['secure'])
                 ? $cookieDefaults['secure']
                 : false;
-            $httpOnly = isset($cookieDefaults['httponly'])
+            $httpOnly       = isset($cookieDefaults['httponly'])
                 ? $cookieDefaults['httponly']
                 : false;
             if (isset($conf['global']['global_cookie_secure']) && $conf['global']['global_cookie_secure'] !== 'S') {
@@ -111,9 +111,9 @@ class SessionStorage
                 }
                 //EXPERIMENTAL_MULTILANG_SHOP END
             }
-            if (isset($conf['global']['global_cookie_lifetime']) &&
-                is_numeric($conf['global']['global_cookie_lifetime']) &&
-                (int)$conf['global']['global_cookie_lifetime'] > 0
+            if (isset($conf['global']['global_cookie_lifetime'])
+                && is_numeric($conf['global']['global_cookie_lifetime'])
+                && (int)$conf['global']['global_cookie_lifetime'] > 0
             ) {
                 $set      = true;
                 $lifetime = (int)$conf['global']['global_cookie_lifetime'];

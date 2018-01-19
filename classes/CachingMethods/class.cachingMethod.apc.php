@@ -91,8 +91,7 @@ class cache_apc implements ICachingMethod
             $prefixedKeys[] = $this->options['prefix'] . $_cid;
         }
         $res = $this->dePrefixArray($func($prefixedKeys));
-
-        //fill up with false values
+        // fill up with false values
         return array_merge(array_fill_keys($cacheIDs, false), $res);
     }
 
@@ -101,8 +100,8 @@ class cache_apc implements ICachingMethod
      */
     public function isAvailable()
     {
-        return ((function_exists('apc_store') && function_exists('apc_exists')) ||
-                (function_exists('apcu_store') && function_exists('apcu_exists')));
+        return ((function_exists('apc_store') && function_exists('apc_exists'))
+            || (function_exists('apcu_store') && function_exists('apcu_exists')));
     }
 
     /**

@@ -1,40 +1,34 @@
-{if $Suchergebnisse->Artikel->elemente|@count > 0}
-    {if $Einstellungen.navigationsfilter.allgemein_tagfilter_benutzen === 'Y'}
-        {if $Suchergebnisse->Tags|@count > 0 && $Suchergebnisse->TagsJSON}
-            <hr>
-            <div class="panel panel-default tags">
-                <div class="panel-heading">{lang key="productsTaggedAs" section="productOverview"}</div>
-                <div class="panel-body">
-                    {foreach name=tagfilter from=$Suchergebnisse->Tags item=oTag}
-                        <a href="{$oTag->cURL}" class="label label-primary tag{$oTag->Klasse}">{$oTag->cName}</a>
-                    {/foreach}
-                </div>
+{assign var=Suchergebnisse value=$NaviFilter->getSearchResults(false)}
+{if $Suchergebnisse->getProducts()->elemente|@count > 0}
+    {if $Einstellungen.navigationsfilter.allgemein_tagfilter_benutzen === 'Y' && $Suchergebnisse->getTagFilterOptions()|@count > 0 && $Suchergebnisse->getTagFilterJSON()}
+        <hr>
+        <div class="panel panel-default tags">
+            <div class="panel-heading">{lang key="productsTaggedAs" section="productOverview"}</div>
+            <div class="panel-body">
+                {foreach name=tagfilter from=$Suchergebnisse->getTagFilterOptions() item=oTag}
+                    <a href="{$oTag->getURL()}" class="label label-primary tag{$oTag->getClass()}">{$oTag->getName()}</a>
+                {/foreach}
             </div>
-        {/if}
+        </div>
     {/if}
-
-    {if $Einstellungen.navigationsfilter.suchtrefferfilter_nutzen === 'Y'}
-        {if $Suchergebnisse->SuchFilter|@count > 0 && $Suchergebnisse->SuchFilterJSON}
-            {if empty($NaviFilter->SuchFilter->kSuchanfrage)}
-                <hr>
-                <div class="panel panel-default tags">
-                    <div class="panel-heading">{lang key="productsSearchTerm" section="productOverview"}</div>
-                    <div class="panel-body">
-                        {foreach name=suchfilter from=$Suchergebnisse->SuchFilter item=oSuchFilter}
-                            <a href="{$oSuchFilter->cURL}" class="label label-primary tag{$oSuchFilter->Klasse}">{$oSuchFilter->cSuche}</a>
-                        {/foreach}
-                    </div>
-                </div>
-            {/if}
-        {/if}
+    {if $Einstellungen.navigationsfilter.suchtrefferfilter_nutzen === 'Y' && $Suchergebnisse->getSearchFilterOptions()|@count > 0 && $Suchergebnisse->getSearchFilterJSON() && !$NaviFilter->hasSearchFilter()}
+        <hr>
+        <div class="panel panel-default tags search-terms">
+            <div class="panel-heading">{lang key="productsSearchTerm" section="productOverview"}</div>
+            <div class="panel-body">
+                {foreach name=suchfilter from=$Suchergebnisse->getSearchFilterOptions() item=oSuchFilter}
+                    <a href="{$oSuchFilter->getURL()}" class="label label-primary tag{$oSuchFilter->getClass()}">{$oSuchFilter->getName()}</a>
+                {/foreach}
+            </div>
+        </div>
     {/if}
 {/if}
 
-{if $Suchergebnisse->Seitenzahlen->maxSeite > 1 && !empty($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
+{if $Suchergebnisse->getPages()->maxSeite > 1 && !empty($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
     <div class="row">
         <div class="col-xs-6 col-md-8 col-lg-9">
             <ul class="pagination pagination-ajax">
-                {if $Suchergebnisse->Seitenzahlen->AktuelleSeite > 1}
+                {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
                     <li class="prev">
                         <a href="{$oNaviSeite_arr.zurueck->cURL}">&laquo; {lang key="previous" section="productOverview"}</a>
                     </li>
@@ -42,7 +36,7 @@
 
                 {foreach name=seite from=$oNaviSeite_arr item=oNaviSeite}
                     {if !isset($oNaviSeite->nBTN)}
-                        <li class="page {if !isset($oNaviSeite->cURL) || $oNaviSeite->cURL|strlen === 0}active{/if}">
+                        <li class="page{if !isset($oNaviSeite->cURL) || $oNaviSeite->cURL|strlen === 0} active{/if}">
                             {if !empty($oNaviSeite->cURL)}
                                 <a href="{$oNaviSeite->cURL}">{$oNaviSeite->nSeite}</a>
                             {else}
@@ -52,12 +46,7 @@
                     {/if}
                 {/foreach}
 
-                {if $Suchergebnisse->Seitenzahlen->AktuelleSeite < $Suchergebnisse->Seitenzahlen->maxSeite}
-                    {*
-                    <li>
-                        .. {lang key="of" section="productOverview"} {$Suchergebnisse->Seitenzahlen->MaxSeiten}
-                    </li>
-                    *}
+                {if $Suchergebnisse->getPages()->AktuelleSeite < $Suchergebnisse->getPages()->maxSeite}
                     <li class="next">
                         <a href="{$oNaviSeite_arr.vor->cURL}">{lang key="next" section="productOverview"} &raquo;</a>
                     </li>
@@ -65,37 +54,37 @@
             </ul>
         </div>
         <div class="col-xs-6 col-md-4 col-lg-3 text-right">
-            <form action="navi.php" method="get" class="form-inline pagination">
+            <form action="{$ShopURL}/" method="get" class="form-inline pagination">
                 {$jtl_token}
-                {if isset($NaviFilter->Kategorie) && $NaviFilter->Kategorie->kKategorie > 0}
-                    <input type="hidden" name="k" value="{$NaviFilter->Kategorie->kKategorie}" />
+                {if $NaviFilter->hasCategory()}
+                    <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />
                 {/if}
-                {if isset($NaviFilter->Hersteller) && $NaviFilter->Hersteller->kHersteller > 0}
-                    <input type="hidden" name="h" value="{$NaviFilter->Hersteller->kHersteller}" />
+                {if $NaviFilter->hasManufacturer()}
+                    <input type="hidden" name="h" value="{$NaviFilter->getManufacturer()->getValue()}" />
                 {/if}
-                {if isset($NaviFilter->Suchanfrage) && $NaviFilter->Suchanfrage->kSuchanfrage > 0}
-                    <input type="hidden" name="l" value="{$NaviFilter->Suchanfrage->kSuchanfrage}" />
+                {if $NaviFilter->hasSearchQuery()}
+                    <input type="hidden" name="l" value="{$NaviFilter->getSearchQuery()->getValue()}" />
                 {/if}
-                {if isset($NaviFilter->MerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0}
-                    <input type="hidden" name="m" value="{$NaviFilter->MerkmalWert->kMerkmalWert}" />
+                {if $NaviFilter->hasAttributeValue()}
+                    <input type="hidden" name="m" value="{$NaviFilter->getAttributeValue()->getValue()}" />
                 {/if}
-                {if isset($NaviFilter->Tag) && $NaviFilter->Tag->kTag > 0}
-                    <input type="hidden" name="t" value="{$NaviFilter->Tag->kTag}" />
+                {if $NaviFilter->hasTag()}
+                    <input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}" />
                 {/if}
-                {if isset($NaviFilter->KategorieFilter) && $NaviFilter->KategorieFilter->kKategorie > 0}
-                    <input type="hidden" name="kf" value="{$NaviFilter->KategorieFilter->kKategorie}" />
+                {if $NaviFilter->hasCategoryFilter()}
+                    <input type="hidden" name="kf" value="{$NaviFilter->getCategoryFilter()->getValue()}" />
                 {/if}
-                {if isset($NaviFilter->HerstellerFilter) && $NaviFilter->HerstellerFilter->kHersteller > 0}
-                    <input type="hidden" name="hf" value="{$NaviFilter->HerstellerFilter->kHersteller}" />
+                {if $NaviFilter->hasManufacturerFilter()}
+                    <input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />
                 {/if}
-                {if isset($NaviFilter->MerkmalFilter)}
-                    {foreach name=merkmalfilter from=$NaviFilter->MerkmalFilter item=mmfilter}
-                        <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$mmfilter->kMerkmalWert}" />
+                {if $NaviFilter->hasAttributeFilter()}
+                    {foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}
+                        <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$attributeFilter->getValue()}" />
                     {/foreach}
                 {/if}
-                {if !empty($NaviFilter->TagFilter)}
-                    {foreach name=tagfilter from=$NaviFilter->TagFilter item=tag}
-                        <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tag->kTag}" />
+                {if $NaviFilter->hasTagFilter()}
+                    {foreach name=tagfilter from=$NaviFilter->getTagFilter() item=tagFilter}
+                        <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tagFilter->getValue()}" />
                     {/foreach}
                 {/if}
 
@@ -107,7 +96,7 @@
                     <ul class="dropdown-menu pagination-ajax" role="menu" aria-labelledby="pagination-dropdown">
                         {foreach name=seite from=$oNaviSeite_arr item=oNaviSeite}
                             {if !isset($oNaviSeite->nBTN)}
-                                {if $oNaviSeite->nSeite == $Suchergebnisse->Seitenzahlen->AktuelleSeite}
+                                {if $oNaviSeite->nSeite == $Suchergebnisse->getPages()->AktuelleSeite}
                                     <li class="active">
                                         <a role="menuitem" class="disabled" href="{$oNaviSeite->cURL}">{$oNaviSeite->nSeite}</a>
                                     </li>

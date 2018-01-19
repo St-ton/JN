@@ -112,7 +112,7 @@ class LessParser
                 if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $value, $matches)) {
                     return $this->rgb2html((int)$matches[2], (int)$matches[3], (int)$matches[4]);
                 } // #fff or #ffffff
-                elseif (preg_match('/#([\w\d]+)/', $value, $matches)) {
+                if (preg_match('/#([\w\d]+)/', $value, $matches)) {
                     return trim($matches[0]);
                 }
                 break;

@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.Plausi.php';
 
 /**
  * Class PlausiKundenfeld
@@ -43,10 +42,15 @@ class PlausiKundenfeld extends Plausi
                 $this->xPlausiVar_arr['nEdit'] = 1;
             }
             if ($cTyp === 'auswahl') {
-                if (!is_array($this->xPostVar_arr['cWert']) ||
-                    count($this->xPostVar_arr['cWert']) === 0 ||
-                    strlen($this->xPostVar_arr['cWert'][0]) === 0
-                ) {
+                if (is_array($this->xPostVar_arr['cWert']) && 0 < count($this->xPostVar_arr['cWert'])) {
+                    foreach ($this->xPostVar_arr['cWert'] as $szFieldValue) {
+                        // empty value are not allowed
+                        if (isset($szFieldValue) && 0 === strlen($szFieldValue)) {
+                            $this->xPlausiVar_arr['cWert'] = 1;
+                        }
+                    }
+                } else {
+                    // empty arrays should not be savable
                     $this->xPlausiVar_arr['cWert'] = 1;
                 }
             } elseif (!$bUpdate) {

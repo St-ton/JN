@@ -101,7 +101,7 @@
                                             {foreach name=gratisgeschenke from=$oArtikelGeschenk_arr item=oArtikelGeschenk}
                                                 <div class="col-sm-6 col-md-4 text-center">
                                                     <label class="thumbnail" for="gift{$oArtikelGeschenk->kArtikel}">
-                                                        <img src="{$oArtikelGeschenk->Bilder[0]->cPfadKlein}" class="image" />
+                                                        <img src="{$oArtikelGeschenk->Bilder[0]->cURLKlein}" class="image" />
                                                         <div class="caption">
                                                             <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
                                                             <p>{$oArtikelGeschenk->cName}</p>
@@ -131,6 +131,7 @@
             </div>
         {/block}
     {else}
+        <div class="alert alert-info">{lang key='emptybasket' section='checkout'}</div>
         <a href="{$ShopURL}" class="submit btn btn-primary">{lang key="continueShopping" section="checkout"}</a>
     {/if}
 {/block}

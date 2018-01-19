@@ -2,7 +2,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *}
-
+{if !empty($cFehler)}
+    <div class="alert alert-danger">{$cFehler}</div>
+{/if}
 {if !empty($hinweis)}
     <div class="alert alert-info">{$hinweis}</div>
 {/if}

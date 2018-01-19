@@ -44,11 +44,11 @@
     {quantityStatisticRow cAnzahlTitle='Geworbene Kunden' nAnzahlVar=$oMailObjekt->nAnzahlGeworbenerKunden}
     {quantityStatisticRow cAnzahlTitle='Geworbene Kunden, die etwas kauften' nAnzahlVar=$oMailObjekt->nAnzahlErfolgreichGeworbenerKunden}
     {quantityStatisticRow cAnzahlTitle='Versendete Wunschlisten' nAnzahlVar=$oMailObjekt->nAnzahlVersendeterWunschlisten}
-    {quantityStatisticRow cAnzahlTitle='Durchgeführte Umfragen' nAnzahlVar=$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
+    {quantityStatisticRow cAnzahlTitle='DurchgefÃ¼hrte Umfragen' nAnzahlVar=$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
     {quantityStatisticRow cAnzahlTitle='Neue Beitragskommentare' nAnzahlVar=$oMailObjekt->nAnzahlNewskommentare}
     {quantityStatisticRow cAnzahlTitle='Beitragskommentare, nicht freigeschaltet' nAnzahlVar=$oMailObjekt->nAnzahlNewskommentareNichtFreigeschaltet}
     {quantityStatisticRow cAnzahlTitle='Neue Produktanfragen' nAnzahlVar=$oMailObjekt->nAnzahlProduktanfrageArtikel}
-    {quantityStatisticRow cAnzahlTitle='Neue Verfügbarkeitsanfragen' nAnzahlVar=$oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit}
+    {quantityStatisticRow cAnzahlTitle='Neue VerfÃ¼gbarkeitsanfragen' nAnzahlVar=$oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit}
     {quantityStatisticRow cAnzahlTitle='Produktvergleiche' nAnzahlVar=$oMailObjekt->nAnzahlVergleiche}
     {quantityStatisticRow cAnzahlTitle='Genutzte Kupons' nAnzahlVar=$oMailObjekt->nAnzahlGenutzteKupons}
 </div>

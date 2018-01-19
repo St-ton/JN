@@ -34,7 +34,7 @@ function exec_query($query)
 $jsTypo = (object)['tables' => []];
 foreach ($tables as $table => $info) {
     $columns                = DBManager::getColumns($table);
-    $columns                = array_map(create_function('$n', 'return null;'), $columns);
+    $columns                = array_map(function($n) { return null; }, $columns);
     $jsTypo->tables[$table] = $columns;
 }
 $smarty->assign('jsTypo', $jsTypo);

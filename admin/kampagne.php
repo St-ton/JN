@@ -53,10 +53,10 @@ if (verifyGPCDataInteger('neu') === 1 && validateToken()) {
     $kKampagne = verifyGPCDataInteger('kKampagne');
     // Zeitraum / Ansicht
     setzeDetailZeitraum($cDatumNow_arr);
-} elseif (verifyGPCDataInteger('defdetail') === 1 &&
-    verifyGPCDataInteger('kKampagne') > 0 &&
-    verifyGPCDataInteger('kKampagneDef') > 0 &&
-    validateToken()
+} elseif (verifyGPCDataInteger('defdetail') === 1
+    && verifyGPCDataInteger('kKampagne') > 0
+    && verifyGPCDataInteger('kKampagneDef') > 0
+    && validateToken()
 ) { // Def Detail
     $step         = 'kampagne_defdetail';
     $kKampagne    = verifyGPCDataInteger('kKampagne');
@@ -79,7 +79,7 @@ if (verifyGPCDataInteger('neu') === 1 && validateToken()) {
 
     $nReturnValue = speicherKampagne($oKampagne);
 
-    if ($nReturnValue == 1) {
+    if ($nReturnValue === 1) {
         $cHinweis = 'Ihre Kampagne wurde erfolgreich gespeichert.';
     } else {
         $cFehler = mappeFehlerCodeSpeichern($nReturnValue);
@@ -99,9 +99,9 @@ if (verifyGPCDataInteger('neu') === 1 && validateToken()) {
     }
 } elseif (verifyGPCDataInteger('nAnsicht') > 0) { // Ansicht
     $_SESSION['Kampagne']->nAnsicht = verifyGPCDataInteger('nAnsicht');
-} elseif (verifyGPCDataInteger('nStamp') == -1 || verifyGPCDataInteger('nStamp') === 1) { // Zeitraum
+} elseif (verifyGPCDataInteger('nStamp') === -1 || verifyGPCDataInteger('nStamp') === 1) { // Zeitraum
     // Vergangenheit
-    if (verifyGPCDataInteger('nStamp') == -1) {
+    if (verifyGPCDataInteger('nStamp') === -1) {
         $_SESSION['Kampagne']->cStamp = gibStamp($_SESSION['Kampagne']->cStamp, -1, $_SESSION['Kampagne']->nAnsicht);
     } elseif (verifyGPCDataInteger('nStamp') === 1) {
         // Zukunft

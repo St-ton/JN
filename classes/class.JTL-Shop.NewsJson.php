@@ -6,9 +6,6 @@
 
 /**
  * Class NewsJson
- *
- * @access public
- * @author Daniel Böhmer
  */
 class NewsJson
 {
@@ -91,117 +88,8 @@ class NewsJson
     public static function buildThumbnail($cOptions_arr)
     {
         if (isset($cOptions_arr['filename'], $cOptions_arr['path'], $cOptions_arr['isdir']) && !$cOptions_arr['isdir']) {
-            $cOptions_arr['thumb'] = Shop::getURL() . '/' . PFAD_NEWSBILDER . "{$cOptions_arr['news']}/{$cOptions_arr['filename']}";
+            $cOptions_arr['thumb'] = Shop::getURL() . '/' .
+                PFAD_NEWSBILDER . "{$cOptions_arr['news']}/{$cOptions_arr['filename']}";
         }
-    }
-}
-
-/**
- * Class NewsItem
- */
-class NewsItem
-{
-    /**
-     * @var
-     */
-    public $startDate;
-
-    /**
-     * @var string
-     */
-    public $endDate;
-
-    /**
-     * @var string
-     */
-    public $headline;
-
-    /**
-     * @var string
-     */
-    public $text;
-
-    /**
-     * @var string
-     */
-    public $url;
-
-    /**
-     * @var string
-     */
-    public $tag;
-
-    /**
-     * @var mixed
-     */
-    public $asset;
-
-    /**
-     * @param string $cHeadline
-     * @param string $cText
-     * @param string $cStartDate
-     * @param string $cUrl
-     * @param string $cTag
-     * @param string $cEndDate
-     */
-    public function __construct($cHeadline, $cText, $cStartDate, $cUrl, $cTag = '', $cEndDate = '')
-    {
-        $this->headline  = $cHeadline;
-        $this->text      = $cText;
-        $this->tag       = $cTag;
-        $this->url       = $cUrl;
-        $this->startDate = $cStartDate;
-        $this->endDate   = $cEndDate;
-    }
-
-    /**
-     * @param mixed $oAsset
-     * @return $this
-     */
-    public function addAsset($oAsset)
-    {
-        $this->asset = $oAsset;
-
-        return $this;
-    }
-}
-
-/**
- * Class NewsItemAsset
- */
-class NewsItemAsset
-{
-    /**
-     * @var string
-     */
-    public $media;
-
-    /**
-     * @var string
-     */
-    public $thumbnail;
-
-    /**
-     * @var string
-     */
-    public $credit;
-
-    /**
-     * @var string
-     */
-    public $caption;
-
-    /**
-     * @param string $cMedia
-     * @param string $cThumbnail
-     * @param string $cCredit
-     * @param string $cCaption
-     */
-    public function __construct($cMedia, $cThumbnail = '', $cCredit = '', $cCaption = '')
-    {
-        $this->media     = $cMedia;
-        $this->thumbnail = $cThumbnail;
-        $this->credit    = $cCredit;
-        $this->caption   = $cCaption;
     }
 }

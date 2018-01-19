@@ -37,14 +37,13 @@ class ArtikelPict
     /**
      * Setzt ArtikelPict mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kArtikel
      * @return $this
      */
     public function loadFromDB($kArtikel)
     {
         $obj = Shop::DB()->select('tartikelpict', 'kArtikel', (int)$kArtikel);
-        if ($obj->kArtikel > 0) {
+        if ($obj !== null && $obj->kArtikel > 0) {
             foreach (get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
             }
@@ -56,8 +55,7 @@ class ArtikelPict
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
-     * @return mixed
+     * @return int
      */
     public function insertInDB()
     {
@@ -91,6 +89,6 @@ class ArtikelPict
         $this->cPfad2   = str_replace('\\', '/', StringHandler::htmlentities(StringHandler::filterXSS($_POST['Path2'])));
         $this->cPfad3   = str_replace('\\', '/', StringHandler::htmlentities(StringHandler::filterXSS($_POST['Path3'])));
 
-        return ($this->kArtikel > 0);
+        return $this->kArtikel > 0;
     }
 }

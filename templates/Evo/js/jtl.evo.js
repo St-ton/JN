@@ -138,8 +138,7 @@
                     src = img.data('src');
 
                 img.css('max-height', square);
-                box.css('max-height', square)
-                    .addClass('loading');
+                box.css('max-height', square);
 
                 if (src && src.length > 0) {
                     //if (src === 'gfx/keinBild.gif') {
@@ -217,7 +216,7 @@
         },
         
         popupDep: function() {
-            $('.popup-dep').click(function(e) {
+            $('#main-wrapper').on('click', '.popup-dep', function(e) {
                 var id    = '#popup' + $(this).attr('id'),
                     title = $(this).attr('title'),
                     html  = $(id).html();

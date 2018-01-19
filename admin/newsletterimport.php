@@ -26,19 +26,17 @@ if ((int)$_POST['newsletterimport'] === 1 &&
         $formatId = -1;
         $fmt      = [];
         while ($data = fgetcsv($file, 2000, ';', '"')) {
-            if ($row == 0) {
+            if ($row === 0) {
                 $hinweis .= 'Checke Kopfzeile ...';
                 $fmt = checkformat($data);
                 if ($fmt === -1) {
                     $fehler = 'Format nicht erkannt!';
                     break;
-                } else {
-                    $hinweis .= '<br /><br />Importiere...<br />';
                 }
+                $hinweis .= '<br /><br />Importiere...<br />';
             } else {
                 $hinweis .= '<br />Zeile ' . $row . ': ' . processImport($fmt, $data);
             }
-
             $row++;
         }
         fclose($file);

@@ -9,7 +9,7 @@ class AdminIO extends IO
     /**
      * @var AdminAccount
      */
-    protected $oAccount = null;
+    protected $oAccount;
 
     /**
      * @param $oAccount

@@ -1,5 +1,5 @@
-{if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->cName)}
-    <h1>{$Suchergebnisse->SuchausdruckWrite}</h1>
+{if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
+    <h1>{$Suchergebnisse->getSearchTermWrite()}</h1>
 {/if}
 
 {if !empty($hinweis)}
@@ -9,48 +9,51 @@
     <div class="alert alert-danger">{$fehler}</div>
 {/if}
 
-{if isset($Suchergebnisse->SucheErfolglos) && $Suchergebnisse->SucheErfolglos == 1}
-    <div class="alert alert-info">{lang key="noResults" section="productOverview"}</div>
-    <form id="suche2" action="navi.php" method="get" class="form">
+{if $Suchergebnisse->isSearchUnsuccessful() == true}
+    <div class="alert alert-info">{lang key='noResults' section='productOverview'}</div>
+    <form id="suche2" action="{$ShopURL}" method="get" class="form">
         <fieldset>
             <ul class="list-unstyled">
                 <li class="form-group">
-                    <label for="searchkey">{lang key="searchText" section="global"}</label>
-                    <input type="text" class="form-control" name="suchausdruck" value="{if isset($Suchergebnisse->cSuche)}{$Suchergebnisse->cSuche|escape:'htmlall'}{/if}" id="searchkey" />
+                    <label for="searchkey">{lang key='searchText'}</label>
+                    <input type="text" class="form-control" name="suchausdruck" value="{if $Suchergebnisse->getSearchTerm()}{$Suchergebnisse->getSearchTerm()|escape:'htmlall'}{/if}" id="searchkey" />
                 </li>
                 <li class="form-group">
-                    <input type="submit" value="{lang key="searchAgain" section="productOverview"}" class="submit btn btn-primary" />
+                    <input type="submit" value="{lang key='searchAgain' section='productOverview'}" class="submit btn btn-primary" />
                 </li>
             </ul>
         </fieldset>
     </form>
 {/if}
 
-{include file="snippets/extension.tpl"}
+{include file='snippets/extension.tpl'}
 
 {block name="productlist-header"}
-{if isset($oNavigationsinfo->cName) && $oNavigationsinfo->cName !== '' || isset($oNavigationsinfo->cBildURL) && !empty($oNavigationsinfo->cBildURL)}
-    <div class="title">{if $oNavigationsinfo->cName}<h1>{$oNavigationsinfo->cName}</h1>{/if}</div>
+{if $oNavigationsinfo->hasData()}
+    <div class="title">{if $oNavigationsinfo->getName()}<h1>{$oNavigationsinfo->getName()}</h1>{/if}</div>
     <div class="desc clearfix">
-        {if !empty($oNavigationsinfo->cBildURL) && $oNavigationsinfo->cBildURL !== 'gfx/keinBild.gif' && $oNavigationsinfo->cBildURL !== 'gfx/keinBild_kl.gif'}
+        {if $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif' && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
           <div class="img pull-left">
-            <img class="img-responsive" src="{$oNavigationsinfo->cBildURL}" alt="{if isset($oNavigationsinfo->oKategorie->cBeschreibung)}{$oNavigationsinfo->oKategorie->cBeschreibung|strip_tags|truncate:40|escape:"html"}{elseif isset($oNavigationsinfo->oHersteller->cBeschreibung)}{$oNavigationsinfo->oHersteller->cBeschreibung|strip_tags|truncate:40|escape:"html"}{/if}" />
+            <img class="img-responsive" src="{$ShopURL}/{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
           </div>
         {/if}
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
-            && isset($oNavigationsinfo->oKategorie) && $oNavigationsinfo->oKategorie->cBeschreibung|strlen > 0
-            && $Einstellungen.navigationsfilter.kategorie_bild_anzeigen !== 'B'}
-            <div class="item_desc custom_content">{$oNavigationsinfo->oKategorie->cBeschreibung}</div>
+            && $Einstellungen.navigationsfilter.kategorie_bild_anzeigen !== 'B'
+            && $oNavigationsinfo->getCategory() !== null
+            && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
+            <div class="item_desc custom_content">{$oNavigationsinfo->getCategory()->cBeschreibung}</div>
         {/if}
         {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
-            && isset($oNavigationsinfo->oHersteller) && $oNavigationsinfo->oHersteller->cBeschreibung|strlen > 0
-            && $Einstellungen.navigationsfilter.hersteller_bild_anzeigen !== 'B'}
-            <div class="item_desc custom_content">{$oNavigationsinfo->oHersteller->cBeschreibung}</div>
+            && $Einstellungen.navigationsfilter.hersteller_bild_anzeigen !== 'B'
+            && $oNavigationsinfo->getManufacturer() !== null
+            && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
+            <div class="item_desc custom_content">{$oNavigationsinfo->getManufacturer()->cBeschreibung}</div>
         {/if}
         {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
-            && isset($oNavigationsinfo->oMerkmalWert) && $oNavigationsinfo->oMerkmalWert->cBeschreibung|strlen > 0
-            && $Einstellungen.navigationsfilter.merkmalwert_bild_anzeigen !== 'B'}
-            <div class="item_desc custom_content">{$oNavigationsinfo->oMerkmalWert->cBeschreibung}</div>
+            && $Einstellungen.navigationsfilter.merkmalwert_bild_anzeigen !== 'B'
+            && $oNavigationsinfo->getAttributeValue() !== null
+            && $oNavigationsinfo->getAttributeValue()->cBeschreibung|strlen > 0}
+            <div class="item_desc custom_content">{$oNavigationsinfo->getAttributeValue()->cBeschreibung}</div>
         {/if}
     </div>
 {/if}
@@ -64,12 +67,12 @@
                 <div class="thumbnail">
                     <a href="{$Unterkat->cURL}">
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
-                            <img src="{$Unterkat->cBildURL}" alt="{$Unterkat->cName}"/>
+                            <img src="{$Unterkat->cBildURLFull}" alt="{$Unterkat->cName}"/>
                         {/if}
                     </a>
                     {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
                         <div class="caption text-center">
-                            <a href="{$Unterkat->cURL}">
+                            <a href="{$Unterkat->cURLFull}">
                                 {$Unterkat->cName}
                             </a>
                         </div>
@@ -83,7 +86,7 @@
                             <ul class="list-unstyled small subsub">
                                 {foreach from=$Unterkat->Unterkategorien item=UnterUnterKat}
                                     <li>
-                                        <a href="{$UnterUnterKat->cURL}" title="{$UnterUnterKat->cName}">{$UnterUnterKat->cName}</a>
+                                        <a href="{$UnterUnterKat->cURLFull}" title="{$UnterUnterKat->cName}">{$UnterUnterKat->cName}</a>
                                     </li>
                                 {/foreach}
                             </ul>
@@ -96,38 +99,50 @@
 {/if}
 {/block}
 
-{include file="productwizard/index.tpl"}
+{include file='productwizard/index.tpl'}
 
-{if count($Suchergebnisse->Artikel->elemente) > 0}
-    <form id="improve_search" action="navi.php" method="get" class="form-inline clearfix">
-        {if isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0}
-            <input type="hidden" name="k" value="{$NaviFilter->Kategorie->kKategorie}" />{/if}
-        {if isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0}
-            <input type="hidden" name="h" value="{$NaviFilter->Hersteller->kHersteller}" />{/if}
-        {if isset($NaviFilter->Suchanfrage->kSuchanfrage) && $NaviFilter->Suchanfrage->kSuchanfrage > 0}
-            <input type="hidden" name="l" value="{$NaviFilter->Suchanfrage->kSuchanfrage}" />{/if}
-        {if isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0}
-            <input type="hidden" name="m" value="{$NaviFilter->MerkmalWert->kMerkmalWert}" />{/if}
-        {if isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0}
-            <input type="hidden" name="q" value="{$NaviFilter->Suchspecial->kKey}" />{/if}
-        {if isset($NaviFilter->Suche->cSuche) && $NaviFilter->Suche->cSuche|count > 0}
-            <input type="hidden" name="suche" value="{$NaviFilter->Suche->cSuche|escape:'htmlall'}" />{/if}
-        {if isset($NaviFilter->Tag->kTag) && $NaviFilter->Tag->kTag > 0}
-            <input type="hidden" name="t" value="{$NaviFilter->Tag->kTag}" />{/if}
+{if count($Suchergebnisse->getProducts()->elemente) > 0}
+    <form id="improve_search" action="{$ShopURL}" method="get" class="form-inline clearfix">
+        {if $NaviFilter->hasCategory()}
+            <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasManufacturer()}
+            <input type="hidden" name="h" value="{$NaviFilter->getManufacturer()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasSearchQuery() && $NaviFilter->getSearchQuery()->getValue() > 0}
+            <input type="hidden" name="l" value="{$NaviFilter->getSearchQuery()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasAttributeValue()}
+            <input type="hidden" name="m" value="{$NaviFilter->getAttributeValue()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasSearchSpecial()}
+            <input type="hidden" name="q" value="{$NaviFilter->getSearchSpecial()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasSearch()}
+            <input type="hidden" name="suche" value="{$NaviFilter->getSearch()->getName()|escape:'htmlall'}" />
+        {/if}
+        {if $NaviFilter->hasTag()}
+            <input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}" />
+        {/if}
         {*Suchergebnisfilter*}
-        {if isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0}
-            <input type="hidden" name="kf" value="{$NaviFilter->KategorieFilter->kKategorie}" />{/if}
-        {if isset($NaviFilter->HerstellerFilter->kHersteller) && $NaviFilter->HerstellerFilter->kHersteller > 0}
-            <input type="hidden" name="hf" value="{$NaviFilter->HerstellerFilter->kHersteller}" />{/if}
-        {if isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0}
-            <input type="hidden" name="qf" value="{$NaviFilter->SuchspecialFilter->kKey}" />{/if}
-        {if isset($NaviFilter->BewertungFilter->nSterne) && $NaviFilter->BewertungFilter->nSterne > 0}
-            <input type="hidden" name="bf" value="{$NaviFilter->BewertungFilter->nSterne}" />{/if}
-        {if isset($NaviFilter->PreisspannenFilter->cWert) && $NaviFilter->PreisspannenFilter->cWert|count > 0}
-            <input type="hidden" name="pf" value="{$NaviFilter->PreisspannenFilter->cWert}" />{/if}
-        {if isset($NaviFilter->MerkmalFilter) && is_array($NaviFilter->MerkmalFilter)}
-            {foreach name=merkmalfilter from=$NaviFilter->MerkmalFilter item=mmfilter}
-                <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$mmfilter->kMerkmalWert}" />
+        {if $NaviFilter->hasCategoryFilter()}
+            <input type="hidden" name="kf" value="{$NaviFilter->getCategoryFilter()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasManufacturerFilter()}
+            <input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasSearchSpecialFilter()}
+            <input type="hidden" name="qf" value="{$NaviFilter->getSearchSpecialFilter()->kKey}" />
+        {/if}
+        {if $NaviFilter->hasRatingFilter()}
+            <input type="hidden" name="bf" value="{$NaviFilter->getRatingFilter()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasPriceRangeFilter()}
+            <input type="hidden" name="pf" value="{$NaviFilter->getPriceRangeFilter()->getValue()}" />
+        {/if}
+        {if $NaviFilter->hasAttributeFilter()}
+            {foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}
+                <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$attributeFilter->getValue()}" />
             {/foreach}
         {/if}
         {if isset($cJTLSearchStatedFilter_arr) && is_array($cJTLSearchStatedFilter_arr)}
@@ -135,39 +150,39 @@
                 <input name="fq{$key}" type="hidden" value="{$cJTLSearchStatedFilter}" />
             {/foreach}
         {/if}
-        {if isset($NaviFilter->TagFilter) && is_array($NaviFilter->TagFilter)}
-            {foreach name=tagfilter from=$NaviFilter->TagFilter item=tag}
-                <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tag->kTag}" />
+        {if $NaviFilter->hasTagFilter()}
+            {foreach name=tagfilter from=$NaviFilter->getTagFilter() item=tagFilter}
+                <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tagFilter->getValue()}" />
             {/foreach}
         {/if}
-        {if isset($NaviFilter->SuchFilter) && is_array($NaviFilter->SuchFilter)}
-            {foreach name=suchfilter from=$NaviFilter->SuchFilter item=oSuche}
-                <input type="hidden" name="sf{$smarty.foreach.suchfilter.iteration}" value="{$oSuche->kSuchanfrage}" />
+        {if $NaviFilter->hasSearchFilter()}
+            {foreach name=suchfilter from=$NaviFilter->getSearchFilter() item=searchFilter}
+                <input type="hidden" name="sf{$smarty.foreach.suchfilter.iteration}" value="{$searchFilter->getValue()}" />
             {/foreach}
         {/if}
         {include file='productlist/result_options.tpl'}
     </form>
 {/if}
 
-{if $Suchergebnisse->Artikel->elemente|@count <= 0 && isset($KategorieInhalt)}
+{if $Suchergebnisse->getProducts()->elemente|@count <= 0 && isset($KategorieInhalt)}
     {if isset($KategorieInhalt->TopArtikel->elemente)}
-        {lang key="topOffer" section="global" assign='slidertitle'}
+        {lang key='topOffer' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}
     {/if}
 
     {if isset($KategorieInhalt->BestsellerArtikel->elemente)}
-        {lang key="bestsellers" section="global" assign='slidertitle'}
+        {lang key='bestsellers' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-bestseller-products' productlist=$KategorieInhalt->BestsellerArtikel->elemente title=$slidertitle}
     {/if}
 {/if}
 
-{if $Suchergebnisse->GesamtanzahlArtikel > 0}
+{if $Suchergebnisse->getProductCount() > 0}
     <div class="row list-pageinfo top10">
         <div class="col-xs-4 page-current">
-            <strong>{lang key="page" section="productOverview"} {$Suchergebnisse->Seitenzahlen->AktuelleSeite}</strong> {lang key="of" section="productOverview"} {$Suchergebnisse->Seitenzahlen->MaxSeiten}
+            <strong>{lang key='page' section='productOverview'} {$Suchergebnisse->getPages()->AktuelleSeite}</strong> {lang key='of' section='productOverview'} {$Suchergebnisse->getPages()->MaxSeiten}
         </div>
         <div class="col-xs-8 page-total text-right">
-            {lang key="products" section="global"} {$Suchergebnisse->ArtikelVon} - {$Suchergebnisse->ArtikelBis} {lang key="of" section="productOverview"} {$Suchergebnisse->GesamtanzahlArtikel}
+            {lang key='products'} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
         </div>
     </div>
 {/if}

@@ -10,37 +10,31 @@
 class Jtllog
 {
     /**
-     * @access protected
      * @var int
      */
     protected $kLog;
 
     /**
-     * @access protected
      * @var int
      */
     protected $nLevel;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cLog;
 
     /**
-     * @access protected
      * @var string
      */
     protected $cKey;
 
     /**
-     * @access protected
      * @var int
      */
     protected $kKey;
 
     /**
-     * @access protected
      * @var string
      */
     protected $dErstellt;
@@ -49,7 +43,6 @@ class Jtllog
      * Constructor
      *
      * @param int $kLog primarykey
-     * @access public
      */
     public function __construct($kLog = 0)
     {
@@ -63,7 +56,6 @@ class Jtllog
      *
      * @param int $kLog
      * @return $this
-     * @access private
      */
     private function loadFromDB($kLog)
     {
@@ -82,7 +74,6 @@ class Jtllog
      *
      * @param bool $bPrim - Controls the return of the method
      * @return bool|int
-     * @access public
      */
     public function save($bPrim = true)
     {
@@ -109,7 +100,6 @@ class Jtllog
      * Update the class in the database
      *
      * @return int
-     * @access public
      */
     public function update()
     {
@@ -148,7 +138,7 @@ class Jtllog
             $nSystemlogFlag = $GLOBALS['nSystemlogFlag'];
         }
         if ($nSystemlogFlag === 0) {
-            $nSystemlogFlag = getSytemlogFlag();
+            $nSystemlogFlag = self::getSytemlogFlag();
         }
 
         return self::isBitFlagSet($nSystemlogFlag, $nLevel) > 0;
@@ -157,7 +147,6 @@ class Jtllog
     /**
      * Write a Log into the database
      *
-     * @access public
      * @param string $cLog
      * @param int    $nLevel
      * @param bool   $bForce
@@ -193,7 +182,6 @@ class Jtllog
     /**
      * Get Logs from the database
      *
-     * @access public
      * @param string $cFilter
      * @param int    $nLevel
      * @param int    $nLimitN
@@ -235,9 +223,27 @@ class Jtllog
     }
 
     /**
+     * Get Logs from the database filtered by an arbitrary SQL expression
+     *
+     * @param string $cWhereSQL
+     * @param string $cLimitSQL
+     * @return array
+     */
+    public static function getLogWhere($cWhereSQL = '', $cLimitSQL = '')
+    {
+        return Shop::DB()->query(
+            "SELECT *
+                FROM tjtllog" .
+                ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .
+                " ORDER BY dErstellt DESC " .
+                ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
+            2
+        );
+    }
+
+    /**
      * Get Logcount from the database
      *
-     * @access public
      * @param string $cFilter
      * @param int    $nLevel
      * @return int
@@ -249,26 +255,25 @@ class Jtllog
             $cSQLWhere = " WHERE nLevel = " . (int)$nLevel;
         }
 
-        if (strlen($cFilter) > 0 && strlen($cSQLWhere) === 0) {
-            $cSQLWhere .= " WHERE cLog LIKE '%" . $cFilter . "%'";
-        } elseif (strlen($cFilter) > 0 && strlen($cSQLWhere) > 0) {
-            $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";
+        if (strlen($cFilter) > 0) {
+            if (strlen($cSQLWhere) === 0) {
+                $cSQLWhere .= " WHERE cLog LIKE '%" . $cFilter . "%'";
+            } else {
+                $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";
+            }
         }
 
         $oLog = Shop::DB()->query("SELECT count(*) AS nAnzahl FROM tjtllog" . $cSQLWhere, 1);
 
-        if (isset($oLog->nAnzahl) && $oLog->nAnzahl > 0) {
-            return (int)$oLog->nAnzahl;
-        }
-
-        return 0;
+        return isset($oLog->nAnzahl) && $oLog->nAnzahl > 0
+            ? (int)$oLog->nAnzahl
+            : 0;
     }
 
     /**
      * Write a Log into the database
      *
      * @return void
-     * @access public
      */
     public static function truncateLog()
     {
@@ -285,7 +290,6 @@ class Jtllog
      * Write a Log into the database
      *
      * @return int
-     * @access public
      */
     public static function deleteAll()
     {
@@ -296,7 +300,6 @@ class Jtllog
      * Delete the class in the database
      *
      * @return int
-     * @access public
      */
     public function delete()
     {
@@ -304,9 +307,6 @@ class Jtllog
     }
 
     /**
-     * Sets the kLog
-     *
-     * @access public
      * @param int $kLog
      * @return $this
      */
@@ -318,9 +318,6 @@ class Jtllog
     }
 
     /**
-     * Sets the nLevel
-     *
-     * @access public
      * @param int $nLevel
      * @return $this
      */
@@ -332,9 +329,6 @@ class Jtllog
     }
 
     /**
-     * Sets the cLog
-     *
-     * @access public
      * @param string $cLog
      * @param bool   $bFilter
      * @return $this
@@ -347,8 +341,6 @@ class Jtllog
     }
 
     /**
-     * Sets the cKey
-     *
      * @param string $cKey
      * @return $this
      */
@@ -360,9 +352,6 @@ class Jtllog
     }
 
     /**
-     * Sets the kKey
-     *
-     * @access public
      * @param int $kKey
      * @return $this
      */
@@ -374,9 +363,6 @@ class Jtllog
     }
 
     /**
-     * Sets the dErstellt
-     *
-     * @access public
      * @param string $dErstellt
      * @return $this
      */
@@ -388,9 +374,6 @@ class Jtllog
     }
 
     /**
-     * Sets BitFlag
-     *
-     * @access public
      * @param array $nFlag_arr
      * @return int
      */
@@ -400,7 +383,7 @@ class Jtllog
 
         if (is_array($nFlag_arr) && count($nFlag_arr) > 0) {
             foreach ($nFlag_arr as $nFlag) {
-                $nVal |= $nFlag;
+                $nVal |= (int)$nFlag;
             }
         }
 
@@ -408,9 +391,6 @@ class Jtllog
     }
 
     /**
-     * Gets the kLog
-     *
-     * @access public
      * @return int
      */
     public function getkLog()
@@ -419,9 +399,6 @@ class Jtllog
     }
 
     /**
-     * Gets the nLevel
-     *
-     * @access public
      * @return int
      */
     public function getLevel()
@@ -430,9 +407,6 @@ class Jtllog
     }
 
     /**
-     * Gets the cLog
-     *
-     * @access public
      * @return string
      */
     public function getcLog()
@@ -441,9 +415,6 @@ class Jtllog
     }
 
     /**
-     * Gets the cKey
-     *
-     * @access public
      * @return string
      */
     public function getcKey()
@@ -452,9 +423,6 @@ class Jtllog
     }
 
     /**
-     * Gets the kKey
-     *
-     * @access public
      * @return int
      */
     public function getkKey()
@@ -463,9 +431,6 @@ class Jtllog
     }
 
     /**
-     * Gets the dErstellt
-     *
-     * @access public
      * @return string
      */
     public function getErstellt()
@@ -474,11 +439,8 @@ class Jtllog
     }
 
     /**
-     * Gets the BitFlag
-     *
-     * @access public
-     * @param $nVal
-     * @param $nFlag
+     * @param int $nVal
+     * @param int $nFlag
      * @return int
      */
     public static function isBitFlagSet($nVal, $nFlag)
@@ -493,7 +455,7 @@ class Jtllog
      */
     public static function cronLog($string, $level = 1)
     {
-        if (defined('VERBOSE_CRONJOBS') && (int)VERBOSE_CRONJOBS >= $level && PHP_SAPI === 'cli') {
+        if (defined('VERBOSE_CRONJOBS') && VERBOSE_CRONJOBS >= $level && PHP_SAPI === 'cli') {
             $now = new DateTime();
             echo $now->format('Y-m-d H:i:s') . ' ' . $string . PHP_EOL;
 
@@ -501,5 +463,24 @@ class Jtllog
         }
 
         return false;
+    }
+
+    /**
+     * @param bool $cache
+     * @return int
+     * @former getSytemlogFlag()
+     */
+    public static function getSytemlogFlag($cache = true)
+    {
+        $conf = Shop::getSettings([CONF_GLOBAL]);
+        if ($cache === true && isset($conf['global']['systemlog_flag'])) {
+            return (int)$conf['global']['systemlog_flag'];
+        }
+        $conf = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'systemlog_flag'", 1);
+        if (isset($conf->cWert)) {
+            return (int)$conf->cWert;
+        }
+
+        return 0;
     }
 }

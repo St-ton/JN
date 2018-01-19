@@ -152,16 +152,10 @@ if (isset($_POST['actionValidateSecretWord']) && validateToken()) {
 
 // Action Delete Secret Word
 if (isset($_POST['actionDeleteSecretWord']) && validateToken()) {
-    $sql = "UPDATE tskrill SET cSecretWord = ''";
-    Shop::DB()->query($sql, 10);
-
-    $sql = "UPDATE tzahlungsart SET nActive = 0 WHERE cModulId LIKE 'za_mbqc_%_jtl'";
-    Shop::DB()->query($sql, 10);
+    Shop::DB()->query("UPDATE tskrill SET cSecretWord = ''", 10);
+    Shop::DB()->query("UPDATE tzahlungsart SET nActive = 0 WHERE cModulId LIKE 'za_mbqc_%_jtl'", 10);
 }
-
-// Load Data from Database
-$sql  = "SELECT * FROM tskrill";
-$data = Shop::DB()->query($sql, 1);
+$data = Shop::DB()->query("SELECT * FROM tskrill", 1);
 
 global $smarty;
 if ($data === false || $data === null) {

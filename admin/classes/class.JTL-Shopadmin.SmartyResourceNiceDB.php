@@ -39,8 +39,8 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
             $source = $exportformat->cContent;
         } elseif ($this->type === 'mail') {
             $pcs = explode('_', $name);
-            if (isset($pcs[0], $pcs[1], $pcs[2], $pcs[3]) &&
-                $pcs[3] === 'anbieterkennzeichnung'
+            if (isset($pcs[0], $pcs[1], $pcs[2], $pcs[3])
+                && $pcs[3] === 'anbieterkennzeichnung'
             ) {
                 // Anbieterkennzeichnungsvorlage holen
                 $vl = Shop::DB()->query(

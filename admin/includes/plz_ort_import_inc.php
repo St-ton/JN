@@ -19,7 +19,7 @@ function plzimportGetPLZOrt()
             FROM tplz
             INNER JOIN tland ON tland.cISO = tplz.cLandISO
             LEFT JOIN (
-	            SELECT tplz_backup.cLandISO, count(tplz_backup.kPLZ) AS nBackup
+                SELECT tplz_backup.cLandISO, count(tplz_backup.kPLZ) AS nBackup
                 FROM tplz_backup
                 GROUP BY tplz_backup.cLandISO
             ) AS backup ON backup.cLandISO = tplz.cLandISO
@@ -87,7 +87,7 @@ function plzimportDoImport($target, array $sessData, $result)
 
             if (isset($data[13]) && in_array($data[13], [6, 8])) {
                 $plz_arr       = explode(',', $data[7]);
-                $oPLZOrt->cOrt = utf8_decode($data[3]);
+                $oPLZOrt->cOrt = $data[3];
 
                 foreach ($plz_arr as $plz) {
                     $oPLZOrt->cPLZ = $plz;
@@ -116,7 +116,7 @@ function plzimportDoImport($target, array $sessData, $result)
                                     'params' => [$target, 'import', $sessData['step']]
                                 ]
                             )
-                        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
+                        ) . '&token=' . StringHandler::filterXSS($_SESSION['jtl_token']);
                     header('Location: ' . $cRedirectUrl);
                     exit;
                 }
@@ -255,7 +255,7 @@ function plzimportDoDownload($target, array $sessData, $result)
                     'params' => [$target, 'import', $sessData['step']]
                 ]
             )
-        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
+        ) . '&token=' . StringHandler::filterXSS($_SESSION['jtl_token']);
     header('Location: ' . $cRedirectUrl);
     exit;
 }
@@ -402,7 +402,7 @@ function plzimportActionCheckStatus()
         $impData = Shop::DB()->query(
             "SELECT count(*) AS nAnzahl
                 FROM tplz
-                WHERE cLandISO ='IMP'", 1
+                WHERE cLandISO = 'IMP'", 1
         );
 
         $result = (object)[
@@ -428,6 +428,7 @@ function plzimportActionCheckStatus()
 function plzimportActionDelTempImport()
 {
     Shop::DB()->delete('tplz', 'cLandISO', 'IMP');
+
     return [
         'type'    => 'success',
         'message' => 'Tempor&auml;rer Import wurde gel&ouml;scht!',
@@ -439,7 +440,9 @@ function plzimportActionDelTempImport()
  */
 function plzimportActionLoadAvailableDownloads()
 {
-    $oLand_arr = isset($_SESSION['plzimport.oLand_arr']) ? $_SESSION['plzimport.oLand_arr'] : Shop::Cache()->get('plzimport.oLand_arr');
+    $oLand_arr = isset($_SESSION['plzimport.oLand_arr'])
+        ? $_SESSION['plzimport.oLand_arr']
+        : Shop::Cache()->get('plzimport.oLand_arr');
 
     if ($oLand_arr === false) {
         $ch = curl_init();
@@ -487,6 +490,7 @@ function plzimportActionLoadAvailableDownloads()
 
 /**
  * @param string $target
+ * @return stdClass
  */
 function plzimportActionRestoreBackup($target = '')
 {
@@ -526,13 +530,9 @@ function plzimportFinalize($step, JTLSmarty $smarty, array &$messages)
         unset($_SESSION['plzimport.error']);
     }
 
-    /*switch ($step) {
-
-    }*/
-
     $smarty->assign('hinweis', $messages['notice'])
-        ->assign('fehler', $messages['error'])
-        ->display('plz_ort_import.tpl');
+           ->assign('fehler', $messages['error'])
+           ->display('plz_ort_import.tpl');
 }
 
 /**
@@ -588,11 +588,9 @@ function plzimportReadSession($sessID)
 {
     $dbSess = Shop::DB()->select('tadminsession', 'cSessionId', "plzimport.{$sessID}");
 
-    if (!empty($dbSess->cSessionData)) {
-        return unserialize($dbSess->cSessionData);
-    }
-
-    return [];
+    return !empty($dbSess->cSessionData)
+        ? unserialize($dbSess->cSessionData)
+        : [];
 }
 
 /**
@@ -616,7 +614,7 @@ function plzimportMakeResponse($data, $error = null)
 
     $result = (object)[
         'error' => $error,
-        'data'  => utf8_convert_recursive($data)
+        'data'  => $data
     ];
 
     $json = json_encode($result);

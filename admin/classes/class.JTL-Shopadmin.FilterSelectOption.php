@@ -45,6 +45,6 @@ class FilterSelectOption
      */
     public function getTestOp()
     {
-        return $this->nTestOp;
+        return (int)$this->nTestOp;
     }
 }

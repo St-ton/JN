@@ -15,7 +15,7 @@ $(document).ready(function() {
     });
 
     /** bring the 2FA-canvas in a defined position depending on the state of the 2FA */
-    if ('nein' == $('#b2FAauth option:selected').text().toLowerCase()) {
+    if ('nein' === $('#b2FAauth option:selected').text().toLowerCase()) {
         $('[id$=TwoFAwrapper]').hide();
     } else {
         $('[id$=TwoFAwrapper]').show();
@@ -24,7 +24,7 @@ $(document).ready(function() {
     /** install a "toggle-event-handler" to fold or unfold the 2FA-canvas, via the "Ja/Nein"-select */
     $('[id$=b2FAauth]').on('change', function(e) {
         e.stopImmediatePropagation(); // stop this event during page-load
-        if('none' == $('[id$=TwoFAwrapper]').css('display')) {
+        if('none' === $('[id$=TwoFAwrapper]').css('display')) {
             $('[id$=TwoFAwrapper]').slideDown();
         } else {
             $('[id$=TwoFAwrapper]').slideUp();
@@ -198,7 +198,7 @@ $(document).ready(function() {
                         {literal}
                         <script>
                             function createNewSecret() {
-                                if('' == $('[id$=cLogin]').val()) {
+                                if('' === $('[id$=cLogin]').val()) {
                                     alert('Bitte legen Sie zuerst, in den Anmeldedaten, einen Benutzernamen fest!');
                                     return(false);
                                 }
@@ -212,7 +212,7 @@ $(document).ready(function() {
                                         $('#c2FAsecret').val(data.szSecret);
 
                                         // toggle code-canvas
-                                        if('none' == $('#QRcodeCanvas').css('display')) {
+                                        if('none' === $('#QRcodeCanvas').css('display')) {
                                             $('#QRcodeCanvas').css('display', 'block');
                                         }
                                     });

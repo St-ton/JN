@@ -35,20 +35,23 @@ class MultiRequest
         }
 
         do {
-            if (curl_multi_select($this->handle) == -1) {
+            if (curl_multi_select($this->handle) === -1) {
                 usleep(100);
             }
 
             $mrc = curl_multi_exec($this->handle, $active);
 
-            if ($state = curl_multi_info_read($this->handle)) {
+            if (($state = curl_multi_info_read($this->handle)) !== false) {
                 $info = curl_getinfo($state['handle']);
                 $callback(curl_multi_getcontent($state['handle']), $info);
                 curl_multi_remove_handle($this->handle, $state['handle']);
             }
-        } while ($mrc == CURLM_CALL_MULTI_PERFORM || $active);
+        } while ($mrc === CURLM_CALL_MULTI_PERFORM || $active);
     }
 
+    /**
+     *
+     */
     public function __destruct()
     {
         curl_multi_close($this->handle);

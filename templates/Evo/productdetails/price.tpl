@@ -2,7 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *}
-{if $smarty.session.Kundengruppe->darfPreiseSehen}
+{if $smarty.session.Kundengruppe->mayViewPrices()}
     <div class="price_wrapper">
     {block name="price-wrapper"}
     {* --- Preis auf Anfrage? --- *}
@@ -28,7 +28,7 @@
         {if $tplscope === 'detail'}
             {block name="price-snippets"}
                 <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">
-                <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->cName}">
+                <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
             {/block}
             <div class="price-note">
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}

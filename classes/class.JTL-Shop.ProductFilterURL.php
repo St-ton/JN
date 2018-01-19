@@ -31,6 +31,7 @@ class ProductFilterURL
      */
     public function getURL($extraFilter = null, $bCanonical = false, $debug = false)
     {
+        $languageID         = $this->productFilter->getLanguageID();
         $extraFilter        = $this->convertExtraFilter($extraFilter);
         $base               = $this->productFilter->getBaseState();
         $nonSeoFilterParams = [];
@@ -47,7 +48,7 @@ class ProductFilterURL
             'misc'   => []
         ];
         if ($base->isInitialized()) {
-            $filterSeoUrl = $base->getSeo($this->productFilter->getLanguageID());
+            $filterSeoUrl = $base->getSeo($languageID);
             if (!empty($filterSeoUrl)) {
                 $seoParam          = new stdClass();
                 $seoParam->value   = '';
@@ -56,7 +57,10 @@ class ProductFilterURL
                 $seoParam->seo     = $filterSeoUrl;
                 $seoFilterParams[] = $seoParam;
             } else {
-                $nonSeoFilterParams[] = [$base->getUrlParam() => $base->getValue()];
+                $filterValue = get_class($base) === 'FilterBaseSearchQuery'
+                    ? $base->getName()
+                    : $base->getValue();
+                $nonSeoFilterParams[$base->getUrlParam()] = $filterValue;
             }
         }
         if ($bCanonical === true) {
@@ -124,7 +128,7 @@ class ProductFilterURL
                     if (!is_array($urlParams[$urlParam][0]->seo)) {
                         $urlParams[$urlParam][0]->seo = [];
                     }
-                    $urlParams[$urlParam][0]->seo[] = $filter->getSeo($this->productFilter->getLanguageID());
+                    $urlParams[$urlParam][0]->seo[] = $filter->getSeo($languageID);
                 }
             } else {
                 $createEntry = true;
@@ -136,13 +140,10 @@ class ProductFilterURL
                     }
                 }
                 if ($createEntry === true) {
-                    if ($debug) {
-                        Shop::dbg($filterValue, false, 'creating entry for $filterValue');
-                    }
                     $filterSeoData          = new stdClass();
                     $filterSeoData->value   = $filterValue;
                     $filterSeoData->sep     = $filter->getUrlParamSEO();
-                    $filterSeoData->seo     = $filter->getSeo($this->productFilter->getLanguageID());
+                    $filterSeoData->seo     = $filter->getSeo($languageID);
                     $filterSeoData->param   = $urlParam;
 
                     $urlParams[$urlParam][] = $filterSeoData;
@@ -178,8 +179,21 @@ class ProductFilterURL
                     } elseif (!is_array($nonSeoFilterParams[$filterID])) {
                         $nonSeoFilterParams[$filterID]   = [$nonSeoFilterParams[$filterID]];
                         $nonSeoFilterParams[$filterID][] = $f->value;
+                    } else {
+                        $nonSeoFilterParams[$filterID][] = $f->value;
                     }
                 }
+            }
+        }
+        if ($languageID !== Shop::getLanguageID()) {
+            $languageCode = null;
+            foreach (Session::Languages() as $language) {
+                if ($language->kSprache === $languageID) {
+                    $languageCode = $language->cISO;
+                }
+            }
+            if ($languageCode !== null) {
+                $nonSeoFilterParams['lang'] = $languageCode;
             }
         }
         $url .= $this->buildURLString($seoFilterParams, $nonSeoFilterParams);

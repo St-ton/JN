@@ -3309,11 +3309,10 @@ class Artikel
      */
     public function baueArtikelSprachURL($bSeo = true)
     {
-        // Baue SprachwechselURLs
         if (is_array($_SESSION['Sprachen']) && count($_SESSION['Sprachen']) > 0) {
             foreach ($_SESSION['Sprachen'] as $oSprache) {
                 $oSprache->kSprache                    = (int)$oSprache->kSprache;
-                $this->cSprachURL_arr[$oSprache->cISO] = 'navi.php?a=' . $this->kArtikel .
+                $this->cSprachURL_arr[$oSprache->cISO] = '?a=' . $this->kArtikel .
                     '&amp;lang=' . $oSprache->cISO;
             }
         }

@@ -43,6 +43,8 @@ EditorGUI.prototype = {
         this.portletBtns
             .on('dragstart', this.onPortletBtnDragStart.bind(this))
             .on('dragend', this.onPortletBtnDragEnd.bind(this));
+
+        this.revisionBtns();
     },
 
     initIframeGUI: function()
@@ -304,6 +306,8 @@ EditorGUI.prototype = {
     onRevision: function(e)
     {
         var elm = $(e.target);
+        this.clearPage();
+        this.editor.io.loadRevision(elm.data('revision-id'));
     },
 
     onPreview: function(e)

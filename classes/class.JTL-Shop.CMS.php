@@ -66,10 +66,16 @@ class CMS
 
     /**
      * @param $pageID string
-     * @param $revisionID string
+     * @param $revisionID int
+     * @return CMSPage
      */
     public function getPageRevision($pageID, $revisionID)
     {
+        $page          = new CMSPage();
+        $page->cIdHash = $pageID;
+        $page->loadRevision($revisionID);
+
+        return $page;
     }
 
     /**

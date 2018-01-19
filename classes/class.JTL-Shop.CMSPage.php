@@ -139,6 +139,22 @@ class CMSPage
         return $revision->getRevisions('cmspage', $this->kPage);
     }
 
+    public function loadRevision($revisionID)
+    {
+        $revision = new Revision();
+        $revision = $revision->getRevision($revisionID);
+        $content  = json_decode($revision->content);
+
+        $content->data = json_decode($content->cJson, true);
+
+        $this->kPage         = $content->kPage;
+        $this->cIdHash       = $content->cIdHash;
+        $this->data          = json_decode($content->cJson, true);
+        $this->dLastModified = $content->dLastModified;
+        $this->cLockedBy     = $content->cLockedBy;
+        $this->dLockedAt     = $content->dLockedAt;
+    }
+
     /**
      * @param $cLogin string - name of the user who wants to lock this page
      * @return bool - true if lock was granted

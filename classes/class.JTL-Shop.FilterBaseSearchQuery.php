@@ -156,7 +156,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     AND tsuchanfrage.kSprache = tseo.kSprache
                 WHERE cKey = 'kSuchanfrage' 
                     AND kKey = :key", 
-            ['key' => $this->getValue()], 
+            ['key' => $this->getID()],
             1
         );
         foreach ($languages as $language) {

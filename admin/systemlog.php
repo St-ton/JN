@@ -63,7 +63,7 @@ $oPagination = (new Pagination('syslog'))
     ->assemble();
 
 $oLog_arr       = Jtllog::getLogWhere($oFilter->getWhereSQL(), $oPagination->getLimitSQL());
-$nSystemlogFlag = getSytemlogFlag(false);
+$nSystemlogFlag = Jtllog::getSytemlogFlag(false);
 $nLevelFlag_arr = [
     JTLLOG_LEVEL_ERROR => Jtllog::isBitFlagSet(JTLLOG_LEVEL_ERROR, $nSystemlogFlag),
     JTLLOG_LEVEL_NOTICE => Jtllog::isBitFlagSet(JTLLOG_LEVEL_NOTICE, $nSystemlogFlag),

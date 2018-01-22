@@ -17,8 +17,29 @@ class FilterItemTag extends FilterBaseTag
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom = false;
-        $this->urlParam = 'tf';
+        $this->setUrlParam('tf')
+             ->setType($this->getConfig()['navigationsfilter']['tag_filter_type'] === 'O'
+                 ? AbstractFilter::FILTER_TYPE_OR
+                 : AbstractFilter::FILTER_TYPE_AND);
+    }
+
+    /**
+     * @param array|int $value
+     * @return $this
+     */
+    public function setValue($value)
+    {
+        $this->value = is_array($value) ? $value : (int)$value;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTableName()
+    {
+        return 'ttagartikel';
     }
 
     /**

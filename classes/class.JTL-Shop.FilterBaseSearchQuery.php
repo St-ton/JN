@@ -44,18 +44,18 @@ class FilterBaseSearchQuery extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'l';
-        $this->urlParamSEO = null;
+        $this->setIsCustom(false)
+             ->setUrlParam('suche')
+             ->setUrlParamSEO(null);
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->value = (int)$id;
+        $this->value = (int)$value;
 
         return $this;
     }
@@ -234,7 +234,7 @@ class FilterBaseSearchQuery extends AbstractFilter
 
     /**
      * @param null $data
-     * @return array|int|object
+     * @return FilterOption[]
      */
     public function getOptions($data = null)
     {
@@ -320,7 +320,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $nPrioStep = ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9;
             }
             foreach ($searchFilters as $searchFilter) {
-                $fe = (new FilterOption())
+                $fo = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setParam($this->getUrlParam())
@@ -332,13 +332,13 @@ class FilterBaseSearchQuery extends AbstractFilter
                     ))
                     ->setClass(rand(1, 10));
                 if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
-                    $fe->setClass(round(
+                    $fo->setClass(round(
                             ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                             $nPrioStep
                         ) + 1
                     );
                 }
-                $options[] = $fe;
+                $options[] = $fo;
             }
         }
         $this->options = $options;
@@ -394,9 +394,9 @@ class FilterBaseSearchQuery extends AbstractFilter
     {
         require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
         // Mapping beachten
-        $cSuche       = $this->getQueryMapping($this->getName(), $kSpracheExt);
+        $cSuche = $this->getQueryMapping($this->getName(), $kSpracheExt);
         $this->setName($cSuche);
-        $kSprache     = $kSpracheExt > 0
+        $kSprache = $kSpracheExt > 0
             ? (int)$kSpracheExt
             : $this->getLanguageID();
         // Suchcache wurde zwar gefunden, ist jedoch nicht mehr gültig
@@ -405,14 +405,10 @@ class FilterBaseSearchQuery extends AbstractFilter
                 FROM tsuchcache
                 LEFT JOIN tsuchcachetreffer 
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
-                WHERE tsuchcache.kSprache = ' . $kSprache . '
-                    AND tsuchcache.dGueltigBis IS NOT NULL
+                WHERE tsuchcache.dGueltigBis IS NOT NULL
                     AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()', 3
         );
 
-        $keySuche = $cSuche . ';' .
-            $this->getConfig()['global']['artikel_artikelanzeigefilter'] . ';' .
-            Session::CustomerGroup()->getID();
         // Suchcache checken, ob bereits vorhanden
         $oSuchCache = Shop::DB()->executeQueryPrepared(
             'SELECT kSuchCache
@@ -420,7 +416,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 WHERE kSprache =  :lang
                     AND cSuche = :search
                     AND (dGueltigBis > now() OR dGueltigBis IS NULL)',
-            ['lang' => $kSprache, 'search' => Shop::DB()->escape($keySuche)],
+            ['lang' => $kSprache, 'search' => Shop::DB()->escape($cSuche)],
             1
         );
 
@@ -471,7 +467,7 @@ class FilterBaseSearchQuery extends AbstractFilter
 
         if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
             $cSQL = 'SELECT ' . $kSuchCache . ', IF(tartikel.kVaterArtikel > 0, 
-                        tartikel.kVaterArtikel, tartikelsprache.kArtikel) AS kArtikelTMP, ';
+                        tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, ';
         } else {
             $cSQL = 'SELECT ' . $kSuchCache . ', IF(kVaterArtikel > 0, 
                         kVaterArtikel, kArtikel) AS kArtikelTMP, ';
@@ -480,9 +476,10 @@ class FilterBaseSearchQuery extends AbstractFilter
         if (count($cSuch_arr) > 3) {
             $cSQL .= " 1 ";
             if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-                $cSQL .= ' FROM tartikelsprache
-                                LEFT JOIN tartikel 
-                                    ON tartikelsprache.kArtikel = tartikel.kArtikel';
+                $cSQL .= ' FROM tartikel
+                                LEFT JOIN tartikelsprache
+                                    ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                    AND tartikelsprache.kSprache = ' . $this->getLanguageID();
             } else {
                 $cSQL .= ' FROM tartikel ';
             }
@@ -767,16 +764,15 @@ class FilterBaseSearchQuery extends AbstractFilter
             }
 
             if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-                $cSQL .= ' FROM tartikelsprache
-                            LEFT JOIN tartikel 
-                                ON tartikelsprache.kArtikel = tartikel.kArtikel';
+                $cSQL .= ' FROM tartikel
+                            LEFT JOIN tartikelsprache
+                                ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                AND tartikelsprache.kSprache = ' . $this->getLanguageID();
             } else {
                 $cSQL .= ' FROM tartikel ';
             }
             $cSQL .= " WHERE ";
-            if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
-                $cSQL .= " tartikelsprache.kSprache = " . $this->getLanguageID() . " AND ";
-            }
+
             foreach ($searchColumnn_arr as $i => $searchColumnn) {
                 if ($i > 0) {
                     $cSQL .= ' OR';

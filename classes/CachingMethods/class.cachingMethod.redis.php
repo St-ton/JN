@@ -62,21 +62,14 @@ class cache_redis implements ICachingMethod
         $redis   = new Redis();
         $connect = $persist === false ? 'connect' : 'pconnect';
         if ($host !== null) {
-            try {
-                $res = ($port !== null && $host[0] !== '/')
-                    ? $redis->$connect($host, (int)$port)
-                    : $redis->$connect($host); //for connecting to socket
-                if ($res !== false && $pass !== null && $pass !== '') {
-                    $res = $redis->auth($pass);
-                }
-                if ($res !== false && $database !== null && $database !== '') {
-                    $res = $redis->select((int)$database);
-                }
-            } catch (RedisException $e) {
-                Shop::dbg($e->getMessage(), false, 'exception:');
-                Jtllog::writeLog('RedisException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR, true);
-
-                return false;
+            $res = ($port !== null && $host[0] !== '/')
+                ? $redis->$connect($host, (int)$port, REDIS_CONNECT_TIMEOUT)
+                : $redis->$connect($host); //for connecting to socket
+            if ($res !== false && $pass !== null && $pass !== '') {
+                $res = $redis->auth($pass);
+            }
+            if ($res !== false && $database !== null && $database !== '') {
+                $res = $redis->select((int)$database);
             }
             if ($res === false) {
                 return false;

@@ -1227,9 +1227,9 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
     $shopURLSSL      = Shop::getURL(true);
     $search          = [$shopURL . '/', $shopURLSSL . '/'];
     $replace         = ['', ''];
-    if ($oSuchergebnisse->GesamtanzahlArtikel > 0) {
-        if ($oSuchergebnisse->Seitenzahlen->MaxSeiten > 1) {
-            for ($i = 1; $i <= $oSuchergebnisse->Seitenzahlen->MaxSeiten; ++$i) {
+    if ($oSuchergebnisse->getProductCount() > 0) {
+        if (($max = $oSuchergebnisse->getPages()->MaxSeiten) > 1) {
+            for ($i = 1; $i <= $max; ++$i) {
                 if ($i > 1) {
                     $cURL_arr[] = makeURL(
                         str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()) . '_s' . $i,

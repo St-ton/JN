@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bilderverwaltung_inc.php'
 
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);
 
-$smarty->configLoad("german.conf", 'bilderverwaltung')
+$smarty->configLoad('german.conf', 'bilderverwaltung')
     ->assign('items', getItems())
     ->assign('corruptedImagesByType', getCorruptedImages(Image::TYPE_PRODUCT, 50))
     ->assign('TYPE_PRODUCT', Image::TYPE_PRODUCT)

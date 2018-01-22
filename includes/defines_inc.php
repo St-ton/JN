@@ -8,7 +8,6 @@
 define('JTL_VERSION', 405);
 define('JTL_MIN_WAWI_VERSION', 99713);
 define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
-define('JTL_BUILD_TIMESTAMP', '#JTL_BUILD_TIMESTAMP#');
 // Einstellungssektionen
 define('CONF_GLOBAL', 1);
 define('CONF_STARTSEITE', 2);

@@ -187,10 +187,11 @@
         </div>
     </div>
     <div class="cle-pinbar btn-group" id="pinbar" style="display:none">
-        <button class="btn btn-default" id="btn-template"><i class="fa fa-star"></i></button>
-        <button class="btn btn-default" id="btn-trash"><i class="fa fa-trash"></i></button>
-        <button class="btn btn-default" id="btn-clone"><i class="fa fa-clone"></i></button>
-        <button class="btn btn-default" id="btn-config"><i class="fa fa-cog"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-parent"><i class="fa fa-level-up"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-template"><i class="fa fa-star"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-trash"><i class="fa fa-trash"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-clone"><i class="fa fa-clone"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-config"><i class="fa fa-cog"></i></button>
     </div>
     <div class="cle-label" id="portlet-label" style="display:none"></div>
 </body>

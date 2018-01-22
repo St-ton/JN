@@ -172,6 +172,10 @@ EditorIO.prototype = {
             elm = elm.parent();
         }
 
+        if(widthHeuristics.sm === null) widthHeuristics.sm = widthHeuristics.xs;
+        if(widthHeuristics.md === null) widthHeuristics.md = widthHeuristics.sm;
+        if(widthHeuristics.lg === null) widthHeuristics.lg = widthHeuristics.md;
+
         result.properties.widthHeuristics = widthHeuristics;
 
 

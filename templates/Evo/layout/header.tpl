@@ -83,11 +83,11 @@
     {/block}
 
     {* Pagination *}
-    {if isset($Suchergebnisse->Seitenzahlen->maxSeite) && $Suchergebnisse->Seitenzahlen->maxSeite > 1 && isset($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
-        {if $Suchergebnisse->Seitenzahlen->AktuelleSeite>1}
+    {if isset($Suchergebnisse) && $Suchergebnisse->getPages()->maxSeite > 1 && isset($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
+        {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
             <link rel="prev" href="{$oNaviSeite_arr.zurueck->cURL}">
         {/if}
-        {if $Suchergebnisse->Seitenzahlen->AktuelleSeite < $Suchergebnisse->Seitenzahlen->maxSeite}
+        {if $Suchergebnisse->getPages()->AktuelleSeite < $Suchergebnisse->getPages()->maxSeite}
             <link rel="next" href="{$oNaviSeite_arr.vor->cURL}">
         {/if}
     {/if}

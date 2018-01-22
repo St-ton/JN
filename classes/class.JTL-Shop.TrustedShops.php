@@ -279,7 +279,7 @@ class TrustedShops
      */
     public function sendeBuchung()
     {
-        if ($this->pruefeZertifikat(StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])) != 1) {
+        if ($this->pruefeZertifikat(StringHandler::convertISO2ISO639(Shop::getLanguageCode())) !== 1) {
             writeLog(PFAD_LOGFILES . 'tskaeuferschutz.log', 'TS certificate is invalid.', 1);
 
             return false;
@@ -355,7 +355,7 @@ class TrustedShops
         }
         // Geaendert aufgrund Mail von Herrn van der Wielen
         // Quote: 'Tatsächlich jedoch sollten Zertifikate mit den Status 'PRODUCTION', 'INTEGRATION' (und 'TEST') akzeptiert werden.'
-        $languageIso = StringHandler::convertISO2ISO639($_SESSION['cISOSprache']);
+        $languageIso = StringHandler::convertISO2ISO639(Shop::getLanguageCode());
         return (($returnValue->stateEnum === 'PRODUCTION'
                 || $returnValue->stateEnum === 'TEST'
                 || $returnValue->stateEnum === 'INTEGRATION')
@@ -412,7 +412,7 @@ class TrustedShops
                     gibPreisStringLocalized($oItem->protectedAmountDecimal);
 
                 if (isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])
-                    && (!isset($_SESSION['Kundengruppe']->nNettoPreise) || !Session::CustomerGroup()->isMerchant())
+                    && (!Session::CustomerGroup()->isMerchant())
                 ) {
                     $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($oItem->netFee *
                         ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100));
@@ -512,7 +512,7 @@ class TrustedShops
                     $this->oKaeuferschutzProdukte->item[$i]->protectedAmountDecimal          = $oItem->nWert;
                     $this->oKaeuferschutzProdukte->item[$i]->tsProductID                     = $oItem->cProduktID;
 
-                    if (!$_SESSION['Kundengruppe']->nNettoPreise && isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])) {
+                    if (!Session::CustomerGroup()->isMerchant() && isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])) {
                         $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized(
                             $fPreis *
                             ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
@@ -568,7 +568,7 @@ class TrustedShops
      *
      * @param string $cISOSprache
      * @param bool   $bSaved
-     * @return bool|int
+     * @return int
      */
     public function pruefeZertifikat($cISOSprache, $bSaved = false)
     {
@@ -667,7 +667,7 @@ class TrustedShops
             return 10; // Falsche Variante
         }
 
-        return false;
+        return 0;
     }
 
     /**

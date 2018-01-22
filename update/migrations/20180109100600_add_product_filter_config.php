@@ -36,7 +36,7 @@ class Migration_20180109100600 extends Migration implements IMigration
             'category_filter_type',
             'A',
             CONF_NAVIGATIONSFILTER,
-            'Typ des Tagfilters',
+            'Typ des Kategoriefilters',
             'selectbox',
             148,
             (object) [

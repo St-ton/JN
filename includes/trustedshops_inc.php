@@ -10,8 +10,8 @@
 function gibTrustedShops()
 {
     unset($_SESSION['TrustedShops'], $oTrustedShops);
-    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-    $oTrustedShops->holeKaeuferschutzProdukteDB(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), true);
+    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
+    $oTrustedShops->holeKaeuferschutzProdukteDB(StringHandler::convertISO2ISO639(Shop::getLanguageCode()), true);
     // Hole alle Käuferschutzprodukte, die in der DB hinterlegt sind
     $oTrustedShopsTMP = new stdClass();
     $cLandISO = $_SESSION['Lieferadresse']->cLand;
@@ -19,7 +19,7 @@ function gibTrustedShops()
         $cLandISO = $_SESSION['Kunde']->cLand;
     }
     // Prüfe, ob TS ID noch gültig ist
-    if ($oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])) === 1) {
+    if ($oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639(Shop::getLanguageCode())) === 1) {
         // Gib nur die Informationen weiter, die das Template auch braucht
         $oTrustedShopsTMP->nAktiv                       = $oTrustedShops->nAktiv;
         $oTrustedShopsTMP->eType                        = $oTrustedShops->eType;
@@ -111,8 +111,9 @@ function gibVorausgewaehltesProdukt($oKaeuferschutzProdukte_arr, $fGesamtSumme)
     $fLetzterWert = 0.0;
     if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
         foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
-            if ((float)$fGesamtSumme <= (float)$oKaeuferschutzProdukte->protectedAmountDecimal &&
-                ((float)$oKaeuferschutzProdukte->protectedAmountDecimal < $fLetzterWert || $fLetzterWert === 0.0)) {
+            if ((float)$fGesamtSumme <= (float)$oKaeuferschutzProdukte->protectedAmountDecimal
+                && ((float)$oKaeuferschutzProdukte->protectedAmountDecimal < $fLetzterWert || $fLetzterWert === 0.0)
+            ) {
                 $tsProductID  = $oKaeuferschutzProdukte->tsProductID;
                 $fLetzterWert = (float)$oKaeuferschutzProdukte->protectedAmountDecimal;
             }

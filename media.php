@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 set_exception_handler(function ($e) {
-    header('HTTP/1.0 404 Not Found', true, 404);
+    header(makeHTTPHeader(404));
     echo $e->getMessage();
     exit;
 });

@@ -1,4 +1,4 @@
-{if $bBoxenFilterNach && $BoxenEinstellungen.navigationsfilter.preisspannenfilter_benutzen === 'box' && $Suchergebnisse->Preisspanne|@count > 0}
+{if $bBoxenFilterNach && $BoxenEinstellungen.navigationsfilter.preisspannenfilter_benutzen === 'box' && $Suchergebnisse->getPriceRangeFilterOptions()|@count > 0}
     <section class="panel panel-default box box-filter-price" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
             <h5 class="panel-title">{lang key="rangeOfPrices" section="global"}</h5>

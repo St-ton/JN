@@ -767,7 +767,7 @@ function gibGratisGeschenkArtikel($conf)
             LEFT JOIN tartikelsichtbarkeit 
                 ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() .
-            "WHERE tartikelsichtbarkeit.kArtikel IS NULL
+            " WHERE tartikelsichtbarkeit.kArtikel IS NULL
             AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
             Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() .
             $cSQLSort .

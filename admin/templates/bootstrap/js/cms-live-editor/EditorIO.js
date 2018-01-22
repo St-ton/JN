@@ -155,7 +155,8 @@ EditorIO.prototype = {
         };
 
         while(!elm.is(this.gui.rootAreas)) {
-            var cls = elm.attr('class').split(/\s+/);
+            var clsStr = elm.attr('class');
+            var cls = typeof clsStr === 'string' ? elm.attr('class').split(/\s+/) : [];
 
             for(var i=0; i < cls.length; i++) {
                 var match = cls[i].match(/col-(xs|sm|md|lg)-([0-9]+)/);

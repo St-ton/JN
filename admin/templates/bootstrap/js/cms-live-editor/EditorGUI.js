@@ -342,10 +342,8 @@ EditorGUI.prototype = {
     {
         if(this.selectedElm !== null) {
             var elem = this.selectedElm.parent();
-            var i = 0;
-            while (elem.attr('data-portletid') == undefined && elem.prop("tagName") !== 'HTML' && i < 50) {
+            while (elem.attr('data-portletid') == undefined && !elem.is(this.rootAreas)) {
                 elem = elem.parent();
-                i++;
             }
 
             if (elem.attr('data-portletid') != undefined) {
@@ -369,6 +367,7 @@ EditorGUI.prototype = {
 
     onTrash: function(e)
     {
+        // TODO Editor: löschen bestätigen
         if(this.selectedElm !== null) {
             this.selectedElm.remove();
             this.setSelected();

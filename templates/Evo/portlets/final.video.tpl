@@ -1,4 +1,4 @@
-<div{$attribString}{$styleString}>
+<div {$attribString} {$styleString}>
     {if !empty($properties['video-title'])}
         <label>{$properties['video-title']}</label>
     {/if}

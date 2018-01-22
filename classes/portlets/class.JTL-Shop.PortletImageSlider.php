@@ -9,27 +9,43 @@
  */
 class PortletImageSlider extends CMSPortlet
 {
-
-
     public function getPreviewHtml($renderLinks = false)
     {
         if (!empty($this->properties['slides'])) {
-            usort($this->properties['slides'], function($a,$b) {
-                return $a['nSort']>$b['nSort'];
-            });
+            usort(
+                $this->properties['slides'],
+                function ($a, $b) {
+                    return $a['nSort'] > $b['nSort'];
+                }
+            );
         }
-        $this->properties['slider-id'] = uniqid();
+
+        $this->properties['slider-id'] = uniqid('', false);
+
         foreach ($this->properties['slides'] as &$slide) {
             $slide['srcStr'] = $this->getSrcString($slide['url']);
         }
 
         if (!empty($this->properties['slides'][0]['url'])) {
-            return '<div class="text-center"' . $this->getStyleString() . '><img' . $this->properties['slides'][0]['srcStr'] . ' style="width: 98%;filter: grayscale() opacity(60%)"/><p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Slider</p></div>';
-        } elseif (!empty($this->properties['slides'][1]['url'])) {
-            return '<div class="text-center"' . $this->getStyleString() . '><img' . $this->properties['slides'][1]['srcStr'] . ' style="width: 98%;filter: grayscale() opacity(60%)"/><p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Slider</p></div>';
-        } else {
-            return '<img src="/gfx/keinBild.gif">';
+            return
+                '<div class="text-center" ' . $this->getStyleString() .
+                '><img' . $this->properties['slides'][0]['srcStr'] .
+                ' style="width: 98%; filter: grayscale(50%) opacity(60%)">' .
+                '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">' .
+                'Slider</p></div>';
         }
+
+        if (!empty($this->properties['slides'][1]['url'])) {
+            return
+                '<div class="text-center" '  . $this->getStyleString() .
+                '><img' . $this->properties['slides'][1]['srcStr'] .
+                ' style="width: 98%;filter: grayscale(50%) opacity(60%)">' .
+                '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">' .
+                'Slider</p></div>';
+        }
+
+        return '<img src="/gfx/keinBild.gif">';
+
         /*TODO EDITOR: platzhalter oder preview prüfen*/
         /*
         return (new JTLSmarty(true))
@@ -43,11 +59,16 @@ class PortletImageSlider extends CMSPortlet
     public function getFinalHtml()
     {
         if (!empty($this->properties['slides'])) {
-            usort($this->properties['slides'], function($a,$b) {
-                return $a['nSort']>$b['nSort'];
-            });
+            usort(
+                $this->properties['slides'],
+                function ($a, $b) {
+                    return $a['nSort'] > $b['nSort'];
+                }
+            );
         }
-        $this->properties['slider-id'] = uniqid();
+
+        $this->properties['slider-id'] = uniqid('', false);
+
         foreach ($this->properties['slides'] as &$slide) {
             $slide['srcStr'] = $this->getSrcString($slide['url']);
         }

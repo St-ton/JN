@@ -24,6 +24,11 @@ EditorIO.prototype = {
         ioCall('getCmsPage', [this.cPageIdHash], this.onGetCmsPageResponse.bind(this));
     },
 
+    loadRevision: function(id)
+    {
+        ioCall('getCmsPageRevision', [this.cPageIdHash, id], this.onGetCmsPageResponse.bind(this));
+    },
+
     savePage: function(success, error)
     {
         success = success || this.noop;

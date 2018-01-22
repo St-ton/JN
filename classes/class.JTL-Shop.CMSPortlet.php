@@ -18,7 +18,7 @@ abstract class CMSPortlet
         '.sm/' => WIDTH_CMS_IMAGE_SM,
         '.md/' => WIDTH_CMS_IMAGE_MD,
         '.lg/' => WIDTH_CMS_IMAGE_LG,
-        '.xl/' => WIDTH_CMS_IMAGE_XL
+        '.xl/' => WIDTH_CMS_IMAGE_XL,
     ];
 
     /**
@@ -151,17 +151,17 @@ abstract class CMSPortlet
             $this->properties['attr']['class'] .= ' wow ' . $animationStyle;
         }
 
-        $attr_str = '';
+        $attribString = '';
 
         if (!empty($this->properties['attr']) && is_array($this->properties['attr'])) {
             foreach ($this->properties['attr'] as $name => $value) {
                 if (trim($value) !== '') {
-                    $attr_str .= $name . '="' . htmlspecialchars($value, ENT_QUOTES) . '" ';
+                    $attribString .= $name . '="' . htmlspecialchars($value, ENT_QUOTES) . '" ';
                 }
             }
         }
 
-        return $attr_str !== '' ? ' ' . $attr_str : '';
+        return $attribString;
     }
 
     /**
@@ -169,7 +169,7 @@ abstract class CMSPortlet
      */
     protected function getStyleString()
     {
-        $style_str = '';
+        $styleString = '';
 
         if (!empty($this->properties['style']) && is_array($this->properties['style'])) {
             foreach ($this->properties['style'] as $name => $value) {
@@ -178,75 +178,74 @@ abstract class CMSPortlet
                         stripos($name, 'padding-') !== false ||
                         stripos($name, '-width') !== false
                     ) {
-                        $style_str .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . 'px;';
+                        $styleString .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . 'px;';
                     } else {
-                        $style_str .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . ';';
+                        $styleString .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . ';';
                     }
                 }
             }
         }
 
-        return $style_str !== '' ? ' style="' . $style_str . '"' : '';
+        return $styleString !== '' ? 'style="' . $styleString . '"' : '';
     }
 
     /**
      * @param String $src
+     * @param array|null $widthHeuristics
      * @return string
      */
-    protected function getSrcString($src, $widthHeuristics = false)
+    protected function getSrcString($src, $widthHeuristics = null)
     {
         if (empty($src)) {
-            return ' src="' . BILD_KEIN_ARTIKELBILD_VORHANDEN . '"';
+            return 'src="' . BILD_KEIN_ARTIKELBILD_VORHANDEN . '"';
         }
-        $settings = Shop::getSettings([CONF_BILDER]);
 
-        $size_arr = [
-            '.xs/' => WIDTH_CMS_IMAGE_XS,
-            '.sm/' => WIDTH_CMS_IMAGE_SM,
-            '.md/' => WIDTH_CMS_IMAGE_MD,
-            '.lg/' => WIDTH_CMS_IMAGE_LG,
-            '.xl/' => WIDTH_CMS_IMAGE_XL
-        ];
-        $name = explode('/', $src);
-        $name = end($name);
-        $srcString = ' srcset="';
+        $settings  = Shop::getSettings([CONF_BILDER]);
+        $name      = explode('/', $src);
+        $name      = end($name);
+        $srcString = 'srcset="';
 
-        foreach ($size_arr as $size => $width){
-            if (!file_exists(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name) === true){
-                $image = new Imanee(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $name);
+        foreach (static::$dirSizes as $size => $width) {
+            if (!file_exists(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name) === true) {
+                $image     = new Imanee(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $name);
                 $imageSize = $image->getSize();
-                $factor = $width/$imageSize['width'];
-                $image->resize((int)$width, (int)($imageSize['height']*$factor))
-                    ->write(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name, $settings['bilder']['bilder_jpg_quali']);
+                $factor    = $width / $imageSize['width'];
+                $image
+                    ->resize((int)$width, (int)($imageSize['height'] * $factor))
+                    ->write(
+                        PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
+                        $settings['bilder']['bilder_jpg_quali']
+                    );
 
                 unset($image);
             }
             $srcString .= PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
-        $srcString = substr($srcString, 0, -1) . '"';
+        $srcString  = substr($srcString, 0, -1) . '"'; // remove trailing comma and append double quote
         $srcString .= ' sizes="';
-        if (!empty($widthHeuristics)) {
-            // zwingend notwendig die Reihenfolge wie folgt einzuhalten: lg, md, sm, xs
+
+        if (is_array($widthHeuristics)) {
             ksort($widthHeuristics);
+
             foreach ($widthHeuristics as $breakpoint => $col) {
                 if (!empty($col)) {
-                    switch ($breakpoint){
+                    switch ($breakpoint) {
                         case 'xs':
                             $breakpoint = 767;
-                            $srcString .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col*100) . 'vw, ' ;
+                            $srcString .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col * 100) . 'vw, ';
                             break;
                         case 'sm':
                             $breakpoint = 768;
-                            $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col*$breakpoint) . 'px, ' ;
+                            $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint) . 'px, ';
                             break;
                         case 'md':
                             $breakpoint = 992;
-                            $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col*$breakpoint) . 'px, ' ;
+                            $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint) . 'px, ';
                             break;
                         case 'lg':
                             $breakpoint = 1200;
-                            $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col*$breakpoint) . 'px, ' ;
+                            $srcString .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint) . 'px, ';
                             break;
                         default:
                             break;
@@ -254,6 +253,7 @@ abstract class CMSPortlet
                 }
             }
         }
+
         $srcString .= '100vw" src="' . PFAD_MEDIAFILES . 'Bilder/.md/' . $name . '"';
 
         return $srcString;

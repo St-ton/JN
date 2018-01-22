@@ -43,24 +43,20 @@ class PortletButton extends CMSPortlet
         $this->properties['attr']['class'] .= " btn btn-$type btn-$size";
         $this->properties['attr']['class'] .= $fullWidthflag === 'yes' ? ' btn-block' : '';
 
-        $previewButton = '<a ';
+        $previewButton = '<a';
 
         if ($renderLinks && $linkFlag === 'yes' && !empty($linkUrl)) {
-            $previewButton .= " href='$linkUrl' title='$linkTitle'";
-            $previewButton .= !empty($linkNewTabFlag) ? " target='_blank'" : "";
+            $previewButton .= ' href="' . $linkUrl . '" title="' . $linkTitle . '" ';
+            $previewButton .= !empty($linkNewTabFlag) ? ' target="_blank" ' : '';
         }
 
         $wrapperClass = '';
 
         if (!empty($alignment)) {
-            if ($alignment !== 'inline') {
-                $wrapperClass .= ' text-' . $alignment;
-            } else {
-                $wrapperClass = 'inline-block';
-            }
+            $wrapperClass = $alignment !== 'inline' ? 'text-' . $alignment : 'inline-block';
         }
 
-        $previewButton .= $this->getStyleString() . $this->getAttribString() . ">";
+        $previewButton .= ' ' . $this->getStyleString() . ' ' . $this->getAttribString() . ">";
 
         if ($iconFlag === 'yes' && $icon !== '') {
             if ($iconAlignment === 'left') {
@@ -72,9 +68,7 @@ class PortletButton extends CMSPortlet
             $previewButton .= "$text</a>";
         }
 
-        $content = "<div class='" . $wrapperClass . "'>" . $previewButton . "</div>";
-
-        return $content;
+        return "<div class='" . $wrapperClass . "'>" . $previewButton . "</div>";
     }
 
     /**

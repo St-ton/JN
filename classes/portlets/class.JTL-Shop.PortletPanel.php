@@ -24,7 +24,7 @@ class PortletPanel extends CMSPortlet
     {
         $this->properties['attr']['class'] .= ' panel panel-'.$this->properties['panel-state'];
 
-        $ret = '<div' . $this->getAttribString() . $this->getStyleString() . '>';
+        $ret = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>';
         $ret .= !empty($this->properties['title-flag']) ? '<div class="panel-heading cle-area"></div>' : '';
         $ret .= '<div class="panel-body cle-area"></div>';
         $ret .= !empty($this->properties['footer-flag']) ? '<div class="panel-footer cle-area"></div>' : '';
@@ -39,11 +39,14 @@ class PortletPanel extends CMSPortlet
     public function getFinalHtml()
     {
         $this->properties['attr']['class'] .= ' panel panel-'.$this->properties['panel-state'];
-        $i=0;
-        $ret = '<div' . $this->getAttribString() . $this->getStyleString() . '>';
+
+        $i   = 0;
+        $ret = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>';
+
         if (!empty($this->properties['title-flag'])) {
-            $subArea  = $this->subAreas[$i];
-            $ret .= '<div class="panel-heading cle-area">';
+            $subArea = $this->subAreas[$i];
+            $ret    .= '<div class="panel-heading cle-area">';
+
             foreach ($subArea as $subPortlet) {
                 $portlet        = CMS::getInstance()->createPortlet($subPortlet['portletId'])
                     ->setProperties($subPortlet['properties'])
@@ -54,8 +57,10 @@ class PortletPanel extends CMSPortlet
             $ret .= '</div>';
             $i++;
         }
-        $ret .= '<div class="panel-body cle-area">';
-        $subArea  = $this->subAreas[$i];
+
+        $ret    .= '<div class="panel-body cle-area">';
+        $subArea = $this->subAreas[$i];
+
         foreach ($subArea as $subPortlet) {
             $portlet        = CMS::getInstance()->createPortlet($subPortlet['portletId'])
                 ->setProperties($subPortlet['properties'])
@@ -63,11 +68,14 @@ class PortletPanel extends CMSPortlet
             $subPortletHtml = $portlet->getFinalHtml();
             $ret           .= $subPortletHtml;
         }
+
         $ret .= '</div>';
         $i++;
+
         if (!empty($this->properties['footer-flag'])) {
-            $subArea  = $this->subAreas[$i];
-            $ret .= '<div class="panel-footer cle-area">';
+            $subArea = $this->subAreas[$i];
+            $ret    .= '<div class="panel-footer cle-area">';
+
             foreach ($subArea as $subPortlet) {
                 $portlet        = CMS::getInstance()->createPortlet($subPortlet['portletId'])
                     ->setProperties($subPortlet['properties'])
@@ -75,6 +83,7 @@ class PortletPanel extends CMSPortlet
                 $subPortletHtml = $portlet->getFinalHtml();
                 $ret           .= $subPortletHtml;
             }
+
             $ret .= '</div>';
             $i++;
         }

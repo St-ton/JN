@@ -92,14 +92,21 @@ if (auth()) {
                 }
             }
             $oLieferadresse        = new Lieferadresse((int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kLieferadresse']);
-            $oLieferadresse->cLand = $oLieferadresse->angezeigtesLand;
+            $land                  = Shop::DB()->select('tland', 'cISO', $oLieferadresse->cLand, null, null, null, null, false, 'cDeutsch');
+            $cISO                  = $oLieferadresse->cLand;
+            $oLieferadresse->cLand = isset($land) ? $land->cDeutsch : $oLieferadresse->angezeigtesLand;
             unset($oLieferadresse->angezeigtesLand);
             $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse'] = $oLieferadresse->gibLieferadresseAssoc();
-            // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
-            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnrede'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnredeLocalized']) 
-                ? $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnredeLocalized'] 
-                : null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse attr']       = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']);
+
+            if (count($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']) > 0) {
+                // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
+                $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnrede'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnredeLocalized'])
+                    ? $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnredeLocalized']
+                    : null;
+                // Am Ende zusätzlich Ländercode cISO mitgeben
+                $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cISO'] = $cISO;
+            }
+            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']);
             //Strasse und Hausnummer zusammenführen
             if (isset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer'])) {
                 $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] .= ' ' . trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
@@ -107,12 +114,21 @@ if (auth()) {
             unset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
 
             $oRechnungsadresse        = new Rechnungsadresse($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kRechnungsadresse']);
-            $oRechnungsadresse->cLand = $oRechnungsadresse->angezeigtesLand;
+            $land                     = Shop::DB()->select('tland', 'cISO', $oRechnungsadresse->cLand, null, null, null, null, false, 'cDeutsch');
+            $cISO                     = $oRechnungsadresse->cLand;
+            $oRechnungsadresse->cLand = isset($land) ? $land->cDeutsch : $oRechnungsadresse->angezeigtesLand;
             unset($oRechnungsadresse->angezeigtesLand);
             $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse'] = $oRechnungsadresse->gibRechnungsadresseAssoc();
-            // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
-            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cAnrede'] = $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cAnredeLocalized'];
-            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse attr']       = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']);
+
+            if (count($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']) > 0) {
+                // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
+                $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cAnrede'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cAnredeLocalized'])
+                    ? $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cAnredeLocalized']
+                    : null;
+                // Am Ende zusätzlich Ländercode cISO mitgeben
+                $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cISO'] = $cISO;
+            }
+            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']);
             //Strasse und Hausnummer zusammenführen
             $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse'] .= ' ' . trim($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cHausnummer']);
             unset($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cHausnummer']);

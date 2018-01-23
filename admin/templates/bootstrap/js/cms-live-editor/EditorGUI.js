@@ -34,7 +34,7 @@ EditorGUI.prototype = {
         this.previewBtn         = this.hostJq('#btn-preview')           .click(this.onPreview.bind(this));
         this.editorCloseBtn     = this.hostJq('#cle-btn-close-editor')  .click(this.onEditorClose.bind(this));
         this.editorSaveBtn      = this.hostJq('#cle-btn-save-editor')   .click(this.onEditorSave.bind(this));
-        this.selectParent       = this.hostJq('#btn-parent')            .click(this.onSelectParent.bind(this));
+        this.selectParentBtn    = this.hostJq('#btn-parent')            .click(this.onSelectParent.bind(this));
         this.storeTemplateBtn   = this.hostJq('#btn-template')          .click(this.onStoreTemplate.bind(this));
         this.trashBtn           = this.hostJq('#btn-trash')             .click(this.onTrash.bind(this));
         this.cloneBtn           = this.hostJq('#btn-clone')             .click(this.onClone.bind(this));
@@ -348,13 +348,14 @@ EditorGUI.prototype = {
     onSelectParent: function(e)
     {
         if(this.selectedElm !== null) {
-            var elem = this.selectedElm.parent();
-            while (elem.attr('data-portletid') == undefined && !elem.is(this.rootAreas)) {
-                elem = elem.parent();
+            var elm = this.selectedElm.parent();
+
+            while (!this.isSelectable(elm) && !elm.is(this.rootAreas)) {
+                elm = elm.parent();
             }
 
-            if (elem.attr('data-portletid') != undefined) {
-                this.setSelected(elem);
+            if (this.isSelectable(elm)) {
+                this.setSelected(elm);
             }
         }
     },

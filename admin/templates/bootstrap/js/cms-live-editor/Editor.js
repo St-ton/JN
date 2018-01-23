@@ -63,13 +63,20 @@ Editor.prototype = {
 
     onIframeLoad: function ()
     {
+        var self = this;
+
         if(this.iframeLoaded) {
             this.gui.showError('Iframe-URL has changed.');
         }
 
         this.iframeLoaded = true;
         this.gui.initIframeGUI();
-        this.io.loadPage(this.gui.hideLoader.bind(this.gui));
+
+        this.io.loadPage(function(page) {
+            self.gui.displayPage(page);
+            self.gui.updateDropTargets();
+            self.gui.hideLoader();
+        });
     },
 
     getIframePageUrl: function ()
@@ -92,9 +99,21 @@ Editor.prototype = {
         ioCall('unlockCmsPage', [this.cPageIdHash]);
     },
 
-    saveEditorPage: function (success, error)
+    saveEditorPage: function ()
     {
-        this.io.savePage(success, error);
+        var self = this;
+
+        this.gui.showLoader();
+
+        this.io.savePage(
+            function() {
+                self.gui.hideLoader();
+                self.gui.setUnsaved(false);
+            },
+            function () {
+                window.location.reload();
+            }
+        );
     },
 
     storeTemplate: function (portlet, templateName)
@@ -126,6 +145,20 @@ Editor.prototype = {
     openTemplateStoreDialog: function(portletId, properties)
     {
         // todo editor: .tpl in popup laden (zukünftig erweiterbar)
+    },
+
+    loadRevision: function(revisionId)
+    {
+        var self = this;
+
+        this.gui.showLoader();
+        this.gui.clearPage();
+
+        this.io.loadRevision(revisionId, function(page) {
+            self.gui.displayPage(page);
+            self.gui.updateDropTargets();
+            self.gui.hideLoader();
+        });
     },
 
 };

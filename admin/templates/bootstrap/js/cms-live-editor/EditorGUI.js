@@ -311,13 +311,24 @@ EditorGUI.prototype = {
         this.updateDropTargets();
     },
 
+    displayPage: function(page)
+    {
+        var self = this;
+
+        $.each(
+            page.cPreviewHtml_arr,
+            function (areaId, html)
+            {
+                self.iframeJq('#' + areaId).html(html);
+            }
+        );
+    },
+
     onRevision: function(e)
     {
         var elm = $(e.target);
 
-        this.showLoader();
-        this.clearPage();
-        this.editor.io.loadRevision(elm.data('revision-id'), this.hideLoader.bind(this));
+        this.editor.loadRevision(elm.data('revision-id'));
     },
 
     onPreview: function(e)
@@ -332,19 +343,7 @@ EditorGUI.prototype = {
 
     onEditorSave: function(e)
     {
-        var self = this;
-
-        this.showLoader();
-
-        this.editor.saveEditorPage(
-            function() {
-                self.hideLoader();
-                self.setUnsaved(false);
-            },
-            function () {
-                window.location.reload();
-            }
-        );
+        this.editor.saveEditorPage();
     },
 
     onSelectParent: function(e)

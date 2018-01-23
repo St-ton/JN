@@ -10,8 +10,6 @@ function EditorIO(editor)
     this.gui         = editor.gui;
     this.noop        = function() {};
 
-    this.onPageLoadCallback = this.noop;
-
     setInterval(function() {
         ioCall('lockCmsPage', [this.cPageIdHash]);
     }, 1000 * 60);
@@ -21,52 +19,23 @@ EditorIO.prototype = {
 
     constructor: EditorIO,
 
-    loadPage: function(onPageLoadCallback)
+    loadPage: function(callback)
     {
-        this.onPageLoadCallback = onPageLoadCallback || this.noop;
-
-        ioCall('getCmsPage', [this.cPageIdHash, true], this.onGetCmsPageResponse.bind(this));
+        ioCall('getCmsPage', [this.cPageIdHash, true], callback || this.noop);
     },
 
-    loadRevision: function(id, onPageLoadCallback)
+    loadRevision: function(id, callback)
     {
         if(id === 0) {
-            this.loadPage(onPageLoadCallback);
+            this.loadPage(callback);
         } else {
-            this.onPageLoadCallback = onPageLoadCallback || this.noop;
-
-            ioCall('getCmsPageRevision', [this.cPageIdHash, id, true], this.onGetCmsPageResponse.bind(this));
+            ioCall('getCmsPageRevision', [this.cPageIdHash, id, true], callback || this.noop);
         }
     },
 
     savePage: function(success, error)
     {
-        success = success || this.noop;
-        error = error || this.noop;
-
-        ioCall('saveCmsPage', [this.cPageIdHash, this.pageToJson()], success.bind(this), error.bind(this));
-    },
-
-    onGetCmsPageResponse: function(cmsPage)
-    {
-        // var serverLastModified = cmsPage && cmsPage.dLastModified || '0000-00-00';
-        // var localLastModified = this.getPageWebStorageLastModified();
-        //
-        // var locallyModified = localLastModified > serverLastModified;
-        // var data =
-        //     locallyModified ? JSON.parse(window.localStorage.getItem(this.getPageStorageId())) :
-        //     cmsPage         ? cmsPage.data :
-        //     {};
-        //var data = cmsPage ? cmsPage.data : {};
-        //this.pageFromJson(data);
-        //this.gui.setUnsaved(locallyModified);
-
-        $.each(cmsPage.cPreviewHtml_arr, function (areaId, html) {
-            this.gui.iframeJq('#' + areaId).html(html);
-        }.bind(this));
-
-        this.gui.updateDropTargets();
-        this.onPageLoadCallback();
+        ioCall('saveCmsPage', [this.cPageIdHash, this.pageToJson()], success || this.noop, error || this.noop);
     },
 
     getPageWebStorageLastModified: function()
@@ -220,17 +189,17 @@ EditorIO.prototype = {
 
     savePageToWebStorage: function()
     {
-        // window.localStorage.setItem(
-        //     this.getPageStorageId(),
-        //     JSON.stringify(this.pageToJson())
-        // );
-        //
-        // window.localStorage.setItem(
-        //     this.getPageStorageId() + '.lastmodified',
-        //     moment().format("YYYY-MM-DD HH:mm:ss")
-        // );
-        //
-        // this.gui.setUnsaved(true);
+        window.localStorage.setItem(
+            this.getPageStorageId(),
+            JSON.stringify(this.pageToJson())
+        );
+
+        window.localStorage.setItem(
+            this.getPageStorageId() + '.lastmodified',
+            moment().format("YYYY-MM-DD HH:mm:ss")
+        );
+
+        this.gui.setUnsaved(true);
     },
 
     storePortletAsTemplate: function(portlet, templateName, success, error)

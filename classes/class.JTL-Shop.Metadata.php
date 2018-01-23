@@ -1431,7 +1431,6 @@ class Metadata
         }
     }
 
-
     /**
      * @return int
      */
@@ -1452,6 +1451,28 @@ class Metadata
         }
 
         return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
+    }
+
+    /**
+     * implemented for compatibility reasons
+     * should catch checks like isset($oNavigationsinfo->oHersteller)
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        if (property_exists($this, $name)) {
+            return true;
+        }
+        $mapped = self::getMapping($name);
+        if ($mapped === null) {
+            return false;
+        }
+        $method = 'get' . $mapped;
+        $result = $this->$method();
+
+        return $result !== null;
     }
 
     /**

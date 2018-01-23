@@ -2001,6 +2001,7 @@ class ProductFilter
             /** @var IFilter $result */
             return $result->isInitialized();
         }
+
         return is_array($result)
             ? count($result) > 0
             : false;

@@ -226,7 +226,6 @@ function generateSitemapXML()
     $defaultCustomerGroupID  = Kundengruppe::getDefaultGroupID();
     $Sprachen                = gibAlleSprachen();
     $oSpracheAssoc_arr       = gibAlleSprachenAssoc($Sprachen);
-    $seoAktiv                = true;
     $defaultLang             = gibStandardsprache(true);
     $defaultLangID           = (int)$defaultLang->kSprache;
     $_SESSION['kSprache']    = $defaultLangID;
@@ -393,7 +392,7 @@ function generateSitemapXML()
                 $nAnzahlURL_arr[$nDatei] = 0;
                 $sitemap_data            = '';
             }
-            if (!$seoAktiv || ($seoAktiv && strlen($oArtikel->cSeo) > 0)) {
+            if (strlen($oArtikel->cSeo) > 0) {
                 $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
                 if (!isSitemapBlocked($cUrl)) {
                     $sitemap_data .= makeURL(
@@ -443,7 +442,7 @@ function generateSitemapXML()
                     $tlink->cSeo = $oSeo->cSeo;
                 }
 
-                if (!$seoAktiv || ($seoAktiv && isset($tlink->cSeo) && strlen($tlink->cSeo) > 0)) {
+                if (isset($tlink->cSeo) && strlen($tlink->cSeo) > 0) {
                     if ($nSitemap > $nSitemapLimit) {
                         $nSitemap = 1;
                         baueSitemap($nDatei, $sitemap_data);
@@ -454,12 +453,10 @@ function generateSitemapXML()
 
                     $tlink->cLocalizedSeo[$tlink->cISOSprache] = isset($tlink->cSeo) ? $tlink->cSeo : null;
                     $link                                      = baueURL($tlink, URLART_SEITE);
-
-                    if ($_SESSION['cISOSprache'] !== $tlink->cISOSprache) {
-                        $link .= '&lang=' . $tlink->cISOSprache;
-                    }
-                    if ($seoAktiv && strlen($tlink->cSeo) > 0) {
+                    if (strlen($tlink->cSeo) > 0) {
                         $link = $tlink->cSeo;
+                    } elseif ($_SESSION['cISOSprache'] !== $tlink->cISOSprache) {
+                        $link .= '&lang=' . $tlink->cISOSprache;
                     }
                     if (!isSitemapBlocked($link)) {
                         $sitemap_data .= makeURL($link, null, FREQ_MONTHLY, PRIO_LOW, '', (int)$tlink->bSSL === 2);
@@ -489,7 +486,7 @@ function generateSitemapXML()
                  ORDER BY tkategorie.kKategorie';
         $res = Shop::DB()->query($strSQL, 10);
         while (($tkategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            if (!$seoAktiv || ($seoAktiv && strlen($tkategorie->cSeo) > 0)) {
+            if (strlen($tkategorie->cSeo) > 0) {
                 $cURL_arr = baueExportURL(
                     $tkategorie->kKategorie,
                     'kKategorie',
@@ -539,7 +536,7 @@ function generateSitemapXML()
                       ORDER BY tkategorie.kKategorie';
             $res = Shop::DB()->query($strSQL, 10);
             while (($tkategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-                if (!$seoAktiv || ($seoAktiv && strlen($tkategorie->cSeo) > 0)) {
+                if (strlen($tkategorie->cSeo) > 0) {
                     $cURL_arr = baueExportURL(
                         $tkategorie->kKategorie,
                         'kKategorie',
@@ -588,7 +585,7 @@ function generateSitemapXML()
                ORDER BY ttag.kTag', 10
         );
         while (($oTag = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            if (!$seoAktiv || ($seoAktiv && strlen($oTag->cSeo) > 0)) {
+            if (strlen($oTag->cSeo) > 0) {
                 $cURL_arr = baueExportURL(
                     $oTag->kTag,
                     'kTag',
@@ -633,7 +630,7 @@ function generateSitemapXML()
                       ORDER BY ttag.kTag', 10
             );
             while (($oTag = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-                if (!$seoAktiv || ($seoAktiv && strlen($oTag->cSeo) > 0)) {
+                if (strlen($oTag->cSeo) > 0) {
                     $cURL_arr = baueExportURL(
                         $oTag->kTag,
                         'kTag',
@@ -677,7 +674,7 @@ function generateSitemapXML()
         );
 
         while (($oHersteller = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            if (!$seoAktiv || ($seoAktiv && strlen($oHersteller->cSeo) > 0)) {
+            if (strlen($oHersteller->cSeo) > 0) {
                 $cURL_arr = baueExportURL(
                     $oHersteller->kHersteller,
                     'kHersteller',
@@ -720,7 +717,7 @@ function generateSitemapXML()
                  ORDER BY tsuchanfrage.kSuchanfrage', 10
         );
         while (($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            if (!$seoAktiv || ($seoAktiv && strlen($oSuchanfrage->cSeo) > 0)) {
+            if (strlen($oSuchanfrage->cSeo) > 0) {
                 $cURL_arr = baueExportURL(
                     $oSuchanfrage->kSuchanfrage,
                     'kSuchanfrage',
@@ -764,7 +761,7 @@ function generateSitemapXML()
                      ORDER BY tsuchanfrage.kSuchanfrage', 10
             );
             while (($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-                if (!$seoAktiv || ($seoAktiv && strlen($oSuchanfrage->cSeo) > 0)) {
+                if (strlen($oSuchanfrage->cSeo) > 0) {
                     $cURL_arr = baueExportURL(
                         $oSuchanfrage->kSuchanfrage,
                         'kSuchanfrage',
@@ -816,7 +813,7 @@ function generateSitemapXML()
         );
 
         while (($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            if (!$seoAktiv || ($seoAktiv && strlen($oMerkmalWert->cSeo) > 0)) {
+            if (strlen($oMerkmalWert->cSeo) > 0) {
                 $cURL_arr = baueExportURL(
                     $oMerkmalWert->kMerkmalWert,
                     'kMerkmalWert',
@@ -872,7 +869,7 @@ function generateSitemapXML()
             );
 
             while (($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-                if (!$seoAktiv || ($seoAktiv && strlen($oMerkmalWert->cSeo) > 0)) {
+                if (strlen($oMerkmalWert->cSeo) > 0) {
                     $cURL_arr = baueExportURL(
                         $oMerkmalWert->kMerkmalWert,
                         'kMerkmalWert',
@@ -917,7 +914,7 @@ function generateSitemapXML()
                     ORDER BY tnews.dErstellt", 10
         );
         while (($oNews = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            if (!$seoAktiv || ($seoAktiv && strlen($oNews->cSeo) > 0)) {
+            if (strlen($oNews->cSeo) > 0) {
                 $cURL = makeURL(
                     baueURL($oNews, URLART_NEWS),
                     date_format(date_create($oNews->dGueltigVon), 'c'),
@@ -955,7 +952,7 @@ function generateSitemapXML()
         );
 
         while (($oNewsKategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            if (!$seoAktiv || ($seoAktiv && strlen($oNewsKategorie->cSeo) > 0)) {
+            if (strlen($oNewsKategorie->cSeo) > 0) {
                 $cURL = makeURL(
                     baueURL($oNewsKategorie, URLART_NEWSKATEGORIE),
                     date_format(date_create($oNewsKategorie->dLetzteAktualisierung), 'c'),

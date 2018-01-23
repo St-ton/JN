@@ -1530,12 +1530,26 @@ class ProductFilter
             'listing'
         );
 
-        return array_map(
+        $productKeys       = array_map(
             function ($e) {
                 return (int)$e->kArtikel;
             },
             Shop::DB()->query($qry, 2)
         );
+        $order             = $this->getFilterSQL()->getOrder();
+        $orderData         = new stdClass();
+        $orderData->cJoin  = $order->join->getSQL();
+        $orderData->cOrder = $order->orderBy;
+
+        executeHook(HOOK_FILTER_INC_GIBARTIKELKEYS, [
+                'oArtikelKey_arr' => &$productKeys,
+                'FilterSQL'       => new stdClass(),
+                'NaviFilter'      => $this,
+                'SortierungsSQL'  => &$orderData
+            ]
+        );
+
+        return $productKeys;
     }
 
     /**
@@ -1656,6 +1670,7 @@ class ProductFilter
                 }
                 $productList->elemente->addItem($product);
             }
+            $this->searchResults->setProductCount($productList->elemente->count());
         }
         $this->url = $this->filterURL->createUnsetFilterURLs($this->url);
         $_SESSION['oArtikelUebersichtKey_arr']   = $productList->productKeys;

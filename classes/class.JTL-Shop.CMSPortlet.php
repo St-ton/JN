@@ -264,9 +264,6 @@ abstract class CMSPortlet
         $srcString  = substr($srcString, 0, -1) . '"'; // remove trailing comma and append double quote
         $srcString .= ' sizes="';
 
-        // Reihenfolge wird über die Defaultwerte des ImagePortlets definiert.
-        // zwingend notwendig die Reihenfolge wie folgt einzuhalten: lg, md, sm, xs
-
         if (is_array($widthHeuristics)) {
             ksort($widthHeuristics);
 

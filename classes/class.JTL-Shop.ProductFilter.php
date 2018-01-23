@@ -171,7 +171,7 @@ class ProductFilter
     private $baseURL;
 
     /**
-     * @var stdClass
+     * @var ProductFilterSearchResults
      */
     private $searchResults;
 
@@ -189,6 +189,16 @@ class ProductFilter
      * @var ProductFilterURL
      */
     private $filterURL;
+
+    /**
+     * @var bool
+     */
+    private $bExtendedJTLSearch;
+
+    /**
+     * @var bool
+     */
+    private $showChildProducts;
 
     /**
      * @var array
@@ -237,23 +247,45 @@ class ProductFilter
         $urls->cAlleSuchFilter   = [];
         $urls->cNoFilter         = null;
 
-        $this->url             = $urls;
-        $this->languages       = $languages === null
+        $this->url               = $urls;
+        $this->languages         = $languages === null
             ? Sprache::getInstance()->getLangArray()
             : $languages;
-        $this->conf            = $config === null
+        $this->conf              = $config === null
             ? Shopsetting::getInstance()->getAll()
             : $config;
-        $this->languageID      = $currentLanguageID === null
+        $this->languageID        = $currentLanguageID === null
             ? Shop::getLanguageID()
             : (int)$currentLanguageID;
-        $this->customerGroupID = Session::CustomerGroup()->getID();
-        $this->baseURL         = Shop::getURL() . '/';
-        $this->metaData        = new Metadata($this);
-        $this->filterSQL       = new ProductFilterSQL($this);
-        $this->filterURL       = new ProductFilterURL($this);
+        $this->customerGroupID   = Session::CustomerGroup()->getID();
+        $this->baseURL           = Shop::getURL() . '/';
+        $this->metaData          = new Metadata($this);
+        $this->filterSQL         = new ProductFilterSQL($this);
+        $this->filterURL         = new ProductFilterURL($this);
+        $this->showChildProducts = defined('SHOW_CHILD_PRODUCTS')
+            ? SHOW_CHILD_PRODUCTS
+            : false;
         executeHook(HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
         $this->initBaseStates();
+    }
+
+    /**
+     * @return bool
+     */
+    public function showChildProducts()
+    {
+        return $this->showChildProducts;
+    }
+
+    /**
+     * @param bool $showChildProducts
+     * @return ProductFilter
+     */
+    public function setShowChildProducts($showChildProducts)
+    {
+        $this->showChildProducts = $showChildProducts;
+
+        return $this;
     }
 
     /**
@@ -357,17 +389,17 @@ class ProductFilter
 
     /**
      * @param bool $products
-     * @return stdClass
+     * @return ProductFilterSearchResults|Collection
      */
     public function getSearchResults($products = true)
     {
-        return $products === true && isset($this->searchResults->Artikel->elemente)
-            ? $this->searchResults->Artikel->elemente
+        return $products === true && $this->searchResults->getProducts() !== null
+            ? $this->searchResults->getProducts()->elemente
             : $this->searchResults;
     }
 
     /**
-     * @param stdClass $results
+     * @param ProductFilterSearchResults $results
      * @return $this
      */
     public function setSearchResults($results)
@@ -547,7 +579,8 @@ class ProductFilter
             'cDatum'                 => '',
             'nAnzahl'                => 0,
             'nSterne'                => 0,
-            'customFilters'          => []
+            'customFilters'          => [],
+            'searchSpecialFilters'   => []
         ];
     }
 
@@ -639,8 +672,12 @@ class ProductFilter
         foreach ($params['TagFilter_arr'] as $tf) {
             $this->tagFilter[] = $this->addActiveFilter(new FilterItemTag($this), $tf);
         }
-        if ($params['kSuchspecialFilter'] > 0) {
-            $this->addActiveFilter($this->searchSpecialFilter, $params['kSuchspecialFilter']);
+        if ($params['kSuchspecialFilter'] > 0 && count($params['searchSpecialFilters']) === 0) {
+            // backwards compatibility
+            $params['searchSpecialFilters'][] = $params['kSuchspecialFilter'];
+        }
+        if (count($params['searchSpecialFilters']) > 0) {
+            $this->addActiveFilter($this->searchSpecialFilter, $params['searchSpecialFilters']);
         }
 
         // @todo - same as suchfilter?
@@ -694,6 +731,31 @@ class ProductFilter
             if (!$this->baseState->isInitialized()) {
                 $this->baseState = $this->searchQuery;
             }
+            $limit                      = $this->metaData->getProductsPerPageLimit();
+            $oExtendedJTLSearchResponse = null;
+            $this->bExtendedJTLSearch   = false;
+
+            executeHook(HOOK_NAVI_PRESUCHE, [
+                'cValue'             => &$this->EchteSuche->cSuche,
+                'bExtendedJTLSearch' => &$this->bExtendedJTLSearch
+            ]);
+            if (empty($params['cSuche'])) {
+                $this->bExtendedJTLSearch = false;
+            }
+            $this->search->bExtendedJTLSearch = $this->bExtendedJTLSearch;
+
+            executeHook(HOOK_NAVI_SUCHE, [
+                'bExtendedJTLSearch'         => $this->bExtendedJTLSearch,
+                'oExtendedJTLSearchResponse' => &$oExtendedJTLSearchResponse,
+                'cValue'                     => &$this->EchteSuche->cSuche,
+                'nArtikelProSeite'           => &$limit,
+                'nSeite'                     => &$this->nSeite,
+                'nSortierung'                => isset($_SESSION['Usersortierung'])
+                    ? $_SESSION['Usersortierung']
+                    : null,
+                'bLagerbeachten'             => (int)$this->getConfig()['global']['artikel_artikelanzeigefilter'] ===
+                    EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+            ]);
         }
         $this->nSeite = max(1, verifyGPCDataInteger('seite'));
         foreach ($this->getCustomFilters() as $filter) {
@@ -1457,29 +1519,60 @@ class ProductFilter
     public function getProductKeys()
     {
         $state = $this->getCurrentStateData();
+        $qry   = $this->getFilterSQL()->getBaseQuery(
+            ['tartikel.kArtikel'],
+            $state->joins,
+            $state->conditions,
+            $state->having,
+            null,
+            '',
+            ['tartikel.kArtikel'],
+            'listing'
+        );
 
         return array_map(
             function ($e) {
                 return (int)$e->kArtikel;
             },
-            Shop::DB()->query(
-                $this->getFilterSQL()->getBaseQuery(
-                    ['tartikel.kArtikel'],
-                    $state->joins,
-                    $state->conditions,
-                    $state->having
-                ),
-                2
-            )
+            Shop::DB()->query($qry, 2)
         );
     }
 
     /**
-     * @param bool           $forProductListing - if true, return $oSuchergebnisse object, otherwise keys only
+     * checks if a given combination of filter class and filter value is currently active
+     *
+     * @param string $class
+     * @param mixed  $value
+     * @return bool
+     */
+    public function filterOptionIsActive($class, $value)
+    {
+        foreach ($this->getActiveFilters() as $filter) {
+            if ($filter->getClassName() !== $class) {
+                continue;
+            }
+            $filterValue = $filter->getValue();
+            if ($value === $filterValue) {
+                return true;
+            }
+            if (is_array($filterValue)) {
+                foreach ($filterValue as $val) {
+                    if ($val === $value) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param bool           $forProductListing - if true, return ProductFilterSearchResults instance, otherwise keys only
      * @param Kategorie|null $currentCategory
      * @param bool           $fillProducts - if true, return Artikel class instances, otherwise keys only
      * @param int            $limit
-     * @return stdClass|Collection
+     * @return ProductFilterSearchResults|Collection
      */
     public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = 0)
     {
@@ -1490,50 +1583,55 @@ class ProductFilter
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         $error        = false;
         if ($this->searchResults === null) {
-            $this->searchResults                       = new stdClass();
-            $this->searchResults->Artikel              = new stdClass();
-            $this->searchResults->Artikel->elemente    = new Collection();
-            $this->searchResults->Artikel->productKeys = $this->getProductKeys();
-            $this->searchResults->GesamtanzahlArtikel  = count($this->searchResults->Artikel->productKeys);
+            $this->searchResults      = new ProductFilterSearchResults();
+            $productList              = new stdClass();
+            $productList->elemente    = new Collection();
+            $productList->productKeys = $this->getProductKeys();
+            $productCount = count($productList->productKeys);
+
+            $this->searchResults->setProductCount($productCount);
             if (!empty($this->search->getName())) {
                 if ($this->searchQuery->getError() === null) {
-                    $this->search->saveQuery($this->searchResults->GesamtanzahlArtikel);
+                    $this->search->saveQuery($productCount, $this->search->getName(), !$this->bExtendedJTLSearch);
                     $this->search->setQueryID($this->search->getName(), $this->getLanguageID());
                     $this->searchQuery->setValue($this->search->getValue())->setSeo($this->languages);
                 } else {
                     $error = $this->searchQuery->getError();
                 }
             }
-            $this->searchResults->ArtikelVon                  = $nLimitN + 1;
-            $this->searchResults->ArtikelBis                  = min(
-                $nLimitN + $limitPerPage,
-                $this->searchResults->GesamtanzahlArtikel
-            );
-            $this->searchResults->Seitenzahlen                = new stdClass();
-            $this->searchResults->Seitenzahlen->AktuelleSeite = $this->nSeite;
-            $this->searchResults->Seitenzahlen->MaxSeiten     = ceil(
-                $this->searchResults->GesamtanzahlArtikel / $limitPerPage
-            );
-            $this->searchResults->Seitenzahlen->minSeite      = min(
-                $this->searchResults->Seitenzahlen->AktuelleSeite - $max / 2,
+            $this->searchResults->setOffsetStart($nLimitN + 1)
+                                ->setOffsetEnd(min(
+                                    $nLimitN + $limitPerPage,
+                                    $productCount
+                                ));
+            
+            $pages                = new stdClass();
+            $pages->AktuelleSeite = $this->nSeite;
+            $pages->MaxSeiten     = ceil($productCount / $limitPerPage);
+            $pages->minSeite      = min(
+                $pages->AktuelleSeite - $max / 2,
                 0
             );
-            $this->searchResults->Seitenzahlen->maxSeite      = max(
-                $this->searchResults->Seitenzahlen->MaxSeiten,
-                $this->searchResults->Seitenzahlen->minSeite + $max - 1
+            $pages->maxSeite      = max(
+                $pages->MaxSeiten,
+                $pages->minSeite + $max - 1
             );
-            if ($this->searchResults->Seitenzahlen->maxSeite > $this->searchResults->Seitenzahlen->MaxSeiten) {
-                $this->searchResults->Seitenzahlen->maxSeite = $this->searchResults->Seitenzahlen->MaxSeiten;
+            if ($pages->maxSeite > $pages->MaxSeiten) {
+                $pages->maxSeite = $pages->MaxSeiten;
             }
+            $this->searchResults->setPages($pages);
             $this->searchResults = $this->setFilterOptions($this->searchResults, $currentCategory);
             // Header bauen
-            $this->searchResults->SuchausdruckWrite = $this->metaData->getHeader();
+            $this->searchResults->setSearchTermWrite($this->metaData->getHeader());
+        } else {
+            $productList = $this->searchResults->getProducts();
         }
         if ($error !== false) {
-            $this->searchResults->GesamtanzahlArtikel = 0;
-            $this->searchResults->SucheErfolglos      = 1;
-            $this->searchResults->Fehler              = $error;
-            $this->searchResults->cSuche              = strip_tags(trim($this->params['cSuche']));
+            $this->searchResults->setProductCount(0)
+                                ->setProducts($productList)
+                                ->setSearchUnsuccessful(true)
+                                ->setSearchTerm(strip_tags(trim($this->params['cSuche'])))
+                                ->setError($error);
 
             return $this->searchResults;
         }
@@ -1550,22 +1648,46 @@ class ProductFilter
             $opt->nVariationDetailPreis = (int)$this->conf['artikeldetails']['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;
-            foreach (array_slice($this->searchResults->Artikel->productKeys, $nLimitN, $limitPerPage) as $id) {
+            foreach (array_slice($productList->productKeys, $nLimitN, $limitPerPage) as $id) {
                 $product = (new Artikel())->fuelleArtikel($id, $opt);
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
                 if ($product !== null && $product->nIstVater === 0) {
                     $_SESSION['nArtikelUebersichtVLKey_arr'][] = $id;
                 }
-                $this->searchResults->Artikel->elemente->addItem($product);
+                $productList->elemente->addItem($product);
             }
         }
         $this->url = $this->filterURL->createUnsetFilterURLs($this->url);
-        $_SESSION['oArtikelUebersichtKey_arr']   = $this->searchResults->Artikel->productKeys;
+        $_SESSION['oArtikelUebersichtKey_arr']   = $productList->productKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
+
+        $this->searchResults->setProducts($productList);
+
+        if ($forProductListing === true) {
+            //Weiterleitung, falls nur 1 Artikel rausgeholt
+            $hasSubCategories = ($categoryID = $this->getCategory()->getValue()) > 0
+                ? (new Kategorie($categoryID, $this->languageID, $this->customerGroupID))
+                    ->existierenUnterkategorien()
+                : false;
+            if ($productList->elemente->count() === 1
+                && $this->getConfig()['navigationsfilter']['allgemein_weiterleitung'] === 'Y'
+                && ($this->getFilterCount() > 0
+                    || ($this->getCategory()->getValue() > 0 && !$hasSubCategories)
+                    || !empty($this->EchteSuche->cSuche))
+            ) {
+                http_response_code(301);
+                $product = $productList->elemente->pop();
+                $url = empty($product->cURL)
+                    ? (Shop::getURL() . '/?a=' . $product->kArtikel)
+                    : (Shop::getURL() . '/' . $product->cURL);
+                header('Location: ' . $url);
+                exit;
+            }
+        }
 
         return $forProductListing === true
             ? $this->searchResults
-            : $this->searchResults->Artikel->elemente;
+            : $productList->elemente;
     }
 
     /**
@@ -1638,6 +1760,7 @@ class ProductFilter
         if (!empty($stateCondition)) {
             $data->conditions[] = $stateCondition;
         }
+        /** @var IFilter $filter */
         foreach ($this->getActiveFilters(true) as $type => $active) {
             $count = count($active);
             if ($count > 1 && $type !== 'misc' && $type !== 'custom') {
@@ -1733,127 +1856,118 @@ class ProductFilter
     }
 
     /**
-     * @param stdClass       $searchResults
-     * @param null|Kategorie $currentCategory
-     * @param bool           $selectionWizard
+     * @param ProductFilterSearchResults $searchResults
+     * @param null|Kategorie             $currentCategory
+     * @param bool                       $selectionWizard
      * @return mixed
      */
     public function setFilterOptions($searchResults, $currentCategory = null, $selectionWizard = false)
     {
         // @todo: make option
-        $hideActiveOnly = true;
-        if (!isset($searchResults->Herstellerauswahl)) {
-            $searchResults->Herstellerauswahl = $this->manufacturerFilter->getOptions();
-        }
-        if (!isset($searchResults->Bewertung)) {
-            $searchResults->Bewertung = $this->ratingFilter->getOptions();
-        }
-        if (!isset($searchResults->Tags)) {
-            $searchResults->Tags = $this->tag->getOptions();
-        }
+        $hideActiveOnly          = true;
+        $manufacturerOptions     = $this->manufacturerFilter->getOptions();
+        $ratingOptions           = $this->ratingFilter->getOptions();
+        $tagOptions              = $this->tag->getOptions();
+        $categoryOptions         = $this->categoryFilter->getOptions();
+        $priceRangeOptions       = $this->priceRangeFilter->getOptions($searchResults->getProductCount());
+        $searchSpecialFilters    = $this->searchSpecialFilter->getOptions();
+        $searchFilterOptions     = $this->searchFilterCompat->getOptions();
+        $attribtuteFilterOptions = $this->attributeFilterCollection->getOptions([
+            'oAktuelleKategorie' => $currentCategory,
+            'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
+        ]);
 
-        if (!isset($searchResults->TagsJSON)
-            && $this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y'
-        ) {
-            $searchResults->TagsJSON = Boxen::gibJSONString(array_map(
+        $searchResults->setManufacturerFilterOptions($manufacturerOptions)
+                      ->setRatingFilterOptions($ratingOptions)
+                      ->setTagFilterOptions($tagOptions)
+                      ->setPriceRangeFilterOptions($priceRangeOptions)
+                      ->setCategoryFilterOptions($categoryOptions)
+                      ->setSearchFilterOptions($searchFilterOptions)
+                      ->setSearchSpecialFilterOptions($searchSpecialFilters)
+                      ->setAttributeFilterOptions($attribtuteFilterOptions)
+                      ->setCustomFilterOptions(array_filter(
+                          $this->filters,
+                          function ($e) {
+                              /** @var IFilter $e */
+                              $isCustom = $e->isCustom();
+                              if ($isCustom && count($e->getOptions()) === 0) {
+                                  $e->hide();
+                              }
+
+                              return $isCustom;
+                          }
+                      ))
+                      ->setSearchFilterJSON(Boxen::gibJSONString(array_map(
+                          function ($e) {
+                              $e->cURL = StringHandler::htmlentitydecode($e->cURL);
+
+                              return $e;
+                          },
+                          $searchFilterOptions
+                      )));
+
+        if ($this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
+            $searchResults->setTagFilterJSON(Boxen::gibJSONString(array_map(
                 function ($e) {
                     /** @var FilterOption $e */
                     return $e->setURL(StringHandler::htmlentitydecode($e->getURL()));
                 },
-                $searchResults->Tags
-            ));
+                $tagOptions
+            )));
         }
-        if (!isset($searchResults->MerkmalFilter)) {
-            $searchResults->MerkmalFilter = $this->attributeFilterCollection->getOptions([
-                'oAktuelleKategorie' => $currentCategory,
-                'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
-            ]);
-            if (count($searchResults->MerkmalFilter) < 1) {
-                $this->attributeFilterCollection->hide();
-            } elseif ($hideActiveOnly === true) {
-                foreach ($searchResults->MerkmalFilter as $mmf) {
-                    /** @var FilterOption $mmf */
-                    $options = $mmf->getOptions();
-                    if (is_array($options)
-                        && $mmf->getVisibility() !== AbstractFilter::SHOW_NEVER
-                        && array_reduce(
-                            $options,
-                            function ($carry, $option) {
-                                /** @var FilterOption $option */
-                                return $carry && $option->isActive();
-                            },
-                            true
-                        ) === true
-                    ) {
-                        $mmf->hide();
-                    }
-                }
-            }
-        }
-        $this->attributeFilterCollection->setFilterCollection($searchResults->MerkmalFilter);
 
-        if (!isset($searchResults->Preisspanne)) {
-            $searchResults->Preisspanne = $this->priceRangeFilter->getOptions($searchResults->GesamtanzahlArtikel);
-        }
-        if (!isset($searchResults->Kategorieauswahl)) {
-            $searchResults->Kategorieauswahl = $this->categoryFilter->getOptions();
-        }
-        if (!isset($searchResults->SuchFilter)) {
-            $searchResults->SuchFilter = $this->searchFilterCompat->getOptions();
-        }
-        if (!isset($searchResults->SuchFilterJSON)) {
-            $searchResults->SuchFilterJSON = Boxen::gibJSONString(array_map(
-                function ($e) {
-                    $e->cURL = StringHandler::htmlentitydecode($e->cURL);
-                    return $e;
-                },
-                $searchResults->SuchFilter
-            ));
-        }
-        if (!isset($searchResults->Suchspecialauswahl)) {
-            $searchResults->Suchspecialauswahl = empty($this->params['kSuchspecial'])
-            && empty($this->params['kSuchspecialFilter'])
-                ? $this->searchSpecialFilter->getOptions()
-                : null;
-        }
-        if (empty($searchResults->Suchspecialauswahl)) {
+        if (empty($searchSpecialFilters)) {
             // hide category filter when a category is being browsed
             $this->searchSpecialFilter->hide();
         }
-        $searchResults->customFilters = [];
-
-        if (empty($searchResults->Kategorieauswahl) || count($searchResults->Kategorieauswahl) <= 1) {
+        if (empty($categoryOptions)
+            || count($categoryOptions) === 0
+            || ($this->category->isInitialized() && $this->category->getValue() !== null)
+        ) {
             // hide category filter when a category is being browsed
             $this->categoryFilter->hide();
         }
-        if (empty($searchResults->Preisspanne) || count($searchResults->Preisspanne) === 0) {
+        if (empty($priceRangeOptions)
+            || count($priceRangeOptions) === 0
+            || ($this->priceRangeFilter->isInitialized() && $this->priceRangeFilter->getValue() !== null)
+       ) {
             // hide empty price ranges
             $this->priceRangeFilter->hide();
         }
-        if (empty($searchResults->Herstellerauswahl) || count($searchResults->Herstellerauswahl) === 0
+        if (empty($manufacturerOptions) || count($manufacturerOptions) === 0
             || $this->manufacturer->isInitialized()
             || ($this->manufacturerFilter->isInitialized()
-                && count($searchResults->Herstellerauswahl) === 1
+                && count($manufacturerOptions) === 1
                 && $hideActiveOnly)
         ) {
             // hide manufacturer filter when browsing manufacturer products
             $this->manufacturerFilter->hide();
         }
-        if (empty($searchResults->Bewertung)) {
+        if (empty($ratingOptions)) {
             $this->ratingFilter->hide();
         }
-        $searchResults->customFilters = array_filter(
-            $this->filters,
-            function ($e) {
-                /** @var IFilter $e */
-                $isCustom = $e->isCustom();
-                if ($isCustom && count($e->getOptions()) === 0) {
-                    $e->hide();
+        if (count($attribtuteFilterOptions) < 1) {
+            $this->attributeFilterCollection->hide();
+        } elseif ($hideActiveOnly === true) {
+            foreach ($attribtuteFilterOptions as $af) {
+                /** @var FilterOption $af */
+                $options = $af->getOptions();
+                if (is_array($options)
+                    && $af->getVisibility() !== AbstractFilter::SHOW_NEVER
+                    && array_reduce(
+                        $options,
+                        function ($carry, $option) {
+                            /** @var FilterOption $option */
+                            return $carry && $option->isActive();
+                        },
+                        true
+                    ) === true
+                ) {
+                    $af->hide();
                 }
-
-                return $isCustom;
             }
-        );
+        }
+        $this->attributeFilterCollection->setFilterCollection($attribtuteFilterOptions);
 
         return $searchResults;
     }
@@ -1866,6 +1980,30 @@ class ProductFilter
         return isset($this->url->cNoFilter)
             ? $this->url->cNoFilter
             : null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        if (property_exists($this, $name)) {
+            return true;
+        }
+        $mapped = self::getMapping($name);
+        if ($mapped === null) {
+            return false;
+        }
+        $method = 'get' . $mapped;
+        $result = $this->$method();
+        if (is_a($result, 'IFilter')) {
+            /** @var IFilter $result */
+            return $result->isInitialized();
+        }
+        return is_array($result)
+            ? count($result) > 0
+            : false;
     }
 
     /**

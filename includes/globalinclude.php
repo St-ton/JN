@@ -38,7 +38,7 @@ if (!function_exists('Shop')) {
     }
 }
 // PHP memory_limit work around
-if (!Shop()->PHPSettingsHelper()->hasMinLimit(64)) {
+if (!Shop()->PHPSettingsHelper()->hasMinLimit(64 * 1024 * 1024)) {
     ini_set('memory_limit', '64M');
 }
 

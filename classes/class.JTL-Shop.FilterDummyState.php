@@ -22,18 +22,18 @@ class FilterDummyState extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->isCustom    = false;
-        $this->urlParam    = 'ds';
-        $this->urlParamSEO = null;
+        $this->setIsCustom(false)
+             ->setUrlParam('ds')
+             ->setUrlParamSEO(null);
     }
 
     /**
-     * @param int $id
+     * @param int $value
      * @return $this
      */
-    public function setValue($id)
+    public function setValue($value)
     {
-        $this->dummyValue = (int)$id;
+        $this->dummyValue = (int)$value;
 
         return $this;
     }

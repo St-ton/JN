@@ -155,7 +155,7 @@ EditorIO.prototype = {
 
         var elm = portlet;
         var widthHeuristics = {
-            lg: null, md: null, sm: null, xs: 1,
+            lg: null, md: null, sm: null, xs: null,
         };
 
         while(!elm.is(this.gui.rootAreas)) {
@@ -176,6 +176,10 @@ EditorIO.prototype = {
 
             elm = elm.parent();
         }
+
+        if(widthHeuristics.sm === null) widthHeuristics.sm = widthHeuristics.xs;
+        if(widthHeuristics.md === null) widthHeuristics.md = widthHeuristics.sm;
+        if(widthHeuristics.lg === null) widthHeuristics.lg = widthHeuristics.md;
 
         result.properties.widthHeuristics = widthHeuristics;
 

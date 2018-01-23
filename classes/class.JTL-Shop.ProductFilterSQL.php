@@ -52,9 +52,9 @@ class ProductFilterSQL
                     $sort->orderBy = 'tartikel.nSort, tartikel.cName';
                 } elseif (isset($_SESSION['Usersortierung'])
                     && $_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD
-                    && $this->productFilter->getSearch()->isInitialized()
+                    && $this->productFilter->getSearch()->kSuchCache > 0
                 ) {
-                    $sort->orderBy = 'tsuchcachetreffer.nSort';
+                    $sort->orderBy = 'jSuche.nSort'; // was tsuchcachetreffer in 4.06, but is aliased to jSuche
                 }
                 break;
             case SEARCH_SORT_NAME_ASC:
@@ -126,6 +126,7 @@ class ProductFilterSQL
      * @param string $order
      * @param string $limit
      * @param array  $groupBy
+     * @param string $type
      * @return string
      * @throws InvalidArgumentException
      */
@@ -136,7 +137,8 @@ class ProductFilterSQL
         array $having = [],
         $order = null,
         $limit = '',
-        array $groupBy = ['tartikel.kArtikel']
+        array $groupBy = ['tartikel.kArtikel'],
+        $type = 'filter'
     ) {
         if ($order === null) {
             $orderData = $this->getOrder();
@@ -170,7 +172,18 @@ class ProductFilterSQL
         );
         // default base conditions
         $conditions[] = 'tartikelsichtbarkeit.kArtikel IS NULL';
-        $conditions[] = 'tartikel.kVaterArtikel = 0';
+
+        $showChildProducts = $this->productFilter->showChildProducts();
+        if ($showChildProducts === 2
+            || ($showChildProducts === 1
+                && ($type === 'filter' || $this->productFilter->getFilterCount() > 0))
+        ) {
+            $conditions[] = '(tartikel.kVaterArtikel > 0 
+                                OR NOT EXISTS 
+                                    (SELECT 1 FROM tartikel cps WHERE cps.kVaterArtikel = tartikel.kArtikel))';
+        } else {
+            $conditions[] = 'tartikel.kVaterArtikel = 0';
+        }
         $conditions[] = $this->getStockFilterSQL(false);
         // remove empty conditions
         $conditions = array_filter($conditions);
@@ -244,7 +257,7 @@ class ProductFilterSQL
             $or = $filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
                 ? " OR tartikel.cLagerKleinerNull = 'Y'"
                 : '';
-            $filterSQL = ($withAnd === true ? ' AND ' : '') .
+            $filterSQL = ($withAnd === true ? ' AND ' : ' ') .
                 "(tartikel.cLagerBeachten != 'Y'
                     OR tartikel.fLagerbestand > 0
                     OR (tartikel.cLagerVariation = 'Y'

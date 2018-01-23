@@ -211,10 +211,11 @@
         </div>
     </div>
     <div class="cle-pinbar btn-group" id="pinbar" style="display:none">
-        <button class="btn btn-default" id="btn-template"><i class="fa fa-star"></i></button>
-        <button class="btn btn-default" id="btn-trash"><i class="fa fa-trash"></i></button>
-        <button class="btn btn-default" id="btn-clone"><i class="fa fa-clone"></i></button>
-        <button class="btn btn-default" id="btn-config"><i class="fa fa-cog"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-parent" title="gehe eine Ebene höher"><i class="fa fa-level-up"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-template" title="Auswahl als Template speichern"><i class="fa fa-star"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-trash"  title="Auswahl löschen"><i class="fa fa-trash"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-clone" title="Auswahl kopieren"><i class="fa fa-clone"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-config"  title="Einstellungen bearbeiten"><i class="fa fa-cog"></i></button>
     </div>
     <div class="cle-label" id="portlet-label" style="display:none"></div>
 </body>

@@ -408,7 +408,7 @@ class Metadata
                 $this->name     = $this->manufacturer->getName();
                 $this->imageURL = $this->manufacturer->cBildpfadNormal;
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'B') {
-                $this->imageURL = $this->manufacturer > cBildpfadNormal;
+                $this->imageURL = $this->manufacturer->cBildpfadNormal;
             }
             if ($this->manufacturer !== null) {
                 $this->setMetaTitle($this->manufacturer->cMetaTitle)
@@ -444,10 +444,10 @@ class Metadata
     }
 
     /**
-     * @param array          $products
-     * @param stdClass       $searchResults
-     * @param array          $globalMeta
-     * @param Kategorie|null $category
+     * @param array                      $products
+     * @param ProductFilterSearchResults $searchResults
+     * @param array                      $globalMeta
+     * @param Kategorie|null             $category
      * @return string
      */
     public function generateMetaDescription($products, $searchResults, $globalMeta, $category = null)
@@ -525,12 +525,12 @@ class Metadata
                     )
                     : trim($cKatDescription);
                 // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-                if ($searchResults->Seitenzahlen->AktuelleSeite > 1
-                    && $searchResults->ArtikelVon > 0
-                    && $searchResults->ArtikelBis > 0
+                if ($searchResults->getPages()->AktuelleSeite > 1
+                    && $searchResults->getOffsetStart()> 0
+                    && $searchResults->getOffsetEnd()> 0
                 ) {
                     $cMetaDescription .= ', ' . Shop::Lang()->get('products') .
-                        " {$searchResults->ArtikelVon} - {$searchResults->ArtikelBis}";
+                        " {$searchResults->getOffsetStart()} - {$searchResults->getOffsetEnd()}";
                 }
 
                 return prepareMeta($cMetaDescription, null, $maxLength);
@@ -557,13 +557,12 @@ class Metadata
                 ' ' . $cArtikelName
                 : $this->getMetaStart($searchResults) . ': ' . $cArtikelName;
             // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-            if (
-                $searchResults->Seitenzahlen->AktuelleSeite > 1 &&
-                $searchResults->ArtikelVon > 0 &&
-                $searchResults->ArtikelBis > 0
+            if ($searchResults->getPages()->AktuelleSeite > 1
+                && $searchResults->getOffsetStart() > 0
+                && $searchResults->getOffsetEnd()> 0
             ) {
                 $cMetaDescription .= ', ' . Shop::Lang()->get('products') . ' ' .
-                    $searchResults->ArtikelVon . ' - ' . $searchResults->ArtikelBis;
+                    $searchResults->getOffsetStart() . ' - ' . $searchResults->getOffsetEnd();
             }
         }
 
@@ -677,9 +676,9 @@ class Metadata
     }
 
     /**
-     * @param stdClass       $searchResults
-     * @param array          $globalMeta
-     * @param Kategorie|null $category
+     * @param ProductFilterSearchResults $searchResults
+     * @param array                      $globalMeta
+     * @param Kategorie|null             $category
      * @return string
      */
     public function generateMetaTitle($searchResults, $globalMeta, $category = null)
@@ -727,9 +726,9 @@ class Metadata
             }
         }
         // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
-        if ($searchResults->Seitenzahlen->AktuelleSeite > 1) {
+        if ($searchResults->getPages()->AktuelleSeite > 1) {
             $cMetaTitle .= ', ' . Shop::Lang()->get('page') . ' ' .
-                $searchResults->Seitenzahlen->AktuelleSeite;
+                $searchResults->getPages()->AktuelleSeite;
         }
         // Globalen Meta Title ueberall anhaengen
         if ($append === true && !empty($globalMeta[$languageID]->Title)) {
@@ -744,7 +743,7 @@ class Metadata
     /**
      * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.
      *
-     * @param stdClass $searchResults
+     * @param ProductFilterSearchResults $searchResults
      * @return string
      */
     public function getMetaStart($searchResults)
@@ -774,9 +773,8 @@ class Metadata
             $cMetaTitle .= ' ' . $this->productFilter->getCategoryFilter()->getName();
         }
         // Herstellerfilter
-        if (!empty($searchResults->Herstellerauswahl[0]->cName)
-            && $this->productFilter->hasManufacturerFilter()
-        ) {
+        $manufacturerFilterOptions = $searchResults->getManufacturerFilterOptions();
+        if (!empty($manufacturerFilterOptions[0]->cName) && $this->productFilter->hasManufacturerFilter()) {
             $cMetaTitle .= ' ' . $this->productFilter->getManufacturerFilter()->getName();
         }
         // Tagfilter
@@ -1453,5 +1451,17 @@ class Metadata
         }
 
         return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $res                  = get_object_vars($this);
+        $res['conf']          = '*truncated*';
+        $res['productFilter'] = '*truncated*';
+
+        return $res;
     }
 }

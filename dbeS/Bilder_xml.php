@@ -128,7 +128,11 @@ if (auth()) {
     }
     $return    = 2;
     $zipFile   = $_FILES['data']['tmp_name'];
-    $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
+    $unzipPath = PFAD_ROOT .
+        PFAD_DBES .
+        PFAD_SYNC_TMP .
+        basename($_FILES['data']['tmp_name']) . '_' .
+        date('dhis') . '/';
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
         if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
             Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');

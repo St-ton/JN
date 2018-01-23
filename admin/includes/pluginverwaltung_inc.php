@@ -2069,7 +2069,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     $frontendNode   = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'])
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link']
-        : null;
+        : [];
     $paymentNode    = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'],
         $XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])

@@ -50,7 +50,7 @@ class PortletBanner extends CMSPortlet
         ];
 
         $isFluid              = false;
-        $cBildPfad            = PFAD_ROOT . $this->properties['attr']['src'];
+        $cBildPfad            = PFAD_ROOT . $this->properties['src'];
         $oImageMap->cBildPfad = Shop::getURL() . $oImageMap->cBildPfad;
         $cParse_arr           = parse_url($oImageMap->cBildPfad);
         $oImageMap->cBild     = substr($cParse_arr['path'], strrpos($cParse_arr['path'], '/') + 1);
@@ -95,6 +95,7 @@ class PortletBanner extends CMSPortlet
             ->assign('oBanner', $oImageMap)
             ->assign('isFluidBanner', false)
             ->assign('attribString', $this->getAttribString())
+            ->assign('srcString', $this->getSrcString($this->properties['src'], $this->properties['widthHeuristics']))
             ->assign('isFluid', $isFluid)
             ->fetch('portlets/final.banner.tpl');
     }
@@ -118,12 +119,12 @@ class PortletBanner extends CMSPortlet
                 'kImageMap' => uniqid('', false),
                 'oArea_arr' => [],
             ],
+            'src'                => '',
             // animation
             'animation-style'     => '',
             // attributes
             'attr' => [
                 'class'              => '',
-                'src'                => '',
                 'alt'                => '',
                 'title'              => '',
                 'data-wow-duration'  => '',

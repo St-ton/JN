@@ -1832,8 +1832,8 @@ class Boxen
     }
 
     /**
-     * @param ProductFilter $productFilter
-     * @param stdClass      $oSuchergebnisse
+     * @param ProductFilter              $productFilter
+     * @param ProductFilterSearchResults $oSuchergebnisse
      * @return bool
      */
     public function gibBoxenFilterNach($productFilter, $oSuchergebnisse)
@@ -1857,24 +1857,20 @@ class Boxen
             ($productFilter->hasTagFilter()
                 && $this->boxConfig['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y')
             ||
-            (isset($oSuchergebnisse->MerkmalFilter)
-                && count($oSuchergebnisse->MerkmalFilter) > 0
+            (count($oSuchergebnisse->getAttributeFilterOptions()) > 0
                 && $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
             ||
             ($productFilter->hasAttributeFilter()
                 && $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
             ||
-            (isset($oSuchergebnisse->Bewertung)
-                && count($oSuchergebnisse->Bewertung) > 0
+            (count($oSuchergebnisse->getRatingFilterOptions()) > 0
                 && $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] === 'box')
             ||
-            (isset($oSuchergebnisse->Preisspanne)
-                && count($oSuchergebnisse->Preisspanne) > 0
+            (count($oSuchergebnisse->getPriceRangeFilterOptions()) > 0
                 && $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box'
                 && (int)$conf['global']['global_sichtbarkeit'] === 1)
             ||
-            (isset($oSuchergebnisse->Suchspecialauswahl)
-                && count($oSuchergebnisse->Suchspecialauswahl) > 0
+            (count($oSuchergebnisse->getSearchSpecialFilterOptions()) > 0
                 && $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
             ||
             ($productFilter->hasSearchSpecialFilter()

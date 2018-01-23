@@ -80,7 +80,6 @@ class PortletImage extends CMSPortlet
                 'data-wow-iteration' => '',
             ],
             'src'                => '',
-            // todo editor: richtigen wert eintragen
             'widthHeuristics' => ['lg' => 1, 'md' => 1, 'sm' => 1, 'xs' => 1],
             // style
             'style' => [

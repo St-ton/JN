@@ -200,13 +200,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function uploadMax()
         {
-            $nMaxUpload   = (int)ini_get('upload_max_filesize');
-            $nMaxPost     = (int)ini_get('post_max_size');
-            $nMemoryLimit = Shop()->PHPSettingsHelper()->limit();
-            $nUploadMax   = min($nMaxUpload, $nMaxPost, $nMemoryLimit);
-            $nUploadMax   *= (1024 * 1024);
-
-            return $nUploadMax;
+            return min(
+                    Shop()->PHPSettingsHelper()->uploadMaxFileSize(),
+                    Shop()->PHPSettingsHelper()->postMaxSize(),
+                    Shop()->PHPSettingsHelper()->limit()
+                );
         }
 
         /**

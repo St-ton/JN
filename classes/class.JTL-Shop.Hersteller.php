@@ -110,6 +110,7 @@ class Hersteller
             foreach ($members as $member) {
                 $this->{$member} = $obj->{$member};
             }
+            $this->kHersteller = (int)$this->kHersteller;
         }
         if ($extras) {
             $this->getExtras($obj);
@@ -145,9 +146,11 @@ class Hersteller
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                     therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                     FROM thersteller
-                    LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
+                    LEFT JOIN therstellersprache 
+                        ON therstellersprache.kHersteller = thersteller.kHersteller
                         AND therstellersprache.kSprache = " . $kSprache . "
-                    LEFT JOIN tseo ON tseo.kKey = thersteller.kHersteller
+                    LEFT JOIN tseo 
+                        ON tseo.kKey = thersteller.kHersteller
                         AND tseo.cKey = 'kHersteller'
                         AND tseo.kSprache = " . $kSprache . "
                     WHERE thersteller.kHersteller = " . $kHersteller, 1
@@ -229,21 +232,21 @@ class Hersteller
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                 FROM thersteller
-                LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
+                LEFT JOIN therstellersprache 
+                    ON therstellersprache.kHersteller = thersteller.kHersteller
                     AND therstellersprache.kSprache = {$kSprache}
-                LEFT JOIN tseo ON tseo.kKey = thersteller.kHersteller
+                LEFT JOIN tseo 
+                    ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
                     AND tseo.kSprache = {$kSprache}
                 {$sqlWhere}
                 ORDER BY thersteller.nSortNr, thersteller.cName", 2
         );
         $results = [];
-        if (is_array($objs)) {
-            foreach ($objs as $obj) {
-                $hersteller = new self(0, 0, true);
-                $hersteller->loadFromObject($obj);
-                $results[] = $hersteller;
-            }
+        foreach ($objs as $obj) {
+            $hersteller = new self(0, 0, true);
+            $hersteller->loadFromObject($obj);
+            $results[] = $hersteller;
         }
 
         return $results;

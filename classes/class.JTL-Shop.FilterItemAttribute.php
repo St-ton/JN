@@ -35,7 +35,9 @@ class FilterItemAttribute extends FilterBaseAttribute
      * @var array
      */
     private static $mapping = [
-        'cName' => 'Name'
+        'kMerkmal'     => 'AttributeIDCompat',
+        'kMerkmalWert' => 'ValueCompat',
+        'cName'        => 'Name'
     ];
 
     /**

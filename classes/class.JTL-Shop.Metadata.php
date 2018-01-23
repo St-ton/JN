@@ -77,6 +77,7 @@ class Metadata
         'oHersteller'      => 'Manufacturer',
         'cBildURL'         => 'ImageURL',
         'oMerkmal'         => 'AttributeValue',
+        'oMerkmalWert'     => 'AttributeValue',
         'oKategorie'       => 'Category',
         'cBrotNavi'        => 'BreadCrumb'
     ];

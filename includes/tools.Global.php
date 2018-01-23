@@ -3902,8 +3902,14 @@ function gibAlleSprachen($nOption = 0)
                 return $languages;
         }
     }
-    $oSprach_arr = Shop::DB()->query("SELECT * FROM tsprache ORDER BY cShopStandard DESC, cNameDeutsch", 2);
+    $oSprach_arr = array_map(
+        function ($s) {
+            $s->kSprache = (int)$s->kSprache;
 
+            return $s;
+        },
+        Shop::DB()->query("SELECT * FROM tsprache ORDER BY cShopStandard DESC, cNameDeutsch", 2)
+    );
     switch ($nOption) {
         case 2:
             return baueAssocArray($oSprach_arr, 'cISO');

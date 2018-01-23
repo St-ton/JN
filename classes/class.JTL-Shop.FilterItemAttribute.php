@@ -469,7 +469,6 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setURL('')
                 ->setData('cTyp', $attributeFilter->cTyp)
                 ->setData('kMerkmal', $attributeFilter->kMerkmal)
-                ->setData('oMerkmalWerte_arr', [])
                 ->setData('cBildpfadKlein', $baseSrcSmall)
                 ->setData('cBildpfadNormal', $baseSrcNormal)
                 ->setData('cBildURLKlein', $shopURL . $baseSrcSmall)
@@ -508,6 +507,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                 );
                 $attribute->addOption($attributeValue->setURL($attributeValueURL));
             }
+            // backwards-compatible
+            $attribute->setData('oMerkmalWerte_arr', $attribute->getOptions());
             if (($optionsCount = count($attribute->getOptions())) > 0) {
                 $attributeFilters[] = $attribute->setCount($optionsCount);
             }

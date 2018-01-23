@@ -188,16 +188,14 @@ class AuswahlAssistent
             }
         }
         $NaviFilter                           = Shop::buildProductFilter($cParameter_arr);
-        $oSuchergebnisse                      = new stdClass();
-        $oSuchergebnisse->GesamtanzahlArtikel = 0;
         $AktuelleKategorie                    = isset($cParameter_arr['kKategorie'])
             ? new Kategorie($cParameter_arr['kKategorie'])
             : null;
         $oMerkmalFilter_arr                   = $NaviFilter->setFilterOptions(
-            $oSuchergebnisse,
+            new ProductFilterSearchResults(),
             $AktuelleKategorie,
             true
-        )->MerkmalFilter;
+        )->getAttributeFilterOptions();
 
         foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
             /** @var FilterItemAttribute $oMerkmalFilter */

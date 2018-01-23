@@ -10,6 +10,8 @@ function EditorIO(editor)
     this.gui         = editor.gui;
     this.noop        = function() {};
 
+    this.onPageLoadCallback = this.noop;
+
     setInterval(function() {
         ioCall('lockCmsPage', [this.cPageIdHash]);
     }, 1000 * 60);
@@ -19,14 +21,22 @@ EditorIO.prototype = {
 
     constructor: EditorIO,
 
-    loadPage: function()
+    loadPage: function(onPageLoadCallback)
     {
+        this.onPageLoadCallback = onPageLoadCallback || this.noop;
+
         ioCall('getCmsPage', [this.cPageIdHash, true], this.onGetCmsPageResponse.bind(this));
     },
 
-    loadRevision: function(id)
+    loadRevision: function(id, onPageLoadCallback)
     {
-        ioCall('getCmsPageRevision', [this.cPageIdHash, id, true], this.onGetCmsPageResponse.bind(this));
+        if(id === 0) {
+            this.loadPage(onPageLoadCallback);
+        } else {
+            this.onPageLoadCallback = onPageLoadCallback || this.noop;
+
+            ioCall('getCmsPageRevision', [this.cPageIdHash, id, true], this.onGetCmsPageResponse.bind(this));
+        }
     },
 
     savePage: function(success, error)
@@ -56,6 +66,7 @@ EditorIO.prototype = {
         }.bind(this));
 
         this.gui.updateDropTargets();
+        this.onPageLoadCallback();
     },
 
     getPageWebStorageLastModified: function()

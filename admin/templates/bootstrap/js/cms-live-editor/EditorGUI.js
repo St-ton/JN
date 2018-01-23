@@ -314,8 +314,10 @@ EditorGUI.prototype = {
     onRevision: function(e)
     {
         var elm = $(e.target);
+
+        this.showLoader();
         this.clearPage();
-        this.editor.io.loadRevision(elm.data('revision-id'));
+        this.editor.io.loadRevision(elm.data('revision-id'), this.hideLoader.bind(this));
     },
 
     onPreview: function(e)

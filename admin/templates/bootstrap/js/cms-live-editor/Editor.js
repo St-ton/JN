@@ -69,8 +69,7 @@ Editor.prototype = {
 
         this.iframeLoaded = true;
         this.gui.initIframeGUI();
-        this.gui.hideLoader();
-        this.io.loadPage();
+        this.io.loadPage(this.gui.hideLoader.bind(this.gui));
     },
 
     getIframePageUrl: function ()

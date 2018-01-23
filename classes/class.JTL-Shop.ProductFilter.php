@@ -201,6 +201,16 @@ class ProductFilter
     private $showChildProducts;
 
     /**
+     * @var FilterItemSort
+     */
+    private $sorting;
+
+    /**
+     * @var FilterItemLimit
+     */
+    private $limits;
+
+    /**
      * @var array
      * @todo: fix working with arrays
      * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
@@ -537,6 +547,43 @@ class ProductFilter
     }
 
     /**
+     * @return FilterItemSort
+     */
+    public function getSorting()
+    {
+        return $this->sorting;
+    }
+
+    /**
+     * @param FilterItemSort $sorting
+     * @return $this
+     */
+    public function setSorting($sorting)
+    {
+        $this->sorting = $sorting;
+
+        return $this;
+    }
+
+    /**
+     * @return FilterItemLimit
+     */
+    public function getLimits()
+    {
+        return $this->limits;
+    }
+
+    /**
+     * @param FilterItemLimit $limits
+     * @return $this
+     */
+    public function setLimits($limits)
+    {
+        $this->limits = $limits;
+
+        return $this;
+    }
+    /**
      * @return array - default array keys
      */
     private function getParamsPrototype()
@@ -630,6 +677,9 @@ class ProductFilter
         $this->filters[] = $this->priceRangeFilter;
         $this->filters[] = $this->ratingFilter;
 
+        $this->sorting = new FilterItemSort($this);
+        $this->limits  = new FilterItemLimit($this);
+
         return $this;
     }
 
@@ -655,7 +705,7 @@ class ProductFilter
             $this->searchSpecial->init($params['kSuchspecial']);
             $this->baseState = $this->searchSpecial;
         }
-        
+
         if ($params['kKategorieFilter'] > 0) {
             $this->addActiveFilter($this->categoryFilter, $params['kKategorieFilter']);
         }
@@ -1878,6 +1928,8 @@ class ProductFilter
         ]);
 
         $searchResults->setManufacturerFilterOptions($manufacturerOptions)
+                      ->setSortingOptions($this->sorting->getOptions())
+                      ->setLimitOptions($this->limits->getOptions())
                       ->setRatingFilterOptions($ratingOptions)
                       ->setTagFilterOptions($tagOptions)
                       ->setPriceRangeFilterOptions($priceRangeOptions)

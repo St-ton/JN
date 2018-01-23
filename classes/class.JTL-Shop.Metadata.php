@@ -1452,4 +1452,16 @@ class Metadata
 
         return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
     }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $res                  = get_object_vars($this);
+        $res['conf']          = '*truncated*';
+        $res['productFilter'] = '*truncated*';
+
+        return $res;
+    }
 }

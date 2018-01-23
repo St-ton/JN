@@ -1983,6 +1983,30 @@ class ProductFilter
     }
 
     /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        if (property_exists($this, $name)) {
+            return true;
+        }
+        $mapped = self::getMapping($name);
+        if ($mapped === null) {
+            return false;
+        }
+        $method = 'get' . $mapped;
+        $result = $this->$method();
+        if (is_a($result, 'IFilter')) {
+            /** @var IFilter $result */
+            return $result->isInitialized();
+        }
+        return is_array($result)
+            ? count($result) > 0
+            : false;
+    }
+
+    /**
      * @return array
      */
     public function __debugInfo()

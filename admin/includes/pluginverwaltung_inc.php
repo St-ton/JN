@@ -424,12 +424,12 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     if (empty($baseNode['ShopVersion']) && empty($baseNode['Shop4Version'])) {
         return PLUGIN_CODE_INVALID_SHOP_VERSION;
     }
-    if ((isset($baseNode['ShopVersion']) 
-            && strlen($cTreffer_arr[0]) !== strlen($baseNode['ShopVersion']) 
+    if ((isset($baseNode['ShopVersion'])
+            && strlen($cTreffer_arr[0]) !== strlen($baseNode['ShopVersion'])
             && (int)$baseNode['ShopVersion'] >= 300
-        ) 
-        || (isset($baseNode['Shop4Version']) 
-            && strlen($cTreffer_arr[0]) !== strlen($baseNode['Shop4Version']) 
+        )
+        || (isset($baseNode['Shop4Version'])
+            && strlen($cTreffer_arr[0]) !== strlen($baseNode['Shop4Version'])
             && (int)$baseNode['Shop4Version'] >= 300)
     ) {
         return PLUGIN_CODE_INVALID_SHOP_VERSION; //Shop-Version entspricht nicht der Konvention
@@ -1149,8 +1149,8 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                     }
                 }
                 // ZahlungsmethodeSprachen prüfen
-                if (!isset($Method_arr['MethodLanguage']) 
-                    || !is_array($Method_arr['MethodLanguage']) 
+                if (!isset($Method_arr['MethodLanguage'])
+                    || !is_array($Method_arr['MethodLanguage'])
                     || count($Method_arr['MethodLanguage']) === 0
                 ) {
                     return PLUGIN_CODE_MISSING_PAYMENT_METHOD_LANGUAGES;
@@ -1243,8 +1243,8 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                             // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                             if ($cTyp === 'selectbox') {
                                 // SelectboxOptions prüfen
-                                if (!isset($Setting_arr['SelectboxOptions']) 
-                                    || !is_array($Setting_arr['SelectboxOptions']) 
+                                if (!isset($Setting_arr['SelectboxOptions'])
+                                    || !is_array($Setting_arr['SelectboxOptions'])
                                     || count($Setting_arr['SelectboxOptions']) === 0
                                 ) {
                                     return PLUGIN_CODE_MISSING_PAYMENT_METHOD_SELECTBOX_OPTIONS;
@@ -2015,7 +2015,6 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     $paymentNode    = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'],
         $XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])
-    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'][0]['Method'])
     && count($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']) > 0
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']
         : [];
@@ -2116,8 +2115,8 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     // tpluginadminmenu füllen
     if ($adminNode !== null) {
         // Adminsmenüs vorhanden?
-        if (isset($adminNode[0]['Customlink']) 
-            && is_array($adminNode[0]['Customlink']) 
+        if (isset($adminNode[0]['Customlink'])
+            && is_array($adminNode[0]['Customlink'])
             && count($adminNode[0]['Customlink']) > 0
         ) {
             $nSort = 0;
@@ -3231,7 +3230,7 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
                 }
             }
             Shop::DB()->query("
-                DELETE FROM tplugineinstellungen 
+                DELETE FROM tplugineinstellungen
                     WHERE kPlugin IN (" . $kPluginOld . ", " . $kPlugin . ")", 3
             );
 
@@ -3332,15 +3331,15 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
         Shop::DB()->update('tspezialseite', 'kPlugin', $kPlugin, $upd);
         // tzahlungsart
         $oZahlungsartOld_arr = Shop::DB()->query("
-            SELECT kZahlungsart, cModulId 
-                FROM tzahlungsart 
+            SELECT kZahlungsart, cModulId
+                FROM tzahlungsart
                 WHERE cModulId LIKE 'kPlugin_{$kPluginOld}_%'", 2
         );
         foreach ($oZahlungsartOld_arr as $oZahlungsartOld) {
             $cModulIdNew     = str_replace("kPlugin_{$kPluginOld}_", "kPlugin_{$kPlugin}_", $oZahlungsartOld->cModulId);
             $oZahlungsartNew = Shop::DB()->query("
-                  SELECT kZahlungsart 
-                      FROM tzahlungsart 
+                  SELECT kZahlungsart
+                      FROM tzahlungsart
                       WHERE cModulId LIKE '{$cModulIdNew}'", 1
             );
             $cNewSetSQL      = '';
@@ -3348,7 +3347,7 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
                 Shop::DB()->query(
                     "DELETE tzahlungsart, tzahlungsartsprache
                         FROM tzahlungsart
-                        JOIN tzahlungsartsprache 
+                        JOIN tzahlungsartsprache
                             ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
                         WHERE tzahlungsart.kZahlungsart = " . $oZahlungsartOld->kZahlungsart, 3
                 );
@@ -3442,9 +3441,9 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
         Shop::DB()->query(
             "DELETE tpluginsprachvariablesprache, tpluginsprachvariablecustomsprache, tpluginsprachvariable
                 FROM tpluginsprachvariable
-                LEFT JOIN tpluginsprachvariablesprache 
+                LEFT JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
-                LEFT JOIN tpluginsprachvariablecustomsprache 
+                LEFT JOIN tpluginsprachvariablecustomsprache
                     ON tpluginsprachvariablecustomsprache.cSprachvariable = tpluginsprachvariable.cName
                     AND tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
                 WHERE tpluginsprachvariable.kPlugin = " . $kPlugin, 3
@@ -3456,7 +3455,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
         Shop::DB()->query(
             "DELETE tzahlungsartsprache, tzahlungsart
                 FROM tzahlungsart
-                LEFT JOIN tzahlungsartsprache 
+                LEFT JOIN tzahlungsartsprache
                     ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
                 WHERE tzahlungsart.cModulId LIKE 'kPlugin_" . $kPlugin . "_%'", 3
         );
@@ -3470,14 +3469,14 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
         );
 
         Shop::DB()->query(
-            "DELETE tpluginemailvorlageeinstellungen, tpluginemailvorlagespracheoriginal, 
+            "DELETE tpluginemailvorlageeinstellungen, tpluginemailvorlagespracheoriginal,
                 tpluginemailvorlage, tpluginemailvorlagesprache
                 FROM tpluginemailvorlage
-                LEFT JOIN tpluginemailvorlagespracheoriginal 
+                LEFT JOIN tpluginemailvorlagespracheoriginal
                     ON tpluginemailvorlagespracheoriginal.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-                LEFT JOIN tpluginemailvorlageeinstellungen 
+                LEFT JOIN tpluginemailvorlageeinstellungen
                     ON tpluginemailvorlageeinstellungen.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-                LEFT JOIN tpluginemailvorlagesprache 
+                LEFT JOIN tpluginemailvorlagesprache
                     ON tpluginemailvorlagesprache.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
                 WHERE tpluginemailvorlage.kPlugin = " . $kPlugin, 3
         );
@@ -3485,7 +3484,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
         Shop::DB()->query(
             "DELETE tpluginsprachvariablesprache, tpluginsprachvariable
                 FROM tpluginsprachvariable
-                LEFT JOIN tpluginsprachvariablesprache 
+                LEFT JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
                 WHERE tpluginsprachvariable.kPlugin = " . $kPlugin, 3
         );
@@ -3495,7 +3494,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
         Shop::DB()->query(
             "DELETE tpluginemailvorlage, tpluginemailvorlagespracheoriginal
                 FROM tpluginemailvorlage
-                LEFT JOIN tpluginemailvorlagespracheoriginal 
+                LEFT JOIN tpluginemailvorlagespracheoriginal
                     ON tpluginemailvorlagespracheoriginal.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
                 WHERE tpluginemailvorlage.kPlugin = " . $kPlugin, 3
         );
@@ -3503,7 +3502,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
     Shop::DB()->query(
         "DELETE tpluginsqlfehler, tpluginhook
             FROM tpluginhook
-            LEFT JOIN tpluginsqlfehler 
+            LEFT JOIN tpluginsqlfehler
                 ON tpluginsqlfehler.kPluginHook = tpluginhook.kPluginHook
             WHERE tpluginhook.kPlugin = " . $kPlugin, 3
     );
@@ -3511,7 +3510,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
     Shop::DB()->query(
         "DELETE tplugineinstellungenconfwerte, tplugineinstellungenconf
             FROM tplugineinstellungenconf
-            LEFT JOIN tplugineinstellungenconfwerte 
+            LEFT JOIN tplugineinstellungenconfwerte
                 ON tplugineinstellungenconfwerte.kPluginEinstellungenConf = tplugineinstellungenconf.kPluginEinstellungenConf
             WHERE tplugineinstellungenconf.kPlugin = " . $kPlugin, 3
     );
@@ -3564,10 +3563,10 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
     Shop::DB()->query(
         "DELETE tlinksprache, tseo, tlink
             FROM tlink
-            LEFT JOIN tlinksprache 
+            LEFT JOIN tlinksprache
                 ON tlinksprache.kLink = tlink.kLink
-            LEFT JOIN tseo 
-                ON tseo.cKey = 'kLink' 
+            LEFT JOIN tseo
+                ON tseo.cKey = 'kLink'
                 AND tseo.kKey = tlink.kLink
             WHERE tlink.kPlugin = " . $kPlugin, 3
     );
@@ -3578,9 +3577,9 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
     Shop::DB()->query(
         "DELETE texportformateinstellungen, texportformatqueuebearbeitet, texportformat
             FROM texportformat
-            LEFT JOIN texportformateinstellungen 
+            LEFT JOIN texportformateinstellungen
                 ON texportformateinstellungen.kExportformat = texportformat.kExportformat
-            LEFT JOIN texportformatqueuebearbeitet 
+            LEFT JOIN texportformatqueuebearbeitet
                 ON texportformatqueuebearbeitet.kExportformat = texportformat.kExportformat
             WHERE texportformat.kPlugin = " . $kPlugin, 3
     );
@@ -3674,11 +3673,11 @@ function makeXMLToObj($XML)
         $oObj->cAuthor         = isset($node['Author']) ? $node['Author'] : '';
         $oObj->cPluginID       = $node['PluginID'];
         $oObj->cIcon           = isset($node['Icon'])
-            ? $node['Icon'] 
+            ? $node['Icon']
             : null;
         $oObj->cVerzeichnis    = $XML['cVerzeichnis'];
         $oObj->shop4compatible = !empty($XML['shop4compatible'])
-            ? $XML['shop4compatible'] 
+            ? $XML['shop4compatible']
             : false;
         $oObj->nVersion        = $nLastVersionKey >= 0 && isset($node['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'])
             ? (int)$node['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr']
@@ -3801,8 +3800,8 @@ function removeNumerousWhitespaces($cStr)
  */
 function parseSQLDatei($cSQLDatei, $cVerzeichnis, $nVersion)
 {
-    $cSQLDateiPfad = PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis . '/' . 
-        PFAD_PLUGIN_VERSION . $nVersion . '/' . 
+    $cSQLDateiPfad = PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis . '/' .
+        PFAD_PLUGIN_VERSION . $nVersion . '/' .
         PFAD_PLUGIN_SQL;
 
     if (!file_exists($cSQLDateiPfad . $cSQLDatei)) {

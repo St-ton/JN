@@ -357,11 +357,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     ->setCount($count)
                     ->setSort(0)
                     ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $i))
-                    ->setURL($this->productFilter->getFilterURL()->getURL($additionalFilter->init($i)
-//                    , false
-//                    , true
-                    )
-                );
+                    ->setURL($this->productFilter->getFilterURL()->getURL($additionalFilter->init($i)));
             }
         }
         $this->options = $options;

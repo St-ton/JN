@@ -420,12 +420,11 @@ class Metadata
                 '',
                 '',
                 0,
-                $this->productFilter->getMetaData()->getBreadCrumbName(),
+                $this->getBreadCrumbName(),
                 $this->productFilter->getFilterURL()->getURL()
             );
         } elseif ($this->productFilter->hasAttributeValue()) {
             $this->attributeValue = new MerkmalWert($this->productFilter->getAttributeValue()->getValue());
-
             if ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
                 $this->setName($this->attributeValue->cWert);
             } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
@@ -439,6 +438,24 @@ class Metadata
                      ->setMetaDescription($this->attributeValue->cMetaDescription)
                      ->setMetaKeywords($this->attributeValue->cMetaKeywords);
             }
+            $this->breadCrumb = createNavigation(
+                '',
+                '',
+                0,
+                $this->getBreadCrumbName(),
+                $this->productFilter->getFilterURL()->getURL()
+            );
+        } elseif ($this->productFilter->hasTag()
+            || $this->productFilter->hasSearchSpecial()
+            || $this->productFilter->hasSearch()
+        ) {
+            $this->breadCrumb = createNavigation(
+                '',
+                '',
+                0,
+                $this->getBreadCrumbName(),
+                $this->productFilter->getFilterURL()->getURL()
+            );
         }
 
         return $this;

@@ -44,6 +44,15 @@ if ($NaviFilter->hasCategory()) {
 $NaviFilter->getMetaData()->setUserSort($AktuelleKategorie);
 // Erweiterte Darstellung Artikelübersicht
 $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
+if ($oSuchergebnisse->getPages()->AktuelleSeite > 0
+    && ($oSuchergebnisse->getProductCount() === 0
+        || ($oSuchergebnisse->getPages()->AktuelleSeite > $oSuchergebnisse->getPages()->MaxSeiten))
+) {
+    // diese Seite hat keine Artikel -> 301 redirect auf 1. Seite
+    http_response_code(301);
+    header('Location: ' . $NaviFilter->getFilterURL()->getURL());
+    exit;
+}
 // Umleiten falls SEO keine Artikel ergibt
 doMainwordRedirect($NaviFilter, $oSuchergebnisse->getProductCount(), true);
 // Bestsellers

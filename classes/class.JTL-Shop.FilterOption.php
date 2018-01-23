@@ -70,7 +70,12 @@ class FilterOption extends AbstractFilter
         'cURL'           => 'URL',
         'Klasse'         => 'Class',
         'nSortNr'        => 'Sort',
-        'kKey'           => 'Value'
+        'kSuchanfrage'   => 'Value',
+        'kTag'           => 'Value',
+        'kKey'           => 'Value',
+        'kKategorie'     => 'Value',
+        'kMerkmal'       => 'Value',
+        'nSterne'        => 'Value',
     ];
 
     /**

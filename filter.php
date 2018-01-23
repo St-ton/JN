@@ -44,9 +44,9 @@ if ($NaviFilter->hasCategory()) {
 $NaviFilter->getMetaData()->setUserSort($AktuelleKategorie);
 // Erweiterte Darstellung Artikelübersicht
 $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
-if ($oSuchergebnisse->getPages()->AktuelleSeite > 0
-    && ($oSuchergebnisse->getProductCount() === 0
-        || ($oSuchergebnisse->getPages()->AktuelleSeite > $oSuchergebnisse->getPages()->MaxSeiten))
+$pages           = $oSuchergebnisse->getPages();
+if ($pages->AktuelleSeite > 0 && $pages->MaxSeiten > 0
+    && ($oSuchergebnisse->getProductCount() === 0 || ($pages->AktuelleSeite > $pages->MaxSeiten))
 ) {
     // diese Seite hat keine Artikel -> 301 redirect auf 1. Seite
     http_response_code(301);
@@ -132,7 +132,6 @@ if ($oSuchergebnisse->getProducts()->elemente->count() === 0) {
 $oNavigationsinfo = $NaviFilter->getMetaData()->getNavigationInfo($AktuelleKategorie, $expandedCategories);
 // Canonical
 if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
-    $pages         = $oSuchergebnisse->getPages();
     $cSeite        = isset($pages->AktuelleSeite)
     && $pages->AktuelleSeite > 1
         ? SEP_SEITE . $pages->AktuelleSeite
@@ -152,7 +151,7 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
            generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
        ->assign('oNaviSeite_arr', $oNavigationsinfo->buildPageNavigation(
            true,
-           $oSuchergebnisse->getPages(),
+           $pages,
            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
        ->assign('ArtikelProSeite', $productsPerPage)
        ->assign('Navigation', $oNavigationsinfo->getBreadCrumb())

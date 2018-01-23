@@ -93,6 +93,45 @@ abstract class CMSPortlet
     }
 
     /**
+     * @return string
+     */
+    public function getFullPreviewHtml()
+    {
+        phpQuery::newDocument();
+
+        $html    = $this->getPreviewHtml();
+        $portlet = pq($html);
+        $portlet->attr('data-portletid', $this->kPortlet);
+        $portlet->attr('data-portlettitle', $this->cTitle);
+        $portlet->attr('data-properties', json_encode($this->properties));
+
+        $subAreas = pq('.cle-area', $portlet);
+
+        foreach ($this->subAreas as $i => $areaPortlets) {
+            $subArea = pq($subAreas->elements[$i], $portlet);
+
+            foreach ($areaPortlets as $areaPortlet) {
+                try {
+                    $subhtml       = CMS::getInstance()
+                        ->createPortlet($areaPortlet['portletId'])
+                        ->setProperties($areaPortlet['properties'])
+                        ->setSubAreas($areaPortlet['subAreas'])
+                        ->getFullPreviewHtml();
+                    $pqAreaPortlet = pq($subhtml);
+                    $pqAreaPortlet->attr('data-portlettitle', $areaPortlet['portletTitle']);
+                    $pqAreaPortlet->attr('data-portletid', $areaPortlet['portletId']);
+                    $pqAreaPortlet->attr('data-properties', $areaPortlet['properties']);
+                    $subArea->append($pqAreaPortlet);
+                } catch (Exception $e) {
+                    // one portlet in this sub area could not be created
+                }
+            }
+        }
+
+        return $portlet->htmlOuter();
+    }
+
+    /**
      * @return string - front end-final HTML content
      */
     public function getFinalHtml()

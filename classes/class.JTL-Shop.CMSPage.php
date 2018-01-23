@@ -45,6 +45,11 @@ class CMSPage
     public $cFinalHtml_arr = null;
 
     /**
+     * @var array - maps each root area to the editable preview html content
+     */
+    public $cPreviewHtml_arr = [];
+
+    /**
      * @param int $kPage
      */
     public function __construct($kPage = 0)
@@ -70,23 +75,50 @@ class CMSPage
     public function renderFinal()
     {
         $this->cFinalHtml_arr = [];
-        if (!empty($this->data)) {
-            foreach ($this->data as $areaId => $areaPortlets) {
-                $cHtml = '';
 
-                foreach ($areaPortlets as $portlet) {
-                    try {
-                        $cHtml .= CMS::getInstance()->createPortlet($portlet['portletId'])
-                            ->setProperties($portlet['properties'])
-                            ->setSubAreas($portlet['subAreas'])
-                            ->getFinalHtml();
-                    } catch (Exception $e) {
-                        $cHtml .= '';
-                    }
+        foreach ($this->data as $areaId => $areaPortlets) {
+            $cHtml = '';
+
+            foreach ($areaPortlets as $portlet) {
+                try {
+                    $cHtml .= CMS::getInstance()->createPortlet($portlet['portletId'])
+                        ->setProperties($portlet['properties'])
+                        ->setSubAreas($portlet['subAreas'])
+                        ->getFinalHtml();
+                } catch (Exception $e) {
+                    $cHtml .= '';
                 }
-
-                $this->cFinalHtml_arr[$areaId] = $cHtml;
             }
+
+            $this->cFinalHtml_arr[$areaId] = $cHtml;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function renderPreview()
+    {
+        $this->cPreviewHtml_arr = [];
+
+        foreach ($this->data as $areaId => $areaPortlets) {
+            $cHtml = '';
+
+            foreach ($areaPortlets as $portlet) {
+                try {
+                    $cHtml .= CMS::getInstance()->createPortlet($portlet['portletId'])
+                        ->setProperties($portlet['properties'])
+                        ->setSubAreas($portlet['subAreas'])
+                        ->getFullPreviewHtml();
+                } catch (Exception $e) {
+                    // one portlet in this sub area could not be created
+                    $cHtml .= '';
+                }
+            }
+
+            $this->cPreviewHtml_arr[$areaId] = $cHtml;
         }
 
         return $this;
@@ -139,6 +171,9 @@ class CMSPage
         return $revision->getRevisions('cmspage', $this->kPage);
     }
 
+    /**
+     * @param $revisionID
+     */
     public function loadRevision($revisionID)
     {
         $revision = new Revision();
@@ -184,6 +219,9 @@ class CMSPage
         return true;
     }
 
+    /**
+     * @return $this
+     */
     public function unlock()
     {
         $this->cLockedBy = '';

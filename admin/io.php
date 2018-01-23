@@ -75,13 +75,14 @@ $io
     // CMS Live Editor
     ->register('getPortletPreviewHtml', [$cms, 'getPortletPreviewHtml'], null, 'CONTENT_PAGE_VIEW')
     ->register('getPortletConfigPanelHtml', [$cms, 'getPortletConfigPanelHtml'], null, 'CONTENT_PAGE_VIEW')
+    ->register('getPortletFullPreviewHtml', [$cms, 'getPortletFullPreviewHtml'], null, 'CONTENT_PAGE_VIEW')
     ->register('getPortletDefaultProps', [$cms, 'getPortletDefaultProps'], null, 'CONTENT_PAGE_VIEW')
     ->register('saveCmsPage', [$cms, 'savePage'], null, 'CONTENT_PAGE_VIEW')
     ->register('getCmsPage', [$cms, 'getPage'], null, 'CONTENT_PAGE_VIEW')
     ->register('getCmsPageRevision', [$cms, 'getPageRevision'], null, 'CONTENT_PAGE_VIEW')
     ->register('lockCmsPage', [$cms, 'lockPage'], null, 'CONTENT_PAGE_VIEW')
     ->register('unlockCmsPage', [$cms, 'unlockPage'], null, 'CONTENT_PAGE_VIEW')
-    ->register('storeTemplate', ['CMS', 'storeTemplate'], null, 'CONTENT_PAGE_VIEW')
+    ->register('storeCmsTemplate', [$cms, 'storeTemplate'], null, 'CONTENT_PAGE_VIEW')
     // Other
     ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
     ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')

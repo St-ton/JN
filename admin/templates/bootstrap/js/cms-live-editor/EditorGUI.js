@@ -25,10 +25,12 @@ EditorGUI.prototype = {
         this.iframe             = this.hostJq('#iframe');
         this.loaderModal        = this.hostJq('#loader-modal');
         this.errorModal         = this.hostJq('#error-modal');
+        this.templateModal      = this.hostJq('#template-modal');
         this.errorAlert         = this.hostJq('#error-alert');
         this.portletLabel       = this.hostJq('#portlet-label');
         this.portletToolbar     = this.hostJq('#pinbar');
         this.portletBtns        = this.hostJq('.portlet-button');
+        this.templateBtns       = this.hostJq('.template-button');
         this.previewBtn         = this.hostJq('#btn-preview')           .click(this.onPreview.bind(this));
         this.editorCloseBtn     = this.hostJq('#cle-btn-close-editor')  .click(this.onEditorClose.bind(this));
         this.editorSaveBtn      = this.hostJq('#cle-btn-save-editor')   .click(this.onEditorSave.bind(this));
@@ -39,9 +41,14 @@ EditorGUI.prototype = {
         this.configForm         = this.hostJq('#config-form')           .submit(this.onConfigSave.bind(this));
         this.configModal        = this.hostJq('#config-modal');
         this.configModalBody    = this.hostJq('#config-modal-body');
+        this.templateForm       = this.hostJq('#template-form')         .submit(this.onTemplateSave.bind(this));
 
         this.portletBtns
             .on('dragstart', this.onPortletBtnDragStart.bind(this))
+            .on('dragend', this.onPortletBtnDragEnd.bind(this));
+
+        this.templateBtns
+            .on('dragstart', this.onTemplateBtnDragStart.bind(this))
             .on('dragend', this.onPortletBtnDragEnd.bind(this));
 
         this.revisionBtns();
@@ -340,14 +347,20 @@ EditorGUI.prototype = {
     onStoreTemplate: function(e)
     {
         if(this.selectedElm !== null) {
-            // todo editor: define name of template, check if exists, confirm save
-            /*this.openTemplateStoreDialog(
-                this.selectedElm.data('portletid'),
-                this.selectedElm.data('properties')
-            );*/
-            // todo Editor: Namen übergeben
-            this.editor.storeTemplate(this.selectedElm);
+            this.templateModal.modal('show');
         }
+    },
+
+    onTemplateSave: function(e)
+    {
+        if(this.selectedElm !== null) {
+            var templateName = this.hostJq('#template-name').val();
+
+            this.editor.storeTemplate(this.selectedElm, templateName);
+            this.templateModal.modal('hide');
+        }
+
+        e.preventDefault();
     },
 
     onTrash: function(e)
@@ -443,6 +456,18 @@ EditorGUI.prototype = {
     onPortletBtnDragEnd: function(e)
     {
         this.cleanUpDrag();
+    },
+
+    onTemplateBtnDragStart: function (e)
+    {
+        var templateBtn = this.hostJq(e.target).closest('.template-button');
+        var template = this.iframeJq(templateBtn.data('content'));
+
+        this.setDragged(template);
+
+        // firefox needs this
+        e.originalEvent.dataTransfer.effectAllowed = 'move';
+        e.originalEvent.dataTransfer.setData('text/html', '');
     },
 
     onPortletMouseOver: function(e)

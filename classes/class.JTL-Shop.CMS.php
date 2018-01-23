@@ -48,32 +48,42 @@ class CMS
 
     /**
      * @param $pageID - current page ID
+     * @param bool $bRenderPreview
      * @return CMSPage
-     * @throws Exception
      */
-    public function getPage($pageID)
+    public function getPage($pageID, $bRenderPreview = false)
     {
         $pageDB = Shop::DB()->select('tcmspage', 'cIdHash', $pageID, null, null, null, null, false, 'kPage');
 
         if ($pageDB === null) {
             $page          = new CMSPage();
             $page->cIdHash = $pageID;
-            return $page;
+        } else {
+            $page = new CMSPage($pageDB->kPage);
         }
 
-        return new CMSPage($pageDB->kPage);
+        if ($bRenderPreview) {
+            $page->renderPreview();
+        }
+
+        return $page;
     }
 
     /**
      * @param $pageID string
      * @param $revisionID int
+     * @param bool $bRenderPreview
      * @return CMSPage
      */
-    public function getPageRevision($pageID, $revisionID)
+    public function getPageRevision($pageID, $revisionID, $bRenderPreview = false)
     {
         $page          = new CMSPage();
         $page->cIdHash = $pageID;
         $page->loadRevision($revisionID);
+
+        if ($bRenderPreview) {
+            $page->renderPreview();
+        }
 
         return $page;
     }
@@ -87,8 +97,8 @@ class CMS
     }
 
     /**
-     * @param $pageID string
-     * @param $pageData array
+     * @param string $pageID
+     * @param array $pageData
      */
     public function savePage($pageID, $pageData)
     {
@@ -98,16 +108,20 @@ class CMS
         $oCmsPage->save();
     }
 
-    public static function storeTemplate($cTemplateName, $cTemplateData)
+    /**
+     * @param $cTemplateName string
+     * @param $templateData array
+     */
+    public function storeTemplate($cTemplateName, $templateData)
     {
         $oCmsTemplate        = new CMSTemplate();
         $oCmsTemplate->cName = $cTemplateName;
-        $oCmsTemplate->data  = $cTemplateData;
+        $oCmsTemplate->data  = $templateData;
         $oCmsTemplate->save();
     }
 
     /**
-     * @param $pageID string
+     * @param string $pageID
      * @return bool - true if lock was granted
      */
     public function lockPage($pageID)
@@ -164,11 +178,34 @@ class CMS
     }
 
     /**
+     * @param string $cName
+     * @return CMSTemplate
+     * @throws Exception
+     */
+    public function createTemplate($cName)
+    {
+        $oDbTemplate = Shop::DB()->select('tcmstemplate', 'cName', $cName);
+
+        if (!is_object($oDbTemplate)) {
+            throw new Exception("Template name '$cName' could not be found in the database.", 404);
+        }
+
+        return new CMSTemplate($oDbTemplate->kTemplate);
+    }
+
+    /**
      * @return CMSTemplate[]
      */
     public function getTemplates()
     {
-        return Shop::DB()->selectAll('tcmstemplate', [], []);
+        $oDbTemplate_arr = Shop::DB()->selectAll('tcmstemplate', [], []);
+        $oTemplate_arr   = [];
+
+        foreach ($oDbTemplate_arr as $i => $oDbTemplate) {
+            $oTemplate_arr[] = $this->createTemplate($oDbTemplate->cName);
+        }
+
+        return $oTemplate_arr;
     }
 
     /**
@@ -181,6 +218,19 @@ class CMS
         return $this->createPortlet($kPortlet)
             ->setProperties($properties)
             ->getPreviewHtml();
+    }
+
+    /**
+     * @param int $kPortlet
+     * @param array $portletData
+     * @return string
+     */
+    public function getPortletFullPreviewHtml($kPortlet, $portletData)
+    {
+        return $this->createPortlet($kPortlet)
+            ->setProperties($portletData['properties'])
+            ->setSubAreas($portletData['subAreas'])
+            ->getFullPreviewHtml();
     }
 
     /**
@@ -205,6 +255,10 @@ class CMS
             ->getDefaultProps();
     }
 
+    /**
+     * @param $oAccount AdminAccount
+     * @return $this
+     */
     public function setAdminAccount($oAccount)
     {
         $this->oAccount = $oAccount;

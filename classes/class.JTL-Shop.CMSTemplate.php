@@ -15,60 +15,47 @@ class CMSTemplate
     public $kTemplate = 0;
 
     /**
+     * @var string
+     */
+    public $cName = '';
+
+    /**
      * @var array
      */
     public $data = [];
 
     /**
-     * @var array
-     */
-    public $cFinalHtml_arr = null;
-
-    /**
      * @param int $kTemplate
-     * @throws Exception
      */
     public function __construct($kTemplate = 0)
     {
         if ($kTemplate > 0) {
             $oCMSTemplateDB = Shop::DB()->select('tcmstemplate', 'kTemplate', $kTemplate);
 
-            if ($oCMSTemplateDB === null) {
-                throw new Exception('No CMS Template found with the given template id.');
+            if ($oCMSTemplateDB !== null) {
+                $this->kTemplate = $oCMSTemplateDB->kTemplate;
+                $this->cName     = $oCMSTemplateDB->cName;
+                $this->data      = json_decode($oCMSTemplateDB->cJson, true);
             }
-
-            $this->kTemplate     = $oCMSTemplateDB->kPage;
-            $this->data          = json_decode($oCMSTemplateDB->cJson, true);
         }
     }
 
-    /**
-     * Render the final HTML content and stores it in cFinalHtml_arr for each area-id
-     */
-    public function renderFinal()
+    public function getFullPreviewHtml()
     {
-        $this->cFinalHtml_arr = [];
-
-        foreach ($this->data as $areaId => $areaPortlets) {
-            $cHtml = '';
-
-            foreach ($areaPortlets as $portlet) {
-                try {
-                    $cHtml .= CMS::createPortlet($portlet['portletId'])
-                        ->setProperties($portlet['properties'])
-                        ->setSubAreas($portlet['subAreas'])
-                        ->getFinalHtml();
-                } catch (Exception $e) {
-                    $cHtml .= '';
-                }
-            }
-
-            $this->cFinalHtml_arr[$areaId] = $cHtml;
+        try {
+            return CMS::getInstance()
+                ->createPortlet($this->data['portletId'])
+                ->setProperties($this->data['properties'])
+                ->setSubAreas($this->data['subAreas'])
+                ->getFullPreviewHtml();
+        } catch (Exception $e) {
+            // the corresponding portlet of this template could not be created
+            return '';
         }
     }
 
     /**
-     * Save this CMS Template instance to the database
+     * Save this CMS Template to the database
      */
     public function save()
     {
@@ -79,40 +66,22 @@ class CMSTemplate
         );
 
         if ($oCmsTemplateDB === null) {
-            $oCmsTemplateDB = (object)[
+            $oCmsTemplateDB  = (object)[
                 'cName' => $this->cName,
                 'cJson' => json_encode($this->data)
             ];
             $this->kTemplate = Shop::DB()->insert('tcmstemplate', $oCmsTemplateDB);
         } else {
-            $revision = new Revision();
-            $revision->addRevision('cmstempate', (int)$oCmsTemplateDB->kTemplate);
-            $oCmsTemplateDB->cJson         = json_encode($this->data);
-            $oCmsTemplateDB->dLastModified = date('Y-m-d H:i:s');
-            Shop::DB()->update(
-                'tcmstemplate',
-                'cName',
-                $this->cName,
-                $oCmsTemplateDB
-            );
+            $oCmsTemplateDB->cJson = json_encode($this->data);
+            Shop::DB()->update('tcmstemplate', 'cName', $this->cName, $oCmsTemplateDB);
         }
     }
 
     /**
-     * Remove this CMS page instance from the database
+     * Remove this template from the database
      */
     public function remove()
     {
         Shop::DB()->delete('tcmstemplate', 'cName', $this->cName);
-    }
-
-    /**
-     * @return array
-     */
-    public function getRevisions()
-    {
-        $revision = new Revision();
-
-        return $revision->getRevisions('cmstemplate', $this->kTemplate);
     }
 }

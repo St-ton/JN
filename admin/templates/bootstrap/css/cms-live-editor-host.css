@@ -52,7 +52,7 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
     margin-bottom: 15px;
 }
 
-.portlet-button {
+.portlet-button, .template-button {
     margin-right: 15px;
 }
 

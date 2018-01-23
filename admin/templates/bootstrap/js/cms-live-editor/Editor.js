@@ -98,9 +98,9 @@ Editor.prototype = {
         this.io.savePage(success, error);
     },
 
-    storeTemplate: function (portlet)
+    storeTemplate: function (portlet, templateName)
     {
-        this.io.storePortletAsTemplate(portlet, 'neuesTemplate');
+        this.io.storePortletAsTemplate(portlet, templateName);
     },
 
     onOpenKCFinder: function (callback)

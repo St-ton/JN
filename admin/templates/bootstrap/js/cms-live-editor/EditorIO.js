@@ -21,12 +21,12 @@ EditorIO.prototype = {
 
     loadPage: function()
     {
-        ioCall('getCmsPage', [this.cPageIdHash], this.onGetCmsPageResponse.bind(this));
+        ioCall('getCmsPage', [this.cPageIdHash, true], this.onGetCmsPageResponse.bind(this));
     },
 
     loadRevision: function(id)
     {
-        ioCall('getCmsPageRevision', [this.cPageIdHash, id], this.onGetCmsPageResponse.bind(this));
+        ioCall('getCmsPageRevision', [this.cPageIdHash, id, true], this.onGetCmsPageResponse.bind(this));
     },
 
     savePage: function(success, error)
@@ -47,11 +47,15 @@ EditorIO.prototype = {
         //     locallyModified ? JSON.parse(window.localStorage.getItem(this.getPageStorageId())) :
         //     cmsPage         ? cmsPage.data :
         //     {};
-
-        var data = cmsPage ? cmsPage.data : {};
-
-        this.pageFromJson(data);
+        //var data = cmsPage ? cmsPage.data : {};
+        //this.pageFromJson(data);
         //this.gui.setUnsaved(locallyModified);
+
+        $.each(cmsPage.cPreviewHtml_arr, function (areaId, html) {
+            this.gui.iframeJq('#' + areaId).html(html);
+        }.bind(this));
+
+        this.gui.updateDropTargets();
     },
 
     getPageWebStorageLastModified: function()
@@ -155,7 +159,8 @@ EditorIO.prototype = {
         };
 
         while(!elm.is(this.gui.rootAreas)) {
-            var cls = elm.attr('class').split(/\s+/);
+            var clsStr = elm.attr('class');
+            var cls = typeof clsStr === 'string' ? elm.attr('class').split(/\s+/) : [];
 
             for(var i=0; i < cls.length; i++) {
                 var match = cls[i].match(/col-(xs|sm|md|lg)-([0-9]+)/);
@@ -218,6 +223,6 @@ EditorIO.prototype = {
         success = success || this.noop;
         error = error || this.noop;
 
-        ioCall('storeTemplate', [templateName, this.portletToJson(portlet)], success.bind(this), error.bind(this));
+        ioCall('storeCmsTemplate', [templateName, this.portletToJson(portlet)], success.bind(this), error.bind(this));
     },
 };

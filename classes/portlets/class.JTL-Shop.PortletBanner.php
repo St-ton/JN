@@ -14,28 +14,42 @@ class PortletBanner extends CMSPortlet
      */
     public function getButton()
     {
-        return '<div class="text-center"><img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.banner.png" style="width: 98%;filter: grayscale() opacity(60%)"/></div>';
+        return
+            '<div class="text-center">' .
+            '<img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.banner.png" ' .
+            'style="width: 98%; filter: grayscale(50%) opacity(60%)"></div>';
     }
 
     public function getPreviewHtml($renderLinks = false)
     {
-        $zones = !empty($this->properties['zones']) ? json_decode($this->properties['zones']) : '';
         $styleString = $this->getStyleString();
-        if (!empty($this->properties['attr']['src']) && strpos($this->properties['attr']['src'], 'gfx/keinBild.gif') === false) {
-            return '<div class="text-center"' . $styleString . '><img src="' . $this->properties['attr']['src'] . '" style="width: 98%;filter: grayscale() opacity(60%)"/><p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Banner</p></div>';
+        $imgSrc      = PFAD_TEMPLATES . 'Evo/portlets/preview.banner.png';
+
+        if (!empty($this->properties['attr']['src']) &&
+            strpos($this->properties['attr']['src'], 'gfx/keinBild.gif') === false
+        ) {
+            $imgSrc = $this->properties['attr']['src'];
         }
-        return '<div class="text-center"' . $styleString . '><img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.banner.png" style="width: 98%;filter: grayscale() opacity(60%)"/><p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Banner</p></div>';
+
+        return
+            '<div class="text-center" ' . $styleString . '>' .
+            '<img src="' . $imgSrc . '" ' .
+            'style="width: 98%;filter: grayscale(50%) opacity(60%)">' .
+            '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Banner</p>'.
+            '</div>';
     }
 
     public function getFinalHtml()
     {
         $zones = !empty($this->properties['zones']) ? json_decode($this->properties['zones']) : '';
-        $oImageMap = new stdClass();
-        $oImageMap->cTitel    = $this->properties['data']['kImageMap'];
-        $oImageMap->cBildPfad = $this->properties['attr']['src'];
-        $oImageMap->oArea_arr = !empty($zones->oArea_arr) ? $zones->oArea_arr : null;
-        $isFluid   = false;
 
+        $oImageMap = (object)[
+            'cTitel' => $this->properties['data']['kImageMap'],
+            'cBildPfad' => $this->properties['attr']['src'],
+            'oArea_arr' => !empty($zones->oArea_arr) ? $zones->oArea_arr : null,
+        ];
+
+        $isFluid              = false;
         $cBildPfad            = PFAD_ROOT . $this->properties['attr']['src'];
         $oImageMap->cBildPfad = Shop::getURL() . $oImageMap->cBildPfad;
         $cParse_arr           = parse_url($oImageMap->cBildPfad);
@@ -44,18 +58,17 @@ class PortletBanner extends CMSPortlet
         $oImageMap->fWidth    = $width;
         $oImageMap->fHeight   = $height;
         $defaultOptions       = Artikel::getDefaultOptions();
-        $fill = true;
+        $fill                 = true;
 
         if (!empty($oImageMap->oArea_arr)) {
             foreach ($oImageMap->oArea_arr as &$oArea) {
                 $oArea->oArtikel = null;
+
                 if ((int)$oArea->kArtikel > 0) {
                     $oArea->oArtikel = new Artikel();
+
                     if ($fill === true) {
-                        $oArea->oArtikel->fuelleArtikel(
-                            $oArea->kArtikel,
-                            $defaultOptions
-                        );
+                        $oArea->oArtikel->fuelleArtikel($oArea->kArtikel, $defaultOptions);
                     } else {
                         $oArea->oArtikel->kArtikel = $oArea->kArtikel;
                         $oArea->oArtikel->cName    = utf8_encode(
@@ -64,13 +77,14 @@ class PortletBanner extends CMSPortlet
                             )->cName
                         );
                     }
-                    if (strlen($oArea->cTitel) === 0) {
+
+                    if ($oArea->cTitel === '') {
                         $oArea->cTitel = $oArea->oArtikel->cName;
                     }
-                    if (strlen($oArea->cUrl) === 0) {
+                    if ($oArea->cUrl === '') {
                         $oArea->cUrl = $oArea->oArtikel->cURL;
                     }
-                    if (strlen($oArea->cBeschreibung) === 0) {
+                    if ($oArea->cBeschreibung === '') {
                         $oArea->cBeschreibung = $oArea->oArtikel->cKurzBeschreibung;
                     }
                 }
@@ -87,7 +101,7 @@ class PortletBanner extends CMSPortlet
 
     public function getConfigPanelHtml()
     {
-        $oArea_arr = json_decode($this->properties['zones']);
+        $oArea_arr                             = json_decode($this->properties['zones']);
         $this->properties['data']['oArea_arr'] = $oArea_arr->oArea_arr;
 
         return (new JTLSmarty(true))
@@ -101,7 +115,7 @@ class PortletBanner extends CMSPortlet
         return [
             'banner-img' => '',
             'data' => [
-                'kImageMap' => uniqid(),
+                'kImageMap' => uniqid('', false),
                 'oArea_arr' => [],
             ],
             // animation

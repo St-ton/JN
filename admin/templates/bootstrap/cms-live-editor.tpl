@@ -110,9 +110,9 @@
                 </div>
                 <div class="tab-pane" id="templates">
                     {foreach $oTemplate_arr as $oTemplate}
-                        {$oTemplate|@var_dump}
-                        <a href="#" class="portlet-button btn btn-default btn-lg"
-                           title="{$oTemplate->cName}">
+                        <a href="#" class="template-button btn btn-default btn-lg"
+                           data-title="{$oTemplate->cName}"
+                           data-content="{$oTemplate->getFullPreviewHtml()|escape:'htmlall'}">
                             <i class="fa fa-puzzle-piece"></i> {$oTemplate->cName}
                         </a>
                     {/foreach}
@@ -183,6 +183,30 @@
                         Something happened
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div id="template-modal" class="modal fade" tabindex="-1" role="dialog" style="padding-top:25%">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Portlet als Template speichern</h4>
+                </div>
+                <form id="template-form">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="template-name">Template-Name</label>
+                            <input type="text" class="form-control" id="template-name" name="templateName"
+                                   value="Neues Template">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                            <button class="btn btn-primary" id="btn-save-template">Speichern</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

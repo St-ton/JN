@@ -378,6 +378,7 @@
                     });
             }
 
+            this.registerProductActions($('#sidepanel_left'));
             this.registerProductActions($wrapper);
         },
 
@@ -565,30 +566,22 @@
         updateComparelist: function(data) {
             var $badgeUpd = $(this.options.selector.navBadgeUpdate);
 
-            if (data.nCount > 1 && data.cNavBadge.length) {
-                var badge = $(data.cNavBadge);
-                if ($badgeUpd.size() > 0) {
-                    $badgeUpd.replaceWith(badge);
-                } else {
-                    $(this.options.selector.navBadgeAppend).before(badge);
-                }
+            var badge = $(data.cNavBadge);
+            $badgeUpd.replaceWith(badge);
 
-                badge.on('click', '.popup', function (e) {
-                    var url = e.currentTarget.href;
-                    url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
-                    eModal.ajax({
-                        size: 'lg',
-                        url: url,
-                        keyboard: true,
-                        tabindex: -1
-                    });
-                    e.stopPropagation();
-
-                    return false;
+            badge.on('click', '.popup', function (e) {
+                var url = e.currentTarget.href;
+                url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
+                eModal.ajax({
+                    size: 'lg',
+                    url: url,
+                    keyboard: true,
+                    tabindex: -1
                 });
-            } else if ($badgeUpd.size() > 0) {
-                $badgeUpd.remove();
-            }
+                e.stopPropagation();
+
+                return false;
+            });
 
             var $list = $(this.options.selector.boxContainer);
 

@@ -248,19 +248,7 @@
             });
             new function(){
                 var clCount = {if isset($oVergleichsliste->oArtikel_arr)}{$oVergleichsliste->oArtikel_arr|count}{else}0{/if};
-                if (clCount > 1) {
-                    $('.navbar-nav .compare-list-menu .badge em').html(clCount);
-                    $('.navbar-nav .compare-list-menu').removeClass('hidden');
-                    $('section.box-compare .panel-body').removeClass('hidden');
-                } else {
-                    if (clCount == 1) {
-                        $('section.box-compare .panel-body').addClass('hidden');
-                    } else {
-                        $('section.box-compare').html('').addClass('hidden');
-                    }
-                    $('.navbar-nav .compare-list-menu').addClass('hidden');
-                    eModal.close();
-                }
+                $('.navbar-nav .compare-list-menu .badge em').html(clCount);
             }();
         </script>
     {/if}

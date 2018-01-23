@@ -275,12 +275,9 @@ function pushToComparelist($kArtikel)
             ->assign('buttons', $buttons)
             ->fetch('snippets/notification.tpl');
 
-    $oResponse->cNavBadge = '';
-    if ($oResponse->nCount > 1) {
-        $oResponse->cNavBadge = Shop::Smarty()
-                ->assign('Einstellungen', $Einstellungen)
-                ->fetch('layout/header_shop_nav_compare.tpl');
-    }
+    $oResponse->cNavBadge = Shop::Smarty()
+            ->assign('Einstellungen', $Einstellungen)
+            ->fetch('layout/header_shop_nav_compare.tpl');
 
     $boxes = Boxen::getInstance();
     $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
@@ -322,13 +319,11 @@ function removeFromComparelist($kArtikel)
     $oResponse->nType     = 2;
     $oResponse->nCount    = count($_SESSION['Vergleichsliste']->oArtikel_arr);
     $oResponse->cTitle    = Shop::Lang()->get('compare');
-    $oResponse->cNavBadge = '';
 
-    if ($oResponse->nCount > 1) {
-        $oResponse->cNavBadge = Shop::Smarty()
-                ->assign('Einstellungen', $Einstellungen)
-                ->fetch('layout/header_shop_nav_compare.tpl');
-    }
+    $oResponse->cNavBadge = Shop::Smarty()
+            ->assign('Einstellungen', $Einstellungen)
+            ->fetch('layout/header_shop_nav_compare.tpl');
+
 
     $boxes = Boxen::getInstance();
     $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());

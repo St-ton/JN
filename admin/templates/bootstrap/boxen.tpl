@@ -232,6 +232,9 @@
                             <input type="hidden" name="action" value="edit" />
                             <input type="hidden" name="typ" value="{$oEditBox->eTyp}" />
                             <input type="hidden" name="page" value="{$nPage}" />
+                            {if !empty($oEditBox->kBox) && $oEditBox->supportsRevisions === true}
+                                {getRevisions type='box' key=$oEditBox->kBox show=['cTitel', 'cInhalt'] secondary=true data=$revionData}
+                            {/if}
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">

@@ -76,7 +76,7 @@ class Metadata
         'cName'            => 'Name',
         'oHersteller'      => 'Manufacturer',
         'cBildURL'         => 'ImageURL',
-        'oMerkmal'         => 'AttributeValue',
+        'oMerkmalWert'     => 'AttributeValue',
         'oKategorie'       => 'Category',
         'cBrotNavi'        => 'BreadCrumb'
     ];
@@ -419,12 +419,11 @@ class Metadata
                 '',
                 '',
                 0,
-                $this->productFilter->getMetaData()->getBreadCrumbName(),
+                $this->getBreadCrumbName(),
                 $this->productFilter->getFilterURL()->getURL()
             );
         } elseif ($this->productFilter->hasAttributeValue()) {
             $this->attributeValue = new MerkmalWert($this->productFilter->getAttributeValue()->getValue());
-
             if ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
                 $this->setName($this->attributeValue->cWert);
             } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
@@ -438,6 +437,24 @@ class Metadata
                      ->setMetaDescription($this->attributeValue->cMetaDescription)
                      ->setMetaKeywords($this->attributeValue->cMetaKeywords);
             }
+            $this->breadCrumb = createNavigation(
+                '',
+                '',
+                0,
+                $this->getBreadCrumbName(),
+                $this->productFilter->getFilterURL()->getURL()
+            );
+        } elseif ($this->productFilter->hasTag()
+            || $this->productFilter->hasSearchSpecial()
+            || $this->productFilter->hasSearch()
+        ) {
+            $this->breadCrumb = createNavigation(
+                '',
+                '',
+                0,
+                $this->getBreadCrumbName(),
+                $this->productFilter->getFilterURL()->getURL()
+            );
         }
 
         return $this;
@@ -1430,7 +1447,6 @@ class Metadata
         }
     }
 
-
     /**
      * @return int
      */
@@ -1451,6 +1467,28 @@ class Metadata
         }
 
         return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
+    }
+
+    /**
+     * implemented for compatibility reasons
+     * should catch checks like isset($oNavigationsinfo->oHersteller)
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        if (property_exists($this, $name)) {
+            return true;
+        }
+        $mapped = self::getMapping($name);
+        if ($mapped === null) {
+            return false;
+        }
+        $method = 'get' . $mapped;
+        $result = $this->$method();
+
+        return $result !== null;
     }
 
     /**

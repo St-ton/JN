@@ -16,7 +16,7 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     private static $mapping = [
         'cName' => 'Name',
-        'kKey'  => 'Value'
+        'kKey'  => 'ValueCompat'
     ];
 
     /**
@@ -42,10 +42,30 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function setValue($value)
     {
-        $this->value = is_array($value) ? $value : (int)$value;
+        $this->value = is_array($value) ? $value : [(int)$value];
 
         return $this;
     }
+
+    /**
+     * @param array|int|string $value
+     * @return $this
+     */
+    public function setValueCompat($value)
+    {
+        $this->value = [(int)$value];
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getValueCompat()
+    {
+        return is_array($this->value) ? $this->value[0] : $this->value;
+    }
+
 
     /**
      * @param array $languages

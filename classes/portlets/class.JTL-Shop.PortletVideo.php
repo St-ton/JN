@@ -22,7 +22,9 @@ class PortletVideo extends CMSPortlet
      */
     public function getPreviewHtml($renderLinks = false)
     {
-        $this->properties['video-yt-playlist'] = !empty($this->properties['video-yt-playlist']) ? $this->properties['video-yt-playlist'] : $this->properties['video-yt-id'];
+        $this->properties['video-yt-playlist'] = !empty($this->properties['video-yt-playlist'])
+            ? $this->properties['video-yt-playlist']
+            : $this->properties['video-yt-id'];
 
         return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
@@ -36,7 +38,9 @@ class PortletVideo extends CMSPortlet
      */
     public function getFinalHtml()
     {
-        $this->properties['video-yt-playlist'] = !empty($this->properties['video-yt-playlist']) ? $this->properties['video-yt-playlist'] : $this->properties['video-yt-id'];
+        $this->properties['video-yt-playlist'] = !empty($this->properties['video-yt-playlist'])
+            ? $this->properties['video-yt-playlist']
+            : $this->properties['video-yt-id'];
 
         return Shop::Smarty()->assign('properties', $this->properties)
             ->assign('styleString', $this->getStyleString())

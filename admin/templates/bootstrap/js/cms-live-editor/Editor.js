@@ -142,11 +142,6 @@ Editor.prototype = {
         this.gui.configSaveCallback = callback;
     },
 
-    openTemplateStoreDialog: function(portletId, properties)
-    {
-        // todo editor: .tpl in popup laden (zukünftig erweiterbar)
-    },
-
     loadRevision: function(revisionId)
     {
         var self = this;

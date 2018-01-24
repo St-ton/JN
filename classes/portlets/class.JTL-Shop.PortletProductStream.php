@@ -14,16 +14,27 @@ class PortletProductStream extends CMSPortlet
      */
     public function getButton()
     {
-        return '<div class="text-center"><img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.productstream.gallery.png" style="width: 98%;filter: grayscale() opacity(60%)"/></div>';
+        return
+            '<div class="text-center">' .
+            '<img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.productstream.gallery.png" ' .
+            'style="width: 98%;filter: grayscale() opacity(60%)"/>' .
+            '</div>';
     }
 
+    /**
+     * @return string
+     */
     public function getPreviewHtml()
     {
-        $style = $this->properties['listStyle'];
+        $style       = $this->properties['listStyle'];
         $styleString = $this->getStyleString();
 
-        return '<div class="text-center"' . $styleString . '><img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.productstream.' . $style . '.png" style="width: 98%;filter: grayscale() opacity(60%)"/><p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Produktliste</p></div>';
-        //return $this->getFinalHtml();
+        return
+            '<div class="text-center" ' . $styleString . '>' .
+            '<img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.productstream.' . $style . '.png" ' .
+            'style="width: 98%;filter: grayscale(50%) opacity(60%)">' .
+            '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Produktliste</p>' .
+            '</div>';
     }
 
     public function getFinalHtml()
@@ -33,13 +44,13 @@ class PortletProductStream extends CMSPortlet
 
         foreach ($articleIds as $kArtikel) {
             $kArtikel = (int)$kArtikel;
-            $p = new Artikel($kArtikel);
-            $p->fuelleArtikel($kArtikel, null);
-            $oArtikel_arr[] = $p;
+            $oArtikel = new Artikel($kArtikel);
+            $oArtikel->fuelleArtikel($kArtikel, null);
+            $oArtikel_arr[] = $oArtikel;
         }
 
         $style = $this->properties['listStyle'];
-        $grid = 'col-xs-12';
+        $grid  = 'col-xs-12';
 
         if ($style === 'gallery') {
             $grid = 'col-xs-6 col-lg-4';

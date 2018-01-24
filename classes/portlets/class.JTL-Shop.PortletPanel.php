@@ -24,7 +24,7 @@ class PortletPanel extends CMSPortlet
     {
         $this->properties['attr']['class'] .= ' panel panel-'.$this->properties['panel-state'];
 
-        $ret = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>';
+        $ret  = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>';
         $ret .= !empty($this->properties['title-flag']) ? '<div class="panel-heading cle-area"></div>' : '';
         $ret .= '<div class="panel-body cle-area"></div>';
         $ret .= !empty($this->properties['footer-flag']) ? '<div class="panel-footer cle-area"></div>' : '';

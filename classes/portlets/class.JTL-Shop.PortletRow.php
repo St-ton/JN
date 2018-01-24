@@ -29,19 +29,18 @@ class PortletRow extends CMSPortlet
         $layoutXs = explode('+', $this->properties['layout-xs']);
 
         foreach ($layoutLg as $i => $col) {
-            $res     .= '<div class="';
-            $res     .= 'cle-area col-lg-' . $col;
-            if (!empty($layoutMd[$i])){
+            $res .= '<div class="cle-area col-lg-' . $col;
+
+            if (!empty($layoutMd[$i])) {
                 $res .= ' col-md-' . $layoutMd[$i];
             }
-            if (!empty($layoutSm[$i])){
+            if (!empty($layoutSm[$i])) {
                 $res .= ' col-sm-' . $layoutSm[$i];
             }
-            if (!empty($layoutXs[$i])){
+            if (!empty($layoutXs[$i])) {
                 $res .= ' col-xs-' . $layoutXs[$i];
             }
-            $res     .= '">';
-            $res     .= '</div>';
+            $res .= '"></div>';
         }
 
         $res .= '</div>';
@@ -61,19 +60,20 @@ class PortletRow extends CMSPortlet
         $layoutXs = explode('+', $this->properties['layout-xs']);
 
         foreach ($layoutLg as $i => $col) {
-            $subArea  = $this->subAreas[$i];
-            $res     .= '<div class="';
-            $res     .= 'col-lg-' . $col;
-            if (!empty($layoutMd[$i])){
+            $subArea = $this->subAreas[$i];
+            $res    .= '<div class="col-lg-' . $col;
+
+            if (!empty($layoutMd[$i])) {
                 $res .= ' col-md-' . $layoutMd[$i];
             }
-            if (!empty($layoutSm[$i])){
+            if (!empty($layoutSm[$i])) {
                 $res .= ' col-sm-' . $layoutSm[$i];
             }
-            if (!empty($layoutXs[$i])){
+            if (!empty($layoutXs[$i])) {
                 $res .= ' col-xs-' . $layoutXs[$i];
             }
-            $res     .= '">';
+
+            $res .= '">';
 
             foreach ($subArea as $subPortlet) {
                 $portlet        = CMS::getInstance()->createPortlet($subPortlet['portletId'])
@@ -83,7 +83,7 @@ class PortletRow extends CMSPortlet
                 $res           .= $subPortletHtml;
             }
 
-            $res     .= '</div>';
+            $res .= '</div>';
         }
 
         $res .= '</div>';

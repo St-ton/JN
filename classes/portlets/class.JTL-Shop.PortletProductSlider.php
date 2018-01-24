@@ -14,15 +14,23 @@ class PortletProductSlider extends CMSPortlet
      */
     public function getButton()
     {
-        return '<div class="text-center" data-toggle="toggle" title="Artikelslider"><img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.productslider.png" style="width: 98%;filter: grayscale() opacity(60%)"/></div>';
+        return
+            '<div class="text-center" data-toggle="toggle" title="Artikelslider">' .
+            '<img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.productslider.png" ' .
+            'style="width: 98%; filter: grayscale(50%) opacity(60%)">' .
+            '</div>';
     }
 
     public function getPreviewHtml()
     {
         $styleString = $this->getStyleString();
 
-        return '<div class="text-center"' . $styleString . '><img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.productslider.png" style="width: 98%;filter: grayscale() opacity(60%)"/><p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Produktslider</p></div>';
-        //return $this->getFinalHtml();
+        return
+            '<div class="text-center" ' . $styleString . '>' .
+            '<img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.productslider.png" ' .
+            'style="width: 98%; filter: grayscale(50%) opacity(60%)">' .
+            '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Produktslider</p>' .
+            '</div>';
     }
 
     public function getFinalHtml()

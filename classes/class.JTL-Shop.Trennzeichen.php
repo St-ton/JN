@@ -147,15 +147,26 @@ class Trennzeichen
     public static function insertMissingRow($nEinheit, $kSprache)
     {
         // Standardwert [kSprache][nEinheit]
-        $xRowAssoc_arr       = [];
-        $xRowAssoc_arr[1][1] = ['nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.'];
-        $xRowAssoc_arr[1][3] = ['nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.'];
-        $xRowAssoc_arr[2][1] = ['nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.'];
-        $xRowAssoc_arr[2][3] = ['nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.'];
-
+        $xRowAssoc_arr = [];
+        foreach (gibAlleSprachen() as $language) {
+            $xRowAssoc_arr[$language->kSprache][JTL_SEPARATOR_WEIGHT] = [
+                'nDezimalstellen'   => 2,
+                'cDezimalZeichen'   => ',',
+                'cTausenderZeichen' => '.'
+            ];
+            $xRowAssoc_arr[$language->kSprache][JTL_SEPARATOR_LENGTH] = [
+                'nDezimalstellen'   => 2,
+                'cDezimalZeichen'   => ',',
+                'cTausenderZeichen' => '.'
+            ];
+            $xRowAssoc_arr[$language->kSprache][JTL_SEPARATOR_AMOUNT] = [
+                'nDezimalstellen'   => 2,
+                'cDezimalZeichen'   => ',',
+                'cTausenderZeichen' => '.'
+            ];
+        }
         $nEinheit = (int)$nEinheit;
         $kSprache = (int)$kSprache;
-
         if ($nEinheit > 0 && $kSprache > 0) {
             if (!isset($xRowAssoc_arr[$kSprache][$nEinheit])) {
                 $xRowAssoc_arr[$kSprache]            = [];
@@ -165,6 +176,7 @@ class Trennzeichen
                     'cTausenderZeichen' => '.'
                 ];
             }
+            Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
 
             return Shop::DB()->query(
                 "INSERT INTO `ttrennzeichen` 

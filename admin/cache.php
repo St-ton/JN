@@ -158,8 +158,9 @@ switch ($action) {
                     $availableMethods = [];
                     $allMethods       = $cache->checkAvailability();
                     foreach ($allMethods as $_name => $_status) {
-                        if (isset($_status['available'], $_status['functional']) &&
-                            $_status['available'] === true && $_status['functional'] === true
+                        if (isset($_status['available'], $_status['functional'])
+                            && $_status['available'] === true
+                            && $_status['functional'] === true
                         ) {
                             $availableMethods[] = $_name;
                         }
@@ -392,9 +393,9 @@ $allMethods          = $cache->checkAvailability();
 $availableMethods    = [];
 $nonAvailableMethods = [];
 foreach ($allMethods as $_name => $_status) {
-    if (isset($_status['available'], $_status['functional']) &&
-        $_status['available'] === true &&
-        $_status['functional'] === true
+    if (isset($_status['available'], $_status['functional'])
+        && $_status['available'] === true
+        && $_status['functional'] === true
     ) {
         $availableMethods[] = $_name;
     } elseif ($_name !== 'null') {

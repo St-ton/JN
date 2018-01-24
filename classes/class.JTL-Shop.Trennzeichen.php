@@ -127,9 +127,9 @@ class Trennzeichen
         if ($nEinheit > 0 && $kSprache > 0) {
             $oObj = self::getUnitObject($nEinheit, $kSprache);
             if (isset($oObj->kTrennzeichen) && $oObj->kTrennzeichen > 0) {
-                return ($fAmount >= 0) ?
-                    number_format($fAmount, $oObj->nDezimalstellen, $oObj->cDezimalZeichen, $oObj->cTausenderZeichen) :
-                    new self($oObj->kTrennzeichen);
+                return $fAmount >= 0
+                    ? number_format($fAmount, $oObj->nDezimalstellen, $oObj->cDezimalZeichen, $oObj->cTausenderZeichen)
+                    : new self($oObj->kTrennzeichen);
             }
             self::insertMissingRow($nEinheit, $kSprache);
         }
@@ -372,15 +372,13 @@ class Trennzeichen
     {
         $oEinstellungen = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_ARTIKELUEBERSICHT]);
         $oSprache_arr   = gibAlleSprachen();
-
         if (is_array($oSprache_arr) && count($oSprache_arr) > 0) {
             Shop::DB()->query("TRUNCATE ttrennzeichen", 3);
-            $nEinheit_arr = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT];
+            $nEinheit_arr = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH];
             foreach ($oSprache_arr as $oSprache) {
                 foreach ($nEinheit_arr as $nEinheit) {
                     $oTrennzeichen = new self();
-                    $oTrennzeichen->setSprache($oSprache->kSprache);
-                    $oTrennzeichen->setEinheit($nEinheit);
+                    $oTrennzeichen->setSprache($oSprache->kSprache)->setEinheit($nEinheit);
 
                     if ($nEinheit === JTL_SEPARATOR_WEIGHT) {
                         if (isset($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl'])

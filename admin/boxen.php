@@ -16,7 +16,7 @@ $bOk      = false;
 if (isset($_REQUEST['page'])) {
     $nPage = (int)$_REQUEST['page'];
 }
-if (isset($_REQUEST['action']) && validateToken()) {
+if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
             if (!empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0) {
@@ -30,6 +30,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
                 $cHinweis = $cnt . ' Box(en) wurde(n) erfolgreich gel&ouml;scht.';
             }
             break;
+
         case 'new':
             $kBox       = $_REQUEST['item'];
             $ePosition  = $_REQUEST['position'];
@@ -68,7 +69,15 @@ if (isset($_REQUEST['action']) && validateToken()) {
         case 'edit_mode':
             $kBox = (int)$_REQUEST['item'];
             $oBox = $oBoxen->holeBox($kBox);
+
+            // revisions need this as a different formatted array
+            $revionData = [];
+            foreach ($oBox->oSprache_arr as $lang) {
+                $revionData[$lang->cISO] = $lang;
+            }
+
             $smarty->assign('oEditBox', $oBox)
+                   ->assign('revionData', $revionData)
                    ->assign('oLink_arr', $oBoxen->gibLinkGruppen());
             break;
 
@@ -77,6 +86,11 @@ if (isset($_REQUEST['action']) && validateToken()) {
             $cTitel = $_REQUEST['boxtitle'];
             $eTyp   = $_REQUEST['typ'];
             if ($eTyp === 'text') {
+                $oldBox = $oBoxen->holeBox($kBox);
+                if ($oldBox->supportsRevisions === true) {
+                    $revision = new Revision();
+                    $revision->addRevision('box', $kBox, true);
+                }
                 $bOk = $oBoxen->bearbeiteBox($kBox, $cTitel);
                 if ($bOk) {
                     foreach ($_REQUEST['title'] as $cISO => $cTitel) {

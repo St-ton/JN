@@ -698,7 +698,6 @@ class Bestellung
                                 $oPosition->bAusgeliefert = true;
                             }
                         }
-                        $this->oLieferschein_arr[] = $_lieferschein;
                     }
                     unset($oPosition);
                     // Charge, MDH & Seriennummern

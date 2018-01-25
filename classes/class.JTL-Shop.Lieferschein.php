@@ -91,7 +91,12 @@ class Lieferschein
         if ($oObj !== null && $oObj->kLieferschein > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+                $setter = 'set' . substr($cMember, 1);
+                if (is_callable([$this, $setter])) {
+                    $this->$setter($oObj->$cMember);
+                } else {
+                    $this->$cMember = $oObj->$cMember;
+                }
             }
 
             $kLieferscheinPos_arr = Shop::DB()->selectAll('tlieferscheinpos', 'kLieferschein', $kLieferschein, 'kLieferscheinPos');
@@ -140,7 +145,7 @@ class Lieferschein
         $oObj->nFulfillment     = $this->nFulfillment;
         $oObj->nStatus          = $this->nStatus;
         $oObj->dErstellt        = $this->dErstellt;
-        $oObj->bEmailVerschickt = $this->bEmailVerschickt;
+        $oObj->bEmailVerschickt = $this->bEmailVerschickt ? 1 : 0;
         $kPrim                  = Shop::DB()->insert('tlieferschein', $oObj);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -163,7 +168,7 @@ class Lieferschein
         $upd->nFulfillment     = $this->nFulfillment;
         $upd->nStatus          = $this->nStatus;
         $upd->dErstellt        = $this->dErstellt;
-        $upd->bEmailVerschickt = $this->bEmailVerschickt;
+        $upd->bEmailVerschickt = $this->bEmailVerschickt ? 1 : 0;
 
         return Shop::DB()->update('tlieferschein', 'kLieferschein', (int)$this->kLieferschein, $upd);
     }
@@ -323,7 +328,7 @@ class Lieferschein
     }
 
     /**
-     * @return string
+     * @return bool
      */
     public function getEmailVerschickt()
     {

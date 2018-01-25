@@ -324,7 +324,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     ORDER BY nSort ASC", 2
             );
             if (!is_array($oItem_arr)) {
-                return false;
+                return [];
             }
             $oItemEx_arr = [];
             foreach ($oItem_arr as &$oItem) {

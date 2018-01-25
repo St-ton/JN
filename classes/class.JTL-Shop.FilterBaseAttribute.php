@@ -93,8 +93,10 @@ class FilterBaseAttribute extends AbstractFilter
             if (strlen($oMerkmalWert->cWert) > 0) {
                 if (!empty($this->getName())) {
                     $this->setName($oMerkmalWert->cName . ': ' . $oMerkmalWert->cWert);
-                } elseif (isset($oMerkmalWert->cMMName) && strlen($oMerkmalWert->cMMName) > 0) {
+                } elseif (!empty($oMerkmalWert->cMMName)) {
                     $this->setName($oMerkmalWert->cMMName . ': ' . $oMerkmalWert->cWert);
+                } elseif (!empty($oMerkmalWert->cName)) {
+                    $this->setName($oMerkmalWert->cName . ': ' . $oMerkmalWert->cWert);
                 }
                 if (count($oMerkmalWert_arr) > 0) {
                     foreach ($oMerkmalWert_arr as $oTmpMerkmal) {

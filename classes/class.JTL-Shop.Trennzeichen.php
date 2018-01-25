@@ -202,7 +202,13 @@ class Trennzeichen
         if (($oObjAssoc_arr = Shop::Cache()->get($cacheID)) === false) {
             $oObjAssoc_arr = [];
             if ($kSprache > 0) {
-                $oObjTMP_arr = Shop::DB()->selectAll('ttrennzeichen', 'kSprache', $kSprache, 'kTrennzeichen', 'nEinheit');
+                $oObjTMP_arr = Shop::DB()->selectAll(
+                    'ttrennzeichen',
+                    'kSprache',
+                    $kSprache,
+                    'kTrennzeichen',
+                    'nEinheit'
+                );
                 foreach ($oObjTMP_arr as $oObjTMP) {
                     if (isset($oObjTMP->kTrennzeichen) && $oObjTMP->kTrennzeichen > 0) {
                         $oTrennzeichen = new self($oObjTMP->kTrennzeichen);
@@ -313,7 +319,7 @@ class Trennzeichen
      */
     public function setDezimalZeichen($cDezimalZeichen)
     {
-        $this->cDezimalZeichen = Shop::DB()->escape($cDezimalZeichen);
+        $this->cDezimalZeichen = $cDezimalZeichen;
 
         return $this;
     }
@@ -324,7 +330,7 @@ class Trennzeichen
      */
     public function setTausenderZeichen($cTausenderZeichen)
     {
-        $this->cTausenderZeichen = Shop::DB()->escape($cTausenderZeichen);
+        $this->cTausenderZeichen = $cTausenderZeichen;
 
         return $this;
     }
@@ -366,7 +372,7 @@ class Trennzeichen
      */
     public function getDezimalZeichen()
     {
-        return $this->cDezimalZeichen;
+        return htmlentities($this->cDezimalZeichen);
     }
 
     /**
@@ -374,7 +380,7 @@ class Trennzeichen
      */
     public function getTausenderZeichen()
     {
-        return $this->cTausenderZeichen;
+        return htmlentities($this->cTausenderZeichen);
     }
 
     /**
@@ -385,7 +391,7 @@ class Trennzeichen
         $oEinstellungen = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_ARTIKELUEBERSICHT]);
         $oSprache_arr   = gibAlleSprachen();
         if (is_array($oSprache_arr) && count($oSprache_arr) > 0) {
-            Shop::DB()->query("TRUNCATE ttrennzeichen", 3);
+            Shop::DB()->query('TRUNCATE ttrennzeichen', 3);
             $nEinheit_arr = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH];
             foreach ($oSprache_arr as $oSprache) {
                 foreach ($nEinheit_arr as $nEinheit) {

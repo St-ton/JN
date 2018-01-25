@@ -16,7 +16,7 @@
                 {assign var=maxItems value=$oBox->nAnzeigen}
             {/if}
             {foreach name=wunschzettel from=$wishlistItems item=oWunschlistePos}
-                <tr class="item" data-id="{$oArtikel->kArtikel}">
+                <tr class="item" data-id="{$oWunschlistePos->Artikel->kArtikel}">
                     {if (isset($Boxen.Wunschliste->nBilderAnzeigen) && $Boxen.Wunschliste->nBilderAnzeigen === 'Y') || (isset($oBox) && $oBox->nBilderAnzeigen === 'Y')}
                         <td>
                             <a href="{$oWunschlistePos->Artikel->cURLFull}"

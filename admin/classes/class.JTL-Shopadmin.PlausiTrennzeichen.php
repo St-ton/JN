@@ -19,7 +19,7 @@ class PlausiTrennzeichen extends Plausi
         if (count($this->xPostVar_arr) === 0) {
             return false;
         }
-        $nEinheit_arr = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT];
+        $nEinheit_arr = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_LENGTH, JTL_SEPARATOR_AMOUNT];
         foreach ($nEinheit_arr as $nEinheit) {
             // Anzahl Dezimalstellen
             $idx = 'nDezimal_' . $nEinheit;

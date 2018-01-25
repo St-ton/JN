@@ -352,10 +352,11 @@ class Status
         $fNewVersions = false;
         // get installed plugins from DB
         $oPluginsDB = Shop::DB()->query('SELECT `cVerzeichnis`, `nVersion` FROM `tplugin`', 2);
-        if (1 > count($oPluginsDB)) {
+        if (!is_array($oPluginsDB) || 1 > count($oPluginsDB)) {
 
             return false; // there are no plugins installed
         }
+        $vPluginsDB = [];
         foreach ($oPluginsDB as $oElement) {
             $vPluginsDB[$oElement->cVerzeichnis] = $oElement->nVersion;
         }

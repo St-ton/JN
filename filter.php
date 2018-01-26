@@ -57,7 +57,7 @@ if ($pages->AktuelleSeite > 0 && $pages->MaxSeiten > 0
 doMainwordRedirect($NaviFilter, $oSuchergebnisse->getProductCount(), true);
 // Bestsellers
 if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-    $productsIDs = $oSuchergebnisse->getProducts()->elemente->map(function ($article) {
+    $productsIDs = $oSuchergebnisse->getProducts()->map(function ($article) {
         return (int)$article->kArtikel;
     });
     $limit       = isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])
@@ -74,7 +74,7 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
         $limit,
         $minsells
     );
-    $products = $oSuchergebnisse->getProducts()->elemente->getItems();
+    $products = $oSuchergebnisse->getProducts()->getItems();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
 $smarty->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']))
@@ -92,7 +92,7 @@ if (!isset($_SESSION['ArtikelProSeite'])
     );
 }
 // Verfügbarkeitsbenachrichtigung pro Artikel
-$oSuchergebnisse->getProducts()->elemente->transform(function ($article) use ($Einstellungen) {
+$oSuchergebnisse->getProducts()->transform(function ($article) use ($Einstellungen) {
     $article->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
         $article,
         $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
@@ -101,7 +101,7 @@ $oSuchergebnisse->getProducts()->elemente->transform(function ($article) use ($E
     return $article;
 });
 
-if ($oSuchergebnisse->getProducts()->elemente->count() === 0) {
+if ($oSuchergebnisse->getProducts()->count() === 0) {
     if ($NaviFilter->hasCategory()) {
         // hole alle enthaltenen Kategorien
         $KategorieInhalt                  = new stdClass();
@@ -178,7 +178,7 @@ $smarty->assign(
 )->assign(
     'meta_description',
     $oNavigationsinfo->generateMetaDescription(
-        $oSuchergebnisse->getProducts()->elemente->getItems(),
+        $oSuchergebnisse->getProducts()->getItems(),
         $oSuchergebnisse,
         $oGlobaleMetaAngabenAssoc_arr,
         $AktuelleKategorie
@@ -186,7 +186,7 @@ $smarty->assign(
 )->assign(
     'meta_keywords',
     $oNavigationsinfo->generateMetaKeywords(
-        $oSuchergebnisse->getProducts()->elemente->getItems(),
+        $oSuchergebnisse->getProducts()->getItems(),
         $AktuelleKategorie
     )
 );

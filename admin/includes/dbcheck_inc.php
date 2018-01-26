@@ -61,7 +61,7 @@ function getDBStruct($extended = false)
                 if (version_compare($mysqlVersion->innodb->version, '5.6') >= 0) {
                     $cDBStruct_arr[$cTable]->Locked = isset($dbLocked[$cTable]) ? $dbLocked[$cTable] : 0;
                 } else {
-                    $cDBStruct_arr[$cTable]->Locked = strpos(':Migrating', $oData->TABLE_COMMENT) !== false ? 1 : 0;
+                    $cDBStruct_arr[$cTable]->Locked = strpos($oData->TABLE_COMMENT, ':Migrating') !== false ? 1 : 0;
                 }
             } else {
                 $cDBStruct_arr[$cTable] = [];

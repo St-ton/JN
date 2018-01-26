@@ -17,7 +17,7 @@
     {/if}
     <div id="pageCheck">
         {if $cDBFileStruct_arr|@count > 0}
-            {if $engineUpdate !== null}
+            {if isset($engineUpdate)}
                 {include file='tpl_inc/dbcheck_engineupdate.tpl'}
             {else}
                 <div class="alert alert-info"><strong>Anzahl Tabellen:</strong> {$cDBFileStruct_arr|@count}<br /><strong>Anzahl modifizierter Tabellen:</strong> {$cDBError_arr|@count}</div>

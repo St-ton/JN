@@ -34,12 +34,40 @@ class DBMigrationHelper
                     WHERE `COLLATION_NAME` = 'utf8_unicode_ci'",
                 NiceDB::RET_SINGLE_OBJECT
             );
+            $innodbPath    = Shop::DB()->query('SELECT @@innodb_data_file_path AS path', NiceDB::RET_SINGLE_OBJECT);
+            $innodbSize    = 'auto';
+
+            if ($innodbPath && strpos(strtolower($innodbPath->path), 'autoextend') === false) {
+                $innodbSize = 0;
+                $paths      = explode(';', $innodbPath->path);
+                foreach ($paths as $path) {
+                    if (preg_match('/:([0-9]+)([MGTKmgtk]+)/', $path, $hits)) {
+                        switch (strtoupper($hits[2])) {
+                            case 'T':
+                                $innodbSize += $hits[1] * 1024 * 1024 * 1024 * 1024;
+                                break;
+                            case 'G':
+                                $innodbSize += $hits[1] * 1024 * 1024 * 1024;
+                                break;
+                            case 'M':
+                                $innodbSize += $hits[1] * 1024 * 1024;
+                                break;
+                            case 'K':
+                                $innodbSize += $hits[1] * 1024;
+                                break;
+                            default:
+                                $innodbSize += $hits[1];
+                        }
+                    }
+                }
+            }
 
             $versionInfo->server = Shop::DB()->info();
             $versionInfo->innodb = new stdClass();
 
             $versionInfo->innodb->support = $innodbSupport && in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT']);
             $versionInfo->innodb->version = Shop::DB()->query("SHOW VARIABLES LIKE 'innodb_version'", NiceDB::RET_SINGLE_OBJECT)->Value;
+            $versionInfo->innodb->size    = $innodbSize;
             $versionInfo->collation_utf8  = $utf8Support && strtolower($utf8Support->IS_COMPILED) === 'yes';
         }
 
@@ -156,7 +184,7 @@ class DBMigrationHelper
         if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
             $oTable = self::getTable($cTable);
 
-            return strpos(':Migrating', $oTable->TABLE_COMMENT) !== false ? true : false;
+            return strpos($oTable->TABLE_COMMENT, ':Migrating') !== false ? true : false;
         } else {
             $tableStatus = Shop::DB()->queryPrepared(
                 "SHOW OPEN TABLES

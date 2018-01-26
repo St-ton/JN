@@ -30,6 +30,13 @@
             {/if}
         </div>
     {/if}
+    {if $DB_Version->innodb->size !== 'auto' && $engineUpdate->dataSize > $DB_Version->innodb->size}
+        <div class="alert alert-warning">
+            <h3 class="panel-title">Nicht genügend Platz im InnoDB-Tablespace!</h3>
+            Im InnoDB-Tablespace Ihrer Datenbank stehen offensichtlich nur {$DB_Version->innodb->size|formatSize:"%.0f"|upper|strip:"&nbsp;"} für Daten zur Verfügung.
+            Das wird für die zu migrierende Datenmenge u.U. nicht ausreichen! Bitte stellen Sie sicher, dass genügend Platz im InnoDB-Tablespace zur Verfügung steht.
+        </div>
+    {/if}
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Struktur-Migration f&uuml;r {$engineUpdate->tableCount} Tabellen</h3>
@@ -100,6 +107,18 @@
                                         <input id="update_auto_wartungsmodus_reject" class="form-control" type="checkbox" name="update_auto_wartungsmodus_reject" value="1" required>
                                     </span>
                                 </div>
+                                {/if}
+                                {if $DB_Version->innodb->size !== 'auto' && $engineUpdate->dataSize > $DB_Version->innodb->size}
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <label for="update_auto_size_skip">Ich habe sichergestellt, dass genügend Platz im InnoDB-Tablespace zur Verfügung steht!</label>
+                                    </span>
+                                        <span class="input-group-wrap">
+                                        <input id="update_auto_size_skip" class="form-control" type="checkbox" name="update_auto_size_skip" value="1" required>
+                                    </span>
+                                </div>
+                                {else}
+                                <input id="update_auto_size" type="hidden" name="update_auto_size" value="1" >
                                 {/if}
                             </div>
                         </div>
@@ -237,7 +256,8 @@
             });
         $('form', '#update_automatic').on('submit', function (e) {
             if ($('#update_auto_backup').is(':checked')
-                && ($('#update_auto_wartungsmodus_reject').is(':checked') || parseInt($('#update_auto_wartungsmodus').val()) === 1)) {
+                && ($('#update_auto_wartungsmodus_reject').is(':checked') || parseInt($('#update_auto_wartungsmodus').val()) === 1)
+                && ($('#update_auto_size_skip').is(':checked') || parseInt($('#update_auto_size').val()) === 1)) {
                 showModalWait('Starten der automatischen Migration...', {/literal}{$engineUpdate->tableCount}{literal} + 1);
                 doAutoMigration('start');
             } else {

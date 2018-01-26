@@ -1,5 +1,12 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
+/**
+ * Class ProductFilterSearchResults
+ */
 class ProductFilterSearchResults
 {
     use MagicCompatibilityTrait;
@@ -557,5 +564,23 @@ class ProductFilterSearchResults
         $this->error = $error;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllFilterOptions()
+    {
+        return [
+            'manufacturerFilterOptions'  => $this->getManufacturerFilterOptions(),
+            'ratingFilterOptions'        => $this->getRatingFilterOptions(),
+            'tagFilterOptions'           => $this->getTagFilterOptions(),
+            'attributeFilterOptions'     => $this->getAttributeFilterOptions(),
+            'priceRangeFilterOptions'    => $this->getPriceRangeFilterOptions(),
+            'categoryFilterOptions'      => $this->getCategoryFilterOptions(),
+            'searchFilterOptions'        => $this->getSearchFilterOptions(),
+            'searchSpecialFilterOptions' => $this->getSearchSpecialFilterOptions(),
+            'customFilterOptions'        => $this->getCustomFilterOptions()
+        ];
     }
 }

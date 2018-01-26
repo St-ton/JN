@@ -15,21 +15,25 @@ function getDBStruct($extended = false)
         'extended' => null,
     ];
 
-    $dbLocked = [];
-    $database = Shop::DB()->getConfig()['database'];
+    $dbLocked     = [];
+    $database     = Shop::DB()->getConfig()['database'];
+    $mysqlVersion = DBMigrationHelper::getMySQLVersion();
 
     if ($extended) {
         $cDBStruct_arr =& $dbStruct['extended'];
-        $dbStatus      = Shop::DB()->queryPrepared(
-            "SHOW OPEN TABLES
-                WHERE `Database` LIKE :schema", [
-                'schema' => $database,
-            ], 2
-        );
-        if ($dbStatus) {
-            foreach ($dbStatus as $oStatus) {
-                if ((int)$oStatus->In_use > 0) {
-                    $dbLocked[$oStatus->Table] = 1;
+
+        if (version_compare($mysqlVersion->innodb->version, '5.6') >= 0) {
+            $dbStatus = Shop::DB()->queryPrepared(
+                "SHOW OPEN TABLES
+                    WHERE `Database` LIKE :schema", [
+                        'schema' => $database,
+                    ], 2
+            );
+            if ($dbStatus) {
+                foreach ($dbStatus as $oStatus) {
+                    if ((int)$oStatus->In_use > 0) {
+                        $dbLocked[$oStatus->Table] = 1;
+                    }
                 }
             }
         }
@@ -39,34 +43,39 @@ function getDBStruct($extended = false)
 
     if ($cDBStruct_arr === null) {
         $oData_arr = Shop::DB()->queryPrepared(
-            "SELECT `TABLE_NAME`, `ENGINE`, TABLE_COLLATION, TABLE_ROWS, DATA_LENGTH + INDEX_LENGTH AS DATA_SIZE
-                FROM information_schema.tables
-                WHERE TABLE_SCHEMA = :schema
-                    AND TABLE_NAME NOT LIKE 'xplugin_%'
+            "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_ROWS`, `TABLE_COMMENT`, `DATA_LENGTH` + `INDEX_LENGTH` AS DATA_SIZE
+                FROM information_schema.TABLES
+                WHERE `TABLE_SCHEMA` = :schema
+                    AND `TABLE_NAME` NOT LIKE 'xplugin_%'
                 ORDER BY `TABLE_NAME`", [
-                'schema' => $database
-            ], 2
+                    'schema' => $database
+                ], 2
         );
         foreach ($oData_arr as $oData) {
             $cTable = $oData->TABLE_NAME;
 
             if ($extended) {
                 $cDBStruct_arr[$cTable]          = $oData;
-                $cDBStruct_arr[$cTable]->Locked  = isset($dbLocked[$cTable]) ? $dbLocked[$cTable] : 0;
                 $cDBStruct_arr[$cTable]->Columns = [];
+
+                if (version_compare($mysqlVersion->innodb->version, '5.6') >= 0) {
+                    $cDBStruct_arr[$cTable]->Locked = isset($dbLocked[$cTable]) ? $dbLocked[$cTable] : 0;
+                } else {
+                    $cDBStruct_arr[$cTable]->Locked = strpos(':Migrating', $oData->TABLE_COMMENT) !== false ? 1 : 0;
+                }
             } else {
                 $cDBStruct_arr[$cTable] = [];
             }
 
             $oCol_arr = Shop::DB()->queryPrepared(
-                "SELECT `COLUMN_NAME`, DATA_TYPE, COLUMN_TYPE, CHARACTER_SET_NAME, COLLATION_NAME
-                    FROM information_schema.columns
-                    WHERE TABLE_SCHEMA = :schema
-                        AND TABLE_NAME = :table
-                    ORDER BY ORDINAL_POSITION", [
-                    'schema' => $database,
-                    'table'  => $cTable,
-                ], 2
+                "SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `CHARACTER_SET_NAME`, `COLLATION_NAME`
+                    FROM information_schema.COLUMNS
+                    WHERE `TABLE_SCHEMA` = :schema
+                        AND `TABLE_NAME` = :table
+                    ORDER BY `ORDINAL_POSITION`", [
+                        'schema' => $database,
+                        'table'  => $cTable,
+                    ], 2
             );
             if ($oCol_arr !== false) {
                 foreach ($oCol_arr as $oCol) {
@@ -206,6 +215,7 @@ function doEngineUpdateScript($fileName, $shopTables)
 
     $database = Shop::DB()->getConfig()['database'];
     $host     = Shop::DB()->getConfig()['host'];
+    $mysqlVer = DBMigrationHelper::getMySQLVersion();
 
     $result  = '-- ' . $fileName . $nl;
     $result .= '-- ' . $nl;
@@ -222,8 +232,21 @@ function doEngineUpdateScript($fileName, $shopTables)
 
     $oTable_arr = DBMigrationHelper::getTablesNeedMigration();
     foreach ($oTable_arr as $oTable) {
+        $fulltextSQL = [];
+
         if (!in_array($oTable->TABLE_NAME, $shopTables)) {
             continue;
+        }
+
+        if (version_compare($mysqlVer->innodb->version, '5.6') < 0) {
+            // Fulltext indizes are not supported for innoDB on MySQL < 5.6
+            $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($oTable->TABLE_NAME);
+
+            if ($fulltextIndizes) {
+                foreach ($fulltextIndizes as $fulltextIndex) {
+                    $fulltextSQL[] = "ALTER TABLE `{$oTable->TABLE_NAME}` DROP KEY `{$fulltextIndex->INDEX_NAME}`";
+                }
+            }
         }
 
         $result .= "$nl--$nl";
@@ -236,6 +259,10 @@ function doEngineUpdateScript($fileName, $shopTables)
             $result .= "-- update collation for {$oTable->TABLE_NAME}$nl";
         }
         $result .= "--$nl";
+
+        if (count($fulltextSQL) > 0) {
+            $result .= implode(";$nl", $fulltextSQL) . ";$nl";
+        }
         $result .= DBMigrationHelper::sqlMoveToInnoDB($oTable) . ";$nl";
 
         $sql = DBMigrationHelper::sqlConvertUTF8($oTable, $nl);
@@ -245,6 +272,17 @@ function doEngineUpdateScript($fileName, $shopTables)
             $result .= "--$nl";
             $result .= "$sql;$nl";
         }
+    }
+
+    $result .= $nl;
+
+    if (version_compare($mysqlVer->innodb->version, '5.6') < 0) {
+        // Fulltext search is not available on MySQL < 5.6
+        $result .= "--$nl";
+        $result .= "-- Fulltext search is not available on MySQL < 5.6$nl";
+        $result .= "--$nl";
+        $result .= "UPDATE `teinstellungen` SET `cWert` = 'N' WHERE `cName` = 'suche_fulltext';$nl";
+        $result .= $nl;
     }
 
     return $result;
@@ -259,9 +297,10 @@ function doEngineUpdateScript($fileName, $shopTables)
  */
 function doMigrateToInnoDB_utf8($status = 'start', $table = '', $step = 1, $exclude = [])
 {
-    $table  = StringHandler::filterXSS($table);
-    $step   = (int)$step;
-    $result = new stdClass();
+    $mysqlVersion = DBMigrationHelper::getMySQLVersion();
+    $table        = StringHandler::filterXSS($table);
+    $step         = (int)$step;
+    $result       = new stdClass();
 
     switch (strtolower($status)) {
         case 'start':
@@ -288,12 +327,26 @@ function doMigrateToInnoDB_utf8($status = 'start', $table = '', $step = 1, $excl
                 $oTable = DBMigrationHelper::getTable($table);
                 if (is_object($oTable) && DBMigrationHelper::isTableNeedMigration($oTable) && !in_array($oTable->TABLE_NAME, $exclude)) {
                     if (!DBMigrationHelper::isTableInUse($table)) {
+                        if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
+                            // If MySQL version is lower than 5.6 use alternative lock method and delete all fulltext indexes because these are not supported
+                            Shop::DB()->executeQuery(DBMigrationHelper::sqlAddLockInfo($oTable), 10);
+                            $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($oTable->TABLE_NAME);
+
+                            if ($fulltextIndizes) {
+                                foreach ($fulltextIndizes as $fulltextIndex) {
+                                    Shop::DB()->executeQuery("ALTER TABLE `{$oTable->TABLE_NAME}` DROP KEY `{$fulltextIndex->INDEX_NAME}`", 10);
+                                }
+                            }
+                        }
                         if (Shop::DB()->executeQuery(DBMigrationHelper::sqlMoveToInnoDB($oTable), 10)) {
                             $result->nextTable = $table;
                             $result->nextStep  = 2;
                             $result->status    = 'migrate';
                         } else {
                             $result->status = 'failure';
+                        }
+                        if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
+                            Shop::DB()->executeQuery(DBMigrationHelper::sqlClearLockInfo($oTable), 10);
                         }
                     } else {
                         $result->status = 'in_use';
@@ -355,6 +408,11 @@ function doMigrateToInnoDB_utf8($status = 'start', $table = '', $step = 1, $excl
 
             // Clear special category session array
             unset($_SESSION['oKategorie_arr_new']);
+
+            // Reset Fulltext search if version is lower than 5.6
+            if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
+                Shop::DB()->executeQuery("UPDATE `teinstellungen` SET `cWert` = 'N' WHERE `cName` = 'suche_fulltext'", 10);
+            }
 
             $result->nextTable = '';
             $result->status    = 'finished';

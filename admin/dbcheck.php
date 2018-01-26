@@ -34,6 +34,7 @@ if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 's
 $cDBStruct_arr = getDBStruct(true);
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
+    CONF_ARTIKELUEBERSICHT,
 ]);
 
 if (!empty($_POST['action']) && !empty($_POST['check'])) {
@@ -55,6 +56,10 @@ if (count($cDBError_arr) > 0) {
     if (count($cEngineError) > 5) {
         $engineUpdate = determineEngineUpdate($cDBStruct_arr);
     }
+
+    $smarty->assign('DB_Version', DBMigrationHelper::getMySQLVersion())
+           ->assign('FulltextIndizes', DBMigrationHelper::getFulltextIndizes())
+           ->assign('engineUpdate', $engineUpdate);
 }
 
 $smarty->assign('cFehler', $cFehler)
@@ -63,7 +68,6 @@ $smarty->assign('cFehler', $cFehler)
        ->assign('cDBError_arr', $cDBError_arr)
        ->assign('JTL_VERSION', JTL_VERSION)
        ->assign('maintenanceResult', $maintenanceResult)
-       ->assign('engineUpdate', $engineUpdate)
        ->assign('scriptGenerationAvailable', defined('ADMIN_MIGRATION') && ADMIN_MIGRATION)
        ->assign('tab', isset($_REQUEST['tab']) ? StringHandler::filterXSS($_REQUEST['tab']) : '')
        ->assign('Einstellungen', $Einstellungen)

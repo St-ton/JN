@@ -14,6 +14,39 @@ class DBMigrationHelper
     const FAILURE = 'failure';
 
     /**
+     * @return stdClass
+     */
+    public static function getMySQLVersion()
+    {
+        static $versionInfo = null;
+
+        if ($versionInfo === null) {
+            $versionInfo = new stdClass();
+
+            $innodbSupport = Shop::DB()->query(
+                "SELECT `SUPPORT`
+                    FROM information_schema.ENGINES
+                    WHERE `ENGINE` = 'InnoDB'",
+                NiceDB::RET_SINGLE_OBJECT
+            );
+            $utf8Support   = Shop::DB()->query(
+                "SELECT `IS_COMPILED` FROM information_schema.COLLATIONS
+                    WHERE `COLLATION_NAME` = 'utf8_unicode_ci'",
+                NiceDB::RET_SINGLE_OBJECT
+            );
+
+            $versionInfo->server = Shop::DB()->info();
+            $versionInfo->innodb = new stdClass();
+
+            $versionInfo->innodb->support = $innodbSupport && in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT']);
+            $versionInfo->innodb->version = Shop::DB()->query("SHOW VARIABLES LIKE 'innodb_version'", NiceDB::RET_SINGLE_OBJECT)->Value;
+            $versionInfo->collation_utf8  = $utf8Support && strtolower($utf8Support->IS_COMPILED) === 'yes';
+        }
+
+        return $versionInfo;
+    }
+
+    /**
      * @return stdClass[]
      */
     public static function getTablesNeedMigration()
@@ -21,11 +54,11 @@ class DBMigrationHelper
         $database = Shop::DB()->getConfig()['database'];
 
         return Shop::DB()->queryPrepared(
-            "SELECT `TABLE_NAME`, `ENGINE`, TABLE_COLLATION
-                FROM information_schema.tables
-                WHERE TABLE_SCHEMA = :schema
-                    AND TABLE_NAME NOT LIKE 'xplugin_%'
-                    AND (`ENGINE` != 'InnoDB' OR TABLE_COLLATION != 'utf8_unicode_ci')
+            "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_COMMENT`
+                FROM information_schema.TABLES
+                WHERE `TABLE_SCHEMA` = :schema
+                    AND `TABLE_NAME` NOT LIKE 'xplugin_%'
+                    AND (`ENGINE` != 'InnoDB' OR `TABLE_COLLATION` != 'utf8_unicode_ci')
                 ORDER BY `TABLE_NAME`", [
                     'schema' => $database
                 ], 2
@@ -42,12 +75,12 @@ class DBMigrationHelper
         $excludeStr = implode("','", StringHandler::filterXSS($excludeTables));
 
         return Shop::DB()->queryPrepared(
-            "SELECT `TABLE_NAME`, `ENGINE`, TABLE_COLLATION
-                FROM information_schema.tables
-                WHERE TABLE_SCHEMA = :schema
-                    AND TABLE_NAME NOT LIKE 'xplugin_%'
+            "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`
+                FROM information_schema.TABLES
+                WHERE `TABLE_SCHEMA` = :schema
+                    AND `TABLE_NAME` NOT LIKE 'xplugin_%'
                     " . (!empty($excludeStr) ? "AND TABLE_NAME NOT IN ('" . $excludeStr . "')" : '') . "
-                    AND (`ENGINE` != 'InnoDB' OR TABLE_COLLATION != 'utf8_unicode_ci')
+                    AND (`ENGINE` != 'InnoDB' OR `TABLE_COLLATION` != 'utf8_unicode_ci')
                 ORDER BY `TABLE_NAME` LIMIT 1", [
                     'schema' => $database
                 ], 1
@@ -63,14 +96,38 @@ class DBMigrationHelper
         $database = Shop::DB()->getConfig()['database'];
 
         return Shop::DB()->queryPrepared(
-            "SELECT `TABLE_NAME`, `ENGINE`, TABLE_COLLATION
-                FROM information_schema.tables
-                WHERE TABLE_SCHEMA = :schema
-                    AND TABLE_NAME = :table
+            "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_COMMENT`
+                FROM information_schema.TABLES
+                WHERE `TABLE_SCHEMA` = :schema
+                    AND `TABLE_NAME` = :table
                 ORDER BY `TABLE_NAME` LIMIT 1", [
                     'schema' => $database,
                     'table'  => $cTable,
                 ], 1
+        );
+    }
+
+    /**
+     * @param string $cTable
+     * @return stdClass[]
+     */
+    public static function getFulltextIndizes($cTable = null)
+    {
+        $params = ['schema' => Shop::DB()->getConfig()['database']];
+        $filter = "AND `INDEX_NAME` NOT IN ('idx_tartikel_fulltext', 'idx_tartikelsprache_fulltext')";
+
+        if (!empty($cTable)) {
+            $params['table'] = $cTable;
+            $filter          = "AND `TABLE_NAME` = :table";
+        }
+
+        return Shop::DB()->queryPrepared(
+            "SELECT DISTINCT `TABLE_NAME`, `INDEX_NAME`
+                FROM information_schema.STATISTICS
+                WHERE `TABLE_SCHEMA` = :schema
+                    {$filter}
+                    AND `INDEX_TYPE` = 'FULLTEXT'
+                    ", $params, 2
         );
     }
 
@@ -93,17 +150,25 @@ class DBMigrationHelper
      */
     public static function isTableInUse($cTable)
     {
-        $database    = Shop::DB()->getConfig()['database'];
-        $tableStatus = Shop::DB()->queryPrepared(
-            "SHOW OPEN TABLES
+        $mysqlVersion = self::getMySQLVersion();
+        $database     = Shop::DB()->getConfig()['database'];
+
+        if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
+            $oTable = self::getTable($cTable);
+
+            return strpos(':Migrating', $oTable->TABLE_COMMENT) !== false ? true : false;
+        } else {
+            $tableStatus = Shop::DB()->queryPrepared(
+                "SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
                     AND `Table` LIKE :table", [
                     'schema' => $database,
                     'table'  => $cTable,
                 ], 1
-        );
+            );
 
-        return is_object($tableStatus) && (int)$tableStatus->In_use > 0;
+            return is_object($tableStatus) && (int)$tableStatus->In_use > 0;
+        }
     }
 
     /**
@@ -115,13 +180,13 @@ class DBMigrationHelper
         $database = Shop::DB()->getConfig()['database'];
 
         return Shop::DB()->queryPrepared(
-            "SELECT `COLUMN_NAME`, DATA_TYPE, COLUMN_TYPE, `COLUMN_DEFAULT`, IS_NULLABLE
-                FROM information_schema.columns
-                WHERE TABLE_SCHEMA = :schema
-                    AND TABLE_NAME = :table
-                    AND CHARACTER_SET_NAME IS NOT NULL
-                    AND (CHARACTER_SET_NAME != 'utf8' OR COLLATION_NAME != 'utf8_unicode_ci')
-                ORDER BY ORDINAL_POSITION", [
+            "SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `COLUMN_DEFAULT`, `IS_NULLABLE`
+                FROM information_schema.COLUMNS
+                WHERE `TABLE_SCHEMA` = :schema
+                    AND `TABLE_NAME` = :table
+                    AND `CHARACTER_SET_NAME` IS NOT NULL
+                    AND (`CHARACTER_SET_NAME` != 'utf8' OR `COLLATION_NAME` != 'utf8_unicode_ci')
+                ORDER BY `ORDINAL_POSITION`", [
                     'schema' => $database,
                     'table'  => $cTable,
                 ], 2
@@ -132,17 +197,53 @@ class DBMigrationHelper
      * @param stdClass $oTable
      * @return string
      */
+    public static function sqlAddLockInfo($oTable)
+    {
+        $mysqlVersion = self::getMySQLVersion();
+
+        if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
+            return "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}:Migrating'";
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * @param stdClass $oTable
+     * @return string
+     */
+    public static function sqlClearLockInfo($oTable)
+    {
+        $mysqlVersion = self::getMySQLVersion();
+
+        if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
+            return "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}'";
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * @param stdClass $oTable
+     * @return string
+     */
     public static function sqlMoveToInnoDB($oTable)
     {
+        $mysqlVersion = self::getMySQLVersion();
+
         if ($oTable->ENGINE !== 'InnoDB' && $oTable->TABLE_COLLATION !== 'utf8_unicode_ci') {
-            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci' ENGINE= 'InnoDB'";
+            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci' ENGINE='InnoDB'";
         } elseif ($oTable->ENGINE !== 'InnoDB') {
-            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` ENGINE= 'InnoDB'";
+            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` ENGINE='InnoDB'";
         } else {
             $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'";
         }
 
-        return $sql . ', LOCK EXCLUSIVE';
+        if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
+            return $sql;
+        } else {
+            return $sql . ', LOCK EXCLUSIVE';
+        }
     }
 
     /**
@@ -152,8 +253,9 @@ class DBMigrationHelper
      */
     public static function sqlConvertUTF8($oTable, $lineBreak = '')
     {
-        $oColumn_arr = self::getColumnsNeedMigration($oTable->TABLE_NAME);
-        $sql         = '';
+        $mysqlVersion = self::getMySQLVersion();
+        $oColumn_arr  = self::getColumnsNeedMigration($oTable->TABLE_NAME);
+        $sql          = '';
 
         if ($oColumn_arr !== false && count($oColumn_arr) > 0) {
             $sql = "ALTER TABLE `{$oTable->TABLE_NAME}`$lineBreak";
@@ -164,7 +266,12 @@ class DBMigrationHelper
                     . ($oColumn->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
                     . ($oColumn->IS_NULLABLE === 'NO' && $oColumn->COLUMN_DEFAULT === null ? '' : " DEFAULT " . ($oColumn->COLUMN_DEFAULT === null ? 'NULL' : "'{$oColumn->COLUMN_DEFAULT}'"));
             }
-            $sql .= implode(", $lineBreak", $columChange) . ', LOCK EXCLUSIVE';
+
+            if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
+                $sql .= implode(", $lineBreak", $columChange);
+            } else {
+                $sql .= implode(", $lineBreak", $columChange) . ', LOCK EXCLUSIVE';
+            }
         }
 
         return $sql;

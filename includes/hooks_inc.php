@@ -473,6 +473,7 @@ define('HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI', 65);
  * Vor der Sendung der Benachrichtigung in den Artikeldetails
  *
  * @file artikel_inc.php
+ * @param Benachrichtigung - since 4.07
  */
 define('HOOK_ARTIKEL_INC_BENACHRICHTIGUNG', 66);
 

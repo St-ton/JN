@@ -112,6 +112,7 @@
                             {render_item title='Profiler aktiv' val=!$status->hasActiveProfiler() more='profiler.php'}
                             {render_item title='Server' val=$status->hasValidEnvironment() more='systemcheck.php'}
                             {render_item title='Verwaiste Kategorien' val=$status->getOrphanedCategories() more='categorycheck.php'}
+                            {render_item title='Neue Plugin-Versionen' val=!$status->hasNewPluginVersions() more='pluginverwaltung.php'}
                         </tbody>
                     </table>
                 </div>

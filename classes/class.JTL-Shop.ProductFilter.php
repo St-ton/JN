@@ -394,7 +394,7 @@ class ProductFilter
     public function getSearchResults($products = true)
     {
         return $products === true && $this->searchResults->getProducts() !== null
-            ? $this->searchResults->getProducts()->elemente
+            ? $this->searchResults->getProducts()
             : $this->searchResults;
     }
 
@@ -1597,13 +1597,12 @@ class ProductFilter
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         $error        = false;
         if ($this->searchResults === null) {
-            $this->searchResults      = new ProductFilterSearchResults();
-            $productList              = new stdClass();
-            $productList->elemente    = new Collection();
-            $productList->productKeys = $this->getProductKeys();
-            $productCount = count($productList->productKeys);
-
-            $this->searchResults->setProductCount($productCount);
+            $productList         = new Collection();
+            $productKeys         = $this->getProductKeys();
+            $productCount        = count($productKeys);
+            $this->searchResults = (new ProductFilterSearchResults())
+                ->setProductCount($productCount)
+                ->setProductKeys($productKeys);
             if (!empty($this->search->getName())) {
                 if ($this->searchQuery->getError() === null) {
                     $this->search->saveQuery($productCount, $this->search->getName(), !$this->bExtendedJTLSearch);
@@ -1639,15 +1638,15 @@ class ProductFilter
             $this->searchResults->setSearchTermWrite($this->metaData->getHeader());
         } else {
             $productList = $this->searchResults->getProducts();
+            $productKeys = $this->searchResults->getProductKeys();
         }
         if ($error !== false) {
-            $this->searchResults->setProductCount(0)
-                                ->setProducts($productList)
-                                ->setSearchUnsuccessful(true)
-                                ->setSearchTerm(strip_tags(trim($this->params['cSuche'])))
-                                ->setError($error);
-
-            return $this->searchResults;
+            return $this->searchResults
+                ->setProductCount(0)
+                ->setProducts($productList)
+                ->setSearchUnsuccessful(true)
+                ->setSearchTerm(strip_tags(trim($this->params['cSuche'])))
+                ->setError($error);
         }
         if ($fillProducts === true) {
             // @todo: slice list of IDs when not filling?
@@ -1662,18 +1661,18 @@ class ProductFilter
             $opt->nVariationDetailPreis = (int)$this->conf['artikeldetails']['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;
-            foreach (array_slice($productList->productKeys, $nLimitN, $limitPerPage) as $id) {
+            foreach (array_slice($productKeys, $nLimitN, $limitPerPage) as $id) {
                 $product = (new Artikel())->fuelleArtikel($id, $opt);
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
                 if ($product !== null && $product->nIstVater === 0) {
                     $_SESSION['nArtikelUebersichtVLKey_arr'][] = $id;
                 }
-                $productList->elemente->addItem($product);
+                $productList->addItem($product);
             }
-            $this->searchResults->setProductCount($productList->elemente->count());
+            $this->searchResults->setProductCount($productList->count());
         }
         $this->url = $this->filterURL->createUnsetFilterURLs($this->url);
-        $_SESSION['oArtikelUebersichtKey_arr']   = $productList->productKeys;
+        $_SESSION['oArtikelUebersichtKey_arr']   = $productKeys;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
         $this->searchResults->setProducts($productList);
@@ -1684,14 +1683,14 @@ class ProductFilter
                 ? (new Kategorie($categoryID, $this->languageID, $this->customerGroupID))
                     ->existierenUnterkategorien()
                 : false;
-            if ($productList->elemente->count() === 1
+            if ($productList->count() === 1
                 && $this->getConfig()['navigationsfilter']['allgemein_weiterleitung'] === 'Y'
                 && ($this->getFilterCount() > 0
                     || ($this->getCategory()->getValue() > 0 && !$hasSubCategories)
                     || !empty($this->EchteSuche->cSuche))
             ) {
                 http_response_code(301);
-                $product = $productList->elemente->pop();
+                $product = $productList->pop();
                 $url = empty($product->cURL)
                     ? (Shop::getURL() . '/?a=' . $product->kArtikel)
                     : (Shop::getURL() . '/' . $product->cURL);
@@ -1702,7 +1701,7 @@ class ProductFilter
 
         return $forProductListing === true
             ? $this->searchResults
-            : $productList->elemente;
+            : $productList;
     }
 
     /**

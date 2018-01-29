@@ -11,6 +11,7 @@ $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
 $kSektion         = CONF_ARTIKELUEBERSICHT;
 $Einstellungen    = Shop::getSettings([$kSektion]);
 $standardwaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+$mysqlVersion     = Shop::DB()->query("SHOW VARIABLES LIKE 'innodb_version'", NiceDB::RET_SINGLE_OBJECT)->Value;
 $step             = 'einstellungen bearbeiten';
 $cHinweis         = '';
 $cFehler          = '';
@@ -103,9 +104,15 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 
 if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
     if ($_POST['suche_fulltext'] === 'Y') {
-        // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
-        $oValue = Shop::DB()->query('select @@ft_min_word_len AS ft_min_word_len', 1);
-        $_POST['suche_min_zeichen'] = $oValue ? $oValue->ft_min_word_len : $_POST['suche_min_zeichen'];
+        if (version_compare($mysqlVersion, '5.6', '<')) {
+            //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
+            $_POST['suche_fulltext'] = 'N';
+            $cFehler                 = 'Die Volltextsuche erfordert MySQL ab Version 5.6!';
+        } else {
+            // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
+            $oValue                     = Shop::DB()->query('SELECT @@ft_min_word_len AS ft_min_word_len', 1);
+            $_POST['suche_min_zeichen'] = $oValue ? $oValue->ft_min_word_len : $_POST['suche_min_zeichen'];
+        }
     }
 
     $shopSettings = Shopsetting::getInstance();
@@ -192,6 +199,7 @@ $smarty->configLoad('german.conf', 'einstellungen')
     ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
     ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
     ->assign('step', $step)
+    ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
     ->assign('waehrung', $standardwaehrung->cName)

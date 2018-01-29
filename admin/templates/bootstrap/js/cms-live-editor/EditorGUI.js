@@ -47,6 +47,7 @@ EditorGUI.prototype = {
         this.templateForm             = this.hostJq('#template-form')             .submit(this.onTemplateSave.bind(this));
         this.templateDeleteBtn        = this.hostJq('.template-delete')           .click(this.onTemplateDelete.bind(this));
         this.templateDeleteForm       = this.hostJq('#template-delete-form')      .submit(this.onTemplateDeleteConfirm.bind(this));
+        this.revisionList             = this.hostJq('#revision-list');
 
         this.portletBtns
             .on('dragstart', this.onPortletBtnDragStart.bind(this))
@@ -328,6 +329,28 @@ EditorGUI.prototype = {
         );
     },
 
+    updateRevisionList: function()
+    {
+        ioCall('getCmsPageRevisions', [this.editor.cPageIdHash], this.onGetRevisions.bind(this));
+    },
+
+    onGetRevisions: function(revisions)
+    {
+        var self = this;
+
+        console.log(revisions);
+
+        this.revisionList.empty();
+
+        revisions.forEach(function(rev) {
+            $('<a class="list-group-item revision-btn" href="#" data-revision-id="' + rev.id + '">')
+                .html(rev.timestamp)
+                .appendTo(self.revisionList);
+        });
+
+        this.revisionBtns();
+    },
+
     onRevision: function(e)
     {
         var elm = $(e.target);
@@ -440,6 +463,9 @@ EditorGUI.prototype = {
             .find('> .cle-area') ; //, :not(.jle-subarea) .jle-subarea');
 
         var properties = this.configForm.serializeControls();
+
+        this.propertiesCallback = this.propertiesCallback || this.noop;
+        this.propertiesCallback(properties);
 
         ioCall('getPortletPreviewHtml', [this.curPortletId, properties], onNewHtml.bind(this));
 

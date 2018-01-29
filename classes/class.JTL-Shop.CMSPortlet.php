@@ -297,4 +297,26 @@ abstract class CMSPortlet
 
         return $srcString;
     }
+
+    /**
+     * If this portlet has a property 'filters' set as an array of filters then return the filtered set of product keys
+     *
+     * @return int[] - filtered product keys
+     */
+    protected function getFilteredProductIds()
+    {
+        if (array_key_exists('filters', $this->properties) && is_array($this->properties['filters'])) {
+            $filters = $this->properties['filters'];
+
+            $productFilter = new ProductFilter();
+
+            foreach ($filters as $filter) {
+                $productFilter->addActiveFilter(new $filter['className']($productFilter), $filter['value']);
+            }
+
+            return $productFilter->getProductKeys();
+        }
+
+        return [];
+    }
 }

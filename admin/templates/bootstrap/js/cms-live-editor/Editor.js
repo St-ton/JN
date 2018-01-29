@@ -43,7 +43,7 @@ Editor.prototype = {
     {
         setJtlToken(this.jtlToken);
         injectJqueryFixes();
-        Split(['#sidebar-panel', '#iframe-panel'], { sizes: [25, 75], gutterSize: 4 });
+        Split(['#sidebar-panel', '#iframe-panel'], { sizes: [20, 80], gutterSize: 4 });
 
         this.gui.initHostGUI();
 
@@ -109,6 +109,7 @@ Editor.prototype = {
             function() {
                 self.gui.hideLoader();
                 self.gui.setUnsaved(false);
+                self.gui.updateRevisionList();
             },
             function () {
                 window.location.reload();
@@ -145,6 +146,11 @@ Editor.prototype = {
     setConfigSaveCallback: function (callback)
     {
         this.gui.configSaveCallback = callback;
+    },
+
+    setPropertiesCallback: function(callback)
+    {
+        this.gui.propertiesCallback = callback;
     },
 
     loadRevision: function(revisionId)

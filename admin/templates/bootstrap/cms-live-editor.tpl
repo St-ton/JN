@@ -110,11 +110,15 @@
                 </div>
                 <div class="tab-pane" id="templates">
                     {foreach $oTemplate_arr as $oTemplate}
-                        <a href="#" class="template-button btn btn-default btn-lg"
-                           data-title="{$oTemplate->cName}"
-                           data-content="{$oTemplate->getFullPreviewHtml()|escape:'htmlall'}">
-                            <i class="fa fa-puzzle-piece"></i> {$oTemplate->cName}
-                        </a>
+                        <div class="btn-group" role="group">
+                            <a href="#" class="template-button btn btn-default"
+                               data-title="{$oTemplate->cName}"
+                               data-template="{$oTemplate->kTemplate}"
+                               data-content="{$oTemplate->getFullPreviewHtml()|escape:'htmlall'}">
+                                <i class="fa fa-puzzle-piece"></i> {$oTemplate->cName}
+                            </a>
+                            <button class="template-delete btn btn-danger" data-template="{$oTemplate->kTemplate}"> &times; </button>
+                        </div>
                     {/foreach}
                 </div>
                 <div class="tab-pane" id="revisions">
@@ -209,6 +213,25 @@
                         <div class="btn-group">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
                             <button class="btn btn-primary" id="btn-save-template">Speichern</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="template-delete-modal" class="modal fade" tabindex="-1" role="dialog" style="padding-top:25%">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Template löschen?</h4>
+                </div>
+                <form id="template-delete-form">
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <input type="hidden" id="template-ktemplate" name="ktemplate"
+                                   value="">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                            <button class="btn btn-primary" id="btn-delete-template">löschen</button>
                         </div>
                     </div>
                 </form>

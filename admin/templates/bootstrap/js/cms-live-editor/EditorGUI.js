@@ -43,6 +43,10 @@ EditorGUI.prototype = {
         this.configModal        = this.hostJq('#config-modal');
         this.configModalBody    = this.hostJq('#config-modal-body');
         this.templateForm       = this.hostJq('#template-form')         .submit(this.onTemplateSave.bind(this));
+        this.templateDeleteModal      = this.hostJq('#template-delete-modal');
+        this.templateDeleteModalInput = this.hostJq('#template-ktemplate');
+        this.templateDeleteBtn        = this.hostJq('.template-delete')           .click(this.onTemplateDelete.bind(this));
+        this.templateDeleteForm       = this.hostJq('#template-delete-form')      .submit(this.onTemplateDeleteConfirm.bind(this));
         this.revisionList       = this.hostJq('#revision-list');
 
         this.portletBtns
@@ -399,6 +403,21 @@ EditorGUI.prototype = {
             this.editor.storeTemplate(this.selectedElm, templateName);
             this.templateModal.modal('hide');
         }
+
+        e.preventDefault();
+    },
+
+    onTemplateDelete: function(e)
+    {
+        var elm = $(e.target);
+        this.templateDeleteModal.modal('show');
+        this.templateDeleteModalInput.val(elm.data('template'));
+    },
+
+    onTemplateDeleteConfirm: function(e) {
+        var elm = this.templateDeleteModalInput.val();
+        this.editor.io.deleteTemplate(elm);
+        this.templateDeleteModal.modal('hide');
 
         e.preventDefault();
     },

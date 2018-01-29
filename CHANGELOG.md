@@ -4,7 +4,7 @@
 
 Dieses Update enthält Bugfixes und Sicherheitsupdates.
 
-Alle für diese Zielversion gelösten Vorgänge finden Sie unter [diesem Link](https://issues.jtl-software.de/issues?project=JTL-Shop&status=done&version=4.06.3).
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: http://jtl-url.de/cl4063
 
 ## [4.06.2]
 

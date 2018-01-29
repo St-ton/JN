@@ -84,6 +84,7 @@ $io
     ->register('lockCmsPage', [$cms, 'lockPage'], null, 'CONTENT_PAGE_VIEW')
     ->register('unlockCmsPage', [$cms, 'unlockPage'], null, 'CONTENT_PAGE_VIEW')
     ->register('storeCmsTemplate', [$cms, 'storeTemplate'], null, 'CONTENT_PAGE_VIEW')
+    ->register('deleteCmsTemplate', [$cms, 'deleteTemplate'], null, 'CONTENT_PAGE_VIEW')
     ->register('getProductFilterOptions', [$cms, 'getFilterOptions'], null, 'CONTENT_PAGE_VIEW')
     // Other
     ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')

@@ -209,4 +209,12 @@ EditorIO.prototype = {
 
         ioCall('storeCmsTemplate', [templateName, this.portletToJson(portlet)], success.bind(this), error.bind(this));
     },
+
+    deleteTemplate: function(kTemplate, success, error)
+    {
+        success = success || this.noop;
+        error = error || this.noop;
+
+        ioCall('deleteCmsTemplate', [kTemplate], success.bind(this), error.bind(this));
+    },
 };

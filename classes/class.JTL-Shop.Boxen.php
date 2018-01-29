@@ -1263,6 +1263,7 @@ class Boxen
 
                 return true;
             } else {
+                $activeBoxes = [];
                 foreach ($this->boxes[$position] as $_box) {
                     if (!empty($_box->cFilter)) {
                         $pageType   = (int)$_box->kSeite;

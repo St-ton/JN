@@ -380,9 +380,10 @@ function removeFromComparelist($kArtikel)
 
 /**
  * @param int $kArtikel
+ * @param int $qty
  * @return IOResponse
  */
-function pushToWishlist($kArtikel)
+function pushToWishlist($kArtikel, $qty)
 {
     global $Einstellungen;
     $kArtikel = (int)$kArtikel;
@@ -397,8 +398,22 @@ function pushToWishlist($kArtikel)
     $oResponse   = new stdClass();
     $objResponse = new IOResponse();
 
+    $qty = (int)$qty === 0 ? 1 : (int)$qty;
+    if (empty($_SESSION['Kunde']->kKunde)) {
+        $linkHelper           = LinkHelper::getInstance();
+        $oResponse->nType     = 1;
+        $oResponse->cLocation = $linkHelper->getStaticRoute('jtl.php') .
+            '?a=' . $kArtikel .
+            '&n=' . $qty .
+            '&r=' . R_LOGIN_WUNSCHLISTE;
+        $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
+
+        return $objResponse;
+    }
+
     $_POST['Wunschliste'] = 1;
-    $_POST['a']          = $kArtikel;
+    $_POST['a']           = $kArtikel;
+    $_POST['n']           = (int)$qty;
 
     WarenkorbHelper::checkAdditions();
     $error             = Shop::Smarty()->getTemplateVars('fehler');

@@ -14,7 +14,8 @@
 
     ArticleClass.DEFAULTS = {
         input: {
-            id: 'a'
+            id: 'a',
+            quantity: 'anzahl'
         },
         action: {
             compareList: 'Vergleichsliste',
@@ -27,7 +28,8 @@
             navBadgeUpdateWish: '#shop-nav li.wish-list-menu',
             navBadgeAppend: '#shop-nav li.cart-menu',
             boxContainer: 'section#sidebox',
-            boxContainerWish: 'section#sidebox'
+            boxContainerWish: 'section#sidebox',
+            quantity: 'input.quantity',
         },
         modal: {
             id: 'modal-article-dialog',
@@ -605,9 +607,10 @@
 
         addToWishlist: function(data) {
             var productId = parseInt(data[this.options.input.id]);
+            var qty =  parseInt(data[this.options.input.quantity]);
             if (productId > 0) {
                 var that = this;
-                $.evo.io().call('pushToWishlist', [productId], that, function(error, data) {
+                $.evo.io().call('pushToWishlist', [productId, qty], that, function(error, data) {
                     if (error) {
                         return;
                     }
@@ -727,6 +730,7 @@
                 case this.options.action.compareListRemove:
                     return this.removeFromCompareList(data);
                 case this.options.action.wishList:
+                    data[this.options.input.quantity] = $('#buy_form_'+data.a+' '+this.options.selector.quantity).val();
                     return this.addToWishlist(data);
                 case this.options.action.wishListRemove:
                     return this.removeFromWishList(data);

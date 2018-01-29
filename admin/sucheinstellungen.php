@@ -16,6 +16,7 @@ $step             = 'einstellungen bearbeiten';
 $cHinweis         = '';
 $cFehler          = '';
 $Conf             = [];
+$createIndex      = 'N';
 
 if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
@@ -140,9 +141,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
         }
     }
     if ($fulltextChanged) {
-        $smarty->assign('createIndex', $_POST['suche_fulltext']);
-    } else {
-        $smarty->assign('createIndex', false);
+        $createIndex = StringHandler::filterXSS($_POST['suche_fulltext']);
     }
 
     if (isset($_POST['suche_fulltext']) && $_POST['suche_fulltext'] === 'Y' && $fulltextChanged) {
@@ -152,8 +151,6 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
     }
 
     $Einstellungen = Shop::getSettings([$kSektion]);
-} else {
-    $smarty->assign('createIndex', false);
 }
 
 $section = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
@@ -200,6 +197,7 @@ $smarty->configLoad('german.conf', 'einstellungen')
     ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
     ->assign('step', $step)
     ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))
+    ->assign('createIndex', $createIndex)
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
     ->assign('waehrung', $standardwaehrung->cName)

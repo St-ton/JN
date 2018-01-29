@@ -37,4 +37,13 @@
         ioCall('createSearchIndex', ['tartikelsprache', createIndex], showIndexNotification, showIndexNotification);
     </script>
 {/if}
+{if $supportFulltext === false}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#suche_fulltext').val('N')
+            .prop('disabled', 'disabled')
+            .prop('title', 'Die Volltextsuche erfordert MySQL ab Version 5.6!');
+    });
+</script>
+{/if}
 {include file='tpl_inc/footer.tpl'}

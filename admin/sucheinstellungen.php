@@ -11,10 +11,12 @@ $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
 $kSektion         = CONF_ARTIKELUEBERSICHT;
 $Einstellungen    = Shop::getSettings([$kSektion]);
 $standardwaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+$mysqlVersion     = Shop::DB()->query("SHOW VARIABLES LIKE 'innodb_version'", NiceDB::RET_SINGLE_OBJECT)->Value;
 $step             = 'einstellungen bearbeiten';
 $cHinweis         = '';
 $cFehler          = '';
 $Conf             = [];
+$createIndex      = 'N';
 
 if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
@@ -102,10 +104,16 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 }
 
 if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
-    if ($_POST['suche_fulltext'] === 'Y') {
-        // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
-        $oValue = Shop::DB()->query('select @@ft_min_word_len AS ft_min_word_len', 1);
-        $_POST['suche_min_zeichen'] = $oValue ? $oValue->ft_min_word_len : $_POST['suche_min_zeichen'];
+    if (isset($_POST['suche_fulltext']) && $_POST['suche_fulltext'] === 'Y') {
+        if (version_compare($mysqlVersion, '5.6', '<')) {
+            //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
+            $_POST['suche_fulltext'] = 'N';
+            $cFehler                 = 'Die Volltextsuche erfordert MySQL ab Version 5.6!';
+        } else {
+            // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
+            $oValue                     = Shop::DB()->query('SELECT @@ft_min_word_len AS ft_min_word_len', 1);
+            $_POST['suche_min_zeichen'] = $oValue ? $oValue->ft_min_word_len : $_POST['suche_min_zeichen'];
+        }
     }
 
     $shopSettings = Shopsetting::getInstance();
@@ -127,26 +135,22 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
             'suche_prio_han',
             'suche_prio_anmerkung'
         ] as $sucheParam) {
-        if ($_POST[$sucheParam] != $Einstellungen['artikeluebersicht'][$sucheParam]) {
+        if (isset($_POST[$sucheParam]) && ($_POST[$sucheParam] != $Einstellungen['artikeluebersicht'][$sucheParam])) {
             $fulltextChanged = true;
             break;
         }
     }
     if ($fulltextChanged) {
-        $smarty->assign('createIndex', $_POST['suche_fulltext']);
-    } else {
-        $smarty->assign('createIndex', false);
+        $createIndex = StringHandler::filterXSS($_POST['suche_fulltext']);
     }
 
-    if ($_POST['suche_fulltext'] === 'Y' && $fulltextChanged) {
+    if (isset($_POST['suche_fulltext']) && $_POST['suche_fulltext'] === 'Y' && $fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde aktiviert.';
     } elseif ($fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde deaktiviert.';
     }
 
     $Einstellungen = Shop::getSettings([$kSektion]);
-} else {
-    $smarty->assign('createIndex', false);
 }
 
 $section = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
@@ -192,6 +196,8 @@ $smarty->configLoad('german.conf', 'einstellungen')
     ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
     ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
     ->assign('step', $step)
+    ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))
+    ->assign('createIndex', $createIndex)
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
     ->assign('waehrung', $standardwaehrung->cName)

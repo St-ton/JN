@@ -1582,7 +1582,7 @@ class ProductFilter
     }
 
     /**
-     * @param bool           $forProductListing - if true, return ProductFilterSearchResults instance, otherwise keys only
+     * @param bool           $forProductListing - if true, return ProductFilterSearchResults instance, otherwise products only
      * @param Kategorie|null $currentCategory
      * @param bool           $fillProducts - if true, return Artikel class instances, otherwise keys only
      * @param int            $limit

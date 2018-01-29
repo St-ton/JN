@@ -422,6 +422,9 @@ EditorGUI.prototype = {
 
         var properties = this.configForm.serializeControls();
 
+        this.propertiesCallback = this.propertiesCallback || this.noop;
+        this.propertiesCallback(properties);
+
         ioCall('getPortletPreviewHtml', [this.curPortletId, properties], onNewHtml.bind(this));
 
         function onNewHtml(newHtml)

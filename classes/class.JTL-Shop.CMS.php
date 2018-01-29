@@ -265,4 +265,42 @@ class CMS
 
         return $this;
     }
+
+    public function getFilterOptions($filtersEnabled = [])
+    {
+        $productFilter     = new ProductFilter();
+        $filtersEnabledMap = [];
+
+        foreach ($filtersEnabled as $filterEnabled) {
+            $filtersEnabledMap[$filterEnabled['className'] . ':' . $filterEnabled['value']] = true;
+            $productFilter->addActiveFilter(
+                new $filterEnabled['className']($productFilter),
+                $filterEnabled['value']
+            );
+        }
+
+        $productFilter->getProducts();
+        $searchResults = $productFilter->getSearchResults(false);
+
+        $res = [];
+
+        foreach (['Category', 'Manufacturer', 'SearchSpecial'] as $term) {
+            /** @var FilterOption[] $filterOptions */
+            $filterOptions = $searchResults->{"get{$term}FilterOptions"}();
+
+            foreach ($filterOptions as $filterOption) {
+                if (!array_key_exists($filterOption->getClassName() . ':' . $filterOption->getValue(), $filtersEnabledMap)) {
+                    $res[] = [
+                        'name'      => $filterOption->getName(),
+                        'term'      => $term,
+                        'className' => $filterOption->getClassName(),
+                        'value'     => $filterOption->getValue(),
+                        'count'     => $filterOption->getCount(),
+                    ];
+                }
+            }
+        }
+
+        return $res;
+    }
 }

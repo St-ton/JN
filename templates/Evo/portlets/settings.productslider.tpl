@@ -5,7 +5,14 @@
         </a>
     </li>
     <li role="presentation">
-        <a data-toggle="tab"  aria-controls="searchpicker-articlePicker" data-toggle="tab" role="tab" href="#searchpicker-articlePicker">Artikel</a>
+        <a aria-controls="searchpicker-articlePicker" data-toggle="tab" role="tab" href="#searchpicker-articlePicker">
+            Artikel
+        </a>
+    </li>
+    <li role="presentation">
+        <a aria-controls="filter" data-toggle="tab" role="tab" href="#filter">
+            Artikel-Filter
+        </a>
     </li>
     <li role="presentation">
         <a aria-expanded="true" aria-controls="wow-animation" data-toggle="tab" role="tab" id="wow-animation-tab" href="#wow-animation">
@@ -37,6 +44,7 @@
         </div>
     </div>
     {include file='./settings.tabcontent.searchpicker.tpl' searchPickerName='articlePicker'}
+    {include file='./settings.tabcontent.filter.tpl'}
     {include file='./settings.tabcontent.animation.tpl'}
     {include file='./settings.tabcontent.style.tpl'}
 </div>

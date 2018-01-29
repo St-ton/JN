@@ -52,8 +52,12 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
     margin-bottom: 15px;
 }
 
-.portlet-button, .template-button {
+.portlet-button, #templates .btn-group{
     margin-right: 15px;
+}
+
+.template-delete{
+    vertical-align: bottom;
 }
 
 .cle-image-btn {

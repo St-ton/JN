@@ -21,28 +21,32 @@ EditorGUI.prototype = {
 
     initHostGUI: function()
     {
-        this.hostJq             = $;
-        this.iframe             = this.hostJq('#iframe');
-        this.loaderModal        = this.hostJq('#loader-modal');
-        this.errorModal         = this.hostJq('#error-modal');
-        this.templateModal      = this.hostJq('#template-modal');
-        this.errorAlert         = this.hostJq('#error-alert');
-        this.portletLabel       = this.hostJq('#portlet-label');
-        this.portletToolbar     = this.hostJq('#pinbar');
-        this.portletBtns        = this.hostJq('.portlet-button');
-        this.templateBtns       = this.hostJq('.template-button');
-        this.previewBtn         = this.hostJq('#btn-preview')           .click(this.onPreview.bind(this));
-        this.editorCloseBtn     = this.hostJq('#cle-btn-close-editor')  .click(this.onEditorClose.bind(this));
-        this.editorSaveBtn      = this.hostJq('#cle-btn-save-editor')   .click(this.onEditorSave.bind(this));
-        this.selectParentBtn    = this.hostJq('#btn-parent')            .click(this.onSelectParent.bind(this));
-        this.storeTemplateBtn   = this.hostJq('#btn-template')          .click(this.onStoreTemplate.bind(this));
-        this.trashBtn           = this.hostJq('#btn-trash')             .click(this.onTrash.bind(this));
-        this.cloneBtn           = this.hostJq('#btn-clone')             .click(this.onClone.bind(this));
-        this.configBtn          = this.hostJq('#btn-config')            .click(this.onConfig.bind(this));
-        this.configForm         = this.hostJq('#config-form')           .submit(this.onConfigSave.bind(this));
-        this.configModal        = this.hostJq('#config-modal');
-        this.configModalBody    = this.hostJq('#config-modal-body');
-        this.templateForm       = this.hostJq('#template-form')         .submit(this.onTemplateSave.bind(this));
+        this.hostJq                   = $;
+        this.iframe                   = this.hostJq('#iframe');
+        this.loaderModal              = this.hostJq('#loader-modal');
+        this.errorModal               = this.hostJq('#error-modal');
+        this.templateModal            = this.hostJq('#template-modal');
+        this.errorAlert               = this.hostJq('#error-alert');
+        this.portletLabel             = this.hostJq('#portlet-label');
+        this.portletToolbar           = this.hostJq('#pinbar');
+        this.portletBtns              = this.hostJq('.portlet-button');
+        this.templateBtns             = this.hostJq('.template-button');
+        this.previewBtn               = this.hostJq('#btn-preview')               .click(this.onPreview.bind(this));
+        this.editorCloseBtn           = this.hostJq('#cle-btn-close-editor')      .click(this.onEditorClose.bind(this));
+        this.editorSaveBtn            = this.hostJq('#cle-btn-save-editor')       .click(this.onEditorSave.bind(this));
+        this.selectParentBtn          = this.hostJq('#btn-parent')                .click(this.onSelectParent.bind(this));
+        this.storeTemplateBtn         = this.hostJq('#btn-template')              .click(this.onStoreTemplate.bind(this));
+        this.trashBtn                 = this.hostJq('#btn-trash')                 .click(this.onTrash.bind(this));
+        this.cloneBtn                 = this.hostJq('#btn-clone')                 .click(this.onClone.bind(this));
+        this.configBtn                = this.hostJq('#btn-config')                .click(this.onConfig.bind(this));
+        this.configForm               = this.hostJq('#config-form')               .submit(this.onConfigSave.bind(this));
+        this.configModal              = this.hostJq('#config-modal');
+        this.configModalBody          = this.hostJq('#config-modal-body');
+        this.templateDeleteModal      = this.hostJq('#template-delete-modal');
+        this.templateDeleteModalInput = this.hostJq('#template-ktemplate')
+        this.templateForm             = this.hostJq('#template-form')             .submit(this.onTemplateSave.bind(this));
+        this.templateDeleteBtn        = this.hostJq('.template-delete')           .click(this.onTemplateDelete.bind(this));
+        this.templateDeleteForm       = this.hostJq('#template-delete-form')      .submit(this.onTemplateDeleteConfirm.bind(this));
 
         this.portletBtns
             .on('dragstart', this.onPortletBtnDragStart.bind(this))
@@ -376,6 +380,21 @@ EditorGUI.prototype = {
             this.editor.storeTemplate(this.selectedElm, templateName);
             this.templateModal.modal('hide');
         }
+
+        e.preventDefault();
+    },
+
+    onTemplateDelete: function(e)
+    {
+        var elm = $(e.target);
+        this.templateDeleteModal.modal('show');
+        this.templateDeleteModalInput.val(elm.data('template'));
+    },
+
+    onTemplateDeleteConfirm: function(e) {
+        var elm = this.templateDeleteModalInput.val();
+        this.editor.io.deleteTemplate(elm);
+        this.templateDeleteModal.modal('hide');
 
         e.preventDefault();
     },

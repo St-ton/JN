@@ -121,6 +121,11 @@ Editor.prototype = {
         this.io.storePortletAsTemplate(portlet, templateName);
     },
 
+    deleteTemplate: function (kTemplate)
+    {
+        this.io.deleteTemplate(kTemplate);
+    },
+
     onOpenKCFinder: function (callback)
     {
         KCFinder = {

@@ -121,6 +121,15 @@ class CMS
     }
 
     /**
+     * @param $kTemplate int
+     */
+    public function deleteTemplate($kTemplate)
+    {
+        $oCmsTemplate = new CMSTemplate($kTemplate);
+        $oCmsTemplate->remove();
+    }
+
+    /**
      * @param string $pageID
      * @return bool - true if lock was granted
      */

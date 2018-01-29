@@ -195,7 +195,7 @@ class FilterSearch extends AbstractFilter
             'cSuche',
             Shop::DB()->escape($tempQueries[0])
         );
-        if ($filterSpam && !empty($blacklist->kSuchanfrageBlacklist)) {
+        if ($filterSpam && $blacklist !== null && !empty($blacklist->kSuchanfrageBlacklist)) {
             return false;
         }
         // Ist MD5(IP) bereits X mal im Cache
@@ -206,7 +206,7 @@ class FilterSearch extends AbstractFilter
                 WHERE kSprache = :lang
                 AND cIP = :ip',
             ['lang' => $languageID, 'ip' => gibIP()],
-            1
+            NiceDB::RET_SINGLE_OBJECT
         );
         $ipUsed       = Shop::DB()->select(
             'tsuchanfragencache',
@@ -221,7 +221,7 @@ class FilterSearch extends AbstractFilter
         );
         if (!$filterSpam
             || (isset($ip_cache_erg->anzahl) && $ip_cache_erg->anzahl < $max_ip_count
-                && (!isset($ipUsed->kSuchanfrageCache) || !$ipUsed->kSuchanfrageCache))
+                && ($ipUsed === null || empty($ipUsed->kSuchanfrageCache)))
         ) {
             // Fülle Suchanfragencache
             $searchQueryCache           = new stdClass();
@@ -442,7 +442,7 @@ class FilterSearch extends AbstractFilter
                             $nPrioStep
                         ) + 1;
                 }
-                $fo = (new FilterOption())
+                $options[] = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setClass($class)
@@ -453,11 +453,9 @@ class FilterSearch extends AbstractFilter
                     ->setURL($this->productFilter->getFilterURL()->getURL(
                         $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                     ))
+                    ->setData('cSuche', $searchFilter->cSuche)
+                    ->setData('kSuchanfrage', $searchFilter->kSuchanfrage)
                     ->setIsActive(in_array((int)$searchFilter->kSuchanfrage, $activeValues, true));
-                $fo->cSuche       = $searchFilter->cSuche;
-                $fo->kSuchanfrage = $searchFilter->kSuchanfrage;
-
-                $options[] = $fo;
             }
         }
         $this->options = $options;

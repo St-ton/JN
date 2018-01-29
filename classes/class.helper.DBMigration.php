@@ -37,7 +37,7 @@ class DBMigrationHelper
             $innodbPath    = Shop::DB()->query('SELECT @@innodb_data_file_path AS path', NiceDB::RET_SINGLE_OBJECT);
             $innodbSize    = 'auto';
 
-            if ($innodbPath && strpos(strtolower($innodbPath->path), 'autoextend') === false) {
+            if ($innodbPath && stripos($innodbPath->path, 'autoextend') === false) {
                 $innodbSize = 0;
                 $paths      = explode(';', $innodbPath->path);
                 foreach ($paths as $path) {
@@ -65,8 +65,10 @@ class DBMigrationHelper
             $versionInfo->server = Shop::DB()->info();
             $versionInfo->innodb = new stdClass();
 
-            $versionInfo->innodb->support = $innodbSupport && in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT']);
-            $versionInfo->innodb->version = Shop::DB()->query("SHOW VARIABLES LIKE 'innodb_version'", NiceDB::RET_SINGLE_OBJECT)->Value;
+            $versionInfo->innodb->support = $innodbSupport && in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
+            $versionInfo->innodb->version = Shop::DB()->query(
+                "SHOW VARIABLES LIKE 'innodb_version'", NiceDB::RET_SINGLE_OBJECT
+            )->Value;
             $versionInfo->innodb->size    = $innodbSize;
             $versionInfo->collation_utf8  = $utf8Support && strtolower($utf8Support->IS_COMPILED) === 'yes';
         }
@@ -169,7 +171,7 @@ class DBMigrationHelper
             $oTable = self::getTable($oTable);
         }
 
-        return (is_object($oTable) && ($oTable->ENGINE != 'InnoDB' || $oTable->TABLE_COLLATION != 'utf8_unicode_ci'));
+        return (is_object($oTable) && ($oTable->ENGINE !== 'InnoDB' || $oTable->TABLE_COLLATION !== 'utf8_unicode_ci'));
     }
 
     /**
@@ -229,7 +231,11 @@ class DBMigrationHelper
     {
         $mysqlVersion = self::getMySQLVersion();
 
-        return version_compare($mysqlVersion->innodb->version, '5.6', '<') ? "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}:Migrating'" : '';
+        if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
+            return "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}:Migrating'";
+        }
+
+        return '';
     }
 
     /**
@@ -240,7 +246,11 @@ class DBMigrationHelper
     {
         $mysqlVersion = self::getMySQLVersion();
 
-        return version_compare($mysqlVersion->innodb->version, '5.6', '<') ? "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}'" : '';
+        if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
+            return "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}'";
+        }
+
+        return '';
     }
 
     /**
@@ -278,9 +288,11 @@ class DBMigrationHelper
 
             $columnChange = [];
             foreach ($oColumn_arr as $key => $oColumn) {
-                $columnChange[] = "    CHANGE COLUMN `{$oColumn->COLUMN_NAME}` `{$oColumn->COLUMN_NAME}` {$oColumn->COLUMN_TYPE} CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'"
+                $columnChange[] = "    CHANGE COLUMN `{$oColumn->COLUMN_NAME}` `{$oColumn->COLUMN_NAME}` "
+                    ."{$oColumn->COLUMN_TYPE} CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'"
                     . ($oColumn->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
-                    . ($oColumn->IS_NULLABLE === 'NO' && $oColumn->COLUMN_DEFAULT === null ? '' : " DEFAULT " . ($oColumn->COLUMN_DEFAULT === null ? 'NULL' : "'{$oColumn->COLUMN_DEFAULT}'"));
+                    . ($oColumn->IS_NULLABLE === 'NO' && $oColumn->COLUMN_DEFAULT === null ? '' : " DEFAULT "
+                        . ($oColumn->COLUMN_DEFAULT === null ? 'NULL' : "'{$oColumn->COLUMN_DEFAULT}'"));
             }
 
             $sql .= implode(", $lineBreak", $columnChange);

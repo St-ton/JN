@@ -43,7 +43,8 @@ function getDBStruct($extended = false)
 
     if ($cDBStruct_arr === null) {
         $oData_arr = Shop::DB()->queryPrepared(
-            "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_ROWS`, `TABLE_COMMENT`, `DATA_LENGTH` + `INDEX_LENGTH` AS DATA_SIZE
+            "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_ROWS`, `TABLE_COMMENT`,
+                    `DATA_LENGTH` + `INDEX_LENGTH` AS DATA_SIZE
                 FROM information_schema.TABLES
                 WHERE `TABLE_SCHEMA` = :schema
                     AND `TABLE_NAME` NOT LIKE 'xplugin_%'
@@ -308,7 +309,7 @@ function doMigrateToInnoDB_utf8($status = 'start', $table = '', $step = 1, $excl
             $oTable     = DBMigrationHelper::getNextTableNeedMigration($exclude);
 
             if (is_object($oTable)) {
-                if (!in_array($oTable->TABLE_NAME, $shopTables)) {
+                if (!in_array($oTable->TABLE_NAME, $shopTables, true)) {
                     $exclude[] = $oTable->TABLE_NAME;
                     $result    = doMigrateToInnoDB_utf8('start', '', 1, $exclude);
                 } else {
@@ -325,7 +326,7 @@ function doMigrateToInnoDB_utf8($status = 'start', $table = '', $step = 1, $excl
             if (!empty($table) && $step === 1) {
                 // Migration Step 1...
                 $oTable = DBMigrationHelper::getTable($table);
-                if (is_object($oTable) && DBMigrationHelper::isTableNeedMigration($oTable) && !in_array($oTable->TABLE_NAME, $exclude)) {
+                if (is_object($oTable) && DBMigrationHelper::isTableNeedMigration($oTable) && !in_array($oTable->TABLE_NAME, $exclude, true)) {
                     if (!DBMigrationHelper::isTableInUse($table)) {
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                             // If MySQL version is lower than 5.6 use alternative lock method and delete all fulltext indexes because these are not supported

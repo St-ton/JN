@@ -84,7 +84,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     WHERE cKey = 'suchspecial' 
                         AND kKey IN (" . implode(', ', $val) . ")
                     ORDER BY kSprache",
-                2
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -365,7 +365,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 $state->conditions,
                 $state->having
             );
-            $qryRes  = Shop::DB()->query($qry, 2);
+            $qryRes  = Shop::DB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS);
 
             if (($count = count($qryRes)) > 0) {
                 $options[$i] = (new FilterOption())

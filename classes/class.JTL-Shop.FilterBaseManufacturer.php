@@ -60,7 +60,7 @@ class FilterBaseManufacturer extends AbstractFilter
                     WHERE cKey = 'kHersteller' 
                         AND kKey IN (" . implode(', ', $val). ")
                     ORDER BY kSprache",
-                2
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -168,7 +168,7 @@ class FilterBaseManufacturer extends AbstractFilter
                             AND tseo.kSprache = " . $this->getLanguageID() . "
                         GROUP BY ssMerkmal.kHersteller
                         ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
-                2
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             $additionalFilter = new FilterItemManufacturer($this->productFilter);
             foreach ($manufacturers as $manufacturer) {

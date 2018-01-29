@@ -234,7 +234,8 @@ class FilterSearch extends AbstractFilter
             Shop::DB()->query(
                 'DELETE 
                     FROM tsuchanfragencache 
-                    WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)', 4
+                    WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)',
+                4
             );
             if ($hits > 0) {
                 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
@@ -260,7 +261,8 @@ class FilterSearch extends AbstractFilter
                             SET nAnzahlTreffer = ' . (int)$searchQuery->nAnzahlTreffer . ',
                                 nAnzahlGesuche = nAnzahlGesuche+1, 
                                 dZuletztGesucht = now()
-                            WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage, 4
+                            WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage,
+                        4
                     );
                 } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
                     Shop::DB()->delete(
@@ -398,7 +400,7 @@ class FilterSearch extends AbstractFilter
                 FROM (' . $query . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
                     ORDER BY ssMerkmal.cSuche' . $nLimit;
-            $searchFilters = Shop::DB()->query($query, 2);
+            $searchFilters = Shop::DB()->query($query, NiceDB::RET_ARRAY_OF_OBJECTS);
             $searchQueries = [];
             if ($this->productFilter->hasSearch()) {
                 $searchQueries[] = $this->productFilter->getSearch()->getValue();

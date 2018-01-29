@@ -43,6 +43,7 @@ EditorGUI.prototype = {
         this.configModal        = this.hostJq('#config-modal');
         this.configModalBody    = this.hostJq('#config-modal-body');
         this.templateForm       = this.hostJq('#template-form')         .submit(this.onTemplateSave.bind(this));
+        this.revisionList       = this.hostJq('#revision-list');
 
         this.portletBtns
             .on('dragstart', this.onPortletBtnDragStart.bind(this))
@@ -322,6 +323,28 @@ EditorGUI.prototype = {
                 self.iframeJq('#' + areaId).html(html);
             }
         );
+    },
+
+    updateRevisionList: function()
+    {
+        ioCall('getCmsPageRevisions', [this.editor.cPageIdHash], this.onGetRevisions.bind(this));
+    },
+
+    onGetRevisions: function(revisions)
+    {
+        var self = this;
+
+        console.log(revisions);
+
+        this.revisionList.empty();
+
+        revisions.forEach(function(rev) {
+            $('<a class="list-group-item revision-btn" href="#" data-revision-id="' + rev.id + '">')
+                .html(rev.timestamp)
+                .appendTo(self.revisionList);
+        });
+
+        this.revisionBtns();
     },
 
     onRevision: function(e)

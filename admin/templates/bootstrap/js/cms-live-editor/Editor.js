@@ -109,6 +109,7 @@ Editor.prototype = {
             function() {
                 self.gui.hideLoader();
                 self.gui.setUnsaved(false);
+                self.gui.updateRevisionList();
             },
             function () {
                 window.location.reload();

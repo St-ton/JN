@@ -89,6 +89,17 @@ class CMS
     }
 
     /**
+     * @param $pageID
+     * @return array
+     */
+    public function getPageRevisions($pageID)
+    {
+        return $this
+            ->getPage($pageID)
+            ->getRevisions();
+    }
+
+    /**
      * @return CMSPage
      */
     public function getCurrentPage()

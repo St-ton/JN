@@ -35,7 +35,7 @@ class PortletProductSlider extends CMSPortlet
 
     public function getFinalHtml()
     {
-        $articleIds   = explode(',', $this->properties['articleIds']);
+        $articleIds   = $this->getFilteredProductIds();
         $oArtikel_arr = [];
 
         foreach ($articleIds as $kArtikel) {
@@ -65,6 +65,7 @@ class PortletProductSlider extends CMSPortlet
         return [
             'title' => '',
             'articleIds' => '',
+            'filters' => [],
             'attr' => [
                 'class'               => '',
                 'data-wow-duration'  => '',

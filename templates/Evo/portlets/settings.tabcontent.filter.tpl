@@ -10,29 +10,33 @@
         var $filtersAvailable = $('#filters-available');
         var $filtersEnabled   = $('#filters-enabled');
 
+        enableFilters({$properties['filters']|json_encode});
         editor.setPropertiesCallback(saveFilterProperties);
         updateFiltersAvailable();
 
-        function saveFilterProperties(props)
+        function enableFilters(filters)
         {
-            props.filtersEnabled = getFiltersEnabled().map(
-                function (filter) {
-                    return {
-                        className: filter.className,
-                        value: filter.value,
-                    }
-                }
-            );
+            filters.forEach(enableFilter.bind(this, false));
+            updateFiltersAvailable();
         }
 
-        function getFiltersEnabled()
+        function enableFilter(doPostUpdate, filter)
         {
-            return $filtersEnabled.find('button').map(getElementFilterData).toArray();
+            $('<button class="btn btn-xs btn-primary" type="button">')
+                .data('filter', filter)
+                .html(filter.name)
+                .click(disableFilter)
+                .appendTo($filtersEnabled);
+
+            if(doPostUpdate) {
+                updateFiltersAvailable();
+            }
         }
 
-        function getElementFilterData()
+        function disableFilter()
         {
-            return $(this).data('filter');
+            $(this).remove();
+            updateFiltersAvailable();
         }
 
         function updateFiltersAvailable()
@@ -49,6 +53,16 @@
         function loadFiltersAvailable()
         {
             ioCall('getProductFilterOptions', [getFiltersEnabled()], renderFiltersAvailable);
+        }
+
+        function getFiltersEnabled()
+        {
+            return $filtersEnabled.find('button').map(getElementFilterData).toArray();
+        }
+
+        function getElementFilterData()
+        {
+            return $(this).data('filter');
         }
 
         function renderFiltersAvailable(filters)
@@ -72,25 +86,21 @@
             $('<button class="btn btn-xs btn-primary" type="button">')
                 .data('filter', filter)
                 .html(filter.name + ' (' + filter.count + ')')
-                .click(enableFilter.bind(this, filter))
+                .click(enableFilter.bind(this, true, filter))
                 .appendTo($filtersAvailable);
         }
 
-        function enableFilter(filter)
+        function saveFilterProperties(props)
         {
-            $('<button class="btn btn-xs btn-primary" type="button">')
-                .data('filter', filter)
-                .html(filter.name)
-                .click(disableFilter)
-                .appendTo($filtersEnabled);
-
-            updateFiltersAvailable();
-        }
-
-        function disableFilter()
-        {
-            $(this).remove();
-            updateFiltersAvailable();
+            props.filters = getFiltersEnabled().map(
+                function (filter) {
+                    return {
+                        className: filter.className,
+                        name: filter.name,
+                        value: filter.value,
+                    }
+                }
+            );
         }
     </script>
 </div>

@@ -273,10 +273,7 @@ class CMS
 
         foreach ($filtersEnabled as $filterEnabled) {
             $filtersEnabledMap[$filterEnabled['className'] . ':' . $filterEnabled['value']] = true;
-            $productFilter->addActiveFilter(
-                new $filterEnabled['className']($productFilter),
-                $filterEnabled['value']
-            );
+            $productFilter->addActiveFilter(new $filterEnabled['className']($productFilter), $filterEnabled['value']);
         }
 
         $productFilter->getProducts();

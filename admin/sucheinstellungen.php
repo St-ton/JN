@@ -103,7 +103,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 }
 
 if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
-    if ($_POST['suche_fulltext'] === 'Y') {
+    if (isset($_POST['suche_fulltext']) && $_POST['suche_fulltext'] === 'Y') {
         if (version_compare($mysqlVersion, '5.6', '<')) {
             //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
             $_POST['suche_fulltext'] = 'N';
@@ -134,7 +134,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
             'suche_prio_han',
             'suche_prio_anmerkung'
         ] as $sucheParam) {
-        if ($_POST[$sucheParam] != $Einstellungen['artikeluebersicht'][$sucheParam]) {
+        if (isset($_POST[$sucheParam]) && ($_POST[$sucheParam] != $Einstellungen['artikeluebersicht'][$sucheParam])) {
             $fulltextChanged = true;
             break;
         }
@@ -145,7 +145,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
         $smarty->assign('createIndex', false);
     }
 
-    if ($_POST['suche_fulltext'] === 'Y' && $fulltextChanged) {
+    if (isset($_POST['suche_fulltext']) && $_POST['suche_fulltext'] === 'Y' && $fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde aktiviert.';
     } elseif ($fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde deaktiviert.';

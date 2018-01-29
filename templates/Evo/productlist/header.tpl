@@ -103,7 +103,7 @@
 
 {include file='productwizard/index.tpl'}
 
-{if count($Suchergebnisse->getProducts()->elemente) > 0}
+{if count($Suchergebnisse->getProducts()) > 0}
     <form id="improve_search" action="{$ShopURL}" method="get" class="form-inline clearfix">
         {if $NaviFilter->hasCategory()}
             <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />
@@ -166,7 +166,7 @@
     </form>
 {/if}
 
-{if $Suchergebnisse->getProducts()->elemente|@count <= 0 && isset($KategorieInhalt)}
+{if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
     {if isset($KategorieInhalt->TopArtikel->elemente)}
         {lang key='topOffer' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}

@@ -49,18 +49,18 @@
             {/if}
 
             {block name="productlist-results"}
-            <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list" itemprop="mainEntity" itemscope itemtype="http://schema.org/ItemList">
-                {foreach name=artikel from=$Suchergebnisse->getProducts()->elemente item=Artikel}
-                    <div class="product-wrapper {$grid}" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                        <meta itemprop="position" content="{$smarty.foreach.artikel.iteration}">
-                        {if $style === 'list'}
-                            {include file='productlist/item_list.tpl' tplscope=$style}
-                        {else}
-                            {include file='productlist/item_box.tpl' tplscope=$style class='thumbnail'}
-                        {/if}
-                    </div>
-                {/foreach}
-            </div>
+                <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list" itemprop="mainEntity" itemscope itemtype="http://schema.org/ItemList">
+                    {foreach name=artikel from=$Suchergebnisse->getProducts() item=Artikel}
+                        <div class="product-wrapper {$grid}" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                            <meta itemprop="position" content="{$smarty.foreach.artikel.iteration}">
+                            {if $style === 'list'}
+                                {include file='productlist/item_list.tpl' tplscope=$style}
+                            {else}
+                                {include file='productlist/item_box.tpl' tplscope=$style class='thumbnail'}
+                            {/if}
+                        </div>
+                    {/foreach}
+                </div>
             {/block}
 
             {block name="productlist-footer"}

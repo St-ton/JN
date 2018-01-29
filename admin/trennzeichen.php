@@ -16,7 +16,6 @@ $cFehler  = '';
 $step     = 'trennzeichen_uebersicht';
 // Speichern
 if (verifyGPCDataInteger('save') === 1 && validateToken()) {
-    // Plausi
     $oPlausiTrennzeichen = new PlausiTrennzeichen();
     $oPlausiTrennzeichen->setPostVar($_POST);
     $oPlausiTrennzeichen->doPlausi();

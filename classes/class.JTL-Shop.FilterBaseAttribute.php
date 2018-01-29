@@ -85,7 +85,8 @@ class FilterBaseAttribute extends AbstractFilter
                     AND kSprache = ' . Shop::getLanguage() . '
                 JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 ' . $oSQL->cMMJOIN . '
-                WHERE ' . $oSQL->cMMWhere, 2
+                WHERE ' . $oSQL->cMMWhere,
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
         if (count($oMerkmalWert_arr) > 0) {
             $oMerkmalWert = $oMerkmalWert_arr[0];

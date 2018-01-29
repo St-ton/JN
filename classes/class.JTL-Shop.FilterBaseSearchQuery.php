@@ -286,7 +286,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     FROM (' . $query . ') AS ssMerkmal
                         GROUP BY ssMerkmal.kSuchanfrage
                         ORDER BY ssMerkmal.cSuche' . $nLimit,
-                2
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             $kSuchanfrage_arr = [];
             if ($this->productFilter->hasSearch()) {
@@ -406,7 +406,8 @@ class FilterBaseSearchQuery extends AbstractFilter
                 LEFT JOIN tsuchcachetreffer 
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
                 WHERE tsuchcache.dGueltigBis IS NOT NULL
-                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()', 3
+                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()',
+            NiceDB::RET_AFFECTED_ROWS
         );
 
         // Suchcache checken, ob bereits vorhanden
@@ -417,7 +418,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     AND cSuche = :search
                     AND (dGueltigBis > now() OR dGueltigBis IS NULL)',
             ['lang' => $kSprache, 'search' => Shop::DB()->escape($cSuche)],
-            1
+            NiceDB::RET_SINGLE_OBJECT
         );
 
         if (isset($oSuchCache->kSuchCache) && $oSuchCache->kSuchCache > 0) {
@@ -792,7 +793,8 @@ class FilterBaseSearchQuery extends AbstractFilter
             'INSERT INTO tsuchcachetreffer ' .
             $cSQL .
                 ' GROUP BY kArtikelTMP
-                LIMIT ' . (int)$this->getConfig()['artikeluebersicht']['suche_max_treffer'], 3
+                LIMIT ' . (int)$this->getConfig()['artikeluebersicht']['suche_max_treffer'],
+            NiceDB::RET_AFFECTED_ROWS
         );
 
         return $kSuchCache;
@@ -884,7 +886,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
                     GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
 
-            Shop::DB()->query($cISQL, 3);
+            Shop::DB()->query($cISQL, NiceDB::RET_AFFECTED_ROWS);
         }
 
         return $oSuchCache->kSuchCache;

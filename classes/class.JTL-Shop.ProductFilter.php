@@ -1590,8 +1590,6 @@ class ProductFilter
      */
     public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = 0)
     {
-        $_SESSION['nArtikelUebersichtVLKey_arr'] = []; // Nur Artikel, die auch wirklich auf der Seite angezeigt werden
-
         $limitPerPage = $limit > 0 ? $limit : $this->metaData->getProductsPerPageLimit();
         $nLimitN      = $limitPerPage * ($this->nSeite - 1);
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
@@ -1662,18 +1660,12 @@ class ProductFilter
                 ? 1
                 : 0;
             foreach (array_slice($productKeys, $nLimitN, $limitPerPage) as $id) {
-                $product = (new Artikel())->fuelleArtikel($id, $opt);
-                // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                if ($product !== null && $product->nIstVater === 0) {
-                    $_SESSION['nArtikelUebersichtVLKey_arr'][] = $id;
-                }
-                $productList->addItem($product);
+                $productList->addItem((new Artikel())->fuelleArtikel($id, $opt));
             }
             $this->searchResults->setProductCount($productList->count());
         }
         $this->url = $this->filterURL->createUnsetFilterURLs($this->url);
         $_SESSION['oArtikelUebersichtKey_arr']   = $productKeys;
-        $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
         $this->searchResults->setProducts($productList);
 

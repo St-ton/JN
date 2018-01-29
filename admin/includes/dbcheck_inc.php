@@ -22,7 +22,7 @@ function getDBStruct($extended = false)
     if ($extended) {
         $cDBStruct_arr =& $dbStruct['extended'];
 
-        if (version_compare($mysqlVersion->innodb->version, '5.6') >= 0) {
+        if (version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
             $dbStatus = Shop::DB()->queryPrepared(
                 "SHOW OPEN TABLES
                     WHERE `Database` LIKE :schema", [
@@ -58,10 +58,10 @@ function getDBStruct($extended = false)
                 $cDBStruct_arr[$cTable]          = $oData;
                 $cDBStruct_arr[$cTable]->Columns = [];
 
-                if (version_compare($mysqlVersion->innodb->version, '5.6') >= 0) {
-                    $cDBStruct_arr[$cTable]->Locked = isset($dbLocked[$cTable]) ? $dbLocked[$cTable] : 0;
-                } else {
+                if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                     $cDBStruct_arr[$cTable]->Locked = strpos($oData->TABLE_COMMENT, ':Migrating') !== false ? 1 : 0;
+                } else {
+                    $cDBStruct_arr[$cTable]->Locked = isset($dbLocked[$cTable]) ? $dbLocked[$cTable] : 0;
                 }
             } else {
                 $cDBStruct_arr[$cTable] = [];
@@ -234,11 +234,11 @@ function doEngineUpdateScript($fileName, $shopTables)
     foreach ($oTable_arr as $oTable) {
         $fulltextSQL = [];
 
-        if (!in_array($oTable->TABLE_NAME, $shopTables)) {
+        if (!in_array($oTable->TABLE_NAME, $shopTables, true)) {
             continue;
         }
 
-        if (version_compare($mysqlVer->innodb->version, '5.6') < 0) {
+        if (version_compare($mysqlVer->innodb->version, '5.6', '<')) {
             // Fulltext indizes are not supported for innoDB on MySQL < 5.6
             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($oTable->TABLE_NAME);
 
@@ -276,7 +276,7 @@ function doEngineUpdateScript($fileName, $shopTables)
 
     $result .= $nl;
 
-    if (version_compare($mysqlVer->innodb->version, '5.6') < 0) {
+    if (version_compare($mysqlVer->innodb->version, '5.6', '<')) {
         // Fulltext search is not available on MySQL < 5.6
         $result .= "--$nl";
         $result .= "-- Fulltext search is not available on MySQL < 5.6$nl";
@@ -327,7 +327,7 @@ function doMigrateToInnoDB_utf8($status = 'start', $table = '', $step = 1, $excl
                 $oTable = DBMigrationHelper::getTable($table);
                 if (is_object($oTable) && DBMigrationHelper::isTableNeedMigration($oTable) && !in_array($oTable->TABLE_NAME, $exclude)) {
                     if (!DBMigrationHelper::isTableInUse($table)) {
-                        if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
+                        if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                             // If MySQL version is lower than 5.6 use alternative lock method and delete all fulltext indexes because these are not supported
                             Shop::DB()->executeQuery(DBMigrationHelper::sqlAddLockInfo($oTable), 10);
                             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($oTable->TABLE_NAME);
@@ -345,7 +345,7 @@ function doMigrateToInnoDB_utf8($status = 'start', $table = '', $step = 1, $excl
                         } else {
                             $result->status = 'failure';
                         }
-                        if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
+                        if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                             Shop::DB()->executeQuery(DBMigrationHelper::sqlClearLockInfo($oTable), 10);
                         }
                     } else {
@@ -410,7 +410,7 @@ function doMigrateToInnoDB_utf8($status = 'start', $table = '', $step = 1, $excl
             unset($_SESSION['oKategorie_arr_new']);
 
             // Reset Fulltext search if version is lower than 5.6
-            if (version_compare($mysqlVersion->innodb->version, '5.6') < 0) {
+            if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                 Shop::DB()->executeQuery("UPDATE `teinstellungen` SET `cWert` = 'N' WHERE `cName` = 'suche_fulltext'", 10);
             }
 

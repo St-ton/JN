@@ -243,7 +243,7 @@
             step = 1;
         }
         if (typeof table !== 'undefined' && table !== '') {
-            updateModalWait('Migrate ' + table + ' Schritt ' + step);
+            updateModalWait('Migrieren von ' + table + ' - Schritt ' + step);
         }
         ioCall('migrateToInnoDB_utf8', ['migrate', table, step],
             function (data, context) {

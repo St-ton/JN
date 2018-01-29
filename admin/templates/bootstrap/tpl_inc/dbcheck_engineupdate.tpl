@@ -181,7 +181,7 @@
                 step = 1;
             }
             if (typeof table !== 'undefined' && table !== null && table !== '') {
-                updateModalWait('Migrate ' + table + ' Schritt ' + step);
+                updateModalWait('Migrieren von ' + table + ' - Schritt ' + step);
             }
             if (typeof exclude === 'undefined' && exclude !== null) {
                 exclude = [];
@@ -271,7 +271,7 @@
 {else}
     {if !$DB_Version->innodb->support}
     <div class="alert alert-danger">
-        <h3 class="panel-title">Keine InnoDB Unterstützung verfügbar!</h3>
+        <h3 class="panel-title">Keine InnoDB-Unterstützung verfügbar!</h3>
         Ihre aktuelle Datenbankversion {$DB_Version->server} unterstützt keine InnoDB-Tabellen - eine Struktur-Migration ist nicht möglich!<br />
         Bitte setzen Sie sich mit Ihrem Datenbank-Administrator oder Ihrem Hoster zwecks Aktivierung der InnoDB-Unterstützung in Verbindung.
     </div>

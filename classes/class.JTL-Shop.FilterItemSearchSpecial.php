@@ -185,11 +185,10 @@ class FilterItemSearchSpecial extends AbstractFilter
                     break;
     
                 case SEARCHSPECIALS_TOPREVIEWS:
-                    if (!$this->productFilter->hasPriceRangeFilter()) {
+                    if (!$this->productFilter->hasRatingFilter()) {
                         $minStars = ($m = $conf['boxen']['boxen_topbewertet_minsterne']) > 0
                             ? (int)$m
                             : 4;
-    
                         $conditions[] = 'ROUND(taex.fDurchschnittsBewertung) >= ' . $minStars;
                     }
                     break;
@@ -244,7 +243,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     break;
 
                 case SEARCHSPECIALS_TOPREVIEWS:
-                    if ($this->productFilter->hasRatingFilter()) {
+                    if (!$this->productFilter->hasRatingFilter()) {
                         $joins[] = (new FilterJoin())
                             ->setType($joinType)
                             ->setTable('tartikelext AS taex ')

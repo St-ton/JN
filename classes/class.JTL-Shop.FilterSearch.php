@@ -327,7 +327,7 @@ class FilterSearch extends AbstractFilter
                 /** @var FilterSearch $f */
                 return $f->getValue();
             }, $searchFilter);
-        } elseif (isset($searchFilter->kSuchCache)) {
+        } elseif ($searchFilter->kSuchCache > 0) {
             $searchCache[] = (int)$searchFilter->kSuchCache;
             $count         = 1;
         } elseif (($value = $searchFilter->getValue()) > 0) {
@@ -437,10 +437,7 @@ class FilterSearch extends AbstractFilter
             foreach ($searchFilters as $searchFilter) {
                 $class = rand(1, 10);
                 if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
-                    $class = round(
-                            ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
-                            $nPrioStep
-                        ) + 1;
+                    $class = round(($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
                 }
                 $options[] = (new FilterOption())
                     ->setType($this->getType())

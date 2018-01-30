@@ -21,6 +21,7 @@ EditorGUI.prototype = {
 
     initHostGUI: function()
     {
+
         this.hostJq                   = $;
         this.iframe                   = this.hostJq('#iframe');
         this.loaderModal              = this.hostJq('#loader-modal');
@@ -30,7 +31,7 @@ EditorGUI.prototype = {
         this.portletLabel             = this.hostJq('#portlet-label');
         this.portletToolbar           = this.hostJq('#pinbar');
         this.portletBtns              = this.hostJq('.portlet-button');
-        this.templateBtns             = this.hostJq('.template-button');
+        //this.templateBtns             = this.hostJq('.template-button');
         this.previewBtn               = this.hostJq('#btn-preview')               .click(this.onPreview.bind(this));
         this.editorCloseBtn           = this.hostJq('#cle-btn-close-editor')      .click(this.onEditorClose.bind(this));
         this.editorSaveBtn            = this.hostJq('#cle-btn-save-editor')       .click(this.onEditorSave.bind(this));
@@ -49,21 +50,20 @@ EditorGUI.prototype = {
         this.templateDeleteForm       = this.hostJq('#template-delete-form')      .submit(this.onTemplateDeleteConfirm.bind(this));
         this.revisionList             = this.hostJq('#revision-list');
         this.helpBtn                  = this.hostJq('#help')                      .click(this.onHelp.bind(this));
+        this.templateBtnBlueprint     = this.hostJq('#template-btn-blueprint');
+        this.templateList             = this.hostJq('#templates');
 
         this.portletBtns
             .on('dragstart', this.onPortletBtnDragStart.bind(this))
             .on('dragend', this.onPortletBtnDragEnd.bind(this));
 
-        this.templateBtns
-            .on('dragstart', this.onTemplateBtnDragStart.bind(this))
-            .on('dragend', this.onPortletBtnDragEnd.bind(this));
-
         this.revisionBtns();
+        this.updateTemplateList();
     },
 
     initIframeGUI: function()
     {
-        this.iframeCtx  = this.iframe[0].contentWindow
+        this.iframeCtx  = this.iframe[0].contentWindow;
         this.iframeJq   = this.iframeCtx.$;
         this.iframeBody = this.iframeJq('body');
         this.loadIframeStylesheet(this.templateUrl + 'css/cms-live-editor-iframe.css');
@@ -82,7 +82,21 @@ EditorGUI.prototype = {
 
     revisionBtns: function()
     {
-        return this.hostJq('.revision-btn').off('click').click(this.onRevision.bind(this));
+        return this.hostJq('.revision-btn')
+            .off('click').click(this.onRevision.bind(this));
+    },
+
+    templateBtns: function()
+    {
+        return this.hostJq('.template-button')
+            .off('dragstart').on('dragstart', this.onTemplateBtnDragStart.bind(this))
+            .off('dragend').on('dragend', this.onPortletBtnDragEnd.bind(this));
+    },
+
+    templateDeleteBtns: function()
+    {
+        return this.hostJq('.template-delete')
+            .off('click').click(this.onTemplateDelete.bind(this));
     },
 
     areas: function()
@@ -177,9 +191,17 @@ EditorGUI.prototype = {
     {
         var portlet = this.iframeJq(content);
 
-        portlet.attr('data-portletid', id);
-        portlet.attr('data-portlettitle', title);
-        portlet.attr('data-properties', JSON.stringify(props));
+        if (id !== undefined) {
+            portlet.attr('data-portletid', id);
+        }
+
+        if (title !== undefined) {
+            portlet.attr('data-portlettitle', title);
+        }
+
+        if (props !== undefined) {
+            portlet.attr('data-properties', JSON.stringify(props));
+        }
 
         return portlet;
     },
@@ -335,11 +357,14 @@ EditorGUI.prototype = {
         ioCall('getCmsPageRevisions', [this.editor.cPageIdHash], this.onGetRevisions.bind(this));
     },
 
+    updateTemplateList: function()
+    {
+        ioCall('getCmsTemplates', [], this.onGetTemplates.bind(this));
+    },
+
     onGetRevisions: function(revisions)
     {
         var self = this;
-
-        console.log(revisions);
 
         this.revisionList.empty();
 
@@ -350,6 +375,36 @@ EditorGUI.prototype = {
         });
 
         this.revisionBtns();
+    },
+
+    onGetTemplates: function(templates)
+    {
+        var self = this;
+
+        this.templateList.empty();
+
+        templates.forEach(function (template) {
+            var newBtn = self.templateBtnBlueprint
+                .clone()
+                .attr('id', '')
+                .css('display', '');
+            newBtn
+                .find('a')
+                .attr('data-title', template.cName)
+                .attr('data-template', template.kTemplate)
+                .attr('data-content', template.fullPreviewHtml);
+            newBtn
+                .find('span')
+                .html(template.cName);
+            newBtn
+                .find('button')
+                .attr('data-template', template.kTemplate);
+            newBtn
+                .appendTo(self.templateList);
+        });
+
+        this.templateBtns();
+        this.templateDeleteBtns();
     },
 
     onRevision: function(e)
@@ -415,9 +470,14 @@ EditorGUI.prototype = {
         this.templateDeleteModalInput.val(elm.data('template'));
     },
 
-    onTemplateDeleteConfirm: function(e) {
+    onTemplateDeleteConfirm: function(e)
+    {
+        var self = this;
         var elm = this.templateDeleteModalInput.val();
-        this.editor.io.deleteTemplate(elm);
+
+        this.editor.io.deleteTemplate(elm, function() {
+            self.updateTemplateList();
+        });
         this.templateDeleteModal.modal('hide');
 
         e.preventDefault();
@@ -525,7 +585,7 @@ EditorGUI.prototype = {
     onTemplateBtnDragStart: function (e)
     {
         var templateBtn = this.hostJq(e.target).closest('.template-button');
-        var template = this.iframeJq(templateBtn.data('content'));
+        var template = this.createPortlet(templateBtn.data('content'));
 
         this.setDragged(template);
 

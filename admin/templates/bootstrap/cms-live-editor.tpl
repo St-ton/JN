@@ -93,12 +93,12 @@
     <div id="main-frame">
         <div id="sidebar-panel">
             <ul class="nav nav-tabs">
-                <li class="active"><a href="#elements" data-toggle="tab">Elemente</a></li>
-                <li><a href="#templates" data-toggle="tab">Templates</a></li>
+                <li><a href="#elements" data-toggle="tab">Elemente</a></li>
+                <li class="active"><a href="#templates" data-toggle="tab">Templates</a></li>
                 <li><a href="#revisions" data-toggle="tab">Revisionen</a></li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane active" id="elements">
+                <div class="tab-pane" id="elements">
                     {foreach $oPortlet_arr as $oPortlet}
                         <a href="#" class="portlet-button btn btn-default btn-lg btn-block"
                            data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
@@ -110,18 +110,19 @@
                         </a>
                     {/foreach}
                 </div>
-                <div class="tab-pane" id="templates">
-                    {foreach $oTemplate_arr as $oTemplate}
-                        <div class="btn-group" role="group">
-                            <a href="#" class="template-button btn btn-default"
-                               data-title="{$oTemplate->cName}"
-                               data-template="{$oTemplate->kTemplate}"
-                               data-content="{$oTemplate->getFullPreviewHtml()|escape:'htmlall'}">
-                                <i class="fa fa-puzzle-piece"></i> {$oTemplate->cName}
-                            </a>
-                            <button class="template-delete btn btn-danger" data-template="{$oTemplate->kTemplate}"> &times; </button>
-                        </div>
-                    {/foreach}
+                <div class="tab-pane active" id="templates">
+                    <!-- blueprint -->
+                    <div class="btn-group" role="group" style="display:none" id="template-btn-blueprint">
+                        <a href="#" class="template-button btn btn-default"
+                           data-title="Template-Title"
+                           data-template="42"
+                           data-content="Template-HTML">
+                            <i class="fa fa-puzzle-piece"></i> <span>Template-Title</span>
+                        </a>
+                        <button class="template-delete btn btn-danger"
+                                data-template="42"> <i class="fa fa-times"></i> </button>
+                    </div>
+                    <!-- /blueprint -->
                 </div>
                 <div class="tab-pane" id="revisions">
                     <div class="list-group">

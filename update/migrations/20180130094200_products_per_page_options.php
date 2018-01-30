@@ -14,6 +14,10 @@ class Migration_20180130094200 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Add products per page options';
 
+    /**
+     * @return bool|void
+     * @throws Exception
+     */
     public function up()
     {
         $this->setConfig(
@@ -38,8 +42,12 @@ class Migration_20180130094200 extends Migration implements IMigration
                 'cBeschreibung' => 'Mit Komma getrennt, -1 für alle',
             ]
         );
+        Shopsetting::getInstance()->reset();
     }
 
+    /**
+     * @return bool|void
+     */
     public function down()
     {
         $this->removeConfig('products_per_page_list');

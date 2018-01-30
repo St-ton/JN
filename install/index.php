@@ -188,10 +188,11 @@ switch ($step) {
             $cHinweis .= '<br />' . $DB->getError() . ' Nr: ' . $DB->getErrorCode();
         }
 
-        $syncLogin        = new stdClass();
-        $syncLogin->cMail = '';
-        $syncLogin->cName = $_POST['syncuser'];
-        $syncLogin->cPass = password_hash($_POST['syncpass'], PASSWORD_DEFAULT);
+        $syncLogin             = new stdClass();
+        $syncLogin->kSynclogin = 1;
+        $syncLogin->cMail      = '';
+        $syncLogin->cName      = $_POST['syncuser'];
+        $syncLogin->cPass      = password_hash($_POST['syncpass'], PASSWORD_DEFAULT);
 
         if (!$DB->insertRow('tsynclogin', $syncLogin)) {
             $cHinweis .= '<br />' . $DB->getError() . ' Nr: ' . $DB->getErrorCode();
@@ -207,8 +208,8 @@ switch ($step) {
                 $_POST['DBname'],
                 (!empty($_POST['DBsocket']))
                     ? $_POST['DBsocket']
-                    : null)
-            ) {
+                    : null
+            )) {
                 $cHinweis  = 'Beim Schreiben der Konfigurationsdatei ist ein unbekannter Fehler aufgetreten.';
                 $configErr = true;
             } else {

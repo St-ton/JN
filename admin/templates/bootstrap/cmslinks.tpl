@@ -1,5 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='cmslinks'}
+{*TODO Editor: Texte bearbeiten*}
 {include file='tpl_inc/seite_header.tpl' cTitel=#cmsLinks# cBeschreibung=#cmsLinksDesc# cDokuURL=#cmsLinksUrl#}
 
 {if $links|@count > 0 && $links}

@@ -225,27 +225,32 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 if ($nLetztesBild > 0) {
                     $nZaehler = $nLetztesBild;
                 }
-
-                for ($i = $nZaehler; $i < (count($_FILES['Bilder']['name']) + $nZaehler); $i++) {
-                    $extension = substr(
-                        $_FILES['Bilder']['type'][$i - $nZaehler],
-                        strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/') + 1,
-                        strlen($_FILES['Bilder']['type'][$i - $nZaehler] -
-                            strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/')) + 1
-                    );
-                    //not elegant, but since it's 99% jpg..
-                    if ($extension === 'jpe') {
-                        $extension = 'jpg';
-                    }
-                    //check if image exists and delete
-                    foreach ($oAlteBilder_arr as $oBild) {
-                        if (strpos($oBild->cDatei, 'Bild' . ($i + 1) . '.') !== false &&
-                            $_FILES['Bilder']['name'][$i - $nZaehler] != '') {
-                            loescheNewsBild($oBild->cName, $kNews, $cUploadVerzeichnis);
+                $imageCount = (count($_FILES['Bilder']['name']) + $nZaehler);
+                for ($i = $nZaehler; $i < $imageCount; ++$i) {
+                    if (!empty($_FILES['Bilder']['size'][$i - $nZaehler])
+                        && $_FILES['Bilder']['error'][$i - $nZaehler] === UPLOAD_ERR_OK
+                    ) {
+                        $type = $_FILES['Bilder']['type'][$i - $nZaehler];
+                        $extension = substr(
+                            $type,
+                            strpos($type, '/') + 1,
+                            strlen($type - strpos($type, '/')) + 1
+                        );
+                        //not elegant, but since it's 99% jpg..
+                        if ($extension === 'jpe') {
+                            $extension = 'jpg';
                         }
+                        //check if image exists and delete
+                        foreach ($oAlteBilder_arr as $oBild) {
+                            if (strpos($oBild->cDatei, 'Bild' . ($i + 1) . '.') !== false
+                                && $_FILES['Bilder']['name'][$i - $nZaehler] != ''
+                            ) {
+                                loescheNewsBild($oBild->cName, $kNews, $cUploadVerzeichnis);
+                            }
+                        }
+                        $cUploadDatei = $cUploadVerzeichnis . $kNews . '/Bild' . ($i + 1) . '.' . $extension;
+                        move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $nZaehler], $cUploadDatei);
                     }
-                    $cUploadDatei = $cUploadVerzeichnis . $kNews . '/Bild' . ($i + 1) . '.' . $extension;
-                    move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $nZaehler], $cUploadDatei);
                 }
             }
             $upd                = new stdClass();

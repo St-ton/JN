@@ -222,7 +222,7 @@ class CMS
         $oTemplate_arr   = [];
 
         foreach ($oDbTemplate_arr as $i => $oDbTemplate) {
-            $oTemplate_arr[] = $this->createTemplate($oDbTemplate->cName);
+            $oTemplate_arr[] = $this->createTemplate($oDbTemplate->cName)->renderFullPreviewHtml();
         }
 
         return $oTemplate_arr;

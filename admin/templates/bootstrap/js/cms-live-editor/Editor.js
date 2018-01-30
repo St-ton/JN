@@ -119,7 +119,15 @@ Editor.prototype = {
 
     storeTemplate: function (portlet, templateName)
     {
-        this.io.storePortletAsTemplate(portlet, templateName);
+        var self = this;
+
+        this.io.storePortletAsTemplate(
+            portlet,
+            templateName,
+            function () {
+                self.gui.updateTemplateList();
+            }
+        );
     },
 
     deleteTemplate: function (kTemplate)

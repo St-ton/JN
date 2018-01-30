@@ -25,6 +25,11 @@ class CMSTemplate
     public $data = [];
 
     /**
+     * @var string
+     */
+    public $fullPreviewHtml = '';
+
+    /**
      * @param int $kTemplate
      */
     public function __construct($kTemplate = 0)
@@ -52,6 +57,13 @@ class CMSTemplate
             // the corresponding portlet of this template could not be created
             return '';
         }
+    }
+
+    public function renderFullPreviewHtml()
+    {
+        $this->fullPreviewHtml = $this->getFullPreviewHtml();
+
+        return $this;
     }
 
     /**

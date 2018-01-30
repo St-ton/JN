@@ -207,7 +207,7 @@ EditorIO.prototype = {
         success = success || this.noop;
         error = error || this.noop;
 
-        ioCall('storeCmsTemplate', [templateName, this.portletToJson(portlet)], success.bind(this), error.bind(this));
+        ioCall('storeCmsTemplate', [templateName, this.portletToJson(portlet)], success, error);
     },
 
     deleteTemplate: function(kTemplate, success, error)
@@ -215,6 +215,6 @@ EditorIO.prototype = {
         success = success || this.noop;
         error = error || this.noop;
 
-        ioCall('deleteCmsTemplate', [kTemplate], success.bind(this), error.bind(this));
+        ioCall('deleteCmsTemplate', [kTemplate], success, error);
     },
 };

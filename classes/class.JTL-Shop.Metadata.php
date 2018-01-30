@@ -1080,7 +1080,7 @@ class Metadata
                         $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
                         if (isset($_SESSION['ArtikelProSeite'])) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
+                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] !== 0) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
                                 (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                         }
@@ -1089,7 +1089,7 @@ class Metadata
                         $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_GALERIE;
                         if (isset($_SESSION['ArtikelProSeite'])) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
+                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] !== 0) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
                                 (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                         }
@@ -1124,7 +1124,7 @@ class Metadata
                 $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
                 if (isset($_SESSION['ArtikelProSeite'])) {
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
+                } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] !== 0) {
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
                         (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                 }
@@ -1140,18 +1140,19 @@ class Metadata
                             (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                     }
                     break;
-                case ERWDARSTELLUNG_ANSICHT_GALERIE:
-                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                    if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
-                            (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
-                    }
-                    break;
                 case ERWDARSTELLUNG_ANSICHT_MOSAIK:
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
                     if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'] > 0) {
                         $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
                             (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
+                    }
+                    break;
+                case ERWDARSTELLUNG_ANSICHT_GALERIE:
+                default:
+                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
+                    if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
+                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
+                            (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                     }
                     break;
             }
@@ -1452,16 +1453,16 @@ class Metadata
      */
     public function getProductsPerPageLimit()
     {
-        if ($this->productFilter->getProductLimit() > 0) {
+        if ($this->productFilter->getProductLimit() !== 0) {
             $limit = (int)$this->productFilter->getProductLimit();
-        } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
+        } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] !== 0) {
             $limit = (int)$_SESSION['ArtikelProSeite'];
         } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel)
-            && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0
+            && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel !== 0
         ) {
             $limit = (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
         } else {
-            $limit = ($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0
+            $limit = ($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) !== 0
                 ? (int)$max
                 : 20;
         }

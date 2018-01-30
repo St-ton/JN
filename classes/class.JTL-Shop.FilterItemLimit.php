@@ -60,8 +60,8 @@ class FilterItemLimit extends AbstractFilter
         $additionalFilter = new self($this->productFilter);
         $params           = $this->productFilter->getParams();
         $view             = $this->productFilter->getMetaData()->getExtendedView($params['nDarstellung'])->nDarstellung;
-        $optionIdx        = $view === ERWDARSTELLUNG_ANSICHT_LISTE ?
-            'products_per_page_list'
+        $optionIdx        = $view === ERWDARSTELLUNG_ANSICHT_LISTE
+            ? 'products_per_page_list'
             : 'products_per_page_gallery';
         $limitOptions     = explode(',', $this->getConfig()['artikeluebersicht'][$optionIdx]);
         foreach ($limitOptions as $i => $limitOption) {

@@ -43,11 +43,12 @@ EditorGUI.prototype = {
         this.configModal              = this.hostJq('#config-modal');
         this.configModalBody          = this.hostJq('#config-modal-body');
         this.templateDeleteModal      = this.hostJq('#template-delete-modal');
-        this.templateDeleteModalInput = this.hostJq('#template-ktemplate')
+        this.templateDeleteModalInput = this.hostJq('#template-ktemplate');
         this.templateForm             = this.hostJq('#template-form')             .submit(this.onTemplateSave.bind(this));
         this.templateDeleteBtn        = this.hostJq('.template-delete')           .click(this.onTemplateDelete.bind(this));
         this.templateDeleteForm       = this.hostJq('#template-delete-form')      .submit(this.onTemplateDeleteConfirm.bind(this));
         this.revisionList             = this.hostJq('#revision-list');
+        this.helpBtn                  = this.hostJq('#help')                      .click(this.onHelp.bind(this));
 
         this.portletBtns
             .on('dragstart', this.onPortletBtnDragStart.bind(this))
@@ -614,5 +615,93 @@ EditorGUI.prototype = {
             this.onTrash(e);
         }
     },
+
+    onHelp: function(e)
+    {
+        // Todo Editor: verschiedene Touren anlegen
+        // Todo Editor: debug ausschalten
+        var confModal = this.configModal;
+        var tour = new Tour({
+            debug: true,
+            orphan: true,
+            template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><div class='popover-navigation'><button class='btn btn-default' data-role='prev'>« Prev</button><span data-role='separator'>|</span><button class='btn btn-default' data-role='next'>Next »</button><button class='btn btn-primary' data-role='end' style='margin-left: 15px;'>End tour</button></div></div>",
+            steps: [
+                {
+                    backdrop: true,
+                    title: "Willkommen",
+                    content: "In dieser kurzen Einführung wollen wir dir einen Überblick über dieses neue Feature geben."
+                },
+                {
+                    backdrop: true,
+                    element: "#sidebar-panel",
+                    title: "Aufteilung",
+                    content: "Grundsätzlich ist der Editor in die zwei Bereich aufgeteilt.<br/>Hier siehst du die Sidebar."
+                },
+                {
+                    backdrop: true,
+                    element: "#iframe-panel",
+                    placement: "top",
+                    title: "Aufteilung",
+                    content: "In diesem Bereich wird der aktuelle Stand deiner Bearbeitung gezeigt."
+                },
+                {
+                    backdrop: true,
+                    element: "#elements",
+                    placement: "right",
+                    title: "Portlets",
+                    content: "Das ist eines unserer Portlets. Diese kannst du nutzen um deine Seiten mit Inhalt zu füllen."
+                },
+                {
+                    backdrop: true,
+                    element: "#iframe",
+                    placement: "top",
+                    title: "Portlets",
+                    content: "Die grauen Bereiche auf dieser Seite zeigen dir wo du Portlets ablegen kannst."
+                },
+                {
+                    element: "#elements > .portlet-button:first-child",
+                    placement: "bottom",
+                    title: "Portlets",
+                    reflex: 'dragend',
+                    content: "Ziehe nun das Portlet 'Überschrift' in den obersten grauen Bereich und du hast den ersten Inhalt auf dieser Seite eingefügt."
+                },
+                {
+                    element: $("#iframe").contents().find('#btn-config'),
+                    placement: "top",
+                    title: "Einstellungen",
+                    reflex: true,
+                    onNext: function (tour) {
+                        confModal.on('shown.bs.modal', function () {
+                            tour.goTo(7);
+                        });
+                    },
+                    content: "An diesem Portlet siehst du eine Leiste mit verschiedenen Icons. Klicke auf das Zahnrad um die Einstellungen zu öffnen."
+                },
+                {
+                    element: "#cle-btn-save-config",
+                    placement: "top",
+                    title: "Einstellungen",
+                    reflex: true,
+                    content: "Alle Portlets bieten verschiedene Einstellungen. Trage hier einen neuen Text für die Überschrift ein und klicke auf Speichern."
+                },
+                {
+                    element: "#cle-btn-save-editor",
+                    placement: "bottom",
+                    title: "Seite Speichern",
+                    reflex: true,
+                    content: "Mit einem Klick auf das Speichern Symbol werden deine Änderungen übernommen und sind ab dann im Shop sichtbar."
+                },
+
+            ]
+        });
+
+        // Initialize the tour
+        tour.init();
+        $('.tour-tour-5-element.tour-step-element').on('dragend', function() {
+            tour.next();
+        });
+
+        tour.start(true);
+    }
 
 };

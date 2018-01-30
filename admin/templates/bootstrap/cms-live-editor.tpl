@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-colorpicker.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/cms-live-editor-host.css">
     <link rel="stylesheet" href="{$templateUrl}css/typeaheadjs.css">
+    <link rel="stylesheet" href="{$templateUrl}css/bootstrap-tour.min.css">
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
     <script src="{$templateUrl}js/jquery-ui-1.11.4.min.js"></script>
@@ -26,6 +27,7 @@
     <script src="{$templateUrl}js/cms-live-editor/EditorIO.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/EditorGUI.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/Editor.js"></script>
+    <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>
 
     <script>
         var editor = new Editor({
@@ -138,6 +140,7 @@
                     </div>
                 </div>
             </div>
+            <button id="help" class="btn btn-primary pull-right"><i class="fa fa-question-circle-o"></i> Hilfe</button>
         </div>
         <div id="iframe-panel">
             <iframe id="iframe"></iframe>

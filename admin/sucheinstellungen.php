@@ -16,7 +16,7 @@ $step             = 'einstellungen bearbeiten';
 $cHinweis         = '';
 $cFehler          = '';
 $Conf             = [];
-$createIndex      = 'N';
+$createIndex      = false;
 
 if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');

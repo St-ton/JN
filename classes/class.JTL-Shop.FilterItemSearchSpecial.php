@@ -16,7 +16,7 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     private static $mapping = [
         'cName' => 'Name',
-        'kKey'  => 'Value'
+        'kKey'  => 'ValueCompat'
     ];
 
     /**
@@ -42,10 +42,30 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function setValue($value)
     {
-        $this->value = is_array($value) ? $value : (int)$value;
+        $this->value = is_array($value) ? $value : [(int)$value];
 
         return $this;
     }
+
+    /**
+     * @param array|int|string $value
+     * @return $this
+     */
+    public function setValueCompat($value)
+    {
+        $this->value = [(int)$value];
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getValueCompat()
+    {
+        return is_array($this->value) ? $this->value[0] : $this->value;
+    }
+
 
     /**
      * @param array $languages
@@ -64,7 +84,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     WHERE cKey = 'suchspecial' 
                         AND kKey IN (" . implode(', ', $val) . ")
                     ORDER BY kSprache",
-                2
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -165,11 +185,10 @@ class FilterItemSearchSpecial extends AbstractFilter
                     break;
     
                 case SEARCHSPECIALS_TOPREVIEWS:
-                    if (!$this->productFilter->hasPriceRangeFilter()) {
+                    if (!$this->productFilter->hasRatingFilter()) {
                         $minStars = ($m = $conf['boxen']['boxen_topbewertet_minsterne']) > 0
                             ? (int)$m
                             : 4;
-    
                         $conditions[] = 'ROUND(taex.fDurchschnittsBewertung) >= ' . $minStars;
                     }
                     break;
@@ -181,9 +200,8 @@ class FilterItemSearchSpecial extends AbstractFilter
         $conditions = array_map(function ($e) {
             return '(' . $e . ')';
         }, $conditions);
-        $condition = '(' . implode($or === true ? ' OR ' : ' AND ', $conditions) . ')';
 
-        return $condition;
+        return '(' . implode($or === true ? ' OR ' : ' AND ', $conditions) . ')';
     }
 
     /**
@@ -191,13 +209,16 @@ class FilterItemSearchSpecial extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        $joins = [];
-        $values = $this->getValue();
+        $joins    = [];
+        $values   = $this->getValue();
+        $joinType = $this->getType() === AbstractFilter::FILTER_TYPE_AND
+            ? 'JOIN'
+            : 'LEFT JOIN';
         foreach ($values as $value) {
             switch ($value) {
                 case SEARCHSPECIALS_BESTSELLER:
-                    $joins = (new FilterJoin())
-                        ->setType('JOIN')
+                    $joins[] = (new FilterJoin())
+                        ->setType($joinType)
                         ->setTable('tbestseller')
                         ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
                         ->setComment('JOIN from FilterItemSearchSpecial bestseller')
@@ -206,32 +227,30 @@ class FilterItemSearchSpecial extends AbstractFilter
 
                 case SEARCHSPECIALS_SPECIALOFFERS:
                     if (!$this->productFilter->hasPriceRangeFilter()) {
-                        $joins = [
-                            (new FilterJoin())
-                                ->setType('JOIN')
-                                ->setTable('tartikelsonderpreis AS tasp')
-                                ->setOn('tasp.kArtikel = tartikel.kArtikel')
-                                ->setComment('JOIN from FilterItemSearchSpecial special offers')
-                                ->setOrigin(__CLASS__),
-                            (new FilterJoin())
-                                ->setType('JOIN')
-                                ->setTable('tsonderpreise AS tsp')
-                                ->setOn('tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
-                                ->setComment('JOIN2 from FilterItemSearchSpecial special offers')
-                                ->setOrigin(__CLASS__)
-                        ];
+                        $joins[] = (new FilterJoin())
+                            ->setType($joinType)
+                            ->setTable('tartikelsonderpreis AS tasp')
+                            ->setOn('tasp.kArtikel = tartikel.kArtikel')
+                            ->setComment('JOIN from FilterItemSearchSpecial special offers')
+                            ->setOrigin(__CLASS__);
+                        $joins[] = (new FilterJoin())
+                            ->setType($joinType)
+                            ->setTable('tsonderpreise AS tsp')
+                            ->setOn('tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
+                            ->setComment('JOIN2 from FilterItemSearchSpecial special offers')
+                            ->setOrigin(__CLASS__);
                     }
                     break;
 
                 case SEARCHSPECIALS_TOPREVIEWS:
-                    $joins = $this->productFilter->hasRatingFilter()
-                        ? []
-                        : (new FilterJoin())
-                            ->setType('JOIN')
+                    if (!$this->productFilter->hasRatingFilter()) {
+                        $joins[] = (new FilterJoin())
+                            ->setType($joinType)
                             ->setTable('tartikelext AS taex ')
                             ->setOn('taex.kArtikel = tartikel.kArtikel')
                             ->setComment('JOIN from FilterItemSearchSpecial top reviews')
                             ->setOrigin(__CLASS__);
+                    }
                     break;
 
                 case SEARCHSPECIALS_NEWPRODUCTS:
@@ -345,7 +364,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 $state->conditions,
                 $state->having
             );
-            $qryRes  = Shop::DB()->query($qry, 2);
+            $qryRes  = Shop::DB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS);
 
             if (($count = count($qryRes)) > 0) {
                 $options[$i] = (new FilterOption())
@@ -357,11 +376,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     ->setCount($count)
                     ->setSort(0)
                     ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $i))
-                    ->setURL($this->productFilter->getFilterURL()->getURL($additionalFilter->init($i)
-//                    , false
-//                    , true
-                    )
-                );
+                    ->setURL($this->productFilter->getFilterURL()->getURL($additionalFilter->init($i)));
             }
         }
         $this->options = $options;

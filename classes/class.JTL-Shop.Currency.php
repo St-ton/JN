@@ -226,7 +226,7 @@ class Currency
     public function setForcePlacementBeforeNumber($forcePlacementBeforeNumber)
     {
         if (is_string($forcePlacementBeforeNumber)) {
-            $isDefault = $forcePlacementBeforeNumber === 'Y';
+            $forcePlacementBeforeNumber = $forcePlacementBeforeNumber === 'Y';
         }
         $this->forcePlacementBeforeNumber = $forcePlacementBeforeNumber;
 
@@ -315,7 +315,6 @@ class Currency
     public function getDefault()
     {
         return $this->extract(Shop::DB()->select('twaehrung', 'cStandard', 'Y'));
-
     }
 
     /**

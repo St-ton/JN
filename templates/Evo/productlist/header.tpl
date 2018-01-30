@@ -101,7 +101,7 @@
 
 {include file='productwizard/index.tpl'}
 
-{if count($Suchergebnisse->getProducts()->elemente) > 0}
+{if count($Suchergebnisse->getProducts()) > 0}
     <form id="improve_search" action="{$ShopURL}" method="get" class="form-inline clearfix">
         {if $NaviFilter->hasCategory()}
             <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />
@@ -124,7 +124,6 @@
         {if $NaviFilter->hasTag()}
             <input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}" />
         {/if}
-        {*Suchergebnisfilter*}
         {if $NaviFilter->hasCategoryFilter()}
             <input type="hidden" name="kf" value="{$NaviFilter->getCategoryFilter()->getValue()}" />
         {/if}
@@ -132,7 +131,7 @@
             <input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />
         {/if}
         {if $NaviFilter->hasSearchSpecialFilter()}
-            <input type="hidden" name="qf" value="{$NaviFilter->getSearchSpecialFilter()->kKey}" />
+            <input type="hidden" name="qf" value="{$NaviFilter->getSearchSpecialFilter()->getValueCompat()}" />
         {/if}
         {if $NaviFilter->hasRatingFilter()}
             <input type="hidden" name="bf" value="{$NaviFilter->getRatingFilter()->getValue()}" />
@@ -164,7 +163,7 @@
     </form>
 {/if}
 
-{if $Suchergebnisse->getProducts()->elemente|@count <= 0 && isset($KategorieInhalt)}
+{if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
     {if isset($KategorieInhalt->TopArtikel->elemente)}
         {lang key='topOffer' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}

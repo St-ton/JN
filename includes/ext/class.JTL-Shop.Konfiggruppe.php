@@ -53,7 +53,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @var array
          */
-        public $oItem_arr;
+        public $oItem_arr = [];
 
         /**
          * @var bool|null
@@ -232,11 +232,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function getBildPfad()
         {
-            if (strlen($this->cBildPfad)) {
-                return PFAD_KONFIGURATOR_KLEIN . $this->cBildPfad;
-            }
-
-            return null;
+            return !empty($this->cBildPfad)
+                ? PFAD_KONFIGURATOR_KLEIN . $this->cBildPfad
+                : null;
         }
 
         /**

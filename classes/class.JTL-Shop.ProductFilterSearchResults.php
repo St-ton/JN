@@ -1,11 +1,18 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
+/**
+ * Class ProductFilterSearchResults
+ */
 class ProductFilterSearchResults
 {
     use MagicCompatibilityTrait;
 
     /**
-     * @var stdClass
+     * @var Collection
      * @former Artikel
      */
     private $products;
@@ -106,6 +113,11 @@ class ProductFilterSearchResults
     private $customFilterOptions = [];
 
     /**
+     * @var int[]
+     */
+    private $productKeys = [];
+
+    /**
      * @var string
      * @former cFehler
      */
@@ -134,7 +146,7 @@ class ProductFilterSearchResults
      * @var array
      */
     private static $mapping = [
-        'Artikel'             => 'Products',
+        'Artikel'             => 'ProductsCompat',
         'GesamtanzahlArtikel' => 'ProductCount',
         'ArtikelBis'          => 'OffsetEnd',
         'ArtikelVon'          => 'OffsetStart',
@@ -191,13 +203,52 @@ class ProductFilterSearchResults
     /**
      * @return stdClass
      */
+    public function getProductsCompat()
+    {
+        $compat              = new stdClass();
+        $compat->elemente    = $this->getProducts();
+        $compat->productKeys = $this->getProductKeys();
+
+        return $compat;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setProductsCompat()
+    {
+        return $this;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getProductKeys()
+    {
+        return $this->productKeys;
+    }
+
+    /**
+     * @param int[] $keys
+     * @return $this
+     */
+    public function setProductKeys($keys)
+    {
+        $this->productKeys = $keys;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
     public function getProducts()
     {
         return $this->products;
     }
 
     /**
-     * @param stdClass $products
+     * @param Collection $products
      * @return ProductFilterSearchResults
      */
     public function setProducts($products)
@@ -587,7 +638,6 @@ class ProductFilterSearchResults
         return $this;
     }
 
-
     /**
      * @return array
      */
@@ -605,5 +655,23 @@ class ProductFilterSearchResults
         $this->limitOptions = $options;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllFilterOptions()
+    {
+        return [
+            'manufacturerFilterOptions'  => $this->getManufacturerFilterOptions(),
+            'ratingFilterOptions'        => $this->getRatingFilterOptions(),
+            'tagFilterOptions'           => $this->getTagFilterOptions(),
+            'attributeFilterOptions'     => $this->getAttributeFilterOptions(),
+            'priceRangeFilterOptions'    => $this->getPriceRangeFilterOptions(),
+            'categoryFilterOptions'      => $this->getCategoryFilterOptions(),
+            'searchFilterOptions'        => $this->getSearchFilterOptions(),
+            'searchSpecialFilterOptions' => $this->getSearchSpecialFilterOptions(),
+            'customFilterOptions'        => $this->getCustomFilterOptions()
+        ];
     }
 }

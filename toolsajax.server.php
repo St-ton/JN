@@ -72,8 +72,7 @@ function billpayRates()
                        ->assign('cBillpayPrivacyURL', BILLPAY_PRIVACY)
                        ->assign('cBillpayTermsPaymentURL', BILLPAY_TERMS_PAYMENT);
 
-                $oResponse->cRateHTML_arr[$oRate->nRate] =
-                    utf8_encode($smarty->fetch('checkout/modules/billpay/raten.tpl'));
+                $oResponse->cRateHTML_arr[$oRate->nRate] = $smarty->fetch('checkout/modules/billpay/raten.tpl');
             }
         } else {
             $oResponse->nType = 1;
@@ -101,9 +100,9 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
     $oVergleichsliste              = new Vergleichsliste();
     // Falls $nVLKeys 1 ist, nimm die kArtikel von $_SESSION['nArtikelUebersichtVLKey_arr']
     // und baue eine neue TMP Vergleichsliste
-    if ($nVLKeys == 1 && isset($_SESSION['nArtikelUebersichtVLKey_arr']) &&
-        is_array($_SESSION['nArtikelUebersichtVLKey_arr']) &&
-        count($_SESSION['nArtikelUebersichtVLKey_arr']) > 0
+    if ($nVLKeys == 1 && isset($_SESSION['nArtikelUebersichtVLKey_arr'])
+        && is_array($_SESSION['nArtikelUebersichtVLKey_arr'])
+        && count($_SESSION['nArtikelUebersichtVLKey_arr']) > 0
     ) {
         $oVergleichsliste->oArtikel_arr = [];
         foreach ($_SESSION['nArtikelUebersichtVLKey_arr'] as $nArtikelUebersichtVLKey) {
@@ -165,8 +164,7 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
            ->assign('bWarenkorb', $bWarenkorb);
 
     executeHook(HOOK_VERGLEICHSLISTE_PAGE);
-    $objResponse->script("this.compareHTML = " .
-        json_encode(utf8_encode($smarty->fetch('comparelist/index.tpl'))) . ";");
+    $objResponse->script("this.compareHTML = " . json_encode($smarty->fetch('comparelist/index.tpl')) . ";");
 
     return $objResponse;
 }
@@ -196,7 +194,7 @@ function ermittleVersandkostenAjax($oArtikel_arr)
 {
     $objResponse      = new xajaxResponse();
     $oResponse        = new stdClass();
-    $oResponse->cText = utf8_encode(VersandartHelper::getShippingCostsExt($oArtikel_arr));
+    $oResponse->cText = VersandartHelper::getShippingCostsExt($oArtikel_arr);
     $oResponse->cText .= ' (' . $_SESSION['shipping_count']++ . ')';
     $objResponse->script("this.response = " . json_encode($oResponse) . ";");
 
@@ -267,7 +265,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
             baueArtikelhinweise($cRedirectParam);
 
             $smarty->assign('cHinweis_arr', $GLOBALS['Artikelhinweise']);
-            $oResponse->cPopup = utf8_encode($smarty->fetch('productdetails/redirect.tpl'));
+            $oResponse->cPopup = $smarty->fetch('productdetails/redirect.tpl');
             //redirekt zum artikel, um variation/en zu wählen / MBM beachten
             if ($Artikel->nIstVater === 1) {
                 $location = 'index.php?a=' . $Artikel->kArtikel .
@@ -341,11 +339,11 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
                ->assign('Xselling', $oXSelling);
 
         $oResponse->nType           = 2;
-        $oResponse->cWarenkorbText  = utf8_encode(lang_warenkorb_warenkorbEnthaeltXArtikel($cart));
-        $oResponse->cWarenkorbLabel = utf8_encode(lang_warenkorb_warenkorbLabel($cart));
-        $oResponse->cPopup          = utf8_encode($smarty->fetch('productdetails/pushed.tpl'));
-        $oResponse->cWarenkorbMini  = utf8_encode($smarty->fetch('basket/cart_dropdown.tpl'));
-        $oResponse->oArtikel        = utf8_convert_recursive($Artikel, true);
+        $oResponse->cWarenkorbText  = lang_warenkorb_warenkorbEnthaeltXArtikel($cart);
+        $oResponse->cWarenkorbLabel = lang_warenkorb_warenkorbLabel($cart);
+        $oResponse->cPopup          = $smarty->fetch('productdetails/pushed.tpl');
+        $oResponse->cWarenkorbMini  = $smarty->fetch('basket/cart_dropdown.tpl');
+        $oResponse->oArtikel        = $Artikel;
 
         $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
         // Kampagne
@@ -404,10 +402,6 @@ function gibPLZInfo($cFormValue, $cLandISO)
             'cOrt'
         );
     }
-    foreach ($oPlz_arr as $i => $oPlz) {
-        $oPlz_arr[$i]->cOrt = utf8_encode($oPlz->cOrt);
-    }
-
     $objResponse->script('this.plz_data = ' . json_encode($oPlz_arr) . ';');
 
     executeHook(HOOK_TOOLSAJAXSERVER_PAGE_KUNDENFORMULARPLZ);
@@ -438,7 +432,7 @@ function aenderKundenformularPLZ($cFormValue, $cLandISO)
             false,
             'cOrt'
         );
-        if (!empty($oPlz->cOrt) && strlen($oPlz->cOrt) > 0) {
+        if ($oPlz !== null && !empty($oPlz->cOrt)) {
             $objResponse->assign('kundenformular_ort', 'value', $oPlz->cOrt);
         }
     }
@@ -457,9 +451,7 @@ function gibRegionzuLand($cLandIso)
 {
     $objResponse = new xajaxResponse();
     if (strlen($cLandIso) === 2) {
-        $cRegion_arr = Staat::getRegions($cLandIso);
-        $cRegion_arr = utf8_convert_recursive($cRegion_arr);
-        $objResponse->script('this.response = ' . json_encode($cRegion_arr) . ';');
+        $objResponse->script('this.response = ' . json_encode(Staat::getRegions($cLandIso)) . ';');
     }
 
     return $objResponse;
@@ -567,10 +559,10 @@ function suggestions($cValue)
         );
         if (is_array($oSuchanfrage_arr) && count($oSuchanfrage_arr) > 0) {
             foreach ($oSuchanfrage_arr as $i => $oSuchanfrage) {
-                $cSuche                 = utf8_encode($oSuchanfrage->cSuche);
+                $cSuche                 = $oSuchanfrage->cSuche;
                 $i                      = count($cSuch_arr);
-                $cSuch_arr[$i]['value'] = $cSuche . ' <span class="ac_resultcount">' . $oSuchanfrage->nAnzahlTreffer .
-                    ' ' . StringHandler::htmlentities(Shop::Lang()->get('matches', 'global')) . ' </span>';
+                $cSuch_arr[$i]['value'] = $cSuche . ' <span class="ac_resultcount">' . (int)$oSuchanfrage->nAnzahlTreffer .
+                    ' ' . StringHandler::htmlentities(Shop::Lang()->get('matches')) . ' </span>';
                 $cSuch_arr[$i]['result'] = $cSuche;
             }
         }
@@ -602,6 +594,7 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
 
     Shop::setPageType(PAGE_ARTIKEL);
     Shop::$AktuelleSeite = 'ARTIKEL';
+    $oArtikel            = new Artikel();
     $objResponse         = new xajaxResponse();
     $cVariationKombiKind = '';
     $Einstellungen       = Shop::getSettings([
@@ -674,7 +667,6 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                 // Hinweise und Fehler sammeln
                 $cHinweis                                    = mappingFehlerCode(verifyGPDataString('cHinweis'), $fBelohnung);
                 $cFehler                                     = mappingFehlerCode(verifyGPDataString('cFehler'));
-                $oArtikel                                    = new Artikel();
                 $oArtikelOptionen                            = new stdClass();
                 $oArtikelOptionen->nMerkmale                 = 1;
                 $oArtikelOptionen->nAttribute                = 1;
@@ -850,9 +842,9 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                                 Shop::getLanguage()
                             );
 
-                            if ($oTestArtikel->cLagerBeachten === 'Y' &&
-                                $oTestArtikel->cLagerKleinerNull !== 'Y' &&
-                                $oTestArtikel->fLagerbestand == 0
+                            if ($oTestArtikel->cLagerBeachten === 'Y'
+                                && $oTestArtikel->cLagerKleinerNull !== 'Y'
+                                && $oTestArtikel->fLagerbestand == 0
                             ) {
                                 $objResponse->script(
                                     "setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, 
@@ -887,7 +879,10 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
         }
     }
 
-    executeHook(HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, ['objResponse' => &$objResponse, 'oArtikel' => &$oArtikel]);
+    executeHook(HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, [
+        'objResponse' => &$objResponse,
+        'oArtikel'    => &$oArtikel
+    ]);
 
     return $objResponse;
 }
@@ -963,7 +958,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
     if ($bewertung_seite || $bewertung_sterne || $bewertung_anzeigen) {
         $BewertungsTabAnzeigen = 1;
     }
-    if ($bewertung_seite == 0) {
+    if ($bewertung_seite === 0) {
         $bewertung_seite = 1;
     }
     // Bewertungen holen
@@ -980,7 +975,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
     }
     $oArtikel->Bewertungen->Sortierung = $nSortierung;
     //$nAnzahlBewertungen = $oArtikel->Bewertungen->oBewertungGesamt->nAnzahl;
-    $nAnzahlBewertungen = $bewertung_sterne == 0
+    $nAnzahlBewertungen = $bewertung_sterne === 0
         ? $oArtikel->Bewertungen->nAnzahlSprache
         : $oArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
     // Baue Blätter Navigation
@@ -1249,8 +1244,8 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
             }
         }
         // Wenn nur noch eine Variation fehlt
-        if (isset($_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl) &&
-            $_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl ==
+        if (isset($_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl)
+            && $_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl ==
             count($_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr) + 1
         ) {
             $oArtikel                                    = new Artikel();
@@ -1300,9 +1295,9 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
                         Shop::getLanguage()
                     );
 
-                    if ($oTestArtikel->cLagerBeachten === 'Y' &&
-                        $oTestArtikel->cLagerKleinerNull !== 'Y' &&
-                        $oTestArtikel->fLagerbestand == 0
+                    if ($oTestArtikel->cLagerBeachten === 'Y'
+                        && $oTestArtikel->cLagerKleinerNull !== 'Y'
+                        && $oTestArtikel->fLagerbestand == 0
                     ) {
                         $objResponse->script(
                             "setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, 
@@ -1387,8 +1382,8 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
         return null;
     }
 
-    return Shop::DB()->query("
-        SELECT tartikel.kArtikel
+    return Shop::DB()->query(
+        "SELECT tartikel.kArtikel
             FROM teigenschaftkombiwert
             JOIN tartikel 
                 ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi

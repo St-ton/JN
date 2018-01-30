@@ -17,7 +17,7 @@
     {/if}
     <div id="pageCheck">
         {if $cDBFileStruct_arr|@count > 0}
-            {if $engineUpdate !== null}
+            {if isset($engineUpdate)}
                 {include file='tpl_inc/dbcheck_engineupdate.tpl'}
             {else}
                 <div class="alert alert-info"><strong>Anzahl Tabellen:</strong> {$cDBFileStruct_arr|@count}<br /><strong>Anzahl modifizierter Tabellen:</strong> {$cDBError_arr|@count}</div>
@@ -82,9 +82,9 @@
                                 <td class="centered">
                                     {if $cDBStruct_arr.$cTable->Locked}
                                         <span title="Tabelle in Benutzung"><i class="fa fa-cog fa-spin fa-2x fa-fw"></i></span>
-                                    {elseif $cDBStruct_arr.$cTable->ENGINE !== 'InnoDB' || $cDBStruct_arr.$cTable->TABLE_COLLATION|strpos:'utf8' === false}
+                                    {elseif ($cDBStruct_arr.$cTable->ENGINE !== 'InnoDB' || $cDBStruct_arr.$cTable->TABLE_COLLATION|strpos:'utf8' === false) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                         <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="1"><i class="fa fa-cogs"></i></a>
-                                    {elseif isset($cDBError_arr.$cTable) && $cDBError_arr.$cTable|strpos:'Inkonsistente Kollation' === 0}
+                                    {elseif (isset($cDBError_arr.$cTable) && $cDBError_arr.$cTable|strpos:'Inkonsistente Kollation' === 0) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                         <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="2"><i class="fa fa-cogs"></i></a>
                                     {elseif !$hasError}
                                         <input id="check-{$smarty.foreach.datei.iteration}" type="checkbox" name="check[]" value="{$cTable}" />
@@ -243,7 +243,7 @@
             step = 1;
         }
         if (typeof table !== 'undefined' && table !== '') {
-            updateModalWait('Migrate ' + table + ' Schritt ' + step);
+            updateModalWait('Migrieren von ' + table + ' - Schritt ' + step);
         }
         ioCall('migrateToInnoDB_utf8', ['migrate', table, step],
             function (data, context) {

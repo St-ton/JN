@@ -583,6 +583,15 @@ class ProductFilter
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
     /**
      * @return array - default array keys
      */
@@ -737,7 +746,7 @@ class ProductFilter
         if ($params['nSortierung'] > 0) {
             $this->nSortierung = (int)$params['nSortierung'];
         }
-        if ($params['nArtikelProSeite'] > 0) {
+        if ($params['nArtikelProSeite'] !== 0) {
             $this->productLimit = (int)$params['nArtikelProSeite'];
         }
         // @todo: how to handle strlen($params['cSuche']) === 0?
@@ -1638,9 +1647,9 @@ class ProductFilter
      * @param int            $limit
      * @return ProductFilterSearchResults|Collection
      */
-    public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = 0)
+    public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = null)
     {
-        $limitPerPage = $limit > 0 ? $limit : $this->metaData->getProductsPerPageLimit();
+        $limitPerPage = $limit !== null ? $limit : $this->metaData->getProductsPerPageLimit();
         $nLimitN      = $limitPerPage * ($this->nSeite - 1);
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         $error        = false;
@@ -1660,15 +1669,14 @@ class ProductFilter
                     $error = $this->searchQuery->getError();
                 }
             }
+            $end = min($nLimitN + $limitPerPage, $productCount);
+
             $this->searchResults->setOffsetStart($nLimitN + 1)
-                                ->setOffsetEnd(min(
-                                    $nLimitN + $limitPerPage,
-                                    $productCount
-                                ));
+                                ->setOffsetEnd($end > 0 ? $end : $productCount);
             
             $pages                = new stdClass();
             $pages->AktuelleSeite = $this->nSeite;
-            $pages->MaxSeiten     = ceil($productCount / $limitPerPage);
+            $pages->MaxSeiten     = $limitPerPage > 0 ? ceil($productCount / $limitPerPage) : 1;
             $pages->minSeite      = min(
                 $pages->AktuelleSeite - $max / 2,
                 0
@@ -1709,6 +1717,9 @@ class ProductFilter
             $opt->nVariationDetailPreis = (int)$this->conf['artikeldetails']['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;
+            if ($limitPerPage < 0) {
+                $limitPerPage = null;
+            }
             foreach (array_slice($productKeys, $nLimitN, $limitPerPage) as $id) {
                 $productList->addItem((new Artikel())->fuelleArtikel($id, $opt));
             }

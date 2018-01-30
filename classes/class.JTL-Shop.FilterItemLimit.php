@@ -58,12 +58,20 @@ class FilterItemLimit extends AbstractFilter
         }
         $options          = [];
         $additionalFilter = new self($this->productFilter);
-        foreach ([0, 9, 18, 30, 90] as $i => $limitOption) {
-            $options[] = (new FilterOption())
+        $params           = $this->productFilter->getParams();
+        $view             = $this->productFilter->getMetaData()->getExtendedView($params['nDarstellung'])->nDarstellung;
+        $optionIdx        = $view === ERWDARSTELLUNG_ANSICHT_LISTE ?
+            'products_per_page_list'
+            : 'products_per_page_gallery';
+        $limitOptions     = explode(',', $this->getConfig()['artikeluebersicht'][$optionIdx]);
+        foreach ($limitOptions as $i => $limitOption) {
+            $limitOption = (int)trim($limitOption);
+            $name        = $limitOption > 0 ? $limitOption : Shop::Lang()->get('showAll');
+            $options[]   = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
-                ->setName($limitOption)
+                ->setName($name)
                 ->setValue($limitOption)
                 ->setCount(null)
                 ->setSort($i)

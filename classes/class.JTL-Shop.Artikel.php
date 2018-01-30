@@ -4149,7 +4149,6 @@ class Artikel
         }
         // Suchspecialbildoverlay
         $this->baueSuchspecialBildoverlay();
-        $this->staffelPreis_arr  = $this->getTierPrices();
         $this->isSimpleVariation = false;
         if (count($this->Variationen) > 0) {
             $this->isSimpleVariation = $this->kVaterArtikel === 0 && $this->nIstVater === 0;
@@ -4179,6 +4178,7 @@ class Artikel
         $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE];
         $basePrice = clone $this->Preise;
         $this->rabattierePreise();
+        $this->staffelPreis_arr  = $this->getTierPrices();
         if ($this->cVPE === 'Y' && $this->fVPEWert > 0 && $this->cVPEEinheit && !empty($this->Preise)) {
             // Grundpreis beim Artikelpreis
             $this->baueVPE();
@@ -4767,6 +4767,9 @@ class Artikel
                 ),
                 $basePriceUnit->fBasePreis,
             ];
+            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = isset($this->fStaffelpreisVPE_arr[$key])
+                ? $this->fStaffelpreisVPE_arr[$key]
+                : null;
         }
 
         return $this;
@@ -6289,9 +6292,6 @@ class Artikel
                     : null;
                 $_v['cPreisLocalized']     = isset($this->Preise->cPreisLocalized_arr[$_idx])
                     ? $this->Preise->cPreisLocalized_arr[$_idx]
-                    : null;
-                $_v['cBasePriceLocalized'] = isset($this->fStaffelpreisVPE_arr[$_idx])
-                    ? $this->fStaffelpreisVPE_arr[$_idx]
                     : null;
                 $tierPrices[]              = $_v;
             }

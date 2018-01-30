@@ -20,6 +20,11 @@ class CMSPage
     public $cIdHash = '';
 
     /**
+     * @var string
+     */
+    public $cPageUrl = '';
+
+    /**
      * @var array
      */
     public $data = [];
@@ -61,6 +66,7 @@ class CMSPage
                 $oCMSPageDB->cJson   = empty($oCMSPageDB->cJson) ? '{}' : $oCMSPageDB->cJson;
                 $this->kPage         = $oCMSPageDB->kPage;
                 $this->cIdHash       = $oCMSPageDB->cIdHash;
+                $this->cPageUrl      = $oCMSPageDB->cPageURL;
                 $this->data          = json_decode($oCMSPageDB->cJson, true);
                 $this->dLastModified = $oCMSPageDB->dLastModified;
                 $this->cLockedBy     = $oCMSPageDB->cLockedBy;
@@ -134,6 +140,7 @@ class CMSPage
         if (!empty($this->cIdHash) && $oCmsPageDB === null) {
             $oCmsPageDB  = (object)[
                 'cIdHash' => $this->cIdHash,
+                'cPageURL' => $this->cPageUrl,
                 'cJson' => json_encode($this->data),
                 'dLastModified' => date('Y-m-d H:i:s'),
                 'cLockedBy' => $this->cLockedBy
@@ -143,6 +150,7 @@ class CMSPage
             $revision = new Revision();
             $revision->addRevision('cmspage', (int)$oCmsPageDB->kPage);
             $oCmsPageDB->cJson         = json_encode($this->data);
+            $oCmsPageDB->cPageURL      = $this->cPageUrl;
             $oCmsPageDB->dLastModified = date('Y-m-d H:i:s');
             $oCmsPageDB->cLockedBy     = $this->cLockedBy;
             Shop::DB()->update('tcmspage', 'cIdHash', $this->cIdHash, $oCmsPageDB);
@@ -184,6 +192,7 @@ class CMSPage
 
         $this->kPage         = $content->kPage;
         $this->cIdHash       = $content->cIdHash;
+        $this->cPageUrl      = $content->cPageUrl;
         $this->data          = json_decode($content->cJson, true);
         $this->dLastModified = $content->dLastModified;
         $this->cLockedBy     = $content->cLockedBy;

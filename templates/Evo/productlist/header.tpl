@@ -134,7 +134,7 @@
             <input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />
         {/if}
         {if $NaviFilter->hasSearchSpecialFilter()}
-            <input type="hidden" name="qf" value="{$NaviFilter->getSearchSpecialFilter()->kKey}" />
+            <input type="hidden" name="qf" value="{$NaviFilter->getSearchSpecialFilter()->getValueCompat()}" />
         {/if}
         {if $NaviFilter->hasRatingFilter()}
             <input type="hidden" name="bf" value="{$NaviFilter->getRatingFilter()->getValue()}" />

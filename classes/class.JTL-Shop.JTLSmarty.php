@@ -8,6 +8,7 @@ require_once PFAD_ROOT . PFAD_PHPQUERY . 'phpquery.class.php';
 
 /**
  * Class JTLSmarty
+ * @method JTLSmarty assign(string $variable, mixed $value)
  */
 class JTLSmarty extends SmartyBC
 {

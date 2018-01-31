@@ -98,6 +98,18 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     display: grid;
 }
 
+#tour-form input[name="help-tour"]:checked+.panel-default >.panel-heading{
+    background-color: #337ab7;
+    border-color: #337ab7;
+    background-image: -webkit-linear-gradient(top, #337ab7 0, #2e6da4 100%);
+    background-image: -o-linear-gradient(top, #337ab7 0, #2e6da4 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #337ab7), to(#2e6da4));
+    background-image: linear-gradient(to bottom, #337ab7 0, #2e6da4 100%);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff337ab7', endColorstr='#ff2e6da4', GradientType=0);
+    color: #fff;
+}
+
 .modal-backdrop {
     opacity: 0.5;
 }

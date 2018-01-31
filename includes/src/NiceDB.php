@@ -572,7 +572,7 @@ class NiceDB implements Serializable
     public function updateRow($tableName, $keyname, $keyvalue, $object, $echo = false)
     {
         $this->validateEntityName($tableName);
-        foreach((array)$keyname as $x) {
+        foreach ((array)$keyname as $x) {
             $this->validateEntityName($x);
         }
         $this->validateDbObject($object);
@@ -724,13 +724,13 @@ class NiceDB implements Serializable
         $select = '*'
     ) {
         $this->validateEntityName($tableName);
-        foreach((array)$keyname as $x) {
+        foreach ((array)$keyname as $x) {
             $this->validateEntityName($x);
         }
-        if($keyname1 !== null) {
+        if ($keyname1 !== null) {
             $this->validateEntityName($keyname1);
         }
-        if($keyname2 !== null) {
+        if ($keyname2 !== null) {
             $this->validateEntityName($keyname2);
         }
         // TODO validate $select
@@ -829,7 +829,7 @@ class NiceDB implements Serializable
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
         $this->validateEntityName($tableName);
-        foreach($keys as $key) {
+        foreach ($keys as $key) {
             $this->validateEntityName($key);
         }
         // TODO verify $orderBy and $limit
@@ -1436,12 +1436,12 @@ class NiceDB implements Serializable
     /**
      * Verifies db entity names and throws an exception if it does not match the preconditions
      *
-     * @param $name
+     * @param string $name
      * @throws InvalidEntityNameException
      */
     protected function validateEntityName($name)
     {
-        if(!$this->isValidEntityName($name)) {
+        if (!$this->isValidEntityName($name)) {
             throw new InvalidEntityNameException($name);
         }
     }
@@ -1455,12 +1455,12 @@ class NiceDB implements Serializable
      */
     protected function validateDbObject($obj)
     {
-        if(!is_object($obj)) {
+        if (!is_object($obj)) {
             $type = gettype($obj);
             throw new \InvalidArgumentException("got var of type $type where object was expected");
         }
-        foreach($obj as $key => $value) {
-            if(!$this->isValidEntityName($key)) {
+        foreach ($obj as $key => $value) {
+            if (!$this->isValidEntityName($key)) {
                 throw new InvalidEntityNameException($key);
             }
         }
@@ -1482,4 +1482,3 @@ class NiceDB implements Serializable
 
     }
 }
-

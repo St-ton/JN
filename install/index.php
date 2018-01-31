@@ -49,8 +49,7 @@ if (!is_writable(PFAD_ROOT . PFAD_COMPILEDIR)) {
 // if anyone goes lower than PHP 5.4, we abort here and warn him!
 require_once PFAD_ROOT . PFAD_SMARTY . 'SmartyBC.class.php';
 $szPhpVersion = PHP_VERSION;
-if(!version_compare($szPhpVersion, '5.4.0', '>='))
-{
+if (!version_compare($szPhpVersion, '5.4.0', '>=')) {
     $smarty = new Smarty();
     $smarty->setCaching(0);
     $smarty->setDebugging(false);
@@ -69,7 +68,7 @@ if(!version_compare($szPhpVersion, '5.4.0', '>='))
            ->assign('cHinweis', $cHinweis)
            ->display('install.tpl');
 
-   exit(-1);
+    exit(-1);
 }
 
 require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
@@ -206,7 +205,7 @@ switch ($step) {
                 $_POST['DBuser'],
                 $_POST['DBpass'],
                 $_POST['DBname'],
-                (!empty($_POST['DBsocket']))
+                !empty($_POST['DBsocket'])
                     ? $_POST['DBsocket']
                     : null
             )) {

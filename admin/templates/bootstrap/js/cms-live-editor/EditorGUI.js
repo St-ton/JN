@@ -678,6 +678,33 @@ EditorGUI.prototype = {
 
     onHelp: function(e)
     {
+        function fixIframePos(element) {
+            var off = element.offset();
+            var pTop = $('#editor-top-nav').height();
+            var pLeft = $('#sidebar-panel').outerWidth();
+
+            element.offset({ top:off.top + pTop, left:off.left +pLeft});
+        }
+
+        function fixBackdrop() {
+            var off = $('.tour-backdrop.top').offset();
+            var pTop = $('#editor-top-nav').height();
+            var pLeft = $('#sidebar-panel').outerWidth();
+            var leftWidth = $('.tour-backdrop.left').width();
+
+            $('.tour-backdrop.top').offset({ top:off.top + pTop});
+
+            off = $('.tour-backdrop.left').offset();
+            $('.tour-backdrop.left').offset({ top:off.top + pTop});
+            $('.tour-backdrop.left').width(leftWidth + pLeft);
+
+            off = $('.tour-backdrop.right').offset();
+            $('.tour-backdrop.right').offset({ top:off.top + pTop, left:off.left +pLeft});
+
+            off = $('.tour-backdrop.bottom').offset();
+            $('.tour-backdrop.bottom').offset({ top:off.top + pTop});
+        }
+
         // Todo Editor: verschiedene Touren anlegen
         // Todo Editor: debug ausschalten
         var confModal = this.configModal;
@@ -713,10 +740,14 @@ EditorGUI.prototype = {
                 },
                 {
                     backdrop: true,
-                    element: "#iframe",
+                    element: $("#iframe").contents().find(".cle-rootarea > .cle-droptarget:first-child"),
                     placement: "top",
                     title: "Portlets",
-                    content: "Die grauen Bereiche auf dieser Seite zeigen dir wo du Portlets ablegen kannst."
+                    content: "Die grauen Bereiche auf dieser Seite zeigen dir wo du Portlets ablegen kannst.",
+                    onShown: function (tour) {
+                        fixIframePos($('#step-4'));
+                        fixBackdrop();
+                    },
                 },
                 {
                     element: "#elements > .portlet-button:first-child",
@@ -726,20 +757,20 @@ EditorGUI.prototype = {
                     content: "Ziehe nun das Portlet 'Überschrift' in den obersten grauen Bereich und du hast den ersten Inhalt auf dieser Seite eingefügt."
                 },
                 {
-                    element: $("#iframe").contents().find('#btn-config'),
-                    placement: "top",
+                    element: $("#iframe").contents().find('#pinbar'),
+                    placement: "left",
                     title: "Einstellungen",
-                    reflex: true,
-                    onNext: function (tour) {
-                        confModal.on('shown.bs.modal', function () {
-                            tour.goTo(7);
+                    onShown: function (tour) {
+                        fixIframePos($('#step-6'));
+                        confModal.off('shown').on('shown.bs.modal', function () {
+                            tour.next();
                         });
                     },
                     content: "An diesem Portlet siehst du eine Leiste mit verschiedenen Icons. Klicke auf das Zahnrad um die Einstellungen zu öffnen."
                 },
                 {
                     element: "#cle-btn-save-config",
-                    placement: "top",
+                    placement: "bottom",
                     title: "Einstellungen",
                     reflex: true,
                     content: "Alle Portlets bieten verschiedene Einstellungen. Trage hier einen neuen Text für die Überschrift ein und klicke auf Speichern."

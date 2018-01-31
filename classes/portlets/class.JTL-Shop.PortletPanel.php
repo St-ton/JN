@@ -22,7 +22,7 @@ class PortletPanel extends CMSPortlet
      */
     public function getPreviewHtml()
     {
-        $this->properties['attr']['class'] .= ' panel panel-'.$this->properties['panel-state'];
+        $this->addClass('panel')->addClass('panel-' . $this->properties['panel-state']);
 
         $ret  = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>';
         $ret .= !empty($this->properties['title-flag']) ? '<div class="panel-heading cle-area"></div>' : '';
@@ -38,7 +38,7 @@ class PortletPanel extends CMSPortlet
      */
     public function getFinalHtml()
     {
-        $this->properties['attr']['class'] .= ' panel panel-'.$this->properties['panel-state'];
+        $this->addClass('panel')->addClass('panel-' . $this->properties['panel-state']);
 
         $i   = 0;
         $ret = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>';

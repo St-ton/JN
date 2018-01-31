@@ -83,6 +83,36 @@ class Revision
     }
 
     /**
+     * @param string $type
+     * @param int $key
+     * @return object|null
+     */
+    public function getLatestRevision($type, $key)
+    {
+        $key     = (int)$key;
+        $mapping = $this->getMapping($type);
+
+        if ($key === 0 || is_null($mapping)) {
+            throw new InvalidArgumentException("Invalid revision type $type");
+        }
+
+        $latestRevision = Shop::DB()->query(
+            "SELECT *
+                FROM trevisions
+                WHERE type = '" . Shop::DB()->escape($type) . "'
+                    AND reference_primary = $key
+                ORDER BY timestamp DESC",
+            1
+        );
+
+        if (!is_object($latestRevision)) {
+            return null;
+        }
+
+        return $latestRevision;
+    }
+
+    /**
      * @param string      $type
      * @param int         $key
      * @param bool        $secondary
@@ -128,8 +158,13 @@ class Revision
                 }
             }
             $revision->content = json_encode($revision->content);
-            $this->storeRevision($revision);
-            $this->housekeeping($type, $key);
+
+            $latestRevision = $this->getLatestRevision($type, $key);
+
+            if ($latestRevision->content !== $revision->content) {
+                $this->storeRevision($revision);
+                $this->housekeeping($type, $key);
+            }
 
             return true;
         }

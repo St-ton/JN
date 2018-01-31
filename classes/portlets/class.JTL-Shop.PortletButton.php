@@ -40,8 +40,11 @@ class PortletButton extends CMSPortlet
         $linkTitle      = $this->properties['link-title'];
         $linkNewTabFlag = $this->properties['link-new-tab-flag'];
 
-        $this->properties['attr']['class'] .= " btn btn-$type btn-$size";
-        $this->properties['attr']['class'] .= $fullWidthflag === 'yes' ? ' btn-block' : '';
+        $this
+            ->addClass('btn')
+            ->addClass("btn-$type")
+            ->addClass("btn-$size")
+            ->addClass($fullWidthflag === 'yes' ? 'btn-block' : '');
 
         $previewButton = '<a';
 

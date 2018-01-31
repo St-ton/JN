@@ -187,7 +187,8 @@ abstract class CMSPortlet
         $animationStyle = $this->properties['animation-style'];
 
         if (!empty($animationStyle)) {
-            $this->properties['attr']['class'] .= ' wow ' . $animationStyle;
+            $this->addClass('wow');
+            $this->addClass($animationStyle);
         }
 
         $attribString = '';
@@ -201,6 +202,21 @@ abstract class CMSPortlet
         }
 
         return $attribString;
+    }
+
+    /**
+     * @param string $cls - CSS class name
+     * @return $this
+     */
+    protected function addClass($cls)
+    {
+        $classes = explode(' ', $this->properties['attr']['class']);
+
+        if (!in_array($cls, $classes)) {
+            $this->properties['attr']['class'] .= ' ' . $cls;
+        }
+
+        return $this;
     }
 
     /**

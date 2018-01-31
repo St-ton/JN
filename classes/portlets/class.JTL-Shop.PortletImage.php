@@ -27,7 +27,9 @@ class PortletImage extends CMSPortlet
         $linkTitle      = $this->properties['link-title'];
         $linkNewTabFlag = $this->properties['link-new-tab-flag'];
 
-        $this->properties['attr']['class'] .= " img-responsive $shape";
+        $this
+            ->addClass('img-responsive')
+            ->addClass($shape);
 
         // todo Editor: in preview nur kleinste bilder laden?
         $content =

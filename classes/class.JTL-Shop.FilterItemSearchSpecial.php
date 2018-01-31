@@ -84,7 +84,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     WHERE cKey = 'suchspecial' 
                         AND kKey IN (" . implode(', ', $val) . ")
                     ORDER BY kSprache",
-                2
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -185,11 +185,10 @@ class FilterItemSearchSpecial extends AbstractFilter
                     break;
     
                 case SEARCHSPECIALS_TOPREVIEWS:
-                    if (!$this->productFilter->hasPriceRangeFilter()) {
+                    if (!$this->productFilter->hasRatingFilter()) {
                         $minStars = ($m = $conf['boxen']['boxen_topbewertet_minsterne']) > 0
                             ? (int)$m
                             : 4;
-    
                         $conditions[] = 'ROUND(taex.fDurchschnittsBewertung) >= ' . $minStars;
                     }
                     break;
@@ -244,7 +243,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     break;
 
                 case SEARCHSPECIALS_TOPREVIEWS:
-                    if ($this->productFilter->hasRatingFilter()) {
+                    if (!$this->productFilter->hasRatingFilter()) {
                         $joins[] = (new FilterJoin())
                             ->setType($joinType)
                             ->setTable('tartikelext AS taex ')
@@ -365,7 +364,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 $state->conditions,
                 $state->having
             );
-            $qryRes  = Shop::DB()->query($qry, 2);
+            $qryRes  = Shop::DB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS);
 
             if (($count = count($qryRes)) > 0) {
                 $options[$i] = (new FilterOption())

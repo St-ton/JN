@@ -56,9 +56,9 @@ class Plausi
                         $value = htmlentities($value);
                     });
                 }
-                $this->xPostVar_arr = array_merge($xVar_arr, StringHandler::filterXSS($filter_arr), $exclude_arr);
+                $this->xPostVar_arr = array_merge($xVar_arr, $filter_arr, $exclude_arr);
             } else {
-                $this->xPostVar_arr = StringHandler::filterXSS($xVar_arr);
+                $this->xPostVar_arr = $xVar_arr;
             }
 
             return true;

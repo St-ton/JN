@@ -415,7 +415,7 @@ class FilterItemPriceRange extends AbstractFilter
                 ' GROUP BY tartikel.kArtikel' .
                 $state->having .
             ') AS ssMerkmal';
-            $oPreisspannenFilterMaxMin = Shop::DB()->query($qry, 1);
+            $oPreisspannenFilterMaxMin = Shop::DB()->query($qry, NiceDB::RET_SINGLE_OBJECT);
             if (isset($oPreisspannenFilterMaxMin->fMax) && $oPreisspannenFilterMaxMin->fMax > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff und liefert diese Werte in einem Objekt
                 $oPreis = $this->calculateSteps(
@@ -444,7 +444,7 @@ class FilterItemPriceRange extends AbstractFilter
                         ' GROUP BY tartikel.kArtikel' .
                         $state->having .
                     ') AS ssMerkmal';
-                $dbRes            = Shop::DB()->query($qry, 1);
+                $dbRes            = Shop::DB()->query($qry, NiceDB::RET_SINGLE_OBJECT);
                 $priceRanges      = [];
                 $priceRangeCounts = is_object($dbRes)
                     ? get_object_vars($dbRes)
@@ -495,7 +495,7 @@ class FilterItemPriceRange extends AbstractFilter
                 }
             }
         } else {
-            $oPreisspannenfilter_arr = Shop::DB()->query('SELECT * FROM tpreisspannenfilter', 2);
+            $oPreisspannenfilter_arr = Shop::DB()->query('SELECT * FROM tpreisspannenfilter', NiceDB::RET_ARRAY_OF_OBJECTS);
             if (is_array($oPreisspannenfilter_arr) && count($oPreisspannenfilter_arr) > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff
                 $oPreis = $this->calculateSteps(
@@ -533,8 +533,8 @@ class FilterItemPriceRange extends AbstractFilter
                                     $state->conditions .
                                 ' GROUP BY tartikel.kArtikel
                                 ' . implode("\n", $state->having) . '
-                        ) AS ssMerkmal
-                    ', 1
+                        ) AS ssMerkmal ',
+                    NiceDB::RET_SINGLE_OBJECT
                 );
                 $priceRangeCounts = get_object_vars($dbRes);
                 $priceRanges      = [];

@@ -3881,9 +3881,8 @@ class Artikel
         $this->cArtikelgewicht = Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, $kSprache, $this->fArtikelgewicht);
 
         if ($this->fMassMenge != 0) {
-            $this->cMassMenge = Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, $kSprache, $this->fMassMenge);
+            $this->cMassMenge = Trennzeichen::getUnit(JTL_SEPARATOR_AMOUNT, $kSprache, $this->fMassMenge);
         }
-
         if ($this->fPackeinheit == 0) {
             $this->fPackeinheit = 1;
         }
@@ -6415,16 +6414,15 @@ class Artikel
     }
 
     /**
-     * @return array of float product dimension
+     * @return array of float product dimensions
      */
     public function getDimension()
     {
-        $dim            = [];
-        $dim['length']  = (float)$this->fLaenge;
-        $dim['width']   = (float)$this->fBreite;
-        $dim['height']  = (float)$this->fHoehe;
-
-        return $dim;
+        return [
+            'length' => (float)$this->fLaenge,
+            'width'  => (float)$this->fBreite,
+            'height' => (float)$this->fHoehe
+        ];
     }
 
     /**

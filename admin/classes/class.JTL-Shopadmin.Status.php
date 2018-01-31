@@ -343,4 +343,40 @@ class Status
             && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
                 || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1));
     }
+
+    /**
+     * @return bool
+     */
+    protected function hasNewPluginVersions()
+    {
+        $fNewVersions = false;
+        // get installed plugins from DB
+        $oPluginsDB = Shop::DB()->query('SELECT `cVerzeichnis`, `nVersion` FROM `tplugin`', 2);
+        if (!is_array($oPluginsDB) || 1 > count($oPluginsDB)) {
+
+            return false; // there are no plugins installed
+        }
+        $vPluginsDB = [];
+        foreach ($oPluginsDB as $oElement) {
+            $vPluginsDB[$oElement->cVerzeichnis] = $oElement->nVersion;
+        }
+        // check against plugins, found in file-system
+        foreach ($vPluginsDB as $szFolder => $nVersion) {
+            $szPluginInfo = PFAD_ROOT . PFAD_PLUGIN . $szFolder . '/info.xml';
+            $oXml         = null;
+            if (file_exists($szPluginInfo)) {
+                $oXml = simplexml_load_file($szPluginInfo);
+                // read all pluginversions from 'info.xml'
+                $vPluginXmlVersions = [0];
+                foreach ($oXml->Install->Version as $oElement) {
+                    $vPluginXmlVersions[] = (int)$oElement['nr'];
+                }
+                // check for the highest and set marker, if it's different from installed db-version
+                if (max($vPluginXmlVersions) !== (int)$nVersion) {
+                    $fNewVersions = true;
+                }
+            }
+        }
+        return $fNewVersions;
+    }
 }

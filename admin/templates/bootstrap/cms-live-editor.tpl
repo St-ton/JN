@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-colorpicker.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/cms-live-editor-host.css">
     <link rel="stylesheet" href="{$templateUrl}css/typeaheadjs.css">
+    <link rel="stylesheet" href="{$templateUrl}css/bootstrap-tour.min.css">
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
     <script src="{$templateUrl}js/jquery-ui-1.11.4.min.js"></script>
@@ -26,6 +27,7 @@
     <script src="{$templateUrl}js/cms-live-editor/EditorIO.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/EditorGUI.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/Editor.js"></script>
+    <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>
 
     <script>
         var editor = new Editor({
@@ -68,6 +70,11 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
+                        <a href="#" id="help" data-toggle="tooltip" data-placement="bottom" title="Help">
+                            <i class="fa fa-question-circle-o"></i>
+                        </a>
+                    </li>
+                    <li>
                         <a href="#" id="btn-preview" data-toggle="tooltip" data-placement="bottom" title="Preview">
                             <i class="fa fa-eye"></i>
                         </a>
@@ -91,12 +98,12 @@
     <div id="main-frame">
         <div id="sidebar-panel">
             <ul class="nav nav-tabs">
-                <li><a href="#elements" data-toggle="tab">Elemente</a></li>
-                <li class="active"><a href="#templates" data-toggle="tab">Templates</a></li>
+                <li class="active"><a href="#elements" data-toggle="tab">Elemente</a></li>
+                <li><a href="#templates" data-toggle="tab">Templates</a></li>
                 <li><a href="#revisions" data-toggle="tab">Revisionen</a></li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane" id="elements">
+                <div class="tab-pane active" id="elements">
                     {foreach $oPortlet_arr as $oPortlet}
                         <a href="#" class="portlet-button btn btn-default btn-lg btn-block"
                            data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
@@ -108,7 +115,7 @@
                         </a>
                     {/foreach}
                 </div>
-                <div class="tab-pane active" id="templates">
+                <div class="tab-pane" id="templates">
                     <!-- blueprint -->
                     <div class="btn-group" role="group" style="display:none" id="template-btn-blueprint">
                         <a href="#" class="template-button btn btn-default"

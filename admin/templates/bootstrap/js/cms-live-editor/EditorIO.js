@@ -7,6 +7,7 @@ function EditorIO(editor)
 {
     this.editor      = editor;
     this.cPageIdHash = editor.cPageIdHash;
+    this.pageUrl     = editor.pageUrl;
     this.gui         = editor.gui;
     this.noop        = function() {};
 
@@ -35,7 +36,7 @@ EditorIO.prototype = {
 
     savePage: function(success, error)
     {
-        ioCall('saveCmsPage', [this.cPageIdHash, this.pageToJson()], success || this.noop, error || this.noop);
+        ioCall('saveCmsPage', [this.cPageIdHash, this.pageUrl, this.pageToJson()], success || this.noop, error || this.noop);
     },
 
     getPageWebStorageLastModified: function()

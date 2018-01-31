@@ -109,13 +109,15 @@ class CMS
 
     /**
      * @param string $pageID
+     * @param string $pageURL
      * @param array $pageData
      */
-    public function savePage($pageID, $pageData)
+    public function savePage($pageID, $pageURL, $pageData)
     {
-        $oCmsPage          = new CMSPage();
-        $oCmsPage->cIdHash = $pageID;
-        $oCmsPage->data    = $pageData;
+        $oCmsPage           = new CMSPage();
+        $oCmsPage->cIdHash  = $pageID;
+        $oCmsPage->cPageUrl = $pageURL;
+        $oCmsPage->data     = $pageData;
         $oCmsPage->save();
     }
 

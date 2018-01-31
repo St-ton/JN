@@ -21,14 +21,14 @@ if ($step === 'uebersicht') {
     // Paginationen
     $oPagiCmsLinks = (new Pagination('cmsLinks'))
         ->setItemCount((int)$lCount->anz)
+        ->setSortByOptions([
+            ['kPage', 'ID'],
+            ['dLastModified', 'Datum'],
+            ['cPageURL', 'URL']
+        ])
         ->assemble();
 
-    $links  = Shop::DB()->query("SELECT * FROM tcmspage LIMIT " . $oPagiCmsLinks->getLimitSQL(), 2);
-    foreach ($links as &$link) {
-        $cmsPage = new CMSPage($link->kPage);
-        $cmsPage->renderPreview();
-        $link->preview = $cmsPage->cPreviewHtml_arr;
-    }
+    $links  = Shop::DB()->query("SELECT * FROM tcmspage ORDER BY " . $oPagiCmsLinks->getOrderSQL() . " LIMIT " . $oPagiCmsLinks->getLimitSQL() , 2);
 }
 
 

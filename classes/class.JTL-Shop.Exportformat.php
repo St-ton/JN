@@ -674,6 +674,22 @@ class Exportformat
             ->assign('Waehrung', Session::Currency())
             ->assign('Einstellungen', $this->getConfig());
 
+        // disable php execution in export format templates for security
+        if(!EXPORTFORMAT_ALLOW_PHP) {
+            $smartySecurity = new Smarty_Security($this->smarty);
+            $smartySecurity->php_handling = Smarty::PHP_REMOVE;
+            $smartySecurity->allow_php_tag = false;
+            $smartySecurity->php_modifiers = array_merge($this->smarty->default_modifiers, [
+                'replace_delim',
+                'count_characters',
+                'string_format',
+                'string_date_format',
+                'truncate',
+            ]);
+            $smartySecurity->php_functions[] = 'lang';
+            $this->smarty->enableSecurity($smartySecurity);
+        }
+
         return $this;
     }
 
@@ -1356,15 +1372,30 @@ class Exportformat
         } else {
             $this->setName($post['cName']);
         }
+        $pathinfo = pathinfo(PFAD_ROOT . PFAD_EXPORT . $post['cDateiname']);
+        $extensionWhitelist = array_map('strtolower', explode(',', EXPORTFORMAT_ALLOWED_FORMATS));
         if (empty($post['cDateiname'])) {
             $cPlausiValue_arr['cDateiname'] = 1;
         } elseif (strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
             $cPlausiValue_arr['cDateiname'] = 2;
+        } elseif(strpos(realpath($pathinfo['dirname']), realpath(PFAD_ROOT)) === false) {
+            $cPlausiValue_arr['cDateiname'] = 3;
+        } elseif(!in_array(strtolower($pathinfo['extension']), $extensionWhitelist)) {
+            $cPlausiValue_arr['cDateiname'] = 4;
         } else {
             $this->setDateiname($post['cDateiname']);
         }
         if (empty($post['cContent'])) {
             $cPlausiValue_arr['cContent'] = 1;
+        } elseif((
+                strpos($post['cContent'], '{php}') !== false
+                || strpos($post['cContent'], '<?php') !== false
+                || strpos($post['cContent'], '<%') !== false
+                || strpos($post['cContent'], '<%=') !== false
+                || strpos($post['cContent'], '<script language="php">') !== false
+            ) && !EXPORTFORMAT_ALLOW_PHP
+        ) {
+            $cPlausiValue_arr['cContent'] = 2;
         } else {
             $this->setContent(str_replace('<tab>', "\t", $post['cContent']));
         }

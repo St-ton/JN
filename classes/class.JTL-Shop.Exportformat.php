@@ -665,14 +665,14 @@ class Exportformat
      */
     private function initSmarty()
     {
-        $this->smarty = (new JTLSmarty(true, false, false, 'export'))
-            ->setCaching(0)
-            ->setTemplateDir(PFAD_TEMPLATES)
-            ->setConfigDir($this->smarty->getTemplateDir($this->smarty->context) . 'lang/')
-            ->registerResource('db', new SmartyResourceNiceDB('export'))
-            ->assign('URL_SHOP', Shop::getURL())
-            ->assign('Waehrung', Session::Currency())
-            ->assign('Einstellungen', $this->getConfig());
+        $this->smarty = new JTLSmarty(true, false, false, 'export');
+        $this->smarty->setCaching(0);
+        $this->smarty->setTemplateDir(PFAD_TEMPLATES);
+        $this->smarty->setConfigDir($this->smarty->getTemplateDir($this->smarty->context) . 'lang/');
+        $this->smarty->registerResource('db', new SmartyResourceNiceDB('export'));
+        $this->smarty->assign('URL_SHOP', Shop::getURL());
+        $this->smarty->assign('Waehrung', Session::Currency());
+        $this->smarty->assign('Einstellungen', $this->getConfig());
 
         return $this;
     }

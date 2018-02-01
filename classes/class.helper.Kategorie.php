@@ -118,11 +118,15 @@ class KategorieHelper
             $shopURL             = Shop::getURL(true);
             $isDefaultLang       = standardspracheAktiv();
             $visibilityWhere     = " AND tartikelsichtbarkeit.kArtikel IS NULL";
-            $depthWhere          = (self::$limitReached === true) ? " AND node.nLevel <= " . CATEGORY_FULL_LOAD_MAX_LEVEL : '';
-            $getDescription      = ($categoryCount < $categoryLimit || //always get description if there aren't that many categories
-                !(isset(self::$config['template']['megamenu']['show_maincategory_info']) && //otherwise check template config
-                isset(self::$config['template']['megamenu']['show_categories']) &&
-                (self::$config['template']['megamenu']['show_categories'] === 'N'
+            $depthWhere          = self::$limitReached === true
+                ? " AND node.nLevel <= " . CATEGORY_FULL_LOAD_MAX_LEVEL
+                : '';
+            $getDescription      = ($categoryCount < $categoryLimit
+                || //always get description if there aren't that many categories
+                !(isset(self::$config['template']['megamenu']['show_maincategory_info'])
+                    //otherwise check template config
+                    &&  isset(self::$config['template']['megamenu']['show_categories'])
+                    && (self::$config['template']['megamenu']['show_categories'] === 'N'
                     || self::$config['template']['megamenu']['show_maincategory_info'] === 'N')));
 
             if ($getDescription === true) {
@@ -392,7 +396,8 @@ class KategorieHelper
             }
         }
         $nodes            = Shop::DB()->query(
-            "SELECT parent.kKategorie, parent.kOberKategorie" . $nameSelect . $descriptionSelect . $imageSelect . $seoSelect . $countSelect . "
+            "SELECT parent.kKategorie, parent.kOberKategorie" . $nameSelect .
+                $descriptionSelect . $imageSelect . $seoSelect . $countSelect . "
                 FROM tkategorie AS node INNER JOIN tkategorie AS parent " . $langJoin . "                    
                 LEFT JOIN tkategoriesichtbarkeit
                     ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
@@ -549,7 +554,9 @@ class KategorieHelper
     {
         $current = $this->getCategoryById((int)$id);
 
-        return isset($current->Unterkategorien) ? array_values($current->Unterkategorien) : [];
+        return $current !== null && isset($current->Unterkategorien)
+            ? array_values($current->Unterkategorien)
+            : [];
     }
 
     /**
@@ -711,7 +718,9 @@ class KategorieHelper
         if (function_exists('gibKategorienHTML')) {
             $cacheID = 'jtl_clh_' .
                 $startCat->kKategorie . '_' .
-                (isset($currentCategory->kKategorie) ? (int)$currentCategory->kKategorie : 0);
+                (isset($currentCategory->kKategorie)
+                    ? (int)$currentCategory->kKategorie
+                    : 0);
 
             if (isset($expanded->elemente)) {
                 foreach ($expanded->elemente as $_elem) {
@@ -743,8 +752,8 @@ class KategorieHelper
 
                 $dist_kategorieboxen = Shop::DB()->query(
                     "SELECT DISTINCT(cWert) 
-                    FROM tkategorieattribut 
-                    WHERE cName = '" . KAT_ATTRIBUT_KATEGORIEBOX . "'", 2
+                        FROM tkategorieattribut 
+                        WHERE cName = '" . KAT_ATTRIBUT_KATEGORIEBOX . "'", 2
                 );
                 foreach ($dist_kategorieboxen as $katboxNr) {
                     $nr = (int)$katboxNr->cWert;

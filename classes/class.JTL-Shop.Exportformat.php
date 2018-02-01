@@ -615,10 +615,9 @@ class Exportformat
         if (is_array($einstellungenAssoc_arr)) {
             $ok = true;
             foreach ($einstellungenAssoc_arr as $einstellungAssoc_arr) {
-                $oObj        = new stdClass();
-                $cMember_arr = array_keys($einstellungAssoc_arr);
+                $oObj = new stdClass();
                 if (is_array($einstellungAssoc_arr) && count($einstellungAssoc_arr) > 0) {
-                    foreach ($cMember_arr as $cMember) {
+                    foreach (array_keys($einstellungAssoc_arr) as $cMember) {
                         $oObj->$cMember = $einstellungAssoc_arr[$cMember];
                     }
                     $oObj->kExportformat = $this->getExportformat();
@@ -640,7 +639,6 @@ class Exportformat
         if (is_array($einstellungenAssoc_arr)) {
             $ok = true;
             foreach ($einstellungenAssoc_arr as $einstellungAssoc_arr) {
-                //Array mit zu importierenden Exportformateinstellungen
                 $cExportEinstellungenToImport_arr = [
                     'exportformate_semikolon',
                     'exportformate_equot',
@@ -667,14 +665,14 @@ class Exportformat
      */
     private function initSmarty()
     {
-        $this->smarty = new JTLSmarty(true, false, false, 'export');
-        $this->smarty->setCaching(0)
-                     ->setTemplateDir(PFAD_TEMPLATES)
-                     ->setConfigDir($this->smarty->getTemplateDir($this->smarty->context) . 'lang/')
-                     ->registerResource('db', new SmartyResourceNiceDB('export'))
-                     ->assign('URL_SHOP', Shop::getURL())
-                     ->assign('Waehrung', Session::Currency())
-                     ->assign('Einstellungen', $this->getConfig());
+        $this->smarty = (new JTLSmarty(true, false, false, 'export'))
+            ->setCaching(0)
+            ->setTemplateDir(PFAD_TEMPLATES)
+            ->setConfigDir($this->smarty->getTemplateDir($this->smarty->context) . 'lang/')
+            ->registerResource('db', new SmartyResourceNiceDB('export'))
+            ->assign('URL_SHOP', Shop::getURL())
+            ->assign('Waehrung', Session::Currency())
+            ->assign('Einstellungen', $this->getConfig());
 
         return $this;
     }
@@ -760,8 +758,8 @@ class Exportformat
 
         $condition = 'AND NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))';
         $conf      = Shop::getSettings([CONF_GLOBAL]);
-        if (isset($conf['global']['global_erscheinende_kaeuflich']) &&
-            $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
+        if (isset($conf['global']['global_erscheinende_kaeuflich'])
+            && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
         ) {
             $condition = 'AND (
                 NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))
@@ -773,10 +771,10 @@ class Exportformat
             )';
         }
 
-        $select = ($countOnly === true)
+        $select = $countOnly === true
             ? 'count(*) AS nAnzahl'
             : 'tartikel.kArtikel';
-        $limit  = ($countOnly === true)
+        $limit  = $countOnly === true
             ? ''
             : (" ORDER BY kArtikel LIMIT " . $this->getQueue()->nLimitN . ", " . $this->getQueue()->nLimitM);
 
@@ -910,13 +908,13 @@ class Exportformat
                 while (($cContent = fgets($handle)) !== false) {
                     if ($nZeile > 1) {
                         $nSizeZeile = strlen($cContent) + 2;
-                        //Schwelle erreicht?
+                        // Schwelle erreicht?
                         if ($nSizeDatei <= ($this->nSplitgroesse * 1024 * 1024 - 102400)) {
                             // Schreibe Content
                             fwrite($new_handle, $cContent);
                             $nSizeDatei += $nSizeZeile;
                         } else {
-                            //neue Datei
+                            // neue Datei
                             $this->writeFooter($new_handle);
                             fclose($new_handle);
                             ++$fileCounter;
@@ -961,15 +959,13 @@ class Exportformat
      */
     private function cleanupFiles($fileName, $fileNameSplit)
     {
-        if (is_dir(PFAD_ROOT . PFAD_EXPORT)) {
-            if (($dir = opendir(PFAD_ROOT . PFAD_EXPORT)) !== false) {
-                while (($cDatei = readdir($dir)) !== false) {
-                    if ($cDatei !== $fileName && strpos($cDatei, $fileNameSplit) !== false) {
-                        unlink(PFAD_ROOT . PFAD_EXPORT . $cDatei);
-                    }
+        if (is_dir(PFAD_ROOT . PFAD_EXPORT) && ($dir = opendir(PFAD_ROOT . PFAD_EXPORT)) !== false) {
+            while (($cDatei = readdir($dir)) !== false) {
+                if ($cDatei !== $fileName && strpos($cDatei, $fileNameSplit) !== false) {
+                    unlink(PFAD_ROOT . PFAD_EXPORT . $cDatei);
                 }
-                closedir($dir);
             }
+            closedir($dir);
         }
 
         return $this;
@@ -1025,7 +1021,7 @@ class Exportformat
             // needed by Google Shopping export format plugin
             $exportformat->tkampagne_cParameter = $this->campaignParameter;
             $exportformat->tkampagne_cWert      = $this->campaignValue;
-            //needed for plugin exports
+            // needed for plugin exports
             $ExportEinstellungen            = $this->getConfig();
             include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT .
                 str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
@@ -1122,7 +1118,12 @@ class Exportformat
                 // so in that case we replace oKategorie_arr with an array of real Kategorie objects
                 $categories = [];
                 foreach ($Artikel->oKategorie_arr as $categoryID) {
-                    $categories[] = new Kategorie((int)$categoryID, $this->kSprache, $this->kKundengruppe, !$this->useCache());
+                    $categories[] = new Kategorie(
+                        (int)$categoryID,
+                        $this->kSprache,
+                        $this->kKundengruppe,
+                        !$this->useCache()
+                    );
                 }
                 $Artikel->oKategorie_arr = $categories;
             }
@@ -1350,13 +1351,11 @@ class Exportformat
     public function check($post)
     {
         $cPlausiValue_arr = [];
-        // Name
         if (empty($post['cName'])) {
             $cPlausiValue_arr['cName'] = 1;
         } else {
             $this->setName($post['cName']);
         }
-        // Dateiname
         if (empty($post['cDateiname'])) {
             $cPlausiValue_arr['cDateiname'] = 1;
         } elseif (strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
@@ -1364,25 +1363,21 @@ class Exportformat
         } else {
             $this->setDateiname($post['cDateiname']);
         }
-        // Content
         if (empty($post['cContent'])) {
             $cPlausiValue_arr['cContent'] = 1;
         } else {
             $this->setContent(str_replace('<tab>', "\t", $post['cContent']));
         }
-        // Sprache
         if (!isset($post['kSprache']) || (int)$post['kSprache'] === 0) {
             $cPlausiValue_arr['kSprache'] = 1;
         } else {
             $this->setSprache($post['kSprache']);
         }
-        // Sprache
         if (!isset($post['kWaehrung']) || (int)$post['kWaehrung'] === 0) {
             $cPlausiValue_arr['kWaehrung'] = 1;
         } else {
             $this->setWaehrung($post['kWaehrung']);
         }
-        // Kundengruppe
         if (!isset($post['kKundengruppe']) || (int)$post['kKundengruppe'] === 0) {
             $cPlausiValue_arr['kKundengruppe'] = 1;
         } else {

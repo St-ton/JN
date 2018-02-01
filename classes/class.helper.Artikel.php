@@ -237,8 +237,8 @@ class ArtikelHelper
         $kVaterArtikel = (int)$oVariationKombiKind_arr[0]->kVaterArtikel;
 
         foreach ($oVariationKombiKind_arr as $oVariationKombiKind) {
-            if (!isset($propertyValues[$oVariationKombiKind->kEigenschaft]) ||
-                !is_array($propertyValues[$oVariationKombiKind->kEigenschaft])
+            if (!isset($propertyValues[$oVariationKombiKind->kEigenschaft])
+                || !is_array($propertyValues[$oVariationKombiKind->kEigenschaft])
             ) {
                 $propertyValues[$oVariationKombiKind->kEigenschaft] = $oVariationKombiKind->kEigenschaftWert;
             }

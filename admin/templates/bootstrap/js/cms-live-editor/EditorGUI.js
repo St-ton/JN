@@ -49,9 +49,10 @@ EditorGUI.prototype = {
         this.templateDeleteBtn        = this.hostJq('.template-delete')           .click(this.onTemplateDelete.bind(this));
         this.templateDeleteForm       = this.hostJq('#template-delete-form')      .submit(this.onTemplateDeleteConfirm.bind(this));
         this.revisionList             = this.hostJq('#revision-list');
-        this.helpBtn                  = this.hostJq('#help')                      .click(this.onHelp.bind(this));
         this.templateBtnBlueprint     = this.hostJq('#template-btn-blueprint');
         this.templateList             = this.hostJq('#templates');
+        this.helpBtn                  = this.hostJq('#help')                      .click(this.onHelp.bind(this));
+        this.tourModal                = this.hostJq('#tour-modal')                .submit(this.onTakeTour.bind(this));
 
         this.portletBtns
             .on('dragstart', this.onPortletBtnDragStart.bind(this))
@@ -678,6 +679,15 @@ EditorGUI.prototype = {
 
     onHelp: function(e)
     {
+        this.tourModal.modal('show');
+    },
+
+    onTakeTour: function(e)
+    {
+        this.tourModal.modal('hide');
+        e.preventDefault();
+        var tourID = this.hostJq('#tour-form input[name="help-tour"]:checked').val();
+
         function fixIframePos(element) {
             var off = element.offset();
             var pTop = $('#editor-top-nav').height();
@@ -705,94 +715,135 @@ EditorGUI.prototype = {
             $('.tour-backdrop.bottom').offset({ top:off.top + pTop});
         }
 
+        console.log(tourID);
         // Todo Editor: verschiedene Touren anlegen
         // Todo Editor: debug ausschalten
-        var confModal = this.configModal;
-        var tour = new Tour({
-            debug: true,
-            orphan: true,
-            template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><div class='popover-navigation'><button class='btn btn-default' data-role='prev'>« Prev</button><span data-role='separator'>|</span><button class='btn btn-default' data-role='next'>Next »</button><button class='btn btn-primary' data-role='end' style='margin-left: 15px;'>End tour</button></div></div>",
-            steps: [
-                {
-                    backdrop: true,
-                    title: "Willkommen",
-                    content: "In dieser kurzen Einführung wollen wir dir einen Überblick über dieses neue Feature geben."
-                },
-                {
-                    backdrop: true,
-                    element: "#sidebar-panel",
-                    title: "Aufteilung",
-                    content: "Grundsätzlich ist der Editor in die zwei Bereich aufgeteilt.<br/>Hier siehst du die Sidebar."
-                },
-                {
-                    backdrop: true,
-                    element: "#iframe-panel",
-                    placement: "top",
-                    title: "Aufteilung",
-                    content: "In diesem Bereich wird der aktuelle Stand deiner Bearbeitung gezeigt."
-                },
-                {
-                    backdrop: true,
-                    element: "#elements",
-                    placement: "right",
-                    title: "Portlets",
-                    content: "Das ist eines unserer Portlets. Diese kannst du nutzen um deine Seiten mit Inhalt zu füllen."
-                },
-                {
-                    backdrop: true,
-                    element: $("#iframe").contents().find(".cle-rootarea > .cle-droptarget:first-child"),
-                    placement: "top",
-                    title: "Portlets",
-                    content: "Die grauen Bereiche auf dieser Seite zeigen dir wo du Portlets ablegen kannst.",
-                    onShown: function (tour) {
-                        fixIframePos($('#step-4'));
-                        fixBackdrop();
-                    },
-                },
-                {
-                    element: "#elements > .portlet-button:first-child",
-                    placement: "bottom",
-                    title: "Portlets",
-                    reflex: 'dragend',
-                    content: "Ziehe nun das Portlet 'Überschrift' in den obersten grauen Bereich und du hast den ersten Inhalt auf dieser Seite eingefügt."
-                },
-                {
-                    element: $("#iframe").contents().find('#pinbar'),
-                    placement: "left",
-                    title: "Einstellungen",
-                    onShown: function (tour) {
-                        fixIframePos($('#step-6'));
-                        confModal.off('shown').on('shown.bs.modal', function () {
-                            tour.next();
-                        });
-                    },
-                    content: "An diesem Portlet siehst du eine Leiste mit verschiedenen Icons. Klicke auf das Zahnrad um die Einstellungen zu öffnen."
-                },
-                {
-                    element: "#cle-btn-save-config",
-                    placement: "bottom",
-                    title: "Einstellungen",
-                    reflex: true,
-                    content: "Alle Portlets bieten verschiedene Einstellungen. Trage hier einen neuen Text für die Überschrift ein und klicke auf Speichern."
-                },
-                {
-                    element: "#cle-btn-save-editor",
-                    placement: "bottom",
-                    title: "Seite Speichern",
-                    reflex: true,
-                    content: "Mit einem Klick auf das Speichern Symbol werden deine Änderungen übernommen und sind ab dann im Shop sichtbar."
-                },
+        switch (tourID) {
+            case 'ht1':
+                var confModal = this.configModal;
+                var tour = new Tour({
+                    name: "tAllgemein",
+                    debug: true,
+                    orphan: true,
+                    template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><div class='popover-navigation'><button class='btn btn-default' data-role='prev'>« Prev</button><span data-role='separator'>|</span><button class='btn btn-default' data-role='next'>Next »</button><button class='btn btn-primary' data-role='end' style='margin-left: 15px;'>End tour</button></div></div>",
+                    steps: [
+                        {
+                            backdrop: true,
+                            title: "Willkommen",
+                            content: "In dieser kurzen Einführung wollen wir dir einen Überblick über dieses neue Feature geben."
+                        },
+                        {
+                            backdrop: true,
+                            element: "#sidebar-panel",
+                            title: "Aufteilung",
+                            content: "Grundsätzlich ist der Editor in die zwei Bereich aufgeteilt.<br/>Hier siehst du die Sidebar."
+                        },
+                        {
+                            backdrop: true,
+                            element: "#iframe-panel",
+                            placement: "top",
+                            title: "Aufteilung",
+                            content: "In diesem Bereich wird der aktuelle Stand deiner Bearbeitung gezeigt."
+                        },
+                        {
+                            backdrop: true,
+                            element: "#elements",
+                            placement: "right",
+                            title: "Portlets",
+                            content: "Das ist eines unserer Portlets. Diese kannst du nutzen um deine Seiten mit Inhalt zu füllen."
+                        },
+                        {
+                            backdrop: true,
+                            element: $("#iframe").contents().find(".cle-rootarea > .cle-droptarget:first-child"),
+                            placement: "top",
+                            title: "Portlets",
+                            content: "Die grauen Bereiche auf dieser Seite zeigen dir wo du Portlets ablegen kannst.",
+                            onShown: function (tour) {
+                                fixIframePos($('#step-4'));
+                                fixBackdrop();
+                            },
+                        },
+                        {
+                            element: "#elements > .portlet-button:first-child",
+                            placement: "bottom",
+                            title: "Portlets",
+                            reflex: 'dragend',
+                            content: "Ziehe nun das Portlet 'Überschrift' in den obersten grauen Bereich und du hast den ersten Inhalt auf dieser Seite eingefügt."
+                        },
+                        {
+                            element: $("#iframe").contents().find('#pinbar'),
+                            placement: "left",
+                            title: "Einstellungen",
+                            onShown: function (tour) {
+                                fixIframePos($('#step-6'));
+                                confModal.off('shown').on('shown.bs.modal', function () {
+                                    tour.next();
+                                });
+                            },
+                            content: "An diesem Portlet siehst du eine Leiste mit verschiedenen Icons. Klicke auf das Zahnrad um die Einstellungen zu öffnen."
+                        },
+                        {
+                            element: "#cle-btn-save-config",
+                            placement: "bottom",
+                            title: "Einstellungen",
+                            reflex: true,
+                            content: "Alle Portlets bieten verschiedene Einstellungen. Trage hier einen neuen Text für die Überschrift ein und klicke auf Speichern."
+                        },
+                        {
+                            element: "#cle-btn-save-editor",
+                            placement: "bottom",
+                            title: "Seite Speichern",
+                            reflex: true,
+                            content: "Mit einem Klick auf das Speichern Symbol werden deine Änderungen übernommen und sind ab dann im Shop sichtbar."
+                        },
 
-            ]
-        });
+                    ]
+                });
 
-        // Initialize the tour
-        tour.init();
-        $('.tour-tour-5-element.tour-step-element').on('dragend', function() {
-            tour.next();
-        });
+                // Initialize the tour
+                tour.init();
+                $('.tour-tAllgemein-5-element').on('dragend', function () {
+                    tour.next();
+                });
+                // Initialize the tour
+                tour.start(true);
+                break;
+            case 'ht2':
+                var tour2 = new Tour({
+                    name: "tAnimation",
+                    debug: true,
+                    orphan: true,
+                    template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><div class='popover-navigation'><button class='btn btn-default' data-role='prev'>« Prev</button><span data-role='separator'>|</span><button class='btn btn-default' data-role='next'>Next »</button><button class='btn btn-primary' data-role='end' style='margin-left: 15px;'>End tour</button></div></div>",
+                    steps: [
+                        {
+                            backdrop: true,
+                            title: "Animationen",
+                            content: "Lerne hier wie du Portlets mit einfachen Animationen erstellst."
+                        }
+                    ]
+                });
+                tour2.init();
+                tour2.start(true);
+                break;
+            case 'ht3':
+                var tour3 = new Tour({
+                    name: "tTemplate",
+                    debug: true,
+                    orphan: true,
+                    template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><div class='popover-navigation'><button class='btn btn-default' data-role='prev'>« Prev</button><span data-role='separator'>|</span><button class='btn btn-default' data-role='next'>Next »</button><button class='btn btn-primary' data-role='end' style='margin-left: 15px;'>End tour</button></div></div>",
+                    steps: [
+                        {
+                            backdrop: true,
+                            title: "Templates",
+                            content: "Lerne hier wie du Templates anlegst und wiederverwendest."
+                        }
+                    ]
+                });
+                tour3.init();
+                tour3.start(true);
+                break;
+        }
 
-        tour.start(true);
     }
 
 };

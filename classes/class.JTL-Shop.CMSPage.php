@@ -147,9 +147,14 @@ class CMSPage
             ];
             $this->kPage = Shop::DB()->insert('tcmspage', $oCmsPageDB);
         } else {
-            $revision = new Revision();
-            $revision->addRevision('cmspage', (int)$oCmsPageDB->kPage);
-            $oCmsPageDB->cJson         = json_encode($this->data);
+            $newPageJson = json_encode($this->data);
+
+            if ($newPageJson !== $oCmsPageDB->cJson) {
+                $revision = new Revision();
+                $revision->addRevision('cmspage', (int)$oCmsPageDB->kPage);
+            }
+
+            $oCmsPageDB->cJson         = $newPageJson;
             $oCmsPageDB->cPageURL      = $this->cPageUrl;
             $oCmsPageDB->dLastModified = date('Y-m-d H:i:s');
             $oCmsPageDB->cLockedBy     = $this->cLockedBy;

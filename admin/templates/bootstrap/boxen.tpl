@@ -233,7 +233,7 @@
                             <input type="hidden" name="typ" value="{$oEditBox->eTyp}" />
                             <input type="hidden" name="page" value="{$nPage}" />
                             {if !empty($oEditBox->kBox) && $oEditBox->supportsRevisions === true}
-                                {getRevisions type='box' key=$oEditBox->kBox show=['cTitel', 'cInhalt'] secondary=true data=$revionData}
+                                {getRevisions type='box' key=$oEditBox->kBox show=['cTitel', 'cInhalt'] secondary=true data=$revisionData}
                             {/if}
                         </div>
                         <div class="panel-footer">

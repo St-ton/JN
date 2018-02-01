@@ -69,15 +69,13 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
         case 'edit_mode':
             $kBox = (int)$_REQUEST['item'];
             $oBox = $oBoxen->holeBox($kBox);
-
             // revisions need this as a different formatted array
-            $revionData = [];
+            $revisionData = [];
             foreach ($oBox->oSprache_arr as $lang) {
-                $revionData[$lang->cISO] = $lang;
+                $revisionData[$lang->cISO] = $lang;
             }
-
             $smarty->assign('oEditBox', $oBox)
-                   ->assign('revionData', $revionData)
+                   ->assign('revisionData', $revisionData)
                    ->assign('oLink_arr', $oBoxen->gibLinkGruppen());
             break;
 

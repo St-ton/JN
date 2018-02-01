@@ -216,23 +216,39 @@ class Warenkorb
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             $NeuePosition->cName[$Sprache->cISO]         = $NeuePosition->Artikel->cName;
             $NeuePosition->cLieferstatus[$Sprache->cISO] = $cLieferstatus_StdSprache;
-            if ($Sprache->cStandard !== 'Y') {
-                $artikel_spr = Shop::DB()->select('tartikelsprache', 'kArtikel', (int)$NeuePosition->kArtikel, 'kSprache', (int)$Sprache->kSprache);
-                //Wenn fuer die gewaehlte Sprache kein Name vorhanden ist dann StdSprache nehmen
-                $NeuePosition->cName[$Sprache->cISO] = (isset($artikel_spr->cName) && strlen(trim($artikel_spr->cName)) > 0)
-                    ? $artikel_spr->cName
-                    : $NeuePosition->Artikel->cName;
-                $lieferstatus_spr = Shop::DB()->select(
-                    'tlieferstatus',
-                    'kLieferstatus', (isset($NeuePosition->Artikel->kLieferstatus)
-                        ? (int)$NeuePosition->Artikel->kLieferstatus
-                        : ''),
-                    'kSprache',
-                    (int)$Sprache->kSprache
+            if ($Sprache->cStandard === 'Y') {
+                $artikel_spr = Shop::DB()->select(
+                    'tartikel',
+                    'kArtikel', (int)$NeuePosition->kArtikel,
+                    null, null,
+                    null, null,
+                    false,
+                    'cName'
                 );
-                if (isset($lieferstatus_spr->cName) && $lieferstatus_spr->cName) {
-                    $NeuePosition->cLieferstatus[$Sprache->cISO] = $lieferstatus_spr->cName;
-                }
+            } else {
+                $artikel_spr = Shop::DB()->select(
+                    'tartikelsprache',
+                    'kArtikel', (int)$NeuePosition->kArtikel,
+                    'kSprache', (int)$Sprache->kSprache,
+                    null, null,
+                    false,
+                    'cName'
+                );
+            }
+            //Wenn fuer die gewaehlte Sprache kein Name vorhanden ist dann StdSprache nehmen
+            $NeuePosition->cName[$Sprache->cISO] = (isset($artikel_spr->cName) && strlen(trim($artikel_spr->cName)) > 0)
+                ? $artikel_spr->cName
+                : $NeuePosition->Artikel->cName;
+            $lieferstatus_spr = Shop::DB()->select(
+                'tlieferstatus',
+                'kLieferstatus', (isset($NeuePosition->Artikel->kLieferstatus)
+                    ? (int)$NeuePosition->Artikel->kLieferstatus
+                    : ''),
+                'kSprache',
+                (int)$Sprache->kSprache
+            );
+            if (isset($lieferstatus_spr->cName) && $lieferstatus_spr->cName) {
+                $NeuePosition->cLieferstatus[$Sprache->cISO] = $lieferstatus_spr->cName;
             }
         }
         // Grundpreise bei Staffelpreisen

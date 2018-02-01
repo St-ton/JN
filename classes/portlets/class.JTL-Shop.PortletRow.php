@@ -28,19 +28,53 @@ class PortletRow extends CMSPortlet
         $layoutSm = explode('+', $this->properties['layout-sm']);
         $layoutXs = explode('+', $this->properties['layout-xs']);
 
+        // TODO Editor: weiter zusammenfassen?
         foreach ($layoutLg as $i => $col) {
+            $addDividerMD = false;
+            $addDividerSM = false;
+            $addDividerXS = false;
             $res .= '<div class="cle-area col-lg-' . $col;
 
             if (!empty($layoutMd[$i])) {
                 $res .= ' col-md-' . $layoutMd[$i];
+                $sum = 0;
+                for ($x=0;$x<=$i;++$x) {
+                    $sum += $layoutMd[$x];
+                }
+                $addDividerMD = $sum % 12 === 0 ? true : false;
             }
             if (!empty($layoutSm[$i])) {
                 $res .= ' col-sm-' . $layoutSm[$i];
+                $sum = 0;
+                for ($x=0;$x<=$i;++$x) {
+                    $sum += $layoutSm[$x];
+                }
+                $addDividerSM = $sum % 12 === 0 ? true : false;
             }
             if (!empty($layoutXs[$i])) {
                 $res .= ' col-xs-' . $layoutXs[$i];
+                $sum = 0;
+                for ($x=0;$x<=$i;++$x) {
+                    $sum += $layoutXs[$x];
+                }
+                $addDividerXS = $sum % 12 === 0 ? true : false;
             }
             $res .= '"></div>';
+
+            $res .= $addDividerMD ? '<div class="clearfix visible-md-block"></div>' : '';
+
+            if ($addDividerSM) {
+                $res .= '<div class="clearfix visible-sm-block';
+                $res .= empty($this->properties['layout-md']) ? ' visible-md-block' : '';
+                $res .= '"></div>';
+            }
+
+            if ($addDividerXS) {
+                $res .= '<div class="clearfix visible-xs-block';
+                $res .= empty($this->properties['layout-sm']) ? ' visible-sm-block' : '';
+                $res .= empty($this->properties['layout-md']) ? ' visible-md-block' : '';
+                $res .= '"></div>';
+            }
         }
 
         $res .= '</div>';
@@ -61,20 +95,36 @@ class PortletRow extends CMSPortlet
 
         foreach ($layoutLg as $i => $col) {
             $subArea = $this->subAreas[$i];
-            $res    .= '<div class="col-lg-' . $col;
+            $addDividerMD = false;
+            $addDividerSM = false;
+            $addDividerXS = false;
+            $res         .= '<div class="col-lg-' . $col;
 
             if (!empty($layoutMd[$i])) {
                 $res .= ' col-md-' . $layoutMd[$i];
+                $sum = 0;
+                for ($x=0;$x<=$i;++$x) {
+                    $sum += $layoutMd[$x];
+                }
+                $addDividerMD = $sum % 12 === 0 ? true : false;
             }
             if (!empty($layoutSm[$i])) {
                 $res .= ' col-sm-' . $layoutSm[$i];
+                $sum = 0;
+                for ($x=0;$x<=$i;++$x) {
+                    $sum += $layoutSm[$x];
+                }
+                $addDividerSM = $sum % 12 === 0 ? true : false;
             }
             if (!empty($layoutXs[$i])) {
                 $res .= ' col-xs-' . $layoutXs[$i];
+                $sum = 0;
+                for ($x=0;$x<=$i;++$x) {
+                    $sum += $layoutXs[$x];
+                }
+                $addDividerXS = $sum % 12 === 0 ? true : false;
             }
-
             $res .= '">';
-
             foreach ($subArea as $subPortlet) {
                 $portlet        = CMS::getInstance()->createPortlet($subPortlet['portletId'])
                     ->setProperties($subPortlet['properties'])
@@ -82,10 +132,21 @@ class PortletRow extends CMSPortlet
                 $subPortletHtml = $portlet->getFinalHtml();
                 $res           .= $subPortletHtml;
             }
-
             $res .= '</div>';
-        }
 
+            $res .= $addDividerMD ? '<div class="clearfix visible-md-block"></div>' : '';
+            if ($addDividerSM) {
+                $res .= '<div class="clearfix visible-sm-block';
+                $res .= empty($this->properties['layout-md']) ? ' visible-md-block' : '';
+                $res .= '"></div>';
+            }
+            if ($addDividerXS) {
+                $res .= '<div class="clearfix visible-xs-block';
+                $res .= empty($this->properties['layout-sm']) ? ' visible-sm-block' : '';
+                $res .= empty($this->properties['layout-md']) ? ' visible-md-block' : '';
+                $res .= '"></div>';
+            }
+        }
         $res .= '</div>';
 
         return $res;

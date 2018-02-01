@@ -297,7 +297,6 @@
                     </div>
                 </form>
             </div>
-        </div>>
         </div>
     </div>
     <div class="cle-pinbar btn-group" id="pinbar" style="display:none">

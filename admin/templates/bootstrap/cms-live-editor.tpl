@@ -116,7 +116,7 @@
                     {/foreach}
                 </div>
                 <div class="tab-pane" id="templates">
-                    <!-- blueprint -->
+                    {* blueprint *}
                     <div class="btn-group" role="group" style="display:none" id="template-btn-blueprint">
                         <a href="#" class="template-button btn btn-default"
                            data-title="Template-Title"
@@ -127,7 +127,7 @@
                         <button class="template-delete btn btn-danger"
                                 data-template="42"> <i class="fa fa-times"></i> </button>
                     </div>
-                    <!-- /blueprint -->
+                    {* /blueprint *}
                 </div>
                 <div class="tab-pane" id="revisions">
                     <div class="list-group">
@@ -151,7 +151,7 @@
             <iframe id="iframe"></iframe>
         </div>
     </div>
-    <div id="config-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div id="config-modal" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -282,7 +282,7 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">Templates</div>
                                     <div class="panel-body">
-                                        Du hast eine tolle Ansicht angelegt die du häufig wiederverwenden möchtest?<br/>
+                                        Du hast eine tolle Ansicht angelegt die du häufig wiederverwenden möchtest?<br>
                                         Leg' sie doch als Template an und greife so einfach immer wieder darauf zu.
                                     </div>
                                 </div>

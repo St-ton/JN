@@ -120,7 +120,7 @@ EditorGUI.prototype = {
         this.rootAreas
             .on('mouseover', this.onPortletMouseOver.bind(this))
             .on('click', this.onPortletClick.bind(this))
-            .on('dblclick', this.onPortletConfig.bind(this))
+            .on('dblclick', this.onConfig.bind(this))
             .on('dragstart', this.onPortletDragStart.bind(this))
             .on('dragend', this.onPortletDragEnd.bind(this))
             .on('dragover', this.onPortletDragOver.bind(this))
@@ -302,7 +302,7 @@ EditorGUI.prototype = {
         this.setDropTarget();
     },
 
-    openConfigurator: function(portletId, properties)
+    openConfigurator: function(portletTitle, portletId, properties)
     {
         this.configSaveCallback = this.noop;
 
@@ -311,6 +311,7 @@ EditorGUI.prototype = {
         function getConfigPanelSuccess(configPanelHtml)
         {
             this.configModalBody.html(configPanelHtml);
+            this.configModal.find('.modal-title').html(portletTitle + ' Einstellungen');
             this.configModal.modal('show');
             this.curPortletId = portletId;
         }
@@ -511,6 +512,7 @@ EditorGUI.prototype = {
     onConfig: function(e)
     {
         this.openConfigurator(
+            this.selectedElm.data('portlettitle'),
             this.selectedElm.data('portletid'),
             this.selectedElm.data('properties')
         );
@@ -615,14 +617,6 @@ EditorGUI.prototype = {
         }
 
         this.setSelected(this.isSelectable(elm) ? elm : undefined);
-    },
-
-    onPortletConfig: function(e)
-    {
-        this.openConfigurator(
-            this.selectedElm.data('portletid'),
-            this.selectedElm.data('properties')
-        );
     },
 
     onPortletDragStart: function(e)

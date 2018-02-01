@@ -103,11 +103,12 @@ class MerkmalWert
      * Konstruktor
      *
      * @param int $kMerkmalWert - Falls angegeben, wird der MerkmalWert mit angegebenem kMerkmalWert aus der DB geholt
+     * @param int $kSprache
      */
-    public function __construct($kMerkmalWert = 0)
+    public function __construct($kMerkmalWert = 0, $kSprache = 0)
     {
         if ($kMerkmalWert > 0) {
-            $this->loadFromDB($kMerkmalWert);
+            $this->loadFromDB($kMerkmalWert, $kSprache);
         }
     }
 
@@ -115,19 +116,12 @@ class MerkmalWert
      * Setzt MerkmalWert mit Daten aus der DB mit spezifiziertem Primary Key
      *
      * @param int $kMerkmalWert
+     * @param int $kSprache
      * @return $this
      */
-    public function loadFromDB($kMerkmalWert)
+    public function loadFromDB($kMerkmalWert, $kSprache = 0)
     {
-        $kSprache = Shop::getLanguage();
-        if (!$kSprache) {
-            $oSprache = gibStandardsprache();
-            if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
-                $kSprache = (int)$oSprache->kSprache;
-            }
-        }
-        $kMerkmalWert = (int)$kMerkmalWert;
-        $kSprache     = (int)$kSprache;
+        $kSprache     = $kSprache === 0 ? Shop::getLanguageID() : (int)$kSprache;
         $id           = 'mmw_' . $kMerkmalWert . '_' . $kSprache;
         if (Shop::has($id)) {
             foreach (get_object_vars(Shop::get($id)) as $k => $v) {
@@ -136,7 +130,7 @@ class MerkmalWert
 
             return $this;
         }
-        $kStandardSprache = (int)gibStandardsprache()->kSprache;
+        $kStandardSprache = gibStandardsprache()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = "COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                         COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,

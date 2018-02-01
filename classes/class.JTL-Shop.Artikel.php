@@ -986,6 +986,11 @@ class Artikel
     public $languageURLs = [];
 
     /**
+     * @var int
+     */
+    private $kSprache = 0;
+
+    /**
      * Konstruktor
      *
      * @param int $kArtikel
@@ -994,6 +999,7 @@ class Artikel
      */
     public function __construct($kArtikel = 0, $kKundengruppe = 0, $kSprache = 0)
     {
+        $this->kSprache = (int)$kSprache;
     }
 
     /**
@@ -1454,8 +1460,8 @@ class Artikel
         if (count($oMerkmal_arr) > 0) {
             $kMerkmal_arr = [];
             foreach ($oMerkmal_arr as $oMerkmal) {
-                $oMerkmalWert = new MerkmalWert($oMerkmal->kMerkmalWert);
-                $oMerkmal     = new Merkmal($oMerkmal->kMerkmal);
+                $oMerkmalWert = new MerkmalWert($oMerkmal->kMerkmalWert, $this->kSprache);
+                $oMerkmal     = new Merkmal($oMerkmal->kMerkmal, false, $this->kSprache);
 
                 if (!isset($kMerkmal_arr[$oMerkmal->kMerkmal])) {
                     $kMerkmal_arr[$oMerkmal->kMerkmal]                   = $oMerkmal;
@@ -3502,7 +3508,8 @@ class Artikel
             $oSprache = gibStandardsprache();
             $kSprache = $oSprache->kSprache;
         }
-        $kSprache = (int)$kSprache;
+        $kSprache       = (int)$kSprache;
+        $this->kSprache = $kSprache;
         // Work Around -.- wenn Einstellung global_sichtbarkeit aktiv ist
         if ($noCache === false) {
             $baseID        = Shop::Cache()->getBaseID(false, false, $kKundengruppe, $kSprache);

@@ -93,7 +93,6 @@ class MerkmalWert
     {
         if ($kMerkmalWert > 0) {
             $this->loadFromDB($kMerkmalWert);
-            Shop::set('mmw_' . $kMerkmalWert, $this);
         }
     }
 

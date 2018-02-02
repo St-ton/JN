@@ -121,7 +121,7 @@ class MerkmalWert
      */
     public function loadFromDB($kMerkmalWert, $kSprache = 0)
     {
-        $kSprache     = $kSprache === 0 ? Shop::getLanguageID() : (int)$kSprache;
+        $kSprache     = (int)$kSprache === 0 ? Shop::getLanguageID() : (int)$kSprache;
         $id           = 'mmw_' . $kMerkmalWert . '_' . $kSprache;
         if (Shop::has($id)) {
             foreach (get_object_vars(Shop::get($id)) as $k => $v) {

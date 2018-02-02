@@ -114,7 +114,7 @@ class Merkmal
      */
     public function loadFromDB($kMerkmal, $bMMW = false, $kSprache = 0)
     {
-        $kSprache = $kSprache === 0 ? Shop::getLanguageID() : (int)$kSprache;
+        $kSprache = (int)$kSprache === 0 ? Shop::getLanguageID() : (int)$kSprache;
         $id       = 'mm_' . $kMerkmal . '_' . $kSprache;
 
         $this->kSprache = $kSprache;

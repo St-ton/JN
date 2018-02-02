@@ -38,7 +38,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
         $step   = 'passwort versenden';
         $oKunde = new Kunde($kunde->kKunde);
-        $oKunde->prepareResetPassword($_POST['email']);
+        $oKunde->prepareResetPassword();
 
         Shop::Smarty()->assign('Kunde', $oKunde);
     } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
@@ -46,40 +46,33 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     } else {
         $hinweis = Shop::Lang()->get('incorrectEmail');
     }
-} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh'])) {
+} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
-        $kunde = Shop::DB()->select(
-            'tkunde',
-            'cMail',
-            $_POST['fpm'],
-            'nRegistriert',
-            1,
-            null,
-            null,
-            false,
-            'kKunde, cSperre'
-        );
-        if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
-            $oKunde   = new Kunde($kunde->kKunde);
-            $verified = $oKunde->verifyResetPasswordHash($_POST['fpwh'], $_POST['fpm']);
-            if ($verified === true) {
-                $oKunde->updatePassword($_POST['pw_new']);
-                header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
+        $resetItem = Shop::DB()->select('tpasswordreset', 'cKey', $_POST['fpwh']);
+        if ($resetItem) {
+            $dateExpires = new DateTime($resetItem->dExpires);
+            if ($dateExpires >= new DateTime()) {
+                $customer = new Kunde($resetItem->kKunde);
+                if ($customer && $customer->cSperre !== 'Y') {
+                    $customer->updatePassword($_POST['pw_new']);
+                    header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
+                    exit();
+                } else {
+                    $cFehler = Shop::Lang()->get('invalidCustomer', 'account data');
+                }
             } else {
                 $cFehler = Shop::Lang()->get('invalidHash', 'account data');
             }
         } else {
-            $cFehler = Shop::Lang()->get('invalidCustomer', 'account data');
+            $cFehler = Shop::Lang()->get('invalidHash', 'account data');
         }
     } else {
         $cFehler = Shop::Lang()->get('passwordsMustBeEqual', 'account data');
     }
     $step = 'confirm';
-    Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']))
-        ->assign('fpm', StringHandler::filterXSS($_POST['fpm']));
-} elseif (isset($_GET['fpwh'], $_GET['mail'])) {
-    Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']))
-        ->assign('fpm', StringHandler::filterXSS($_GET['mail']));
+    Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']));
+} elseif (isset($_GET['fpwh'])) {
+    Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']));
     $step = 'confirm';
 }
 $cCanonicalURL    = $linkHelper->getStaticRoute('pass.php');

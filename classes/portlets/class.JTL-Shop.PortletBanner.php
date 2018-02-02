@@ -45,7 +45,7 @@ class PortletBanner extends CMSPortlet
 
         $oImageMap = (object)[
             'cTitel' => $this->properties['data']['kImageMap'],
-            'cBildPfad' => $this->properties['attr']['src'],
+            'cBildPfad' => $this->properties['src'],
             'oArea_arr' => !empty($zones->oArea_arr) ? $zones->oArea_arr : null,
         ];
 

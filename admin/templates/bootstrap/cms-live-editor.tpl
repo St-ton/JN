@@ -252,52 +252,59 @@
                 <div class="modal-header">
                     <h4 class="modal-title">Hilfe</h4>
                 </div>
-                <form id="tour-form">
-                    <div class="modal-body">
-                        <div class="radio">
-                            <label>
-                                <input type="radio" name="help-tour" id="help-tour-1" value="ht1" checked class="hidden">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">Allgemeine Einführung</div>
-                                    <div class="panel-body">
-                                        lerne den Editor kennen und lege dein erstes Portlet an
-                                    </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            Du findest neben den, nachfolgend aufgelisteten, Touren auch ausführliche Informationen in unserem
+                            <a href="https://guide.jtl-software.de" target="_blank"><i class="fa fa-external-link"></i>
+                                Guide
+                            </a>.
+
+                            <form id="tour-form">
+                                <div class="radio">
+                                    <label class="tour-label">
+                                        <input type="radio" name="help-tour" id="help-tour-1" value="ht1" checked class="hidden">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">Allgemeine Einführung</div>
+                                            <div class="panel-body">
+                                                lerne den Editor kennen und lege dein erstes Portlet an
+                                            </div>
+                                        </div>
+                                    </label>
                                 </div>
-                            </label>
-                        </div>
-                        <div class="radio">
-                            <label>
-                                <input type="radio" name="help-tour" id="help-tour-2" value="ht2" class="hidden">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">Animation</div>
-                                    <div class="panel-body">
-                                        du möchtest etwas Bewegung auf deinen Seiten, lerne hier wie`s geht
-                                    </div>
+                                <div class="radio">
+                                    <label class="tour-label">
+                                        <input type="radio" name="help-tour" id="help-tour-2" value="ht2" class="hidden">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">Animation</div>
+                                            <div class="panel-body">
+                                                du möchtest etwas Bewegung auf deinen Seiten, lerne hier wie`s geht
+                                            </div>
+                                        </div>
+                                    </label>
                                 </div>
-                            </label>
-                        </div>
-                        <div class="radio">
-                            <label>
-                                <input type="radio" name="help-tour" id="help-tour-3" value="ht3" class="hidden">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">Templates</div>
-                                    <div class="panel-body">
-                                        Du hast eine tolle Ansicht angelegt die du häufig wiederverwenden möchtest?<br>
-                                        Leg' sie doch als Template an und greife so einfach immer wieder darauf zu.
-                                    </div>
+                                <div class="radio">
+                                    <label class="tour-label">
+                                        <input type="radio" name="help-tour" id="help-tour-3" value="ht3" class="hidden">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">Templates</div>
+                                            <div class="panel-body">
+                                                Du hast eine tolle Ansicht angelegt die du häufig wiederverwenden möchtest?<br/>
+                                                Leg' sie doch als Template an und greife so einfach immer wieder darauf zu.
+                                            </div>
+                                        </div>
+                                    </label>
                                 </div>
-                            </label>
+
+                                <div class="btn-group pull-right">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                                    <button class="btn btn-primary" id="btn-save-template">Tour starten</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                            <button class="btn btn-primary" id="btn-save-template">Tour starten</button>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>>
         </div>
     </div>
     <div class="cle-pinbar btn-group" id="pinbar" style="display:none">

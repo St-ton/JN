@@ -710,7 +710,6 @@ EditorGUI.prototype = {
         }
 
         console.log(tourID);
-        // Todo Editor: verschiedene Touren anlegen
         // Todo Editor: debug ausschalten
         switch (tourID) {
             case 'ht1':

@@ -126,7 +126,6 @@
         {if $NaviFilter->hasTag()}
             <input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}" />
         {/if}
-        {*Suchergebnisfilter*}
         {if $NaviFilter->hasCategoryFilter()}
             <input type="hidden" name="kf" value="{$NaviFilter->getCategoryFilter()->getValue()}" />
         {/if}

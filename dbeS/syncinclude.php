@@ -149,11 +149,8 @@ function auth()
     if (!isset($_POST['userID'], $_POST['userPWD'])) {
         return false;
     }
-    $cName      = $_POST['userID'];
-    $cPass      = $_POST['userPWD'];
-    $loginDaten = Shop::DB()->query("SELECT * FROM tsynclogin", 1);
 
-    return ($cName === $loginDaten->cName && $cPass === $loginDaten->cPass);
+    return (new Synclogin())->checkLogin($_POST['userID'], $_POST['userPWD']) === true;
 }
 
 /**

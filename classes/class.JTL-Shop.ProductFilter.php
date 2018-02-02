@@ -201,6 +201,16 @@ class ProductFilter
     private $showChildProducts;
 
     /**
+     * @var FilterItemSort
+     */
+    private $sorting;
+
+    /**
+     * @var FilterItemLimit
+     */
+    private $limits;
+
+    /**
      * @var array
      * @todo: fix working with arrays
      * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
@@ -537,6 +547,52 @@ class ProductFilter
     }
 
     /**
+     * @return FilterItemSort
+     */
+    public function getSorting()
+    {
+        return $this->sorting;
+    }
+
+    /**
+     * @param FilterItemSort $sorting
+     * @return $this
+     */
+    public function setSorting($sorting)
+    {
+        $this->sorting = $sorting;
+
+        return $this;
+    }
+
+    /**
+     * @return FilterItemLimit
+     */
+    public function getLimits()
+    {
+        return $this->limits;
+    }
+
+    /**
+     * @param FilterItemLimit $limits
+     * @return $this
+     */
+    public function setLimits($limits)
+    {
+        $this->limits = $limits;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    /**
      * @return array - default array keys
      */
     private function getParamsPrototype()
@@ -630,6 +686,9 @@ class ProductFilter
         $this->filters[] = $this->priceRangeFilter;
         $this->filters[] = $this->ratingFilter;
 
+        $this->sorting = new FilterItemSort($this);
+        $this->limits  = new FilterItemLimit($this);
+
         return $this;
     }
 
@@ -655,7 +714,7 @@ class ProductFilter
             $this->searchSpecial->init($params['kSuchspecial']);
             $this->baseState = $this->searchSpecial;
         }
-        
+
         if ($params['kKategorieFilter'] > 0) {
             $this->addActiveFilter($this->categoryFilter, $params['kKategorieFilter']);
         }
@@ -687,7 +746,7 @@ class ProductFilter
         if ($params['nSortierung'] > 0) {
             $this->nSortierung = (int)$params['nSortierung'];
         }
-        if ($params['nArtikelProSeite'] > 0) {
+        if ($params['nArtikelProSeite'] !== 0) {
             $this->productLimit = (int)$params['nArtikelProSeite'];
         }
         // @todo: how to handle strlen($params['cSuche']) === 0?
@@ -1588,9 +1647,9 @@ class ProductFilter
      * @param int            $limit
      * @return ProductFilterSearchResults|Collection
      */
-    public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = 0)
+    public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = null)
     {
-        $limitPerPage = $limit > 0 ? $limit : $this->metaData->getProductsPerPageLimit();
+        $limitPerPage = $limit !== null ? $limit : $this->metaData->getProductsPerPageLimit();
         $nLimitN      = $limitPerPage * ($this->nSeite - 1);
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         $error        = false;
@@ -1610,15 +1669,14 @@ class ProductFilter
                     $error = $this->searchQuery->getError();
                 }
             }
+            $end = min($nLimitN + $limitPerPage, $productCount);
+
             $this->searchResults->setOffsetStart($nLimitN + 1)
-                                ->setOffsetEnd(min(
-                                    $nLimitN + $limitPerPage,
-                                    $productCount
-                                ));
+                                ->setOffsetEnd($end > 0 ? $end : $productCount);
             
             $pages                = new stdClass();
             $pages->AktuelleSeite = $this->nSeite;
-            $pages->MaxSeiten     = ceil($productCount / $limitPerPage);
+            $pages->MaxSeiten     = $limitPerPage > 0 ? ceil($productCount / $limitPerPage) : 1;
             $pages->minSeite      = min(
                 $pages->AktuelleSeite - $max / 2,
                 0
@@ -1659,6 +1717,9 @@ class ProductFilter
             $opt->nVariationDetailPreis = (int)$this->conf['artikeldetails']['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;
+            if ($limitPerPage < 0) {
+                $limitPerPage = null;
+            }
             foreach (array_slice($productKeys, $nLimitN, $limitPerPage) as $id) {
                 $productList->addItem((new Artikel())->fuelleArtikel($id, $opt));
             }
@@ -1884,6 +1945,8 @@ class ProductFilter
         ]);
 
         $searchResults->setManufacturerFilterOptions($manufacturerOptions)
+                      ->setSortingOptions($this->sorting->getOptions())
+                      ->setLimitOptions($this->limits->getOptions())
                       ->setRatingFilterOptions($ratingOptions)
                       ->setTagFilterOptions($tagOptions)
                       ->setPriceRangeFilterOptions($priceRangeOptions)

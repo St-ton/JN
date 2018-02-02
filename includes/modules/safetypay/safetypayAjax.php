@@ -160,10 +160,5 @@ if (isset($ResultCQuote['FxCalculationQuote']['ToAmount'])) {
 header('Content-Type: text/xml');
 
 if (is_array($Result)) {
-    if (PHP_VERSION >= '5.0.0') {
-        echo ArrayToXML::toXML1($Result);
-    } else {
-        $objXML = new ArrayToXML;
-        echo $objXML->toXML2($Result);
-    }
+    echo ArrayToXML::toXML1($Result);
 }

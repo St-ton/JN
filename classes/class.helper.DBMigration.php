@@ -231,11 +231,9 @@ class DBMigrationHelper
     {
         $mysqlVersion = self::getMySQLVersion();
 
-        if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-            return "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}:Migrating'";
-        }
-
-        return '';
+        return version_compare($mysqlVersion->innodb->version, '5.6', '<')
+            ? "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}:Migrating'"
+            : '';
     }
 
     /**
@@ -246,11 +244,9 @@ class DBMigrationHelper
     {
         $mysqlVersion = self::getMySQLVersion();
 
-        if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-            return "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}'";
-        }
-
-        return '';
+        return version_compare($mysqlVersion->innodb->version, '5.6', '<')
+            ? "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}'"
+            : '';
     }
 
     /**
@@ -269,7 +265,9 @@ class DBMigrationHelper
             $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'";
         }
 
-        return version_compare($mysqlVersion->innodb->version, '5.6', '<') ? $sql : $sql . ', LOCK EXCLUSIVE';
+        return version_compare($mysqlVersion->innodb->version, '5.6', '<')
+            ? $sql
+            : $sql . ', LOCK EXCLUSIVE';
     }
 
     /**

@@ -55,6 +55,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
                 $customer = new Kunde($resetItem->kKunde);
                 if ($customer && $customer->cSperre !== 'Y') {
                     $customer->updatePassword($_POST['pw_new']);
+                    Shop::DB()->delete('tpasswordreset', 'kKunde', $customer->kKunde);
                     header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
                     exit();
                 } else {

@@ -64,8 +64,8 @@ class CustomerFields
     }
 
     /**
-     * @param stdClass $customerField
-     * @return stdClass
+     * @param object $customerField
+     * @return object
      */
     protected function prepare($customerField)
     {
@@ -96,7 +96,7 @@ class CustomerFields
     }
 
     /**
-     * @param stdClass $customerField
+     * @param object $customerField
      * @return null|object[]
      */
     public function getCustomerFieldValues($customerField)
@@ -168,7 +168,7 @@ class CustomerFields
     }
 
     /**
-     * @param stdClass $customerField
+     * @param object $customerField
      * @param null|array $customerFieldValues
      */
     public function update($customerField, $customerFieldValues = null)

@@ -72,7 +72,17 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     $step = 'confirm';
     Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']));
 } elseif (isset($_GET['fpwh'])) {
-    Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']));
+    $resetItem = Shop::DB()->select('tpasswordreset', 'cKey', $_GET['fpwh']);
+    if($resetItem) {
+        $dateExpires = new DateTime($resetItem->dExpires);
+        if($dateExpires >= new DateTime()) {
+            Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']));
+        } else {
+            $cFehler = Shop::Lang()->get('invalidHash', 'account data');
+        }
+    } else {
+        $cFehler = Shop::Lang()->get('invalidHash', 'account data');
+    }
     $step = 'confirm';
 }
 $cCanonicalURL    = $linkHelper->getStaticRoute('pass.php');

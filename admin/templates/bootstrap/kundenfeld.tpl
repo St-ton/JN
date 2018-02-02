@@ -280,7 +280,7 @@
                         </table>
                     </div>
                     <div class="panel-footer">
-                        <button name="speichern" type="button" class="btn btn-primary" value="{#kundenfeldSave#}" onclick="document.kundenfeld.submit();"><i class="fa fa-save"></i> {#kundenfeldSave#}</button>
+                        <button name="speichern" type="submit" class="btn btn-primary" value="{#kundenfeldSave#}"><i class="fa fa-save"></i> {#kundenfeldSave#}</button>
                     </div>
                 </div>
 
@@ -381,5 +381,18 @@
             return false;
         }
     });
+    {if isset($oKundenfeld->cTyp)}
+    $('form[name="kundenfeld"').on('submit', function (e) {
+        if ('{$oKundenfeld->cTyp}' !== $('#cTyp').val()) {
+            if (!confirm('Wenn Sie den Feldtyp ändern, werden alle Kundenwerte - soweit möglich - automatisch an den neuen Typ angepasst!')) {
+                e.preventDefault();
+
+                return false;
+            }
+        }
+
+        return true;
+    });
+    {/if}
 </script>
 {include file='tpl_inc/footer.tpl'}

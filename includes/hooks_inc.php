@@ -1745,3 +1745,16 @@ define('HOOK_PRODUCTFILTER_CREATE', 252);
  * @param ProductFilter productFilter
  */
 define('HOOK_PRODUCTFILTER_GET_BASE_QUERY', 253);
+
+/**
+ * in Preise::__construct()
+ *
+ * @since 4.07
+ * @file class.JTL-Shop.Preise.php
+ * @param int customerGroupID
+ * @param int customerID
+ * @param int productID
+ * @param int taxClassID
+ * @param Preise prices
+ */
+define('HOOK_PRICES_CONSTRUCT', 260);

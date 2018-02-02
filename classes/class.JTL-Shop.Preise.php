@@ -389,6 +389,13 @@ class Preise
             }
         }
         $this->berechneVKs();
+        executeHook('HOOK_PRICES_CONSTRUCT', [
+            'customerGroupID' => $kKundengruppe,
+            'customerID'      => $kKunde,
+            'productID'       => $kArtikel,
+            'taxClassID'      => $kSteuerklasse,
+            'prices'          => $this
+        ]);
     }
 
     /**

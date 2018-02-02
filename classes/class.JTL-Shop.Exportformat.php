@@ -648,11 +648,11 @@ class Exportformat
                     $_upd        = new stdClass();
                     $_upd->cWert = $einstellungAssoc_arr['cWert'];
                     $ok          = $ok && (Shop::DB()->update(
-                                        'tboxensichtbar',
-                                        ['kExportformat', 'cName'],
-                                        [$this->getExportformat(), $einstellungAssoc_arr['cName']],
-                                        $_upd
-                                    ) >= 0);
+                                'tboxensichtbar',
+                                ['kExportformat', 'cName'],
+                                [$this->getExportformat(), $einstellungAssoc_arr['cName']],
+                                $_upd
+                            ) >= 0);
                 }
             }
         }
@@ -675,11 +675,11 @@ class Exportformat
             ->assign('Einstellungen', $this->getConfig());
 
         // disable php execution in export format templates for security
-        if(!EXPORTFORMAT_ALLOW_PHP) {
-            $smartySecurity = new Smarty_Security($this->smarty);
-            $smartySecurity->php_handling = Smarty::PHP_REMOVE;
-            $smartySecurity->allow_php_tag = false;
-            $smartySecurity->php_modifiers = array_merge($this->smarty->default_modifiers, [
+        if (!EXPORTFORMAT_ALLOW_PHP) {
+            $smartySecurity                  = new Smarty_Security($this->smarty);
+            $smartySecurity->php_handling    = Smarty::PHP_REMOVE;
+            $smartySecurity->allow_php_tag   = false;
+            $smartySecurity->php_modifiers   = array_merge($this->smarty->default_modifiers, [
                 'replace_delim',
                 'count_characters',
                 'string_format',
@@ -1038,7 +1038,7 @@ class Exportformat
             $exportformat->tkampagne_cParameter = $this->campaignParameter;
             $exportformat->tkampagne_cWert      = $this->campaignValue;
             // needed for plugin exports
-            $ExportEinstellungen            = $this->getConfig();
+            $ExportEinstellungen = $this->getConfig();
             include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT .
                 str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
@@ -1073,7 +1073,7 @@ class Exportformat
         Jtllog::cronLog('Starting exportformat "' . StringHandler::convertUTF8($this->getName()) .
             '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
             ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
-             ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
+            ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
         // Kopfzeile schreiben
         if ((int)$this->queue->nLimitN === 0) {
             $this->writeHeader($datei);
@@ -1150,7 +1150,7 @@ class Exportformat
                 } else {
                     ++$cacheMisses;
                 }
-                $Artikel->cBeschreibungHTML = StringHandler::removeWhitespace(
+                $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(
                     str_replace(
                         $findTwo,
                         $replaceTwo,
@@ -1182,7 +1182,8 @@ class Exportformat
                     str_replace(
                         $findTwo,
                         $replaceTwo,
-                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cKurzBeschreibung)))
+                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace,
+                            $Artikel->cKurzBeschreibung)))
                     )
                 );
                 $Artikel->fUst                  = gibUst($Artikel->kSteuerklasse);
@@ -1198,10 +1199,10 @@ class Exportformat
                     !$this->useCache()
                 );
                 // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
-                $Artikel->Kategoriepfad         = $Artikel->Kategorie->cKategoriePfad !== null
+                $Artikel->Kategoriepfad = $Artikel->Kategorie->cKategoriePfad !== null
                     ? $Artikel->Kategorie->cKategoriePfad
                     : $helper->getPath($Artikel->Kategorie);
-                $Artikel->Versandkosten         = gibGuenstigsteVersandkosten(
+                $Artikel->Versandkosten = gibGuenstigsteVersandkosten(
                     isset($this->config['exportformate_lieferland'])
                         ? $this->config['exportformate_lieferland']
                         : '',
@@ -1217,7 +1218,7 @@ class Exportformat
                 }
                 // Kampagne URL
                 if (!empty($this->campaignParameter)) {
-                    $cSep = (strpos($Artikel->cURL, '.php') !== false) ? '&' : '?';
+                    $cSep          = (strpos($Artikel->cURL, '.php') !== false) ? '&' : '?';
                     $Artikel->cURL .= $cSep . $this->campaignParameter . '=' . $this->campaignValue;
                 }
 
@@ -1372,22 +1373,22 @@ class Exportformat
         } else {
             $this->setName($post['cName']);
         }
-        $pathinfo = pathinfo(PFAD_ROOT . PFAD_EXPORT . $post['cDateiname']);
+        $pathinfo           = pathinfo(PFAD_ROOT . PFAD_EXPORT . $post['cDateiname']);
         $extensionWhitelist = array_map('strtolower', explode(',', EXPORTFORMAT_ALLOWED_FORMATS));
         if (empty($post['cDateiname'])) {
             $cPlausiValue_arr['cDateiname'] = 1;
         } elseif (strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
             $cPlausiValue_arr['cDateiname'] = 2;
-        } elseif(strpos(realpath($pathinfo['dirname']), realpath(PFAD_ROOT)) === false) {
+        } elseif (strpos(realpath($pathinfo['dirname']), realpath(PFAD_ROOT)) === false) {
             $cPlausiValue_arr['cDateiname'] = 3;
-        } elseif(!in_array(strtolower($pathinfo['extension']), $extensionWhitelist)) {
+        } elseif (!in_array(strtolower($pathinfo['extension']), $extensionWhitelist)) {
             $cPlausiValue_arr['cDateiname'] = 4;
         } else {
             $this->setDateiname($post['cDateiname']);
         }
         if (empty($post['cContent'])) {
             $cPlausiValue_arr['cContent'] = 1;
-        } elseif((
+        } elseif ((
                 strpos($post['cContent'], '{php}') !== false
                 || strpos($post['cContent'], '<?php') !== false
                 || strpos($post['cContent'], '<%') !== false

@@ -18,10 +18,11 @@
         "erusev/parsedown": "dev-master",
         "pclzip/pclzip": "^2.8"
     },
-    "require_dev": {
+    "require-dev": {
         "phpunit/php-token-stream": "~1.2",
         "nikic/php-parser": "^2.1",
-        "Symfony/Finder": "^2.8"
+        "Symfony/Finder": "^2.8",
+        "friendsofphp/php-cs-fixer": "~2.1"
     },
     "repositories": [
         {

@@ -186,7 +186,7 @@ class Warenkorb
                     if (($WKEigenschaft->kEigenschaftWert > 0
                             && $WKEigenschaft->kEigenschaftWert != $oEigenschaftwerte->kEigenschaftWert)
                         || (($WKEigenschaft->cTyp === 'FREIFELD' || $WKEigenschaft->cTyp === 'PFLICHT-FREIFELD')
-                            && $WKEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']] != $oEigenschaftwerte->cFreifeldWert)
+                            && $WKEigenschaft->cEigenschaftWertName[Shop::getLanguageCode()] != $oEigenschaftwerte->cFreifeldWert)
                     ) {
                         $neuePos = true;
                         break;
@@ -237,19 +237,28 @@ class Warenkorb
         $NeuePosition->cName         = [];
         $NeuePosition->cLieferstatus = [];
 
-        foreach ($_SESSION['Sprachen'] as $Sprache) {
+        foreach (Session::Languages() as $Sprache) {
             $NeuePosition->cName[$Sprache->cISO]         = $NeuePosition->Artikel->cName;
             $NeuePosition->cLieferstatus[$Sprache->cISO] = $cLieferstatus_StdSprache;
             if ($Sprache->cStandard === 'Y') {
-                continue;
+                $artikel_spr = Shop::DB()->select(
+                    'tartikel',
+                    'kArtikel', (int)$NeuePosition->kArtikel,
+                    null, null,
+                    null, null,
+                    false,
+                    'cName'
+                );
+            } else {
+                $artikel_spr = Shop::DB()->select(
+                    'tartikelsprache',
+                    'kArtikel', (int)$NeuePosition->kArtikel,
+                    'kSprache', (int)$Sprache->kSprache,
+                    null, null,
+                    false,
+                    'cName'
+                );
             }
-            $artikel_spr = Shop::DB()->select(
-                'tartikelsprache',
-                'kArtikel',
-                (int)$NeuePosition->kArtikel,
-                'kSprache',
-                (int)$Sprache->kSprache
-            );
             //Wenn fuer die gewaehlte Sprache kein Name vorhanden ist dann StdSprache nehmen
             $NeuePosition->cName[$Sprache->cISO] = (isset($artikel_spr->cName) && strlen(trim($artikel_spr->cName)) > 0)
                 ? $artikel_spr->cName
@@ -345,10 +354,10 @@ class Warenkorb
 
             //Pruefen ob eine Versandart hinzugefuegt wird und haenge den Hinweistext an die Position (falls vorhanden)
             case C_WARENKORBPOS_TYP_VERSANDPOS:
-                if (isset($_SESSION['Versandart']->angezeigterHinweistext[$_SESSION['cISOSprache']])
-                    && strlen($_SESSION['Versandart']->angezeigterHinweistext[$_SESSION['cISOSprache']]) > 0
+                if (isset($_SESSION['Versandart']->angezeigterHinweistext[Shop::getLanguageCode()])
+                    && strlen($_SESSION['Versandart']->angezeigterHinweistext[Shop::getLanguageCode()]) > 0
                 ) {
-                    $NeuePosition->cHinweis = $_SESSION['Versandart']->angezeigterHinweistext[$_SESSION['cISOSprache']];
+                    $NeuePosition->cHinweis = $_SESSION['Versandart']->angezeigterHinweistext[Shop::getLanguageCode()];
                 }
                 break;
 
@@ -523,7 +532,7 @@ class Warenkorb
         if ($typ === C_WARENKORBPOS_TYP_KUPON && isset($name->cName)) {
             $NeuePosition->cName = is_array($name->cName)
                 ? $name->cName
-                : [$_SESSION['cISOSprache'] => $name->cName];
+                : [Shop::getLanguageCode() => $name->cName];
             if (isset($name->cArticleNameAffix, $name->discountForArticle)) {
                 $NeuePosition->cArticleNameAffix  = $name->cArticleNameAffix;
                 $NeuePosition->discountForArticle = $name->discountForArticle;
@@ -531,7 +540,7 @@ class Warenkorb
         } else {
             $NeuePosition->cName = is_array($name)
                 ? $name
-                : [$_SESSION['cISOSprache'] => $name];
+                : [Shop::getLanguageCode() => $name];
         }
         $NeuePosition->nPosTyp  = $typ;
         $NeuePosition->cHinweis = $hinweis;
@@ -864,7 +873,7 @@ class Warenkorb
                     $oPosition->setzeGesamtpreisLocalized();
                 }
                 if ($bName && $oKonfigitem->getUseOwnName() && class_exists('Konfigitemsprache')) {
-                    foreach ($_SESSION['Sprachen'] as $Sprache) {
+                    foreach (Session::Languages() as $Sprache) {
                         $oKonfigitemsprache               = new Konfigitemsprache($oKonfigitem->getKonfigitem(), $Sprache->kSprache);
                         $oPosition->cName[$Sprache->cISO] = $oKonfigitemsprache->getName();
                     }

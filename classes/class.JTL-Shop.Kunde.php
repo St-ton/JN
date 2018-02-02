@@ -808,12 +808,12 @@ class Kunde
      */
     public function prepareResetPassword()
     {
-        if(!$this->kKunde) {
+        if (!$this->kKunde) {
             return false;
         }
-        $linkHelper               = LinkHelper::getInstance();
-        $expires                  = new DateTime();
-        $interval                 = new DateInterval('P1D');
+        $linkHelper = LinkHelper::getInstance();
+        $expires    = new DateTime();
+        $interval   = new DateInterval('P1D');
         $expires->add($interval);
         $key = bin2hex(random_bytes(32));
         Shop::DB()->executeQueryPrepared("
@@ -821,18 +821,19 @@ class Kunde
             VALUES (:kKunde, :cKey, :dExpires)
             ON DUPLICATE KEY UPDATE cKey = :cKey, dExpires = :dExpires
         ", [
-            'kKunde' => $this->kKunde,
-            'cKey' => $key,
+            'kKunde'   => $this->kKunde,
+            'cKey'     => $key,
             'dExpires' => $expires->format(DateTime::ISO8601),
         ], NiceDB::RET_AFFECTED_ROWS);
 
         require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-        $linkParams = [
+        $linkParams             = [
             'fpwh' => $key
         ];
         $obj                    = new stdClass();
         $obj->tkunde            = $this;
-        $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') . '?'. http_build_query($linkParams, null, '&');
+        $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') . '?' . http_build_query($linkParams, null,
+                '&');
         $obj->cHash             = $key;
         $obj->neues_passwort    = 'Bitte Mailvorlage zuruecksetzen!';
         sendeMail(MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);

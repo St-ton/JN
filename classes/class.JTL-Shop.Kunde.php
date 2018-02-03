@@ -771,7 +771,6 @@ class Kunde
 
             $_upd                     = new stdClass();
             $_upd->cPasswort          = $this->cPasswort;
-            $_upd->cResetPasswordHash = '_DBNULL_';
             $_upd->nLoginversuche     = 0;
             Shop::DB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
         }

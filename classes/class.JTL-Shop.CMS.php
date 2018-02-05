@@ -193,7 +193,7 @@ class CMS
         $oPortlet_arr   = [];
 
         foreach ($oDbPortlet_arr as $i => $oDbPortlet) {
-            $oPortlet_arr[] = $this->createPortlet($oDbPortlet->kPortlet);
+            $oPortlet_arr[$oDbPortlet->cGroup][] = $this->createPortlet($oDbPortlet->kPortlet);
         }
 
         return $oPortlet_arr;

@@ -104,15 +104,23 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="elements">
-                    {foreach $oPortlet_arr as $oPortlet}
-                        <a href="#" class="portlet-button btn btn-default btn-lg btn-block"
-                           data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
-                           data-portletid="{$oPortlet->kPortlet}"
-                           data-portlettitle="{$oPortlet->cTitle}"
-                           data-defaultprops="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}"
-                           title="{$oPortlet->cTitle}" draggable="true">
-                            {$oPortlet->getButton()}
-                        </a>
+                    {foreach name=groups from=$oPortlet_arr  key=$group item=$group_arr}
+                        <div class="collapse-groups" role="button" data-toggle="collapse" href="#collapse-{$group}"
+                           aria-controls="collapse-{$group}" aria-expanded="false">
+                            <i class="fa fa-plus"></i> {$group}
+                        </div>
+                        <div class="collapse" id="collapse-{$group}" aria-expanded="false">
+                            {foreach $group_arr as $oPortlet}
+                                <a href="#" class="portlet-button btn btn-default btn-lg btn-block"
+                                   data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
+                                   data-portletid="{$oPortlet->kPortlet}"
+                                   data-portlettitle="{$oPortlet->cTitle}"
+                                   data-defaultprops="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}"
+                                   title="{$oPortlet->cTitle}" draggable="true">
+                                    {$oPortlet->getButton()}
+                                </a>
+                            {/foreach}
+                        </div>
                     {/foreach}
                 </div>
                 <div class="tab-pane" id="templates">

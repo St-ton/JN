@@ -41,37 +41,40 @@ class Migration_20171102121900 extends Migration implements IMigration
             VALUES ('4', 'core_jtl', 'CMS Live Editor', 'cms-live-editor-backend.php', 'CONTENT_PAGE_VIEW', '115');");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Heading', 'Heading', 'Elements')");
+            VALUES (0, 'Heading', 'Heading', 'content')");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Image', 'Image', 'Elements')");
+            VALUES (0, 'Image', 'Image', 'content')");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Row', 'Row', 'Elements')");
+            VALUES (0, 'Row', 'Row', 'layout')");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Button', 'Button', 'Elements')");
+            VALUES (0, 'Button', 'Button', 'content')");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Bilder-Slider', 'ImageSlider', 'Elements')");
+            VALUES (0, 'Bilder-Slider', 'ImageSlider', 'content')");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Artikel-Slider', 'ProductSlider', 'Elements')");
+            VALUES (0, 'Artikel-Slider', 'ProductSlider', 'content')");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Product-Stream', 'ProductStream', 'Elements')");
+            VALUES (0, 'Product-Stream', 'ProductStream', 'content')");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Banner', 'Banner', 'Elements')");
+            VALUES (0, 'Banner', 'Banner', 'content')");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Text', 'Text', 'Elements')");
+            VALUES (0, 'Text', 'Text', 'content')");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Video', 'Video', 'Elements')");
+            VALUES (0, 'Video', 'Video', 'content')");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Panel', 'Panel', 'Elements')");
+            VALUES (0, 'Panel', 'Panel', 'layout')");
+
+        $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
+            VALUES (0, 'Accordion', 'Accordion', 'layout')");
     }
 
     public function down()

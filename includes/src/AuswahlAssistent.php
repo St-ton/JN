@@ -112,7 +112,7 @@ class AuswahlAssistent
     private function loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive = true)
     {
         $oDbResult = Shop::DB()->executeQueryPrepared(
-                'SELECT *
+            'SELECT *
                     FROM tauswahlassistentort AS ao
                         JOIN tauswahlassistentgruppe AS ag
                             ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe

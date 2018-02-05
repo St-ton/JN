@@ -89,7 +89,7 @@ class AuswahlAssistentGruppe
                 "SELECT *
                     FROM tauswahlassistentgruppe
                     WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe .
-                    $cAktivSQL, 1
+                $cAktivSQL, 1
             );
             if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) {
                 $cMember_arr = array_keys(get_object_vars($oGruppe));
@@ -152,7 +152,7 @@ class AuswahlAssistentGruppe
             SELECT kAuswahlAssistentGruppe
                 FROM tauswahlassistentgruppe
                 WHERE kSprache = " . (int)$kSprache .
-                $cAktivSQL, 2
+            $cAktivSQL, 2
         );
         foreach ($oGruppeTMP_arr as $oGruppeTMP) {
             $oGruppe_arr[] = new self($oGruppeTMP->kAuswahlAssistentGruppe, $bAktiv, $bAktivFrage, $bBackend);

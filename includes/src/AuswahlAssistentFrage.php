@@ -90,7 +90,7 @@ class AuswahlAssistentFrage
                         ON ms.kMerkmal = m.kMerkmal 
                             AND ms.kSprache = ag.kSprache
                 WHERE af.kAuswahlAssistentFrage = " . $kAuswahlAssistentFrage .
-                    ($bOnlyActive ? " AND af.nAktiv = 1" : ""),
+            ($bOnlyActive ? " AND af.nAktiv = 1" : ""),
             1
         );
 
@@ -128,7 +128,7 @@ class AuswahlAssistentFrage
                 "SELECT *
                     FROM tauswahlassistentfrage
                     WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe .
-                    $cAktivSQL . "
+                $cAktivSQL . "
                     ORDER BY nSort", 2
             );
             if (count($oFrage_arr) > 0) {

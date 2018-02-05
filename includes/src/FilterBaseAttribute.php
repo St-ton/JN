@@ -144,13 +144,13 @@ class FilterBaseAttribute extends AbstractFilter
     public function getSQLJoin()
     {
         return (new FilterJoin())->setType('JOIN')
-             ->setComment('join1 from FilterBaseAttribute')
-             ->setTable('(SELECT kArtikel
+                                 ->setComment('join1 from FilterBaseAttribute')
+                                 ->setTable('(SELECT kArtikel
                               FROM tartikelmerkmal
                               WHERE kMerkmalWert = ' . $this->getValue() . '
                               GROUP BY tartikelmerkmal.kArtikel
                               ) AS tmerkmaljoin')
-             ->setOrigin(__CLASS__)
-             ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');
+                                 ->setOrigin(__CLASS__)
+                                 ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');
     }
 }

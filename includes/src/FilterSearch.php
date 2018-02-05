@@ -296,7 +296,7 @@ class FilterSearch extends AbstractFilter
                             SET nAnzahlGesuche = nAnzahlGesuche+1, 
                                 dZuletztGesucht = now()
                             WHERE kSuchanfrageErfolglos = ' .
-                            (int)$queryMiss_old->kSuchanfrageErfolglos,
+                        (int)$queryMiss_old->kSuchanfrageErfolglos,
                         4
                     );
                 } else {

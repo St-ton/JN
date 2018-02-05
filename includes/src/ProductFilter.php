@@ -1045,7 +1045,7 @@ class ProductFilter
             function ($f) {
                 /** @var IFilter $f */
                 return ($f->getVisibility() === AbstractFilter::SHOW_ALWAYS
-                        || $f->getVisibility() === AbstractFilter::SHOW_CONTENT);
+                    || $f->getVisibility() === AbstractFilter::SHOW_CONTENT);
             }
         );
     }
@@ -1673,7 +1673,7 @@ class ProductFilter
 
             $this->searchResults->setOffsetStart($nLimitN + 1)
                                 ->setOffsetEnd($end > 0 ? $end : $productCount);
-            
+
             $pages                = new stdClass();
             $pages->AktuelleSeite = $this->nSeite;
             $pages->MaxSeiten     = $limitPerPage > 0 ? ceil($productCount / $limitPerPage) : 1;
@@ -1999,7 +1999,7 @@ class ProductFilter
         if (empty($priceRangeOptions)
             || count($priceRangeOptions) === 0
             || ($this->priceRangeFilter->isInitialized() && $this->priceRangeFilter->getValue() !== null)
-       ) {
+        ) {
             // hide empty price ranges
             $this->priceRangeFilter->hide();
         }

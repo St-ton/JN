@@ -5,17 +5,17 @@
  */
 
 /**
- * Class FilterNewsOverview
+ * Class FilterNewsCategory
  */
-class FilterNewsOverview extends AbstractFilter
+class FilterNewsCategory extends AbstractFilter
 {
     /**
      * @var int
      */
-    public $kNewsMonatsUebersicht = 0;
+    public $kNewsKategorie = 0;
 
     /**
-     * FilterNewsOverview constructor.
+     * FilterNewsCategory constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -23,7 +23,7 @@ class FilterNewsOverview extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('nm')
+             ->setUrlParam('nk')
              ->setUrlParamSEO(null);
     }
 
@@ -33,7 +33,7 @@ class FilterNewsOverview extends AbstractFilter
      */
     public function setValue($value)
     {
-        $this->kNewsMonatsUebersicht = (int)$value;
+        $this->kNewsKategorie = (int)$value;
 
         return $this;
     }
@@ -43,7 +43,7 @@ class FilterNewsOverview extends AbstractFilter
      */
     public function getValue()
     {
-        return $this->kNewsMonatsUebersicht;
+        return $this->kNewsKategorie;
     }
 
     /**
@@ -53,14 +53,14 @@ class FilterNewsOverview extends AbstractFilter
     public function setSeo($languages)
     {
         $oSeo_obj = Shop::DB()->queryPrepared(
-                "SELECT tseo.cSeo, tseo.kSprache, tnewsmonatsuebersicht.cName
+            "SELECT tseo.cSeo, tseo.kSprache, tnewskategorie.cName
                     FROM tseo
-                    LEFT JOIN tnewsmonatsuebersicht
-                        ON tnewsmonatsuebersicht.kNewsMonatsUebersicht = tseo.kKey
-                    WHERE tseo.cKey = 'kNewsMonatsUebersicht'
-                        AND tseo.kKey = kkey",
-                ['kkey' => $this->getValue()],
-                1
+                    LEFT JOIN tnewskategorie
+                        ON tnewskategorie.kNewsKategorie = tseo.kKey
+                    WHERE cKey = 'kNewsKategorie'
+                        AND kKey = :kkey",
+            ['kkey' => $this->getValue()],
+            1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -75,12 +75,13 @@ class FilterNewsOverview extends AbstractFilter
         return $this;
     }
 
+
     /**
      * @return string
      */
     public function getPrimaryKeyRow()
     {
-        return 'kNewsMonatsUebersicht';
+        return 'kNewsKategorie';
     }
 
     /**
@@ -88,7 +89,7 @@ class FilterNewsOverview extends AbstractFilter
      */
     public function getTableName()
     {
-        return 'tnewsmonatsuebersicht';
+        return 'tnewskategorie';
     }
 
     /**

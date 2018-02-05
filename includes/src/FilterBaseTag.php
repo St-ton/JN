@@ -153,9 +153,9 @@ class FilterBaseTag extends AbstractFilter
             $state->conditions[] = 'ttag.kSprache = ' . $this->getLanguageID();
             $query               = $this->productFilter->getFilterSQL()->getBaseQuery(
                 ['ttag.kTag',
-                'ttag.cName',
-                'ttagartikel.nAnzahlTagging',
-                'tartikel.kArtikel'],
+                 'ttag.cName',
+                 'ttagartikel.nAnzahlTagging',
+                 'tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
                 $state->having,
@@ -172,7 +172,7 @@ class FilterBaseTag extends AbstractFilter
                         AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kTag
                     ORDER BY nAnzahl DESC LIMIT 0, " .
-                    (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
+                (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
                 NiceDB::RET_ARRAY_OF_OBJECTS
             );
             $additionalFilter = new FilterItemTag($this->productFilter);

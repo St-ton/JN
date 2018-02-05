@@ -147,10 +147,10 @@ class FilterItemSearchSpecial extends AbstractFilter
                     $nAnzahl = ($min = (int)$conf['global']['global_bestseller_minanzahl']) > 0
                         ? $min
                         : 100;
-    
+
                     $conditions[] = 'ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl;
                     break;
-    
+
                 case SEARCHSPECIALS_SPECIALOFFERS:
                     $tasp = 'tartikelsonderpreis';
                     $tsp  = 'tsonderpreise';
@@ -165,25 +165,25 @@ class FilterItemSearchSpecial extends AbstractFilter
                                             OR " . $tasp . ".dEnde = '0000-00-00')
                                         AND " . $tsp . " .kKundengruppe = " . Session::CustomerGroup()->getID();
                     break;
-    
+
                 case SEARCHSPECIALS_NEWPRODUCTS:
                     $days = ($d = $conf['boxen']['box_neuimsortiment_alter_tage']) > 0
                         ? (int)$d
                         : 30;
-    
+
                     $conditions[] = "tartikel.cNeu = 'Y' 
                                 AND DATE_SUB(now(),INTERVAL $days DAY) < tartikel.dErstellt 
                                 AND tartikel.cNeu = 'Y'";
                     break;
-    
+
                 case SEARCHSPECIALS_TOPOFFERS:
                     $conditions[] = "tartikel.cTopArtikel = 'Y'";
                     break;
-    
+
                 case SEARCHSPECIALS_UPCOMINGPRODUCTS:
                     $conditions[] = 'NOW() < tartikel.dErscheinungsdatum';
                     break;
-    
+
                 case SEARCHSPECIALS_TOPREVIEWS:
                     if (!$this->productFilter->hasRatingFilter()) {
                         $minStars = ($m = $conf['boxen']['boxen_topbewertet_minsterne']) > 0
@@ -192,7 +192,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                         $conditions[] = 'ROUND(taex.fDurchschnittsBewertung) >= ' . $minStars;
                     }
                     break;
-    
+
                 default:
                     break;
             }

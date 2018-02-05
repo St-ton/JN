@@ -147,7 +147,7 @@ class FilterItemPriceRange extends AbstractFilter
                     ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
                     Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100), ' .
                     'IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
-                        $conversionFactor . '))) * ((100 + ' . $fSteuersatz . ') / 100), 2),';
+                    $conversionFactor . '))) * ((100 + ' . $fSteuersatz . ') / 100), 2),';
             }
             $oFilter->cWhere .= '0';
 
@@ -320,7 +320,7 @@ class FilterItemPriceRange extends AbstractFilter
             ->setType('LEFT JOIN')
             ->setTable('tartikelkategorierabatt')
             ->setOn('tartikelkategorierabatt.kKundengruppe = ' . $this->getCustomerGroupID() .
-                    ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel')
+                ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel')
             ->setOrigin(__CLASS__);
         $state->joins[] = (new FilterJoin())
             ->setType('LEFT JOIN')
@@ -410,11 +410,11 @@ class FilterItemPriceRange extends AbstractFilter
                 $state->joins .
                 ' WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0 ' .
-                    $this->productFilter->getFilterSQL()->getStockFilterSQL() .
-                    $state->conditions .
+                $this->productFilter->getFilterSQL()->getStockFilterSQL() .
+                $state->conditions .
                 ' GROUP BY tartikel.kArtikel' .
                 $state->having .
-            ') AS ssMerkmal';
+                ') AS ssMerkmal';
             $oPreisspannenFilterMaxMin = Shop::DB()->query($qry, NiceDB::RET_SINGLE_OBJECT);
             if (isset($oPreisspannenFilterMaxMin->fMax) && $oPreisspannenFilterMaxMin->fMax > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff und liefert diese Werte in einem Objekt
@@ -435,14 +435,14 @@ class FilterItemPriceRange extends AbstractFilter
                     ' FROM
                     (
                         SELECT ' . $this->getPriceRangeSQL($oPreis, $currency) .
-                        ' FROM tartikel ' .
-                        $state->joins .
-                        ' WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                    ' FROM tartikel ' .
+                    $state->joins .
+                    ' WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = 0' .
-                            $this->productFilter->getFilterSQL()->getStockFilterSQL() .
-                            $state->conditions .
-                        ' GROUP BY tartikel.kArtikel' .
-                        $state->having .
+                    $this->productFilter->getFilterSQL()->getStockFilterSQL() .
+                    $state->conditions .
+                    ' GROUP BY tartikel.kArtikel' .
+                    $state->having .
                     ') AS ssMerkmal';
                 $dbRes            = Shop::DB()->query($qry, NiceDB::RET_SINGLE_OBJECT);
                 $priceRanges      = [];
@@ -529,9 +529,9 @@ class FilterItemPriceRange extends AbstractFilter
                                 FROM tartikel ' . implode("\n", $state->joins) . '
                                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                     AND tartikel.kVaterArtikel = 0 ' .
-                                    $this->productFilter->getFilterSQL()->getStockFilterSQL() .
-                                    $state->conditions .
-                                ' GROUP BY tartikel.kArtikel
+                    $this->productFilter->getFilterSQL()->getStockFilterSQL() .
+                    $state->conditions .
+                    ' GROUP BY tartikel.kArtikel
                                 ' . implode("\n", $state->having) . '
                         ) AS ssMerkmal ',
                     NiceDB::RET_SINGLE_OBJECT
@@ -575,7 +575,7 @@ class FilterItemPriceRange extends AbstractFilter
             }
         }
         // Preisspannen ohne Artikel ausblenden (falls im Backend eingestellt)
-        if (count($options) > 0 
+        if (count($options) > 0
             && $this->getConfig()['navigationsfilter']['preisspannenfilter_spannen_ausblenden'] === 'Y'
         ) {
             $options = array_filter(

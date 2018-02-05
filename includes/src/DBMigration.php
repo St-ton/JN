@@ -90,8 +90,8 @@ class DBMigrationHelper
                     AND `TABLE_NAME` NOT LIKE 'xplugin_%'
                     AND (`ENGINE` != 'InnoDB' OR `TABLE_COLLATION` != 'utf8_unicode_ci')
                 ORDER BY `TABLE_NAME`", [
-                    'schema' => $database
-                ], 2
+            'schema' => $database
+        ], 2
         );
     }
 
@@ -112,8 +112,8 @@ class DBMigrationHelper
                     " . (!empty($excludeStr) ? "AND TABLE_NAME NOT IN ('" . $excludeStr . "')" : '') . "
                     AND (`ENGINE` != 'InnoDB' OR `TABLE_COLLATION` != 'utf8_unicode_ci')
                 ORDER BY `TABLE_NAME` LIMIT 1", [
-                    'schema' => $database
-                ], 1
+            'schema' => $database
+        ], 1
         );
     }
 
@@ -131,9 +131,9 @@ class DBMigrationHelper
                 WHERE `TABLE_SCHEMA` = :schema
                     AND `TABLE_NAME` = :table
                 ORDER BY `TABLE_NAME` LIMIT 1", [
-                    'schema' => $database,
-                    'table'  => $cTable,
-                ], 1
+            'schema' => $database,
+            'table'  => $cTable,
+        ], 1
         );
     }
 
@@ -193,9 +193,9 @@ class DBMigrationHelper
             "SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
                     AND `Table` LIKE :table", [
-                    'schema' => $database,
-                    'table'  => $cTable,
-                ], 1
+            'schema' => $database,
+            'table'  => $cTable,
+        ], 1
         );
 
         return is_object($tableStatus) && (int)$tableStatus->In_use > 0;
@@ -217,9 +217,9 @@ class DBMigrationHelper
                     AND `CHARACTER_SET_NAME` IS NOT NULL
                     AND (`CHARACTER_SET_NAME` != 'utf8' OR `COLLATION_NAME` != 'utf8_unicode_ci')
                 ORDER BY `ORDINAL_POSITION`", [
-                    'schema' => $database,
-                    'table'  => $cTable,
-                ], 2
+            'schema' => $database,
+            'table'  => $cTable,
+        ], 2
         );
     }
 

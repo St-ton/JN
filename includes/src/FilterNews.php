@@ -5,25 +5,25 @@
  */
 
 /**
- * Class FilterNewsCategory
+ * Class FilterNews
  */
-class FilterNewsCategory extends AbstractFilter
+class FilterNews extends AbstractFilter
 {
     /**
      * @var int
      */
-    public $kNewsKategorie = 0;
+    public $kNews = 0;
 
     /**
-     * FilterNewsCategory constructor.
+     * FilterNews constructor.
      *
-     * @param ProductFilter $productFilter
+     * @param ProductFilter|null $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('nk')
+             ->setUrlParam('n')
              ->setUrlParamSEO(null);
     }
 
@@ -33,7 +33,7 @@ class FilterNewsCategory extends AbstractFilter
      */
     public function setValue($value)
     {
-        $this->kNewsKategorie = (int)$value;
+        $this->kNews = (int)$value;
 
         return $this;
     }
@@ -43,7 +43,7 @@ class FilterNewsCategory extends AbstractFilter
      */
     public function getValue()
     {
-        return $this->kNewsKategorie;
+        return $this->kNews;
     }
 
     /**
@@ -53,14 +53,15 @@ class FilterNewsCategory extends AbstractFilter
     public function setSeo($languages)
     {
         $oSeo_obj = Shop::DB()->queryPrepared(
-                "SELECT tseo.cSeo, tseo.kSprache, tnewskategorie.cName
+            "SELECT tseo.cSeo, tseo.kSprache, tnews.cBetreff
                     FROM tseo
-                    LEFT JOIN tnewskategorie
-                        ON tnewskategorie.kNewsKategorie = tseo.kKey
-                    WHERE cKey = 'kNewsKategorie'
-                        AND kKey = :kkey",
-                ['kkey' => $this->getValue()],
-                1
+                    LEFT JOIN tnews
+                        ON tnews.kNews = tseo.kKey                        
+                    WHERE cKey = 'kNews'
+                        AND kKey = :kkey
+                    ORDER BY kSprache",
+            ['kkey' => $this->getValue()],
+            1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -68,20 +69,19 @@ class FilterNewsCategory extends AbstractFilter
                 $this->cSeo[$language->kSprache] = $oSeo_obj->cSeo;
             }
         }
-        if (!empty($oSeo_obj->cName)) {
-            $this->cName = $oSeo_obj->cName;
+        if (!empty($oSeo_obj->cBetreff)) {
+            $this->cName = $oSeo_obj->cBetreff;
         }
 
         return $this;
     }
-
 
     /**
      * @return string
      */
     public function getPrimaryKeyRow()
     {
-        return 'kNewsKategorie';
+        return 'kNews';
     }
 
     /**
@@ -89,7 +89,7 @@ class FilterNewsCategory extends AbstractFilter
      */
     public function getTableName()
     {
-        return 'tnewskategorie';
+        return 'tnews';
     }
 
     /**

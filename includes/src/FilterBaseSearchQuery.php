@@ -155,7 +155,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     ON tsuchanfrage.kSuchanfrage = tseo.kKey
                     AND tsuchanfrage.kSprache = tseo.kSprache
                 WHERE cKey = 'kSuchanfrage' 
-                    AND kKey = :key", 
+                    AND kKey = :key",
             ['key' => $this->getID()],
             1
         );
@@ -792,7 +792,7 @@ class FilterBaseSearchQuery extends AbstractFilter
         Shop::DB()->query(
             'INSERT INTO tsuchcachetreffer ' .
             $cSQL .
-                ' GROUP BY kArtikelTMP
+            ' GROUP BY kArtikelTMP
                 LIMIT ' . (int)$this->getConfig()['artikeluebersicht']['suche_max_treffer'],
             NiceDB::RET_AFFECTED_ROWS
         );
@@ -937,10 +937,10 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     public function checkColumnClasses($searchColumns, $searchColumn, $nonAllowed)
     {
-        if (is_array($searchColumns) 
-            && is_array($nonAllowed) 
-            && count($searchColumns) > 0 
-            && strlen($searchColumn) > 0 
+        if (is_array($searchColumns)
+            && is_array($nonAllowed)
+            && count($searchColumns) > 0
+            && strlen($searchColumn) > 0
             && count($nonAllowed) > 0
         ) {
             foreach ($nonAllowed as $class) {
@@ -956,7 +956,7 @@ class FilterBaseSearchQuery extends AbstractFilter
 
         return true;
     }
-    
+
     /**
      * @return bool
      */
@@ -966,7 +966,7 @@ class FilterBaseSearchQuery extends AbstractFilter
 
         if ($active === null) {
             $active = Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
-            && Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1);
+                && Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1);
         }
 
         return $active;

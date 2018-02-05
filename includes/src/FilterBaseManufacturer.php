@@ -160,8 +160,8 @@ class FilterBaseManufacturer extends AbstractFilter
             $manufacturers    = Shop::DB()->query(
                 "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
                     FROM (" .
-                    $query .
-                    ") AS ssMerkmal
+                $query .
+                ") AS ssMerkmal
                         LEFT JOIN tseo 
                             ON tseo.kKey = ssMerkmal.kHersteller
                             AND tseo.cKey = 'kHersteller'

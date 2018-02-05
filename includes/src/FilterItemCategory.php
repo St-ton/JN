@@ -39,7 +39,7 @@ class FilterItemCategory extends FilterBaseCategory
 
         return $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF'
             ? '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() .
-                ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') '
+            ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') '
             : ' tkategorieartikel.kKategorie = ' . $this->getValue();
     }
 
@@ -181,7 +181,7 @@ class FilterItemCategory extends FilterBaseCategory
                         AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kKategorie
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName"
-                , 2
+            , 2
         );
         $langID           = $this->getLanguageID();
         $customerGroupID  = $this->getCustomerGroupID();

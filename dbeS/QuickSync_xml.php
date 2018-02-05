@@ -6,56 +6,44 @@
 
 require_once __DIR__ . '/syncinclude.php';
 
-$return = 3;
+$return  = 3;
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
-    $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Qucisync_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
+    $zipFile   = checkFile();
+    $return    = 2;
+    $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
+    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'QuickSync_xml');
         }
-        $entzippfad = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
-        mkdir($entzippfad);
-        $entzippfad .= '/';
-        if ($archive->extract(PCLZIP_OPT_PATH, $entzippfad)) {
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $i => $xmlFile) {
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Zip entpackt in ' . $entzippfad, JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
+                Jtllog::writeLog(
+                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'QuickSync_xml'
+                );
             }
-            $return = 0;
-            foreach ($list as $i => $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
-                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
-                }
-                $d   = file_get_contents($entzippfad . $zip['filename']);
-                $xml = XML_unserialize($d);
+            $d   = file_get_contents($xmlFile);
+            $xml = XML_unserialize($d);
 
-                if ($zip['filename'] === 'quicksync.xml') {
-                    bearbeiteInsert($xml);
-                }
-
-                removeTemporaryFiles($entzippfad . $zip['filename']);
+            if (strpos($xmlFile, 'quicksync.xml') !== false) {
+                bearbeiteInsert($xml);
             }
-            removeTemporaryFiles(substr($entzippfad, 0, -1), true);
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'QuickSync_xml');
+
+            removeTemporaryFiles($xmlFile);
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'QuickSync_xml');
+        removeTemporaryFiles(substr($unzipPath, 0, -1), true);
     }
-}
-
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
 }
 
 echo $return;
 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
+    Jtllog::writeLog('BEENDE: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
 }
 
 /**
@@ -106,20 +94,20 @@ function bearbeiteInsert($xml)
         foreach ($oArtikel_arr as $oArtikel) {
             //any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
             if (isset($oArtikel->fLagerbestand) && $oArtikel->fLagerbestand > 0) {
-                $delta = Shop::DB()->query("
-                  SELECT SUM(pos.nAnzahl) AS totalquantity 
-                    FROM tbestellung b 
-                    JOIN twarenkorbpos pos 
-                      ON pos.kWarenkorb = b.kWarenkorb 
-                      WHERE b.cAbgeholt = 'N' 
-                        AND pos.kArtikel = " . (int)$oArtikel->kArtikel, 1
+                $delta = Shop::DB()->query(
+                    "SELECT SUM(pos.nAnzahl) AS totalquantity
+                        FROM tbestellung b
+                        JOIN twarenkorbpos pos
+                        ON pos.kWarenkorb = b.kWarenkorb
+                        WHERE b.cAbgeholt = 'N'
+                            AND pos.kArtikel = " . (int)$oArtikel->kArtikel, 1
                 );
                 if ($delta->totalquantity > 0) {
                     //subtract delta from stocklevel
                     $oArtikel->fLagerbestand -= $delta->totalquantity;
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                         Jtllog::writeLog("Artikel-Quicksync: Lagerbestand von kArtikel {$oArtikel->kArtikel} wurde wegen nicht-abgeholter Bestellungen "
-                        . "um {$delta->totalquantity} auf {$oArtikel->fLagerbestand} reduziert." , JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                        . "um {$delta->totalquantity} auf {$oArtikel->fLagerbestand} reduziert.", JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
                     }
                 }
             }
@@ -127,8 +115,10 @@ function bearbeiteInsert($xml)
             if ($oArtikel->fLagerbestand < 0) {
                 $oArtikel->fLagerbestand = 0;
             }
+
             $upd                        = new stdClass();
             $upd->fLagerbestand         = $oArtikel->fLagerbestand;
+            $upd->fStandardpreisNetto   = $oArtikel->fStandardpreisNetto;
             $upd->dLetzteAktualisierung = 'now()';
             Shop::DB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
             executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);

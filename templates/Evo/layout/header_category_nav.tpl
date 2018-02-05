@@ -5,13 +5,16 @@
         <div class="container{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}-fluid{/if}">
             {if $Einstellungen.template.theme.static_header === 'Y'}
                 {if isset($ShopLogoURL)}
+                {block name="category-nav-logo"}
                 <div class="navbar-header visible-affix pull-left hidden-xs hidden-sm">
                     <a class="navbar-brand" href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}">
                         {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive-height"}
                     </a>
                 </div>
+                {/block}
                 {/if}
             {/if}
+            {block name="category-nav-megamenu"}
             <div class="megamenu">
                 <ul class="nav navbar-nav force-float">
                     {include file='snippets/categories_mega.tpl'}
@@ -22,6 +25,7 @@
                     {/if}
                 </ul>
             </div>
+            {/block}
         </div>
     </nav>
 </div>

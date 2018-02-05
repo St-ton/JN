@@ -344,8 +344,8 @@ class Image
     {
         $filename = strtolower($filename);
 
-        $source   = ['.', ' ', '/', 'ä', 'ö', 'ü', 'ß', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß')];
-        $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss', 'ae', 'oe', 'ue', 'ss'];
+        $source   = ['.', ' ', '/', 'ä', 'ö', 'ü', 'ß'];
+        $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss'];
         $filename = str_replace($source, $replace, $filename);
 
         return preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $filename);
@@ -380,16 +380,20 @@ class Image
 
         $imanee->resize($width, $height, true, $settings['scale']);
 
-        if ($settings['container'] === true) {
-            $background = $settings['format'] === 'png'
-                ? 'transparent' : $settings['background'];
+        $background = $settings['format'] === 'png'
+            ? 'transparent' : $settings['background'];
 
-            $container = (new Imanee())
+        if ($settings['container'] === true) {
+            $imanee = (new Imanee())
                 ->newImage($width, $height, $background)
                 ->setFormat($settings['format'])
                 ->placeImage($imanee, Imanee::IM_POS_MID_CENTER, $width, $height);
-
-            $imanee = $container;
+        }
+        else {
+            $imanee = (new Imanee())
+                ->newImage($imanee->getWidth(), $imanee->getHeight(), $background)
+                ->setFormat($settings['format'])
+                ->placeImage($imanee, Imanee::IM_POS_MID_CENTER, $imanee->getWidth(), $imanee->getHeight());
         }
 
         if (isset($settings['branding']) && $req->getSize()->getType() === self::SIZE_LG) {

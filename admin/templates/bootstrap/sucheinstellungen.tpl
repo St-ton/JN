@@ -6,14 +6,13 @@
         var createCount = 0;
     </script>
     <script type="text/javascript">
-        {literal}
         function showIndexNotification(pResult) {
             var type = 'info';
             var msg  = '';
 
-            if (pResult && pResult.error && pResult.error.length) {
+            if (pResult && pResult.error) {
                 type = 'danger';
-                msg  = pResult.error;
+                msg  = pResult.error.message;
             } else if (pResult && pResult.hinweis) {
                 msg  = pResult.hinweis;
                 createCount++;
@@ -34,13 +33,17 @@
             }
         }
 
-        ajaxCall('sucheinstellungen.php', {action: 'createIndex', create: createIndex, index: 'tartikel'}, function (result, xhr) {
-            showIndexNotification(result);
-        });
-        ajaxCall('sucheinstellungen.php', {action: 'createIndex', create: createIndex, index: 'tartikelsprache'}, function (result, xhr) {
-            showIndexNotification(result);
-        });
-        {/literal}
+        ioCall('createSearchIndex', ['tartikel', createIndex], showIndexNotification, showIndexNotification);
+        ioCall('createSearchIndex', ['tartikelsprache', createIndex], showIndexNotification, showIndexNotification);
     </script>
+{/if}
+{if $supportFulltext === false}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#suche_fulltext').val('N')
+            .prop('disabled', 'disabled')
+            .prop('title', 'Die Volltextsuche erfordert MySQL ab Version 5.6!');
+    });
+</script>
 {/if}
 {include file='tpl_inc/footer.tpl'}

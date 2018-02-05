@@ -4,62 +4,48 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/syncinclude.php';
-//smarty lib
-global $smarty;
 
-if ($smarty === null) {
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-    $smarty = Shop::Smarty();
-}
-
-$return = 3;
+$return  = 3;
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
-    $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Kategorien_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Kategorien_xml');
+    $zipFile   = checkFile();
+    $return    = 2;
+    $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
+    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Kategorien_xml');
         }
-        $entzippfad = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
-        mkdir($entzippfad);
-        $entzippfad .= '/';
-        if ($archive->extract(PCLZIP_OPT_PATH, $entzippfad)) {
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $xmlFile) {
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Zip entpackt in ' . $entzippfad, JTLLOG_LEVEL_DEBUG, false, 'Kategorien_xml');
+                Jtllog::writeLog(
+                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Kategorien_xml'
+                );
             }
-            $return = 0;
-            foreach ($list as $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
-                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Kategorien_xml');
-                }
-                $d   = file_get_contents($entzippfad . $zip['filename']);
-                $xml = XML_unserialize($d);
+            $d   = file_get_contents($xmlFile);
+            $xml = XML_unserialize($d);
 
-                if ($zip['filename'] === 'katdel.xml') {
-                    bearbeiteDeletes($xml);
-                } else {
-                    bearbeiteInsert($xml);
-                }
-                removeTemporaryFiles($entzippfad . $zip['filename']);
+            if (isset($xml['tkategorie attr']['nGesamt']) || isset($xml['tkategorie attr']['nAktuell'])) {
+                setMetaLimit($xml['tkategorie attr']['nAktuell'], $xml['tkategorie attr']['nGesamt']);
+                unset($xml['tkategorie attr']['nGesamt'], $xml['tkategorie attr']['nAktuell']);
             }
 
-            LastJob::getInstance()->run(LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
-            removeTemporaryFiles(substr($entzippfad, 0, -1), true);
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Kategorien_xml');
+            if (strpos($xmlFile, 'katdel.xml') !== false) {
+                bearbeiteDeletes($xml);
+            } else {
+                bearbeiteInsert($xml);
+            }
+            removeTemporaryFiles($xmlFile);
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Kategorien_xml');
-    }
-}
 
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
+        LastJob::getInstance()->run(LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
+        removeTemporaryFiles(substr($unzipPath, 0, -1), true);
+    }
 }
 
 echo $return;
@@ -117,7 +103,11 @@ function bearbeiteInsert($xml)
     }
     if (is_array($xml['tkategorie'])) {
         // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
-        $oSeoOld       = Shop::DB()->query("SELECT cSeo FROM tkategorie WHERE kKategorie = " . $Kategorie->kKategorie, 1);
+        $oDataOld      = Shop::DB()->query(
+            "SELECT cSeo, lft, rght, nLevel
+                FROM tkategorie
+                WHERE kKategorie = " . $Kategorie->kKategorie, 1
+        );
         $oSeoAssoc_arr = getSeoFromDB($Kategorie->kKategorie, 'kKategorie', null, 'kSprache');
 
         loescheKategorie($Kategorie->kKategorie);
@@ -130,10 +120,13 @@ function bearbeiteInsert($xml)
             $kategorie_arr[0]->cSeo                  = getSeo($kategorie_arr[0]->cSeo);
             $kategorie_arr[0]->cSeo                  = checkSeo($kategorie_arr[0]->cSeo);
             $kategorie_arr[0]->dLetzteAktualisierung = 'now()';
+            $kategorie_arr[0]->lft                   = isset($oDataOld->lft) ? $oDataOld->lft : 0;
+            $kategorie_arr[0]->rght                  = isset($oDataOld->rght) ? $oDataOld->rght : 0;
+            $kategorie_arr[0]->nLevel                = isset($oDataOld->nLevel) ? $oDataOld->nLevel : 0;
             DBUpdateInsert('tkategorie', $kategorie_arr, 'kKategorie');
             // Insert into tredirect weil sich das SEO geändert hat
-            if (isset($oSeoOld->cSeo)) {
-                checkDbeSXmlRedirect($oSeoOld->cSeo, $kategorie_arr[0]->cSeo);
+            if (isset($oDataOld->cSeo)) {
+                checkDbeSXmlRedirect($oDataOld->cSeo, $kategorie_arr[0]->cSeo);
             }
             //insert in tseo
             Shop::DB()->query(
@@ -217,15 +210,13 @@ function bearbeiteInsert($xml)
             }
         }
 
-        $cache = Shop::Cache();
 //        $flushArray = [];
 //        $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kKategorie;
 //        if (isset($Kategorie->kOberKategorie) && $Kategorie->kOberKategorie > 0) {
 //            $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kOberKategorie;
 //        }
-//        $cache->flushTags($flushArray);
+//        Shop::Cache()->flushTags($flushArray);
         //@todo: the above does not really work on parent categories when adding/deleting child categories
-        $cache->flushTags([CACHING_GROUP_CATEGORY]);
     }
 }
 
@@ -249,7 +240,6 @@ function loescheKategorie($kKategorie)
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Kategorie geloescht: ' . $kKategorie, JTLLOG_LEVEL_DEBUG, false, 'Kategorien_xml');
     }
-    Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY]);
 }
 
 /**
@@ -295,4 +285,15 @@ function saveKategorieAttribut($xmlParent, $oAttribut)
     }
 
     return $oAttribut->kKategorieAttribut;
+}
+
+/**
+ * ToDo: Implement different updatestrategies in dependece of total and current category blocks
+ * @param $nAktuell
+ * @param $nGesamt
+ * @return bool
+ */
+function setMetaLimit($nAktuell, $nGesamt)
+{
+    return false;
 }

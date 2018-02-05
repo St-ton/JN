@@ -24,11 +24,12 @@ class ImageMap implements IExtensionPoint
      */
     public function __construct()
     {
-        $oSprache            = gibStandardsprache(true);
-        $this->kSprache      = $oSprache->kSprache;
-        $this->kKundengruppe = (isset($_SESSION['Kundengruppe']->kKundengruppe) ? $_SESSION['Kundengruppe']->kKundengruppe : null);
+        $this->kSprache      = Shop::getLanguage();
+        $this->kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe)
+            ? Session::CustomerGroup()->getID()
+            : null;
         if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
-            $this->kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
+            $this->kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
         }
     }
 
@@ -41,8 +42,7 @@ class ImageMap implements IExtensionPoint
     {
         $oImageMap = $this->fetch($kInitial, $fetch_all);
         if (is_object($oImageMap)) {
-            $smarty = Shop::Smarty();
-            $smarty->assign('oImageMap', $oImageMap);
+            Shop::Smarty()->assign('oImageMap', $oImageMap);
         }
 
         return $this;
@@ -109,6 +109,9 @@ class ImageMap implements IExtensionPoint
                     );
                 } else {
                     $oArea->oArtikel->kArtikel = $oArea->kArtikel;
+                    $oArea->oArtikel->cName    = Shop::DB()->select(
+                        'tartikel', 'kArtikel', $oArea->kArtikel, null, null, null, null, false, 'cName'
+                    )->cName;
                 }
                 if (strlen($oArea->cTitel) === 0) {
                     $oArea->cTitel = $oArea->oArtikel->cName;

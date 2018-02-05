@@ -259,8 +259,8 @@
 @zindex-popover:           1060;
 @zindex-tooltip:           1070;
 @zindex-navbar-fixed:      1030;
-@zindex-modal:             1040;
-
+@zindex-modal:             1050;
+@zindex-overtop:           9999;
 
 //== Media queries breakpoints
 //
@@ -357,10 +357,10 @@
 
 // Navbar links
 @navbar-default-link-color:                #777;
-@navbar-default-link-hover-color:          #fff;
-@navbar-default-link-hover-bg:             @brand-secondary;
-@navbar-default-link-active-color:         @brand-primary;
-@navbar-default-link-active-bg:            @gray-light;
+@navbar-default-link-hover-color:          @brand-primary;
+@navbar-default-link-hover-bg:             @gray-light;
+@navbar-default-link-active-color:         #fff;
+@navbar-default-link-active-bg:            @brand-secondary;
 @navbar-default-link-disabled-color:       #ccc;
 @navbar-default-link-disabled-bg:          transparent;
 
@@ -551,7 +551,7 @@
 //##
 
 //** Default label background color
-@label-default-bg:            transparent;
+@label-default-bg:            @gray-dark;
 //** Primary label background color
 @label-primary-bg:            @brand-primary;
 //** Success label background color

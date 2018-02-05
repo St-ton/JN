@@ -1,8 +1,5 @@
 'use strict';
 
-/**********************************************************************************************************************/
-/**********************************************************************************************************************/
-
 $('body').on('click', '.option li', function (e) {
     var i = $(this).parents('.select').attr('id'),
         v = $(this).children().text(),
@@ -41,11 +38,8 @@ function getCategoryMenu(categoryId, success) {
     io.call('getCategoryMenu', [categoryId], xx, function (error, data) {
         if (error) {
             console.error(data);
-        }
-        else {
-            if (typeof success === 'function') {
-                success(xx.response);
-            }
+        } else if (typeof success === 'function') {
+            success(xx.response);
         }
     });
 
@@ -79,22 +73,19 @@ function categoryMenu(rootcategory) {
 function compatibility() {
     var __enforceFocus = $.fn.modal.Constructor.prototype.enforceFocus;
     $.fn.modal.Constructor.prototype.enforceFocus = function () {
-        if ($('.modal-body .g-recaptcha').length == 0) {
+        if ($('.modal-body .g-recaptcha').length === 0) {
             __enforceFocus.apply(this, arguments);
         }
     };
 }
 
 function regionsToState() {
-    if ($('#state').length == 0)
+    var state = $('#state');
+    if (state.length === 0) {
         return;
-
-    var title = $('#state').attr('title');
-    if($('#state').attr('required') == 'required'){
-        var stateIsRequired = true;
-    } else {
-        var stateIsRequired = false;
     }
+    var title = state.attr('title');
+    var stateIsRequired = state.attr('required') === 'required';
 
     $('#country').change(function() {
         var result = {};
@@ -104,11 +95,10 @@ function regionsToState() {
         io.call('getRegionsByCountry', [val], result, function (error, data) {
             if (error) {
                 console.error(data);
-            }
-            else {
+            } else {
                 var data = result.response;
                 var def = $('#state').val();
-                if (data != null && data.length > 0) {
+                if (data !== null && data.length > 0) {
                     if (stateIsRequired){
                         var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'required form-control', required: 'required'});
                     } else {
@@ -123,8 +113,7 @@ function regionsToState() {
                         );
                     });
                     $('#state').replaceWith(state);
-                }
-                else {
+                } else {
                     if (stateIsRequired) {
                         var state = $('<input />').attr({ type: 'text', id: 'state', name: 'bundesland', class: 'required form-control', placeholder: title, required: 'required' });
                     } else {
@@ -143,6 +132,13 @@ function loadContent(url)
 {
     $.evo.extended().loadContent(url, function() {
         $.evo.extended().register();
+
+        if (typeof $.evo.article === 'function') {
+            $.evo.article().onLoad();
+            $.evo.article().register();
+            addValidationListener();
+        }
+
         $('html,body').animate({
             scrollTop: $('.list-pageinfo').offset().top - $('#evo-main-nav-wrapper').outerHeight() - 10 
         }, 100);
@@ -164,20 +160,58 @@ function navigation()
 }
 
 function addValidationListener() {
-    var forms = $('form');
-    var inputs = $('input,select,textarea');
+    var forms  = $('form'),
+        inputs = $('input,select,textarea'),
+        $body  = $('body');
 
     for (var i = 0; i < forms.length; i++) {
         forms[i].addEventListener('invalid', function (event) {
             event.preventDefault();
             $(event.target).closest('.form-group').find('div.form-error-msg').remove();
             $(event.target).closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fa fa-warning"></i> ' + event.target.validationMessage + '</div>');
+
+            if (!$body.data('doScrolling')) {
+                var $firstError = $(event.target).closest('.form-group.has-error');
+                if ($firstError.length > 0) {
+                    $body.data('doScrolling', true);
+                    var $nav        = $('#evo-main-nav-wrapper.do-affix'),
+                        fixedOffset = $nav.length > 0 ? $nav.outerHeight() : 0,
+                        vpHeight    = $(window).height(),
+                        scrollTop   = $(window).scrollTop();
+                    if ($firstError.offset().top > (scrollTop + vpHeight) || $firstError.offset().top < scrollTop) {
+                        $('html, body').animate(
+                            {
+                                scrollTop: $firstError.offset().top - fixedOffset - parseInt($firstError.css('margin-top'))
+                            },
+                            {
+                                done: function () {
+                                    $body.data('doScrolling', false);
+                                }
+                            }, 300
+                        );
+                    }
+                }
+            }
         }, true);
     }
 
     for (var i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener('blur', function (event) {
-            $(event.target).closest('.form-group').find('div.form-error-msg').remove();
+            var $target = $(event.target);
+            $target.closest('.form-group').find('div.form-error-msg').remove();
+
+            if ($target.data('must-equal-to') !== undefined) {
+                var $equalsTo = $($target.data('must-equal-to'));
+                if ($equalsTo.length === 1) {
+                    var theOther = $equalsTo[0];
+                    if (theOther.value !== '' && theOther.value !== event.target.value && event.target.value !== '') {
+                        event.target.setCustomValidity($target.data('custom-message') !== undefined ? $target.data('custom-message') : event.target.validationMessage);
+                    } else {
+                        event.target.setCustomValidity('');
+                    }
+                }
+            }
+
             if (event.target.validity.valid) {
                 $(event.target).closest('.form-group').removeClass('has-error');
             } else {
@@ -191,11 +225,46 @@ function captcha_filled() {
     $('.g-recaptcha').closest('.form-group').find('div.form-error-msg').remove();
 }
 
+function isTouchCapable() {
+    return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
+}
+
 $(window).load(function(){
     navigation();
 });
 
 $(document).ready(function () {
+    $('.collapse-non-validate')
+        .on('hidden.bs.collapse', function(e) {
+            $(e.target)
+                .addClass('hidden')
+                .find('fieldset, .form-control')
+                .attr('disabled', true);
+            e.stopPropagation();
+        })
+        .on('show.bs.collapse', function(e) {
+            $(e.target)
+                .removeClass('hidden')
+                .attr('disabled', false);
+            e.stopPropagation();
+        }).on('shown.bs.collapse', function(e) {
+            $(e.target)
+                .find('fieldset, .form-control')
+                .filter(function (i, e) {
+                    return $(e).closest('.collapse-non-validate.collapse').hasClass('in');
+                })
+                .attr('disabled', false);
+            e.stopPropagation();
+        });
+    $('.collapse-non-validate.collapse.in')
+        .removeClass('hidden')
+        .find('fieldset, .form-control')
+        .attr('disabled', false);
+    $('.collapse-non-validate.collapse:not(.in)')
+        .addClass('hidden')
+        .find('fieldset, .form-control')
+        .attr('disabled', true);
+
     $('#complete-order-button').click(function () {
         var commentField = $('#comment'),
             commentFieldHidden = $('#comment-hidden');
@@ -204,13 +273,15 @@ $(document).ready(function () {
         }
     });
 
-    $('.footnote-vat a, .versand, .popup').click(function(e) {
+    $(document).on('click', '.footnote-vat a, .versand, .popup', function(e) {
         var url = e.currentTarget.href;
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
         eModal.ajax({
-            'size': 'lg',
-            'url': url,
-            'title': typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : ''
+            size: 'lg',
+            url: url,
+            title: typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : '',
+            keyboard: true,
+            tabindex: -1
         });
         e.stopPropagation();
         return false;
@@ -227,7 +298,7 @@ $(document).ready(function () {
         window.addEventListener('popstate', function(e) {
             loadContent(document.location.href);
         }, false);
-    };
+    }
 
     $('.dropdown .dropdown-menu.keepopen').on('click touchstart', function(e) {
         e.stopPropagation();
@@ -264,27 +335,29 @@ $(document).ready(function () {
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote:         {
-            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}',
+            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
             wildcard: '%QUERY'
         },
         dataType: "json"
     });
-
-    $('#neukunde #plz, #new_customer #plz').change(function(){
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
+    $('.city_input').focusin(function () {
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
-    $('#neukunde #country, #new_customer #country').change(function(){
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $('#country').val() + '", "' + $('#plz').val() + '"]}';
+    $('.postcode_input').change(function () {
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).val() + '"]}';
+    });
+    $('.country_input').change(function () {
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
 
-    $('#neukunde #city, #new_customer #city').typeahead(
+    $('.city_input').typeahead(
         {
             hint: true,
-            minLength: 1
+            minLength: 0
         },
         {
-            name:       'cities',
-            source:     citySuggestion
+            name:   'cities',
+            source: citySuggestion
         }
     );
 
@@ -374,12 +447,15 @@ $(document).ready(function () {
      * set bootstrap viewport
      */
     (function($, document, window, viewport){ 
+        var $body = $('body');
+
         $(window).resize(
             viewport.changed(function() {
-                $('body').attr('data-viewport', viewport.current());
+                $body.attr('data-viewport', viewport.current());
             })
         );
-        $('body').attr('data-viewport', viewport.current());
+        $body.attr('data-viewport', viewport.current());
+        $body.attr('data-touchcapable', isTouchCapable() ? 'true' : 'false');
     })(jQuery, document, window, ResponsiveBootstrapToolkit);
 
     categoryMenu();

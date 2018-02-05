@@ -36,13 +36,10 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 require_once PFAD_ROOT . PFAD_DBES . 'xml_tools.php';
-require_once PFAD_ROOT . PFAD_PCLZIP . 'pclzip.lib.php';
 require_once PFAD_ROOT . PFAD_DBES . 'mappings.php';
 
-//datenbankverbindung aufbauen
-$DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-$cache = JTLCache::getInstance();
-$cache->setJtlCacheConfig();
+$DB    = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$cache = JTLCache::getInstance()->setJtlCacheConfig();
 
 $GLOBALS['bSeo'] = true; //compatibility!
 // Liste aller Hooks, die momentan im Shop gebraucht werden könnten
@@ -94,7 +91,7 @@ function html2rgb($color)
 }
 
 /**
- *
+ * @return bool|string
  */
 function checkFile()
 {
@@ -134,12 +131,14 @@ function checkFile()
                 $cFehler = 'Dateiendung nicht akzeptiert, bitte an Hoster werden! [8]';
                 break;
         }
-
         syncException($cFehler . "\n" . print_r($_FILES, true), 8);
-    } else {
-        move_uploaded_file($_FILES['data']['tmp_name'], PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']));
-        $_FILES['data']['tmp_name'] = PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']);
+
+        return false;
     }
+    move_uploaded_file($_FILES['data']['tmp_name'], PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']));
+    $_FILES['data']['tmp_name'] = PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']);
+
+    return PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']);
 }
 
 /**
@@ -150,11 +149,8 @@ function auth()
     if (!isset($_POST['userID'], $_POST['userPWD'])) {
         return false;
     }
-    $cName      = $_POST['userID'];
-    $cPass      = $_POST['userPWD'];
-    $loginDaten = Shop::DB()->query("SELECT * FROM tsynclogin", 1);
 
-    return ($cName === $loginDaten->cName && $cPass === $loginDaten->cPass);
+    return (new Synclogin())->checkLogin($_POST['userID'], $_POST['userPWD']) === true;
 }
 
 /**
@@ -328,15 +324,26 @@ function buildAttributes(&$arr, $cExclude_arr = [])
 function zipRedirect($zip, $xml_obj)
 {
     $xmlfile = fopen(PFAD_SYNC_TMP . FILENAME_XML, 'w');
-    fwrite($xmlfile, strtr(XML_serialize($xml_obj), "\0", ' '));
+    fwrite($xmlfile, strtr(StringHandler::convertISO(XML_serialize($xml_obj)), "\0", ' '));
     fclose($xmlfile);
     if (file_exists(PFAD_SYNC_TMP . FILENAME_XML)) {
-        $archive = new PclZip(PFAD_SYNC_TMP . $zip);
-        if ($archive->create(PFAD_SYNC_TMP . FILENAME_XML, PCLZIP_OPT_REMOVE_ALL_PATH)) {
-            //unlink(PFAD_SYNC_TMP . FILENAME_XML);
-            readfile(PFAD_SYNC_TMP . $zip);
-            exit;
+        if (class_exists('ZipArchive')) {
+            $archive = new ZipArchive();
+            if ($archive->open(PFAD_SYNC_TMP . $zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== false
+                && $archive->addFile(PFAD_SYNC_TMP . FILENAME_XML)
+            ) {
+                $archive->close();
+                readfile(PFAD_SYNC_TMP . $zip);
+                exit;
+            }
+            $archive->close();
+            syncException($archive->getStatusString());
         } else {
+            $archive = new PclZip(PFAD_SYNC_TMP . $zip);
+            if ($archive->create(PFAD_SYNC_TMP . FILENAME_XML, PCLZIP_OPT_REMOVE_ALL_PATH)) {
+                readfile(PFAD_SYNC_TMP . $zip);
+                exit;
+            }
             syncException($archive->errorInfo(true));
         }
     }
@@ -444,11 +451,11 @@ function JTLMapArr($oXmlTree, $cMapping_arr)
 {
     $oMapped = new stdClass();
     foreach ($oXmlTree->Attributes() as $cKey => $cVal) {
-        $oMapped->{$cKey} = utf8_decode((string)$cVal);
+        $oMapped->{$cKey} = (string)$cVal;
     }
     foreach ($cMapping_arr as $cMap) {
         if (isset($oXmlTree->{$cMap})) {
-            $oMapped->{$cMap} = utf8_decode((string)$oXmlTree->{$cMap});
+            $oMapped->{$cMap} = (string)$oXmlTree->{$cMap};
         }
     }
 
@@ -490,7 +497,6 @@ function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
 /**
  * @param object $oArtikel
  * @param array  $oKundengruppe_arr
- * @global JTLSmarty $smarty
  */
 function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
 {
@@ -543,12 +549,11 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
-            $Artikel = new Artikel();
-            $Artikel->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
+            $Artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
             // Kampagne
             $oKampagne = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
             if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-                $cSep = (strpos($Artikel->cURL, '.php') === false) ? '?' : '&';
+                $cSep           = (strpos($Artikel->cURL, '.php') === false) ? '?' : '&';
                 $Artikel->cURL .= $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
             }
             foreach ($Benachrichtigungen as $Benachrichtigung) {
@@ -586,61 +591,49 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
  */
 function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
 {
-    $oPreis  = Shop::DB()->query(
-        "SELECT fVKNetto
-                FROM tpreisverlauf
-                WHERE kArtikel = " . $kArtikel . "
-                    AND kKundengruppe = " . $kKundengruppe . "
-                    AND dDate != DATE(NOW())
-                ORDER BY dDate DESC
-                LIMIT 1", 1
+    $kArtikel      = (int)$kArtikel;
+    $kKundengruppe = (int)$kKundengruppe;
+    $fVKNetto      = (float)$fVKNetto;
+
+    $oPreis_arr = Shop::DB()->query(
+        "SELECT kPreisverlauf, fVKNetto, dDate, IF(dDate = CURDATE(), 1, 0) bToday
+            FROM tpreisverlauf
+            WHERE kArtikel = {$kArtikel}
+	            AND kKundengruppe = {$kKundengruppe}
+            ORDER BY dDate DESC LIMIT 2", 2
     );
-    // gleicher Wert wie letzter Eintrag?
-    if (!isset($oPreis->fVKNetto) ||
-        (isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100))
-    ) {
-        $oPreisverlauf                = new stdClass();
-        $oPreisverlauf->fVKNetto      = $fVKNetto;
-        $nReihen                      = Shop::DB()->update(
-            'tpreisverlauf',
-            ['kArtikel', 'kKundengruppe', 'dDate'],
-            [$kArtikel, $kKundengruppe, date('Y-m-d')],
-            $oPreisverlauf
-        );
-    } else {
-        // Eintrag entfernen um Dopplung zu vermeiden
-        $nReihen = Shop::DB()->delete(
-            'tpreisverlauf',
-            ['kArtikel', 'kKundengruppe', 'dDate'],
-            [$kArtikel, $kKundengruppe, date('Y-m-d')]
-        );
-    }
 
-    if ((int)$nReihen === 0) {
-        $oPreisverlauf                = new stdClass();
-        $oPreisverlauf->kArtikel      = $kArtikel;
-        $oPreisverlauf->kKundengruppe = $kKundengruppe;
-        $oPreisverlauf->fVKNetto      = $fVKNetto;
-        $oPreisverlauf->dDate         = 'now()';
-
-        $oPreis = Shop::DB()->query(
-            "SELECT fVKNetto
-                FROM tpreisverlauf
-                WHERE kArtikel = " . $kArtikel . "
-                    AND kKundengruppe = " . $kKundengruppe . "
-                ORDER BY dDate DESC
-                LIMIT 1", 1
-        );
-        //no pricehistory or price changed?
-        if (!isset($oPreis->fVKNetto) ||
-            (isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100))
-        ) {
-            Shop::DB()->insert('tpreisverlauf', $oPreisverlauf);
-            // Clear Artikel Cache
-            $cache = Shop::Cache();
-            $cache->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
+    if (!empty($oPreis_arr[0]) && (int)$oPreis_arr[0]->bToday === 1) {
+        // price for today exists
+        if (round($oPreis_arr[0]->fVKNetto * 100) === round($fVKNetto * 100)) {
+            // return if there is no difference
+            return;
         }
+        if (!empty($oPreis_arr[1]) && round($oPreis_arr[1]->fVKNetto * 100) === round($fVKNetto * 100)) {
+            // delete todays price if the new price for today is the same as the latest price
+            Shop::DB()->delete('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf);
+        } else {
+            // update if prices are different
+            Shop::DB()->update('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf, (object)[
+                'fVKNetto' => $fVKNetto,
+            ]);
+        }
+    } else {
+        // no price for today exists
+        if (!empty($oPreis_arr[0]) && round($oPreis_arr[0]->fVKNetto * 100) === round($fVKNetto * 100)) {
+            // return if there is no difference
+            return;
+        }
+        Shop::DB()->insert('tpreisverlauf', (object)[
+            'kArtikel'      => $kArtikel,
+            'kKundengruppe' => $kKundengruppe,
+            'fVKNetto'      => $fVKNetto,
+            'dDate'         => 'now()',
+        ]);
     }
+
+    // Clear Artikel Cache
+    Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
 }
 
 /**
@@ -673,10 +666,10 @@ function translateError($cMessage)
 {
     if (preg_match('/Maximum execution time of (\d+) second.? exceeded/', $cMessage, $cMatch_arr)) {
         $nSeconds = (int)$cMatch_arr[1];
-        $cMessage = utf8_decode("Maximale Ausführungszeit von $nSeconds Sekunden überschritten");
+        $cMessage = "Maximale Ausführungszeit von $nSeconds Sekunden überschritten";
     } elseif (preg_match("/Allowed memory size of (\d+) bytes exhausted/", $cMessage, $cMatch_arr)) {
         $nLimit   = (int)$cMatch_arr[1];
-        $cMessage = utf8_decode("Erlaubte Speichergröße von $nLimit Bytes erschöpft");
+        $cMessage = "Erlaubte Speichergröße von $nLimit Bytes erschöpft";
     }
 
     return $cMessage;
@@ -691,7 +684,7 @@ function handleError($output)
     if (function_exists('error_get_last')) {
         $error = error_get_last();
         if ($error['type'] == 1) {
-            $cError = translateError($error['message']) . "\n";
+            $cError  = translateError($error['message']) . "\n";
             $cError .= 'Datei: ' . $error['file'];
             if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
                 Jtllog::writeLog($cError, JTLLOG_LEVEL_ERROR);
@@ -965,7 +958,7 @@ function handleNewPriceFormat($xml)
                 }
                 $hasDefaultPrice = false;
                 foreach ($preisdetails as $preisdetail) {
-                    $o            = (object)[
+                    $o = (object)[
                         'kPreis'    => $kPreis,
                         'nAnzahlAb' => $preisdetail->nAnzahlAb,
                         'fVKNetto'  => $preisdetail->fNettoPreis
@@ -990,10 +983,10 @@ function handleNewPriceFormat($xml)
             $kKundengruppen_arr = Kundengruppe::getGroups();
             /** @var Kundengruppe $customergroup */
             foreach ($kKundengruppen_arr as $customergroup) {
-                $kKundengruppe = $customergroup->getKundengruppe();
+                $kKundengruppe = $customergroup->getID();
                 if (isset($xml['fStandardpreisNetto']) && !in_array($kKundengruppe, $customerGroupHandled, true)) {
-                    $kPreis       = handlePriceFormat($kArtikel, $kKundengruppe);
-                    $o            = (object)[
+                    $kPreis = handlePriceFormat($kArtikel, $kKundengruppe);
+                    $o      = (object)[
                         'kPreis'    => $kPreis,
                         'nAnzahlAb' => 0,
                         'fVKNetto'  => $xml['fStandardpreisNetto']
@@ -1098,7 +1091,7 @@ function syncException($msg, $wawiExceptionCode = null)
 {
     $output = '';
     if ($wawiExceptionCode !== null) {
-        $output .= $wawiExceptionCode . '\n';
+        $output .= $wawiExceptionCode . "\n";
     }
     $output .= $msg;
     die(mb_convert_encoding($output, 'ISO-8859-1', 'auto'));
@@ -1121,6 +1114,85 @@ function flushCategoryTreeCache()
 function flushCustomerPriceCache($kKunde)
 {
     return Shop::Cache()->flush('custprice_' . (int)$kKunde);
+}
+
+/**
+ * @param string $zipFile
+ * @param string $targetPath
+ * @param string $source
+ * @return array|bool
+ */
+function unzipSyncFiles($zipFile, $targetPath, $source = '')
+{
+    if ($zipFile === false) {
+        return false;
+    }
+    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+        Jtllog::writeLog('Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'syncinclude');
+    }
+    if (class_exists('ZipArchive')) {
+        $archive = new ZipArchive();
+        $open    = $archive->open($zipFile);
+        if (!$open) {
+            Jtllog::writeLog(
+                'unzipSyncFiles: Kann Datei nicht öffnen: ' . $zipFile,
+                JTLLOG_LEVEL_ERROR,
+                false,
+                'syncinclude'
+            );
+
+            return false;
+        }
+        $filenames = [];
+        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog(
+                'unzipSyncFiles: Anzahl Dateien im Zip: ' . $archive->numFiles,
+                JTLLOG_LEVEL_DEBUG,
+                false,
+                'syncinclude'
+            );
+        }
+        if (is_dir($targetPath) || (mkdir($targetPath) && is_dir($targetPath))) {
+            for ($i = 0; $i < $archive->numFiles; ++$i) {
+                $filenames[] = $targetPath . $archive->getNameIndex($i);
+            }
+            if ($archive->numFiles > 0 && !$archive->extractTo($targetPath)) {
+                return false;
+            }
+            $archive->close();
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog('unzipSyncFiles: Zip entpackt in ' . $targetPath, JTLLOG_LEVEL_DEBUG, false,
+                    'syncinclude');
+            }
+
+            return array_filter(array_map(function ($e) {
+                return file_exists($e)
+                    ? $e
+                    : null;
+            }, $filenames));
+        }
+
+    } else {
+        if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
+            Jtllog::writeLog(
+                'Achtung: Klasse ZipArchive wurde nicht gefunden, bitte PHP-Konfiguration überprüfen.',
+                JTLLOG_LEVEL_NOTICE,
+                false,
+                'syncinclude'
+            );
+        }
+        $archive = new PclZip($zipFile);
+        if (($list = $archive->listContent()) !== 0 && $archive->extract(PCLZIP_OPT_PATH, $targetPath)) {
+            $filenames = [];
+            foreach ($list as $file) {
+                $filenames[] = $targetPath . $file['filename'];
+            }
+
+            return $filenames;
+        }
+    }
+
+    return false;
 }
 
 ob_start('handleError');

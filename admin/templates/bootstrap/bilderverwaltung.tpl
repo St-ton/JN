@@ -1,59 +1,130 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="bilderverwaltung"}
+{$corruptedPicsTypes = []}
+{$corruptedPics = false}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=#bilderverwaltung# cBeschreibung=#bilderverwaltungDesc# cDokuURL=#bilderverwaltungURL#}
 <div id="content">
     {if isset($success)}
         <div class="alert alert-success"><i class="fa fa-info-circle"></i> {$success}</div>
     {/if}
-    <div class="panel panel-default">
-        <div class="table-responsive">
-            <table class="list table" id="cache-items">
+    <div class="table-responsive">
+        <table class="list table" id="cache-items">
+            <thead>
+            <tr>
+                <th class="tleft">{#headlineTyp#}</th>
+                <th class="text-center">{#headlineTotal#}</th>
+                <th class="text-center abbr">{#headlineCache#}</th>
+                <th class="text-center">{#headlineCorrupted#}</th>
+                <th class="text-center" width="125">{#headlineSize#}</th>
+                <th class="text-center" width="200">{#headlineAction#}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach from=$items item="item"}
+                {$corruptedPicsTypes[{$item->type}] = $item->stats->corrupted}
+                <tr data-type="{$item->type}">
+                    <td class="item-name">{$item->name}</td>
+                    <td class="text-center">
+                        <span class="item-total">
+                          {$item->stats->total}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="item-generated">
+                          {(($item->stats->generated[$SIZE_XS] + $item->stats->generated[$SIZE_SM] + $item->stats->generated[$SIZE_MD] + $item->stats->generated[$SIZE_LG]) / 4)|round:0}
+                        </span>
+                        (
+                        <span class="item-fallback">
+                            {$item->stats->fallback}
+                        </span>
+                        )
+                    </td>
+                    <td class="text-center">
+                        <span class="item-corrupted">{$item->stats->corrupted}</span>
+                    </td>
+                    <td class="text-center item-total-size">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </td>
+                    <td class="text-center action-buttons">
+                        <div class="btn-group btn-group-xs" role="group">
+                            <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i>{#deleteCachedPics#}</a>
+                            <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i>{#generatePics#}</a>
+                        </div>
+                    </td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footnote small text-muted">
+        <p>{#fallbackNote#}</p>
+    </div>
+
+    {foreach $corruptedPicsTypes as $corruptedPicsType}
+        {if $corruptedPicsType > 0}
+            {$corruptedPics = true}
+        {/if}
+    {/foreach}
+
+    {if $corruptedPics}
+        <h3 class="top40">
+            {#currentCorruptedPics#}
+        </h3>
+        <p class="small text-muted">{#corruptedPicsNote#}</p>
+        <table class="list table table-condensed">
+            {foreach $corruptedImagesByType as $corruptedImages}
                 <thead>
                 <tr>
-                    <th class="tleft">Typ</th>
-                    <th class="text-center">Insgesamt</th>
-                    <th class="text-center">Im Cache</th>
-                    <th class="text-center">Fehlerhaft</th>
-                    <th class="text-center" width="125">Gr&ouml;&szlig;e</th>
-                    <th class="text-center" width="300">Aktionen</th>
+                    <th>{#articlePic#}</th>
+                    <th>{#articlenr#}</th>
                 </tr>
                 </thead>
                 <tbody>
-                {foreach from=$items item="item"}
-                    <tr data-type="{$item->type}">
-                        <td class="item-name">{$item->name}</td>
-                        <td class="text-center">
-                            <span class="item-total">
-                              {$item->stats->total}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <span class="item-generated">
-                              {(($item->stats->generated[$SIZE_XS] + $item->stats->generated[$SIZE_SM] + $item->stats->generated[$SIZE_MD] + $item->stats->generated[$SIZE_LG]) / 4)|round:0}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <span class="item-corrupted">
-                              {$item->stats->corrupted}
-                            </span>
-                        </td>
-                        <td class="text-center item-total-size">
-                            <i class="fa fa-spinner fa-spin"></i>
-                        </td>
-                        <td class="text-center action-buttons">
-                            <div class="btn-group btn-group-xs" role="group">
-                                <a class="btn btn-default" href="#" data-callback="cleanup" data-type="{$item->type}"><i class="fa fa-trash-o"></i> Verwaiste l&ouml;schen</a>
-                                <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i> Cache leeren</a>
-                                <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i> Generieren</a>
+                {foreach from=$corruptedImages key=key item="corruptedImage"}
+                    <tr>
+                        <td class="col-xs-6">{$corruptedImage->picture}</td>
+                        <td class="col-xs-6">
+                            {$moreCorruptedImages = false}
+                            <div class="input-group">
+                                {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
+                                    {if $smarty.foreach.corruptedImageArticle.iteration <= 3}
+                                        <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
+                                            {$article->articleNr}
+                                        </a>
+                                        {if !$smarty.foreach.corruptedImageArticle.last
+                                        && $smarty.foreach.corruptedImageArticle.iteration < 3} |{/if}
+                                    {else}
+                                        {$moreCorruptedImages = true}
+                                        {$moreCorruptedImage = $key}
+                                        {break}
+                                    {/if}
+                                {/foreach}
+                                {if $moreCorruptedImages}
+                                    <a class="btn btn-default btn-xs" data-toggle="collapse"
+                                        href="#dropdownCorruptedImages-{$moreCorruptedImage}"
+                                        aria-controls="dropdownCorruptedImages-{$moreCorruptedImage}">
+                                        {#more#} <span class="caret"></span>
+                                    </a>
+                                    <div class="collapse" id="dropdownCorruptedImages-{$moreCorruptedImage}">
+                                        {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
+                                            {if $smarty.foreach.corruptedImageArticle.iteration > 3}
+                                                <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
+                                                    {$article->articleNr}
+                                                </a>
+                                                {if !$smarty.foreach.corruptedImageArticle.last} |{/if}
+                                            {/if}
+                                        {/foreach}
+                                    </div>
+                                {/if}
                             </div>
                         </td>
                     </tr>
                 {/foreach}
                 </tbody>
-            </table>
-        </div>
-    </div>
+            {/foreach}
+        </table>
+    {/if}
 </div>
 <script>
     {literal}
@@ -64,25 +135,17 @@
     function updateStats() {
         $('#cache-items tbody > tr').each(function (i, item) {
             var type = $(item).data('type');
-            loadStats(type, function (stats) {
+            ioCall('loadStats', [type], function (data) {
                 var totalCached = 0;
-                $('.item-total', item).text(stats.total);
-                $('.item-corrupted', item).text(stats.corrupted);
-                $('.item-total-size', item).text(formatSize(stats.totalSize));
+                $('.item-total', item).text(data.total);
+                $('.item-corrupted', item).text(data.corrupted);
+                $('.item-total-size', item).text(formatSize(data.totalSize));
 
                 $(['xs', 'sm', 'md', 'lg']).each(function (i, size) {
-                    totalCached += stats.generated[size];
+                    totalCached += data.generated[size];
                 });
                 $('.item-generated', item).text(Math.round(totalCached / 4, 0));
             });
-        });
-    }
-
-    function loadStats(type, callback) {
-        return ajaxCall('bilderverwaltung.php', {action : 'stats', type : type}, function (result, xhr) {
-            if (typeof callback === 'function') {
-                callback(result.data);
-            }
         });
     }
 
@@ -99,7 +162,7 @@
         running = true;
         lastResults = [];
         lastTick = new Date();
-        notify = showGenerateNotify('Bilder werden aufger&auml;mt', 'L&ouml;sche Bilder...');
+        notify = showGenerateNotify('Bilder werden aufger&auml;umt', 'L&ouml;sche Bilder...');
         $('.action-buttons a').attr('disabled', true);
         doCleanup(0);
     }
@@ -116,13 +179,13 @@
             progress: 100,
             message: 'Insgesamt ' + result.deletedImages + ' Bilder gel&ouml;scht.',
             type: 'success',
-            title: 'Bilder erfolgreich aufger&auml;mt'
+            title: 'Bilder erfolgreich aufger&auml;umt'
         });
     }
 
     function doCleanup(index) {
         lastTick = new Date().getTime();
-        var call = loadCleanup(index, function (result) {
+        ioCall('cleanupStorage', [index], function (result) {
             var items = result.deletes,
                 deleted = result.deletedImages,
                 total = result.total,
@@ -160,15 +223,6 @@
                 doCleanup(result.nextIndex);
             }
         });
-        $.when(call).done();
-    }
-
-    function loadCleanup(index, callback) {
-        return ajaxCall('bilderverwaltung.php', {action: 'cleanup_storage', index: index}, function (result, xhr) {
-            if (typeof callback === 'function') {
-                callback(result.data);
-            }
-        });
     }
 
     function showCleanupNotify(title, message) {
@@ -187,16 +241,14 @@
 
     function flush(param) {
         var type = (typeof param.data('type') !== 'undefined') ? param.data('type') : 'product';
-        return ajaxCall('bilderverwaltung.php', {action: 'clear', type: type, isAjax: true}, function (result, xhr) {
-            if (typeof result.data.success !== 'undefined') {
-                updateStats();
-                showGenerateNotify(result.data.success).update({
-                    progress: 100,
-                    message: '&nbsp;',
-                    type: 'success',
-                    title: result.data.success
-                });
-            }
+        return ioCall('clearImageCache', [type, true], function (result) {
+            updateStats();
+            showGenerateNotify(result.success).update({
+                progress: 100,
+                message: '&nbsp;',
+                type: 'success',
+                title: result.success
+            });
         });
     }
 
@@ -301,10 +353,8 @@
     });
 
     function loadGenerate(type, index, callback) {
-        return ajaxCall('bilderverwaltung.php', {action: 'cache', type: type, index: index}, function (result, xhr) {
-            if (typeof callback === 'function') {
-                callback(result.data);
-            }
+        return ioCall('generateImageCache', [type, index], function (result) {
+            callback(result);
         });
     }
 

@@ -163,14 +163,13 @@ if (strlen($cSh) > 0) {
                     }
                     header($header);
                     exit();
+                }
+                if (strlen($cEditZahlungHinweis) > 0) {
+                    echo $linkHelper->getStaticRoute('bestellvorgang.php') .
+                        '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
                 } else {
-                    if (strlen($cEditZahlungHinweis) > 0) {
-                        echo $linkHelper->getStaticRoute('bestellvorgang.php') .
-                            '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
-                    } else {
-                        echo $linkHelper->getStaticRoute('bestellvorgang.php') .
-                            '?editZahlungsart=1';
-                    }
+                    echo $linkHelper->getStaticRoute('bestellvorgang.php') .
+                        '?editZahlungsart=1';
                 }
             }
         }
@@ -244,7 +243,7 @@ if ($moduleId !== null) {
         if (NO_MODE === 1) {
             writeLog(NO_PFAD, 'Payment Hash ' . $cPh . ' ergab ' . print_r($paymentMethod, true), 1);
         }
-
+        $paymentHash = Shop::DB()->escape(StringHandler::htmlentities(StringHandler::filterXSS($cPh)));
         $paymentMethod->handleNotification($order, $paymentHash, $_REQUEST);
         if ($paymentMethod->redirectOnPaymentSuccess() === true) {
             header('Location: ' . $paymentMethod->getReturnURL($order));

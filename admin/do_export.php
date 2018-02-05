@@ -13,7 +13,7 @@ if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !validateToken()) {
 }
 
 $queue = Shop::DB()->select('texportqueue', 'kExportqueue', (int)$_GET['e']);
-if ($queue === false || !isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {
+if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {
     die('1');
 }
 $ef = new Exportformat($queue->kExportformat);

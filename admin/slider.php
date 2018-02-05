@@ -36,7 +36,7 @@ switch ($cAction) {
             $oSlide->cText        = htmlspecialchars($aSlide['cText'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oSlide->cLink        = $aSlide['cLink'];
             $oSlide->nSort        = $aSlide['nSort'];
-            if ($aSlide['delete'] == 1) {
+            if ((int)$aSlide['delete'] === 1) {
                 $oSlide->delete();
             } else {
                 $oSlide->save();
@@ -74,10 +74,6 @@ switch ($cAction) {
                 ];
 
                 $cKeyValue = $aFilter_arr[$cKey];
-                $cValue    = $_POST[$cKeyValue];
-            } elseif ($nSeite === PAGE_HERSTELLER) {
-                $cKey      = 'kHersteller';
-                $cKeyValue = 'manufacturer_key';
                 $cValue    = $_POST[$cKeyValue];
             } elseif ($nSeite === PAGE_EIGENE) {
                 $cKey      = 'kLink';

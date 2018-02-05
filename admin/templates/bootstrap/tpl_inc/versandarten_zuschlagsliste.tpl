@@ -10,69 +10,71 @@
             <div class="panel-heading">
                 <h3 class="panel-title">{#isleList#}: {$zuschlag->cName}</h3>
             </div>
-            <table class="list table">
-                <tbody>
-                {foreach name=sprachen from=$sprachen item=sprache}
-                    {assign var="cISO" value=$sprache->cISO}
+            <div class="table-responsive">
+                <table class="list table">
+                    <tbody>
+                    {foreach name=sprachen from=$sprachen item=sprache}
+                        {assign var="cISO" value=$sprache->cISO}
+                        <tr>
+                            <td width="35%">{#showedName#} ({$sprache->cNameDeutsch})</td>
+                            <td>{$zuschlag->angezeigterName[$cISO]}</td>
+                        </tr>
+                    {/foreach}
                     <tr>
-                        <td width="35%">{#showedName#} ({$sprache->cNameDeutsch})</td>
-                        <td>{$zuschlag->angezeigterName[$cISO]}</td>
+                        <td width="35%">{#additionalFee#}</td>
+                        <td>{getCurrencyConversionSmarty fPreisBrutto=$zuschlag->fZuschlag bSteuer=false}</td>
                     </tr>
-                {/foreach}
-                <tr>
-                    <td width="35%">{#additionalFee#}</td>
-                    <td>{getCurrencyConversionSmarty fPreisBrutto=$zuschlag->fZuschlag bSteuer=false}</td>
-                </tr>
-                <tr>
-                    <td width="35%">{#plz#}</td>
-                    <td>
-                        <div class="row">
-                            {foreach name=plz from=$zuschlag->zuschlagplz item=plz}
-                                <p class="col-xs-6 col-md-4">
-                                    {if $plz->cPLZ}{$plz->cPLZ}{elseif $plz->cPLZAb}{$plz->cPLZAb} - {$plz->cPLZBis}{/if}
-                                    {if $plz->cPLZ || $plz->cPLZAb}
-                                        <a href="versandarten.php?delplz={$plz->kVersandzuschlagPlz}&kVersandart={$Versandart->kVersandart}&cISO={$Land->cISO}&token={$smarty.session.jtl_token}" class="button plain remove">{#delete#}</a>
-                                    {/if}
-                                </p>
-                            {/foreach}
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>
-                        <form name="zuschlagplz_neu_{$zuschlag->kVersandzuschlag}" method="post" action="versandarten.php">
-                            {$jtl_token}
-                            <input type="hidden" name="neueZuschlagPLZ" value="1" />
-                            <input type="hidden" name="kVersandart" value="{$Versandart->kVersandart}" />
-                            <input type="hidden" name="cISO" value="{$Land->cISO}" />
-                            <input type="hidden" name="kVersandzuschlag" value="{$zuschlag->kVersandzuschlag}" />
-                            {#plz#} <input type="text" name="cPLZ" class="form-control zipcode" /> {#orPlzRange#}
-                            <div class="input-group">
-                                <input type="text" name="cPLZAb" class="form-control zipcode" />
-                                <span class="input-group-addon">&ndash;</span>
-                                <input type="text" name="cPLZBis" class="form-control zipcode" />
+                    <tr>
+                        <td width="35%">{#plz#}</td>
+                        <td>
+                            <div class="row">
+                                {foreach name=plz from=$zuschlag->zuschlagplz item=plz}
+                                    <p class="col-xs-6 col-md-4">
+                                        {if $plz->cPLZ}{$plz->cPLZ}{elseif $plz->cPLZAb}{$plz->cPLZAb} - {$plz->cPLZBis}{/if}
+                                        {if $plz->cPLZ || $plz->cPLZAb}
+                                            <a href="versandarten.php?delplz={$plz->kVersandzuschlagPlz}&kVersandart={$Versandart->kVersandart}&cISO={$Land->cISO}&token={$smarty.session.jtl_token}" class="button plain remove">{#delete#}</a>
+                                        {/if}
+                                    </p>
+                                {/foreach}
                             </div>
-                            <input type="submit" value="{#add#}" class="btn btn-default button plain add" />
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-                <tfoot class="light">
-                <tr>
-                    <td colspan="2">
-                        <div class="btn-group">
-                            <a href="versandarten.php?delzus={$zuschlag->kVersandzuschlag}&token={$smarty.session.jtl_token}&kVersandart={$Versandart->kVersandart}&cISO={$Land->cISO}" class="btn btn-danger">
-                                <i class="fa fa-trash"></i> {#additionalFeeDelete#}
-                            </a>
-                            <a href="versandarten.php?editzus={$zuschlag->kVersandzuschlag}&token={$smarty.session.jtl_token}&kVersandart={$Versandart->kVersandart}&cISO={$Land->cISO}" class="btn btn-default">
-                                <i class="fa fa-edit"></i> {#additionalFeeEdit#}
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                </tfoot>
-            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td>
+                            <form name="zuschlagplz_neu_{$zuschlag->kVersandzuschlag}" method="post" action="versandarten.php">
+                                {$jtl_token}
+                                <input type="hidden" name="neueZuschlagPLZ" value="1" />
+                                <input type="hidden" name="kVersandart" value="{$Versandart->kVersandart}" />
+                                <input type="hidden" name="cISO" value="{$Land->cISO}" />
+                                <input type="hidden" name="kVersandzuschlag" value="{$zuschlag->kVersandzuschlag}" />
+                                {#plz#} <input type="text" name="cPLZ" class="form-control zipcode" /> {#orPlzRange#}
+                                <div class="input-group">
+                                    <input type="text" name="cPLZAb" class="form-control zipcode" />
+                                    <span class="input-group-addon">&ndash;</span>
+                                    <input type="text" name="cPLZBis" class="form-control zipcode" />
+                                </div>
+                                <input type="submit" value="{#add#}" class="btn btn-default button plain add" />
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot class="light">
+                    <tr>
+                        <td colspan="2">
+                            <div class="btn-group">
+                                <a href="versandarten.php?delzus={$zuschlag->kVersandzuschlag}&token={$smarty.session.jtl_token}&kVersandart={$Versandart->kVersandart}&cISO={$Land->cISO}" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i> {#additionalFeeDelete#}
+                                </a>
+                                <a href="versandarten.php?editzus={$zuschlag->kVersandzuschlag}&token={$smarty.session.jtl_token}&kVersandart={$Versandart->kVersandart}&cISO={$Land->cISO}" class="btn btn-default">
+                                    <i class="fa fa-edit"></i> {#additionalFeeEdit#}
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
         </div>
     {/foreach}
 
@@ -119,9 +121,14 @@
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <button type="submit" value="{if isset($oVersandzuschlag->kVersandart) && $oVersandzuschlag->kVersandart > 0}{#createEditList#}{else}{#createNewList#}{/if}" class="btn btn-primary">
-                        <i class="fa fa-save"></i> {if isset($oVersandzuschlag->kVersandart) && $oVersandzuschlag->kVersandart > 0}{#createEditList#}{else}{#createNewList#}{/if}
-                    </button>
+                    <div class="btn-group">
+                        <a href="versandarten.php" type="button" class="btn btn-warning">
+                            <i class="fa fa-chevron-left"></i> {#back2shippingtypes#}
+                        </a>
+                        <button type="submit" value="{if isset($oVersandzuschlag->kVersandart) && $oVersandzuschlag->kVersandart > 0}{#createEditList#}{else}{#createNewList#}{/if}" class="btn btn-primary">
+                            <i class="fa fa-save"></i> {if isset($oVersandzuschlag->kVersandart) && $oVersandzuschlag->kVersandart > 0}{#createEditList#}{else}{#createNewList#}{/if}
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>
@@ -130,6 +137,6 @@
 
 {if isset($oVersandzuschlag->kVersandzuschlag) && $oVersandzuschlag->kVersandzuschlag > 0}
     <script type="text/javascript">
-        xajax_getCurrencyConversionAjax(0, document.getElementById('fZuschlag').value, 'ajaxzuschlag');
+        ioCall('getCurrencyConversion', [0, $('#fZuschlag').val(), 'ajaxzuschlag']);
     </script>
 {/if}

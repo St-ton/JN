@@ -72,7 +72,7 @@ Ihre Lieferadresse:
 Lieferadresse ist gleich Rechnungsadresse.
 {/if}
 
-Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}
+Sie haben folgende Zahlungsart gewÃ¤hlt: {$Bestellung->cZahlungsartName}
 
 {if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}  {$Zahlungsart->cHinweisText}
 
@@ -81,7 +81,7 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}
 
 {if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
-Wir belasten in Kürze folgendes Bankkonto um die fällige Summe:
+Wir belasten in KÃ¼rze folgendes Bankkonto um die fÃ¤llige Summe:
 
 Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}
 KontoNr: {$Bestellung->Zahlungsinfo->cKontoNr}
@@ -90,18 +90,18 @@ Bank: {$Bestellung->Zahlungsinfo->cBankName}
 
 {elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
-Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende E-Mailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
+Falls Sie Ihre Zahlung per PayPal noch nicht durchgefÃ¼hrt haben, nutzen Sie folgende E-Mailadresse als EmpfÃ¤nger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
-Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.
+Ãœber den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.
 
 {if !empty($oTrustedShopsBewertenButton->cURL)}
-Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.
+Waren Sie mit Ihrer Bestellung zufrieden? Dann wÃ¼rden wir uns Ã¼ber eine Empfehlung freuen ... es dauert auch nur eine Minute.
 {$oTrustedShopsBewertenButton->cURL}
 {/if}
 
-Mit freundlichem Gruß,
+Mit freundlichem GruÃŸ,
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

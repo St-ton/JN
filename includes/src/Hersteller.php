@@ -74,6 +74,15 @@ class Hersteller
      * @var string
      */
     public $cBildpfadNormal;
+    /**
+     * @var string
+     */
+    public $cBildURLKlein;
+
+    /**
+     * @var string
+     */
+    public $cBildURLNormal;
 
     /**
      * Konstruktor
@@ -101,6 +110,7 @@ class Hersteller
             foreach ($members as $member) {
                 $this->{$member} = $obj->{$member};
             }
+            $this->kHersteller = (int)$this->kHersteller;
         }
         if ($extras) {
             $this->getExtras($obj);
@@ -120,7 +130,7 @@ class Hersteller
     public function loadFromDB($kHersteller, $kSprache = 0, $noCache = false)
     {
         //noCache param to avoid problem with de-serialization of class properties with jtl search
-        $kSprache = ((int)$kSprache > 0) ? (int)$kSprache : Shop::getLanguage();
+        $kSprache = (int)$kSprache > 0 ? (int)$kSprache : Shop::getLanguageID();
         if ($kSprache === 0) {
             $oSprache = gibStandardsprache();
             $kSprache = (int)$oSprache->kSprache;
@@ -136,9 +146,11 @@ class Hersteller
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                     therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                     FROM thersteller
-                    LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
+                    LEFT JOIN therstellersprache 
+                        ON therstellersprache.kHersteller = thersteller.kHersteller
                         AND therstellersprache.kSprache = " . $kSprache . "
-                    LEFT JOIN tseo ON tseo.kKey = thersteller.kHersteller
+                    LEFT JOIN tseo 
+                        ON tseo.kKey = thersteller.kHersteller
                         AND tseo.cKey = 'kHersteller'
                         AND tseo.kSprache = " . $kSprache . "
                     WHERE thersteller.kHersteller = " . $kHersteller, 1
@@ -173,11 +185,12 @@ class Hersteller
      */
     public function getExtras(stdClass $obj)
     {
+        $shopURL = Shop::getURL() . '/';
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
             $this->cURL = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
-                ? Shop::getURL() . '/' . $obj->cSeo
-                : Shop::getURL() . '/index.php?h=' . $obj->kHersteller;
+                ? $shopURL . $obj->cSeo
+                : $shopURL . '?h=' . $obj->kHersteller;
             $this->cBeschreibung = parseNewsText($this->cBeschreibung);
         }
         if (strlen($this->cBildpfad) > 0) {
@@ -187,6 +200,8 @@ class Hersteller
             $this->cBildpfadKlein  = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
             $this->cBildpfadNormal = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
         }
+        $this->cBildURLKlein  = $shopURL . $this->cBildpfadKlein;
+        $this->cBildURLNormal = $shopURL . $this->cBildpfadNormal;
 
         return $this;
     }
@@ -198,18 +213,18 @@ class Hersteller
     public static function getAll($productLookup = true)
     {
         $sqlWhere = '';
-        $kSprache = isset($_SESSION['kSprache']) ? (int)$_SESSION['kSprache'] : Shop::getLanguage();
+        $kSprache = Shop::getLanguage();
         if ($productLookup) {
             $sqlWhere = "WHERE EXISTS (
                             SELECT 1
                             FROM tartikel
                             WHERE tartikel.kHersteller = thersteller.kHersteller
-                                " . gibLagerfilter() . "
+                                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
                                 AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                                    AND tartikelsichtbarkeit.kKundengruppe = {$_SESSION['Kundengruppe']->kKundengruppe}
-							)
+                                    AND tartikelsichtbarkeit.kKundengruppe = ". Session::CustomerGroup()->getID() .
+                            ")
                         )";
         }
         $objs = Shop::DB()->query(
@@ -217,23 +232,31 @@ class Hersteller
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                 FROM thersteller
-                LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
+                LEFT JOIN therstellersprache 
+                    ON therstellersprache.kHersteller = thersteller.kHersteller
                     AND therstellersprache.kSprache = {$kSprache}
-                LEFT JOIN tseo ON tseo.kKey = thersteller.kHersteller
+                LEFT JOIN tseo 
+                    ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
                     AND tseo.kSprache = {$kSprache}
                 {$sqlWhere}
                 ORDER BY thersteller.nSortNr, thersteller.cName", 2
         );
         $results = [];
-        if (is_array($objs)) {
-            foreach ($objs as $obj) {
-                $hersteller = new self(0, 0, true);
-                $hersteller->loadFromObject($obj);
-                $results[] = $hersteller;
-            }
+        foreach ($objs as $obj) {
+            $hersteller = new self(0, 0, true);
+            $hersteller->loadFromObject($obj);
+            $results[] = $hersteller;
         }
 
         return $results;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->cName;
     }
 }

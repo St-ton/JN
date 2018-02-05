@@ -16,7 +16,7 @@ $bOk      = false;
 if (isset($_REQUEST['page'])) {
     $nPage = (int)$_REQUEST['page'];
 }
-if (isset($_REQUEST['action']) && validateToken()) {
+if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
             if (!empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0) {
@@ -30,6 +30,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
                 $cHinweis = $cnt . ' Box(en) wurde(n) erfolgreich gel&ouml;scht.';
             }
             break;
+
         case 'new':
             $kBox       = $_REQUEST['item'];
             $ePosition  = $_REQUEST['position'];
@@ -68,7 +69,13 @@ if (isset($_REQUEST['action']) && validateToken()) {
         case 'edit_mode':
             $kBox = (int)$_REQUEST['item'];
             $oBox = $oBoxen->holeBox($kBox);
+            // revisions need this as a different formatted array
+            $revisionData = [];
+            foreach ($oBox->oSprache_arr as $lang) {
+                $revisionData[$lang->cISO] = $lang;
+            }
             $smarty->assign('oEditBox', $oBox)
+                   ->assign('revisionData', $revisionData)
                    ->assign('oLink_arr', $oBoxen->gibLinkGruppen());
             break;
 
@@ -77,6 +84,11 @@ if (isset($_REQUEST['action']) && validateToken()) {
             $cTitel = $_REQUEST['boxtitle'];
             $eTyp   = $_REQUEST['typ'];
             if ($eTyp === 'text') {
+                $oldBox = $oBoxen->holeBox($kBox);
+                if ($oldBox->supportsRevisions === true) {
+                    $revision = new Revision();
+                    $revision->addRevision('box', $kBox, true);
+                }
                 $bOk = $oBoxen->bearbeiteBox($kBox, $cTitel);
                 if ($bOk) {
                     foreach ($_REQUEST['title'] as $cISO => $cTitel) {
@@ -113,22 +125,19 @@ if (isset($_REQUEST['action']) && validateToken()) {
             break;
 
         case 'resort':
-            $nPage     = $_REQUEST['page'];
+            $nPage     = (int)$_REQUEST['page'];
             $ePosition = $_REQUEST['position'];
             $box_arr   = isset($_REQUEST['box']) ? $_REQUEST['box'] : null;
             $sort_arr  = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : null;
             $aktiv_arr = isset($_REQUEST['aktiv']) ? $_REQUEST['aktiv'] : [];
             $boxCount  = count($box_arr);
-            for ($i = 0; $i < $boxCount; $i++) {
-                $oBoxen->sortBox($box_arr[$i], $nPage, $sort_arr[$i], in_array($box_arr[$i], $aktiv_arr) ? true : false);
-                $oBoxen->filterBoxVisibility(
-                    (int)$box_arr[$i],
-                    (int)$nPage,
-                    isset($_POST['box-filter-' . $box_arr[$i]]) ? $_POST['box-filter-' . $box_arr[$i]] : ''
-                );
+            foreach ($box_arr as $i => $kBox) {
+                $idx = 'box-filter-' . $kBox;
+                $oBoxen->sortBox($kBox, $nPage, $sort_arr[$i], in_array($kBox, $aktiv_arr));
+                $oBoxen->filterBoxVisibility((int)$kBox, $nPage, isset($_POST[$idx]) ? $_POST[$idx] : '');
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
-            if ($ePosition !== 'left' || (int)$nPage > 0) {
+            if ($ePosition !== 'left' || $nPage > 0) {
                 $oBoxen->setzeBoxAnzeige($nPage, $ePosition, isset($_REQUEST['box_show']));
             }
             $cHinweis = 'Die Boxen wurden aktualisiert.';

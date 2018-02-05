@@ -949,6 +949,11 @@ legend {
     margin: 10px 0;
 }
 
+.single_search_browser img#loaderimg {
+    visibility: hidden;
+    padding-left: 5px;
+}
+
 .input-group-checkbox-wrap:not(:first-child):not(:last-child) {
     border-radius: 0;
 }
@@ -2927,4 +2932,59 @@ h2 .btn-group {
 
 .template-favicon-upload .file-input {
     overflow-x: hidden;
+}
+
+.review-reply {
+    margin: 0;
+}
+
+@media (max-width: 767px) {
+    .dropdown .dropdown-menu .list-wrapper {
+        float: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .dropdown .dropdown-menu .list-wrapper .list-unstyled {
+        float: none;
+    }
+
+    .navbar-nav .open .dropdown-menu .dropdown-header {
+        color: #fff;
+        border: none;
+        padding: 6px 20px 6px 10px;
+    }
+
+    .yamm-content li a {
+        color: #fff;
+    }
+
+    .nag {
+        background-color: inherit;
+    }
+
+    .nag:hover {
+        background-color: inherit;
+    }
+
+    .nag a {
+        color: #fff;
+    }
+}
+
+.tt-menu {
+    max-height: 256px;
+    overflow-y: auto;
+}
+
+.tt-suggestion {
+    cursor: pointer;
+}
+
+.top40 {
+    margin-top: 40px;
+}
+
+.logtext {
+    max-height: 32em;
 }

@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
@@ -18,7 +17,7 @@ function bearbeiteTrustedShopsKundenbewertung($oJobQueue)
         unset($oTrustedShops);
         $oTrustedShops                = new TrustedShops(-1, $cValidSprachISO);
         $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus($cValidSprachISO);
-        if ($oTrustedShopsKundenbewertung->nStatus == 1 && strlen($oTrustedShopsKundenbewertung->cTSID) > 0) {
+        if ((int)$oTrustedShopsKundenbewertung->nStatus === 1 && strlen($oTrustedShopsKundenbewertung->cTSID) > 0) {
             $returnValue = $oTrustedShops->aenderKundenbewertungsstatus(
                 $oTrustedShopsKundenbewertung->cTSID,
                 1,
@@ -37,5 +36,4 @@ function bearbeiteTrustedShopsKundenbewertung($oJobQueue)
     $oJobQueue->nInArbeit        = 0;
     $oJobQueue->updateJobInDB();
     $oJobQueue->deleteJobInDB();
-    unset($oJobQueue);
 }

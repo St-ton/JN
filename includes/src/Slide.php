@@ -7,8 +7,6 @@
 
 /**
  * Class Slide
- *
- * @access public
  */
 class Slide
 {
@@ -72,14 +70,24 @@ class Slide
     /**
      * @param int $kSlider
      * @param int $kSlide
+     */
+    public function __construct($kSlider = 0, $kSlide = 0)
+    {
+        if ($kSlider > 0 && $kSlide > 0) {
+            $this->load($kSlider, $kSlide);
+        }
+    }
+
+    /**
+     * @param int $kSlider
+     * @param int $kSlide
      * @return bool
      */
     public function load($kSlider = 0, $kSlide = 0)
     {
-        if (
-            ((int)$kSlider > 0) ||
-            (!empty($this->kSlider) && (int)$this->kSlider > 0 && (int)$kSlide > 0) ||
-            (!empty($this->kSlide) && (int)$this->kSlide > 0)
+        if ((int)$kSlider > 0
+            || (!empty($this->kSlider) && (int)$this->kSlider > 0 && (int)$kSlide > 0)
+            || (!empty($this->kSlide) && (int)$this->kSlide > 0)
         ) {
             if (empty($kSlider) || (int)$kSlider === 0) {
                 $kSlider = $this->kSlider;
@@ -91,8 +99,7 @@ class Slide
             $oSlide = Shop::DB()->select('tslide', 'kSlide', (int)$kSlide);
 
             if (is_object($oSlide)) {
-                $cSlide_arr = (array)$oSlide;
-                $this->set($cSlide_arr);
+                $this->set((array)$oSlide);
 
                 return true;
             }
@@ -113,9 +120,8 @@ class Slide
                 $this->$cField = $cData_arr[$cField];
             }
         }
-        $this->setAbsoluteImagePaths();
 
-        return $this;
+        return $this->setAbsoluteImagePaths();
     }
 
     /**
@@ -124,8 +130,10 @@ class Slide
     private function setAbsoluteImagePaths()
     {
         $shopURL                 = Shop::getURL();
-        $this->cBildAbsolut      = $shopURL . '/' . PFAD_MEDIAFILES . str_replace($shopURL . '/' . PFAD_MEDIAFILES, '', $this->cBild);
-        $this->cThumbnailAbsolut = $shopURL . '/' . PFAD_MEDIAFILES . str_replace($shopURL . '/' . PFAD_MEDIAFILES, '', $this->cThumbnail);
+        $this->cBildAbsolut      = $shopURL . '/' . PFAD_MEDIAFILES .
+            str_replace($shopURL . '/' . PFAD_MEDIAFILES, '', $this->cBild);
+        $this->cThumbnailAbsolut = $shopURL . '/' . PFAD_MEDIAFILES .
+            str_replace($shopURL . '/' . PFAD_MEDIAFILES, '', $this->cThumbnail);
 
         return $this;
     }
@@ -136,8 +144,8 @@ class Slide
     public function save()
     {
         if (!empty($this->cBild)) {
-            $cShopUrl  = Shop::getURL();
-            $cShopUrl2 = URL_SHOP;
+            $cShopUrl  = parse_url(Shop::getURL(), PHP_URL_PATH);
+            $cShopUrl2 = parse_url(URL_SHOP, PHP_URL_PATH);
             if (strrpos($cShopUrl, '/') !== (strlen($cShopUrl) - 1)) {
                 $cShopUrl .= '/';
             }
@@ -157,11 +165,9 @@ class Slide
             }
         }
 
-        if ($this->kSlide !== null) {
-            return $this->update();
-        }
-
-        return $this->append();
+        return $this->kSlide === null
+            ? $this->append()
+            : $this->update();
     }
 
     /**
@@ -193,10 +199,10 @@ class Slide
                     WHERE kSlider = " . $this->kSlider . "
                     ORDER BY nSort DESC LIMIT 1", 1
                 );
-                $oSlide->nSort = (!is_object($oSort) || $oSort->nSort == 0) ? 1 : ($oSort->nSort + 1);
+                $oSlide->nSort = (!is_object($oSort) || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
             }
             $kSlide = Shop::DB()->insert('tslide', $oSlide);
-            if ((int)$kSlide > 0) {
+            if ($kSlide > 0) {
                 $this->kSlide = $kSlide;
 
                 return true;
@@ -214,7 +220,7 @@ class Slide
         if ($this->kSlide !== null && (int)$this->kSlide > 0) {
             $bSuccess = Shop::DB()->delete('tslide', 'kSlide', (int)$this->kSlide);
 
-            return (int)$bSuccess !== 0;
+            return $bSuccess > 0;
         }
 
         return false;

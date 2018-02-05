@@ -49,8 +49,7 @@ if (!is_writable(PFAD_ROOT . PFAD_COMPILEDIR)) {
 // if anyone goes lower than PHP 5.4, we abort here and warn him!
 require_once PFAD_ROOT . PFAD_SMARTY . 'SmartyBC.class.php';
 $szPhpVersion = PHP_VERSION;
-if(!version_compare($szPhpVersion, '5.4.0', '>='))
-{
+if (!version_compare($szPhpVersion, '5.4.0', '>=')) {
     $smarty = new Smarty();
     $smarty->setCaching(0);
     $smarty->setDebugging(false);
@@ -69,13 +68,12 @@ if(!version_compare($szPhpVersion, '5.4.0', '>='))
            ->assign('cHinweis', $cHinweis)
            ->display('install.tpl');
 
-   exit(-1);
+    exit(-1);
 }
 
 $shop = Shop::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES_LIBS . 'password_compat/password.php';
 require_once PFAD_ROOT . PFAD_INSTALL . PFAD_INCLUDES . 'install_inc.php';
 
 
@@ -187,10 +185,11 @@ switch ($step) {
             $cHinweis .= '<br />' . $DB->getError() . ' Nr: ' . $DB->getErrorCode();
         }
 
-        $syncLogin        = new stdClass();
-        $syncLogin->cMail = '';
-        $syncLogin->cName = $_POST['syncuser'];
-        $syncLogin->cPass = $_POST['syncpass'];
+        $syncLogin             = new stdClass();
+        $syncLogin->kSynclogin = 1;
+        $syncLogin->cMail      = '';
+        $syncLogin->cName      = $_POST['syncuser'];
+        $syncLogin->cPass      = password_hash($_POST['syncpass'], PASSWORD_DEFAULT);
 
         if (!$DB->insertRow('tsynclogin', $syncLogin)) {
             $cHinweis .= '<br />' . $DB->getError() . ' Nr: ' . $DB->getErrorCode();
@@ -204,10 +203,10 @@ switch ($step) {
                 $_POST['DBuser'],
                 $_POST['DBpass'],
                 $_POST['DBname'],
-                (!empty($_POST['DBsocket']))
+                !empty($_POST['DBsocket'])
                     ? $_POST['DBsocket']
-                    : null)
-            ) {
+                    : null
+            )) {
                 $cHinweis  = 'Beim Schreiben der Konfigurationsdatei ist ein unbekannter Fehler aufgetreten.';
                 $configErr = true;
             } else {
@@ -225,4 +224,3 @@ $smarty->assign('cHinweis', $cHinweis)
        ->assign('PFAD_ADMIN_TEMPLATE', PFAD_ADMIN . PFAD_TEMPLATES . 'bootstrap/')
        ->assign('oTests', $vTests)
        ->display('install.tpl');
-

@@ -112,6 +112,11 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         $smarty->assign('nFZ', 1);
     }
 } elseif ($step === 'bewertung_uebersicht') {
+    if (isset($_GET['a']) && $_GET['a'] === 'delreply' && validateToken()) {
+        removeReply(verifyGPCDataInteger('kBewertung'));
+        $cHinweis = 'Antwort zu einer Bewertung wurde entfernt.';
+    }
+
     // Config holen
     $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_BEWERTUNG, '*', 'nSort');
     $configCount = count($oConfig_arr);

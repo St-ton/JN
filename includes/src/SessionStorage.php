@@ -23,11 +23,7 @@ class SessionStorage
     public function __construct($handler = null, array $options = [], $start = true)
     {
         ini_set('session.use_cookies', 1);
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            session_register_shutdown();
-        } else {
-            register_shutdown_function('session_write_close');
-        }
+        session_register_shutdown();
 
         $this->setHandler($handler, $start);
     }
@@ -48,18 +44,7 @@ class SessionStorage
             $res = true;
         } elseif ($this->_handler instanceof SessionHandlerInterface) {
             ini_set('session.save_handler', 'user');
-            if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-                $res = session_set_save_handler($this->_handler, true);
-            } else {
-                $res = session_set_save_handler(
-                    [$this->_handler, 'open'],
-                    [$this->_handler, 'close'],
-                    [$this->_handler, 'read'],
-                    [$this->_handler, 'write'],
-                    [$this->_handler, 'destroy'],
-                    [$this->_handler, 'gc']
-                );
-            }
+            $res = session_set_save_handler($this->_handler, true);
         } else {
             throw new \InvalidArgumentException('Must implement \SessionHandlerInterface.');
         }
@@ -71,16 +56,16 @@ class SessionStorage
             $lifetime       = isset($cookieDefaults['lifetime'])
                 ? $cookieDefaults['lifetime']
                 : 0;
-            $path = isset($cookieDefaults['path'])
+            $path           = isset($cookieDefaults['path'])
                 ? $cookieDefaults['path']
                 : '';
-            $domain = isset($cookieDefaults['domain'])
+            $domain         = isset($cookieDefaults['domain'])
                 ? $cookieDefaults['domain']
                 : '';
-            $secure = isset($cookieDefaults['secure'])
+            $secure         = isset($cookieDefaults['secure'])
                 ? $cookieDefaults['secure']
                 : false;
-            $httpOnly = isset($cookieDefaults['httponly'])
+            $httpOnly       = isset($cookieDefaults['httponly'])
                 ? $cookieDefaults['httponly']
                 : false;
             if (isset($conf['global']['global_cookie_secure']) && $conf['global']['global_cookie_secure'] !== 'S') {
@@ -111,9 +96,9 @@ class SessionStorage
                 }
                 //EXPERIMENTAL_MULTILANG_SHOP END
             }
-            if (isset($conf['global']['global_cookie_lifetime']) &&
-                is_numeric($conf['global']['global_cookie_lifetime']) &&
-                (int)$conf['global']['global_cookie_lifetime'] > 0
+            if (isset($conf['global']['global_cookie_lifetime'])
+                && is_numeric($conf['global']['global_cookie_lifetime'])
+                && (int)$conf['global']['global_cookie_lifetime'] > 0
             ) {
                 $set      = true;
                 $lifetime = (int)$conf['global']['global_cookie_lifetime'];

@@ -403,7 +403,7 @@ define('HOOK_WARENKORB_PAGE_KUPONANNEHMEN', 54);
  *
  * @file warenkorb.php
  * @param array error
- * @param int nReturnValue
+ * @param int - nReturnValue
  */
 define('HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI', 55);
 
@@ -473,6 +473,7 @@ define('HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI', 65);
  * Vor der Sendung der Benachrichtigung in den Artikeldetails
  *
  * @file artikel_inc.php
+ * @param Benachrichtigung - since 4.07
  */
 define('HOOK_ARTIKEL_INC_BENACHRICHTIGUNG', 66);
 
@@ -794,7 +795,7 @@ define('HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG', 109);
 /**
  * after loading an article
  *
- * @file class.JTL-Shop.Attribut.php
+ * @file class.JTL-Shop.Artikel.php
  * @param Artikel - oArtikel
  * @param array   - cacheTags - list of associated cache tags (since 4.0)
  * @param bool    - cached - true when fetched from object cache (since 4.0)
@@ -1667,3 +1668,106 @@ define('HOOK_QUICKSYNC_XML_BEARBEITEINSERT', 225);
  * @param array - manufacturers
  */
 define('HOOK_GET_MANUFACTURERS', 226);
+
+/**
+ * @since 4.06
+ * @file admin/templates/bootstrap/php/functions.php
+ * @param AdminAccount - oAdminAccount
+ * @param string       - url
+ */
+define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);
+
+/**
+ * @since 4.06
+ * @file includes/bestellabschluss_inc.php
+ * @param Warenkorb - oWarenkorb
+ */
+define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);
+
+/**
+ * after truncating tables in database
+ *
+ * @since 4.06
+ * @file admin/shopzuruecksetzen.php
+ */
+define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
+
+/**
+ * on removing a cart position that has been deactivated / deleted in the meantime
+ *
+ * @since 4.07
+ * @file classes/class.JTL-Shop.Warenkorb.php
+ * @param WarenkorbPos - oPosition
+ * @param bool         - &delete
+ */
+define('HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS', 230);
+
+/**
+ * in ProductFilter::initBaseStates() after initializing the base filters
+ *
+ * @since 4.07
+ * @file class.JTL-Shop.ProductFilter.php
+ * @param ProductFilter productFilter
+ */
+define('HOOK_PRODUCTFILTER_INIT', 250);
+
+/**
+ * in ProductFilter::initStates() after initializing the active filters
+ *
+ * @since 4.07
+ * @file class.JTL-Shop.ProductFilter.php
+ * @param ProductFilter productFilter
+ * @param array params
+ */
+define('HOOK_PRODUCTFILTER_INIT_STATES', 251);
+
+/**
+ * in ProductFilter::construct() when creating the instance
+ *
+ * @since 4.07
+ * @file class.JTL-Shop.ProductFilter.php
+ * @param ProductFilter productFilter
+ */
+define('HOOK_PRODUCTFILTER_CREATE', 252);
+
+/**
+ * in ProductFilter::construct() when creating the instance
+ *
+ * @since 4.07
+ * @file class.JTL-Shop.ProductFilter.php
+ * @param array select
+ * @param array joins
+ * @param array conditions
+ * @param array groupBy
+ * @param array having
+ * @param array order
+ * @param array limit
+ * @param ProductFilter productFilter
+ */
+define('HOOK_PRODUCTFILTER_GET_BASE_QUERY', 253);
+
+/**
+ * in Preise::__construct()
+ *
+ * @since 4.07
+ * @file class.JTL-Shop.Preise.php
+ * @param int customerGroupID
+ * @param int customerID
+ * @param int productID
+ * @param int taxClassID
+ * @param Preise prices
+ */
+define('HOOK_PRICES_CONSTRUCT', 260);
+
+/**
+ * in WarenkorbHelper::addToCartCheck()
+ *
+ * @since 4.07
+ * @file class.helper.Warenkorb.php
+ * @param Artikel product
+ * @param int     quantity
+ * @param array   attributes
+ * @param int     accuracy
+ * @param array   redirectParam
+ */
+define('HOOK_ADD_TO_CART_CHECK', 261);

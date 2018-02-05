@@ -4,7 +4,7 @@
  *}
 
 {if $Position->nPosTyp == 1}
-    <p><a href="{$Position->Artikel->cURL}">{$Position->cName}</a></p>
+    <p><a href="{$Position->Artikel->cURLFull}">{$Position->cName}</a></p>
     {* Seriennummer *}
     {if !empty($Position->cSeriennummer)}
         <p>{lang key="serialnumber"}: {$Position->cSeriennummer}</p>

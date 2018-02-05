@@ -2,143 +2,101 @@
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=#boxen# cBeschreibung=#boxenDesc# cDokuURL=#boxenURL#}
 
-<script type="text/javascript">
-    $(function() {
-        $('#boxFilterModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget),
-                    filter = button.data('filter'),
-                    boxTitle = button.data('box-title'),
-                    boxID = button.data('box-id'),
-                    modal = $(this);
-            modal.find('#myModalLabel').text('{#showBoxOnlyFor#}'.replace('%s', boxTitle));
-            modal.find('#filter-target').val(filter);
-            modal.find('#filter-target-id').val(boxID);
-            $('#selected-items').append($('#box-active-filters-' + boxID).find('.selected-item').clone());
-        }).on('hide.bs.modal', function (event) {
-            $('#boxFilterModal .selected-item').remove(); //cleanup selected items
-            $('#boxFilterModal .filter-input').val(''); //cleanup input
+{include file='tpl_inc/searchpicker_modal.tpl'
+    searchPickerName='articlePicker'
+    modalTitle='Artikel ausw&auml;hlen'
+    searchInputLabel='Suche nach Artikelnamen'
+}
+{include file='tpl_inc/searchpicker_modal.tpl'
+    searchPickerName='categoryPicker'
+    modalTitle='Kategorien ausw&auml;hlen'
+    searchInputLabel='Suche nach Kategorienamen'
+}
+{include file='tpl_inc/searchpicker_modal.tpl'
+    searchPickerName='manufacturerPicker'
+    modalTitle='Hersteller ausw&auml;hlen'
+    searchInputLabel='Suche nach Herstellernamen'
+}
+{include file='tpl_inc/searchpicker_modal.tpl'
+    searchPickerName='pagePicker'
+    modalTitle='Eigene Seiten ausw&auml;hlen'
+    searchInputLabel='Suche nach Seitennamen'
+}
+
+<script>
+    $(function () {
+        articlePicker = new SearchPicker({
+            searchPickerName:  'articlePicker',
+            getDataIoFuncName: 'getProducts',
+            keyName:           'kArtikel',
+            renderItemCb:      renderItemName
         });
-        {if $nPage == 1}
-            $('#products').typeahead({
-                ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=product&token={$smarty.session.jtl_token}',
-                onSelect: function (item) {
-                    onSelect(item, '#selected-items', '#products');
-                }
-            });
-        {elseif $nPage == 31}
-            $('#pages').typeahead({
-                ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=page&token={$smarty.session.jtl_token}',
-                onSelect: function (item) {
-                    onSelect(item, '#selected-items', '#pages');
-                }
-            });
-        {elseif $nPage == 2}
-            $('#categories').typeahead({
-                ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=category&token={$smarty.session.jtl_token}',
-                onSelect: function (item) {
-                    onSelect(item, '#selected-items', '#categories');
-                }
-            });
-        {elseif $nPage == 24}
-            $('#manufacturers').typeahead({
-                ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=manufacturer&token={$smarty.session.jtl_token}',
-                onSelect: function (item) {
-                    onSelect(item, '#selected-items', '#manufacturers');
-                }
-            });
-        {/if}
-
-        $('#modal-save').click(function () {
-            var idList = $('#modal-filter-form .new-filter'),
-                    numElements = idList.length,
-                    boxID = $('#filter-target-id').val(),
-                    target,
-                    targetSelector = $('#filter-target').val();
-
-            if (targetSelector) {
-                $('#box-active-filters-' + boxID).empty().append($('#boxFilterModal .selected-item'));
-                $('#boxFilterModal').modal('hide'); //hide modal
-            }
+        categoryPicker = new SearchPicker({
+            searchPickerName:  'categoryPicker',
+            getDataIoFuncName: 'getCategories',
+            keyName:           'kKategorie',
+            renderItemCb:      renderItemName
         });
-
-        $('#modal-cancel').click(function () {
-            $('#boxFilterModal').modal('hide'); //hide modal
+        manufacturerPicker = new SearchPicker({
+            searchPickerName:  'manufacturerPicker',
+            getDataIoFuncName: 'getManufacturers',
+            keyName:           'kHersteller',
+            renderItemCb:      renderItemName
         });
-
-        $('#boxFilterModal .selected-items').on('click', 'a', function (e) {
-            e.preventDefault();
-            $('#elem-' + $(this).attr('data-ref')).remove();
-            return false;
+        pagePicker = new SearchPicker({
+            searchPickerName:  'pagePicker',
+            getDataIoFuncName: 'getPages',
+            keyName:           'kLink',
+            renderItemCb:      renderItemName
         });
     });
 
-    function onSelect (item, selectorAdd, selectorRemove) {
-        if (item.value > 0) {
-            var button = $('<a />'),
-                input = $('<input />'),
-                element = $('<li />'),
-                boxID = $('#filter-target-id').val();
-            input.attr({ 'class': 'new-filter', type: 'hidden', name: 'box-filter-' + boxID + '[]', value: item.value });
-            element.attr({ 'class': 'selected-item', id: 'elem-' + item.value });
-            button.attr({ 'class': 'btn btn-default btn-xs', href: '#', 'data-ref': item.value }).html('<i class="fa fa-trash"></i>');
-            element.append(button).append(' ' + item.text).append(input);
-            $(selectorAdd).append(element);
-        }
+    function renderItemName (item)
+    {
+        return '<p class="list-group-item-text">' + item.cName + '</p>';
     }
 
-    function confirmDelete(cName) {
+    function openFilterPicker (picker, kBox)
+    {
+        picker
+            .setOnApplyBefore(
+                function () { onApplyBeforeFilterPicker(kBox) }
+            )
+            .setOnApply(
+                function (selectedKeys, selectedItems) { onApplyFilterPicker(kBox, selectedKeys, selectedItems) }
+            )
+            .setSelection($('#box-filter-' + kBox).val().split(',').filter(Boolean))
+            .show();
+    }
+
+    function onApplyBeforeFilterPicker (kBox)
+    {
+        $('#box-active-filters-' + kBox)
+            .empty()
+            .append(
+                '<li class="selected-item"><i class="fa fa-spinner fa-pulse"></i></li>'
+            );
+    }
+
+    function onApplyFilterPicker (kBox, selectedKeys, selectedItems)
+    {
+        var $activeFilterList = $('#box-active-filters-' + kBox);
+
+        $('#box-filter-' + kBox).val(selectedKeys.join(','));
+        $activeFilterList.empty();
+
+        selectedItems.forEach(function (item) {
+            $activeFilterList.append(
+                '<li class="selected-item"><i class="fa fa-filter"></i> ' + item.cName + '</li>'
+            );
+        });
+    }
+
+    function confirmDelete(cName)
+    {
         return confirm('{#confirmDeleteBox#}'.replace('%s', cName));
     }
-
-    function onFocus(obj) {
-       obj.id = obj.value;
-       obj.value = '';
-    }
-
-    function onBlur(obj) {
-       if (obj.value.length === 0) {
-           obj.value = obj.id;
-       }
-    }
 </script>
-<div class="modal fade" id="boxFilterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel"></h4>
-            </div>
-            <div class="modal-body">
-                <form id="modal-filter-form">
-                    {$jtl_token}
-                    <input id="filter-target" type="hidden" />
-                    <input id="filter-target-id" type="hidden" />
-                    {if $nPage == 1}
-                        <input id="products" type="text" class="filter-input form-control" placeholder="{#products#}..." autocomplete="off" />
-                        <ul id="selected-products" class="selected-items"></ul>
-                    {elseif $nPage == 31}
-                        <input id="pages" type="text" class="filter-input form-control" placeholder="{#pages#}..." autocomplete="off" />
-                        <ul id="selected-pages" class="selected-items"></ul>
-                    {elseif $nPage == 2}
-                        <input id="categories" type="text" class="filter-input form-control" placeholder="{#categories#}..." autocomplete="off" />
-                        <ul id="selected-categories" class="selected-items"></ul>
-                    {elseif $nPage == 24}
-                        <input id="manufacturers" type="text" class="filter-input form-control" placeholder="{#manufacturers#}..." autocomplete="off" />
-                        <ul id="selected-manufacturers" class="selected-items"></ul>
-                    {/if}
-                    <ul id="selected-items" class="selected-items"></ul>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <span class="btn-group">
-                    <button type="button" class="btn btn-default" id="modal-cancel"><i class="fa fa-times"></i> {#cancel#}</button>
-                    <button type="button" class="btn btn-primary" id="modal-save"><i class="fa fa-save"></i> {#apply#}</button>
-                </span>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal -->
 
 <div id="content">
     {if $invisibleBoxes|count > 0}
@@ -149,48 +107,50 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">{#invisibleBoxes#}</h3>
                 </div>
-                <table class="table">
-                    <tr class="boxRow">
-                        <th class="check">&nbsp;</th>
-                        <th>
-                            <strong>{#boxTitle#}</strong>
-                        </th>
-                        <th>
-                            <strong>{#boxLabel#}</strong>
-                        </th>
-                        <th>
-                            <strong>{#boxTemplate#}</strong>
-                        </th>
-                        <th>
-                            <strong>{#boxPosition#}</strong>
-                        </th>
-                    </tr>
-                    {foreach from=$invisibleBoxes item=invisibleBox name=invisibleBoxList}
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr class="boxRow">
+                            <th class="check">&nbsp;</th>
+                            <th>
+                                <strong>{#boxTitle#}</strong>
+                            </th>
+                            <th>
+                                <strong>{#boxLabel#}</strong>
+                            </th>
+                            <th>
+                                <strong>{#boxTemplate#}</strong>
+                            </th>
+                            <th>
+                                <strong>{#boxPosition#}</strong>
+                            </th>
+                        </tr>
+                        {foreach from=$invisibleBoxes item=invisibleBox name=invisibleBoxList}
+                            <tr>
+                                <td class="check">
+                                    <input name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">
+                                </td>
+                                <td>
+                                    <label for="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">{$invisibleBox->cTitel}</label>
+                                </td>
+                                <td>
+                                    {$invisibleBox->cName}
+                                </td>
+                                <td>
+                                    {$invisibleBox->cTemplate}
+                                </td>
+                                <td>
+                                    {$invisibleBox->ePosition}
+                                </td>
+                            </tr>
+                        {/foreach}
                         <tr>
                             <td class="check">
-                                <input name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">
+                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                             </td>
-                            <td>
-                                <label for="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">{$invisibleBox->cTitel}</label>
-                            </td>
-                            <td>
-                                {$invisibleBox->cName}
-                            </td>
-                            <td>
-                                {$invisibleBox->cTemplate}
-                            </td>
-                            <td>
-                                {$invisibleBox->ePosition}
-                            </td>
+                            <td colspan="4" class="tleft"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
                         </tr>
-                    {/foreach}
-                    <tr>
-                        <td class="check">
-                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                        </td>
-                        <td colspan="4" class="tleft"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
-                    </tr>
-                </table>
+                    </table>
+                </div>
                 <div class="panel-footer">
                     <button name="action" type="submit" class="btn btn-danger" value="delete-invisible"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                 </div>
@@ -272,6 +232,9 @@
                             <input type="hidden" name="action" value="edit" />
                             <input type="hidden" name="typ" value="{$oEditBox->eTyp}" />
                             <input type="hidden" name="page" value="{$nPage}" />
+                            {if !empty($oEditBox->kBox) && $oEditBox->supportsRevisions === true}
+                                {getRevisions type='box' key=$oEditBox->kBox show=['cTitel', 'cInhalt'] secondary=true data=$revisionData}
+                            {/if}
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
@@ -308,6 +271,4 @@
     {/if}
 </div>
 
-<script type="text/javascript">
-</script>
 {include file='tpl_inc/footer.tpl'}

@@ -121,7 +121,9 @@ function getBrowser($cUserAgent = null)
     preg_match_all($cPattern, $cUserAgent, $aMatches);
     if (count($aMatches['browser']) !== 1) {
         $oBrowser->cVersion = '0';
-        if (strripos($cUserAgent, 'Version') < strripos($cUserAgent, $oBrowser->cBrowser)) {
+        if (isset($aMatches['version'][0])
+            && strripos($cUserAgent, 'Version') < strripos($cUserAgent, $oBrowser->cBrowser)
+        ) {
             $oBrowser->cVersion = $aMatches['version'][0];
         } elseif (isset($aMatches['version'][1])) {
             $oBrowser->cVersion = $aMatches['version'][1];

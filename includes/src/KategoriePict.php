@@ -44,7 +44,6 @@ class KategoriePict
     /**
      * Setzt KategoriePict mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kKategoriePict Primary Key
      * @return $this
      */
@@ -61,7 +60,6 @@ class KategoriePict
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @return int
      */
     public function insertInDB()
@@ -72,7 +70,6 @@ class KategoriePict
     /**
      * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
      *
-     * @access public
      * @return int
      */
     public function updateInDB()

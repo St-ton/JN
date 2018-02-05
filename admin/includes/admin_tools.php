@@ -21,13 +21,12 @@ function getAdminSectionSettings($kEinstellungenSektion)
             'nSort'
         );
         if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
-            $count = count($oConfig_arr);
-            for ($i = 0; $i < $count; $i++) {
-                if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-                    $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+            foreach ($oConfig_arr as $conf) {
+                if ($conf->cInputTyp === 'selectbox') {
+                    $conf->ConfWerte = Shop::DB()->selectAll(
                         'teinstellungenconfwerte',
                         'kEinstellungenConf',
-                        $oConfig_arr[$i]->kEinstellungenConf,
+                        $conf->kEinstellungenConf,
                         '*',
                         'nSort'
                     );
@@ -35,9 +34,9 @@ function getAdminSectionSettings($kEinstellungenSektion)
                 $oSetValue = Shop::DB()->select(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
-                    [$kEinstellungenSektion, $oConfig_arr[$i]->cWertName]
+                    [$kEinstellungenSektion, $conf->cWertName]
                 );
-                $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
+                $conf->gesetzterWert = isset($oSetValue->cWert)
                     ? $oSetValue->cWert
                     : null;
             }
@@ -64,16 +63,15 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
             WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
             ORDER BY nSort", 2
     );
-    $configCount = count($oConfig_arr);
     if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
-        for ($i = 0; $i < $configCount; $i++) {
+        foreach ($oConfig_arr as $config) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = isset($cPost_arr[$oConfig_arr[$i]->cWertName])
-                ? $cPost_arr[$oConfig_arr[$i]->cWertName]
+            $aktWert->cWert                 = isset($cPost_arr[$config->cWertName])
+                ? $cPost_arr[$config->cWertName]
                 : null;
-            $aktWert->cName                 = $oConfig_arr[$i]->cWertName;
-            $aktWert->kEinstellungenSektion = (int)$oConfig_arr[$i]->kEinstellungenSektion;
-            switch ($oConfig_arr[$i]->cInputTyp) {
+            $aktWert->cName                 = $config->cWertName;
+            $aktWert->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
+            switch ($config->cInputTyp) {
                 case 'kommazahl':
                     $aktWert->cWert = (float)$aktWert->cWert;
                     break;
@@ -88,11 +86,11 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
                     bearbeiteListBox($aktWert->cWert, $aktWert->cName, $aktWert->kEinstellungenSektion);
                     break;
             }
-            if ($oConfig_arr[$i]->cInputTyp !== 'listbox') {
+            if ($config->cInputTyp !== 'listbox') {
                 Shop::DB()->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
-                    [(int)$oConfig_arr[$i]->kEinstellungenSektion, $oConfig_arr[$i]->cWertName]
+                    [(int)$config->kEinstellungenSektion, $config->cWertName]
                 );
                 Shop::DB()->insert('teinstellungen', $aktWert);
             }
@@ -166,15 +164,14 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
     );
 
     if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
-        $count = count($oConfig_arr);
-        for ($i = 0; $i < $count; $i++) {
+        foreach ($oConfig_arr as $config) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = isset($cPost_arr[$oConfig_arr[$i]->cWertName])
-                ? $cPost_arr[$oConfig_arr[$i]->cWertName]
+            $aktWert->cWert                 = isset($cPost_arr[$config->cWertName])
+                ? $cPost_arr[$config->cWertName]
                 : null;
-            $aktWert->cName                 = $oConfig_arr[$i]->cWertName;
+            $aktWert->cName                 = $config->cWertName;
             $aktWert->kEinstellungenSektion = $kEinstellungenSektion;
-            switch ($oConfig_arr[$i]->cInputTyp) {
+            switch ($config->cInputTyp) {
                 case 'kommazahl':
                     $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
@@ -187,15 +184,15 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
                     break;
                 case 'listbox':
                 case 'selectkdngrp':
-                    bearbeiteListBox($aktWert->cWert, $oConfig_arr[$i]->cWertName, $kEinstellungenSektion);
+                    bearbeiteListBox($aktWert->cWert, $config->cWertName, $kEinstellungenSektion);
                     break;
             }
 
-            if ($oConfig_arr[$i]->cInputTyp !== 'listbox' && $oConfig_arr[$i]->cInputTyp !== 'selectkdngrp') {
+            if ($config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
                 Shop::DB()->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
-                    [$kEinstellungenSektion, $oConfig_arr[$i]->cWertName]
+                    [$kEinstellungenSektion, $config->cWertName]
                 );
                 Shop::DB()->insert('teinstellungen', $aktWert);
             }
@@ -520,4 +517,84 @@ function getMaxFileSize($size_str)
         default:
             return $size_str;
     }
+}
+
+/**
+ * @param float  $fPreisNetto
+ * @param float  $fPreisBrutto
+ * @param string $cTargetID
+ * @return IOResponse
+ */
+function getCurrencyConversionIO($fPreisNetto, $fPreisBrutto, $cTargetID)
+{
+    $response = new IOResponse();
+    $cString  = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $response->assign($cTargetID, 'innerHTML', $cString);
+
+    return $response;
+}
+
+/**
+ * @param float  $fPreisNetto
+ * @param float  $fPreisBrutto
+ * @param string $cTooltipID
+ * @return IOResponse
+ */
+function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID)
+{
+    $response = new IOResponse();
+    $cString  = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $response->assign($cTooltipID, 'dataset.originalTitle', $cString);
+
+    return $response;
+}
+
+/**
+ * @param $title
+ * @param $utl
+ */
+function addFav($title, $url)
+{
+    $success     = false;
+    $kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
+
+    if (!empty($title) && !empty($url)) {
+        $success = AdminFavorite::add($kAdminlogin, $title, $url);
+    }
+
+    if ($success) {
+        $result = [
+            'title' => $title,
+            'url'   => $url
+        ];
+    } else {
+        $result = new IOError('Unauthorized', 401);
+    }
+
+    return $result;
+}
+
+/**
+ * @return array
+ */
+function reloadFavs()
+{
+    global $smarty, $oAccount;
+
+    $smarty->assign('favorites', $oAccount->favorites());
+    $tpl = $smarty->fetch('tpl_inc/favs_drop.tpl');
+
+    return [ 'tpl' => $tpl ];
+}
+
+/**
+ * @return array
+ */
+function getNotifyDropIO()
+{
+    Shop::Smarty()->assign('notifications', Notification::getInstance());
+    return [
+        'tpl' => Shop::Smarty()->fetch('tpl_inc/notify_drop.tpl'),
+        'type' => 'notify'
+    ];
 }

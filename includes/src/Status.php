@@ -35,14 +35,12 @@ class Status
      */
     protected function getObjectCache()
     {
-        $cache = JTLCache::getInstance();
-        $cache->setJtlCacheConfig();
-
-        return $cache;
+        return JTLCache::getInstance()->setJtlCacheConfig();
     }
 
     /**
-     * @return object
+     * @return stdClass
+     * @throws Exception
      */
     protected function getImageCache()
     {
@@ -50,11 +48,11 @@ class Status
     }
 
     /**
-     * @return object
+     * @return stdClass
      */
     protected function getSystemLogInfo()
     {
-        $flags = getSytemlogFlag(false);
+        $flags = Jtllog::getSytemlogFlag(false);
 
         return (object)[
             'error'  => Jtllog::isBitFlagSet(JTLLOG_LEVEL_ERROR, $flags) > 0,
@@ -73,14 +71,10 @@ class Status
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
-        $current  = getDBStruct();
+        $current  = getDBStruct(true);
         $original = getDBFileStruct();
 
-        if (is_array($current) && is_array($original)) {
-            return count(compareDBStruct($original, $current)) === 0;
-        }
-
-        return false;
+        return is_array($current) && is_array($original) && count(compareDBStruct($original, $current)) === 0;
     }
 
     /**
@@ -94,11 +88,10 @@ class Status
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
         $files = $stats = [];
-        if (getAllFiles($files, $stats) === 1) {
-            return end($stats) === 0;
-        }
 
-        return false;
+        return getAllFiles($files, $stats) === 1
+            ? end($stats) === 0
+            : false;
     }
 
     /**
@@ -106,9 +99,7 @@ class Status
      */
     protected function validFolderPermissions()
     {
-        $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
-
-        $permissionStat = $oFsCheck->getFolderStats();
+        $permissionStat = (new Systemcheck_Platform_Filesystem(PFAD_ROOT))->getFolderStats();
 
         return $permissionStat->nCountInValid === 0;
     }
@@ -125,14 +116,10 @@ class Status
                 GROUP BY nHook
                 HAVING COUNT(DISTINCT kPlugin) > 1", 2
         );
-
-        array_walk($sharedHookIds, function (&$val, $key) {
-            $val = (int)$val->nHook;
-        });
-
-        foreach ($sharedHookIds as $hookId) {
+        foreach ($sharedHookIds as $hookData) {
+            $hookId                 = (int)$hookData->nHook;
             $sharedPlugins[$hookId] = [];
-            $plugins                = Shop::DB()->executeQuery(
+            $plugins                = Shop::DB()->query(
                 "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
                     FROM tpluginhook
                     INNER JOIN tplugin
@@ -153,9 +140,7 @@ class Status
      */
     protected function hasPendingUpdates()
     {
-        $updater = new Updater();
-
-        return $updater->hasPendingUpdates();
+        return (new Updater())->hasPendingUpdates();
     }
 
     /**
@@ -179,9 +164,7 @@ class Status
      */
     protected function hasDifferentTemplateVersion()
     {
-        $template = Template::getInstance();
-
-        return JTL_VERSION != $template->getShopVersion();
+        return JTL_VERSION != Template::getInstance()->getShopVersion();
     }
 
     /**
@@ -190,8 +173,8 @@ class Status
     protected function hasMobileTemplateIssue()
     {
         $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
-        if (isset($oTemplate->cTemplate)) {
-            $oTplData = TemplateHelper::getInstance(false)->getData($oTemplate->cTemplate);
+        if ($oTemplate !== null && isset($oTemplate->cTemplate)) {
+            $oTplData = TemplateHelper::getInstance()->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($oMobileTpl !== null) {
@@ -215,27 +198,7 @@ class Status
      */
     protected function hasStandardTemplateIssue()
     {
-        $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
-
-        return $oTemplate === null;
-    }
-
-    /**
-     * @return mixed|null
-     */
-    protected function getSubscription()
-    {
-        if (!isset($_SESSION['subscription'])) {
-            $_SESSION['subscription'] = jtlAPI::getSubscription();
-        }
-        if (is_object($_SESSION['subscription']) &&
-            isset($_SESSION['subscription']->kShop) &&
-            (int)$_SESSION['subscription']->kShop > 0
-        ) {
-            return $_SESSION['subscription'];
-        }
-
-        return null;
+        return Shop::DB()->select('ttemplate', 'eTyp', 'standard') === null;
     }
 
     /**
@@ -254,9 +217,7 @@ class Status
      */
     protected function getEnvironmentTests()
     {
-        $systemcheck = new Systemcheck_Environment();
-
-        return $systemcheck->executeTestGroup('Shop4');
+        return (new Systemcheck_Environment())->executeTestGroup('Shop4');
     }
 
     /**
@@ -277,14 +238,12 @@ class Status
         $lines = explode('  ', $stats);
 
         $lines = array_map(function ($v) {
-            @list($key, $value) = @explode(':', $v, 2);
+            list($key, $value) = explode(':', $v, 2);
 
             return ['key' => trim($key), 'value' => trim($value)];
         }, $lines);
 
-        $lines = array_merge([['key' => 'Version', 'value' => $info]], $lines);
-
-        return $lines;
+        return array_merge([['key' => 'Version', 'value' => $info]], $lines);
     }
 
     /**
@@ -300,23 +259,10 @@ class Status
             '*',
             'cAnbieter, cName, nSort, kZahlungsart'
         );
-
-        if (is_array($paymentMethods)) {
-            foreach ($paymentMethods as $i => $method) {
-                $log  = new ZahlungsLog($method->cModulId);
-                $logs = $log->holeLog();
-
-                if (!is_array($logs)) {
-                    continue;
-                }
-
-                foreach ($logs as $entry) {
-                    if ((int)$entry->nLevel === JTLLOG_LEVEL_ERROR) {
-                        $method->logs              = $logs;
-                        $incorrectPaymentMethods[] = $method;
-                        break;
-                    }
-                }
+        foreach ($paymentMethods as $method) {
+            if (($logCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR)) > 0) {
+                $method->logCount = $logCount;
+                $incorrectPaymentMethods[] = $method;
             }
         }
 
@@ -330,23 +276,21 @@ class Status
     {
         $aPollCoupons        = Shop::DB()->selectAll('tumfrage', 'nAktiv', 1);
         $invalidCouponsFound = false;
+        foreach ($aPollCoupons as $Kupon) {
+            if ($Kupon->kKupon > 0) {
+                $kKupon = Shop::DB()->select(
+                    'tkupon',
+                    'kKupon',
+                    $Kupon->kKupon,
+                    'cAktiv',
+                    'Y',
+                    null,
+                    null,
+                    false,
+                    'kKupon'
+                );
 
-        if (count($aPollCoupons) > 0) {
-            foreach ($aPollCoupons as $Kupon) {
-                if ($Kupon->kKupon > 0){
-                    $kKupon = Shop::DB()->select(
-                        'tkupon',
-                        'kKupon',
-                        $Kupon->kKupon,
-                        'cAktiv',
-                        'Y',
-                        null,
-                        null,
-                        false,
-                        'kKupon'
-                    );
-                    $invalidCouponsFound = empty($kKupon);
-                }
+                $invalidCouponsFound = empty($kKupon);
             }
         }
 
@@ -375,16 +319,64 @@ class Status
      */
     protected function getOrphanedCategories($has = true)
     {
-        $categories = Shop::DB()->query("
-            SELECT kKategorie, cName
+        $categories = Shop::DB()->query(
+            "SELECT kKategorie, cName
                 FROM tkategorie
                 WHERE kOberkategorie > 0
                     AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)", 2
         );
 
-        return ($has === true)
+        return $has === true
             ? count($categories) === 0
             : $categories;
     }
 
+    /**
+     * @return bool
+     */
+    protected function hasFullTextIndexError()
+    {
+        $conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+
+        return isset($conf['artikeluebersicht']['suche_fulltext'])
+            && $conf['artikeluebersicht']['suche_fulltext'] === 'Y'
+            && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
+                || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1));
+    }
+
+    /**
+     * @return bool
+     */
+    protected function hasNewPluginVersions()
+    {
+        $fNewVersions = false;
+        // get installed plugins from DB
+        $oPluginsDB = Shop::DB()->query('SELECT `cVerzeichnis`, `nVersion` FROM `tplugin`', 2);
+        if (!is_array($oPluginsDB) || 1 > count($oPluginsDB)) {
+
+            return false; // there are no plugins installed
+        }
+        $vPluginsDB = [];
+        foreach ($oPluginsDB as $oElement) {
+            $vPluginsDB[$oElement->cVerzeichnis] = $oElement->nVersion;
+        }
+        // check against plugins, found in file-system
+        foreach ($vPluginsDB as $szFolder => $nVersion) {
+            $szPluginInfo = PFAD_ROOT . PFAD_PLUGIN . $szFolder . '/info.xml';
+            $oXml         = null;
+            if (file_exists($szPluginInfo)) {
+                $oXml = simplexml_load_file($szPluginInfo);
+                // read all pluginversions from 'info.xml'
+                $vPluginXmlVersions = [0];
+                foreach ($oXml->Install->Version as $oElement) {
+                    $vPluginXmlVersions[] = (int)$oElement['nr'];
+                }
+                // check for the highest and set marker, if it's different from installed db-version
+                if (max($vPluginXmlVersions) !== (int)$nVersion) {
+                    $fNewVersions = true;
+                }
+            }
+        }
+        return $fNewVersions;
+    }
 }

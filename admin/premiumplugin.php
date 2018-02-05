@@ -24,11 +24,11 @@ if (!empty($pluginID)) {
         Jeder Kunde, der ein Amazon-Kundenkonto besitzt, kann "Login und Bezahlen mit Amazon" als Zahlungsart in Ihrem Shop auswählen.');
         $pp->setShortDescription('Zertifiziertes Plugin für JTL-Shop 4',
             'Für JTL-Shop 4 steht Ihnen "Login und Bezahlen mit Amazon" als zertifiziertes Plugin direkt im Backend zur Verfügung.');
-        $pp->setTitle('Amazon Payments Login & Pay (JTL Shop 4)');
+        $pp->setTitle('Amazon Pay Login & Pay (JTL Shop 4)');
 
         $pp->setAuthor('Solution 360 GmbH');
 
-        $pp->addButton('Jetzt registrieren', 'https://payments.amazon.de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07', 'btn btn-primary', 'sign-in')
+        $pp->addButton('Jetzt registrieren', 'https://pay.amazon.com/de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07', 'btn btn-primary', 'sign-in')
            ->addButton('Dokumentation', 'https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf', 'btn btn-default', null, true);
 
         $pp->addAdvantage('Neukundengewinnung und verbessertes Einkaufserlebnis - Chance auf höhere Konversion und mehr Umsatz Online-Shop durch vereinfachten Bezahlprozess. Käufer werden zu Ihren Kunden und Sie können Ihre Produkte direkt an sie vermarkten.')
@@ -38,9 +38,9 @@ if (!empty($pluginID)) {
            ->addAdvantage('Schutz vor Zahlungsausfall und Betrugsversuchen')
            ->addAdvantage('Kostensenkung durch transaktionsbasiertes Preismodell ohne Grundgebühren, Vorauszahlungen o.Ä.');
 
-        $pp->addHowTo('Registrieren Sie sich bei Amazon Payments unter <a title="Amazon Payments" href="https://payments.amazon.de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07" target="_blank"><i class="fa fa-external-link"></i> https://payments.amazon.de/</a>')
-           ->addHowTo('Aktivieren Sie das Amazon Payments Plugin in Ihrem JTL-Shop 4')
-           ->addHowTo('Konfigurieren Sie das Amazon Payments Plugin mit Hilfe der Dokumentation von Solution 360. Diese finden Sie unter diesem <a title="Dokumentation" href="https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf" target="_blank"><i class="fa fa-external-link"></i> Link</a>.')
+        $pp->addHowTo('Registrieren Sie sich bei Amazon Pay unter <a title="Amazon Pay" href="https://pay.amazon.com/de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07" target="_blank"><i class="fa fa-external-link"></i> https://pay.amazon.com/</a>')
+           ->addHowTo('Aktivieren Sie das Amazon Pay Plugin in Ihrem JTL-Shop 4')
+           ->addHowTo('Konfigurieren Sie das Amazon Pay Plugin mit Hilfe der Dokumentation von Solution 360. Diese finden Sie unter diesem <a title="Dokumentation" href="https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf" target="_blank"><i class="fa fa-external-link"></i> Link</a>.')
            ->addHowTo('Fertig!');
 
         $ss          = new stdClass();
@@ -65,14 +65,14 @@ if (!empty($pluginID)) {
         $sp->cPLZ                  = '10179';
         $sp->cOrt                  = 'Berlin';
         $sp->cStrasse              = 'Engeldamm 20';
-        $sp->cWWW                  = 'http://www.solution360.de';
+        $sp->cWWW                  = 'https://www.solution360.de';
         $sp->cMail                 = 'mail@solution360.de';
         $sp->cAdresszusatz         = '';
         $sp->cLandName             = 'Deutschland';
 
         $pp->setServicePartner($sp);
 
-        $pp->addBadge('AmazonPayments_PartnerLogos_Black_Premier_Partner.png', true);
+        $pp->addBadge('amazon_pay_partner_program_logo_dark_premier_partner.png', true);
     } elseif ($pluginID === 'agws_ts_features') {
         $pp->setLongDescription('Zeigen Sie, dass Ihre Kunden Sie lieben!',
             'Die einzigartige Trustbadge Technologie ermöglicht es Ihnen automatisiert Shopbewertungen und Produktbewertungen zu sammeln und direkt im Shop konversionssteigernd anzuzeigen. 
@@ -83,7 +83,7 @@ if (!empty($pluginID)) {
 
         $pp->setAuthor('Trusted Shops GmbH');
 
-        $pp->addButton('Jetzt registrieren', 'http://www.trustbadge.com/de/bewertungen?utm_source=jtl&utm_medium=software-app&utm_content=marketing-page&utm_campaign=jtl-app', 'btn btn-primary', 'sign-in')
+        $pp->addButton('Jetzt registrieren', 'https://business.trustedshops.de/produkte/bewertungen/?utm_source=jtl&utm_medium=software-app&utm_content=marketing-page&utm_campaign=jtl-app', 'btn btn-primary', 'sign-in')
            ->addButton('Dokumentation', 'http://www.trustedshops.de/shopbetreiber/integration/shopsoftware-integration/jtl/?shop_id=&variant=&yOffset=', 'btn btn-default', null, true);
 
         $pp->addAdvantage('Sammeln Sie Shop- und Produktbewertungen automatisch von echten Kunden')
@@ -124,9 +124,9 @@ if (!empty($pluginID)) {
         $sp->cLogoPfad             = $baseURL . 'agws_ts_features_logo.png';
         $sp->cFirma                = 'Trusted Shops GmbH';
         $sp->cPLZ                  = '50823';
-        $sp->cOrt                  = utf8_decode('Köln');
-        $sp->cStrasse              = utf8_decode('Subbelrather Straße 15c');
-        $sp->cWWW                  = 'http://www.trustbadge.com/de/';
+        $sp->cOrt                  = 'Köln';
+        $sp->cStrasse              = 'Subbelrather Straße 15c';
+        $sp->cWWW                  = 'https://business.trustedshops.de/produkte/bewertungen/';
         $sp->cMail                 = 'welcome@trustbadge.com';
         $sp->cAdresszusatz         = '';
         $sp->cLandName             = 'Deutschland';

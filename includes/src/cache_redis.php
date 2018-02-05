@@ -60,30 +60,23 @@ class cache_redis implements ICachingMethod
     private function setRedis($host = null, $port = null, $pass = null, $database = null, $persist = false)
     {
         $redis   = new Redis();
-        $connect = ($persist === false) ? 'connect' : 'pconnect';
+        $connect = $persist === false ? 'connect' : 'pconnect';
         if ($host !== null) {
-            try {
-                $res = ($port !== null && $host[0] !== '/')
-                    ? $redis->$connect($host, (int)$port)
-                    : $redis->$connect($host); //for connecting to socket
-                if ($res !== false && $pass !== null && $pass !== '') {
-                    $res = $redis->auth($pass);
-                }
-                if ($res !== false && $database !== null && $database !== '') {
-                    $res = $redis->select((int)$database);
-                }
-            } catch (RedisException $e) {
-                Shop::dbg($e->getMessage(), false, 'exception:');
-                Jtllog::writeLog('RedisException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR);
-
-                return false;
+            $res = ($port !== null && $host[0] !== '/')
+                ? $redis->$connect($host, (int)$port, REDIS_CONNECT_TIMEOUT)
+                : $redis->$connect($host); //for connecting to socket
+            if ($res !== false && $pass !== null && $pass !== '') {
+                $res = $redis->auth($pass);
+            }
+            if ($res !== false && $database !== null && $database !== '') {
+                $res = $redis->select((int)$database);
             }
             if ($res === false) {
                 return false;
             }
-            //set custom prefix
+            // set custom prefix
             $redis->setOption(Redis::OPT_PREFIX, $this->options['prefix']);
-            //set php serializer for objects and arrays
+            // set php serializer for objects and arrays
             $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
 
             $this->_redis = $redis;
@@ -104,12 +97,10 @@ class cache_redis implements ICachingMethod
     {
         try {
             $res = $this->_redis->set($cacheID, $content);
-            if ($cacheID !== $this->journalID) {
-                //the journal should not have an expiration
-                $this->_redis->setTimeout($cacheID, (($expiration === null)
-                    ? $this->options['lifetime']
-                    : $expiration)
-                );
+            $exp = $expiration === null ? $this->options['lifetime'] : $expiration;
+            // the journal and negative expiration values should not cause an expiration
+            if ($cacheID !== $this->journalID && $exp > -1) {
+                $this->_redis->setTimeout($cacheID, $exp);
             }
 
             return $res;
@@ -219,7 +210,7 @@ class cache_redis implements ICachingMethod
         }
         if (count($tags) > 0) {
             foreach ($tags as $tag) {
-                $redis->sAdd($this->_keyFromTagName($tag), $cacheID);
+                $redis->sAdd(self::_keyFromTagName($tag), $cacheID);
             }
             $redis->exec();
             $res = true;
@@ -234,7 +225,7 @@ class cache_redis implements ICachingMethod
      * @param string $tagName
      * @return string
      */
-    private function _keyFromTagName($tagName)
+    private static function _keyFromTagName($tagName)
     {
         return 'tag_' . $tagName;
     }
@@ -247,21 +238,7 @@ class cache_redis implements ICachingMethod
      */
     public function flushTags($tags)
     {
-        if (is_string($tags)) {
-            //delete single cache tag
-            $tags     = [$tags];
-            $cacheIDs = $this->getKeysByTag($tags);
-        } else {
-            //delete multiple cache tags at once
-            $cacheIDs = [];
-            foreach ($tags as $tag) {
-                foreach ($this->getKeysByTag($tag) as $cacheID) {
-                    $cacheIDs[] = $cacheID;
-                }
-            }
-        }
-
-        return $this->flush(array_unique($cacheIDs));
+        return $this->flush(array_unique($this->getKeysByTag($tags)));
     }
 
     /**
@@ -278,24 +255,21 @@ class cache_redis implements ICachingMethod
      */
     public function getKeysByTag($tags = [])
     {
-        if (is_string($tags)) {
-            $matchTags = [$this->_keyFromTagName($tags)];
-        } else {
-            $matchTags = [];
-            foreach ($tags as $_tag) {
-                $matchTags[] = $this->_keyFromTagName($_tag);
-            }
-        }
-        $res = (count($tags) === 1)
+        $matchTags = is_string($tags)
+            ? [self::_keyFromTagName($tags)]
+            : array_map('cache_redis::_keyFromTagName', $tags);
+        $res       = count($tags) === 1
             ? $this->_redis->sMembers($matchTags[0])
-            : $this->_redis->sInter($matchTags);
-        //for some stupid reason, hhvm does not unserialize values
-        foreach ($res as &$_cid) {
-            //and phpredis will throw an exception when unserializing unserialized data
-            try {
-                $_cid = $this->_redis->_unserialize($_cid);
-            } catch (RedisException $e) {
-                break;
+            : $this->_redis->sUnion($matchTags);
+        if (PHP_SAPI === 'srv' || PHP_SAPI === 'cli') { // for some reason, hhvm does not unserialize values
+            foreach ($res as &$_cid) {
+                // phpredis will throw an exception when unserializing unserialized data
+                try {
+                    $_cid = $this->_redis->_unserialize($_cid);
+                } catch (RedisException $e) {
+                    // we know we don't have to continue unserializing when there was an exception
+                    break;
+                }
             }
         }
 

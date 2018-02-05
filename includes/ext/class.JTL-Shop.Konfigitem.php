@@ -143,14 +143,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function jsonSerialize()
         {
+            $cKurzBeschreibung = $this->getKurzBeschreibung();
             $virtual = [
                 'bAktiv' => $this->{"bAktiv"}
             ];
             $override = [
                 'cName'             => $this->getName(),
                 'kArtikel'          => $this->getArtikelKey(),
-                'cBeschreibung'     => $this->getBeschreibung(),
-                'cKurzBeschreibung' => $this->getKurzBeschreibung(),
+                'cBeschreibung'     => !empty($cKurzBeschreibung)
+                    ? $this->getKurzBeschreibung()
+                    : $this->getBeschreibung(),
+
                 'bAnzahl'           => $this->getMin() != $this->getMax(),
                 'fInitial'          => (float)$this->getInitial(),
                 'fMin'              => (float)$this->getMin(),
@@ -194,7 +197,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                         : getDefaultLanguageID();
                 }
                 if (!$kKundengruppe) {
-                    $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+                    $kKundengruppe = Session::CustomerGroup()->getID();
                 }
                 $this->kKonfiggruppe     = (int)$this->kKonfiggruppe;
                 $this->kKonfigitem       = (int)$this->kKonfigitem;
@@ -321,7 +324,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     ORDER BY nSort ASC", 2
             );
             if (!is_array($oItem_arr)) {
-                return false;
+                return [];
             }
             $oItemEx_arr = [];
             foreach ($oItem_arr as &$oItem) {
@@ -500,7 +503,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             }
 
             if ($this->oSprache) {
-                return $this->oSprache->getKurzBeschreibung();
+                return $this->oSprache->getBeschreibung();
             }
 
             return '';
@@ -555,6 +558,43 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $isConverted = true;
             }
             if ($bConvertCurrency && !$isConverted) {
+                $fVKPreis *= Session::Currency()->getConversionFactor();
+            }
+            if (!$bForceNetto && !Session::CustomerGroup()->isMerchant()) {
+                $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);
+            }
+
+            return $fVKPreis;
+        }
+
+        /**
+         * @param bool $bForceNetto
+         * @param bool $bConvertCurrency
+         * @param int $totalAmount
+         * @return float|int
+         */
+        public function getFullPrice($bForceNetto = false, $bConvertCurrency = false, $totalAmount = 1)
+        {
+            $fVKPreis    = 0.0;
+            $isConverted = false;
+            if ($this->oArtikel && $this->bPreis) {
+                //get price from associated article
+                $fVKPreis = isset($this->oArtikel->Preise->fVKNetto) ? $this->oArtikel->Preise->fVKNetto : 0;
+                // Zuschlag / Rabatt berechnen
+                $fSpecial = $this->oPreis->getPreis($bConvertCurrency);
+                if ($fSpecial != 0) {
+                    // Betrag
+                    if ($this->oPreis->getTyp() == 0) {
+                        $fVKPreis += $fSpecial;
+                    } elseif ($this->oPreis->getTyp() == 1) { // Prozent
+                        $fVKPreis *= (100 + $fSpecial) / 100;
+                    }
+                }
+            } elseif ($this->oPreis) {
+                $fVKPreis    = $this->oPreis->getPreis($bConvertCurrency);
+                $isConverted = true;
+            }
+            if ($bConvertCurrency && !$isConverted) {
                 if (isset($_SESSION['Waehrung'])) {
                     $waehrung = $_SESSION['Waehrung'];
                 } else {
@@ -562,11 +602,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
                 $fVKPreis *= (float)$waehrung->fFaktor;
             }
-            if (!$_SESSION['Kundengruppe']->nNettoPreise && !$bForceNetto) {
+            if (!$bForceNetto && !Session::CustomerGroup()->getIsMerchant()) {
                 $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);
             }
 
-            return $fVKPreis;
+            return $fVKPreis * $this->fAnzahl * $totalAmount;
         }
 
         /**
@@ -595,10 +635,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp < 0) {
                     $fRabatt = $fTmp * -1;
-                    if ($this->oPreis->getTyp() == 0) {
-                        if (!$_SESSION['Kundengruppe']->nNettoPreise) {
-                            $fRabatt = berechneBrutto($fRabatt, gibUst($this->getSteuerklasse()));
-                        }
+                    if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->isMerchant()) {
+                        $fRabatt = berechneBrutto($fRabatt, gibUst($this->getSteuerklasse()));
                     }
                 }
             }
@@ -624,10 +662,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp > 0) {
                     $fZuschlag = $fTmp;
-                    if ($this->oPreis->getTyp() == 0) {
-                        if (!$_SESSION['Kundengruppe']->nNettoPreise) {
-                            $fZuschlag = berechneBrutto($fZuschlag, gibUst($this->getSteuerklasse()));
-                        }
+                    if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->isMerchant()) {
+                        $fZuschlag = berechneBrutto($fZuschlag, gibUst($this->getSteuerklasse()));
                     }
                 }
             }
@@ -688,6 +724,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             if ($bSigned && $this->getPreis() > 0) {
                 $cLocalized = '+' . $cLocalized;
             }
+
+            return $cLocalized;
+        }
+
+        /**
+         * @param bool $bHTML
+         * @param bool $bForceNetto
+         * @param int $totalAmount
+         * @return string
+         */
+        public function getFullPriceLocalized($bHTML = true, $bForceNetto = false, $totalAmount = 1)
+        {
+            $cLocalized = gibPreisStringLocalized($this->getFullPrice($bForceNetto, false, $totalAmount), 0, $bHTML);
 
             return $cLocalized;
         }

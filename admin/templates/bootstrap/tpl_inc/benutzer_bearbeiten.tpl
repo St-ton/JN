@@ -15,7 +15,7 @@ $(document).ready(function() {
     });
 
     /** bring the 2FA-canvas in a defined position depending on the state of the 2FA */
-    if ('nein' == $('#b2FAauth option:selected').text().toLowerCase()) {
+    if ('nein' === $('#b2FAauth option:selected').text().toLowerCase()) {
         $('[id$=TwoFAwrapper]').hide();
     } else {
         $('[id$=TwoFAwrapper]').show();
@@ -24,7 +24,7 @@ $(document).ready(function() {
     /** install a "toggle-event-handler" to fold or unfold the 2FA-canvas, via the "Ja/Nein"-select */
     $('[id$=b2FAauth]').on('change', function(e) {
         e.stopImmediatePropagation(); // stop this event during page-load
-        if('none' == $('[id$=TwoFAwrapper]').css('display')) {
+        if('none' === $('[id$=TwoFAwrapper]').css('display')) {
             $('[id$=TwoFAwrapper]').slideDown();
         } else {
             $('[id$=TwoFAwrapper]').slideUp();
@@ -89,8 +89,11 @@ $(document).ready(function() {
                     <div class="item">
                         <div class="input-group{if isset($cError_arr.cName)} error{/if}">
                             <span class="input-group-addon">
-                            <label for="cName">Vor- und Nachname</label></span>
-                            <input id="cName" class="form-control" type="text" name="cName" value="{if isset($oAccount->cName)}{$oAccount->cName}{/if}" />
+                                <label for="cName">Vor- und Nachname</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <input id="cName" class="form-control" type="text" name="cName" value="{if isset($oAccount->cName)}{$oAccount->cName}{/if}" />
+                            </span>
                             {if isset($cError_arr.cName)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
@@ -99,7 +102,9 @@ $(document).ready(function() {
                             <span class="input-group-addon">
                                 <label for="cMail">E-Mail Adresse</label>
                             </span>
-                            <input id="cMail" class="form-control" type="text" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
+                            <span class="input-group-wrap">
+                                <input id="cMail" class="form-control" type="text" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
+                            </span>
                             {if isset($cError_arr.cMail)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
@@ -116,7 +121,9 @@ $(document).ready(function() {
                             <span class="input-group-addon">
                                 <label for="cLogin">Benutzername</label>
                             </span>
-                            <input id="cLogin" class="form-control" type="text" name="cLogin" value="{if isset($oAccount->cLogin)}{$oAccount->cLogin}{/if}" />
+                            <span class="input-group-wrap">
+                                <input id="cLogin" class="form-control" type="text" name="cLogin" value="{if isset($oAccount->cLogin)}{$oAccount->cLogin}{/if}">
+                            </span>
                             {if isset($cError_arr.cLogin) && $cError_arr.cLogin == 1}
                                 <span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>
                             {elseif isset($cError_arr.cLogin) && $cError_arr.cLogin == 2}
@@ -131,9 +138,14 @@ $(document).ready(function() {
                             <span class="input-group-addon">
                                 <label for="cPass">Passwort</label>
                             </span>
-                            <input id="cPass" class="form-control" type="text" name="cPass" autocomplete="off" />
+                            <span class="input-group-wrap">
+                                <input id="cPass" class="form-control" type="text" name="cPass" autocomplete="off" />
+                            </span>
                             <span class="input-group-addon">
-                                <a href="#" onclick="xajax_getRandomPassword();return false;" class="button generate" title="">Passwort generieren</a>
+                                <button type="button" onclick="ioCall('getRandomPassword');return false;"
+                                        class="btn btn-info btn-xs" title="Passwort generieren">
+                                    <i class="fa fa-random"></i>
+                                </button>
                             </span>
                             {if isset($cError_arr.cPass)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{else}<span class="input-group-addon"><i class="fa fa-wrench"></i></span>{/if}
                         </div>
@@ -186,38 +198,51 @@ $(document).ready(function() {
                         {literal}
                         <script>
                             function createNewSecret() {
-                                if('' == $('[id$=cLogin]').val()) {
+                                if('' === $('[id$=cLogin]').val()) {
                                     alert('Bitte legen Sie zuerst, in den Anmeldedaten, einen Benutzernamen fest!');
                                     return(false);
                                 }
 
                                 if(confirm("Das bisherige 'Authentication Secret' wird ersetzt!\nWirklich fortfahren?")) {
-                                    $.ajax({
-                                          method: 'get'
-                                        , url: 'ajax.php?type=TwoFA&token=' + $('[name$=jtl_token]').val()
-                                        , data: {
-                                              userName: $('[id$=cLogin]').val()
-                                            , query: '_dummy'
-                                            , type: 'TwoFA'
-                                          }
-                                        , beforeSend: function() {
-                                                $('[id$=QRcode]').html('<img src="templates/bootstrap/gfx/widgets/ajax-loader.gif">');
-                                            }
-                                    })
-                                    .done(function(msg) {
-                                        var oUserData = jQuery.parseJSON(msg);
-
+                                    var userName = $('#cLogin').val();
+                                    $('#QRcode').html('<img src="templates/bootstrap/gfx/widgets/ajax-loader.gif">');
+                                    ioCall('getNewTwoFA', [userName], function (data) {
                                         // display the new RQ-code
-                                        $('[id$=QRcode]').html(oUserData.szQRcode);
-                                        $('[id$=c2FAsecret]').val(oUserData.szSecret);
+                                        $('#QRcode').html(data.szQRcode);
+                                        $('#c2FAsecret').val(data.szSecret);
 
                                         // toggle code-canvas
-                                        if('none' == $('[id$=QRcodeCanvas]').css('display')) {
-                                            $('[id$=QRcodeCanvas]').css('display','block');
+                                        if('none' === $('#QRcodeCanvas').css('display')) {
+                                            $('#QRcodeCanvas').css('display', 'block');
                                         }
                                     });
                                 }
                             }
+
+                            function showEmergencyCodes(action) {
+                                var userName = $('#cLogin').val();
+                                ioCall('genTwoFAEmergencyCodes', [userName], function (data) {
+                                    var iframeHtml = '';
+
+                                    iframeHtml += '<h4>JTL-shop Backend Notfall-Codes</h4>';
+                                    iframeHtml += 'Account: <b>' + data.loginName + '</b><br>';
+                                    iframeHtml += 'Shop: <b>' + data.shopName + '</b><br><br>';
+                                    iframeHtml += '<pre>';
+
+                                    data.vCodes.forEach(function (code, i) {
+                                        iframeHtml += code + ' ';
+                                        if (i%2 === 1) {
+                                            iframeHtml += '\n';
+                                        }
+                                    });
+
+                                    iframeHtml += '</pre>';
+
+                                    $('#printframe').contents().find('body')[0].innerHTML = iframeHtml;
+                                    $('#EmergencyCodeModal').modal('show');
+                                });
+                            }
+
                         </script>
                         {/literal}
                         <div id="TwoFAwrapper" {if isset($cError_arr.c2FAsecret)}class="error"{/if} style="border:1px solid {if isset($cError_arr.c2FAsecret)}red{else}lightgrey{/if};padding:10px;">
@@ -231,9 +256,38 @@ $(document).ready(function() {
                                 <input type="hidden" id="c2FAsecret" name="c2FAsecret" value="{$cKnownSecret}">
                                 <br>
                             </div>
+                            {* Emergency-Code-Modal  BEGIN *}
+                            <div class="modal fade" id="EmergencyCodeModal">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title">Notfall-Codes</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="EmergencyCodes">
+                                                <div class="iframewrapper">
+                                                    <iframe src="" id="printframe" name="printframe" frameborder="0" width="100%" height="300" align="middle"></iframe>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <div class="btn-group">
+                                                <button class="btn btn-default" type="button" data-dismiss="modal">Schlie&szlig;en</button>
+                                                <button class="btn btn-primary" type="button" onclick="printframe.print();">Drucken</button>
+                                                <button class="btn btn-danger" type="button" onclick="showEmergencyCodes('forceReload');">Codes neu erzeugen</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {* Emergency-Code-Modal  END *}
                             Um einen neuen QR-Code zu erzeugen, klicken Sie bitte hier:<br>
                             <br>
-                            <button class="btn btn-primary" type="button" onclick="createNewSecret();">Code erstellen</button>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" type="button" onclick="createNewSecret();">Neuen Code erstellen</button>
+                                <button class="btn btn-warning" type="button" onclick="showEmergencyCodes();">Notfall-Codes neu erstellen</button>
+                            </div>
                         </div>
 
                     </div>

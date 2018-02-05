@@ -79,7 +79,8 @@ function splitteExportDatei($oExportformat)
 {
     if (isset($oExportformat->nSplitgroesse) &&
         (int)$oExportformat->nSplitgroesse > 0 &&
-        file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)) {
+        file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)
+    ) {
         $nDateiZaehler       = 1;
         $cDateinameSplit_arr = [];
         $nFileTypePos        = strrpos($oExportformat->cDateiname, '.');
@@ -100,7 +101,7 @@ function splitteExportDatei($oExportformat)
             $nZeile     = 1;
             $new_handle = fopen(gibDateiPfad($cDateinameSplit_arr, $nDateiZaehler), 'w');
             $nSizeDatei = 0;
-            while ($cContent = fgets($handle)) {
+            while (($cContent = fgets($handle)) !== false) {
                 if ($nZeile > 1) {
                     $nSizeZeile = strlen($cContent) + 2;
                     //Schwelle erreicht?
@@ -145,9 +146,9 @@ function schreibeKopfzeile($dateiHandle, $cKopfzeile, $cKodierung)
             if ($cKodierung === 'UTF-8') {
                 fwrite($dateiHandle, "\xEF\xBB\xBF");
             }
-            fwrite($dateiHandle, utf8_encode($cKopfzeile . "\n"));
-        } else {
             fwrite($dateiHandle, $cKopfzeile . "\n");
+        } else {
+            fwrite($dateiHandle, StringHandler::convertISO($cKopfzeile . "\n"));
         }
     }
 }
@@ -162,9 +163,9 @@ function schreibeFusszeile($dateiHandle, $cFusszeile, $cKodierung)
 {
     if (strlen($cFusszeile) > 0) {
         if ($cKodierung === 'UTF-8' || $cKodierung === 'UTF-8noBOM') {
-            fwrite($dateiHandle, utf8_encode($cFusszeile));
-        } else {
             fwrite($dateiHandle, $cFusszeile);
+        } else {
+            fwrite($dateiHandle, StringHandler::convertISO($cFusszeile));
         }
     }
 }
@@ -179,7 +180,7 @@ function loescheExportDateien($cDateiname, $cDateinameSplit)
     if (is_dir(PFAD_ROOT . PFAD_EXPORT)) {
         $dir = opendir(PFAD_ROOT . PFAD_EXPORT);
         if ($dir !== false) {
-            while ($cDatei = readdir($dir)) {
+            while (($cDatei = readdir($dir)) !== false) {
                 if ($cDatei !== $cDateiname && strpos($cDatei, $cDateinameSplit) !== false) {
                     @unlink(PFAD_ROOT . PFAD_EXPORT . $cDatei);
                 }
@@ -446,7 +447,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                         'price'         => $childArticle->Preise->fVKNetto,
                         'quantity_unit' => !empty($childArticle->cVPEEinheit)
                             ? $childArticle->cVPEEinheit
-                            : utf8_decode('Stück'),
+                            : 'Stück',
                         'package_size'  => !empty($childArticle->fVPEWert) && $childArticle->fVPEWert > 0
                             ? $childArticle->fVPEWert
                             : 1,
@@ -470,7 +471,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                             : 1,
                         'article_nr'    => $Artikel->cArtNr . '.' . $combination->cName,
                         'price'         => $Artikel->Preise->fVKNetto + $combination->fAufpreisNetto,
-                        'quantity_unit' => !empty($Artikel->cVPEEinheit) ? $Artikel->cVPEEinheit : utf8_decode('Stück'),
+                        'quantity_unit' => !empty($Artikel->cVPEEinheit) ? $Artikel->cVPEEinheit : 'Stück',
                         'package_size'  => (!empty($Artikel->fVPEWert) && $Artikel->fVPEWert > 0)
                             ? $Artikel->fVPEWert
                             : 1,
@@ -530,7 +531,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                 'article_nr'    => $Artikel->cArtNr,
                 'price'         => 0,
                 'quantity_unit' => (isset($Artikel->cVPEEinheit) && strlen($Artikel->cVPEEinheit) > 0)
-                    ? $Artikel->cVPEEinheit : utf8_decode('Stück'),
+                    ? $Artikel->cVPEEinheit : 'Stück',
                 'package_size'  => (isset($Artikel->fVPEWert) && $Artikel->fVPEWert > 0) ? $Artikel->fVPEWert : 1,
                 'info_v_title'  => '',
                 'info_vs_id'    => '',

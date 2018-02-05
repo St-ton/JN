@@ -65,3 +65,24 @@ function holeBannerDateien()
 
     return $cBannerFile_arr;
 }
+
+/**
+ * @param $cData
+ * @return IOResponse
+ */
+function saveBannerAreasIO($cData)
+{
+    $oBanner  = new ImageMap();
+    $response = new IOResponse();
+    $oData    = json_decode($cData);
+
+    foreach ($oData->oArea_arr as $oArea) {
+        $oArea->kArtikel      = (int)$oArea->kArtikel;
+        $oArea->kImageMap     = (int)$oArea->kImageMap;
+        $oArea->kImageMapArea = (int)$oArea->kImageMapArea;
+    }
+
+    $oBanner->saveAreas($oData);
+
+    return $response;
+}

@@ -22,7 +22,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="row">
-                        <div class="col-xxs-12 col-xs-6" id="billing-address">
+                        <div class="col-xs-6" id="billing-address">
                             {block name="checkout-confirmation-billing-address"}
                                 <p class="title">
                                     <strong>{lang key="billingAdress" section="account data"}</strong>
@@ -35,7 +35,7 @@
                                 </a>
                             {/block}
                         </div>
-                        <div class="col-xxs-12 col-xs-6" id="shipping-address">
+                        <div class="col-xs-6" id="shipping-address">
                             {block name="checkout-confirmation-shipping-address"}
                                 <p class="title">
                                     <strong>{lang key="shippingAdress" section="account data"}</strong>
@@ -150,10 +150,15 @@
     <form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}">
         {$jtl_token}
         {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen == 1}
-            {lang key="cancellationPolicyNotice" section="checkout" assign="cancellationPolicyNotice"}
-            {lang key="wrb" section="checkout" assign="wrb"}
+            {lang key='cancellationPolicyNotice' section='checkout' assign='cancellationPolicyNotice'}
+            {lang key='wrb' section='checkout' assign='wrb'}
             {if isset($AGB->kLinkWRB) && $AGB->kLinkWRB > 0}
-                {assign var='linkWRB' value='<a href="navi.php?s='|cat:$AGB->kLinkWRB|cat:'" class="popup">'|cat:$wrb|cat:'</a>'}
+                {if !empty($AGB->cURLWRB)}
+                    {assign var=wrbURL value=$AGB->cURLWRB}
+                {else}
+                    {assign var=wrbURL value='index.php?s='|cat:$AGB->kLinkWRB}
+                {/if}
+                {assign var='linkWRB' value='<a href="'|cat:$wrbURL|cat:'" class="popup">'|cat:$wrb|cat:'</a>'}
 
                 <div class="alert alert-info">{$cancellationPolicyNotice|replace:"#LINK_WRB#":$linkWRB}</div>
             {elseif !empty($AGB->cWRBContentHtml)}

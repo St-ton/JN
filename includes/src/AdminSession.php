@@ -24,7 +24,7 @@ class AdminSession
      */
     public static function getInstance()
     {
-        return (self::$_instance === null) ? new self() : self::$_instance;
+        return self::$_instance === null ? new self() : self::$_instance;
     }
 
     /**
@@ -32,14 +32,8 @@ class AdminSession
      */
     public function __construct()
     {
-        session_write_close(); // save previously created session
         self::$_instance = $this;
         session_name('eSIdAdm');
-
-        // if a session id came as cookie, set it as the current one
-        if (isset($_COOKIE['eSIdAdm'])) {
-            session_id($_COOKIE['eSIdAdm']);
-        }
 
         if (ES_SESSIONS === 1) {
             // Sessions in DB speichern
@@ -104,6 +98,12 @@ class AdminSession
         if (!isset($_SESSION['kSprache'])) {
             $lang                 = Shop::DB()->select('tsprache', 'cISO', 'ger');
             $_SESSION['kSprache'] = isset($lang->kSprache) ? (int)$lang->kSprache : 1;
+        }
+        if (isset($_SESSION['Kundengruppe']) && get_class($_SESSION['Kundengruppe']) === 'stdClass') {
+            $_SESSION['Kundengruppe'] = new Kundengruppe($_SESSION['Kundengruppe']->kKundengruppe);
+        }
+        if (isset($_SESSION['Waehrung']) && get_class($_SESSION['Waehrung']) === 'stdClass') {
+            $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
         }
     }
 

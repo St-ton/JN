@@ -54,59 +54,61 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title">Vorhandene Checkboxen</h3>
                             </div>
-                            <table class="table">
-                                <tr>
-                                    <th class="th-1">&nbsp;</th>
-                                    <th class="th-1">{#checkboxName#}</th>
-                                    <th class="th-2">{#checkboxLink#}</th>
-                                    <th class="th-3">{#checkboxLocation#}</th>
-                                    <th class="th-4">{#checkboxFunction#}</th>
-                                    <th class="th-4">{#checkboxRequired#}</th>
-                                    <th class="th-5">{#checkboxActive#}</th>
-                                    <th class="th-5">{#checkboxLogging#}</th>
-                                    <th class="th-6">{#checkboxSort#}</th>
-                                    <th class="th-7">{#checkboxGroup#}</th>
-                                    <th class="th-8" colspan="2">{#checkboxDate#}</th>
-                                </tr>
-                                {foreach name=checkboxen from=$oCheckBox_arr item=oCheckBoxUebersicht}
-                                    <tr class="tab_bg{$smarty.foreach.checkboxen.iteration%2}">
-                                        <td class="TD1">
-                                            <input name="kCheckBox[]" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
-                                        </td>
-                                        <td class="TD1">{$oCheckBoxUebersicht->cName}</td>
-                                        <td class="TD2">{if isset($oCheckBoxUebersicht->oLink->cName)}{$oCheckBoxUebersicht->oLink->cName}{/if}</td>
-                                        <td class="TD3">
-                                            {foreach name="anzeigeortAusgabe" from=$oCheckBoxUebersicht->kAnzeigeOrt_arr item=kAnzeigeOrt}
-                                                {$cAnzeigeOrt_arr[$kAnzeigeOrt]}{if !$smarty.foreach.anzeigeortAusgabe.last}, {/if}
-                                            {/foreach}
-                                        </td>
-                                        <td class="TD4">{if isset($oCheckBoxUebersicht->oCheckBoxFunktion->cName)}{$oCheckBoxUebersicht->oCheckBoxFunktion->cName}{/if}</td>
-
-                                        <td class="TD4">{if $oCheckBoxUebersicht->nPflicht}{#yes#}{else}{#no#}{/if}</td>
-                                        <td class="TD5">{if $oCheckBoxUebersicht->nAktiv}{#yes#}{else}{#no#}{/if}</td>
-                                        <td class="TD5">{if $oCheckBoxUebersicht->nLogging}{#yes#}{else}{#no#}{/if}</td>
-                                        <td class="TD6">{$oCheckBoxUebersicht->nSort}</td>
-                                        <td class="TD7">
-                                            {foreach name="kundengruppe" from=$oCheckBoxUebersicht->cKundengruppeAssoc_arr item=cKundengruppeAssoc}
-                                                {$cKundengruppeAssoc}{if !$smarty.foreach.kundengruppe.last}, {/if}
-                                            {/foreach}
-                                        </td>
-                                        <td class="TD8">{$oCheckBoxUebersicht->dErstellt_DE}</td>
-                                        <td class="TD9">
-                                            <a href="checkbox.php?edit={$oCheckBoxUebersicht->kCheckBox}&token={$smarty.session.jtl_token}"
-                                               class="btn btn-default" title="{#modify#}">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
-                                        </td>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th class="th-1">&nbsp;</th>
+                                        <th class="th-1">{#checkboxName#}</th>
+                                        <th class="th-2">{#checkboxLink#}</th>
+                                        <th class="th-3">{#checkboxLocation#}</th>
+                                        <th class="th-4">{#checkboxFunction#}</th>
+                                        <th class="th-4">{#checkboxRequired#}</th>
+                                        <th class="th-5">{#checkboxActive#}</th>
+                                        <th class="th-5">{#checkboxLogging#}</th>
+                                        <th class="th-6">{#checkboxSort#}</th>
+                                        <th class="th-7">{#checkboxGroup#}</th>
+                                        <th class="th-8" colspan="2">{#checkboxDate#}</th>
                                     </tr>
-                                {/foreach}
-                                <tr>
-                                    <td class="TD1">
-                                        <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                    </td>
-                                    <td colspan="11" class="TD7"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
-                                </tr>
-                            </table>
+                                    {foreach name=checkboxen from=$oCheckBox_arr item=oCheckBoxUebersicht}
+                                        <tr class="tab_bg{$smarty.foreach.checkboxen.iteration%2}">
+                                            <td class="TD1">
+                                                <input name="kCheckBox[]" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
+                                            </td>
+                                            <td class="TD1">{$oCheckBoxUebersicht->cName}</td>
+                                            <td class="TD2">{if isset($oCheckBoxUebersicht->oLink->cName)}{$oCheckBoxUebersicht->oLink->cName}{/if}</td>
+                                            <td class="TD3">
+                                                {foreach name="anzeigeortAusgabe" from=$oCheckBoxUebersicht->kAnzeigeOrt_arr item=kAnzeigeOrt}
+                                                    {$cAnzeigeOrt_arr[$kAnzeigeOrt]}{if !$smarty.foreach.anzeigeortAusgabe.last}, {/if}
+                                                {/foreach}
+                                            </td>
+                                            <td class="TD4">{if isset($oCheckBoxUebersicht->oCheckBoxFunktion->cName)}{$oCheckBoxUebersicht->oCheckBoxFunktion->cName}{/if}</td>
+
+                                            <td class="TD4">{if $oCheckBoxUebersicht->nPflicht}{#yes#}{else}{#no#}{/if}</td>
+                                            <td class="TD5">{if $oCheckBoxUebersicht->nAktiv}{#yes#}{else}{#no#}{/if}</td>
+                                            <td class="TD5">{if $oCheckBoxUebersicht->nLogging}{#yes#}{else}{#no#}{/if}</td>
+                                            <td class="TD6">{$oCheckBoxUebersicht->nSort}</td>
+                                            <td class="TD7">
+                                                {foreach name="kundengruppe" from=$oCheckBoxUebersicht->cKundengruppeAssoc_arr item=cKundengruppeAssoc}
+                                                    {$cKundengruppeAssoc}{if !$smarty.foreach.kundengruppe.last}, {/if}
+                                                {/foreach}
+                                            </td>
+                                            <td class="TD8">{$oCheckBoxUebersicht->dErstellt_DE}</td>
+                                            <td class="TD9">
+                                                <a href="checkbox.php?edit={$oCheckBoxUebersicht->kCheckBox}&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-default" title="{#modify#}">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                    <tr>
+                                        <td class="TD1">
+                                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                        </td>
+                                        <td colspan="11" class="TD7"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
+                                    </tr>
+                                </table>
+                            </div>
                             <div class="panel-footer">
                                 <div class="btn-group submit">
                                     <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen">neue Checkbox erstellen</button>

@@ -2,98 +2,63 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *}
-
-<div class="well">
-    <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="order_register_or_login">
-       {if $hinweis}
-            <div class="alert alert-danger">{$hinweis}</div>
-       {/if}
-        <div class="row">
-            {* Create new Account *}
-            <div class="col-sm-12 col-md-6">
-                {block name="checkout-new-account"}
-                <div class="panel panel-default" id="order_choose_order_type">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{block name="checkout-new-account-title"}{lang key="createNewAccount" section="account data"}{/block}</h3>
-                    </div>
-                    <div class="panel-body">
-                        {block name="checkout-new-account-body"}
-                        <p>{lang key="createNewAccountDesc" section="checkout"}</p>
-                        <a class="btn btn-primary btn-block" href="{get_static_route id='registrieren.php'}?checkout=1" class="submit">
-                            {lang key="createNewAccount" section="account data"}
-                        </a>
-                        {if $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
-                            <hr>
-                            <p>{lang key="orderWithoutRegistrationDesc" section="checkout"}</p>
-                            <a class="btn btn-default btn-block" href="{get_static_route id='bestellvorgang.php'}?unreg=1" class="submit">{lang key="orderUnregistered" section="checkout"}</a>
-                        {/if}
+{if !empty($cFehler)}
+    <div class="alert alert-danger">{$cFehler}</div>
+{/if}
+{if !empty($hinweis)}
+    <div class="alert alert-info">{$hinweis}</div>
+{/if}
+{if !empty($fehlendeAngaben) && !$hinweis}
+    <div class="alert alert-danger">{lang key="yourDataDesc" section="account data"}</div>
+{/if}
+{if isset($fehlendeAngaben.email_vorhanden) && $fehlendeAngaben.email_vorhanden == 1}
+    <div class="alert alert-danger">{lang key="emailAlreadyExists" section="account data"}</div>
+{/if}
+{if isset($fehlendeAngaben.formular_zeit) && $fehlendeAngaben.formular_zeit == 1}
+    <div class="alert alert-danger">{lang key="formToFast" section="account data"}</div>
+{/if}
+{if isset($boxes.left) && !$bExclusive && !empty($boxes.left)}
+    {assign var="withSidebar" value=1}
+{else}
+    {assign var="withSidebar" value=0}
+{/if}
+<div id="register-customer" class="row">
+    <div id="existing-customer" class="col-xs-12 {if $withSidebar === 0}col-md-4{else}col-md-12{/if}">
+        <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="order_register_or_login">
+            {block name="checkout-login"}
+                <div class="panel-wrap">
+                    {block name="checkout-login-body"}
+                    <fieldset>
+                        {$jtl_token}
+                        <legend>{block name="checkout-login-title"}{lang key="alreadyCustomer" section="global"}{/block}</legend>
+                        {include file="register/form/customer_login.tpl" withSidebar=$withSidebar}
+                    </fieldset>
+                    {/block}
+                </div>
+            {/block}
+        </form>
+    </div>
+    <div id="customer" class="col-xs-12 {if $withSidebar === 0}col-md-8{else}col-md-12 top30{/if}">
+        <div>
+            {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}
+            <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="form-register">
+                {block name="checkout-register"}
+                    <div class="panel-wrap">
+                        {block name="checkout-register-body"}
+                            {$jtl_token}
+                            {include file='register/form/customer_account.tpl' checkout=1 step="formular"}
+                            <hr/>
+                            {include file='checkout/inc_shipping_address.tpl'}
                         {/block}
                     </div>
-                </div>
                 {/block}
-            </div>
-
-            {* Login form *}
-            <div class="col-sm-12 col-md-6">
-                {block name="checkout-login"}
-                <div class="panel panel-default " id="order_customer_login">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{block name="checkout-login-title"}{lang key="loginForRegisteredCustomers" section="checkout"}{/block}</h3>
-                    </div>
-                    <div class="panel-body">
-                        {block name="checkout-login-body"}
-                        <fieldset>
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <div class="form-group required">
-                                        <label class="control-label" for="email">{lang key="emailadress" section="global"}</label>
-                                        <input
-                                        class="form-control"
-                                        type="text"
-                                        name="email"
-                                        id="email"
-                                        placeholder="{lang key="emailadress" section="global"}"
-                                        required
-                                        >
-                                    </div>
-                                </div>
-                                <div class="col-xs-12">
-                                    <div class="form-group required">
-                                        <label class="control-label" for="password">{lang key="password" section="account data"}</label>
-                                        <input
-                                        class="form-control"
-                                        type="password"
-                                        name="passwort"
-                                        id="password"
-                                        placeholder="{lang key="password" section="account data"}"
-                                        required
-                                        >
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
-                        <fieldset>
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <div class="form-group">
-                                        {$jtl_token}
-                                        <input type="hidden" name="login" value="1" />
-                                        <input type="hidden" name="wk" value="1" />
-                                        <input type="submit" class="submit btn btn-primary btn-block" value="{lang key="login" section="checkout"}" />
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 register-or-resetpw">
-                                    <small>
-                                    <a class="resetpw  pull-right" href="{get_static_route id='pass.php'}?exclusive_content=1" onclick="window.open(this.href,this.target,'width=640,height=430'); return false;"><span class="fa fa-question-circle"></span> {lang key="forgotPassword" section="global"}</a>
-                                    </small>
-                                </div>
-                            </div>
-                        </fieldset>
-                        {/block}
-                    </div>
+                <div class="text-right">
+                    <input type="hidden" name="checkout" value="1">
+                    <input type="hidden" name="form" value="1">
+                    <input type="hidden" name="editRechnungsadresse" value="0">
+                    <input type="submit" class="btn btn-primary btn-lg submit submit_once" value="{lang key="sendCustomerData" section="account data"}">
                 </div>
-                {/block}
-            </div>
-        </div>{* /row *}
-    </form>
-</div>{* /well *}
+            </form>
+        </div>
+    </div>
+</div>

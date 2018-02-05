@@ -32,6 +32,7 @@ if (typeof CKEDITOR !== 'undefined') {ldelim}
     {rdelim};
     CKEDITOR.editorConfig(CKEDITOR.config);
 {rdelim}
+$('.select2').select2();
 </script>
 
 {/if}

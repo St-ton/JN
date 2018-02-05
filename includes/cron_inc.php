@@ -11,15 +11,15 @@ if (!defined('PFAD_LOGFILES')) {
 
 define('JOBQUEUE_LOCKFILE', PFAD_LOGFILES . 'jobqueue.lock');
 
-if (file_exists(JOBQUEUE_LOCKFILE)) {
-    if ((time() - filemtime(JOBQUEUE_LOCKFILE)) < 600) {
-        Jtllog::cronLog('Cron currently locked', 2);
-        exit;
-    } else {
-        touch(JOBQUEUE_LOCKFILE);
-    }
-} else {
+if (file_exists(JOBQUEUE_LOCKFILE) === false) {
     touch(JOBQUEUE_LOCKFILE);
+}
+
+$lockfile = fopen(JOBQUEUE_LOCKFILE, 'rb');
+
+if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
+    Jtllog::cronLog('Cron currently locked', 2);
+    exit;
 }
 $oCron_arr = Shop::DB()->query(
     "SELECT tcron.*
@@ -92,5 +92,6 @@ if (is_array($oCron_arr) && count($oCron_arr) > 0) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jobqueue_inc.php';
 
 if (file_exists(JOBQUEUE_LOCKFILE)) {
+    fclose($lockfile);
     unlink(JOBQUEUE_LOCKFILE);
 }

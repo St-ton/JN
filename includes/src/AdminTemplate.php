@@ -143,7 +143,7 @@ class AdminTemplate
         $cOrdner   = $this->getDir();
         $folders   = [];
         $folders[] = $cOrdner;
-        $cacheID   = 'template_minify_data_adm_' . $cOrdner . (($absolute == true) ? '_a' : '');
+        $cacheID   = 'template_minify_data_adm_' . $cOrdner . (($absolute === true) ? '_a' : '');
         if (($tplGroups_arr = Shop::Cache()->get($cacheID)) === false) {
             $tplGroups_arr = [];
             foreach ($folders as $cOrdner) {

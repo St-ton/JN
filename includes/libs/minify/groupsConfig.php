@@ -8,7 +8,7 @@
 define('JTL_INCLUDE_ONLY_DB', true);
 require_once '../../../includes/globalinclude.php';
 
-$isAdmin   = (isset($_GET['g']) && ($_GET['g'] === 'admin_js' || $_GET['g'] === 'admin_css'));
-$oTemplate = ($isAdmin) ? AdminTemplate::getInstance() : Template::getInstance();
+$isAdmin   = isset($_GET['g']) && ($_GET['g'] === 'admin_js' || $_GET['g'] === 'admin_css');
+$oTemplate = $isAdmin ? AdminTemplate::getInstance() : Template::getInstance();
 
 return $oTemplate->getMinifyArray(true);

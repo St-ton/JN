@@ -158,8 +158,9 @@ switch ($action) {
                     $availableMethods = [];
                     $allMethods       = $cache->checkAvailability();
                     foreach ($allMethods as $_name => $_status) {
-                        if (isset($_status['available'], $_status['functional']) &&
-                            $_status['available'] === true && $_status['functional'] === true
+                        if (isset($_status['available'], $_status['functional'])
+                            && $_status['available'] === true
+                            && $_status['functional'] === true
                         ) {
                             $availableMethods[] = $_name;
                         }
@@ -310,12 +311,12 @@ for ($i = 0; $i < $settingsCount; ++$i) {
         ? $oSetValue->cWert
         : null;
 }
-$advancedSettings = Shop::DB()->selectAll(
-    'teinstellungenconf',
-    ['nStandardAnzeigen', 'kEinstellungenSektion'],
-    [0, CONF_CACHING],
-    '*',
-    'nSort'
+$advancedSettings = Shop::DB()->query(
+    "SELECT * 
+        FROM teinstellungenconf 
+        WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
+            AND kEinstellungenSektion = " . CONF_CACHING . "
+        ORDER BY nSort", 2
 );
 $settingsCount    = count($advancedSettings);
 for ($i = 0; $i < $settingsCount; ++$i) {
@@ -392,9 +393,9 @@ $allMethods          = $cache->checkAvailability();
 $availableMethods    = [];
 $nonAvailableMethods = [];
 foreach ($allMethods as $_name => $_status) {
-    if (isset($_status['available'], $_status['functional']) &&
-        $_status['available'] === true &&
-        $_status['functional'] === true
+    if (isset($_status['available'], $_status['functional'])
+        && $_status['available'] === true
+        && $_status['functional'] === true
     ) {
         $availableMethods[] = $_name;
     } elseif ($_name !== 'null') {

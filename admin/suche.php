@@ -2,6 +2,7 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
+ * @deprecated since 4.06 - AJAX function adminSearch() in admin/suche_inc.php is used instead
  */
 ob_start();
 set_time_limit(0);
@@ -13,7 +14,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 /** @global JTLSmarty $smarty */
 $response      = new AjaxResponse();
-$hasPermission = $oAccount->permission('SETTINGS_SEARCH_VIEW', false, false);
+$hasPermission = $oAccount->permission('SETTINGS_SEARCH_VIEW');
 
 if (!$hasPermission) {
     $result = $response->buildError('Unauthorized', 401);

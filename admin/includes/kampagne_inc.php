@@ -775,7 +775,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    $_SESSION['Kundengruppe']->darfPreiseSehen = 1;
+                    $_SESSION['Kundengruppe']->setMayViewPrices(1);
                     $count = count($oDaten_arr);
                     for ($i = 0; $i < $count; $i++) {
                         if (isset($oDaten_arr[$i]->fVKNetto) && $oDaten_arr[$i]->fVKNetto > 0) {
@@ -1378,7 +1378,6 @@ function GetKampTypeName($Type)
 function PrepareLineChartKamp($Stats, $Type)
 {
     $chart = new Linechart(['active' => false]);
-
     if (is_array($Stats) && count($Stats) > 0) {
         $chart->setActive(true);
         $data = [];
@@ -1387,7 +1386,7 @@ function PrepareLineChartKamp($Stats, $Type)
                 $x = '';
                 foreach ($Dates as $Key => $Stat) {
                     if (strpos($Key, 'cDatum') !== false) {
-                        $x = utf8_encode($Dates[$Key]);
+                        $x = $Dates[$Key];
                     }
 
                     if ($Key == $Type) {

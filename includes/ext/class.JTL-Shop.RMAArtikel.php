@@ -11,37 +11,31 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
     class RMAArtikel
     {
         /**
-         * @access public
          * @var int
          */
         public $kRMA;
 
         /**
-         * @access public
          * @var int
          */
         public $kBestellung;
 
         /**
-         * @access public
          * @var int
          */
         public $kArtikel;
 
         /**
-         * @access public
          * @var float
          */
         public $fAnzahl;
 
         /**
-         * @access public
          * @var string
          */
         public $cGrund;
 
         /**
-         * @access public
          * @var string
          */
         public $cKommentar;
@@ -108,8 +102,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
             // Load complete product object
             if ($bProductObject) {
-                $this->oArtikel = new Artikel();
-                $this->oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions(), $kKundengruppe, $kSprache);
+                $this->oArtikel = (new Artikel())
+                    ->fuelleArtikel($kArtikel, Artikel::getDefaultOptions(), $kKundengruppe, $kSprache);
             }
         }
 
@@ -118,7 +112,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          *
          * @param bool $bPrim - Controls the return of the method
          * @return bool|int
-         * @access public
          */
         public function save($bPrim = true)
         {
@@ -144,7 +137,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          * Update the class in the database
          *
          * @return int
-         * @access public
          */
         public function update()
         {
@@ -164,7 +156,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          * Delete the class in the database
          *
          * @return int
-         * @access public
          */
         public function delete()
         {
@@ -172,9 +163,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the kRMA
-         *
-         * @access public
          * @param int $kRMA
          * @return $this
          */
@@ -186,9 +174,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the kBestellung
-         *
-         * @access public
          * @param int $kBestellung
          * @return $this
          */
@@ -200,9 +185,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the kArtikel
-         *
-         * @access public
          * @param int $kArtikel
          * @return $this
          */
@@ -214,9 +196,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the fAnzahl
-         *
-         * @access public
          * @param float $fAnzahl
          * @return $this
          */
@@ -228,9 +207,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the cGrund
-         *
-         * @access public
          * @param string $cGrund
          * @return $this
          */
@@ -242,9 +218,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Sets the cKommentar
-         *
-         * @access public
          * @param string $cKommentar
          * @return $this
          */
@@ -256,9 +229,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the kRMA
-         *
-         * @access public
          * @return int
          */
         public function getRMA()
@@ -267,9 +237,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the kBestellung
-         *
-         * @access public
          * @return int
          */
         public function getBestellung()
@@ -278,9 +245,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the kArtikel
-         *
-         * @access public
          * @return int
          */
         public function getArtikel()
@@ -289,9 +253,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the fAnzahl
-         *
-         * @access public
          * @return float
          */
         public function getAnzahl()
@@ -300,9 +261,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the cGrund
-         *
-         * @access public
          * @return string
          */
         public function getGrund()
@@ -311,9 +269,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Gets the cKommentar
-         *
-         * @access public
          * @return string
          */
         public function getKommentar()
@@ -330,11 +285,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         public static function isOrderExisting($kBestellung, $kArtikel_arr, &$cRMAPostAssoc_arr)
         {
             $kBestellung = (int)$kBestellung;
-            if ($kBestellung > 0 &&
-                is_array($kArtikel_arr) &&
-                is_array($cRMAPostAssoc_arr) &&
-                count($kArtikel_arr) > 0 &&
-                count($cRMAPostAssoc_arr) > 0
+            if ($kBestellung > 0
+                && is_array($kArtikel_arr)
+                && is_array($cRMAPostAssoc_arr)
+                && count($kArtikel_arr) > 0
+                && count($cRMAPostAssoc_arr) > 0
             ) {
                 foreach ($kArtikel_arr as $kArtikel) {
                     $fRMAArtikelQuantity = self::getRMAQuantity($kBestellung, $kArtikel); // Bereits zurueckgeschickte Anzahl
@@ -373,11 +328,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                         FROM trmaartikel
                         WHERE kBestellung = " . $kBestellung, 2
                 );
-
-                if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-                    foreach ($oObj_arr as $oObj) {
-                        $kArtikel_arr[] = $oObj->kArtikel;
-                    }
+                foreach ($oObj_arr as $oObj) {
+                    $kArtikel_arr[] = (int)$oObj->kArtikel;
                 }
             }
 

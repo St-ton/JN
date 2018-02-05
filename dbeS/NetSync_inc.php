@@ -12,12 +12,7 @@ require_once __DIR__ . '/../includes/config.JTL-Shop.ini.php';
 require_once __DIR__ . '/../includes/defines.php';
 error_reporting(SYNC_LOG_LEVEL);
 // basic classes
-// global helper
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
-require_once PFAD_ROOT . PFAD_PCLZIP . 'pclzip.lib.php';
-// database
-//$DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 // language
 $oSprache = Sprache::getInstance(true);
 
@@ -328,13 +323,11 @@ class NetSyncHandler
             return $_SESSION['bAuthed'];
         }
         // by syncdata
-        $cName   = utf8_decode(urldecode($_REQUEST['uid']));
-        $cPass   = utf8_decode(urldecode($_REQUEST['upwd']));
-        $bAuthed = false;
-        if (strlen($cName) > 0 && strlen($cPass) > 0) {
-            $oSync   = new Synclogin();
-            $bAuthed = ($cName === $oSync->cName && $cPass === $oSync->cPass);
-        }
+        $cName   = urldecode($_REQUEST['uid']);
+        $cPass   = urldecode($_REQUEST['upwd']);
+        $bAuthed = (strlen($cName) > 0 && strlen($cPass) > 0)
+            ? (new Synclogin())->checkLogin($cName, $cPass)
+            : false;
         if ($bAuthed) {
             session_start();
             $_SESSION['bAuthed'] = $bAuthed;
@@ -353,16 +346,11 @@ class NetSyncHandler
         $oResponse->nCode  = $nCode;
         $oResponse->cToken = '';
         $oResponse->oData  = null;
-
         if ($nCode === 0) {
             $oResponse->cToken = session_id();
             $oResponse->oData  = $oData;
         }
-
-        $cJson = json_encode($oResponse);
-        $cJson = utf8_encode($cJson);
-
-        echo $cJson;
+        echo json_encode($oResponse);
         exit;
     }
 
@@ -418,6 +406,7 @@ class NetSyncHandler
             header("Content-length: $size");
         }
         readfile($filename);
+        unlink($filename);
         exit;
     }
 }

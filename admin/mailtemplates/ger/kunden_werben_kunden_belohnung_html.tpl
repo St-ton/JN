@@ -4,9 +4,9 @@ Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{e
 <br>
 Sie erhalten im Rahmen der Aktion Kunden werben Kunden ein Guthaben von {$BestandskundenBoni->fGuthaben}.<br>
 <br>
-Wir bedanken uns für Ihre Teilnahme!<br>
+Wir bedanken uns fÃ¼r Ihre Teilnahme!<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem GruÃŸ,<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

@@ -4,20 +4,20 @@
     <ul class="list-inline user-settings pull-right">
         {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
             <li class="currency-dropdown dropdown">
-                <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown">
-                    {if $smarty.session.Waehrung->cISO === 'EUR'}
-                        <i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>
-                    {elseif $smarty.session.Waehrung->cISO === 'USD'}
-                        <i class="fa fa-usd" title="{$smarty.session.Waehrung->cName}"></i>
-                    {elseif $smarty.session.Waehrung->cISO === 'GBP'}
-                        <i class="fa fa-gbp" title="{$smarty.session.Waehrung->cName}"></i>
+                <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown" title="{lang key='selectCurrency'}">
+                    {if $smarty.session.Waehrung->getCode() === 'EUR'}
+                        <i class="fa fa-eur" title="{$smarty.session.Waehrung->getName()}"></i>
+                    {elseif $smarty.session.Waehrung->getCode() === 'USD'}
+                        <i class="fa fa-usd" title="{$smarty.session.Waehrung->getName()}"></i>
+                    {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
+                        <i class="fa fa-gbp" title="{$smarty.session.Waehrung->getName()}"></i>
                     {else}
-                        {$smarty.session.Waehrung->cName}
+                        {$smarty.session.Waehrung->getName()}
                     {/if} <span class="caret"></span></a>
                 <ul id="currency-dropdown" class="dropdown-menu dropdown-menu-right">
                 {foreach from=$smarty.session.Waehrungen item=oWaehrung}
                     <li>
-                        <a href="{$oWaehrung->cURL}" rel="nofollow">{$oWaehrung->cName}</a>
+                        <a href="{$oWaehrung->getURL()}" rel="nofollow">{$oWaehrung->getName()}</a>
                     </li>
                 {/foreach}
                 </ul>
@@ -25,7 +25,7 @@
         {/if}
         {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
         <li class="language-dropdown dropdown">
-            <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown" itemprop="inLanguage" itemscope itemtype="http://schema.org/Language">
+            <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown" itemprop="inLanguage" itemscope itemtype="http://schema.org/Language" title="{lang key='selectLang'}">
                 <i class="fa fa-language"></i>
                 {foreach from=$smarty.session.Sprachen item=Sprache}
                     {if $Sprache->kSprache == $smarty.session.kSprache}
@@ -55,7 +55,7 @@
         {foreach name=headlinks from=$linkgroups->Kopf->Links item=Link}
             {if $Link->cLocalizedName|has_trans}
                 <li class="{if isset($Link->aktiv) && $Link->aktiv == 1}active{/if}">
-                    <a href="{$Link->URL}"{if $Link->cNoFollow == 'Y'} rel="nofollow"{/if}>{$Link->cLocalizedName|trans}</a>
+                    <a href="{if !empty($Link->cURLFull)}{$Link->cURLFull}{else}{$Link->URL}{/if}"{if $Link->cNoFollow == 'Y'} rel="nofollow"{/if} title="{$Link->cLocalizedName|trans}">{$Link->cLocalizedName|trans}</a>
                 </li>
             {/if}
         {/foreach}

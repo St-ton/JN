@@ -6,8 +6,6 @@
 
 /**
  * Class Slider
- *
- * @access public
  */
 class Slider implements IExtensionPoint
 {
@@ -110,13 +108,8 @@ class Slider implements IExtensionPoint
     public function init($kSlider)
     {
         $kSlider = (int)$kSlider;
-        if ($kSlider > 0) {
-            global $smarty;
-
-            if ($this->load($kSlider, 'AND bAktiv = 1') === true && (int)$this->bAktiv === 1) {
-                $smarty->assign('PFAD_SLIDER', Shop::getURL() . '/' . PFAD_BILDER_SLIDER)
-                       ->assign('oSlider', $this);
-            }
+        if ($kSlider > 0 && $this->load($kSlider, 'AND bAktiv = 1') === true) {
+            Shop::Smarty()->assign('oSlider', $this);
         }
 
         return $this;
@@ -154,8 +147,8 @@ class Slider implements IExtensionPoint
             }
             $kSlider     = (int)$kSlider;
             $limit       = (int)$limit;
-            $cSlider_arr = Shop::DB()->query("
-                SELECT *
+            $cSlider_arr = Shop::DB()->query(
+                "SELECT *
                     FROM tslider
                     WHERE kSlider = " . $kSlider . " " . $filter . "
                     LIMIT " . $limit, 8
@@ -163,23 +156,15 @@ class Slider implements IExtensionPoint
             if ($cSlider_arr === null) {
                 return false;
             }
-            $kSlide_arr = Shop::DB()->query("
-                SELECT kslide
+            $slides = Shop::DB()->query(
+                "SELECT kslide
                     FROM tslide
                     WHERE kSlider = " . $kSlider . "
-                    ORDER BY nSort ASC", 9
+                    ORDER BY nSort ASC",
+                2
             );
-            $oSlide_arr = [];
-            foreach ($kSlide_arr as $kSlide) {
-                $oSlide          = new Slide();
-                $oSlide->kSlider = (int)$cSlider_arr['kSlider'];
-                $oSlide->kSlide  = (int)$kSlide['kslide'];
-                $oSlide->load();
-                $oSlide_arr[] = $oSlide;
-            }
-
-            if (is_array($oSlide_arr)) {
-                $this->oSlide_arr = $oSlide_arr;
+            foreach ($slides as $slide) {
+                $this->oSlide_arr[] = new Slide($cSlider_arr['kSlider'], $slide->kslide);
             }
 
             if (is_array($cSlider_arr)) {
@@ -197,7 +182,7 @@ class Slider implements IExtensionPoint
      */
     public function save()
     {
-        return ($this->kSlider > 0)
+        return $this->kSlider > 0
             ? $this->update()
             : $this->append();
     }
@@ -212,8 +197,8 @@ class Slider implements IExtensionPoint
 
         $kSlider = Shop::DB()->insert('tslider', $oSlider);
 
-        if ((int)$kSlider > 0) {
-            $this->kSlider = (int)$kSlider;
+        if ($kSlider > 0) {
+            $this->kSlider = $kSlider;
 
             return true;
         }

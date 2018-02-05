@@ -846,8 +846,8 @@ function holeArtikel($cArtNr_arr)
 //                    }
                     // Wenn der Artikel fuer diese Kundengruppen sichtbar ist
                     if ($nSichtbar) {
-                        $_SESSION['Kundengruppe']->darfPreiseSehen = 1;
-                        $oArtikel                                  = new Artikel();
+                        $_SESSION['Kundengruppe']->setMayViewPrices(1);
+                        $oArtikel = new Artikel();
                         $oArtikel->fuelleArtikel($oArtikel_tmp->kArtikel, $defaultOptions);
 
                         $oArtikel_arr[] = $oArtikel;
@@ -1307,8 +1307,8 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($kArtikel_arr as $kArtikel) {
             if ((int)$kArtikel > 0) {
-                $_SESSION['Kundengruppe']->darfPreiseSehen = 1;
-                $oArtikel                                  = new Artikel();
+                $_SESSION['Kundengruppe']->setMayViewPrices(1);
+                $oArtikel = new Artikel();
                 $oArtikel->fuelleArtikel($kArtikel, $defaultOptions, $kKundengruppe, $kSprache);
 
                 if (!$oArtikel->kArtikel > 0) {

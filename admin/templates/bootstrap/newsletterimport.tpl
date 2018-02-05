@@ -22,7 +22,9 @@
                 <span class="input-group-addon">
                     <label for="csv">{#csvFile#}</label>
                 </span>
-                <input class="form-control" type="file" name="csv" id="csv"  tabindex="1" />
+                <span class="input-group-wrap">
+                    <input class="form-control" type="file" name="csv" id="csv"  tabindex="1" />
+                </span>
             </div>
             <p class="submit">
                 <button type="submit" value="{#import#}" class="btn btn-primary">{#import#}</button>

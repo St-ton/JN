@@ -53,7 +53,7 @@
                         />
                     </div>
 
-                    {if $showLoginCaptcha}
+                    {if isset($showLoginCaptcha) && $showLoginCaptcha}
                         <div class="form-group text-center float-label-control">
                             <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
                         </div>

@@ -107,9 +107,9 @@ function baueKontaktFormularVorgaben()
     }
     if (isset($Nachricht->cAnrede) && strlen($Nachricht->cAnrede) === 1) {
         if ($Nachricht->cAnrede === 'm') {
-            $Nachricht->cAnredeLocalized = Shop::Lang()->get('salutationM', 'global');
+            $Nachricht->cAnredeLocalized = Shop::Lang()->get('salutationM');
         } elseif ($Nachricht->cAnrede === 'w') {
-            $Nachricht->cAnredeLocalized = Shop::Lang()->get('salutationW', 'global');
+            $Nachricht->cAnredeLocalized = Shop::Lang()->get('salutationW');
         }
     }
     if (!isset($Nachricht->cAnrede)) {
@@ -160,7 +160,7 @@ function eingabenKorrekt($fehlendeAngaben)
  */
 function pruefeBetreffVorhanden()
 {
-    $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+    $kKundengruppe = Session::CustomerGroup()->getID();
     if (!$kKundengruppe) {
         $kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
         if (!$kKundengruppe) {
@@ -171,7 +171,7 @@ function pruefeBetreffVorhanden()
     $oBetreff_arr = Shop::DB()->query(
         "SELECT kKontaktBetreff
             FROM tkontaktbetreff
-            WHERE cKundengruppen RLIKE '^([0-9;]*;)?" . (int)$kKundengruppe . ";'
+            WHERE FIND_IN_SET('" . $kKundengruppe . "', REPLACE(cKundengruppen, ';', ',')) > 0
                 OR cKundengruppen = '0'", 2
     );
 

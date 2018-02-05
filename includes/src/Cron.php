@@ -86,27 +86,23 @@ class Cron
     }
 
     /**
-     * @return mixed|bool
+     * @return array|bool
      */
     public function holeCronArt()
     {
-        if ($this->kKey > 0 && strlen($this->cTabelle > 0)) {
-            return Shop::DB()->selectAll($this->cTabelle, $this->cKey, (int)$this->kKey);
-        }
-
-        return false;
+        return ($this->kKey > 0 && strlen($this->cTabelle) > 0)
+            ? Shop::DB()->selectAll($this->cTabelle, $this->cKey, (int)$this->kKey)
+            : false;
     }
 
     /**
-     * @return mixed|bool
+     * @return int|bool
      */
     public function speicherInDB()
     {
-        if ($this->kKey > 0 && $this->cKey && $this->cTabelle && $this->cName && $this->nAlleXStd && $this->dStart) {
-            return Shop::DB()->insert('tcron', $this);
-        }
-
-        return false;
+        return $this->kKey > 0 && $this->cKey && $this->cTabelle && $this->cName && $this->nAlleXStd && $this->dStart
+            ? Shop::DB()->insert('tcron', $this)
+            : false;
     }
 
     /**

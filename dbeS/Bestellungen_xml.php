@@ -12,56 +12,44 @@ require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 $archive = null;
 $return  = 3;
 if (auth()) {
-    checkFile();
+    $zipFile = checkFile();
     $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Bestellungen_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Bestellungen_xml');
+    $zipFile = $_FILES['data']['tmp_name'];
+    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
+        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Bestellungen_xml');
         }
-        if ($archive->extract(PCLZIP_OPT_PATH, PFAD_SYNC_TMP)) {
-            $return = 0;
-            foreach ($list as $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
-                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Bestellungen_xml');
-                }
-                $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
-                $xml = XML_unserialize($d);
-
-                if ($zip['filename'] === 'ack_bestellung.xml') {
-                    bearbeiteAck($xml);
-                } elseif ($zip['filename'] === 'del_bestellung.xml') {
-                    bearbeiteDel($xml);
-                } elseif ($zip['filename'] === 'delonly_bestellung.xml') {
-                    bearbeiteDelOnly($xml);
-                } elseif ($zip['filename'] === 'storno_bestellung.xml') {
-                    bearbeiteStorno($xml);
-                } elseif ($zip['filename'] === 'reaktiviere_bestellung.xml') {
-                    bearbeiteRestorno($xml);
-                } elseif ($zip['filename'] === 'ack_zahlungseingang.xml') {
-                    bearbeiteAckZahlung($xml);
-                } elseif ($zip['filename'] === 'set_bestellung.xml') {
-                    bearbeiteSet($xml);
-                } elseif ($zip['filename'] === 'upd_bestellung.xml') {
-                    bearbeiteUpdate($xml);
-                }
-
-                removeTemporaryFiles(PFAD_SYNC_TMP . $zip['filename']);
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $xmlFile) {
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $xmlFile . ' size: ' .
+                    filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Bestellungen_xml');
             }
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error: ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Bestellungen_xml');
-        }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error: ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Bestellungen_xml');
-    }
-}
+            $d   = file_get_contents($xmlFile);
+            $xml = XML_unserialize($d);
 
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
+            if (strpos($xmlFile, 'ack_bestellung.xml') !== false) {
+                bearbeiteAck($xml);
+            } elseif (strpos($xmlFile, 'del_bestellung.xml') !== false) {
+                bearbeiteDel($xml);
+            } elseif (strpos($xmlFile, 'delonly_bestellung.xml') !== false) {
+                bearbeiteDelOnly($xml);
+            } elseif (strpos($xmlFile, 'storno_bestellung.xml') !== false) {
+                bearbeiteStorno($xml);
+            } elseif (strpos($xmlFile, 'reaktiviere_bestellung.xml') !== false) {
+                bearbeiteRestorno($xml);
+            } elseif (strpos($xmlFile, 'ack_zahlungseingang.xml') !== false) {
+                bearbeiteAckZahlung($xml);
+            } elseif (strpos($xmlFile, 'set_bestellung.xml') !== false) {
+                bearbeiteSet($xml);
+            } elseif (strpos($xmlFile, 'upd_bestellung.xml') !== false) {
+                bearbeiteUpdate($xml);
+            }
+            removeTemporaryFiles($xmlFile);
+        }
+    }
 }
 
 echo $return;
@@ -207,7 +195,8 @@ function bearbeiteStorno($xml)
                     $oMail->tbestellung = $bestellungTmp;
                     sendeMail(MAILTEMPLATE_BESTELLUNG_STORNO, $oMail);
                 }
-                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, (object)['cStatus' => BESTELLUNG_STATUS_STORNO]);
+                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung,
+                    (object)['cStatus' => BESTELLUNG_STATUS_STORNO]);
             }
             checkGuestAccount($kunde->kKunde);
             executeHook(HOOK_BESTELLUNGEN_XML_BEARBEITESTORNO, [
@@ -234,7 +223,8 @@ function bearbeiteStorno($xml)
                     $oMail->tbestellung = $bestellungTmp;
                     sendeMail(MAILTEMPLATE_BESTELLUNG_STORNO, $oMail);
                 }
-                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, (object)['cStatus' => BESTELLUNG_STATUS_STORNO]);
+                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung,
+                    (object)['cStatus' => BESTELLUNG_STATUS_STORNO]);
             }
             checkGuestAccount($kunde->kKunde);
             executeHook(HOOK_BESTELLUNGEN_XML_BEARBEITESTORNO, [
@@ -267,7 +257,8 @@ function bearbeiteRestorno($xml)
                     $oMail->tbestellung = $bestellungTmp;
                     sendeMail(MAILTEMPLATE_BESTELLUNG_RESTORNO, $oMail);
                 }
-                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG]);
+                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung,
+                    (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG]);
                 checkGuestAccount($kunde->kKunde);
             }
         }
@@ -289,7 +280,8 @@ function bearbeiteRestorno($xml)
                     sendeMail(MAILTEMPLATE_BESTELLUNG_RESTORNO, $oMail);
                 }
 
-                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG]);
+                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung,
+                    (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG]);
                 checkGuestAccount($kunde->kKunde);
             }
         }
@@ -347,7 +339,8 @@ function bearbeiteUpdate($xml)
     extractStreet($oRechnungsadresse);
     //rechnungsadresse gefüllt?
     if (!$oRechnungsadresse->cNachname && !$oRechnungsadresse->cFirma && !$oRechnungsadresse->cStrasse) {
-        unhandledError('Error Bestellung Update. Rechnungsadresse enthält keinen Nachnamen, Firma und Strasse! XML:' . print_r($xml, true));
+        unhandledError('Error Bestellung Update. Rechnungsadresse enthält keinen Nachnamen, Firma und Strasse! XML:' . print_r($xml,
+                true));
     }
     //existiert eine alte bestellung mit dieser kBestellung?
     if (!$oBestellungAlt->kBestellung || trim($oBestellung->cBestellNr) !== trim($oBestellungAlt->cBestellNr)) {
@@ -356,28 +349,36 @@ function bearbeiteUpdate($xml)
     // Zahlungsart vorhanden?
     $oZahlungsart = new stdClass();
     if (isset($xml['tbestellung']['cZahlungsartName']) && strlen($xml['tbestellung']['cZahlungsartName']) > 0) {
-        $oSprache = gibStandardsprache(true);
-        if ($oSprache->kSprache != $oBestellung->kSprache) {
-            $oZahlungsart = Shop::DB()->executeQueryPrepared(
-                "SELECT kZahlungsart, cName
-                    FROM tzahlungsart
-                    WHERE cName LIKE :name",
-                ['name' => '%' . $xml['tbestellung']['cZahlungsartName'] . '%'],
-                1
-            );
-        } else {
-            $oZahlungsart = Shop::DB()->executeQueryPrepared(
-                "SELECT tzahlungsart.kZahlungsart, IFNULL(tzahlungsartsprache.cName, tzahlungsart.cName) AS cName
-                    FROM tzahlungsart
-                    LEFT JOIN tzahlungsartsprache 
-                        ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                        AND tzahlungsartsprache.cISOSprache = :iso
-                    WHERE tzahlungsart.cName LIKE :name",
-                [
-                    'iso'  => gibSprachKeyISO('', (int)$oBestellung->kSprache),
-                    'name' => '%' . $xml['tbestellung']['cZahlungsartName'] . '%'
-                ],
-                1
+        // Von Wawi kommt in $xml['tbestellung']['cZahlungsartName'] nur der deutsche Wert,
+        // deshalb immer Abfrage auf tzahlungsart.cName
+        $cZahlungsartName = $xml['tbestellung']['cZahlungsartName'];
+        $oZahlungsart     = Shop::DB()->executeQueryPrepared(
+            "SELECT tzahlungsart.kZahlungsart, IFNULL(tzahlungsartsprache.cName, tzahlungsart.cName) AS cName
+                FROM tzahlungsart
+                LEFT JOIN tzahlungsartsprache
+                    ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
+                    AND tzahlungsartsprache.cISOSprache = :iso
+                WHERE tzahlungsart.cName LIKE :search
+                ORDER BY CASE
+                    WHEN tzahlungsart.cName = :name1 THEN 1
+                    WHEN tzahlungsart.cName LIKE :name2 THEN 2
+                    WHEN tzahlungsart.cName LIKE :name3 THEN 3
+                    END, kZahlungsart",
+            [
+                'iso'    => gibSprachKeyISO('', (int)$oBestellung->kSprache),
+                'search' => "%{$cZahlungsartName}%",
+                'name1'  => $cZahlungsartName,
+                'name2'  => "{$cZahlungsartName}%",
+                'name3'  => "%{$cZahlungsartName}%",
+            ],
+            1
+        );
+        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog(
+                'Zahlungsart Matching (' . gibSprachKeyISO('', (int)$oBestellung->kSprache) . '): ' . $xml['tbestellung']['cZahlungsartName'] . ' matched: ' . $oZahlungsart->cName,
+                JTLLOG_LEVEL_DEBUG,
+                false,
+                'Bestellungen_xml'
             );
         }
     }
@@ -391,10 +392,15 @@ function bearbeiteUpdate($xml)
         $currentCurrency = Shop::DB()->select('twaehrung', 'kWaehrung', $oBestellung->kWaehrung);
         $defaultCurrency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         if (isset($currentCurrency->kWaehrung, $defaultCurrency->kWaehrung)) {
-            $correctionFactor = (float)$currentCurrency->fFaktor;
+            $correctionFactor           = (float)$currentCurrency->fFaktor;
             $oBestellung->fGesamtsumme /= $correctionFactor;
+            $oBestellung->fGuthaben    /= $correctionFactor;
         }
     }
+    // Die Wawi schickt in fGesamtsumme die Rechnungssumme (Summe aller Positionen), der Shop erwartet hier aber tatsächlich
+    // eine Gesamtsumme oder auch den Zahlungsbetrag (Rechnungssumme abzgl. evtl. Guthaben)
+    $oBestellung->fGesamtsumme -= $oBestellung->fGuthaben;
+
     //aktualisiere bestellung
     Shop::DB()->query(
         "UPDATE tbestellung SET
@@ -466,9 +472,9 @@ function bearbeiteUpdate($xml)
             ? $WarenkorbposAlt_arr[$WarenkorbposAlt_map[$Warenkorbpos_arr[$i]->kArtikel]]
             : null;
         unset($Warenkorbpos_arr[$i]->kWarenkorbPos);
-        $Warenkorbpos_arr[$i]->kWarenkorb          = $oBestellungAlt->kWarenkorb;
-        $Warenkorbpos_arr[$i]->fPreis             /= $correctionFactor;
-        $Warenkorbpos_arr[$i]->fPreisEinzelNetto  /= $correctionFactor;
+        $Warenkorbpos_arr[$i]->kWarenkorb        = $oBestellungAlt->kWarenkorb;
+        $Warenkorbpos_arr[$i]->fPreis            /= $correctionFactor;
+        $Warenkorbpos_arr[$i]->fPreisEinzelNetto /= $correctionFactor;
         // persistiere nLongestMin/MaxDelivery wenn nicht von Wawi übetragen
         if (!isset($Warenkorbpos_arr[$i]->nLongestMinDelivery)) {
             $Warenkorbpos_arr[$i]->nLongestMinDelivery = isset($oWarenkorbposAlt) ? $oWarenkorbposAlt->nLongestMinDelivery : 0;
@@ -479,9 +485,11 @@ function bearbeiteUpdate($xml)
         $Warenkorbpos_arr[$i]->kWarenkorbPos = Shop::DB()->insert('twarenkorbpos', $Warenkorbpos_arr[$i]);
 
         if (count($Warenkorbpos_arr) < 2) { // nur eine pos
-            $Warenkorbposeigenschaft_arr = mapArray($xml['tbestellung']['twarenkorbpos'], 'twarenkorbposeigenschaft', $GLOBALS['mWarenkorbposeigenschaft']);
+            $Warenkorbposeigenschaft_arr = mapArray($xml['tbestellung']['twarenkorbpos'], 'twarenkorbposeigenschaft',
+                $GLOBALS['mWarenkorbposeigenschaft']);
         } else { //mehrere posis
-            $Warenkorbposeigenschaft_arr = mapArray($xml['tbestellung']['twarenkorbpos'][$i], 'twarenkorbposeigenschaft', $GLOBALS['mWarenkorbposeigenschaft']);
+            $Warenkorbposeigenschaft_arr = mapArray($xml['tbestellung']['twarenkorbpos'][$i],
+                'twarenkorbposeigenschaft', $GLOBALS['mWarenkorbposeigenschaft']);
         }
         //füge warenkorbposeigenschaften ein
         foreach ($Warenkorbposeigenschaft_arr as $Warenkorbposeigenschaft) {
@@ -491,18 +499,23 @@ function bearbeiteUpdate($xml)
         }
     }
 
+    if (isset($xml['tbestellung']['tbestellattribut'])) {
+        bearbeiteBestellattribute($oBestellung->kBestellung,
+            is_assoc($xml['tbestellung']['tbestellattribut']) ? [$xml['tbestellung']['tbestellattribut']] : $xml['tbestellung']['tbestellattribut']);
+    }
+
     //sende Versandmail
     $oModule = gibZahlungsmodul($oBestellungAlt->kBestellung);
     //neues flag 'cSendeEMail' ab JTL-Wawi 099781 damit die email nur versandt wird wenns auch wirklich für den kunden interessant ist
     //ab JTL-Wawi 099781 wird das Flag immer gesendet und ist entweder "Y" oder "N"
     //bei JTL-Wawi Version <= 099780 ist dieses Flag nicht gesetzt, Mail soll hier immer versendet werden.
     $emailvorlage = Emailvorlage::load(MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
+    $kunde        = new Kunde((int)$oBestellungAlt->kKunde);
 
     if ($emailvorlage !== null && $emailvorlage->getAktiv() === 'Y' && ($oBestellung->cSendeEMail === 'Y' || !isset($oBestellung->cSendeEMail))) {
         if ($oModule) {
             $oModule->sendMail($oBestellungAlt->kBestellung, MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
         } else {
-            $kunde         = new Kunde((int)$oBestellungAlt->kKunde);
             $bestellungTmp = new Bestellung((int)$oBestellungAlt->kBestellung);
             $bestellungTmp->fuelleBestellung();
 
@@ -533,8 +546,8 @@ function bearbeiteSet($xml)
             if (strlen($oBestellungWawi->cIdentCode) > 0) {
                 $cTrackingURL = $oBestellungWawi->cLogistikURL;
                 if ($oBestellungShop->kLieferadresse > 0) {
-                    $Lieferadresse = Shop::DB()->query("
-                        SELECT cPLZ 
+                    $Lieferadresse = Shop::DB()->query(
+                        "SELECT cPLZ
                             FROM tlieferadresse 
                             WHERE kLieferadresse = " . (int)$oBestellungShop->kLieferadresse, 1
                     );
@@ -548,7 +561,7 @@ function bearbeiteSet($xml)
 
                 $cTrackingURL = str_replace('#IdentCode#', $oBestellungWawi->cIdentCode, $cTrackingURL);
             }
-            
+
             if ($oBestellungShop->cStatus === BESTELLUNG_STATUS_STORNO) {
                 $status = BESTELLUNG_STATUS_STORNO;    // fixes jtlshop/jtl-shop#42
             } else {
@@ -568,9 +581,10 @@ function bearbeiteSet($xml)
                     $status = BESTELLUNG_STATUS_TEILVERSANDT;
                 }
             }
-            
 
-            executeHook(HOOK_BESTELLUNGEN_XML_BESTELLSTATUS, ['status' => &$status, 'oBestellung' => &$oBestellungShop]);
+
+            executeHook(HOOK_BESTELLUNGEN_XML_BESTELLSTATUS,
+                ['status' => &$status, 'oBestellung' => &$oBestellungShop]);
             $cZahlungsartName = Shop::DB()->escape($oBestellungWawi->cZahlungsartName);
             $dBezahltDatum    = Shop::DB()->escape($oBestellungWawi->dBezahltDatum);
             $dVersandDatum    = Shop::DB()->escape($oBestellungWawi->dVersandt);
@@ -587,8 +601,8 @@ function bearbeiteSet($xml)
             if (strlen($cZahlungsartName) > 0) {
                 $upd->cZahlungsartName = $cZahlungsartName;
             }
-            $upd->dBezahltDatum = empty($dBezahltDatum) 
-                ? '0000-00-00' 
+            $upd->dBezahltDatum = empty($dBezahltDatum)
+                ? '0000-00-00'
                 : $dBezahltDatum;
             Shop::DB()->update('tbestellung', 'kBestellung', (int)$oBestellungWawi->kBestellung, $upd);
             $oBestellungUpdated = new Bestellung($oBestellungShop->kBestellung, true);
@@ -679,7 +693,8 @@ function bearbeiteSet($xml)
  */
 function deleteOrder($kBestellung)
 {
-    $kWarenkorb = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'kWarenkorb');
+    $kWarenkorb = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false,
+        'kWarenkorb');
     Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
     Shop::DB()->delete('tbestellid', 'kBestellung', $kBestellung);
     Shop::DB()->delete('tbestellstatus', 'kBestellung', $kBestellung);
@@ -688,7 +703,8 @@ function deleteOrder($kBestellung)
     Shop::DB()->delete('tuploadqueue', 'kBestellung', $kBestellung);
     if ((int)$kWarenkorb->kWarenkorb > 0) {
         Shop::DB()->delete('twarenkorb', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
-        $kWarenkorbPos_arr = Shop::DB()->selectAll('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb, 'kWarenkorbPos');
+        $kWarenkorbPos_arr = Shop::DB()->selectAll('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb,
+            'kWarenkorbPos');
         Shop::DB()->delete('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
         if (is_array($kWarenkorbPos_arr)) {
             foreach ($kWarenkorbPos_arr as $kWarenkorbPos) {
@@ -719,5 +735,44 @@ function checkGuestAccount($kKunde)
             Shop::DB()->delete('tkundenattribut', 'kKunde', (int)$kunde->kKunde);
             Shop::DB()->delete('tkunde', 'kKunde', (int)$kunde->kKunde);
         }
+    }
+}
+
+/**
+ * @param int        $kBestellung
+ * @param stdClass[] $oBestellattribut_arr
+ */
+function bearbeiteBestellattribute($kBestellung, $oBestellattribut_arr)
+{
+    $keys_updated = [];
+    if (isset($oBestellattribut_arr) && count($oBestellattribut_arr)) {
+        foreach ($oBestellattribut_arr as $bestellattribut) {
+            $oBestellattribut      = (object)$bestellattribut;
+            $oBestellattribute_old = Shop::DB()->select('tbestellattribut', ['kBestellung', 'cName'],
+                [$kBestellung, $oBestellattribut->key]);
+            if (isset($oBestellattribute_old->kBestellattribut)) {
+                Shop::DB()->update('tbestellattribut', 'kBestellattribut', $oBestellattribute_old->kBestellattribut,
+                    (object)[
+                        'cValue' => $oBestellattribut->value,
+                    ]);
+                $keys_updated[] = $oBestellattribute_old->kBestellattribut;
+            } else {
+                $keys_updated[] = Shop::DB()->insert('tbestellattribut', (object)[
+                    'kBestellung' => $kBestellung,
+                    'cName'       => $oBestellattribut->key,
+                    'cValue'      => $oBestellattribut->value,
+                ]);
+            }
+        }
+    }
+
+    if (count($keys_updated) > 0) {
+        Shop::DB()->query(
+            "DELETE FROM tbestellattribut
+                WHERE kBestellung = {$kBestellung}
+                    AND kBestellattribut NOT IN (" . implode(', ', $keys_updated) . ")", 10
+        );
+    } else {
+        Shop::DB()->delete('tbestellattribut', 'kBestellung', $kBestellung);
     }
 }

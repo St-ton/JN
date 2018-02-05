@@ -81,11 +81,7 @@
                                         </td>
                                         <td class="text-right">
                                             <strong>
-                                                {if $versandart->fEndpreis == 0}
-                                                    {lang key="freeshipping" section="global"}
-                                                {else}
-                                                    {$versandart->cPreisLocalized}
-                                                {/if}
+                                                {$versandart->cPreisLocalized}
                                             </strong>
                                         </td>
                                     </tr>
@@ -95,7 +91,7 @@
                         {if isset($checkout) && $checkout}
                             {$link={get_static_route id='warenkorb.php'}}
                         {else}
-                            {$link="navi.php?s={$Link->kLink}"}
+                            {$link="index.php?s={$Link->kLink}"}
                         {/if}
                         <a href="{$link}" class="btn btn-default">{lang key="newEstimation" section="checkout"}</a>
                     {else}

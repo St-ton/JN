@@ -4,7 +4,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#sslcheck# cBeschreibung=#sslcheckDesc# cDokuURL=#sslcheckURL#}
 <div id="content" class="container-fluid">
     <div class="container-fluid2">
-        <a href="sslcheck.php?action=check" data-callback="check">Check</a>
+        <a href="#" data-callback="check">Check</a>
         <div id="result">
             {include file='tpl_inc/sslcheck.tpl'}
         </div>
@@ -19,22 +19,19 @@
     {
         var url = $element.attr('href');
 
-        ajaxManagedCall(url, {}, function(result, error) {
+        ioManagedCall(adminPath, 'getSSLCheck', [], function(result, error) {
             var res = result.data;
-            
-            /*
-            if (res.status != 'READY') {
-                window.setTimeout(function() {
-                    check($element);
-                }, 2000);
-            }
-            */
-            
             console.log(res.data);
             $('#result').html(res.tpl);
         });
     }
 
+    /**
+     * @deprecated since 4.06
+     * @param url
+     * @param params
+     * @param callback
+     */
     function ajaxManagedCall(url, params, callback)
     {
         ajaxCall(url, params, function(result, xhr) {

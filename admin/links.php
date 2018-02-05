@@ -31,7 +31,7 @@ if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && validateToken()) {
     $kLink       = (int)$_POST['dellink'];
     $kLinkgruppe = (int)$_POST['kLinkgruppe'];
     removeLink($kLink, $kLinkgruppe);
-    $hinweis .= 'Link erfolgreich gel&ouml;scht!';
+    $hinweis   .= 'Link erfolgreich gel&ouml;scht!';
     $clearCache = true;
     $step       = 'uebersicht';
     $_POST      = [];
@@ -65,7 +65,7 @@ if ((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0 && valid
         $oLink->delete(false, $oLink->kLinkgruppe);
     }
     Shop::DB()->delete('tlink', 'kLinkgruppe', $kLinkgruppe);
-    $hinweis .= 'Linkgruppe erfolgreich gel&ouml;scht!';
+    $hinweis   .= 'Linkgruppe erfolgreich gel&ouml;scht!';
     $clearCache = true;
     $step       = 'uebersicht';
     $_POST      = [];
@@ -77,8 +77,8 @@ if (isset($_POST['delconfirmlinkgruppe']) && (int)$_POST['delconfirmlinkgruppe']
 }
 
 if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken()) {
-    $sprachen     = gibAlleSprachen();
-    $hasHTML_arr  = [];
+    $sprachen    = gibAlleSprachen();
+    $hasHTML_arr = [];
 
     foreach ($sprachen as $sprache) {
         $hasHTML_arr[] = 'cContent_' . $sprache->cISO;
@@ -128,13 +128,13 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
         $kLink      = 0;
         if ((int)$_POST['kLink'] === 0) {
             //einfuegen
-            $kLink = Shop::DB()->insert('tlink', $link);
+            $kLink    = Shop::DB()->insert('tlink', $link);
             $hinweis .= 'Link wurde erfolgreich hinzugef&uuml;gt.';
         } else {
             //updaten
-            $kLink = (int)$_POST['kLink'];
+            $kLink       = (int)$_POST['kLink'];
             $kLinkgruppe = (int)$_POST['kLinkgruppe'];
-            $revision = new Revision();
+            $revision    = new Revision();
             $revision->addRevision('link', (int)$_POST['kLink'], true);
             Shop::DB()->update('tlink', ['kLink', 'kLinkgruppe'], [$kLink, $kLinkgruppe], $link);
             $hinweis .= "Der Link <strong>$link->cName</strong> wurde erfolgreich ge&auml;ndert.";
@@ -153,13 +153,16 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
                 $nZaehler = $nLetztesBild;
             }
             $imageCount = (count($_FILES['Bilder']['name']) + $nZaehler);
-            for ($i = $nZaehler; $i < $imageCount; $i++) {
-                if ($_FILES['Bilder']['size'][$i - $nZaehler] <= 2097152) {
+            for ($i = $nZaehler; $i < $imageCount; ++$i) {
+                if (!empty($_FILES['Bilder']['size'][$i - $nZaehler])
+                    && $_FILES['Bilder']['error'][$i - $nZaehler] === UPLOAD_ERR_OK
+                ) {
+                    $type         = $_FILES['Bilder']['type'][$i - $nZaehler];
                     $cUploadDatei = $cUploadVerzeichnis . $kLink . '/Bild' . ($i + 1) . '.' .
                         substr(
-                            $_FILES['Bilder']['type'][$i - $nZaehler],
-                            strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/') + 1,
-                            strlen($_FILES['Bilder']['type'][$i - $nZaehler] - strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/')) + 1
+                            $type,
+                            strpos($type, '/') + 1,
+                            strlen($type) - strpos($type, '/') + 1
                         );
                     move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $nZaehler], $cUploadDatei);
                 }
@@ -235,7 +238,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
 if ($continue && ((isset($_POST['kLink']) && (int)$_POST['kLink'] > 0) ||
         (isset($_GET['kLink']) && (int)$_GET['kLink'] && isset($_GET['delpic']))) && validateToken()) {
     $step = 'neuer Link';
-    $link = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'], [verifyGPCDataInteger('kLink'), verifyGPCDataInteger('kLinkgruppe')]);
+    $link = Shop::DB()->select('tlink', 'kLink', verifyGPCDataInteger('kLink'));
     $smarty->assign('Link', $link)
            ->assign('Linkname', getLinkVar($link->kLink, 'cName'))
            ->assign('Linkseo', getLinkVar($link->kLink, 'cSeo'))
@@ -287,13 +290,13 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && va
         if ((int)$_POST['kLinkgruppe'] === 0) {
             //einf?gen
             $kLinkgruppe = Shop::DB()->insert('tlinkgruppe', $linkgruppe);
-            $hinweis .= 'Linkgruppe wurde erfolgreich hinzugef&uuml;gt.';
+            $hinweis    .= 'Linkgruppe wurde erfolgreich hinzugef&uuml;gt.';
         } else {
             //updaten
             $kLinkgruppe = (int)$_POST['kLinkgruppe'];
             Shop::DB()->update('tlinkgruppe', 'kLinkgruppe', $kLinkgruppe, $linkgruppe);
             $hinweis .= "Die Linkgruppe <strong>$linkgruppe->cName</strong> wurde erfolgreich ge&auml;ndert.";
-            $step = 'uebersicht';
+            $step     = 'uebersicht';
         }
         $clearCache = true;
         $sprachen   = gibAlleSprachen();
@@ -337,7 +340,7 @@ if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1
                     if (isset($oLink->oSub_arr) && count($oLink->oSub_arr) > 0) {
                         aenderLinkgruppeRek($oLink->oSub_arr, (int)$_POST['kLinkgruppe'], (int)$_POST['kLinkgruppeAlt']);
                     }
-                    $hinweis .= 'Sie haben den Link "' . $oLink->cName . '" erfolgreich in die Linkgruppe "' .
+                    $hinweis   .= 'Sie haben den Link "' . $oLink->cName . '" erfolgreich in die Linkgruppe "' .
                         $oLinkgruppe->cName . '" verschoben.';
                     $step       = 'uebersicht';
                     $clearCache = true;
@@ -351,7 +354,7 @@ if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1
             $fehler .= 'Fehler: Es konnte kein Link mit Ihrem Key gefunden werden.';
         }
     }
-    $step       = 'uebersicht';
+    $step = 'uebersicht';
 }
 if (isset($_POST['kopiere_in_linkgruppe']) &&
     (int)$_POST['kopiere_in_linkgruppe'] === 1 &&
@@ -395,12 +398,12 @@ if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 &
 
         if (isset($oLink->kLink) && $oLink->kLink > 0 &&
             ((isset($oVaterLink->kLink) && $oVaterLink->kLink > 0) || $kVaterLink == 0)) {
-            $success = true;
-            $upd = new stdClass();
+            $success         = true;
+            $upd             = new stdClass();
             $upd->kVaterLink = $kVaterLink;
             Shop::DB()->update('tlink', ['kLink', 'kLinkgruppe'], [$kLink, $kLinkgruppe], $upd);
             $hinweis .= "Sie haben den Link '" . $oLink->cName . "' erfolgreich verschoben.";
-            $step = 'uebersicht';
+            $step     = 'uebersicht';
         }
         $clearCache = true;
     }
@@ -413,15 +416,16 @@ if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 &
 if ($step === 'uebersicht') {
     $linkgruppen = Shop::DB()->query("SELECT * FROM tlinkgruppe", 2);
     $lCount      = count($linkgruppen);
-    for ($i = 0; $i < $lCount; $i++) {
-        $linkgruppen[$i]->links_nh = Shop::DB()->selectAll(
+
+    foreach ($linkgruppen as $linkgruppe) {
+        $linkgruppe->links_nh = Shop::DB()->selectAll(
             'tlink',
             'kLinkgruppe',
-            (int)$linkgruppen[$i]->kLinkgruppe,
+            (int)$linkgruppe->kLinkgruppe,
             '*',
             'nSort, cName'
         );
-        $linkgruppen[$i]->links    = build_navigation_subs_admin($linkgruppen[$i]->links_nh);
+        $linkgruppe->links    = build_navigation_subs_admin($linkgruppe->links_nh);
     }
 
     $smarty->assign('kPlugin', verifyGPCDataInteger('kPlugin'))

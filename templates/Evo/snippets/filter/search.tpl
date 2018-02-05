@@ -1,11 +1,10 @@
-<ul class="filter_state nav nav-list">
-    {foreach name=suchfilter from=$NaviFilter->SuchFilter item=oSuchFilter}
-        {assign var=kSuchanfrage value=$oSuchFilter->kSuchanfrage}
+<ul class="filter_search nav nav-list">
+    {foreach name=suchfilter from=$NaviFilter->searchFilterCompat->getOptions() item=searchFilter}
         <li>
-            <a rel="nofollow" href="{$NaviFilter->URL->cAlleSuchFilter[$kSuchanfrage]}" class="active">
+            <a rel="nofollow" href="#" class="{if $searchFilter->isActive()}active{/if}">
+                <span class="badge pull-right">{$searchFilter->getCount()}</span>
                 <span class="value">
-                    <i class="fa fa-square-o text-muted"></i> {$oSuchFilter->cSuche}
-                    <span class="badge pull-right">{$oSuchFilter->nAnzahl}</span>
+                    <i class="fa {if $searchFilter->isActive()}fa-check-square-o{else}fa-square-o{/if} text-muted"></i> {$searchFilter->getName()}
                 </span>
             </a>
         </li>

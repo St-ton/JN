@@ -567,7 +567,7 @@ class Link extends MainModel
      * @param null|int    $kKey
      * @param null|object $oObj
      * @param null|mixed  $xOption
-     * @param nulll|int   $kLinkgruppe
+     * @param null|int   $kLinkgruppe
      */
     public function __construct($kKey = null, $oObj = null, $xOption = null, $kLinkgruppe = null)
     {
@@ -682,23 +682,10 @@ class Link extends MainModel
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $mValue = "'" . Shop::DB()->realEscape(
-                            call_user_func(
-                                [
-                                    &$this,
-                                    $cMethod
-                                ]
-                            )
-                        ) . "'";
-                    if (call_user_func(
-                            [
-                                &$this,
-                                $cMethod
-                            ]
-                        ) === null
-                    ) {
-                        $mValue = 'NULL';
-                    }
+                    $val        = $this->$cMethod();
+                    $mValue     = $val === null
+                        ? 'NULL'
+                        : ("'" . Shop::DB()->realEscape($val) . "'");
                     $cSet_arr[] = "{$cMember} = {$mValue}";
                 }
             }
@@ -707,9 +694,8 @@ class Link extends MainModel
             $cQuery .= " WHERE kLink = {$this->getLink()} AND klinkgruppe = {$this->getLinkgruppe()}";
 
             return Shop::DB()->query($cQuery, 3);
-        } else {
-            throw new Exception("ERROR: Object has no members!");
         }
+        throw new Exception("ERROR: Object has no members!");
     }
 
     /**

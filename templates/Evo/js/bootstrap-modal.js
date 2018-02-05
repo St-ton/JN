@@ -81,7 +81,7 @@
                     .closest(".modal-dialog");
 
                 var title = $modal
-                    .find('.modal-body h1')
+                    .find('.modal-body h1');
 
                 if (title.length > 0 && title.text().length > 0) {
                     $modal.find('.modal-title').text(title.text());
@@ -439,6 +439,14 @@
 
             // Lazy loading
             var $ref = getModalInstance();
+
+            if (typeof params.keyboard !== 'undefined') {
+                $ref.attr('data-keyboard', params.keyboard);
+            }
+
+            if (typeof params.tabindex !== 'undefined') {
+                $ref.attr('tabindex', params.tabindex);
+            }
 
             //#region change size
             $ref.find(".modal-dialog")

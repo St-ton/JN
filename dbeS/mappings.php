@@ -238,7 +238,8 @@ $mArtikel = [
 ];
 
 $mArtikelQuickSync = [
-    'fLagerbestand'
+    'fLagerbestand',
+    'fStandardpreisNetto'
 ];
 
 $mPreise = [
@@ -457,7 +458,8 @@ $mMerkmal = [
     'nSort',
     'cName',
     'nGlobal',
-    'cTyp'
+    'cTyp',
+    'nMehrfachauswahl'
 ];
 
 $mMerkmalSprache = [

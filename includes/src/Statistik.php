@@ -5,12 +5,6 @@
  */
 
 /**
- * Statistik Klasse
- *
- * @package eazySales.Shop.Basic
- */
-
-/**
  * Class Statistik
  */
 class Statistik
@@ -465,6 +459,11 @@ class Statistik
                 case 4:    // Jahre
                     $start = mktime(0, 0, 0, 1, 1, date('Y', $this->nStampVon));
                     $end   = mktime(23, 59, 59, 12, 31, date('Y', $this->nStampBis));
+                    break;
+
+                default:
+                    $start = 0;
+                    $end   = 0;
                     break;
             }
 

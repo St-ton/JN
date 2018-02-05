@@ -5,80 +5,17 @@
 
 (function () {
     'use strict';
-    
+
     if (!$.evo) {
-        $.evo = { 'showDebug' : false };
+        $.evo = {};
     }
 
-    var EvoClass = function (options) {
-        this.init(options);
-    };
-
-    EvoClass.VERSION = '1.0.0';
-
-    EvoClass.DEFAULTS = { captcha: {} };
+    var EvoClass = function() {};
 
     EvoClass.prototype = {
+        options: { captcha: {} },
 
         constructor: EvoClass,
-
-        init: function (options) {
-            this.options = $.extend({}, EvoClass.DEFAULTS, options);
-        },
-
-        /*
-        generateEvoSlider: function () {
-            var slideNum = 3,
-                containerWidth,
-                target,
-                slideWidthPercent,
-                cellCount,
-                item,
-                items;
-            $('.evo-slider > .carousel-inner').each(function (index, el) {
-                containerWidth = $(this).parent().width();
-                target = $(this).parent().data('item-width');
-                slideNum = 1;
-                if (parseFloat(target) > 0) {
-                    slideNum = Math.floor(containerWidth / target);
-                }
-                items = $(this).parent().data('item-count');
-                if (parseInt(items) > 0) {
-                    slideNum = items;
-                }
-                //cellWidth = (containerWidth / slideNum) - 1;
-                slideWidthPercent = Math.floor(100 / slideNum);
-                cellCount = 0;
-                item = null;
-                items = $(el).find('.product-wrapper');
-
-                items.find('.product-cell').css('margin-bottom', 0);
-
-                $(el).empty();
-
-                items.each(function () {
-                    if (cellCount === 0) {
-                        item = $('<div class="item"></div>');
-                    }
-
-                    // $(this).css('width', cellWidth).appendTo(item);
-                    $(this).css('width', slideWidthPercent + '%').appendTo(item);
-
-                    cellCount++;
-
-                    if (cellCount >= slideNum) {
-                        $(el).append(item);
-                        cellCount = 0;
-                    }
-                });
-
-                $(el).append(item).children('.item').first().addClass('active');
-                $(this).removeClass('hidden');
-            });
-            
-            $('.evo-slider').carousel('cycle');
-        },
-        */
 
         generateSlickSlider: function() {
             /*
@@ -165,44 +102,24 @@
             }
         },
 
-        productTabs: function() {
-            var tabAnchor = $('#article-tabs');
-            if (tabAnchor && tabAnchor.hasClass('tab-content')) {
-                var items = '<ul id="article-tabs-list" class="nav nav-tabs">';
-
-                $('.panel-heading[data-parent="#article-tabs"]').each(function () {
-                    var href = $(this).attr('data-target'),
-                        aria = href.replace('#', ''),
-                        title = $(this).text();
-                    items += '<li role="presentation" class="' + aria + '-list"><a href="' + href + '" aria-controls="' + aria + '" role="tab" data-toggle="tab">' + title + '</a></li>';
-                    $(this).remove();
-                });
-
-                $('#article-tabs.tab-content').before(items + '</ul>');
-
-                $('#article-tabs-list li:first,#article-tabs.tab-content div:first').addClass('active');
-
-                $('#article-tabs-list').on('click', 'a', function (e) {
-                    e.preventDefault();
-                    $(this).tab('show');
-                    if ($(e.target).attr('aria-controls') === 'tab-preisverlauf' && typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
-                        window.priceHistoryChart = new Chart(window.ctx).Bar(window.chartData, {
-                            responsive:      true,
-                            scaleBeginAtZero: false,
-                            tooltipTemplate: "<%if (label){%><%=label%> - <%}%><%= parseFloat(value).toFixed(2).replace('.', ',') %> " + window.chartDataCurrency
-                        });
-                    }
-                });
-
-                if (window.location.hash) {
-                    $('#article-tabs-list').find('a[href="' + window.location.hash + '"]').tab('show');
+        productTabsPriceFlow: function() {
+            $('a[href="#tab-priceFlow"]').on('shown.bs.tab', function () {
+                if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
+                    window.priceHistoryChart = new Chart(window.ctx).Bar(window.chartData, {
+                        responsive:      true,
+                        scaleBeginAtZero: false,
+                        tooltipTemplate: "<%if (label){%><%=label%> - <%}%><%= parseFloat(value).toFixed(2).replace('.', ',') %> " + window.chartDataCurrency
+                    });
                 }
-            }
+            });
         },
 
         autoheight: function() {
             $('.row-eq-height').each(function(i, e) {
-                $(e).find('[class*="col-"] > *').responsiveEqualHeightGrid();
+                $(e).children('[class*="col-"]').children().responsiveEqualHeightGrid();
+            });
+            $('.row-eq-height.gallery > [class*="col-"]').each(function(i, e) {
+                $(e).height($('div', $(e)).outerHeight());
             });
         },
         
@@ -210,21 +127,25 @@
             $('[data-toggle="tooltip"]').tooltip();
         },
 
-        imagebox: function() {
-            $('.image-box').each(function(i, item) {
+        imagebox: function(wrapper) {
+            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper),
+                square   = $('.image-box', $wrapper).first().height() + 'px',
+                padding  = $(window).height() / 2;
+
+            $('.image-box', $wrapper).each(function(i, item) {
                 var box = $(this),
                     img = box.find('img'),
                     src = img.data('src');
-                box.addClass('loading');
-                    
+
+                img.css('max-height', square);
+                box.css('max-height', square);
+
                 if (src && src.length > 0) {
                     //if (src === 'gfx/keinBild.gif') {
                     //    box.removeClass('loading')
                     //        .addClass('none');
                     //    box.parent().find('.overlay-img').remove();
                     //} else {
-                        var padding = $(window).height() / 2,
-                            square = box.width() + 'px';
                         $(img).lazy(padding, function() {
                             $(this).load(function() {
                                 img.css('max-height', square);
@@ -264,19 +185,21 @@
                 buttons: false,
                 title: options.title, 
                 message: options.text,
+                keyboard: true,
+                tabindex: -1,
                 onShown: function() {
-                    $.evo.extended().generateSlickSlider();
+                    $.evo.generateSlickSlider();
                 }
             });
         },
         
         renderCaptcha: function(parameters) {
-            if (typeof parameters != 'undefined') {
+            if (typeof parameters !== 'undefined') {
                 this.options.captcha = 
                     $.extend({}, this.options.captcha, parameters);
             }
 
-            if (typeof grecaptcha == 'undefined' && !this.options.captcha.loaded) {
+            if (typeof grecaptcha === 'undefined' && !this.options.captcha.loaded) {
                 this.options.captcha.loaded = true;
                 var lang                    = document.documentElement.lang;
                 $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=g_recaptcha_callback&hl=" + lang);
@@ -293,13 +216,15 @@
         },
         
         popupDep: function() {
-            $('.popup-dep').click(function(e) {
+            $('#main-wrapper').on('click', '.popup-dep', function(e) {
                 var id    = '#popup' + $(this).attr('id'),
                     title = $(this).attr('title'),
                     html  = $(id).html();
                 eModal.alert({
                     message: html,
                     title: title,
+                    keyboard: true,
+                    tabindex: -1,
                     onShown:function () {
                         //the modal just copies all the html.. so we got duplicate IDs which confuses recaptcha
                         var recaptcha = $('.tmp-modal-content .g-recaptcha');
@@ -341,7 +266,7 @@
         },
 
         smoothScrollToAnchor: function(href, pushToHistory) {
-            var anchorRegex = /^#[\w]+$/;
+            var anchorRegex = /^#[\w\-]+$/;
             if (!anchorRegex.test(href)) {
                 return false;
             }
@@ -393,52 +318,66 @@
             });
         },
 
-        register: function() {
-            this.addSliderTouchSupport();
-            this.productTabs();
-            // this.generateEvoSlider();
-            this.generateSlickSlider();
-            $('.nav-pills, .nav-tabs').tabdrop();
-            this.autoheight();
-            this.tooltips();
-            this.imagebox();
-            this.renderCaptcha();
-            this.popupDep();
-            this.popover();
-            this.preventDropdownToggle();
-            this.smoothScroll();
+        checkout: function() {
+            // show only the first submit button (i.g. the button from payment plugin)
+            var $submits = $('#checkout-shipping-payment')
+                .closest('form')
+                .find('input[type="submit"]');
+            $submits.addClass('hidden');
+            $submits.first().removeClass('hidden');
+
+            $('input[name="Versandart"]', '#checkout-shipping-payment').change(function() {
+                var id    = parseInt($(this).val());
+                var $form = $(this).closest('form');
+
+                if (isNaN(id)) {
+                    return;
+                }
+
+                $form.find('fieldset, input[type="submit"]')
+                    .attr('disabled', true);
+
+                var url = 'bestellvorgang.php?kVersandart=' + id;
+                $.evo.loadContent(url, function() {
+                    $.evo.checkout();
+                }, null, true);
+            });
         },
-        
-        loadContent: function(url, callback, error, animation) {
-            var that = this;
-            var $wrapper = $('#result-wrapper');
+
+        loadContent: function(url, callback, error, animation, wrapper) {
+            var that        = this;
+            var $wrapper    = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
+            var ajaxOptions = {data: 'isAjax'};
             if (animation) {
                 $wrapper.addClass('loading');
             }
 
-            $.ajax(url, {data: 'isAjax'}).done(function(html) {
+            that.trigger('load.evo.content', { url: url });
+
+            $.ajax(url, ajaxOptions).done(function(html) {
                 var $data = $(html);
                 if (animation) {
                     $data.addClass('loading');
                 }
                 $wrapper.replaceWith($data);
                 $wrapper = $data;
-                if (typeof callback == 'function') {
+                if (typeof callback === 'function') {
                     callback();
                 }
             })
             .fail(function() {
-                if (typeof error == 'function') {
+                if (typeof error === 'function') {
                     error();
                 }
             })
             .always(function() {
                 $wrapper.removeClass('loading');
-                that.trigger('contentLoaded');
+                that.trigger('contentLoaded'); // compatibility
+                that.trigger('loaded.evo.content', { url: url });
             });
         },
         
-        spinner: function() {
+        spinner: function(target) {
             var opts = {
               lines: 12             // The number of lines to draw
             , length: 7             // The length of each line
@@ -460,47 +399,70 @@
             , shadow: false         // Whether to render a shadow
             , hwaccel: false        // Whether to use hardware acceleration (might be buggy)
             , position: 'absolute'  // Element positioning
+            };
+
+            if (typeof target === 'undefined') {
+                target = document.getElementsByClassName('product-offer')[0];
             }
-            var target = document.getElementsByClassName('product-offer')[0];
-            var elem = new Spinner(opts).spin(target);
-            return elem;
+
+            return new Spinner(opts).spin(target);
         },
 
         trigger: function(event, args) {
             $(document).trigger('evo:' + event, args);
+            return this;
+        },
+
+        error: function() {
+            if (console && console.error) {
+                console.error(arguments);
+            }
+        },
+
+        /**
+         * $.evo.extended() is deprecated, please use $.evo instead
+         */
+        extended: function() {
+            return $.evo;
+        },
+
+        register: function() {
+            this.addSliderTouchSupport();
+            this.productTabsPriceFlow();
+            this.generateSlickSlider();
+            $('.nav-pills, .nav-tabs').tabdrop();
+            this.autoheight();
+            this.tooltips();
+            this.imagebox();
+            this.renderCaptcha();
+            this.popupDep();
+            this.popover();
+            this.preventDropdownToggle();
+            this.smoothScroll();
+            this.checkout();
         }
     };
 
     var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
     if (ie && parseInt(ie) <= 9) {
         $(document).ready(function () {
-            $.evo.extended().register();
+            $.evo.register();
         });
     } else {
         $(window).on('load', function () {
-            $.evo.extended().register();
+            $.evo.register();
         });
     }
 
     $(window).on('resize', function () {
-        $.evo.extended().autoheight();
+        $.evo.autoheight();
     });
 
     // PLUGIN DEFINITION
     // =================
-
-    $.evo.extended = function(option) {
-        return new EvoClass(option);
-    };
-    
-    $.evo.error = function() {
-        if (console && console.error) {
-            console.error(arguments);
-        }
-    }
-
+    $.evo = new EvoClass();
 })(jQuery);
 
 function g_recaptcha_callback() {
-    $.evo.extended().renderCaptcha();
+    $.evo.renderCaptcha();
 }

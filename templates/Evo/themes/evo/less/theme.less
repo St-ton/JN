@@ -1,24 +1,51 @@
-
 //
 // Load core variables and mixins
 // --------------------------------------------------
-
 @import "../../base/less/base";
 @import "variables";
 
-@import url("//fonts.googleapis.com/css?family=Open+Sans:400,700");
-@import url("//fonts.googleapis.com/css?family=Merriweather:400,700");
+//import via CDN
+//@import url("//fonts.googleapis.com/css?family=Open+Sans:400,700");
+//@import url("//fonts.googleapis.com/css?family=Merriweather:400,700");
+//import local files
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Open Sans'), local('OpenSans-Regular'), url('@{icon-font-path}/opensans/OpenSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Open Sans Bold'), local('OpenSans-Bold'), url('@{icon-font-path}/opensans/OpenSans-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Merriweather';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Merriweather'), local('Merriweather-Regular'), url('@{icon-font-path}/merriweather/Merriweather-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Merriweather';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Merriweather Bold'), local('Merriweather-Bold'), url('@{icon-font-path}/merriweather/Merriweather-Bold.ttf') format('truetype');
+}
 
 //
 // Buttons
 // --------------------------------------------------
 
 .btn {
-  border-radius: 2px;
+    border-radius: 2px;
 
-  &.form-control {
-    border-radius: @input-border-radius;
-  }
+    &.form-control {
+        border-radius: @input-border-radius;
+    }
 }
 
 // Common styles
@@ -35,64 +62,81 @@
 }
 
 .btn-primary {
-    border-color: @brand-primary!important;
+    border-color: @brand-primary !important;
 }
 
 .badge {
-  background-color: @brand-secondary;
+    background-color: @brand-secondary;
 }
 
 // Mixin for generating new styles
 .btn-styles(@btn-color: #555) {
-  .reset-filter(); // Disable gradients for IE9 because filter bleeds through rounded corners; see https://github.com/twbs/bootstrap/issues/10620
-  background-repeat: repeat-x;
-  border-color: darken(@btn-color, 18%);
+    .reset-filter(); // Disable gradients for IE9 because filter bleeds through rounded corners; see https://github.com/twbs/bootstrap/issues/10620
+    background-repeat: repeat-x;
+    border-color: darken(@btn-color, 18%);
 
-  &:hover,
-  &:focus  {
-    background-color: darken(@btn-color, 8%);
-    background-position: 0 -15px;
-  }
+    &:hover,
+    &:focus {
+        background-color: darken(@btn-color, 8%);
+        background-position: 0 -15px;
+    }
 
-  &:active,
-  &.active {
-    .box-shadow(none);
-    background-color: darken(@btn-color, 15%);
-    border-color: darken(@btn-color, 20%);
-  }
+    &:active,
+    &.active {
+        .box-shadow(none);
+        background-color: darken(@btn-color, 15%);
+        border-color: darken(@btn-color, 20%);
+    }
 
-  &.disabled,
-  &:disabled,
-  &[disabled] {
-    background-color: darken(@btn-color, 12%);
-    background-image: none;
-  }
+    &.disabled,
+    &:disabled,
+    &[disabled] {
+        background-color: darken(@btn-color, 12%);
+        background-image: none;
+    }
 }
 
 // Common styles
 .btn {
-  // Remove the gradient for the pressed/active state
-  &:active,
-  &.active {
-    background-image: none;
-  }
+    // Remove the gradient for the pressed/active state
+    &:active,
+    &.active {
+        background-image: none;
+    }
 }
 
 // Apply the mixin to the buttons
-.btn-default { .btn-styles(@btn-default-bg);
-                &:active, &.active {
-                    .btn-styles(darken(@btn-info-bg, 10%)); color: @btn-info-color;
-                }
+.btn-default {
+    .btn-styles(@btn-default-bg);
+    &:active, &.active {
+        .btn-styles(darken(@btn-info-bg, 10%));
+        color: @btn-info-color;
+    }
 }
-.btn-primary { .btn-styles(@btn-primary-bg); }
-.btn-success { .btn-styles(@btn-success-bg); }
-.btn-info    { .btn-styles(@btn-info-bg);    }
-.btn-warning { .btn-styles(@btn-warning-bg); }
-.btn-danger  { .btn-styles(@btn-danger-bg);  }
+
+.btn-primary {
+    .btn-styles(@btn-primary-bg);
+}
+
+.btn-success {
+    .btn-styles(@btn-success-bg);
+}
+
+.btn-info {
+    .btn-styles(@btn-info-bg);
+}
+
+.btn-warning {
+    .btn-styles(@btn-warning-bg);
+}
+
+.btn-danger {
+    .btn-styles(@btn-danger-bg);
+}
 
 // Form Styles
 
-.form-group label {
+.form-group label:not(.variation) {
     font-size: 12px;
     text-transform: uppercase;
     font-weight: 400;
@@ -104,29 +148,29 @@
 // --------------------------------------------------
 
 .breadcrumb {
-  padding-bottom: 5px;
-  padding-left: 0;
-  margin-bottom: @line-height-computed;
-  list-style: none;
-      font-size: @font-size-small;
-  border-bottom: @navbar-border-dotted;
-  background-color: transparent;
+    padding-bottom: 5px;
+    padding-left: 0;
+    margin-bottom: @line-height-computed;
+    list-style: none;
+    font-size: @font-size-small;
+    border-bottom: @navbar-border-dotted;
+    background-color: transparent;
 
-  > li {
-    display: inline-block;
+    > li {
+        display: inline-block;
 
-    + li:before {
-      content: "\00bb"; // Unicode space added since inline-block means non-collapsing white-space
-      padding: 0 5px;
-      color: @breadcrumb-color;
+        + li:before {
+            content: "\00bb"; // Unicode space added since inline-block means non-collapsing white-space
+            padding: 0 5px;
+            color: @breadcrumb-color;
+        }
     }
-  }
-  > li a.last {
-    text-decoration: underline;
-  }
-  > .active {
-    color: @breadcrumb-active-color;
-  }
+    > li a.last {
+        text-decoration: underline;
+    }
+    > .active {
+        color: @breadcrumb-active-color;
+    }
 }
 
 @media (min-width: @screen-md-min) {
@@ -140,12 +184,12 @@
 
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-  line-height: @headings-line-height;
-  padding-bottom:   @padding-small-vertical;
-  margin-bottom:    @margin-large;
-  font-family:      @font-family-serif;
-  color:            @brand-secondary;
-  font-weight:      @font-weight-normal;
+    line-height: @headings-line-height;
+    padding-bottom: @padding-small-vertical;
+    margin-bottom: @margin-large;
+    font-family: @font-family-serif;
+    color: @brand-secondary;
+    font-weight: @font-weight-normal;
 }
 
 h1, h2 {
@@ -158,10 +202,10 @@ h1, h2 {
     padding: @padding-large-vertical;
     font-size: @font-size-base;
     border: 1px solid @gray-base;
-}
 
-.news-categories .label-default:hover {
-    background: @gray-base!important;
+    &:hover {
+        background: @gray-base !important;
+    }
 }
 
 //
@@ -170,7 +214,7 @@ h1, h2 {
 
 .thumbnail,
 .img-thumbnail {
-  .box-shadow(0 1px 2px rgba(0,0,0,.075));
+    .box-shadow(0 1px 2px rgba(0, 0, 0, .075));
 }
 
 //
@@ -194,9 +238,9 @@ aside .panel-default .panel-heading {
 }
 
 aside .panel-default > .panel-heading > .panel-title {
-  color: @text-color;
-  border-bottom: @navbar-border-dotted;
-  padding: 15px 0;
+    color: @text-color;
+    border-bottom: @navbar-border-dotted;
+    padding: 15px 0;
 }
 
 //
@@ -205,64 +249,62 @@ aside .panel-default > .panel-heading > .panel-title {
 
 // The dropdown menu (ul)
 .dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: @zindex-dropdown;
-  display: none; // none by default, but block on "open" of the menu
-  float: left;
-  min-width: 160px;
-  padding: 0;
-  margin: 2px 0 0; // override default ul
-  margin-top: -5px;
-  list-style: none;
-  font-size: @font-size-base;
-  text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
-  background-color: @dropdown-bg;
-  border: 1px solid @dropdown-fallback-border; // IE8 fallback
-  border: 1px solid @dropdown-border;
-  border-radius: 0;
-  .box-shadow(3px 3px 3px rgba(0,0,0,0.05));
-  background-clip: padding-box;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: @zindex-dropdown;
+    display: none; // none by default, but block on "open" of the menu
+    float: left;
+    min-width: 160px;
+    padding: 0;
+    margin: 2px 0 0; // override default ul
+    margin-top: -5px;
+    list-style: none;
+    font-size: @font-size-base;
+    text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
+    background-color: @dropdown-bg;
+    border: 1px solid @dropdown-fallback-border; // IE8 fallback
+    border: 1px solid @dropdown-border;
+    border-radius: 0;
+    .box-shadow(3px 3px 3px rgba(0, 0, 0, 0.05));
+    background-clip: padding-box;
 
-  // Aligns the dropdown menu to right
-  //
-  // Deprecated as of 3.1.0 in favor of `.dropdown-menu-[dir]`
-  &.pull-right {
-    right: 0;
-    left: auto;
-  }
+    // Aligns the dropdown menu to right
+    //
+    // Deprecated as of 3.1.0 in favor of `.dropdown-menu-[dir]`
+    &.pull-right {
+        right: 0;
+        left: auto;
+    }
 
-  // Links within the dropdown menu
-  > li > a {
-    display: block;
-    border-bottom: 1px solid @gray-base;
-    padding: 8px 20px;
-    clear: both;
-    font-weight: normal;
-    line-height: @line-height-base;
-    color: @dropdown-link-color;
-    white-space: nowrap; // prevent links from randomly breaking onto new lines
-  }
+    // Links within the dropdown menu
+    > li > a {
+        display: block;
+        border-bottom: 1px solid @gray-base;
+        padding: 8px 20px;
+        clear: both;
+        font-weight: normal;
+        line-height: @line-height-base;
+        color: @dropdown-link-color;
+        white-space: nowrap; // prevent links from randomly breaking onto new lines
+
+        &:hover, &:focus {
+            background-color: darken(@dropdown-link-hover-bg, 5%);
+            color: @brand-primary;
+        }
+    }
+    > .active > a,
+    > .active > a:hover,
+    > .active > a:focus {
+        background-color: darken(@dropdown-link-active-bg, 5%);
+    }
+    > li:last-child > a {
+        border-bottom: 1px solid transparent;
+    }
 }
 
-.box .dropdown-submenu>.dropdown-menu {
-  border-radius: 0;
-}
-
-.dropdown-menu > li > a:hover,
-.dropdown-menu > li > a:focus {
-  background-color: darken(@dropdown-link-hover-bg, 5%);
-  color: @brand-primary;
-}
-.dropdown-menu > .active > a,
-.dropdown-menu > .active > a:hover,
-.dropdown-menu > .active > a:focus {
-  background-color: darken(@dropdown-link-active-bg, 5%);
-}
-
-.dropdown-menu > li:last-child > a {
-  border-bottom: 1px solid transparent;
+.box .dropdown-submenu > .dropdown-menu {
+    border-radius: 0;
 }
 
 #aside_left .nav-list > li {
@@ -272,38 +314,40 @@ aside .panel-default > .panel-heading > .panel-title {
         border-bottom: 1px solid transparent;
     }
 }
+
 aside a, header a {
-  color: @brand-secondary;
+    color: @brand-secondary;
 }
+
 aside .nav-list a:hover, aside .nav-list a:focus, header a:hover, header a:focus {
-  color: @brand-primary;
+    color: @brand-primary;
 }
 
 aside .dropdown-submenu:hover {
-  border-bottom: 1px solid #dfdfdf;
-  border-left: 1px solid #dfdfdf;
-  border-right: 1px solid #fff;
-  .box-shadow(3px 3px 3px rgba(0,0,0,0.05));
+    border-bottom: 1px solid #dfdfdf;
+    border-left: 1px solid #dfdfdf;
+    border-right: 1px solid #fff;
+    .box-shadow(3px 3px 3px rgba(0, 0, 0, 0.05));
 }
 
 aside .dropdown-submenu:hover > a:before {
-  content: "";
-  width: 3px;
-  position: absolute;
-  right: 0;
-  height: 100%;
-  background: #fff;
-  z-index: 1100;
-  top: 0;
+    content: "";
+    width: 3px;
+    position: absolute;
+    right: 0;
+    height: 100%;
+    background: #fff;
+    z-index: 1100;
+    top: 0;
 }
 
 .box .dropdown-submenu:hover > a:after {
-  border-left-color: @brand-primary;
+    border-left-color: @brand-primary;
 }
 
 .dropdown-submenu .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
-  background: @gray-light;
-  color: @brand-primary;
+    background: @gray-light;
+    color: @brand-primary;
 }
 
 #page-actions {
@@ -315,49 +359,45 @@ aside .dropdown-submenu:hover > a:before {
 // --------------------------------------------------
 
 .navbar {
-  border: none;
-  border-radius: 0;
+    border: none;
+    border-radius: 0;
 }
 
 @media (min-width: @screen-md-min) {
     header .navbar > .container {
-      margin-top: 7px;
+        margin-top: 7px;
     }
 }
 
 // Default navbar
 .navbar-default {
-  border-top: @navbar-border-solid;
-  border-bottom: @navbar-border-solid;
+    border-top: @navbar-border-solid;
+    border-bottom: @navbar-border-solid;
     background-color: @body-bg;
-  .reset-filter(); // Remove gradient in IE<10 to fix bug where dropdowns don't get triggered
+    .reset-filter(); // Remove gradient in IE<10 to fix bug where dropdowns don't get triggered
 }
 
 // Inverted navbar
 .navbar-inverse {
-  .reset-filter(); // Remove gradient in IE<10 to fix bug where dropdowns don't get triggered; see https://github.com/twbs/bootstrap/issues/10257
+    .reset-filter(); // Remove gradient in IE<10 to fix bug where dropdowns don't get triggered; see https://github.com/twbs/bootstrap/issues/10257
 }
 
 // Undo rounded corners in static and fixed navbars
 .navbar-static-top,
 .navbar-fixed-top,
 .navbar-fixed-bottom {
-  border-radius: 0;
+    border-radius: 0;
 }
 
 // Fix active state of dropdown items in collapsed mode
 @media (max-width: @grid-float-breakpoint-max) {
-  .navbar .navbar-nav .open .dropdown-menu > .active > a {
-    &,
-    &:hover,
-    &:focus {
-      color: #fff;
+    .navbar .navbar-nav .open .dropdown-menu > .active > a {
+        &,
+        &:hover,
+        &:focus {
+            color: #fff;
+        }
     }
-  }
-}
-
-.navbar-default .navbar-nav > .active > a {
-  background-color: transparent;
 }
 
 //
@@ -365,7 +405,7 @@ aside .dropdown-submenu:hover > a:before {
 // --------------------------------------------------
 
 .top-nav {
-  text-align: center;
+    text-align: center;
 }
 
 .navbar-inverse .container {
@@ -373,16 +413,16 @@ aside .dropdown-submenu:hover > a:before {
 }
 
 .navbar-right .btn {
-  margin: 0 30px 0 0;
+    margin: 0 30px 0 0;
 }
 
 form.navbar-right {
-  margin: 0 -15px 0 0;
+    margin: 0 -15px 0 0;
 }
 
 .navbar-default .nav > li > a, .navbar-default .btn {
-  position: relative;
-  padding: 18px 15px 18px 15px;
+    position: relative;
+    padding: 18px 15px 18px 15px;
 }
 
 .nav > li > a {
@@ -410,7 +450,7 @@ footer h3,
 footer h4,
 footer h5,
 footer h6 {
-  color: #fff;
+    color: #fff;
 }
 
 //
@@ -418,11 +458,21 @@ footer h6 {
 // --------------------------------------------------
 
 // Apply the mixin to the alerts
-.alert-success    { background: @alert-success-bg; }
-.alert-info       { background: @alert-info-bg; }
-.alert-warning    { background: @alert-warning-bg; }
-.alert-danger     { background: @alert-danger-bg; }
+.alert-success {
+    background: @alert-success-bg;
+}
 
+.alert-info {
+    background: @alert-info-bg;
+}
+
+.alert-warning {
+    background: @alert-warning-bg;
+}
+
+.alert-danger {
+    background: @alert-danger-bg;
+}
 
 //
 // Progress bars
@@ -430,25 +480,39 @@ footer h6 {
 
 // Give the progress background some depth
 .progress {
-  #gradient > .vertical(@start-color: darken(@progress-bg, 4%); @end-color: @progress-bg)
+    #gradient > .vertical(@start-color: darken(@progress-bg, 4%); @end-color: @progress-bg)
 }
 
 // Mixin for generating new styles
 .progress-bar-styles(@color) {
-  #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 10%));
+    #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 10%));
 }
 
 // Apply the mixin to the progress bars
-.progress-bar            { .progress-bar-styles(@progress-bar-bg); }
-.progress-bar-success    { .progress-bar-styles(@progress-bar-success-bg); }
-.progress-bar-info       { .progress-bar-styles(@progress-bar-info-bg); }
-.progress-bar-warning    { .progress-bar-styles(@progress-bar-warning-bg); }
-.progress-bar-danger     { .progress-bar-styles(@progress-bar-danger-bg); }
+.progress-bar {
+    .progress-bar-styles(@progress-bar-bg);
+}
+
+.progress-bar-success {
+    .progress-bar-styles(@progress-bar-success-bg);
+}
+
+.progress-bar-info {
+    .progress-bar-styles(@progress-bar-info-bg);
+}
+
+.progress-bar-warning {
+    .progress-bar-styles(@progress-bar-warning-bg);
+}
+
+.progress-bar-danger {
+    .progress-bar-styles(@progress-bar-danger-bg);
+}
 
 // Reset the striped class because our mixins don't do multiple gradients and
 // the above custom styles override the new `.progress-bar-striped` in v3.2.0.
 .progress-bar-striped {
-  #gradient > .striped();
+    #gradient > .striped();
 }
 
 //
@@ -456,12 +520,12 @@ footer h6 {
 // --------------------------------------------------
 
 .panel-heading h5 {
-  margin: 0;
-  font-size: @font-size-large;
+    margin: 0;
+    font-size: @font-size-large;
 }
 
 .form-inner.last .panel {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .panel-title {
@@ -469,7 +533,7 @@ footer h6 {
 }
 
 .panel-title .btn-default {
-  color: @btn-default-color;
+    color: @btn-default-color;
 }
 
 //
@@ -477,25 +541,24 @@ footer h6 {
 // --------------------------------------------------
 
 .price {
-  font-size: @font-size-large;
-  font-family: @font-family-serif;
+    font-size: @font-size-large;
+    font-family: @font-family-serif;
 }
 
 .product-offer .price {
-  font-size: @font-size-xl;
+    font-size: @font-size-xl;
 }
 
 //
 // Thumbnails
 // --------------------------------------------------
 
-
 //
 // Filter bar
 // --------------------------------------------------
 
 .view-change {
-  padding-top: 3px;
+    padding-top: 3px;
 }
 
 //
@@ -503,14 +566,14 @@ footer h6 {
 // --------------------------------------------------
 
 .well {
-  border-radius: 0;
-  border: none;
-  box-shadow: none;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
 }
 
 .well > .panel-default {
-  box-shadow: none;
-  border: 1px solid #d8d8d8;
+    box-shadow: none;
+    border: 1px solid #d8d8d8;
 }
 
 //
@@ -518,14 +581,14 @@ footer h6 {
 // --------------------------------------------------
 
 .progress {
-  background-image: none;
-  box-shadow: none;
-  background-color: @gray-base;
+    background-image: none;
+    box-shadow: none;
+    background-color: @gray-base;
 }
 
 .progress-bar {
-  background-image: none;
-  box-shadow: none;
+    background-image: none;
+    box-shadow: none;
 }
 
 //
@@ -533,17 +596,17 @@ footer h6 {
 // --------------------------------------------------
 
 .comment strong {
-  border-bottom: 2px dotted #d8d8d8;
-  padding-bottom: 5px;
-  width: 100%;
-  display: block;
+    border-bottom: 2px dotted #d8d8d8;
+    padding-bottom: 5px;
+    width: 100%;
+    display: block;
 }
 
 blockquote {
-  font-size: @font-size-base;
-  border-left: none;
-  margin-top: 5px;
-  padding: 10px 10px 0 5px;
+    font-size: @font-size-base;
+    border-left: none;
+    margin-top: 5px;
+    padding: 10px 10px 0 5px;
 }
 
 //
@@ -560,24 +623,25 @@ blockquote {
 
 .nav-tabs {
     margin-bottom: 0;
-}
 
-.nav-tabs > li > a {
-    margin-right: 2px;
-    background-color: @gray-light;
-    color: @gray;
-    line-height: 1.42857143;
-    border: 1px solid transparent;
-    border-radius: 4px 4px 0 0;
-}
-
-.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
-    color: @brand-primary;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-bottom-color: transparent;
-    cursor: default;
-    font-weight: bold;
+    > li > a {
+        margin-right: 2px;
+        background-color: @gray-light;
+        color: @gray;
+        line-height: 1.42857143;
+        border: 1px solid transparent;
+        border-radius: 4px 4px 0 0;
+    }
+    > li.active {
+        > a, > a:hover, > a:focus {
+            color: @brand-primary;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-bottom-color: transparent;
+            cursor: default;
+            font-weight: bold;
+        }
+    }
 }
 
 footer {

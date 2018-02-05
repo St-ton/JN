@@ -15,7 +15,7 @@
             {assign var='Link' value=LinkHelper::getInstance()->getPageLink($activeId)}
         {/if}
     {/if}
-    {if !isset($activeParents) && (isset($Link))}
+    {if !isset($activeParents)}
         {assign var='activeParents' value=LinkHelper::getInstance()->getParentsArray($activeId)}
     {/if}
     {if !isset($links)}

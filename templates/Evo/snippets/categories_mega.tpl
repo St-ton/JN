@@ -11,8 +11,8 @@
     {get_category_array categoryId=0 assign='categories'}
     {if !empty($categories)}
         {if !isset($activeId)}
-            {if isset($NaviFilter->Kategorie) && intval($NaviFilter->Kategorie->kKategorie) > 0}
-                {$activeId = $NaviFilter->Kategorie->kKategorie}
+            {if $NaviFilter->hasCategory()}
+                {$activeId = $NaviFilter->getCategory()->getValue()}
             {elseif $nSeitenTyp == 1 && isset($Artikel)}
                 {assign var='activeId' value=$Artikel->gibKategorie()}
             {elseif $nSeitenTyp == 1 && isset($smarty.session.LetzteKategorie)}
@@ -30,7 +30,7 @@
                 {assign var='isDropdown' value=true}
             {/if}
             <li class="{if $isDropdown}dropdown megamenu-fw{/if}{if $category->kKategorie == $activeId || (isset($activeParents[0]) && $activeParents[0]->kKategorie == $category->kKategorie)} active{/if}">
-                <a href="{$category->cURL}"{if $isDropdown} class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true"{/if}>
+                <a href="{$category->cURLFull}"{if $isDropdown} class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true"{/if}>
                     {$category->cKurzbezeichnung}
                     {if $isDropdown}<span class="caret"></span>{/if}
                 </a>
@@ -39,7 +39,7 @@
                         <li>
                             <div class="megamenu-content">
                                 <div class="category-title text-center">
-                                    <a href="{$category->cURL}">
+                                    <a href="{$category->cURLFull}">
                                         {$category->cName}
                                     </a>
                                 </div>
@@ -51,7 +51,7 @@
                                         <div class="col-lg-3 visible-lg">
                                             <div class="mega-info-lg top15">
                                                 {if $category->cBildURL !== 'gfx/keinBild.gif'}
-                                                    <a href="{$category->cURL}">
+                                                    <a href="{$category->cURLFull}">
                                                         <img src="{$category->cBildURLFull}" class="img-responsive"
                                                              alt="{$category->cKurzbezeichnung|escape:'html'}">
                                                     </a>
@@ -74,7 +74,7 @@
                                                         <div class="category-wrapper top15{if $sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie)} active{/if}">
                                                             {if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                                 <div class="img text-center">
-                                                                    <a href="{$sub->cURL}">
+                                                                    <a href="{$sub->cURLFull}">
                                                                         <img src="{$sub->cBildURLFull}" class="image"
                                                                              alt="{$category->cKurzbezeichnung|escape:'html'}">
                                                                     </a>
@@ -82,7 +82,7 @@
                                                             {/if}
                                                             <div class="caption{if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">
                                                                 <h5 class="title">
-                                                                    <a href="{$sub->cURL}">
+                                                                    <a href="{$sub->cURLFull}">
                                                                         <span>
                                                                             {$sub->cKurzbezeichnung}
                                                                         </span>
@@ -100,12 +100,12 @@
                                                                     {foreach name='subsub_categories' from=$subsub_categories item='subsub'}
                                                                         {if $smarty.foreach.subsub_categories.iteration <= $max_subsub_items}
                                                                             <li{if $subsub->kKategorie == $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->kKategorie)} class="active"{/if}>
-                                                                                <a href="{$subsub->cURL}">
+                                                                                <a href="{$subsub->cURLFull}">
                                                                                     {$subsub->cKurzbezeichnung}
                                                                                 </a>
                                                                             </li>
                                                                         {else}
-                                                                            <li class="more"><a href="{$sub->cURL}"><i class="fa fa-chevron-circle-right"></i> {lang key="more" section="global"} <span class="remaining">({math equation='total - max' total=$subsub_categories|count max=$max_subsub_items})</span></a></li>
+                                                                            <li class="more"><a href="{$sub->cURLFull}"><i class="fa fa-chevron-circle-right"></i> {lang key="more" section="global"} <span class="remaining">({math equation='total - max' total=$subsub_categories|count max=$max_subsub_items})</span></a></li>
                                                                             {break}
                                                                         {/if}
                                                                     {/foreach}
@@ -138,7 +138,7 @@
 {if isset($Einstellungen.template.megamenu.show_manufacturers) && $Einstellungen.template.megamenu.show_manufacturers !== 'N' && isset($Einstellungen.global.global_sichtbarkeit) && ($Einstellungen.global.global_sichtbarkeit != 3 || isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde != 0)}
     {get_manufacturers assign='manufacturers'}
     {if !empty($manufacturers)}
-        <li class="dropdown megamenu-fw{if (isset($NaviFilter->Hersteller) && !empty($NaviFilter->Hersteller->kHersteller)) || $nSeitenTyp == PAGE_HERSTELLER} active{/if}">
+        <li class="dropdown megamenu-fw{if $NaviFilter->hasManufacturer() || $nSeitenTyp == PAGE_HERSTELLER} active{/if}">
             {assign var="linkKeyHersteller" value=LinkHelper::getInstance()->getSpecialPageLinkKey(LINKTYP_HERSTELLER)}
             {if !empty($linkKeyHersteller)}{assign var="linkSEOHersteller" value=LinkHelper::getInstance()->getPageLinkLanguage($linkKeyHersteller)}{/if}
             {if isset($linkSEOHersteller)}
@@ -168,14 +168,14 @@
                                 <div class="row row-eq-height row-eq-img-height">
                                     {foreach name=hersteller from=$manufacturers item=hst}
                                         <div class="col-xs-6 col-sm-3 col-lg-3">
-                                            <div class="category-wrapper manufacturer top15{if isset($NaviFilter->Hersteller) && $NaviFilter->Hersteller->kHersteller == $hst->kHersteller} active{/if}">
+                                            <div class="category-wrapper manufacturer top15{if $NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() == $hst->kHersteller} active{/if}">
                                                 {if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                     <div class="img text-center">
-                                                        <a href="{$hst->cSeo}"><img src="{$hst->cBildpfadNormal}" class=image alt="{$hst->cName|escape:'html'}"></a>
+                                                        <a href="{$hst->cURLFull}"><img src="{$hst->cBildURLNormal}" class=image alt="{$hst->cName|escape:'html'}"></a>
                                                     </div>
                                                 {/if}
                                                 <div class="caption{if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">
-                                                    <h5 class="title"><a href="{$hst->cSeo}"><span>{$hst->cName}</span></a></h5>
+                                                    <h5 class="title"><a href="{$hst->cURLFull}"><span>{$hst->cName}</span></a></h5>
                                                 </div>
                                             </div>{* /category-wrapper *}
                                         </div>

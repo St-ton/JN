@@ -47,7 +47,9 @@ if (!function_exists('getallheaders')) {
 }
 
 /**
- * Class Notification
+ * Class AjaxResponse
+ *
+ * @deprecated since 4.07
  */
 class AjaxResponse
 {

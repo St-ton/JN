@@ -10,20 +10,21 @@
  */
 function speicherTrennzeichen($cPostAssoc_arr)
 {
-    $nEinheit_arr = [JTLSEPARATER_WEIGHT, JTLSEPARATER_AMOUNT];
-
-    foreach ($nEinheit_arr as $nEinheit) {
-        if (isset($cPostAssoc_arr['nDezimal_' . $nEinheit], $cPostAssoc_arr['cDezZeichen_' . $nEinheit], $cPostAssoc_arr['cTausenderZeichen_' . $nEinheit])) {
+    foreach ([JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH] as $nEinheit) {
+        if (isset($cPostAssoc_arr['nDezimal_' . $nEinheit],
+            $cPostAssoc_arr['cDezZeichen_' . $nEinheit],
+            $cPostAssoc_arr['cTausenderZeichen_' . $nEinheit])
+        ) {
             $oTrennzeichen = new Trennzeichen();
             $oTrennzeichen->setSprache($_SESSION['kSprache'])
                           ->setEinheit($nEinheit)
                           ->setDezimalstellen($cPostAssoc_arr['nDezimal_' . $nEinheit])
                           ->setDezimalZeichen($cPostAssoc_arr['cDezZeichen_' . $nEinheit])
                           ->setTausenderZeichen($cPostAssoc_arr['cTausenderZeichen_' . $nEinheit]);
-
             // Update
-            if (isset($cPostAssoc_arr['kTrennzeichen_' . $nEinheit])) {
-                $oTrennzeichen->setTrennzeichen($cPostAssoc_arr['kTrennzeichen_' . $nEinheit])
+            $idx = 'kTrennzeichen_' . $nEinheit;
+            if (isset($cPostAssoc_arr[$idx])) {
+                $oTrennzeichen->setTrennzeichen($cPostAssoc_arr[$idx])
                               ->update();
             } else { // Speichern
                 if (!$oTrennzeichen->save()) {

@@ -33,7 +33,7 @@ if (strlen(verifyGPDataString('cSuche')) > 0) {
 }
 // Einstellungen
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-    if (isset($_POST['speichern']) || isset($_POST['a']) && $_POST['a'] === 'speichern') {
+    if (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern')) {
         $step = 'uebersicht';
         $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
         $smarty->assign('tab', 'einstellungen');

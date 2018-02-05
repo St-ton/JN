@@ -11,11 +11,16 @@
 		<Version nr="100">
 			<CreateDate>2016-06-21</CreateDate>
 		</Version>
+        <Version nr="101">
+            <CreateDate>2017-08-30</CreateDate>
+        </Version>
 		<Hooks>
 			<Hook id="32">32_jtl_backend_account_news_detail.php</Hook>
 			<Hook id="33">33_jtl_backend_account_news_uebersicht.php</Hook>
+            <Hook id="220">220_jtl_fontend_get_news.php</Hook>
             <Hook id="222">222_jtl_backend_account_edit.php</Hook>
 			<Hook id="223">223_jtl_backend_account_prepare_edit.php</Hook>
+			<Hook id="227">227_jtl_backend_functions_gravatar.php</Hook>
 		</Hooks>
 		<Adminmenu>
             <Settingslink sort="1">

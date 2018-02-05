@@ -13,7 +13,7 @@
     {/if}
     
     <div class="container-fluid">
-        <table  class="table">
+        <table class="table">
             <tr>
                 <td colspan="2"><p><label>Trusted Shops - Europas Internet-G&uuml;tesiegel Nr. 1</strong></label></p></td>
             </tr>
@@ -55,7 +55,7 @@
                     
                     <p>
                         Weitere Informationen und Erfahrungen von zertifizierten Online-Shops finden Sie auf der Trusted<br />
-                        Shops Homepage unter <a href="http://www.trustedshops.de/shopbetreiber" target="_blank">www.trustedshops.de/shopbetreiber</a>.                            
+                        Shops Homepage unter <a href="http://www.trustedshops.de/shopbetreiber" target="_blank" rel="noopener">www.trustedshops.de/shopbetreiber</a>.
                     </p>
                     <p><a href="http://www.trustedshops.de/shopbetreiber/mitgliedschaft_partner.html?shopsw=JTL" target="_blank">Nutzen Sie diese Chance und lassen Sie sich jetzt zum Sonderpreis zertifizieren.</a></p>
                 </td>

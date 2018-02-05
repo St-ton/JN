@@ -29,6 +29,7 @@ function getRevisions($params, &$smarty)
         ? $params['data']
         : null;
     $revision  = new Revision();
+
     return $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
            ->assign('secondary', $secondary)
            ->assign('data', $data)
@@ -43,7 +44,7 @@ function getRevisions($params, &$smarty)
  */
 function getCurrencyConversionSmarty($params, &$smarty)
 {
-    $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] == false);
+    $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
     if (!isset($params['fPreisBrutto'])) {
         $params['fPreisBrutto'] = 0;
     }
@@ -101,27 +102,16 @@ function getCurrentPage($params, &$smarty)
  */
 function getHelpDesc($params, &$smarty)
 {
-    $placement = 'left';
-    if (isset($params['placement'])) {
-        $placement = $params['placement'];
-    }
+    $placement   = isset($params['placement']) ? $params['placement'] : 'left';
+    $cID         = !empty($params['cID']) ? $params['cID'] : null;
+    $description = isset($params['cDesc'])
+        ? str_replace('"', '\'', $params['cDesc'])
+        : null;
 
-    $button = '<button type="button" class="btn-tooltip btn btn-info btn-heading" data-html="true" data-toggle="tooltip" data-placement="' . $placement . '" title="';
-
-    if (isset($params['cDesc'])) {
-        $button .= str_replace('"', '\'', $params['cDesc']);
-        if (isset($params['cID'])) {
-            $button .= '<hr><strong>Einstellungsnr.:</strong> ' . $params['cID'];
-        }
-        $button .= '"><i class="fa fa-question"></i></button>';
-    } else {
-        if (isset($params['cID'])) {
-            $button .= '<p><strong>Einstellungsnr.:</strong> ' . $params['cID'] . '</p>';
-        }
-        $button .= '"><i class="fa fa-question"></i></button>';
-    }
-
-    return $button;
+    return $smarty->assign('placement', $placement)
+                  ->assign('cID', $cID)
+                  ->assign('description', $description)
+                  ->fetch('tpl_inc/help_description.tpl');
 }
 
 /**
@@ -134,12 +124,12 @@ function permission($cRecht)
     global $smarty;
 
     if (isset($_SESSION['AdminAccount'])) {
-        if ($_SESSION['AdminAccount']->oGroup->kAdminlogingruppe == 1) {
+        if ((int)$_SESSION['AdminAccount']->oGroup->kAdminlogingruppe === ADMINGROUP) {
             $bOkay = true;
         } else {
             $orExpressions = explode('|', $cRecht);
             foreach ($orExpressions as $flag) {
-                $bOkay = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr);
+                $bOkay = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
                 if ($bOkay) {
                     break;
                 }
@@ -231,7 +221,7 @@ function formatVersion($params, &$smarty)
  * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
  * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
  *
- * @param JTLSmarty $smarty
+ * @params JTLSmarty $smarty
  * @source https://gravatar.com/site/implement/images/php/
  * @return string
  */
@@ -249,6 +239,11 @@ function gravatarImage($params, &$smarty)
     $url  = 'https://www.gravatar.com/avatar/';
     $url .= md5(strtolower(trim($email)));
     $url .= '?' . http_build_query($params, '', '&');
+
+    executeHook(HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
+        'url' => &$url,
+        'AdminAccount' => &$_SESSION['AdminAccount']
+    ]);
 
     return $url;
 }

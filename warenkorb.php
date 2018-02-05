@@ -6,10 +6,10 @@
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-/** @global JTLSmarty $smarty */
+
 $AktuelleSeite = 'WARENKORB';
 $MsgWarning    = '';
+$smarty        = Shop::Smarty();
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
@@ -18,36 +18,35 @@ $Einstellungen = Shop::getSettings([
     CONF_ARTIKELUEBERSICHT,
     CONF_SONSTIGES
 ]);
+Shop::setPageType(PAGE_WARENKORB);
 $Schnellkaufhinweis       = checkeSchnellkauf();
 $linkHelper               = LinkHelper::getInstance();
 $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
-$cart                     = $_SESSION['Warenkorb'];
-
-Shop::setPageType(PAGE_WARENKORB);
-$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
-//Warenkorbaktualisierung?
+$cart                     = Session::Cart();
+$kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
+// Warenkorbaktualisierung?
 uebernehmeWarenkorbAenderungen();
-//validiere Konfigurationen
+// validiere Konfigurationen
 validiereWarenkorbKonfig();
 pruefeGuthabenNutzen();
-//Versandermittlung?
-if (isset($_POST['land'], $_POST['plz']) &&
-    !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)
+// Versandermittlung?
+if (isset($_POST['land'], $_POST['plz'])
+    && !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)
 ) {
     $MsgWarning = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
 }
-//Kupons bearbeiten
-if ($cart !== null &&
-    isset($_POST['Kuponcode']) &&
-    strlen($_POST['Kuponcode']) > 0 &&
-    $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+// Kupons bearbeiten
+if ($cart !== null
+    && isset($_POST['Kuponcode'])
+    && strlen($_POST['Kuponcode']) > 0
+    && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
 ) {
     // Kupon darf nicht im leeren Warenkorb eingelöst werden
     $Kupon             = new Kupon();
     $Kupon             = $Kupon->getByCode($_POST['Kuponcode']);
     $invalidCouponCode = false;
-    if (isset($Kupon->kKupon)) {
+    if ($Kupon !== false && $Kupon->kKupon > 0) {
         $Kuponfehler  = checkeKupon($Kupon);
         $nReturnValue = angabenKorrekt($Kuponfehler);
         executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
@@ -55,15 +54,12 @@ if ($cart !== null &&
             'nReturnValue' => &$nReturnValue
         ]);
         if ($nReturnValue) {
-            if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
+            if ($Kupon->cKuponTyp === 'standard') {
                 kuponAnnehmen($Kupon);
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
-                if (freeGiftStillValid() === false) {
-                    $MsgWarning = Shop::Lang()->get('freegiftsMinimum', 'errorMessages');
-                }
             } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
                 // Aktiven Kupon aus der Session löschen und dessen Warenkorbposition
-                $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
+                $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                 // Versandfrei Kupon
                 $_SESSION['oVersandfreiKupon'] = $Kupon;
                 $smarty->assign('cVersandfreiKuponLieferlaender_arr', explode(';', $Kupon->cLieferlaender));
@@ -77,15 +73,13 @@ if ($cart !== null &&
         $smarty->assign('invalidCouponCode', $invalidCouponCode);
     }
 }
-
-//Kupon nicht mehr verfügbar. Redirekt im Bestellabschluss. Fehlerausgabe
+// Kupon nicht mehr verfügbar. Redirect im Bestellabschluss. Fehlerausgabe
 if (isset($_SESSION['checkCouponResult'])) {
     $KuponcodeUngueltig = true;
     $Kuponfehler        = $_SESSION['checkCouponResult'];
     unset($_SESSION['checkCouponResult']);
     $smarty->assign('cKuponfehler', $Kuponfehler['ungueltig']);
 }
-
 // Gratis Geschenk bearbeiten
 if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST['gratis_geschenk'] === 1) {
     $kArtikelGeschenk = (int)$_POST['gratisgeschenk'];
@@ -111,24 +105,21 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST
             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
                  ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
-            fuegeEinInWarenkorbPers($kArtikelGeschenk, 1, [], null, null, (int)C_WARENKORBPOS_TYP_GRATISGESCHENK);
+            fuegeEinInWarenkorbPers($kArtikelGeschenk, 1, [], null, null, C_WARENKORBPOS_TYP_GRATISGESCHENK);
         }
     }
 }
-//hole aktuelle Kategorie, falls eine gesetzt
+// hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
 if (isset($_GET['fillOut'])) {
-    if ((int)$_GET['fillOut'] === 9 &&
-        isset($_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT]) &&
-        $_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT] > 0 &&
-        $cart->gibGesamtsummeWaren(1, 0) < $_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT]
-    ) {
+    $mbw = Session::CustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
+    if ((int)$_GET['fillOut'] === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(1, 0) < $mbw) {
         $MsgWarning = Shop::Lang()->get('minordernotreached', 'checkout') . ' ' .
-            gibPreisStringLocalized($_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT]);
+            gibPreisStringLocalized($mbw);
     } elseif ((int)$_GET['fillOut'] === 8) {
         $MsgWarning = Shop::Lang()->get('orderNotPossibleNow', 'checkout');
     } elseif ((int)$_GET['fillOut'] === 3) {
@@ -140,8 +131,7 @@ if (isset($_GET['fillOut'])) {
         $MsgWarning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }
 }
-
-$kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+$kKundengruppe = Session::CustomerGroup()->getID();
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKundengruppe > 0) {
     $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
 }
@@ -170,9 +160,7 @@ if (isset($_SESSION['Warenkorbhinweise']) && $_SESSION['Warenkorbhinweise']) {
 }
 
 WarenkorbHelper::addVariationPictures($cart);
-//specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('Einstellungen', $Einstellungen)
        ->assign('MsgWarning', $MsgWarning)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
        ->assign('requestURL', isset($requestURL) ? $requestURL : null)
@@ -188,7 +176,6 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('xselling', gibXSelling())
        ->assign('oArtikelGeschenk_arr', gibGratisGeschenke($Einstellungen))
        ->assign('BestellmengeHinweis', pruefeBestellMengeUndLagerbestand($Einstellungen))
-       ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
        ->assign('cErrorVersandkosten', isset($cErrorVersandkosten) ? $cErrorVersandkosten : null)

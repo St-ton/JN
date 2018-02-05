@@ -137,17 +137,6 @@ function removeLink($kLink, $kLinkgruppe)
     $oLink              = new Link($kLink, null, true);
     $oLink->kLinkgruppe = $kLinkgruppe;
     $oLink->delete(true, $kLinkgruppe);
-    // Bilderverzeichnis loeschen
-    if (isset($cUploadVerzeichnis) && is_dir($cUploadVerzeichnis . $kLink)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kLink);
-        while (false !== ($Datei = readdir($DirHandle))) {
-            if ($Datei !== '.' && $Datei !== '..') {
-                unlink($cUploadVerzeichnis . $kLink . '/' . $Datei);
-            }
-        }
-
-        rmdir($cUploadVerzeichnis . $kLink);
-    }
 }
 
 /**

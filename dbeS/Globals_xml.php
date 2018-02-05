@@ -6,43 +6,37 @@
 
 require_once __DIR__ . '/syncinclude.php';
 
-$return = 3;
+$zipFile = $_FILES['data']['tmp_name'];
+$return  = 3;
 if (auth()) {
-    checkFile();
+    $zipFile = checkFile();
     $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
-        }
-        if ($archive->extract(PCLZIP_OPT_PATH, PFAD_SYNC_TMP)) {
-            $return = 0;
-            foreach ($list as $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
-                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
-                }
-                $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
-                $xml = XML_unserialize($d);
-                if ($zip['filename'] === 'del_globals.xml') {
-                    bearbeiteDeletes($xml);
-                } elseif ($zip['filename'] === 'globals.xml') {
-                    bearbeiteUpdates($xml);
-                }
-            }
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Globals_xml');
-        }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Globals_xml');
-    }
-}
 
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
+    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
+        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Globals_xml');
+        }
+//        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $xmlFile) {
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog(
+                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Globals_xml'
+                );
+            }
+            $d   = file_get_contents($xmlFile);
+            $xml = XML_unserialize($d);
+            if (strpos($xmlFile, 'del_globals.xml') !== false) {
+                bearbeiteDeletes($xml);
+            } elseif (strpos($xmlFile, 'globals.xml') !== false) {
+                bearbeiteUpdates($xml);
+            }
+        }
+    }
 }
 
 Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
@@ -132,10 +126,18 @@ function bearbeiteUpdates($xml)
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('oWarenlager_arr: ' . print_r($oWarenlager_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
             }
-            //Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager. 
+            //Lagersichtbarkeit für Shop zwischenspeichern
+            $lagersichtbarkeit_arr = Shop::DB()->query("SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1", 2);
+            //Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
             Shop::DB()->query("DELETE FROM twarenlager WHERE 1", 4);
             
             DBUpdateInsert('twarenlager', $oWarenlager_arr, 'kWarenlager');
+            //Lagersichtbarkeit übertragen
+            if (!empty($lagersichtbarkeit_arr)) {
+                foreach ($lagersichtbarkeit_arr as $lager) {
+                    Shop::DB()->update('twarenlager', 'kWarenlager', $lager->kWarenlager, $lager);
+                }
+            }
         }
         // Masseinheit
         if (isset($xml['globals']['tmasseinheit']) && is_array($xml['globals']['tmasseinheit'])) {

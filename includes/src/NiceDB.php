@@ -24,7 +24,7 @@
  * @method string getErrorMessage()
  * @method mixed getError()
  */
-class NiceDB
+class NiceDB implements Serializable
 {
     /**
      * @var pdo
@@ -90,6 +90,15 @@ class NiceDB
      */
     private $transactionCount = 0;
 
+    const RET_SINGLE_OBJECT         = 1;
+    const RET_ARRAY_OF_OBJECTS      = 2;
+    const RET_AFFECTED_ROWS         = 3;
+    const RET_LAST_INSERTED_ID      = 7;
+    const RET_SINGLE_ASSOC_ARRAY    = 8;
+    const RET_ARRAY_OF_ASSOC_ARRAYS = 9;
+    const RET_QUERYSINGLE           = 10;
+    const RET_ARRAY_OF_BOTH_ARRAYS  = 11;
+
     /**
      * create DB Connection with default parameters
      *
@@ -102,16 +111,16 @@ class NiceDB
      */
     public function __construct($dbHost, $dbUser, $dbPass, $dbName, $debugOverride = false)
     {
+        $options      = [];
+        $dsn          = 'mysql:dbname=' . $dbName;
         $this->config = [
             'driver'   => 'mysql',
             'host'     => $dbHost,
             'database' => $dbName,
             'username' => $dbUser,
             'password' => $dbPass,
-            'charset'  => 'latin1',
+            'charset'  => DB_CHARSET,
         ];
-        $options = [];
-        $dsn     = 'mysql:dbname=' . $dbName;
         if (defined('DB_SOCKET')) {
             $dsn .= ';unix_socket=' . DB_SOCKET;
         } else {
@@ -124,15 +133,20 @@ class NiceDB
             }
             $dsn .= ';host=' . $dbHost;
         }
+        if (defined('DB_PERSISTENT_CONNECTIONS') && is_bool(DB_PERSISTENT_CONNECTIONS)) {
+            $options[PDO::ATTR_PERSISTENT] = DB_PERSISTENT_CONNECTIONS;
+        }
+        if (defined('DB_CHARSET') && defined('DB_COLLATE')) {
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '" . DB_CHARSET . "' COLLATE '" . DB_COLLATE . "'";
+        } elseif (defined('DB_CHARSET')) {
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '" . DB_CHARSET . "'";
+        }
         $this->pdo = new PDO($dsn, $dbUser, $dbPass, $options);
         if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
-        if (JTL_CHARSET === 'iso-8859-1') {
-            $this->pdo->query("SET NAMES 'latin1'");
-        }
         if (!(defined('DB_DEFAULT_SQL_MODE') && DB_DEFAULT_SQL_MODE === true)) {
-            $this->pdo->query("SET SQL_MODE=''");
+            $this->pdo->exec("SET SQL_MODE=''");
         }
         if (defined('PFAD_LOGFILES')) {
             $this->logfileName = PFAD_LOGFILES . 'DB_errors.log';
@@ -140,10 +154,10 @@ class NiceDB
         if ($debugOverride === false) {
             if (defined('PROFILE_QUERIES') && PROFILE_QUERIES !== false) {
                 if (defined('DEBUG_LEVEL')) {
-                    $this->debugLevel = (int)DEBUG_LEVEL;
+                    $this->debugLevel = DEBUG_LEVEL;
                 }
                 if (defined('PROFILE_QUERIES_ACTIVATION_FUNCTION') && is_callable(PROFILE_QUERIES_ACTIVATION_FUNCTION)) {
-                    $this->collectData = (bool) call_user_func(PROFILE_QUERIES_ACTIVATION_FUNCTION);
+                    $this->collectData = (bool)call_user_func(PROFILE_QUERIES_ACTIVATION_FUNCTION);
                 } elseif (PROFILE_QUERIES === true) {
                     $this->debug = true;
                 }
@@ -168,7 +182,9 @@ class NiceDB
      */
     public static function getInstance($DBHost = null, $DBUser = null, $DBpass = null, $DBdatabase = null)
     {
-        return (self::$instance !== null) ? self::$instance : new self($DBHost, $DBUser, $DBpass, $DBdatabase);
+        return self::$instance !== null
+            ? self::$instance
+            : new self($DBHost, $DBUser, $DBpass, $DBdatabase);
     }
 
     /**
@@ -206,8 +222,10 @@ class NiceDB
             $dsn .= ';host=' . $this->config['host'];
         }
         $this->pdo = new PDO($dsn, $this->config['username'], $this->config['password']);
-        if (JTL_CHARSET === 'iso-8859-1') {
-            $this->pdo->query("SET NAMES 'latin1'");
+        if (defined('DB_CHARSET') && defined('DB_COLLATE')) {
+            $this->pdo->exec("SET NAMES '" . DB_CHARSET . "' COLLATE '" . DB_COLLATE . "'");
+        } elseif (defined('DB_CHARSET')) {
+            $this->pdo->exec("SET NAMES '" . DB_CHARSET . "'");
         }
 
         return $this;
@@ -225,7 +243,7 @@ class NiceDB
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null)
+        return $mapping !== null
             ? call_user_func_array([$this, $mapping], $arguments)
             : null;
     }
@@ -242,7 +260,7 @@ class NiceDB
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null)
+        return $mapping !== null
             ? call_user_func_array([self::$instance, $mapping], $arguments)
             : null;
     }
@@ -255,7 +273,7 @@ class NiceDB
      */
     private static function map($method)
     {
-        $mapping = [
+        static $mapping = [
             'query'           => 'executeQuery',
             'queryPrepared'   => 'executeQueryPrepared',
             'exQuery'         => 'executeExQuery',
@@ -288,7 +306,7 @@ class NiceDB
      * @param null|array $backtrace
      * @return $this
      */
-    private function analyzeQuery($type = '', $stmt, $time = 0, $backtrace = null)
+    private function analyzeQuery($type, $stmt, $time = 0, $backtrace = null)
     {
         $explain = 'EXPLAIN ' . $stmt;
         try {
@@ -309,8 +327,7 @@ class NiceDB
                 if (!isset($_bt['function'])) {
                     $_bt['function'] = '';
                 }
-                if (
-                    isset($_bt['file']) &&
+                if (isset($_bt['file']) &&
                     !($_bt['class'] === 'NiceDB' && $_bt['function'] === '__call') &&
                     strpos($_bt['file'], 'class.core.NiceDB.php') === false
                 ) {
@@ -417,7 +434,6 @@ class NiceDB
     /**
      * insert row into db
      *
-     * @access public
      * @param string   $tableName - table name
      * @param object   $object - object to insert
      * @param int|bool $echo - true -> print statement
@@ -466,7 +482,7 @@ class NiceDB
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'NiceDB exception when inserting row: ');
                 Shop::dbg($assigns, false, 'Bound params:');
-                Shop::dbg($e->getMessage(), false);
+                Shop::dbg($e->getMessage());
             }
             if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
@@ -484,7 +500,11 @@ class NiceDB
 
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() . "\n\nBacktrace:" . print_r(debug_backtrace(), 1));
+                $this->writeLog(
+                    $stmt . "\n" .
+                    $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() .
+                    "\n\nBacktrace:" . print_r(debug_backtrace(), 1)
+                );
             }
             if ($this->debug === true || $this->collectData === true) {
                 $end       = microtime(true);
@@ -530,59 +550,57 @@ class NiceDB
             }
 
             return 0;
-        } else {
-            $id = $this->pdo->lastInsertId();
-            if (($this->debug === true || $this->collectData === true) && strpos($tableName, 'tprofiler') !== 0) {
-                $end       = microtime(true);
-                $backtrace = null;
-                if ($this->debugLevel > 2) {
-                    $backtrace = debug_backtrace();
-                }
-                $arr = get_object_vars($object);
-                if (!is_array($arr)) {
-                    if ($this->logErrors && $this->logfileName) {
-                        $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
-                    }
-
-                    return 0;
-                }
-                $columns  = '(';
-                $values   = '(';
-                $keys     = array_keys($arr);
-                $keyCount = count($keys);
-                for ($i = 0; $i < $keyCount; $i++) {
-                    $property = $keys[$i];
-                    if ($i === (count($keys) - 1)) {
-                        $columns .= $property . ') values';
-                        if ($object->$property === '_DBNULL_') {
-                            $values .= 'null' . ')';
-                        } elseif ($object->$property === 'now()') {
-                            $values .= $object->$property . ')';
-                        } else {
-                            $values .= '"' . $this->pdoEscape($object->$property) . '")';
-                        }
-                    } else {
-                        $columns .= $property . ', ';
-                        if ($object->$property === '_DBNULL_') {
-                            $values .= 'null' . ', ';
-                        } elseif ($object->$property === 'now()') {
-                            $values .= $object->$property . ', ';
-                        } else {
-                            $values .= '"' . $this->pdoEscape($object->$property) . '", ';
-                        }
-                    }
-                }
-                $this->analyzeQuery('insert', "INSERT INTO $tableName $columns $values", $end - $start, $backtrace);
-            }
-
-            return ($id > 0) ? $id : 1;
         }
+        $id = $this->pdo->lastInsertId();
+        if (($this->debug === true || $this->collectData === true) && strpos($tableName, 'tprofiler') !== 0) {
+            $end       = microtime(true);
+            $backtrace = null;
+            if ($this->debugLevel > 2) {
+                $backtrace = debug_backtrace();
+            }
+            $arr = get_object_vars($object);
+            if (!is_array($arr)) {
+                if ($this->logErrors && $this->logfileName) {
+                    $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
+                }
+
+                return 0;
+            }
+            $columns  = '(';
+            $values   = '(';
+            $keys     = array_keys($arr);
+            $keyCount = count($keys);
+            for ($i = 0; $i < $keyCount; $i++) {
+                $property = $keys[$i];
+                if ($i === (count($keys) - 1)) {
+                    $columns .= $property . ') values';
+                    if ($object->$property === '_DBNULL_') {
+                        $values .= 'null' . ')';
+                    } elseif ($object->$property === 'now()') {
+                        $values .= $object->$property . ')';
+                    } else {
+                        $values .= '"' . $this->pdoEscape($object->$property) . '")';
+                    }
+                } else {
+                    $columns .= $property . ', ';
+                    if ($object->$property === '_DBNULL_') {
+                        $values .= 'null' . ', ';
+                    } elseif ($object->$property === 'now()') {
+                        $values .= $object->$property . ', ';
+                    } else {
+                        $values .= '"' . $this->pdoEscape($object->$property) . '", ';
+                    }
+                }
+            }
+            $this->analyzeQuery('insert', "INSERT INTO $tableName $columns $values", $end - $start, $backtrace);
+        }
+
+        return $id > 0 ? (int)$id : 1;
     }
 
     /**
      * update table row
      *
-     * @access public
      * @param string           $tableName - table name
      * @param string|array     $keyname   - Name of Key which should be compared
      * @param int|string|array $keyvalue  - Value of Key which should be compared
@@ -607,7 +625,12 @@ class NiceDB
         }
         if (!$keyname || !$keyvalue) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog('updateRow: Kein keyname oder keyvalue! - Tablename:' . $tableName . ' Keyname: ' . $keyname . ' - Keyvalue: ' . $keyvalue);
+                $this->writeLog(
+                    'updateRow: Kein keyname oder keyvalue! - ' .
+                    'Tablename:' . $tableName .
+                    ' Keyname: ' . $keyname .
+                    ' - Keyvalue: ' . $keyvalue
+                );
             }
 
             return -1;
@@ -628,7 +651,11 @@ class NiceDB
         if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('updateRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tableName);
+                    $this->writeLog(
+                        'updateRow: ' .
+                        'Anzahl an Schluesseln passt nicht zu Anzahl an Werten - ' .
+                        'Tablename:' . $tableName
+                    );
                 }
 
                 return -1;
@@ -636,7 +663,7 @@ class NiceDB
             $keynamePrepared = array_map(function ($_v) {
                 return $_v . '=?';
             }, $keyname);
-            $where   = ' WHERE ' . implode(' AND ', $keynamePrepared);
+            $where = ' WHERE ' . implode(' AND ', $keynamePrepared);
             foreach ($keyvalue as $_v) {
                 $assigns[] = $_v;
             }
@@ -656,7 +683,7 @@ class NiceDB
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'NiceDB exception when updating row: ');
                 Shop::dbg($assigns, false, 'Bound params:');
-                Shop::dbg($e->getMessage(), false);
+                Shop::dbg($e->getMessage());
             }
             if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
@@ -708,7 +735,6 @@ class NiceDB
     /**
      * selects all (*) values in a single row from a table - gives just one row back!
      *
-     * @access public
      * @param string           $tableName - Tabellenname
      * @param string|array     $keyname - Name of Key which should be compared
      * @param string|int|array $keyvalue - Value of Key which should be compared
@@ -720,8 +746,17 @@ class NiceDB
      * @param string           $select - the key to select
      * @return null|object - null if fails, resultObject if successful
      */
-    public function selectSingleRow($tableName, $keyname, $keyvalue, $keyname1 = null, $keyvalue1 = null, $keyname2 = null, $keyvalue2 = null, $echo = false, $select = '*')
-    {
+    public function selectSingleRow(
+        $tableName,
+        $keyname,
+        $keyvalue,
+        $keyname1 = null,
+        $keyvalue1 = null,
+        $keyname2 = null,
+        $keyvalue2 = null,
+        $echo = false,
+        $select = '*'
+    ) {
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
             : 0;
@@ -731,14 +766,20 @@ class NiceDB
         $i       = 0;
         foreach ($keys as &$_key) {
             if ($_key !== null) {
-                $_key .= '=?';
+                $_key     .= '=?';
                 $assigns[] = $values[$i];
             } else {
                 unset($keys[$i]);
             }
             ++$i;
         }
-        $stmt = 'SELECT ' . $select . ' FROM ' . $tableName . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
+        unset($_key);
+        $stmt = 'SELECT ' . $select .
+            ' FROM ' . $tableName .
+            ((count($keys) > 0)
+                ? (' WHERE ' . implode(' AND ', $keys))
+                : ''
+            );
         if ($echo) {
             echo $stmt;
         }
@@ -749,7 +790,7 @@ class NiceDB
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'NiceDB exception when selecting row: ');
                 Shop::dbg($assigns, false, 'Bound params:');
-                Shop::dbg($e->getMessage(), false);
+                Shop::dbg($e->getMessage());
             }
             if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
@@ -774,9 +815,9 @@ class NiceDB
             if ($this->debug === true || $this->collectData === true) {
                 $start = microtime(true);
             }
-            $keys    = is_array($keyname) ? $keyname : [$keyname, $keyname1, $keyname2];
-            $values  = is_array($keyvalue) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
-            $i       = 0;
+            $keys   = is_array($keyname) ? $keyname : [$keyname, $keyname1, $keyname2];
+            $values = is_array($keyvalue) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
+            $i      = 0;
             foreach ($keys as &$k) {
                 if ($k !== null) {
                     $k .= '=';
@@ -790,11 +831,17 @@ class NiceDB
                 }
                 ++$i;
             }
-            $stmt = 'SELECT ' . $select . ' FROM ' . $tableName . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
+            unset($k);
+            $stmt = 'SELECT ' . $select .
+                ' FROM ' . $tableName .
+                ((count($keys) > 0)
+                    ? (' WHERE ' . implode(' AND ', $keys))
+                    : ''
+                );
             $this->analyzeQuery('select', $stmt, $end - $start, $backtrace);
         }
 
-        return ($ret !== false) ? $ret : null;
+        return $ret !== false ? $ret : null;
     }
 
     /**
@@ -804,14 +851,14 @@ class NiceDB
      * @param string       $select
      * @param string       $orderBy
      * @param string       $limit
-     * @return array|int|object
+     * @return array
      * @throws InvalidArgumentException
      */
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
-        $keys         = is_array($keys) ? $keys : [$keys];
-        $values       = is_array($values) ? $values : [$values];
-        $kv           = [];
+        $keys   = is_array($keys) ? $keys : [$keys];
+        $values = is_array($values) ? $values : [$values];
+        $kv     = [];
         if (count($keys) !== count($values)) {
             throw new InvalidArgumentException('Number of keys must be equal to number of given keys. Got ' .
                 count($keys) . ' key(s) and ' . count($values) . ' value(s).');
@@ -824,8 +871,8 @@ class NiceDB
                 (' WHERE ' . implode(' AND ', $kv)) :
                 ''
             ) .
-            ((!empty($orderBy)) ? (' ORDER BY ' . $orderBy) : '') .
-            ((!empty($limit)) ? (' LIMIT ' . $limit) : '');
+            (!empty($orderBy) ? (' ORDER BY ' . $orderBy) : '') .
+            (!empty($limit) ? (' LIMIT ' . $limit) : '');
 
         return $this->executeQueryPrepared($stmt, array_combine($keys, $values), 2);
     }
@@ -833,15 +880,16 @@ class NiceDB
     /**
      * executes query and returns misc data
      *
-     * @access public
      * @param string   $stmt - Statement to be executed
      * @param int      $return - what should be returned.
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
+     * 7  - last inserted id
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
+     * 11 - fetch both arrays
      * @param int|bool $echo print current stmt
      * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
@@ -856,16 +904,17 @@ class NiceDB
     /**
      * executes query and returns misc data
      *
-     * @access public
      * @param string   $stmt - Statement to be executed
      * @param array    $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
      * @param int      $return - what should be returned.
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
+     * 7  - last inserted id
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
+     * 11 - fetch both arrays
      * @param int|bool $echo print current stmt
      * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
@@ -878,9 +927,45 @@ class NiceDB
     }
 
     /**
+     * @param string $stmt
+     * @param array  $params
+     * @return Generator|int
+     */
+    public function executeYield($stmt, array $params = [])
+    {
+        try {
+            $res  = $this->pdo->prepare($stmt);
+            $stmt = $this->readableQuery($stmt, $params);
+            foreach ($params as $k => $v) {
+                $this->_bind($res, $k, $v);
+            }
+            if ($res->execute() === false) {
+                return;
+            }
+        } catch (PDOException $e) {
+            if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
+                Shop::dbg($stmt, false, 'Exception when trying to execute query: ');
+                Shop::dbg($e->getMessage(), false, 'Exception:');
+            }
+
+            if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
+                Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
+            }
+
+            if ($this->transactionCount > 0) {
+                throw $e;
+            }
+
+            return;
+        }
+        while (($row = $res->fetchObject()) !== false) {
+            yield $row;
+        }
+    }
+
+    /**
      * executes query and returns misc data
      *
-     * @access protected
      * @param int           $type - Type [0 => query, 1 => prepared]
      * @param string        $stmt - Statement to be executed
      * @param array         $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
@@ -895,6 +980,7 @@ class NiceDB
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
+     * 11 - fetch both arrays
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws InvalidArgumentException
      */
@@ -971,30 +1057,34 @@ class NiceDB
 
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() . "\n\nBacktrace: " . print_r(debug_backtrace(), true));
+                $this->writeLog(
+                    $stmt . "\n" .
+                    $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() .
+                    "\n\nBacktrace: " . print_r(debug_backtrace(), true)
+                );
             }
 
             return 0;
         }
 
         switch ($return) {
-            case 1:
+            case self::RET_SINGLE_OBJECT:
                 $ret = $res->fetchObject();
                 break;
-            case 2:
+            case self::RET_ARRAY_OF_OBJECTS:
                 $ret = [];
                 while (($row = $res->fetchObject()) !== false) {
                     $ret[] = $row;
                 }
                 break;
-            case 3:
+            case self::RET_AFFECTED_ROWS:
                 $ret = $res->rowCount();
                 break;
-            case 7:
-                $id = $this->pdo->lastInsertId();
+            case self::RET_LAST_INSERTED_ID:
+                $id  = $this->pdo->lastInsertId();
                 $ret = ($id > 0) ? $id : 1;
                 break;
-            case 8:
+            case self::RET_SINGLE_ASSOC_ARRAY:
                 $ret = $res->fetchAll(PDO::FETCH_NAMED);
                 if (is_array($ret) && isset($ret[0])) {
                     $ret = $ret[0];
@@ -1002,13 +1092,13 @@ class NiceDB
                     $ret = null;
                 }
                 break;
-            case 9:
+            case self::RET_ARRAY_OF_ASSOC_ARRAYS:
                 $ret = $res->fetchAll(PDO::FETCH_ASSOC);
                 break;
-            case 10:
+            case self::RET_QUERYSINGLE:
                 $ret = $res;
                 break;
-            case 11:
+            case self::RET_ARRAY_OF_BOTH_ARRAYS:
                 $ret = $res->fetchAll(PDO::FETCH_BOTH);
                 break;
             default:
@@ -1033,7 +1123,6 @@ class NiceDB
     /**
      * delete row from table
      *
-     * @access public
      * @param string           $tableName - table name
      * @param string|array     $keyname - Name of Key which should be compared
      * @param string|int|array $keyvalue - Value of Key which should be compared
@@ -1050,7 +1139,11 @@ class NiceDB
         if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('deleteRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tableName);
+                    $this->writeLog(
+                        'deleteRow: ' .
+                        'Anzahl an Schluesseln passt nicht zu Anzahl an Werten - ' .
+                        'Tablename:' . $tableName
+                    );
                 }
 
                 return -1;
@@ -1058,7 +1151,7 @@ class NiceDB
             $keyname = array_map(function ($_v) {
                 return $_v . '=?';
             }, $keyname);
-            $where   = implode(' AND ', $keyname);
+            $where = implode(' AND ', $keyname);
             foreach ($keyvalue as $_v) {
                 $assigns[] = $_v;
             }
@@ -1078,7 +1171,7 @@ class NiceDB
         } catch (PDOException $e) {
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'NiceDB exception when deleting row: ');
-                Shop::dbg($e->getMessage(), false);
+                Shop::dbg($e->getMessage());
             }
             if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
@@ -1113,7 +1206,6 @@ class NiceDB
     /**
      * executes a query and gives back the result
      *
-     * @access public
      * @param string $stmt - Statement to be executed
      * @return PDOStatement|int
      */
@@ -1124,7 +1216,7 @@ class NiceDB
         } catch (PDOException $e) {
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'NiceDB exception when executing: ');
-                Shop::dbg($e->getMessage(), false);
+                Shop::dbg($e->getMessage());
             }
             if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
@@ -1150,7 +1242,7 @@ class NiceDB
      */
     protected function isMysqliResult($res)
     {
-        return (is_object($res) && get_class($res) === 'mysqli_result');
+        return is_object($res) && get_class($res) === 'mysqli_result';
     }
 
     /**
@@ -1159,7 +1251,7 @@ class NiceDB
      */
     protected function isPdoResult($res)
     {
-        return (is_object($res) && get_class($res) === 'PDOStatement');
+        return is_object($res) && get_class($res) === 'PDOStatement';
     }
 
     /**
@@ -1185,10 +1277,8 @@ class NiceDB
      */
     public function escape($string)
     {
-        $quotedString = $this->quote($string);
-
         // remove outer single quotes
-        return preg_replace('/^\'(.*)\'$/', '$1', $quotedString);
+        return preg_replace('/^\'(.*)\'$/', '$1', $this->quote($string));
     }
 
     /**
@@ -1200,7 +1290,11 @@ class NiceDB
     public function writeLog($entry)
     {
         $logfile = fopen($this->logfileName, 'a');
-        fwrite($logfile, "\n[" . date('m.d.y H:i:s') . ' ' . microtime() . '] ' . $_SERVER['SCRIPT_NAME'] . "\n" . $entry);
+        fwrite(
+            $logfile,
+            "\n[" . date('m.d.y H:i:s') . ' ' . microtime() . '] ' .
+            $_SERVER['SCRIPT_NAME'] . "\n" . $entry
+        );
         fclose($logfile);
 
         return $this;
@@ -1300,7 +1394,7 @@ class NiceDB
                 case is_int($value):
                     $type = PDO::PARAM_INT;
                     break;
-                case is_null($value):
+                case $value === null:
                     $type = PDO::PARAM_NULL;
                     break;
                 default:
@@ -1318,11 +1412,9 @@ class NiceDB
      */
     protected function _bindName($name)
     {
-        if (is_string($name)) {
-            return ':' . ltrim($name, ':');
-        }
-
-        return $name;
+        return is_string($name)
+            ? (':' . ltrim($name, ':'))
+            : $name;
     }
 
     /**
@@ -1341,7 +1433,7 @@ class NiceDB
                 : '[?]';
             $keys[] = '/' . $key . '/';
             $value  = is_int($value)
-                ? (int)$value
+                ? $value
                 : $this->quote($value);
 
             $values[] = $value;
@@ -1349,4 +1441,21 @@ class NiceDB
 
         return preg_replace($keys, $values, $query, 1, $count);
     }
+
+    /**
+     * @return null
+     */
+    public function serialize()
+    {
+        return null;
+    }
+
+    /**
+     * @param string $serialized
+     */
+    public function unserialize($serialized)
+    {
+
+    }
 }
+

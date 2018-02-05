@@ -120,6 +120,31 @@
                 <Option Value="N">Inaktiv</Option>
             </Setting>
         </Section>
+        <Section Name="Listen- und Gallerieansicht" Key="productlist">
+            <Setting Description="Hovereffekt für Zusatzinfos (&lt;small&gt;zeigt Details zum Artikel in einer Hover-Box oder per Tap auf Touchdisplays&lt;/small&gt;)" Key="hover_productlist" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Variationsauswahl anzeigen (&lt;small&gt;Nur in Verbindung mit &quot;Hovereffekt für Zusatzinfos&quot;&lt;/small&gt;" Key="variation_select_productlist" Type="select" Value="N">
+                <Option Value="N"><![CDATA[Nein]]></Option>
+                <Option Value="1"><![CDATA[max. 1]]></Option>
+                <Option Value="2"><![CDATA[max. 2]]></Option>
+                <Option Value="3"><![CDATA[max. 3]]></Option>
+                <Option Value="5"><![CDATA[max. 5]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
+            </Setting>
+            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches. (&lt;small&gt;Nur in Verbindung mit &quot;Variationsauswahl anzeigen&quot;&lt;/small&gt;)" Key="variation_max_werte_productlist" Type="select" Value="3">
+                <Option Value="3"><![CDATA[max. 3]]></Option>
+                <Option Value="5"><![CDATA[max. 5]]></Option>
+                <Option Value="9"><![CDATA[max. 9]]></Option>
+                <Option Value="12"><![CDATA[max. 12]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
+            </Setting>
+            <Setting Description="Quickview für Artikeldetails" Key="quickview_productlist" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+        </Section>
         <Section Name="Footer-Einstellungen" Key="footer">
             <Setting Description="Newsletter-Anmeldung im Footer" Key="newsletter_footer" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>

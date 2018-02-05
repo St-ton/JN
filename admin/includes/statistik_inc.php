@@ -553,7 +553,6 @@ function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
 function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
 {
     $chart = new Piechart(['active' => false]);
-
     if (is_array($stats) && count($stats) > 0) {
         $chart->setActive(true);
         $data = [];

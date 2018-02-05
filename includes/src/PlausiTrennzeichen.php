@@ -16,29 +16,28 @@ class PlausiTrennzeichen extends Plausi
      */
     public function doPlausi($cTyp = null, $bUpdate = false)
     {
-        if (count($this->xPostVar_arr) > 0) {
-            $nEinheit_arr = [JTLSEPARATER_WEIGHT, JTLSEPARATER_AMOUNT];
-            foreach ($nEinheit_arr as $nEinheit) {
-                // Anzahl Dezimalstellen
-                if (!isset($this->xPostVar_arr['nDezimal_' . $nEinheit]) || strlen($this->xPostVar_arr['nDezimal_' . $nEinheit]) === 0) {
-                    $this->xPlausiVar_arr['nDezimal_' . $nEinheit] = 1;
-                } else {
-                    switch ($nEinheit) {
-                        case JTLSEPARATER_AMOUNT:
-                            if ($this->xPostVar_arr['nDezimal_' . $nEinheit] > 2) {
-                                $this->xPlausiVar_arr['nDezimal_' . $nEinheit] = 2;
-                            }
-                            break;
-                    }
-                }
-                // Dezimaltrennzeichen
-                if (!isset($this->xPostVar_arr['cDezZeichen_' . $nEinheit]) || strlen($this->xPostVar_arr['cDezZeichen_' . $nEinheit]) === 0) {
-                    $this->xPlausiVar_arr['cDezZeichen_' . $nEinheit] = 1;
-                }
-                // Tausendertrennzeichen
-                if (!isset($this->xPostVar_arr['cTausenderZeichen_' . $nEinheit]) || strlen($this->xPostVar_arr['cTausenderZeichen_' . $nEinheit]) === 0) {
-                    $this->xPlausiVar_arr['cTausenderZeichen_' . $nEinheit] = 1;
-                }
+        if (count($this->xPostVar_arr) === 0) {
+            return false;
+        }
+        $nEinheit_arr = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_LENGTH, JTL_SEPARATOR_AMOUNT];
+        foreach ($nEinheit_arr as $nEinheit) {
+            // Anzahl Dezimalstellen
+            $idx = 'nDezimal_' . $nEinheit;
+            if (!isset($this->xPostVar_arr[$idx])) {
+                $this->xPlausiVar_arr[$idx] = 1;
+            }
+            if ($nEinheit === JTL_SEPARATOR_AMOUNT && $this->xPostVar_arr[$idx] > 2) {
+                $this->xPlausiVar_arr[$idx] = 2;
+            }
+            // Dezimaltrennzeichen
+            $idx = 'cDezZeichen_' . $nEinheit;
+            if (!isset($this->xPostVar_arr[$idx]) || strlen($this->xPostVar_arr[$idx]) === 0) {
+                $this->xPlausiVar_arr[$idx] = 1;
+            }
+            // Tausendertrennzeichen
+            $idx = 'cTausenderZeichen_' . $nEinheit;
+            if (!isset($this->xPostVar_arr[$idx])) {
+                $this->xPlausiVar_arr[$idx] = 1;
             }
         }
 

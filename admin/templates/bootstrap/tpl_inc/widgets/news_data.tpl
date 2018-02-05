@@ -4,7 +4,7 @@
         {foreach name="news" from=$oNews_arr item=oNews}
             <li>
                 <p>
-                    <a class="" href="{$oNews->cUrlExt|urldecode}" target="_blank"><span class="date label label-default pull-right">{$oNews->dErstellt|date_format:"%d.%m.%Y"}</span>{$oNews->cBetreff}</a>
+                    <a class="" href="{$oNews->cUrlExt|urldecode}" target="_blank" rel="noopener"><span class="date label label-default pull-right">{$oNews->dErstellt|date_format:"%d.%m.%Y"}</span>{$oNews->cBetreff}</a>
                 </p>
             </li>
         {/foreach}

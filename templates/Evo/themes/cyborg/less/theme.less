@@ -10,7 +10,21 @@
 // Bootswatch
 // -----------------------------------------------------
 
-@import url("//fonts.googleapis.com/css?family=Roboto:400,700");
+//import via CDN
+//@import url("//fonts.googleapis.com/css?family=Roboto:400,700");
+//import local files
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular'), url('@{icon-font-path}roboto/Roboto-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Roboto Bold'), local('Roboto-Bold'), url('@{icon-font-path}roboto/Roboto-Bold.ttf') format('truetype');
+}
 
 // Navbar =====================================================================
 
@@ -109,6 +123,9 @@ table,
   .input-group-addon {
     border-color: @brand-success;
   }
+}
+.twitter-typeahead .tt-hint {
+  background-color: #fff !important;
 }
 
 legend {

@@ -14,12 +14,14 @@
                         <label for="box_{$direction}_show">Container anzeigen</label>
                     {else}
                         {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}
+                            <input type="hidden" name="box_show" value="1" />
                             <a href="boxen.php?action=container&position={$direction}&value=0&token={$smarty.session.jtl_token}"
                                title="{$directionName} auf jeder Seite deaktivieren" class="btn btn-warning"
                                data-toggle="tooltip" data-placement="right">
                                 <i class="fa fa-eye-slash"></i>
                             </a>
                         {else}
+                            <input type="hidden" name="box_show" value="0" />
                             <a href="boxen.php?action=container&position={$direction}&value=1&token={$smarty.session.jtl_token}"
                                title="{$directionName} auf jeder Seite aktivieren" class="btn btn-success"
                                data-toggle="tooltip" data-placement="right">
@@ -31,19 +33,19 @@
                 {if $oBox_arr|@count > 0}
                     <ul class="list-group">
                         <li class="boxRow">
-                            <div class="col-xs-3">
+                            <div class="col-sm-3 col-xs-4">
                                 <strong>{#boxTitle#}</strong>
                             </div>
-                            <div class="col-xs-2">
+                            <div class="col-sm-2 col-xs-3">
                                 <strong>{#boxType#}</strong>
                             </div>
-                            <div class="col-xs-3">
+                            <div class="col-sm-3 col-xs-4">
                                 <strong>{#boxLabel#}</strong>
                             </div>
-                            <div class="col-xs-2">
+                            <div class="col-sm-2 col-xs-6">
                                 <strong>{#boxSort#}</strong>
                             </div>
-                            <div class="col-xs-2">
+                            <div class="col-sm-2 col-xs-6">
                                 <strong>{#boxActions#}</strong>
                             </div>
                         </li>
@@ -62,7 +64,7 @@
                             <input type="hidden" name="page" value="{$nPage}" />
                             <input type="hidden" name="action" value="resort" />
                             <button type="submit" value="aktualisieren" class="btn btn-primary">
-                                <i class="fa fa-refresh"></i> {#save#}
+                                <i class="fa fa-save"></i> {#save#}
                             </button>
                         </li>
                     </ul>

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * class AbstractPlugin
@@ -16,12 +20,18 @@ abstract class AbstractPlugin implements IPlugin
     private $notifications = [];
 
     /**
-     * AbstractPlugin constructor.
-     * @param string $pluginId
+     * @var Plugin
      */
-    final public function __construct($pluginId)
+    private $plugin;
+
+    /**
+     * AbstractPlugin constructor.
+     * @param Plugin $plugin
+     */
+    final public function __construct($plugin)
     {
-        $this->pluginId = $pluginId;
+        $this->plugin   = $plugin;
+        $this->pluginId = $plugin->cPluginID;
     }
 
     /**
@@ -31,10 +41,8 @@ abstract class AbstractPlugin implements IPlugin
     {
         $dispatcher->listen('backend.notification', function (\Notification $notify) use (&$dispatcher) {
             $dispatcher->forget('backend.notification');
-            if (count($this->notifications) > 0) {
-                foreach ($this->notifications as $n) {
-                    $notify->addNotify($n);
-                }
+            foreach ($this->notifications as $n) {
+                $notify->addNotify($n);
             }
         });
     }
@@ -46,9 +54,7 @@ abstract class AbstractPlugin implements IPlugin
      */
     final public function addNotify($type, $title, $description = null)
     {
-        $notify = new NotificationEntry($type, $title, $description);
-        $notify->setPluginId($this->pluginId);
-        $this->notifications[] = $notify;
+        $this->notifications[] = (new NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
     }
 
     /**
@@ -77,5 +83,13 @@ abstract class AbstractPlugin implements IPlugin
      */
     public function disabled()
     {
+    }
+
+    /**
+     * @return Plugin
+     */
+    public function getPlugin()
+    {
+        return $this->plugin;
     }
 }

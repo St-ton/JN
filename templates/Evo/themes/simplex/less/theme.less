@@ -9,7 +9,21 @@
 // Bootswatch
 // -----------------------------------------------------
 
-@import url("//fonts.googleapis.com/css?family=Open+Sans:400,700");
+//import via CDN
+//@import url("//fonts.googleapis.com/css?family=Open+Sans:400,700");
+//import local files
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans-Regular'), url('@{icon-font-path}/opensans/OpenSans-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url('@{icon-font-path}/opensans/OpenSans-Bold.ttf') format('truetype');
+}
 
 .btn-shadow(@color) {
   #gradient > .vertical-three-colors(lighten(@color, 3%), @color, 6%, darken(@color, 3%));

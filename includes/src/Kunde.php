@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
-require_once PFAD_ROOT . PFAD_INCLUDES_LIBS . 'password_compat/password.php';
 
 /**
  * Class Kunde
@@ -247,9 +246,16 @@ class Kunde
     public function holRegKundeViaEmail($cEmail)
     {
         if (strlen($cEmail) > 0) {
-            $oKundeTMP = Shop::DB()->select('tkunde', 'cMail', StringHandler::filterXSS($cEmail), null, null, null, null, false, 'kKunde');
+            $oKundeTMP = Shop::DB()->select(
+                'tkunde',
+                'cMail', StringHandler::filterXSS($cEmail),
+                null, null,
+                null, null,
+                false,
+                'kKunde'
+            );
 
-            if (isset($oKundeTMP->kKunde) && $oKundeTMP->kKunde > 0) {
+            if ($oKundeTMP !== null && isset($oKundeTMP->kKunde) && $oKundeTMP->kKunde > 0) {
                 return new self($oKundeTMP->kKunde);
             }
         }
@@ -265,10 +271,10 @@ class Kunde
     {
         $conf          = Shop::getSettings([CONF_KUNDEN]);
         $cBenutzername = $post['email'];
-        if (isset($conf['kunden']['kundenlogin_max_loginversuche']) &&
-            $conf['kunden']['kundenlogin_max_loginversuche'] !== '' &&
-            $conf['kunden']['kundenlogin_max_loginversuche'] > 1 &&
-            strlen($cBenutzername) > 0
+        if (isset($conf['kunden']['kundenlogin_max_loginversuche'])
+            && $conf['kunden']['kundenlogin_max_loginversuche'] !== ''
+            && $conf['kunden']['kundenlogin_max_loginversuche'] > 1
+            && strlen($cBenutzername) > 0
         ) {
             $attempts = Shop::DB()->select(
                 'tkunde',
@@ -278,8 +284,9 @@ class Kunde
                 false,
                 'nLoginversuche'
             );
-            if (isset($attempts->nLoginversuche) &&
-                (int)$attempts->nLoginversuche >= (int)$conf['kunden']['kundenlogin_max_loginversuche']
+            if ($attempts !== null
+                && isset($attempts->nLoginversuche)
+                && (int)$attempts->nLoginversuche >= (int)$conf['kunden']['kundenlogin_max_loginversuche']
             ) {
                 if (validateCaptcha($_POST)) {
                     return true;
@@ -318,9 +325,10 @@ class Kunde
                 }
                 $this->angezeigtesLand = ISO2land($this->cLand);
                 $this->holeKundenattribute();
-                //check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-                if ((isset($oUser->cPasswort) && password_needs_rehash($oUser->cPasswort, PASSWORD_DEFAULT)) &&
-                    version_compare(Shop::getShopVersion(), 350, '>=') === true
+                // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
+                if ((isset($oUser->cPasswort)
+                        && password_needs_rehash($oUser->cPasswort, PASSWORD_DEFAULT))
+                    && version_compare(Shop::getShopVersion(), 350, '>=') === true
                 ) {
                     $_upd            = new stdClass();
                     $_upd->cPasswort = password_hash($cPasswort, PASSWORD_DEFAULT);
@@ -354,7 +362,6 @@ class Kunde
     public function checkCredentials($cBenutzername, $cPasswort)
     {
         $cBenutzername = StringHandler::filterXSS($cBenutzername);
-        $cPasswort     = StringHandler::filterXSS($cPasswort);
         // Work Around Passwort 32, 40 oder mehr Zeichen
         $oUser           = Shop::DB()->select(
             'tkunde',
@@ -370,7 +377,7 @@ class Kunde
         $updatePassword  = false;
         $verify          = false;
         $oldPasswordHash = '';
-        if (isset($oUser->cPasswort)) {
+        if ($oUser !== null && isset($oUser->cPasswort)) {
             if (strlen($oUser->cPasswort) === 32) { // Alter md5
                 $oldPasswordHash = md5($cPasswort);
                 $updatePassword  = true;
@@ -388,7 +395,7 @@ class Kunde
             $oUser->nLoginversuche = (int)$oUser->nLoginversuche;
         }
         if ($updatePassword === true) {
-            //get customer by mail and old password hash
+            // get customer by mail and old password hash
             $obj = Shop::DB()->select(
                 'tkunde',
                 'cMail',
@@ -398,10 +405,10 @@ class Kunde
                 'kKunde',
                 (int)$oUser->kKunde,
                 false,
-                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag'
+                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag_formatted'
             );
         } elseif ($verify === true) {
-            //get customer by mail since new hash verification was successful
+            // get customer by mail since new hash verification was successful
             $obj = Shop::DB()->select(
                 'tkunde',
                 'kKunde',
@@ -411,18 +418,19 @@ class Kunde
                 null,
                 null,
                 false,
-                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag'
+                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag_formatted'
             );
-            //reset unsuccessful login attempts
+            // reset unsuccessful login attempts
             if ($oUser->nLoginversuche > 0) {
                 $upd = new stdClass();
+
                 $upd->nLoginversuche = 0;
                 Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $upd);
             }
         } else {
             $obj = false;
             if (isset($oUser->nLoginversuche)) {
-                //increment unsuccessful login attempts
+                // increment unsuccessful login attempts
                 $this->nLoginversuche = (int)$oUser->nLoginversuche + 1;
                 $_upd                 = new stdClass();
                 $_upd->nLoginversuche = $this->nLoginversuche;
@@ -459,20 +467,16 @@ class Kunde
         $kKunde = (int)$kKunde;
         if ($kKunde > 0) {
             $obj = Shop::DB()->select('tkunde', 'kKunde', $kKunde);
-
-            if (isset($obj->kKunde) && $obj->kKunde > 0) {
+            if ($obj !== null && isset($obj->kKunde) && $obj->kKunde > 0) {
                 $members = array_keys(get_object_vars($obj));
-                if (is_array($members) && count($members) > 0) {
-                    foreach ($members as $member) {
-                        $this->$member = $obj->$member;
-                    }
+                foreach ($members as $member) {
+                    $this->$member = $obj->$member;
                 }
                 // Anrede mappen
                 $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, $this->kSprache);
                 $this->angezeigtesLand  = ISO2land($this->cLand);
                 //$this->cLand = landISO($this->cLand);
-                $this->holeKundenattribute();
-                $this->entschluesselKundendaten();
+                $this->holeKundenattribute()->entschluesselKundendaten();
                 $this->kKunde         = (int)$this->kKunde;
                 $this->kKundengruppe  = (int)$this->kKundengruppe;
                 $this->kSprache       = (int)$this->kSprache;
@@ -579,7 +583,6 @@ class Kunde
         $this->kKunde = Shop::DB()->insert('tkunde', $obj);
         $this->entschluesselKundendaten();
 
-        // Anrede mappen
         $this->cAnredeLocalized   = mappeKundenanrede($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
         $cDatum_arr               = gibDatumTeile($this->dErstellt);
@@ -630,7 +633,6 @@ class Kunde
         }
         $this->entschluesselKundendaten();
 
-        // Anrede mappen
         $this->cAnredeLocalized   = mappeKundenanrede($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
         $cDatum_arr               = gibDatumTeile($this->dErstellt);
@@ -653,10 +655,8 @@ class Kunde
             (int)$this->kKunde,
             '*', 'kKundenAttribut'
         );
-        if (is_array($oKundenattribut_arr) && count($oKundenattribut_arr) > 0) {
-            foreach ($oKundenattribut_arr as $oKundenattribut) {
-                $this->cKundenattribut_arr[$oKundenattribut->kKundenfeld] = $oKundenattribut;
-            }
+        foreach ($oKundenattribut_arr as $oKundenattribut) {
+            $this->cKundenattribut_arr[$oKundenattribut->kKundenfeld] = $oKundenattribut;
         }
 
         return $this;
@@ -670,7 +670,6 @@ class Kunde
      */
     public function pruefeLandISO($cLandISO)
     {
-        // ISO prüfen
         preg_match('/[a-zA-Z]{2}/', $cLandISO, $cTreffer1_arr);
         if (strlen($cTreffer1_arr[0]) !== strlen($cLandISO)) {
             $cISO = landISO($cLandISO);
@@ -683,19 +682,13 @@ class Kunde
     }
 
     /**
-     * copy session
-     *
      * @return $this
      */
     public function kopiereSession()
     {
-        $oElement_arr = array_keys(get_object_vars($_SESSION['Kunde']));
-        if (is_array($oElement_arr) && count($oElement_arr) > 0) {
-            foreach ($oElement_arr as $oElement) {
-                $this->$oElement = $_SESSION['Kunde']->$oElement;
-            }
+        foreach (array_keys(get_object_vars($_SESSION['Kunde'])) as $oElement) {
+            $this->$oElement = $_SESSION['Kunde']->$oElement;
         }
-        // Work Around
         $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, $this->kSprache);
 
         return $this;
@@ -708,14 +701,11 @@ class Kunde
      */
     public function verschluesselAlleKunden()
     {
-        $oKunden_arr = Shop::DB()->query("SELECT * FROM tkunde", 2);
-        if (is_array($oKunden_arr) && count($oKunden_arr) > 0) {
-            foreach ($oKunden_arr as $oKunden) {
-                if ($oKunden->kKunde > 0) {
-                    unset($oKundeTMP);
-                    $oKundeTMP = new self($oKunden->kKunde);
-                    $oKundeTMP->updateInDB();
-                }
+        foreach (Shop::DB()->query("SELECT * FROM tkunde", 2) as $oKunden) {
+            if ($oKunden->kKunde > 0) {
+                unset($oKundeTMP);
+                $oKundeTMP = new self($oKunden->kKunde);
+                $oKundeTMP->updateInDB();
             }
         }
 
@@ -766,9 +756,9 @@ class Kunde
             $cPasswortKlartext = $this->generatePassword(12);
             $this->cPasswort   = $this->generatePasswordHash($cPasswortKlartext);
 
-            $_upd                     = new stdClass();
-            $_upd->cPasswort          = $this->cPasswort;
-            $_upd->nLoginversuche     = 0;
+            $_upd                 = new stdClass();
+            $_upd->cPasswort      = $this->cPasswort;
+            $_upd->nLoginversuche = 0;
             Shop::DB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
 
             $obj                 = new stdClass();
@@ -794,7 +784,11 @@ class Kunde
      */
     public function generatePassword($length = 12)
     {
-        return gibUID($length, strtoupper(substr(md5($this->kKunde . $this->cMail . time() . $this->cStrasse), 5, 8)));
+        return gibUID($length, strtoupper(substr(
+            md5($this->kKunde . $this->cMail . time() . $this->cStrasse),
+            5,
+            8
+        )));
     }
 
     /**
@@ -825,7 +819,8 @@ class Kunde
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             $obj                    = new stdClass();
             $obj->tkunde            = $this;
-            $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') . '?fpwh=' . $stringToSend . '&mail=' . $mail;
+            $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') .
+                '?fpwh=' . $stringToSend . '&mail=' . $mail;
             $obj->cHash             = $stringToSend;
             $obj->neues_passwort    = 'Bitte Mailvorlage zuruecksetzen!';
             sendeMail(MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);
@@ -855,9 +850,9 @@ class Kunde
                 //check if the link is not expired (=24 hours valid)
                 $createdAt = new DateTime();
                 $createdAt->setTimestamp((int)$timeStamp);
-                $now  = new DateTime();
-                $diff = $now->diff($createdAt);
-                $secs = $diff->format('%a') * (60 * 60 * 24); //total days
+                $now   = new DateTime();
+                $diff  = $now->diff($createdAt);
+                $secs  = $diff->format('%a') * (60 * 60 * 24); //total days
                 $secs += (int)$diff->format('%h') * (60 * 60); //hours
                 $secs += (int)$diff->format('%i') * 60; //minutes
                 $secs += (int)$diff->format('%s'); //seconds
@@ -870,5 +865,21 @@ class Kunde
         }
 
         return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function getID()
+    {
+        return (int)$this->kKunde;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoggedIn()
+    {
+        return $this->kKunde > 0;
     }
 }

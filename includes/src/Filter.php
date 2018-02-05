@@ -3,12 +3,35 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+/**
+ * Class Filter
+ */
 class Filter
 {
+    /**
+     * @var string
+     */
     protected $cId          = 'filter';
+
+    /**
+     * @var array
+     */
     protected $oField_arr   = [];
+
+    /**
+     * @var string
+     */
     protected $cWhereSQL    = '';
+
+    /**
+     * @var string
+     */
     protected $cAction      = '';
+
+    /**
+     * @var array
+     */
     protected $cSession_arr = [];
 
     /**
@@ -145,7 +168,9 @@ class Filter
      */
     public function loadSessionStore()
     {
-        $this->cSession_arr = isset($_SESSION['filter_' . $this->cId]) ? $_SESSION['filter_' . $this->cId] : [];
+        $idx = 'filter_' . $this->cId;
+
+        $this->cSession_arr = isset($_SESSION[$idx]) ? $_SESSION[$idx] : [];
     }
 
     /**

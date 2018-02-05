@@ -8,7 +8,6 @@ defined('JTLCRON') || define('JTLCRON', true);
 if (!isset($bCronManuell) || !$bCronManuell) {
     require_once __DIR__ . '/globalinclude.php';
 }
-
 $oJobQueue_arr = Shop::DB()->query("SELECT * FROM tjobqueue WHERE nInArbeit = 0 AND dStartZeit < now()", 2);
 if (is_array($oJobQueue_arr) && count($oJobQueue_arr) > 0) {
     foreach ($oJobQueue_arr as $i => $oJobQueueTMP) {

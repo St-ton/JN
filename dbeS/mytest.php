@@ -11,7 +11,7 @@ if (!isset($_POST['wawiversion']) || (int)$_POST['wawiversion'] < JTL_MIN_WAWI_V
     syncException("Ihr JTL-Shop Version " .
         (JTL_VERSION / 100) . " benötigt für den Datenabgleich mindestens JTL-Wawi Version " .
         (JTL_MIN_WAWI_VERSION / 100000.0) .
-        ". \nEine aktuelle Version erhalten Sie unter: http://jtl-url.de/wawidownload", 8);
+        ". \nEine aktuelle Version erhalten Sie unter: https://jtl-url.de/wawidownload", 8);
 }
 $return = 3;
 $cName  = $_POST['uID'];
@@ -20,14 +20,11 @@ $cPass  = $_POST['uPWD'];
 $_POST['uID']  = '*';
 $_POST['uPWD'] = '*';
 
-$loginDaten = new Synclogin();
-$version    = '';
-$oVersion   = null;
+$login    = new Synclogin();
+$version  = '';
+$oVersion = null;
 
-Jtllog::writeLog(print_r($loginDaten, true), JTLLOG_LEVEL_DEBUG, false, 'Sync_xml');
-Jtllog::writeLog("{$cName} - {$cPass}", JTLLOG_LEVEL_DEBUG, false, 'Sync_xml');
-
-if ($cName && $cPass && $cName === $loginDaten->cName && $cPass === $loginDaten->cPass) {
+if ($login->checkLogin($cName, $cPass) === true) {
     $return = 0;
     if (isset($_POST['kKunde']) && (int)$_POST['kKunde'] > 0) {
         $oStatus = Shop::DB()->query("SHOW TABLE STATUS LIKE 'tkunde'", 1);

@@ -413,11 +413,9 @@ class News extends MainModel
     {
         $kKey = (int)$kKey;
         if ($kKey > 0) {
-            $kSprache = null;
-            if (isset($_SESSION['kSprache'])) {
-                $kSprache = (int)$_SESSION['kSprache'];
-            } else {
-                $oSprache = gibStandardsprache(true);
+            $kSprache = Shop::getLanguage();
+            if ($kSprache <= 0) {
+                $oSprache = gibStandardsprache();
                 $kSprache = (int)$oSprache->kSprache;
             }
 
@@ -475,14 +473,13 @@ class News extends MainModel
         }
         $kKundengruppe = null;
         if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-            $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = Session::CustomerGroup()->getID();
         } else {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
-        if (isset($_SESSION['kSprache'])) {
-            $kSprache = (int)$_SESSION['kSprache'];
-        } else {
-            $oSprache = gibStandardsprache(true);
+        $kSprache = Shop::getLanguage();
+        if ($kSprache <= 0) {
+            $oSprache = gibStandardsprache();
             $kSprache = (int)$oSprache->kSprache;
         }
         $oObj_arr = Shop::DB()->query(
@@ -497,7 +494,8 @@ class News extends MainModel
                     AND tnewskommentar.nAktiv = 1
                 {$cSqlExcludeCategory}
                 WHERE tnews.dGueltigVon <= now()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe RLIKE '^([0-9;]*;)?{$kKundengruppe};')
+                    AND (tnews.cKundengruppe LIKE '%;-1;%' 
+                        OR FIND_IN_SET('{$kKundengruppe}', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnews.kSprache = {$kSprache}
                 {$cSqlActive}
                 GROUP BY tnews.kNews

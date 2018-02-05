@@ -39,7 +39,7 @@ class Nice
      */
     public static function getInstance()
     {
-        return (self::$instance !== null) ? self::$instance : new self();
+        return self::$instance !== null ? self::$instance : new self();
     }
 
     /**
@@ -98,11 +98,10 @@ class Nice
      */
     public function checkErweiterung($kShopModulCheck)
     {
-        return ($this->cAPIKey !== '' &&
-            strlen($this->cAPIKey) > 0 &&
-            !empty($this->cDomain) &&
-            count($this->kShopModul_arr) > 0
-        )
+        return ($this->cAPIKey !== ''
+            && strlen($this->cAPIKey) > 0
+            && !empty($this->cDomain)
+            && count($this->kShopModul_arr) > 0)
             ? in_array((int)$kShopModulCheck, $this->kShopModul_arr, true)
             : false;
     }
@@ -114,8 +113,6 @@ class Nice
     {
         // SEO Modul - Suchmaschinenoptimierung
         defined('SHOP_ERWEITERUNG_SEO') || define('SHOP_ERWEITERUNG_SEO', 8001);
-        // Commerz Finanz GmbH Finanzierungsmodul
-        defined('SHOP_ERWEITERUNG_FINANZIERUNG') || define('SHOP_ERWEITERUNG_FINANZIERUNG', 8011);
         // Umfragen Modul
         defined('SHOP_ERWEITERUNG_UMFRAGE') || define('SHOP_ERWEITERUNG_UMFRAGE', 8021);
         // Auswahlassistent Modul
@@ -143,13 +140,6 @@ class Nice
         if (!defined(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $this->ladeDefines();
         }
-        // Finanzierungsmodul
-        $oModul           = new stdClass();
-        $oModul->kModulId = SHOP_ERWEITERUNG_FINANZIERUNG;
-        $oModul->cName    = 'Commerz Finanz GmbH Finanzierungsmodul';
-        $oModul->cDefine  = 'SHOP_ERWEITERUNG_FINANZIERUNG';
-        $oModul->cURL     = '';
-        $oModul_arr[]     = $oModul;
         // Umfragen Modul
         $oModul           = new stdClass();
         $oModul->kModulId = SHOP_ERWEITERUNG_UMFRAGE;

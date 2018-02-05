@@ -5,14 +5,13 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
-/** @global JTLSmarty $smarty */
-
+Shop::setPageType(PAGE_BESTELLVORGANG);
 $AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
@@ -23,9 +22,9 @@ $Einstellungen = Shop::getSettings([
     CONF_TRUSTEDSHOPS,
     CONF_ARTIKELDETAILS
 ]);
-Shop::setPageType(PAGE_BESTELLVORGANG);
-$step    = 'accountwahl';
-$cHinweis = '';
+$step          = 'accountwahl';
+$cHinweis      = '';
+$cart          = Session::Cart();
 // Kill Ajaxcheckout falls vorhanden
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
@@ -40,31 +39,31 @@ if (verifyGPCDataInteger('basket2Pers') === 1) {
     exit();
 }
 // Ist Bestellung moeglich?
-if ($_SESSION['Warenkorb']->istBestellungMoeglich() !== 10) {
+if ($cart->istBestellungMoeglich() !== 10) {
     pruefeBestellungMoeglich();
 }
 // Pflicht-Uploads vorhanden?
-if (class_exists('Upload') && !Upload::pruefeWarenkorbUploads($_SESSION['Warenkorb'])) {
+if (class_exists('Upload') && !Upload::pruefeWarenkorbUploads($cart)) {
     Upload::redirectWarenkorb(UPLOAD_ERROR_NEED_UPLOAD);
 }
 // Download-Artikel vorhanden?
-if (class_exists('Download') && Download::hasDownloads($_SESSION['Warenkorb'])) {
+if (class_exists('Download') && Download::hasDownloads($cart)) {
     // Nur registrierte Benutzer
     $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
 }
 // oneClick? Darf nur einmal ausgeführt werden und nur dann, wenn man vom Warenkorb kommt.
-if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO' &&
-    verifyGPCDataInteger('wk') === 1
+if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
+    && verifyGPCDataInteger('wk') === 1
 ) {
     $kKunde = 0;
     if (isset($_SESSION['Kunde']->kKunde)) {
         $kKunde = $_SESSION['Kunde']->kKunde;
     }
     $oWarenkorbPers = new WarenkorbPers($kKunde);
-    if (!(isset($_POST['login']) && (int)$_POST['login'] === 1 &&
-        $Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' &&
-        $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P' &&
-        count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0)
+    if (!(isset($_POST['login']) && (int)$_POST['login'] === 1
+        && $Einstellungen['global']['warenkorbpers_nutzen'] === 'Y'
+        && $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
+        && count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0)
     ) {
         pruefeAjaxEinKlick();
     }
@@ -72,132 +71,233 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
 if (verifyGPCDataInteger('wk') === 1) {
     resetNeuKundenKupon();
 }
-if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) {
-    pruefeVersandartWahl(isset($_POST['Versandart']) ? $_POST['Versandart'] : null);
+if (isset($_FILES['vcard'])
+    && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
+    && validateToken()
+) {
+    gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
-if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
-    $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+if (isset($_POST['unreg_form'])
+    && (int)$_POST['unreg_form'] === 1
+    && $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
 ) {
     pruefeUnregistriertBestellen($_POST);
 }
-if (isset($_GET['unreg']) && (int)$_GET['unreg'] === 1 &&
-    $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
-) {
-    $step = 'unregistriert bestellen';
+if (isset($_GET['editLieferadresse'])) {
+    // Shipping address and customer address are now on same site
+    $_GET['editRechnungsadresse'] = $_GET['editLieferadresse'];
 }
-if (isset($_POST['lieferdaten']) && (int)$_POST['lieferdaten'] === 1) {
-    pruefeLieferdaten($_POST);
+if (isset($_POST['shipping_address'])) {
+    if ((int)$_POST['shipping_address'] === 0) {
+        $_POST['kLieferadresse'] = 0;
+        $_POST['lieferdaten']    = 1;
+        pruefeLieferdaten($_POST);
+    } elseif (isset($_POST['kLieferadresse']) && (int)$_POST['kLieferadresse'] > 0) {
+        pruefeLieferdaten($_POST);
+    } elseif (isset($_POST['register']['shipping_address'])) {
+        pruefeLieferdaten($_POST['register']['shipping_address'], $fehlendeAngaben);
+    }
+} elseif (isset($_POST['lieferdaten']) && (int)$_POST['lieferdaten'] === 1) {
+    // compatibility with older template
+    pruefeLieferdaten($_POST, $fehlendeAngaben);
+}
+if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
+    $_POST['checkout'] = 1;
+    $_POST['form']     = 1;
+
+    // persistent delivery address during custom register
+    $_SESSION['tmpShipping'] = [
+        'Lieferadresse'   => $_SESSION['Lieferadresse'],
+        'fehlendeAngaben' => $fehlendeAngaben,
+    ];
+    include PFAD_ROOT . 'registrieren.php';
+} elseif (isset($_SESSION['tmpShipping'])) {
+    // restore delivery address after registering customer
+    if ((int)$_POST['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {
+        setzeLieferadresseAusRechnungsadresse();
+    } else {
+        $_SESSION['Lieferadresse'] = $_SESSION['tmpShipping']['Lieferadresse'];
+    }
+    if (is_array($_SESSION['tmpShipping']['fehlendeAngaben'])) {
+        setzeFehlendeAngaben($_SESSION['tmpShipping']['fehlendeAngaben'], 'shipping_address');
+    }
+    unset($_SESSION['tmpShipping']);
+}
+if ((isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) || isset($_GET['kVersandart'])) {
+    unset($_SESSION['Zahlungsart']);
+    $kVersandart = null;
+
+    if (isset($_GET['kVersandart'])) {
+        $kVersandart = (int)$_GET['kVersandart'];
+    } elseif (isset($_POST['Versandart'])) {
+        $kVersandart = (int)$_POST['Versandart'];
+    }
+
+    pruefeVersandartWahl($kVersandart);
+}
+if (isset($_GET['unreg'])
+    && (int)$_GET['unreg'] === 1
+    && $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+) {
+    $step = 'edit_customer_address';
 }
 //autom. step ermitteln
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     $step = 'Lieferadresse';
+
+    if (!isset($_SESSION['Lieferadresse'])) {
+        pruefeLieferdaten(['kLieferadresse' => 0]);
+    }
+
+    if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
+        $land          = isset($_SESSION['Lieferadresse']->cLand)
+            ? $_SESSION['Lieferadresse']->cLand
+            : $_SESSION['Kunde']->cLand;
+        $plz           = isset($_SESSION['Lieferadresse']->cPLZ)
+            ? $_SESSION['Lieferadresse']->cPLZ
+            : $_SESSION['Kunde']->cPLZ;
+        $kKundengruppe = Session::CustomerGroup()->getID();
+
+        $oGuenstigsteVersandart = null;
+        $oVersandart_arr        = VersandartHelper::getPossibleShippingMethods(
+            $land,
+            $plz,
+            VersandartHelper::getShippingClasses($cart),
+            $kKundengruppe
+        );
+        $activeVersandart       = gibAktiveVersandart($oVersandart_arr);
+
+        if (empty($activeVersandart)) {
+            foreach ($oVersandart_arr as $oVersandart) {
+                if ($oGuenstigsteVersandart === null || $oVersandart->fEndpreis < $oGuenstigsteVersandart->fEndpreis) {
+                    $oGuenstigsteVersandart = $oVersandart;
+                }
+            }
+            if ($oGuenstigsteVersandart !== null) {
+                pruefeVersandartWahl(
+                    $oGuenstigsteVersandart->kVersandart,
+                    ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
+                );
+            }
+        } else {
+            pruefeVersandartWahl(
+                $activeVersandart,
+                ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
+            );
+        }
+    }
 }
-//Download-Artikel vorhanden?
-if ($step !== 'accountwahl' &&
-    class_exists('Download') &&
-    Download::hasDownloads($_SESSION['Warenkorb']) &&
-    (!isset($_SESSION['Kunde']->cPasswort) || strlen($_SESSION['Kunde']->cPasswort) === 0)
+// Download-Artikel vorhanden?
+if ($step !== 'accountwahl'
+    && empty($_SESSION['Kunde']->cPasswort)
+    && class_exists('Download')
+    && Download::hasDownloads($cart)
 ) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-    $step = 'accountwahl';
+    $step      = 'accountwahl';
+    $cHinweis  = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+    $cPost_arr = StringHandler::filterXSS($_POST);
+
+    Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($cPost_arr))
+                  ->assign('kLieferadresse', $cPost_arr['kLieferadresse'])
+                  ->assign('cPost_var', $cPost_arr);
+
+    if ((int)$cPost_arr['shipping_address'] === 1) {
+        Shop::Smarty()->assign('Lieferadresse', mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address']));
+    }
+
     unset($_SESSION['Kunde']);
 }
-//autom. step ermitteln
+// autom. step ermitteln
 pruefeVersandkostenStep();
-//autom. step ermitteln
+// autom. step ermitteln
 pruefeZahlungStep();
-//autom. step ermitteln
+// autom. step ermitteln
 pruefeBestaetigungStep();
-//sondersteps Rechnungsadresse aendern
+// sondersteps Rechnungsadresse aendern
 pruefeRechnungsadresseStep($_GET);
-//sondersteps Lieferadresse aendern
+// sondersteps Lieferadresse aendern
 pruefeLieferadresseStep($_GET);
-//sondersteps Versandart aendern
+// sondersteps Versandart aendern
 pruefeVersandartStep($_GET);
-//sondersteps Zahlungsart aendern
+// sondersteps Zahlungsart aendern
 pruefeZahlungsartStep($_GET);
 pruefeZahlungsartwahlStep($_POST);
 
 if ($step === 'accountwahl') {
     gibStepAccountwahl();
-}
-if ($step === 'unregistriert bestellen') {
     gibStepUnregistriertBestellen();
 }
-if ($step === 'Lieferadresse') {
+if ($step === 'edit_customer_address' || $step === 'Lieferadresse') {
     validateCouponInCheckout();
+    gibStepUnregistriertBestellen();
     gibStepLieferadresse();
 }
-if ($step === 'Versand') {
+if ($step === 'Versand' || $step === 'Zahlung') {
     gibStepVersand();
-    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
-}
-if ($step === 'Zahlung') {
     gibStepZahlung();
-    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
+    Warenkorb::refreshChecksum($cart);
 }
 if ($step === 'ZahlungZusatzschritt') {
     gibStepZahlungZusatzschritt($_POST);
-    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
+    Warenkorb::refreshChecksum($cart);
 }
 if ($step === 'Bestaetigung') {
     plausiGuthaben($_POST);
-    $smarty->assign('cKuponfehler_arr', plausiKupon($_POST));
+    Shop::Smarty()->assign('cKuponfehler_arr', plausiKupon($_POST));
     //evtl genutztes guthaben anpassen
     pruefeGuthabenNutzen();
+    // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
+    getPaymentSurchageDiscount($_SESSION['Zahlungsart']);
     gibStepBestaetigung($_GET);
-    $_SESSION['Warenkorb']->cEstimatedDelivery = $_SESSION['Warenkorb']->getEstimatedDeliveryTime();
-    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
+    $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
+    Warenkorb::refreshChecksum($cart);
 }
-//SafetyPay Work Around
-if (isset($_SESSION['Zahlungsart']->cModulId) &&
-    $_SESSION['Zahlungsart']->cModulId === 'za_safetypay' &&
-    $step === 'Bestaetigung'
+// SafetyPay Work Around
+if (isset($_SESSION['Zahlungsart']->cModulId)
+    && $_SESSION['Zahlungsart']->cModulId === 'za_safetypay'
+    && $step === 'Bestaetigung'
 ) {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/safetypay.php';
-    $smarty->assign('safetypay_form', gib_safetypay_form(
+    Shop::Smarty()->assign('safetypay_form', gib_safetypay_form(
         $_SESSION['Kunde'],
-        $_SESSION['Warenkorb'],
-        $Einstellungen['zahlungsarten'])
-    );
+        $cart,
+        $Einstellungen['zahlungsarten']
+    ));
 }
-//Billpay
-if (isset($_SESSION['Zahlungsart']) &&
-    $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl' &&
-    $step === 'Bestaetigung'
+// Billpay
+if (isset($_SESSION['Zahlungsart'])
+    && $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl'
+    && $step === 'Bestaetigung'
 ) {
     /** @var Billpay $paymentMethod */
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }
-//hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
+$startKat               = new Kategorie();
+$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$startKat             = new Kategorie();
-$startKat->kKategorie = 0;
-
-WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
-
-//specific assigns
-$smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('AGB', gibAGBWRB(Shop::getLanguage(), $_SESSION['Kundengruppe']->kKundengruppe))
-       ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
-       ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
-       ->assign('Einstellungen', $Einstellungen)
-       ->assign('hinweis', $cHinweis)
-       ->assign('step', $step)
-       ->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
-       ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())
-       ->assign('Steuerpositionen', $_SESSION['Warenkorb']->gibSteuerpositionen())
-       ->assign('bestellschritt', gibBestellschritt($step))
-       ->assign('requestURL', (isset($requestURL) ? $requestURL : null))
-       ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-       ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
+WarenkorbHelper::addVariationPictures($cart);
+Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
+    ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
+    ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
+    ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
+    ->assign('hinweis', $cHinweis)
+    ->assign('step', $step)
+    ->assign('editRechnungsadresse', verifyGPCDataInteger('editRechnungsadresse'))
+    ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
+    ->assign('Warensumme', $cart->gibGesamtsummeWaren())
+    ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
+    ->assign('bestellschritt', gibBestellschritt($step))
+    ->assign('requestURL', (isset($requestURL) ? $requestURL : null))
+    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
+    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_BESTELLVORGANG_PAGE);
 
-$smarty->display('checkout/index.tpl');
+Shop::Smarty()->display('checkout/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

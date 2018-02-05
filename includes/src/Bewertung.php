@@ -42,14 +42,15 @@ class Bewertung
     public function __construct($kArtikel, $kSprache, $nAnzahlSeite = -1, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0, $bAlleSprachen = false)
     {
         if (!$kSprache) {
-            $kSprache = $_SESSION['kSprache'];
+            $kSprache = Shop::getLanguageID();
         }
         $kArtikel     = (int)$kArtikel;
         $kSprache     = (int)$kSprache;
         $nAnzahlSeite = (int)$nAnzahlSeite;
         $nSeite       = (int)$nSeite;
         $nSterne      = (int)$nSterne;
-        if ($nOption == 1) { // Hilfreich holen
+        $nOption      = (int)$nOption;
+        if ($nOption === 1) {
             $this->holeHilfreichsteBewertung($kArtikel, $kSprache);
         } else {
             $this->holeProduktBewertungen(
@@ -75,7 +76,8 @@ class Bewertung
         $this->oBewertung_arr = [];
         if ($kArtikel > 0 && $kSprache > 0) {
             $oBewertungHilfreich = Shop::DB()->query(
-                "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum
+                "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
+                        DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                     FROM tbewertung
                     WHERE kSprache = " . (int)$kSprache . "
                         AND kArtikel = " . (int)$kArtikel . "
@@ -172,7 +174,8 @@ class Bewertung
                         : ' LIMIT ' . $nAnzahlSeite;
                 }
                 $this->oBewertung_arr = Shop::DB()->query(
-                    "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum
+                    "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
+                            DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                         FROM tbewertung
                         WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQL . $cSQLFreischalten . "
                         ORDER BY" . $cOrderSQL . $nLimit, 2

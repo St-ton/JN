@@ -9,7 +9,27 @@
 // Bootswatch
 // -----------------------------------------------------
 
-@import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic");
+//import via CDN
+//@import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic");
+//import local files
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url('@{icon-font-path}lato/Lato-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Lato Bold'), local('Lato-Bold'), url('@{icon-font-path}lato/Lato-Bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Lato Italic'), local('Lato-Italic'), url('@{icon-font-path}lato/Lato-Italic.ttf') format('truetype');
+}
 
 // Navbar =====================================================================
 
@@ -214,6 +234,9 @@ textarea {
   color: @text-color;
 }
 
+.twitter-typeahead .tt-hint {
+  background-color: #fff !important;
+}
 // Navs =======================================================================
 
 .nav {

@@ -21,17 +21,17 @@
                         {foreach from=$PluginFehlerhaft_arr item=PluginFehlerhaft}
                             <tr>
                                 <td>
-                                    <strong>{$PluginFehlerhaft->cName}</strong>
-                                    <p>{$PluginFehlerhaft->cDescription}</p>
+                                    <strong>{if !empty($PluginFehlerhaft->cName)}{$PluginFehlerhaft->cName}{/if}</strong>
+                                    <p>{if !empty($PluginFehlerhaft->cDescription)}{$PluginFehlerhaft->cDescription}{/if}</p>
                                 </td>
                                 <td>
-                                    <p><span class="badge error">{$PluginFehlerhaft->cFehlercode}</span>{$PluginFehlerhaft->cFehlerBeschreibung}</p>
-                                    {if isset($PluginFehlerhaft->shop4compatible) && $PluginFehlerhaft->shop4compatible === false}
-                                        <div class="alert alert-info"><strong>Achtung:</strong> Plugin ist nicht vollst&auml;ndig Shop4-kompatibel! Es k&ouml;nnen daher Probleme beim Betrieb entstehen.</div>
-                                    {/if}
+                                    <p>
+                                        <span class="badge error">{if !empty($PluginFehlerhaft->cFehlercode)}{$PluginFehlerhaft->cFehlercode}{/if}</span>
+                                        {if !empty($PluginFehlerhaft->cFehlerBeschreibung)}{$PluginFehlerhaft->cFehlerBeschreibung}{/if}
+                                    </p>
                                 </td>
-                                <td class="tcenter">{$PluginFehlerhaft->cVersion}</td>
-                                <td class="tcenter">{$PluginFehlerhaft->cVerzeichnis}</td>
+                                <td class="tcenter">{if !empty($PluginFehlerhaft->cVersion)}{$PluginFehlerhaft->cVersion}{/if}</td>
+                                <td class="tcenter">{if !empty($PluginFehlerhaft->cVerzeichnis)}{$PluginFehlerhaft->cVerzeichnis}{/if}</td>
                             </tr>
                         {/foreach}
                         </tbody>

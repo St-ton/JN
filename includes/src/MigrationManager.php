@@ -44,7 +44,7 @@ class MigrationManager
             return [];
         }
 
-        if ($identifier == null) {
+        if ($identifier === null) {
             $identifier = max(array_merge($executedMigrations, array_keys($migrations)));
         }
 
@@ -108,16 +108,13 @@ class MigrationManager
     }
 
     /**
-     * Execute a migration.
-     *
-     * @param int $id MigrationId
-     * @param string $direction Direction
-     * @return void
+     * @param int    $id
+     * @param string $direction
+     * @throws Exception
      */
     public function executeMigrationById($id, $direction = IMigration::UP)
     {
-        $migration = $this->getMigrationById($id);
-        $this->executeMigration($migration, $direction);
+        $this->executeMigration($this->getMigrationById($id), $direction);
     }
 
     /**

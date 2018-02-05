@@ -11,6 +11,7 @@ function show_confirmation($bestellung)
 {
     $einstellungApiKey       = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_apikey'", 1);
     $einstellungSignatureKey = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1);
+    $TransactionData         = null;
 
     define('SAFETYPAY_APIKEY', $einstellungApiKey->cWert);
     define('SAFETYPAY_SIGNTATURE_KEY', $einstellungSignatureKey->cWert);
@@ -18,23 +19,25 @@ function show_confirmation($bestellung)
     require_once __DIR__ . '/class/safetypayProxyAPI.php';
     require_once __DIR__ . '/include/safetypay_functions.php';
 
-    // Gets Values
-    $pLanguageShop          = (isset($_REQUEST['languageShop']) ? $_REQUEST['languageShop'] : $_POST['languageShop']);
-    $pCurrency              = (isset($_REQUEST['Currency']) ? $_REQUEST['Currency'] : (isset($_POST['Currency']) ? $_POST['Currency'] : ''));
-    $pToCurrency            = (isset($_REQUEST['slcToCurrency']) ? $_REQUEST['slcToCurrency'] : (isset($_POST['slcToCurrency']) ? $_POST['slcToCurrency'] : ''));
-    $pBankID                = (isset($_REQUEST['slcBankID']) ? $_REQUEST['slcBankID'] : $_POST['slcBankID']);
-    $txtAmount              = (isset($_REQUEST['txtAmount']) ? $_REQUEST['txtAmount'] : (isset($_POST['txtAmount']) ? $_POST['txtAmount'] : ''));
-    $pTrackingCode          = (isset($_REQUEST['TrackingCode']) ? $_REQUEST['TrackingCode'] : $_POST['TrackingCode']);
-    $pCalculationQuoteRefNo = (isset($_REQUEST['CalcQuoteReferenceNo']) ? $_REQUEST['CalcQuoteReferenceNo'] : $_POST['CalcQuoteReferenceNo']);
+    $pLanguageShop          = isset($_REQUEST['languageShop']) ? $_REQUEST['languageShop'] : $_POST['languageShop'];
+    $pCurrency              = isset($_REQUEST['Currency']) ? $_REQUEST['Currency'] : (isset($_POST['Currency']) ? $_POST['Currency'] : '');
+    $pToCurrency            = isset($_REQUEST['slcToCurrency']) ? $_REQUEST['slcToCurrency'] : (isset($_POST['slcToCurrency']) ? $_POST['slcToCurrency'] : '');
+    $pBankID                = isset($_REQUEST['slcBankID']) ? $_REQUEST['slcBankID'] : $_POST['slcBankID'];
+    $txtAmount              = isset($_REQUEST['txtAmount']) ? $_REQUEST['txtAmount'] : (isset($_POST['txtAmount']) ? $_POST['txtAmount'] : '');
+    $pTrackingCode          = isset($_REQUEST['TrackingCode']) ? $_REQUEST['TrackingCode'] : $_POST['TrackingCode'];
+    $pCalculationQuoteRefNo = isset($_REQUEST['CalcQuoteReferenceNo']) ? $_REQUEST['CalcQuoteReferenceNo'] : $_POST['CalcQuoteReferenceNo'];
     $pMerchantReferenceNo   = $bestellung->cBestellNr;
-    $pURLPaymentSuccesfully = (isset($_REQUEST['URLPaymentSuccesfully']) ? $_REQUEST['URLPaymentSuccesfully'] : $_POST['URLPaymentSuccesfully']);
-    $pURLPaymentFailed      = (isset($_REQUEST['URLPaymentFailed']) ? $_REQUEST['URLPaymentFailed'] : $_POST['URLPaymentFailed']);
-
-    $pSubmit = (isset($_REQUEST['Submit']) ? $_REQUEST['Submit'] : $_POST['Submit']);
+    $pURLPaymentSuccesfully = isset($_REQUEST['URLPaymentSuccesfully']) ? $_REQUEST['URLPaymentSuccesfully'] : $_POST['URLPaymentSuccesfully'];
+    $pURLPaymentFailed      = isset($_REQUEST['URLPaymentFailed']) ? $_REQUEST['URLPaymentFailed'] : $_POST['URLPaymentFailed'];
+    $pSubmit                = isset($_REQUEST['Submit']) ? $_REQUEST['Submit'] : $_POST['Submit'];
 
     // Instance of SafetyPay Proxy Class
     $proxySTP = new SafetyPayProxy();
-    if (!empty($einstellungApiKey) && !empty($einstellungApiKey->cWert) && !empty($einstellungSignatureKey) && !empty($einstellungSignatureKey->cWert)) {
+    if (!empty($einstellungApiKey)
+        && !empty($einstellungApiKey->cWert)
+        && !empty($einstellungSignatureKey)
+        && !empty($einstellungSignatureKey->cWert)
+    ) {
         $proxySTP->LetKeys($einstellungApiKey->cWert, $einstellungSignatureKey->cWert);
     }
 
@@ -59,12 +62,12 @@ function show_confirmation($bestellung)
         );
     }
 
-    if ($TransactionData['SelectedBank']['AccessType'] == 2) {
+    if (isset($TransactionData['SelectedBank']['AccessType']) && $TransactionData['SelectedBank']['AccessType'] == 2) {
         header('Location: ' . $TransactionData['SelectedBank']['NavigationURL']);
     } else {
         return '<center>
-		<div style="float:center; border: #ffffff 1px solid; width: 400px; margin:5px; margin-top:0px;">
-		<center>
+        <div style="float:center; border: #ffffff 1px solid; width: 400px; margin:5px; margin-top:0px;">
+        <center>
             <table width="100%" cellpadding="3" cellspacing="3">
                 <tr>
                     <td colspan="2" nowrap>
@@ -87,7 +90,7 @@ function show_confirmation($bestellung)
                 </tr>
             </table>
             </center>
-		</div>
-		</center>';
+        </div>
+        </center>';
     }
 }

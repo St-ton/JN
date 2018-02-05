@@ -21,9 +21,9 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $cPlausi_arr['cName'] = 1;
     }
     $cBannerPath = (isset($_POST['cPath']) && $_POST['cPath'] !== '' ? $_POST['cPath'] : null);
-    if (isset($_FILES['oFile']) &&
-        $_FILES['oFile']['error'] == 0 &&
-        move_uploaded_file($_FILES['oFile']['tmp_name'], PFAD_ROOT . PFAD_BILDER_BANNER . $_FILES['oFile']['name'])
+    if (isset($_FILES['oFile'])
+        && $_FILES['oFile']['error'] === UPLOAD_ERR_OK
+        && move_uploaded_file($_FILES['oFile']['tmp_name'], PFAD_ROOT . PFAD_BILDER_BANNER . $_FILES['oFile']['name'])
     ) {
         $cBannerPath = $_FILES['oFile']['name'];
     }
@@ -83,10 +83,6 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             ];
             $cKeyValue = $aFilter_arr[$cKey];
             $cValue    = isset($_POST[$cKeyValue]) ? $_POST[$cKeyValue] : null;
-        } elseif ($nSeite === PAGE_HERSTELLER) {
-            $cKey      = 'kHersteller';
-            $cKeyValue = 'manufacturer_key';
-            $cValue    = $_POST[$cKeyValue];
         } elseif ($nSeite === PAGE_EIGENE) {
             $cKey      = 'kLink';
             $cKeyValue = 'link_key';
@@ -106,7 +102,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
 
         $ins = Shop::DB()->insert('textensionpoint', $oExtension);
         // saved?
-        if ($kImageMap && (int)$ins > 0) {
+        if ($kImageMap && $ins > 0) {
             $cAction  = 'view';
             $cHinweis = 'Banner wurde erfolgreich gespeichert.';
         } else {
@@ -138,13 +134,7 @@ switch ($cAction) {
             $cAction = 'view';
             break;
         }
-        $oBanner->cTitel = utf8_encode($oBanner->cTitel);
-        foreach ($oBanner->oArea_arr as &$oArea) {
-            $oArea->cTitel        = utf8_encode($oArea->cTitel);
-            $oArea->cUrl          = utf8_encode($oArea->cUrl);
-            $oArea->cBeschreibung = utf8_encode($oArea->cBeschreibung);
-            $oArea->cStyle        = utf8_encode($oArea->cStyle);
-        }
+
         $smarty->assign('oBanner', $oBanner)
                ->assign('cBannerLocation', Shop::getURL() . '/' . PFAD_BILDER_BANNER);
         break;

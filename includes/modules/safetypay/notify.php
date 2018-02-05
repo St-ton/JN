@@ -7,13 +7,13 @@ require_once __DIR__ . '/../../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-$einstellungApiKey       = Shop::DB()->query("
-    SELECT cWert 
+$einstellungApiKey       = Shop::DB()->query(
+    "SELECT cWert 
         FROM teinstellungen 
         WHERE cName = 'zahlungsart_safetypay_apikey'", 1
 );
-$einstellungSignatureKey = Shop::DB()->query("
-    SELECT cWert 
+$einstellungSignatureKey = Shop::DB()->query(
+    "SELECT cWert 
         FROM teinstellungen 
         WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1
 );

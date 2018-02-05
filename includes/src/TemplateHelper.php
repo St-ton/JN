@@ -47,7 +47,7 @@ class TemplateHelper
     {
         $idx = $isAdmin ? 'admin' : 'frontend';
 
-        return (!empty(self::$instances[$idx])) ? self::$instances[$idx] : new self($isAdmin);
+        return !empty(self::$instances[$idx]) ? self::$instances[$idx] : new self($isAdmin);
     }
 
     /**
@@ -101,8 +101,6 @@ class TemplateHelper
     }
 
     /**
-     * todo
-     *
      * @return array
      */
     public function getStoredTemplates()
@@ -122,7 +120,7 @@ class TemplateHelper
             );
             foreach ($intersect as $dir) {
                 $d = $subTemplateDir . $version . DIRECTORY_SEPARATOR . $dir;
-                if ($data = $this->getData($d, false)) {
+                if (($data = $this->getData($d, false)) !== false) {
                     $storedTemplates[$dir][] = $data;
                 }
             }
@@ -165,10 +163,10 @@ class TemplateHelper
 
     /**
      * @param string $path
-     * @param int    $depht
+     * @param int    $depth
      * @return array
      */
-    public function getFolders($path, $depht = 0)
+    public function getFolders($path, $depth = 0)
     {
         $result = [];
 
@@ -176,10 +174,10 @@ class TemplateHelper
             return $result;
         }
 
-        foreach (scandir($path) as $key => $value) {
+        foreach (scandir($path, SCANDIR_SORT_ASCENDING) as $value) {
             if (!in_array($value, ['.', '..'], true) && is_dir($path . DIRECTORY_SEPARATOR . $value)) {
-                $result[$value] = ($depht > 1)
-                    ? $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depht - 1)
+                $result[$value] = $depth > 1
+                    ? $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depth - 1)
                     : [];
             }
         }
@@ -195,45 +193,34 @@ class TemplateHelper
      */
     public function getFrontendTemplateFolders($path = false)
     {
-        $cOrdner_arr = [];
-        if ($nHandle = opendir(PFAD_ROOT . PFAD_TEMPLATES)) {
-            while (false !== ($cFile = readdir($nHandle))) {
-                if ($cFile !== '.' && $cFile !== '..' && $cFile[0] !== '.') {
-                    $cOrdner_arr[] = $path ? (PFAD_ROOT . PFAD_TEMPLATES . $cFile) : $cFile;
-                }
+        $res      = [];
+        $iterator = new DirectoryIterator(PFAD_ROOT . PFAD_TEMPLATES);
+        foreach ($iterator as $fileinfo) {
+            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
+                $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
             }
-            closedir($nHandle);
         }
 
-        return $cOrdner_arr;
+        return $res;
     }
 
     /**
      * get all potential admin template folder names
      *
-     * @param bool $bPfad
+     * @param bool $path
      * @return array
      */
-    public function getAdminTemplateFolders($bPfad = false)
+    public function getAdminTemplateFolders($path = false)
     {
-        $cOrdner_arr = [];
-        if (($nHandle = opendir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)) !== false) {
-            while (false !== ($cFile = readdir($nHandle))) {
-                if (
-                    $cFile !== '.' &&
-                    $cFile !== '..' &&
-                    $cFile[0] !== '.' &&
-                    is_dir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cFile)
-                ) {
-                    $cOrdner_arr[] = $bPfad
-                        ? (PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cFile)
-                        : $cFile;
-                }
+        $res      = [];
+        $iterator = new DirectoryIterator(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES);
+        foreach ($iterator as $fileinfo) {
+            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
+                $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
             }
-            closedir($nHandle);
         }
 
-        return $cOrdner_arr;
+        return $res;
     }
 
     /**
@@ -245,9 +232,7 @@ class TemplateHelper
      */
     public function getXML($cOrdner, $isAdmin = null)
     {
-        $isAdmin  = ($isAdmin !== null) ?
-            $isAdmin
-            : $this->isAdmin;
+        $isAdmin  = ($isAdmin !== null) ? $isAdmin : $this->isAdmin;
         $cXMLFile = ($isAdmin === false)
             ? PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML
             : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML;
@@ -261,7 +246,12 @@ class TemplateHelper
             if ($oXML === false) {
                 $oXML = simplexml_load_string(file_get_contents($cXMLFile));
             }
-            $oXML->Ordner = $cOrdner;
+
+            if (is_a($oXML, 'SimpleXMLElement')) {
+                $oXML->Ordner = $cOrdner;
+            } else {
+                $oXML = null;
+            }
 
             return $oXML;
         }
@@ -309,24 +299,36 @@ class TemplateHelper
         if (!$oXMLTemplate) {
             return false;
         }
-        $oTemplate->cName        = (string)trim($oXMLTemplate->Name);
+
+        $oTemplate->cName        = trim($oXMLTemplate->Name);
         $oTemplate->cOrdner      = (string)$cOrdner;
-        $oTemplate->cAuthor      = (string)trim($oXMLTemplate->Author);
-        $oTemplate->cURL         = (string)trim($oXMLTemplate->URL);
-        $oTemplate->cVersion     = (string)trim($oXMLTemplate->Version);
-        $oTemplate->cShopVersion = (string)trim($oXMLTemplate->ShopVersion);
-        $oTemplate->cPreview     = (string)trim($oXMLTemplate->Preview);
-        $oTemplate->cDokuURL     = (string)trim($oXMLTemplate->DokuURL);
+        $oTemplate->cAuthor      = trim($oXMLTemplate->Author);
+        $oTemplate->cURL         = trim($oXMLTemplate->URL);
+        $oTemplate->cVersion     = trim($oXMLTemplate->Version);
+        $oTemplate->cShopVersion = trim($oXMLTemplate->ShopVersion);
+        $oTemplate->cPreview     = trim($oXMLTemplate->Preview);
+        $oTemplate->cDokuURL     = trim($oXMLTemplate->DokuURL);
         $oTemplate->bChild       = !empty($oXMLTemplate->Parent);
-        $oTemplate->cParent      = !empty($oXMLTemplate->Parent) ? (string)trim($oXMLTemplate->Parent) : '';
+        $oTemplate->cParent      = !empty($oXMLTemplate->Parent) ? trim($oXMLTemplate->Parent) : '';
         $oTemplate->bResponsive  = empty($oXMLTemplate['isFullResponsive'])
             ? false
             : (strtolower((string)$oXMLTemplate['isFullResponsive']) === 'true');
         $oTemplate->bHasError    = false;
         $oTemplate->eTyp         = '';
-        $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? (string)trim($oXMLTemplate->Description) : '';
-        if (StringHandler::is_utf8($oTemplate->cDescription)) {
-            $oTemplate->cDescription = utf8_decode($oTemplate->cDescription);
+        $oTemplate->cDescription = !empty($oXMLTemplate->Description) ? trim($oXMLTemplate->Description) : '';
+        if (!StringHandler::is_utf8($oTemplate->cDescription)) {
+            $oTemplate->cDescription = StringHandler::convertUTF8($oTemplate->cDescription);
+        }
+
+        if (!empty($oXMLTemplate->Parent)) {
+            $parentConfig = $this->getData($oXMLTemplate->Parent, $isAdmin);
+
+            if ($parentConfig !== false && empty($oTemplate->cVersion)) {
+                $oTemplate->cVersion = $parentConfig->cVersion;
+            }
+            if ($parentConfig !== false && empty($oTemplate->cShopVersion)) {
+                $oTemplate->cShopVersion = $parentConfig->cShopVersion;
+            }
         }
 
         $oTemplate_arr = Shop::DB()->query("SELECT * FROM ttemplate", 2);

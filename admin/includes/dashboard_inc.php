@@ -18,11 +18,7 @@ function getWidgets($bActive = true)
             $cClassFile                = 'class.' . $cClass . '.php';
             $cClassPath                = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
             $oWidget->cNiceTitle       = str_replace(['--', ' '], '-', $oWidget->cTitle);
-            $oWidget->cNiceTitle       = strtolower(str_replace(
-                ['ä', 'Ä', 'ü', 'Ü', 'ö', 'Ö', 'ß', utf8_decode('ü'), utf8_decode('Ü'), utf8_decode('ä'), utf8_decode('Ä'), utf8_decode('ö'), utf8_decode('Ö'), '(', ')', '/', '\\'],
-                '',
-                $oWidget->cNiceTitle)
-            );
+            $oWidget->cNiceTitle       = strtolower(preg_replace('/[äüöß\(\)\/\\\]/iu', '', $oWidget->cNiceTitle));
             // Plugin?
             $oPlugin = null;
             if (isset($oWidget->kPlugin) && $oWidget->kPlugin > 0) {
@@ -121,6 +117,7 @@ function getWidgetContent($kWidget)
  * @param string $cURL
  * @param int    $nTimeout
  * @return mixed|string
+ * @deprecated since 4.06
  */
 function getRemoteData($cURL, $nTimeout = 15)
 {
@@ -148,4 +145,64 @@ function getRemoteData($cURL, $nTimeout = 15)
     }
 
     return $cData;
+}
+
+/**
+ * @param string $cURL
+ * @param string $cDataName
+ * @param string $cTpl
+ * @param string $cWrapperID
+ * @param string $cPost
+ * @param bool $bDecodeUTF8
+ * @return IOResponse
+ */
+function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $cCallback = null, $bDecodeUTF8 = false)
+{
+    $response = new IOResponse();
+    $cData    = http_get_contents($cURL, 15, $cPost);
+    $oData    = json_decode($cData);
+    $oData    = $bDecodeUTF8 ? utf8_convert_recursive($oData) : $oData;
+    Shop::Smarty()->assign($cDataName, $oData);;
+    $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
+    $response->assign($cWrapperID, 'innerHTML', $cWrapper);
+
+    if ($cCallback !== null) {
+        $response->script("if(typeof {$cCallback} === 'function') {$cCallback}({$cData});");
+    }
+
+    return $response;
+}
+
+function getShopInfoIO($cTpl, $cWrapperID)
+{
+    $response = new IOResponse();
+
+    $oSubscription = Shop()->RS()->getSubscription();
+    $oLatestVersion = Shop()->RS()->getLatestVersion();
+    $bUpdateAvailable = Shop()->RS()->hasNewerVersion();
+
+    $strLatestVersion = $oLatestVersion
+        ? sprintf('%.2f', $oLatestVersion->version / 100)
+        : null;
+
+    Shop::Smarty()->assign('oSubscription', $oSubscription);
+    Shop::Smarty()->assign('oVersion', $oLatestVersion);
+    Shop::Smarty()->assign('strLatestVersion', $strLatestVersion);
+    Shop::Smarty()->assign('bUpdateAvailable', $bUpdateAvailable);
+
+    $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
+    $response->assign($cWrapperID, 'innerHTML', $cWrapper);
+
+    return $response;
+}
+
+function getAvailableWidgetsIO()
+{
+    $response             = new IOResponse();
+    $oAvailableWidget_arr = getWidgets(false);
+    Shop::Smarty()->assign('oAvailableWidget_arr', $oAvailableWidget_arr);
+    $cWrapper = Shop::Smarty()->fetch('tpl_inc/widget_selector.tpl');
+    $response->assign('settings', 'innerHTML', $cWrapper);
+
+    return $response;
 }

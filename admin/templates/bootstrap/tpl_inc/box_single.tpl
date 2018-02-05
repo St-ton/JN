@@ -1,22 +1,22 @@
 <li class="list-group-item {if $oBox->kContainer > 0}boxRowContainer{/if}">
     <div class="row">
         {if $oBox->bContainer}
-            <div class="col-xs-8{if $oBox->bAktiv == 0} inactive text-muted{/if}">
+            <div class="col-sm-8 col-xs-12{if $oBox->bAktiv == 0} inactive text-muted{/if}">
                 <b>Container #{$oBox->kBox}</b>
             </div>
         {else}
-            <div class="col-xs-3{if $oBox->bAktiv == 0} inactive text-muted{/if}
+            <div class="col-sm-3 col-xs-4{if $oBox->bAktiv == 0} inactive text-muted{/if}
                         {if $oBox->kContainer > 0}boxSubName{/if}">
                 {$oBox->cTitel}
             </div>
-            <div class="col-xs-2{if $oBox->bAktiv == 0} inactive text-muted{/if}">
+            <div class="col-sm-2 col-xs-3{if $oBox->bAktiv == 0} inactive text-muted{/if}">
                 {$oBox->eTyp|ucfirst}
             </div>
-            <div class="col-xs-3{if $oBox->bAktiv == 0} inactive text-muted{/if}">
+            <div class="col-sm-3 col-xs-4{if $oBox->bAktiv == 0} inactive text-muted{/if}">
                 {$oBox->cName}
             </div>
         {/if}
-        <div class="col-xs-2">
+        <div class="col-sm-2 col-xs-6 {if $oBox->kContainer > 0}boxSubName{/if}">
             <input type="hidden" name="box[]" value="{$oBox->kBox}">
             {if $nPage == 0}
                 {if $oBox->bAktiv == 1}
@@ -29,14 +29,16 @@
             <input class="form-control text-right" type="number" size="3" name="sort[]" value="{$oBox->nSort}"
                    autocomplete="off" id="{$oBox->nSort}">
         </div>
-        <div class="col-xs-2 btn-group">
+        <div class="col-sm-2 col-xs-6 btn-group">
             {if $nPage == 0}
                 {if $oBox->bAktiv == 0}
+                    <input type="hidden" name="box_show" value="0" />
                     <a href="boxen.php?action=activate&position={$position}&item={$oBox->kBox}&value=1&token={$smarty.session.jtl_token}"
                        title="Auf jeder Seite aktivieren" class="btn btn-success">
                         <i class="fa fa-eye"></i>
                     </a>
                 {else}
+                    <input type="hidden" name="box_show" value="1" />
                     <a href="boxen.php?action=activate&position={$position}&item={$oBox->kBox}&value=0&token={$smarty.session.jtl_token}"
                        title="Auf jeder Seite deaktivieren" class="btn btn-warning">
                         <i class="fa fa-eye-slash"></i>
@@ -60,11 +62,21 @@
                         <i class="fa fa-info"></i>
                     </button>
                 {elseif $nPage == 1 || $nPage == 2 || $nPage == 24 || $nPage == 31}
-                    <a href="#" data-filter="box-filter-{$oBox->kBox}" data-box-id="{$oBox->kBox}" class="btn btn-default"
-                       data-box-title="{if $oBox->bContainer}Container #{$oBox->kBox}{else}{$oBox->cTitel}{/if}"
-                       data-toggle="modal" data-target="#boxFilterModal">
+                    {if $nPage == 1}
+                        {assign var="picker" value="articlePicker"}
+                    {elseif $nPage == 2}
+                        {assign var="picker" value="categoryPicker"}
+                    {elseif $nPage == 24}
+                        {assign var="picker" value="manufacturerPicker"}
+                    {elseif $nPage == 31}
+                        {assign var="picker" value="pagePicker"}
+                    {/if}
+                    <input type="hidden" id="box-filter-{$oBox->kBox}" name="box-filter-{$oBox->kBox}"
+                           value="{foreach $oBox->cFilter as $filter}{$filter.id}{if !$filter@last},{/if}{/foreach}">
+                    <button type="button" class="btn btn-default"
+                            onclick="openFilterPicker({$picker}, {$oBox->kBox})">
                         <i class="fa fa-filter"></i>
-                    </a>
+                    </button>
                 {/if}
             {/if}
         </div>
@@ -74,13 +86,7 @@
             {if !empty($oBox->cFilter)}
                 {foreach name="filters" from=$oBox->cFilter item=filter}
                     {if $filter !== ''}
-                        <li class="selected-item" id="elem-{$filter.id}">
-                            <a href="#" data-ref="{$filter.id}" class="btn btn-default btn-xs">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                            {$filter.name}
-                            <input class="new-filter" type="hidden" name="box-filter-{$oBox->kBox}[]" value="{$filter.id}">
-                        </li>
+                        <li class="selected-item"><i class="fa fa-filter"></i> {$filter.name}</li>
                     {/if}
                 {/foreach}
             {/if}

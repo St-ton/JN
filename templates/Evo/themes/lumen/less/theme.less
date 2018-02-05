@@ -9,7 +9,33 @@
 // Bootswatch
 // -----------------------------------------------------
 
-@import url("//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic");
+//import via CDN
+//@import url("//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic");
+//import local files
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Source Sans Pro Light'), local('SourceSansPro-Light'), url('@{icon-font-path}sourcesanspro/SourceSansPro-Light.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Sans Pro'), local('SourceSansPro-Regular'), url('@{icon-font-path}sourcesanspro/SourceSansPro-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url('@{icon-font-path}sourcesanspro/SourceSansPro-Bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Source Sans Pro Italic'), local('SourceSansPro-Italic'), url('@{icon-font-path}sourcesanspro/SourceSansPro-Italic.ttf') format('truetype');
+}
 
 .shadow (@width: 4px) {
   border-width: 0 1px @width 1px;

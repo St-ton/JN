@@ -50,7 +50,7 @@ class Preise
     public $cPreis5Localized;
 
     /**
-     * @var string
+     * @var array
      */
     public $cVKLocalized;
 
@@ -389,6 +389,13 @@ class Preise
             }
         }
         $this->berechneVKs();
+        executeHook('HOOK_PRICES_CONSTRUCT', [
+            'customerGroupID' => $kKundengruppe,
+            'customerID'      => $kKunde,
+            'productID'       => $kArtikel,
+            'taxClassID'      => $kSteuerklasse,
+            'prices'          => $this
+        ]);
     }
 
     /**
@@ -423,7 +430,6 @@ class Preise
     /**
      * Setzt Preise mit Daten aus der DB mit spezifizierten Primary Keys
      *
-     * @access public
      * @param int $kKundengruppe
      * @param int $kArtikel
      * @return $this
@@ -527,6 +533,7 @@ class Preise
         $this->cPreis4Localized[1] = gibPreisStringLocalized($this->fPreis4);
         $this->cPreis5Localized[1] = gibPreisStringLocalized($this->fPreis5);
 
+        $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->cPreisLocalized_arr[] = [
                 gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst)),
@@ -552,34 +559,32 @@ class Preise
      */
     public function berechneVKs()
     {
-        $waehrung = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
-        if (!isset($waehrung->kWaehrung)) {
-            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-        }
+        $factor = Session::Currency()->getConversionFactor(); 
 
         $this->fVKBrutto = berechneBrutto($this->fVKNetto, $this->fUst);
 
-        $this->fVK[0] = berechneBrutto($this->fVKNetto * $waehrung->fFaktor, $this->fUst);
-        $this->fVK[1] = $this->fVKNetto * $waehrung->fFaktor;
+        $this->fVK[0] = berechneBrutto($this->fVKNetto * $factor, $this->fUst);
+        $this->fVK[1] = $this->fVKNetto * $factor;
 
-        $this->alterVK[0] = berechneBrutto($this->alterVKNetto * $waehrung->fFaktor, $this->fUst);
-        $this->alterVK[1] = $this->alterVKNetto * $waehrung->fFaktor;
+        $this->alterVK[0] = berechneBrutto($this->alterVKNetto * $factor, $this->fUst);
+        $this->alterVK[1] = $this->alterVKNetto * $factor;
 
-        $this->fStaffelpreis1[0] = berechneBrutto($this->fPreis1 * $waehrung->fFaktor, $this->fUst);
-        $this->fStaffelpreis1[1] = $this->fPreis1 * $waehrung->fFaktor;
-        $this->fStaffelpreis2[0] = berechneBrutto($this->fPreis2 * $waehrung->fFaktor, $this->fUst);
-        $this->fStaffelpreis2[1] = $this->fPreis2 * $waehrung->fFaktor;
-        $this->fStaffelpreis3[0] = berechneBrutto($this->fPreis3 * $waehrung->fFaktor, $this->fUst);
-        $this->fStaffelpreis3[1] = $this->fPreis3 * $waehrung->fFaktor;
-        $this->fStaffelpreis4[0] = berechneBrutto($this->fPreis4 * $waehrung->fFaktor, $this->fUst);
-        $this->fStaffelpreis4[1] = $this->fPreis4 * $waehrung->fFaktor;
-        $this->fStaffelpreis5[0] = berechneBrutto($this->fPreis5 * $waehrung->fFaktor, $this->fUst);
-        $this->fStaffelpreis5[1] = $this->fPreis5 * $waehrung->fFaktor;
+        $this->fStaffelpreis1[0] = berechneBrutto($this->fPreis1 * $factor, $this->fUst);
+        $this->fStaffelpreis1[1] = $this->fPreis1 * $factor;
+        $this->fStaffelpreis2[0] = berechneBrutto($this->fPreis2 * $factor, $this->fUst);
+        $this->fStaffelpreis2[1] = $this->fPreis2 * $factor;
+        $this->fStaffelpreis3[0] = berechneBrutto($this->fPreis3 * $factor, $this->fUst);
+        $this->fStaffelpreis3[1] = $this->fPreis3 * $factor;
+        $this->fStaffelpreis4[0] = berechneBrutto($this->fPreis4 * $factor, $this->fUst);
+        $this->fStaffelpreis4[1] = $this->fPreis4 * $factor;
+        $this->fStaffelpreis5[0] = berechneBrutto($this->fPreis5 * $factor, $this->fUst);
+        $this->fStaffelpreis5[1] = $this->fPreis5 * $factor;
 
+        $this->fStaffelpreis_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->fStaffelpreis_arr[] = [
-                berechneBrutto($fPreis * $waehrung->fFaktor, $this->fUst),
-                $fPreis * $waehrung->fFaktor
+                berechneBrutto($fPreis * $factor, $this->fUst),
+                $fPreis * $factor
             ];
         }
 
@@ -589,7 +594,6 @@ class Preise
     /**
      * Fuegt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
      * @retun int
      */
     public function insertInDB()
@@ -644,5 +648,48 @@ class Preise
                     AND {$priceAlias}.kKundengruppe = {$kKundengruppe}
                 JOIN tpreisdetail AS {$detailAlias} ON {$detailAlias}.kPreis = {$priceAlias}.kPreis
                     AND {$detailAlias}.nAnzahlAb = 0";
+    }
+
+    /**
+     * Set all fvk prices to zero.
+     */
+    public function setPricesToZero()
+    {
+        $this->fVKNetto  = 0;
+        $this->fVKBrutto = 0;
+        foreach ($this->fVK as $key => $fVK) {
+            $this->fVK[$key] = 0;
+        }
+        foreach ($this->alterVK as $key => $alterVK) {
+            $this->alterVK[$key] = 0;
+        }
+        $this->fPreis1 = 0;
+        $this->fPreis2 = 0;
+        $this->fPreis3 = 0;
+        $this->fPreis4 = 0;
+        $this->fPreis5 = 0;
+        foreach ($this->fStaffelpreis1 as $key => $fSteffelpreis1) {
+            $this->fStaffelpreis1[$key] = 0;
+        }
+        foreach ($this->fStaffelpreis2 as $key => $fSteffelpreis2) {
+            $this->fStaffelpreis2[$key] = 0;
+        }
+        foreach ($this->fStaffelpreis3 as $key => $fSteffelpreis3) {
+            $this->fStaffelpreis3[$key] = 0;
+        }
+        foreach ($this->fStaffelpreis4 as $key => $fSteffelpreis4) {
+            $this->fStaffelpreis4[$key] = 0;
+        }
+        foreach ($this->fStaffelpreis5 as $key => $fSteffelpreis5) {
+            $this->fStaffelpreis5[$key] = 0;
+        }
+        foreach ($this->fPreis_arr as $key => $fPreis) {
+            $this->fPreis_arr[$key] = 0;
+        }
+        foreach ($this->fStaffelpreis_arr as $fStaffelpreisKey => $fStaffelpreis) {
+            foreach ($fStaffelpreis as $fPreisKey => $fPreis) {
+                $this->fStaffelpreis_arr[$fStaffelpreisKey][$fPreisKey] = 0;
+            }
+        }
     }
 }

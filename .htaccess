@@ -88,9 +88,21 @@
   #RewriteBase /
 
   #REWRITE ANPASSUNG 2 (auf www.meinedomain.de umleiten)
-  #Ihr Shop sollte nicht unter www.meinedomain.de und nur meinedomain.de erreichbar sein, siehe: http://guide.jtl-software.de/index.php?title=JTL-Shop3-Neuinstallation#4._Einrichtung_einer_Domainweiterleitung
+  #Ihr Shop sollte nicht unter www.meinedomain.de und nur meinedomain.de erreichbar sein, siehe: https://guide.jtl-software.de/index.php?title=JTL-Shop3-Neuinstallation#4._Einrichtung_einer_Domainweiterleitung
+  #Achten Sie darauf, daß Sie bei Verwendung der SSL-Verschlüsselung das Weiterleitungsziel unbedingt mit https und nicht nur mit http angeben!
   #RewriteCond %{HTTP_HOST} ^meinedomain.de
-  #RewriteRule ^(.*)$ http://www.meinedomain.de/$1 [r=301,L]
+  #RewriteRule ^(.*)$ http(s)://www.meinedomain.de/$1 [R=301,L]
+
+  #REWRITE ANPASSUNG 3 (Entfernt abschließenden Slash per 301-Redirect)
+  #RewriteCond %{REQUEST_FILENAME} !-f
+  #RewriteCond %{REQUEST_FILENAME} !-d
+  #RewriteCond %{REQUEST_URI} ^(.*)/$
+  #RewriteRule ^. %1 [R=301,L]
+
+  #REWRITE ANPASSUNG 4 (Weiterleitung auf SSL-Verschlüsselung bei Aufruf über http)
+  #Diese Angabe entlastet die PHP-Engine von Weiterleitungen anhand Einstellung 192 und sorgt zusätzlich dafür, daß auch statische Resourcen über https ausgeliefert werden.
+  #RewriteCond %{HTTPS} !=on
+  #RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
   #Rewrite der JTL-Shop-URLs
   #Aendern Sie an diesen Zeilen nichts!

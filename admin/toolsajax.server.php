@@ -23,6 +23,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
 $xajax = new xajax($url);
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function reloadAdminLoginCaptcha()
@@ -37,6 +38,7 @@ function reloadAdminLoginCaptcha()
 }
 
 /**
+ * @deprecated since 4.06
  * @param float  $fPreisNetto
  * @param float  $fPreisBrutto
  * @param string $cTargetID
@@ -52,6 +54,7 @@ function getCurrencyConversionAjax($fPreisNetto, $fPreisBrutto, $cTargetID)
 }
 
 /**
+ * @deprecated since 4.06
  * @param float  $fPreisNetto
  * @param float  $fPreisBrutto
  * @param string $cTooltipID
@@ -67,6 +70,7 @@ function setCurrencyConversionAjaxTooltip($fPreisNetto, $fPreisBrutto, $cTooltip
 }
 
 /**
+ * @deprecated since 4.06
  * @param int    $kWidget
  * @param string $cContainer
  * @param int    $nPos
@@ -81,6 +85,7 @@ function setWidgetPositionAjax($kWidget, $cContainer, $nPos)
 }
 
 /**
+ * @deprecated since 4.06
  * @param int $kWidget
  * @return xajaxResponse
  */
@@ -93,6 +98,7 @@ function closeWidgetAjax($kWidget)
 }
 
 /**
+ * @deprecated since 4.06
  * @param int $kWidget
  * @return xajaxResponse
  */
@@ -105,6 +111,7 @@ function addWidgetAjax($kWidget)
 }
 
 /**
+ * @deprecated since 4.06
  * @param int  $kWidget
  * @param bool $bExpand
  * @return xajaxResponse
@@ -121,11 +128,12 @@ function expandWidgetAjax($kWidget, $bExpand)
 }
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function getAvailableWidgetsAjax()
 {
-    $objResponse          = new xajaxResponse();
+    $objResponse = new xajaxResponse();
     global $oAccount;
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         $oAvailableWidget_arr = getWidgets(false);
@@ -141,6 +149,7 @@ function getAvailableWidgetsAjax()
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cURL
  * @param string $cDataName
  * @param string $cTpl
@@ -172,6 +181,7 @@ function getRemoteDataAjax($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null,
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cURL
  * @param string $cDataName
  * @param string $cTpl
@@ -179,18 +189,10 @@ function getRemoteDataAjax($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null,
  */
 function getRemoteDataApiAjax($cURL, $cDataName, $cTpl, $cWrapperID)
 {
-    global $oAccount;
-    $oResponse = new xajaxResponse();
-    if ($oAccount->permission('DASHBOARD_VIEW')) {
-
-        $cData = jtlAPI::checkVersion(Shop::getVersion());
-        Shop::Smarty()->assign($cDataName, $cData);
-        $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
-        $oResponse->assign($cWrapperID, 'innerHTML', $cWrapper);
-    }
 }
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function getRandomPassword()
@@ -202,6 +204,7 @@ function getRandomPassword()
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return array
@@ -229,6 +232,7 @@ function getArticleList($cSearch, $aParam)
             );
             foreach ($oArticle_arr as &$oArticle) {
                 $oArticle->cName                              = utf8_encode($oArticle->cName);
+                $oArticle->cBase                              = utf8_encode($oArticle->cBase); // optional (maybe for austria)
                 $Artikel                                      = new Artikel();
                 $oArtikelOptionen                             = new stdClass();
                 $oArtikelOptionen->nKeinLagerbestandBeachten  = 1;
@@ -248,6 +252,7 @@ function getArticleList($cSearch, $aParam)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cArray
  * @return xajaxResponse
  */
@@ -270,9 +275,9 @@ function getArticleListFromString($cArray)
         }
 
         $oArticle_arr = Shop::DB()->query("
-            SELECT kArtikel AS kPrimary, cArtNr AS cBase, kArtikel, cName 
-                FROM tartikel 
-                WHERE " . $cSQL . " 
+            SELECT kArtikel AS kPrimary, cArtNr AS cBase, kArtikel, cName
+                FROM tartikel
+                WHERE " . $cSQL . "
                 LIMIT 50", 2
         );
         foreach ($oArticle_arr as &$oArticle) {
@@ -286,6 +291,7 @@ function getArticleListFromString($cArray)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return array
@@ -304,7 +310,7 @@ function getManufacturerList($cSearch, $aParam)
         $oManufacturer_arr = Shop::DB()->executeQueryPrepared("
             SELECT kHersteller AS kPrimary, kHersteller AS cBase, cName
                 FROM thersteller
-                WHERE cName LIKE :search 
+                WHERE cName LIKE :search
                 LIMIT :lim",
             ['search' => $cSearch . '%', 'lim' => $limit],
             2
@@ -327,6 +333,7 @@ function getManufacturerList($cSearch, $aParam)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cArray
  * @return xajaxResponse
  */
@@ -365,6 +372,7 @@ function getManufacturerListFromString($cArray)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return array
@@ -405,6 +413,7 @@ function getCategoryList($cSearch, $aParam)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cArray
  * @return xajaxResponse
  */
@@ -427,9 +436,9 @@ function getCategoryListFromString($cArray)
         }
 
         $oArticle_arr = Shop::DB()->query("
-            SELECT kKategorie AS kPrimary, kKategorie AS cBase, cName 
-                FROM tkategorie 
-                WHERE " . $cSQL . " 
+            SELECT kKategorie AS kPrimary, kKategorie AS cBase, cName
+                FROM tkategorie
+                WHERE " . $cSQL . "
                 LIMIT 50", 2
         );
         foreach ($oArticle_arr as &$oArticle) {
@@ -443,6 +452,7 @@ function getCategoryListFromString($cArray)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param string $cWrapperID
  * @return xajaxResponse
@@ -457,9 +467,9 @@ function getTagList($cSearch, $cWrapperID)
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oArticle_arr = Shop::DB()->executeQueryPrepared("
-            SELECT kTag AS kPrimary, kTag AS cBase, cName 
-                FROM ttag 
-                WHERE cName LIKE :search 
+            SELECT kTag AS kPrimary, kTag AS cBase, cName
+                FROM ttag
+                WHERE cName LIKE :search
                 LIMIT 50",
             ['search' => $cSearch . '%'],
             2
@@ -475,6 +485,7 @@ function getTagList($cSearch, $cWrapperID)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param string $cWrapperID
  * @return xajaxResponse
@@ -489,12 +500,12 @@ function getAttributeList($cSearch, $cWrapperID)
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oArticle_arr = Shop::DB()->executeQueryPrepared("
-            SELECT tmerkmalwert.kMerkmalwert AS kPrimary, tmerkmalwert.kMerkmalwert AS cBase, 
+            SELECT tmerkmalwert.kMerkmalwert AS kPrimary, tmerkmalwert.kMerkmalwert AS cBase,
                 tmerkmalwertsprache.cWert AS cName
                 FROM tmerkmal
-                LEFT JOIN tmerkmalwert 
+                LEFT JOIN tmerkmalwert
                     ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                LEFT JOIN tmerkmalwertsprache 
+                LEFT JOIN tmerkmalwertsprache
                     ON tmerkmalwert.kMerkmalwert = tmerkmalwertsprache.kMerkmalwert
                 WHERE length(tmerkmalwertsprache.cWert) > 0
                     AND tmerkmalwertsprache.cWert LIKE :search
@@ -513,6 +524,7 @@ function getAttributeList($cSearch, $cWrapperID)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cSearch
  * @param array $aParam
  * @return xajaxResponse
@@ -526,9 +538,9 @@ function getLinkList($cSearch, $aParam)
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oArticle_arr = Shop::DB()->executeQueryPrepared("
-            SELECT kLink AS kPrimary, kLink AS cBase, cName 
-                FROM tlink 
-                WHERE cName LIKE :search 
+            SELECT kLink AS kPrimary, kLink AS cBase, cName
+                FROM tlink
+                WHERE cName LIKE :search
                 LIMIT 50",
             ['search' => $cSearch . '%'],
             2
@@ -546,6 +558,7 @@ function getLinkList($cSearch, $aParam)
 /**
  * Auswahlassistent
  *
+ * @deprecated since 4.06
  * @param array $kMM_arr
  * @param int   $kSprache
  * @return xajaxResponse
@@ -562,9 +575,9 @@ function getMerkmalWerteAA($kMM_arr, $kSprache)
         $oMerkmalWert_arr = Shop::DB()->query(
             "SELECT tmerkmalwert.*, tmerkmalwertsprache.cWert, tmerkmal.cName
                 FROM tmerkmalwert
-                JOIN tmerkmal 
+                JOIN tmerkmal
                     ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                JOIN tmerkmalwertsprache 
+                JOIN tmerkmalwertsprache
                     ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                     AND tmerkmalwertsprache.kSprache = " . (int)$kSprache . "
                 WHERE tmerkmalwert.kMerkmal IN(" . implode(',', $kMM_arr) . ")
@@ -585,6 +598,7 @@ function getMerkmalWerteAA($kMM_arr, $kSprache)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cData
  * @return xajaxResponse
  */
@@ -611,6 +625,7 @@ function saveBannerAreas($cData)
 }
 
 /**
+ * @deprecated since 4.06
  * @param string $cTemplate
  * @return xajaxResponse
  */
@@ -632,6 +647,7 @@ function getContentTemplate($cTemplate)
 }
 
 /**
+ * @deprecated since 4.06
  * @return xajaxResponse
  */
 function truncateJtllog()
@@ -645,70 +661,7 @@ function truncateJtllog()
     return $oResponse;
 }
 
-/**
- * @param string $searchString
- * @param array  $kKundeSelected_arr
- * @return xajaxResponse
- */
-function getCustomerList($searchString, $kKundeSelected_arr)
-{
-    global $smarty, $oAccount;
-    $oResponse = new xajaxResponse();
-    if ($oAccount->permission('ORDER_COUPON_VIEW')) {
-        $searchString = utf8_decode($searchString);
-
-        if ($searchString === '') {
-            if (count($kKundeSelected_arr) === 0) {
-                $oKunde_arr = [];
-                $listTitle  = 'Bisher sind keine Kunden ausgew&auml;hlt. Suchen Sie jetzt nach Kunden!';
-            } else {
-                foreach ($kKundeSelected_arr as &$kKundeSelected) {
-                    $kKundeSelected = (int)$kKundeSelected;
-                }
-
-                $oKunde_arr = Shop::DB()->query("
-                    SELECT kKunde
-                        FROM tkunde
-                        WHERE kKunde IN (" . implode(',', $kKundeSelected_arr) . ")", 2
-                );
-                $listTitle  = 'Alle ausgew&auml;hlten Kunden: ' . count($oKunde_arr);
-            }
-        } else {
-            $oKunde_arr = Shop::DB()->executeQueryPrepared("
-                SELECT kKunde
-                    FROM tkunde
-                    WHERE cVorname LIKE :search 
-                          OR cMail LIKE :search 
-                          OR cOrt LIKE :search 
-                          OR cPLZ LIKE :search
-                    LIMIT 100",
-                ['search' => '%' . $searchString . '%'],
-                2
-            );
-            $listTitle  = 'Gefundene Kunden: ' . (count($oKunde_arr) >= 100 ? '>= ' : '') . count($oKunde_arr);
-        }
-
-        $oKundeFull_arr = [];
-        foreach ($oKunde_arr as $oKunde) {
-            $oKundeFull_arr[] = new Kunde($oKunde->kKunde);
-        }
-
-        $customerListHtml = $smarty->assign('cPart', 'customerlist')
-                                   ->assign('oKunde_arr', $oKundeFull_arr)
-                                   ->assign('kKundeSelected_arr', $kKundeSelected_arr)
-                                   ->fetch('tpl_inc/customer_search.tpl');
-
-
-        $oResponse->assign('customer-search-result-list', 'innerHTML', $customerListHtml);
-        $oResponse->assign('customer-list-title', 'innerHTML', $listTitle);
-        $oResponse->script('shownCustomers=[' . implode(',', array_map(function ($e) {
-                return $e->kKunde;
-            }, $oKunde_arr)) . ']');
-    }
-
-    return $oResponse;
-}
-if ($oAccount->logged()) {
+if ($oAccount->getIsAuthenticated()) {
     executeHook(HOOK_TOOLSAJAX_SERVER_ADMIN, ['xajax' => &$xajax]);
 
     $xajax->registerFunction('reloadAdminLoginCaptcha');
@@ -736,7 +689,6 @@ if ($oAccount->logged()) {
     $xajax->registerFunction('saveBannerAreas');
     $xajax->registerFunction('getContentTemplate');
     $xajax->registerFunction('truncateJtllog');
-    $xajax->registerFunction('getCustomerList');
 
     $xajax->processRequest();
     header('Content-Type:text/html;charset=' . JTL_CHARSET . ';');

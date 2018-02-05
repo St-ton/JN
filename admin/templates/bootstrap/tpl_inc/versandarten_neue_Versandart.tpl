@@ -6,10 +6,67 @@
         i += 1;
     {rdelim}
 
-    function delInputRow() {ldelim}
+    function confirmAllCombi() {ldelim}
+        return confirm('{#shippingConfirm#}');
+    {rdelim}
+
+    {literal}
+    function delInputRow() {
         i -= 1;
         $('#price_range tbody tr:last').remove();
-    {rdelim}
+    }
+
+    function addShippingCombination() {
+        var newCombi = '<li class=\'input-group\'>'+$('#ulVK #liVKneu').html()+'</li>';
+        newCombi = newCombi.replace(/selectX/gi,'select');
+        if ($("select[name='Versandklassen']").size() >= 1) {
+            newCombi = newCombi.replace(/<option value="-1">/gi, '<option value="-1" disabled="disabled">');
+        }
+
+        $('#ulVK').append(newCombi);
+    }
+
+    function updateVK() {
+        var val = '';
+        $("select[name='Versandklassen']").each( function(index) {
+            if ($(this).val()!= null) {
+                val += ((val.length > 0)?' ':'') + $(this).val().toString().replace(/,/gi,'-');
+            }
+        });
+        $("input[name='kVersandklasse']").val(val);
+    }
+
+    function checkCombination() {
+        var remove = false;
+        $("select[name='Versandklassen']").each(function (index) {
+            if (index === 0) {
+                if ($.inArray("-1", $(this).val()) != -1) {
+                    if (!confirmAllCombi()) {
+                        var valSelected = $(this).val();
+                        valSelected.shift();
+                        $(this).val(valSelected);
+                        $('.select2').select2();
+                        return false;
+                    }
+                    if ($("select[name='Versandklassen']").size() >= 1) {
+                        $(this).val("-1");
+                        $('#addNewShippingClassCombi').prop('disabled', true);
+                        remove = true;
+                    }
+                    $(this).val("-1");
+                    $('#addNewShippingClassCombi').prop('disabled', true);
+                    $('.select2').select2();
+                } else {
+                    $('#addNewShippingClassCombi').prop('disabled', false);
+                }
+            } else {
+                if (remove) {
+                    $(this).parent().parent().detach();
+                }
+            }
+        });
+    }
+    {/literal}
 </script>
 
 {assign var=cTitel value=#createShippingMethod#}
@@ -99,6 +156,19 @@
 
                         <li class="input-group">
                             <span class="input-group-addon">
+                                <label for="cIgnoreShippingProposal">{#excludeShippingProposal#}</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <select name="cIgnoreShippingProposal" id="cIgnoreShippingProposal" class="form-control combo">
+                                    <option value="N" {if isset($Versandart->cIgnoreShippingProposal) && $Versandart->cIgnoreShippingProposal === 'N'}selected{/if}>{#no#}</option>
+                                    <option value="Y" {if isset($Versandart->cIgnoreShippingProposal) && $Versandart->cIgnoreShippingProposal === 'Y'}selected{/if}>{#yes#}</option>
+                                </select>
+                            </span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=#excludeShippingProposalDesc#}</span>
+                        </li>
+
+                        <li class="input-group">
+                            <span class="input-group-addon">
                                 <label for="cNurAbhaengigeVersandart">{#onlyForOwnShippingPrices#}</label>
                             </span>
                             <span class="input-group-wrap">
@@ -159,26 +229,6 @@
                             <span class="input-group-addon">{getHelpDesc cDesc=#customerclassDesc#}</span>
                         </li>
 
-                        <li class="input-group{if isset($versandklassenExceeded) && $versandklassenExceeded == 1} has-error{/if}">
-                            <span class="input-group-addon">
-                                <label for="kVersandklasse">{#shippingclass#}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="kVersandklasse[]" id="kVersandklasse" multiple="multiple" class="combo form-control">
-                                    <option value="-1" {if isset($gesetzteVersandklassen.alle) && $gesetzteVersandklassen.alle}selected{/if}>{#all#}</option>
-                                    {if !$versandklassenExceeded}
-                                        {foreach name=versandklassen from=$versandklassen item=versandklasse}
-                                            {assign var="klasse" value=$versandklasse->kVersandklasse}
-                                            <option value="{$versandklasse->kVersandklasse}" {if $gesetzteVersandklassen.$klasse}selected{/if}>{$versandklasse->cName}</option>
-                                        {/foreach}
-                                    {/if}
-                                </select>
-                                {if  isset($versandklassenExceeded) && $versandklassenExceeded == 1}
-                                    <p class="help-block">{#versandklassenExceeded#}</p>
-                                {/if}
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
-                        </li>
                         {foreach name=sprachen from=$sprachen item=sprache}
                             {assign var="cISO" value=$sprache->cISO}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
@@ -205,6 +255,87 @@
                     </ul>
                 </div>
             </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{#validOnShippingClasses#}</h3>
+                </div>
+                <div class="panel-body">
+                    <input name="kVersandklasse" type="hidden" value="{if !empty($Versandart->cVersandklassen)}{$Versandart->cVersandklassen}{else}-1{/if}">
+                    <ul id="ulVK" class="jtl-list-group">
+                        <li id='liVKneu' class="input-group" style="display:none;">
+                            <span class="input-group-wrap">
+                                <selectX class="selectX2 form-control" name="Versandklassen"
+                                         onchange="checkCombination();updateVK();"
+                                         multiple>
+                                    <option value="-1">{#allCombinations#}</option>
+                                    {foreach from=$versandKlassen item=vk}
+                                        <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
+                                    {/foreach}
+                                </selectX>
+                            </span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
+                            <div class="input-group-btn">
+                                <button class="btn btn-danger" type="button"
+                                        onclick="$(this).parent().parent().detach(); updateVK();"><span
+                                            class="glyphicon glyphicon-remove"></span></button>
+                            </div>
+                        </li>
+                        {if !empty($Versandart->cVersandklassen)}
+                            {$aVK = ' '|explode:$Versandart->cVersandklassen}
+                            {foreach name="vKombi" from=$aVK item=VK}
+                                <li class="input-group">
+                                    <span class="input-group-wrap">
+                                        <select class="select2 form-control" name="Versandklassen"
+                                                onchange="checkCombination();updateVK();" multiple="multiple">
+                                            <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if}{if $VK === '-1'} selected{/if}>{#allCombinations#}</option>
+                                            {if $VK === '-1'}
+                                                {foreach from=$versandKlassen item=vk}
+                                                    <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
+                                                {/foreach}
+                                            {else}
+                                                {$vkID = '-'|explode:$VK}
+                                                {foreach from=$versandKlassen item=vk}
+                                                    <option value="{$vk->kVersandklasse}"
+                                                            {if $vk->kVersandklasse|in_array:$vkID}selected{/if}>{$vk->cName}</option>
+                                                {/foreach}
+                                            {/if}
+                                        </select>
+                                    </span>
+                                    <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
+                                    {if  $smarty.foreach.vKombi.iteration != 1}
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-danger" type="button"
+                                                onclick="$(this).parent().parent().detach(); updateVK();">
+                                            <span class="glyphicon glyphicon-remove"></span></button>
+                                    </div>
+                                    {/if}
+                                </li>
+                            {/foreach}
+                        {else}
+                            <li class="input-group">
+                                        <span class="input-group-wrap">
+                                            <select class="select2 form-control" name="Versandklassen"
+                                                    onchange="checkCombination();updateVK();" multiple="multiple">
+                                                <option value="-1"{if $smarty.foreach.vKombi.iteration >1} disabled="disabled"{/if} selected>{#allCombinations#}</option>
+                                                {foreach from=$versandKlassen item=vk}
+                                                    <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
+                                                {/foreach}
+                                            </select>
+                                        </span>
+                                <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
+                            </li>
+                        {/if}
+                    </ul>
+                </div>
+                <div class="panel-footer">
+                    <button id="addNewShippingClassCombi" class="btn btn-success" type="button"
+                            onclick="addShippingCombination();$('.select2').select2();">
+                        <span class="glyphicon glyphicon-plus"></span> {#addShippingClass#}
+                    </button>
+                </div>
+            </div>
+
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">{#acceptedPaymentMethods#}</h3>
@@ -212,7 +343,7 @@
                 <div class="panel-body">
                     <ul class="jtl-list-group">
 
-                        <li class="input-group2">
+                        <li class="input-group2 table-responsive">
                             <table class="list table">
                                 <thead>
                                 <tr>
@@ -286,7 +417,7 @@
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
-                        <li class="input-group2">
+                        <li class="input-group2 table-responsive">
                             <table class="list table">
                                 <thead>
                                 <tr>
@@ -318,7 +449,7 @@
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
-                        <li class="input-group2">
+                        <li class="input-group2 table-responsive">
                             <table id="price_range" class="table">
                                 <thead>
                                 <tr>
@@ -383,7 +514,7 @@
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
-                        <li class="input-group2">
+                        <li class="input-group2 table-responsive">
                             <table class="list table">
                                 <thead>
                                 <tr>
@@ -532,4 +663,4 @@
             </div>
         </div>
     </form>
-</div><!-- #content -->
+</div>

@@ -834,7 +834,7 @@ class Kunde
         $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') . '?' . http_build_query($linkParams, null,
                 '&');
         $obj->cHash             = $key;
-        $obj->neues_passwort    = 'Bitte Mailvorlage zuruecksetzen!';
+        $obj->neues_passwort    = 'Es ist leider ein Fehler aufgetreten. Bitte kontaktieren Sie uns.';
         sendeMail(MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);
         return true;
     }

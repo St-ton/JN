@@ -155,6 +155,14 @@ class Notification implements IteratorAggregate, Countable
                 'preisanzeige.php');
         }
 
+        if($status->hasInvalidPasswordResetMailTemplate()) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                'E-Mail-Vorlage defekt',
+                'Die E-Mail-Vorlage "Passwort Vergessen" ist veraltet. Die Variable $neues_passwort ist nicht mehr verfügbar. Bitte ersetzen Sie diese durch $passwordResetLink oder setzen Sie die Vorlage zurück.'
+            );
+        }
+
         return $this;
     }
 }

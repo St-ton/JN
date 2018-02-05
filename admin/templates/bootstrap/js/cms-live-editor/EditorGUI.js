@@ -31,7 +31,6 @@ EditorGUI.prototype = {
         this.portletLabel             = this.hostJq('#portlet-label');
         this.portletToolbar           = this.hostJq('#pinbar');
         this.portletBtns              = this.hostJq('.portlet-button');
-        //this.templateBtns             = this.hostJq('.template-button');
         this.previewBtn               = this.hostJq('#btn-preview')               .click(this.onPreview.bind(this));
         this.editorCloseBtn           = this.hostJq('#cle-btn-close-editor')      .click(this.onEditorClose.bind(this));
         this.editorSaveBtn            = this.hostJq('#cle-btn-save-editor')       .click(this.onEditorSave.bind(this));
@@ -524,7 +523,7 @@ EditorGUI.prototype = {
 
         var children = this.selectedElm
         // select direct descendant subareas or non-nested subareas
-            .find('> .cle-area') ; //, :not(.jle-subarea) .jle-subarea');
+            .find('.cle-area').not(this.selectedElm.find('[data-portletid] .cle-area'));
 
         var properties = this.configForm.serializeControls();
 

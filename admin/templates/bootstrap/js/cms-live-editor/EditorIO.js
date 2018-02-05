@@ -167,7 +167,7 @@ EditorIO.prototype = {
 
         var children = portlet
         // select direct descendant subareas or non-nested subareas
-            .find('> .cle-area') ; //, :not(.jle-subarea) .jle-subarea');
+            .find('.cle-area').not(portlet.find('[data-portletid] .cle-area'));
 
         children.each(function (i, child)
         {

@@ -87,6 +87,7 @@ if (PHP_SAPI !== 'cli' &&
 }
 
 if (!JTL_INCLUDE_ONLY_DB) {
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     //standard includes

@@ -12,7 +12,6 @@ Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
 /** @global ProductFilter $NaviFilter*/
 $Einstellungen      = Shopsetting::getInstance()->getAll();
-$productsPerPage    = [5, 10, 25, 50, 100];
 $bestsellers        = [];
 $suchanfrage        = '';
 $doSearch           = true;
@@ -77,8 +76,6 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
     $products = $oSuchergebnisse->getProducts()->getItems();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
-$smarty->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']))
-       ->assign('oBestseller_arr', $bestsellers);
 if (verifyGPCDataInteger('zahl') > 0) {
     $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
     setFsession(0, 0, $_SESSION['ArtikelProSeite']);
@@ -146,14 +143,15 @@ AuswahlAssistent::startIfRequired(
     [],
     $NaviFilter
 );
-$smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
+$smarty->assign('NaviFilter', $NaviFilter)
+       ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']))
+       ->assign('oBestseller_arr', $bestsellers)->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
        ->assign('code_benachrichtigung_verfuegbarkeit',
            generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
        ->assign('oNaviSeite_arr', $oNavigationsinfo->buildPageNavigation(
            true,
            $pages,
            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
-       ->assign('ArtikelProSeite', $productsPerPage)
        ->assign('Navigation', $oNavigationsinfo->getBreadCrumb())
        ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())
        ->assign('Suchergebnisse', $oSuchergebnisse)

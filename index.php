@@ -9,9 +9,6 @@ $NaviFilter = Shop::run();
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
 WarenkorbHelper::checkAdditions();
 Shop::getEntryPoint();
-Shop::Smarty()->assign('NaviFilter', $NaviFilter);
-if (Shop::$fileName !== null) {
-    require PFAD_ROOT . basename(Shop::$fileName);
-} else {
-    require_once PFAD_ROOT . 'seite.php';
-}
+require Shop::$fileName !== null
+    ? PFAD_ROOT . basename(Shop::$fileName)
+    : PFAD_ROOT . 'seite.php';

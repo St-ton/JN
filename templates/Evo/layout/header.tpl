@@ -28,9 +28,7 @@
         <link rel="canonical" href="{$cCanonicalURL}">
     {/if}
 
-    {block name="head-base"}
-        <base href="{$ShopURL}/">
-    {/block}
+    {block name="head-base"}{/block}
 
     {block name="head-icons"}
         {if !empty($Einstellungen.template.theme.favicon)}

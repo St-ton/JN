@@ -10,15 +10,12 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
  */
 function getSmarty()
 {
-    $smarty = new JTLSmarty(true, false, false, 'cron');
-    $smarty->setCaching(0)
-           ->setDebugging(0)
-           ->setTemplateDir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)
-           ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
-           ->setConfigDir($smarty->getTemplateDir($smarty->context) . 'lang/')
-           ->registerResource('db', new SmartyResourceNiceDB('export'));
-
-    return $smarty;
+    return (new JTLSmarty(true, false, false, 'cron'))
+        ->setCaching(0)
+        ->setDebugging(0)
+        ->setTemplateDir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)
+        ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
+        ->registerResource('db', new SmartyResourceNiceDB('export'));
 }
 
 /**

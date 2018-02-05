@@ -668,7 +668,7 @@ class Exportformat
         $this->smarty = (new JTLSmarty(true, false, false, 'export'))
             ->setCaching(0)
             ->setTemplateDir(PFAD_TEMPLATES)
-            ->setConfigDir($this->smarty->getTemplateDir($this->smarty->context) . 'lang/')
+            ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
             ->registerResource('db', new SmartyResourceNiceDB('export'))
             ->assign('URL_SHOP', Shop::getURL())
             ->assign('Waehrung', Session::Currency())

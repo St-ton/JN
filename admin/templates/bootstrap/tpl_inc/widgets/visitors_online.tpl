@@ -13,14 +13,15 @@
     {if is_array($oVisitors_arr) && $oVisitors_arr|@count > 0}
         <table class="table table-condensed table-hover table-blank">
             <thead>
-                <th>Kunde</th><th>Info</th><th class="text-center">Letzte Aktivität</th><th class="text-right">Warenkorb (Netto)</th>
+                <th>Kunde</th><th>Info</th><th class="text-center">Letzte Aktivität</th><th class="text-right"
+                    title="Letzter Einkauf innerhalb der letzten 3 Stunden">Letzter Einkauf</th>
             </thead>
             <tbody>
             {foreach from=$oVisitors_arr item=oVisitor}
                 {if !empty($oVisitor->kKunde)}
                     <tr>
                         <td class="customer" onclick="$(this).parent().toggleClass('active')">
-                            
+
                             {$oVisitor->cVorname} {$oVisitor->cNachname}
                         </td>
                         <td>
@@ -45,7 +46,7 @@
                                  {/if}
                             {/if}
                         </td>
-                        <td class="basket text-right">
+                        <td class="basket text-right" title="Letzter Einkauf innerhalb der letzten 3 Stunden">
                             {if $oVisitor->kBestellung > 0}
                                 <i class="fa fa-shopping-cart" aria-hidden="true"></i> {$oVisitor->fGesamtsumme}
                             {else}

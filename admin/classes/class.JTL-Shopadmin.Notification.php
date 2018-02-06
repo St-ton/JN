@@ -155,7 +155,7 @@ class Notification implements IteratorAggregate, Countable
                 'preisanzeige.php');
         }
 
-        if($status->hasInvalidPasswordResetMailTemplate()) {
+        if ($status->hasInvalidPasswordResetMailTemplate()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
                 'E-Mail-Vorlage defekt',

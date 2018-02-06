@@ -28,21 +28,29 @@ testphp56:
   stage: test
   script:
     - includes/vendor/bin/phpunit tests
+  tags:
+    - docker
 
 testphp70:
   image: php:7.0
   stage: test
   script:
     - includes/vendor/bin/phpunit tests
+  tags:
+      - docker
 
 testphp71:
   image: php:7.1
   stage: test
   script:
     - includes/vendor/bin/phpunit tests
+  tags:
+      - docker
 
 testphp72:
   image: php:7.2
   stage: test
   script:
     - includes/vendor/bin/phpunit tests
+  tags:
+      - docker

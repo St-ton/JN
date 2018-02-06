@@ -387,18 +387,21 @@ class Status
      */
     public function hasInvalidPasswordResetMailTemplate()
     {
-        $translations = Shop::DB()->query("
-            SELECT lang.cContentText, lang.cContentHtml
-            FROM temailvorlagesprache lang
-            JOIN temailvorlage ON lang.kEmailvorlage = temailvorlage.kEmailvorlage
-            WHERE temailvorlage.cName = 'Passwort vergessen'
-        ", NiceDB::RET_ARRAY_OF_OBJECTS);
-        foreach($translations as $t) {
+        $translations = Shop::DB()->query(
+            "SELECT lang.cContentText, lang.cContentHtml
+                FROM temailvorlagesprache lang
+                JOIN temailvorlage 
+                ON lang.kEmailvorlage = temailvorlage.kEmailvorlage
+                WHERE temailvorlage.cName = 'Passwort vergessen'",
+            NiceDB::RET_ARRAY_OF_OBJECTS
+        );
+        foreach ($translations as $t) {
             $old = '{$neues_passwort}';
             if(strpos($t->cContentHtml, $old) !== false || strpos($t->cContentText, $old) !== false) {
                 return true;
             }
         }
+
         return false;
     }
 }

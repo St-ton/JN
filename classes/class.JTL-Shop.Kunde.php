@@ -803,38 +803,40 @@ class Kunde
      * creates a random string for password reset validation
      *
      * @return bool - true if valid account
+     * @throws Exception
      */
     public function prepareResetPassword()
     {
         if (!$this->kKunde) {
             return false;
         }
+        $key        = bin2hex(random_bytes(32));
         $linkHelper = LinkHelper::getInstance();
         $expires    = new DateTime();
         $interval   = new DateInterval('P1D');
         $expires->add($interval);
-        $key = bin2hex(random_bytes(32));
-        Shop::DB()->executeQueryPrepared("
-            INSERT INTO tpasswordreset(kKunde, cKey, dExpires)
+        Shop::DB()->executeQueryPrepared(
+            "INSERT INTO tpasswordreset(kKunde, cKey, dExpires)
             VALUES (:kKunde, :cKey, :dExpires)
-            ON DUPLICATE KEY UPDATE cKey = :cKey, dExpires = :dExpires
-        ", [
-            'kKunde'   => $this->kKunde,
-            'cKey'     => $key,
-            'dExpires' => $expires->format(DateTime::ISO8601),
-        ], NiceDB::RET_AFFECTED_ROWS);
+            ON DUPLICATE KEY UPDATE cKey = :cKey, dExpires = :dExpires",
+            [
+                'kKunde'   => $this->kKunde,
+                'cKey'     => $key,
+                'dExpires' => $expires->format(DateTime::ISO8601),
+            ],
+            NiceDB::RET_AFFECTED_ROWS
+        );
 
         require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-        $linkParams             = [
-            'fpwh' => $key
-        ];
+        $linkParams             = ['fpwh' => $key];
         $obj                    = new stdClass();
         $obj->tkunde            = $this;
-        $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') . '?' . http_build_query($linkParams, null,
-                '&');
+        $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') .
+            '?' . http_build_query($linkParams, null, '&');
         $obj->cHash             = $key;
         $obj->neues_passwort    = 'Es ist leider ein Fehler aufgetreten. Bitte kontaktieren Sie uns.';
         sendeMail(MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);
+
         return true;
     }
 

@@ -27,10 +27,10 @@ class Migration_20180202145224 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("
-          CREATE TABLE tpasswordreset(
+        $this->execute(
+          "CREATE TABLE tpasswordreset(
             kKunde INT PRIMARY KEY ,
-            cKey VARCHAR(200) UNIQUE,
+            cKey VARCHAR(255) UNIQUE,
             dExpires DATETIME
           );
           CREATE INDEX tpasswordreset_cKey ON tpasswordreset(cKey);

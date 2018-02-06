@@ -362,7 +362,6 @@ class Kunde
     public function checkCredentials($cBenutzername, $cPasswort)
     {
         $cBenutzername = StringHandler::filterXSS($cBenutzername);
-        $cPasswort     = StringHandler::filterXSS($cPasswort);
         // Work Around Passwort 32, 40 oder mehr Zeichen
         $oUser           = Shop::DB()->select(
             'tkunde',

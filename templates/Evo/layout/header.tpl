@@ -53,12 +53,12 @@
         {* css *}
         {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
             {foreach from=$cCSS_arr item="cCSS"}
-                <link type="text/css" href="{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
+                <link type="text/css" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
             {/foreach}
 
             {if isset($cPluginCss_arr)}
                 {foreach from=$cPluginCss_arr item="cCSS"}
-                    <link type="text/css" href="{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
+                    <link type="text/css" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
                 {/foreach}
             {/if}
         {else}

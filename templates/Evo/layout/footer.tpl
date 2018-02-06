@@ -301,33 +301,33 @@
             {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
                 {if isset($cPluginJsHead_arr)}
                     {foreach from=$cPluginJsHead_arr item="cJS"}
-                        "{$cJS}?v={$nTemplateVersion}",
+                        "{$ShopURL}/{$cJS}?v={$nTemplateVersion}",
                     {/foreach}
                 {/if}
             {else}
                 {if isset($cPluginJsHead_arr) && $cPluginJsHead_arr|@count > 0}
-                    "asset/plugin_js_head?v={$nTemplateVersion}",
+                    "{$ShopURL}/asset/plugin_js_head?v={$nTemplateVersion}",
                 {/if}
             {/if}
             {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
                 {foreach from=$cJS_arr item="cJS"}
-                    "{$cJS}?v={$nTemplateVersion}",
+                    "{$ShopURL}/{$cJS}?v={$nTemplateVersion}",
                 {/foreach}
                 {if isset($cPluginJsBody_arr)}
                     {foreach from=$cPluginJsBody_arr item="cJS"}
-                        "{$cJS}?v={$nTemplateVersion}",
+                        "{$ShopURL}/{$cJS}?v={$nTemplateVersion}",
                     {/foreach}
                 {/if}
             {else}
-                "asset/jtl3.js?v={$nTemplateVersion}",
+                "{$ShopURL}/asset/jtl3.js?v={$nTemplateVersion}",
                 {if isset($cPluginJsBody_arr) && $cPluginJsBody_arr|@count > 0}
-                    "asset/plugin_js_body?v={$nTemplateVersion}",
+                    "{$ShopURL}/asset/plugin_js_body?v={$nTemplateVersion}",
                 {/if}
             {/if}
 
             {assign var="customJSPath" value=$currentTemplateDir|cat:'/js/custom.js'}
             {if file_exists($customJSPath)}
-                "{$customJSPath}?v={$nTemplateVersion}",
+                "{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}",
             {/if}
         ]{/strip});
         {if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}

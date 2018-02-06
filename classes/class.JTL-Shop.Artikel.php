@@ -1362,7 +1362,7 @@ class Artikel
         }
 
         return (object)[
-            'src'  => $imagePath,
+            'src'  => Shop::getURL() . '/' . $imagePath,
             'size' => (object)[
                 'width'  => $width,
                 'height' => $height

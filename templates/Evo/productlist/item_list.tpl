@@ -210,22 +210,24 @@
                                         (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig
                                     }
                                         <div class="quantity-wrapper form-group top7">
-                                            {if $Artikel->cEinheit}
-                                                <div class="input-group input-group-sm">
-                                                    <input type="number" min="0"{if $Artikel->fAbnahmeintervall > 0} step="{$Artikel->fAbnahmeintervall}"{/if} size="2" onfocus="this.setAttribute('autocomplete', 'off');" id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl" value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}" />
-                                                    <span class="input-group-addon unit">{$Artikel->cEinheit}</span>
-                                                </div>
-                                                <div class="input-group input-group-sm">
-                                                    <span class="change_quantity input-group-btn">
-                                                        <button type="submit" class="btn btn-primary btn-block" id="submit{$Artikel->kArtikel}" title="{lang key="addToCart" section="global"}"><span class="fa fa-shopping-cart"></span> {lang key="addToCart" section="global"}</button>
-                                                    </span>
-                                                </div>
+                                            {if $Artikel->nIstVater && $Artikel->kVaterArtikel == 0}
+                                                <p class="alert alert-info choose-variations">{lang key="chooseVariations" section="messages"}</p>
                                             {else}
-                                                <div class="input-group input-group-sm">
-                                                    <input type="number" min="0"{if $Artikel->fAbnahmeintervall > 0} step="{$Artikel->fAbnahmeintervall}"{/if} size="2" onfocus="this.setAttribute('autocomplete', 'off');" id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl" value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}" />
-                                                    <span class="change_quantity input-group-btn">
-                                                        <button type="submit" class="btn btn-primary" id="submit{$Artikel->kArtikel}" title="{lang key="addToCart" section="global"}"><span><i class="fa fa-shopping-cart"></i> {lang key="addToCart" section="global"}</span></button>
-                                                    </span>
+                                                <div class="quantity-wrapper form-group top7">
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" min="0"
+                                                               {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if} size="2"
+                                                               id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl"
+                                                               autocomplete="off"
+                                                               value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}">
+
+                                                        <span class="input-group-btn">
+                                                            <button type="submit" class="btn btn-primary" id="submit{$Artikel->kArtikel}"
+                                                                    title="{lang key="addToCart" section="global"}">
+                                                                <span><i class="fa fa-shopping-cart"></i> {lang key="addToCart" section="global"}</span>
+                                                            </button>
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             {/if}
                                         </div>

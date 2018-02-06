@@ -22,26 +22,45 @@ class PortletAccordion extends CMSPortlet
      */
     public function getPreviewHtml()
     {
+        // TODO Editor: in .tpl auslagern
         if ($this->properties['layout'] === 'button') {
-            $ret='<div>    
-            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#div_' . $this->properties['uid'] . '" aria-expanded="true" aria-controls="div_' . $this->properties['uid'] . '">
-                click to minimize
-            </button>
-            <div class="collapse in cle-area" id="div_' . $this->properties['uid'] . '">
-              
-            </div></div>';
+            $ret = '<div ' . $this->getStyleString() . ' ' . $this->getAttribString() . '>    
+                <button 
+                class="btn btn-' . $this->properties['cllps-button-type'] . ' btn-' . $this->properties['cllps-button-size'] . '" 
+                type="button" data-toggle="collapse" 
+                data-target="#div_' . $this->properties['uid'] . '" 
+                aria-expanded="true" 
+                aria-controls="div_' . $this->properties['uid'] . '">
+                    ' . $this->properties['cllps-button-text'] . '
+                </button>
+                <div class="collapse in" id="div_' . $this->properties['uid'] . '">
+                    <div class="well cle-area"></div>
+                </div>
+            </div>';
         } else {
-            $ret='<div>
-                <div class="panel-group" id="accordion_' . $this->properties['uid'] . '" role="tablist" aria-multiselectable="true">
+            $ret = '<div ' . $this->getStyleString() . ' ' . $this->getAttribString() . '>
+                <div class="panel-group" 
+                id="accordion_' . $this->properties['uid'] . '" 
+                role="tablist" 
+                aria-multiselectable="true">
                     <div class="panel panel-default">
-                        <div class="panel-heading" role="tab" id="headingOne">
+                        <div class="panel-heading" 
+                        role="tab" 
+                        id="pnl_hd_' . $this->properties['uid'] . '">
                             <h4 class="panel-title">
-                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#div_' . $this->properties['uid'] . '" aria-expanded="true" aria-controls="div_' . $this->properties['uid'] . '">
+                                <a role="button" data-toggle="collapse" 
+                                data-parent="#accordion_' . $this->properties['uid'] . '" 
+                                href="#div_' . $this->properties['uid'] . '" 
+                                aria-expanded="true" 
+                                aria-controls="div_' . $this->properties['uid'] . '">
                                     <div class="well cle-area"></div>
                                 </a>
                             </h4>
                         </div>
-                        <div id="#div_' . $this->properties['uid'] . '" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                        <div id="#div_' . $this->properties['uid'] . '" 
+                        class="panel-collapse collapse in" 
+                        role="tabpanel" 
+                        aria-labelledby="pnl_hd_' . $this->properties['uid'] . '">
                             <div class="panel-body">
                                 <div class="well cle-area"></div>
                             </div>
@@ -50,7 +69,6 @@ class PortletAccordion extends CMSPortlet
                 </div>
             </div>';
         }
-
 
         return $ret;
     }
@@ -61,13 +79,20 @@ class PortletAccordion extends CMSPortlet
     public function getFinalHtml()
     {
         $i   = 0;
-
         if ($this->properties['layout'] === 'button') {
-            $ret='<div>    
-            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#div_' . $this->properties['uid'] . '" aria-expanded="true" aria-controls="div_' . $this->properties['uid'] . '">
-                click to minimize
+            $ret='<div '. $this->getStyleString() . ' ' . $this->getAttribString() .'>    
+            <button 
+            class="btn btn-' . $this->properties['cllps-button-type'] . ' btn-' . $this->properties['cllps-button-size'] . '" 
+            type="button" 
+            data-toggle="collapse" 
+            data-target="#div_' . $this->properties['uid'] . '" 
+            aria-expanded="true" 
+            aria-controls="div_' . $this->properties['uid'] . '">
+                ' . $this->properties['cllps-button-text'] . '
             </button>
-            <div class="collapse in cle-area" id="div_' . $this->properties['uid'] . '">';
+            <div class="collapse ' . $this->properties['cllps-initial-state'] . '" 
+            id="div_' . $this->properties['uid'] . '">
+            <div class="cle-area well">';
             $subArea = $this->subAreas[$i];
             foreach ($subArea as $subPortlet) {
                 $portlet        = CMS::getInstance()->createPortlet($subPortlet['portletId'])
@@ -76,14 +101,22 @@ class PortletAccordion extends CMSPortlet
                 $subPortletHtml = $portlet->getFinalHtml();
                 $ret           .= $subPortletHtml;
             }
-            $ret .= '</div></div>';
+            $ret .= '</div></div></div>';
         } else {
-            $ret='<div>
-                <div class="panel-group" id="accordion_' . $this->properties['uid'] . '" role="tablist" aria-multiselectable="true">
+            $ret='<div '. $this->getStyleString() . ' ' . $this->getAttribString() .'>
+                <div class="panel-group" 
+                id="accordion_' . $this->properties['uid'] . '" 
+                role="tablist" aria-multiselectable="true">
                     <div class="panel panel-default">
-                        <div class="panel-heading" role="tab" id="headingOne">
+                        <div class="panel-heading" 
+                        role="tab" id="pnl_hd_' . $this->properties['uid'] . '">
                             <h4 class="panel-title">
-                                <a class="cle-area" role="button" data-toggle="collapse" data-parent="#accordion" href="#div_' . $this->properties['uid'] . '" aria-expanded="true" aria-controls="div_' . $this->properties['uid'] . '">';
+                                <a class="cle-area" 
+                                role="button" data-toggle="collapse" 
+                                data-parent="#accordion_' . $this->properties['uid'] . '" 
+                                href="#div_' . $this->properties['uid'] . '" 
+                                aria-expanded="true" 
+                                aria-controls="div_' . $this->properties['uid'] . '">';
             $subArea = $this->subAreas[$i];
             foreach ($subArea as $subPortlet) {
                 $portlet        = CMS::getInstance()->createPortlet($subPortlet['portletId'])
@@ -96,7 +129,9 @@ class PortletAccordion extends CMSPortlet
             $ret.='                  </a>
                             </h4>
                         </div>
-                        <div id="#div_' . $this->properties['uid'] . '" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                        <div id="div_' . $this->properties['uid'] . '" 
+                        class="panel-collapse collapse ' . $this->properties['cllps-initial-state'] . '" 
+                        role="tabpanel" aria-labelledby="pnl_hd_' . $this->properties['uid'] . '">
                             <div class="panel-body cle-area">';
             $subArea = $this->subAreas[$i];
             foreach ($subArea as $subPortlet) {
@@ -124,6 +159,10 @@ class PortletAccordion extends CMSPortlet
         return [
             'uid' => uniqid('cllps_'),
             'layout' => 'button',
+            'cllps-button-text' => 'Text',
+            'cllps-button-type' => 'default',
+            'cllps-button-size' => 'normal',
+            'cllps-initial-state' => '',
             // animation
             'animation-style'     => '',
             // attributes

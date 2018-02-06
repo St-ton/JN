@@ -1,6 +1,6 @@
 [submodule "templates/Evo-Child-Example"]
 	path = templates/Evo-Child-Example
-	url = git@gitlab.jtl-software.de:f.moche/childTemplateTest.git
+	url = git@gitlab.jtl-software.de:jtlshop/EvoChild.git
 [submodule "includes/plugins/jtl_debug"]
 	path = includes/plugins/jtl_debug
 	url = git@gitlab.jtl-software.de:jtlshop/jtldebug.git

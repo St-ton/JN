@@ -65,7 +65,7 @@ class Warenlager extends MainModel
     public $nAktiv;
 
     /**
-     * @var
+     * @var stdClass
      */
     public $oLageranzeige;
 
@@ -95,22 +95,153 @@ class Warenlager extends MainModel
     public $dZulaufDatum_de;
 
     /**
+     * @return stdClass
+     */
+    public function getOLageranzeige()
+    {
+        return $this->oLageranzeige;
+    }
+
+    /**
+     * @param stdClass $oLageranzeige
+     * @return Warenlager
+     */
+    public function setOLageranzeige($oLageranzeige)
+    {
+        $this->oLageranzeige = $oLageranzeige;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLanguages()
+    {
+        return $this->cSpracheAssoc_arr;
+    }
+
+    /**
+     * @param array $cSpracheAssoc_arr
+     * @return Warenlager
+     */
+    public function setLanguages($cSpracheAssoc_arr)
+    {
+        $this->cSpracheAssoc_arr = $cSpracheAssoc_arr;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getStock()
+    {
+        return $this->fBestand;
+    }
+
+    /**
+     * @param float $fBestand
+     * @return Warenlager
+     */
+    public function setStock($fBestand)
+    {
+        $this->fBestand = $fBestand;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getBackorder()
+    {
+        return $this->fZulauf;
+    }
+
+    /**
+     * @param float $fZulauf
+     * @return Warenlager
+     */
+    public function setBackorder($fZulauf)
+    {
+        $this->fZulauf = $fZulauf;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackorderDate()
+    {
+        return $this->dZulaufDatum;
+    }
+
+    /**
+     * @param string $dZulaufDatum
+     * @return Warenlager
+     */
+    public function setBackorderDate($dZulaufDatum)
+    {
+        $this->dZulaufDatum = $dZulaufDatum;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackorderDateDE()
+    {
+        return $this->dZulaufDatum_de;
+    }
+
+    /**
+     * @param string $dZulaufDatum_de
+     * @return Warenlager
+     */
+    public function setBackorderDateDE($dZulaufDatum_de)
+    {
+        $this->dZulaufDatum_de = $dZulaufDatum_de;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
-    public function getWarenlager()
+    public function getID()
     {
         return $this->kWarenlager;
     }
 
     /**
-     * @param $kWarenlager
+     * @param int $id
+     * @return $this
+     */
+    public function setID($id)
+    {
+        $this->kWarenlager = (int)$id;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWarenlager()
+    {
+        return $this->getID();
+    }
+
+    /**
+     * @param int $kWarenlager
      * @return $this
      */
     public function setWarenlager($kWarenlager)
     {
-        $this->kWarenlager = (int)$kWarenlager;
-
-        return $this;
+        return $this->setID($kWarenlager);
     }
 
     /**
@@ -122,7 +253,7 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param $cName
+     * @param string $cName
      * @return $this
      */
     public function setName($cName)
@@ -141,7 +272,7 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param $cKuerzel
+     * @param string $cKuerzel
      * @return $this
      */
     public function setKuerzel($cKuerzel)
@@ -160,7 +291,7 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param $cLagerTyp
+     * @param string $cLagerTyp
      * @return $this
      */
     public function setLagerTyp($cLagerTyp)
@@ -179,7 +310,7 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param $cBeschreibung
+     * @param string $cBeschreibung
      * @return $this
      */
     public function setBeschreibung($cBeschreibung)
@@ -198,7 +329,7 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param $cStrasse
+     * @param string $cStrasse
      * @return $this
      */
     public function setStrasse($cStrasse)
@@ -217,7 +348,7 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param $cPLZ
+     * @param string $cPLZ
      * @return $this
      */
     public function setPLZ($cPLZ)
@@ -236,7 +367,7 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param $cOrt
+     * @param string $cOrt
      * @return $this
      */
     public function setOrt($cOrt)
@@ -255,7 +386,7 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param $cLand
+     * @param string $cLand
      * @return $this
      */
     public function setLand($cLand)
@@ -274,7 +405,7 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param $nFulfillment
+     * @param int $nFulfillment
      * @return $this
      */
     public function setFulfillment($nFulfillment)
@@ -293,7 +424,7 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param $nAktiv
+     * @param int $nAktiv
      * @return $this
      */
     public function setAktiv($nAktiv)
@@ -312,11 +443,9 @@ class Warenlager extends MainModel
     {
         if ($kKey !== null) {
             $kKey = (int)$kKey;
-
             if ($kKey > 0) {
                 $cSqlSelect = '';
                 $cSqlJoin   = '';
-                // $xOption = kSprache
                 if ($xOption !== null && (int)$xOption > 0) {
                     $xOption    = (int)$xOption;
                     $cSqlSelect = ", IF (twarenlagersprache.cName IS NOT NULL, twarenlagersprache.cName, twarenlager.cName) AS cName";
@@ -332,7 +461,6 @@ class Warenlager extends MainModel
                 );
             }
         }
-
         if (isset($oObj->kWarenlager) && $oObj->kWarenlager > 0) {
             $this->loadObject($oObj);
         }
@@ -345,21 +473,17 @@ class Warenlager extends MainModel
      */
     public function save($bPrim = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        foreach ($cMember_arr as $cMember) {
+        $oObj = new stdClass();
+        foreach (array_keys(get_object_vars($this)) as $cMember) {
             $oObj->$cMember = $this->$cMember;
         }
-
         if ($this->getWarenlager() === null) {
             $kPrim = Shop::DB()->insert('twarenlager', $oObj);
-
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
             }
         } else {
             $xResult = $this->update();
-
             if ($xResult) {
                 return $bPrim ? -1 : true;
             }
@@ -418,11 +542,10 @@ class Warenlager extends MainModel
     {
         if ($this->getWarenlager() > 0) {
             $oObj_arr = Shop::DB()->selectAll('twarenlagersprache', 'kWarenlager', $this->getWarenlager());
-
-            if (is_array($oObj_arr) && count($oObj_arr) > 0) {
+            if (count($oObj_arr) > 0) {
                 $this->cSpracheAssoc_arr = [];
                 foreach ($oObj_arr as $oObj) {
-                    $this->cSpracheAssoc_arr[$oObj->kSprache] = $oObj->cName;
+                    $this->cSpracheAssoc_arr[(int)$oObj->kSprache] = $oObj->cName;
                 }
 
                 return true;
@@ -440,25 +563,18 @@ class Warenlager extends MainModel
     public static function getAll($bActive = true, $bLoadLanguages = false)
     {
         $oWarenlager_arr = [];
-        $cSql            = '';
-        if ($bActive) {
-            $cSql = " WHERE nAktiv = 1";
-        }
+        $cSql            = $bActive ? " WHERE nAktiv = 1" : '';
         $oObj_arr = Shop::DB()->query(
             "SELECT *
                FROM twarenlager
                {$cSql}", 2
         );
-
-        if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-            foreach ($oObj_arr as $oObj) {
-                $oWarenlager = new self(null, $oObj);
-                // Languages?
-                if ($bLoadLanguages) {
-                    $oWarenlager->loadLanguages();
-                }
-                $oWarenlager_arr[] = $oWarenlager;
+        foreach ($oObj_arr as $oObj) {
+            $oWarenlager = new self(null, $oObj);
+            if ($bLoadLanguages) {
+                $oWarenlager->loadLanguages();
             }
+            $oWarenlager_arr[] = $oWarenlager;
         }
 
         return $oWarenlager_arr;
@@ -476,10 +592,7 @@ class Warenlager extends MainModel
         $oWarenlager_arr = [];
         $kArtikel        = (int)$kArtikel;
         if ($kArtikel > 0) {
-            $cSql = '';
-            if ($bActive) {
-                $cSql = " AND twarenlager.nAktiv = 1";
-            }
+            $cSql     = $bActive ? " AND twarenlager.nAktiv = 1" : '';
             $oObj_arr = Shop::DB()->query(
                 "SELECT tartikelwarenlager.*
                     FROM tartikelwarenlager
@@ -488,26 +601,22 @@ class Warenlager extends MainModel
                        {$cSql}
                     WHERE tartikelwarenlager.kArtikel = {$kArtikel}", 2
             );
-            if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-                $oWarenlager_arr = [];
-                foreach ($oObj_arr as $oObj) {
-                    $oWarenlager               = new self($oObj->kWarenlager, null, $kSprache);
-                    $oWarenlager->fBestand     = $oObj->fBestand;
-                    $oWarenlager->fZulauf      = $oObj->fZulauf;
-                    $oWarenlager->dZulaufDatum = $oObj->dZulaufDatum;
-                    if (strlen($oWarenlager->dZulaufDatum) > 1) {
-                        try {
-                            $oDateTime                    = new DateTime($oObj->dZulaufDatum);
-                            $oWarenlager->dZulaufDatum_de = $oDateTime->format('d.m.Y');
-                        } catch (Exception $exc) {
-                            $oWarenlager->dZulaufDatum_de = '00.00.0000';
-                        }
+            foreach ($oObj_arr as $oObj) {
+                $oWarenlager               = new self($oObj->kWarenlager, null, $kSprache);
+                $oWarenlager->fBestand     = $oObj->fBestand;
+                $oWarenlager->fZulauf      = $oObj->fZulauf;
+                $oWarenlager->dZulaufDatum = $oObj->dZulaufDatum;
+                if (strlen($oWarenlager->dZulaufDatum) > 1) {
+                    try {
+                        $oWarenlager->dZulaufDatum_de = (new DateTime($oObj->dZulaufDatum))->format('d.m.Y');
+                    } catch (Exception $exc) {
+                        $oWarenlager->dZulaufDatum_de = '00.00.0000';
                     }
-                    if (is_array($xOption_arr)) {
-                        $oWarenlager->buildWarehouseInfo($oWarenlager->fBestand, $xOption_arr);
-                    }
-                    $oWarenlager_arr[] = $oWarenlager;
                 }
+                if (is_array($xOption_arr)) {
+                    $oWarenlager->buildWarehouseInfo($oWarenlager->fBestand, $xOption_arr);
+                }
+                $oWarenlager_arr[] = $oWarenlager;
             }
         }
 
@@ -524,14 +633,14 @@ class Warenlager extends MainModel
         $this->oLageranzeige                = new stdClass();
         $this->oLageranzeige->cLagerhinweis = [];
         $conf                               = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELDETAILS]);
-
         if ($xOption_arr['cLagerBeachten'] === 'Y') {
             if ($fBestand > 0) {
-                $this->oLageranzeige->cLagerhinweis['genau']          = $fBestand . ' ' .
-                    $xOption_arr['cEinheit'] . ' ' . Shop::Lang()->get('inStock');
+                $this->oLageranzeige->cLagerhinweis['genau']          = $fBestand . ' '
+                    . (!empty($xOption_arr['cEinheit']) ? ($xOption_arr['cEinheit'] . ' ') : '')
+                    . Shop::Lang()->get('inStock');
                 $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable');
-                if (isset($conf['artikeldetails']['artikel_lagerbestandsanzeige']) &&
-                    $conf['artikeldetails']['artikel_lagerbestandsanzeige'] === 'verfuegbarkeit'
+                if (isset($conf['artikeldetails']['artikel_lagerbestandsanzeige'])
+                    && $conf['artikeldetails']['artikel_lagerbestandsanzeige'] === 'verfuegbarkeit'
                 ) {
                     $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
                 }
@@ -547,17 +656,17 @@ class Warenlager extends MainModel
             $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
         }
         if ($xOption_arr['cLagerBeachten'] === 'Y') {
-            // ampel
             $this->oLageranzeige->nStatus   = 1;
             $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gelb'];
             if ($fBestand <= (int)$conf['global']['artikel_lagerampel_rot']) {
                 $this->oLageranzeige->nStatus   = 0;
                 $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_rot'];
             }
-            if ($xOption_arr['cLagerBeachten'] !== 'Y' || $fBestand >= (int)$conf['global']['artikel_lagerampel_gruen'] ||
-                ($xOption_arr['cLagerBeachten'] === 'Y' && $xOption_arr['cLagerKleinerNull'] === 'Y' &&
-                    $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y'
-                )
+            if ($xOption_arr['cLagerBeachten'] !== 'Y'
+                || $fBestand >= (int)$conf['global']['artikel_lagerampel_gruen']
+                || ($xOption_arr['cLagerBeachten'] === 'Y'
+                    && $xOption_arr['cLagerKleinerNull'] === 'Y'
+                    && $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
             ) {
                 $this->oLageranzeige->nStatus   = 2;
                 $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gruen'];
@@ -567,7 +676,6 @@ class Warenlager extends MainModel
             if ($this->oLageranzeige->nStatus < 0 || $this->oLageranzeige->nStatus > 2) {
                 $this->oLageranzeige->nStatus = 2;
             }
-
             switch ($this->oLageranzeige->nStatus) {
                 case 1:
                     $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gelb'];

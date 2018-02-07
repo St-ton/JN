@@ -423,14 +423,14 @@
             $(this.element).find('ul.image-container > li img')
                 .css('max-height', height);
             $(this.element).find('ul.image-container')
-                .css('height', height);
+                .css('max-height', height);
         },
 
         resetMaxHeight: function () {
             $(this.element).find('.image-gallery, ul.image-container > li img')
                 .css('max-height', '');
             $(this.element).find('ul.image-container')
-                .css('height', '');
+                .css('max-height', '');
         },
 
         itemCount: function() {

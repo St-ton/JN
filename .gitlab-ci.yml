@@ -4,14 +4,7 @@ stages:
 
 before_script:
   - cd includes
-  - apt-get update
-  - apt-get install -y wget git
-  - wget https://composer.github.io/installer.sig -O - -q | tr -d '\n' > installer.sig
-  - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-  - php -r "if (hash_file('SHA384', 'composer-setup.php') === file_get_contents('installer.sig')) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-  - php composer-setup.php
-  - php -r "unlink('composer-setup.php'); unlink('installer.sig');"
-  - php composer.phar install
+  - php /root/composer.phar install
   - cd ../
 
 archive:
@@ -24,7 +17,7 @@ archive:
     - tags
 
 testphp56:
-  image: php:5.6
+  image: gitlab.jtl-software.de:4567/jtlshop/shop4/php56
   stage: test
   script:
     - includes/vendor/bin/phpunit tests
@@ -32,7 +25,7 @@ testphp56:
     - docker
 
 testphp70:
-  image: php:7.0
+  image: gitlab.jtl-software.de:4567/jtlshop/shop4/php70
   stage: test
   script:
     - includes/vendor/bin/phpunit tests
@@ -40,15 +33,7 @@ testphp70:
       - docker
 
 testphp71:
-  image: php:7.1
-  stage: test
-  script:
-    - includes/vendor/bin/phpunit tests
-  tags:
-      - docker
-
-testphp72:
-  image: php:7.2
+  image: gitlab.jtl-software.de:4567/jtlshop/shop4/php71
   stage: test
   script:
     - includes/vendor/bin/phpunit tests

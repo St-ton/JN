@@ -34,8 +34,9 @@ class CMS
      */
     private function __construct()
     {
-        $this->curPageParameters = Shop::getParameters();
-        $this->curPageID         = md5(serialize($this->curPageParameters));
+        $this->curPageParameters             = Shop::getParameters();
+        $this->curPageParameters['kSprache'] = Shop::getLanguage();
+        $this->curPageID                     = md5(serialize($this->curPageParameters));
     }
 
     /**
@@ -303,13 +304,18 @@ class CMS
 
         $res = [];
 
-        foreach (['Category', 'Manufacturer', 'SearchSpecial'] as $term) {
+        foreach (['Category', 'Manufacturer', 'Rating', 'SearchSpecial', 'Tag', 'Attribute', 'PriceRange'] as $term) {
             /** @var FilterOption[] $filterOptions */
             $filterOptions = $searchResults->{"get{$term}FilterOptions"}();
 
+            $res[$term] = [];
+
             foreach ($filterOptions as $filterOption) {
-                if (!array_key_exists($filterOption->getClassName() . ':' . $filterOption->getValue(), $filtersEnabledMap)) {
-                    $res[] = [
+                if (!array_key_exists(
+                    $filterOption->getClassName() . ':' . $filterOption->getValue(),
+                    $filtersEnabledMap
+                )) {
+                    $res[$term][] = [
                         'name'      => $filterOption->getName(),
                         'term'      => $term,
                         'className' => $filterOption->getClassName(),

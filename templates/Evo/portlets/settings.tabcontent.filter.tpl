@@ -22,7 +22,7 @@
 
         function enableFilter(doPostUpdate, filter)
         {
-            $('<button class="btn btn-xs btn-primary" type="button">')
+            $('<button class="btn btn-xs btn-danger" type="button">')
                 .data('filter', filter)
                 .html(filter.name)
                 .click(disableFilter)
@@ -69,10 +69,26 @@
         {
             clearFiltersAvailable();
 
-            if(filters.length === 0) {
-                $filtersAvailable.html('No more filters available');
-            } else {
-                filters.forEach(addFilterAvailableButton);
+//            if(filters.length === 0) {
+//                $filtersAvailable.html('No more filters available');
+//            } else {
+//                filters.forEach(addFilterAvailableButton);
+//            }
+
+            for(filterTerm in filters) {
+                var filterSubset = filters[filterTerm];
+
+                console.log(filterTerm, filterSubset);
+
+                if(filterSubset.length > 0) {
+                    var $filterSubCat = $('<div>').append('<h3>' + filterTerm + '</h3>').appendTo($filtersAvailable);
+
+                    for(var i=0; i<filterSubset.length; i++) {
+                        var filter = filterSubset[i];
+
+                        addFilterAvailableButton(filter, $filterSubCat);
+                    }
+                }
             }
         }
 
@@ -81,13 +97,13 @@
             $filtersAvailable.empty();
         }
 
-        function addFilterAvailableButton(filter)
+        function addFilterAvailableButton(filter, target)
         {
             $('<button class="btn btn-xs btn-primary" type="button">')
                 .data('filter', filter)
                 .html(filter.name + ' (' + filter.count + ')')
                 .click(enableFilter.bind(this, true, filter))
-                .appendTo($filtersAvailable);
+                .appendTo(target);
         }
 
         function saveFilterProperties(props)

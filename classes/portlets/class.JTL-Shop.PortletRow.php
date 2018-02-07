@@ -33,12 +33,12 @@ class PortletRow extends CMSPortlet
             $addDividerMD = false;
             $addDividerSM = false;
             $addDividerXS = false;
-            $res .= '<div class="cle-area col-lg-' . $col;
+            $res         .= '<div class="cle-area col-lg-' . $col;
 
             if (!empty($layoutMd[$i])) {
                 $res .= ' col-md-' . $layoutMd[$i];
                 $sum = 0;
-                for ($x=0;$x<=$i;++$x) {
+                for ($x=0; $x<=$i; ++$x) {
                     $sum += $layoutMd[$x];
                 }
                 $addDividerMD = $sum % 12 === 0 ? true : false;

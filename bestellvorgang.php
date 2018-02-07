@@ -89,41 +89,10 @@ if (isset($_GET['editLieferadresse'])) {
     // Shipping address and customer address are now on same site
     $_GET['editRechnungsadresse'] = $_GET['editLieferadresse'];
 }
-if (isset($_POST['shipping_address'])) {
-    if ((int)$_POST['shipping_address'] === 0) {
-        $_POST['kLieferadresse'] = 0;
-        $_POST['lieferdaten']    = 1;
-        pruefeLieferdaten($_POST);
-    } elseif (isset($_POST['kLieferadresse']) && (int)$_POST['kLieferadresse'] > 0) {
-        pruefeLieferdaten($_POST);
-    } elseif (isset($_POST['register']['shipping_address'])) {
-        pruefeLieferdaten($_POST['register']['shipping_address'], $fehlendeAngaben);
-    }
-} elseif (isset($_POST['lieferdaten']) && (int)$_POST['lieferdaten'] === 1) {
-    // compatibility with older template
-    pruefeLieferdaten($_POST, $fehlendeAngaben);
-}
 if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
     $_POST['checkout'] = 1;
     $_POST['form']     = 1;
-
-    // persistent delivery address during custom register
-    $_SESSION['tmpShipping'] = [
-        'Lieferadresse'   => $_SESSION['Lieferadresse'],
-        'fehlendeAngaben' => $fehlendeAngaben,
-    ];
     include 'registrieren.php';
-} elseif (isset($_SESSION['tmpShipping'])) {
-    // restore delivery address after registering customer
-    if ((int)$_POST['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {
-        setzeLieferadresseAusRechnungsadresse();
-    } else {
-        $_SESSION['Lieferadresse'] = $_SESSION['tmpShipping']['Lieferadresse'];
-    }
-    if (is_array($_SESSION['tmpShipping']['fehlendeAngaben'])) {
-        setzeFehlendeAngaben($_SESSION['tmpShipping']['fehlendeAngaben'], 'shipping_address');
-    }
-    unset($_SESSION['tmpShipping']);
 }
 if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1 || isset($_GET['kVersandart'])) {
     unset($_SESSION['Zahlungsart']);

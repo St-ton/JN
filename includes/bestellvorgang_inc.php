@@ -98,6 +98,20 @@ function pruefeUnregistriertBestellen($cPost_arr)
             setzeSteuersaetze();
             $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized();
         }
+        if (isset($cPost_arr['shipping_address'])) {
+            if ((int)$cPost_arr['shipping_address'] === 0) {
+                $cPost_arr['kLieferadresse'] = 0;
+                $cPost_arr['lieferdaten']    = 1;
+                pruefeLieferdaten($cPost_arr);
+            } elseif (isset($cPost_arr['kLieferadresse']) && (int)$cPost_arr['kLieferadresse'] > 0) {
+                pruefeLieferdaten($cPost_arr);
+            } elseif (isset($cPost_arr['register']['shipping_address'])) {
+                pruefeLieferdaten($cPost_arr['register']['shipping_address'], $fehlendeAngaben);
+            }
+        } elseif (isset($cPost_arr['lieferdaten']) && (int)$cPost_arr['lieferdaten'] === 1) {
+            // compatibility with older template
+            pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
+        }
 
         executeHook(HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN);
 

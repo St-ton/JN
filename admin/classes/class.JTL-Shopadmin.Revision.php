@@ -46,6 +46,13 @@ class Revision
             'cmspage' => [
                 'table' => 'tcmspage',
                 'id'    => 'kPage'
+            ],
+            'box' => [
+                'table'         => 'tboxen',
+                'id'            => 'kBox',
+                'reference'     => 'tboxsprache',
+                'reference_id'  => 'kBox',
+                'reference_key' => 'cISO'
             ]
         ];
     }
@@ -135,7 +142,7 @@ class Revision
             }
             $field           = $mapping['id'];
             $currentRevision = Shop::DB()->select($mapping['table'], $mapping['id'], $key);
-            if (empty($currentRevision->$field)) {
+            if ($currentRevision === null || empty($currentRevision->$field)) {
                 return false;
             }
             $revision                     = new stdClass();
@@ -179,12 +186,17 @@ class Revision
      */
     public function getRevisions($type, $primary)
     {
-        $revisions = Shop::DB()->selectAll('trevisions', ['type', 'reference_primary'], [$type, $primary], '*', 'timestamp DESC');
-        foreach ($revisions as $revision) {
-            $revision->content = json_decode($revision->content);
-        }
+        return array_map(function ($e) {
+            $e->content = json_decode($e->content);
 
-        return $revisions;
+            return $e;
+        }, Shop::DB()->selectAll(
+            'trevisions',
+            ['type', 'reference_primary'],
+            [$type, $primary],
+            '*',
+            'timestamp DESC'
+        ));
     }
 
     /**
@@ -216,27 +228,36 @@ class Revision
     public function restoreRevision($type, $id, $secondary = false, $utf8 = true)
     {
         $revision = $this->getRevision($id);
-        $mapping  = $this->getMapping($type); //get static mapping from build in content types
+        $mapping  = $this->getMapping($type); // get static mapping from build in content types
         if ($mapping === null && !empty($revision->custom_table) && !empty($revision->custom_primary_key)) {
-            //load dynamic mapping from DB
+            // load dynamic mapping from DB
             $mapping = ['table' => $revision->custom_table, 'id' => $revision->custom_primary_key];
         }
         if (isset($revision->id) && $mapping !== null) {
             $oldCOntent = json_decode($revision->content);
             $primaryRow = $mapping['id'];
             $primaryKey = $oldCOntent->$primaryRow;
+            $updates    = 0;
             unset($oldCOntent->$primaryRow);
             if ($secondary === false) {
-                return Shop::DB()->update($mapping['table'], $primaryRow, $primaryKey, $oldCOntent) === 1;
+                $updates = Shop::DB()->update($mapping['table'], $primaryRow, $primaryKey, $oldCOntent);
             }
             if ($secondary === true && isset($mapping['reference_key'], $oldCOntent->references)) {
                 $tableToUpdate = $mapping['reference'];
-                $secondaryRow  = $mapping['reference_key']; //most likely something like "kSprache"
+                $secondaryRow  = $mapping['reference_key']; // most likely something like "kSprache"
                 foreach ($oldCOntent->references as $key => $value) {
-                    //$key is the index in the reference array - which corresponds to the foreign key
+                    // $key is the index in the reference array - which corresponds to the foreign key
                     unset($value->$primaryRow, $value->$secondaryRow);
-                    Shop::DB()->update($tableToUpdate, [$primaryRow, $secondaryRow], [$primaryKey, $key], $value);
+                    $updates += Shop::DB()->update(
+                        $tableToUpdate,
+                        [$primaryRow, $secondaryRow],
+                        [$primaryKey, $key],
+                        $value
+                    );
                 }
+            }
+            if ($updates > 0) {
+                Shop::DB()->delete('trevisions', 'id', $id);
 
                 return true;
             }
@@ -265,8 +286,8 @@ class Revision
      */
     private function housekeeping($type, $key)
     {
-        return Shop::DB()->query("
-            DELETE a 
+        return Shop::DB()->query(
+            "DELETE a 
               FROM trevisions AS a 
                 JOIN
                     ( 

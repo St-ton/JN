@@ -153,13 +153,16 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
                 $nZaehler = $nLetztesBild;
             }
             $imageCount = (count($_FILES['Bilder']['name']) + $nZaehler);
-            for ($i = $nZaehler; $i < $imageCount; $i++) {
-                if ($_FILES['Bilder']['size'][$i - $nZaehler] <= 2097152) {
+            for ($i = $nZaehler; $i < $imageCount; ++$i) {
+                if (!empty($_FILES['Bilder']['size'][$i - $nZaehler])
+                    && $_FILES['Bilder']['error'][$i - $nZaehler] === UPLOAD_ERR_OK
+                ) {
+                    $type         = $_FILES['Bilder']['type'][$i - $nZaehler];
                     $cUploadDatei = $cUploadVerzeichnis . $kLink . '/Bild' . ($i + 1) . '.' .
                         substr(
-                            $_FILES['Bilder']['type'][$i - $nZaehler],
-                            strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/') + 1,
-                            strlen($_FILES['Bilder']['type'][$i - $nZaehler] - strpos($_FILES['Bilder']['type'][$i - $nZaehler], '/')) + 1
+                            $type,
+                            strpos($type, '/') + 1,
+                            strlen($type) - strpos($type, '/') + 1
                         );
                     move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $nZaehler], $cUploadDatei);
                 }

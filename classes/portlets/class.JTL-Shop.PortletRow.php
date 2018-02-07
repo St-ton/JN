@@ -41,7 +41,7 @@ class PortletRow extends CMSPortlet
                 for ($x=0; $x<=$i; ++$x) {
                     $sum += $layoutMd[$x];
                 }
-                $addDividerMD = $sum % 12 === 0 ? true : false;
+                $addDividerMD = $sum % 12 === 0;
             }
             if (!empty($layoutSm[$i])) {
                 $res .= ' col-sm-' . $layoutSm[$i];
@@ -49,7 +49,7 @@ class PortletRow extends CMSPortlet
                 for ($x=0;$x<=$i;++$x) {
                     $sum += $layoutSm[$x];
                 }
-                $addDividerSM = $sum % 12 === 0 ? true : false;
+                $addDividerSM = $sum % 12 === 0;
             }
             if (!empty($layoutXs[$i])) {
                 $res .= ' col-xs-' . $layoutXs[$i];
@@ -57,7 +57,7 @@ class PortletRow extends CMSPortlet
                 for ($x=0;$x<=$i;++$x) {
                     $sum += $layoutXs[$x];
                 }
-                $addDividerXS = $sum % 12 === 0 ? true : false;
+                $addDividerXS = $sum % 12 === 0;
             }
             $res .= '"></div>';
 
@@ -106,7 +106,7 @@ class PortletRow extends CMSPortlet
                 for ($x=0;$x<=$i;++$x) {
                     $sum += $layoutMd[$x];
                 }
-                $addDividerMD = $sum % 12 === 0 ? true : false;
+                $addDividerMD = $sum % 12 === 0;
             }
             if (!empty($layoutSm[$i])) {
                 $res .= ' col-sm-' . $layoutSm[$i];
@@ -114,7 +114,7 @@ class PortletRow extends CMSPortlet
                 for ($x=0;$x<=$i;++$x) {
                     $sum += $layoutSm[$x];
                 }
-                $addDividerSM = $sum % 12 === 0 ? true : false;
+                $addDividerSM = $sum % 12 === 0;
             }
             if (!empty($layoutXs[$i])) {
                 $res .= ' col-xs-' . $layoutXs[$i];
@@ -122,7 +122,7 @@ class PortletRow extends CMSPortlet
                 for ($x=0;$x<=$i;++$x) {
                     $sum += $layoutXs[$x];
                 }
-                $addDividerXS = $sum % 12 === 0 ? true : false;
+                $addDividerXS = $sum % 12 === 0;
             }
             $res .= '">';
             foreach ($subArea as $subPortlet) {

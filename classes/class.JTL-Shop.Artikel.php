@@ -986,6 +986,11 @@ class Artikel
     public $languageURLs = [];
 
     /**
+     * @var int
+     */
+    private $kSprache = 0;
+
+    /**
      * Konstruktor
      *
      * @param int $kArtikel
@@ -994,6 +999,7 @@ class Artikel
      */
     public function __construct($kArtikel = 0, $kKundengruppe = 0, $kSprache = 0)
     {
+        $this->kSprache = (int)$kSprache;
     }
 
     /**
@@ -1454,8 +1460,8 @@ class Artikel
         if (count($oMerkmal_arr) > 0) {
             $kMerkmal_arr = [];
             foreach ($oMerkmal_arr as $oMerkmal) {
-                $oMerkmalWert = new MerkmalWert($oMerkmal->kMerkmalWert);
-                $oMerkmal     = new Merkmal($oMerkmal->kMerkmal);
+                $oMerkmalWert = new MerkmalWert($oMerkmal->kMerkmalWert, $this->kSprache);
+                $oMerkmal     = new Merkmal($oMerkmal->kMerkmal, false, $this->kSprache);
 
                 if (!isset($kMerkmal_arr[$oMerkmal->kMerkmal])) {
                     $kMerkmal_arr[$oMerkmal->kMerkmal]                   = $oMerkmal;
@@ -3502,7 +3508,8 @@ class Artikel
             $oSprache = gibStandardsprache();
             $kSprache = $oSprache->kSprache;
         }
-        $kSprache = (int)$kSprache;
+        $kSprache       = (int)$kSprache;
+        $this->kSprache = $kSprache;
         // Work Around -.- wenn Einstellung global_sichtbarkeit aktiv ist
         if ($noCache === false) {
             $baseID        = Shop::Cache()->getBaseID(false, false, $kKundengruppe, $kSprache);
@@ -4128,7 +4135,6 @@ class Artikel
         }
         // Suchspecialbildoverlay
         $this->baueSuchspecialBildoverlay($kSprache);
-        $this->staffelPreis_arr  = $this->getTierPrices();
         $this->isSimpleVariation = false;
         if (count($this->Variationen) > 0) {
             $this->isSimpleVariation = $this->kVaterArtikel === 0 && $this->nIstVater === 0;
@@ -4158,6 +4164,7 @@ class Artikel
         $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE];
         $basePrice = clone $this->Preise;
         $this->rabattierePreise();
+        $this->staffelPreis_arr  = $this->getTierPrices();
         if ($this->cVPE === 'Y' && $this->fVPEWert > 0 && $this->cVPEEinheit && !empty($this->Preise)) {
             // Grundpreis beim Artikelpreis
             $this->baueVPE();
@@ -4750,6 +4757,9 @@ class Artikel
                 ),
                 $basePriceUnit->fBasePreis,
             ];
+            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = isset($this->fStaffelpreisVPE_arr[$key])
+                ? $this->fStaffelpreisVPE_arr[$key]
+                : null;
         }
 
         return $this;
@@ -6192,9 +6202,6 @@ class Artikel
                     : null;
                 $_v['cPreisLocalized']     = isset($this->Preise->cPreisLocalized_arr[$_idx])
                     ? $this->Preise->cPreisLocalized_arr[$_idx]
-                    : null;
-                $_v['cBasePriceLocalized'] = isset($this->fStaffelpreisVPE_arr[$_idx])
-                    ? $this->fStaffelpreisVPE_arr[$_idx]
                     : null;
                 $tierPrices[]              = $_v;
             }

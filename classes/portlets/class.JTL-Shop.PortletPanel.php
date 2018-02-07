@@ -85,7 +85,6 @@ class PortletPanel extends CMSPortlet
             }
 
             $ret .= '</div>';
-            $i++;
         }
         $ret .= '</div>';
 

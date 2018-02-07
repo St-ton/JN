@@ -52,10 +52,23 @@ EditorGUI.prototype = {
         this.templateList             = this.hostJq('#templates');
         this.helpBtn                  = this.hostJq('#help')                      .click(this.onHelp.bind(this));
         this.tourModal                = this.hostJq('#tour-modal')                .submit(this.onTakeTour.bind(this));
+        this.collapseContent          = this.hostJq('#collapse-content');
+        this.collapseGroup            = this.hostJq('.collapse');
 
         this.portletBtns
             .on('dragstart', this.onPortletBtnDragStart.bind(this))
             .on('dragend', this.onPortletBtnDragEnd.bind(this));
+
+        function toggleChevron(e) {
+            $(e.target)
+                .prev('.collapse-groups')
+                .find('i.fa')
+                .toggleClass('fa-plus fa-minus');
+        }
+
+        this.collapseGroup.on('hidden.bs.collapse', toggleChevron);
+        this.collapseGroup.on('shown.bs.collapse', toggleChevron);
+        this.collapseContent.collapse('show');
 
         this.revisionBtns();
         this.updateTemplateList();
@@ -522,7 +535,7 @@ EditorGUI.prototype = {
         this.configSaveCallback();
 
         var children = this.selectedElm
-        // select direct descendant subareas or non-nested subareas
+        // select descendant subareas or non-nested subareas
             .find('.cle-area').not(this.selectedElm.find('[data-portletid] .cle-area'));
 
         var properties = this.configForm.serializeControls();
@@ -708,7 +721,6 @@ EditorGUI.prototype = {
             $('.tour-backdrop.bottom').offset({ top:off.top + pTop});
         }
 
-        console.log(tourID);
         // Todo Editor: debug ausschalten
         switch (tourID) {
             case 'ht1':

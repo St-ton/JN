@@ -12,7 +12,7 @@ class ProductFilterSearchResults
     use MagicCompatibilityTrait;
 
     /**
-     * @var stdClass
+     * @var Collection
      * @former Artikel
      */
     private $products;
@@ -129,9 +129,18 @@ class ProductFilterSearchResults
     public $searchFilterJSON;
     /**
      * @var string
-     * @todo
      */
     public $tagFilterJSON;
+
+    /**
+     * @var array
+     */
+    private $sortingOptions = [];
+
+    /**
+     * @var array
+     */
+    private $limitOptions = [];
 
     /**
      * @var array
@@ -606,6 +615,44 @@ class ProductFilterSearchResults
     public function setError($error)
     {
         $this->error = $error;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSortingOptions()
+    {
+        return $this->sortingOptions;
+    }
+
+    /**
+     * @param array $options
+     * @return ProductFilterSearchResults
+     */
+    public function setSortingOptions($options)
+    {
+        $this->sortingOptions = $options;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLimitOptions()
+    {
+        return $this->limitOptions;
+    }
+
+    /**
+     * @param array $options
+     * @return ProductFilterSearchResults
+     */
+    public function setLimitOptions($options)
+    {
+        $this->limitOptions = $options;
 
         return $this;
     }

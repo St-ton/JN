@@ -18,13 +18,16 @@
                                 Standardinhalt wiederherstellen
                             </button>
                         </p>
-                    {/if}
-                    {if empty($oCMSPage->cFinalHtml_arr['editor_replace_all'])}
+                        <p>
+                            <button type="submit" name="cAction" class="btn btn-primary"
+                                    value="{if empty($oCMSPage->cFinalHtml_arr['editor_replace_all'])}extend{else}replace{/if}">Inhalt
+                                bearbeiten
+                            </button>
+                        </p>
+                    {else}
                         <p>
                             <button type="submit" name="cAction" class="btn btn-primary" value="extend">Inhalt erweitern</button>
                         </p>
-                    {/if}
-                    {if empty($oCMSPage->cFinalHtml_arr) || !empty($oCMSPage->cFinalHtml_arr['editor_replace_all'])}
                         <p>
                             <button type="submit" name="cAction" class="btn btn-primary" value="replace">Inhalt ersetzen</button>
                         </p>

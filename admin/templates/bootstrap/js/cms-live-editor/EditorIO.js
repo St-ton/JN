@@ -136,7 +136,7 @@ EditorIO.prototype = {
 
         var elm = portlet;
         var widthHeuristics = {
-            lg: null, md: null, sm: null, xs: null,
+            lg: null, md: null, sm: null, xs: null
         };
 
         while(!elm.is(this.gui.rootAreas)) {
@@ -166,7 +166,7 @@ EditorIO.prototype = {
 
 
         var children = portlet
-        // select direct descendant subareas or non-nested subareas
+        // select descendant subareas or non-nested subareas
             .find('.cle-area').not(portlet.find('[data-portletid] .cle-area'));
 
         children.each(function (i, child)
@@ -217,5 +217,5 @@ EditorIO.prototype = {
         error = error || this.noop;
 
         ioCall('deleteCmsTemplate', [kTemplate], success, error);
-    },
+    }
 };

@@ -109,19 +109,22 @@ function baueBewertungsErinnerung()
                         }
                     } else {
                         Jtllog::writeLog(
-                            "Es wurden keine Bestellungen fuer Bewertungserinnerungen gefunden. SQL:
-                            <code>{$cQuery}</code>", JTLLOG_LEVEL_NOTICE, true, 'Bewertungserinnerung'
+                            'Es wurden keine Bestellungen für Bewertungserinnerungen gefunden. ',
+                            JTLLOG_LEVEL_DEBUG,
+                            false,
+                            'Bewertungserinnerung'
                         );
                     }
                 }
             } else {
-                Jtllog::writeLog('Einstellung bewertungserinnerung_versandtage ist 0 oder nicht gesetzt.',
+                Jtllog::writeLog(
+                    'Einstellung bewertungserinnerung_versandtage ist 0 oder nicht gesetzt.',
                     JTLLOG_LEVEL_ERROR,
                     true
                 );
             }
         } else {
-            Jtllog::writeLog('Bewertungserinnerung ist deaktiviert.', JTLLOG_LEVEL_DEBUG, false);
+            Jtllog::writeLog('Bewertungserinnerung ist deaktiviert.', JTLLOG_LEVEL_DEBUG);
         }
     }
 }

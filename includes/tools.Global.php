@@ -1916,6 +1916,7 @@ function gibStandardsprache($bShop = true)
     }
     $row  = $bShop ? 'cShopStandard' : 'cStandard';
     $lang = Shop::DB()->select('tsprache', $row, 'Y');
+    $lang->kSprache = (int)$lang->kSprache;
     Shop::Cache()->set($cacheID, $lang, [CACHING_GROUP_LANGUAGE]);
 
     return $lang;

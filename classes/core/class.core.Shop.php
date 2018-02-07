@@ -753,7 +753,7 @@ final class Shop
         }
 
         self::$nArtikelProSeite = verifyGPCDataInteger('af');
-        if (self::$nArtikelProSeite > 0) {
+        if (self::$nArtikelProSeite !== 0) {
             $_SESSION['ArtikelProSeite'] = self::$nArtikelProSeite;
         }
 

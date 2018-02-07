@@ -103,6 +103,14 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     width: 100%;
 }
 
+.collapse-groups{
+    color: #fff;
+    text-transform: uppercase;
+    padding: 8px 25px;
+    background: #5aafd6;
+    margin: 0 -15px 15px -15px;
+}
+
 #tour-form input[name="help-tour"]:checked+.panel-default >.panel-heading{
     background-color: #337ab7;
     border-color: #337ab7;

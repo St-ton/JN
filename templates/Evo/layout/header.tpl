@@ -18,7 +18,7 @@
         <meta property="og:site_name" content="{$meta_title}" />
         <meta property="og:title" content="{$meta_title}" />
         <meta property="og:description" content="{$meta_description|truncate:1000:"":true}" />
-        <meta property="og:image" content="{$ShopLogoURL}" />
+        <meta property="og:image" content="{$ShopURL}/{$ShopLogoURL}" />
         <meta property="og:url" content="{$cCanonicalURL}"/>
     {/block}
 
@@ -43,7 +43,7 @@
         {else}
             <link type="image/x-icon" href="{$ShopURL}/favicon-default.ico" rel="shortcut icon">
         {/if}
-        {if $nSeitenTyp == 1 && isset($Artikel) && !empty($Artikel->Bilder)}
+        {if $nSeitenTyp === 1 && !empty($Artikel->Bilder)}
             <link rel="image_src" href="{$Artikel->Bilder[0]->cURLGross}">
             <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
         {/if}

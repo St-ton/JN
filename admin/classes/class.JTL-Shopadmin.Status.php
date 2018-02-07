@@ -371,4 +371,30 @@ class Status
             && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
                 || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1));
     }
+
+    /**
+     * Checks, whether the password reset mail template contains the old variable $neues_passwort.
+     *
+     * @return bool
+     */
+    public function hasInvalidPasswordResetMailTemplate()
+    {
+        $translations = Shop::DB()->query(
+            "SELECT lang.cContentText, lang.cContentHtml
+                FROM temailvorlagesprache lang
+                JOIN temailvorlage 
+                ON lang.kEmailvorlage = temailvorlage.kEmailvorlage
+                WHERE temailvorlage.cName = 'Passwort vergessen'",
+            2
+        );
+        foreach ($translations as $t) {
+            $old = '{$neues_passwort}';
+            if(strpos($t->cContentHtml, $old) !== false || strpos($t->cContentText, $old) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

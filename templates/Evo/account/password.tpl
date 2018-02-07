@@ -90,7 +90,6 @@
                                             <input type="hidden" name="exclusive_content" value="1">
                                         {/if}
                                         <input type="hidden" name="fpwh" value="{$fpwh}">
-                                        <input type="hidden" name="fpm" value="{$fpm}">
                                         <input type="submit" class="btn btn-primary btn-block submit submit_once" value="{lang key="createNewPassword" section="forgot password"}">
                                     </div>
                                 </fieldset>

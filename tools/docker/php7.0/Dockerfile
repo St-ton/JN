@@ -1,6 +1,6 @@
 FROM php:7.0
 RUN apt-get update
-RUN apt-get install -y wget git
+RUN apt-get install -y wget git unzip
 RUN cd /root \
   && wget https://composer.github.io/installer.sig -O - -q | tr -d '\n' > installer.sig \
   && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \

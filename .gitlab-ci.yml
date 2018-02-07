@@ -2,11 +2,6 @@ stages:
   - test
   - build
 
-before_script:
-  - cd includes
-  - php /root/composer.phar install
-  - cd ../
-
 archive:
   stage: build
   script:
@@ -15,11 +10,16 @@ archive:
     - master
     - /^release\/.*$/
     - tags
+  tags:
+    - build
 
 testphp56:
   image: gitlab.jtl-software.de:4567/jtlshop/shop4/php56
   stage: test
   script:
+    - cd includes
+    - php /root/composer.phar install
+    - cd ../
     - includes/vendor/bin/phpunit tests
   tags:
     - docker
@@ -28,6 +28,9 @@ testphp70:
   image: gitlab.jtl-software.de:4567/jtlshop/shop4/php70
   stage: test
   script:
+    - cd includes
+    - php /root/composer.phar install
+    - cd ../
     - includes/vendor/bin/phpunit tests
   tags:
       - docker
@@ -36,6 +39,9 @@ testphp71:
   image: gitlab.jtl-software.de:4567/jtlshop/shop4/php71
   stage: test
   script:
+    - cd includes
+    - php /root/composer.phar install
+    - cd ../
     - includes/vendor/bin/phpunit tests
   tags:
       - docker

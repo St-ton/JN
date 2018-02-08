@@ -27,65 +27,38 @@ class WidgetVisitorsOnline extends WidgetBase
         // this is the default since mysql version >= 5.7.x
         $oVisitors_arr = Shop::DB()->query("
             SELECT
-                ANY_VALUE(`otab`.`kBesucher`) AS kBesucher,
-                ANY_VALUE(`otab`.`cIP`) AS cIP,
-                ANY_VALUE(`otab`.`cSessID`) AS cSessID,
-                ANY_VALUE(`otab`.`cID`) AS cID,
-                ANY_VALUE(`otab`.`kKunde`) AS kKunde,
-                ANY_VALUE(`otab`.`kBestellung`) AS kBestellung,
-                ANY_VALUE(`otab`.`cReferer`) AS cReferer,
-                ANY_VALUE(`otab`.`cUserAgent`) AS cUserAgent,
-                ANY_VALUE(`otab`.`cEinstiegsseite`) AS cEinstiegsseite,
-                ANY_VALUE(`otab`.`cBrowser`) AS cBrowser,
-                ANY_VALUE(`otab`.`cAusstiegsseite`) AS cAusstiegsseite,
-                ANY_VALUE(`otab`.`kBesucherBot`) AS kBesucherBot,
-                ANY_VALUE(`dLetzteAktivitaet`) AS dLetzteAktivitaet,
-                ANY_VALUE(`otab`.`dZeit`) AS dZeit,
-                ANY_VALUE(`otab`.`fGesamtsumme`) AS fGesamtsumme,
-                ANY_VALUE(`otab`.`cVorname`) AS cVorname,
-                ANY_VALUE(`otab`.`cNachname`) AS cNachname,
-                ANY_VALUE(`otab`.`dErstellt`) AS dErstellt,
-                ANY_VALUE(`otab`.`cNewsletter`) AS cNewsletter
+                `otab`.*,
+                `tbestellung`.`fGesamtsumme` as fGesamtsumme, `tkunde`.`cVorname` as cVorname,
+                `tkunde`.`cNachname` as cNachname, `tkunde`.`dErstellt` as dErstellt,
+                `tkunde`.`cNewsletter` as cNewsletter
             FROM
                 (SELECT
-                    `tbesucher`.*,
-                    `tbestellung`.`fGesamtsumme`,
-                    `tkunde`.`cVorname`,
-                    `tkunde`.`cNachname`,
-                    `tkunde`.`dErstellt`,
-                    `tkunde`.`cNewsletter`
+                      ANY_VALUE(`tbesucher`.`kKunde`) AS kKunde
+                    , max(`tbesucher`.`dLetzteAktivitaet`) AS dLetzteAktivitaet
                 FROM
                     `tbesucher`
-                        LEFT JOIN `tbestellung` ON `tbesucher`.`kBestellung` = `tbestellung`.`kBestellung`
-                        LEFT JOIN `tkunde` ON `tbesucher`.`kKunde` = `tkunde`.`kKunde`
                 WHERE
                     `tbesucher`.`kBesucherBot` = 0
-                    AND `tbesucher`.`dLetzteAktivitaet` = (SELECT max(`dLetzteAktivitaet`) FROM `tbesucher`)
-                ) AS `otab`
-            GROUP BY
-                  `otab`.`kKunde`
-                /*, cSessID*/   /* grouping all the same customers together, to see different browser-logins as one */
-                HAVING `otab`.`kKunde` != 0
+                GROUP BY
+                    `tbesucher`.`kKunde`
+                    HAVING `tbesucher`.`kKunde` != 0   -- ignore all guests for now (unite them later)
+                ) AS `itab`
+                INNER JOIN `tbesucher` AS `otab` ON `itab`.`kKunde` = `otab`.`kKunde` AND `itab`.`dLetzteAktivitaet` = `otab`.`dLetzteAktivitaet`
+                LEFT JOIN `tbestellung` ON `otab`.`kBestellung` = `tbestellung`.`kBestellung`
+                LEFT JOIN `tkunde` ON `otab`.`kKunde` = `tkunde`.`kKunde`
             UNION
-            SELECT * FROM
-                (SELECT
-                    `tbesucher`.*,
-                    `tbestellung`.`fGesamtsumme` as fGesamtsumme,
-                    `tkunde`.`cVorname` as cVorname,
-                    `tkunde`.`cNachname` as cNachname,
-                    `tkunde`.`dErstellt` as dErstellt,
-                    `tkunde`.`cNewsletter` as cNewsletter
-                FROM
-                    `tbesucher`
-                        LEFT JOIN `tbestellung` ON `tbesucher`.`kBestellung` = `tbestellung`.`kBestellung`
-                        LEFT JOIN `tkunde` ON `tbesucher`.`kKunde` = `tkunde`.`kKunde`
-                WHERE
-                    `tbesucher`.`kBesucherBot` = 0
-                    AND `tbesucher`.`kKunde` = 0
-                ORDER BY
-                    `tbesucher`.`dLetzteAktivitaet`
-            ) AS `otab`
-            ;
+            SELECT
+                `tbesucher`.*,
+                `tbestellung`.`fGesamtsumme` as fGesamtsumme, `tkunde`.`cVorname` as cVorname,
+                `tkunde`.`cNachname` as cNachname, `tkunde`.`dErstellt` as dErstellt,
+                `tkunde`.`cNewsletter` as cNewsletter
+            FROM
+                `tbesucher`
+                    LEFT JOIN `tbestellung` ON `tbesucher`.`kBestellung` = `tbestellung`.`kBestellung`
+                    LEFT JOIN `tkunde` ON `tbesucher`.`kKunde` = `tkunde`.`kKunde`
+            WHERE
+                `tbesucher`.`kBesucherBot` = 0
+                AND `tbesucher`.`kKunde` = 0   -- only guests are of interest here
         ", 2);
         if (is_array($oVisitors_arr)) {
             foreach ($oVisitors_arr as $i => $oVisitor) {

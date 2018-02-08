@@ -46,22 +46,8 @@ if ($bJustCreated !== true && isset($_SESSION['oBesucher']->kBesucher) && $_SESS
     // update the databse
     Shop::DB()->executeQuery("
         INSERT INTO
-            tbesucher(
-                kBesucher,
-                cIP,
-                cSessID,
-                cID,
-                kKunde,
-                kBestellung,
-                cReferer,
-                cUserAgent,
-                cEinstiegsseite,
-                cBrowser,
-                cAusstiegsseite,
-                kBesucherBot,
-                dLetzteAktivitaet,
-                dZeit
-            )
+            tbesucher(kBesucher, cIP, cSessID, cID, kKunde, kBestellung, cReferer, cUserAgent, cEinstiegsseite,
+                cBrowser, cAusstiegsseite, kBesucherBot, dLetzteAktivitaet, dZeit)
             VALUES(
                 " . (int)$oVisitorReNew->kBesucher . ",
                 '" . $oVisitorReNew->cIP . "',
@@ -79,27 +65,16 @@ if ($bJustCreated !== true && isset($_SESSION['oBesucher']->kBesucher) && $_SESS
                 " . $oVisitorReNew->dZeit . "
             )
             ON DUPLICATE KEY UPDATE
-                cIP = VALUES(cIP),
-                cSessID = VALUES(cSessID),
-                cID = VALUES(cID),
-                kKunde = VALUES(kKunde),
-                kBestellung = VALUES(kBestellung),
-                cReferer = VALUES(cReferer),
-                cUserAgent = VALUES(cUserAgent),
-                cEinstiegsseite = VALUES(cEinstiegsseite),
-                cBrowser = VALUES(cBrowser),
-                cAusstiegsseite = VALUES(cAusstiegsseite),
-                kBesucherBot = VALUES(kBesucherBot),
-                dLetzteAktivitaet = VALUES(dLetzteAktivitaet),
-                dZeit = VALUES(dZeit)
+                cIP = VALUES(cIP), cSessID = VALUES(cSessID), cID = VALUES(cID), kKunde = VALUES(kKunde),
+                kBestellung = VALUES(kBestellung), cReferer = VALUES(cReferer), cUserAgent = VALUES(cUserAgent),
+                cEinstiegsseite = VALUES(cEinstiegsseite), cBrowser = VALUES(cBrowser),
+                cAusstiegsseite = VALUES(cAusstiegsseite), kBesucherBot = VALUES(kBesucherBot),
+                dLetzteAktivitaet = VALUES(dLetzteAktivitaet), dZeit = VALUES(dZeit)
         ;
     ", 3);
 }
 
 /**
- * create a new visitor-object (from scratch)
- * and write it into the DB too
- *
  * @param string $szUserAgent
  * @param int $kBesucherBot
  * @return object
@@ -125,12 +100,11 @@ function createVisitorEntry($szUserAgent, $kBesucherBot)
     if ($oVisitor->cReferer) {
         werteRefererAus($oVisitor->kBesucher, $oVisitor->cReferer);
     }
+
     return $oVisitor;
 }
 
 /**
- * create a new visitor-object by restoring session-data
- *
  * @param string $szUserAgent
  * @param int $kBesucherBot
  * @return object
@@ -138,44 +112,33 @@ function createVisitorEntry($szUserAgent, $kBesucherBot)
 function restoreVisitorEntry($szUserAgent, $kBesucherBot)
 {
     $oVisitor                    = new stdClass();
-    $oVisitor->kBesucher         = $_SESSION['oBesucher']->kBesucher;
     $oVisitor->cIP               = gibIP();
     $oVisitor->cSessID           = session_id();
     $oVisitor->cID               = md5($szUserAgent . gibIP());
-    $oVisitor->kKunde            = (int)$_SESSION['oBesucher']->kKunde;
+    $oVisitor->kKunde            = $_SESSION['oBesucher']->kKunde;
     $oVisitor->kBestellung       = refreshCustomerOrderId((int)$_SESSION['oBesucher']->kKunde);
+    $oVisitor->cEinstiegsseite   = $_SESSION['oBesucher']->cEinstiegsseite;
     $oVisitor->cReferer          = $_SESSION['oBesucher']->cReferer;
     $oVisitor->cUserAgent        = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
-    $oVisitor->cEinstiegsseite   = $_SESSION['oBesucher']->cEinstiegsseite;
     $oVisitor->cBrowser          = gibBrowser();
     $oVisitor->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
-    $oVisitor->kBesucherBot      = $kBesucherBot;
     $oVisitor->dLetzteAktivitaet = 'now()';
-    //$oVisitor->dZeit             = isset($_SESSION['oBesucher']->dZeit) ? "'" . $_SESSION['oBesucher']->dZeit . "'" : 'now()';
     $oVisitor->dZeit             = 'now()';
+    $oVisitor->kBesucherBot      = $kBesucherBot;
+    $oVisitor->kBesucher         = $_SESSION['oBesucher']->kBesucher;
 
     return $oVisitor;
 }
 
-
 /**
- * fetches the correct order-id for the appropriate custer,
- * because an old sessions can contain old ids
- *
  * @param int $nCustomerId
  * @return int
  */
 function refreshCustomerOrderId($nCustomerId)
 {
     $oOrder = Shop::DB()->query('
-        SELECT
-            `kBestellung`
-        FROM
-            `tbestellung`
-        WHERE
-            `kKunde` = ' . $nCustomerId . '
-        ORDER BY `dErstellt` DESC
-        LIMIT 1'
+        SELECT `kBestellung` FROM `tbestellung` WHERE `kKunde` = ' . $nCustomerId . '
+        ORDER BY `dErstellt` DESC LIMIT 1'
     , 1);
 
     return $oOrder->kBestellung;

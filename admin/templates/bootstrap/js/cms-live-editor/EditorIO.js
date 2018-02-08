@@ -5,6 +5,8 @@
 
 function EditorIO(editor)
 {
+    var self = this;
+
     this.editor      = editor;
     this.cPageIdHash = editor.cPageIdHash;
     this.pageUrl     = editor.pageUrl;
@@ -12,7 +14,7 @@ function EditorIO(editor)
     this.noop        = function() {};
 
     setInterval(function() {
-        ioCall('lockCmsPage', [this.cPageIdHash]);
+        ioCall('lockCmsPage', [self.cPageIdHash]);
     }, 1000 * 60);
 }
 

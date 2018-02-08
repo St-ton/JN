@@ -24,6 +24,7 @@
     <script src="{$templateUrl}js/ckeditor_4.7.3_basic/ckeditor.js"></script>
     <script src="{$templateUrl}js/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
     <script src="{$templateUrl}js/moment.js"></script>
+    <script src="{$templateUrl}js/download.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/EditorIO.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/EditorGUI.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/Editor.js"></script>
@@ -77,6 +78,16 @@
                     <li>
                         <a href="#" id="btn-preview" data-toggle="tooltip" data-placement="bottom" title="Preview">
                             <i class="fa fa-eye"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="btn-import" data-toggle="tooltip" data-placement="bottom" title="Import">
+                            <i class="fa fa-upload"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="btn-export" data-toggle="tooltip" data-placement="bottom" title="Export">
+                            <i class="fa fa-download"></i>
                         </a>
                     </li>
                     <li>

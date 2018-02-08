@@ -161,9 +161,6 @@
                             {/if}
                         {/block}
                     </div>
-                    <div class="top7 form-group">
-                        <a class="btn btn-default btn-sm btn-block" role="button" href="{$Artikel->cURLFull}">{lang key="details"}</a>
-                    </div>
                     <form action="" method="post" class="hidden-xs product-actions" data-toggle="product-actions">
                         {$jtl_token}
                         <div class="actions btn-group btn-group-xs btn-group-justified" role="group" aria-label="...">
@@ -230,6 +227,10 @@
                                                     </div>
                                                 </div>
                                             {/if}
+                                        </div>
+                                    {else}
+                                        <div class="top7 form-group">
+                                            <a class="btn btn-default btn-sm btn-block" role="button" href="{$Artikel->cURLFull}">{lang key="details"}</a>
                                         </div>
                                     {/if}
                                 {/block}

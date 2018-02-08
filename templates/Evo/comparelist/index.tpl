@@ -221,7 +221,7 @@
             </table>
         </div>
     {else}
-        {lang key="compareListNoItems" sektion="global"}
+        {lang key='compareListNoItems'}
     {/if}
     
     {if !empty($cFehler)}

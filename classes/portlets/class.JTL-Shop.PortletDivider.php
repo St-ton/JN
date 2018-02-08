@@ -26,9 +26,7 @@ class PortletDivider extends CMSPortlet
 
     public function getFinalHtml()
     {
-        $res = '<hr ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>';
-
-        return $res;
+        return $this->getPreviewHtml();
     }
 
     public function getConfigPanelHtml()

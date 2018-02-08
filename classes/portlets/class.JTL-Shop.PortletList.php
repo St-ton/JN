@@ -7,71 +7,46 @@
 /**
  * Class PortletRow
  */
-class PortletTabs extends CMSPortlet
+class PortletList extends CMSPortlet
 {
     /**
      * @return string
      */
     public function getButton()
     {
-        // TODO Editor: Icon richtig wählen
-        return '<i class="fa fa-table"></i> Tabs';
+        return '<i class="fa fa-list-ol"></i> Liste';
     }
 
     public function getPreviewHtml()
     {
-        unset($this->properties['tab']['NEU']);
-
         $res = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>
-                    <ul class="nav nav-tabs" role="tablist">';
-
-        foreach ($this->properties['tab'] as $key => $tab) {
-            $res .= '<li role="presentation"';
-            if ($key == $this->properties['active']) {
-                $res .= ' class="active"';
-            }
-            $res .= '>
-                 <a href="#prtlt_tb_' . $tab . '" aria-controls="prtlt_tb_' . $tab . '" role="tab" data-toggle="tab">' . $tab . '</a></li>';
+                    <'. $this->properties['listType'];
+        if (!empty($this->properties['list-style-type'])) {
+            $res .= ' style="list-style-type:'. $this->properties['list-style-type'] .'"';
         }
-        $res .= '</ul>
-                    <div class="tab-content">';
-        foreach ($this->properties['tab'] as $key => $tab) {
-            $res .= '<div role="tabpanel" class="tab-pane';
-            if ($key == $this->properties['active']) {
-                $res .= ' active';
-            }
-            $res .= ' cle-area" id="prtlt_tb_' . $tab . '"></div>';
+        $res .='>';
+
+        for ($x=0; $x<(int)$this->properties['count']; ++$x) {
+            $res .= '<li><div class="cle-area"></div></li>';
         }
 
-        $res .= '</div></div>';
+        $res .= '</'. $this->properties['listType'] .'></div>';
 
         return $res;
     }
 
     public function getFinalHtml()
     {
-        unset($this->properties['tab']['NEU']);
-
         $res = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>
-                    <ul class="nav nav-tabs" role="tablist">';
-
-        foreach ($this->properties['tab'] as $key => $tab) {
-            $res .= '<li role="presentation"';
-            if ($key == $this->properties['active']) {
-                $res .= ' class="active"';
-            }
-            $res .= '>
-                 <a href="#prtlt_tb_' . $tab . '" aria-controls="prtlt_tb_' . $tab . '" role="tab" data-toggle="tab">' . $tab . '</a></li>';
+                    <'. $this->properties['listType'];
+        if (!empty($this->properties['list-style-type'])) {
+            $res .= ' style="list-style-type:'. $this->properties['list-style-type'] .'"';
         }
-        $res .= '</ul>
-                    <div class="tab-content">';
-        foreach ($this->properties['tab'] as $key => $tab) {
-            $subArea = $this->subAreas[$key-1];
-            $res .= '<div role="tabpanel" class="tab-pane';
-            if ($key == $this->properties['active']) {
-                $res .= ' active';
-            }
-            $res .= ' cle-area" id="prtlt_tb_' . $tab . '">';
+        $res .='>';
+
+        for ($x=0; $x<(int)$this->properties['count']; ++$x) {
+            $subArea = $this->subAreas[$x];
+            $res .= '<li><div class="cle-area">';
             foreach ($subArea as $subPortlet) {
                 $portlet        = CMS::getInstance()->createPortlet($subPortlet['portletId'])
                     ->setProperties($subPortlet['properties'])
@@ -79,10 +54,9 @@ class PortletTabs extends CMSPortlet
                 $subPortletHtml = $portlet->getFinalHtml();
                 $res           .= $subPortletHtml;
             }
-            $res.='</div>';
+            $res.='</div></li>';
         }
-
-        $res .= '</div></div>';
+        $res .= '</'. $this->properties['listType'] .'></div>';
 
         return $res;
     }
@@ -93,19 +67,16 @@ class PortletTabs extends CMSPortlet
 
         return (new JTLSmarty(true))
             ->assign('properties', $this->properties)
-            ->fetch('portlets/settings.tabs.tpl');
+            ->fetch('portlets/settings.list.tpl');
     }
 
     public function getDefaultProps()
     {
         return [
             // general
-            'tab' => [
-                '1' => 'Home',
-                '2' => 'Profile',
-                '3' => 'Messages',
-            ],
-            'active' => 1,
+            'listType' => 'ul',
+            'count' => '3',
+            'list-style-type' => '',
             // animation
             'animation-style'     => '',
             // attributes

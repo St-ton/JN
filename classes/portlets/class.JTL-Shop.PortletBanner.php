@@ -17,7 +17,7 @@ class PortletBanner extends CMSPortlet
         return
             '<div class="text-center">' .
             '<img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.banner.png" ' .
-            'style="width: 98%; filter: grayscale(50%) opacity(60%)"></div>';
+            'style="width: 80%; filter: grayscale(50%) opacity(60%)"><br/> Banner</div>';
     }
 
     public function getPreviewHtml($renderLinks = false)

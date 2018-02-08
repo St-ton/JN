@@ -14,7 +14,7 @@ class PortletDivider extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-minus"></i> Trennlinie';
+        return '<i class="fa fa-minus"></i><br/> Trennlinie';
     }
 
     public function getPreviewHtml()

@@ -9,6 +9,14 @@
  */
 class PortletGallery extends CMSPortlet
 {
+    /**
+     * @return string
+     */
+    public function getButton()
+    {
+        return '<i class="fa fa-images"></i><br/> Gallery';
+    }
+
     public function getPreviewHtml()
     {
         unset($this->properties['gllry_images']['NEU']);

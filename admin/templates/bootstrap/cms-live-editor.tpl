@@ -43,7 +43,7 @@
     </script>
 </head>
 <body>
-    <nav id="editor-top-nav" class="navbar navbar-inverse">
+    {*<nav id="editor-top-nav" class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="collapsed navbar-toggle" data-toggle="collapse"
@@ -94,66 +94,138 @@
                 </ul>
             </div>
         </div>
-    </nav>
+    </nav>*}
     <div id="main-frame">
         <div id="sidebar-panel">
-            <ul class="nav nav-tabs">
+            <nav id="editor-top-nav" class="navbar">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        {*<button type="button" class="collapsed navbar-toggle" data-toggle="collapse"
+                                data-target="#le-navbar-collapse" aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+                        </button>*}
+                        <a href="#" class="navbar-brand">Live Editor</a>
+                    </div>
+
+                   {* <ul class="nav navbar-nav">
+                        <li>
+                            <a href="#" onclick="$('#iframe').width('100%');"><i class="fa fa-desktop"></i></a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="$('#iframe').width('992px');"><i class="fa fa-laptop"></i></a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="$('#iframe').width('768px');"><i class="fa fa-tablet"></i></a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="$('#iframe').width('375px');"><i class="fa fa-mobile"></i></a>
+                        </li>
+                    </ul>*}
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" id="help" data-toggle="tooltip" data-placement="bottom" title="Help">
+                                <i class="fa fa-question-circle-o"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" id="btn-preview" data-toggle="tooltip" data-placement="bottom" title="Preview">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" id="cle-btn-save-editor" data-toggle="tooltip" data-placement="bottom"
+                               title="Seite speichern">
+                                <i class="fa fa-save"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{$cPageUrl}" id="cle-btn-close-editor" data-toggle="tooltip" data-placement="bottom"
+                               title="Editor schlie&szlig;en">
+                                <i class="fa fa-close"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <ul id="editor-tabs" class="nav nav-tabs">
                 <li class="active"><a href="#elements" data-toggle="tab">Elemente</a></li>
                 <li><a href="#templates" data-toggle="tab">Templates</a></li>
                 <li><a href="#revisions" data-toggle="tab">Revisionen</a></li>
             </ul>
-            <div class="tab-content">
-                <div class="tab-pane active" id="elements">
-                    {foreach name=groups from=$oPortlet_arr  key=$group item=$group_arr}
-                        <div class="collapse-groups" role="button" data-toggle="collapse" href="#collapse-{$group}"
-                           aria-controls="collapse-{$group}" aria-expanded="false">
-                            <i class="fa fa-plus"></i> {$group}
-                        </div>
-                        <div class="collapse" id="collapse-{$group}" aria-expanded="false">
-                            {foreach $group_arr as $oPortlet}
-                                <a href="#" class="portlet-button btn btn-default btn-lg btn-block"
-                                   data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
-                                   data-portletid="{$oPortlet->kPortlet}"
-                                   data-portlettitle="{$oPortlet->cTitle}"
-                                   data-defaultprops="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}"
-                                   title="{$oPortlet->cTitle}" draggable="true">
-                                    {$oPortlet->getButton()}
-                                </a>
-                            {/foreach}
-                        </div>
-                    {/foreach}
-                </div>
-                <div class="tab-pane" id="templates">
-                    {* blueprint *}
-                    <div class="btn-group" role="group" style="display:none" id="template-btn-blueprint">
-                        <a href="#" class="template-button btn btn-default"
-                           data-title="Template-Title"
-                           data-template="42"
-                           data-content="Template-HTML">
-                            <i class="fa fa-puzzle-piece"></i> <span>Template-Title</span>
-                        </a>
-                        <button class="template-delete btn btn-danger"
-                                data-template="42"> <i class="fa fa-times"></i> </button>
-                    </div>
-                    {* /blueprint *}
-                </div>
-                <div class="tab-pane" id="revisions">
-                    <div class="list-group">
-                        {if isset($oCMSPage)}
-                            <a class="list-group-item revision-btn" href="#" data-revision-id="0">
-                                Aktuelle Version
-                            </a>
-                            <div id="revision-list">
-                                {foreach $oCMSPage->getRevisions() as $oRevision}
-                                    <a class="list-group-item revision-btn" href="#" data-revision-id="{$oRevision->id}">
-                                        {$oRevision->timestamp}
-                                    </a>
-                                {/foreach}
+            <div class="container-fluid">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="elements">
+                        {foreach name=groups from=$oPortlet_arr  key=$group item=$group_arr}
+                            <div class="collapse-groups" role="button" data-toggle="collapse" href="#collapse-{$group}"
+                               aria-controls="collapse-{$group}" aria-expanded="false">
+                                <i class="fa fa-plus-circle"></i> {$group}
                             </div>
-                        {/if}
+                            <div class="collapse" id="collapse-{$group}" aria-expanded="false">
+                                <div class="row">
+                                    {foreach $group_arr as $oPortlet}
+                                        <div class="col-xs-4">
+                                            <a href="#" class="portlet-button btn"
+                                               data-content="{$oPortlet->getPreviewHtml()|escape:'htmlall'}"
+                                               data-portletid="{$oPortlet->kPortlet}"
+                                               data-portlettitle="{$oPortlet->cTitle}"
+                                               data-defaultprops="{$oPortlet->getDefaultProps()|json_encode|escape:'htmlall'}"
+                                               title="{$oPortlet->cTitle}" draggable="true">
+                                                {$oPortlet->getButton()}
+                                            </a>
+                                        </div>
+                                    {/foreach}
+                                </div>
+                            </div>
+                            <hr/>
+                        {/foreach}
+                    </div>
+                    <div class="tab-pane" id="templates">
+                        {* blueprint *}
+                        <div class="btn-group" role="group" style="display:none" id="template-btn-blueprint">
+                            <a href="#" class="template-button btn btn-default"
+                               data-title="Template-Title"
+                               data-template="42"
+                               data-content="Template-HTML">
+                                <i class="fa fa-puzzle-piece"></i> <span>Template-Title</span>
+                            </a>
+                            <button class="template-delete btn btn-danger"
+                                    data-template="42"> <i class="fa fa-times"></i> </button>
+                        </div>
+                        {* /blueprint *}
+                    </div>
+                    <div class="tab-pane" id="revisions">
+                        <div class="list-group">
+                            {if isset($oCMSPage)}
+                                <a class="list-group-item revision-btn" href="#" data-revision-id="0">
+                                    Aktuelle Version
+                                </a>
+                                <div id="revision-list">
+                                    {foreach $oCMSPage->getRevisions() as $oRevision}
+                                        <a class="list-group-item revision-btn" href="#" data-revision-id="{$oRevision->id}">
+                                            {$oRevision->timestamp}
+                                        </a>
+                                    {/foreach}
+                                </div>
+                            {/if}
+                        </div>
                     </div>
                 </div>
             </div>
+            <ul class="nav navbar-nav navbar-fixed-bottom" id="display-previews">
+                <li>
+                    <a href="#" onclick="$('#iframe').width('100%');"><i class="fa fa-desktop"></i></a>
+                </li>
+                <li>
+                    <a href="#" onclick="$('#iframe').width('992px');"><i class="fa fa-laptop"></i></a>
+                </li>
+                <li>
+                    <a href="#" onclick="$('#iframe').width('768px');"><i class="fa fa-tablet"></i></a>
+                </li>
+                <li>
+                    <a href="#" onclick="$('#iframe').width('375px');"><i class="fa fa-mobile"></i></a>
+                </li>
+            </ul>
         </div>
         <div id="iframe-panel">
             <iframe id="iframe"></iframe>

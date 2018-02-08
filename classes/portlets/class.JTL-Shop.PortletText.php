@@ -14,7 +14,7 @@ class PortletText extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-font"></i> Text';
+        return '<i class="fa fa-font"></i><br/> Text';
     }
 
     public function getPreviewHtml()

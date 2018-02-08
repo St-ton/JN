@@ -14,7 +14,7 @@ class PortletVideo extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-film"></i> Video';
+        return '<i class="fa fa-film"></i><br/> Video';
     }
 
     /**

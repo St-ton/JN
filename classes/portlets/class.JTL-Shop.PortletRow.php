@@ -14,7 +14,7 @@ class PortletRow extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-columns"></i> Spalten';
+        return '<i class="fa fa-columns"></i><br/> Spalten';
     }
 
     public function getPreviewHtml()

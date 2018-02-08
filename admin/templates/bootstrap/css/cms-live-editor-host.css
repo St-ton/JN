@@ -4,18 +4,60 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
     box-sizing: border-box;
 }
 
-#editor-top-nav {
-    margin-bottom: 0;
-    height: 5rem;
-    border: none;
-}
-
 #main-frame {
     position: absolute;
-    top: 5rem;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+#editor-tabs {
+    -webkit-box-shadow: 0px 2px 10px 2px rgba(189,189,189,0.8);
+    -moz-box-shadow: 0px 2px 10px 2px rgba(189,189,189,0.8);
+    box-shadow: 0px 2px 10px 2px rgba(189,189,189,0.8);
+}
+#editor-tabs>li{
+    margin-bottom: 0;
+}
+
+#editor-tabs>li>a {
+    position: relative;
+    display: block;
+    color: #98978b;
+    border: 2px solid transparent;
+}
+
+#editor-tabs>li>a:hover,
+#editor-tabs>li>a:focus {
+    color: #23527c;
+    text-decoration: none;
+    background-color: #fff;
+    border: 2px solid transparent;
+}
+
+#editor-tabs>li.active>a,
+#editor-tabs>li.active>a:hover,
+#editor-tabs>li.active>a:focus {
+    color: #555;
+    background-color: #fff;
+    border-bottom: 2px solid #23527c;
+    cursor: default;
+}
+
+#editor-top-nav{
+    border: 0;
+    background: #5aafd6;
+    margin-bottom: 0;
+}
+
+#editor-top-nav a{
+    color: #fff;
+}
+#editor-top-nav .nav>li>a:hover,
+#editor-top-nav .nav>li>a:focus {
+    color: #23527c;
+    background-color: inherit;
 }
 
 #sidebar-panel, #iframe-panel {
@@ -24,8 +66,6 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 }
 
 #sidebar-panel {
-    padding: 10px 15px;
-    background-color: #222;
     overflow-y: auto;
 }
 
@@ -104,10 +144,9 @@ tr.text-vcenter > td, tr.text-vcenter > th{
 }
 
 .collapse-groups{
-    color: #fff;
+    color: #23527c;
     text-transform: uppercase;
     padding: 8px 25px;
-    background: #5aafd6;
     margin: 0 -15px 15px -15px;
 }
 
@@ -123,6 +162,33 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     color: #fff;
 }
 
+#display-previews{
+    background-color: #f7f7f7;
+    position: absolute;
+}
+#display-previews a{
+    color: #d1d1d1;
+}
+#display-previews a:hover,
+#display-previews a:active,
+#display-previews a:focus,
+#display-previews a.active{
+    color: #9d9d9d;
+}
+
+.portlet-button {
+    color: #9d9d9d;
+    background-color: #f6f6f6;
+    height: 70px;
+    display: block;
+    width: 100%;
+    border-radius: 5px;
+}
+.portlet-button i {
+    color: #5aafd6;
+    font-size: 30px;
+}
+
 .modal-backdrop {
     opacity: 0.5;
 }
@@ -132,12 +198,12 @@ tr.text-vcenter > td, tr.text-vcenter > th{
   height: 5px;
 }
 ::-webkit-scrollbar-button {
-    width: 0px;
-    height: 0px;
+    width: 0;
+    height: 0;
 }
 ::-webkit-scrollbar-thumb {
     background: #e1e1e1;
-    border: 0px none #ffffff;
+    border: 0 none #ffffff;
     border-radius: 50px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -148,7 +214,7 @@ tr.text-vcenter > td, tr.text-vcenter > th{
 }
 ::-webkit-scrollbar-track {
     background: #666666;
-    border: 0px none #ffffff;
+    border: 0 none #ffffff;
     border-radius: 50px;
 }
 ::-webkit-scrollbar-track:hover {

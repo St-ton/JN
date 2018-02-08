@@ -125,7 +125,7 @@ class AdminTemplate
 
                 return $oTemplate->cTemplate;
             }
-            //fall back to admin template "default"
+            // fall back to admin template "default"
             self::$cTemplate = 'default';
         }
 
@@ -157,19 +157,19 @@ class AdminTemplate
                         }
                         foreach ($oCSS->File as $oFile) {
                             $cFile     = (string) $oFile->attributes()->Path;
-                            $cFilePath = (self::$isAdmin === false) ?
-                                PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile :
-                                PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
+                            $cFilePath = self::$isAdmin === false
+                                ? PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile
+                                : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
                             if (file_exists($cFilePath)) {
-                                $tplGroups_arr[$name][] = (($absolute === true) ? PFAD_ROOT : '') .
-                                    ((self::$isAdmin === true) ? PFAD_ADMIN : '') .
-                                    PFAD_TEMPLATES . $cOrdner . '/' . (string) $oFile->attributes()->Path;
+                                $tplGroups_arr[$name][] = ($absolute === true ? PFAD_ROOT : '') .
+                                    (self::$isAdmin === true ? PFAD_ADMIN : '') .
+                                    PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                                 $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
                                 if (file_exists($cCustomFilePath)) {
                                     $tplGroups_arr[$name][] = str_replace('.css', '_custom.css',
-                                        (($absolute === true) ? PFAD_ROOT : '') .
-                                        ((self::$isAdmin === true) ? PFAD_ADMIN : '') .
-                                        PFAD_TEMPLATES . $cOrdner . '/' . (string) $oFile->attributes()->Path);
+                                        ($absolute === true ? PFAD_ROOT : '') .
+                                        (self::$isAdmin === true ? PFAD_ADMIN : '') .
+                                        PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path);
                                 }
                             }
                         }
@@ -177,7 +177,7 @@ class AdminTemplate
                         $cCustomFilePath = PFAD_ROOT . 'templates/' . $oXML->Ordner . '/themes/custom.css';
                         if (file_exists($cCustomFilePath)) {
                             $tplGroups_arr[$name][] = (($absolute === true) ? PFAD_ROOT : '') .
-                                ((self::$isAdmin === true) ? PFAD_ADMIN : '') .
+                                (self::$isAdmin === true ? PFAD_ADMIN : '') .
                                 PFAD_TEMPLATES . $cOrdner . '/' . 'themes/custom.css';
                         }
                     }
@@ -191,8 +191,8 @@ class AdminTemplate
                             $tplGroups_arr[$name] = [];
                         }
                         foreach ($oJS->File as $oFile) {
-                            $tplGroups_arr[$name][] = (($absolute === true) ? PFAD_ROOT : '') .
-                                ((self::$isAdmin === true) ? PFAD_ADMIN : '') .
+                            $tplGroups_arr[$name][] = ($absolute === true ? PFAD_ROOT : '') .
+                                (self::$isAdmin === true ? PFAD_ADMIN : '') .
                                 PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                         }
                     }
@@ -227,16 +227,37 @@ class AdminTemplate
         if ($minify === false) {
             $fileSuffix = '?v=' . $version;
             foreach ($files['admin_js'] as $_file) {
-                $outputJS .= '<script type="text/javascript" src="' . $baseURL . '/' . $_file . $fileSuffix . '"></script>' . "\n";
+                $outputJS .= '<script type="text/javascript" src="'
+                    . $baseURL . '/'
+                    . $_file
+                    . $fileSuffix
+                    . '"></script>'
+                    . "\n";
             }
             foreach ($files['admin_css'] as $_file) {
-                $outputCSS .= '<link rel="stylesheet" type="text/css" href="' . $baseURL . '/' . $_file . '" media="screen" />' . "\n";
+                $outputCSS .= '<link rel="stylesheet" type="text/css" href="'
+                    . $baseURL . '/'
+                    . $_file
+                    . $fileSuffix
+                    . '" media="screen" />'
+                    . "\n";
             }
         } else {
-            $tplString  = $this->getDir(); //add tpl string to avoid caching
+            $tplString  = $this->getDir(); // add tpl string to avoid caching
             $fileSuffix = '&v=' . $version;
-            $outputCSS  = '<link rel="stylesheet" type="text/css" href="' . $baseURL . '/' . PFAD_MINIFY . '/index.php?g=admin_css&tpl=' . $tplString . $fileSuffix . '" media="screen" />';
-            $outputJS   = '<script type="text/javascript" src="' . $baseURL . '/' . PFAD_MINIFY . '/index.php?g=admin_js&tpl=' . $tplString . $fileSuffix . '"></script>';
+            $outputCSS  = '<link rel="stylesheet" type="text/css" href="'
+                . $baseURL . '/'
+                . PFAD_MINIFY . '/index.php?g=admin_css&tpl='
+                . $tplString
+                . $fileSuffix
+                . '" media="screen" />';
+            $outputJS   = '<script type="text/javascript" src="'
+                . $baseURL . '/'
+                . PFAD_MINIFY
+                . '/index.php?g=admin_js&tpl='
+                . $tplString
+                . $fileSuffix
+                . '"></script>';
         }
 
         return ['js' => $outputJS, 'css' => $outputCSS];

@@ -1039,25 +1039,39 @@ class LinkHelper
         if (isset($this->linkGroups->staticRoutes[$id])) {
             $index = $this->linkGroups->staticRoutes[$id];
             if (is_array($index)) {
-                $language  = $langISO !== null
+                $language        = $langISO !== null
                     ? $langISO
                     : Shop::getLanguageCode();
-                $localized = isset($index[$language])
+                $localized       = isset($index[$language])
                     ? $index[$language]
                     : null;
                 $customerGroupID = isset($_SESSION['Kundengruppe'])
                     ? Session::CustomerGroup()->getID()
                     : 0;
-
-                $base = $full === true ? (Shop::getURL($secure) . '/') : '';
+                $base            = $full === true
+                    ? (Shop::getURL($secure) . '/')
+                    : '';
                 if (!is_array($localized)) {
                     return $base . $id;
                 }
-                $attr = $full === true ? ($secure === true ? 'cURLFullSSL' : 'cURLFull') : 'cSeo';
-
-                return empty($localized[$customerGroupID]->$attr)
+                $attr     = $full === true
+                    ? ($secure === true
+                        ? 'cURLFullSSL'
+                        : 'cURLFull')
+                    : 'cSeo';
+                $res      = !empty($localized[$customerGroupID]->$attr)
+                    ? $localized[$customerGroupID]->$attr
+                    : null;
+                $fallback = $res === null && isset($localized[0]->$attr)
                     ? $localized[0]->$attr
-                    : $localized[$customerGroupID]->$attr;
+                    : null;
+
+                return $res !== null
+                    ? $res
+                    : ($fallback !== null
+                        ? $fallback
+                        : $base . $id
+                    );
             }
 
             return $index;
@@ -1066,5 +1080,5 @@ class LinkHelper
         return $full && strpos($id, 'http') !== 0
             ? Shop::getURL($secure) . '/' . $id
             : $id;
-     }
+    }
 }

@@ -287,7 +287,7 @@ EditorGUI.prototype = {
             if(this.selectedElm !== null) {
                 this.selectedElm.addClass('cle-selected');
                 this.portletLabel
-                    .text(this.hoveredElm.data('portlettitle'))
+                    .text(this.selectedElm.data('portlettitle'))
                     .show()
                     ;
                 this.portletToolbar

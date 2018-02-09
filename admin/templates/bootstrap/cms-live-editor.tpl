@@ -115,15 +115,18 @@
                     </div>
                     <div class="tab-pane" id="templates">
                         {* blueprint *}
-                        <div class="btn-group" role="group" style="display:none" id="template-btn-blueprint">
-                            <a href="#" class="template-button btn btn-default"
-                               data-title="Template-Title"
-                               data-template="42"
-                               data-content="Template-HTML">
-                                <i class="fa fa-puzzle-piece"></i> <span>Template-Title</span>
-                            </a>
-                            <button class="template-delete btn btn-danger"
-                                    data-template="42"> <i class="fa fa-times"></i> </button>
+                        <div class="list-group-item" role="group" style="display:none" id="template-btn-blueprint">
+                            <div class="btn-group btn-group-justified">
+                                <a href="#" class="template-button btn"
+                                   data-title="Template-Title"
+                                   data-template="42"
+                                   data-content="Template-HTML">
+                                    <i class="fa fa-puzzle-piece"></i> <span>Template-Title</span>
+                                </a>
+                                <a href="#" class="template-delete btn"
+                                        data-template="42"> <i class="fa fa-times"></i>
+                                </a>
+                            </div>
                         </div>
                         {* /blueprint *}
                     </div>

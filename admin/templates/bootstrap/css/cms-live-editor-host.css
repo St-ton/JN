@@ -98,6 +98,7 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 
 .template-delete{
     vertical-align: bottom;
+    border-left: 1px solid #eee;
 }
 
 .cle-image-btn {
@@ -151,7 +152,8 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     box-shadow: none;
 }
 
-#revisions .list-group-item {
+#revisions .list-group-item,
+#templates .list-group-item{
     margin-bottom: 0;
     border: 0;
     margin: 10px 0;
@@ -160,7 +162,12 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     border-radius: 5px;
     color: #23527c;
 }
-
+#templates .list-group-item .btn{
+    padding: 0;
+}
+#templates .template-button{
+    text-align: left;
+}
 #tour-form .tour-label {
     padding-left: 0;
     width: 100%;

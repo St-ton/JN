@@ -43,109 +43,42 @@
     </script>
 </head>
 <body>
-    {*<nav id="editor-top-nav" class="navbar navbar-inverse">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="collapsed navbar-toggle" data-toggle="collapse"
-                        data-target="#le-navbar-collapse" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-                </button>
-                <a href="#" class="navbar-brand">Live Editor</a>
-            </div>
-            <div class="collapse navbar-collapse" id="le-navbar-collapse">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a href="#" onclick="$('#iframe').width('100%');"><i class="fa fa-desktop"></i></a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="$('#iframe').width('992px');"><i class="fa fa-laptop"></i></a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="$('#iframe').width('768px');"><i class="fa fa-tablet"></i></a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="$('#iframe').width('375px');"><i class="fa fa-mobile"></i></a>
-                    </li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="#" id="help" data-toggle="tooltip" data-placement="bottom" title="Help">
-                            <i class="fa fa-question-circle-o"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" id="btn-preview" data-toggle="tooltip" data-placement="bottom" title="Preview">
-                            <i class="fa fa-eye"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" id="cle-btn-save-editor" data-toggle="tooltip" data-placement="bottom"
-                           title="Seite speichern">
-                            <i class="fa fa-save"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{$cPageUrl}" id="cle-btn-close-editor" data-toggle="tooltip" data-placement="bottom"
-                           title="Editor schlie&szlig;en">
-                            <i class="fa fa-close"></i>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>*}
     <div id="main-frame">
         <div id="sidebar-panel">
-            <nav id="editor-top-nav" class="navbar">
+            <nav id="editor-top-nav" class="navbar navbar-static-top" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        {*<button type="button" class="collapsed navbar-toggle" data-toggle="collapse"
-                                data-target="#le-navbar-collapse" aria-expanded="false">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-                        </button>*}
                         <a href="#" class="navbar-brand">Live Editor</a>
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#editor-nav-collapse">
+                            <i class="fa fa-bars"></i>
+                        </button>
                     </div>
-
-                   {* <ul class="nav navbar-nav">
-                        <li>
-                            <a href="#" onclick="$('#iframe').width('100%');"><i class="fa fa-desktop"></i></a>
-                        </li>
-                        <li>
-                            <a href="#" onclick="$('#iframe').width('992px');"><i class="fa fa-laptop"></i></a>
-                        </li>
-                        <li>
-                            <a href="#" onclick="$('#iframe').width('768px');"><i class="fa fa-tablet"></i></a>
-                        </li>
-                        <li>
-                            <a href="#" onclick="$('#iframe').width('375px');"><i class="fa fa-mobile"></i></a>
-                        </li>
-                    </ul>*}
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" id="help" data-toggle="tooltip" data-placement="bottom" title="Help">
-                                <i class="fa fa-question-circle-o"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" id="btn-preview" data-toggle="tooltip" data-placement="bottom" title="Preview">
-                                <i class="fa fa-eye"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" id="cle-btn-save-editor" data-toggle="tooltip" data-placement="bottom"
-                               title="Seite speichern">
-                                <i class="fa fa-save"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{$cPageUrl}" id="cle-btn-close-editor" data-toggle="tooltip" data-placement="bottom"
-                               title="Editor schlie&szlig;en">
-                                <i class="fa fa-close"></i>
-                            </a>
-                        </li>
-                    </ul>
+                    <div class="collapse navbar-collapse" id="editor-nav-collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a href="#" id="help" data-toggle="tooltip" data-placement="bottom" title="Help">
+                                    <i class="fa fa-question-circle-o"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" id="btn-preview" data-toggle="tooltip" data-placement="bottom" title="Preview">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" id="cle-btn-save-editor" data-toggle="tooltip" data-placement="bottom"
+                                   title="Seite speichern">
+                                    <i class="fa fa-save"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{$cPageUrl}" id="cle-btn-close-editor" data-toggle="tooltip" data-placement="bottom"
+                                   title="Editor schlie&szlig;en">
+                                    <i class="fa fa-close"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </nav>
             <ul id="editor-tabs" class="nav nav-tabs">
@@ -212,20 +145,22 @@
                     </div>
                 </div>
             </div>
-            <ul class="nav navbar-nav navbar-fixed-bottom" id="display-previews">
-                <li>
-                    <a href="#" onclick="$('#iframe').width('100%');"><i class="fa fa-desktop"></i></a>
-                </li>
-                <li>
-                    <a href="#" onclick="$('#iframe').width('992px');"><i class="fa fa-laptop"></i></a>
-                </li>
-                <li>
-                    <a href="#" onclick="$('#iframe').width('768px');"><i class="fa fa-tablet"></i></a>
-                </li>
-                <li>
-                    <a href="#" onclick="$('#iframe').width('375px');"><i class="fa fa-mobile"></i></a>
-                </li>
-            </ul>
+            <div  id="display-previews">
+                <ul class="">
+                    <li>
+                        <a href="#" onclick="$('#iframe').width('375px');"><i class="fa fa-mobile"></i></a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="$('#iframe').width('768px');"><i class="fa fa-tablet"></i></a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="$('#iframe').width('992px');"><i class="fa fa-laptop"></i></a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="$('#iframe').width('100%');"><i class="fa fa-desktop"></i></a>
+                    </li>
+                </ul>
+            </div>
         </div>
         <div id="iframe-panel">
             <iframe id="iframe"></iframe>
@@ -388,12 +323,13 @@
         </div>
     </div>
     <div class="cle-pinbar btn-group" id="pinbar" style="display:none">
-        <button class="btn btn-default btn-sm" id="btn-parent" title="gehe eine Ebene höher"><i class="fa fa-level-up"></i></button>
-        <button class="btn btn-default btn-sm" id="btn-template" title="Auswahl als Template speichern"><i class="fa fa-star"></i></button>
-        <button class="btn btn-default btn-sm" id="btn-trash"  title="Auswahl löschen"><i class="fa fa-trash"></i></button>
+        <button class="btn btn-dafault btn-sm cle-label" id="portlet-label"></button>
+        <button class="btn btn-default btn-sm" id="btn-config"  title="Einstellungen bearbeiten"><i class="fa fa-pencil"></i></button>
         <button class="btn btn-default btn-sm" id="btn-clone" title="Auswahl kopieren"><i class="fa fa-clone"></i></button>
-        <button class="btn btn-default btn-sm" id="btn-config"  title="Einstellungen bearbeiten"><i class="fa fa-cog"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-template" title="Auswahl als Template speichern"><i class="fa fa-star"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-parent" title="gehe eine Ebene höher"><i class="fa fa-level-up"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-trash"  title="Auswahl löschen"><i class="fa fa-trash"></i></button>
     </div>
-    <div class="cle-label" id="portlet-label" style="display:none"></div>
+    <div class="cle-label" id="portlet-preview-label" style="display:none"></div>
 </body>
 </html>

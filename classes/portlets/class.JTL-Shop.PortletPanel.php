@@ -14,7 +14,7 @@ class PortletPanel extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-window-maximize"></i><br/> Panel';
+        return '<i class="fa fa-square-o"></i><br/> Panel';
     }
 
     /**

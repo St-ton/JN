@@ -770,7 +770,6 @@ class Kunde
 
             $_upd                     = new stdClass();
             $_upd->cPasswort          = $this->cPasswort;
-            $_upd->cResetPasswordHash = '_DBNULL_';
             $_upd->nLoginversuche     = 0;
             Shop::DB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
         }
@@ -801,70 +800,44 @@ class Kunde
     }
 
     /**
-     * creates hashes and sends mails for forgotten admin passwords
+     * creates a random string for password reset validation
      *
-     * @param string $mail - the account's email address
      * @return bool - true if valid account
+     * @throws Exception
      */
-    public function prepareResetPassword($mail)
+    public function prepareResetPassword()
     {
-        $linkHelper               = LinkHelper::getInstance();
-        $now                      = new DateTime();
-        $timestamp                = $now->format('U');
-        $stringToSend             = md5($mail . microtime(true));
-        $_upd                     = new stdClass();
-        $_upd->cResetPasswordHash = $timestamp . ':' . password_hash($stringToSend, PASSWORD_DEFAULT);
-        $res                      = Shop::DB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
-        if ($res > 0) {
-            require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-            $obj                    = new stdClass();
-            $obj->tkunde            = $this;
-            $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') .
-                '?fpwh=' . $stringToSend . '&mail=' . $mail;
-            $obj->cHash             = $stringToSend;
-            $obj->neues_passwort    = 'Bitte Mailvorlage zuruecksetzen!';
-            sendeMail(MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);
-
-            return true;
+        if (!$this->kKunde) {
+            return false;
         }
+        $key        = bin2hex(random_bytes(32));
+        $linkHelper = LinkHelper::getInstance();
+        $expires    = new DateTime();
+        $interval   = new DateInterval('P1D');
+        $expires->add($interval);
+        Shop::DB()->executeQueryPrepared(
+            "INSERT INTO tpasswordreset(kKunde, cKey, dExpires)
+            VALUES (:kKunde, :cKey, :dExpires)
+            ON DUPLICATE KEY UPDATE cKey = :cKey, dExpires = :dExpires",
+            [
+                'kKunde'   => $this->kKunde,
+                'cKey'     => $key,
+                'dExpires' => $expires->format(DateTime::ISO8601),
+            ],
+            NiceDB::RET_AFFECTED_ROWS
+        );
 
-        return false;
-    }
+        require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
+        $linkParams             = ['fpwh' => $key];
+        $obj                    = new stdClass();
+        $obj->tkunde            = $this;
+        $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') .
+            '?' . http_build_query($linkParams, null, '&');
+        $obj->cHash             = $key;
+        $obj->neues_passwort    = 'Es ist leider ein Fehler aufgetreten. Bitte kontaktieren Sie uns.';
+        sendeMail(MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);
 
-    /**
-     * checks user submitted hash against the ones saved in db
-     *
-     * @param string $hash - the hash received via email
-     * @param string $mail - the admin account's email address
-     * @return bool - true if successfully verified
-     */
-    public function verifyResetPasswordHash($hash, $mail)
-    {
-        $user = Shop::DB()->select('tkunde', 'cMail', $mail, 'nRegistriert', 1);
-        if ($user !== null) {
-            //there should be a string <created_timestamp>:<hash> in the DB
-            $timestampAndHash = explode(':', $user->cResetPasswordHash);
-            if (count($timestampAndHash) === 2) {
-                $timeStamp    = $timestampAndHash[0];
-                $originalHash = $timestampAndHash[1];
-                //check if the link is not expired (=24 hours valid)
-                $createdAt = new DateTime();
-                $createdAt->setTimestamp((int)$timeStamp);
-                $now   = new DateTime();
-                $diff  = $now->diff($createdAt);
-                $secs  = $diff->format('%a') * (60 * 60 * 24); //total days
-                $secs += (int)$diff->format('%h') * (60 * 60); //hours
-                $secs += (int)$diff->format('%i') * 60; //minutes
-                $secs += (int)$diff->format('%s'); //seconds
-                if ($secs > (60 * 60 * 24)) {
-                    return false;
-                }
-                //check the submitted hash against the saved one
-                return password_verify($hash, $originalHash);
-            }
-        }
-
-        return false;
+        return true;
     }
 
     /**

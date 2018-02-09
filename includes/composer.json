@@ -16,13 +16,15 @@
         "phpmailer/phpmailer": "~5.2",
         "jtlshop/qrcodegenerator": "dev-master",
         "erusev/parsedown": "dev-master",
-        "pclzip/pclzip": "^2.8"
+        "pclzip/pclzip": "^2.8",
+        "paragonie/random_compat": "~2.0"
     },
     "require-dev": {
         "phpunit/php-token-stream": "~1.2",
         "nikic/php-parser": "^2.1",
         "Symfony/Finder": "^2.8",
-        "friendsofphp/php-cs-fixer": "~2.1"
+        "friendsofphp/php-cs-fixer": "~2.1",
+        "phpunit/phpunit": "~5.7"
     },
     "repositories": [
         {

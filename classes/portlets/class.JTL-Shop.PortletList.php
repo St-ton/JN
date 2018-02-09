@@ -14,7 +14,7 @@ class PortletList extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-list-ol"></i> Liste';
+        return '<i class="fa fa-list-ol"></i><br/> Liste';
     }
 
     public function getPreviewHtml()

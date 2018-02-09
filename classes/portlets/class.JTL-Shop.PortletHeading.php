@@ -14,7 +14,7 @@ class PortletHeading extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-header"></i> Überschrift';
+        return '<i class="fa fa-header"></i><br/> Überschrift';
     }
 
     /**

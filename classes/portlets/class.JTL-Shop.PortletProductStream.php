@@ -17,8 +17,8 @@ class PortletProductStream extends CMSPortlet
         return
             '<div class="text-center">' .
             '<img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.productstream.gallery.png" ' .
-            'style="width: 98%;filter: grayscale() opacity(60%)"/>' .
-            '</div>';
+            'style="width: 80%;filter: grayscale() opacity(60%)"/>' .
+            '<br/> Product stream</div>';
     }
 
     /**

@@ -14,7 +14,7 @@ class PortletAccordion extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-th-list"></i> Akkordeon';
+        return '<i class="fa fa-th-list"></i><br/> Akkordeon';
     }
 
     /**

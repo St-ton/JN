@@ -17,8 +17,8 @@ class PortletProductSlider extends CMSPortlet
         return
             '<div class="text-center" data-toggle="toggle" title="Artikelslider">' .
             '<img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.productslider.png" ' .
-            'style="width: 98%; filter: grayscale(50%) opacity(60%)">' .
-            '</div>';
+            'style="width: 80%; filter: grayscale(50%) opacity(60%)">' .
+            '<br/> Product slider</div>';
     }
 
     public function getPreviewHtml()

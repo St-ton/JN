@@ -64,7 +64,7 @@ EditorGUI.prototype = {
             $(e.target)
                 .prev('.collapse-groups')
                 .find('i.fa')
-                .toggleClass('fa-plus fa-minus');
+                .toggleClass('fa-plus-circle fa-minus-circle');
         }
 
         this.collapseGroup.on('hidden.bs.collapse', toggleChevron);

@@ -14,7 +14,7 @@ class PortletButton extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-square-o"></i> Button';
+        return '<i class="fa fa-square-o"></i><br/> Button';
     }
 
     /**

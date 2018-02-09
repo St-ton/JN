@@ -15,7 +15,7 @@ class PortletTab extends CMSPortlet
     public function getButton()
     {
         // TODO Editor: Icon richtig wählen
-        return '<i class="fa fa-table"></i> Tabs';
+        return '<i class="fa fa-table"></i><br/> Tabs';
     }
 
     public function getPreviewHtml()

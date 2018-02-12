@@ -206,7 +206,7 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && vali
     $Zuschlag->cISO        = $_POST['cISO'];
     $Zuschlag->cName       = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $Zuschlag->fZuschlag   = (float)str_replace(',', '.', $_POST['fZuschlag']);
-    if ($Zuschlag->cName && $Zuschlag->fZuschlag !== 0) {
+    if ($Zuschlag->cName && $Zuschlag->fZuschlag != 0) {
         $kVersandzuschlag = 0;
         if (isset($Zuschlag->kVersandzuschlag) && $Zuschlag->kVersandzuschlag > 0) {
             Shop::DB()->delete('tversandzuschlag', 'kVersandzuschlag', (int)$Zuschlag->kVersandzuschlag);

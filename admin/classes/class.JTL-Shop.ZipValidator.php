@@ -12,7 +12,7 @@ class ZipValidator
     /**
      * @var array
      */
-    private $vPatternHashList = [
+    private static $vPatternHashList = [
       'AC' => 'ASCN 1ZZ',
       'AD' => 'AD[1-7]0\\d',
       'AF' => '\\d{4}',
@@ -199,11 +199,13 @@ class ZipValidator
     private $cISO;
 
 
+    /**
+     * @param string $cISO
+     */
     public function __construct($cISO)
     {
         $this->cISO = $cISO;
     }
-
 
     /**
      * validate a ZipCode against the international postal codes provided by the i18n-APIs
@@ -217,25 +219,20 @@ class ZipValidator
      */
     public function validateZip($szZipCode)
     {
-        if (array_key_exists($this->cISO, $this->vPatternHashList)) {
-            if (!preg_match("/^{$this->vPatternHashList[$this->cISO]}$/", $szZipCode)) {
-                Jtllog::writeLog('Postleitzahl stimmt nicht mit Landesvorgabe überein! '.$szZipCode.
-                    ' ('.$this->cISO.', "'.$this->vPatternHashList[$this->cISO].'")', JTLLOG_LEVEL_ERROR);
+        if (array_key_exists($this->cISO, self::$vPatternHashList)) {
+            if (!preg_match("/^" . self::$vPatternHashList[$this->cISO] . "$/", $szZipCode)) {
+                Jtllog::writeLog('Postleitzahl stimmt nicht mit Landesvorgabe überein! ' . $szZipCode .
+                    ' (' . $this->cISO . ', "' . self::$vPatternHashList[$this->cISO] . '")', JTLLOG_LEVEL_ERROR);
 
                 return '';
-            } else {
-
-                return $szZipCode;
             }
-        } else {
-            // country not in pattern-list
-            //Jtllog::writeLog('Land nicht in Zip-Code-Pattern-Liste!'.$this->cISO.')', JTLLOG_LEVEL_ERROR);
-
-            //return '';
-            Jtllog::writeLog('Land nicht in Zip-Code-Pattern-Liste!'.$this->cISO.')', JTLLOG_LEVEL_NOTICE);
 
             return $szZipCode;
         }
+        // country not in pattern-list
+        Jtllog::writeLog('Land nicht in Zip-Code-Pattern-Liste!' . $this->cISO . ')', JTLLOG_LEVEL_NOTICE);
+
+        return $szZipCode;
     }
 
 }

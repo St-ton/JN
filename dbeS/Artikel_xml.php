@@ -111,6 +111,7 @@ function bearbeiteDeletes($xml, $conf)
 function bearbeiteInsert($xml, array $conf)
 {
     $res = [];
+
     $Artikel           = new stdClass();
     $Artikel->kArtikel = 0;
 

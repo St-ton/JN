@@ -10,7 +10,3 @@ if (!file_exists(PFAD_ROOT . PFAD_INCLUDES . 'vendor/autoload.php')) {
 }
 
 require PFAD_ROOT . PFAD_INCLUDES . 'vendor/autoload.php';
-    if ($class === 'PluginLizenz') {
-        require PFAD_ROOT . PFAD_CLASSES . 'interface.JTL-Shop.PluginLizenz.php';
-        return true;
-    }

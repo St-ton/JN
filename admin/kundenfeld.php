@@ -26,14 +26,19 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENFELD, $_POST);
 } elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && validateToken()) { // Kundenfelder
+    $success = true;
     if (isset($_POST['loeschen'])) {
         $kKundenfeld_arr = $_POST['kKundenfeld'];
 
         if (is_array($kKundenfeld_arr) && count($kKundenfeld_arr) > 0) {
             foreach ($kKundenfeld_arr as $kKundenfeld) {
-                $customerFields->delete((int)$kKundenfeld);
+                $success = $success && $customerFields->delete((int)$kKundenfeld);
             }
-            $cHinweis .= "Die ausgew&auml;hlten Kundenfelder wurden erfolgreich gel&ouml;scht.<br />";
+            if ($success) {
+                $cHinweis .= "Die ausgew&auml;hlten Kundenfelder wurden erfolgreich gel&ouml;scht.<br />";
+            } else {
+                $cFehler .= 'Die ausgew&auml;hlten Kundenfelder konnten nicht gel&ouml;scht werden.<br />';
+            }
         } else {
             $cFehler .= "Fehler: Bitte w&auml;hlen Sie mindestens ein Kundenfeld aus.<br />";
         }
@@ -41,9 +46,13 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         // Kundenfelder auslesen und in Smarty assignen
         foreach ($customerFields->getCustomerFields() as $customerField) {
             $customerField->nSort = (int)$_POST['nSort_' . $customerField->kKundenfeld];
-            $customerFields->update($customerField);
+            $success              = $success && $customerFields->save($customerField);
         }
-        $cHinweis .= 'Ihre Kundenfelder wurden erfolgreich aktualisiert.';
+        if ($success) {
+            $cHinweis .= 'Ihre Kundenfelder wurden erfolgreich aktualisiert.<br />';
+        } else {
+            $cFehler .= 'Ihre Kundenfelder konnten nicht aktualisiert werden.<br />';
+        }
     } else { // Speichern
         $customerField = (object)[
             'kKundenfeld' => (int)$_POST['kKundenfeld'],
@@ -65,8 +74,11 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
 
         if (count($oPlausi->getPlausiVar()) === 0) {
             // Update?
-            $customerFields->update($customerField, $cfValues);
-            $cHinweis .= 'Ihr Kundenfeld wurde erfolgreich gespeichert.<br />';
+            if ($customerFields->save($customerField, $cfValues)) {
+                $cHinweis .= 'Ihr Kundenfeld wurde erfolgreich gespeichert.<br />';
+            } else {
+                $cFehler .= 'Ihr Kundenfeld konnte nicht gespeichert werden.<br />';
+            }
         } else {
             $vWrongFields = $oPlausi->getPlausiVar();
             if (isset($vWrongFields['cName']) && 2 === $vWrongFields['cName']) {

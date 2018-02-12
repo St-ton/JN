@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  * @package jtl-shop
- * @since
+ * @since 4.07
  */
 
 /**
@@ -32,16 +32,8 @@ class CustomerFields
      */
     public function __construct($langID)
     {
-        $this->customerFields = [];
-        $this->langID         = $langID;
-        $customerFields       = Shop::DB()->selectAll('tkundenfeld', 'kSprache', $langID, '*', 'nSort ASC');
-
-        if (is_array($customerFields)) {
-            foreach ($customerFields as $item) {
-                $this->prepare($item);
-                $this->customerFields[$item->kKundenfeld] = $item;
-            }
-        }
+        $this->langID = $langID;
+        $this->loadFields($langID);
     }
 
     /**
@@ -61,6 +53,20 @@ class CustomerFields
         }
 
         return self::$instances[$langID];
+    }
+
+    /**
+     * @param int $langID
+     */
+    protected function loadFields($langID)
+    {
+        $this->customerFields = [];
+        $customerFields       = Shop::DB()->selectAll('tkundenfeld', 'kSprache', $langID, '*', 'nSort ASC');
+
+        foreach ($customerFields as $item) {
+            $this->prepare($item);
+            $this->customerFields[$item->kKundenfeld] = $item;
+        }
     }
 
     /**
@@ -118,18 +124,27 @@ class CustomerFields
 
     /**
      * @param int $kCustomerField
+     * @return bool
      */
     public function delete($kCustomerField)
     {
         $kCustomerField = (int)$kCustomerField;
 
         if ($kCustomerField !== 0) {
-            Shop::DB()->delete('tkundenattribut', 'kKundenfeld', $kCustomerField);
-            Shop::DB()->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField);
-            Shop::DB()->delete('tkundenfeld', 'kKundenfeld', $kCustomerField);
+            $ret = Shop::DB()->delete('tkundenattribut', 'kKundenfeld', $kCustomerField) >= 0
+                && Shop::DB()->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField) >= 0
+                && Shop::DB()->delete('tkundenfeld', 'kKundenfeld', $kCustomerField) >= 0;
 
-            unset($this->customerFields[$kCustomerField]);
+            if ($ret) {
+                unset($this->customerFields[$kCustomerField]);
+            } else {
+                $this->loadFields($this->langID);
+            }
+
+            return $ret;
         }
+
+        return false;
     }
 
     /**
@@ -170,11 +185,13 @@ class CustomerFields
     /**
      * @param object $customerField
      * @param null|array $customerFieldValues
+     * @return bool
      */
-    public function update($customerField, $customerFieldValues = null)
+    public function save($customerField, $customerFieldValues = null)
     {
         $this->prepare($customerField);
         $key = isset($customerField->kKundenfeld) ? $customerField->kKundenfeld : null;
+        $ret = false;
 
         if ($key !== null && isset($this->customerFields[$key])) {
             // update...
@@ -185,7 +202,7 @@ class CustomerFields
             unset($customerField->kSprache);
             unset($customerField->cWawi);
 
-            Shop::DB()->update('tkundenfeld', 'kKundenfeld', $key, $customerField);
+            $ret = Shop::DB()->update('tkundenfeld', 'kKundenfeld', $key, $customerField) >= 0;
 
             if ($oldType !== $customerField->cTyp) {
                 // cTyp has been changed
@@ -230,12 +247,22 @@ class CustomerFields
             // insert...
             $key = Shop::DB()->insert('tkundenfeld', $customerField);
 
-            $customerField->kKundenfeld = $key;
-            $this->customerFields[$key] = $customerField;
+            if ($key > 0) {
+                $customerField->kKundenfeld = $key;
+                $this->customerFields[$key] = $customerField;
+
+                $ret = true;
+            }
         }
 
-        if ($customerField->cTyp === 'auswahl' && is_array($customerFieldValues)) {
-            $this->updateCustomerFieldValues($key, $customerFieldValues);
+        if ($ret) {
+            if ($customerField->cTyp === 'auswahl' && is_array($customerFieldValues)) {
+                $this->updateCustomerFieldValues($key, $customerFieldValues);
+            }
+        } else {
+            $this->loadFields($this->langID);
         }
+
+        return $ret;
     }
 }

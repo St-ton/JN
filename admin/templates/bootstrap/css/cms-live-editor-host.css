@@ -47,7 +47,7 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 
 #editor-top-nav{
     border: 0;
-    background: #5aafd6;
+    background: #5cbcf6;
     margin-bottom: 0;
 }
 
@@ -83,7 +83,7 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 
 .gutter {
     height: 100%;
-    background-color: #5aafd6;
+    background-color: #5cbcf6;
     float: left;
     cursor: ew-resize;
 }
@@ -132,6 +132,10 @@ tr.text-vcenter > td, tr.text-vcenter > th{
 
 #elements a.btn{
     margin-bottom: 15px;
+    padding-top: 10px;
+}
+#elements a.btn .fa{
+    margin-bottom: 5px;
 }
 
 #elements ul li{
@@ -228,9 +232,10 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     width: 100%;
     border-radius: 5px;
 }
-.portlet-button i {
-    color: #5aafd6;
+.portlet-button .fa {
+    color: #5cbcf6;
     font-size: 30px;
+    height: 30px;
 }
 
 .modal-backdrop {

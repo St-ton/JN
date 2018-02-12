@@ -14,7 +14,7 @@ class PortletButton extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-square-o"></i><br/> Button';
+        return '<img class="fa" src="' . Shop::getURL() .'/'. PFAD_TEMPLATES . 'Evo/themes/base/images/cms_live_editor/Button.svg"><br/> Button';
     }
 
     /**

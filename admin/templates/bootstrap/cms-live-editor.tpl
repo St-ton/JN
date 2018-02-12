@@ -148,19 +148,20 @@
                     </div>
                 </div>
             </div>
+            {*TODO Editor in EditorGUI.js auslagern*}
             <div  id="display-previews">
                 <ul class="">
                     <li>
-                        <a href="#" onclick="$('#iframe').width('375px');"><i class="fa fa-mobile"></i></a>
+                        <a href="#" onclick="$('#iframe').width('375px');$('#display-previews a').removeClass('active'); $(this).addClass('active');"><i class="fa fa-mobile"></i></a>
                     </li>
                     <li>
-                        <a href="#" onclick="$('#iframe').width('768px');"><i class="fa fa-tablet"></i></a>
+                        <a href="#" onclick="$('#iframe').width('768px');$('#display-previews a').removeClass('active'); $(this).addClass('active');"><i class="fa fa-tablet"></i></a>
                     </li>
                     <li>
-                        <a href="#" onclick="$('#iframe').width('992px');"><i class="fa fa-laptop"></i></a>
+                        <a href="#" onclick="$('#iframe').width('992px');$('#display-previews a').removeClass('active'); $(this).addClass('active');"><i class="fa fa-laptop"></i></a>
                     </li>
                     <li>
-                        <a href="#" onclick="$('#iframe').width('100%');"><i class="fa fa-desktop"></i></a>
+                        <a href="#" onclick="$('#iframe').width('100%');$('#display-previews a').removeClass('active'); $(this).addClass('active');" class="active"><i class="fa fa-desktop"></i></a>
                     </li>
                 </ul>
             </div>

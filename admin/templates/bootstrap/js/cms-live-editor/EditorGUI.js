@@ -28,6 +28,7 @@ EditorGUI.prototype = {
         this.templateModal            = this.hostJq('#template-modal');
         this.errorAlert               = this.hostJq('#error-alert');
         this.portletLabel             = this.hostJq('#portlet-label');
+        this.portletPreviewLabel      = this.hostJq('#portlet-preview-label');
         this.portletToolbar           = this.hostJq('#pinbar');
         this.portletBtns              = this.hostJq('.portlet-button');
         this.exportPageBtn            = this.hostJq('#btn-export')                .click(this.onExportPage.bind(this));
@@ -88,8 +89,9 @@ EditorGUI.prototype = {
             .click(function(e) { e.preventDefault(); });
 
         this.rootAreas = this.iframeJq('.cle-rootarea');
-        this.portletLabel.appendTo(this.iframeBody);
+        this.portletPreviewLabel.appendTo(this.iframeBody);
         this.portletToolbar.appendTo(this.iframeBody);
+        this.portletLabel.prependTo(this.portletToolbar);
 
         this.enableEditingEvents();
     },
@@ -252,7 +254,7 @@ EditorGUI.prototype = {
         if(this.hoveredElm !== null) {
             this.hoveredElm.removeClass('cle-hovered');
             this.hoveredElm.attr('draggable', 'false');
-            this.portletLabel.hide();
+            this.portletPreviewLabel.hide();
         }
 
         this.hoveredElm = elm;
@@ -260,12 +262,12 @@ EditorGUI.prototype = {
         if(this.hoveredElm !== null) {
             this.hoveredElm.addClass('cle-hovered');
             this.hoveredElm.attr('draggable', 'true');
-            this.portletLabel
+            this.portletPreviewLabel
                 .text(this.hoveredElm.data('portlettitle'))
                 .show()
                 .css({
                     left: elm.offset().left + 'px',
-                    top: elm.offset().top - this.portletLabel.outerHeight() + 'px'
+                    top: elm.offset().top - this.portletPreviewLabel.outerHeight() - 3 + 'px'
                 })
         }
     },
@@ -284,11 +286,15 @@ EditorGUI.prototype = {
 
             if(this.selectedElm !== null) {
                 this.selectedElm.addClass('cle-selected');
+                this.portletLabel
+                    .text(this.selectedElm.data('portlettitle'))
+                    .show()
+                    ;
                 this.portletToolbar
                     .show()
                     .css({
-                        left: elm.offset().left + elm.outerWidth() - this.portletToolbar.outerWidth() + 'px',
-                        top: elm.offset().top + elm.outerHeight() + 'px'
+                        left: elm.offset().left + 'px',
+                        top: elm.offset().top - this.portletLabel.outerHeight() - 3 + 'px'
                     });
             }
         }

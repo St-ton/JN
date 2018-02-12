@@ -44,23 +44,31 @@
     top: -4px;
     left: -4px;
 }
+.cle-pinbar {
+    position: absolute;
+    min-width: 1em;
+    min-height: 1em;
+    z-index: 19;
+    border: solid 1px #b8b8b8;
+    border-bottom: 0;
+    border-radius: 4px 4px 0 0;
 
+}
+.cle-pinbar .btn-default {
+    background: #fff;
+    color: #23527c;
+}
+.cle-pinbar .btn-default:hover {
+    background: #eee;
+}
 .cle-label {
     position: absolute;
     background-color: #5cbcf6;
     color: #fff;
     min-width: 1em;
     min-height: 1em;
-    opacity: 0.75;
     font-size: 0.75em;
     padding: 0.5em;
     border-radius: 4px;
-    z-index: 19;
-}
-
-.cle-pinbar {
-    position: absolute;
-    min-width: 1em;
-    min-height: 1em;
     z-index: 19;
 }

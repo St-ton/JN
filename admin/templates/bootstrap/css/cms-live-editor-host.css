@@ -51,7 +51,8 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
     margin-bottom: 0;
 }
 
-#editor-top-nav a{
+#editor-top-nav a,
+#editor-top-nav button{
     color: #fff;
 }
 #editor-top-nav .nav>li>a:hover,
@@ -72,7 +73,6 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 #iframe-panel {
 	text-align: center;
 	background: #ddd;
-    border-top: 4px solid #5aafd6;
 }
 
 #iframe-panel iframe {
@@ -98,6 +98,7 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 
 .template-delete{
     vertical-align: bottom;
+    border-left: 1px solid #eee;
 }
 
 .cle-image-btn {
@@ -137,7 +138,36 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     list-style: none;
     display: grid;
 }
+#elements .row > *{
+    padding-left: 10px;
+    padding-right: 10px
+}
 
+#elements hr{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#revisions .list-group{
+    box-shadow: none;
+}
+
+#revisions .list-group-item,
+#templates .list-group-item{
+    margin-bottom: 0;
+    border: 0;
+    margin: 10px 0;
+    padding: 5px 10px;
+    background: #f7f7f7;
+    border-radius: 5px;
+    color: #23527c;
+}
+#templates .list-group-item .btn{
+    padding: 0;
+}
+#templates .template-button{
+    text-align: left;
+}
 #tour-form .tour-label {
     padding-left: 0;
     width: 100%;
@@ -147,7 +177,7 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     color: #23527c;
     text-transform: uppercase;
     padding: 8px 25px;
-    margin: 0 -15px 15px -15px;
+    margin: 0 -15px 5px -15px;
 }
 
 #tour-form input[name="help-tour"]:checked+.panel-default >.panel-heading{
@@ -163,6 +193,20 @@ tr.text-vcenter > td, tr.text-vcenter > th{
 }
 
 #display-previews{
+    width: 100%;
+    text-align: center;
+    bottom: 0;
+}
+
+#display-previews ul {
+    padding: 0;
+}
+#display-previews li {
+    display: inline-block;
+    padding: 15px 10px 5px 10px;
+}
+
+#display-previews{
     background-color: #f7f7f7;
     position: absolute;
 }
@@ -173,7 +217,7 @@ tr.text-vcenter > td, tr.text-vcenter > th{
 #display-previews a:active,
 #display-previews a:focus,
 #display-previews a.active{
-    color: #9d9d9d;
+    color: #23527c;
 }
 
 .portlet-button {

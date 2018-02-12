@@ -8,7 +8,7 @@
         </div>
     </div>
     {/foreach}
-    <div class="modal fade" id="gallery_popup" tabindex="-1" role="dialog">
+    <div class="modal fade" id="gallery_popup_{$properties.attr.id}" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -18,10 +18,10 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <img id="gallery_popup_img" src="" class="img-responsive">
+                    <img id="gallery_popup_img_{$properties.attr.id}" src="" class="img-responsive">
                 </div>
                 <div class="modal-footer">
-                    <h4 id="gallery_popup_desc"></h4>
+                    <h4 id="gallery_popup_desc_{$properties.attr.id}"></h4>
                 </div>
             </div>
         </div>
@@ -29,17 +29,18 @@
     {if $popupEnabled}
     <script>
         $(function () {
-            $(".gallery_zoom_btn").click(function (e) {
+            $("#{$properties.attr.id} .gallery_zoom_btn").click(function (e) {
                 var source = $(this).find("img").attr("src");
                 var desc = $(this).find("img").data("desc");
                 source = source || this.getAttribute("data-src");
-                $("#gallery_popup_img").attr("src", source);
-                $("#gallery_popup_desc").text(desc);
-                $("#gallery_popup").modal("show");
+                $("#gallery_popup_img_{$properties.attr.id}").attr("src", source);
+                $("#gallery_popup_desc_{$properties.attr.id}").text(desc);
+                $("#gallery_popup_{$properties.attr.id}").modal("show");
             });
         });
     </script>
     {/if}
+    {*todo editor: in shop-styles übernehmen*}
     <style>
         .gal-container{
             padding: 12px;

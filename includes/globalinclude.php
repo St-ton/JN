@@ -5,6 +5,8 @@
  */
 $nStartzeit = microtime(true);
 
+
+
 if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
     require_once __DIR__ . '/config.JTL-Shop.ini.php';
 }
@@ -77,6 +79,7 @@ if (PHP_SAPI !== 'cli'
 }
 
 if (!JTL_INCLUDE_ONLY_DB) {
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_XAJAX . 'xajax_core/xajax.inc.php';

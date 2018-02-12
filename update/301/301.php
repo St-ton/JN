@@ -16,8 +16,7 @@
         die("Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!");
     }
 
-    require_once(PFAD_ROOT . PFAD_CLASSES_CORE."class.core.NiceDB.php");
-    require_once(PFAD_ROOT . PFAD_INCLUDES."tools.Global.php");
+    require_once(PFAD_ROOT . PFAD_INCLUDES . 'globalinclude.php');
     require_once(PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . "dbupdater_inc.php");
     
     //datenbankverbindung aufbauen

@@ -44,8 +44,8 @@ if ($bJustCreated !== true && isset($_SESSION['oBesucher']->kBesucher) && $_SESS
         ? $_SESSION['Kunde']->kKunde
         : 0;
     // update the databse
-    Shop::DB()->executeQuery("
-        INSERT INTO
+    Shop::DB()->executeQuery(
+        "INSERT INTO
             tbesucher(kBesucher, cIP, cSessID, cID, kKunde, kBestellung, cReferer, cUserAgent, cEinstiegsseite,
                 cBrowser, cAusstiegsseite, kBesucherBot, dLetzteAktivitaet, dZeit)
             VALUES(
@@ -70,8 +70,7 @@ if ($bJustCreated !== true && isset($_SESSION['oBesucher']->kBesucher) && $_SESS
                 cEinstiegsseite = VALUES(cEinstiegsseite), cBrowser = VALUES(cBrowser),
                 cAusstiegsseite = VALUES(cAusstiegsseite), kBesucherBot = VALUES(kBesucherBot),
                 dLetzteAktivitaet = VALUES(dLetzteAktivitaet), dZeit = VALUES(dZeit)
-        ;
-    ", 3);
+        ;", 3);
 }
 
 /**

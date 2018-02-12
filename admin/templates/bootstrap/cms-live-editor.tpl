@@ -145,6 +145,16 @@
                             </a>
                         </li>
                         <li>
+                            <a href="#" id="btn-import" data-toggle="tooltip" data-placement="bottom" title="Import">
+                                <i class="fa fa-upload"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" id="btn-export" data-toggle="tooltip" data-placement="bottom" title="Export">
+                                <i class="fa fa-download"></i>
+                            </a>
+                        </li>
+                        <li>
                             <a href="#" id="cle-btn-save-editor" data-toggle="tooltip" data-placement="bottom"
                                title="Seite speichern">
                                 <i class="fa fa-save"></i>

@@ -21,6 +21,7 @@ if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
     Jtllog::cronLog('Cron currently locked', 2);
     exit;
 }
+
 $oCron_arr = Shop::DB()->query(
     "SELECT tcron.*
         FROM tcron

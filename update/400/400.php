@@ -1,6 +1,7 @@
 <?php
 require_once '../../includes/config.JTL-Shop.ini.php';
-require_once PFAD_ROOT . 'includes/globalinclude.php';
+require_once PFAD_ROOT . 'includes/defines.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -11,8 +12,9 @@ defined('DB_NAME') || die('Kein MySql Datenbanknamen angegeben. Bitte config.JTL
 defined('DB_USER') || die('Kein MySql-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 defined('DB_PASS') || die('Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 
-require_once(PFAD_ROOT . PFAD_INCLUDES . 'globalinclude.php');
+require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
 $shop = Shop::getInstance();
+require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
 // datenbankverbindung aufbauen
 try {
     $GLOBALS['DB'] = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
@@ -20,8 +22,10 @@ try {
     die($exc->getMessage());
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
+require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Shopsetting.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
 //datenbankverbindung aufbauen
+require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.JTLCache.php';
 $cache = JTLCache::getInstance();
 $cache->setJtlCacheConfig();
 $options            = $cache->getOptions();

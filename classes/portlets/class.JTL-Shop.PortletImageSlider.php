@@ -29,7 +29,7 @@ class PortletImageSlider extends CMSPortlet
         if (!empty($this->properties['slides'][0]['url'])) {
             return
                 '<div class="text-center" ' . $this->getStyleString() .
-                '><img' . $this->properties['slides'][0]['srcStr'] .
+                '><img ' . $this->properties['slides'][0]['srcStr'] .
                 ' style="width: 98%; filter: grayscale(50%) opacity(60%)">' .
                 '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">' .
                 'Slider</p></div>';
@@ -38,7 +38,7 @@ class PortletImageSlider extends CMSPortlet
         if (!empty($this->properties['slides'][1]['url'])) {
             return
                 '<div class="text-center" '  . $this->getStyleString() .
-                '><img' . $this->properties['slides'][1]['srcStr'] .
+                '><img ' . $this->properties['slides'][1]['srcStr'] .
                 ' style="width: 98%;filter: grayscale(50%) opacity(60%)">' .
                 '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">' .
                 'Slider</p></div>';

@@ -404,4 +404,16 @@ class Status
 
         return false;
     }
+
+    /**
+     * Checks, whether SMTP is configured for sending mails but no encryption method is chosen for E-Mail-Server
+     * communication
+     *
+     * @return bool
+     */
+    public function hasInsecureMailConfig()
+    {
+        $emailConf = Shop::getConfig([CONF_EMAILS])['emails'];
+        return $emailConf['email_methode'] === 'smtp' && empty(trim($emailConf['email_smtp_verschluesselung']));
+    }
 }

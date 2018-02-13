@@ -173,6 +173,7 @@ class ProductFilterSearchResults
      */
     public function __construct($legacy = null)
     {
+        $this->products             = new Collection();
         $this->pages                = new stdClass();
         $this->pages->AktuelleSeite = 0;
         $this->pages->MaxSeiten     = 0;

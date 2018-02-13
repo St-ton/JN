@@ -1,6 +1,6 @@
 <?php
     require_once("../../includes/config.JTL-Shop.ini.php");
-    require_once(PFAD_ROOT . "includes/" . "defines.php");
+    require_once(PFAD_ROOT . 'includes/globalinclude.php');
 
     //existiert Konfiguration?
     if (!defined('DB_HOST')) {

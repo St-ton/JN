@@ -356,23 +356,16 @@ class JTLCache
     public function setCache($methodName)
     {
         $cache = null;
-        if (file_exists(CACHING_METHODS_DIR . 'class.cachingMethod.' . $methodName . '.php')) {
-            require_once CACHING_METHODS_DIR . 'class.cachingMethod.' . $methodName . '.php';
-            /** @var ICachingMethod $className */
-            $className = 'cache_' . $methodName;
-            $cache     = $className::getInstance($this->options);
-        }
+        /** @var ICachingMethod $className */
+        $className = 'cache_' . $methodName;
+        $cache     = $className::getInstance($this->options);
         // check method's health
         if (!empty($cache) && $cache instanceof ICachingMethod && $cache->isInitialized() && $cache->isAvailable()) {
             $this->setMethod($cache);
 
             return true;
         }
-        // fallback to null method
-        if (file_exists(CACHING_METHODS_DIR . 'class.cachingMethod.null.php')) {
-            require_once CACHING_METHODS_DIR . 'class.cachingMethod.null.php';
-            $this->setMethod(cache_null::getInstance($this->options));
-        }
+        $this->setMethod(cache_null::getInstance($this->options));
 
         return false;
     }

@@ -329,6 +329,7 @@
             <File Path="js/spin.js"/>
             <File Path="js/global.js"/>
             <File Path="js/wow.min.js"/>
+            <File Path="js/parallax.min.js"/>
             <File Path="js/Chart.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
         </JS>
     </Minify>

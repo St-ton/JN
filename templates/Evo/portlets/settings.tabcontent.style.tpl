@@ -157,7 +157,7 @@
     <script>
         $(function(){
             $('#config-modal-body .background-color-picker').colorpicker({
-                format:'hex',
+                format:'rgba',
                 colorSelectors: {
                     '#ffffff': '#ffffff',
                     '#777777': '#777777',

@@ -1256,9 +1256,6 @@ class Boxen
      * @return bool
      */
     public function isSingleBox($kBox, $cPosition) {
-        $smarty = Shop::Smarty();
-        $path   = 'boxes/';
-
         if (!empty($kBox) && !empty($this->boxes[$cPosition])) {
             if (is_array($this->boxes[$cPosition]) && count($this->boxes[$cPosition]) === 1) {
 

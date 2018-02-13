@@ -338,13 +338,6 @@ class Boxen
         if (count($this->boxes) === 0) {
             $this->boxes = $this->holeBoxen($nSeite, $bAktiv, $bVisible);
         }
-        foreach ($this->boxes as $_position => $_boxes) {
-            if (is_array($_boxes)) {
-                foreach ($_boxes as $_box) {
-                    $_box->bSingleBox = $this->isSingleBox($_box->kBox, $_position);
-                }
-            }
-        }
 
         return $this;
     }
@@ -1245,69 +1238,6 @@ class Boxen
             $timestamp = filemtime($filename_cache);
             // Seconds
             return ((time() - $timestamp) < $timeout);
-        }
-
-        return false;
-    }
-
-    /**
-     * @param int    $kBox
-     * @param string $cPosition
-     * @return bool
-     */
-    public function isSingleBox($kBox, $cPosition) {
-        if (!empty($kBox) && !empty($this->boxes[$cPosition])) {
-            if (is_array($this->boxes[$cPosition]) && count($this->boxes[$cPosition]) === 1) {
-
-                return true;
-            }
-
-            $activeBoxes = [];
-            foreach ($this->boxes[$cPosition] as $_box) {
-                if (!empty($_box->cFilter)) {
-                    $pageType   = (int)$_box->kSeite;
-                    $allowedIDs = array_map('intval', explode(',', $_box->cFilter));
-                    if ($pageType === PAGE_ARTIKELLISTE) {
-                        if (!in_array((int)Shop::$kKategorie, $allowedIDs, true)) {
-                            continue;
-                        }
-                    } elseif ($pageType === PAGE_ARTIKEL) {
-                        if (!in_array((int)Shop::$kArtikel, $allowedIDs, true)) {
-                            continue;
-                        }
-                    } elseif ($pageType === PAGE_EIGENE) {
-                        if (!in_array((int)Shop::$kLink, $allowedIDs, true)) {
-                            continue;
-                        }
-                    } elseif ($pageType === PAGE_HERSTELLER) {
-                        if (!in_array((int)Shop::$kHersteller, $allowedIDs, true)) {
-                            continue;
-                        }
-                    }
-                }
-                $activeBoxes[] = $_box;
-            }
-            if (count($activeBoxes) === 1 && $activeBoxes[0]->kBox === $kBox) {
-
-                return true;
-            }
-
-            foreach ($activeBoxes as $_aBox) {
-                if ($_aBox->kBox === $kBox){
-                    continue;
-                }
-                if ($_aBox->kBoxvorlage === BOX_VERGLEICHSLISTE || $_aBox->kBoxvorlage === BOX_WUNSCHLISTE) {
-                    $_aBox = $this->prepareBox($_aBox->kBoxvorlage, $_aBox);
-                    if (empty($_aBox->Artikel) && empty($_aBox->CWunschlistePos_arr)) {
-
-                        continue;
-                    }
-                }
-
-                return false;
-            }
-
-            return true;
         }
 
         return false;

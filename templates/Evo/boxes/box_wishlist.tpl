@@ -43,6 +43,6 @@
             <a href="{get_static_route id='jtl.php'}?wl={if isset($Boxen.Wunschliste->CWunschlistePos_arr)}{$Boxen.Wunschliste->CWunschlistePos_arr[0]->kWunschliste}{else}{$oBox->CWunschlistePos_arr[0]->kWunschliste}{/if}" class="btn btn-default btn-block btn-sm">{lang key="goToWishlist" section="global"}</a>
         </div>
     </section>
-{elseif  empty($oBox->bSingleBox)}
+{else}
     <section class="hidden box-wishlist" id="sidebox{$oBox->kBox}"></section>
 {/if}

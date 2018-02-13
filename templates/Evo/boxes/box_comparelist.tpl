@@ -43,6 +43,6 @@
             </div>
         </section>
     {/if}
-{elseif empty($oBox->bSingleBox)}
+{else}
     <section class="hidden box-compare" id="sidebox{$oBox->kBox}"></section>
 {/if}

@@ -42,10 +42,10 @@ class PlausiKundenfeld extends Plausi
                 $this->xPlausiVar_arr['nEdit'] = 1;
             }
             if ($cTyp === 'auswahl') {
-                if (is_array($this->xPostVar_arr['cWert']) && 0 < count($this->xPostVar_arr['cWert'])) {
-                    foreach ($this->xPostVar_arr['cWert'] as $szFieldValue) {
+                if (is_array($this->xPostVar_arr['cfValues'])) {
+                    foreach ($this->xPostVar_arr['cfValues'] as $szFieldValue) {
                         // empty value are not allowed
-                        if (isset($szFieldValue) && 0 === strlen($szFieldValue)) {
+                        if (empty($szFieldValue['cWert'])) {
                             $this->xPlausiVar_arr['cWert'] = 1;
                         }
                     }

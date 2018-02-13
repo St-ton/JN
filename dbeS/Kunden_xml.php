@@ -88,7 +88,7 @@ function generiereNeuePasswoerter($xml)
         if (isset($oKundeXML->kKunde) && $oKundeXML->kKunde > 0) {
             $oKunde = new Kunde((int)$oKundeXML->kKunde);
             if ($oKunde->nRegistriert == 1 && $oKunde->cMail) {
-                $oKunde->prepareResetPassword($oKunde->cMail);
+                $oKunde->prepareResetPassword();
             } else {
                 syncException('Kunde hat entweder keine Emailadresse oder es ist ein unregistrierter Kunde', 8);
             }

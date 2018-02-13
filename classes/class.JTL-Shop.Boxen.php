@@ -120,7 +120,7 @@ class Boxen
      */
     public function gibBoxInhalt($kBox, $cISO = '')
     {
-        return (strlen($cISO) > 0)
+        return strlen($cISO) > 0
             ? Shop::DB()->select('tboxsprache', 'kBox', (int)$kBox, 'cISO', $cISO)
             : Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
     }
@@ -178,8 +178,8 @@ class Boxen
                 if ($oBox->eTyp === 'plugin') {
                     $cacheTags[] = CACHING_GROUP_PLUGIN . '_' . $oBox->kCustomID;
                 }
-                if ($force === true ||
-                    (isset($this->visibility[$oBox->ePosition]) && $this->visibility[$oBox->ePosition] === true)
+                if ($force === true 
+                    || (isset($this->visibility[$oBox->ePosition]) && $this->visibility[$oBox->ePosition] === true)
                 ) {
                     $kContainer           = (int)$oBox->kBox;
                     $oBox->oContainer_arr = [];
@@ -415,12 +415,12 @@ class Boxen
                         if (is_array($rndkeys)) {
                             foreach ($rndkeys as $key) {
                                 if (isset($menge[$key]->kArtikel) && $menge[$key]->kArtikel > 0) {
-                                    $kArtikel_arr[] = $menge[$key]->kArtikel;
+                                    $kArtikel_arr[] = (int)$menge[$key]->kArtikel;
                                 }
                             }
                         } elseif (is_int($rndkeys)) {
                             if (isset($menge[$rndkeys]->kArtikel) && $menge[$rndkeys]->kArtikel > 0) {
-                                $kArtikel_arr[] = $menge[$rndkeys]->kArtikel;
+                                $kArtikel_arr[] = (int)$menge[$rndkeys]->kArtikel;
                             }
                         }
                     }
@@ -457,33 +457,36 @@ class Boxen
             case BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN :
                 $oBox->compatName    = 'TrustedShopsKundenbewertung';
                 $cValidSprachISO_arr = ['de', 'en', 'fr', 'pl', 'es'];
-                if ($this->boxConfig['trustedshops']['trustedshops_nutzen'] === 'Y' &&
-                    in_array(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), $cValidSprachISO_arr, true)) {
-                    $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-                    $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-                    if (isset($oTrustedShopsKundenbewertung->cTSID)
-                        && (int)$oTrustedShopsKundenbewertung->nStatus === 1
-                        && strlen($oTrustedShopsKundenbewertung->cTSID) > 0
-                    ) {
-                        $cURLSprachISO_arr = [
-                            'de' => 'https://www.trustedshops.com/bewertung/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
-                            'en' => 'https://www.trustedshops.com/buyerrating/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
-                            'fr' => 'https://www.trustedshops.com/evaluation/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
-                            'es' => 'https://www.trustedshops.com/evaluacion/info_' . $oTrustedShopsKundenbewertung->cTSID . '.html',
-                            'pl' => ''
-                        ];
-                        $oBox->anzeigen = 'Y';
-                        if (!$this->cachecheck($filename = $oTrustedShopsKundenbewertung->cTSID . '.gif', 10800)) {
-                            if (!$oTrustedShops::ladeKundenbewertungsWidgetNeu($filename)) {
-                                $oBox->anzeigen = 'N';
-                            }
-                            // Prüft alle X Stunden ob ein Zertifikat noch gültig ist
-                            $oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                $lang                = Shop::getLanguageCode();
+                if ($this->boxConfig['trustedshops']['trustedshops_nutzen'] !== 'Y'
+                    || !in_array(StringHandler::convertISO2ISO639($lang), $cValidSprachISO_arr, true)
+                ) {
+                    break;
+                }
+                $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($lang));
+                $tsRating      = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($lang));
+                if (isset($tsRating->cTSID)
+                    && (int)$tsRating->nStatus === 1
+                    && strlen($tsRating->cTSID) > 0
+                ) {
+                    $cURLSprachISO_arr = [
+                        'de' => 'https://www.trustedshops.com/bewertung/info_' . $tsRating->cTSID . '.html',
+                        'en' => 'https://www.trustedshops.com/buyerrating/info_' . $tsRating->cTSID . '.html',
+                        'fr' => 'https://www.trustedshops.com/evaluation/info_' . $tsRating->cTSID . '.html',
+                        'es' => 'https://www.trustedshops.com/evaluacion/info_' . $tsRating->cTSID . '.html',
+                        'pl' => ''
+                    ];
+                    $oBox->anzeigen    = 'Y';
+                    if (!$this->cachecheck($filename = $tsRating->cTSID . '.gif', 10800)) {
+                        if (!$oTrustedShops::ladeKundenbewertungsWidgetNeu($filename)) {
+                            $oBox->anzeigen = 'N';
                         }
-                        $oBox->cBildPfad    = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . $filename;
-                        $oBox->cBildPfadURL = $cURLSprachISO_arr[StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])];
-                        $oBox->oStatistik   = $oTrustedShops->gibKundenbewertungsStatistik();
+                        // Prüft alle X Stunden ob ein Zertifikat noch gültig ist
+                        $oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639($lang));
                     }
+                    $oBox->cBildPfad    = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . $filename;
+                    $oBox->cBildPfadURL = $cURLSprachISO_arr[StringHandler::convertISO2ISO639($lang)];
+                    $oBox->oStatistik   = $oTrustedShops->gibKundenbewertungsStatistik();
                 }
                 break;
 
@@ -491,8 +494,8 @@ class Boxen
                 $oBox->compatName = 'Umfrage';
                 $oBox->anzeigen   = 'N';
                 $cSQL             = '';
-                if (isset($this->boxConfig['umfrage']['news_anzahl_box']) &&
-                    (int)$this->boxConfig['umfrage']['news_anzahl_box'] > 0
+                if (isset($this->boxConfig['umfrage']['news_anzahl_box'])
+                    && (int)$this->boxConfig['umfrage']['news_anzahl_box'] > 0
                 ) {
                     $cSQL = ' LIMIT ' . (int)$this->boxConfig['umfrage']['umfrage_box_anzahl'];
                 }
@@ -560,10 +563,21 @@ class Boxen
                             $oArtikel->fuelleArtikel($oPreisradar->kArtikel, $defaultOptions);
                             $oArtikel->oPreisradar                     = new stdClass();
                             $oArtikel->oPreisradar->fDiff              = $oPreisradar->fDiff * -1;
-                            $oArtikel->oPreisradar->fDiffLocalized[0]  = gibPreisStringLocalized(berechneBrutto($oArtikel->oPreisradar->fDiff, $oArtikel->Preise->fUst));
-                            $oArtikel->oPreisradar->fDiffLocalized[1]  = gibPreisStringLocalized($oArtikel->oPreisradar->fDiff);
-                            $oArtikel->oPreisradar->fOldVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($oArtikel->Preise->fVKNetto + $oArtikel->oPreisradar->fDiff, $oArtikel->Preise->fUst));
-                            $oArtikel->oPreisradar->fOldVKLocalized[1] = gibPreisStringLocalized($oArtikel->Preise->fVKNetto + $oArtikel->oPreisradar->fDiff);
+                            $oArtikel->oPreisradar->fDiffLocalized[0]  = gibPreisStringLocalized(
+                                berechneBrutto($oArtikel->oPreisradar->fDiff, $oArtikel->Preise->fUst)
+                            );
+                            $oArtikel->oPreisradar->fDiffLocalized[1]  = gibPreisStringLocalized(
+                                $oArtikel->oPreisradar->fDiff
+                            );
+                            $oArtikel->oPreisradar->fOldVKLocalized[0] = gibPreisStringLocalized(
+                                berechneBrutto(
+                                    $oArtikel->Preise->fVKNetto + $oArtikel->oPreisradar->fDiff,
+                                    $oArtikel->Preise->fUst
+                                )
+                            );
+                            $oArtikel->oPreisradar->fOldVKLocalized[1] = gibPreisStringLocalized(
+                                $oArtikel->Preise->fVKNetto + $oArtikel->oPreisradar->fDiff
+                            );
                             $oArtikel->oPreisradar->fProzentDiff       = $oPreisradar->fProzentDiff;
 
                             if ((int)$oArtikel->kArtikel > 0) {
@@ -592,9 +606,12 @@ class Boxen
                             tnewskategorie.cPreviewImage, tseo.cSeo,
                             count(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
                             FROM tnewskategorie
-                            LEFT JOIN tnewskategorienews ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                            LEFT JOIN tnews ON tnews.kNews = tnewskategorienews.kNews
-                            LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
+                            LEFT JOIN tnewskategorienews 
+                                ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
+                            LEFT JOIN tnews 
+                                ON tnews.kNews = tnewskategorienews.kNews
+                            LEFT JOIN tseo 
+                                ON tseo.cKey = 'kNewsKategorie'
                                 AND tseo.kKey = tnewskategorie.kNewsKategorie
                                 AND tseo.kSprache = " . $kSprache . "
                             WHERE tnewskategorie.kSprache = " . $kSprache . "
@@ -685,7 +702,7 @@ class Boxen
                 // Alle kArtikels aus der DB Menge in ein Array speichern
                 foreach ($oTopBewertet_arr as $oTopBewertet) {
                     $oTopBewertet->kArtikel = (int)$oTopBewertet->kArtikel;
-                    $kArtikel_arr[]         = $oTopBewertet->kArtikel;
+                    $kArtikel_arr[]         = (int)$oTopBewertet->kArtikel;
                 }
                 // Wenn das Array Elemente besitzt
                 if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
@@ -958,9 +975,8 @@ class Boxen
                     $oBox->anzeigen = 'N';
                     break;
                 }
-                $kArtikel_arr = [];
-                $limit        = (int)$this->boxConfig['boxen']['box_erscheinende_anzahl_anzeige'];
-                $cacheID      = 'box_ikv_' . $currencyCachePart . $kKundengruppe . '_' .
+                $limit   = (int)$this->boxConfig['boxen']['box_erscheinende_anzahl_anzeige'];
+                $cacheID = 'box_ikv_' . $currencyCachePart . $kKundengruppe . '_' .
                     $kSprache . '_' . $limit . md5($this->lagerFilter . $this->cVaterSQL);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) !== false) {
                     $oBox = $oBoxCached;
@@ -978,12 +994,8 @@ class Boxen
                             AND now() < tartikel.dErscheinungsdatum
                         ORDER BY rand() LIMIT " . $limit, 2
                 );
-                foreach ($menge as $obj) {
-                    if ($obj->kArtikel > 0) {
-                        $kArtikel_arr[] = $obj->kArtikel;
-                    }
-                }
-                $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+                $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
+                $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                 if (count($kArtikel_arr) > 0) {
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
@@ -1031,9 +1043,8 @@ class Boxen
                     $oBox->anzeigen = 'N';
                     break;
                 }
-                $kArtikel_arr = [];
-                $limit        = $this->boxConfig['boxen']['box_topangebot_anzahl_anzeige'];
-                $cacheID      = 'box_top_offer_' . $currencyCachePart . $kKundengruppe . '_' .
+                $limit   = $this->boxConfig['boxen']['box_topangebot_anzahl_anzeige'];
+                $cacheID = 'box_top_offer_' . $currencyCachePart . $kKundengruppe . '_' .
                     $kSprache . '_' . $limit . md5($this->lagerFilter . $this->cVaterSQL);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) !== false) {
                     $oBox = $oBoxCached;
@@ -1051,14 +1062,8 @@ class Boxen
                             $this->cVaterSQL
                         ORDER BY rand() LIMIT " . $limit, 2
                 );
-                if (is_array($menge) && count($menge) > 0) {
-                    foreach ($menge as $obj) {
-                        if ($obj->kArtikel > 0) {
-                            $kArtikel_arr[] = $obj->kArtikel;
-                        }
-                    }
-                }
-                $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+                $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
+                $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                 if (count($kArtikel_arr) > 0) {
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
@@ -1079,9 +1084,8 @@ class Boxen
                     $oBox->anzeigen = 'N';
                     break;
                 }
-                $kArtikel_arr = [];
-                $limit        = $this->boxConfig['boxen']['box_neuimsortiment_anzahl_anzeige'];
-                $alter_tage   = 30;
+                $limit      = $this->boxConfig['boxen']['box_neuimsortiment_anzahl_anzeige'];
+                $alter_tage = 30;
                 if ($this->boxConfig['boxen']['box_neuimsortiment_alter_tage'] > 0) {
                     $alter_tage = $this->boxConfig['boxen']['box_neuimsortiment_alter_tage'];
                 }
@@ -1105,12 +1109,8 @@ class Boxen
                             AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
                         ORDER BY rand() LIMIT " . $limit, 2
                 );
-                foreach ($menge as $obj) {
-                    if ($obj->kArtikel > 0) {
-                        $kArtikel_arr[] = (int)$obj->kArtikel;
-                    }
-                }
-                $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+                $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
+                $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                 if (count($kArtikel_arr) > 0) {
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
@@ -1131,9 +1131,8 @@ class Boxen
                     $oBox->anzeigen = 'N';
                     break;
                 }
-                $kArtikel_arr = [];
-                $limit        = $this->boxConfig['boxen']['box_sonderangebote_anzahl_anzeige'];
-                $cacheID      = 'box_special_offer_' . $currencyCachePart . $kKundengruppe . '_' .
+                $limit   = $this->boxConfig['boxen']['box_sonderangebote_anzahl_anzeige'];
+                $cacheID = 'box_special_offer_' . $currencyCachePart . $kKundengruppe . '_' .
                     $kSprache . '_' . $limit . md5($this->lagerFilter . $this->cVaterSQL);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) !== false) {
                     $oBox = $oBoxCached;
@@ -1160,12 +1159,8 @@ class Boxen
                             $this->cVaterSQL
                         ORDER BY rand() LIMIT " . $limit, 2
                 );
-                foreach ($menge as $obj) {
-                    if ($obj->kArtikel > 0) {
-                        $kArtikel_arr[] = (int)$obj->kArtikel;
-                    }
-                }
-                $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+                $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
+                $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                 if (count($kArtikel_arr) > 0) {
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
@@ -1234,13 +1229,10 @@ class Boxen
     private function cachecheck($filename_cache, $timeout = 10800)
     {
         $filename_cache = PFAD_ROOT . PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
-        if (file_exists($filename_cache)) {
-            $timestamp = filemtime($filename_cache);
-            // Seconds
-            return ((time() - $timestamp) < $timeout);
-        }
 
-        return false;
+        return file_exists($filename_cache)
+            ? ((time() - filemtime($filename_cache)) < $timeout)
+            : false;
     }
 
     /**
@@ -1252,13 +1244,14 @@ class Boxen
     {
         $smarty          = Shop::Smarty();
         $originalArticle = $smarty->getTemplateVars('Artikel');
+        $productFilter   = Shop::getProductFilter();
         $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
-        //check whether filters should be displayed after a box
-        $filterAfter = (!empty($this->boxConfig) && isset($GLOBALS['NaviFilter'], $GLOBALS['oSuchergebnisse']))
-            ? $this->gibBoxenFilterNach(Shop::getProductFilter(), $GLOBALS['oSuchergebnisse'])
+        // check whether filters should be displayed after a box
+        $filterAfter = !empty($this->boxConfig)
+            ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults())
             : 0;
         $path              = 'boxes/';
-        $this->lagerFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+        $this->lagerFilter = $productFilter->getFilterSQL()->getStockFilterSQL();
         $htmlArray         = [
             'top'    => null,
             'right'  => null,
@@ -1503,11 +1496,9 @@ class Boxen
             return $oBoxAnzeige;
         }
 
-        if ($nSeite !== 0 && $bGlobal) {
-            return $this->holeBoxAnzeige(0);
-        }
-
-        return false;
+        return $nSeite !== 0 && $bGlobal
+            ? $this->holeBoxAnzeige(0)
+            : false;
     }
 
     /**
@@ -1524,8 +1515,8 @@ class Boxen
         if ($nSeite === 0) {
             $bOk = true;
             for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
-                $bOk = Shop::DB()->executeQueryPrepared("
-                  REPLACE INTO tboxenanzeige 
+                $bOk = Shop::DB()->executeQueryPrepared(
+                  "REPLACE INTO tboxenanzeige 
                       SET bAnzeigen = :show,
                           nSeite = :page, 
                           ePosition = :position",
@@ -1537,8 +1528,8 @@ class Boxen
             return $bOk;
         }
 
-        return Shop::DB()->executeQueryPrepared("
-            REPLACE INTO tboxenanzeige 
+        return Shop::DB()->executeQueryPrepared(
+            "REPLACE INTO tboxenanzeige 
                 SET bAnzeigen = :show, 
                     nSeite = :page, 
                     ePosition = :position",
@@ -1714,7 +1705,6 @@ class Boxen
             $cFilter = array_unique($cFilter);
             $cFilter = implode(',', $cFilter);
         }
-
         $_upd           = new stdClass();
         $_upd->cFilter  = $cFilter;
 
@@ -1915,9 +1905,9 @@ class Boxen
                 foreach ($_boxes as $_box) {
                     $_box = $this->prepareBox($_box->kBoxvorlage, $_box);
                     if (isset($_box->compatName)) {
-                        $boxen[$_box->compatName] = ($_box->compatName === 'oGlobalMerkmal_arr') ?
-                            $_box->globaleMerkmale :
-                            $_box;
+                        $boxen[$_box->compatName] = $_box->compatName === 'oGlobalMerkmal_arr' 
+                            ? $_box->globaleMerkmale 
+                            : $_box;
                     }
                 }
             }
@@ -1973,6 +1963,7 @@ class Boxen
                 'hover' => $cColorHover ?: $cRandomColor
             ];
         }
+
         return urlencode(json_encode($oTags_arr));
     }
 
@@ -1987,7 +1978,7 @@ class Boxen
         $i     = 0;
         foreach ($this->boxes as $position => $_boxes) {
             if ($_boxes !== null) {
-                $class .= (($i !== 0) ? ' ' : '') . 'panel_' . $position;
+                $class .= ($i !== 0 ? ' ' : '') . 'panel_' . $position;
             }
             ++$i;
         }
@@ -2029,7 +2020,7 @@ class Boxen
      */
     public function getValidPageTypes()
     {
-        $validPageTypes = [
+        return [
             PAGE_UNBEKANNT, PAGE_ARTIKEL, PAGE_ARTIKELLISTE, PAGE_WARENKORB, PAGE_MEINKONTO,
             PAGE_KONTAKT, PAGE_UMFRAGE, PAGE_NEWS, PAGE_NEWSLETTER, PAGE_LOGIN, PAGE_REGISTRIERUNG, PAGE_BESTELLVORGANG,
             PAGE_BEWERTUNG, PAGE_DRUCKANSICHT, PAGE_PASSWORTVERGESSEN, PAGE_WARTUNG, PAGE_WUNSCHLISTE,
@@ -2038,7 +2029,5 @@ class Boxen
             PAGE_NEWSLETTERARCHIV, PAGE_NEWSARCHIV, PAGE_EIGENE, PAGE_AUSWAHLASSISTENT, PAGE_BESTELLABSCHLUSS,
             PAGE_RMA
         ];
-
-        return $validPageTypes;
     }
 }

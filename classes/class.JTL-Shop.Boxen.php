@@ -1248,7 +1248,7 @@ class Boxen
         $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
         // check whether filters should be displayed after a box
         $filterAfter = !empty($this->boxConfig)
-            ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults())
+            ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults(false))
             : 0;
         $path              = 'boxes/';
         $this->lagerFilter = $productFilter->getFilterSQL()->getStockFilterSQL();

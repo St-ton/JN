@@ -121,6 +121,10 @@ class Notification implements IteratorAggregate, Countable
             $this->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Der Profiler ist aktiv. Dies kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.');
         }
 
+        if ($status->hasNewPluginVersions()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Es sind neue Plugin-Versionen vorhanden.', 'pluginverwaltung.php');
+        }
+
         if ((int)$config['global']['anti_spam_method'] === 7 && !reCaptchaConfigured()) {
             $this->add(NotificationEntry::TYPE_WARNING, 'Konfiguration', 'Sie haben Google reCaptcha als Spamschutz-Methode gew&auml;hlt, aber Website- und/oder Geheimer Schl&uuml;ssel nicht angegeben.', 'einstellungen.php?kSektion=1#anti_spam_method');
         }
@@ -149,6 +153,14 @@ class Notification implements IteratorAggregate, Countable
             $this->add(NotificationEntry::TYPE_WARNING, 'Konfiguration',
                 'Sie nutzen Grafikpreise. Diese Funktion ist als "deprecated" markiert.<br/>Bitte beachten Sie die Hinweise unter "Storefront->Artikel->Preisanzeige".',
                 'preisanzeige.php');
+        }
+
+        if ($status->hasInvalidPasswordResetMailTemplate()) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                'E-Mail-Vorlage defekt',
+                'Die E-Mail-Vorlage "Passwort Vergessen" ist veraltet. Die Variable $neues_passwort ist nicht mehr verfügbar. Bitte ersetzen Sie diese durch $passwordResetLink oder setzen Sie die Vorlage zurück.'
+            );
         }
 
         return $this;

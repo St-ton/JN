@@ -389,6 +389,13 @@ class Preise
             }
         }
         $this->berechneVKs();
+        executeHook('HOOK_PRICES_CONSTRUCT', [
+            'customerGroupID' => $kKundengruppe,
+            'customerID'      => $kKunde,
+            'productID'       => $kArtikel,
+            'taxClassID'      => $kSteuerklasse,
+            'prices'          => $this
+        ]);
     }
 
     /**
@@ -526,6 +533,7 @@ class Preise
         $this->cPreis4Localized[1] = gibPreisStringLocalized($this->fPreis4);
         $this->cPreis5Localized[1] = gibPreisStringLocalized($this->fPreis5);
 
+        $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->cPreisLocalized_arr[] = [
                 gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst)),
@@ -572,6 +580,7 @@ class Preise
         $this->fStaffelpreis5[0] = berechneBrutto($this->fPreis5 * $factor, $this->fUst);
         $this->fStaffelpreis5[1] = $this->fPreis5 * $factor;
 
+        $this->fStaffelpreis_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->fStaffelpreis_arr[] = [
                 berechneBrutto($fPreis * $factor, $this->fUst),

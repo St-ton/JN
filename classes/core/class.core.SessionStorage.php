@@ -23,11 +23,7 @@ class SessionStorage
     public function __construct($handler = null, array $options = [], $start = true)
     {
         ini_set('session.use_cookies', 1);
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            session_register_shutdown();
-        } else {
-            register_shutdown_function('session_write_close');
-        }
+        session_register_shutdown();
 
         $this->setHandler($handler, $start);
     }
@@ -48,18 +44,7 @@ class SessionStorage
             $res = true;
         } elseif ($this->_handler instanceof SessionHandlerInterface) {
             ini_set('session.save_handler', 'user');
-            if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-                $res = session_set_save_handler($this->_handler, true);
-            } else {
-                $res = session_set_save_handler(
-                    [$this->_handler, 'open'],
-                    [$this->_handler, 'close'],
-                    [$this->_handler, 'read'],
-                    [$this->_handler, 'write'],
-                    [$this->_handler, 'destroy'],
-                    [$this->_handler, 'gc']
-                );
-            }
+            $res = session_set_save_handler($this->_handler, true);
         } else {
             throw new \InvalidArgumentException('Must implement \SessionHandlerInterface.');
         }

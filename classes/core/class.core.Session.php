@@ -323,9 +323,9 @@ class Session
         }
 
         //wurde kunde über wawi aktualisiert?
-        if (isset($_SESSION['Kunde']->kKunde) &&
-            $_SESSION['Kunde']->kKunde > 0 &&
-            !isset($_SESSION['kundendaten_aktualisiert'])
+        if (isset($_SESSION['Kunde']->kKunde)
+            && $_SESSION['Kunde']->kKunde > 0
+            && !isset($_SESSION['kundendaten_aktualisiert'])
         ) {
             $Kunde = Shop::DB()->query(
                 "SELECT kKunde

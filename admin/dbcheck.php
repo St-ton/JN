@@ -17,6 +17,7 @@ $cDBError_arr      = [];
 $cDBFileStruct_arr = getDBFileStruct();
 $maintenanceResult = null;
 $engineUpdate      = null;
+$fulltextIndizes   = null;
 
 if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 'script' && validateToken()) {
     $scriptName = 'innodb_and_utf8_update_'
@@ -34,6 +35,7 @@ if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 's
 $cDBStruct_arr = getDBStruct(true);
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
+    CONF_ARTIKELUEBERSICHT,
 ]);
 
 if (!empty($_POST['action']) && !empty($_POST['check'])) {
@@ -53,7 +55,8 @@ if (count($cDBError_arr) > 0) {
         return strpos($item, 'keine InnoDB-Tabelle') !== false;
     });
     if (count($cEngineError) > 5) {
-        $engineUpdate = determineEngineUpdate($cDBStruct_arr);
+        $engineUpdate    = determineEngineUpdate($cDBStruct_arr);
+        $fulltextIndizes = DBMigrationHelper::getFulltextIndizes();
     }
 }
 
@@ -63,8 +66,10 @@ $smarty->assign('cFehler', $cFehler)
        ->assign('cDBError_arr', $cDBError_arr)
        ->assign('JTL_VERSION', JTL_VERSION)
        ->assign('maintenanceResult', $maintenanceResult)
-       ->assign('engineUpdate', $engineUpdate)
        ->assign('scriptGenerationAvailable', defined('ADMIN_MIGRATION') && ADMIN_MIGRATION)
        ->assign('tab', isset($_REQUEST['tab']) ? StringHandler::filterXSS($_REQUEST['tab']) : '')
        ->assign('Einstellungen', $Einstellungen)
+       ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())
+       ->assign('FulltextIndizes', $fulltextIndizes)
+       ->assign('engineUpdate', $engineUpdate)
        ->display('dbcheck.tpl');

@@ -1,5 +1,5 @@
 {assign var=Suchergebnisse value=$NaviFilter->getSearchResults(false)}
-{if $Suchergebnisse->getProducts()->elemente|@count > 0}
+{if $Suchergebnisse->getProducts()|@count > 0}
     {if $Einstellungen.navigationsfilter.allgemein_tagfilter_benutzen === 'Y' && $Suchergebnisse->getTagFilterOptions()|@count > 0 && $Suchergebnisse->getTagFilterJSON()}
         <hr>
         <div class="panel panel-default tags">

@@ -195,7 +195,7 @@ class FilterSearch extends AbstractFilter
             'cSuche',
             Shop::DB()->escape($tempQueries[0])
         );
-        if ($filterSpam && !empty($blacklist->kSuchanfrageBlacklist)) {
+        if ($filterSpam && $blacklist !== null && !empty($blacklist->kSuchanfrageBlacklist)) {
             return false;
         }
         // Ist MD5(IP) bereits X mal im Cache
@@ -206,7 +206,7 @@ class FilterSearch extends AbstractFilter
                 WHERE kSprache = :lang
                 AND cIP = :ip',
             ['lang' => $languageID, 'ip' => gibIP()],
-            1
+            NiceDB::RET_SINGLE_OBJECT
         );
         $ipUsed       = Shop::DB()->select(
             'tsuchanfragencache',
@@ -221,7 +221,7 @@ class FilterSearch extends AbstractFilter
         );
         if (!$filterSpam
             || (isset($ip_cache_erg->anzahl) && $ip_cache_erg->anzahl < $max_ip_count
-                && (!isset($ipUsed->kSuchanfrageCache) || !$ipUsed->kSuchanfrageCache))
+                && ($ipUsed === null || empty($ipUsed->kSuchanfrageCache)))
         ) {
             // Fülle Suchanfragencache
             $searchQueryCache           = new stdClass();
@@ -234,7 +234,8 @@ class FilterSearch extends AbstractFilter
             Shop::DB()->query(
                 'DELETE 
                     FROM tsuchanfragencache 
-                    WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)', 4
+                    WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)',
+                4
             );
             if ($hits > 0) {
                 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
@@ -260,7 +261,8 @@ class FilterSearch extends AbstractFilter
                             SET nAnzahlTreffer = ' . (int)$searchQuery->nAnzahlTreffer . ',
                                 nAnzahlGesuche = nAnzahlGesuche+1, 
                                 dZuletztGesucht = now()
-                            WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage, 4
+                            WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage,
+                        4
                     );
                 } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
                     Shop::DB()->delete(
@@ -325,7 +327,7 @@ class FilterSearch extends AbstractFilter
                 /** @var FilterSearch $f */
                 return $f->getValue();
             }, $searchFilter);
-        } elseif (isset($searchFilter->kSuchCache)) {
+        } elseif ($searchFilter->kSuchCache > 0) {
             $searchCache[] = (int)$searchFilter->kSuchCache;
             $count         = 1;
         } elseif (($value = $searchFilter->getValue()) > 0) {
@@ -398,7 +400,7 @@ class FilterSearch extends AbstractFilter
                 FROM (' . $query . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
                     ORDER BY ssMerkmal.cSuche' . $nLimit;
-            $searchFilters = Shop::DB()->query($query, 2);
+            $searchFilters = Shop::DB()->query($query, NiceDB::RET_ARRAY_OF_OBJECTS);
             $searchQueries = [];
             if ($this->productFilter->hasSearch()) {
                 $searchQueries[] = $this->productFilter->getSearch()->getValue();
@@ -435,12 +437,9 @@ class FilterSearch extends AbstractFilter
             foreach ($searchFilters as $searchFilter) {
                 $class = rand(1, 10);
                 if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
-                    $class = round(
-                            ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
-                            $nPrioStep
-                        ) + 1;
+                    $class = round(($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
                 }
-                $fo = (new FilterOption())
+                $options[] = (new FilterOption())
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setClass($class)
@@ -451,11 +450,9 @@ class FilterSearch extends AbstractFilter
                     ->setURL($this->productFilter->getFilterURL()->getURL(
                         $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                     ))
+                    ->setData('cSuche', $searchFilter->cSuche)
+                    ->setData('kSuchanfrage', $searchFilter->kSuchanfrage)
                     ->setIsActive(in_array((int)$searchFilter->kSuchanfrage, $activeValues, true));
-                $fo->cSuche       = $searchFilter->cSuche;
-                $fo->kSuchanfrage = $searchFilter->kSuchanfrage;
-
-                $options[] = $fo;
             }
         }
         $this->options = $options;

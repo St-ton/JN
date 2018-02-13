@@ -737,40 +737,40 @@ class WarenkorbHelper
     }
     
     /**
-     * @param Artikel|object $article
+     * @param Artikel|object $product
      * @param int            $qty
      * @param array          $attributes
      * @param int            $accuracy
      * @return array
      * @former pruefeFuegeEinInWarenkorb()
      */
-    public static function addToCartCheck($article, $qty, $attributes, $accuracy = 2)
+    public static function addToCartCheck($product, $qty, $attributes, $accuracy = 2)
     {
         $cart          = Session::Cart();
-        $kArtikel      = $article->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
+        $kArtikel      = $product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
         $conf          = Shop::getSettings([CONF_GLOBAL]);
         // Abnahmeintervall
-        if ($article->fAbnahmeintervall > 0) {
+        if ($product->fAbnahmeintervall > 0) {
             $dVielfache = function_exists('bcdiv')
-                ? round($article->fAbnahmeintervall * ceil(bcdiv($qty, $article->fAbnahmeintervall, $accuracy + 1)), 2)
-                : round($article->fAbnahmeintervall * ceil($qty / $article->fAbnahmeintervall), $accuracy);
+                ? round($product->fAbnahmeintervall * ceil(bcdiv($qty, $product->fAbnahmeintervall, $accuracy + 1)), 2)
+                : round($product->fAbnahmeintervall * ceil($qty / $product->fAbnahmeintervall), $accuracy);
             if ($dVielfache != $qty) {
                 $redirectParam[] = R_ARTIKELABNAHMEINTERVALL;
             }
         }
-        if ((int)$qty != $qty && $article->cTeilbar !== 'Y') {
+        if ((int)$qty != $qty && $product->cTeilbar !== 'Y') {
             $qty = max((int)$qty, 1);
         }
         // mbm
-        if ($article->fMindestbestellmenge > $qty + $cart->gibAnzahlEinesArtikels($kArtikel)) {
+        if ($product->fMindestbestellmenge > $qty + $cart->gibAnzahlEinesArtikels($kArtikel)) {
             $redirectParam[] = R_MINDESTMENGE;
         }
         // lager beachten
-        if ($article->cLagerBeachten === 'Y'
-            && $article->cLagerVariation !== 'Y'
-            && $article->cLagerKleinerNull !== 'Y'
-            && $article->fPackeinheit * ($qty + $cart->gibAnzahlEinesArtikels($kArtikel)) > $article->fLagerbestand
+        if ($product->cLagerBeachten === 'Y'
+            && $product->cLagerVariation !== 'Y'
+            && $product->cLagerKleinerNull !== 'Y'
+            && $product->fPackeinheit * ($qty + $cart->gibAnzahlEinesArtikels($kArtikel)) > $product->fLagerbestand
         ) {
             $redirectParam[] = R_LAGER;
         }
@@ -779,45 +779,45 @@ class WarenkorbHelper
             $redirectParam[] = R_LOGIN;
         }
         // kein vorbestellbares Produkt, aber mit Erscheinungsdatum in Zukunft
-        if ($article->nErscheinendesProdukt && $conf['global']['global_erscheinende_kaeuflich'] === 'N') {
+        if ($product->nErscheinendesProdukt && $conf['global']['global_erscheinende_kaeuflich'] === 'N') {
             $redirectParam[] = R_VORBESTELLUNG;
         }
         // Die maximale Bestellmenge des Artikels wurde überschritten
-        if (isset($article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE])
-            && $article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] > 0
-            && ($qty > $article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]
+        if (isset($product->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE])
+            && $product->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] > 0
+            && ($qty > $product->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]
                 || ($cart->gibAnzahlEinesArtikels($kArtikel) + $qty) >
-                $article->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE])
+                $product->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE])
         ) {
             $redirectParam[] = R_MAXBESTELLMENGE;
         }
         // Der Artikel ist unverkäuflich
-        if (isset($article->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])
-            && $article->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH] == 1
+        if (isset($product->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])
+            && $product->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH] == 1
         ) {
             $redirectParam[] = R_UNVERKAEUFLICH;
         }
         // Preis auf Anfrage
         // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
-        if ($article->bHasKonfig === false
-            && !empty($article->isKonfigItem)
-            && $article->inWarenkorbLegbar === INWKNICHTLEGBAR_PREISAUFANFRAGE
+        if ($product->bHasKonfig === false
+            && !empty($product->isKonfigItem)
+            && $product->inWarenkorbLegbar === INWKNICHTLEGBAR_PREISAUFANFRAGE
         ) {
-            $article->inWarenkorbLegbar = 1;
+            $product->inWarenkorbLegbar = 1;
         }
-        if (($article->bHasKonfig === false && empty($article->isKonfigItem))
-            && (!isset($article->Preise->fVKNetto) || $article->Preise->fVKNetto == 0)
+        if (($product->bHasKonfig === false && empty($product->isKonfigItem))
+            && (!isset($product->Preise->fVKNetto) || $product->Preise->fVKNetto == 0)
             && $conf['global']['global_preis0'] === 'N'
         ) {
             $redirectParam[] = R_AUFANFRAGE;
         }
         // Stücklistenkomponente oder Stückliste und ein Teil ist bereits im Warenkorb?
-        $xReturn = pruefeWarenkorbStueckliste($article, $qty);
+        $xReturn = pruefeWarenkorbStueckliste($product, $qty);
         if ($xReturn !== null) {
             $redirectParam[] = $xReturn;
         }
         // fehlen zu einer Variation werte?
-        foreach ($article->Variationen as $var) {
+        foreach ($product->Variationen as $var) {
             //min. 1 Problem?
             if (count($redirectParam) > 0) {
                 break;
@@ -846,9 +846,9 @@ class WarenkorbHelper
                         break;
                     }
                     //schaue, ob genug auf Lager von jeder var
-                    if ($article->cLagerBeachten === 'Y'
-                        && $article->cLagerVariation === 'Y'
-                        && $article->cLagerKleinerNull !== 'Y'
+                    if ($product->cLagerBeachten === 'Y'
+                        && $product->cLagerVariation === 'Y'
+                        && $product->cLagerKleinerNull !== 'Y'
                     ) {
                         if ($EigenschaftWert->fPackeinheit == 0) {
                             $EigenschaftWert->fPackeinheit = 1;
@@ -872,6 +872,13 @@ class WarenkorbHelper
                 break;
             }
         }
+        executeHook('HOOK_ADD_TO_CART_CHECK', [
+            'product'       => $product,
+            'quantity'      => $qty,
+            'attributes'    => $attributes,
+            'accuracy'      => $accuracy,
+            'redirectParam' => &$redirectParam
+        ]);
 
         return $redirectParam;
     }

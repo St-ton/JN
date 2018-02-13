@@ -77,7 +77,7 @@ class PHPSettingsHelper
      */
     public function safeMode()
     {
-        return (bool)ini_get('safe_mode');
+        return false;
     }
     
     /**

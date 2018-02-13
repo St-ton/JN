@@ -125,7 +125,8 @@ class FilterItemRating extends AbstractFilter
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
                 FROM (' . $query . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne
-                ORDER BY ssMerkmal.nSterne DESC', 2
+                ORDER BY ssMerkmal.nSterne DESC',
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
         $nSummeSterne     = 0;
         $additionalFilter = new self($this->getProductFilter());

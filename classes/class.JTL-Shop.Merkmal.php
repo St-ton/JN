@@ -86,15 +86,21 @@ class Merkmal
     public $cBildURLNormal;
 
     /**
+     * @var int
+     */
+    public $kSprache;
+
+    /**
      * Konstruktor
      *
      * @param int  $kMerkmal - Falls angegeben, wird das Merkmal mit angegebenem kMerkmal aus der DB geholt
      * @param bool $bMMW
+     * @param int  $kSprache
      */
-    public function __construct($kMerkmal = 0, $bMMW = false)
+    public function __construct($kMerkmal = 0, $bMMW = false, $kSprache = 0)
     {
         if ((int)$kMerkmal > 0) {
-            $this->loadFromDB($kMerkmal, $bMMW);
+            $this->loadFromDB($kMerkmal, $bMMW, $kSprache);
         }
     }
 
@@ -103,19 +109,15 @@ class Merkmal
      *
      * @param int  $kMerkmal - Primary Key, bool $bMMW MerkmalWert Array holen
      * @param bool $bMMW
+     * @param int  $kSprache
      * @return $this
      */
-    public function loadFromDB($kMerkmal, $bMMW = false)
+    public function loadFromDB($kMerkmal, $bMMW = false, $kSprache = 0)
     {
-        $kSprache = Shop::getLanguage();
-        if (!$kSprache) {
-            $oSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
-            if ($oSprache !== null && $oSprache->kSprache > 0) {
-                $kSprache = (int)$oSprache->kSprache;
-            }
-        }
-        $kSprache = (int)$kSprache;
+        $kSprache = (int)$kSprache === 0 ? Shop::getLanguageID() : (int)$kSprache;
         $id       = 'mm_' . $kMerkmal . '_' . $kSprache;
+
+        $this->kSprache = $kSprache;
         if ($bMMW === false && Shop::has($id)) {
             foreach (get_object_vars(Shop::get($id)) as $k => $v) {
                 $this->$k = $v;
@@ -123,7 +125,7 @@ class Merkmal
 
             return $this;
         }
-        $kStandardSprache     = (int)gibStandardsprache()->kSprache;
+        $kStandardSprache = gibStandardsprache()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = "COALESCE(fremdSprache.cName, standardSprache.cName) AS cName";
             $cJoin   = "INNER JOIN tmerkmalsprache AS standardSprache 
@@ -178,7 +180,7 @@ class Merkmal
             if (is_array($oMerkmalWertTMP_arr) && count($oMerkmalWertTMP_arr) > 0) {
                 $this->oMerkmalWert_arr = [];
                 foreach ($oMerkmalWertTMP_arr as $oMerkmalWertTMP) {
-                    $this->oMerkmalWert_arr[] = new MerkmalWert($oMerkmalWertTMP->kMerkmalWert);
+                    $this->oMerkmalWert_arr[] = new MerkmalWert($oMerkmalWertTMP->kMerkmalWert, $this->kSprache);
                 }
             }
         }
@@ -257,7 +259,7 @@ class Merkmal
             if ($bMMW && is_array($oMerkmal_arr) && count($oMerkmal_arr) > 0) {
                 $shopURL = Shop::getURL() . '/';
                 foreach ($oMerkmal_arr as $i => $oMerkmal) {
-                    $oMerkmalWert                       = new MerkmalWert();
+                    $oMerkmalWert                       = new MerkmalWert(0, $this->kSprache);
                     $oMerkmal_arr[$i]->oMerkmalWert_arr = $oMerkmalWert->holeAlleMerkmalWerte($oMerkmal->kMerkmal);
 
                     if (strlen($oMerkmal->cBildpfad) > 0) {

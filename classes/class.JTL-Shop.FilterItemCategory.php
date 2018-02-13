@@ -133,7 +133,7 @@ class FilterItemCategory extends FilterBaseCategory
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(
                 'checkCategoryVisibility',
-                Shop::DB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', 3) > 0
+                Shop::DB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', NiceDB::RET_AFFECTED_ROWS) > 0
             );
         }
         if (Shop::get('checkCategoryVisibility')) {

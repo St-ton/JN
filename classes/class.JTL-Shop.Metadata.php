@@ -76,7 +76,7 @@ class Metadata
         'cName'            => 'Name',
         'oHersteller'      => 'Manufacturer',
         'cBildURL'         => 'ImageURL',
-        'oMerkmal'         => 'AttributeValue',
+        'oMerkmalWert'     => 'AttributeValue',
         'oKategorie'       => 'Category',
         'cBrotNavi'        => 'BreadCrumb'
     ];
@@ -419,12 +419,11 @@ class Metadata
                 '',
                 '',
                 0,
-                $this->productFilter->getMetaData()->getBreadCrumbName(),
+                $this->getBreadCrumbName(),
                 $this->productFilter->getFilterURL()->getURL()
             );
         } elseif ($this->productFilter->hasAttributeValue()) {
             $this->attributeValue = new MerkmalWert($this->productFilter->getAttributeValue()->getValue());
-
             if ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
                 $this->setName($this->attributeValue->cWert);
             } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
@@ -438,6 +437,24 @@ class Metadata
                      ->setMetaDescription($this->attributeValue->cMetaDescription)
                      ->setMetaKeywords($this->attributeValue->cMetaKeywords);
             }
+            $this->breadCrumb = createNavigation(
+                '',
+                '',
+                0,
+                $this->getBreadCrumbName(),
+                $this->productFilter->getFilterURL()->getURL()
+            );
+        } elseif ($this->productFilter->hasTag()
+            || $this->productFilter->hasSearchSpecial()
+            || $this->productFilter->hasSearch()
+        ) {
+            $this->breadCrumb = createNavigation(
+                '',
+                '',
+                0,
+                $this->getBreadCrumbName(),
+                $this->productFilter->getFilterURL()->getURL()
+            );
         }
 
         return $this;
@@ -1063,7 +1080,7 @@ class Metadata
                         $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
                         if (isset($_SESSION['ArtikelProSeite'])) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
+                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] !== 0) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
                                 (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                         }
@@ -1072,7 +1089,7 @@ class Metadata
                         $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_GALERIE;
                         if (isset($_SESSION['ArtikelProSeite'])) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
+                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] !== 0) {
                             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
                                 (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                         }
@@ -1107,7 +1124,7 @@ class Metadata
                 $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
                 if (isset($_SESSION['ArtikelProSeite'])) {
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
+                } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] !== 0) {
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
                         (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                 }
@@ -1123,18 +1140,19 @@ class Metadata
                             (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
                     }
                     break;
-                case ERWDARSTELLUNG_ANSICHT_GALERIE:
-                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                    if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
-                            (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
-                    }
-                    break;
                 case ERWDARSTELLUNG_ANSICHT_MOSAIK:
                     $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
                     if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'] > 0) {
                         $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
                             (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
+                    }
+                    break;
+                case ERWDARSTELLUNG_ANSICHT_GALERIE:
+                default:
+                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
+                    if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
+                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
+                            (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                     }
                     break;
             }
@@ -1430,27 +1448,48 @@ class Metadata
         }
     }
 
-
     /**
      * @return int
      */
     public function getProductsPerPageLimit()
     {
-        if ($this->productFilter->getProductLimit() > 0) {
+        if ($this->productFilter->getProductLimit() !== 0) {
             $limit = (int)$this->productFilter->getProductLimit();
-        } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
+        } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] !== 0) {
             $limit = (int)$_SESSION['ArtikelProSeite'];
         } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel)
-            && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0
+            && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel !== 0
         ) {
             $limit = (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
         } else {
-            $limit = ($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0
+            $limit = ($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) !== 0
                 ? (int)$max
                 : 20;
         }
 
         return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
+    }
+
+    /**
+     * implemented for compatibility reasons
+     * should catch checks like isset($oNavigationsinfo->oHersteller)
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        if (property_exists($this, $name)) {
+            return true;
+        }
+        $mapped = self::getMapping($name);
+        if ($mapped === null) {
+            return false;
+        }
+        $method = 'get' . $mapped;
+        $result = $this->$method();
+
+        return $result !== null;
     }
 
     /**

@@ -753,7 +753,7 @@ final class Shop
         }
 
         self::$nArtikelProSeite = verifyGPCDataInteger('af');
-        if (self::$nArtikelProSeite > 0) {
+        if (self::$nArtikelProSeite !== 0) {
             $_SESSION['ArtikelProSeite'] = self::$nArtikelProSeite;
         }
 
@@ -1451,20 +1451,20 @@ final class Shop
     /**
      * build navigation filter object from parameters
      *
-     * @param array                     $cParameter_arr
-     * @param object|null|ProductFilter $productFilter
+     * @param array                       $cParameter_arr
+     * @param stdClass|null|ProductFilter $productFilter
      * @return ProductFilter
      */
     public static function buildProductFilter($cParameter_arr, $productFilter = null)
     {
-        $nf = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
+        $pf = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
         if ($productFilter !== null) {
             foreach (get_object_vars($productFilter) as $k => $v) {
-                $nf->$k = $v;
+                $pf->$k = $v;
             }
         }
 
-        return $nf->initStates($cParameter_arr);
+        return $pf->initStates($cParameter_arr);
     }
 
     /**

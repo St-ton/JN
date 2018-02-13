@@ -473,6 +473,7 @@ define('HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI', 65);
  * Vor der Sendung der Benachrichtigung in den Artikeldetails
  *
  * @file artikel_inc.php
+ * @param Benachrichtigung - since 4.07
  */
 define('HOOK_ARTIKEL_INC_BENACHRICHTIGUNG', 66);
 
@@ -1744,3 +1745,29 @@ define('HOOK_PRODUCTFILTER_CREATE', 252);
  * @param ProductFilter productFilter
  */
 define('HOOK_PRODUCTFILTER_GET_BASE_QUERY', 253);
+
+/**
+ * in Preise::__construct()
+ *
+ * @since 4.07
+ * @file class.JTL-Shop.Preise.php
+ * @param int customerGroupID
+ * @param int customerID
+ * @param int productID
+ * @param int taxClassID
+ * @param Preise prices
+ */
+define('HOOK_PRICES_CONSTRUCT', 260);
+
+/**
+ * in WarenkorbHelper::addToCartCheck()
+ *
+ * @since 4.07
+ * @file class.helper.Warenkorb.php
+ * @param Artikel product
+ * @param int     quantity
+ * @param array   attributes
+ * @param int     accuracy
+ * @param array   redirectParam
+ */
+define('HOOK_ADD_TO_CART_CHECK', 261);

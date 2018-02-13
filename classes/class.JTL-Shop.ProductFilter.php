@@ -275,9 +275,6 @@ class ProductFilter
         $this->showChildProducts = defined('SHOW_CHILD_PRODUCTS')
             ? SHOW_CHILD_PRODUCTS
             : false;
-        $this->searchResults     = (new ProductFilterSearchResults())
-            ->setProductCount(0)
-            ->setProductKeys([]);
         executeHook(HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
         $this->initBaseStates();
     }
@@ -406,7 +403,12 @@ class ProductFilter
      */
     public function getSearchResults($products = true)
     {
-        return $products === true && $this->searchResults->getProducts() !== null
+        if ($this->searchResults === null) {
+            $this->searchResults = new ProductFilterSearchResults();
+            $this->searchResults->setProducts(new Collection());
+        }
+
+        return $products === true
             ? $this->searchResults->getProducts()
             : $this->searchResults;
     }

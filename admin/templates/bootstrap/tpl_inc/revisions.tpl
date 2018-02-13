@@ -9,12 +9,12 @@
                 {if $secondary === true}
                     {foreach $data as $foreignKey => $localized}
                         {foreach $show as $attribute}
-                            <div class="hidden" id="original-{$attribute}-{$foreignKey}">{if isset($localized->$attribute)}{$localized->$attribute|escape}{elseif is_string($localized)}{$localized|escape}{/if}</div>
+                            <div class="hidden" id="original-{$attribute|escape}-{$foreignKey}">{if isset($localized->$attribute)}{$localized->$attribute|escape}{elseif is_string($localized)}{$localized|escape}{/if}</div>
                         {/foreach}
                     {/foreach}
                 {else}
                     {foreach $show as $attribute}
-                        <div class="hidden" id="original-{$attribute}" class="original" data-references="{$attribute}">{$data->$attribute}</div>
+                        <div class="hidden" id="original-{$attribute|escape}" class="original" data-references="{$attribute|escape}">{$data->$attribute|escape}</div>
                     {/foreach}
                 {/if}
             {/if}

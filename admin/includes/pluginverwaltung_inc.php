@@ -1610,7 +1610,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         foreach ($installNode['ExportFormat'][0]['Format'] as $h => $Format_arr) {
             preg_match("/[0-9]+\sattr/", $h, $cTreffer1_arr);
             preg_match("/[0-9]+/", $h, $cTreffer2_arr);
-            if (strlen($cTreffer2_arr[0]) === strlen($h)) {
+            if (strlen($cTreffer2_arr[0]) !== strlen($h)) {
                 continue;
             }
             // Name prüfen

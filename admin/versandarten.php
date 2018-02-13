@@ -191,7 +191,12 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
         }
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
-        $cFehler .= "Sie m&uuml;ssen eine PLZ oder einen PLZ-Bereich angeben!";
+        $szErrorString = $oZipValidator->getError();
+        if ('' !== $szErrorString) {
+            $cFehler .= $szErrorString;
+        } else {
+            $cFehler .= "Sie m&uuml;ssen eine PLZ oder einen PLZ-Bereich angeben!";
+        }
     }
 }
 
@@ -622,4 +627,3 @@ $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]])
        ->assign('oWaehrung', Shop::DB()->select('twaehrung', 'cStandard', 'Y'))
        ->assign('step', $step)
        ->display('versandarten.tpl');
-

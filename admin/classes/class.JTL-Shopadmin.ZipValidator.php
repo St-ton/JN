@@ -198,6 +198,11 @@ class ZipValidator
      */
     private $cISO;
 
+    /**
+     * @var string
+     */
+    private $szErrorString;
+
 
     /**
      * @param string $cISO
@@ -221,6 +226,7 @@ class ZipValidator
     {
         if (array_key_exists($this->cISO, self::$vPatternHashList)) {
             if (!preg_match("/^" . self::$vPatternHashList[$this->cISO] . "$/", $szZipCode)) {
+                $this->szErrorString = $this->beautifyErrorString($szZipCode, self::$vPatternHashList[$this->cISO]);
                 Jtllog::writeLog('Postleitzahl stimmt nicht mit Landesvorgabe überein! ' . $szZipCode .
                     ' (' . $this->cISO . ', "' . self::$vPatternHashList[$this->cISO] . '")', JTLLOG_LEVEL_ERROR);
 
@@ -233,6 +239,35 @@ class ZipValidator
         Jtllog::writeLog('Land nicht in Zip-Code-Pattern-Liste!' . $this->cISO . ')', JTLLOG_LEVEL_NOTICE);
 
         return $szZipCode;
+    }
+
+    /**
+     * mark the errors in the user-input string
+     *
+     * @param string $szZipCode
+     * @param string $szPattern
+     * @return string
+     */
+    private function beautifyErrorString($szZipCode, $szPattern)
+    {
+        return preg_replace_callback(
+            "/{$szPattern}/",
+            function($hit) {
+                return '<span class="alert-danger">' . $hit[0] . '</span>';
+            },
+            $szZipCode,
+            1);
+    }
+
+    /**
+     * returns a discriptive error-message
+     *
+     * @return string
+     */
+    public function getError()
+    {
+        return 'Postleitzahl stimmt nicht mit Landesvorgabe überein! '
+            .'(<span class="text-muted">' . $this->szErrorString . '</span>)';
     }
 
 }

@@ -275,6 +275,9 @@ class ProductFilter
         $this->showChildProducts = defined('SHOW_CHILD_PRODUCTS')
             ? SHOW_CHILD_PRODUCTS
             : false;
+        $this->searchResults     = (new ProductFilterSearchResults())
+            ->setProductCount(0)
+            ->setProductKeys([]);
         executeHook(HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
         $this->initBaseStates();
     }

@@ -21,7 +21,7 @@ class PortletRow extends CMSPortlet
     {
         $this->addClass('row');
 
-        $res = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '  data-parallax="scroll" data-z-index="1" data-image-src="http://marco.vm1.halle/mediafiles/Bilder/digital_space_universe_4k_8k-3840x2160.jpg">';
+        $res = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>';
 
         $layoutLg = explode('+', $this->properties['layout-lg']);
         $layoutMd = explode('+', $this->properties['layout-md']);
@@ -86,7 +86,7 @@ class PortletRow extends CMSPortlet
     {
         $this->addClass('row');
 
-        $res = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '  data-parallax="scroll" data-z-index="1" data-image-src="http://marco.vm1.halle/mediafiles/Bilder/digital_space_universe_4k_8k-3840x2160.jpg">';
+        $res = '<div ' . $this->getAttribString() . ' ' . $this->getStyleString() . '>';
 
         $layoutLg = explode('+', $this->properties['layout-lg']);
         $layoutMd = explode('+', $this->properties['layout-md']);

@@ -5,7 +5,7 @@
  */
 
 /**
- * Class PortletPanel
+ * Class PortletAccordion
  */
 class PortletAccordion extends CMSPortlet
 {

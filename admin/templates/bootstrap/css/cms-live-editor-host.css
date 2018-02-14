@@ -12,51 +12,49 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
     right: 0;
 }
 
-#editor-tabs {
-    -webkit-box-shadow: 0px 2px 10px 2px rgba(189,189,189,0.8);
-    -moz-box-shadow: 0px 2px 10px 2px rgba(189,189,189,0.8);
-    box-shadow: 0px 2px 10px 2px rgba(189,189,189,0.8);
+.nav.nav-tabs {
+    box-shadow: 0 2px 10px 2px rgba(189,189,189,0.8);
 }
-#editor-tabs>li{
+.nav.nav-tabs > li {
     margin-bottom: 0;
 }
 
-#editor-tabs>li>a {
+.nav.nav-tabs > li > a {
     position: relative;
     display: block;
     color: #98978b;
     border: 2px solid transparent;
 }
 
-#editor-tabs>li>a:hover,
-#editor-tabs>li>a:focus {
+.nav.nav-tabs > li > a:hover,
+.nav.nav-tabs > li > a:focus {
     color: #23527c;
     text-decoration: none;
     background-color: #fff;
     border: 2px solid transparent;
 }
 
-#editor-tabs>li.active>a,
-#editor-tabs>li.active>a:hover,
-#editor-tabs>li.active>a:focus {
+.nav.nav-tabs > li.active > a,
+.nav.nav-tabs > li.active > a:hover,
+.nav.nav-tabs > li.active > a:focus {
     color: #555;
     background-color: #fff;
     border-bottom: 2px solid #23527c;
     cursor: default;
 }
 
-#editor-top-nav{
+#editor-top-nav {
     border: 0;
     background: #5cbcf6;
     margin-bottom: 0;
 }
 
 #editor-top-nav a,
-#editor-top-nav button{
+#editor-top-nav button {
     color: #fff;
 }
-#editor-top-nav .nav>li>a:hover,
-#editor-top-nav .nav>li>a:focus {
+#editor-top-nav .nav > li > a:hover,
+#editor-top-nav .nav > li > a:focus {
     color: #23527c;
     background-color: inherit;
 }
@@ -122,15 +120,15 @@ html, body, #sidebar-panel, #iframe-panel, #iframe-panel iframe {
 .table > tfoot > tr > td.text-vcenter {
     vertical-align: middle;
 }
-tr.text-vcenter > td, tr.text-vcenter > th{
+tr.text-vcenter > td, tr.text-vcenter > th {
     vertical-align: middle !important;
 }
 
-#icons .fa{
+#icons .fa {
     margin: 2px 5px 2px;
 }
 
-#elements a.btn{
+#elements a.btn {
     margin-bottom: 15px;
     padding-top: 10px;
 }
@@ -138,27 +136,26 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     margin-bottom: 5px;
 }
 
-#elements ul li{
+#elements ul li {
     list-style: none;
     display: grid;
 }
-#elements .row > *{
+#elements .row > * {
     padding-left: 10px;
     padding-right: 10px
 }
 
-#elements hr{
+#elements hr {
     margin-top: 5px;
     margin-bottom: 5px;
 }
 
-#revisions .list-group{
+#revisions .list-group {
     box-shadow: none;
 }
 
 #revisions .list-group-item,
-#templates .list-group-item{
-    margin-bottom: 0;
+#templates .list-group-item {
     border: 0;
     margin: 10px 0;
     padding: 5px 10px;
@@ -166,10 +163,10 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     border-radius: 5px;
     color: #23527c;
 }
-#templates .list-group-item .btn{
+#templates .list-group-item .btn {
     padding: 0;
 }
-#templates .template-button{
+#templates .template-button {
     text-align: left;
 }
 #tour-form .tour-label {
@@ -177,14 +174,14 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     width: 100%;
 }
 
-.collapse-groups{
+.collapse-groups {
     color: #23527c;
     text-transform: uppercase;
     padding: 8px 25px;
     margin: 0 -15px 5px -15px;
 }
 
-#tour-form input[name="help-tour"]:checked+.panel-default >.panel-heading{
+#tour-form input[name="help-tour"]:checked+.panel-default >.panel-heading {
     background-color: #337ab7;
     border-color: #337ab7;
     background-image: -webkit-linear-gradient(top, #337ab7 0, #2e6da4 100%);
@@ -196,7 +193,7 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     color: #fff;
 }
 
-#display-previews{
+#display-previews {
     width: 100%;
     text-align: center;
     bottom: 0;
@@ -210,17 +207,17 @@ tr.text-vcenter > td, tr.text-vcenter > th{
     padding: 15px 10px 5px 10px;
 }
 
-#display-previews{
+#display-previews {
     background-color: #f7f7f7;
     position: absolute;
 }
-#display-previews a{
+#display-previews a {
     color: #d1d1d1;
 }
 #display-previews a:hover,
 #display-previews a:active,
 #display-previews a:focus,
-#display-previews a.active{
+#display-previews a.active {
     color: #23527c;
 }
 
@@ -240,6 +237,40 @@ tr.text-vcenter > td, tr.text-vcenter > th{
 
 .modal-backdrop {
     opacity: 0.5;
+}
+
+.modal-header {
+    background-color: #5aafd6;
+    color: #fff;
+}
+
+.modal-header button {
+    color: #fff;
+    opacity: 1;
+}
+
+.modal-body {
+    overflow: hidden;
+}
+
+.modal-body .nav.nav-tabs {
+    margin: -15px -15px 15px -15px;
+}
+
+.modal-content .btn {
+    background-image: none;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-size: 1.1em;
+}
+
+.modal-content .btn-danger {
+    background-color: #bbb;
+}
+
+.modal-content .btn-primary {
+    background-color: #5aafd6;
 }
 
 ::-webkit-scrollbar {

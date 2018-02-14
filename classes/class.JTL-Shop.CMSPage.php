@@ -158,7 +158,10 @@ class CMSPage
             $oCmsPageDB->cPageURL      = $this->cPageUrl;
             $oCmsPageDB->dLastModified = date('Y-m-d H:i:s');
             $oCmsPageDB->cLockedBy     = $this->cLockedBy;
-            Shop::DB()->update('tcmspage', 'cIdHash', $this->cIdHash, $oCmsPageDB);
+
+            if (Shop::DB()->update('tcmspage', 'cIdHash', $this->cIdHash, $oCmsPageDB) === -1) {
+                throw new Exception('Could not update the page in tcmspage');
+            }
         }
 
         return $this;

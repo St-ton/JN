@@ -24,10 +24,12 @@
     <script src="{$templateUrl}js/ckeditor_4.7.3_basic/ckeditor.js"></script>
     <script src="{$templateUrl}js/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
     <script src="{$templateUrl}js/moment.js"></script>
+    <script src="{$templateUrl}js/download.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/EditorIO.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/EditorGUI.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/Editor.js"></script>
     <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>
+    <script src="{$templateUrl}js/typeahead.bundle.js"></script>
 
     <script>
         var editor = new Editor({
@@ -63,6 +65,16 @@
                             <li>
                                 <a href="#" id="btn-preview" data-toggle="tooltip" data-placement="bottom" title="Preview">
                                     <i class="fa fa-eye"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" id="btn-import" data-toggle="tooltip" data-placement="bottom" title="Import">
+                                    <i class="fa fa-upload"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" id="btn-export" data-toggle="tooltip" data-placement="bottom" title="Export">
+                                    <i class="fa fa-download"></i>
                                 </a>
                             </li>
                             <li>
@@ -175,7 +187,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i class="fa fa-times"></i>
+                        <i class="fa fa-lg fa-times"></i>
                     </button>
                     <h4 class="modal-title">
                         Portlet Einstellungen
@@ -185,10 +197,8 @@
                     <div class="modal-body" id="config-modal-body">
                     </div>
                     <div class="modal-footer">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                            <button class="btn btn-primary" id="cle-btn-save-config">Speichern</button>
-                        </div>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                        <button class="btn btn-primary" id="cle-btn-save-config">Speichern</button>
                     </div>
                 </form>
             </div>

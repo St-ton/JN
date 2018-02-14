@@ -21,7 +21,6 @@ EditorGUI.prototype = {
 
     initHostGUI: function()
     {
-
         this.hostJq                   = $;
         this.iframe                   = this.hostJq('#iframe');
         this.loaderModal              = this.hostJq('#loader-modal');
@@ -32,7 +31,8 @@ EditorGUI.prototype = {
         this.portletPreviewLabel      = this.hostJq('#portlet-preview-label');
         this.portletToolbar           = this.hostJq('#pinbar');
         this.portletBtns              = this.hostJq('.portlet-button');
-        //this.templateBtns             = this.hostJq('.template-button');
+        this.exportPageBtn            = this.hostJq('#btn-export')                .click(this.onExportPage.bind(this));
+        this.importPageBtn            = this.hostJq('#btn-import')                .click(this.onImportPage.bind(this));
         this.previewBtn               = this.hostJq('#btn-preview')               .click(this.onPreview.bind(this));
         this.editorCloseBtn           = this.hostJq('#cle-btn-close-editor')      .click(this.onEditorClose.bind(this));
         this.editorSaveBtn            = this.hostJq('#cle-btn-save-editor')       .click(this.onEditorSave.bind(this));
@@ -433,6 +433,30 @@ EditorGUI.prototype = {
         var elm = $(e.target);
 
         this.editor.loadRevision(elm.data('revision-id'));
+    },
+
+    onExportPage: function(e)
+    {
+        download(JSON.stringify(this.editor.io.pageToJson()), 'page-export.json', 'text/plain');
+    },
+
+    onImportPage: function(e)
+    {
+        var self = this;
+
+        $('<input type="file">')
+            .change(function(e) {
+                var file = e.target.files[0];
+                var reader = new FileReader();
+
+                reader.onload = function() {
+                    self.clearPage();
+                    self.editor.io.pageFromJson(JSON.parse(reader.result));
+                };
+
+                reader.readAsText(file);
+            })
+            .click();
     },
 
     onPreview: function(e)

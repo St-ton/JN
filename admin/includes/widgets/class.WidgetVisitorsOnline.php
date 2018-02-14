@@ -31,21 +31,14 @@ class WidgetVisitorsOnline extends WidgetBase
                 `tbestellung`.`fGesamtsumme` AS fGesamtsumme, `tkunde`.`cVorname` as cVorname,
                 `tkunde`.`cNachname` AS cNachname, `tkunde`.`dErstellt` as dErstellt,
                 `tkunde`.`cNewsletter` AS cNewsletter
-            FROM
-                (SELECT
-                    ANY_VALUE(`tbesucher`.`kKunde`) AS kKunde,
-                    max(`tbesucher`.`dLetzteAktivitaet`) AS dLetzteAktivitaet
-                FROM
-                    `tbesucher`
-                WHERE
-                    `tbesucher`.`kBesucherBot` = 0
-                GROUP BY
-                    `tbesucher`.`kKunde`
-                    HAVING `tbesucher`.`kKunde` != 0   -- ignore all guests for now (unite them later)
-                ) AS `itab`
-                INNER JOIN `tbesucher` AS `otab` ON `itab`.`kKunde` = `otab`.`kKunde` AND `itab`.`dLetzteAktivitaet` = `otab`.`dLetzteAktivitaet`
+            FROM `tbesucher` AS `otab`
+                INNER JOIN `tkunde` ON `otab`.`kKunde` = `tkunde`.`kKunde`
                 LEFT JOIN `tbestellung` ON `otab`.`kBestellung` = `tbestellung`.`kBestellung`
-                LEFT JOIN `tkunde` ON `otab`.`kKunde` = `tkunde`.`kKunde`
+            WHERE `otab`.`kKunde` != 0
+                AND `otab`.`kBesucherBot` = 0
+                AND `otab`.`dLetzteAktivitaet` = (
+                    SELECT MAX(tbesucher.dLetzteAktivitaet) FROM tbesucher WHERE tbesucher.kKunde = `otab`.`kKunde`
+                )
             UNION
             SELECT
                 `tbesucher`.*,

@@ -129,6 +129,7 @@ define('MAILTEMPLATE_RMA_ABGESENDET', 'core_jtl_rma_submitted');
 define('MAILTEMPLATE_BEWERTUNG_GUTHABEN', 'core_jtl_bewertung_guthaben');
 define('MAILTEMPLATE_BESTELLUNG_TEILVERSANDT', 'core_jtl_bestellung_teilversandt');
 define('MAILTEMPLATE_ANBIETERKENNZEICHNUNG', 'core_jtl_anbieterkennzeichnung');
+
 // Suche
 define('SEARCH_SORT_STANDARD', 100);
 define('SEARCH_SORT_NAME_ASC', 1);
@@ -320,8 +321,6 @@ define('JOBQUEUE_LIMIT_M_STATUSEMAIL', '1');
 // Exportformate
 defined('EXPORTFORMAT_LIMIT_M') || define('EXPORTFORMAT_LIMIT_M', 2000);
 defined('EXPORTFORMAT_ASYNC_LIMIT_M') || define('EXPORTFORMAT_ASYNC_LIMIT_M', 15);
-defined('EXPORTFORMAT_USE_SECURITY') || define('EXPORTFORMAT_USE_SECURITY', true);
-defined('EXPORTFORMAT_ALLOWED_FORMATS') || define('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');
 // Special Exportformate
 define('SPECIAL_EXPORTFORMAT_YATEGO', 1);
 // Shop Template Logo Name
@@ -493,3 +492,10 @@ define('SHOP_SEO', true);
 define('ES_SESSIONS', 0);
 //Max Anzahl an Variationswerten für Warenkorbmatrix
 define('ART_MATRIX_MAX', 250);
+
+
+// security
+defined('NEWSLETTER_USE_SECURITY') || define('NEWSLETTER_USE_SECURITY', true);
+defined('MAILTEMPLATE_USE_SECURITY') || define('MAILTEMPLATE_USE_SECURITY', true);
+defined('EXPORTFORMAT_USE_SECURITY') || define('EXPORTFORMAT_USE_SECURITY', true);
+defined('EXPORTFORMAT_ALLOWED_FORMATS') || define('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');

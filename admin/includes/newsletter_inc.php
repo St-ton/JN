@@ -20,7 +20,9 @@ function bereiteNewsletterVor($Einstellungen)
                ->assign('Firma', Shop::DB()->query("SELECT * FROM tfirma", 1))
                ->assign('URL_SHOP', Shop::getURL())
                ->assign('Einstellungen', $Einstellungen);
-
+    if(NEWSLETTER_USE_SECURITY) {
+        $mailSmarty->activateBackendSecurityMode();
+    }
     return $mailSmarty;
 }
 

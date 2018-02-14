@@ -9,12 +9,12 @@
                 {if $secondary === true}
                     {foreach $data as $foreignKey => $localized}
                         {foreach $show as $attribute}
-                            <div class="hidden" id="original-{$attribute}-{$foreignKey}">{if isset($localized->$attribute)}{$localized->$attribute}{elseif is_string($localized)}{$localized}{/if}</div>
+                            <div class="hidden" id="original-{$attribute|escape}-{$foreignKey}">{if isset($localized->$attribute)}{$localized->$attribute|escape}{elseif is_string($localized)}{$localized|escape}{/if}</div>
                         {/foreach}
                     {/foreach}
                 {else}
                     {foreach $show as $attribute}
-                        <div class="hidden" id="original-{$attribute}" class="original" data-references="{$attribute}">{$data->$attribute}</div>
+                        <div class="hidden" id="original-{$attribute|escape}" class="original" data-references="{$attribute|escape}">{$data->$attribute|escape}</div>
                     {/foreach}
                 {/if}
             {/if}
@@ -35,18 +35,18 @@
                                         {foreach $revision->content->references as $secondaryKey => $ref}
                                             {foreach $show as $attribute}
                                                 {if isset($ref->$attribute)}
-                                                    <h4>{$attribute} ({$secondaryKey}):</h4>
-                                                    <div id="diff-{$revision@iteration}-{$attribute}-{$secondaryKey}"></div>
-                                                    <div class="hidden" data-references="{$attribute}" data-references-secondary="{$secondaryKey}">{$ref->$attribute|utf8_decode}</div>
+                                                    <h4>{$attribute|escape} ({$secondaryKey}):</h4>
+                                                    <div id="diff-{$revision@iteration}-{$attribute|escape}-{$secondaryKey}"></div>
+                                                    <div class="hidden" data-references="{$attribute|escape}" data-references-secondary="{$secondaryKey}">{$ref->$attribute|escape|utf8_decode}</div>
                                                 {/if}
                                             {/foreach}
                                         {/foreach}
                                     {else}
                                         {foreach $show as $attribute}
                                             {if isset($revision->content->$attribute)}
-                                                <h4>{$attribute}</h4>
-                                                <div id="diff-{$revision@iteration}-{$attribute}"></div>
-                                                <div class="hidden" data-references="{$attribute}" data-references-secondary="">{$revision->content->$attribute|utf8_decode}</div>
+                                                <h4>{$attribute|escape}</h4>
+                                                <div id="diff-{$revision@iteration}-{$attribute|escape}"></div>
+                                                <div class="hidden" data-references="{$attribute|escape}" data-references-secondary="">{$revision->content->$attribute|escape|utf8_decode}</div>
                                             {/if}
                                         {/foreach}
                                     {/if}

@@ -35,19 +35,19 @@
                             <span class="input-group-addon">
                                 <label for="cEmailOut">{#emailOut#}</label>
                             </span>
-                            <input class="form-control" id="cEmailOut" name="cEmailOut" type="text" value="{if isset($oEmailEinstellungAssoc_arr.cEmailOut)}{$oEmailEinstellungAssoc_arr.cEmailOut}{/if}" />
+                            <input class="form-control" id="cEmailOut" name="cEmailOut" type="text" value="{if isset($oEmailEinstellungAssoc_arr.cEmailOut)}{$oEmailEinstellungAssoc_arr.cEmailOut|escape}{/if}" />
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="cEmailSenderName">{#emailSenderName#}</label>
                             </span>
-                            <input class="form-control" id="cEmailSenderName" name="cEmailSenderName" type="text" value="{if isset($oEmailEinstellungAssoc_arr.cEmailSenderName)}{$oEmailEinstellungAssoc_arr.cEmailSenderName}{/if}" />
+                            <input class="form-control" id="cEmailSenderName" name="cEmailSenderName" type="text" value="{if isset($oEmailEinstellungAssoc_arr.cEmailSenderName)}{$oEmailEinstellungAssoc_arr.cEmailSenderName|escape}{/if}" />
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="cEmailCopyTo">{#emailCopyTo#}</label>
                             </span>
-                            <input class="form-control" id="cEmailCopyTo" name="cEmailCopyTo" type="text" value="{if isset($oEmailEinstellungAssoc_arr.cEmailCopyTo)}{$oEmailEinstellungAssoc_arr.cEmailCopyTo}{/if}" />
+                            <input class="form-control" id="cEmailCopyTo" name="cEmailCopyTo" type="text" value="{if isset($oEmailEinstellungAssoc_arr.cEmailCopyTo)}{$oEmailEinstellungAssoc_arr.cEmailCopyTo|escape}{/if}" />
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
@@ -154,7 +154,7 @@
                                 <div class="name"><label for="cBetreff_{$kSprache}">{#subject#}</label></div>
                                 <div class="for">
                                     <input class="form-control" style="width:400px" type="text" name="cBetreff_{$kSprache}" id="cBetreff_{$kSprache}"
-                                           value="{if isset($Emailvorlagesprache[$kSprache]->cBetreff)}{$Emailvorlagesprache[$kSprache]->cBetreff}{/if}" tabindex="1" />
+                                           value="{if isset($Emailvorlagesprache[$kSprache]->cBetreff)}{$Emailvorlagesprache[$kSprache]->cBetreff|escape}{/if}" tabindex="1" />
                                 </div>
                             </div>
                         {/if}
@@ -162,14 +162,14 @@
                             <div class="name"><label for="cContentHtml_{$kSprache}">{#mailHtml#}</label></div>
                             <div class="for">
                                 <textarea class="codemirror smarty" id="cContentHtml_{$kSprache}" name="cContentHtml_{$kSprache}"
-                                          style="width:99%" rows="20">{if isset($Emailvorlagesprache[$kSprache]->cContentHtml)}{$Emailvorlagesprache[$kSprache]->cContentHtml}{/if}</textarea>
+                                          style="width:99%" rows="20">{if isset($Emailvorlagesprache[$kSprache]->cContentHtml)}{$Emailvorlagesprache[$kSprache]->cContentHtml|escape:"html"}{/if}</textarea>
                             </div>
                         </div>
                         <div class="item well">
                             <div class="name"><label for="cContentText_{$kSprache}">{#mailText#}</label></div>
                             <div class="for">
                                 <textarea class="codemirror smarty" id="cContentText_{$kSprache}" name="cContentText_{$kSprache}"
-                                          style="width:99%" rows="20">{if isset($Emailvorlagesprache[$kSprache]->cContentText)}{$Emailvorlagesprache[$kSprache]->cContentText}{/if}</textarea>
+                                          style="width:99%" rows="20">{if isset($Emailvorlagesprache[$kSprache]->cContentText)}{$Emailvorlagesprache[$kSprache]->cContentText|escape:"html"}{/if}</textarea>
                             </div>
                         </div>
                         {if isset($Emailvorlagesprache[$kSprache]->cPDFS_arr) && $Emailvorlagesprache[$kSprache]->cPDFS_arr|@count > 0}

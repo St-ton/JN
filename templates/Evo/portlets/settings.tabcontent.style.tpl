@@ -174,7 +174,7 @@
             });
 
             $('#config-modal-body .border-color-picker').colorpicker({
-                format:'hex',
+                format:'rgba',
                 colorSelectors: {
                     '#ffffff': '#ffffff',
                     '#777777': '#777777',
@@ -191,7 +191,7 @@
             });
 
             $('#config-modal-body .font-color-picker').colorpicker({
-                format:'hex',
+                format:'rgba',
                 colorSelectors: {
                     '#ffffff': '#ffffff',
                     '#777777': '#777777',

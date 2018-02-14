@@ -172,7 +172,7 @@ class PortletRow extends CMSPortlet
             'animation-style'     => '',
             // attributes
             'attr' => [
-                'class'               => 'parallax-window',
+                'class'              => '',
                 'data-wow-duration'  => '',
                 'data-wow-delay'     => '',
                 'data-wow-offset'    => '',

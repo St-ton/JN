@@ -35,18 +35,18 @@
                                         {foreach $revision->content->references as $secondaryKey => $ref}
                                             {foreach $show as $attribute}
                                                 {if isset($ref->$attribute)}
-                                                    <h4>{$attribute} ({$secondaryKey}):</h4>
-                                                    <div id="diff-{$revision@iteration}-{$attribute}-{$secondaryKey}"></div>
-                                                    <div class="hidden" data-references="{$attribute}" data-references-secondary="{$secondaryKey}">{$ref->$attribute}</div>
+                                                    <h4>{$attribute|escape} ({$secondaryKey}):</h4>
+                                                    <div id="diff-{$revision@iteration}-{$attribute|escape}-{$secondaryKey}"></div>
+                                                    <div class="hidden" data-references="{$attribute|escape}" data-references-secondary="{$secondaryKey}">{$ref->$attribute|escape}</div>
                                                 {/if}
                                             {/foreach}
                                         {/foreach}
                                     {else}
                                         {foreach $show as $attribute}
                                             {if isset($revision->content->$attribute)}
-                                                <h4>{$attribute}</h4>
-                                                <div id="diff-{$revision@iteration}-{$attribute}"></div>
-                                                <div class="hidden" data-references="{$attribute}" data-references-secondary="">{$revision->content->$attribute}</div>
+                                                <h4>{$attribute|escape}</h4>
+                                                <div id="diff-{$revision@iteration}-{$attribute|escape}"></div>
+                                                <div class="hidden" data-references="{$attribute|escape}" data-references-secondary="">{$revision->content->$attribute|escape}</div>
                                             {/if}
                                         {/foreach}
                                     {/if}

@@ -790,9 +790,13 @@ class JTLSmarty extends SmartyBC
         return self::$isChildTemplate;
     }
 
+    /**
+     * @return $this
+     * @throws SmartyException
+     */
     public function activateBackendSecurityMode()
     {
-        $sec                = new Smarty_Security($this->smarty);
+        $sec                = new Smarty_Security($this);
         $sec->php_handling  = Smarty::PHP_REMOVE;
         $sec->allow_php_tag = false;
         $jtlModifier        = [
@@ -811,14 +815,20 @@ class JTLSmarty extends SmartyBC
         $sec->php_modifiers = array_unique($sec->php_modifiers);
         $sec->php_functions = array_unique(array_merge($sec->php_functions, $secureFuncs, ['lang']));
         $this->enableSecurity($sec);
+
+        return $this;
     }
 
+    /**
+     * @return string[]
+     */
     private function getSecurePhpFunctions()
     {
         static $functions;
         if ($functions === null) {
             $functions = array_map('trim', explode(',', SECURE_PHP_FUNCTIONS));
         }
+
         return $functions;
     }
 }

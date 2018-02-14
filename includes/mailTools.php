@@ -76,7 +76,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                ->setDebugging(0)
                ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
                ->setTemplateDir(PFAD_ROOT . PFAD_EMAILTEMPLATES);
-    if(MAILTEMPLATE_USE_SECURITY) {
+    if (MAILTEMPLATE_USE_SECURITY) {
         $mailSmarty->activateBackendSecurityMode();
     }
     if (!isset($Object->tkunde)) {

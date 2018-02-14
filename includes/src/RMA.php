@@ -5,9 +5,6 @@
  */
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
-    require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.RMAArtikel.php';
-    require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.RMAGrund.php';
-    require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.RMAStatus.php';
 
     /**
      * Class RMA

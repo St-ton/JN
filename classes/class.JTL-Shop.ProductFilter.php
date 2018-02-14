@@ -403,7 +403,12 @@ class ProductFilter
      */
     public function getSearchResults($products = true)
     {
-        return $products === true && $this->searchResults->getProducts() !== null
+        if ($this->searchResults === null) {
+            $this->searchResults = new ProductFilterSearchResults();
+            $this->searchResults->setProducts(new Collection());
+        }
+
+        return $products === true
             ? $this->searchResults->getProducts()
             : $this->searchResults;
     }

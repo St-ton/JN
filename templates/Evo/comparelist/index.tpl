@@ -248,6 +248,11 @@
             });
             new function(){
                 var clCount = {if isset($oVergleichsliste->oArtikel_arr)}{$oVergleichsliste->oArtikel_arr|count}{else}0{/if};
+                if (clCount > 1) {
+                    $('section.box-compare .panel-body').removeClass('hidden');
+                } else {
+                    eModal.close();
+                }
                 $('.navbar-nav .compare-list-menu .badge em').html(clCount);
             }();
         </script>

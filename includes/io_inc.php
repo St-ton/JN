@@ -399,7 +399,7 @@ function pushToWishlist($kArtikel, $qty)
     $objResponse = new IOResponse();
 
     $qty = (int)$qty === 0 ? 1 : (int)$qty;
-    if (empty($_SESSION['Kunde']->kKunde)) {
+    if (empty($customerID = Session::Customer()->getID())) {
         $linkHelper           = LinkHelper::getInstance();
         $oResponse->nType     = 1;
         $oResponse->cLocation = $linkHelper->getStaticRoute('jtl.php') .
@@ -409,6 +409,19 @@ function pushToWishlist($kArtikel, $qty)
         $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
         return $objResponse;
+    }
+
+    $vals = Shop::DB()->query('SELECT * FROM teigenschaft WHERE kArtikel = '. $kArtikel, 2);
+    if (!ArtikelHelper::isParent($kArtikel) && !empty($vals)) {
+        // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
+        // muss zum Artikel weitergeleitet werden um Variationen zu wählen
+        $oResponse->nType     = 1;
+        $oResponse->cLocation =(Shop::getURL() . '/?a=' . $kArtikel .
+                '&n=' . $qty .
+                '&r=' . R_VARWAEHLEN);
+            $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
+
+            return $objResponse;
     }
 
     $_POST['Wunschliste'] = 1;

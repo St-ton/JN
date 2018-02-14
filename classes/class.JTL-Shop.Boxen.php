@@ -1243,7 +1243,6 @@ class Boxen
         return false;
     }
 
-
     /**
      * @return array
      * @throws Exception

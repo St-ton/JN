@@ -714,6 +714,9 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
                        ->setCaching(0)
                        ->setDebugging(0)
                        ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR);
+            if (MAILTEMPLATE_USE_SECURITY) {
+                $mailSmarty->activateBackendSecurityMode();
+            }
             try {
                 $mailSmarty->fetch('db:html_' . $Emailvorlagesprache->kEmailvorlage .
                     '_' . $Sprache->kSprache . '_' . $cTableSprache);

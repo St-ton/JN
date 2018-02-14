@@ -789,6 +789,56 @@ class JTLSmarty extends SmartyBC
     {
         return self::$isChildTemplate;
     }
+
+    /**
+     * When Smarty is used in an insecure context (e.g. when third parties are granted access to shop admin) this
+     * function activates a secure mode that:
+     *   - deactivates {php}-tags
+     *   - removes php code (that could be written to a file an then be executes)
+     *   - applies a whitelist for php functions (Smarty modifiers and functions)
+     *
+     * @return $this
+     * @throws SmartyException
+     */
+    public function activateBackendSecurityMode()
+    {
+        $sec                = new Smarty_Security($this);
+        $sec->php_handling  = Smarty::PHP_REMOVE;
+        $sec->allow_php_tag = false;
+        $jtlModifier        = [
+            'replace_delim',
+            'count_characters',
+            'string_format',
+            'string_date_format',
+            'truncate',
+        ];
+        $secureFuncs        = $this->getSecurePhpFunctions();
+        $sec->php_modifiers = array_merge(
+            $sec->php_modifiers,
+            $jtlModifier,
+            $secureFuncs
+        );
+        $sec->php_modifiers = array_unique($sec->php_modifiers);
+        $sec->php_functions = array_unique(array_merge($sec->php_functions, $secureFuncs, ['lang']));
+        $this->enableSecurity($sec);
+
+        return $this;
+    }
+
+    /**
+     * Get a list of php functions, that should be save to use in an insecure context.
+     *
+     * @return string[]
+     */
+    private function getSecurePhpFunctions()
+    {
+        static $functions;
+        if ($functions === null) {
+            $functions = array_map('trim', explode(',', SECURE_PHP_FUNCTIONS));
+        }
+
+        return $functions;
+    }
 }
 
 /**

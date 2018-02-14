@@ -791,6 +791,12 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
+     * When Smarty is used in an insecure context (e.g. when third parties are granted access to shop admin) this
+     * function activates a secure mode that:
+     *   - deactivates {php}-tags
+     *   - removes php code (that could be written to a file an then be executes)
+     *   - applies a whitelist for php functions (Smarty modifiers and functions)
+     *
      * @return $this
      * @throws SmartyException
      */
@@ -820,6 +826,8 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
+     * Get a list of php functions, that should be save to use in an insecure context.
+     *
      * @return string[]
      */
     private function getSecurePhpFunctions()

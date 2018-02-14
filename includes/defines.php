@@ -175,6 +175,38 @@ ifndef('SHOW_CHILD_PRODUCTS', 0);
 // redis connect timeout in seconds
 ifndef('REDIS_CONNECT_TIMEOUT', 3);
 
+defined('SECURE_PHP_FUNCTIONS') || define('SECURE_PHP_FUNCTIONS', "
+    addcslashes, addslashes, bin2hex, chop, chr, chunk_split, count_chars, crypt, explode, html_entity_decode,
+    htmlentities, htmlspecialchars_decode, htmlspecialchars, implode, join, lcfirst, levenshtein, ltrim, md5, metaphone,
+    money_format, nl2br, number_format, ord, rtrim, sha1, similar_text, soundex, sprintf, str_ireplace, str_pad,
+    str_repeat, str_replace, str_rot13, str_shuffle, str_split, str_word_count, strcasecmp, strchr, strcmp, strcoll,
+    strcspn, strip_tags, stripslashes, stristr, strlen, strnatcasecmp, strnatcmp, strncasecmp, strncmp, strpbrk, strpos,
+    strrchr, strrev, strripos, strrpos, strspn, strstr, strtok, strtolower, strtoupper, strtr, substr_compare,
+    substr_count, substr_replace, substr, trim, ucfirst, ucwords, vsprintf, wordwrap,
+    
+    checkdate, date_add, date_create_from_format, date_create_immutable_from_format, date_create_immutable, date_create,
+    date_date_set, date_diff, date_format, date_get_last_errors, date_interval_create_from_date_string,
+    date_interval_format, date_isodate_set, date_modify, date_offset_get, date_parse_from_format, date_parse, date_sub,
+    date_sun_info, date_sunrise, date_sunset, date_time_set, date_timestamp_get, date_timespamp_set, date_timezone_get,
+    date_timezone_set, date, getdate, gettimeofday, gmdate, gmmktime, gmstrftime, idate, localtime, microtime, mktime,
+    strftime, strptime, strtotime, time, timezone_abbreviations_list, timezone_identifiers_list, timezone_location_get,
+    timezone_name_from_abbr, timezone_name_get, timezone_offset_get, timzone_open, timezone_transitions_get,
+    timezone_version_get,
+    
+    preg_filter, preg_quote, preg_replace, preg_split,
+    
+    bcadd, bccomp, bcdiv, bcmod, bcmul, bcpow, bcpowmod, bcsqrt, bcsub,
+    
+    abs, acos, acosh, asin, asinh, atan2, atan, atanh, base_convert, bindex, ceil, cos, cosh, decbin, dexhex, decoct,
+    deg2rad, exp, expm1, floor, fmod, getrandmax, hexdec, hypot, intdiv, is_finite, is_infinite, is_nan, lcg_value,
+    log10, log1p, log, max, min, mt_getrandmax, mt_rand, mt_srand, octdec, pi, pow, rad2deg, rand, round, sin, sinh,
+    sqrt, srand, tan, tanh,
+    
+    json_decode, json_encode, json_last_error_msg, json_last_error,
+    
+    yaml_emit, yaml_parse,
+");
+
 /**
  * @param string     $constant
  * @param string|int $value

@@ -320,7 +320,7 @@ define('JOBQUEUE_LIMIT_M_STATUSEMAIL', '1');
 // Exportformate
 defined('EXPORTFORMAT_LIMIT_M') || define('EXPORTFORMAT_LIMIT_M', 2000);
 defined('EXPORTFORMAT_ASYNC_LIMIT_M') || define('EXPORTFORMAT_ASYNC_LIMIT_M', 15);
-defined('EXPORTFORMAT_ALLOW_PHP') || define('EXPORTFORMAT_ALLOW_PHP', false);
+defined('EXPORTFORMAT_USE_SECURITY') || define('EXPORTFORMAT_USE_SECURITY', true);
 defined('EXPORTFORMAT_ALLOWED_FORMATS') || define('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');
 // Special Exportformate
 define('SPECIAL_EXPORTFORMAT_YATEGO', 1);

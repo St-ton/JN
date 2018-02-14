@@ -675,19 +675,8 @@ class Exportformat
             ->assign('Einstellungen', $this->getConfig());
 
         // disable php execution in export format templates for security
-        if (!EXPORTFORMAT_ALLOW_PHP) {
-            $smartySecurity                  = new Smarty_Security($this->smarty);
-            $smartySecurity->php_handling    = Smarty::PHP_REMOVE;
-            $smartySecurity->allow_php_tag   = false;
-            $smartySecurity->php_modifiers   = array_merge($this->smarty->default_modifiers, [
-                'replace_delim',
-                'count_characters',
-                'string_format',
-                'string_date_format',
-                'truncate',
-            ]);
-            $smartySecurity->php_functions[] = 'lang';
-            $this->smarty->enableSecurity($smartySecurity);
+        if (EXPORTFORMAT_USE_SECURITY) {
+            $this->smarty->activateBackendSecurityMode();
         }
 
         return $this;

@@ -789,6 +789,38 @@ class JTLSmarty extends SmartyBC
     {
         return self::$isChildTemplate;
     }
+
+    public function activateBackendSecurityMode()
+    {
+        $sec                = new Smarty_Security($this->smarty);
+        $sec->php_handling  = Smarty::PHP_REMOVE;
+        $sec->allow_php_tag = false;
+        $jtlModifier        = [
+            'replace_delim',
+            'count_characters',
+            'string_format',
+            'string_date_format',
+            'truncate',
+        ];
+        $secureFuncs        = $this->getSecurePhpFunctions();
+        $sec->php_modifiers = array_merge(
+            $sec->php_modifiers,
+            $jtlModifier,
+            $secureFuncs
+        );
+        $sec->php_modifiers = array_unique($sec->php_modifiers);
+        $sec->php_functions = array_unique(array_merge($sec->php_functions, $secureFuncs, ['lang']));
+        $this->enableSecurity($sec);
+    }
+
+    private function getSecurePhpFunctions()
+    {
+        static $functions;
+        if ($functions === null) {
+            $functions = array_map('trim', explode(',', SECURE_PHP_FUNCTIONS));
+        }
+        return $functions;
+    }
 }
 
 /**

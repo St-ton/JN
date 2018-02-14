@@ -29,6 +29,7 @@
     <script src="{$templateUrl}js/cms-live-editor/EditorGUI.js"></script>
     <script src="{$templateUrl}js/cms-live-editor/Editor.js"></script>
     <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>
+    <script src="{$templateUrl}js/typeahead.bundle.js"></script>
 
     <script>
         var editor = new Editor({
@@ -185,7 +186,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i class="fa fa-times"></i>
+                        <i class="fa fa-lg fa-times"></i>
                     </button>
                     <h4 class="modal-title">
                         Portlet Einstellungen
@@ -195,10 +196,8 @@
                     <div class="modal-body" id="config-modal-body">
                     </div>
                     <div class="modal-footer">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                            <button class="btn btn-primary" id="cle-btn-save-config">Speichern</button>
-                        </div>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                        <button class="btn btn-primary" id="cle-btn-save-config">Speichern</button>
                     </div>
                 </form>
             </div>

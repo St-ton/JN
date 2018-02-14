@@ -97,8 +97,7 @@
                 </div>
             </div>
 
-            <script type="text/javascript" src="../{$frontendPfad}/portlets/settings.banner.js"></script>
-            <script type="text/javascript" src="../../../admin/templates/bootstrap/js/typeahead.bundle.js"></script>
+            <script src="../{$frontendPfad}/portlets/settings.banner.js"></script>
             {*<link rel="stylesheet" href="../../../admin/templates/bootstrap/css/clickareas.css" type="text/css" media="screen" />*}
             <style>
                 #area_wrapper {

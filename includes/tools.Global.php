@@ -6121,3 +6121,18 @@ if (!function_exists('array_flatten')) {
         return $result;
     }
 }
+
+/**
+ * @param array $fehlendeAngaben
+ * @return int
+ */
+function eingabenKorrekt($fehlendeAngaben)
+{
+    foreach ($fehlendeAngaben as $angabe) {
+        if ($angabe > 0) {
+            return 0;
+        }
+    }
+
+    return 1;
+}

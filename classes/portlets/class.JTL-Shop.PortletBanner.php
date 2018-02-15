@@ -14,7 +14,7 @@ class PortletBanner extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa" src="' . Shop::getURL() .'/'
+        return '<img class="fa" src="' . Shop::getURL() .'/'
             . PFAD_TEMPLATES
             . 'Evo/themes/base/images/cms_live_editor/Icon-Banner.svg"></i>
             <br/> Banner';

@@ -133,7 +133,7 @@ tr.text-vcenter > td, tr.text-vcenter > th {
     padding-top: 10px;
 }
 #elements a.btn .fa{
-    margin-bottom: 5px;
+    margin-bottom: 12px;
 }
 
 #elements ul li {
@@ -233,6 +233,7 @@ tr.text-vcenter > td, tr.text-vcenter > th {
     color: #5cbcf6;
     font-size: 30px;
     height: 30px;
+    max-width: 100%;
 }
 
 .modal-backdrop {

@@ -72,11 +72,8 @@ if (!isset($AktuelleKategorie)) {
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
-if ($smarty->getTemplateVars('NaviFilter') === null) {
-    $smarty->assign('NaviFilter', $NaviFilter);
-}
-// assign variables moved from $_SESSION to cache to smarty
 $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
+       ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie, false))

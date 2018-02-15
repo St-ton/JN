@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="1018.5 267 35 18">
+  <defs>
+    <style>
+      .cls-1, .cls-5 {
+        fill: none;
+      }
+
+      .cls-1 {
+        stroke: #5cbcf6;
+        stroke-width: 1.3px;
+      }
+
+      .cls-2, .cls-3 {
+        fill: #5cbcf6;
+        font-family: FontAwesome;
+      }
+
+      .cls-2 {
+        font-size: 10px;
+      }
+
+      .cls-3 {
+        font-size: 8px;
+      }
+
+      .cls-4 {
+        stroke: none;
+      }
+    </style>
+  </defs>
+  <g id="Icon-Banner" transform="translate(986 164)">
+    <g id="Rechteck_21" data-name="Rechteck 21" class="cls-1" transform="translate(32.5 103)">
+      <rect class="cls-4" width="35" height="18" rx="3"/>
+      <rect class="cls-5" x="0.65" y="0.65" width="33.7" height="16.7" rx="2.35"/>
+    </g>
+    <text id="_" data-name="" class="cls-2" transform="translate(57 116)"><tspan x="-5.357" y="0"></tspan></text>
+    <text id="_2" data-name="" class="cls-3" transform="translate(42 115)"><tspan x="-3.714" y="0"></tspan></text>
+  </g>
+</svg>

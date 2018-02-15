@@ -3478,6 +3478,11 @@ header.fixed-navbar {
 }
 
 //CMS
+.parallax-window > * {
+    z-index: 2;
+    position: relative;
+}
+
 .switcher {
     z-index: 980;
     position: fixed;
@@ -3486,58 +3491,52 @@ header.fixed-navbar {
     width: 360px;
     -webkit-transition: left .2s ease;
     transition: left .2s ease;
-}
-
-.switcher .btn-toggle {
-    position: absolute;
-    right: -43px;
-    top: 0;
-    padding: 10px 15px;
-    z-index: 980;
-    border-right-width: 0;
-    background-color: #E04000;
-}
-
-.switcher,.switcher .btn-toggle {
+    color: #333;
     -webkit-box-shadow: 0 0 1px rgba(0,0,0,.15);
     box-shadow: 0 0 1px rgba(0,0,0,.15);
     background-clip: padding-box;
-}
 
-.switcher {
-    color: #333;
-}
+    &.open {
+        left: -2px;
+        z-index: 1060;
+        -moz-box-shadow: 1px 5px 15px 1px rgba(0, 0, 0, 0.3);
+        box-shadow: 1px 5px 15px 1px rgba(0, 0, 0, 0.3);
 
-.switcher a.btn-toggle {
-    color: #fff;
-}
+        .btn-toggle {
+            color: #fff;
+            background-color: #333;
+        }
+    }
 
-.switcher.open {
-    left: -2px;
-    z-index: 1060;
-    -moz-box-shadow: 1px 5px 15px 1px rgba(0, 0, 0, 0.3);
-    box-shadow: 1px 5px 15px 1px rgba(0, 0, 0, 0.3);
-}
+    .btn-toggle {
+        position: absolute;
+        right: -43px;
+        top: 0;
+        padding: 10px 15px;
+        z-index: 980;
+        border-right-width: 0;
+        background-color: #5cbcf6;
+        color: #fff;
+        -webkit-box-shadow: 0 0 1px rgba(0,0,0,.15);
+        box-shadow: 0 0 1px rgba(0,0,0,.15);
+        background-clip: padding-box;
+    }
 
-.switcher.open a.btn-toggle {
-    color: #fff;
-    background-color: #333;
-}
+    .switcher-header {
+        background-color: #fff;
+        border-bottom: 1px solid rgba(120,130,140,.13);
 
-.switcher .switcher-content {
-    padding: 15px;
-    min-height: 44px;
-    background-color: #fff;
-}
+        h2 {
+            margin: 0;
+            padding: 0 15px;
+            line-height: 39px;
+            font-size: 20px;
+        }
+    }
 
-.switcher .switcher-header {
-    background-color: #fff;
-    border-bottom: 1px solid rgba(120,130,140,.13);
-}
-
-.switcher .switcher-header h2 {
-    margin: 0;
-    padding: 0 15px;
-    line-height: 39px;
-    font-size: 20px;
+    .switcher-content {
+        padding: 15px;
+        min-height: 44px;
+        background-color: #fff;
+    }
 }

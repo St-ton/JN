@@ -14,10 +14,10 @@ class PortletBanner extends CMSPortlet
      */
     public function getButton()
     {
-        return
-            '<div class="text-center">' .
-            '<img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.banner.png" ' .
-            'style="width: 80%; filter: grayscale(50%) opacity(60%)"><br/> Banner</div>';
+        return '<i class="fa" src="' . Shop::getURL() .'/'
+            . PFAD_TEMPLATES
+            . 'Evo/themes/base/images/cms_live_editor/Icon-Banner.svg"></i>
+            <br/> Banner';
     }
 
     public function getPreviewHtml($renderLinks = false)

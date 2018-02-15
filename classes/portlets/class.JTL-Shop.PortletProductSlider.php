@@ -14,11 +14,10 @@ class PortletProductSlider extends CMSPortlet
      */
     public function getButton()
     {
-        return
-            '<div class="text-center" data-toggle="toggle" title="Artikelslider">' .
-            '<img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.productslider.png" ' .
-            'style="width: 80%; filter: grayscale(50%) opacity(60%)">' .
-            '<br/> Product slider</div>';
+        return '<img class="fa" src="' . Shop::getURL() . '/'
+            . PFAD_TEMPLATES
+            . 'Evo/themes/base/images/cms_live_editor/Icon-ProductSlider.svg">
+            <br/> Product Slider';
     }
 
     public function getPreviewHtml()

@@ -14,7 +14,10 @@ class PortletGallery extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-images"></i><br/> Gallery';
+        return '<i class="fa" src="' . Shop::getURL() .'/'
+            . PFAD_TEMPLATES
+            . 'Evo/themes/base/images/cms_live_editor/Icon-ImageGallery.svg"></i>
+            <br/>  Gallery';
     }
 
     public function getPreviewHtml()

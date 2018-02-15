@@ -14,7 +14,10 @@ class PortletAccordion extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-th-list"></i><br/> Akkordeon';
+        return '<i class="fa" src="' . Shop::getURL() .'/'
+            . PFAD_TEMPLATES
+            . 'Evo/themes/base/images/cms_live_editor/Icon-Accordion.svg"></i>
+            <br/> Akkordeon';
     }
 
     /**

@@ -97,5 +97,7 @@ class Migration_20171102121900 extends Migration implements IMigration
         $this->execute("DROP TABLE tcmsportlet");
         $this->execute("DROP TABLE tcmstemplate");
         $this->execute("DROP TABLE tcmspage");
+
+        $this->execute("DELETE FROM tadminmenu WHERE cLinkname='CMS Live Editor';");
     }
 }

@@ -5,8 +5,6 @@
  */
 use Imanee\Imanee;
 
-require_once __DIR__ . '/class.JTL-Shop.Image.php';
-
 /**
  * Class ImageStorage
  */

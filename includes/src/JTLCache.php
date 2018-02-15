@@ -881,20 +881,12 @@ class JTLCache
         $available = [];
         foreach ($this->_getAllMethods() as $methodName) {
             $class = 'cache_' . $methodName;
-            include_once CACHING_METHODS_DIR . 'class.cachingMethod.' . $methodName . '.php';
-            if (class_exists($class)) {
-                /** @var ICachingMethod $instance */
-                $instance               = new $class($this->options);
-                $available[$methodName] = [
-                    'available'  => $instance->isAvailable(),
-                    'functional' => $instance->test()
-                ];
-            } else {
-                $available[$methodName] = [
-                    'available'  => false,
-                    'functional' => false
-                ];
-            }
+            /** @var ICachingMethod $instance */
+            $instance               = new $class($this->options);
+            $available[$methodName] = [
+                'available'  => $instance->isAvailable(),
+                'functional' => $instance->test()
+            ];
         }
 
         return $available;

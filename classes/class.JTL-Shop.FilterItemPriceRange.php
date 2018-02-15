@@ -213,10 +213,10 @@ class FilterItemPriceRange extends AbstractFilter
     /**
      * @param stdClass $oPreis
      * @param Currency $currency
-     * @param array    $oPreisspannenfilter_arr
+     * @param array    $ranges
      * @return string
      */
-    public function getPriceRangeSQL($oPreis, $currency, array $oPreisspannenfilter_arr = [])
+    public function getPriceRangeSQL($oPreis, $currency, array $ranges = [])
     {
         $cSQL          = '';
         $fKundenrabatt = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
@@ -226,15 +226,15 @@ class FilterItemPriceRange extends AbstractFilter
         if ($this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
             $nPreisMin               = $oPreis->fMinPreis;
             $nStep                   = $oPreis->fStep;
-            $oPreisspannenfilter_arr = [];
+            $ranges = [];
             for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
                 $fakePriceRange              = new stdClass();
                 $fakePriceRange->nBis        = $nPreisMin + ($i + 1) * $nStep;
-                $oPreisspannenfilter_arr[$i] = $fakePriceRange;
+                $ranges[$i] = $fakePriceRange;
             }
         }
-        $max = count($oPreisspannenfilter_arr) - 1;
-        foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
+        $max = count($ranges) - 1;
+        foreach ($ranges as $i => $oPreisspannenfilter) {
             $cSQL .= 'COUNT(DISTINCT IF(';
             $nBis = $oPreisspannenfilter->nBis;
             // Finde den höchsten und kleinsten Steuersatz
@@ -297,7 +297,7 @@ class FilterItemPriceRange extends AbstractFilter
             ->setType('LEFT JOIN')
             ->setTable('tartikelkategorierabatt')
             ->setOn('tartikelkategorierabatt.kKundengruppe = ' . $this->getCustomerGroupID() .
-                    ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel')
+                ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel')
             ->setOrigin(__CLASS__);
         $state->joins[] = (new FilterJoin())
             ->setType('LEFT JOIN')
@@ -332,18 +332,6 @@ class FilterItemPriceRange extends AbstractFilter
         if ($this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
             $fSteuersatzMax = 0.0;
             $fSteuersatzMin = 0.0;
-            // remove duplicate joins
-            $joinedTables = [];
-            foreach ($state->joins as $i => $stateJoin) {
-                if (is_string($stateJoin)) {
-                    throw new \InvalidArgumentException('getBaseQuery() got join as string: ' . $stateJoin);
-                }
-                if (!in_array($stateJoin->getTable(), $joinedTables, true)) {
-                    $joinedTables[] = $stateJoin->getTable();
-                } else {
-                    unset($state->joins[$i]);
-                }
-            }
             // Finde den höchsten und kleinsten Steuersatz
             if (is_array($_SESSION['Steuersatz']) && !Session::CustomerGroup()->isMerchant()) {
                 $fSteuersatz_arr = [];
@@ -356,48 +344,40 @@ class FilterItemPriceRange extends AbstractFilter
                 $fSteuersatzMax = 0.0;
                 $fSteuersatzMin = 0.0;
             }
-            $fKundenrabatt     = ($discount = Session::CustomerGroup()->getDiscount()) > 0
+            $fKundenrabatt = ($discount = Session::CustomerGroup()->getDiscount()) > 0
                 ? $discount
                 : 0.0;
-            $state->conditions = implode(' AND ', array_map(function ($a) {
-                return is_string($a) || (is_object($a) && get_class($a) === 'FilterQuery')
-                    ? $a
-                    : ('(' . implode(' OR ', $a) . ')');
-            }, $state->conditions));
-            if (!empty($state->conditions)) {
-                $state->conditions = ' AND ' . $state->conditions;
+            $state         = $this->productFilter->getCurrentStateData();
+            foreach ($this->getSQLJoin() as $join) {
+                $state->joins[] = $join;
             }
-            $state->having             = implode(' AND ', $state->having);
-            $state->joins              = implode("\n", $state->joins);
-            $qry                       = 'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin
-                FROM (
-                    SELECT ROUND(
+            $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery(
+                [
+                    'ROUND(
                         LEAST(
                             (tpreise.fVKNetto * ' . $currency->getConversionFactor() . ') *
                             ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
-                Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100),
+                    Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100),
                             IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
-                $currency->getConversionFactor() . '))) * ((100 + ' . $fSteuersatzMax . ') / 100), 2) AS fMax,
+                    $currency->getConversionFactor() . '))) * ((100 + ' . $fSteuersatzMax . ') / 100), 2) AS fMax,
                  ROUND(LEAST((tpreise.fVKNetto * ' . $currency->getConversionFactor() . ') *
                  ((100 - greatest(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
-                Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100),
+                    Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100),
                  IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
-                $currency->getConversionFactor() . '))) * ((100 + ' . $fSteuersatzMin . ') / 100), 2) AS fMin
-                FROM tartikel ' .
-                $state->joins .
-                ' WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikel.kVaterArtikel = 0 ' .
-                    $this->productFilter->getFilterSQL()->getStockFilterSQL() .
-                    $state->conditions .
-                ' GROUP BY tartikel.kArtikel' .
-                $state->having .
-            ') AS ssMerkmal';
-            $oPreisspannenFilterMaxMin = Shop::DB()->query($qry, NiceDB::RET_SINGLE_OBJECT);
-            if (isset($oPreisspannenFilterMaxMin->fMax) && $oPreisspannenFilterMaxMin->fMax > 0) {
+                    $currency->getConversionFactor() . '))) * ((100 + ' . $fSteuersatzMin . ') / 100), 2) AS fMin'
+                ],
+                $state->joins,
+                $state->conditions,
+                $state->having
+            );
+            $qry       = 'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin 
+                                              FROM (' . $baseQuery . ' ) AS ssMerkmal';
+            $minMax    = Shop::DB()->query($qry, NiceDB::RET_SINGLE_OBJECT);
+            if (isset($minMax->fMax) && $minMax->fMax > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff und liefert diese Werte in einem Objekt
                 $oPreis = $this->calculateSteps(
-                    $oPreisspannenFilterMaxMin->fMax * $currency->getConversionFactor(),
-                    $oPreisspannenFilterMaxMin->fMin * $currency->getConversionFactor()
+                    $minMax->fMax * $currency->getConversionFactor(),
+                    $minMax->fMin * $currency->getConversionFactor()
                 );
                 // Begrenzung der Preisspannen bei zu großen Preisdifferenzen
                 $oPreis->nAnzahlSpannen = min(20, (int)$oPreis->nAnzahlSpannen);
@@ -408,24 +388,18 @@ class FilterItemPriceRange extends AbstractFilter
                     }
                     $cSelectSQL .= ' SUM(ssMerkmal.anz' . $i . ') AS anz' . $i;
                 }
-                $qry              = 'SELECT ' . $cSelectSQL .
-                    ' FROM
-                    (
-                        SELECT ' . $this->getPriceRangeSQL($oPreis, $currency) .
-                        ' FROM tartikel ' .
-                        $state->joins .
-                        ' WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            AND tartikel.kVaterArtikel = 0' .
-                            $this->productFilter->getFilterSQL()->getStockFilterSQL() .
-                            $state->conditions .
-                        ' GROUP BY tartikel.kArtikel' .
-                        $state->having .
-                    ') AS ssMerkmal';
+                $baseQuery        = $this->productFilter->getFilterSQL()->getBaseQuery(
+                    [$this->getPriceRangeSQL($oPreis, $currency)],
+                    $state->joins,
+                    $state->conditions,
+                    $state->having
+                );
+                $qry              = 'SELECT ' . $cSelectSQL . ' FROM (' . $baseQuery . ' ) AS ssMerkmal';
                 $dbRes            = Shop::DB()->query($qry, NiceDB::RET_SINGLE_OBJECT);
                 $priceRanges      = [];
                 $priceRangeCounts = is_object($dbRes)
                     ? get_object_vars($dbRes)
-                    : null;
+                    : [];
                 for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
                     $sub           = $i === 0
                         ? 0
@@ -472,67 +446,40 @@ class FilterItemPriceRange extends AbstractFilter
                 }
             }
         } else {
-            $oPreisspannenfilter_arr = Shop::DB()->query('SELECT * FROM tpreisspannenfilter', NiceDB::RET_ARRAY_OF_OBJECTS);
-            if (count($oPreisspannenfilter_arr) > 0) {
+            $ranges = Shop::DB()->query('SELECT * FROM tpreisspannenfilter', NiceDB::RET_ARRAY_OF_OBJECTS);
+            if (count($ranges) > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff
                 $oPreis = $this->calculateSteps(
-                    $oPreisspannenfilter_arr[count($oPreisspannenfilter_arr) - 1]->nBis * $currency->getConversionFactor(),
-                    $oPreisspannenfilter_arr[0]->nVon * $currency->getConversionFactor()
+                    $ranges[count($ranges) - 1]->nBis * $currency->getConversionFactor(),
+                    $ranges[0]->nVon * $currency->getConversionFactor()
                 );
                 if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
                     return [];
                 }
+                $state      = $this->productFilter->getCurrentStateData();
                 $cSelectSQL = '';
-                $count      = count($oPreisspannenfilter_arr);
+                $count      = count($ranges);
                 for ($i = 0; $i < $count; ++$i) {
                     if ($i > 0) {
                         $cSelectSQL .= ', ';
                     }
                     $cSelectSQL .= 'SUM(ssMerkmal.anz' . $i . ') AS anz' . $i;
                 }
-                // remove duplicate joins
-                $checked = [];
-                $state->joins   = array_filter(
-                    $state->joins,
-                    function ($j) use (&$checked) {
-                        if (is_string($j)) {
-                            throw new \InvalidArgumentException('getBaseQuery() got join as string: ' . $j);
-                        }
-                        /** @var FilterJoin $j */
-                        if (!in_array($j->getTable(), $checked, true)) {
-                            $checked[] = $j->getTable();
-
-                            return true;
-                        }
-
-                        return false;
-                    }
-                );
-
-                $state->conditions = implode(' AND ', array_map(function ($a) {
-                    return is_string($a)
-                        ? $a
-                        : ('(' . implode(' OR ', $a) . ')');
-                }, $state->conditions));
-                if (!empty($state->conditions)) {
-                    $state->conditions = ' AND ' . $state->conditions;
+                foreach ($this->getSQLJoin() as $join) {
+                    $state->joins[] = $join;
                 }
-                $qry = 'SELECT ' . $cSelectSQL . '
-                        FROM
-                        (
-                            SELECT ' . $this->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr) . '
-                                FROM tartikel ' . implode("\n", $state->joins) . '
-                                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                                    AND tartikel.kVaterArtikel = 0 ' .
-                    $this->productFilter->getFilterSQL()->getStockFilterSQL() .
-                    $state->conditions .
-                    ' GROUP BY tartikel.kArtikel
-                                ' . implode("\n", $state->having) . '
-                        ) AS ssMerkmal';
-                $dbRes            = Shop::DB()->query(
+                $query = $this->productFilter->getFilterSQL()->getBaseQuery(
+                    [$this->getPriceRangeSQL($oPreis, $currency, $ranges)],
+                    $state->joins,
+                    $state->conditions,
+                    $state->having
+                );
+                $qry   = 'SELECT ' . $cSelectSQL . ' FROM (' . $query . ' ) AS ssMerkmal';
+                $dbRes = Shop::DB()->query(
                     $qry,
                     NiceDB::RET_SINGLE_OBJECT
                 );
+
                 $additionalFilter = new self($this->productFilter);
                 $priceRangeCounts = $dbRes !== false ? get_object_vars($dbRes) : [];
                 $priceRanges      = [];
@@ -543,38 +490,38 @@ class FilterItemPriceRange extends AbstractFilter
                         : $priceRangeCounts['anz' . ($i - 1)];
                     $priceRanges[] = $priceRangeCounts['anz' . $i] - $sub;
                 }
-                foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
-                    $fo                 = new FilterOption();
-                    $fo->nVon           = $oPreisspannenfilter->nVon;
-                    $fo->nBis           = $oPreisspannenfilter->nBis;
-                    $fo->cVonLocalized  = gibPreisLocalizedOhneFaktor(
+                foreach ($ranges as $i => $range) {
+                    $fo                = new FilterOption();
+                    $fo->nVon          = $range->nVon;
+                    $fo->nBis          = $range->nBis;
+                    $fo->cVonLocalized = gibPreisLocalizedOhneFaktor(
                         $fo->nVon,
                         $currency
                     );
-                    $fo->cBisLocalized  = gibPreisLocalizedOhneFaktor(
+                    $fo->cBisLocalized = gibPreisLocalizedOhneFaktor(
                         $fo->nBis,
                         $currency
                     );
-                    $options[] = $fo->setType($this->getType())
-                                    ->setClassName($this->getClassName())
-                                    ->setParam($this->getUrlParam())
-                                    ->setName($fo->cVonLocalized . ' - ' . $fo->cBisLocalized)
-                                    ->setValue($i)
-                                    ->setCount(isset($priceRanges[$i]) ? (int)$priceRanges[$i] : 0)
-                                    ->setSort(0)
-                                    ->setURL($this->productFilter->getFilterURL()->getURL(
-                                        $additionalFilter->init($fo->nVon . '_' . $fo->nBis)
-                                    ));
+                    $options[]         = $fo->setType($this->getType())
+                                            ->setClassName($this->getClassName())
+                                            ->setParam($this->getUrlParam())
+                                            ->setName($fo->cVonLocalized . ' - ' . $fo->cBisLocalized)
+                                            ->setValue($i)
+                                            ->setCount(isset($priceRanges[$i]) ? (int)$priceRanges[$i] : 0)
+                                            ->setSort(0)
+                                            ->setURL($this->productFilter->getFilterURL()->getURL(
+                                                $additionalFilter->init($fo->nVon . '_' . $fo->nBis)
+                                            ));
                 }
             }
         }
         // Preisspannen ohne Artikel ausblenden (falls im Backend eingestellt)
-        if (count($options) > 0 
+        if (count($options) > 0
             && $this->getConfig()['navigationsfilter']['preisspannenfilter_spannen_ausblenden'] === 'Y'
         ) {
             $options = array_filter(
                 $options,
-                function($e) {
+                function ($e) {
                     /** @var FilterOption $e */
                     return $e->getCount() > 0;
                 }

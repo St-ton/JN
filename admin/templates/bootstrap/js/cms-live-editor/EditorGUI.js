@@ -81,7 +81,9 @@ EditorGUI.prototype = {
         this.iframeCtx  = this.iframe[0].contentWindow;
         this.iframeJq   = this.iframeCtx.$;
         this.iframeBody = this.iframeJq('body');
-        this.loadIframeStylesheet(this.templateUrl + 'css/cms-live-editor-iframe.css');
+        // this.loadIframeStylesheet(this.templateUrl + 'css/cms-live-editor-iframe.css');
+        this.loadIframeStylesheet(this.templateUrl + 'css/live-editor/iframe.less', true);
+        this.loadIframeScript('//cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js');
 
         this.iframeJq('a, button')          // disable links and buttons that could change the current iframes location
             .off('click')
@@ -160,10 +162,21 @@ EditorGUI.prototype = {
             .off('keydown');
     },
 
-    loadIframeStylesheet: function(url)
+    loadIframeScript: function(url)
     {
+        less = less || false;
+
         this
-            .iframeJq('<link rel="stylesheet" href="' + url + '">')
+            .iframeJq('<script src="' + url  + '"></script>')
+            .appendTo(this.iframeJq('head'));
+    },
+
+    loadIframeStylesheet: function(url, less)
+    {
+        less = less || false;
+
+        this
+            .iframeJq('<link rel="stylesheet' + (less ? '/less' : '') + '" href="' + url + '">')
             .appendTo(this.iframeJq('head'));
     },
 

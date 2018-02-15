@@ -11,14 +11,18 @@
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/font-awesome.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-colorpicker.min.css">
-    <link rel="stylesheet" href="{$templateUrl}css/cms-live-editor-host.css">
     <link rel="stylesheet" href="{$templateUrl}css/typeaheadjs.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-tour.min.css">
+    <link rel="stylesheet/less" href="{$templateUrl}css/live-editor/host.less">
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
     <script src="{$templateUrl}js/jquery-ui-1.11.4.min.js"></script>
     <script src="{$templateUrl}js/bootstrap.min.js"></script>
-    <script src="{$templateUrl}js/split.min.js"></script>
+
+    {*<script src="{$templateUrl}js/split.min.js"></script>*}
+    <script src="https://unpkg.com/split.js/split.min.js"></script>
+
+
     <script src="{$templateUrl}js/global.js"></script>
     <script src="{$templateUrl}js/searchpicker.js"></script>
     <script src="{$templateUrl}js/ckeditor_4.7.3_basic/ckeditor.js"></script>
@@ -30,6 +34,7 @@
     <script src="{$templateUrl}js/cms-live-editor/Editor.js"></script>
     <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>
     <script src="{$templateUrl}js/typeahead.bundle.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js"></script>
 
     <script>
         var editor = new Editor({
@@ -55,26 +60,39 @@
                             <i class="fa fa-bars"></i>
                         </button>
                     </div>
-                    <div class="collapse navbar-collapse" id="editor-nav-collapse">
+                    {*<div class="collapse navbar-collapse" id="editor-nav-collapse">*}
                         <ul class="nav navbar-nav navbar-right">
-                            <li>
-                                <a href="#" id="help" data-toggle="tooltip" data-placement="bottom" title="Help">
-                                    <i class="fa fa-question-circle-o"></i>
+                            <li class="dropdown">
+                                <a href="#" id="dropdownMenu1" data-toggle="dropdown">
+                                    <i class="fa fa-ellipsis-v"></i>
                                 </a>
+                                <ul class="dropdown-menu dropdown-menu-left" aria-labelledby="dropdownMenu1">
+                                    <li>
+                                        <a href="#" id="btn-import" data-toggle="tooltip" data-placement="bottom"
+                                           title="Import">
+                                            <i class="fa fa-upload"></i> Import
+                                        </a>
+                                    </li>
+                                    <li role="separator" class="divider"></li>
+                                    <li>
+                                        <a href="#" id="btn-export" data-toggle="tooltip" data-placement="bottom"
+                                           title="Export">
+                                            <i class="fa fa-download"></i> Export
+                                        </a>
+                                    </li>
+                                    <li role="separator" class="divider"></li>
+                                    <li>
+                                        <a href="#" id="help" data-toggle="tooltip" data-placement="bottom"
+                                           title="Help">
+                                            <i class="fa fa-question-circle"></i> Hilfe
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
                             <li>
-                                <a href="#" id="btn-preview" data-toggle="tooltip" data-placement="bottom" title="Preview">
+                                <a href="#" id="btn-preview" data-toggle="tooltip" data-placement="bottom"
+                                   title="Preview">
                                     <i class="fa fa-eye"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" id="btn-import" data-toggle="tooltip" data-placement="bottom" title="Import">
-                                    <i class="fa fa-upload"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" id="btn-export" data-toggle="tooltip" data-placement="bottom" title="Export">
-                                    <i class="fa fa-download"></i>
                                 </a>
                             </li>
                             <li>
@@ -84,13 +102,13 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{$cPageUrl}" id="cle-btn-close-editor" data-toggle="tooltip" data-placement="bottom"
-                                   title="Editor schlie&szlig;en">
+                                <a href="{$cPageUrl}" id="cle-btn-close-editor" data-toggle="tooltip"
+                                   data-placement="bottom" title="Editor schlie&szlig;en">
                                     <i class="fa fa-close"></i>
                                 </a>
                             </li>
                         </ul>
-                    </div>
+                    {*</div>*}
                 </div>
             </nav>
             <ul id="editor-tabs" class="nav nav-tabs">

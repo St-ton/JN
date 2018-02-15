@@ -224,12 +224,12 @@ class Warenkorb
         $NeuePosition->kVersandklasse    = $NeuePosition->Artikel->kVersandklasse;
         $NeuePosition->kSteuerklasse     = $NeuePosition->Artikel->kSteuerklasse;
         $NeuePosition->fPreisEinzelNetto = $NeuePosition->Artikel->gibPreis($NeuePosition->nAnzahl, []);
-        $NeuePosition->fPreis      = $NeuePosition->Artikel->gibPreis($anzahl, []);
-        $NeuePosition->cArtNr      = $NeuePosition->Artikel->cArtNr;
-        $NeuePosition->nPosTyp     = $nPosTyp;
-        $NeuePosition->cEinheit    = $NeuePosition->Artikel->cEinheit;
-        $NeuePosition->cUnique     = $cUnique;
-        $NeuePosition->kKonfigitem = $kKonfigitem;
+        $NeuePosition->fPreis            = $NeuePosition->Artikel->gibPreis($anzahl, []);
+        $NeuePosition->cArtNr            = $NeuePosition->Artikel->cArtNr;
+        $NeuePosition->nPosTyp           = $nPosTyp;
+        $NeuePosition->cEinheit          = $NeuePosition->Artikel->cEinheit;
+        $NeuePosition->cUnique           = $cUnique;
+        $NeuePosition->kKonfigitem       = $kKonfigitem;
 
         $NeuePosition->setzeGesamtpreisLocalized();
         //posname lokalisiert ablegen
@@ -567,9 +567,9 @@ class Warenkorb
             );
 
             // Konfigurationsartikel: mapto: 9a87wdgad
-            if ((int)$NeuePosition->kKonfigitem > 0 &&
-                is_string($NeuePosition->cUnique) &&
-                strlen($NeuePosition->cUnique) === 10
+            if ((int)$NeuePosition->kKonfigitem > 0
+                && is_string($NeuePosition->cUnique)
+                && strlen($NeuePosition->cUnique) === 10
             ) {
                 $fPreisNetto  = 0;
                 $fPreisBrutto = 0;
@@ -673,7 +673,7 @@ class Warenkorb
         $anz = 0;
         foreach ($this->PositionenArr as $Position) {
             if (in_array($Position->nPosTyp, $postyp_arr)
-                && (($Position->cUnique === false) || (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
+                && (empty($Position->cUnique) || (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
             ) {
                 $anz += ($Position->Artikel->cTeilbar === 'Y') ? 1 : $Position->nAnzahl;
             }
@@ -696,7 +696,7 @@ class Warenkorb
         $anz = 0;
         foreach ($this->PositionenArr as $i => $Position) {
             if (in_array($Position->nPosTyp, $postyp_arr)
-                && ($Position->cUnique === false || (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
+                && (empty($Position->cUnique) || (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
             ) {
                 ++$anz;
             }

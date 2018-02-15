@@ -450,14 +450,14 @@ EditorGUI.prototype = {
 
     onExportPage: function(e)
     {
-        download(JSON.stringify(this.editor.io.pageToJson()), 'page-export.json', 'text/plain');
+        download(JSON.stringify(this.editor.io.pageToJson()), 'page-export.json', 'application/json');
     },
 
     onImportPage: function(e)
     {
         var self = this;
 
-        $('<input type="file">')
+        $('<input type="file" accept="application/json">')
             .change(function(e) {
                 var file = e.target.files[0];
                 var reader = new FileReader();

@@ -231,7 +231,8 @@ abstract class CMSPortlet
                 if (trim($value) !== '') {
                     if (stripos($name, 'margin-') !== false ||
                         stripos($name, 'padding-') !== false ||
-                        stripos($name, '-width') !== false
+                        stripos($name, '-width') !== false ||
+                        stripos($name, '-height') !== false
                     ) {
                         $styleString .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . 'px;';
                     } else {

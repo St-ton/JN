@@ -14,7 +14,10 @@ class PortletDivider extends CMSPortlet
      */
     public function getButton()
     {
-        return '<i class="fa fa-minus"></i><br/> Trennlinie';
+        return '<img class="fa" src="' . Shop::getURL() . '/'
+            . PFAD_TEMPLATES
+            . 'Evo/themes/base/images/cms_live_editor/Icon-HR.svg">
+            <br/> Trennlinie';
     }
 
     public function getPreviewHtml()

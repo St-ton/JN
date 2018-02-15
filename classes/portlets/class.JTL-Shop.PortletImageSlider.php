@@ -9,6 +9,17 @@
  */
 class PortletImageSlider extends CMSPortlet
 {
+    /**
+     * @return string
+     */
+    public function getButton()
+    {
+        return '<img class="fa" src="' . Shop::getURL() . '/'
+            . PFAD_TEMPLATES
+            . 'Evo/themes/base/images/cms_live_editor/Icon-ImageSlider.svg">
+            <br/> Image Slider';
+    }
+
     public function getPreviewHtml($renderLinks = false)
     {
         if (!empty($this->properties['slides'])) {

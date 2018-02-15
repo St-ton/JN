@@ -14,14 +14,14 @@
                     <input type="hidden" name="cPageUrl" value="{$smarty.server.REQUEST_URI}">
                     {if !empty($oCMSPage->cFinalHtml_arr)}
                         <p>
-                            <button type="submit" name="cAction" class="btn btn-default" value="restore_default">
-                                Standardinhalt wiederherstellen
-                            </button>
-                        </p>
-                        <p>
                             <button type="submit" name="cAction" class="btn btn-primary"
                                     value="{if empty($oCMSPage->cFinalHtml_arr['editor_replace_all'])}extend{else}replace{/if}">Inhalt
                                 bearbeiten
+                            </button>
+                        </p>
+                        <p>
+                            <button type="submit" name="cAction" class="btn" value="restore_default">
+                                Standardinhalt wiederherstellen
                             </button>
                         </p>
                     {else}

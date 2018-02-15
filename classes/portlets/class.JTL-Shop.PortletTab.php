@@ -14,8 +14,10 @@ class PortletTab extends CMSPortlet
      */
     public function getButton()
     {
-        // TODO Editor: Icon richtig wählen
-        return '<i class="fa fa-table"></i><br/> Tabs';
+        return '<img class="fa" src="' . Shop::getURL() . '/'
+            . PFAD_TEMPLATES
+            . 'Evo/themes/base/images/cms_live_editor/Icon-Tab.svg">
+            <br/> Tabs';
     }
 
     public function getPreviewHtml()

@@ -14,11 +14,10 @@ class PortletProductStream extends CMSPortlet
      */
     public function getButton()
     {
-        return
-            '<div class="text-center">' .
-            '<img src="../' . PFAD_TEMPLATES . 'Evo/portlets/preview.productstream.gallery.png" ' .
-            'style="width: 80%;filter: grayscale() opacity(60%)"/>' .
-            '<br/> Product stream</div>';
+        return '<img class="fa" src="' . Shop::getURL() . '/'
+            . PFAD_TEMPLATES
+            . 'Evo/themes/base/images/cms_live_editor/Icon-ProductStream.svg">
+            <br/> Product Stream';
     }
 
     /**

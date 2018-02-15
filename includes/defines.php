@@ -43,7 +43,7 @@ ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
 // Pfade
-ifndef('PFAD_CLASSES', 'classes/'); // DEPRECATED
+ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
 ifndef('PFAD_CONFIG', 'config/');
 ifndef('PFAD_INCLUDES', 'includes/');
 ifndef('PFAD_TEMPLATES', 'templates/');

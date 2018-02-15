@@ -37,7 +37,7 @@ class PortletImage extends CMSPortlet
             $this->getSrcString($this->properties['src'], $this->properties['widthHeuristics']) . '>';
 
         if ($renderLinks && $linkFlag === 'yes' && !empty($linkUrl)) {
-            if ($linkNewTabFlag) {
+            if ($linkNewTabFlag === 'yes') {
                 $content = '<a href="' . $linkUrl . '" title="' . $linkTitle . '" target="_blank">' . $content . '</a>';
             } else {
                 $content = '<a href="' . $linkUrl . '" title="' . $linkTitle . '">' . $content . '</a>';

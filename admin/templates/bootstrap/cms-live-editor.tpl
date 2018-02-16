@@ -209,7 +209,7 @@
                         <i class="fa fa-lg fa-times"></i>
                     </button>
                     <h4 class="modal-title">
-                        Portlet Einstellungen
+                        Portlet bearbeiten
                     </h4>
                 </div>
                 <form id="config-form">

@@ -21,15 +21,15 @@
                         </p>
                         <p>
                             <button type="submit" name="cAction" class="btn" value="restore_default">
-                                Standardinhalt wiederherstellen
+                                Seite zurücksetzen
                             </button>
                         </p>
                     {else}
                         <p>
-                            <button type="submit" name="cAction" class="btn btn-primary" value="extend">Inhalt erweitern</button>
+                            <button type="submit" name="cAction" class="btn btn-primary" value="extend">Seite erweitern</button>
                         </p>
                         <p>
-                            <button type="submit" name="cAction" class="btn btn-primary" value="replace">Inhalt ersetzen</button>
+                            <button type="submit" name="cAction" class="btn btn-primary" value="replace">Seite ersetzen</button>
                         </p>
                     {/if}
                 </form>

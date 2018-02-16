@@ -350,7 +350,7 @@ EditorGUI.prototype = {
         function getConfigPanelSuccess(configPanelHtml)
         {
             this.configModalBody.html(configPanelHtml);
-            this.configModal.find('.modal-title').html(portletTitle + ' Einstellungen');
+            this.configModal.find('.modal-title').html(portletTitle + ' bearbeiten');
             this.configModal.modal('show');
             this.curPortletId = portletId;
         }

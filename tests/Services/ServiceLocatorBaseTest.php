@@ -82,4 +82,44 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
         $this->expectException(ServiceNotFoundException::class);
         $locator->getNew('doesnotexist');
     }
+
+
+    // EXTENSIBILITY
+
+    public function test_singletonDecorator_happyPath()
+    {
+        require_once 'HelloWorldServiceInterface.php';
+        require_once 'HelloWorldService.php';
+        require_once 'HelloWorldTrimmingServiceDecorator.php';
+
+        $locator = new ServiceLocatorBase();
+        $helloWorldService = new HelloWorldService();
+        $locator->setSingleton(HelloWorldServiceInterface::class, $helloWorldService);
+        $helloWorldService = $locator->getInstance(HelloWorldServiceInterface::class);
+        $decorator = new HelloWorldTrimmingServiceDecorator($helloWorldService);
+        $locator->setSingleton(HelloWorldServiceInterface::class, $decorator);
+        /** @var HelloWorldServiceInterface $finalService */
+        $finalService = $locator->getInstance(HelloWorldServiceInterface::class);
+        $this->assertEquals('Hello World', $finalService->getHelloWorldString());
+    }
+
+    public function test_factoryDecorator_happyPath()
+    {
+        require_once 'HelloWorldServiceInterface.php';
+        require_once 'HelloWorldService.php';
+        require_once 'HelloWorldTrimmingServiceDecorator.php';
+
+        $locator = new ServiceLocatorBase();
+        $locator->setFactory(HelloWorldServiceInterface::class, function(){
+            return new HelloWorldService();
+        });
+        $factory = $locator->getFactory(HelloWorldServiceInterface::class);
+        $locator->setFactory(HelloWorldServiceInterface::class, function() use ($factory){
+            return new HelloWorldTrimmingServiceDecorator($factory());
+        });
+        /** @var HelloWorldServiceInterface $service */
+        $service = $locator->getNew(HelloWorldServiceInterface::class);
+        $this->assertEquals('Hello World', $service->getHelloWorldString());
+        $this->assertNotSame($service, $locator->getNew(HelloWorldServiceInterface::class));
+    }
 }

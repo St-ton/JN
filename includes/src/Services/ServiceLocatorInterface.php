@@ -30,6 +30,12 @@ interface ServiceLocatorInterface
     public function setFactory($interface, $callable);
 
     /**
+     * @param $interface
+     * @return callable
+     */
+    public function getFactory($interface);
+
+    /**
      * @param string $interface
      * @return object
      * @throws ServiceNotFoundException

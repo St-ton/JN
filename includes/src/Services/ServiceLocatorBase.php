@@ -6,6 +6,8 @@
 
 namespace Services;
 
+use Exceptions\ServiceNotFoundException;
+
 /**
  * Class ServiceLocatorBase
  */
@@ -30,10 +32,18 @@ class ServiceLocatorBase implements ServiceLocatorInterface
         $this->factories[$interface] = $callable;
     }
 
+    public function getFactory($interface)
+    {
+        if (!isset($this->factories[$interface])) {
+            throw new ServiceNotFoundException($interface);
+        }
+        return $this->factories[$interface];
+    }
+
     public function getInstance($interface)
     {
         if (!isset($this->singletons[$interface])) {
-            throw new \Exceptions\ServiceNotFoundException($interface);
+            throw new ServiceNotFoundException($interface);
         }
         if (is_callable($this->singletons[$interface])) {
             $callable                     = $this->singletons[$interface];
@@ -45,7 +55,7 @@ class ServiceLocatorBase implements ServiceLocatorInterface
     public function getNew($interface)
     {
         if (!isset($this->factories[$interface])) {
-            throw new \Exceptions\ServiceNotFoundException($interface);
+            throw new ServiceNotFoundException($interface);
         }
         $callable = $this->factories[$interface];
         return $callable($this);

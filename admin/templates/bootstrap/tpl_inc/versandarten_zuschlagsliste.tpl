@@ -117,7 +117,7 @@
                         <span class="input-group-addon">
                             <label for="fZuschlag">{#additionalFee#} ({#amount#})</label>
                         </span>
-                        <input type="text" id="fZuschlag" name="fZuschlag" value="{if isset($oVersandzuschlag->fZuschlag)}{$oVersandzuschlag->fZuschlag}{/if}" class="form-control price_large" tabindex="{$idx+1}">{* onKeyUp="setzePreisAjax(false, 'ajaxzuschlag', this)" required/> <span id="ajaxzuschlag"></span>*}
+                        <input type="text" id="fZuschlag" name="fZuschlag" value="{if isset($oVersandzuschlag->fZuschlag)}{$oVersandzuschlag->fZuschlag}{/if}" class="form-control price_large" tabindex="{$idx+1}" required>{* onKeyUp="setzePreisAjax(false, 'ajaxzuschlag', this)"/> <span id="ajaxzuschlag"></span>*}
                     </div>
                 </div>
                 <div class="panel-footer">

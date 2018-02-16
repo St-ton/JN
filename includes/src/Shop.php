@@ -326,7 +326,7 @@ final class Shop
     /**
      * @var \Services\DefaultServicesInterface
      */
-    public static $serviceLocator;
+    public static $container;
 
     /**
      * @var array
@@ -1684,14 +1684,14 @@ final class Shop
      *
      * @return \Services\DefaultServicesInterface
      */
-    public function getServiceLocator()
+    public function getContainer()
     {
 
-        if (!static::$serviceLocator) {
-            static::createServiceLocator();
+        if (!static::$container) {
+            static::createContainer();
         }
 
-        return static::$serviceLocator;
+        return static::$container;
     }
 
     /**
@@ -1699,10 +1699,10 @@ final class Shop
      *
      * @return null
      */
-    private function createServiceLocator()
+    private function createContainer()
     {
-        $l                      = new \Services\ServiceLocator();
-        static::$serviceLocator = $l;
+        $l                 = new \Services\Container();
+        static::$container = $l;
         $l->setSingleton(Services\JTL\ExampleServiceInterface::class, function ($locator) {
             return new Services\JTL\ExampleService();
         });

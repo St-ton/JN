@@ -17,7 +17,7 @@ use Services\JTL\ExampleService;
  *
  * @package Services
  */
-class ServiceLocator extends ServiceLocatorBase implements DefaultServicesInterface
+class Container extends ContainerBase implements DefaultServicesInterface
 {
     public function getExampleService()
     {

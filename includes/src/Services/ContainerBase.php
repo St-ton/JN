@@ -11,7 +11,7 @@ use Exceptions\ServiceNotFoundException;
 /**
  * Class ServiceLocatorBase
  */
-class ServiceLocatorBase implements ServiceLocatorInterface
+class ContainerBase implements ContainerInterface
 {
     protected $singletons = [];
     protected $factories = [];

@@ -14,7 +14,7 @@ namespace Services;
  *
  * @package Services
  */
-interface DefaultServicesInterface extends ServiceLocatorInterface
+interface DefaultServicesInterface extends ContainerInterface
 {
     /**
      * @return ExampleService

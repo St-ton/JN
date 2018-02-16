@@ -9,9 +9,9 @@ namespace Services;
 use Exceptions\ServiceNotFoundException;
 
 /**
- * Interface ServiceLocatorInterface
+ * Interface ContainerInterface
  */
-interface ServiceLocatorInterface
+interface ContainerInterface
 {
     /**
      * @param string          $interface

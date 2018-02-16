@@ -9,7 +9,7 @@ namespace Services;
 use Exceptions\ServiceNotFoundException;
 
 /**
- * Class ServiceLocatorBase
+ * Class ContainerBase
  */
 class ContainerBase implements ContainerInterface
 {

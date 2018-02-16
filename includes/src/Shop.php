@@ -1680,7 +1680,7 @@ final class Shop
     }
 
     /**
-     * Get the default service locator of the jtl shop
+     * Get the default container of the jtl shop
      *
      * @return \Services\DefaultServicesInterface
      */
@@ -1695,7 +1695,7 @@ final class Shop
     }
 
     /**
-     * Create the default service locator of the jtl shop
+     * Create the default container of the jtl shop
      *
      * @return null
      */

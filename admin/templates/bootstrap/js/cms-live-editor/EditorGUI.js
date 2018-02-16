@@ -21,6 +21,13 @@ EditorGUI.prototype = {
 
     initHostGUI: function()
     {
+        var self = this;
+
+        Split(
+            ['#sidebar-panel', '#iframe-panel'],
+            { sizes: [25, 75], gutterSize: 4, onDrag: function() { self.toolbarPopper.update(); self.previewLabelPopper.update(); } }
+        );
+
         this.hostJq                   = $;
         this.iframe                   = this.hostJq('#iframe');
         this.loaderModal              = this.hostJq('#loader-modal');
@@ -81,7 +88,6 @@ EditorGUI.prototype = {
         this.iframeCtx  = this.iframe[0].contentWindow;
         this.iframeJq   = this.iframeCtx.$;
         this.iframeBody = this.iframeJq('body');
-        // this.loadIframeStylesheet(this.templateUrl + 'css/cms-live-editor-iframe.css');
         this.loadIframeStylesheet(this.templateUrl + 'css/live-editor/iframe.less', true);
         this.loadIframeScript('//cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js');
 
@@ -93,7 +99,16 @@ EditorGUI.prototype = {
         this.rootAreas = this.iframeJq('.cle-rootarea');
         this.portletPreviewLabel.appendTo(this.iframeBody);
         this.portletToolbar.appendTo(this.iframeBody);
-        this.portletLabel.prependTo(this.portletToolbar);
+
+        this.toolbarPopper = new Popper(
+            document.body, this.portletToolbar[0],
+            { placement: 'top-start', modifiers: { computeStyle: { gpuAcceleration: false }}}
+        );
+
+        this.previewLabelPopper = new Popper(
+            document.body, this.portletPreviewLabel[0],
+            { placement: 'top-start', modifiers: { computeStyle: { gpuAcceleration: false }}}
+        );
 
         this.enableEditingEvents();
     },
@@ -275,13 +290,9 @@ EditorGUI.prototype = {
         if(this.hoveredElm !== null) {
             this.hoveredElm.addClass('cle-hovered');
             this.hoveredElm.attr('draggable', 'true');
-            this.portletPreviewLabel
-                .text(this.hoveredElm.data('portlettitle'))
-                .show()
-                .css({
-                    left: elm.offset().left + 'px',
-                    top: elm.offset().top - this.portletPreviewLabel.outerHeight() - 3 + 'px'
-                })
+            this.portletPreviewLabel.text(this.hoveredElm.data('portlettitle')).show();
+            this.previewLabelPopper.reference = elm[0];
+            this.previewLabelPopper.update();
         }
     },
 
@@ -299,16 +310,10 @@ EditorGUI.prototype = {
 
             if(this.selectedElm !== null) {
                 this.selectedElm.addClass('cle-selected');
-                this.portletLabel
-                    .text(this.selectedElm.data('portlettitle'))
-                    .show()
-                    ;
-                this.portletToolbar
-                    .show()
-                    .css({
-                        left: elm.offset().left + 'px',
-                        top: elm.offset().top - this.portletLabel.outerHeight() - 3 + 'px'
-                    });
+                this.portletLabel.text(this.selectedElm.data('portlettitle'));
+                this.portletToolbar.show();
+                this.toolbarPopper.reference = elm[0];
+                this.toolbarPopper.update();
             }
         }
     },
@@ -332,6 +337,8 @@ EditorGUI.prototype = {
     {
         this.setDragged();
         this.setDropTarget();
+        this.toolbarPopper.update();
+        this.previewLabelPopper.update();
     },
 
     openConfigurator: function(portletTitle, portletId, properties)
@@ -450,14 +457,14 @@ EditorGUI.prototype = {
 
     onExportPage: function(e)
     {
-        download(JSON.stringify(this.editor.io.pageToJson()), 'page-export.json', 'text/plain');
+        download(JSON.stringify(this.editor.io.pageToJson()), 'page-export.json', 'application/json');
     },
 
     onImportPage: function(e)
     {
         var self = this;
 
-        $('<input type="file">')
+        $('<input type="file" accept=".json">')
             .change(function(e) {
                 var file = e.target.files[0];
                 var reader = new FileReader();

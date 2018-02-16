@@ -20,6 +20,9 @@ class PortletContainer extends CMSPortlet
     public function getPreviewHtml()
     {
         $res = "<div ";
+        if (strpos($this->properties['src'], 'gfx/keinBild.gif') === false) {
+            $this->getSrcString($this->properties['src']);
+        }
         if ($this->properties['parallax-flag'] === 'yes') {
             $name      = explode('/', $this->properties['src']);
             $name      = end($name);
@@ -34,6 +37,9 @@ class PortletContainer extends CMSPortlet
 
     public function getFinalHtml()
     {
+        if (strpos($this->properties['src'], 'gfx/keinBild.gif') === false) {
+            $this->getSrcString($this->properties['src']);
+        }
         unset($this->properties['style']['background']);
         unset($this->properties['style']['background-size']);
         $res = "<div ";
@@ -73,7 +79,7 @@ class PortletContainer extends CMSPortlet
         return [
             // general
             'parallax-flag' => 'no',
-            'src'           => '../' . BILD_KEIN_ARTIKELBILD_VORHANDEN,
+            'src'           => '',
             // animation
             'animation-style'     => '',
             // attributes

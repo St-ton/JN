@@ -63,10 +63,10 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <label for="parallax-btn-img">Bild</label>
-                        <input type="hidden" id="parallax-url" name="src" value="{$properties['src']}">
+                        <input type="hidden" id="parallax-url" name="src" value="{if empty($properties['src'])}../gfx/keinBild.gif{else}{$properties['src']}{/if}">
                         <button type="button" class="btn btn-default cle-image-btn" onclick="editor.onOpenKCFinder(kcfinderCallback);">
                             {if isset($properties['src'])}
-                                <img src="{$properties['src']}" id="parallax-btn-img" alt="einzufügendes Bild">
+                                <img src="{if empty($properties['src'])}../gfx/keinBild.gif{else}{$properties['src']}{/if}" id="parallax-btn-img" alt="einzufügendes Bild">
                             {else}
                                 Bild auswählen
                             {/if}

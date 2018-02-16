@@ -856,19 +856,30 @@ class JTLCache
      */
     public function _getAllMethods()
     {
-        $files = scandir(CACHING_METHODS_DIR, SCANDIR_SORT_ASCENDING);
-        if (!is_array($files)) {
-            return [];
-        }
-
-        return array_filter(array_map(
-            function ($m) {
-                return strpos($m, 'class.cachingMethod') !== false
-                    ? str_replace(['class.cachingMethod.', '.php'], '', $m)
-                    : false;
-            },
-            $files
-        ));
+        return [
+            'advancedfile',
+            'apc',
+            'file',
+            'memcache',
+            'memcached',
+            'null',
+            'redis',
+            'session',
+            'xcache'
+        ];
+//        $files = scandir(CACHING_METHODS_DIR, SCANDIR_SORT_ASCENDING);
+//        if (!is_array($files)) {
+//            return [];
+//        }
+//
+//        return array_filter(array_map(
+//            function ($m) {
+//                return strpos($m, 'class.cachingMethod') !== false
+//                    ? str_replace(['class.cachingMethod.', '.php'], '', $m)
+//                    : false;
+//            },
+//            $files
+//        ));
     }
 
     /**

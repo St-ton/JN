@@ -31,6 +31,7 @@ class PortletGallery extends CMSPortlet
                 }
             );
         }
+        $this->properties['attr']['id'] = empty($this->properties['attr']['id']) ? uniqid('gllry_') : $this->properties['attr']['id'];
 
         foreach ($this->properties['gllry_images'] as &$slide) {
             $slide['srcStr'] = $this->getSrcString($slide['url'],
@@ -63,6 +64,7 @@ class PortletGallery extends CMSPortlet
                 }
             );
         }
+        $this->properties['attr']['id'] = empty($this->properties['attr']['id']) ? uniqid('gllry_') : $this->properties['attr']['id'];
 
         foreach ($this->properties['gllry_images'] as &$slide) {
             $slide['srcStr'] = $this->getSrcString($slide['url'],

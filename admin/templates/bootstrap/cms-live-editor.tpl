@@ -35,7 +35,7 @@
     <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>
     <script src="{$templateUrl}js/typeahead.bundle.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js"></script>
-    <script src="https://unpkg.com/popper.js/dist/umd/popper.min.js"></script>
+    {*<script src="https://unpkg.com/popper.js/dist/umd/popper.min.js"></script>*}
 
     <script>
         var editor = new Editor({

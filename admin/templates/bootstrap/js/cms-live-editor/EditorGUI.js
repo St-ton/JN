@@ -92,7 +92,16 @@ EditorGUI.prototype = {
         this.rootAreas = this.iframeJq('.cle-rootarea');
         this.portletPreviewLabel.appendTo(this.iframeBody);
         this.portletToolbar.appendTo(this.iframeBody);
-        this.portletLabel.prependTo(this.portletToolbar);
+
+        this.toolbarPopper = new Popper(
+            document.body, this.portletToolbar[0],
+            { placement: 'top-start', modifiers: { computeStyle: { gpuAcceleration: false }}}
+        );
+
+        this.previewLabelPopper = new Popper(
+            document.body, this.portletPreviewLabel[0],
+            { placement: 'top-start', modifiers: { computeStyle: { gpuAcceleration: false }}}
+        );
 
         this.enableEditingEvents();
     },
@@ -274,13 +283,9 @@ EditorGUI.prototype = {
         if(this.hoveredElm !== null) {
             this.hoveredElm.addClass('cle-hovered');
             this.hoveredElm.attr('draggable', 'true');
-            this.portletPreviewLabel
-                .text(this.hoveredElm.data('portlettitle'))
-                .show()
-                .css({
-                    left: elm.offset().left + 'px',
-                    top: elm.offset().top - this.portletPreviewLabel.outerHeight() - 3 + 'px'
-                })
+            this.portletPreviewLabel.text(this.hoveredElm.data('portlettitle')).show();
+            this.previewLabelPopper.reference = elm[0];
+            this.previewLabelPopper.update();
         }
     },
 
@@ -298,16 +303,10 @@ EditorGUI.prototype = {
 
             if(this.selectedElm !== null) {
                 this.selectedElm.addClass('cle-selected');
-                this.portletLabel
-                    .text(this.selectedElm.data('portlettitle'))
-                    .show()
-                    ;
-                this.portletToolbar
-                    .show()
-                    .css({
-                        left: elm.offset().left + 'px',
-                        top: elm.offset().top - this.portletLabel.outerHeight() - 3 + 'px'
-                    });
+                this.portletLabel.text(this.selectedElm.data('portlettitle'));
+                this.portletToolbar.show();
+                this.toolbarPopper.reference = elm[0];
+                this.toolbarPopper.update();
             }
         }
     },
@@ -331,6 +330,8 @@ EditorGUI.prototype = {
     {
         this.setDragged();
         this.setDropTarget();
+        this.toolbarPopper.update();
+        this.previewLabelPopper.update();
     },
 
     openConfigurator: function(portletTitle, portletId, properties)

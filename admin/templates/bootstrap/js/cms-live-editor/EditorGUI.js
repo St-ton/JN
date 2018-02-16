@@ -81,7 +81,6 @@ EditorGUI.prototype = {
         this.iframeCtx  = this.iframe[0].contentWindow;
         this.iframeJq   = this.iframeCtx.$;
         this.iframeBody = this.iframeJq('body');
-        // this.loadIframeStylesheet(this.templateUrl + 'css/cms-live-editor-iframe.css');
         this.loadIframeStylesheet(this.templateUrl + 'css/live-editor/iframe.less', true);
         this.loadIframeScript('//cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js');
 
@@ -457,7 +456,7 @@ EditorGUI.prototype = {
     {
         var self = this;
 
-        $('<input type="file" accept="application/json">')
+        $('<input type="file" accept=".json">')
             .change(function(e) {
                 var file = e.target.files[0];
                 var reader = new FileReader();
@@ -713,9 +712,9 @@ EditorGUI.prototype = {
     {
         if(this.dropTarget !== null) {
             this.dropTarget.replaceWith(this.draggedElm);
+            this.updateDropTargets();
             this.setSelected();
             this.setSelected(this.draggedElm);
-            this.updateDropTargets();
             this.editor.io.savePageToWebStorage();
         }
     },

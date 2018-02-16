@@ -30,6 +30,7 @@
     <script>
         $(function () {
             $("#{$properties.attr.id} .gallery_zoom_btn").click(function (e) {
+                e.preventDefault();
                 var source = $(this).find("img").attr("src");
                 var desc = $(this).find("img").data("desc");
                 source = source || this.getAttribute("data-src");

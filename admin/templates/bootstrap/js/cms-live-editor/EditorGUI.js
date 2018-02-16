@@ -714,7 +714,7 @@ EditorGUI.prototype = {
             this.dropTarget.replaceWith(this.draggedElm);
             this.updateDropTargets();
             this.setSelected();
-            this.setSelected(this.draggedElm);
+            this.setSelected(this.draggedElm, true);
             this.editor.io.savePageToWebStorage();
         }
     },

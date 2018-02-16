@@ -43,7 +43,6 @@ Editor.prototype = {
     {
         setJtlToken(this.jtlToken);
         injectJqueryFixes();
-        Split(['#sidebar-panel', '#iframe-panel'], { sizes: [25, 75], gutterSize: 4 });
 
         this.gui.initHostGUI();
 

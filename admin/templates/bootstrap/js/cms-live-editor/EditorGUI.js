@@ -21,6 +21,13 @@ EditorGUI.prototype = {
 
     initHostGUI: function()
     {
+        var self = this;
+
+        Split(
+            ['#sidebar-panel', '#iframe-panel'],
+            { sizes: [25, 75], gutterSize: 4, onDrag: function() { self.toolbarPopper.update(); self.previewLabelPopper.update(); } }
+        );
+
         this.hostJq                   = $;
         this.iframe                   = this.hostJq('#iframe');
         this.loaderModal              = this.hostJq('#loader-modal');

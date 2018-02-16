@@ -324,6 +324,11 @@ final class Shop
     public static $customFilters = [];
 
     /**
+     * @var \Services\DefaultServicesInterface
+     */
+    public static $serviceLocator;
+
+    /**
      * @var array
      */
     private static $mapping = [
@@ -1672,5 +1677,34 @@ final class Shop
     public static function isBrandfree()
     {
         return Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_BRANDFREE);
+    }
+
+    /**
+     * Get the default service locator of the jtl shop
+     *
+     * @return \Services\DefaultServicesInterface
+     */
+    public function getServiceLocator()
+    {
+
+        if (!static::$serviceLocator) {
+            static::createServiceLocator();
+        }
+
+        return static::$serviceLocator;
+    }
+
+    /**
+     * Create the default service locator of the jtl shop
+     *
+     * @return null
+     */
+    private function createServiceLocator()
+    {
+        $l                      = new \Services\ServiceLocator();
+        static::$serviceLocator = $l;
+        $l->setSingleton(Services\JTL\ExampleServiceInterface::class, function ($locator) {
+            return new Services\JTL\ExampleService();
+        });
     }
 }

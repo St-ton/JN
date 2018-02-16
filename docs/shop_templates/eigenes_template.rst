@@ -149,7 +149,7 @@ Wird das EVO-Template aktualisiert, beispielsweise durch neue Funktionen oder gr
 
 .. note::
 
-    Eine Liste aller zur Verfügung stehenden Smary-Blocks können Sie hier finden: :doc:`Liste mit allen Blocks </shop_templates/blocks_list>`
+    Eine Liste aller zur Verfügung stehenden Smarty-Blocks können Sie hier finden: :doc:`Liste mit allen Blocks </shop_templates/blocks_list>`
 
 `Weitere Infos zu Blocks finden Sie auf smarty.net <http://www.smarty.net/docs/en/language.function.block.tpl>`_
 

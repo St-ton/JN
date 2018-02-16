@@ -37,6 +37,7 @@ class ServiceLocatorBase implements ServiceLocatorInterface
         if (!isset($this->factories[$interface])) {
             throw new ServiceNotFoundException($interface);
         }
+
         return $this->factories[$interface];
     }
 
@@ -49,6 +50,7 @@ class ServiceLocatorBase implements ServiceLocatorInterface
             $callable                     = $this->singletons[$interface];
             $this->singletons[$interface] = $callable($this);
         }
+
         return $this->singletons[$interface];
     }
 
@@ -58,6 +60,7 @@ class ServiceLocatorBase implements ServiceLocatorInterface
             throw new ServiceNotFoundException($interface);
         }
         $callable = $this->factories[$interface];
+
         return $callable($this);
     }
 }

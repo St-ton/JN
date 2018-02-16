@@ -17,6 +17,7 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
         $locator = new ServiceLocatorBase();
         $locator->setSingleton(ServiceLocatorInterface::class, function ($locator) {
             $this->assertInstanceOf(ServiceLocatorInterface::class, $locator);
+
             return new ServiceLocatorBase();
         });
         $this->assertTrue($locator->getInstance(ServiceLocatorInterface::class) instanceof ServiceLocatorBase);
@@ -50,8 +51,9 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
     public function test_factory_happyPath()
     {
         $locator = new ServiceLocatorBase();
-        $locator->setFactory(ServiceLocatorInterface::class, function($locator){
+        $locator->setFactory(ServiceLocatorInterface::class, function ($locator) {
             $this->assertInstanceOf(ServiceLocatorInterface::class, $locator);
+
             return new ServiceLocatorBase();
         });
         $instance1 = $locator->getNew(ServiceLocatorInterface::class);
@@ -64,7 +66,7 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
     {
         $locator = new ServiceLocatorBase();
         $this->expectException(\InvalidArgumentException::class);
-        $locator->setFactory(10, function(){
+        $locator->setFactory(10, function () {
 
         });
     }
@@ -92,11 +94,11 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
         require_once 'HelloWorldService.php';
         require_once 'HelloWorldTrimmingServiceDecorator.php';
 
-        $locator = new ServiceLocatorBase();
+        $locator           = new ServiceLocatorBase();
         $helloWorldService = new HelloWorldService();
         $locator->setSingleton(HelloWorldServiceInterface::class, $helloWorldService);
         $helloWorldService = $locator->getInstance(HelloWorldServiceInterface::class);
-        $decorator = new HelloWorldTrimmingServiceDecorator($helloWorldService);
+        $decorator         = new HelloWorldTrimmingServiceDecorator($helloWorldService);
         $locator->setSingleton(HelloWorldServiceInterface::class, $decorator);
         /** @var HelloWorldServiceInterface $finalService */
         $finalService = $locator->getInstance(HelloWorldServiceInterface::class);
@@ -110,11 +112,11 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
         require_once 'HelloWorldTrimmingServiceDecorator.php';
 
         $locator = new ServiceLocatorBase();
-        $locator->setFactory(HelloWorldServiceInterface::class, function(){
+        $locator->setFactory(HelloWorldServiceInterface::class, function () {
             return new HelloWorldService();
         });
         $factory = $locator->getFactory(HelloWorldServiceInterface::class);
-        $locator->setFactory(HelloWorldServiceInterface::class, function() use ($factory){
+        $locator->setFactory(HelloWorldServiceInterface::class, function () use ($factory) {
             return new HelloWorldTrimmingServiceDecorator($factory());
         });
         /** @var HelloWorldServiceInterface $service */

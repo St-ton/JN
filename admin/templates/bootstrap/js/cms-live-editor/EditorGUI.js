@@ -85,11 +85,14 @@ EditorGUI.prototype = {
 
     initIframeGUI: function()
     {
+        var self = this;
+
         this.iframeCtx  = this.iframe[0].contentWindow;
         this.iframeJq   = this.iframeCtx.$;
         this.iframeBody = this.iframeJq('body');
         this.loadIframeStylesheet(this.templateUrl + 'css/live-editor/iframe.less', true);
         this.loadIframeScript('//cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js');
+        this.loadIframeScript('https://unpkg.com/popper.js/dist/umd/popper.min.js', onPopperLoad);
 
         this.iframeJq('a, button')          // disable links and buttons that could change the current iframes location
             .off('click')
@@ -100,17 +103,22 @@ EditorGUI.prototype = {
         this.portletPreviewLabel.appendTo(this.iframeBody);
         this.portletToolbar.appendTo(this.iframeBody);
 
-        this.toolbarPopper = new Popper(
-            document.body, this.portletToolbar[0],
-            { placement: 'top-start', modifiers: { computeStyle: { gpuAcceleration: false }}}
-        );
-
-        this.previewLabelPopper = new Popper(
-            document.body, this.portletPreviewLabel[0],
-            { placement: 'top-start', modifiers: { computeStyle: { gpuAcceleration: false }}}
-        );
-
         this.enableEditingEvents();
+
+        function onPopperLoad()
+        {
+            console.log(self);
+
+            self.toolbarPopper = new self.iframeCtx.Popper(
+                document.body, self.portletToolbar[0],
+                { placement: 'top-start', modifiers: { computeStyle: { gpuAcceleration: false }}}
+            );
+
+            self.previewLabelPopper = new self.iframeCtx.Popper(
+                document.body, self.portletPreviewLabel[0],
+                { placement: 'top-start', modifiers: { computeStyle: { gpuAcceleration: false }}}
+            );
+        }
     },
 
     revisionBtns: function()
@@ -177,13 +185,13 @@ EditorGUI.prototype = {
             .off('keydown');
     },
 
-    loadIframeScript: function(url)
+    loadIframeScript: function(url, callback)
     {
-        less = less || false;
+        var script = this.iframeCtx.document.createElement('script');
 
-        this
-            .iframeJq('<script src="' + url  + '"></script>')
-            .appendTo(this.iframeJq('head'));
+        script.src = url;
+        script.addEventListener('load', callback || this.noop);
+        this.iframeCtx.document.head.append(script);
     },
 
     loadIframeStylesheet: function(url, less)

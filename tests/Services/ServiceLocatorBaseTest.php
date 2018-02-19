@@ -6,6 +6,7 @@
 
 namespace Services;
 
+use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
 
 require_once __DIR__ . '/../bootstrap.php';
@@ -122,5 +123,24 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
         $service = $container->get(HelloWorldServiceInterface::class);
         $this->assertEquals('Hello World', $service->getHelloWorldString());
         $this->assertNotSame($service, $container->get(HelloWorldServiceInterface::class));
+    }
+
+
+    // CIRCULAR REFERENCES
+    public function test_detectCircularReferences()
+    {
+        $container = new ContainerBase();
+        $container->setFactory('id1', function (\Psr\Container\ContainerInterface $container) {
+            $container->get('id2');
+
+            return new \stdClass();
+        });
+        $container->setFactory('id2', function (\Psr\Container\ContainerInterface $container) {
+            $container->get('id1');
+
+            return new \stdClass();
+        });
+        $this->expectException(CircularReferenceException::class);
+        $container->get('id1');
     }
 }

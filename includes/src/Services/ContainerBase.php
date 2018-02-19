@@ -6,6 +6,7 @@
 
 namespace Services;
 
+use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
 
 /**
@@ -15,6 +16,7 @@ class ContainerBase implements ContainerInterface
 {
     /** @var ContainerEntry[] */
     protected $entries = [];
+    protected $current = [];
 
     public function setSingleton($id, $factory)
     {
@@ -22,6 +24,7 @@ class ContainerBase implements ContainerInterface
             throw new \InvalidArgumentException();
         }
         $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_SINGLETON);
+        $this->current[$id] = false;
     }
 
     public function setFactory($id, $factory)
@@ -30,6 +33,7 @@ class ContainerBase implements ContainerInterface
             throw new \InvalidArgumentException();
         }
         $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_FACTORY);
+        $this->current[$id] = false;
     }
 
     public function getFactory($id)
@@ -42,18 +46,26 @@ class ContainerBase implements ContainerInterface
     public function get($id)
     {
         $this->checkExistance($id);
-        $entry   = $this->entries[$id];
-        $factory = $entry->getFactory();
+        if ($this->current[$id]) {
+            throw new CircularReferenceException($id);
+        }
+        $this->current[$id] = true;
+        $entry              = $this->entries[$id];
+        $factory            = $entry->getFactory();
+
         if ($entry->getType() === ContainerEntry::TYPE_FACTORY) {
-            return $factory($this);
+            $result = $factory($this);
         } elseif ($entry->hasInstance()) {
-            return $entry->getInstance();
+            $result = $entry->getInstance();
         } else {
             $instance = $factory($this);
             $entry->setInstance($instance);
-
-            return $instance;
+            $result = $instance;
         }
+
+        $this->current[$id] = false;
+
+        return $result;
     }
 
     public function has($id)

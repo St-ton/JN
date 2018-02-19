@@ -13,69 +13,58 @@ use Exceptions\ServiceNotFoundException;
  */
 class ContainerBase implements ContainerInterface
 {
-    protected $singletons = [];
-    protected $instances = [];
-    protected $factories = [];
+    /** @var ContainerEntry[] */
+    protected $entries = [];
 
-    public function setSingleton($interface, $callable)
+    public function setSingleton($id, $factory)
     {
-        if (!is_callable($callable) || !is_string($interface)) {
+        if (!is_callable($factory) || !is_string($id)) {
             throw new \InvalidArgumentException();
         }
-        $this->singletons[$interface] = $callable;
+        $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_SINGLETON);
     }
 
-    public function getSingleton($interface)
+    public function setFactory($id, $factory)
     {
-        if (!isset($this->singletons[$interface])) {
-            throw new ServiceNotFoundException($interface);
-        }
-        if (isset($this->instances[$interface])) {
-            throw new \Exception("Singleton has already an instance. Trying to get the singleton, when an instance is already created is a usage mistake.");
-        }
-
-        return $this->singletons[$interface];
-    }
-
-    public function setFactory($interface, $callable)
-    {
-        if (!is_callable($callable) || !is_string($interface)) {
+        if (!is_callable($factory) || !is_string($id)) {
             throw new \InvalidArgumentException();
         }
-        $this->factories[$interface] = $callable;
+        $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_FACTORY);
     }
 
-    public function getFactory($interface)
+    public function getFactory($id)
     {
-        if (!isset($this->factories[$interface])) {
-            throw new ServiceNotFoundException($interface);
-        }
+        $this->checkExistance($id);
 
-        return $this->factories[$interface];
+        return $this->entries[$id]->getFactory();
     }
 
-    public function getInstance($interface)
+    public function get($id)
     {
-        if (!isset($this->singletons[$interface])) {
-            throw new ServiceNotFoundException($interface);
-        }
-        if (isset($this->instances[$interface])) {
-            return $this->instances[$interface];
-        }
-        $callable                    = $this->singletons[$interface];
-        $instance                    = $callable($this);
-        $this->instances[$interface] = $instance;
+        $this->checkExistance($id);
+        $entry   = $this->entries[$id];
+        $factory = $entry->getFactory();
+        if ($entry->getType() === ContainerEntry::TYPE_FACTORY) {
+            return $factory($this);
+        } elseif ($entry->hasInstance()) {
+            return $entry->getInstance();
+        } else {
+            $instance = $factory($this);
+            $entry->setInstance($instance);
 
-        return $instance;
+            return $instance;
+        }
     }
 
-    public function getNew($interface)
+    public function has($id)
     {
-        if (!isset($this->factories[$interface])) {
-            throw new ServiceNotFoundException($interface);
-        }
-        $callable = $this->factories[$interface];
+        return isset($this->entries[$id]);
+    }
 
-        return $callable($this);
+    protected function checkExistance($id)
+    {
+        if (!$this->has($id)) {
+            throw new ServiceNotFoundException($id);
+        }
     }
 }

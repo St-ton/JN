@@ -20,7 +20,7 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
 
             return new ContainerBase();
         });
-        $this->assertTrue($container->getInstance(ContainerInterface::class) instanceof ContainerBase);
+        $this->assertTrue($container->get(ContainerInterface::class) instanceof ContainerBase);
     }
 
     public function test_setSingleton_passIntegerInsteadOfCallableOrObject_throwsInvalidArgumentException()
@@ -42,7 +42,7 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
     {
         $container = new ContainerBase();
         $this->expectException(ServiceNotFoundException::class);
-        $container->getInstance('doesnotexist');
+        $container->get('doesnotexist');
     }
 
     public function test_factory_happyPath()
@@ -53,8 +53,8 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
 
             return new ContainerBase();
         });
-        $instance1 = $container->getNew(ContainerInterface::class);
-        $instance2 = $container->getNew(ContainerInterface::class);
+        $instance1 = $container->get(ContainerInterface::class);
+        $instance2 = $container->get(ContainerInterface::class);
         $this->assertInstanceOf(ContainerInterface::class, $instance1);
         $this->assertNotSame($instance1, $instance2);
     }
@@ -79,7 +79,7 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
     {
         $container = new ContainerBase();
         $this->expectException(ServiceNotFoundException::class);
-        $container->getNew('doesnotexist');
+        $container->get('doesnotexist');
     }
 
 
@@ -95,12 +95,12 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
         $container->setSingleton(HelloWorldServiceInterface::class, function () {
             return new HelloWorldService();
         });
-        $inner = $container->getSingleton(HelloWorldServiceInterface::class);
+        $inner = $container->getFactory(HelloWorldServiceInterface::class);
         $container->setSingleton(HelloWorldServiceInterface::class, function () use ($inner) {
             return new HelloWorldTrimmingServiceDecorator($inner());
         });
         /** @var HelloWorldServiceInterface $service */
-        $service = $container->getInstance(HelloWorldServiceInterface::class);
+        $service = $container->get(HelloWorldServiceInterface::class);
         $this->assertEquals('Hello World', $service->getHelloWorldString());
     }
 
@@ -119,8 +119,8 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
             return new HelloWorldTrimmingServiceDecorator($factory());
         });
         /** @var HelloWorldServiceInterface $service */
-        $service = $container->getNew(HelloWorldServiceInterface::class);
+        $service = $container->get(HelloWorldServiceInterface::class);
         $this->assertEquals('Hello World', $service->getHelloWorldString());
-        $this->assertNotSame($service, $container->getNew(HelloWorldServiceInterface::class));
+        $this->assertNotSame($service, $container->get(HelloWorldServiceInterface::class));
     }
 }

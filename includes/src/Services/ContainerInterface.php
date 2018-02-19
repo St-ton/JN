@@ -11,49 +11,27 @@ use Exceptions\ServiceNotFoundException;
 /**
  * Interface ContainerInterface
  */
-interface ContainerInterface
+interface ContainerInterface extends \Psr\Container\ContainerInterface
 {
     /**
-     * @param string   $interface
-     * @param callable $callable
+     * @param string   $id
+     * @param callable $factory
      * @return null
      * @throws \InvalidArgumentException
      */
-    public function setSingleton($interface, $callable);
+    public function setSingleton($id, $factory);
 
     /**
-     * @param $interface
-     * @return callable
-     * @throws ServiceNotFoundException
-     * @throws \Exception
-     */
-    public function getSingleton($interface);
-
-    /**
-     * @param string   $interface
-     * @param callable $callable
+     * @param string   $id
+     * @param callable $factory
      * @return null
      * @throws \InvalidArgumentException
      */
-    public function setFactory($interface, $callable);
+    public function setFactory($id, $factory);
 
     /**
-     * @param $interface
+     * @param $id
      * @return callable
      */
-    public function getFactory($interface);
-
-    /**
-     * @param string $interface
-     * @return object
-     * @throws ServiceNotFoundException
-     */
-    public function getInstance($interface);
-
-    /**
-     * @param string $interface
-     * @return object
-     * @throws ServiceNotFoundException
-     */
-    public function getNew($interface);
+    public function getFactory($id);
 }

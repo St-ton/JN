@@ -2,9 +2,13 @@
     {foreach $properties.gllry_images as $image}
     <div class="{foreach $image['width'] as $gridWidth => $gridCols}{if !empty($gridCols)}col-{$gridWidth}-{$gridCols} {/if}{/foreach}gal-item">
         <div class="box">
+            {if $popupEnabled === true}
             <a href="#" class="gallery_zoom_btn">
                 <img {$image['srcStr']} data-desc="{$image['desc']}">
             </a>
+            {else}
+                <img {$image['srcStr']} data-desc="{$image['desc']}">
+            {/if}
         </div>
     </div>
     {/foreach}

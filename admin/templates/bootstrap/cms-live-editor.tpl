@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>CMS Live Editor</title>
+    <title>eazyComposer</title>
 
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-theme.min.css">
@@ -56,7 +56,7 @@
             <nav id="editor-top-nav" class="navbar navbar-static-top" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <a href="#" class="navbar-brand">Live Editor</a>
+                        <a href="#" class="navbar-brand">eazyComposer</a>
                         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#editor-nav-collapse">
                             <i class="fa fa-bars"></i>
                         </button>
@@ -113,9 +113,9 @@
                 </div>
             </nav>
             <ul id="editor-tabs" class="nav nav-tabs">
-                <li class="active"><a href="#elements" data-toggle="tab">Elemente</a></li>
-                <li><a href="#templates" data-toggle="tab">Templates</a></li>
-                <li><a href="#revisions" data-toggle="tab">Revisionen</a></li>
+                <li class="active"><a href="#elements" data-toggle="tab">Portlets</a></li>
+                <li><a href="#templates" data-toggle="tab">Vorlagen</a></li>
+                <li><a href="#revisions" data-toggle="tab">Versionen</a></li>
             </ul>
             <div class="container-fluid">
                 <div class="tab-content">
@@ -152,7 +152,7 @@
                                    data-title="Template-Title"
                                    data-template="42"
                                    data-content="Template-HTML">
-                                    <i class="fa fa-puzzle-piece"></i> <span>Template-Title</span>
+                                    <i class="fa fa-puzzle-piece"></i> <span>Vorlagen-Titel</span>
                                 </a>
                                 <a href="#" class="template-delete btn"
                                         data-template="42"> <i class="fa fa-times"></i>
@@ -255,12 +255,12 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Portlet als Template speichern</h4>
+                    <h4 class="modal-title">Portlet als Vorlage speichern</h4>
                 </div>
                 <form id="template-form">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="template-name">Template-Name</label>
+                            <label for="template-name">Vorlagen-Name</label>
                             <input type="text" class="form-control" id="template-name" name="templateName"
                                    value="Neues Template">
                         </div>
@@ -279,7 +279,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Template löschen?</h4>
+                    <h4 class="modal-title">Vorlage löschen?</h4>
                 </div>
                 <form id="template-delete-form">
                     <div class="modal-footer">
@@ -315,7 +315,7 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">Allgemeine Einführung</div>
                                             <div class="panel-body">
-                                                lerne den Editor kennen und lege dein erstes Portlet an
+                                                lerne den Composer kennen und lege dein erstes Portlet an
                                             </div>
                                         </div>
                                     </label>
@@ -335,10 +335,10 @@
                                     <label class="tour-label">
                                         <input type="radio" name="help-tour" id="help-tour-3" value="ht3" class="hidden">
                                         <div class="panel panel-default">
-                                            <div class="panel-heading">Templates</div>
+                                            <div class="panel-heading">Vorlagen</div>
                                             <div class="panel-body">
                                                 Du hast eine tolle Ansicht angelegt die du häufig wiederverwenden möchtest?<br/>
-                                                Leg' sie doch als Template an und greife so einfach immer wieder darauf zu.
+                                                Leg' sie doch als Vorlage an und greife so einfach immer wieder darauf zu.
                                             </div>
                                         </div>
                                     </label>
@@ -359,7 +359,7 @@
         <button class="btn btn-dafault btn-sm cle-label" id="portlet-label"></button>
         <button class="btn btn-default btn-sm" id="btn-config"  title="Einstellungen bearbeiten"><i class="fa fa-pencil"></i></button>
         <button class="btn btn-default btn-sm" id="btn-clone" title="Auswahl kopieren"><i class="fa fa-clone"></i></button>
-        <button class="btn btn-default btn-sm" id="btn-template" title="Auswahl als Template speichern"><i class="fa fa-star"></i></button>
+        <button class="btn btn-default btn-sm" id="btn-template" title="Auswahl als Vorlage speichern"><i class="fa fa-star"></i></button>
         <button class="btn btn-default btn-sm" id="btn-parent" title="gehe eine Ebene höher"><i class="fa fa-level-up"></i></button>
         <button class="btn btn-default btn-sm" id="btn-trash"  title="Auswahl löschen"><i class="fa fa-trash"></i></button>
     </div>

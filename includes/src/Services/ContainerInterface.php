@@ -14,12 +14,20 @@ use Exceptions\ServiceNotFoundException;
 interface ContainerInterface
 {
     /**
-     * @param string          $interface
-     * @param callable|object $callableOrObject
+     * @param string   $interface
+     * @param callable $callable
      * @return null
      * @throws \InvalidArgumentException
      */
-    public function setSingleton($interface, $callableOrObject);
+    public function setSingleton($interface, $callable);
+
+    /**
+     * @param $interface
+     * @return callable
+     * @throws ServiceNotFoundException
+     * @throws \Exception
+     */
+    public function getSingleton($interface);
 
     /**
      * @param string   $interface

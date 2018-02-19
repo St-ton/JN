@@ -14,14 +14,27 @@ use Exceptions\ServiceNotFoundException;
 class ContainerBase implements ContainerInterface
 {
     protected $singletons = [];
+    protected $instances = [];
     protected $factories = [];
 
-    public function setSingleton($interface, $callableOrObject)
+    public function setSingleton($interface, $callable)
     {
-        if ((!is_callable($callableOrObject) && !is_object($callableOrObject)) || !is_string($interface)) {
+        if (!is_callable($callable) || !is_string($interface)) {
             throw new \InvalidArgumentException();
         }
-        $this->singletons[$interface] = $callableOrObject;
+        $this->singletons[$interface] = $callable;
+    }
+
+    public function getSingleton($interface)
+    {
+        if (!isset($this->singletons[$interface])) {
+            throw new ServiceNotFoundException($interface);
+        }
+        if (isset($this->instances[$interface])) {
+            throw new \Exception("Singleton has already an instance. Trying to get the singleton, when an instance is already created is a usage mistake.");
+        }
+
+        return $this->singletons[$interface];
     }
 
     public function setFactory($interface, $callable)
@@ -46,12 +59,14 @@ class ContainerBase implements ContainerInterface
         if (!isset($this->singletons[$interface])) {
             throw new ServiceNotFoundException($interface);
         }
-        if (is_callable($this->singletons[$interface])) {
-            $callable                     = $this->singletons[$interface];
-            $this->singletons[$interface] = $callable($this);
+        if (isset($this->instances[$interface])) {
+            return $this->instances[$interface];
         }
+        $callable                    = $this->singletons[$interface];
+        $instance                    = $callable($this);
+        $this->instances[$interface] = $instance;
 
-        return $this->singletons[$interface];
+        return $instance;
     }
 
     public function getNew($interface)

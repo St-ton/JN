@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Services\Container as Container;
+
 /**
  * Class Shop
  * @method static NiceDB DB()
@@ -1699,10 +1701,15 @@ final class Shop
      */
     private function createContainer()
     {
-        $l                 = new \Services\Container();
-        static::$container = $l;
-        $l->setSingleton(Services\JTL\ExampleServiceInterface::class, function ($locator) {
-            return new Services\JTL\ExampleService();
+        $container         = new \Services\Container();
+        static::$container = $container;
+
+        $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function(){
+            return new \Services\JTL\CryptoService();
+        });
+
+        $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function(Container $container){
+            return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
         });
     }
 }

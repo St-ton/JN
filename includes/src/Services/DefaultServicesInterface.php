@@ -6,6 +6,11 @@
 
 namespace Services;
 
+use Exceptions\CircularReferenceException;
+use Exceptions\ServiceNotFoundException;
+use Services\JTL\CryptoServiceInterface;
+use Services\JTL\PasswordServiceInterface;
+
 /**
  * Interface DefaultServicesInterface
  *
@@ -17,7 +22,16 @@ namespace Services;
 interface DefaultServicesInterface extends ContainerInterface
 {
     /**
-     * @return ExampleService
+     * @return PasswordServiceInterface
+     * @throws ServiceNotFoundException
+     * @throws CircularReferenceException
      */
-    public function getExampleService();
+    public function getPasswordService();
+
+    /**
+     * @return CryptoServiceInterface
+     * @throws ServiceNotFoundException
+     * @throws CircularReferenceException
+     */
+    public function getCryptoService();
 }

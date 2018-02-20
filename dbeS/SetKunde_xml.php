@@ -223,9 +223,10 @@ function bearbeite($xml)
                 return $xml_obj;
             }
             //Email noch nicht belegt, der Kunde muss neu erstellt werden -> KUNDE WIRD NEU ERSTELLT
+            $passwordService          = Shop()->getContainer()->getPasswordService();
             $Kunde->dErstellt         = 'now()';
-            $Kunde->cPasswortKlartext = $Kunde->generatePassword(12);
-            $Kunde->cPasswort         = $Kunde->generatePasswordHash($Kunde->cPasswortKlartext);
+            $Kunde->cPasswortKlartext = $passwordService->generate(12);
+            $Kunde->cPasswort         = $passwordService->hash($Kunde->cPasswortKlartext);
             $Kunde->nRegistriert      = 1;
             $Kunde->cAbgeholt         = 'Y';
             $Kunde->cAktiv            = 'Y';

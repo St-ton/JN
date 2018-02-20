@@ -7,7 +7,8 @@
 namespace Services;
 
 
-use Services\JTL\ExampleService;
+use Services\JTL\CryptoServiceInterface;
+use Services\JTL\PasswordServiceInterface;
 
 /**
  * Class ServiceLocator
@@ -19,8 +20,13 @@ use Services\JTL\ExampleService;
  */
 class Container extends ContainerBase implements DefaultServicesInterface
 {
-    public function getExampleService()
+    public function getPasswordService()
     {
-        return new ExampleService();
+        return $this->get(PasswordServiceInterface::class);
+    }
+
+    public function getCryptoService()
+    {
+        return $this->get(CryptoServiceInterface::class);
     }
 }

@@ -2348,12 +2348,13 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
  */
 function gibCaptchaCode($sec)
 {
+    $cryptoService = Shop()->getContainer()->getCryptoService();
     $code = '';
     switch ((int)$sec) {
         case 1:
             $chars = '1234567890';
             for ($i = 0; $i < 4; $i++) {
-                $code .= $chars{rand(0, strlen($chars) - 1)};
+                $code .= $chars{$cryptoService->randomInt(0, strlen($chars) - 1)};
             }
             break;
         case 2:
@@ -2361,7 +2362,7 @@ function gibCaptchaCode($sec)
         default:
             $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             for ($i = 0; $i < 4; $i++) {
-                $code .= $chars{rand(0, strlen($chars) - 1)};
+                $code .= $chars{$cryptoService->randomInt(0, strlen($chars) - 1)};
             }
             break;
     }
@@ -2375,6 +2376,7 @@ function gibCaptchaCode($sec)
  */
 function encodeCode($klartext)
 {
+    $cryptoService = Shop()->getContainer()->getCryptoService();
     if (strlen($klartext) !== 4) {
         return '0';
     }
@@ -2387,7 +2389,12 @@ function encodeCode($klartext)
     $s3 = ord($klartext{2}) + $mod1 + 345;
     $s4 = ord($klartext{3}) + $mod2 + 456;
 
-    return rand(100, 999) . $s3 . rand(0, 9) . $s4 . rand(10, 99) . $s1 . $s2 . rand(1000, 9999);
+    $r1 = $cryptoService->randomInt(100, 999);
+    $r2 = $cryptoService->randomInt(0, 9);
+    $r3 = $cryptoService->randomInt(10, 99);
+    $r4 = $cryptoService->randomInt(1000, 9999);
+
+    return $r1 . $s3 . $r2 . $s4 . $r3 . $s1 . $s2 . $r4;
 }
 
 /**
@@ -2412,38 +2419,40 @@ function generiereCaptchaCode($sec)
         return false;
     }
 
+    $cryptoService = Shop()->getContainer()->getCryptoService();
+
     $code = new stdClass();
     if ((int)$sec === 4) {
         $rnd       = time() % 4 + 1;
         $code->art = $rnd;
         switch ($rnd) {
             case 1:
-                $x1          = rand(1, 10);
-                $x2          = rand(1, 10);
+                $x1          = $cryptoService->randomInt(1, 10);
+                $x2          = $cryptoService->randomInt(1, 10);
                 $code->code  = $x1 + $x2;
                 $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
                     Shop::Lang()->get('captchaAddition') . ' ' . $x2 . '?';
                 break;
 
             case 2:
-                $x1          = rand(3, 10);
-                $x2          = rand(1, $x1 - 1);
+                $x1          = $cryptoService->randomInt(3, 10);
+                $x2          = $cryptoService->randomInt(1, $x1 - 1);
                 $code->code  = $x1 - $x2;
                 $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
                     Shop::Lang()->get('captchaSubtraction') . ' ' . $x2 . '?';
                 break;
 
             case 3:
-                $x1          = rand(2, 5);
-                $x2          = rand(2, 5);
+                $x1          = $cryptoService->randomInt(2, 5);
+                $x2          = $cryptoService->randomInt(2, 5);
                 $code->code  = $x1 * $x2;
                 $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
                     Shop::Lang()->get('captchaMultiplication') . ' ' . $x2 . '?';
                 break;
 
             case 4:
-                $x1          = rand(2, 5);
-                $x2          = rand(2, 5);
+                $x1          = $cryptoService->randomInt(2, 5);
+                $x2          = $cryptoService->randomInt(2, 5);
                 $code->code  = $x1;
                 $x1         *= $x2;
                 $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
@@ -2456,7 +2465,7 @@ function generiereCaptchaCode($sec)
     } else {
         $code->code    = gibCaptchaCode($sec);
         $code->codeURL = Shop::getURL() . '/' . PFAD_INCLUDES . 'captcha/captcha.php?c=' .
-            encodeCode($code->code) . '&amp;s=' . $sec . '&amp;l=' . rand(0, 9);
+            encodeCode($code->code) . '&amp;s=' . $sec . '&amp;l=' . $cryptoService->randomInt(0, 9);
     }
     $code->codemd5 = md5(PFAD_ROOT . $code->code);
 
@@ -3414,6 +3423,7 @@ function baueSuchSpecialURL($kKey)
  * @param string      $cPasswort
  * @param null{string $cHashPasswort
  * @return bool|string
+ * @deprecated since 4.07
  */
 function cryptPasswort($cPasswort, $cHashPasswort = null)
 {
@@ -3707,6 +3717,7 @@ function pruefeSSL()
  * @param int    $nAnzahlStellen
  * @param string $cString
  * @return bool|string
+ * @deprecated since 4.07
  */
 function gibUID($nAnzahlStellen = 40, $cString = '')
 {
@@ -5015,16 +5026,19 @@ function getDefaultLanguageID()
  * creates an csrf token
  *
  * @return string
+ * @throws Exception
  */
 function generateCSRFToken()
 {
-    return md5(uniqid(rand(), true));
+    $cryptoService = Shop()->getContainer()->getCryptoService();
+    return $cryptoService->randomString(32);
 }
 
 /**
  * create a hidden input field for xsrf validation
  *
  * @return string
+ * @throws Exception
  */
 function getTokenInput()
 {

@@ -154,7 +154,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
 
         case 'setPublic':
             if ($userOK === true && isset($_POST['kWunschlisteTarget'])) {
-                $cURLID = gibUID(32, substr(md5($kWunschliste), 0, 16) . time());
+                $cURLID = uniqid('', true);
                 // Kampagne
                 $oKampagne = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
                 if ($oKampagne->kKampagne > 0) {

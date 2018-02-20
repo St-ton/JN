@@ -32,7 +32,7 @@ class PortletProductStream extends CMSPortlet
             '<div class="text-center" ' . $styleString . '>' .
             '<img src="' . PFAD_TEMPLATES . 'Evo/portlets/preview.productstream.' . $style . '.png" ' .
             'style="width: 98%;filter: grayscale(50%) opacity(60%)">' .
-            '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Produktliste</p>' .
+            '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -56px;">Produktliste</p>' .
             '</div>';
     }
 

@@ -215,8 +215,9 @@ final class Shop
 
     /**
      * @var bool
+     * @deprecated since 4.07
      */
-    public static $isSeoMainword;
+    public static $isSeoMainword = false;
 
     /**
      * @var null|Shop
@@ -684,7 +685,7 @@ final class Shop
                   FROM tplugin 
                   WHERE nStatus = 2 
                     AND bBootstrap = 1 
-                  ORDER BY nPrio ASC', 2) ?: [];
+                  ORDER BY nPrio ASC', NiceDB::RET_ARRAY_OF_OBJECTS) ?: [];
             self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
 
@@ -736,8 +737,6 @@ final class Shop
         self::$is404           = false;
 
         self::$nSterne = verifyGPCDataInteger('nSterne');
-        // @todo:
-        self::$isSeoMainword = !(!isset($oSeo) || !is_object($oSeo) || !isset($oSeo->cSeo) || trim($oSeo->cSeo) === '');
 
         self::$kWunschliste = checkeWunschlisteParameter();
 
@@ -866,7 +865,7 @@ final class Shop
             'TagFilter'              => self::$TagFilter,
             'vergleichsliste'        => self::$vergleichsliste,
             'nDarstellung'           => self::$nDarstellung,
-            'isSeoMainword'          => self::$isSeoMainword,
+            'isSeoMainword'          => false,
             'nNewsKat'               => self::$nNewsKat,
             'cDatum'                 => self::$cDatum,
             'nAnzahl'                => self::$nAnzahl,
@@ -1269,7 +1268,7 @@ final class Shop
                 || self::$kSuchspecial > 0
                 || self::$kSuchFilter > 0)
                 || (self::$cPreisspannenFilter !== null && self::$cPreisspannenFilter > 0))
-            && (self::$isSeoMainword || self::$productFilter->getFilterCount() === 0 || !self::$bSeo)
+            && (self::$productFilter->getFilterCount() === 0 || !self::$bSeo)
         ) {
             self::$fileName      = 'filter.php';
             self::$AktuelleSeite = 'ARTIKEL';
@@ -1317,7 +1316,8 @@ final class Shop
                     $link              = self::DB()->query(
                         'SELECT kLink 
                             FROM tlink
-                            WHERE nLinkart = ' . LINKTYP_STARTSEITE . $cKundengruppenSQL, 1
+                            WHERE nLinkart = ' . LINKTYP_STARTSEITE . $cKundengruppenSQL,
+                        NiceDB::RET_SINGLE_OBJECT
                     );
                 }
                 self::$kLink = isset($link->kLink)
@@ -1421,10 +1421,7 @@ final class Shop
             }
         }
         if (self::$is404 === true) {
-            if (!isset($seo)) {
-                $seo = null;
-            }
-            executeHook(HOOK_INDEX_SEO_404, ['seo' => $seo]);
+            executeHook(HOOK_INDEX_SEO_404, ['seo' => self::getRequestUri()]);
             if (!self::$kLink) {
                 $hookInfos     = urlNotFoundRedirect([
                     'key'   => 'kLink',
@@ -1449,7 +1446,7 @@ final class Shop
      */
     public static function buildNaviFilter($cParameter_arr, $productFilter = null)
     {
-        trigger_error(__CLASS__ . ': calling buildNaviFilter() is deprecated.', E_USER_DEPRECATED);
+        trigger_error(__CLASS__ . ': buildNaviFilter() is deprecated. Use buildProductFilter() istead', E_USER_DEPRECATED);
         return self::buildProductFilter($cParameter_arr, $productFilter);
     }
 
@@ -1478,7 +1475,7 @@ final class Shop
      */
     public static function getNaviFilter()
     {
-        trigger_error(__CLASS__ . ': calling getNaviFilter() is deprecated.', E_USER_DEPRECATED);
+        trigger_error(__CLASS__ . ': getNaviFilter() is deprecated. Use getProductFilter() instead', E_USER_DEPRECATED);
         return self::getProductFilter();
     }
 
@@ -1508,6 +1505,7 @@ final class Shop
      */
     public static function checkNaviFilter($productFilter = null)
     {
+        trigger_error(__CLASS__ . ': checkNaviFilter() is deprecated.', E_USER_DEPRECATED);
     }
 
     /**
@@ -1515,7 +1513,7 @@ final class Shop
      */
     public static function getShopVersion()
     {
-        $oVersion = self::DB()->query('SELECT nVersion FROM tversion', 1);
+        $oVersion = self::DB()->query('SELECT nVersion FROM tversion', NiceDB::RET_SINGLE_OBJECT);
 
         return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
             ? (int)$oVersion->nVersion

@@ -594,7 +594,7 @@ class ProductFilter
      */
     public function getParams()
     {
-        return $this->params;
+        return array_merge($this->getParamsPrototype(), $this->params);
     }
 
     /**

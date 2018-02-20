@@ -14,9 +14,9 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="image-btn-img">Bild</label>
-                    <input type="hidden" id="img-url" name="src" value="{$properties['src']}">
+                    <input type="hidden" id="img-url" name="src" value="{if empty($properties['src'])}../gfx/keinBild.gif{else}{$properties['src']}{/if}">
                     <button type="button" class="btn btn-default cle-image-btn" onclick="editor.onOpenKCFinder(kcfinderCallback);">
-                        {if isset($properties['src'])}
+                        {if !empty($properties['src'])}
                             <img src="{$properties['src']}" id="image-btn-img" alt="einzufügendes Bild">
                         {else}
                             Bild auswählen

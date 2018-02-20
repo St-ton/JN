@@ -191,8 +191,8 @@ class AuswahlAssistent
         $AktuelleKategorie                    = isset($cParameter_arr['kKategorie'])
             ? new Kategorie($cParameter_arr['kKategorie'])
             : null;
-        $oMerkmalFilter_arr                   = $NaviFilter->setFilterOptions(
-            new ProductFilterSearchResults(),
+        $oMerkmalFilter_arr                   = (new ProductFilterSearchResults())->setFilterOptions(
+            $NaviFilter,
             $AktuelleKategorie,
             true
         )->getAttributeFilterOptions();

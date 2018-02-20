@@ -64,7 +64,7 @@ class Metadata
     /**
      * @var string
      */
-    private $imageURL = '';
+    private $imageURL = BILD_KEIN_KATEGORIEBILD_VORHANDEN;
 
     /**
      * @var array

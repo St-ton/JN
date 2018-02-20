@@ -85,7 +85,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                             $oSuchergebnisse = new ProductFilterSearchResults($oSuchergebnisse);
                         }
 
-                        $oSuchergebnisse = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie, true);
+                        $oSuchergebnisse->setFilterOptions($NaviFilter, $AktuelleKategorie, true);
                         filterSelectionWizard($oSuchergebnisse->getAttributeFilterOptions(), $bMerkmalFilterVorhanden);
                     }
                 }
@@ -143,8 +143,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $AktuelleKategorie                   = new Kategorie($kKategorie);
 
         $oSuchergebnisse->setAttributeFilterOptions(
-            $NaviFilter->setFilterOptions(
-                $oSuchergebnisse,
+            $oSuchergebnisse->setFilterOptions(
+                $NaviFilter,
                 $AktuelleKategorie,
                 true
             )->MerkmalFilter

@@ -95,6 +95,7 @@
     <div class="row ">
         <label for="border-width" class="col-sm-2 form-control-static">Border</label>
         <div class="col-sm-10" id="border-width">
+            <input type="hidden" name="style[border]" id="border" value="{$properties['style']['border']}">
             <div class="row">
                 <div class="col-sm-3">
                     <div class="input-group">

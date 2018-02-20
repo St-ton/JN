@@ -1,7 +1,7 @@
 <ul role="tablist" class="nav nav-tabs" id="portlet-design-tab">
-    <li class="active" role="presentation"><a aria-expanded="true" aria-controls="general" data-toggle="tab" role="tab" id="general-tab" href="#general">General</a></li>
-    <li role="presentation"><a aria-expanded="true" aria-controls="wow-animation" data-toggle="tab" role="tab" id="wow-animation-tab" href="#wow-animation">Animation</a></li>
-    <li role="presentation" class=""><a aria-controls="style-design" data-toggle="tab" id="style-design-tab" role="tab" href="#style-design" aria-expanded="false">Style</a></li>
+    <li class="active" role="presentation"><a aria-controls="general" data-toggle="tab" role="tab" id="general-tab" href="#general">General</a></li>
+    <li role="presentation"><a aria-controls="wow-animation" data-toggle="tab" role="tab" id="wow-animation-tab" href="#wow-animation">Animation</a></li>
+    <li role="presentation" class=""><a aria-controls="style-design" data-toggle="tab" id="style-design-tab" role="tab" href="#style-design">Style</a></li>
 </ul>
 <div class="tab-content" id="portlet-design-tab-content">
     <div id="general" class="tab-pane fade active in" role="general" aria-labelledby="general-tab">

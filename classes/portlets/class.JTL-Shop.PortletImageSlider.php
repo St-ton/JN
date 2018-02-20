@@ -147,6 +147,7 @@ class PortletImageSlider extends CMSPortlet
                 'padding-right'       => '',
                 'padding-bottom'      => '',
                 'padding-left'        => '',
+                'border'              => '0',
                 'border-top-width'    => '',
                 'border-right-width'  => '',
                 'border-bottom-width' => '',

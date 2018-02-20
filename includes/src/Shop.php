@@ -1449,7 +1449,7 @@ final class Shop
      */
     public static function buildNaviFilter($cParameter_arr, $productFilter = null)
     {
-        trigger_error('class.core.Shop.php: calling buildNaviFilter() is deprecated.', E_USER_DEPRECATED);
+        trigger_error(__CLASS__ . ': calling buildNaviFilter() is deprecated.', E_USER_DEPRECATED);
         return self::buildProductFilter($cParameter_arr, $productFilter);
     }
 
@@ -1478,7 +1478,7 @@ final class Shop
      */
     public static function getNaviFilter()
     {
-        trigger_error('class.core.Shop.php: calling getNaviFilter() is deprecated.', E_USER_DEPRECATED);
+        trigger_error(__CLASS__ . ': calling getNaviFilter() is deprecated.', E_USER_DEPRECATED);
         return self::getProductFilter();
     }
 

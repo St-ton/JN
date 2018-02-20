@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>eazyComposer</title>
+    <title>OnPage Composer</title>
 
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-theme.min.css">
@@ -56,7 +56,7 @@
             <nav id="editor-top-nav" class="navbar navbar-static-top" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <a href="#" class="navbar-brand">eazyComposer</a>
+                        <a href="#" class="navbar-brand">OnPage Composer</a>
                         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#editor-nav-collapse">
                             <i class="fa fa-bars"></i>
                         </button>

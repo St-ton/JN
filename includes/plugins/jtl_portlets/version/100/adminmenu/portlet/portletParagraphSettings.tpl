@@ -1,7 +1,11 @@
 <div>
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">general settings</a></li>
-        <li role="presentation"><a href="#style" aria-controls="style" role="tab" data-toggle="tab">style</a></li>
+        <li role="presentation" class="active">
+            <a href="#general" aria-controls="general" role="tab" data-toggle="tab">general settings</a>
+        </li>
+        <li role="presentation">
+            <a href="#style" aria-controls="style" role="tab" data-toggle="tab">style</a>
+        </li>
     </ul>
 
     <!-- Tab panes -->

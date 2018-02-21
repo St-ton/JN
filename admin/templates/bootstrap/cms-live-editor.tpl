@@ -155,7 +155,8 @@
                                     <i class="fa fa-puzzle-piece"></i> <span>Vorlagen-Titel</span>
                                 </a>
                                 <a href="#" class="template-delete btn"
-                                        data-template="42"> <i class="fa fa-times"></i>
+                                   data-template="42">
+                                    <i class="fa fa-times"></i>
                                 </a>
                             </div>
                         </div>

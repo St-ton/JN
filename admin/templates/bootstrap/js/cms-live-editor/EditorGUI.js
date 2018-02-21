@@ -54,7 +54,7 @@ EditorGUI.prototype = {
         this.templateDeleteModal      = this.hostJq('#template-delete-modal');
         this.templateDeleteModalInput = this.hostJq('#template-ktemplate');
         this.templateForm             = this.hostJq('#template-form')             .submit(this.onTemplateSave.bind(this));
-        this.templateDeleteBtn        = this.hostJq('.template-delete')           .click(this.onTemplateDelete.bind(this));
+        // this.templateDeleteBtn        = this.hostJq('.template-delete')           .click(this.onTemplateDelete.bind(this));
         this.templateDeleteForm       = this.hostJq('#template-delete-form')      .submit(this.onTemplateDeleteConfirm.bind(this));
         this.revisionList             = this.hostJq('#revision-list');
         this.templateBtnBlueprint     = this.hostJq('#template-btn-blueprint');
@@ -438,7 +438,7 @@ EditorGUI.prototype = {
                 .attr('id', '')
                 .css('display', '');
             newBtn
-                .find('a')
+                .find('.template-button')
                 .attr('data-title', template.cName)
                 .attr('data-template', template.kTemplate)
                 .attr('data-content', template.fullPreviewHtml);
@@ -446,7 +446,7 @@ EditorGUI.prototype = {
                 .find('span')
                 .html(template.cName);
             newBtn
-                .find('button')
+                .find('.template-delete')
                 .attr('data-template', template.kTemplate);
             newBtn
                 .appendTo(self.templateList);
@@ -538,7 +538,7 @@ EditorGUI.prototype = {
 
     onTemplateDelete: function(e)
     {
-        var elm = $(e.target);
+        var elm = $(e.target).closest('.template-delete');
         this.templateDeleteModal.modal('show');
         this.templateDeleteModalInput.val(elm.data('template'));
     },
@@ -551,6 +551,7 @@ EditorGUI.prototype = {
         this.editor.io.deleteTemplate(elm, function() {
             self.updateTemplateList();
         });
+
         this.templateDeleteModal.modal('hide');
 
         e.preventDefault();

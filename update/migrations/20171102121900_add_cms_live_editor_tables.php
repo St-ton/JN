@@ -38,7 +38,7 @@ class Migration_20171102121900 extends Migration implements IMigration
         )");
 
         $this->execute("INSERT INTO tadminmenu (kAdminmenueGruppe, cModulId, cLinkname, cURL, cRecht, nSort)
-            VALUES ('4', 'core_jtl', 'CMS Live Editor', 'cms-live-editor-backend.php', 'CONTENT_PAGE_VIEW', '115');");
+            VALUES ('4', 'core_jtl', 'OnPage Composer', 'cms-live-editor-backend.php', 'CONTENT_PAGE_VIEW', '115');");
 
         $this->execute("INSERT INTO tcmsportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Heading', 'Heading', 'content')");

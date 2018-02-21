@@ -66,7 +66,7 @@ class AdminAccount
                     return false;
                 }
                 // check the submitted hash against the saved one
-                return Shop()->getContainer()->getPasswordService()->verify($hash, $originalHash);
+                return Shop::Container()->getPasswordService()->verify($hash, $originalHash);
             }
         }
 
@@ -82,8 +82,8 @@ class AdminAccount
      */
     public function prepareResetPassword($mail)
     {
-        $cryptoService            = Shop()->getContainer()->getCryptoService();
-        $passwordService          = Shop()->getContainer()->getPasswordService();
+        $cryptoService            = Shop::Container()->getCryptoService();
+        $passwordService          = Shop::Container()->getPasswordService();
         $now                      = new DateTime();
         $timestamp                = $now->format('U');
         $stringToSend             = md5($mail . $cryptoService->randomString(30));
@@ -500,7 +500,7 @@ class AdminAccount
      */
     public static function generatePasswordHash($password)
     {
-        return Shop()->getContainer()->getPasswordService()->hash($password);
+        return Shop::Container()->getPasswordService()->hash($password);
     }
 
     /**
@@ -512,7 +512,7 @@ class AdminAccount
      */
     private function checkAndUpdateHash($password)
     {
-        $passwordService = Shop()->getContainer()->getPasswordService();
+        $passwordService = Shop::Container()->getPasswordService();
         //only update hash if the db update to 4.00+ was already executed
         if (
             isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin)

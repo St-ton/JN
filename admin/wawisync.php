@@ -11,7 +11,7 @@ $cFehler  = '';
 $cHinweis = '';
 
 if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
-    $passwordService = Shop()->getContainer()->getPasswordService();
+    $passwordService = Shop::Container()->getPasswordService();
     $passInfo   = $passwordService->getInfo($_POST['wawi-pass']);
     $upd        = new stdClass();
     $upd->cName = $_POST['wawi-user'];

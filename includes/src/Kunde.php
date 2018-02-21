@@ -309,7 +309,7 @@ class Kunde
      */
     public function holLoginKunde($cBenutzername, $cPasswort)
     {
-        $passwordService = Shop()->getContainer()->getPasswordService();
+        $passwordService = Shop::Container()->getPasswordService();
         if (strlen($cBenutzername) > 0 && strlen($cPasswort) > 0) {
             $oUser = $this->checkCredentials($cBenutzername, $cPasswort);
             if ($oUser === false) {
@@ -361,7 +361,7 @@ class Kunde
      */
     public function checkCredentials($cBenutzername, $cPasswort)
     {
-        $passwordService = Shop()->getContainer()->getPasswordService();
+        $passwordService = Shop::Container()->getPasswordService();
 
         $oUser           = Shop::DB()->select(
             'tkunde',
@@ -711,7 +711,7 @@ class Kunde
      */
     public function updatePassword($password = null)
     {
-        $passwordService = Shop()->getContainer()->getPasswordService();
+        $passwordService = Shop::Container()->getPasswordService();
         if ($password === null) {
             $cPasswortKlartext = $passwordService->generate(12);
             $this->cPasswort   = $passwordService->hash($cPasswortKlartext);
@@ -745,7 +745,7 @@ class Kunde
      */
     public function generatePassword($length = 12)
     {
-        return Shop()->getContainer()->getPasswordService()->generate($length);
+        return Shop::Container()->getPasswordService()->generate($length);
     }
 
     /**
@@ -756,7 +756,7 @@ class Kunde
      */
     public function generatePasswordHash($password)
     {
-        return Shop()->getContainer()->getPasswordService()->hash($password);
+        return Shop::Container()->getPasswordService()->hash($password);
     }
 
     /**
@@ -767,7 +767,7 @@ class Kunde
      */
     public function prepareResetPassword()
     {
-        $cryptoService = Shop()->getContainer()->getCryptoService();
+        $cryptoService = Shop::Container()->getCryptoService();
         if (!$this->kKunde) {
             return false;
         }

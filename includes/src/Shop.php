@@ -329,7 +329,7 @@ final class Shop
     /**
      * @var \Services\DefaultServicesInterface
      */
-    public static $container;
+    private static $container;
 
     /**
      * @var array
@@ -1684,7 +1684,7 @@ final class Shop
      *
      * @return \Services\DefaultServicesInterface
      */
-    public function getContainer()
+    public static function Container()
     {
 
         if (!static::$container) {
@@ -1694,12 +1694,17 @@ final class Shop
         return static::$container;
     }
 
+    public function _Container()
+    {
+        return self::Container();
+    }
+
     /**
      * Create the default container of the jtl shop
      *
      * @return null
      */
-    private function createContainer()
+    private static function createContainer()
     {
         $container         = new \Services\Container();
         static::$container = $container;

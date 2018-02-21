@@ -407,7 +407,7 @@ class Status
      */
     protected function needPasswordRehash2FA()
     {
-        $passwordService = Shop()->getContainer()->getPasswordService();
+        $passwordService = Shop::Container()->getPasswordService();
         $hashes = Shop::DB()->query("
             SELECT *
             FROM tadmin2facodes

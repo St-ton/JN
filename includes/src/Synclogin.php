@@ -49,7 +49,7 @@ class Synclogin
      */
     public function checkLogin($user, $pass)
     {
-        $passwordService = Shop()->getContainer()->getPasswordService();
+        $passwordService = Shop::Container()->getPasswordService();
         return $this->cName !== null
             && $this->cPass !== null
             && $this->cName === $user

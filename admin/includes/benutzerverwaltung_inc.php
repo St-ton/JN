@@ -368,7 +368,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                     $_SESSION['AdminAccount']->cLogin = $oTmpAcc->cLogin;
                 }
                 if (strlen($oTmpAcc->cPass) > 0) {
-                    $oTmpAcc->cPass = Shop()->getContainer()->getPasswordService()->hash($oTmpAcc->cPass);
+                    $oTmpAcc->cPass = Shop::Container()->getPasswordService()->hash($oTmpAcc->cPass);
                     // if we change the current admin-user, we have to update his session-credentials too!
                     if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
                         $_SESSION['AdminAccount']->cPass = $oTmpAcc->cPass;
@@ -724,7 +724,7 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
 function getRandomPasswordIO()
 {
     $response = new IOResponse();
-    $password = Shop()->getContainer()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
+    $password = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
     $response->assign('cPass', 'value', $password);
 
     return $response;

@@ -46,7 +46,7 @@ class TwoFAEmergency
      */
     public function createNewCodes($oUserTuple)
     {
-        $passwordService = Shop()->getContainer()->getPasswordService();
+        $passwordService = Shop::Container()->getPasswordService();
         $vAnalogyArray  = [];
         $szSqlRowValues = '';
         $iValCount      = 'a';

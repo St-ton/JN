@@ -2348,7 +2348,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
  */
 function gibCaptchaCode($sec)
 {
-    $cryptoService = Shop()->getContainer()->getCryptoService();
+    $cryptoService = Shop::Container()->getCryptoService();
     $code = '';
     switch ((int)$sec) {
         case 1:
@@ -2376,7 +2376,7 @@ function gibCaptchaCode($sec)
  */
 function encodeCode($klartext)
 {
-    $cryptoService = Shop()->getContainer()->getCryptoService();
+    $cryptoService = Shop::Container()->getCryptoService();
     if (strlen($klartext) !== 4) {
         return '0';
     }
@@ -2419,7 +2419,7 @@ function generiereCaptchaCode($sec)
         return false;
     }
 
-    $cryptoService = Shop()->getContainer()->getCryptoService();
+    $cryptoService = Shop::Container()->getCryptoService();
 
     $code = new stdClass();
     if ((int)$sec === 4) {
@@ -5030,7 +5030,7 @@ function getDefaultLanguageID()
  */
 function generateCSRFToken()
 {
-    $cryptoService = Shop()->getContainer()->getCryptoService();
+    $cryptoService = Shop::Container()->getCryptoService();
     return $cryptoService->randomString(32);
 }
 

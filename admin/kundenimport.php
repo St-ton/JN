@@ -174,7 +174,7 @@ function processImport($fmt, $data)
     }
     $cPasswortKlartext = '';
     if ((int)$_POST['PasswortGenerieren'] === 1) {
-        $cPasswortKlartext = Shop()->getContainer()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
+        $cPasswortKlartext = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
         $kunde->cPasswort  = $kunde->generatePasswordHash($cPasswortKlartext);
     }
     $oTMP              = new stdClass();

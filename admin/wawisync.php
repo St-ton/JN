@@ -12,10 +12,10 @@ $cHinweis = '';
 
 if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
     $passwordService = Shop::Container()->getPasswordService();
-    $passInfo   = $passwordService->getInfo($_POST['wawi-pass']);
-    $upd        = new stdClass();
-    $upd->cName = $_POST['wawi-user'];
-    $upd->cPass = $passInfo['algo'] > 0
+    $passInfo        = $passwordService->getInfo($_POST['wawi-pass']);
+    $upd             = new stdClass();
+    $upd->cName      = $_POST['wawi-user'];
+    $upd->cPass      = $passInfo['algo'] > 0
         ? $_POST['wawi-pass'] // hashed password was not changed
         : $passwordService->hash($_POST['wawi-pass']); // new clear text password was given
 

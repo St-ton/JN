@@ -225,32 +225,22 @@ deploy_create_initial_schema()
     local TMPDB="${1}_tmp"
     local TMPFILE=`mktemp`
 
-    (>&2 echo "dumping current shop-DB..")
     mysqldump --default-character-set=utf8 --skip-add-locks  --skip-add-drop-table --skip-comments $1 -r $TMPFILE
 
-    (>&2 echo -ne "creating temporary DB..\n")
     mysql -e "DROP DATABASE IF EXISTS ${TMPDB}"
     mysql -e "CREATE DATABASE ${TMPDB} DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"
 
-    (>&2 echo -ne "transfer dump "${TMPFILE}" into temp-DB..\n")
     mysql -D $TMPDB -e "SET names utf8; SOURCE "${TMPFILE}";"
 
-    (>&2 echo -ne "remove dump-file..\n")
     rm $TMPFILE
 
-    (>&2 echo -ne "clear data in temp-DB..\n")
     mysql -D $TMPDB -e "TRUNCATE TABLE tsynclogin; TRUNCATE TABLE tadminlogin;TRUNCATE TABLE tbesucher; TRUNCATE TABLE tbesucherarchiv; TRUNCATE TABLE tbesuchteseiten; TRUNCATE TABLE tbrocken; TRUNCATE TABLE tfirma; TRUNCATE TABLE tsprachlog; TRUNCATE TABLE tredirect; TRUNCATE TABLE tredirectreferer;TRUNCATE TABLE tjtllog;TRUNCATE TABLE tsuchanfragencache;TRUNCATE TABLE tsuchanfrageerfolglos;TRUNCATE TABLE ttrustedshopskundenbewertung;TRUNCATE TABLE teinheit;TRUNCATE TABLE trevisions;"
 
-    (>&2 echo -ne "modify default-settings in temp-DB..\n")
     mysql -D $TMPDB -e "SET @orig_sql_mode:=(SELECT @@sql_mode); SET @@sql_mode:='';  UPDATE tversion SET nVersion=${SHOP_VERSION}; UPDATE tbesucherzaehler SET nZaehler=0; UPDATE tnummern SET nNummer = 10000 WHERE nArt=1; UPDATE tnummern SET dAktualisiert='0000-00-00 00:00:00'; UPDATE tmigration SET dExecuted=NOW(); SET @@sql_mode:=@orig_sql_mode;"
 
-    (>&2 echo -ne "dumping temp-DB to STDOUT..\n")
     mysqldump --default-character-set=utf8 --skip-add-locks  --skip-add-drop-table --skip-comments $TMPDB
 
-    (>&2 echo -ne "removing temp-DB..\n")
     mysql -e "DROP DATABASE IF EXISTS ${TMPDB}"
-
-    (>&2 echo -ne "done.\n\n")
 }
 
 deploy_prepare_zip()

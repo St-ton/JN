@@ -5,7 +5,7 @@
         </a>
         <div class="switcher-wrapper">
             <div class="switcher-header">
-                <h2>eazyComposer</h2>
+                <h2>OnPage Composer</h2>
             </div>
             <div class="switcher-content">
                 <form id="start-editor" action="admin/cms-live-editor.php" method="get" class="form-group">

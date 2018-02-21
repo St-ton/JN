@@ -128,7 +128,7 @@ function plzimportDoImport($target, array $sessData, $result)
         plzimportWriteSession('Import', $sessData);
 
         Shop::DB()->delete('tplz_backup', 'cLandISO', $isoLand);
-        Shop::DB()->query("INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = '" . $isoLand . "'", 3);
+        Shop::DB()->query("INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode", ['isoCode', $isoLand], 3);
         Shop::DB()->delete('tplz', 'cLandISO', $isoLand);
 
         $sessData['step']   = 95;
@@ -457,10 +457,16 @@ function plzimportActionLoadAvailableDownloads()
         curl_close($ch);
 
         if (preg_match_all(PLZIMPORT_REGEX, $cContent, $hits, PREG_PATTERN_ORDER)) {
+            $quotedHits = array_map(
+                function($hit){
+                    return Shop::DB()->getPDO()->quote($hit);
+                },
+                $hits[2]
+            );
             $oLand_arr = Shop::DB()->query(
                 "SELECT cISO, cDeutsch
                     FROM tland
-                    WHERE cISO IN ('" . implode("', '", $hits[2]) . "')
+                    WHERE cISO IN (" . implode(", ", $quotedHits) . ")
                     ORDER BY cISO", 2
             );
 
@@ -481,11 +487,41 @@ function plzimportActionLoadAvailableDownloads()
         }
     }
 
-    Shop::Smarty()->assign('oLand_arr', $oLand_arr);
+    Shop::Smarty()->assign('oLand_arr', countriesPreventXss($oLand_arr));
 
     return [
         'dialogHTML' => Shop::Smarty()->fetch('tpl_inc/plz_ort_import_auswahl.tpl')
     ];
+}
+
+/**
+ * @param stdClass $country
+ * @return stdClass
+ */
+function countryPreventXss($country)
+{
+    if (Shop::Smarty()->escape_html) {
+        return $country;
+    }
+    return (object)[
+        'cISO' => htmlspecialchars($country->cISO, ENT_QUOTES, JTL_CHARSET, false),
+        'cDeutsch' => htmlspecialchars($country->cDeutsch, ENT_QUOTES, JTL_CHARSET, false),
+        'cDate' => htmlspecialchars($country->cDate, ENT_QUOTES, JTL_CHARSET, false),
+        'cSize' => htmlspecialchars($country->cSize, ENT_QUOTES, JTL_CHARSET, false),
+        'cURL' => htmlspecialchars($country->cURL, ENT_QUOTES, JTL_CHARSET, false),
+    ];
+}
+
+/**
+ * @param stdClass[] $countries
+ * @return stdClass[]
+ */
+function countriesPreventXss($countries)
+{
+    if (Shop::Smarty()->escape_html) {
+        return $countries;
+    }
+    return array_map('countryPreventXss', $countries);
 }
 
 /**
@@ -498,7 +534,7 @@ function plzimportActionRestoreBackup($target = '')
 
     if (!empty($target)) {
         Shop::DB()->delete('tplz', 'cLandISO', $target);
-        Shop::DB()->query("INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = '" . $target . "'", 3);
+        Shop::DB()->query("INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = :target", ['target' => $target], 3);
         Shop::DB()->delete('tplz_backup', 'cLandISO', $target);
 
         $result = (object)[

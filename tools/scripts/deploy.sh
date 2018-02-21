@@ -230,7 +230,7 @@ deploy_create_initial_schema()
     mysql -e "DROP DATABASE IF EXISTS ${TMPDB}"
     mysql -e "CREATE DATABASE ${TMPDB} DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"
 
-    mysql -D $TMPDB -e "SET names utf8; SOURCE "${TMPFILE}";"
+    mysql -D $TMPDB -e "SET names utf8; SOURCE ${TMPFILE};"
 
     rm $TMPFILE
 

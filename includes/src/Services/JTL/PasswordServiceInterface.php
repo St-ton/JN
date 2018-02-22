@@ -6,7 +6,10 @@
 
 namespace Services\JTL;
 
-
+/**
+ * Interface PasswordServiceInterface
+ * @package Services\JTL
+ */
 interface PasswordServiceInterface
 {
     /**

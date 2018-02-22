@@ -6,7 +6,11 @@
 
 namespace Services\JTL;
 
-
+/**
+ * Interface CryptoServiceInterface
+ *
+ * @package Services\JTL
+ */
 interface CryptoServiceInterface
 {
     /**

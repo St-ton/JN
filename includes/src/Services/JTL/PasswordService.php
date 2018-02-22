@@ -6,7 +6,10 @@
 
 namespace Services\JTL;
 
-
+/**
+ * Class PasswordService
+ * @package Services\JTL
+ */
 class PasswordService implements PasswordServiceInterface
 {
     const ASCII_MIN = 33;
@@ -19,6 +22,9 @@ class PasswordService implements PasswordServiceInterface
         $this->cryptoService = $cryptoService;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function generate($length)
     {
         /**
@@ -35,11 +41,17 @@ class PasswordService implements PasswordServiceInterface
         return $result;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function hash($password)
     {
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function verify($password, $hash)
     {
         $length = strlen($hash);
@@ -53,6 +65,9 @@ class PasswordService implements PasswordServiceInterface
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function needsRehash($hash)
     {
         $length = strlen($hash);
@@ -63,6 +78,9 @@ class PasswordService implements PasswordServiceInterface
         return password_needs_rehash($hash, PASSWORD_DEFAULT);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getInfo($hash)
     {
         return password_get_info($hash);

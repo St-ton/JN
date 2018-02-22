@@ -6,13 +6,16 @@
 
 namespace Services\JTL;
 
-
+/**
+ * Class PasswordServiceTest
+ * @package Services\JTL
+ */
 class PasswordServiceTest extends \PHPUnit_Framework_TestCase
 {
     public function test_generate()
     {
         $passwordService = new PasswordService(new CryptoService());
-        $password = $passwordService->generate(10);
+        $password        = $passwordService->generate(10);
         $this->assertEquals(10, strlen($password));
     }
 
@@ -23,8 +26,8 @@ class PasswordServiceTest extends \PHPUnit_Framework_TestCase
          * The only thing I can test is, whether the service returns the plain text password itself as an hash
          */
         $passwordService = new PasswordService(new CryptoService());
-        $password = '123456';
-        $hashed = $passwordService->hash($password);
+        $password        = '123456';
+        $hashed          = $passwordService->hash($password);
         $this->assertNotEquals($password, $hashed);
         $this->assertNotNull($hashed);
     }
@@ -32,7 +35,7 @@ class PasswordServiceTest extends \PHPUnit_Framework_TestCase
     public function test_verify()
     {
         $passwordService = new PasswordService(new CryptoService());
-        $password = $passwordService->generate(100);
+        $password        = $passwordService->generate(100);
 
         // md5 (very old mechanism)
         $hash = md5($password);
@@ -51,7 +54,7 @@ class PasswordServiceTest extends \PHPUnit_Framework_TestCase
     public function test_needsRehash()
     {
         $passwordService = new PasswordService(new CryptoService());
-        $password = $passwordService->generate(100);
+        $password        = $passwordService->generate(100);
 
         // md5 (very old mechanism)
         $hash = md5($password);
@@ -63,7 +66,7 @@ class PasswordServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($passwordService->needsRehash($hash));
 
         // latest mechanism
-        $hashed = password_hash($password, PASSWORD_ARGON2I);
+        $hashed      = password_hash($password, PASSWORD_ARGON2I);
         $needsRehash = $passwordService->needsRehash($hashed);
         $this->assertTrue($needsRehash);
     }

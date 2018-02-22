@@ -20,11 +20,17 @@ use Services\JTL\PasswordServiceInterface;
  */
 class Container extends ContainerBase implements DefaultServicesInterface
 {
+    /**
+     * @inheritdoc
+     */
     public function getPasswordService()
     {
         return $this->get(PasswordServiceInterface::class);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getCryptoService()
     {
         return $this->get(CryptoServiceInterface::class);

@@ -1694,6 +1694,11 @@ final class Shop
         return static::$container;
     }
 
+    /**
+     * Get the default container of the jtl shop
+     *
+     * @return \Services\DefaultServicesInterface
+     */
     public function _Container()
     {
         return self::Container();
@@ -1701,8 +1706,6 @@ final class Shop
 
     /**
      * Create the default container of the jtl shop
-     *
-     * @return null
      */
     private static function createContainer()
     {

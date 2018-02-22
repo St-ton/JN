@@ -2349,7 +2349,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
 function gibCaptchaCode($sec)
 {
     $cryptoService = Shop::Container()->getCryptoService();
-    $code = '';
+    $code          = '';
     switch ((int)$sec) {
         case 1:
             $chars = '1234567890';

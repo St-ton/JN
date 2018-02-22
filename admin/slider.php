@@ -189,5 +189,4 @@ $smarty->assign('PFAD_KCFINDER', PFAD_KCFINDER)
        ->assign('cAction', $cAction)
        ->assign('kSlider', $kSlider)
        ->assign('oSlider_arr', Shop::DB()->query("SELECT * FROM tslider", 2))
-       ->assign('xajax_javascript', $xajax->getJavascript(Shop::getURL() . '/' . PFAD_XAJAX))
        ->display('slider.tpl');

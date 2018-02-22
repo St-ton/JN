@@ -129,7 +129,7 @@ function plzimportDoImport($target, array $sessData, $result)
         plzimportWriteSession('Import', $sessData);
 
         Shop::DB()->delete('tplz_backup', 'cLandISO', $isoLand);
-        Shop::DB()->query("INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode", ['isoCode', $isoLand],
+        Shop::DB()->queryPrepared("INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode", ['isoCode' => $isoLand],
             3);
         Shop::DB()->delete('tplz', 'cLandISO', $isoLand);
 
@@ -539,8 +539,7 @@ function plzimportActionRestoreBackup($target = '')
 
     if (!empty($target)) {
         Shop::DB()->delete('tplz', 'cLandISO', $target);
-        Shop::DB()->query("INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = :target", ['target' => $target],
-            3);
+        Shop::DB()->queryPrepared("INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = :target", ['target' => $target], 3);
         Shop::DB()->delete('tplz_backup', 'cLandISO', $target);
 
         $result = (object)[

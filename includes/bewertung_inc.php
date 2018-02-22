@@ -59,7 +59,13 @@ function speicherBewertung($kArtikel, $kKunde, $kSprache, $cTitel, $cText, $nSte
 
                 executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG, ['rating' => &$oBewertung]);
                 // Speicher Bewertung
-                $kBewertung    = Shop::DB()->insert('tbewertung', $oBewertung);
+
+                if(is_object(Shop::DB()->select('tbewertung', ['kArtikel', 'kKunde'], [$kArtikel, $kKunde]))) {
+                    $kBewertung = Shop::DB()->update('tbewertung',['kArtikel', 'kKunde'], [$kArtikel, $kKunde], $oBewertung);
+                } else {
+                    $kBewertung = Shop::DB()->insert('tbewertung', $oBewertung);
+                }
+
                 $nFreischalten = 1;
                 if ($conf['bewertung']['bewertung_freischalten'] === 'N') {
                     $nFreischalten = 0;
@@ -257,28 +263,6 @@ function aktualisiereDurchschnitt($kArtikel, $cFreischalten)
     return true;
 }
 
-/**
- * @param int $kArtikel
- * @param int $kKunde
- * @return int
- */
-function pruefeKundeArtikelBewertet($kArtikel, $kKunde)
-{
-    // Pürfen ob der Bewerter schon diesen Artikel bewertet hat
-    if ($kKunde > 0) {
-        $oBewertung = Shop::DB()->select(
-            'tbewertung',
-            ['kKunde', 'kArtikel', 'kSprache'],
-            [(int)$kKunde, (int)$kArtikel, Shop::getLanguage()]
-        );
-        // Kunde hat den Artikel schon bewertet
-        if (isset($oBewertung->kKunde) && $oBewertung->kKunde > 0) {
-            return 1;
-        }
-    }
-
-    return 0;
-}
 
 /**
  * @param int $kArtikel
@@ -329,7 +313,7 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
     if ($Einstellungen['bewertung']['bewertung_guthaben_nutzen'] === 'Y') {
         // Hole Kunden und cText der Bewertung
         $oBewertung = Shop::DB()->query(
-            "SELECT kKunde, cText
+            "SELECT kBewertung, kKunde, cText
                 FROM tbewertung
                 WHERE kBewertung = " . $kBewertung, 1
         );
@@ -338,28 +322,39 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
             "SELECT sum(fGuthabenBonus) AS fGuthabenProMonat
                 FROM tbewertungguthabenbonus
                 WHERE kKunde = " . $kKunde . "
+                    AND kBewertung != " . (int)$kBewertung . "
                     AND YEAR(dDatum) = " . date('Y') . "
                     AND MONTH(dDatum) = " . date('m'), 1
         );
         if ((float)$oBewertungGuthabenBonus->fGuthabenProMonat <=
             (float)$Einstellungen['bewertung']['bewertung_max_guthaben']) {
             // Reichen die Zeichen in der Bewertung, um das Stufe 2 Guthaben zu erhalten?
-            if ($Einstellungen['bewertung']['bewertung_stufe2_anzahlzeichen'] <= strlen($oBewertung->cText)) {
+            if ((int)$Einstellungen['bewertung']['bewertung_stufe2_anzahlzeichen'] <= strlen($oBewertung->cText)) {
                 // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überscchreitet
                 // Falls ja, nur die Differenz von Kundenguthaben zu Max im Monat auszahlen
                 if (((float)$oBewertungGuthabenBonus->fGuthabenProMonat +
                     (float)$Einstellungen['bewertung']['bewertung_stufe2_guthaben']) >
-                    (float)$Einstellungen['bewertung']['bewertung_max_guthaben']) {
+                    (float)$Einstellungen['bewertung']['bewertung_max_guthaben']
+                ) {
                     $fBelohnung = (float)$Einstellungen['bewertung']['bewertung_max_guthaben'] -
                         (float)$oBewertungGuthabenBonus->fGuthabenProMonat;
                 } else {
                     $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe2_guthaben'];
                 }
+
+//                // tkunde Guthaben updaten
+//                Shop::DB()->query("
+//                    UPDATE tkunde
+//                        SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
+//                            WHERE kKunde = " . $kKunde, 3
+//                );
+
                 // tkunde Guthaben updaten
-                Shop::DB()->query("
+                Shop::DB()->query('
                     UPDATE tkunde
-                        SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
-                            WHERE kKunde = " . $kKunde, 3
+                        SET fGuthaben = 
+                        (SELECT sum(fGuthabenBonus) FROM tbewertungguthabenbonus WHERE kKunde = ' . $kKunde . ')
+                            WHERE kKunde = ' . $kKunde, 3
                 );
 
                 // tbewertungguthabenbonus eintragen
@@ -369,7 +364,13 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 $oBewertungGuthabenBonus->kKunde         = $kKunde;
                 $oBewertungGuthabenBonus->fGuthabenBonus = (float)$fBelohnung;
                 $oBewertungGuthabenBonus->dDatum         = 'now()';
-                Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
+
+                    if(is_object(Shop::DB()->select('tbewertungguthabenbonus', ['kBewertung', 'kKunde'], [$kBewertung, $kKunde]))) {
+                        Shop::DB()->query('UPDATE tbewertungguthabenbonus SET fGuthabenBonus = ' . $fBelohnung . ' WHERE kBewertung = ' . $kBewertung, 1) ;
+                    } else {
+                        Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
+                    }
+
             } else {
                 // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überschreitet
                 // Falls ja, nur die Differenz von Kundenguthaben zu Max im Monat auszahlen
@@ -381,11 +382,20 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 } else {
                     $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe1_guthaben'];
                 }
+
+//                // tkunde Guthaben updaten
+//                Shop::DB()->query("
+//                    UPDATE tkunde
+//                        SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
+//                        WHERE kKunde = " . $kKunde, 3
+//                );
+
                 // tkunde Guthaben updaten
-                Shop::DB()->query("
+                Shop::DB()->query('
                     UPDATE tkunde
-                        SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
-                        WHERE kKunde = " . $kKunde, 3
+                        SET fGuthaben = 
+                        (SELECT sum(fGuthabenBonus) FROM tbewertungguthabenbonus WHERE kKunde = ' . $kKunde . ')
+                            WHERE kKunde = ' . $kKunde, 3
                 );
 
                 // tbewertungguthabenbonus eintragen
@@ -394,7 +404,12 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 $oBewertungGuthabenBonus->kKunde         = $kKunde;
                 $oBewertungGuthabenBonus->fGuthabenBonus = (float)$fBelohnung;
                 $oBewertungGuthabenBonus->dDatum         = 'now()';
-                Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
+
+                if(is_object(Shop::DB()->select('tbewertungguthabenbonus', ['kBewertung', 'kKunde'], [$kBewertung, $kKunde]))) {
+                    Shop::DB()->query('UPDATE tbewertungguthabenbonus SET fGuthabenBonus = ' . $fBelohnung . ' WHERE kBewertung = ' . $kBewertung, 1) ;
+                } else {
+                    Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
+                }
             }
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             $oKunde                       = new Kunde($oBewertungGuthabenBonus->kKunde);

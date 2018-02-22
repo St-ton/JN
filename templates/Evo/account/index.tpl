@@ -56,6 +56,9 @@
                             {lang key="wishlists" section="account data"}
                         </a>
                     {/if}
+                    <a href="{get_static_route id='jtl.php' params=['bewertungen' => 1]}" class="list-group-item{if $step === 'bewertungen'} active{/if}">
+                        {lang key="feedback" section="account data"}
+                    </a>
                 </div>
             </div>
         {/if}
@@ -83,6 +86,8 @@
                 {include file='account/wishlist_email_form.tpl'}
             {elseif $step === 'kunden_werben_kunden'}
                 {include file='account/customers_recruiting.tpl'}
+            {elseif $step === 'bewertungen'}
+                {include file='account/feedback.tpl'}
             {/if}
         </div>
     </div>

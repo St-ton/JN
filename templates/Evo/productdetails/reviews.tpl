@@ -64,7 +64,13 @@
                                 {/if}
                                 <input name="bfa" type="hidden" value="1" />
                                 <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
-                                <input name="bewerten" type="submit" value="{lang key="productAssess" section="product rating"}" class="submit btn btn-primary" />
+
+                                <input name="bewerten" type="submit"
+                                        {if $bereitsBewertet === false}
+                                           value="{lang key="productAssess" section="product rating"}"
+                                       {else}
+                                           value="Bewertung &Auml;ndern"{/if}
+                                       class="submit btn btn-primary" />
                             </div>
                         </div>
                     </form>

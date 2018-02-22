@@ -15,12 +15,13 @@ $Einstellungen = Shop::getSettings([CONF_BEWERTUNG]);
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'bewertung_uebersicht';
+$cTab          = 'freischalten';
 $cacheTags     = [];
 
 setzeSprache();
 
 if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+    $cTab = verifyGPDataString('tab');
 }
 // Bewertung editieren
 if (verifyGPCDataInteger('bewertung_editieren') === 1) {
@@ -214,4 +215,5 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
+       ->assign('cTab', $cTab)
        ->display('bewertung.tpl');

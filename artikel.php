@@ -299,6 +299,17 @@ if (isAjaxRequest()) {
     $smarty->assign('listStyle', isset($_GET['isListStyle']) ? StringHandler::filterXSS($_GET['isListStyle']) : '');
 }
 
+$bereitsBewertet = false;
+if (isset($_SESSION['Kunde']) and !empty($oBewertung_arr)){
+    foreach ($oBewertung_arr as $Bewertung){
+        if ($Bewertung->kKunde == $_SESSION['Kunde']->kKunde ){
+            $bereitsBewertet = true;
+        }
+    }
+
+}
+
+$smarty->assign('bereitsBewertet', $bereitsBewertet);
 $smarty->display('productdetails/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

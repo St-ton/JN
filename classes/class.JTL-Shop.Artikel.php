@@ -2177,6 +2177,13 @@ class Artikel
                 $kLetzteVariation = 0;
                 $nZaehler         = -1;
                 $nFreifelder      = 0;
+                $rabattTemp       = $this->getDiscount($kKundengruppe, $this->kArtikel);
+                $nGenauigkeit = 2;
+                if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
+                    && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
+                ) {
+                    $nGenauigkeit = (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT];
+                }
                 foreach ($oVariationTMP_arr as $i => $oVariationTMP) {
                     $oVariationTMP->kEigenschaft = (int)$oVariationTMP->kEigenschaft;
                     if ($kLetzteVariation !== $oVariationTMP->kEigenschaft) {
@@ -2193,10 +2200,8 @@ class Artikel
                         $variation->nLieferbareVariationswerte = 0;
                         $this->Variationen[$nZaehler]          = $variation;
 
-                        if ($kSprache > 0 && !standardspracheAktiv()) {
-                            if (strlen($oVariationTMP->cName_teigenschaftsprache) > 0) {
-                                $this->Variationen[$nZaehler]->cName = $oVariationTMP->cName_teigenschaftsprache;
-                            }
+                        if ($kSprache > 0 && !standardspracheAktiv() && strlen($oVariationTMP->cName_teigenschaftsprache) > 0) {
+                            $this->Variationen[$nZaehler]->cName = $oVariationTMP->cName_teigenschaftsprache;
                         }
                         if ($oVariationTMP->cTyp === 'FREIFELD' || $oVariationTMP->cTyp === 'PFLICHT-FREIFELD') {
                             $this->Variationen[$nZaehler]->nLieferbareVariationswerte = 1;
@@ -2242,39 +2247,36 @@ class Artikel
 
                         $this->Variationen[$nZaehler]->Werte[$i]->oVariationsKombi = $varCombi;
                     }
-                    if ($kSprache > 0 && !standardspracheAktiv()) {
-                        if (strlen($oVariationTMP->cName_teigenschaftwertsprache) > 0) {
-                            $this->Variationen[$nZaehler]->Werte[$i]->cName = $oVariationTMP->cName_teigenschaftwertsprache;
-                        }
+                    if ($kSprache > 0 && !standardspracheAktiv() && strlen($oVariationTMP->cName_teigenschaftwertsprache) > 0) {
+                        $this->Variationen[$nZaehler]->Werte[$i]->cName = $oVariationTMP->cName_teigenschaftwertsprache;
                     }
                     //kundengrp spezif. Aufpreis?
                     if ($oVariationTMP->fAufpreisNetto_teigenschaftwertaufpreis !== null) {
-                        $rabattTemp                                              = $this->getDiscount($kKundengruppe, $this->kArtikel);
                         $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto = $oVariationTMP->fAufpreisNetto_teigenschaftwertaufpreis * ((100 - $rabattTemp) / 100);
                     }
                     if ((int)$this->Variationen[$nZaehler]->Werte[$i]->fPackeinheit === 0) {
                         $this->Variationen[$nZaehler]->Werte[$i]->fPackeinheit = 1;
                     }
-                    if ($this->cLagerBeachten === 'Y' &&
-                        $this->cLagerVariation === 'Y' &&
-                        $this->cLagerKleinerNull !== 'Y' &&
-                        $this->Variationen[$nZaehler]->Werte[$i]->fLagerbestand <= 0 &&
-                        (int)$conf['global']['artikeldetails_variationswertlager'] === 3
+                    if ($this->cLagerBeachten === 'Y'
+                        && $this->cLagerVariation === 'Y'
+                        && $this->cLagerKleinerNull !== 'Y'
+                        && $this->Variationen[$nZaehler]->Werte[$i]->fLagerbestand <= 0
+                        && (int)$conf['global']['artikeldetails_variationswertlager'] === 3
                     ) {
                         unset($this->Variationen[$nZaehler]->Werte[$i]);
                         continue;
                     }
                     $this->Variationen[$nZaehler]->nLieferbareVariationswerte++;
 
-                    if ($this->cLagerBeachten === 'Y' &&
-                        $this->cLagerVariation === 'Y' &&
-                        $this->cLagerKleinerNull !== 'Y' &&
-                        $this->nIstVater === 0 &&
-                        $this->kVaterArtikel === 0 &&
-                        $this->Variationen[$nZaehler]->Werte[$i]->fLagerbestand <= 0 &&
-                        (int)$conf['global']['artikeldetails_variationswertlager'] === 2
+                    if ($this->cLagerBeachten === 'Y'
+                        && $this->cLagerVariation === 'Y'
+                        && $this->cLagerKleinerNull !== 'Y'
+                        && $this->nIstVater === 0
+                        && $this->kVaterArtikel === 0
+                        && $this->Variationen[$nZaehler]->Werte[$i]->fLagerbestand <= 0
+                        && (int)$conf['global']['artikeldetails_variationswertlager'] === 2
                     ) {
-                        $this->Variationen[$nZaehler]->Werte[$i]->cName .= '(' . Shop::Lang()->get('outofstock', 'productDetails') . ')';
+                        $this->Variationen[$nZaehler]->Werte[$i]->cName .= '(' . $oos . ')';
                     }
                     if ($oVariationTMP->cPfad && file_exists(PFAD_ROOT . PFAD_VARIATIONSBILDER_NORMAL . $oVariationTMP->cPfad)) {
                         $this->cVariationenbilderVorhanden                       = true;
@@ -2302,15 +2304,9 @@ class Artikel
                             $this->Variationen[$nZaehler]->Werte[$i]->cAufpreisLocalized,
                             $this->Variationen[$nZaehler]->Werte[$i]->cPreisInklAufpreis
                         );
-                    } elseif (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert) &&
-                        $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert > 0
+                    } elseif (isset($this->Variationen[$nZaehler]->Werte[$i]->fVPEWert)
+                        && $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert > 0
                     ) {
-                        $nGenauigkeit = 2;
-                        if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) &&
-                            (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
-                        ) {
-                            $nGenauigkeit = (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT];
-                        }
                         $this->Variationen[$nZaehler]->Werte[$i]->cPreisVPEWertAufpreis[0] = gibPreisStringLocalized(
                             berechneBrutto(
                                 $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto / $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert,
@@ -2385,6 +2381,8 @@ class Artikel
                         }
                     }
                 }
+                $matrixConf = isset($conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'])
+                    && $conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y';
                 foreach ($this->Variationen as $i => $oVariation) {
                     $this->Variationen[$i]->Werte = array_merge($this->Variationen[$i]->Werte);
                     if ($this->Variationen[$i]->nLieferbareVariationswerte === 0) {
@@ -2405,9 +2403,9 @@ class Artikel
                         foreach ($this->VariationenOhneFreifeld[$i]->Werte as $j => $oVariationsWert) {
                             // Variationskombi
                             if ($this->kVaterArtikel > 0 || $this->nIstVater === 1) {
-                                if ($this->oVariationKombi_arr !== null &&
-                                    is_array($this->oVariationKombi_arr) &&
-                                    count($this->oVariationKombi_arr) > 0
+                                if ($this->oVariationKombi_arr !== null
+                                    && is_array($this->oVariationKombi_arr)
+                                    && count($this->oVariationKombi_arr) > 0
                                 ) {
                                     foreach ($this->oVariationKombi_arr as $oVariationKombi) {
                                         if ($oVariationKombi->kEigenschaftWert === $oVariationsWert->kEigenschaftWert) {
@@ -2416,20 +2414,20 @@ class Artikel
                                     }
                                 }
                                 // Lagerbestand beachten?
-                                if ($oVariationsWert->oVariationsKombi->cLagerBeachten === 'Y' &&
-                                    $oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N' &&
-                                    $oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0 &&
-                                    isset($conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten']) &&
-                                    $conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
+                                if ($oVariationsWert->oVariationsKombi->cLagerBeachten === 'Y'
+                                    && $oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
+                                    && $oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
+                                    && $matrixConf === true
                                 ) {
                                     $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
                                 }
                             } else {
                                 // Lagerbestand beachten?
-                                if ($this->cLagerVariation === 'Y' && $this->cLagerBeachten === 'Y' &&
-                                    $this->cLagerKleinerNull === 'N' && $oVariationsWert->fLagerbestand <= 0 &&
-                                    isset($conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten']) &&
-                                    $conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
+                                if ($this->cLagerVariation === 'Y'
+                                    && $this->cLagerBeachten === 'Y'
+                                    && $this->cLagerKleinerNull === 'N'
+                                    && $oVariationsWert->fLagerbestand <= 0
+                                    && $matrixConf === true
                                 ) {
                                     $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
                                 }
@@ -2530,13 +2528,11 @@ class Artikel
                                 ORDER BY teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert", 2
                         );
 
-                        if (is_array($oVariBoxMatrixBildTMP_arr) && count($oVariBoxMatrixBildTMP_arr) > 0) {
-                            foreach ($oVariBoxMatrixBildTMP_arr as $oVariBoxMatrixBildTMP) {
-                                if (!isset($oVariBoxMatrixBildAssoc_arr[$oVariBoxMatrixBildTMP->kEigenschaftWert])) {
-                                    $oVariBoxMatrixBildAssoc_arr[$oVariBoxMatrixBildTMP->kEigenschaftWert]               = new stdClass();
-                                    $oVariBoxMatrixBildAssoc_arr[$oVariBoxMatrixBildTMP->kEigenschaftWert]->cPfad        = $oVariBoxMatrixBildTMP->cPfad;
-                                    $oVariBoxMatrixBildAssoc_arr[$oVariBoxMatrixBildTMP->kEigenschaftWert]->kEigenschaft = $oVariBoxMatrixBildTMP->kEigenschaft;
-                                }
+                        foreach ($oVariBoxMatrixBildTMP_arr as $oVariBoxMatrixBildTMP) {
+                            if (!isset($oVariBoxMatrixBildAssoc_arr[$oVariBoxMatrixBildTMP->kEigenschaftWert])) {
+                                $oVariBoxMatrixBildAssoc_arr[$oVariBoxMatrixBildTMP->kEigenschaftWert]               = new stdClass();
+                                $oVariBoxMatrixBildAssoc_arr[$oVariBoxMatrixBildTMP->kEigenschaftWert]->cPfad        = $oVariBoxMatrixBildTMP->cPfad;
+                                $oVariBoxMatrixBildAssoc_arr[$oVariBoxMatrixBildTMP->kEigenschaftWert]->kEigenschaft = $oVariBoxMatrixBildTMP->kEigenschaft;
                             }
                         }
                         // Prüfe ob Bilder Horizontal gesetzt werden
@@ -2700,18 +2696,17 @@ class Artikel
                         // Gleiche Farben entfernen + komplette Vorschau nicht anzeigen
                         foreach ($oVariBoxMatrixBild_arr as $oVariBoxMatrixBild) {
                             $oVariBoxMatrixBild->kEigenschaft = (int)$oVariBoxMatrixBild->kEigenschaft;
-                            $oVariBoxMatrixBild->cBild        = Shop::getURL() . '/' .
+                            $oVariBoxMatrixBild->cBild        = $shopURL .
                                 PFAD_VARIATIONSBILDER_MINI .
                                 $oVariBoxMatrixBild->cPfad;
 
-                            if (!in_array($oVariBoxMatrixBild->kEigenschaft, $kEigenschaft_arr, true) &&
-                                count($kEigenschaft_arr) > 0
+                            if (!in_array($oVariBoxMatrixBild->kEigenschaft, $kEigenschaft_arr, true)
+                                && count($kEigenschaft_arr) > 0
                             ) {
                                 $bFailure = true;
                                 break;
-                            } else {
-                                $kEigenschaft_arr[] = $oVariBoxMatrixBild->kEigenschaft;
                             }
+                            $kEigenschaft_arr[] = $oVariBoxMatrixBild->kEigenschaft;
                         }
                         $oVariBoxMatrixBild_arr = array_merge($oVariBoxMatrixBild_arr);
                     }

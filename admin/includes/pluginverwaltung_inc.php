@@ -1062,7 +1062,6 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                         'FINANCING',
                         'LEASING',
                         'T_PAY',
-                        'CLICKANDBUY',
                         'GIROPAY',
                         'GOOGLE_CHECKOUT',
                         'SHOP_CARD',

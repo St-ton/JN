@@ -7,7 +7,7 @@ if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();
 }
-require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 /** @global JTLSmarty $smarty */
 $AktuelleSeite    = 'ARTIKEL';
 $oPreisverlauf    = null;

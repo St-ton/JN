@@ -72,11 +72,8 @@ if (!isset($AktuelleKategorie)) {
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
-if ($smarty->getTemplateVars('NaviFilter') === null) {
-    $smarty->assign('NaviFilter', $NaviFilter);
-}
-// assign variables moved from $_SESSION to cache to smarty
 $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
+       ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie, false))
@@ -173,7 +170,6 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('Suchergebnisse', isset($oSuchergebnisse) ? $oSuchergebnisse : new ProductFilterSearchResults());
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 
 $oCMSPage = CMS::getInstance()->getCurrentPage()->renderFinal();

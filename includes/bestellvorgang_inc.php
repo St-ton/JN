@@ -2109,7 +2109,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             if (true === $bAnalizeCheck && true === $vViesResult['success']) {
                 // "all was fine"
                 $ret['ustid'] = 0;
-            } else {
+            } elseif(isset($vViesResult)) {
                 switch ($vViesResult['errortype']) {
                     case 'vies' :
                         // vies-error: the ID is invalid according to the VIES-system
@@ -3003,10 +3003,10 @@ function kuponMoeglich()
                 AND fMindestbestellwert <= " . $cart->gibGesamtsummeWaren(true, false) . "
                 AND (cKuponTyp = 'versandkupon'
                     OR cKuponTyp = 'standard')
-                AND (kKundengruppe = -1 
-                    OR kKundengruppe = 0 
+                AND (kKundengruppe = -1
+                    OR kKundengruppe = 0
                     OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
-                AND (nVerwendungen = 0 
+                AND (nVerwendungen = 0
                     OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' $Artikel_qry)
                 AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' $Hersteller_qry)

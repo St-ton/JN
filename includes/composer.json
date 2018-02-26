@@ -17,7 +17,8 @@
         "jtlshop/qrcodegenerator": "dev-master",
         "erusev/parsedown": "dev-master",
         "pclzip/pclzip": "^2.8",
-        "paragonie/random_compat": "~2.0"
+        "paragonie/random_compat": "~2.0",
+        "psr/container": "1.0.0"
     },
     "require-dev": {
         "phpunit/php-token-stream": "~1.2",
@@ -45,6 +46,9 @@
         }
     ],
     "autoload": {
-        "files": [ "vendor/jtlshop/shop4-systemcheck/lib/bootstrap.php" ]
+        "files": [ "vendor/jtlshop/shop4-systemcheck/lib/bootstrap.php" ],
+        "psr-4": {
+            "": "src/"
+        }
     }
 }

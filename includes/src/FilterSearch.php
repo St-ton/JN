@@ -235,7 +235,7 @@ class FilterSearch extends AbstractFilter
                 'DELETE 
                     FROM tsuchanfragencache 
                     WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)',
-                4
+                NiceDB::RET_AFFECTED_ROWS
             );
             if ($hits > 0) {
                 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
@@ -262,7 +262,7 @@ class FilterSearch extends AbstractFilter
                                 nAnzahlGesuche = nAnzahlGesuche+1, 
                                 dZuletztGesucht = now()
                             WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage,
-                        4
+                        NiceDB::RET_AFFECTED_ROWS
                     );
                 } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
                     Shop::DB()->delete(
@@ -297,7 +297,7 @@ class FilterSearch extends AbstractFilter
                                 dZuletztGesucht = now()
                             WHERE kSuchanfrageErfolglos = ' .
                             (int)$queryMiss_old->kSuchanfrageErfolglos,
-                        4
+                        NiceDB::RET_AFFECTED_ROWS
                     );
                 } else {
                     Shop::DB()->delete(
@@ -345,7 +345,7 @@ class FilterSearch extends AbstractFilter
                               HAVING COUNT(*) = ' . $count . '
                         ) AS jfSuche')
             ->setOn('jfSuche.kArtikel = tartikel.kArtikel')
-            ->setComment('JOIN1 from FilterSearch');
+            ->setComment('JOIN1 from ' . __METHOD__);
     }
 
     /**
@@ -366,19 +366,19 @@ class FilterSearch extends AbstractFilter
             $state  = $this->productFilter->getCurrentStateData();
 
             $state->joins[] = (new FilterJoin())
-                ->setComment('join1 from getSearchFilterOptions')
+                ->setComment('JOIN1 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tsuchcachetreffer')
                 ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
                 ->setOrigin(__CLASS__);
             $state->joins[] = (new FilterJoin())
-                ->setComment('join2 from getSearchFilterOptions')
+                ->setComment('JOIN2 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tsuchcache')
                 ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
                 ->setOrigin(__CLASS__);
             $state->joins[] = (new FilterJoin())
-                ->setComment('join3 from getSearchFilterOptions')
+                ->setComment('JOIN3 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tsuchanfrage')
                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 

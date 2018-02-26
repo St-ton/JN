@@ -25,7 +25,7 @@ if (auth()) {
     } else {
         $return = 0;
         if (count($syncFiles) === 1) {
-            $xmlFile = array_shift($list);
+            $xmlFile = array_shift($syncFiles);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog(
                     'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
@@ -35,8 +35,7 @@ if (auth()) {
                 );
             }
             $d   = file_get_contents($xmlFile);
-            $xml = XML_unserialize($d);
-            $res = bearbeite($xml);
+            $res = bearbeite(XML_unserialize($d));
         } else {
             $errMsg = 'Error : Es kann nur ein Kunde pro Aufruf verarbeitet werden!';
             Jtllog::writeLog($errMsg, JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');

@@ -44,25 +44,12 @@ if ($bJustCreated !== true && isset($_SESSION['oBesucher']->kBesucher) && $_SESS
         ? $_SESSION['Kunde']->kKunde
         : 0;
     // update the databse
-    Shop::DB()->executeQuery(
+    Shop::DB()->executeQueryPrepared(
         "INSERT INTO
             tbesucher(kBesucher, cIP, cSessID, cID, kKunde, kBestellung, cReferer, cUserAgent, cEinstiegsseite,
                 cBrowser, cAusstiegsseite, kBesucherBot, dLetzteAktivitaet, dZeit)
-            VALUES(
-                " . (int)$oVisitorReNew->kBesucher . ",
-                '" . $oVisitorReNew->cIP . "',
-                '" . $oVisitorReNew->cSessID . "',
-                '" . $oVisitorReNew->cID . "',
-                " . (int)$oVisitorReNew->kKunde . ",
-                " . (int)$oVisitorReNew->kBestellung . ",
-                '" . $oVisitorReNew->cReferer . "',
-                '" . $oVisitorReNew->cUserAgent . "',
-                '" . $oVisitorReNew->cEinstiegsseite . "',
-                '" . $oVisitorReNew->cBrowser . "',
-                '" . $oVisitorReNew->cAusstiegsseite . "',
-                " . (int)$oVisitorReNew->kBesucherBot . ",
-                " . $oVisitorReNew->dLetzteAktivitaet . ",
-                " . $oVisitorReNew->dZeit . "
+            VALUES(:_kBesucher, :_cIP, :_cSessID, :_cID, :_kKunde, :_kBestellung, :_cReferer, :_cUserAgent,
+                :_cEinstiegsseite, :_cBrowser, :_cAusstiegsseite, :_kBesucherBot, :_dLetzteAktivitaet, :_dZeit
             )
             ON DUPLICATE KEY UPDATE
                 cIP = VALUES(cIP), cSessID = VALUES(cSessID), cID = VALUES(cID), kKunde = VALUES(kKunde),
@@ -70,7 +57,17 @@ if ($bJustCreated !== true && isset($_SESSION['oBesucher']->kBesucher) && $_SESS
                 cEinstiegsseite = VALUES(cEinstiegsseite), cBrowser = VALUES(cBrowser),
                 cAusstiegsseite = VALUES(cAusstiegsseite), kBesucherBot = VALUES(kBesucherBot),
                 dLetzteAktivitaet = VALUES(dLetzteAktivitaet), dZeit = VALUES(dZeit)
-        ;", 3);
+        ;",
+        [
+            "_kBesucher" => (int)$oVisitorReNew->kBesucher, "_cIP" => $oVisitorReNew->cIP,
+            "_cSessID" => $oVisitorReNew->cSessID, "_cID" => $oVisitorReNew->cID,
+            "_kKunde" => (int)$oVisitorReNew->kKunde, "_kBestellung" => (int)$oVisitorReNew->kBestellung,
+            "_cReferer" => $oVisitorReNew->cReferer, "_cUserAgent" => $oVisitorReNew->cUserAgent,
+            "_cEinstiegsseite" => $oVisitorReNew->cEinstiegsseite, "_cBrowser" => $oVisitorReNew->cBrowser,
+            "_cAusstiegsseite" => $oVisitorReNew->cAusstiegsseite, "_kBesucherBot" => (int)$oVisitorReNew->kBesucherBot,
+            "_dLetzteAktivitaet" => $oVisitorReNew->dLetzteAktivitaet, "_dZeit" => $oVisitorReNew->dZeit
+        ],
+        3);
 }
 
 /**
@@ -135,10 +132,13 @@ function restoreVisitorEntry($szUserAgent, $kBesucherBot)
  */
 function refreshCustomerOrderId($nCustomerId)
 {
-    $oOrder = Shop::DB()->query('
-        SELECT `kBestellung` FROM `tbestellung` WHERE `kKunde` = ' . $nCustomerId . '
-        ORDER BY `dErstellt` DESC LIMIT 1'
-    , 1);
+    $oOrder = Shop::DB()->queryPrepared('
+        SELECT `kBestellung` FROM `tbestellung` WHERE `kKunde` = :_nCustomerId
+        ORDER BY `dErstellt` DESC LIMIT 1',
+    [
+        '_nCustomerId' => $nCustomerId
+    ],
+    1);
 
     return $oOrder->kBestellung;
 }

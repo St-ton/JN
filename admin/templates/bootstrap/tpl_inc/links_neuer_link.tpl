@@ -29,34 +29,8 @@
                 $('#option_isActive select').val(1);
             }
         }).trigger('change');
-
-        $('#content_template_type ul li a').click(function () {
-            $('#content_template_type ul li a').parent().removeClass('active');
-            $(this).parent().addClass('active');
-
-            var tpl = $(this).parent().attr('rel');
-            if (tpl.length === 0)
-                tpl = 'default';
-
-            xajax_getContentTemplate(tpl);
-
-            return false;
-        });
     });
 
-    function link_dynamic_init() {
-        $('.ckeditor_dyn').each(function (idx, item) {
-            set_editor($(item).attr('id'));
-        });
-    }
-
-    function set_editor(id) {
-        var instance = CKEDITOR.instances[id];
-        if (instance) {
-            CKEDITOR.remove(instance);
-        }
-        CKEDITOR.replace(id);
-    }
     {/literal}
 </script>
 {if isset($Link->kLink) && isset($Link->cName)}

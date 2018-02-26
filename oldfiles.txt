@@ -17,4 +17,4 @@ includes/ext/class.JTL-Shop.RMAGrund.php
 includes/ext/class.JTL-Shop.RMAStatus.php
 includes/ext/class.JTL-Shop.Upload.php
 includes/ext/class.JTL-Shop.UploadDatei.php
-includes/ext/class.JTL-Shop.UploadSchema.phpincludes/ext/
+includes/ext/class.JTL-Shop.UploadSchema.php

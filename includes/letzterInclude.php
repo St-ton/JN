@@ -169,7 +169,6 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('Suchergebnisse', isset($oSuchergebnisse) ? $oSuchergebnisse : new ProductFilterSearchResults());
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 // Kampagnen
 pruefeKampagnenParameter();

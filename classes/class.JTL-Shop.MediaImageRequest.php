@@ -80,7 +80,7 @@ class MediaImageRequest
             unset($mixed->$property);
         }
         unset($value);
-        $mixed = (unset) $mixed;
+        $mixed = null;
 
         return $new;
     }

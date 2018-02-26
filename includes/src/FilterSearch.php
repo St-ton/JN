@@ -13,8 +13,9 @@ class FilterSearch extends AbstractFilter
 
     /**
      * @var int
+     * @former kSuchCache
      */
-    public $kSuchCache = 0;
+    private $searchCacheID = 0;
 
     /**
      * @var string
@@ -52,6 +53,25 @@ class FilterSearch extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('sf')
              ->setUrlParamSEO(null);
+    }
+
+    /**
+     * @return int
+     */
+    public function getSearchCacheID()
+    {
+        return $this->searchCacheID;
+    }
+
+    /**
+     * @param int $id
+     * @return $this
+     */
+    public function setSearchCacheID($id)
+    {
+        $this->searchCacheID = (int)$id;
+
+        return $this;
     }
 
     /**
@@ -327,8 +347,8 @@ class FilterSearch extends AbstractFilter
                 /** @var FilterSearch $f */
                 return $f->getValue();
             }, $searchFilter);
-        } elseif ($searchFilter->kSuchCache > 0) {
-            $searchCache[] = (int)$searchFilter->kSuchCache;
+        } elseif ($searchFilter->getSearchCacheID() > 0) {
+            $searchCache[] = $searchFilter->getSearchCacheID();
             $count         = 1;
         } elseif (($value = $searchFilter->getValue()) > 0) {
             $searchCache = [$value];

@@ -763,10 +763,10 @@ class ProductFilter
             // Suchcache beachten / erstellen
             $searchName = $this->search->getName();
             if (!empty($searchName)) {
-                $this->search->kSuchCache = $this->searchQuery->editSearchCache();
-                $this->searchQuery->init($oSuchanfrage->kSuchanfrage);
-                $this->searchQuery->kSuchCache = $this->search->kSuchCache;
-                $this->searchQuery->setName($this->search->getName());
+                $this->search->setSearchCacheID($this->searchQuery->editSearchCache());
+                $this->searchQuery->init($oSuchanfrage->kSuchanfrage)
+                                  ->setSearchCacheID($this->search->getSearchCacheID())
+                                  ->setName($this->search->getName());
                 if (!$this->baseState->isInitialized()) {
                     $this->baseState = $this->searchQuery;
                 }
@@ -787,9 +787,10 @@ class ProductFilter
             $kSuchAnfrage                  = isset($oSuchanfrage->kSuchanfrage)
                 ? (int)$oSuchanfrage->kSuchanfrage
                 : $params['kSuchanfrage'];
-            $this->search->kSuchCache      = $kSuchCache;
-            $this->searchQuery->kSuchCache = $kSuchCache;
-            $this->searchQuery->init($kSuchAnfrage)->setName($params['cSuche']);
+            $this->search->setSearchCacheID($kSuchCache);
+            $this->searchQuery->setSearchCacheID($kSuchCache)
+                              ->init($kSuchAnfrage)
+                              ->setName($params['cSuche']);
             $this->EchteSuche          = new stdClass();
             $this->EchteSuche->cSuche  = $params['cSuche'];
             if (!$this->baseState->isInitialized()) {

@@ -1358,7 +1358,7 @@ class Metadata
             $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         }
         // Eine Suche wurde ausgeführt und die Suche wird auf die Suchtreffersuche eingestellt
-        if (!isset($_SESSION['nUsersortierungWahl']) && $this->productFilter->getSearch()->kSuchCache > 0) {
+        if (!isset($_SESSION['nUsersortierungWahl']) && $this->productFilter->getSearch()->getSearchCacheID() > 0) {
             // nur bei initialsuche Sortierung zurücksetzen
             $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
             $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;

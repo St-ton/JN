@@ -16,6 +16,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     private static $mapping = [
         'kSuchanfrage' => 'ID',
+        'kSuchcache'   => 'SearchCacheID',
         'cSuche'       => 'Name',
         'Fehler'       => 'Error'
     ];
@@ -28,8 +29,9 @@ class FilterBaseSearchQuery extends AbstractFilter
 
     /**
      * @var int
+     * @former kSuchCache
      */
-    public $kSuchCache = 0;
+    private $searchCacheID = 0;
 
     /**
      * @var string
@@ -47,6 +49,25 @@ class FilterBaseSearchQuery extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('suche')
              ->setUrlParamSEO(null);
+    }
+
+    /**
+     * @return int
+     */
+    public function getSearchCacheID()
+    {
+        return $this->searchCacheID;
+    }
+
+    /**
+     * @param int $id
+     * @return $this
+     */
+    public function setSearchCacheID($id)
+    {
+        $this->searchCacheID = (int)$id;
+
+        return $this;
     }
 
     /**
@@ -206,12 +227,12 @@ class FilterBaseSearchQuery extends AbstractFilter
         if (is_array($searchFilter)) {
             $count = count($searchFilter);
             foreach ($searchFilter as $oSuchFilter) {
-                if (isset($oSuchFilter->kSuchCache)) {
-                    $kSucheCache_arr[] = (int)$oSuchFilter->kSuchCache;
+                if ($oSuchFilter->getSearchCacheID() > 0) {
+                    $kSucheCache_arr[] = $oSuchFilter->getSearchCacheID();
                 }
             }
-        } elseif (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0) {
-            $kSucheCache_arr[] = (int)$searchFilter->kSuchCache;
+        } elseif ($searchFilter->getSearchCacheID() > 0) {
+            $kSucheCache_arr[] = $searchFilter->getSearchCacheID();
             $count             = 1;
         } else {
             $kSucheCache_arr = [$searchFilter->getValue()];

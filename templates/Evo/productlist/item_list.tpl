@@ -43,7 +43,8 @@
                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
                     <div class="media hidden-xs top0 bottom5">
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
-                        || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B') && !empty($Artikel->cHerstellerBildKlein)}
+                            || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B')
+                            && !empty($Artikel->cHerstellerBildKlein)}
                             <div class="media-left">
                                 {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
                                     <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
@@ -51,7 +52,7 @@
                             </div>
                         {/if}
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
-                        || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
+                            || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
                             <div class="media-body">
                                 <span class="small text-uppercase">
                                     {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
@@ -80,13 +81,13 @@
                                 <span class="attr-label col-sm-5">{lang key="productMHD" section="global"}: </span> <span class="value col-sm-7">{$Artikel->dMHD_de}</span>
                             </li>
                         {/if}
-                        {if isset($Artikel->cGewicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && $Artikel->fGewicht > 0}
+                        {if $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && isset($Artikel->cGewicht) && $Artikel->fGewicht > 0}
                             <li class="item row attr-weight">
                                 <span class="attr-label col-sm-5">{lang key="shippingWeight" section="global"}: </span>
                                 <span class="value col-sm-7">{$Artikel->cGewicht} {lang key="weightUnit" section="global"}</span>
                             </li>
                         {/if}
-                        {if isset($Artikel->cArtikelgewicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && $Artikel->fArtikelgewicht > 0}
+                        {if $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && isset($Artikel->cArtikelgewicht) && $Artikel->fArtikelgewicht > 0}
                             <li class="item row attr-weight weight-unit-article hidden-sm">
                                 <span class="attr-label col-sm-5">{lang key="productWeight" section="global"}: </span>
                                 <span class="value col-sm-7">{$Artikel->cArtikelgewicht} {lang key="weightUnit" section="global"}</span>
@@ -98,7 +99,7 @@
                                 <span class="value col-sm-7">{$Artikel->fAbnahmeintervall} {$Artikel->cEinheit}</span>
                             </li>
                         {/if}
-                        {if count($Artikel->Variationen)>0}
+                        {if count($Artikel->Variationen) > 0}
                             <li class="item row attr-variations">
                                 <span class="attr-label col-sm-5">{lang key="variationsIn" section="productOverview"}: </span>
                                 <span class="value-group col-sm-7">{foreach name=variationen from=$Artikel->Variationen item=Variation}{if !$smarty.foreach.variationen.first}, {/if}
@@ -106,7 +107,7 @@
                             </li>
                         {/if}
                     </ul>{* /attr-group *}
-                    {if $Artikel->oVariationKombiVorschau_arr|@count > 0 && $Artikel->oVariationKombiVorschau_arr && $Einstellungen.artikeluebersicht.artikeluebersicht_varikombi_anzahl > 0}
+                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_varikombi_anzahl > 0 && $Artikel->oVariationKombiVorschau_arr !== null && $Artikel->oVariationKombiVorschau_arr|@count > 0}
                         <div class="varikombis-thumbs hidden-md hidden-sm">
                             {foreach name=varikombis from=$Artikel->oVariationKombiVorschau_arr item=oVariationKombiVorschau}
                                 <a href="{$oVariationKombiVorschau->cURL}" class="thumbnail pull-left"><img src="{$oVariationKombiVorschau->cBildMini}" alt="" /></a>
@@ -135,19 +136,24 @@
                                 {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar === 1}
                                     <div class="attr attr-preorder"><small class="value">{lang key="preorderPossible" section="global"}</small></div>
                                 {/if}
-                            {elseif $anzeige !== 'nichts' &&
-                                $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N' &&
-                                $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' ||
-                                $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U') &&
-                                $Artikel->fLagerbestand <= 0 && $Artikel->fZulauf > 0 && isset($Artikel->dZulaufDatum_de)}
+                            {elseif $anzeige !== 'nichts'
+                                && $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N'
+                                && $Artikel->cLagerBeachten === 'Y'
+                                && ($Artikel->cLagerKleinerNull === 'N'
+                                    || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')
+                                && $Artikel->fLagerbestand <= 0
+                                && $Artikel->fZulauf > 0
+                                && isset($Artikel->dZulaufDatum_de)}
                                 {assign var=cZulauf value=$Artikel->fZulauf|cat:':::'|cat:$Artikel->dZulaufDatum_de}
                                 <div class="signal_image status-1"><small>{lang key="productInflowing" section="productDetails" printf=$cZulauf}</small></div>
-                            {elseif $anzeige !== 'nichts' &&
-                                $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N' &&
-                                $Artikel->cLagerBeachten === 'Y' && $Artikel->fLagerbestand <= 0 &&
-                                $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
-                                ($Artikel->cLagerKleinerNull === 'N' ||
-                                $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
+                            {elseif $anzeige !== 'nichts'
+                                && $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N'
+                                && $Artikel->cLagerBeachten === 'Y'
+                                && $Artikel->fLagerbestand <= 0
+                                && $Artikel->fLieferantenlagerbestand > 0
+                                && $Artikel->fLieferzeit > 0
+                                && ($Artikel->cLagerKleinerNull === 'N'
+                                    || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
                                 <div class="signal_image status-1"><small>{lang key="supplierStockNotice" section="global" printf=$Artikel->fLieferzeit}</small></div>
                             {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
                                 <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</small></div>
@@ -203,9 +209,8 @@
                             {/if}
                             <div class="hidden-xs basket-details">
                                 {block name="basket-details"}
-                                    {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) &&
-                                        (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig
-                                    }
+                                    {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
+                                        && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig}
                                         <div class="quantity-wrapper form-group top7">
                                             {if $Artikel->nIstVater && $Artikel->kVaterArtikel == 0}
                                                 <p class="alert alert-info choose-variations">{lang key="chooseVariations" section="messages"}</p>

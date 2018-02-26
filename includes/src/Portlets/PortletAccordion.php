@@ -140,7 +140,7 @@ class PortletAccordion extends \CMSPortlet
                             <div class="panel-body cle-area">';
             $subArea = $this->subAreas[$i];
             foreach ($subArea as $subPortlet) {
-                $portlet        = \CMS::getInstance()->createPortlet($subPortlet['portletId'])
+                $portlet        = \OPC::getInstance()->createPortlet($subPortlet['portletId'])
                     ->setProperties($subPortlet['properties'])
                     ->setSubAreas($subPortlet['subAreas']);
                 $subPortletHtml = $portlet->getFinalHtml();

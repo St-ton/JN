@@ -15,7 +15,7 @@ if (!$oAccount->getIsAuthenticated()) {
 
 $jsonApi             = JSONAPI::getInstance();
 $io                  = AdminIO::getInstance()->setAccount($oAccount);
-$cms                 = CMS::getInstance()->setAdminAccount($oAccount);
+$cms                 = OPC::getInstance()->setAdminAccount($oAccount);
 $dashboardInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 $accountInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 $bannerInc           = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';

@@ -50,7 +50,7 @@ class PortletPanel extends \CMSPortlet
             $ret    .= '<div class="panel-heading cle-area">';
 
             foreach ($subArea as $subPortlet) {
-                $portlet        = \CMS::getInstance()->createPortlet($subPortlet['portletId'])
+                $portlet        = \OPC::getInstance()->createPortlet($subPortlet['portletId'])
                     ->setProperties($subPortlet['properties'])
                     ->setSubAreas($subPortlet['subAreas']);
                 $subPortletHtml = $portlet->getFinalHtml();
@@ -64,7 +64,7 @@ class PortletPanel extends \CMSPortlet
         $subArea = $this->subAreas[$i];
 
         foreach ($subArea as $subPortlet) {
-            $portlet        = \CMS::getInstance()->createPortlet($subPortlet['portletId'])
+            $portlet        = \OPC::getInstance()->createPortlet($subPortlet['portletId'])
                 ->setProperties($subPortlet['properties'])
                 ->setSubAreas($subPortlet['subAreas']);
             $subPortletHtml = $portlet->getFinalHtml();
@@ -79,7 +79,7 @@ class PortletPanel extends \CMSPortlet
             $ret    .= '<div class="panel-footer cle-area">';
 
             foreach ($subArea as $subPortlet) {
-                $portlet        = \CMS::getInstance()->createPortlet($subPortlet['portletId'])
+                $portlet        = \OPC::getInstance()->createPortlet($subPortlet['portletId'])
                     ->setProperties($subPortlet['properties'])
                     ->setSubAreas($subPortlet['subAreas']);
                 $subPortletHtml = $portlet->getFinalHtml();

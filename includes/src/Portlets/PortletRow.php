@@ -128,7 +128,7 @@ class PortletRow extends \CMSPortlet
             }
             $res .= '">';
             foreach ($subArea as $subPortlet) {
-                $portlet        = \CMS::getInstance()->createPortlet($subPortlet['portletId'])
+                $portlet        = \OPC::getInstance()->createPortlet($subPortlet['portletId'])
                     ->setProperties($subPortlet['properties'])
                     ->setSubAreas($subPortlet['subAreas']);
                 $subPortletHtml = $portlet->getFinalHtml();

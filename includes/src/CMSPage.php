@@ -87,7 +87,7 @@ class CMSPage
 
             foreach ($areaPortlets as $portlet) {
                 try {
-                    $cHtml .= CMS::getInstance()->createPortlet($portlet['portletId'])
+                    $cHtml .= OPC::getInstance()->createPortlet($portlet['portletId'])
                         ->setProperties($portlet['properties'])
                         ->setSubAreas($portlet['subAreas'])
                         ->getFinalHtml();
@@ -114,7 +114,7 @@ class CMSPage
 
             foreach ($areaPortlets as $portlet) {
                 try {
-                    $cHtml .= CMS::getInstance()->createPortlet($portlet['portletId'])
+                    $cHtml .= OPC::getInstance()->createPortlet($portlet['portletId'])
                         ->setProperties($portlet['properties'])
                         ->setSubAreas($portlet['subAreas'])
                         ->getFullPreviewHtml();
@@ -131,7 +131,7 @@ class CMSPage
     }
 
     /**
-     * Save this CMS page instance to the database
+     * Save this OPC page instance to the database
      */
     public function save()
     {
@@ -168,7 +168,7 @@ class CMSPage
     }
 
     /**
-     * Remove this CMS page instance from the database
+     * Remove this OPC page instance from the database
      */
     public function remove()
     {

@@ -48,7 +48,7 @@ class CMSTemplate
     public function getFullPreviewHtml()
     {
         try {
-            return CMS::getInstance()
+            return OPC::getInstance()
                 ->createPortlet($this->data['portletId'])
                 ->setProperties($this->data['properties'])
                 ->setSubAreas($this->data['subAreas'])
@@ -67,7 +67,7 @@ class CMSTemplate
     }
 
     /**
-     * Save this CMS Template to the database
+     * Save this OPC Template to the database
      */
     public function save()
     {

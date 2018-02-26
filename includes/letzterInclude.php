@@ -172,7 +172,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 
-$oCMSPage = CMS::getInstance()->getCurrentPage()->renderFinal();
+$oCMSPage = OPC::getInstance()->getCurrentPage()->renderFinal();
 $smarty->assign('oCMSPage', $oCMSPage);
 $smarty->assign('cCmsPageIdHash', $oCMSPage->cIdHash);
 

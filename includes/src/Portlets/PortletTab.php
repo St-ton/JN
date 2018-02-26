@@ -77,7 +77,7 @@ class PortletTab extends \CMSPortlet
             }
             $res .= ' cle-area" id="prtlt_tb_' . $tab . '">';
             foreach ($subArea as $subPortlet) {
-                $portlet        = \CMS::getInstance()->createPortlet($subPortlet['portletId'])
+                $portlet        = \OPC::getInstance()->createPortlet($subPortlet['portletId'])
                     ->setProperties($subPortlet['properties'])
                     ->setSubAreas($subPortlet['subAreas']);
                 $subPortletHtml = $portlet->getFinalHtml();

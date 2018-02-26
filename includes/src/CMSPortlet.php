@@ -112,7 +112,7 @@ abstract class CMSPortlet
 
             foreach ($areaPortlets as $areaPortlet) {
                 try {
-                    $subhtml       = CMS::getInstance()
+                    $subhtml       = OPC::getInstance()
                         ->createPortlet($areaPortlet['portletId'])
                         ->setProperties($areaPortlet['properties'])
                         ->setSubAreas($areaPortlet['subAreas'])

@@ -15,7 +15,7 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
 $cHinweis      = '';
 $cFehler       = '';
-$oCMS          = CMS::getInstance()->setAdminAccount($oAccount);
+$oCMS          = OPC::getInstance()->setAdminAccount($oAccount);
 $oCMSPage      = null;
 $oPortlet_arr  = $oCMS->getPortlets();
 $oTemplate_arr = $oCMS->getTemplates();

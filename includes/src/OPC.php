@@ -5,12 +5,12 @@
  */
 
 /**
- * Class CMS
+ * Class OPC
  */
-class CMS
+class OPC
 {
     /**
-     * @var CMS
+     * @var OPC
      */
     private static $instance = null;
 
@@ -30,7 +30,7 @@ class CMS
     public $oAccount = null;
 
     /**
-     * CMS constructor initializes the current page id hash
+     * OPC constructor initializes the current page id hash
      */
     private function __construct()
     {
@@ -40,7 +40,7 @@ class CMS
     }
 
     /**
-     * @return CMS
+     * @return OPC
      */
     public static function getInstance()
     {

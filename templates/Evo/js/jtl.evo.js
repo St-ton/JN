@@ -121,6 +121,9 @@
             $('.row-eq-height.gallery > [class*="col-"]').each(function(i, e) {
                 $(e).height($('div', $(e)).outerHeight());
             });
+            $('#product-list .product-wrapper').each(function(i,e) {
+                $(e).height($('div', $(e)).outerHeight());
+            })
         },
         
         tooltips: function() {

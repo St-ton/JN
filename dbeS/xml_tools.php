@@ -30,36 +30,35 @@ function XML_unserialize(&$xml, $cEncoding = 'UTF-8')
  * serializes any PHP data structure into XML
  * Takes one parameter: the data to serialize. Must be an array.
  *
- * @param mixed $data
+ * @param array $data
  * @param int   $level
  * @param null  $prior_key
  * @return string
  */
 function XML_serialize(&$data, $level = 0, $prior_key = null)
 {
-    if ($level == 0) {
+    if ($level === 0) {
         ob_start();
         echo '<?xml version="1.0" ?>', "\n";
     }
-    while (list($key, $value) = each($data)) {
-        if (!strpos($key, ' attr')) #if it's not an attribute
-            #we don't treat attributes by themselves, so for an empty element
-            # that has attributes you still need to set the element to NULL
-
+    foreach ($data as $key => $value) {
+        if (!strpos($key, ' attr')) //if it's not an attribute
+            // we don't treat attributes by themselves, so for an empty element
+            // that has attributes you still need to set the element to NULL
         {
             if (is_array($value) && array_key_exists(0, $value)) {
                 XML_serialize($value, $level, $key);
             } else {
                 $tag = $prior_key ?: $key;
                 echo str_repeat("\t", $level), '<', $tag;
-                if (array_key_exists("$key attr", $data)) { #if there's an attribute for this element
-                    while (list($attr_name, $attr_value) = each($data["$key attr"])) {
+                if (array_key_exists("$key attr", $data)) { // if there's an attribute for this element
+                    foreach($data["$key attr"] as $attr_name => $attr_value) {
                         echo ' ', $attr_name, '="', StringHandler::htmlspecialchars($attr_value), '"';
                     }
                     reset($data["$key attr"]);
                 }
 
-                if (is_null($value)) {
+                if ($value === null) {
                     echo " />\n";
                 } elseif (!is_array($value)) {
                     echo '>', StringHandler::htmlspecialchars($value), "</$tag>\n";
@@ -70,7 +69,7 @@ function XML_serialize(&$data, $level = 0, $prior_key = null)
         }
     }
     reset($data);
-    if ($level == 0) {
+    if ($level === 0) {
         $str = ob_get_contents();
         ob_end_clean();
 

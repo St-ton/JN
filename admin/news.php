@@ -243,7 +243,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                         //check if image exists and delete
                         foreach ($oAlteBilder_arr as $oBild) {
                             if (strpos($oBild->cDatei, 'Bild' . ($i + 1) . '.') !== false
-                                && $_FILES['Bilder']['name'][$i - $nZaehler] != ''
+                                && $_FILES['Bilder']['name'][$i - $nZaehler] !== ''
                             ) {
                                 loescheNewsBild($oBild->cName, $kNews, $cUploadVerzeichnis);
                             }

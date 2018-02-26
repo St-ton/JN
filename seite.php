@@ -8,9 +8,9 @@ if (!defined('PFAD_ROOT')) {
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
-$smarty = Shop::Smarty();
-$AktuelleSeite = 'SEITE';
-$Einstellungen = Shop::getSettings([
+$smarty                 = Shop::Smarty();
+$AktuelleSeite          = 'SEITE';
+$Einstellungen          = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -22,7 +22,6 @@ $Einstellungen = Shop::getSettings([
     CONF_CACHING,
     CONF_METAANGABEN
 ]);
-// hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();

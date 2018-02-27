@@ -3252,7 +3252,8 @@ class Artikel
                         $nLastkArtikel = $oVariationDetailPreis->kArtikel;
                         $oArtikelTMP   = new self();
                         $oArtikelTMP->getPriceData($oVariationDetailPreis->kArtikel, $kKundengruppe);
-//                        $oArtikelTMP->fuelleArtikel($oVariationDetailPreis->kArtikel, $oArtikelOptionenTMP, $kKundengruppe, $kSprache);
+                        // SHOP-2180
+                        // $oArtikelTMP->fuelleArtikel($oVariationDetailPreis->kArtikel, $oArtikelOptionenTMP, $kKundengruppe, $kSprache);
                     }
                     $nGenauigkeit = 2;
                     if (!isset($this->oVariationDetailPreis_arr[$oVariationDetailPreis->kEigenschaftWert])) {

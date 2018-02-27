@@ -11,35 +11,24 @@
             <div class="panel-heading">
                 <h5 class="panel-title"><i class="fa fa-tasks"></i> {lang key="compare" section="global"}</h5>
             </div>{* /panel-heading *}
-            <table class="table vtable">
-                {foreach name=vergleich from=$from item=oArtikel}
-                    {if $smarty.foreach.vergleich.iteration <= $nAnzahl}
-                        <tr class="item" data-id="{$oArtikel->kArtikel}">
-                            <td>
-                                <a href="{$oArtikel->cURLFull}" class="image">
-                                    <img src="{$oArtikel->Bilder[0]->cURLMini}"
-                                        alt="{$oArtikel->cName|strip_tags|truncate:60|escape:"html"}"
-                                        class="img-xs"/>
-                                </a><br>
-                            </td>
-                            <td>
-                                <a href="{$oArtikel->cURLFull}" class="name">{$oArtikel->cName|truncate:25:"..."}</a>
-                            </td>
-                            <td class="text-right">
-                                <a href="{$oArtikel->cURLDEL}" class="remove pull-right"
-                                   data-name="Vergleichsliste.remove" data-toggle="product-actions"
-                                   data-value='{ldelim}"a":{$oArtikel->kArtikel}{rdelim}'>
-                                    <span class="fa fa-trash-o"></span>
+            <div class="panel-body">
+                <ul class="list-unstyled">
+                    {foreach name=vergleich from=$from item=oArtikel}
+                        {if $smarty.foreach.vergleich.iteration <= $nAnzahl}
+                            <li data-id="{$oArtikel->kArtikel}">
+                                <a href="{$oArtikel->cURLDEL}" class="remove pull-right" data-name="Vergleichsliste.remove" data-toggle="product-actions" data-value='{ldelim}"a":{$oArtikel->kArtikel}{rdelim}'><span class="fa fa-trash-o"></span></a>
+                                <a href="{$oArtikel->cURLFull}">
+                                    <img src="{$oArtikel->Bilder[0]->cURLMini}" alt="{$oArtikel->cName|strip_tags|truncate:60|escape:"html"}" class="img-xs" />
+                                    {$oArtikel->cName|truncate:25:"..."}
                                 </a>
-                            </td>
-                        </tr>
-                    {/if}
-                {/foreach}
-            </table>
-            <div class="panel-body{if count($from) <= 1} hidden{/if}">
-                <a class="btn btn-default btn-sm btn-block{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"
-                    href="{get_static_route id='vergleichsliste.php'}"{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'}
-                    target="_blank"{/if}>{lang key="gotToCompare" section="global"}</a>
+                            </li>
+                        {/if}
+                    {/foreach}
+                </ul>
+                {if count($from) > 1}
+                    <hr>
+                    <a class="btn btn-default btn-sm btn-block{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}" href="{get_static_route id='vergleichsliste.php'}"{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'} target="_blank"{/if}>{lang key="gotToCompare" section="global"}</a>
+                {/if}
             </div>
         </section>
     {/if}

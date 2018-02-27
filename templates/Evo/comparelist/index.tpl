@@ -248,12 +248,13 @@
             });
             new function(){
                 var clCount = {if isset($oVergleichsliste->oArtikel_arr)}{$oVergleichsliste->oArtikel_arr|count}{else}0{/if};
+                $('.navbar-nav .compare-list-menu .badge em').html(clCount);
                 if (clCount > 1) {
                     $('section.box-compare .panel-body').removeClass('hidden');
                 } else {
+                    $('.navbar-nav .compare-list-menu .link_to_comparelist').removeAttr('href').removeClass('popup');
                     eModal.close();
                 }
-                $('.navbar-nav .compare-list-menu .badge em').html(clCount);
             }();
         </script>
     {/if}

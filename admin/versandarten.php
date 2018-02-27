@@ -71,7 +71,7 @@ if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && validateToken()) {
             LEFT JOIN tversandzuschlagsprache 
               ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
             WHERE tversandzuschlag.kVersandzuschlag = :kVersandzuschlag",
-        $_GET['delzus'],
+        ['kVersandzuschlag' => $_GET['delzus']],
         4
     );
     Shop::DB()->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
@@ -141,10 +141,10 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                         AND tversandzuschlag.cISO = :iso
                         AND tversandzuschlag.kVersandart = :kVersandart',
                 [
-                    'plz' => $ZuschlagPLZ->cPLZ,
+                    'plz'              => $ZuschlagPLZ->cPLZ,
                     'kVersandzuschlag' => $ZuschlagPLZ->kVersandzuschlag,
-                    'iso' => $versandzuschlag->cISO,
-                    'kVersandart' => $versandzuschlag->kVersandart,
+                    'iso'              => $versandzuschlag->cISO,
+                    'kVersandart'      => $versandzuschlag->kVersandart,
                 ],
                 1
             );
@@ -163,11 +163,11 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                         AND tversandzuschlag.cISO = :iso
                         AND tversandzuschlag.kVersandart = :kVersandart',
                 [
-                    'plzAb' => $ZuschlagPLZ->cPLZAb,
-                    'plzBis' => $ZuschlagPLZ->cPLZBis,
+                    'plzAb'            => $ZuschlagPLZ->cPLZAb,
+                    'plzBis'           => $ZuschlagPLZ->cPLZBis,
                     'kVersandzuschlag' => $ZuschlagPLZ->kVersandzuschlag,
-                    'iso' => $versandzuschlag->cISO,
-                    'kVersandart' => $versandzuschlag->kVersandart,
+                    'iso'              => $versandzuschlag->cISO,
+                    'kVersandart'      => $versandzuschlag->kVersandart,
                 ],
                 1
             );

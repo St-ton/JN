@@ -7,7 +7,7 @@
 {if isset($wishlistItems)}
     <section class="panel panel-default box box-wishlist" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
-            <h5 class="panel-title">{lang key="wishlist" section="global"}</h5>
+            <h5 class="panel-title"><i class="fa fa-heart"></i> {lang key="wishlist" section="global"}</h5>
         </div>
         <div class="panel-body">
             {if isset($Boxen.Wunschliste->nAnzeigen)}

@@ -17,5 +17,5 @@
     {else}
         {lang key="specialOffer" section="global" assign='slidertitle'}
     {/if}
-    {include file='snippets/product_slider.tpl' id='boxslider-topoffer' productlist=$specialOfferArticles title=$slidertitle tplscope='box' moreLink=$moreLink moreTitle=$moreTitle}
+    {include file='snippets/product_slider.tpl' id='boxslider-special-offer' productlist=$specialOfferArticles title=$slidertitle tplscope='box' moreLink=$moreLink moreTitle=$moreTitle}
 {/if}

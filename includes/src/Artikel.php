@@ -3305,7 +3305,8 @@ class Artikel
             if ($varDetailPrice->kArtikel !== $nLastkArtikel) {
                 $nLastkArtikel = $varDetailPrice->kArtikel;
                 $oArtikelTMP   = new self();
-                $oArtikelTMP->fuelleArtikel($varDetailPrice->kArtikel, $oArtikelOptionenTMP, $kKundengruppe, $kSprache);
+//                $oArtikelTMP->fuelleArtikel($varDetailPrice->kArtikel, $oArtikelOptionenTMP, $kKundengruppe, $kSprache);
+                $oArtikelTMP->fillMinimal($varDetailPrice->kArtikel, $kKundengruppe);
             }
             if (!isset($this->oVariationDetailPreis_arr[$idx])) {
                 $this->oVariationDetailPreis_arr[$idx] = new stdClass();
@@ -3774,7 +3775,7 @@ class Artikel
                     AND teinheit.kSprache = " . $kSprache . "
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe=" . $kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                 LEFT JOIN tversandklasse 
                     ON tversandklasse.kVersandklasse = tartikel.kVersandklasse
                 LEFT JOIN tmasseinheit me ON me.kMassEinheit = tartikel.kMassEinheit
@@ -3789,7 +3790,6 @@ class Artikel
                 WHERE tartikel.kArtikel = " . $kArtikel . "
                     " . $cSichbarkeitSQL . "
                     " . $cLagerbestandSQL;
-
         $oArtikelTMP = Shop::DB()->query($productSQL, NiceDB::RET_SINGLE_OBJECT);
         if ($oArtikelTMP === false || $oArtikelTMP === null) {
             $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $kArtikel, CACHING_GROUP_ARTICLE];
@@ -4265,6 +4265,32 @@ class Artikel
             // restore oVariationKombiKinderAssoc_arr and Preise to class instance
             $this->oVariationKombiKinderAssoc_arr = $children;
             $this->Preise                         = $newPrice;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param int $kArtikel
+     * @param int $kKundengruppe
+     * @return array|int|object
+     */
+    public function fillMinimal($kArtikel, $kKundengruppe)
+    {
+        $productSQL = "SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse, 
+                tartikel.fPackeinheit, tartikel.cVPE, tartikel.fVPEWert, tartikel.cVPEEinheit
+                FROM tartikel 
+                LEFT JOIN tartikelsichtbarkeit 
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL AND tartikel.kArtikel = " . $kArtikel;
+        $oArtikelTMP = Shop::DB()->query($productSQL, NiceDB::RET_SINGLE_OBJECT);
+
+        if ($oArtikelTMP !== null) {
+            foreach (get_object_vars($oArtikelTMP) as $k => $v) {
+                $this->$k = $v;
+            }
+            $this->holPreise($kKundengruppe, $this);
         }
 
         return $this;

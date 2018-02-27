@@ -4249,7 +4249,8 @@ class Artikel
             foreach (get_object_vars($oArtikelTMP) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->holPreise($kKundengruppe, $this)->rabattierePreise($kKundengruppe);
+            $this->holPreise($kKundengruppe, $this)
+                 ->rabattierePreise($kKundengruppe);
         }
 
         return $this;

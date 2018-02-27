@@ -60,7 +60,7 @@ class OPCPage
     public function __construct($kPage = 0)
     {
         if ($kPage > 0) {
-            $oCMSPageDB = Shop::DB()->select('tcmspage', 'kPage', $kPage);
+            $oCMSPageDB = Shop::DB()->select('topcpage', 'kPage', $kPage);
 
             if ($oCMSPageDB !== null) {
                 $oCMSPageDB->cJson   = empty($oCMSPageDB->cJson) ? '{}' : $oCMSPageDB->cJson;
@@ -135,7 +135,7 @@ class OPCPage
      */
     public function save()
     {
-        $oCmsPageDB = Shop::DB()->select('tcmspage', 'cIdHash', $this->cIdHash);
+        $oCmsPageDB = Shop::DB()->select('topcpage', 'cIdHash', $this->cIdHash);
 
         if (!empty($this->cIdHash) && $oCmsPageDB === null) {
             $oCmsPageDB  = (object)[
@@ -145,13 +145,13 @@ class OPCPage
                 'dLastModified' => date('Y-m-d H:i:s'),
                 'cLockedBy' => $this->cLockedBy
             ];
-            $this->kPage = Shop::DB()->insert('tcmspage', $oCmsPageDB);
+            $this->kPage = Shop::DB()->insert('topcpage', $oCmsPageDB);
         } else {
             $newPageJson = json_encode($this->data);
 
             if ($newPageJson !== $oCmsPageDB->cJson) {
                 $revision = new Revision();
-                $revision->addRevision('cmspage', (int)$oCmsPageDB->kPage);
+                $revision->addRevision('opcpage', (int)$oCmsPageDB->kPage);
             }
 
             $oCmsPageDB->cJson         = $newPageJson;
@@ -159,8 +159,8 @@ class OPCPage
             $oCmsPageDB->dLastModified = date('Y-m-d H:i:s');
             $oCmsPageDB->cLockedBy     = $this->cLockedBy;
 
-            if (Shop::DB()->update('tcmspage', 'cIdHash', $this->cIdHash, $oCmsPageDB) === -1) {
-                throw new Exception('Could not update the page in tcmspage');
+            if (Shop::DB()->update('topcpage', 'cIdHash', $this->cIdHash, $oCmsPageDB) === -1) {
+                throw new Exception('Could not update the page in topcpage');
             }
         }
 
@@ -172,7 +172,7 @@ class OPCPage
      */
     public function remove()
     {
-        Shop::DB()->delete('tcmspage', 'cIdHash', $this->cIdHash);
+        Shop::DB()->delete('topcpage', 'cIdHash', $this->cIdHash);
 
         return $this;
     }
@@ -184,7 +184,7 @@ class OPCPage
     {
         $revision = new Revision();
 
-        return $revision->getRevisions('cmspage', $this->kPage);
+        return $revision->getRevisions('opcpage', $this->kPage);
     }
 
     /**
@@ -227,10 +227,10 @@ class OPCPage
             'dLockedAt' => date('Y-m-d H:i:s'),
         ];
 
-        if (!empty($this->cIdHash) && Shop::DB()->select('tcmspage', 'cIdHash', $this->cIdHash) === null) {
-            $this->kPage = Shop::DB()->insert('tcmspage', $pageUpdate);
+        if (!empty($this->cIdHash) && Shop::DB()->select('topcpage', 'cIdHash', $this->cIdHash) === null) {
+            $this->kPage = Shop::DB()->insert('topcpage', $pageUpdate);
         } else {
-            Shop::DB()->update('tcmspage', 'cIdHash', $this->cIdHash, $pageUpdate);
+            Shop::DB()->update('topcpage', 'cIdHash', $this->cIdHash, $pageUpdate);
         }
 
         return true;
@@ -248,10 +248,10 @@ class OPCPage
             'dLockedAt' => null,
         ];
 
-        if (Shop::DB()->select('tcmspage', 'cIdHash', $this->cIdHash) === null) {
-            $this->kPage = Shop::DB()->insert('tcmspage', $pageUpdate);
+        if (Shop::DB()->select('topcpage', 'cIdHash', $this->cIdHash) === null) {
+            $this->kPage = Shop::DB()->insert('topcpage', $pageUpdate);
         } else {
-            Shop::DB()->update('tcmspage', 'cIdHash', $this->cIdHash, $pageUpdate);
+            Shop::DB()->update('topcpage', 'cIdHash', $this->cIdHash, $pageUpdate);
         }
 
         return $this;

@@ -9,12 +9,8 @@
         {if (!empty($oCMSPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.editpage))}
             {$oCMSPage->cFinalHtml_arr['editor_replace_all']}
         {elseif (!empty($smarty.get.editpage) && !empty($smarty.get.cAction) && $smarty.get.cAction === 'replace')}
-            {include file='snippets/live_content_area.tpl' id='editor_replace_all'}
+            {include file='snippets/opc_mount_point.tpl' id='editor_replace_all'}
         {else}
-<<<<<<< HEAD
-            {block name="productlist-header"}
-            {include file='productlist/header.tpl'}
-=======
             {assign var='grid' value='col-xs-6 col-md-4'}
         {/if}
         {*Prio: -> Funktionsattribut -> Benutzereingabe -> Standarddarstellung*}
@@ -37,7 +33,6 @@
             {block name="productlist-bestseller"}
             {lang key='bestseller' section='global' assign='slidertitle'}
             {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$oBestseller_arr title=$slidertitle}
->>>>>>> 50fb656441c73ed986726fff0683bd9965f8a7c4
             {/block}
 
             {assign var='style' value='gallery'}
@@ -90,7 +85,7 @@
 
             {block name="productlist-footer"}
                 {include file='productlist/footer.tpl'}
-                {include file='snippets/live_content_area.tpl' id='editor_productlist_footer'}
+                {include file='snippets/opc_mount_point.tpl' id='editor_productlist_footer'}
             {/block}
         {/if}
     </div>

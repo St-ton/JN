@@ -9,7 +9,7 @@
 {if !empty($cNewsErr)}
     <div class="alert alert-danger">{lang key='newsRestricted' section='news'}</div>
 {else}
-    {include file='snippets/live_content_area.tpl' id='editor_news_article_prepend'}
+    {include file='snippets/opc_mount_point.tpl' id='editor_news_article_prepend'}
     <article itemprop="mainEntity" itemscope itemtype="https://schema.org/BlogPosting">
         <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$oNewsArchiv->cSeo}">
         <h1 itemprop="headline">
@@ -33,13 +33,13 @@
             {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
         </div>
 
-        {include file='snippets/live_content_area.tpl' id='editor_news_content_prepend'}
+        {include file='snippets/opc_mount_point.tpl' id='editor_news_content_prepend'}
         <div itemprop="articleBody" class="row">
             <div class="col-xs-12">
                 {$oNewsArchiv->cText}
             </div>
         </div>
-        {include file='snippets/live_content_area.tpl' id='editor_news_content_append'}
+        {include file='snippets/opc_mount_point.tpl' id='editor_news_content_append'}
 
         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
             <div class="top10 news-categorylist">
@@ -175,6 +175,6 @@
                 <div class="alert alert-danger">{lang key="newsLogin" section="news"}</div>
             {/if}
         {/if}
-        {include file='snippets/live_content_area.tpl' id='editor_news_comments_append'}
+        {include file='snippets/opc_mount_point.tpl' id='editor_news_comments_append'}
     </article>
 {/if}

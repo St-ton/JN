@@ -48,7 +48,7 @@ EditorIO.prototype = {
 
     getPageStorageId: function()
     {
-        return 'cmspage.' + this.cPageIdHash;
+        return 'opcpage.' + this.cPageIdHash;
     },
 
     pageFromJson: function(data)

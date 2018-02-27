@@ -43,8 +43,8 @@ class Revision
                 'table' => 'tnews',
                 'id'    => 'kNews'
             ],
-            'cmspage' => [
-                'table' => 'tcmspage',
+            'opcpage' => [
+                'table' => 'topcpage',
                 'id'    => 'kPage'
             ],
             'box' => [

@@ -13,25 +13,25 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-$cHinweis      = '';
-$cFehler       = '';
-$oCMS          = OPC::getInstance()->setAdminAccount($oAccount);
-$oCMSPage      = null;
-$oPortlet_arr  = $oCMS->getPortlets();
-$oTemplate_arr = $oCMS->getTemplates();
-$cPageIdHash   = verifyGPDataString('cCmsPageIdHash');
-$cAction       = verifyGPDataString('cAction');
-$cPageUrl      = verifyGPDataString('cPageUrl');
+$cHinweis    = '';
+$cFehler     = '';
+$opc         = OPC::getInstance()->setAdminAccount($oAccount);
+$opcPage     = null;
+$portlets    = $opc->getPortlets();
+$templates   = $opc->getTemplates();
+$cPageIdHash = verifyGPDataString('cCmsPageIdHash');
+$cAction     = verifyGPDataString('cAction');
+$cPageUrl    = verifyGPDataString('cPageUrl');
 
 if (empty($cPageIdHash) || empty($cAction) || empty($cPageUrl)) {
     $cFehler = 'Einige Parameter für den Editor wurden nicht gesetzt.';
 } else {
-    $oCMSPage = $oCMS->getPage($cPageIdHash);
+    $opcPage = $opc->getPage($cPageIdHash);
 
-    if ($oCMSPage->lock($oAccount->account()->cLogin) === false) {
-        $cFehler = "Diese Seite wird bereits von '{$oCMSPage->cLockedBy}' bearbeitet.";
+    if ($opcPage->lock($oAccount->account()->cLogin) === false) {
+        $cFehler = "Diese Seite wird bereits von '{$opcPage->cLockedBy}' bearbeitet.";
     } elseif ($cAction === 'restore_default') {
-        $oCMSPage->remove();
+        $opcPage->remove();
         header('Location: ' . $cPageUrl);
         exit();
     }
@@ -41,10 +41,10 @@ $smarty
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
     ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
-    ->assign('oPortlet_arr', $oPortlet_arr)
-    ->assign('oTemplate_arr', $oTemplate_arr)
+    ->assign('oPortlet_arr', $portlets)
+    ->assign('oTemplate_arr', $templates)
     ->assign('cAction', $cAction)
     ->assign('cPageUrl', $cPageUrl)
     ->assign('cPageIdHash', $cPageIdHash)
-    ->assign('oCMSPage', $oCMSPage)
-    ->display('cms-live-editor.tpl');
+    ->assign('oCMSPage', $opcPage)
+    ->display('onpage-composer.tpl');

@@ -36,7 +36,7 @@
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
-{include file='snippets/live_content_area.tpl' id='editor_article_content_prepend'}
+{include file='snippets/opc_mount_point.tpl' id='editor_article_content_prepend'}
 
 <form id="buy_form" method="post" action="{$Artikel->cURLFull}" >
     {$jtl_token}
@@ -202,7 +202,7 @@
     {/block}
 </form>
 
-{include file='snippets/live_content_area.tpl' id='editor_article_content_append'}
+{include file='snippets/opc_mount_point.tpl' id='editor_article_content_append'}
 
 {if !isset($smarty.get.quickView) || $smarty.get.quickView != 1}
     <div class="clearfix"></div>
@@ -213,7 +213,7 @@
 
     <div class="clearfix"></div>
 
-    {include file='snippets/live_content_area.tpl' id='editor_article_tabs_prepend'}
+    {include file='snippets/opc_mount_point.tpl' id='editor_article_tabs_prepend'}
 
     {*SLIDERS*}
     {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0

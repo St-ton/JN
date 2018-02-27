@@ -26,7 +26,7 @@
             {if !empty($oCMSPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.frontedit)}
                 {$oCMSPage->cFinalHtml_arr['editor_replace_all']}
             {elseif (!empty($smarty.get.frontedit) && !empty($smarty.get.cAction) && $smarty.get.cAction === 'replace')}
-                {include file='snippets/live_content_area.tpl' id='editor_replace_all'}
+                {include file='snippets/opc_mount_point.tpl' id='editor_replace_all'}
             {else}
                 {include file='snippets/extension.tpl'}
                 {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]) && $currentTemplateDirFullPath|cat:'productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]|file_exists}

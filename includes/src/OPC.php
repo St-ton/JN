@@ -54,7 +54,7 @@ class OPC
      */
     public function getPage($pageID, $bRenderPreview = false)
     {
-        $pageDB = Shop::DB()->select('tcmspage', 'cIdHash', $pageID, null, null, null, null, false, 'kPage');
+        $pageDB = Shop::DB()->select('topcpage', 'cIdHash', $pageID, null, null, null, null, false, 'kPage');
 
         if ($pageDB === null) {
             $page          = new \OPCPage();

@@ -1105,12 +1105,16 @@ class Artikel
     }
 
     /**
+     * @param int $kKundengruppe
      * @return $this
      */
-    private function rabattierePreise()
+    private function rabattierePreise($kKundengruppe = 0)
     {
         if ($this->Preise !== null && method_exists($this->Preise, 'rabbatierePreise')) {
-            $discount = $this->getDiscount(Session::CustomerGroup()->getID(), $this->kArtikel);
+            if (!$kKundengruppe) {
+                $kKundengruppe = Session::CustomerGroup()->getID();
+            }
+            $discount = $this->getDiscount($kKundengruppe, $this->kArtikel);
             if ($discount !== 0) {
                 $this->Preise->rabbatierePreise($discount)->localizePreise();
             }
@@ -3305,7 +3309,7 @@ class Artikel
             $oArtikelOptionenTMP->nKeinLagerbestandBeachten = 1;
             if ($varDetailPrice->kArtikel !== $nLastkArtikel) {
                 $nLastkArtikel = $varDetailPrice->kArtikel;
-                $oArtikelTMP   = new self();
+                $oArtikelTMP = new self();
                 $oArtikelTMP->getPriceData($varDetailPrice->kArtikel, $kKundengruppe);
             }
             if (!isset($this->oVariationDetailPreis_arr[$idx])) {
@@ -3607,7 +3611,7 @@ class Artikel
                     $this->holPreise($kKundengruppe, $this);
                 }
                 if ($fMaxRabatt > 0) {
-                    $this->rabattierePreise();
+                    $this->rabattierePreise($kKundengruppe);
                 }
                 //#7595 - do not use cached result if special price is expired
                 $return = true;
@@ -4238,7 +4242,7 @@ class Artikel
 
         $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE];
         $basePrice = clone $this->Preise;
-        $this->rabattierePreise();
+        $this->rabattierePreise($kKundengruppe);
         $this->staffelPreis_arr  = $this->getTierPrices();
         if ($this->cVPE === 'Y' && $this->fVPEWert > 0 && $this->cVPEEinheit && !empty($this->Preise)) {
             // Grundpreis beim Artikelpreis
@@ -4294,7 +4298,7 @@ class Artikel
             foreach (get_object_vars($oArtikelTMP) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->holPreise($kKundengruppe, $this);
+            $this->holPreise($kKundengruppe, $this)->rabattierePreise($kKundengruppe);
         }
 
         return $this;
@@ -4354,7 +4358,7 @@ class Artikel
         if (!empty($searchSpecial_arr) && is_array($searchSpecial_arr) && count($searchSpecial_arr) > 0) {
             $bSuchspecial_arr = [
                 SEARCHSPECIALS_BESTSELLER       => $this->istBestseller(),
-                SEARCHSPECIALS_SPECIALOFFERS    => $this->Preise->Sonderpreis_aktiv === 1,
+                SEARCHSPECIALS_SPECIALOFFERS    => $this->Preise !== null && $this->Preise->Sonderpreis_aktiv === 1,
                 SEARCHSPECIALS_NEWPRODUCTS      => false,
                 SEARCHSPECIALS_TOPOFFERS        => $this->cTopArtikel === 'Y',
                 SEARCHSPECIALS_UPCOMINGPRODUCTS => false,

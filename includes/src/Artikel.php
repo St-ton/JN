@@ -2483,25 +2483,29 @@ class Artikel
             // Gibt es nur 1 Variation?
             if (count($this->VariationenOhneFreifeld) === 1) {
                 // Baue Warenkorbmatrix Bildvorschau
-                $oVariBoxMatrixBild_arr = Shop::DB()->query(
+                $oVariBoxMatrixBild_arr = Shop::DB()->queryPrepared(
                     "SELECT tartikelpict.cPfad, tartikel.cName, tartikel.cSeo, tartikel.cArtNr,
                         tartikel.cBarcode, tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft,
                         teigenschaftkombiwert.kEigenschaftWert
                         FROM teigenschaftkombiwert
                         JOIN tartikel 
-                            ON tartikel.kVaterArtikel = " . $this->kArtikel . "
+                            ON tartikel.kVaterArtikel = :kArtikel
                             AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                            AND tartikelsichtbarkeit.kKundengruppe = :kKundengruppe
                         LEFT JOIN teigenschaftwertsichtbarkeit 
                             ON teigenschaftkombiwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                            AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                            AND teigenschaftwertsichtbarkeit.kKundengruppe = :kKundengruppe
                         JOIN tartikelpict 
                             ON tartikelpict.kArtikel = tartikel.kArtikel
                             AND tartikelpict.nNr = 1
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL 
                             AND teigenschaftwertsichtbarkeit.kKundengruppe IS NULL",
+                    [
+                        'kArtikel'      => $this->kArtikel,
+                        'kKundengruppe' => $kKundengruppe,
+                    ],
                     NiceDB::RET_ARRAY_OF_OBJECTS
                 );
 
@@ -2526,25 +2530,29 @@ class Artikel
                 $this->oVariBoxMatrixBild_arr = [];
 
                 $matrixImages = [];
-                $matrixImgRes = Shop::DB()->query(
+                $matrixImgRes = Shop::DB()->queryPrepared(
                     "SELECT tartikelpict.cPfad, teigenschaftkombiwert.kEigenschaft,
                             teigenschaftkombiwert.kEigenschaftWert
                         FROM teigenschaftkombiwert
                         JOIN tartikel 
-                            ON tartikel.kVaterArtikel = " . (int)$this->kArtikel . "
+                            ON tartikel.kVaterArtikel = :kArtikel
                             AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = {$kKundengruppe}
+                            AND tartikelsichtbarkeit.kKundengruppe = :kKundengruppe
                         LEFT JOIN teigenschaftwertsichtbarkeit 
                             ON teigenschaftkombiwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                            AND teigenschaftwertsichtbarkeit.kKundengruppe = {$kKundengruppe}
+                            AND teigenschaftwertsichtbarkeit.kKundengruppe = :kKundengruppe
                         JOIN tartikelpict 
                             ON tartikelpict.kArtikel = tartikel.kArtikel
                             AND tartikelpict.nNr = 1
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL 
                             AND teigenschaftwertsichtbarkeit.kKundengruppe IS NULL
                         ORDER BY teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert",
+                    [
+                        'kArtikel'      => $this->kArtikel,
+                        'kKundengruppe' => $kKundengruppe,
+                    ],
                     NiceDB::RET_ARRAY_OF_OBJECTS
                 );
                 foreach ($matrixImgRes as $matrixImage) {
@@ -2563,7 +2571,9 @@ class Artikel
                     // Laufe Variation 1 durch
                     foreach ($this->VariationenOhneFreifeld[0]->Werte as $i => $oVariationWertHead) {
                         $imageHashes = [];
-                        if (is_array($this->VariationenOhneFreifeld[1]->Werte) && count($this->VariationenOhneFreifeld[1]->Werte) > 0) {
+                        if (is_array($this->VariationenOhneFreifeld[1]->Werte)
+                            && count($this->VariationenOhneFreifeld[1]->Werte) > 0
+                        ) {
                             $nVertikal_arr[$i] = new stdClass();
                             if (isset($matrixImages[$oVariationWertHead->kEigenschaftWert]->cPfad)) {
                                 $req                      = MediaImageRequest::create([

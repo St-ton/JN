@@ -2215,10 +2215,6 @@ class Artikel
                     if (!isset($oVariationTMP->fAufpreisNetto_teigenschaftwertaufpreis) && $oVariationTMP->fAufpreisNetto != 0) {
                         $oVariationTMP->fAufpreisNetto_teigenschaftwertaufpreis = $oVariationTMP->fAufpreisNetto;
                     }
-                    if (defined('CACHE_VARIATIONS') && ($cached = Shop::get('kew_' . (int)$oVariationTMP->kEigenschaftWert)) !== null) {
-                        $this->Variationen[$nZaehler]->Werte[$i] = $cached;
-                        continue;
-                    }
                     $value                                   = new stdClass();
                     $value->kEigenschaftWert                 = (int)$oVariationTMP->kEigenschaftWert;
                     $value->kEigenschaft                     = (int)$oVariationTMP->kEigenschaft;
@@ -2386,12 +2382,6 @@ class Artikel
                         if ($this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto > 0) {
                             $this->nVariationsAufpreisVorhanden = 1;
                         }
-                    }
-                    if (defined('CACHE_VARIATIONS')) {
-                        Shop::set(
-                            'kew_' . $this->Variationen[$nZaehler]->Werte[$i]->kEigenschaftWert,
-                            $this->Variationen[$nZaehler]->Werte[$i]
-                        );
                     }
                 }
                 $matrixConf = isset($conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'])
@@ -3261,7 +3251,8 @@ class Artikel
                     if ($oVariationDetailPreis->kArtikel !== $nLastkArtikel) {
                         $nLastkArtikel = $oVariationDetailPreis->kArtikel;
                         $oArtikelTMP   = new self();
-                        $oArtikelTMP->fuelleArtikel($oVariationDetailPreis->kArtikel, $oArtikelOptionenTMP, $kKundengruppe, $kSprache);
+                        $oArtikelTMP->getPriceData($oVariationDetailPreis->kArtikel, $kKundengruppe);
+//                        $oArtikelTMP->fuelleArtikel($oVariationDetailPreis->kArtikel, $oArtikelOptionenTMP, $kKundengruppe, $kSprache);
                     }
                     $nGenauigkeit = 2;
                     if (!isset($this->oVariationDetailPreis_arr[$oVariationDetailPreis->kEigenschaftWert])) {
@@ -3604,7 +3595,8 @@ class Artikel
             CONF_ARTIKELDETAILS,
             CONF_BOXEN,
             CONF_ARTIKELUEBERSICHT,
-            CONF_BEWERTUNG
+            CONF_BEWERTUNG,
+            CONF_PREISANZEIGE
         ]);
 
         $this->cCachedCountryCode = isset($_SESSION['cLieferlandISO'])
@@ -3877,10 +3869,9 @@ class Artikel
         if (!empty($_abbr)) {
             $this->cMasseinheitName = $_abbr;
         }
-        $articleConfig = Shop::getSettings([CONF_ARTIKELDETAILS]);
-        if (isset($oArtikelOptionen->bSimilar) &&
-            $oArtikelOptionen->bSimilar === true &&
-            (int)$articleConfig['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
+        if (isset($oArtikelOptionen->bSimilar)
+            && $oArtikelOptionen->bSimilar === true
+            && (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
         ) {
             $this->similarProducts = $this->getSimilarProducts();
         }
@@ -4086,80 +4077,80 @@ class Artikel
         if (!empty($this->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_UNVERKAEUFLICH;
         }
-        if (isset($this->Preise->cVKLocalized[0]) && $this->Preise->cVKLocalized[0]) {
-            // Preisanzeige Einstellungen holen
-            $oPreisanzeigeConf_arr = Shop::getSettings([CONF_PREISANZEIGE]);
+        // Preisanzeige Einstellungen holen
+        if (isset($this->Preise->cVKLocalized[0])
+            && $this->Preise->cVKLocalized[0]
+            && is_array($conf)
+            && count($conf) > 0
+        ) {
+            $strVKLocalized = isset($_SESSION['Kundengruppe']->nNettoPreise)
+                ? $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
+                : $this->Preise->cVKLocalized[0];
+            //$strVKLocalized = $this->Preise->cVKLocalized[0];
+            $strVKLocalized = StringHandler::htmlentitydecode($strVKLocalized);
+            $strVKLocalized = str_replace('&euro;', 'EUR', $strVKLocalized);
 
-            if (is_array($oPreisanzeigeConf_arr) && count($oPreisanzeigeConf_arr) > 0) {
-                $strVKLocalized = isset($_SESSION['Kundengruppe']->nNettoPreise)
-                    ? $this->Preise->cVKLocalized[$_SESSION['Kundengruppe']->nNettoPreise]
-                    : $this->Preise->cVKLocalized[0];
-                //$strVKLocalized = $this->Preise->cVKLocalized[0];
-                $strVKLocalized = StringHandler::htmlentitydecode($strVKLocalized);
-                $strVKLocalized = str_replace('&euro;', 'EUR', $strVKLocalized);
+            if ($conf['preisanzeige']['preisanzeige_preisgrafik_artikeldetails_anzeigen'] === 'Y') {
+                $font = new JTLFont(
+                    $conf['preisanzeige']['preisanzeige_schriftart_artikeldetails'],
+                    $conf['preisanzeige']['preisanzeige_groesse_artikeldetails'],
+                    $conf['preisanzeige']['preisanzeige_farbe_artikeldetails']
+                );
 
-                if ($oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_preisgrafik_artikeldetails_anzeigen'] === 'Y') {
-                    $font = new JTLFont(
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_schriftart_artikeldetails'],
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_groesse_artikeldetails'],
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_farbe_artikeldetails']
-                    );
+                $strVKImage = $font->asHTML($strVKLocalized);
 
-                    $strVKImage = $font->asHTML($strVKLocalized);
+                $this->Preise->strPreisGrafik_Detail       = $strVKImage;
+                $this->Preise->cPreisGrafik_Artikeldetails = $strVKImage;
+            }
 
-                    $this->Preise->strPreisGrafik_Detail       = $strVKImage;
-                    $this->Preise->cPreisGrafik_Artikeldetails = $strVKImage;
-                }
+            if ($conf['preisanzeige']['preisanzeige_preisgrafik_artikeluebersicht_anzeigen'] === 'Y') {
+                $font = new JTLFont(
+                    $conf['preisanzeige']['preisanzeige_schriftart_artikeluebersicht'],
+                    $conf['preisanzeige']['preisanzeige_groesse_artikeluebersicht'],
+                    $conf['preisanzeige']['preisanzeige_farbe_artikeluebersicht']
+                );
 
-                if ($oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_preisgrafik_artikeluebersicht_anzeigen'] === 'Y') {
-                    $font = new JTLFont(
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_schriftart_artikeluebersicht'],
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_groesse_artikeluebersicht'],
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_farbe_artikeluebersicht']
-                    );
+                $strVKImage = $font->asHTML($strVKLocalized);
 
-                    $strVKImage = $font->asHTML($strVKLocalized);
+                $this->Preise->strPreisGrafik_Suche           = $strVKImage;
+                $this->Preise->strPreisGrafik_Uebersicht      = $strVKImage;
+                $this->Preise->cPreisGrafik_Artikeluebersicht = $strVKImage;
+            }
 
-                    $this->Preise->strPreisGrafik_Suche           = $strVKImage;
-                    $this->Preise->strPreisGrafik_Uebersicht      = $strVKImage;
-                    $this->Preise->cPreisGrafik_Artikeluebersicht = $strVKImage;
-                }
+            if ($conf['preisanzeige']['preisanzeige_preisgrafik_boxen_anzeigen'] === 'Y') {
+                $font = new JTLFont(
+                    $conf['preisanzeige']['preisanzeige_schriftart_boxen'],
+                    $conf['preisanzeige']['preisanzeige_groesse_boxen'],
+                    $conf['preisanzeige']['preisanzeige_farbe_boxen']
+                );
 
-                if ($oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_preisgrafik_boxen_anzeigen'] === 'Y') {
-                    $font = new JTLFont(
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_schriftart_boxen'],
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_groesse_boxen'],
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_farbe_boxen']
-                    );
+                $strVKImage = $font->asHTML($strVKLocalized);
 
-                    $strVKImage = $font->asHTML($strVKLocalized);
+                $this->Preise->strPreisGrafik_Topbox        = $strVKImage;
+                $this->Preise->strPreisGrafik_Sonderbox     = $strVKImage;
+                $this->Preise->strPreisGrafik_Neubox        = $strVKImage;
+                $this->Preise->strPreisGrafik_Bestsellerbox = $strVKImage;
+                $this->Preise->strPreisGrafik_Zuletztbox    = $strVKImage;
+                $this->Preise->strPreisGrafik_Baldbox       = $strVKImage;
+                $this->Preise->cPreisGrafik_Boxen           = $strVKImage;
+            }
 
-                    $this->Preise->strPreisGrafik_Topbox        = $strVKImage;
-                    $this->Preise->strPreisGrafik_Sonderbox     = $strVKImage;
-                    $this->Preise->strPreisGrafik_Neubox        = $strVKImage;
-                    $this->Preise->strPreisGrafik_Bestsellerbox = $strVKImage;
-                    $this->Preise->strPreisGrafik_Zuletztbox    = $strVKImage;
-                    $this->Preise->strPreisGrafik_Baldbox       = $strVKImage;
-                    $this->Preise->cPreisGrafik_Boxen           = $strVKImage;
-                }
+            if ($conf['preisanzeige']['preisanzeige_preisgrafik_startseite_anzeigen'] === 'Y') {
+                $font = new JTLFont(
+                    $conf['preisanzeige']['preisanzeige_schriftart_startseite'],
+                    $conf['preisanzeige']['preisanzeige_groesse_startseite'],
+                    $conf['preisanzeige']['preisanzeige_farbe_startseite']
+                );
 
-                if ($oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_preisgrafik_startseite_anzeigen'] === 'Y') {
-                    $font = new JTLFont(
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_schriftart_startseite'],
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_groesse_startseite'],
-                        $oPreisanzeigeConf_arr['preisanzeige']['preisanzeige_farbe_startseite']
-                    );
+                $strVKImage = $font->asHTML($strVKLocalized);
 
-                    $strVKImage = $font->asHTML($strVKLocalized);
-
-                    $this->Preise->strPreisGrafik_TopboxStartseite        = $strVKImage;
-                    $this->Preise->strPreisGrafik_SonderboxStartseite     = $strVKImage;
-                    $this->Preise->strPreisGrafik_NeuboxStartseite        = $strVKImage;
-                    $this->Preise->strPreisGrafik_BestsellerboxStartseite = $strVKImage;
-                    $this->Preise->strPreisGrafik_ZuletztboxStartseite    = $strVKImage;
-                    $this->Preise->strPreisGrafik_BaldboxStartseite       = $strVKImage;
-                    $this->Preise->cPreisGrafik_Startseite                = $strVKImage;
-                }
+                $this->Preise->strPreisGrafik_TopboxStartseite        = $strVKImage;
+                $this->Preise->strPreisGrafik_SonderboxStartseite     = $strVKImage;
+                $this->Preise->strPreisGrafik_NeuboxStartseite        = $strVKImage;
+                $this->Preise->strPreisGrafik_BestsellerboxStartseite = $strVKImage;
+                $this->Preise->strPreisGrafik_ZuletztboxStartseite    = $strVKImage;
+                $this->Preise->strPreisGrafik_BaldboxStartseite       = $strVKImage;
+                $this->Preise->cPreisGrafik_Startseite                = $strVKImage;
             }
         }
 
@@ -4225,6 +4216,32 @@ class Artikel
             // restore oVariationKombiKinderAssoc_arr and Preise to class instance
             $this->oVariationKombiKinderAssoc_arr = $children;
             $this->Preise                         = $newPrice;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param int $kArtikel
+     * @param int $kKundengruppe
+     * @return array|int|object
+     */
+    public function getPriceData($kArtikel, $kKundengruppe)
+    {
+        $productSQL = "SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse, 
+                tartikel.fPackeinheit, tartikel.cVPE, tartikel.fVPEWert, tartikel.cVPEEinheit
+                FROM tartikel 
+                LEFT JOIN tartikelsichtbarkeit 
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL AND tartikel.kArtikel = " . $kArtikel;
+        $oArtikelTMP = Shop::DB()->query($productSQL, 1);
+
+        if ($oArtikelTMP !== null) {
+            foreach (get_object_vars($oArtikelTMP) as $k => $v) {
+                $this->$k = $v;
+            }
+            $this->holPreise($kKundengruppe, $this);
         }
 
         return $this;

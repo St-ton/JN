@@ -2990,7 +2990,7 @@ class Artikel
                 $bProp = $collapse($b, $k);
                 if ($aProp != $bProp) {
 
-                    return ($v == SORT_ASC)
+                    return $v === SORT_ASC
                         ? strnatcasecmp($aProp, $bProp)
                         : strnatcasecmp($bProp, $aProp);
                 }
@@ -3342,7 +3342,6 @@ class Artikel
             // Grundpreis?
             if (!empty($oArtikelTMP->cVPE)
                 && $oArtikelTMP->cVPE === 'Y'
-                && isset($oArtikelTMP->fVPEWert)
                 && $oArtikelTMP->fVPEWert > 0
             ) {
                 $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[0] = gibPreisStringLocalized(
@@ -4355,7 +4354,7 @@ class Artikel
         if (!empty($searchSpecial_arr) && is_array($searchSpecial_arr) && count($searchSpecial_arr) > 0) {
             $bSuchspecial_arr = [
                 SEARCHSPECIALS_BESTSELLER       => $this->istBestseller(),
-                SEARCHSPECIALS_SPECIALOFFERS    => isset($this->Preise->Sonderpreis_aktiv) && $this->Preise->Sonderpreis_aktiv == 1,
+                SEARCHSPECIALS_SPECIALOFFERS    => $this->Preise->Sonderpreis_aktiv === 1,
                 SEARCHSPECIALS_NEWPRODUCTS      => false,
                 SEARCHSPECIALS_TOPOFFERS        => $this->cTopArtikel === 'Y',
                 SEARCHSPECIALS_UPCOMINGPRODUCTS => false,
@@ -4866,8 +4865,9 @@ class Artikel
      */
     public function setzeSprache($kSprache)
     {
+        $kSprache = (int)$kSprache;
         $oSprache = gibStandardsprache(false);
-        if ($this->kArtikel > 0 && $kSprache != $oSprache->kSprache) {
+        if ($this->kArtikel > 0 && $kSprache !== $oSprache->kSprache) {
             //auf aktuelle Sprache setzen
             $objSprache = Shop::DB()->query(
                 "SELECT tartikelsprache.cName, tseo.cSeo, tartikelsprache.cKurzBeschreibung, tartikelsprache.cBeschreibung
@@ -4903,7 +4903,7 @@ class Artikel
      */
     public function aufLagerSichtbarkeit($oArtikel = null)
     {
-        $oArtikel = ($oArtikel !== null) ? $oArtikel : $this;
+        $oArtikel = $oArtikel !== null ? $oArtikel : $this;
         if ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
             if (isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y') {
                 return true;
@@ -5946,8 +5946,8 @@ class Artikel
             }
             $cSQL     = '';
             $nLaender = count($cLaender_arr);
-            for ($i = 0; $i < $nLaender; $i++) {
-                $cSQL .= "cISO = '" . $cLaender_arr[$i] . "'";
+            foreach ($cLaender_arr as $i => $land) {
+                $cSQL .= "cISO = '" . $land . "'";
                 if ($nLaender > ($i + 1)) {
                     $cSQL .= " OR ";
                 }
@@ -5966,26 +5966,27 @@ class Artikel
                     [CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION]
                 );
             }
-            $cLaenderAssoc_arr = [];
-            for ($i = 0; $i < $nLaender; $i++) {
+            $countriesAssoc = [];
+            $german         = (!isset($_SESSION['cISOSprache']) || Shop::getLanguageCode() === 'ger');
+            foreach ($oLand_arr as $i => $country) {
                 if ($bString) {
-                    $cLaender .= (!isset($_SESSION['cISOSprache']) || $_SESSION['cISOSprache'] === 'ger')
-                        ? $oLand_arr[$i]->cDeutsch
-                        : $oLand_arr[$i]->cEnglisch;
+                    $cLaender .= $german === true
+                        ? $country->cDeutsch
+                        : $country->cEnglisch;
                     if ($nLaender > ($i + 1)) {
                         $cLaender .= ', ';
                     }
                 } else {
-                    $cLaender = (!isset($_SESSION['cISOSprache']) || $_SESSION['cISOSprache'] === 'ger')
-                        ? $oLand_arr[$i]->cDeutsch
-                        : $oLand_arr[$i]->cEnglisch;
+                    $cLaender = $german === true
+                        ? $country->cDeutsch
+                        : $country->cEnglisch;
                 }
-                $cLaenderAssoc_arr[$oLand_arr[$i]->cISO] = $cLaender;
+                $countriesAssoc[$country->cISO] = $cLaender;
             }
 
             return $bString
                 ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', $cLaender)
-                : $cLaenderAssoc_arr;
+                : $countriesAssoc;
         }
 
         return '';
@@ -6085,7 +6086,7 @@ class Artikel
         $confMinKeyLen        = (int)$this->conf['metaangaben']['global_meta_keywords_laenge'];
         $cacheID              = 'meta_keywords_' . Shop::getLanguageID();
         $_descriptionKeywords = explode(' ', StringHandler::removeDoubleSpaces(
-            preg_replace('/[^a-zA-Z0-9üÜäÄöÖß-]/', ' ', $description)
+            preg_replace('/[^a-zA-Z0-9üÜäÄöÖß-]/u', ' ', $description)
         ));
         $descriptionKeywords  = array_filter($_descriptionKeywords, function ($value) use ($confMinKeyLen) {
             return strlen($value) >= $confMinKeyLen;

@@ -1110,8 +1110,10 @@ class Artikel
     private function rabattierePreise()
     {
         if ($this->Preise !== null && method_exists($this->Preise, 'rabbatierePreise')) {
-            $this->Preise->rabbatierePreise($this->getDiscount(Session::CustomerGroup()->getID(), $this->kArtikel))
-                         ->localizePreise();
+            $discount = $this->getDiscount(Session::CustomerGroup()->getID(), $this->kArtikel);
+            if ($discount !== 0) {
+                $this->Preise->rabbatierePreise($discount)->localizePreise();
+            }
         }
 
         return $this;
@@ -1578,7 +1580,8 @@ class Artikel
             $oOption->nKeineSichtbarkeitBeachten = 1;
             $this->oProduktBundleMain->fuelleArtikel($Main->kArtikel, $oOption);
 
-            $Obj_arr = Shop::DB()->selectAll('tstueckliste', 'kStueckliste', $Main->kStueckliste, 'kArtikel, fAnzahl');
+            $currency = Session::Currency();
+            $Obj_arr  = Shop::DB()->selectAll('tstueckliste', 'kStueckliste', $Main->kStueckliste, 'kArtikel, fAnzahl');
             foreach ($Obj_arr as $Obj) {
                 $oOption->nKeineSichtbarkeitBeachten = 0;
                 $oProduct                            = new self();
@@ -1602,10 +1605,14 @@ class Artikel
                     (isset($_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse])
                         ? $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse]
                         : null)
-                )
+                ),
+                $currency
             );
 
-            $this->oProduktBundlePrice->cPriceLocalized[1]     = gibPreisStringLocalized($this->oProduktBundlePrice->fVKNetto);
+            $this->oProduktBundlePrice->cPriceLocalized[1]     = gibPreisStringLocalized(
+                $this->oProduktBundlePrice->fVKNetto,
+                $currency
+            );
             $this->oProduktBundlePrice->cPriceDiffLocalized    = [];
             $this->oProduktBundlePrice->cPriceDiffLocalized[0] = gibPreisStringLocalized(
                 berechneBrutto(
@@ -1613,9 +1620,13 @@ class Artikel
                     (isset($_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse])
                         ? $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse]
                         : null)
-                )
+                ),
+                $currency
             );
-            $this->oProduktBundlePrice->cPriceDiffLocalized[1] = gibPreisStringLocalized($this->oProduktBundlePrice->fPriceDiff);
+            $this->oProduktBundlePrice->cPriceDiffLocalized[1] = gibPreisStringLocalized(
+                $this->oProduktBundlePrice->fPriceDiff,
+                $currency
+            );
         }
 
         return $this;
@@ -2364,18 +2375,24 @@ class Artikel
 
             if (isset($value->fAufpreisNetto) && $value->fAufpreisNetto != 0) {
                 $surcharge                    = $value->fAufpreisNetto;
-                $value->cAufpreisLocalized[0] = gibPreisStringLocalized(berechneBrutto($surcharge, $taxRate));
-                $value->cAufpreisLocalized[1] = gibPreisStringLocalized($surcharge);
+                $value->cAufpreisLocalized[0] = gibPreisStringLocalized(berechneBrutto($surcharge, $taxRate), $currency);
+                $value->cAufpreisLocalized[1] = gibPreisStringLocalized($surcharge, $currency);
                 // Wenn der Artikel ein VarikombiKind ist, rechne nicht nochmal die Variationsaufpreise drauf
                 if ($this->kVaterArtikel > 0) {
-                    $value->cPreisInklAufpreis[0] =
-                        gibPreisStringLocalized(berechneBrutto($this->Preise->fVKNetto, $taxRate));
-                    $value->cPreisInklAufpreis[1] =
-                        gibPreisStringLocalized($this->Preise->fVKNetto);
+                    $value->cPreisInklAufpreis[0] = gibPreisStringLocalized(
+                        berechneBrutto($this->Preise->fVKNetto, $taxRate),
+                        $currency
+                    );
+                    $value->cPreisInklAufpreis[1] = gibPreisStringLocalized($this->Preise->fVKNetto, $currency);
                 } else {
-                    $value->cPreisInklAufpreis[0] =
-                        gibPreisStringLocalized(berechneBrutto($surcharge + $this->Preise->fVKNetto, $taxRate));
-                    $value->cPreisInklAufpreis[1] = gibPreisStringLocalized($surcharge + $this->Preise->fVKNetto);
+                    $value->cPreisInklAufpreis[0] = gibPreisStringLocalized(
+                        berechneBrutto($surcharge + $this->Preise->fVKNetto, $taxRate),
+                        $currency
+                    );
+                    $value->cPreisInklAufpreis[1] = gibPreisStringLocalized(
+                        $surcharge + $this->Preise->fVKNetto,
+                        $currency
+                    );
                 }
 
                 if ($value->fAufpreisNetto > 0) {
@@ -3190,10 +3207,11 @@ class Artikel
     public function holeVariationDetailPreisKind()
     {
         $this->oVariationDetailPreisKind_arr = [];
-        $currency                            = Session::Currency();
-        $per                                 = ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
-        $taxRate                             = $_SESSION['Steuersatz'][$this->kSteuerklasse];
-        $nGenauigkeit                        = isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
+
+        $currency     = Session::Currency();
+        $per          = ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
+        $taxRate      = $_SESSION['Steuersatz'][$this->kSteuerklasse];
+        $nGenauigkeit = isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
         && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
             ? (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
             : 2;
@@ -4677,7 +4695,9 @@ class Artikel
                     gibUst($this->kSteuerklasse),
                     $nGenauigkeit
                 ),
-                $currency, 1, $nGenauigkeit
+                $currency,
+                1,
+                $nGenauigkeit
             )  . $per . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE2[1] = gibPreisStringLocalized(
                 $basePriceUnit->fBasePreis,
@@ -4748,7 +4768,8 @@ class Artikel
                     $nGenauigkeit
                 ),
                 $currency,
-                1, $nGenauigkeit
+                1,
+                $nGenauigkeit
             )  . $per . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE5[1] = gibPreisStringLocalized(
                 $basePriceUnit->fBasePreis,
@@ -5837,14 +5858,14 @@ class Artikel
         } elseif ($this->conf['global']['global_ust_auszeichnung'] === 'endpreis') {
             $ust = Shop::Lang()->get('finalprice', 'productDetails');
         }
-        $steuertext = isset($this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT])
+        $taxText = isset($this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT])
             ? $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT]
             : false;
-        if (!$steuertext) {
-            $steuertext = $this->gibAttributWertNachName(ART_ATTRIBUT_STEUERTEXT);
+        if (!$taxText) {
+            $taxText = $this->gibAttributWertNachName(ART_ATTRIBUT_STEUERTEXT);
         }
-        if ($steuertext) {
-            $ust = $steuertext;
+        if ($taxText) {
+            $ust = $taxText;
         }
         $ret = $ust . $versand;
         executeHook(HOOK_TOOLSGLOBAL_INC_MWSTVERSANDSTRING, ['cVersandhinweis' => &$ret, 'oArtikel' => $this]);

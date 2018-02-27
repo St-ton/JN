@@ -1497,7 +1497,7 @@ class Artikel
             //Merkmale assoziativ ablegen
             $this->cMerkmalAssoc_arr = [];
             foreach ($this->oMerkmale_arr as $oMerkmal) {
-                $cMerkmalname = preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/', '', $oMerkmal->cName);
+                $cMerkmalname = preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/u', '', $oMerkmal->cName);
                 if (strlen($oMerkmal->cName) > 0) {
                     $values = array_filter(array_map(function ($e) {
                         return isset($e->cWert) ? $e->cWert : null;

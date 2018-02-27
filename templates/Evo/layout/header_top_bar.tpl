@@ -2,6 +2,7 @@
 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1 || isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
     {block name="top-bar-user-settings"}
     <ul class="list-inline user-settings pull-right">
+        {block name="top-bar-user-settings-currency"}
         {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
             <li class="currency-dropdown dropdown">
                 <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown" title="{lang key='selectCurrency'}">
@@ -23,6 +24,8 @@
                 </ul>
             </li>
         {/if}
+        {/block}
+        {block name="top-bar-user-settings-language"}
         {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
         <li class="language-dropdown dropdown">
             <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown" itemprop="inLanguage" itemscope itemtype="http://schema.org/Language" title="{lang key='selectLang'}">
@@ -46,6 +49,7 @@
         </li>
         {* /language-dropdown *}
         {/if}
+        {/block}
     </ul>{* user-settings *}
     {/block}
 {/if}

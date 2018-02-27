@@ -1704,6 +1704,7 @@ class ProductFilter
         if ($error !== false) {
             return $this->searchResults
                 ->setProductCount(0)
+                ->setVisibleProductCount(0)
                 ->setProducts($productList)
                 ->setSearchUnsuccessful(true)
                 ->setSearchTerm(strip_tags(trim($this->params['cSuche'])))
@@ -1728,7 +1729,7 @@ class ProductFilter
             foreach (array_slice($productKeys, $nLimitN, $limitPerPage) as $id) {
                 $productList->addItem((new Artikel())->fuelleArtikel($id, $opt));
             }
-            $this->searchResults->setProductCount($productList->count());
+            $this->searchResults->setVisibleProductCount($productList->count());
         }
         $this->url = $this->filterURL->createUnsetFilterURLs($this->url);
         $_SESSION['oArtikelUebersichtKey_arr']   = $productKeys;

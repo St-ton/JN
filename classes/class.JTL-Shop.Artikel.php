@@ -4232,14 +4232,18 @@ class Artikel
      */
     public function getPriceData($kArtikel, $kKundengruppe)
     {
-        $productSQL = "SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse, 
+        $oArtikelTMP = Shop::DB()->queryPrepared(
+            'SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse, 
                 tartikel.fPackeinheit, tartikel.cVPE, tartikel.fVPEWert, tartikel.cVPEEinheit
                 FROM tartikel 
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL AND tartikel.kArtikel = " . $kArtikel;
-        $oArtikelTMP = Shop::DB()->query($productSQL, 1);
+                    AND tartikelsichtbarkeit.kKundengruppe = :kKundengruppe
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL 
+                    AND tartikel.kArtikel = :kArtikel',
+            ['kArtikel' => $kArtikel, 'kKundengruppe' => $kKundengruppe],
+            1
+        );
 
         if ($oArtikelTMP !== null) {
             foreach (get_object_vars($oArtikelTMP) as $k => $v) {

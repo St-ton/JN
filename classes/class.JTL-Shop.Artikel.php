@@ -4437,7 +4437,7 @@ class Artikel
         if ($this->bIsTopBewertet !== null) {
             return $this->bIsTopBewertet;
         }
-        if (!$this->kArtikel > 0) {
+        if (!($this->kArtikel > 0)) {
             return false;
         }
         $nSchwelleTopBewertet = isset($oBoxenEinstellung_arr['boxen']['boxen_topbewertet_minsterne'])
@@ -4463,7 +4463,7 @@ class Artikel
         if ($this->bIsBestseller !== null) {
             return $this->bIsBestseller;
         }
-        if (!$this->kArtikel > 0) {
+        if (!($this->kArtikel > 0)) {
             return false;
         }
         if ($oGlobalEinstellung_arr === null) {

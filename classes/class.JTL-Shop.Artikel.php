@@ -1393,6 +1393,7 @@ class Artikel
             $kSprache = Shop::$kSprache;
         }
         $kSprache             = (int)$kSprache;
+        $isDefaultLanguage    = standardspracheAktiv();
         $this->Attribute      = [];
         $this->AttributeAssoc = [];
         if ($this->kArtikel > 0) {
@@ -1403,7 +1404,7 @@ class Artikel
                 $Attribut->cName = $att->cName;
                 $Attribut->cWert = $att->cTextWert ?: $att->cStringWert;
 
-                if ($att->kAttribut > 0 && $kSprache > 0 && !standardspracheAktiv()) {
+                if ($att->kAttribut > 0 && $kSprache > 0 && !$isDefaultLanguage) {
                     $attributsprache = Shop::DB()->select(
                         'tattributsprache',
                         'kAttribut', (int)$att->kAttribut,
@@ -1927,11 +1928,13 @@ class Artikel
             $kSprache = Shop::getLanguage();
         }
         $this->nVariationsAufpreisVorhanden = 0;
-        $kSprache                           = (int)$kSprache;
-        $kKundengruppe                      = (int)$kKundengruppe;
-        $waehrung                           = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
-        $conf                               = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELDETAILS]);
-        $shopURL                            = Shop::getURL() . '/';
+
+        $isDefaultLanguage = standardspracheAktiv();
+        $kSprache          = (int)$kSprache;
+        $kKundengruppe     = (int)$kKundengruppe;
+        $waehrung          = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
+        $conf              = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELDETAILS]);
+        $shopURL           = Shop::getURL() . '/';
         if (!isset($waehrung->kWaehrung) || !$waehrung->kWaehrung) {
             $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
@@ -1943,7 +1946,7 @@ class Artikel
             $oSQLEigenschaft->cJOIN       = '';
             $oSQLEigenschaftWert->cSELECT = '';
             $oSQLEigenschaftWert->cJOIN   = '';
-            if ($kSprache > 0 && !standardspracheAktiv()) {
+            if ($kSprache > 0 && !$isDefaultLanguage) {
                 $oSQLEigenschaft->cSELECT = "teigenschaftsprache.cName AS cName_teigenschaftsprache, ";
                 $oSQLEigenschaft->cJOIN   = " LEFT JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
                                                 AND teigenschaftsprache.kSprache = " . $kSprache;
@@ -2200,7 +2203,7 @@ class Artikel
                         $variation->nLieferbareVariationswerte = 0;
                         $this->Variationen[$nZaehler]          = $variation;
 
-                        if ($kSprache > 0 && !standardspracheAktiv() && strlen($oVariationTMP->cName_teigenschaftsprache) > 0) {
+                        if ($kSprache > 0 && !$isDefaultLanguage && strlen($oVariationTMP->cName_teigenschaftsprache) > 0) {
                             $this->Variationen[$nZaehler]->cName = $oVariationTMP->cName_teigenschaftsprache;
                         }
                         if ($oVariationTMP->cTyp === 'FREIFELD' || $oVariationTMP->cTyp === 'PFLICHT-FREIFELD') {
@@ -2247,7 +2250,7 @@ class Artikel
 
                         $this->Variationen[$nZaehler]->Werte[$i]->oVariationsKombi = $varCombi;
                     }
-                    if ($kSprache > 0 && !standardspracheAktiv() && strlen($oVariationTMP->cName_teigenschaftwertsprache) > 0) {
+                    if ($kSprache > 0 && !$isDefaultLanguage && strlen($oVariationTMP->cName_teigenschaftwertsprache) > 0) {
                         $this->Variationen[$nZaehler]->Werte[$i]->cName = $oVariationTMP->cName_teigenschaftwertsprache;
                     }
                     //kundengrp spezif. Aufpreis?
@@ -3097,7 +3100,6 @@ class Artikel
                 foreach ($oVariationKombiVorschau_arr as $i => $oVariationKombiVorschau) {
                     $releaseDate                                    = new DateTime($oVariationKombiVorschau->dErscheinungsdatum);
                     $now                                            = new DateTime();
-                    $conf                                           = Shop::getSettings([CONF_GLOBAL]);
                     $oVariationKombiVorschau->nErscheinendesProdukt = ($releaseDate > $now) ? 1 : 0;
                     $oVariationKombiVorschau->inWarenkorbLegbar     = 0;
                     if ($oVariationKombiVorschau->nErscheinendesProdukt && $conf['global']['global_erscheinende_kaeuflich'] !== 'Y') {

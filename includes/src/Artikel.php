@@ -4894,7 +4894,7 @@ class Artikel
      */
     public function gibAttributWertNachName($name, $kSprache = 0)
     {
-        if ($this->kArtikel === null || $this->kArtikel <= 0) {
+        if ($this->kArtikel === null || $this->kArtikel <= 0 || standardspracheAktiv()) {
             return false;
         }
         if (!$kSprache) {
@@ -4907,7 +4907,7 @@ class Artikel
         }
         $kSprache = (int)$kSprache;
         $att      = Shop::DB()->select('tattribut', 'kArtikel', (int)$this->kArtikel, 'cName', $name);
-        if ($kSprache > 0 && isset($att->kAttribut) && $att->kAttribut > 0 && !standardspracheAktiv()) {
+        if ($kSprache > 0 && isset($att->kAttribut) && $att->kAttribut > 0) {
             $att  = Shop::DB()->select('tattributsprache', 'kAttribut', $att->kAttribut, 'kSprache', $kSprache);
             $wert = $att->cStringWert;
             if ($att->cTextWert) {

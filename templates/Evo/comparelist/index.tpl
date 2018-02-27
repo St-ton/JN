@@ -235,7 +235,7 @@
         <script type="text/javascript">
             $('.modal a.remove').click(function(e) {
                 var kArtikel = $(e.currentTarget).data('id');
-                $('section.box-compare tr[data-id="' + kArtikel + '"]').remove();
+                $('section.box-compare li[data-id="' + kArtikel + '"]').remove();
                 eModal.ajax({
                     size: 'lg',
                     url: e.currentTarget.href,
@@ -243,7 +243,7 @@
                     keyboard: true,
                     tabindex: -1
                 });
-    
+
                 return false;
             });
             new function(){

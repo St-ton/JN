@@ -4364,22 +4364,22 @@ class Artikel
                 SEARCHSPECIALS_ONSTOCK          => false,
                 SEARCHSPECIALS_PREORDER         => false
             ];
-            $nStampJetzt = time();
+
+            $now = new DateTime();
             // Neu im Sortiment
             if (!empty($this->cNeu) && $this->cNeu === 'Y') {
-                $nAlterTage  = (isset($this->conf['boxen']['box_neuimsortiment_alter_tage']) && (int)$this->conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
+                $nAlterTage     = (isset($this->conf['boxen']['box_neuimsortiment_alter_tage'])
+                    && (int)$this->conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
                     ? (int)$this->conf['boxen']['box_neuimsortiment_alter_tage']
                     : 30;
-                list($cJahr, $cMonat, $cTag)                  = explode('-', $this->dErstellt);
-                $nStampErstellt                               = mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr);
-                $bSuchspecial_arr[SEARCHSPECIALS_NEWPRODUCTS] = (($nStampJetzt - ($nAlterTage * 24 * 60 * 60)) < $nStampErstellt);
+                $dateCreated = new DateTime($this->dErstellt);
+                $dateCreated->modify('+' . $nAlterTage . ' day');
+                $bSuchspecial_arr[SEARCHSPECIALS_NEWPRODUCTS] = $now < $dateCreated;
             }
             // In kürze Verfügbar
-            list($cJahr, $cMonat, $cTag)                       = explode('-', $this->dErscheinungsdatum);
-            $nStampErscheinung                                 = mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr);
-            $bSuchspecial_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $nStampJetzt < $nStampErscheinung;
+            $bSuchspecial_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $now < new DateTime($this->dErscheinungsdatum);
             // Top bewertet
-            //No need to check with custom function.. this value is set in fuelleArtikel()?
+            // No need to check with custom function.. this value is set in fuelleArtikel()?
             $bSuchspecial_arr[SEARCHSPECIALS_TOPREVIEWS] = $this->bIsTopBewertet === '1';
             // Variationen Lagerbestand 0
             if ($this->cLagerBeachten === 'Y'
@@ -4391,35 +4391,31 @@ class Artikel
                 $bSuchspecial_arr[SEARCHSPECIALS_OUTOFSTOCK] = $this->nVariationenVerfuegbar === 0;
             }
             // VariationskombiKinder Lagerbestand 0
-            if ($this->kVaterArtikel === 1) {
-                // @todo: this makes absolutely no sense - $bSuchspecial_arr[SEARCHSPECIALS_OUTOFSTOCK] will be overridden after this condition
+            if ($this->kVaterArtikel > 0) {
                 $oVariKinder_arr = Shop::DB()->selectAll(
                     'tartikel',
                     'kVaterArtikel',
                     (int)$this->kVaterArtikel,
                     'fLagerbestand, cLagerBeachten, cLagerKleinerNull'
                 );
-                $bLieferbar      = false;
-                foreach ($oVariKinder_arr as $oVariKinder) {
-                    if ($oVariKinder->fLagerbestand > 0
-                        || $oVariKinder->cLagerBeachten === 'N'
-                        || $oVariKinder->cLagerKleinerNull === 'Y'
-                    ) {
-                        $bLieferbar = true;
-                        break;
-                    }
-                }
+                $bLieferbar = array_reduce($oVariKinder_arr, function ($carry, $item) {
+                    return $carry
+                        || $item->fLagerbestand > 0
+                        || $item->cLagerBeachten === 'N'
+                        || $item->cLagerKleinerNull === 'Y';
+                }, false);
+
                 $bSuchspecial_arr[SEARCHSPECIALS_OUTOFSTOCK] = !$bLieferbar;
+            } else {
+                // Normal Lagerbestand 0
+                $bSuchspecial_arr[SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
+                    && $this->cLagerBeachten === 'Y'
+                    && $this->cLagerKleinerNull !== 'Y');
             }
-            // Normal Lagerbestand 0
-            $bSuchspecial_arr[SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
-                && $this->cLagerBeachten === 'Y'
-                && $this->cLagerKleinerNull !== 'Y');
             // Auf Lager
             $bSuchspecial_arr[SEARCHSPECIALS_ONSTOCK] = ($this->fLagerbestand > 0 && $this->cLagerBeachten === 'Y');
             // Vorbestellbar
-            if (
-                $bSuchspecial_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS]
+            if ($bSuchspecial_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS]
                 && $this->conf['global']['global_erscheinende_kaeuflich'] === 'Y'
             ) {
                 $bSuchspecial_arr[SEARCHSPECIALS_PREORDER] = true;
@@ -4502,7 +4498,7 @@ class Artikel
         $oBewertet = Shop::DB()->queryPrepared(
             'SELECT ROUND(fDurchschnittsBewertung) >= :threshold AS bIsTopBewertet
                 FROM tartikelext
-                WHERE kArtikel :kArtikel',
+                WHERE kArtikel = :kArtikel',
             ['threshold' => $minStars, 'kArtikel' => $this->kArtikel],
             NiceDB::RET_SINGLE_OBJECT
         );
@@ -4983,9 +4979,8 @@ class Artikel
     }
 
     /**
-     * Fuegt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
-     * @return mixed
+     * @return int
+     * @deprecated since 4.07
      */
     public function insertInDB()
     {
@@ -5051,9 +5046,8 @@ class Artikel
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
      * @return $this
+     * @deprecated since 4.07
      */
     public function updateInDB()
     {
@@ -5138,13 +5132,21 @@ class Artikel
         if (Session::CustomerGroup()->isMerchant()) {
             $this->fUVP                             /= (1 + gibUst($this->kSteuerklasse) / 100);
             $this->SieSparenX->anzeigen             = $anzeigen;
-            $this->SieSparenX->nProzent             = round((($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP, 2);
+            $this->SieSparenX->nProzent             = round(
+                (($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP,
+                2
+            );
             $this->SieSparenX->fSparbetrag          = $this->fUVP - $this->Preise->fVKNetto;
             $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
         } else {
             $this->SieSparenX->anzeigen             = $anzeigen;
-            $this->SieSparenX->nProzent             = round((($this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse))) * 100) / $this->fUVP, 2);
-            $this->SieSparenX->fSparbetrag          = $this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse));
+            $this->SieSparenX->nProzent             = round(
+                (($this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse))) * 100)
+                / $this->fUVP,
+                2
+            );
+            $this->SieSparenX->fSparbetrag          = $this->fUVP - berechneBrutto($this->Preise->fVKNetto,
+                    gibUst($this->kSteuerklasse));
             $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
         }
 
@@ -6368,37 +6370,33 @@ class Artikel
             && !$this->kArtikelVariKombi
             && !$this->kVariKindArtikel
             && !$this->nErscheinendesProdukt
-        ) {
-            if (($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y'
+            && (is_array($this->Variationen)
+                && ($this->nVariationOhneFreifeldAnzahl === 2
+                    || $this->nVariationOhneFreifeldAnzahl === 1
+                    || ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
+                        && $this->nVariationOhneFreifeldAnzahl > 1)))
+            && ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y'
                     || (!empty($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX])
                         && $this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === '1'))
-                && (is_array($this->Variationen)
-                    && ($this->nVariationOhneFreifeldAnzahl === 2
-                        || $this->nVariationOhneFreifeldAnzahl === 1
-                        || ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
-                            && $this->nVariationOhneFreifeldAnzahl > 1)
-                    )
-                )
-            ) {
-                //the cart matrix cannot deal with those different kinds of variations..
-                //so if we got "freifeldvariationen" in combination with normal ones, we have to disable the matrix
-                $gesamt_anz = 1;
-                foreach ($this->Variationen as $_variation) {
-                    if ($_variation->cTyp === 'FREIFELD' || $_variation->cTyp === 'PFLICHT-FREIFELD') {
-                        return false;
-                    }
-                    $gesamt_anz *= $_variation->nLieferbareVariationswerte;
+        ) {
+            //the cart matrix cannot deal with those different kinds of variations..
+            //so if we got "freifeldvariationen" in combination with normal ones, we have to disable the matrix
+            $gesamt_anz = 1;
+            foreach ($this->Variationen as $_variation) {
+                if ($_variation->cTyp === 'FREIFELD' || $_variation->cTyp === 'PFLICHT-FREIFELD') {
+                    return false;
                 }
-                foreach ($this->oKonfig_arr as $_oKonfig) {
-                    if (isset($_oKonfig)) {
-                        return false;
-                    }
-                }
-
-                return !($gesamt_anz > ART_MATRIX_MAX
-                    && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
-                );
+                $gesamt_anz *= $_variation->nLieferbareVariationswerte;
             }
+            foreach ($this->oKonfig_arr as $_oKonfig) {
+                if (isset($_oKonfig)) {
+                    return false;
+                }
+            }
+
+            return !($gesamt_anz > ART_MATRIX_MAX
+                && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
+            );
         }
 
         return false;

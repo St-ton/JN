@@ -1470,15 +1470,16 @@ class Artikel
     public function holeMerkmale()
     {
         $this->oMerkmale_arr = [];
-        $oMerkmal_arr        = Shop::DB()->query(
-            "SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
+        $oMerkmal_arr        = Shop::DB()->queryPrepared(
+            'SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
                 FROM tartikelmerkmal
                 JOIN tmerkmal 
                     ON tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal
                 JOIN tmerkmalwert 
                     ON tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                WHERE tartikelmerkmal.kArtikel = " . (int)$this->kArtikel . "
-                ORDER BY tmerkmal.nSort, tmerkmalwert.nSort, tartikelmerkmal.kMerkmal",
+                WHERE tartikelmerkmal.kArtikel = :kArtikel
+                ORDER BY tmerkmal.nSort, tmerkmalwert.nSort, tartikelmerkmal.kMerkmal',
+            ['kArtikel' => $this->kArtikel],
             NiceDB::RET_ARRAY_OF_OBJECTS
         );
         if (count($oMerkmal_arr) > 0) {
@@ -1486,7 +1487,6 @@ class Artikel
             foreach ($oMerkmal_arr as $oMerkmal) {
                 $oMerkmalWert = new MerkmalWert($oMerkmal->kMerkmalWert, $this->kSprache);
                 $oMerkmal     = new Merkmal($oMerkmal->kMerkmal, false, $this->kSprache);
-
                 if (!isset($kMerkmal_arr[$oMerkmal->kMerkmal])) {
                     $kMerkmal_arr[$oMerkmal->kMerkmal]                   = $oMerkmal;
                     $kMerkmal_arr[$oMerkmal->kMerkmal]->oMerkmalWert_arr = [];
@@ -1535,7 +1535,6 @@ class Artikel
                 $oArtikelOptionen                             = self::getDefaultOptions();
                 $oArtikelOptionen->nKeineSichtbarkeitBeachten = $bGetInvisibleParts ? 1 : 0;
                 foreach ($parts as $i => $oStueckliste) {
-                    //@todo: Lager beachten
                     $oArtikel = new self();
                     $oArtikel->fuelleArtikel($oStueckliste->kArtikel, $oArtikelOptionen);
                     $oArtikel->holeBewertungDurchschnitt();
@@ -1560,16 +1559,17 @@ class Artikel
         $this->oProduktBundlePrice->fPriceDiff = 0.0;
         $this->oProduktBundle_arr              = [];
 
-        $Main = Shop::DB()->query(
-            "SELECT tartikel.kArtikel, tartikel.kStueckliste
+        $Main = Shop::DB()->queryPrepared(
+            'SELECT tartikel.kArtikel, tartikel.kStueckliste
                 FROM
                 (
                     SELECT kStueckliste
                         FROM tstueckliste
-                        WHERE kArtikel = {$this->kArtikel}
+                        WHERE kArtikel = :kArtikel
                 ) AS sub
                 JOIN tartikel 
-                    ON tartikel.kStueckliste = sub.kStueckliste",
+                    ON tartikel.kStueckliste = sub.kStueckliste',
+            ['kArtikel' => $this->kArtikel],
             NiceDB::RET_SINGLE_OBJECT
         );
         if (isset($Main->kArtikel, $Main->kStueckliste) && $Main->kArtikel > 0 && $Main->kStueckliste > 0) {
@@ -1653,10 +1653,10 @@ class Artikel
             }
         }
         if ($kSprache === $kDefaultLanguage) {
-            $conditionalFields   = "lang.cName, lang.cBeschreibung, lang.kSprache";
-            $conditionalLeftJoin = "LEFT JOIN tmediendateisprache AS lang 
+            $conditionalFields   = 'lang.cName, lang.cBeschreibung, lang.kSprache';
+            $conditionalLeftJoin = 'LEFT JOIN tmediendateisprache AS lang 
                                     ON lang.kMedienDatei = tmediendatei.kMedienDatei 
-                                    AND lang.kSprache = " . $kSprache;
+                                    AND lang.kSprache = ' . $kSprache;
         } else {
             $conditionalFields   = "IF(TRIM(IFNULL(lang.cName, '')) != '', lang.cName, deflang.cName) cName,
                                         IF(TRIM(IFNULL(lang.cBeschreibung, '')) != '', 
@@ -1902,11 +1902,12 @@ class Artikel
                 }
             } else {
                 $kArtikel    = $kArtikel > 0 ? $kArtikel : (int)$this->kArtikel;
-                $oArtikelExt = Shop::DB()->query(
-                    "SELECT fDurchschnittsBewertung
+                $oArtikelExt = Shop::DB()->queryPrepared(
+                    'SELECT fDurchschnittsBewertung
                         FROM tartikelext
-                        WHERE round(fDurchschnittsBewertung) >= " . $minStars . "
-                            AND kArtikel = " . $kArtikel,
+                        WHERE ROUND(fDurchschnittsBewertung) >= :minStars
+                            AND kArtikel = :kArtikel',
+                    ['minStars' => $minStars, 'kArtikel' => $kArtikel],
                     NiceDB::RET_SINGLE_OBJECT
                 );
                 if (!empty($oArtikelExt)) {
@@ -3305,8 +3306,7 @@ class Artikel
             if ($varDetailPrice->kArtikel !== $nLastkArtikel) {
                 $nLastkArtikel = $varDetailPrice->kArtikel;
                 $oArtikelTMP   = new self();
-//                $oArtikelTMP->fuelleArtikel($varDetailPrice->kArtikel, $oArtikelOptionenTMP, $kKundengruppe, $kSprache);
-                $oArtikelTMP->fillMinimal($varDetailPrice->kArtikel, $kKundengruppe);
+                $oArtikelTMP->getPriceData($varDetailPrice->kArtikel, $kKundengruppe);
             }
             if (!isset($this->oVariationDetailPreis_arr[$idx])) {
                 $this->oVariationDetailPreis_arr[$idx] = new stdClass();
@@ -3405,12 +3405,13 @@ class Artikel
         if (!$bSeo) {
             return $this;
         }
-        $oSeo_arr = Shop::DB()->query(
+        $oSeo_arr = Shop::DB()->queryPrepared(
             "SELECT cSeo, kSprache
                 FROM tseo
                 WHERE cKey = 'kArtikel'
-                    AND kKey = " . (int)$this->kArtikel . " 
+                    AND kKey = :kArtikel 
                 ORDER BY kSprache",
+            ['kArtikel' => $this->kArtikel],
             NiceDB::RET_ARRAY_OF_OBJECTS
         );
 
@@ -3674,7 +3675,7 @@ class Artikel
         $oSQLSeo->cJOIN   = '';
         $oSQLSeo->cSELECT = "tseo.cSeo, ";
         $oSQLSeo->cJOIN   = "LEFT JOIN tseo ON tseo.cKey = 'kArtikel' AND tseo.kKey = tartikel.kArtikel";
-        $oSQLSeo->cJOIN   .= " AND tseo.kSprache=" . $kSprache;
+        $oSQLSeo->cJOIN   .= " AND tseo.kSprache = " . $kSprache;
         // Work Around um an kStueckliste zu kommen
         $oStueckliste    = Shop::DB()->query(
             "SELECT kStueckliste, fLagerbestand
@@ -4275,16 +4276,20 @@ class Artikel
      * @param int $kKundengruppe
      * @return array|int|object
      */
-    public function fillMinimal($kArtikel, $kKundengruppe)
+    public function getPriceData($kArtikel, $kKundengruppe)
     {
-        $productSQL = "SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse, 
+        $oArtikelTMP = Shop::DB()->queryPrepared(
+            'SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse, 
                 tartikel.fPackeinheit, tartikel.cVPE, tartikel.fVPEWert, tartikel.cVPEEinheit
                 FROM tartikel 
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL AND tartikel.kArtikel = " . $kArtikel;
-        $oArtikelTMP = Shop::DB()->query($productSQL, NiceDB::RET_SINGLE_OBJECT);
+                    AND tartikelsichtbarkeit.kKundengruppe = :kKundengruppe
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL 
+                    AND tartikel.kArtikel = :kArtikel',
+            ['kArtikel' => $kArtikel, 'kKundengruppe' => $kKundengruppe],
+            NiceDB::RET_SINGLE_OBJECT
+        );
 
         if ($oArtikelTMP !== null) {
             foreach (get_object_vars($oArtikelTMP) as $k => $v) {
@@ -4379,8 +4384,8 @@ class Artikel
             // Variationen Lagerbestand 0
             if ($this->cLagerBeachten === 'Y'
                 && $this->cLagerKleinerNull === 'N'
-                && $this->cLagerVariation === 'Y' &&
-                is_array($this->Variationen)
+                && $this->cLagerVariation === 'Y'
+                && is_array($this->Variationen)
                 && count($this->Variationen) > 0
             ) {
                 $bSuchspecial_arr[SEARCHSPECIALS_OUTOFSTOCK] = $this->nVariationenVerfuegbar === 0;
@@ -4491,13 +4496,14 @@ class Artikel
         if ($this->kArtikel <= 0) {
             return false;
         }
-        $nSchwelleTopBewertet = isset($oBoxenEinstellung_arr['boxen']['boxen_topbewertet_minsterne'])
+        $minStars  = isset($oBoxenEinstellung_arr['boxen']['boxen_topbewertet_minsterne'])
             ? (int)$oBoxenEinstellung_arr['boxen']['boxen_topbewertet_minsterne']
             : 4;
-        $oBewertet            = Shop::DB()->query(
-            "SELECT round(fDurchschnittsBewertung) >= " . $nSchwelleTopBewertet . " AS bIsTopBewertet
+        $oBewertet = Shop::DB()->queryPrepared(
+            'SELECT ROUND(fDurchschnittsBewertung) >= :threshold AS bIsTopBewertet
                 FROM tartikelext
-                WHERE kArtikel = " . (int)$this->kArtikel,
+                WHERE kArtikel :kArtikel',
+            ['threshold' => $minStars, 'kArtikel' => $this->kArtikel],
             NiceDB::RET_SINGLE_OBJECT
         );
 
@@ -4518,13 +4524,14 @@ class Artikel
         if ($this->kArtikel <= 0) {
             return false;
         }
-        $nSchwelleBestseller = isset($oGlobalEinstellung_arr['global']['global_bestseller_minanzahl'])
+        $minSales    = isset($oGlobalEinstellung_arr['global']['global_bestseller_minanzahl'])
             ? (float)$this->conf['global']['global_bestseller_minanzahl']
             : 10;
-        $oBestseller         = Shop::DB()->query(
-            "SELECT round(fAnzahl) >= " . $nSchwelleBestseller . " AS bIsBestseller
+        $oBestseller = Shop::DB()->queryPrepared(
+            'SELECT ROUND(fAnzahl) >= :threshold AS bIsBestseller
                 FROM tbestseller
-                WHERE kArtikel = " . (int)$this->kArtikel,
+                WHERE kArtikel = :kArtikel',
+            ['threshold' => $minSales, 'kArtikel' => $this->kArtikel],
             NiceDB::RET_SINGLE_OBJECT
         );
 

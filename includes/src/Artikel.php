@@ -4125,87 +4125,17 @@ class Artikel
         ) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGER;
         }
-        if (isset($this->Preise->fVKNetto, $this->conf['global']['global_preis0'])
-            && !$this->bHasKonfig
+        if (!$this->bHasKonfig
             && $this->Preise->fVKNetto == 0
             && $this->conf['global']['global_preis0'] === 'N'
+            && isset($this->Preise->fVKNetto, $this->conf['global']['global_preis0'])
         ) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_PREISAUFANFRAGE;
         }
         if (!empty($this->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_UNVERKAEUFLICH;
         }
-        if (!empty($this->Preise->cVKLocalized[0])) {
-            $strVKLocalized = isset($_SESSION['Kundengruppe']->nNettoPreise)
-                ? $this->Preise->cVKLocalized[Session::CustomerGroup()->getIsMerchant()]
-                : $this->Preise->cVKLocalized[0];
-            //$strVKLocalized = $this->Preise->cVKLocalized[0];
-            $strVKLocalized = StringHandler::htmlentitydecode($strVKLocalized);
-            $strVKLocalized = str_replace('&euro;', 'EUR', $strVKLocalized);
-
-            if ($this->conf['preisanzeige']['preisanzeige_preisgrafik_artikeldetails_anzeigen'] === 'Y') {
-                $font = new JTLFont(
-                    $this->conf['preisanzeige']['preisanzeige_schriftart_artikeldetails'],
-                    $this->conf['preisanzeige']['preisanzeige_groesse_artikeldetails'],
-                    $this->conf['preisanzeige']['preisanzeige_farbe_artikeldetails']
-                );
-
-                $strVKImage = $font->asHTML($strVKLocalized);
-
-                $this->Preise->strPreisGrafik_Detail       = $strVKImage;
-                $this->Preise->cPreisGrafik_Artikeldetails = $strVKImage;
-            }
-
-            if ($this->conf['preisanzeige']['preisanzeige_preisgrafik_artikeluebersicht_anzeigen'] === 'Y') {
-                $font = new JTLFont(
-                    $this->conf['preisanzeige']['preisanzeige_schriftart_artikeluebersicht'],
-                    $this->conf['preisanzeige']['preisanzeige_groesse_artikeluebersicht'],
-                    $this->conf['preisanzeige']['preisanzeige_farbe_artikeluebersicht']
-                );
-
-                $strVKImage = $font->asHTML($strVKLocalized);
-
-                $this->Preise->strPreisGrafik_Suche           = $strVKImage;
-                $this->Preise->strPreisGrafik_Uebersicht      = $strVKImage;
-                $this->Preise->cPreisGrafik_Artikeluebersicht = $strVKImage;
-            }
-
-            if ($this->conf['preisanzeige']['preisanzeige_preisgrafik_boxen_anzeigen'] === 'Y') {
-                $font = new JTLFont(
-                    $this->conf['preisanzeige']['preisanzeige_schriftart_boxen'],
-                    $this->conf['preisanzeige']['preisanzeige_groesse_boxen'],
-                    $this->conf['preisanzeige']['preisanzeige_farbe_boxen']
-                );
-
-                $strVKImage = $font->asHTML($strVKLocalized);
-
-                $this->Preise->strPreisGrafik_Topbox        = $strVKImage;
-                $this->Preise->strPreisGrafik_Sonderbox     = $strVKImage;
-                $this->Preise->strPreisGrafik_Neubox        = $strVKImage;
-                $this->Preise->strPreisGrafik_Bestsellerbox = $strVKImage;
-                $this->Preise->strPreisGrafik_Zuletztbox    = $strVKImage;
-                $this->Preise->strPreisGrafik_Baldbox       = $strVKImage;
-                $this->Preise->cPreisGrafik_Boxen           = $strVKImage;
-            }
-
-            if ($this->conf['preisanzeige']['preisanzeige_preisgrafik_startseite_anzeigen'] === 'Y') {
-                $font = new JTLFont(
-                    $this->conf['preisanzeige']['preisanzeige_schriftart_startseite'],
-                    $this->conf['preisanzeige']['preisanzeige_groesse_startseite'],
-                    $this->conf['preisanzeige']['preisanzeige_farbe_startseite']
-                );
-
-                $strVKImage = $font->asHTML($strVKLocalized);
-
-                $this->Preise->strPreisGrafik_TopboxStartseite        = $strVKImage;
-                $this->Preise->strPreisGrafik_SonderboxStartseite     = $strVKImage;
-                $this->Preise->strPreisGrafik_NeuboxStartseite        = $strVKImage;
-                $this->Preise->strPreisGrafik_BestsellerboxStartseite = $strVKImage;
-                $this->Preise->strPreisGrafik_ZuletztboxStartseite    = $strVKImage;
-                $this->Preise->strPreisGrafik_BaldboxStartseite       = $strVKImage;
-                $this->Preise->cPreisGrafik_Startseite                = $strVKImage;
-            }
-        }
+        $this->buildPriceGraphics();
 
         $this->cUVPLocalized = gibPreisStringLocalized($this->fUVP);
         // Lieferzeit abhaengig vom Session-Lieferland aktualisieren
@@ -4275,6 +4205,87 @@ class Artikel
     }
 
     /**
+     * @return $this
+     */
+    private function buildPriceGraphics()
+    {
+        if (empty($this->Preise->cVKLocalized[0])) {
+            return $this;
+        }
+        $strVKLocalized = isset($_SESSION['Kundengruppe']->nNettoPreise)
+            ? $this->Preise->cVKLocalized[Session::CustomerGroup()->getIsMerchant()]
+            : $this->Preise->cVKLocalized[0];
+        //$strVKLocalized = $this->Preise->cVKLocalized[0];
+        $strVKLocalized = StringHandler::htmlentitydecode($strVKLocalized);
+        $strVKLocalized = str_replace('&euro;', 'EUR', $strVKLocalized);
+
+        if ($this->conf['preisanzeige']['preisanzeige_preisgrafik_artikeldetails_anzeigen'] === 'Y') {
+            $font = new JTLFont(
+                $this->conf['preisanzeige']['preisanzeige_schriftart_artikeldetails'],
+                $this->conf['preisanzeige']['preisanzeige_groesse_artikeldetails'],
+                $this->conf['preisanzeige']['preisanzeige_farbe_artikeldetails']
+            );
+
+            $strVKImage = $font->asHTML($strVKLocalized);
+
+            $this->Preise->strPreisGrafik_Detail       = $strVKImage;
+            $this->Preise->cPreisGrafik_Artikeldetails = $strVKImage;
+        }
+
+        if ($this->conf['preisanzeige']['preisanzeige_preisgrafik_artikeluebersicht_anzeigen'] === 'Y') {
+            $font = new JTLFont(
+                $this->conf['preisanzeige']['preisanzeige_schriftart_artikeluebersicht'],
+                $this->conf['preisanzeige']['preisanzeige_groesse_artikeluebersicht'],
+                $this->conf['preisanzeige']['preisanzeige_farbe_artikeluebersicht']
+            );
+
+            $strVKImage = $font->asHTML($strVKLocalized);
+
+            $this->Preise->strPreisGrafik_Suche           = $strVKImage;
+            $this->Preise->strPreisGrafik_Uebersicht      = $strVKImage;
+            $this->Preise->cPreisGrafik_Artikeluebersicht = $strVKImage;
+        }
+
+        if ($this->conf['preisanzeige']['preisanzeige_preisgrafik_boxen_anzeigen'] === 'Y') {
+            $font = new JTLFont(
+                $this->conf['preisanzeige']['preisanzeige_schriftart_boxen'],
+                $this->conf['preisanzeige']['preisanzeige_groesse_boxen'],
+                $this->conf['preisanzeige']['preisanzeige_farbe_boxen']
+            );
+
+            $strVKImage = $font->asHTML($strVKLocalized);
+
+            $this->Preise->strPreisGrafik_Topbox        = $strVKImage;
+            $this->Preise->strPreisGrafik_Sonderbox     = $strVKImage;
+            $this->Preise->strPreisGrafik_Neubox        = $strVKImage;
+            $this->Preise->strPreisGrafik_Bestsellerbox = $strVKImage;
+            $this->Preise->strPreisGrafik_Zuletztbox    = $strVKImage;
+            $this->Preise->strPreisGrafik_Baldbox       = $strVKImage;
+            $this->Preise->cPreisGrafik_Boxen           = $strVKImage;
+        }
+
+        if ($this->conf['preisanzeige']['preisanzeige_preisgrafik_startseite_anzeigen'] === 'Y') {
+            $font = new JTLFont(
+                $this->conf['preisanzeige']['preisanzeige_schriftart_startseite'],
+                $this->conf['preisanzeige']['preisanzeige_groesse_startseite'],
+                $this->conf['preisanzeige']['preisanzeige_farbe_startseite']
+            );
+
+            $strVKImage = $font->asHTML($strVKLocalized);
+
+            $this->Preise->strPreisGrafik_TopboxStartseite        = $strVKImage;
+            $this->Preise->strPreisGrafik_SonderboxStartseite     = $strVKImage;
+            $this->Preise->strPreisGrafik_NeuboxStartseite        = $strVKImage;
+            $this->Preise->strPreisGrafik_BestsellerboxStartseite = $strVKImage;
+            $this->Preise->strPreisGrafik_ZuletztboxStartseite    = $strVKImage;
+            $this->Preise->strPreisGrafik_BaldboxStartseite       = $strVKImage;
+            $this->Preise->cPreisGrafik_Startseite                = $strVKImage;
+        }
+
+        return $this;
+    }
+
+    /**
      * @param int $kArtikel
      * @param int $kKundengruppe
      * @return array|int|object
@@ -4298,7 +4309,8 @@ class Artikel
             foreach (get_object_vars($oArtikelTMP) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->holPreise($kKundengruppe, $this)->rabattierePreise($kKundengruppe);
+            $this->holPreise($kKundengruppe, $this)
+                 ->rabattierePreise($kKundengruppe);
         }
 
         return $this;

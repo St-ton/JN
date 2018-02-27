@@ -2215,6 +2215,10 @@ class Artikel
                     if (!isset($oVariationTMP->fAufpreisNetto_teigenschaftwertaufpreis) && $oVariationTMP->fAufpreisNetto != 0) {
                         $oVariationTMP->fAufpreisNetto_teigenschaftwertaufpreis = $oVariationTMP->fAufpreisNetto;
                     }
+                    if (defined('CACHE_VARIATIONS') && ($cached = Shop::get('kew_' . (int)$oVariationTMP->kEigenschaftWert)) !== null) {
+                        $this->Variationen[$nZaehler]->Werte[$i] = $cached;
+                        continue;
+                    }
                     $value                                   = new stdClass();
                     $value->kEigenschaftWert                 = (int)$oVariationTMP->kEigenschaftWert;
                     $value->kEigenschaft                     = (int)$oVariationTMP->kEigenschaft;
@@ -2382,6 +2386,12 @@ class Artikel
                         if ($this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto > 0) {
                             $this->nVariationsAufpreisVorhanden = 1;
                         }
+                    }
+                    if (defined('CACHE_VARIATIONS')) {
+                        Shop::set(
+                            'kew_' . $this->Variationen[$nZaehler]->Werte[$i]->kEigenschaftWert,
+                            $this->Variationen[$nZaehler]->Werte[$i]
+                        );
                     }
                 }
                 $matrixConf = isset($conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'])

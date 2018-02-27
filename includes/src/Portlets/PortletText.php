@@ -9,7 +9,7 @@ namespace Portlets;
 /**
  * Class WidgetClock
  */
-class PortletText extends \CMSPortlet
+class PortletText extends \OPCPortlet
 {
     /**
      * @return string

@@ -9,7 +9,7 @@ namespace Portlets;
 /**
  * Class PortletHeading
  */
-class PortletButton extends \CMSPortlet
+class PortletButton extends \OPCPortlet
 {
     /**
      * @return string

@@ -6,9 +6,9 @@
 use Imanee\Imanee;
 
 /**
- * Class CMSPortlet
+ * Class OPCPortlet
  */
-abstract class CMSPortlet
+abstract class OPCPortlet
 {
     /**
      * @var array -

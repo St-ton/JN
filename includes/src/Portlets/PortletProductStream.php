@@ -9,7 +9,7 @@ namespace Portlets;
 /**
  * Class PortletProductSlider
  */
-class PortletProductStream extends \CMSPortlet
+class PortletProductStream extends \OPCPortlet
 {
     /**
      * @return string

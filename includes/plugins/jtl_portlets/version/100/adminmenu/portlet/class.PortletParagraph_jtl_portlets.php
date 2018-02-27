@@ -8,7 +8,7 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CMSPortlet.php';
 /**
  * Class WidgetClock
  */
-class PortletParagraph_jtl_portlets extends CMSPortlet
+class PortletParagraph_jtl_portlets extends OPCPortlet
 {
     public function getPreviewHtml()
     {

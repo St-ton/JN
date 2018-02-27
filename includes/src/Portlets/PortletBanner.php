@@ -9,7 +9,7 @@ namespace Portlets;
 /**
  * Class PortletBanner
  */
-class PortletBanner extends \CMSPortlet
+class PortletBanner extends \OPCPortlet
 {
     /**
      * @return string - sidepanel button

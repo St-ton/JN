@@ -50,17 +50,17 @@ class OPC
     /**
      * @param $pageID - current page ID
      * @param bool $bRenderPreview
-     * @return CMSPage
+     * @return OPCPage
      */
     public function getPage($pageID, $bRenderPreview = false)
     {
         $pageDB = Shop::DB()->select('tcmspage', 'cIdHash', $pageID, null, null, null, null, false, 'kPage');
 
         if ($pageDB === null) {
-            $page          = new \CMSPage();
+            $page          = new \OPCPage();
             $page->cIdHash = $pageID;
         } else {
-            $page = new \CMSPage($pageDB->kPage);
+            $page = new \OPCPage($pageDB->kPage);
         }
 
         if ($bRenderPreview) {
@@ -74,11 +74,11 @@ class OPC
      * @param $pageID string
      * @param $revisionID int
      * @param bool $bRenderPreview
-     * @return CMSPage
+     * @return OPCPage
      */
     public function getPageRevision($pageID, $revisionID, $bRenderPreview = false)
     {
-        $page          = new \CMSPage();
+        $page          = new \OPCPage();
         $page->cIdHash = $pageID;
         $page->loadRevision($revisionID);
 
@@ -101,7 +101,7 @@ class OPC
     }
 
     /**
-     * @return CMSPage
+     * @return OPCPage
      */
     public function getCurrentPage()
     {
@@ -115,7 +115,7 @@ class OPC
      */
     public function savePage($pageID, $pageURL, $pageData)
     {
-        $oCmsPage           = new \CMSPage();
+        $oCmsPage           = new \OPCPage();
         $oCmsPage->cIdHash  = $pageID;
         $oCmsPage->cPageUrl = $pageURL;
         $oCmsPage->data     = $pageData;
@@ -128,7 +128,7 @@ class OPC
      */
     public function storeTemplate($cTemplateName, $templateData)
     {
-        $oCmsTemplate        = new \CMSTemplate();
+        $oCmsTemplate        = new \OPCTemplate();
         $oCmsTemplate->cName = $cTemplateName;
         $oCmsTemplate->data  = $templateData;
         $oCmsTemplate->save();
@@ -139,7 +139,7 @@ class OPC
      */
     public function deleteTemplate($kTemplate)
     {
-        $oCmsTemplate = new \CMSTemplate($kTemplate);
+        $oCmsTemplate = new \OPCTemplate($kTemplate);
         $oCmsTemplate->remove();
     }
 
@@ -162,7 +162,7 @@ class OPC
 
     /**
      * @param int $kPortlet
-     * @return CMSPortlet
+     * @return OPCPortlet
      * @throws Exception
      */
     public function createPortlet($kPortlet)
@@ -186,7 +186,7 @@ class OPC
     }
 
     /**
-     * @return CMSPortlet[]
+     * @return OPCPortlet[]
      */
     public function getPortlets()
     {
@@ -202,7 +202,7 @@ class OPC
 
     /**
      * @param string $cName
-     * @return CMSTemplate
+     * @return OPCTemplate
      * @throws Exception
      */
     public function createTemplate($cName)
@@ -213,11 +213,11 @@ class OPC
             throw new Exception("Template name '$cName' could not be found in the database.", 404);
         }
 
-        return new CMSTemplate($oDbTemplate->kTemplate);
+        return new \OPCTemplate($oDbTemplate->kTemplate);
     }
 
     /**
-     * @return CMSTemplate[]
+     * @return OPCTemplate[]
      */
     public function getTemplates()
     {

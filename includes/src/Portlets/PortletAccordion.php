@@ -9,7 +9,7 @@ namespace Portlets;
 /**
  * Class PortletAccordion
  */
-class PortletAccordion extends \CMSPortlet
+class PortletAccordion extends \OPCPortlet
 {
     /**
      * @return string

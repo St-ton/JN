@@ -5,9 +5,9 @@
  */
 
 /**
- * Class CMSTemplate
+ * Class OPCTemplate
  */
-class CMSTemplate
+class OPCTemplate
 {
     /**
      * @var int

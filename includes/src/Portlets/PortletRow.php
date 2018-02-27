@@ -9,7 +9,7 @@ namespace Portlets;
 /**
  * Class PortletRow
  */
-class PortletRow extends \CMSPortlet
+class PortletRow extends \OPCPortlet
 {
     /**
      * @return string

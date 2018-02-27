@@ -9,7 +9,7 @@ namespace Portlets;
 /**
  * Class PortletHeading
  */
-class PortletVideo extends \CMSPortlet
+class PortletVideo extends \OPCPortlet
 {
     /**
      * @return string

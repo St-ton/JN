@@ -5,9 +5,9 @@
  */
 
 /**
- * Class CMSPage
+ * Class OPCPage
  */
-class CMSPage
+class OPCPage
 {
     /**
      * @var int

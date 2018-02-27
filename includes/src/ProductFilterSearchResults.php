@@ -25,6 +25,11 @@ class ProductFilterSearchResults
 
     /**
      * @var int
+     */
+    private $visibileProductCount = 0;
+
+    /**
+     * @var int
      * former ArtikelVon
      */
     private $offsetStart = 0;
@@ -274,6 +279,25 @@ class ProductFilterSearchResults
     public function setProductCount($productCount)
     {
         $this->productCount = $productCount;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVisibleProductCount()
+    {
+        return $this->visibileProductCount;
+    }
+
+    /**
+     * @param int $count
+     * @return ProductFilterSearchResults
+     */
+    public function setVisibleProductCount($count)
+    {
+        $this->visibileProductCount = $count;
 
         return $this;
     }

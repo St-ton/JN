@@ -65,12 +65,14 @@ if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart']) &&
 
 if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && validateToken()) {
     $step = 'Zuschlagsliste';
-    Shop::DB()->query(
+    Shop::DB()->queryPrepared(
         "DELETE tversandzuschlag, tversandzuschlagsprache
             FROM tversandzuschlag
             LEFT JOIN tversandzuschlagsprache 
               ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-            WHERE tversandzuschlag.kVersandzuschlag = " . (int)$_GET['delzus'], 4
+            WHERE tversandzuschlag.kVersandzuschlag = :kVersandzuschlag",
+        ['kVersandzuschlag' => $_GET['delzus']],
+        4
     );
     Shop::DB()->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
@@ -128,31 +130,46 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
     if ($ZuschlagPLZ->cPLZ || $ZuschlagPLZ->cPLZAb) {
         //schaue, ob sich PLZ ueberscheiden
         if ($ZuschlagPLZ->cPLZ) {
-            $plz_x = Shop::DB()->query(
-                "SELECT tversandzuschlagplz.*
+            $plz_x = Shop::DB()->queryPrepared(
+                'SELECT tversandzuschlagplz.*
                     FROM tversandzuschlagplz, tversandzuschlag
-                    WHERE (tversandzuschlagplz.cPLZ = '" . $ZuschlagPLZ->cPLZ . "'
-                        OR (tversandzuschlagplz.cPLZAb <= '" . $ZuschlagPLZ->cPLZ . "'
-                        AND tversandzuschlagplz.cPLZBis >= '" . $ZuschlagPLZ->cPLZ . "'))
-                        AND tversandzuschlagplz.kVersandzuschlag != " . $ZuschlagPLZ->kVersandzuschlag . "
+                    WHERE (tversandzuschlagplz.cPLZ = :plz
+                        OR (tversandzuschlagplz.cPLZAb <= :plz
+                        AND tversandzuschlagplz.cPLZBis >= :plz
+                        AND tversandzuschlagplz.kVersandzuschlag != :kVersandzuschlag
                         AND tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                        AND tversandzuschlag.cISO = '" . $versandzuschlag->cISO . "'
-                        AND tversandzuschlag.kVersandart = " . (int)$versandzuschlag->kVersandart, 1
+                        AND tversandzuschlag.cISO = :iso
+                        AND tversandzuschlag.kVersandart = :kVersandart',
+                [
+                    'plz'              => $ZuschlagPLZ->cPLZ,
+                    'kVersandzuschlag' => $ZuschlagPLZ->kVersandzuschlag,
+                    'iso'              => $versandzuschlag->cISO,
+                    'kVersandart'      => $versandzuschlag->kVersandart,
+                ],
+                1
             );
         } else {
-            $plz_x = Shop::DB()->query(
-                "SELECT tversandzuschlagplz.*
+            $plz_x = Shop::DB()->queryPrepared(
+                'SELECT tversandzuschlagplz.*
                     FROM tversandzuschlagplz, tversandzuschlag
-                    WHERE ((tversandzuschlagplz.cPLZ <= '" . $ZuschlagPLZ->cPLZBis . "'
-                        AND tversandzuschlagplz.cPLZ >= '" . $ZuschlagPLZ->cPLZAb . "')
-                        OR (tversandzuschlagplz.cPLZAb >= '" . $ZuschlagPLZ->cPLZAb . "'
-                        AND tversandzuschlagplz.cPLZAb <= '" . $ZuschlagPLZ->cPLZBis . "')
-                        OR (tversandzuschlagplz.cPLZBis >= '" . $ZuschlagPLZ->cPLZAb . "'
-                        AND tversandzuschlagplz.cPLZBis <= '" . $ZuschlagPLZ->cPLZBis . "'))
-                        AND tversandzuschlagplz.kVersandzuschlag != " . $ZuschlagPLZ->kVersandzuschlag . "
+                    WHERE ((tversandzuschlagplz.cPLZ <= :plzBis
+                        AND tversandzuschlagplz.cPLZ >= :plzAb
+                        OR (tversandzuschlagplz.cPLZAb >= :plzBis
+                        AND tversandzuschlagplz.cPLZAb <= :plzBis
+                        OR (tversandzuschlagplz.cPLZBis >= :plzAb
+                        AND tversandzuschlagplz.cPLZBis <= :plzBis
+                        AND tversandzuschlagplz.kVersandzuschlag != :kVersandzuschlag
                         AND tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                        AND tversandzuschlag.cISO = '" . $versandzuschlag->cISO . "'
-                        AND tversandzuschlag.kVersandart = " . $versandzuschlag->kVersandart, 1
+                        AND tversandzuschlag.cISO = :iso
+                        AND tversandzuschlag.kVersandart = :kVersandart',
+                [
+                    'plzAb'            => $ZuschlagPLZ->cPLZAb,
+                    'plzBis'           => $ZuschlagPLZ->cPLZBis,
+                    'kVersandzuschlag' => $ZuschlagPLZ->kVersandzuschlag,
+                    'iso'              => $versandzuschlag->cISO,
+                    'kVersandart'      => $versandzuschlag->kVersandart,
+                ],
+                1
             );
         }
         if ((isset($plz_x->cPLZ) && $plz_x->cPLZ) || (isset($plz_x->cPLZAb) && $plz_x->cPLZAb)) {

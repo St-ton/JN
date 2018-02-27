@@ -521,34 +521,36 @@ class Preise
      */
     public function localizePreise()
     {
-        $this->cPreis1Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis1, $this->fUst));
-        $this->cPreis2Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis2, $this->fUst));
-        $this->cPreis3Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis3, $this->fUst));
-        $this->cPreis4Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis4, $this->fUst));
-        $this->cPreis5Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis5, $this->fUst));
+        $currency = Session::Currency();
 
-        $this->cPreis1Localized[1] = gibPreisStringLocalized($this->fPreis1);
-        $this->cPreis2Localized[1] = gibPreisStringLocalized($this->fPreis2);
-        $this->cPreis3Localized[1] = gibPreisStringLocalized($this->fPreis3);
-        $this->cPreis4Localized[1] = gibPreisStringLocalized($this->fPreis4);
-        $this->cPreis5Localized[1] = gibPreisStringLocalized($this->fPreis5);
+        $this->cPreis1Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis1, $this->fUst), $currency);
+        $this->cPreis2Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis2, $this->fUst), $currency);
+        $this->cPreis3Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis3, $this->fUst), $currency);
+        $this->cPreis4Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis4, $this->fUst), $currency);
+        $this->cPreis5Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis5, $this->fUst), $currency);
+
+        $this->cPreis1Localized[1] = gibPreisStringLocalized($this->fPreis1, $currency);
+        $this->cPreis2Localized[1] = gibPreisStringLocalized($this->fPreis2, $currency);
+        $this->cPreis3Localized[1] = gibPreisStringLocalized($this->fPreis3, $currency);
+        $this->cPreis4Localized[1] = gibPreisStringLocalized($this->fPreis4, $currency);
+        $this->cPreis5Localized[1] = gibPreisStringLocalized($this->fPreis5, $currency);
 
         $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->cPreisLocalized_arr[] = [
-                gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst)),
-                gibPreisStringLocalized($fPreis)
+                gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst), $currency),
+                gibPreisStringLocalized($fPreis, $currency)
             ];
         }
 
-        $this->cVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->fVKNetto, $this->fUst));
-        $this->cVKLocalized[1] = gibPreisStringLocalized($this->fVKNetto);
+        $this->cVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->fVKNetto, $this->fUst), $currency);
+        $this->cVKLocalized[1] = gibPreisStringLocalized($this->fVKNetto, $currency);
 
         $this->fVKBrutto = berechneBrutto($this->fVKNetto, $this->fUst);
 
         if ($this->alterVKNetto) {
-            $this->alterVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->alterVKNetto, $this->fUst));
-            $this->alterVKLocalized[1] = gibPreisStringLocalized($this->alterVKNetto);
+            $this->alterVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->alterVKNetto, $this->fUst), $currency);
+            $this->alterVKLocalized[1] = gibPreisStringLocalized($this->alterVKNetto, $currency);
         }
 
         return $this;

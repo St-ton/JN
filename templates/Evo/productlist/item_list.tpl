@@ -121,11 +121,7 @@
         <div class="col-xs-4 product-detail">
             <div class="product-detail-cell">
                 {block name="form-basket"}
-                    {assign var=price_image value=""}
-                    {if isset($Artikel->Preise->strPreisGrafik_Suche)}
-                        {assign var=$price_image value=$Artikel->Preise->strPreisGrafik_Suche}
-                    {/if}
-                    {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$price_image tplscope=$tplscope}
+                    {include file="productdetails/price.tpl" Artikel=$Artikel tplscope=$tplscope}
                     <div class="delivery-status">
                         {block name="delivery-status"}
                             {assign var=anzeige value=$Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}

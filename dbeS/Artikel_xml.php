@@ -1410,10 +1410,10 @@ function clearProductCaches($articles)
         if (count($deps) > 0) {
             // flush cache tags associated with the article's manufacturer ID
             $manufacturers = Shop::DB()->query(
-                'SELECT kHersteller 
-                        FROM tartikel 
-                        WHERE kArtikel IN (' . implode(',', $deps) . ') 
-                            AND kHersteller > 0',
+                'SELECT DISTINCT kHersteller 
+                    FROM tartikel 
+                    WHERE kArtikel IN (' . implode(',', $deps) . ') 
+                        AND kHersteller > 0',
                 NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($manufacturers as $manufacturer) {
@@ -1421,7 +1421,7 @@ function clearProductCaches($articles)
             }
             // flush cache tags associated with the article's category IDs
             $categories = Shop::DB()->query(
-                "SELECT kKategorie
+                "SELECT DISTINCT kKategorie
                     FROM tkategorieartikel
                     WHERE kArtikel IN (" . implode(',', $deps) . ')',
                 NiceDB::RET_ARRAY_OF_OBJECTS
@@ -1431,7 +1431,7 @@ function clearProductCaches($articles)
             }
             // flush parent article IDs
             $parentArticles = Shop::DB()->query(
-                "SELECT kVaterArtikel AS id
+                "SELECT DISTINCT kVaterArtikel AS id
                     FROM tartikel
                     WHERE kArtikel IN (" . implode(',', $deps) . ')
                     AND kVaterArtikel > 0',

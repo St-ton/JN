@@ -408,11 +408,12 @@ class Status
     protected function needPasswordRehash2FA()
     {
         $passwordService = Shop::Container()->getPasswordService();
-        $hashes = Shop::DB()->query("
+        $hashes          = Shop::DB()->query("
             SELECT *
             FROM tadmin2facodes
             GROUP BY kAdminlogin", 2
         );
+
         foreach ($hashes as $hash) {
             if ($passwordService->needsRehash($hash->cEmergencyCode)) {
                 return true;

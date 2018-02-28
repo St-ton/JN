@@ -5030,8 +5030,7 @@ function getDefaultLanguageID()
  */
 function generateCSRFToken()
 {
-    $cryptoService = Shop::Container()->getCryptoService();
-    return $cryptoService->randomString(32);
+    return Shop::Container()->getCryptoService()->randomString(32);
 }
 
 /**

@@ -18,7 +18,7 @@
         <meta property="og:site_name" content="{$meta_title}" />
         <meta property="og:title" content="{$meta_title}" />
         <meta property="og:description" content="{$meta_description|truncate:1000:"":true}" />
-        <meta property="og:image" content="{$ShopLogoURL}" />
+        <meta property="og:image" content="{$ShopURL}/{$ShopLogoURL}" />
         <meta property="og:url" content="{$cCanonicalURL}"/>
     {/block}
 
@@ -28,9 +28,7 @@
         <link rel="canonical" href="{$cCanonicalURL}">
     {/if}
 
-    {block name="head-base"}
-        <base href="{$ShopURL}/">
-    {/block}
+    {block name="head-base"}{/block}
 
     {block name="head-icons"}
         {if !empty($Einstellungen.template.theme.favicon)}
@@ -45,7 +43,7 @@
         {else}
             <link type="image/x-icon" href="{$ShopURL}/favicon-default.ico" rel="shortcut icon">
         {/if}
-        {if $nSeitenTyp == 1 && isset($Artikel) && !empty($Artikel->Bilder)}
+        {if $nSeitenTyp === 1 && !empty($Artikel->Bilder)}
             <link rel="image_src" href="{$Artikel->Bilder[0]->cURLGross}">
             <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
         {/if}
@@ -55,12 +53,12 @@
         {* css *}
         {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
             {foreach from=$cCSS_arr item="cCSS"}
-                <link type="text/css" href="{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
+                <link type="text/css" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
             {/foreach}
 
             {if isset($cPluginCss_arr)}
                 {foreach from=$cPluginCss_arr item="cCSS"}
-                    <link type="text/css" href="{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
+                    <link type="text/css" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
                 {/foreach}
             {/if}
         {else}
@@ -83,11 +81,11 @@
     {/block}
 
     {* Pagination *}
-    {if isset($Suchergebnisse->Seitenzahlen->maxSeite) && $Suchergebnisse->Seitenzahlen->maxSeite > 1 && isset($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
-        {if $Suchergebnisse->Seitenzahlen->AktuelleSeite>1}
+    {if isset($Suchergebnisse) && $Suchergebnisse->getPages()->maxSeite > 1 && isset($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
+        {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
             <link rel="prev" href="{$oNaviSeite_arr.zurueck->cURL}">
         {/if}
-        {if $Suchergebnisse->Seitenzahlen->AktuelleSeite < $Suchergebnisse->Seitenzahlen->maxSeite}
+        {if $Suchergebnisse->getPages()->AktuelleSeite < $Suchergebnisse->getPages()->maxSeite}
             <link rel="next" href="{$oNaviSeite_arr.vor->cURL}">
         {/if}
     {/if}

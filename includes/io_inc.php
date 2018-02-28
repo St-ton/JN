@@ -117,7 +117,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
     $Artikel = new Artikel();
     $Artikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
     // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
-    if ($Artikel->kEigenschaftKombi > 0) {
+    if ($Artikel->kEigenschaftKombi > 0 || $Artikel->nIstVater === 1) {
         // Variationskombi-Artikel
         $_POST['eigenschaftwert'] = $oEigenschaftwerte_arr['eigenschaftwert'];
         $oEigenschaftwerte_arr    = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel);

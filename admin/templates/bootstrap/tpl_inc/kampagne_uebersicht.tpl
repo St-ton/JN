@@ -19,7 +19,7 @@
         <div id="uebersicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'uebersicht'} active in{/if}">
             <div class="panel panel-default">
                 <div class="panel-heading"><h3 class="panel-title">{#kampagneIntern#}</h3></div>
-                {if isset($oKampagne_arr[0]->kKampagne) && $oKampagne_arr[0]->kKampagne < 1000}
+                {if $oKampagne_arr|count > 0}
                     <div class="table-responsive">
                         <table class="table">
                             <tr>
@@ -51,7 +51,7 @@
                                         <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{#yes#}{else}{#no#}{/if}</td>
                                         <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
                                         <td class="tcenter">
-                                            <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" class="btn btn-default">{#kampagneEditBTN#}</a>
+                                            <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{#modify#}" class="btn btn-default"><i class="fa fa-edit"></i></a>
                                         </td>
                                     </tr>
                                 {/if}

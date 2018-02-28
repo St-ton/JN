@@ -124,7 +124,6 @@
                         'za_eos_dd_jtl',
                         'za_eos_direct_jtl',
                         'za_eos_ewallet_jtl',
-                        'za_clickandbuy_jtl',
                         'za_billpay_invoice_jtl',
                         'za_billpay_direct_debit_jtl',
                         'za_billpay_rate_payment_jtl',

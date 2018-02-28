@@ -54,7 +54,6 @@
 * PCLZip - LGPL
 * PHPMailer - LGPL
 * phpQuery - MIT
-* xajax - BSD
 
 ### Frontend Libs
 * jQuery + jQuery UI + various jQuery Scripts - MIT

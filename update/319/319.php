@@ -19,7 +19,6 @@ if (!defined('DB_USER')) {
 if (!defined('DB_PASS')) {
     die('Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 }
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
 $shop = Shop::getInstance();
 require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
 // datenbankverbindung aufbauen
@@ -29,7 +28,6 @@ try {
     die($exc->getMessage());
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Shopsetting.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
 //datenbankverbindung aufbauen
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.JTLCache.php';

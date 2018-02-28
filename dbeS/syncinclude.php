@@ -38,6 +38,16 @@ require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 require_once PFAD_ROOT . PFAD_DBES . 'xml_tools.php';
 require_once PFAD_ROOT . PFAD_DBES . 'mappings.php';
 
+if (!function_exists('Shop')) {
+    /**
+     * @return Shop
+     */
+    function Shop()
+    {
+        return Shop::getInstance();
+    }
+}
+
 $DB    = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 $cache = JTLCache::getInstance()->setJtlCacheConfig();
 
@@ -149,11 +159,8 @@ function auth()
     if (!isset($_POST['userID'], $_POST['userPWD'])) {
         return false;
     }
-    $cName      = $_POST['userID'];
-    $cPass      = $_POST['userPWD'];
-    $loginDaten = Shop::DB()->query("SELECT * FROM tsynclogin", 1);
 
-    return ($cName === $loginDaten->cName && $cPass === $loginDaten->cPass);
+    return (new Synclogin())->checkLogin($_POST['userID'], $_POST['userPWD']) === true;
 }
 
 /**

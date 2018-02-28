@@ -284,21 +284,6 @@ function baueProduktanfrageFormularVorgaben()
 }
 
 /**
- * @param array $fehlendeAngaben
- * @return int
- */
-function eingabenKorrekt($fehlendeAngaben)
-{
-    foreach ($fehlendeAngaben as $angabe) {
-        if ($angabe > 0) {
-            return 0;
-        }
-    }
-
-    return 1;
-}
-
-/**
  *
  */
 function sendeProduktanfrage()
@@ -414,9 +399,9 @@ function floodSchutzArtikelWeiterempfehlen($min = 0)
 function bearbeiteBenachrichtigung()
 {
     $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
-    if ((int)$_POST['a'] > 0 &&
-        isset($conf['artikeldetails']['benachrichtigung_nutzen']) &&
-        $conf['artikeldetails']['benachrichtigung_nutzen'] !== 'N'
+    if (isset($_POST['a'], $conf['artikeldetails']['benachrichtigung_nutzen'])
+        && (int)$_POST['a'] > 0
+        && $conf['artikeldetails']['benachrichtigung_nutzen'] !== 'N'
     ) {
         $fehlendeAngaben = gibFehlendeEingabenBenachrichtigungsformular();
         Shop::Smarty()->assign('fehlendeAngaben_benachrichtigung', $fehlendeAngaben);
@@ -433,9 +418,6 @@ function bearbeiteBenachrichtigung()
                 $Benachrichtigung->nStatus   = 0;
                 $oCheckBox                   = new CheckBox();
                 $kKundengruppe               = Session::CustomerGroup()->getID();
-
-                executeHook(HOOK_ARTIKEL_INC_BENACHRICHTIGUNG);
-
                 // Set empty string if not exists
                 if (empty($Benachrichtigung->cNachname)) {
                     $Benachrichtigung->cNachname = '';
@@ -444,6 +426,7 @@ function bearbeiteBenachrichtigung()
                 if (empty($Benachrichtigung->cVorname)) {
                     $Benachrichtigung->cVorname = '';
                 }
+                executeHook(HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $Benachrichtigung]);
                 // CheckBox Spezialfunktion ausfuehren
                 $oCheckBox->triggerSpecialFunction(
                     CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT,

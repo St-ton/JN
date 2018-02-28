@@ -4,7 +4,6 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/../globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.UploadDatei.php';
 
 /**
  * output

@@ -47,6 +47,7 @@
 /admin/templates_c/*
 /templates_c/*
 /export/*
+!/export/.htaccess
 /jtllogs/*
 /admin/includes/emailpdfs/*
 !/jtllogs/.htaccess

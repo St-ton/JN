@@ -915,14 +915,14 @@ ul.filter_state {
                     opacity: 0.8;
                 }
 
-                .product-detail-cell {
+                .product-body {
                     position: absolute;
                     z-index: @zindex-menu - 1;
                     left: 0;
                     top: 0;
                     height: auto !important;
                     min-height: 100%;
-                    width: 100%;
+                    margin-top: -(@grid-gutter-width / 2);
                     padding: @grid-gutter-width / 2;
                     .box-shadow(0 0 @margin-base rgba(0, 0, 0, 0.45));
                     transition: box-shadow 0.3s;

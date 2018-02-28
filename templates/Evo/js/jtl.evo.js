@@ -118,7 +118,7 @@
             $('.row-eq-height').each(function(i, e) {
                 $(e).children('[class*="col-"]').children().responsiveEqualHeightGrid();
             });
-            $('.row-eq-height.gallery > [class*="col-"]').each(function(i, e) {
+            $('.row-eq-height.gallery > [class*="col-"], #product-list .product-wrapper').each(function(i, e) {
                 $(e).height($('div', $(e)).outerHeight());
             });
         },

@@ -4175,7 +4175,7 @@ class Artikel
         $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE];
         $basePrice = clone $this->Preise;
         $this->rabattierePreise($kKundengruppe);
-        $this->staffelPreis_arr  = $this->getTierPrices();
+        $this->staffelPreis_arr = $this->getTierPrices();
         if ($this->cVPE === 'Y' && $this->fVPEWert > 0 && $this->cVPEEinheit && !empty($this->Preise)) {
             // Grundpreis beim Artikelpreis
             $this->baueVPE();

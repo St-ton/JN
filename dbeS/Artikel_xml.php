@@ -47,7 +47,7 @@ if (auth()) {
                     "UPDATE tsuchcache
                         SET dGueltigBis = DATE_ADD(now(), INTERVAL " . SUCHCACHE_LEBENSDAUER . " MINUTE)
                         WHERE dGueltigBis IS NULL",
-                    NiceDB::RET_SINGLE_OBJECT
+                    NiceDB::RET_AFFECTED_ROWS
                 );
             }
         }

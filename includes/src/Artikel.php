@@ -2628,7 +2628,9 @@ class Artikel
                             // Laufe Variationswerte von Variation 2 durch
                             foreach ($this->VariationenOhneFreifeld[1]->Werte as $i => $oVariationWert1) {
                                 $imageHashes = [];
-                                if (is_array($this->VariationenOhneFreifeld[0]->Werte) && count($this->VariationenOhneFreifeld[0]->Werte) > 0) {
+                                if (is_array($this->VariationenOhneFreifeld[0]->Werte)
+                                    && count($this->VariationenOhneFreifeld[0]->Werte) > 0
+                                ) {
                                     $req = MediaImageRequest::create([
                                         'type' => 'product',
                                         'id'   => $this->kArtikel,
@@ -4015,7 +4017,7 @@ class Artikel
         }
         // Kategorie
         if (isset($oArtikelOptionen->nKategorie) && $oArtikelOptionen->nKategorie === 1) {
-            $kArtikel             = ($this->kVaterArtikel > 0) ? $this->kVaterArtikel : $this->kArtikel;
+            $kArtikel             = $this->kVaterArtikel > 0 ? $this->kVaterArtikel : $this->kArtikel;
             $this->oKategorie_arr = $this->getCategories($kArtikel, $kKundengruppe);
         }
         if (!isset($oArtikelOptionen->nVariationKombi)) {

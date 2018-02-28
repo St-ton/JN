@@ -235,7 +235,7 @@
         <script type="text/javascript">
             $('.modal a.remove').click(function(e) {
                 var kArtikel = $(e.currentTarget).data('id');
-                $('section.box-compare tr[data-id="' + kArtikel + '"]').remove();
+                $('section.box-compare li[data-id="' + kArtikel + '"]').remove();
                 eModal.ajax({
                     size: 'lg',
                     url: e.currentTarget.href,
@@ -243,22 +243,16 @@
                     keyboard: true,
                     tabindex: -1
                 });
-    
+
                 return false;
             });
             new function(){
                 var clCount = {if isset($oVergleichsliste->oArtikel_arr)}{$oVergleichsliste->oArtikel_arr|count}{else}0{/if};
+                $('.navbar-nav .compare-list-menu .badge em').html(clCount);
                 if (clCount > 1) {
-                    $('.navbar-nav .compare-list-menu .badge em').html(clCount);
-                    $('.navbar-nav .compare-list-menu').removeClass('hidden');
                     $('section.box-compare .panel-body').removeClass('hidden');
                 } else {
-                    if (clCount == 1) {
-                        $('section.box-compare .panel-body').addClass('hidden');
-                    } else {
-                        $('section.box-compare').html('').addClass('hidden');
-                    }
-                    $('.navbar-nav .compare-list-menu').addClass('hidden');
+                    $('.navbar-nav .compare-list-menu .link_to_comparelist').removeAttr('href').removeClass('popup');
                     eModal.close();
                 }
             }();

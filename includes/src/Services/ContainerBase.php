@@ -36,7 +36,7 @@ class ContainerBase implements ContainerInterface
         $this->current[$id] = false;
     }
 
-    public function getFactory($id)
+    public function getFactoryMethod($id)
     {
         $this->checkExistance($id);
 

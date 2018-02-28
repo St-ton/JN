@@ -33,5 +33,5 @@ interface ContainerInterface extends \Psr\Container\ContainerInterface
      * @param $id
      * @return callable
      */
-    public function getFactory($id);
+    public function getFactoryMethod($id);
 }

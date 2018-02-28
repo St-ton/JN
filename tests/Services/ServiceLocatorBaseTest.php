@@ -96,7 +96,7 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
         $container->setSingleton(HelloWorldServiceInterface::class, function () {
             return new HelloWorldService();
         });
-        $inner = $container->getFactory(HelloWorldServiceInterface::class);
+        $inner = $container->getFactoryMethod(HelloWorldServiceInterface::class);
         $container->setSingleton(HelloWorldServiceInterface::class, function () use ($inner) {
             return new HelloWorldTrimmingServiceDecorator($inner());
         });
@@ -115,7 +115,7 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
         $container->setFactory(HelloWorldServiceInterface::class, function () {
             return new HelloWorldService();
         });
-        $factory = $container->getFactory(HelloWorldServiceInterface::class);
+        $factory = $container->getFactoryMethod(HelloWorldServiceInterface::class);
         $container->setFactory(HelloWorldServiceInterface::class, function () use ($factory) {
             return new HelloWorldTrimmingServiceDecorator($factory());
         });

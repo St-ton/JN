@@ -11,6 +11,8 @@ $io->register('suggestions')
    ->register('pushToBasket')
    ->register('pushToComparelist')
    ->register('removeFromComparelist')
+   ->register('pushToWishlist')
+   ->register('removeFromWishlist')
    ->register('checkDependencies')
    ->register('checkVarkombiDependencies')
    ->register('generateToken')
@@ -275,20 +277,36 @@ function pushToComparelist($kArtikel)
             ->assign('buttons', $buttons)
             ->fetch('snippets/notification.tpl');
 
-    $oResponse->cNavBadge = '';
-    if ($oResponse->nCount > 1) {
-        $oResponse->cNavBadge = Shop::Smarty()
-                ->assign('Einstellungen', $Einstellungen)
-                ->fetch('layout/header_shop_nav_compare.tpl');
-    }
+    $oResponse->cNavBadge = Shop::Smarty()
+            ->assign('Einstellungen', $Einstellungen)
+            ->fetch('layout/header_shop_nav_compare.tpl');
 
     $boxes = Boxen::getInstance();
-    $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
-
-    $oResponse->cBoxContainer = Shop::Smarty()
-            ->assign('Einstellungen', $Einstellungen)
-            ->assign('oBox', $oBox)
-            ->fetch('boxes/box_comparelist.tpl');
+    $allBoxes = $boxes->build();
+    foreach ($allBoxes->boxes as $_position => $_boxes) {
+        if (is_array($_boxes)) {
+            foreach ($_boxes as $_box) {
+                if (isset($_box->bContainer) && $_box->bContainer === true) {
+                    foreach ($_box->oContainer_arr as $_cbox) {
+                        if ($_cbox->kBoxvorlage === BOX_VERGLEICHSLISTE) {
+                            $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_cbox->kBox));
+                            $oResponse->cBoxContainer[$_cbox->kBox] = Shop::Smarty()
+                                ->assign('Einstellungen', $Einstellungen)
+                                ->assign('oBox', $oBox)
+                                ->fetch('boxes/box_comparelist.tpl');
+                        }
+                    }
+                }
+                if ($_box->kBoxvorlage === BOX_VERGLEICHSLISTE) {
+                    $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_box->kBox));
+                    $oResponse->cBoxContainer[$_box->kBox] = Shop::Smarty()
+                        ->assign('Einstellungen', $Einstellungen)
+                        ->assign('oBox', $oBox)
+                        ->fetch('boxes/box_comparelist.tpl');
+                }
+            }
+        }
+    }
 
     $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
@@ -322,22 +340,218 @@ function removeFromComparelist($kArtikel)
     $oResponse->nType     = 2;
     $oResponse->nCount    = count($_SESSION['Vergleichsliste']->oArtikel_arr);
     $oResponse->cTitle    = Shop::Lang()->get('compare');
-    $oResponse->cNavBadge = '';
 
-    if ($oResponse->nCount > 1) {
-        $oResponse->cNavBadge = Shop::Smarty()
-                ->assign('Einstellungen', $Einstellungen)
-                ->fetch('layout/header_shop_nav_compare.tpl');
-    }
+    $oResponse->cNavBadge = Shop::Smarty()
+            ->assign('Einstellungen', $Einstellungen)
+            ->fetch('layout/header_shop_nav_compare.tpl');
+
 
     $boxes = Boxen::getInstance();
-    $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
+    $allBoxes = $boxes->build();
+    foreach ($allBoxes->boxes as $_position => $_boxes) {
+        if (is_array($_boxes)) {
+            foreach ($_boxes as $_box) {
+                if (isset($_box->bContainer) && $_box->bContainer === true) {
+                    foreach ($_box->oContainer_arr as $_cbox) {
+                        if ($_cbox->kBoxvorlage === BOX_VERGLEICHSLISTE) {
+                            $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_cbox->kBox));
+                            $oResponse->cBoxContainer[$_cbox->kBox] = Shop::Smarty()
+                                ->assign('Einstellungen', $Einstellungen)
+                                ->assign('oBox', $oBox)
+                                ->fetch('boxes/box_comparelist.tpl');
+                        }
+                    }
+                }
+                if ($_box->kBoxvorlage === BOX_VERGLEICHSLISTE) {
+                    $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_box->kBox));
+                    $oResponse->cBoxContainer[$_box->kBox] = Shop::Smarty()
+                        ->assign('Einstellungen', $Einstellungen)
+                        ->assign('oBox', $oBox)
+                        ->fetch('boxes/box_comparelist.tpl');
+                }
+            }
+        }
+    }
 
-    $oResponse->cBoxContainer = Shop::Smarty()
-            ->assign('Einstellungen', $Einstellungen)
-            ->assign('oBox', $oBox)
-            ->fetch('boxes/box_comparelist.tpl');
+    $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
+    return $objResponse;
+}
+
+/**
+ * @param int $kArtikel
+ * @param int $qty
+ * @return IOResponse
+ */
+function pushToWishlist($kArtikel, $qty)
+{
+    global $Einstellungen;
+    $kArtikel = (int)$kArtikel;
+
+    if (!isset($Einstellungen['global']['global_wunschliste_anzeigen']) || !isset($Einstellungen['vergleichsliste'])) {
+        if (isset($Einstellungen)) {
+            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_VERGLEICHSLISTE]));
+        } else {
+            $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_VERGLEICHSLISTE]);
+        }
+    }
+    $oResponse   = new stdClass();
+    $objResponse = new IOResponse();
+
+    $qty = (int)$qty === 0 ? 1 : (int)$qty;
+    if (empty($customerID = Session::Customer()->getID())) {
+        $linkHelper           = LinkHelper::getInstance();
+        $oResponse->nType     = 1;
+        $oResponse->cLocation = $linkHelper->getStaticRoute('jtl.php') .
+            '?a=' . $kArtikel .
+            '&n=' . $qty .
+            '&r=' . R_LOGIN_WUNSCHLISTE;
+        $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
+
+        return $objResponse;
+    }
+
+    $vals = Shop::DB()->query('SELECT * FROM teigenschaft WHERE kArtikel = '. $kArtikel, 2);
+    if (!ArtikelHelper::isParent($kArtikel) && !empty($vals)) {
+        // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
+        // muss zum Artikel weitergeleitet werden um Variationen zu wählen
+        $oResponse->nType     = 1;
+        $oResponse->cLocation =(Shop::getURL() . '/?a=' . $kArtikel .
+                '&n=' . $qty .
+                '&r=' . R_VARWAEHLEN);
+            $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
+
+            return $objResponse;
+    }
+
+    $_POST['Wunschliste'] = 1;
+    $_POST['a']           = $kArtikel;
+    $_POST['n']           = (int)$qty;
+
+    WarenkorbHelper::checkAdditions();
+    $error             = Shop::Smarty()->getTemplateVars('fehler');
+    $notice            = Shop::Smarty()->getTemplateVars('hinweis');
+    $oResponse->nType  = 2;
+    $oResponse->nCount = count($_SESSION['Wunschliste']->CWunschlistePos_arr);
+    $oResponse->cTitle = Shop::Lang()->get('goToWishlist');
+    $buttons           = [
+        (object)[
+            'href'    => '#',
+            'fa'      => 'fa fa-arrow-circle-right',
+            'title'   => Shop::Lang()->get('continueShopping', 'checkout'),
+            'primary' => true,
+            'dismiss' => 'modal'
+        ]
+    ];
+
+    if ($oResponse->nCount > 1) {
+        array_unshift($buttons, (object)[
+            'href'  => 'wunschliste.php',
+            'fa'    => 'fa-tasks',
+            'title' => Shop::Lang()->get('goToWishlist')
+        ]);
+    }
+
+    $oResponse->cNotification = Shop::Smarty()
+        ->assign('type', empty($error) ? 'info' : 'danger')
+        ->assign('body', empty($error) ? $notice : $error)
+        ->assign('buttons', $buttons)
+        ->fetch('snippets/notification.tpl');
+
+    $oResponse->cNavBadge = Shop::Smarty()
+        ->assign('Einstellungen', $Einstellungen)
+        ->fetch('layout/header_shop_nav_wish.tpl');
+
+    $boxes = Boxen::getInstance();
+    $allBoxes = $boxes->build();
+    foreach ($allBoxes->boxes as $_position => $_boxes) {
+        if (is_array($_boxes)) {
+            foreach ($_boxes as $_box) {
+                if (isset($_box->bContainer) && $_box->bContainer === true) {
+                    foreach ($_box->oContainer_arr as $_cbox) {
+                        if ($_cbox->kBoxvorlage === BOX_WUNSCHLISTE) {
+                            $oBox  = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_cbox->kBox));
+                            $oResponse->cBoxContainer[$_cbox->kBox] = Shop::Smarty()
+                                ->assign('Einstellungen', $Einstellungen)
+                                ->assign('oBox', $oBox)
+                                ->fetch('boxes/box_wishlist.tpl');
+                        }
+                    }
+                }
+                if ($_box->kBoxvorlage === BOX_WUNSCHLISTE) {
+                    $oBox  = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_box->kBox));
+                    $oResponse->cBoxContainer[$_box->kBox] = Shop::Smarty()
+                        ->assign('Einstellungen', $Einstellungen)
+                        ->assign('oBox', $oBox)
+                        ->fetch('boxes/box_wishlist.tpl');
+                }
+            }
+        }
+    }
+
+    $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
+
+    return $objResponse;
+}
+
+/**
+ * @param int $kArtikel
+ * @return IOResponse
+ */
+function removeFromWishlist($kArtikel)
+{
+    global $Einstellungen;
+
+    $kArtikel = (int)$kArtikel;
+    if (!isset($Einstellungen['global']['global_wunschliste_anzeigen']) || !isset($Einstellungen['vergleichsliste'])) {
+        if (isset($Einstellungen)) {
+            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_VERGLEICHSLISTE]));
+        } else {
+            $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_VERGLEICHSLISTE]);
+        }
+    }
+
+    $oResponse   = new stdClass();
+    $objResponse = new IOResponse();
+
+    $_GET['Wunschliste'] = 1;
+    $_GET['wlplo']       = $kArtikel;
+
+    Session::getInstance()->setStandardSessionVars();
+    $oResponse->nType     = 2;
+    $oResponse->nCount    = count($_SESSION['Wunschliste']->CWunschlistePos_arr);
+    $oResponse->cTitle    = Shop::Lang()->get('goToWishlist');
+
+    $oResponse->cNavBadge = Shop::Smarty()
+        ->assign('Einstellungen', $Einstellungen)
+        ->fetch('layout/header_shop_nav_wish.tpl');
+
+    $boxes = Boxen::getInstance();
+    $allBoxes = $boxes->build();
+    foreach ($allBoxes->boxes as $_position => $_boxes) {
+        if (is_array($_boxes)) {
+            foreach ($_boxes as $_box) {
+                if (isset($_box->bContainer) && $_box->bContainer === true) {
+                    foreach ($_box->oContainer_arr as $_cbox) {
+                        if ($_cbox->kBoxvorlage === BOX_WUNSCHLISTE) {
+                            $oBox  = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_cbox->kBox));
+                            $oResponse->cBoxContainer[$_cbox->kBox] = Shop::Smarty()
+                                ->assign('Einstellungen', $Einstellungen)
+                                ->assign('oBox', $oBox)
+                                ->fetch('boxes/box_wishlist.tpl');
+                        }
+                    }
+                }
+                if ($_box->kBoxvorlage === BOX_WUNSCHLISTE) {
+                    $oBox  = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_box->kBox));
+                    $oResponse->cBoxContainer[$_box->kBox] = Shop::Smarty()
+                        ->assign('Einstellungen', $Einstellungen)
+                        ->assign('oBox', $oBox)
+                        ->fetch('boxes/box_wishlist.tpl');
+                }
+            }
+        }
+    }
     $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
     return $objResponse;

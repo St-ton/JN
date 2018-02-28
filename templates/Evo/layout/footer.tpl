@@ -5,7 +5,7 @@
     
     {block name="aside"}
     {has_boxes position='left' assign='hasLeftBox'}
-    {if !$bExclusive && $hasLeftBox && !empty($boxes.left)}
+    {if !$bExclusive && $hasLeftBox && !empty($boxes.left|strip_tags|trim)}
         {block name="footer-sidepanel-left"}
         <aside id="sidepanel_left"
                class="hidden-print col-xs-12 {if $nSeitenTyp === 2} col-md-4 col-md-pull-8 {/if} col-lg-3 col-lg-pull-9">

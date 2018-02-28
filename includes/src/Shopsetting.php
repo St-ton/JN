@@ -59,7 +59,6 @@ final class Shopsetting implements ArrayAccess
         CONF_TRUSTEDSHOPS        => 'trustedshops',
         CONF_SUCHSPECIAL         => 'suchspecials',
         CONF_TEMPLATE            => 'template',
-        CONF_PREISANZEIGE        => 'preisanzeige',
         CONF_CHECKBOX            => 'checkbox',
         CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
         CONF_RMA                 => 'rma',

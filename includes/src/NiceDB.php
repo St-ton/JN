@@ -829,9 +829,14 @@ class NiceDB implements Serializable
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
         $this->validateEntityName($tableName);
-        foreach ($keys as $key) {
-            $this->validateEntityName($key);
+        if (is_array($keys)) {
+            foreach ($keys as $key) {
+                $this->validateEntityName($key);
+            }
+        } else {
+            $this->validateEntityName($keys);
         }
+
         // TODO verify $orderBy and $limit
         $keys   = is_array($keys) ? $keys : [$keys];
         $values = is_array($values) ? $values : [$values];

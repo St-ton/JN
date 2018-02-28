@@ -1409,10 +1409,10 @@ function clearProductCaches($articles)
         if (count($deps) > 0) {
             // flush cache tags associated with the article's manufacturer ID
             $manufacturers = Shop::DB()->query(
-                'SELECT kHersteller 
-                        FROM tartikel 
-                        WHERE kArtikel IN (' . implode(',', $deps) . ') 
-                            AND kHersteller > 0',
+                'SELECT DISTINCT kHersteller 
+                    FROM tartikel 
+                    WHERE kArtikel IN (' . implode(',', $deps) . ') 
+                        AND kHersteller > 0',
                 2
             );
             foreach ($manufacturers as $manufacturer) {
@@ -1420,13 +1420,24 @@ function clearProductCaches($articles)
             }
             // flush cache tags associated with the article's category IDs
             $categories = Shop::DB()->query(
-                "SELECT kKategorie
+                "SELECT DISTINCT kKategorie
                     FROM tkategorieartikel
                     WHERE kArtikel IN (" . implode(',', $deps) . ')',
                 2
             );
             foreach ($categories as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . (int)$category->kKategorie;
+            }
+            // flush parent article IDs
+            $parentArticles = Shop::DB()->query(
+                "SELECT DISTINCT kVaterArtikel AS id
+                    FROM tartikel
+                    WHERE kArtikel IN (" . implode(',', $deps) . ')
+                    AND kVaterArtikel > 0',
+                2
+            );
+            foreach ($parentArticles as $parentArticle) {
+                $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$parentArticle->id;
             }
         }
 

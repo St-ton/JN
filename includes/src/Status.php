@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use function Functional\some;
+
 /**
  * Class Status
  */
@@ -414,13 +416,9 @@ class Status
             GROUP BY kAdminlogin", 2
         );
 
-        foreach ($hashes as $hash) {
-            if ($passwordService->needsRehash($hash->cEmergencyCode)) {
-                return true;
-            }
-        }
-
-        return false;
+        return some($hashes, function ($hash) use ($passwordService) {
+            return $passwordService->needsRehash($hash->cEmergencyCode);
+        });
     }
 
 }

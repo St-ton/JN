@@ -38,22 +38,16 @@ class Migration_20180301133757 extends Migration implements IMigration
         );
 
         if (count($idxExists) > 0) {
-            // If so - delete it if name or column count matches...
+            // If so - delete it...
             $idxDelete = [];
             foreach ($idxExists as $idx) {
-                if (array_key_exists($idx->Key_name, $idxDelete)) {
-                    $idxDelete[$idx->Key_name]++;
-                } else {
-                    $idxDelete[$idx->Key_name] = 1;
-                }
+                $idxDelete[] = $idx->Key_name;
             }
-            foreach ($idxDelete as $idxName => $idxColumnCount) {
-                if ($idxName === 'idx_tkategorie_lft_rght' || $idxColumnCount <= 2) {
-                    $this->execute(
-                        "ALTER TABLE `tkategorie` 
-                            DROP INDEX `$idxName`"
-                    );
-                }
+            foreach (array_unique($idxDelete) as $idxName) {
+                $this->execute(
+                    "ALTER TABLE `tkategorie` 
+                        DROP INDEX `$idxName`"
+                );
             }
         }
 

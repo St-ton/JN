@@ -166,7 +166,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                     ->setType('JOIN')
                     ->setTable('tbestseller')
                     ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
-                    ->setComment('JOIN from FilterBaseSearchSpecial bestseller')
+                    ->setComment('bestseller JOIN from ' . __METHOD__)
                     ->setOrigin(__CLASS__);
 
             case SEARCHSPECIALS_SPECIALOFFERS:
@@ -177,7 +177,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                         ->setTable('tartikelsonderpreis AS tasp')
                         ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
                                     ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
-                        ->setComment('JOIN from FilterBaseSearchSpecial special offers')
+                        ->setComment('special offers JOIN from ' . __METHOD__)
                         ->setOrigin(__CLASS__);
 
             case SEARCHSPECIALS_NEWPRODUCTS:
@@ -192,7 +192,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
                         ->setType('JOIN')
                         ->setTable('tartikelext AS taex ')
                         ->setOn('taex.kArtikel = tartikel.kArtikel')
-                        ->setComment('JOIN from FilterBaseSearchSpecial top reviews')
+                        ->setComment('top reviews JOIN from ' . __METHOD__)
                         ->setOrigin(__CLASS__);
 
             default:

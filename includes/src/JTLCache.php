@@ -17,6 +17,7 @@ define('CACHING_GROUP_BOX', 'bx');
 define('CACHING_GROUP_NEWS', 'nws');
 define('CACHING_GROUP_ATTRIBUTE', 'attr');
 define('CACHING_GROUP_MANUFACTURER', 'mnf');
+define('CACHING_GROUP_FILTER', 'fltr');
 
 /**
  * Class JTLCache
@@ -281,6 +282,11 @@ class JTLCache
                 'nicename'    => 'cg_manufacturer_nicename',
                 'value'       => CACHING_GROUP_MANUFACTURER,
                 'description' => 'cg_manufacturer_description'],
+            [
+                'name'        => 'CACHING_GROUP_FILTER',
+                'nicename'    => 'cg_filter_nicename',
+                'value'       => CACHING_GROUP_FILTER,
+                'description' => 'cg_filter_description'],
         ];
 
         return $this;

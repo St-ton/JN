@@ -52,7 +52,7 @@ class ProductFilterSQL
                     $sort->orderBy = 'tartikel.nSort, tartikel.cName';
                 } elseif (isset($_SESSION['Usersortierung'])
                     && $_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD
-                    && $this->productFilter->getSearch()->kSuchCache > 0
+                    && $this->productFilter->getSearch()->getSearchCacheID() > 0
                 ) {
                     $sort->orderBy = 'jSuche.nSort'; // was tsuchcachetreffer in 4.06, but is aliased to jSuche
                 }

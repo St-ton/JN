@@ -111,7 +111,7 @@ class AuswahlAssistent
      */
     private function loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive = true)
     {
-        $oDbResult = Shop::DB()->executeQueryPrepared(
+        $oDbResult = Shop::DB()->queryPrepared(
                 'SELECT *
                     FROM tauswahlassistentort AS ao
                         JOIN tauswahlassistentgruppe AS ag
@@ -120,7 +120,11 @@ class AuswahlAssistent
                                 AND ao.kKey = :kkey
                                 AND ag.kSprache = :ksprache' .
             ($bOnlyActive ? ' AND ag.nAktiv = 1' : ''),
-            ['ckey' => $cKey, 'kkey' => $kKey, 'ksprache' => $kSprache],
+            [
+                'ckey'     => $cKey,
+                'kkey'     => $kKey,
+                'ksprache' => $kSprache
+            ],
             1
         );
 
@@ -135,21 +139,22 @@ class AuswahlAssistent
             $this->kSprache                = (int)$this->kSprache;
             $this->nAktiv                  = (int)$this->nAktiv;
 
-            $oAuswahlAssistentFrageDB_arr = Shop::DB()->query(
-                'SELECT kAuswahlAssistentFrage
+            $questionIDs = Shop::DB()->queryPrepared(
+                'SELECT kAuswahlAssistentFrage AS id
                     FROM tauswahlassistentfrage
-                    WHERE kAuswahlAssistentGruppe = ' . $this->kAuswahlAssistentGruppe . '
-                        ' . ($bOnlyActive ? 'AND nAktiv = 1' : '') . '
-                    ORDER BY nSort',
-                2
+                    WHERE kAuswahlAssistentGruppe = :groupID' .
+                    ($bOnlyActive ? ' AND nAktiv = 1 ' : ' ') .
+                    'ORDER BY nSort',
+                ['groupID' => $this->kAuswahlAssistentGruppe],
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
 
             $this->oFrage_arr = [];
 
-            foreach ($oAuswahlAssistentFrageDB_arr as $oFrageDB) {
-                $oFrage                                = new AuswahlAssistentFrage($oFrageDB->kAuswahlAssistentFrage);
-                $this->oFrage_arr[]                    = $oFrage;
-                $this->oFrage_assoc[$oFrage->kMerkmal] = $oFrage;
+            foreach ($questionIDs as $questionID) {
+                $question                                = new AuswahlAssistentFrage($questionID->id);
+                $this->oFrage_arr[]                      = $question;
+                $this->oFrage_assoc[$question->kMerkmal] = $question;
             }
         }
     }
@@ -191,8 +196,8 @@ class AuswahlAssistent
         $AktuelleKategorie                    = isset($cParameter_arr['kKategorie'])
             ? new Kategorie($cParameter_arr['kKategorie'])
             : null;
-        $oMerkmalFilter_arr                   = $NaviFilter->setFilterOptions(
-            new ProductFilterSearchResults(),
+        $oMerkmalFilter_arr                   = (new ProductFilterSearchResults())->setFilterOptions(
+            $NaviFilter,
             $AktuelleKategorie,
             true
         )->getAttributeFilterOptions();
@@ -209,8 +214,8 @@ class AuswahlAssistent
                     $oFrage->oMerkmalWert_arr = $oFrage->oWert_arr;
                 }
                 foreach ($oMerkmalFilter->getOptions() as $oWert) {
-                    $oFrage->nTotalResultCount                += $oWert->nAnzahl;
-                    $oFrage->oWert_assoc[$oWert->kMerkmalWert] = $oWert;
+                    $oFrage->nTotalResultCount                           += $oWert->getCount();
+                    $oFrage->oWert_assoc[$oWert->getData('kMerkmalWert')] = $oWert;
                 }
             }
         }
@@ -355,7 +360,9 @@ class AuswahlAssistent
         $oFrage         = end($this->oFrage_arr);
         $kSelectedValue = end($this->kSelection_arr);
 
-        return $oFrage->oWert_assoc[$kSelectedValue];
+        return isset($oFrage->oWert_assoc[$kSelectedValue])
+            ? $oFrage->oWert_assoc[$kSelectedValue]
+            : null;
     }
 
     /**
@@ -392,8 +399,7 @@ class AuswahlAssistent
         if (!self::isRequired()) {
             return null;
         }
-        $productFilter = $pf !== null ? $pf : $GLOBALS['NaviFilter'];
-        $filterCount   = $productFilter !== null ? (int)$GLOBALS['NaviFilter']->getFilterCount() : 0;
+        $filterCount = $pf !== null ? $pf->getFilterCount() : 0;
         // only start if no filters are already set
         if ($filterCount === 0) {
             $AWA = new self($cKey, $kKey, $kSprache, true);
@@ -444,7 +450,7 @@ class AuswahlAssistent
                         WHERE tao.cKey = :ckey
                             AND tao.kKey = :kkey',
                 ['lang' => $kSprache, 'ckey' => $cKey, 'kkey' => $kKey],
-                1
+                NiceDB::RET_SINGLE_OBJECT
             );
 
             if (isset($oOrt->kAuswahlAssistentGruppe) && $oOrt->kAuswahlAssistentGruppe > 0) {

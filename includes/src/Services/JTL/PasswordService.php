@@ -12,9 +12,17 @@ namespace Services\JTL;
  */
 class PasswordService implements PasswordServiceInterface
 {
+    /**
+     * The lowest allowed ascii character in decimal representation
+     */
     const ASCII_MIN = 33;
+
+    /**
+     * The highest allowed ascii character in decimal representation
+     */
     const ASCII_MAX = 127;
 
+    /** @var CryptoServiceInterface  */
     protected $cryptoService;
 
     public function __construct(CryptoServiceInterface $cryptoService)

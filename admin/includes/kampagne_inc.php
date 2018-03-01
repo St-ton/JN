@@ -842,7 +842,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
  */
 function baueDefDetailSELECTWHERE(&$cSQLSELECT, &$cSQLWHERE, $cStamp)
 {
-    switch (intval($_SESSION['Kampagne']->nDetailAnsicht)) {
+    $cStamp = Shop::DB()->escape($cStamp);
+    switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
             $cSQLSELECT = ", DATE_FORMAT(tkampagnevorgang.dErstellt, '%Y') AS cStampText";
             $cSQLWHERE  = " WHERE DATE_FORMAT(tkampagnevorgang.dErstellt, '%Y') = '" . $cStamp . "'";

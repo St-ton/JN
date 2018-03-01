@@ -273,8 +273,6 @@ function gibEinstellungsSektionsPfad($kEinstellungenSektion)
                 return 'System-&gt;Benutzer- &amp; Kundenverwaltung-&gt;Kunden werben Kunden';
             case CONF_TRUSTEDSHOPS:
                 return 'Storefront-&gt;Kaufabwicklung-&gt;Trusted Shops';
-            case CONF_PREISANZEIGE:
-                return 'Storefront-&gt;Artikel-&gt;Preisanzeige';
             case CONF_SUCHSPECIAL:
                 return 'Storefront-&gt;Artikel-&gt;Besondere Produkte';
             default:

@@ -31,12 +31,7 @@
                                 <p>{lang key="priceOnApplication" section="global"}</p>
                             {else}
                                 <p>
-                                    {if isset($oArtikel->Preise->strPreisGrafik_Detail)}
-                                        {assign var=priceImage value=$oArtikel->Preise->strPreisGrafik_Detail}
-                                    {else}
-                                        {assign var=priceImage value=null}
-                                    {/if}
-                                    {include file="productdetails/price.tpl" Artikel=$oArtikel price_image=$priceImage tplscope="detail"}
+                                    {include file="productdetails/price.tpl" Artikel=$oArtikel tplscope="detail"}
                                 </p>
                             {/if}
                             <p>

@@ -13,7 +13,7 @@
                                 <p><a href="{$oArtikel->cURLFull}">{$oArtikel->cName}</a></p>
 
                                 {lang key='oldPrice'}: <del>{$oArtikel->oPreisradar->fOldVKLocalized[$NettoPreise]}</del>
-                                {include file='productdetails/price.tpl' price_image=$oArtikel->Preise->strPreisGrafik_Sonderbox Artikel=$oArtikel tplscope='box'}
+                                {include file='productdetails/price.tpl' Artikel=$oArtikel tplscope='box'}
                             </div>
                         </li>
                     {/foreach}
@@ -39,7 +39,7 @@
                         <p><a href="{$oArtikel->cURLFull}">{$oArtikel->cName}</a></p>
 
                         {lang key="oldPrice" section="global"}: <del>{$oArtikel->oPreisradar->fOldVKLocalized[$NettoPreise]}</del>
-                        {include file='productdetails/price.tpl' price_image=$oArtikel->Preise->strPreisGrafik_Sonderbox Artikel=$oArtikel tplscope='box'}
+                        {include file='productdetails/price.tpl' Artikel=$oArtikel tplscope='box'}
                     </div>
                 </li>
             {/foreach}

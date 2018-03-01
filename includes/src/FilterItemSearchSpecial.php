@@ -221,7 +221,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                         ->setType($joinType)
                         ->setTable('tbestseller')
                         ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
-                        ->setComment('JOIN from FilterItemSearchSpecial bestseller')
+                        ->setComment('bestseller JOIN from ' . __METHOD__)
                         ->setOrigin(__CLASS__);
                     break;
 
@@ -231,13 +231,13 @@ class FilterItemSearchSpecial extends AbstractFilter
                             ->setType($joinType)
                             ->setTable('tartikelsonderpreis AS tasp')
                             ->setOn('tasp.kArtikel = tartikel.kArtikel')
-                            ->setComment('JOIN from FilterItemSearchSpecial special offers')
+                            ->setComment('special offers JOIN from ' . __METHOD__)
                             ->setOrigin(__CLASS__);
                         $joins[] = (new FilterJoin())
                             ->setType($joinType)
                             ->setTable('tsonderpreise AS tsp')
                             ->setOn('tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
-                            ->setComment('JOIN2 from FilterItemSearchSpecial special offers')
+                            ->setComment('special offers JOIN2 from ' . __METHOD__)
                             ->setOrigin(__CLASS__);
                     }
                     break;
@@ -248,7 +248,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                             ->setType($joinType)
                             ->setTable('tartikelext AS taex ')
                             ->setOn('taex.kArtikel = tartikel.kArtikel')
-                            ->setComment('JOIN from FilterItemSearchSpecial top reviews')
+                            ->setComment('top reviews JOIN from ' . __METHOD__)
                             ->setOrigin(__CLASS__);
                     }
                     break;
@@ -292,7 +292,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                         : 100;
 
                     $state->joins[] = (new FilterJoin())
-                        ->setComment('join from FilterItemSearchSpecial::getOptions() bestseller')
+                        ->setComment('bestseller JOIN from ' . __METHOD__)
                         ->setType('JOIN')
                         ->setTable('tbestseller')
                         ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
@@ -304,14 +304,14 @@ class FilterItemSearchSpecial extends AbstractFilter
                     $name = Shop::Lang()->get('specialOffer');
                     if (true||!$this->isInitialized()) {
                         $state->joins[] = (new FilterJoin())
-                            ->setComment('join1 from FilterItemSearchSpecial::getOptions() special offer')
+                            ->setComment('special offer JOIN1 from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tartikelsonderpreis')
                             ->setOn('tartikelsonderpreis.kArtikel = tartikel.kArtikel')
                             ->setOrigin(__CLASS__);
 
                         $state->joins[] = (new FilterJoin())
-                            ->setComment('join2 from FilterItemSearchSpecial::getOptions() special offer')
+                            ->setComment('special offer JOIN2 from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tsonderpreise')
                             ->setOn('tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis')
@@ -346,7 +346,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                     $name = Shop::Lang()->get('topReviews');
                     if (!$this->productFilter->hasRatingFilter()) {
                         $state->joins[] = (new FilterJoin())
-                            ->setComment('join from FilterItemSearchSpecial::getOptions() top reviews')
+                            ->setComment('top reviews JOIN from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tartikelext')
                             ->setOn('tartikelext.kArtikel = tartikel.kArtikel')

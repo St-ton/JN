@@ -7,7 +7,7 @@ error_reporting(ADMIN_LOG_LEVEL);
 date_default_timezone_set('Europe/Berlin');
 // Captcha file
 define('CAPTCHA_LOCKFILE', PFAD_ROOT . PFAD_ADMIN . 'templates_c/captcha.lock');
-// AdminMenu
+// AdminMenu @todo: these are never used?
 define('AM_EINSTELLUNGEN', 1);
 define('AM_LINKS', 2);
 define('AM_AGBWRB', 3);
@@ -29,8 +29,6 @@ define('AM_BESUCHER', 18);
 define('AM_BESUCHTESEITEN', 19);
 define('AM_PRODUKTANFRAGEN', 20);
 define('AM_PASSWORTAENDERN', 21);
-define('AM_PREISANZEIGE', 22);
-define('AM_MONEYBOOKERS', 23);
 define('AM_SITEMAP', 24);
 define('AM_SHOPINFO', 25);
 define('AM_LIVESUCHE', 26);

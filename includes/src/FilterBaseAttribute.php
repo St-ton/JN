@@ -144,7 +144,7 @@ class FilterBaseAttribute extends AbstractFilter
     public function getSQLJoin()
     {
         return (new FilterJoin())->setType('JOIN')
-             ->setComment('join1 from FilterBaseAttribute')
+             ->setComment('JOIN from ' . __METHOD__)
              ->setTable('(SELECT kArtikel
                               FROM tartikelmerkmal
                               WHERE kMerkmalWert = ' . $this->getValue() . '

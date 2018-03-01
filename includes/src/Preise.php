@@ -27,27 +27,27 @@ class Preise
     /**
      * @var string
      */
-    public $cPreis1Localized;
+//    public $cPreis1Localized;
 
     /**
      * @var string
      */
-    public $cPreis2Localized;
+//    public $cPreis2Localized;
 
     /**
      * @var string
      */
-    public $cPreis3Localized;
+//    public $cPreis3Localized;
 
     /**
      * @var string
      */
-    public $cPreis4Localized;
+//    public $cPreis4Localized;
 
     /**
      * @var string
      */
-    public $cPreis5Localized;
+//    public $cPreis5Localized;
 
     /**
      * @var array
@@ -125,16 +125,6 @@ class Preise
     public $nAnzahl5;
 
     /**
-     * @var string
-     */
-    public $strPreisGrafik_Detail;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_Suche;
-
-    /**
      * @var array
      */
     public $alterVK;
@@ -142,27 +132,27 @@ class Preise
     /**
      * @var array
      */
-    public $fStaffelpreis1;
+//    public $fStaffelpreis1;
 
     /**
      * @var array
      */
-    public $fStaffelpreis2;
+//    public $fStaffelpreis2;
 
     /**
      * @var array
      */
-    public $fStaffelpreis3;
+//    public $fStaffelpreis3;
 
     /**
      * @var array
      */
-    public $fStaffelpreis4;
+//    public $fStaffelpreis4;
 
     /**
      * @var array
      */
-    public $fStaffelpreis5;
+//    public $fStaffelpreis5;
 
     /**
      * @var float
@@ -198,91 +188,6 @@ class Preise
      * @var array
      */
     public $cPreisLocalized_arr = [];
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_Topbox;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_Sonderbox;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_Neubox;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_Bestsellerbox;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_Zuletztbox;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_Baldbox;
-
-    /**
-     * @var string
-     */
-    public $cPreisGrafik_Boxen;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_TopboxStartseite;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_SonderboxStartseite;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_NeuboxStartseite;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_BestsellerboxStartseite;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_ZuletztboxStartseite;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_BaldboxStartseite;
-
-    /**
-     * @var string
-     */
-    public $cPreisGrafik_Startseite;
-
-    /**
-     * @var string
-     */
-    public $cPreisGrafik_Artikeldetails;
-
-    /**
-     * @var string
-     */
-    public $strPreisGrafik_Uebersicht;
-
-    /**
-     * @var string
-     */
-    public $cPreisGrafik_Artikeluebersicht;
 
     /**
      * @var bool|int
@@ -521,34 +426,36 @@ class Preise
      */
     public function localizePreise()
     {
-        $this->cPreis1Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis1, $this->fUst));
-        $this->cPreis2Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis2, $this->fUst));
-        $this->cPreis3Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis3, $this->fUst));
-        $this->cPreis4Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis4, $this->fUst));
-        $this->cPreis5Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis5, $this->fUst));
-
-        $this->cPreis1Localized[1] = gibPreisStringLocalized($this->fPreis1);
-        $this->cPreis2Localized[1] = gibPreisStringLocalized($this->fPreis2);
-        $this->cPreis3Localized[1] = gibPreisStringLocalized($this->fPreis3);
-        $this->cPreis4Localized[1] = gibPreisStringLocalized($this->fPreis4);
-        $this->cPreis5Localized[1] = gibPreisStringLocalized($this->fPreis5);
+        $currency = Session::Currency();
+        // SHOP-2185
+//        $this->cPreis1Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis1, $this->fUst), $currency);
+//        $this->cPreis2Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis2, $this->fUst), $currency);
+//        $this->cPreis3Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis3, $this->fUst), $currency);
+//        $this->cPreis4Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis4, $this->fUst), $currency);
+//        $this->cPreis5Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis5, $this->fUst), $currency);
+//
+//        $this->cPreis1Localized[1] = gibPreisStringLocalized($this->fPreis1, $currency);
+//        $this->cPreis2Localized[1] = gibPreisStringLocalized($this->fPreis2, $currency);
+//        $this->cPreis3Localized[1] = gibPreisStringLocalized($this->fPreis3, $currency);
+//        $this->cPreis4Localized[1] = gibPreisStringLocalized($this->fPreis4, $currency);
+//        $this->cPreis5Localized[1] = gibPreisStringLocalized($this->fPreis5, $currency);
 
         $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->cPreisLocalized_arr[] = [
-                gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst)),
-                gibPreisStringLocalized($fPreis)
+                gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst), $currency),
+                gibPreisStringLocalized($fPreis, $currency)
             ];
         }
 
-        $this->cVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->fVKNetto, $this->fUst));
-        $this->cVKLocalized[1] = gibPreisStringLocalized($this->fVKNetto);
+        $this->cVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->fVKNetto, $this->fUst), $currency);
+        $this->cVKLocalized[1] = gibPreisStringLocalized($this->fVKNetto, $currency);
 
         $this->fVKBrutto = berechneBrutto($this->fVKNetto, $this->fUst);
 
         if ($this->alterVKNetto) {
-            $this->alterVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->alterVKNetto, $this->fUst));
-            $this->alterVKLocalized[1] = gibPreisStringLocalized($this->alterVKNetto);
+            $this->alterVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->alterVKNetto, $this->fUst), $currency);
+            $this->alterVKLocalized[1] = gibPreisStringLocalized($this->alterVKNetto, $currency);
         }
 
         return $this;
@@ -569,16 +476,17 @@ class Preise
         $this->alterVK[0] = berechneBrutto($this->alterVKNetto * $factor, $this->fUst);
         $this->alterVK[1] = $this->alterVKNetto * $factor;
 
-        $this->fStaffelpreis1[0] = berechneBrutto($this->fPreis1 * $factor, $this->fUst);
-        $this->fStaffelpreis1[1] = $this->fPreis1 * $factor;
-        $this->fStaffelpreis2[0] = berechneBrutto($this->fPreis2 * $factor, $this->fUst);
-        $this->fStaffelpreis2[1] = $this->fPreis2 * $factor;
-        $this->fStaffelpreis3[0] = berechneBrutto($this->fPreis3 * $factor, $this->fUst);
-        $this->fStaffelpreis3[1] = $this->fPreis3 * $factor;
-        $this->fStaffelpreis4[0] = berechneBrutto($this->fPreis4 * $factor, $this->fUst);
-        $this->fStaffelpreis4[1] = $this->fPreis4 * $factor;
-        $this->fStaffelpreis5[0] = berechneBrutto($this->fPreis5 * $factor, $this->fUst);
-        $this->fStaffelpreis5[1] = $this->fPreis5 * $factor;
+        // SHOP-2185
+//        $this->fStaffelpreis1[0] = berechneBrutto($this->fPreis1 * $factor, $this->fUst);
+//        $this->fStaffelpreis1[1] = $this->fPreis1 * $factor;
+//        $this->fStaffelpreis2[0] = berechneBrutto($this->fPreis2 * $factor, $this->fUst);
+//        $this->fStaffelpreis2[1] = $this->fPreis2 * $factor;
+//        $this->fStaffelpreis3[0] = berechneBrutto($this->fPreis3 * $factor, $this->fUst);
+//        $this->fStaffelpreis3[1] = $this->fPreis3 * $factor;
+//        $this->fStaffelpreis4[0] = berechneBrutto($this->fPreis4 * $factor, $this->fUst);
+//        $this->fStaffelpreis4[1] = $this->fPreis4 * $factor;
+//        $this->fStaffelpreis5[0] = berechneBrutto($this->fPreis5 * $factor, $this->fUst);
+//        $this->fStaffelpreis5[1] = $this->fPreis5 * $factor;
 
         $this->fStaffelpreis_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {

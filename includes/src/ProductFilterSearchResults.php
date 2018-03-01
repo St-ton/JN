@@ -25,6 +25,11 @@ class ProductFilterSearchResults
 
     /**
      * @var int
+     */
+    private $visibileProductCount = 0;
+
+    /**
+     * @var int
      * former ArtikelVon
      */
     private $offsetStart = 0;
@@ -274,6 +279,25 @@ class ProductFilterSearchResults
     public function setProductCount($productCount)
     {
         $this->productCount = $productCount;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVisibleProductCount()
+    {
+        return $this->visibileProductCount;
+    }
+
+    /**
+     * @param int $count
+     * @return ProductFilterSearchResults
+     */
+    public function setVisibleProductCount($count)
+    {
+        $this->visibileProductCount = $count;
 
         return $this;
     }
@@ -674,5 +698,131 @@ class ProductFilterSearchResults
             'searchSpecialFilterOptions' => $this->getSearchSpecialFilterOptions(),
             'customFilterOptions'        => $this->getCustomFilterOptions()
         ];
+    }
+
+
+    /**
+     * @param ProductFilter  $productFilter
+     * @param null|Kategorie $currentCategory
+     * @param bool           $selectionWizard
+     * @return mixed
+     */
+    public function setFilterOptions($productFilter, $currentCategory = null, $selectionWizard = false)
+    {
+        // @todo: make option
+        $hideActiveOnly          = true;
+        $manufacturerOptions     = $productFilter->getManufacturerFilter()->getOptions();
+        $ratingOptions           = $productFilter->getRatingFilter()->getOptions();
+        $tagOptions              = $productFilter->getTag()->getOptions();
+        $categoryOptions         = $productFilter->getCategoryFilter()->getOptions();
+        $priceRangeOptions       = $productFilter->getPriceRangeFilter()->getOptions($this->getProductCount());
+        $searchSpecialFilters    = $productFilter->getSearchSpecialFilter()->getOptions();
+        $attribtuteFilterOptions = $productFilter->getAttributeFilterCollection()->getOptions([
+            'oAktuelleKategorie' => $currentCategory,
+            'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
+        ]);
+        $searchFilterOptions     = [];
+        foreach ($productFilter->getSearchFilter() as $searchFilter) {
+            // @todo: validate
+            $searchFilterOptions[] = $searchFilter->getOptions();
+        }
+
+        $this->setManufacturerFilterOptions($manufacturerOptions)
+             ->setSortingOptions($productFilter->getSorting()->getOptions())
+             ->setLimitOptions($productFilter->getLimits()->getOptions())
+             ->setRatingFilterOptions($ratingOptions)
+             ->setTagFilterOptions($tagOptions)
+             ->setPriceRangeFilterOptions($priceRangeOptions)
+             ->setCategoryFilterOptions($categoryOptions)
+             ->setSearchFilterOptions($searchFilterOptions)
+             ->setSearchSpecialFilterOptions($searchSpecialFilters)
+             ->setAttributeFilterOptions($attribtuteFilterOptions)
+             ->setCustomFilterOptions(array_filter(
+                 $productFilter->getAvailableFilters(),
+                 function ($e) {
+                     /** @var IFilter $e */
+                     $isCustom = $e->isCustom();
+                     if ($isCustom && count($e->getOptions()) === 0) {
+                         $e->hide();
+                     }
+
+                     return $isCustom;
+                 }
+             ))
+             ->setSearchFilterJSON(Boxen::gibJSONString(array_map(
+                 function ($e) {
+                     $e->cURL = StringHandler::htmlentitydecode($e->cURL);
+
+                     return $e;
+                 },
+                 $searchFilterOptions
+             )));
+
+        if ($productFilter->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
+            $this->setTagFilterJSON(Boxen::gibJSONString(array_map(
+                function ($e) {
+                    /** @var FilterOption $e */
+                    return $e->setURL(StringHandler::htmlentitydecode($e->getURL()));
+                },
+                $tagOptions
+            )));
+        }
+
+        if (empty($searchSpecialFilters)) {
+            // hide category filter when a category is being browsed
+            $productFilter->getSearchSpecialFilter()->hide();
+        }
+        if (empty($categoryOptions)
+            || count($categoryOptions) === 0
+            || ($productFilter->getCategory()->isInitialized()
+                && $productFilter->getCategory()->getValue() !== null)
+        ) {
+            // hide category filter when a category is being browsed
+            $productFilter->getCategoryFilter()->hide();
+        }
+        if (empty($priceRangeOptions)
+            || count($priceRangeOptions) === 0
+            || ($productFilter->getPriceRangeFilter()->isInitialized()
+                && $productFilter->getPriceRangeFilter()->getValue() !== null)
+        ) {
+            // hide empty price ranges
+            $productFilter->getPriceRangeFilter()->hide();
+        }
+        if (empty($manufacturerOptions) || count($manufacturerOptions) === 0
+            || $productFilter->getManufacturer()->isInitialized()
+            || ($productFilter->getManufacturerFilter()->isInitialized()
+                && count($manufacturerOptions) === 1
+                && $hideActiveOnly)
+        ) {
+            // hide manufacturer filter when browsing manufacturer products
+            $productFilter->getManufacturerFilter()->hide();
+        }
+        if (empty($ratingOptions)) {
+            $productFilter->getRatingFilter()->hide();
+        }
+        if (count($attribtuteFilterOptions) < 1) {
+            $productFilter->getAttributeFilterCollection()->hide();
+        } elseif ($hideActiveOnly === true) {
+            foreach ($attribtuteFilterOptions as $af) {
+                /** @var FilterOption $af */
+                $options = $af->getOptions();
+                if (is_array($options)
+                    && $af->getVisibility() !== AbstractFilter::SHOW_NEVER
+                    && array_reduce(
+                        $options,
+                        function ($carry, $option) {
+                            /** @var FilterOption $option */
+                            return $carry && $option->isActive();
+                        },
+                        true
+                    ) === true
+                ) {
+                    $af->hide();
+                }
+            }
+        }
+        $productFilter->getAttributeFilterCollection()->setFilterCollection($attribtuteFilterOptions);
+
+        return $this;
     }
 }

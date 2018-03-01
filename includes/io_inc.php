@@ -839,8 +839,9 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
     $objResponse                 = new IOResponse();
     $kVaterArtikel               = (int)$aValues['a'];
     $kArtikelKind                = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : 0;
+    $idx                         = isset($aValues['eigenschaftwert']) ? (array)$aValues['eigenschaftwert'] : [];
     $kFreifeldEigeschaftWert_arr = [];
-    $kGesetzteEigeschaftWert_arr = array_filter((array)$aValues['eigenschaftwert']);
+    $kGesetzteEigeschaftWert_arr = array_filter($idx);
     $wrapper                     = isset($aValues['wrapper']) ? StringHandler::filterXSS($aValues['wrapper']) : '';
 
     if ($kVaterArtikel > 0) {

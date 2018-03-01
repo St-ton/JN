@@ -25,10 +25,6 @@
             <a href="{$Artikel->cURLFull}">{$Artikel->cKurzbezeichnung}</a>
         </h4>
         {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}<small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>{/if}
-        {if isset($Artikel->Preise->strPreisGrafik_Suche)}
-            {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$Artikel->Preise->strPreisGrafik_Suche tplscope=$tplscope}
-        {else}
-            {include file="productdetails/price.tpl" Artikel=$Artikel price_image=null tplscope=$tplscope}
-        {/if}
+        {include file="productdetails/price.tpl" Artikel=$Artikel tplscope=$tplscope}
     </div>
 </div>{* /product-cell *}

@@ -763,10 +763,10 @@ class ProductFilter
             // Suchcache beachten / erstellen
             $searchName = $this->search->getName();
             if (!empty($searchName)) {
-                $this->search->kSuchCache = $this->searchQuery->editSearchCache();
-                $this->searchQuery->init($oSuchanfrage->kSuchanfrage);
-                $this->searchQuery->kSuchCache = $this->search->kSuchCache;
-                $this->searchQuery->setName($this->search->getName());
+                $this->search->setSearchCacheID($this->searchQuery->editSearchCache());
+                $this->searchQuery->init($oSuchanfrage->kSuchanfrage)
+                                  ->setSearchCacheID($this->search->getSearchCacheID())
+                                  ->setName($this->search->getName());
                 if (!$this->baseState->isInitialized()) {
                     $this->baseState = $this->searchQuery;
                 }
@@ -787,9 +787,10 @@ class ProductFilter
             $kSuchAnfrage                  = isset($oSuchanfrage->kSuchanfrage)
                 ? (int)$oSuchanfrage->kSuchanfrage
                 : $params['kSuchanfrage'];
-            $this->search->kSuchCache      = $kSuchCache;
-            $this->searchQuery->kSuchCache = $kSuchCache;
-            $this->searchQuery->init($kSuchAnfrage)->setName($params['cSuche']);
+            $this->search->setSearchCacheID($kSuchCache);
+            $this->searchQuery->setSearchCacheID($kSuchCache)
+                              ->init($kSuchAnfrage)
+                              ->setName($params['cSuche']);
             $this->EchteSuche          = new stdClass();
             $this->EchteSuche->cSuche  = $params['cSuche'];
             if (!$this->baseState->isInitialized()) {
@@ -1693,10 +1694,9 @@ class ProductFilter
             if ($pages->maxSeite > $pages->MaxSeiten) {
                 $pages->maxSeite = $pages->MaxSeiten;
             }
-            $this->searchResults->setPages($pages);
-            $this->searchResults = $this->setFilterOptions($this->searchResults, $currentCategory);
-            // Header bauen
-            $this->searchResults->setSearchTermWrite($this->metaData->getHeader());
+            $this->searchResults->setPages($pages)
+                                ->setFilterOptions($this, $currentCategory)
+                                ->setSearchTermWrite($this->metaData->getHeader());
         } else {
             $productList = $this->searchResults->getProducts();
             $productKeys = $this->searchResults->getProductKeys();
@@ -1704,6 +1704,7 @@ class ProductFilter
         if ($error !== false) {
             return $this->searchResults
                 ->setProductCount(0)
+                ->setVisibleProductCount(0)
                 ->setProducts($productList)
                 ->setSearchUnsuccessful(true)
                 ->setSearchTerm(strip_tags(trim($this->params['cSuche'])))
@@ -1728,7 +1729,7 @@ class ProductFilter
             foreach (array_slice($productKeys, $nLimitN, $limitPerPage) as $id) {
                 $productList->addItem((new Artikel())->fuelleArtikel($id, $opt));
             }
-            $this->searchResults->setProductCount($productList->count());
+            $this->searchResults->setVisibleProductCount($productList->count());
         }
         $this->url = $this->filterURL->createUnsetFilterURLs($this->url);
         $_SESSION['oArtikelUebersichtKey_arr']   = $productKeys;
@@ -1925,125 +1926,6 @@ class ProductFilter
         }
 
         return $data;
-    }
-
-    /**
-     * @param ProductFilterSearchResults $searchResults
-     * @param null|Kategorie             $currentCategory
-     * @param bool                       $selectionWizard
-     * @return mixed
-     */
-    public function setFilterOptions($searchResults, $currentCategory = null, $selectionWizard = false)
-    {
-        // @todo: make option
-        $hideActiveOnly          = true;
-        $manufacturerOptions     = $this->manufacturerFilter->getOptions();
-        $ratingOptions           = $this->ratingFilter->getOptions();
-        $tagOptions              = $this->tag->getOptions();
-        $categoryOptions         = $this->categoryFilter->getOptions();
-        $priceRangeOptions       = $this->priceRangeFilter->getOptions($searchResults->getProductCount());
-        $searchSpecialFilters    = $this->searchSpecialFilter->getOptions();
-        $searchFilterOptions     = $this->searchFilterCompat->getOptions();
-        $attribtuteFilterOptions = $this->attributeFilterCollection->getOptions([
-            'oAktuelleKategorie' => $currentCategory,
-            'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
-        ]);
-
-        $searchResults->setManufacturerFilterOptions($manufacturerOptions)
-                      ->setSortingOptions($this->sorting->getOptions())
-                      ->setLimitOptions($this->limits->getOptions())
-                      ->setRatingFilterOptions($ratingOptions)
-                      ->setTagFilterOptions($tagOptions)
-                      ->setPriceRangeFilterOptions($priceRangeOptions)
-                      ->setCategoryFilterOptions($categoryOptions)
-                      ->setSearchFilterOptions($searchFilterOptions)
-                      ->setSearchSpecialFilterOptions($searchSpecialFilters)
-                      ->setAttributeFilterOptions($attribtuteFilterOptions)
-                      ->setCustomFilterOptions(array_filter(
-                          $this->filters,
-                          function ($e) {
-                              /** @var IFilter $e */
-                              $isCustom = $e->isCustom();
-                              if ($isCustom && count($e->getOptions()) === 0) {
-                                  $e->hide();
-                              }
-
-                              return $isCustom;
-                          }
-                      ))
-                      ->setSearchFilterJSON(Boxen::gibJSONString(array_map(
-                          function ($e) {
-                              $e->cURL = StringHandler::htmlentitydecode($e->cURL);
-
-                              return $e;
-                          },
-                          $searchFilterOptions
-                      )));
-
-        if ($this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
-            $searchResults->setTagFilterJSON(Boxen::gibJSONString(array_map(
-                function ($e) {
-                    /** @var FilterOption $e */
-                    return $e->setURL(StringHandler::htmlentitydecode($e->getURL()));
-                },
-                $tagOptions
-            )));
-        }
-
-        if (empty($searchSpecialFilters)) {
-            // hide category filter when a category is being browsed
-            $this->searchSpecialFilter->hide();
-        }
-        if (empty($categoryOptions)
-            || count($categoryOptions) === 0
-            || ($this->category->isInitialized() && $this->category->getValue() !== null)
-        ) {
-            // hide category filter when a category is being browsed
-            $this->categoryFilter->hide();
-        }
-        if (empty($priceRangeOptions)
-            || count($priceRangeOptions) === 0
-            || ($this->priceRangeFilter->isInitialized() && $this->priceRangeFilter->getValue() !== null)
-       ) {
-            // hide empty price ranges
-            $this->priceRangeFilter->hide();
-        }
-        if (empty($manufacturerOptions) || count($manufacturerOptions) === 0
-            || $this->manufacturer->isInitialized()
-            || ($this->manufacturerFilter->isInitialized()
-                && count($manufacturerOptions) === 1
-                && $hideActiveOnly)
-        ) {
-            // hide manufacturer filter when browsing manufacturer products
-            $this->manufacturerFilter->hide();
-        }
-        if (empty($ratingOptions)) {
-            $this->ratingFilter->hide();
-        }
-        if (count($attribtuteFilterOptions) < 1) {
-            $this->attributeFilterCollection->hide();
-        } elseif ($hideActiveOnly === true) {
-            foreach ($attribtuteFilterOptions as $af) {
-                /** @var FilterOption $af */
-                $options = $af->getOptions();
-                if (is_array($options)
-                    && $af->getVisibility() !== AbstractFilter::SHOW_NEVER
-                    && array_reduce(
-                        $options,
-                        function ($carry, $option) {
-                            /** @var FilterOption $option */
-                            return $carry && $option->isActive();
-                        },
-                        true
-                    ) === true
-                ) {
-                    $af->hide();
-                }
-            }
-        }
-        $this->attributeFilterCollection->setFilterCollection($attribtuteFilterOptions);
-
-        return $searchResults;
     }
 
     /**

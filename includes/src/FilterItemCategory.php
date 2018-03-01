@@ -50,7 +50,7 @@ class FilterItemCategory extends FilterBaseCategory
     {
         $join = (new FilterJoin())
             ->setOrigin(__CLASS__)
-            ->setComment('join from FilterItemCategory')
+            ->setComment('join from ' . __METHOD__)
             ->setType('JOIN');
         if ($this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
             $join->setTable('(
@@ -94,7 +94,7 @@ class FilterItemCategory extends FilterBaseCategory
                 : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
 
             $state->joins[] = (new FilterJoin())
-                ->setComment('join1 from FilterItemCategory::getOptions()')
+                ->setComment('join1 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('(
             SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
@@ -108,7 +108,7 @@ class FilterItemCategory extends FilterBaseCategory
                 ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter)
                 ->setOrigin(__CLASS__);
             $state->joins[] = (new FilterJoin())
-                ->setComment('join2 from FilterItemCategory::getOptions()')
+                ->setComment('join2 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tkategorie')
                 ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie')
@@ -117,14 +117,14 @@ class FilterItemCategory extends FilterBaseCategory
             // @todo: this instead of $naviFilter->Kategorie?
             if (!$this->productFilter->hasCategory()) {
                 $state->joins[] = (new FilterJoin())
-                    ->setComment('join3 from FilterItemCategory::getOptions()')
+                    ->setComment('join3 from ' . __METHOD__)
                     ->setType('JOIN')
                     ->setTable('tkategorieartikel')
                     ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
                     ->setOrigin(__CLASS__);
             }
             $state->joins[] = (new FilterJoin())
-                ->setComment('join4 from FilterItemCategory::getOptions()')
+                ->setComment('join4 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tkategorie')
                 ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie')
@@ -138,7 +138,7 @@ class FilterItemCategory extends FilterBaseCategory
         }
         if (Shop::get('checkCategoryVisibility')) {
             $state->joins[] = (new FilterJoin())
-                ->setComment('join5 from FilterItemCategory::getOptions()')
+                ->setComment('join5 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tkategoriesichtbarkeit')
                 ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie')
@@ -153,7 +153,7 @@ class FilterItemCategory extends FilterBaseCategory
         if (!standardspracheAktiv()) {
             $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
             $state->joins[] = (new FilterJoin())
-                ->setComment('join5 from FilterItemCategory::getOptions()')
+                ->setComment('join5 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tkategoriesprache')
                 ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie 

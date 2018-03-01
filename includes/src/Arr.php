@@ -461,6 +461,39 @@ class Arr
     }
 
     /**
+     * Get one or a specified number of random values from an array.
+     *
+     * @param  array  $array
+     * @param  int|null  $number
+     * @return mixed
+     *
+     * @throws \InvalidArgumentException
+     */
+    public static function random($array, $number = null)
+    {
+        $requested = $number === null ? 1 : $number;
+        $count     = count($array);
+        if ($requested > $count) {
+            throw new InvalidArgumentException(
+                "You requested {$requested} items, but there are only {$count} items available."
+            );
+        }
+        if ($number === null) {
+            return $array[array_rand($array)];
+        }
+        if ((int)$number === 0) {
+            return [];
+        }
+        $keys    = array_rand($array, $number);
+        $results = [];
+        foreach ((array)$keys as $key) {
+            $results[] = $array[$key];
+        }
+
+        return $results;
+    }
+
+        /**
      * Set an array item to a given value using "dot" notation.
      *
      * If no key is given to the method, the entire array will be replaced.

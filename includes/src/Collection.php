@@ -75,6 +75,21 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
+     * Get one or a specified number of items randomly from the collection.
+     *
+     * @param  int|null  $number
+     * @return mixed
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function random($number = null)
+    {
+        return $number === null
+            ? Arr::random($this->items)
+            : new static(Arr::random($this->items, $number));
+    }
+
+    /**
      * Reduce the collection to a single value
      *
      * @param  callable $callback

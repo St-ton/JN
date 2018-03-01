@@ -70,7 +70,7 @@ ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/pclzip/pclzip/');
 ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
 ifndef('PFAD_GRAPHCLASS', PFAD_INCLUDES_LIBS . 'graph-2005-08-28/');
 ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'xtea/');
-ifndef('PFAD_FLASHPLAYER', PFAD_INCLUDES_LIBS . 'flashplayer/');
+ifndef('PFAD_FLASHPLAYER', PFAD_INCLUDES_LIBS . 'flashplayer/'); // DEPRECATED in Shop 5
 ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');  // DEPRECATED
 ifndef('PFAD_OBJECT_CACHING', 'caching/');
 ifndef('PFAD_GFX', 'gfx/');

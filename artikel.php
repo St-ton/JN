@@ -245,7 +245,6 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
-       ->assign('PFAD_FLASHPLAYER', $shopURL . PFAD_FLASHPLAYER)
        ->assign('PFAD_BILDER', PFAD_BILDER)
        ->assign('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', FKT_ATTRIBUT_ATTRIBUTEANHAENGEN)
        ->assign('FKT_ATTRIBUT_WARENKORBMATRIX', FKT_ATTRIBUT_WARENKORBMATRIX)
@@ -262,7 +261,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI', KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI)
        ->assign('ratingPagination', $pagination)
        ->assign('bewertungSterneSelected', $bewertung_sterne)
-       ->assign('bPreisverlauf', count($oPreisverlauf) > 1)
+       ->assign('bPreisverlauf', is_array($oPreisverlauf) && count($oPreisverlauf) > 1)
        ->assign('preisverlaufData', $oPreisverlauf)
        ->assign('NavigationBlaettern', $nav);
 

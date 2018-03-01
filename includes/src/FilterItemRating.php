@@ -89,7 +89,7 @@ class FilterItemRating extends AbstractFilter
             ->setType('JOIN')
             ->setTable('tartikelext')
             ->setOn('tartikel.kArtikel = tartikelext.kArtikel')
-            ->setComment('JOIN from FilterItemRating')
+            ->setComment('JOIN from ' . __METHOD__)
             ->setOrigin(__CLASS__);
     }
 

@@ -154,12 +154,7 @@
                     <div class="row">
                         {block name="productdetails-info-price"}
                         <div class="col-xs-7">
-                            {if isset($Artikel->Preise->strPreisGrafik_Detail)}
-                                {assign var=priceImage value=$Artikel->Preise->strPreisGrafik_Detail}
-                            {else}
-                                {assign var=priceImage value=null}
-                            {/if}
-                            {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$priceImage tplscope="detail"}
+                            {include file="productdetails/price.tpl" Artikel=$Artikel tplscope="detail"}
                         </div>
                         {/block}
                         {block name="productdetails-info-stock"}

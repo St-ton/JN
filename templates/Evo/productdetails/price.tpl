@@ -23,6 +23,9 @@
         {else}
             <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
                 <span>{$Artikel->Preise->cVKLocalized[$NettoPreise]}</span>{if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
+                {if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv}
+                    <meta itemprop="priceValidUntil" content="{$Artikel->Preise->SonderpreisBis_en}">
+                {/if}
             </strong>
         {/if}
         {if $tplscope === 'detail'}
@@ -38,8 +41,14 @@
                 {* Grundpreis *}
                 {if !empty($Artikel->cLocalizedVPE)}
                     {block name="detail-base-price"}
-                        <div class="base-price text-nowrap">
-                            <span class="value">{$Artikel->cLocalizedVPE[$NettoPreise]}</span>
+                        <div class="base-price text-nowrap" itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification">
+                            <meta itemprop="price" content="{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}">
+                            <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                            <span class="value" itemprop="referenceQuantity" itemscope itemtype="http://schema.org/QuantitativeValue">
+                                {$Artikel->cLocalizedVPE[$NettoPreise]}
+                                <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
+                                <meta itemprop="unitText" content="{$Artikel->cVPEEinheit}">
+                            </span>
                         </div>
                     {/block}
                 {/if}

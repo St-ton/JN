@@ -111,7 +111,7 @@ class AuswahlAssistent
      */
     private function loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive = true)
     {
-        $oDbResult = Shop::DB()->executeQueryPrepared(
+        $oDbResult = Shop::DB()->queryPrepared(
                 'SELECT *
                     FROM tauswahlassistentort AS ao
                         JOIN tauswahlassistentgruppe AS ag
@@ -120,7 +120,11 @@ class AuswahlAssistent
                                 AND ao.kKey = :kkey
                                 AND ag.kSprache = :ksprache' .
             ($bOnlyActive ? ' AND ag.nAktiv = 1' : ''),
-            ['ckey' => $cKey, 'kkey' => $kKey, 'ksprache' => $kSprache],
+            [
+                'ckey'     => $cKey,
+                'kkey'     => $kKey,
+                'ksprache' => $kSprache
+            ],
             1
         );
 
@@ -135,12 +139,13 @@ class AuswahlAssistent
             $this->kSprache                = (int)$this->kSprache;
             $this->nAktiv                  = (int)$this->nAktiv;
 
-            $questionIDs = Shop::DB()->query(
+            $questionIDs = Shop::DB()->queryPrepared(
                 'SELECT kAuswahlAssistentFrage AS id
                     FROM tauswahlassistentfrage
-                    WHERE kAuswahlAssistentGruppe = ' . $this->kAuswahlAssistentGruppe . '
-                        ' . ($bOnlyActive ? 'AND nAktiv = 1' : '') . '
-                    ORDER BY nSort',
+                    WHERE kAuswahlAssistentGruppe = :groupID' .
+                    ($bOnlyActive ? ' AND nAktiv = 1 ' : ' ') .
+                    'ORDER BY nSort',
+                ['groupID' => $this->kAuswahlAssistentGruppe],
                 NiceDB::RET_ARRAY_OF_OBJECTS
             );
 

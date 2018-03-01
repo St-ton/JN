@@ -1446,7 +1446,7 @@ final class Shop
      */
     public static function buildNaviFilter($cParameter_arr, $productFilter = null)
     {
-        trigger_error(__CLASS__ . ': buildNaviFilter() is deprecated. Use buildProductFilter() istead', E_USER_DEPRECATED);
+        trigger_error(__METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead', E_USER_DEPRECATED);
         return self::buildProductFilter($cParameter_arr, $productFilter);
     }
 
@@ -1475,7 +1475,7 @@ final class Shop
      */
     public static function getNaviFilter()
     {
-        trigger_error(__CLASS__ . ': getNaviFilter() is deprecated. Use getProductFilter() instead', E_USER_DEPRECATED);
+        trigger_error(__METHOD__ . 'is deprecated. Use ' . __CLASS__ . '::getProductFilter() instead', E_USER_DEPRECATED);
         return self::getProductFilter();
     }
 
@@ -1505,7 +1505,7 @@ final class Shop
      */
     public static function checkNaviFilter($productFilter = null)
     {
-        trigger_error(__CLASS__ . ': checkNaviFilter() is deprecated.', E_USER_DEPRECATED);
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     }
 
     /**

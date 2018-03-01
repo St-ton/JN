@@ -558,6 +558,7 @@ function getMerkmalWerteAA($kMM_arr, $kSprache)
 {
     global $oAccount;
     $oResponse = new xajaxResponse();
+    $kMM_arr = array_map('intval', $kMM_arr);
     if ($kSprache > 0 &&
         is_array($kMM_arr) &&
         count($kMM_arr) > 0 &&

@@ -10,6 +10,7 @@
 
         {*include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cURLKlein alt=$alt*}
         <img src="{$Artikel->Bilder[0]->cURLKlein}" alt="{$alt}" />
+        <meta itemprop="image" content="{$ShopURL}/{$Artikel->Bilder[0]->cURLKlein}">
         {if isset($Artikel->oSuchspecialBild) && !isset($hideOverlays)}
             <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cURLKlein}"
                  alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
@@ -22,13 +23,15 @@
                     <span class="bundle-amount">{$Artikel->fAnzahl_stueckliste}</span> <span class="bundle-times">x</span>
                 </span>
             {/if}
-            <a href="{$Artikel->cURLFull}">{$Artikel->cKurzbezeichnung}</a>
+            <a href="{$Artikel->cURLFull}" itemprop="url"><span itemprop="name">{$Artikel->cKurzbezeichnung}</span></a>
         </h4>
         {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}<small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>{/if}
         {if isset($Artikel->Preise->strPreisGrafik_Suche)}
             {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$Artikel->Preise->strPreisGrafik_Suche tplscope=$tplscope}
         {else}
-            {include file="productdetails/price.tpl" Artikel=$Artikel price_image=null tplscope=$tplscope}
+            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                {include file="productdetails/price.tpl" Artikel=$Artikel price_image=null tplscope=$tplscope}
+            </div>
         {/if}
     </div>
 </div>{* /product-cell *}

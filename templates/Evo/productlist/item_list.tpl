@@ -17,6 +17,7 @@
                     {/if}
 
                     {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cURLNormal alt=$alt tplscope=$tplscope}
+                    <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
 
                     {if isset($Artikel->oSuchspecialBild)}
                         <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cURLKlein}"
@@ -41,12 +42,13 @@
             {/block}
             {block name="product-manufacturer"}
                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
-                    <div class="media hidden-xs top0 bottom5">
+                    <div class="media hidden-xs top0 bottom5" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
                         || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B') && !empty($Artikel->cHerstellerBildKlein)}
                             <div class="media-left">
-                                {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
+                                {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}" itemprop="url">{/if}
                                     <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
+                                    <meta itemprop="image" content="{$ShopURL}/{$Artikel->cHerstellerBildKlein}">
                                 {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
                             </div>
                         {/if}
@@ -54,8 +56,8 @@
                         || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
                             <div class="media-body">
                                 <span class="small text-uppercase">
-                                    {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
-                                        {$Artikel->cHersteller}
+                                    {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}" itemprop="url">{/if}
+                                        <span itemprop="name">{$Artikel->cHersteller}</span>
                                     {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
                                 </span>
                             </div>
@@ -67,13 +69,13 @@
             <div class="product-info hidden-xs">
                 {block name="product-info"}
                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
-                        <div class="shortdescription">
+                        <div class="shortdescription" itemprop="description">
                             {$Artikel->cKurzBeschreibung}
                         </div>
                     {/if}
                     <ul class="attr-group list-unstyled small text-muted top10 hidden-xs">
                         <li class="item row attr-sku">
-                            <span class="attr-label col-sm-5">{lang key="productNo" section="global"}: </span> <span class="value col-sm-7">{$Artikel->cArtNr}</span>
+                            <span class="attr-label col-sm-5">{lang key="productNo" section="global"}: </span> <span class="value col-sm-7" itemprop="sku">{$Artikel->cArtNr}</span>
                         </li>
                         {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
                             <li class="item row attr-best-before" title="{lang key='productMHDTool' section='global'}">
@@ -118,7 +120,8 @@
 
         </div>{* /col-md-9 *}
         <div class="col-xs-4 product-detail">
-            <div class="product-detail-cell">
+            <div class="product-detail-cell" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                 {block name="form-basket"}
                     {assign var=price_image value=""}
                     {if isset($Artikel->Preise->strPreisGrafik_Suche)}

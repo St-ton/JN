@@ -29,7 +29,7 @@ class Migration_20180228193500 extends Migration implements IMigration
     {
         $this->execute("DELETE FROM tadminmenu WHERE cURL = 'preisanzeige.php'");
         $this->execute("DELETE FROM tadminrecht WHERE cRecht = 'DISPLAY_PRICECHART_VIEW'");
-        $this->execute("DELETE FROM einstellungen WHERE kEinstellungenSektion = 118");
+        $this->execute("DELETE FROM teinstellungen WHERE kEinstellungenSektion = 118");
     }
 
     public function down()

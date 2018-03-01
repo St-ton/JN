@@ -241,9 +241,6 @@ define('FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN', 'stuecklistenkomponenten');
 define('FKT_ATTRIBUT_INHALT', 'inhalt');
 define('FKT_ATTRIBUT_CANONICALURL_VARKOMBI', 'varkombi_canonicalurl');
 define('FKT_ATTRIBUT_KONFIG_MAX_ITEMS', 'konfig_max_items'); // deprecated? not in use anywhere
-define('FKT_ATTRIBUT_ARTIKELDETAILS_TPL', 'tpl_artikeldetails');
-define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL', 'tpl_artikelkonfig');
-define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS', 'tpl_js_artikelkonfig');
 // Special Content
 define('SC_KONTAKTFORMULAR', '1');
 // Suchspecials

@@ -180,11 +180,7 @@
             <div id="product-configurator" class="col-sm-12">
                 <div class="product-config top10">
                     {*KONFIGURATOR*}
-                    {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]) && file_exists("tpl_inc/{$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}")}
-                        {include file='tpl_inc/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}
-                    {else}
-                        {include file="productdetails/config.tpl"}
-                    {/if}
+                    {include file="productdetails/config.tpl"}
                 </div>
             </div>
             {/block}

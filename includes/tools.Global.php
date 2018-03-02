@@ -276,11 +276,23 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'VERGLEICHSLISTE':
-            $url                = $linkHelper->getStaticRoute('news.php', false);
-            $urlFull            = $linkHelper->getStaticRoute('news.php');
+            $url                = $linkHelper->getStaticRoute('vergleichsliste.php', false);
+            $urlFull            = $linkHelper->getStaticRoute('vergleichsliste.php');
             $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
                 Shop::Lang()->get('compare') . '</a>';
             $ele->name          = Shop::Lang()->get('compare');
+            $ele->url           = $url;
+            $ele->urlFull       = $urlFull;
+            $brotnavi[]         = $ele;
+            $SieSindHierString .= '<br />';
+            break;
+
+        case 'WUNSCHLISTE':
+            $url                = $linkHelper->getStaticRoute('wunschliste.php', false);
+            $urlFull            = $linkHelper->getStaticRoute('wunschliste.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
+                Shop::Lang()->get('wishlist') . '</a>';
+            $ele->name          = Shop::Lang()->get('wishlist');
             $ele->url           = $url;
             $ele->urlFull       = $urlFull;
             $brotnavi[]         = $ele;

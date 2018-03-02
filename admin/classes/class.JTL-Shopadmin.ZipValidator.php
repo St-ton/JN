@@ -209,7 +209,8 @@ class ZipValidator
      */
     public function __construct($cISO)
     {
-        $this->cISO = $cISO;
+        $this->cISO          = $cISO;
+        $this->szErrorString = '';
     }
 
     /**
@@ -266,8 +267,11 @@ class ZipValidator
      */
     public function getError()
     {
-        return 'Postleitzahl stimmt nicht mit Landesvorgabe überein! '
-            .'(<span class="text-muted">' . $this->szErrorString . '</span>)';
+        if ('' !== $this->szErrorString) {
+            return 'Postleitzahl stimmt nicht mit Landesvorgabe überein! '
+                .'(<span class="text-muted">' . $this->szErrorString . '</span>)';
+        }
+        return '';
     }
 
 }

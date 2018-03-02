@@ -114,7 +114,9 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
     $oZipValidator = new ZipValidator($_POST['cISO']);
     $ZuschlagPLZ   = new stdClass();
     $ZuschlagPLZ->kVersandzuschlag = (int)$_POST['kVersandzuschlag'];
-    $ZuschlagPLZ->cPLZ             = $oZipValidator->validateZip($_POST['cPLZ']);
+    if (!empty($_POST['cPLZ'])) {
+        $ZuschlagPLZ->cPLZ = $oZipValidator->validateZip($_POST['cPLZ']);
+    }
     if (!empty($_POST['cPLZAb']) && !empty($_POST['cPLZBis'])) {
         unset($ZuschlagPLZ->cPLZ);
         $ZuschlagPLZ->cPLZAb  = $oZipValidator->validateZip($_POST['cPLZAb']);

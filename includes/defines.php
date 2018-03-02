@@ -52,7 +52,7 @@ ifndef('PFAD_EMAILPDFS', 'emailpdfs/');
 ifndef('PFAD_NEWSLETTERBILDER', 'newsletter/');
 ifndef('PFAD_LINKBILDER', 'links/');
 ifndef('PFAD_INCLUDES_LIBS', PFAD_INCLUDES . 'libs/');
-ifndef('PFAD_MINIFY', PFAD_INCLUDES_LIBS . 'minify');
+ifndef('PFAD_MINIFY', PFAD_INCLUDES . 'vendor/mrclay/minify');
 ifndef('PFAD_CKEDITOR', PFAD_INCLUDES_LIBS . 'ckeditor/');
 ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror-5.18.2/');
 ifndef('PFAD_INCLUDES_TOOLS', PFAD_INCLUDES . 'tools/');

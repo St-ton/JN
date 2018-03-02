@@ -420,7 +420,8 @@ function generateSitemapXML()
 
     if ($conf['sitemap']['sitemap_seiten_anzeigen'] === 'Y') {
         //Links alle sprachen
-        $strSQL = "SELECT tlink.nLinkart, tlinksprache.kLink, tlinksprache.cISOSprache, tlink.bSSL
+        $res = Shop::DB()->queryPrepared(
+            "SELECT tlink.nLinkart, tlinksprache.kLink, tlinksprache.cISOSprache, tlink.bSSL
                      FROM tlink
                      JOIN tlinkgruppe 
                         ON tlink.kLinkgruppe = tlinkgruppe.kLinkgruppe
@@ -432,10 +433,11 @@ function generateSitemapXML()
                         AND tlinkgruppe.cTemplatename != 'hidden'
                         AND (tlink.cKundengruppen IS NULL
                           OR tlink.cKundengruppen = 'NULL'
-                          OR FIND_IN_SET('{$defaultCustomerGroupID}', REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
-                     ORDER BY tlinksprache.kLink";
-
-        $res = Shop::DB()->query($strSQL, NiceDB::RET_QUERYSINGLE);
+                          OR FIND_IN_SET(:cGrpID, REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
+                     ORDER BY tlinksprache.kLink",
+            ['cGrpID' => $defaultCustomerGroupID],
+            NiceDB::RET_QUERYSINGLE
+        );
         while (($tlink = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if (spracheEnthalten($tlink->cISOSprache, $Sprachen)) {
                 $oSeo = Shop::DB()->queryPrepared(

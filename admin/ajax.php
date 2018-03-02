@@ -1,1 +1,1 @@
-removed in shop 5.0
+<?php // removed in shop 5.0

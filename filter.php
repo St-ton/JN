@@ -73,7 +73,7 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
         $limit,
         $minsells
     );
-    $products = $oSuchergebnisse->getProducts()->getItems();
+    $products = $oSuchergebnisse->getProducts()->all();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
 if (verifyGPCDataInteger('zahl') > 0) {
@@ -177,7 +177,7 @@ $smarty->assign(
 )->assign(
     'meta_description',
     $oNavigationsinfo->generateMetaDescription(
-        $oSuchergebnisse->getProducts()->getItems(),
+        $oSuchergebnisse->getProducts()->all(),
         $oSuchergebnisse,
         $oGlobaleMetaAngabenAssoc_arr,
         $AktuelleKategorie
@@ -185,7 +185,7 @@ $smarty->assign(
 )->assign(
     'meta_keywords',
     $oNavigationsinfo->generateMetaKeywords(
-        $oSuchergebnisse->getProducts()->getItems(),
+        $oSuchergebnisse->getProducts()->all(),
         $AktuelleKategorie
     )
 );

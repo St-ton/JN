@@ -405,7 +405,7 @@ class ProductFilter
     {
         if ($this->searchResults === null) {
             $this->searchResults = new ProductFilterSearchResults();
-            $this->searchResults->setProducts(new Collection());
+            $this->searchResults->setProducts(new \Tightenco\Collect\Support\Collection());
         }
 
         return $products === true
@@ -1660,7 +1660,7 @@ class ProductFilter
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         $error        = false;
         if ($this->searchResults === null) {
-            $productList         = new Collection();
+            $productList         = new \Tightenco\Collect\Support\Collection();
             $productKeys         = $this->getProductKeys();
             $productCount        = count($productKeys);
             $this->searchResults = (new ProductFilterSearchResults())
@@ -1727,7 +1727,7 @@ class ProductFilter
                 $limitPerPage = null;
             }
             foreach (array_slice($productKeys, $nLimitN, $limitPerPage) as $id) {
-                $productList->addItem((new Artikel())->fuelleArtikel($id, $opt));
+                $productList->push((new Artikel())->fuelleArtikel($id, $opt));
             }
             $this->searchResults->setVisibleProductCount($productList->count());
         }

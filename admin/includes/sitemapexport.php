@@ -435,7 +435,7 @@ function generateSitemapXML()
                           OR FIND_IN_SET('{$defaultCustomerGroupID}', REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
                      ORDER BY tlinksprache.kLink";
 
-        $res = Shop::DB()->queryPrepared($strSQL, NiceDB::RET_QUERYSINGLE);
+        $res = Shop::DB()->query($strSQL, NiceDB::RET_QUERYSINGLE);
         while (($tlink = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if (spracheEnthalten($tlink->cISOSprache, $Sprachen)) {
                 $oSeo = Shop::DB()->queryPrepared(

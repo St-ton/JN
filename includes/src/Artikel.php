@@ -5702,7 +5702,7 @@ class Artikel
         }
         // Existiert für diese Kundengruppe ein Kategorierabatt?
         if (Shop::get('checkCategoryDiscount')) {
-            if ($this->kEigenschaftKombi > 0) {
+            if ($this->kEigenschaftKombi != 0) {
                 $oArtikelKatRabatt = Shop::DB()->select(
                     'tartikelkategorierabatt',
                     'kArtikel', $this->kVaterArtikel,
@@ -5726,7 +5726,7 @@ class Artikel
         $kdgrp = (isset($_SESSION['Kundengruppe']->fRabatt) && Session::CustomerGroup()->getID() === $kKundengruppe)
             ? $_SESSION['Kundengruppe']
             : new Kundengruppe($kKundengruppe);
-        if ($kdgrp->getDiscount() > 0) {
+        if ($kdgrp->getDiscount() != 0) {
             $Rabatt_arr[] = $kdgrp->getDiscount();
         }
         // Existiert für diesen Kunden ein Rabatt?
@@ -5734,7 +5734,7 @@ class Artikel
             array_key_exists('Kunde', $_SESSION)
             && isset($_SESSION['Kunde']->kKunde)
             && $_SESSION['Kunde']->kKunde > 0
-            && $_SESSION['Kunde']->fRabatt > 0
+            && $_SESSION['Kunde']->fRabatt != 0
         ) {
             $Rabatt_arr[] = $_SESSION['Kunde']->fRabatt;
         }

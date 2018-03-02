@@ -9,6 +9,22 @@
  */
 class AdminAccount
 {
+    const LOGIN_OK = 1;
+
+    const ERROR_NOT_AUTHORIZED = 0;
+
+    const ERROR_INVALID_PASSWORD = -1;
+
+    const ERROR_INVALID_PASSWORD_LOCKED = -2;
+
+    const ERROR_USER_NOT_FOUND = -3;
+
+    const ERROR_USER_DISABLED = -4;
+
+    const ERROR_LOGIN_EXPIRED = -5;
+
+    const ERROR_TWO_FACTOR_AUTH_EXPIRED = -6;
+
     /**
      * @var bool
      */
@@ -127,14 +143,14 @@ class AdminAccount
             '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
         );
         if ($oAdmin === null || !is_object($oAdmin)) {
-            return -3;
+            return self::ERROR_USER_NOT_FOUND;
         }
         $oAdmin->kAdminlogingruppe = (int)$oAdmin->kAdminlogingruppe;
         if (!$oAdmin->bAktiv && $oAdmin->kAdminlogingruppe !== ADMINGROUP) {
-            return -4;
+            return self::ERROR_USER_DISABLED;
         }
         if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== ADMINGROUP && $oAdmin->dGueltigTS < time()) {
-            return -5;
+            return self::ERROR_LOGIN_EXPIRED;
         }
         $verified     = false;
         $cPassCrypted = null;
@@ -145,7 +161,9 @@ class AdminAccount
                 //login failed
                 $this->_setRetryCount($oAdmin->cLogin);
 
-                return (($oAdmin->nLoginVersuch + 1) >= 3) ? -2 : -1;
+                return (($oAdmin->nLoginVersuch + 1) >= 3)
+                    ? self::ERROR_INVALID_PASSWORD_LOCKED
+                    : self::ERROR_INVALID_PASSWORD;
             }
             if (!isset($_SESSION['AdminAccount'])) {
                 $_SESSION['AdminAccount'] = new stdClass();
@@ -187,14 +205,16 @@ class AdminAccount
             //check password hash and update if necessary
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
-                return -6;
+                return self::ERROR_TWO_FACTOR_AUTH_EXPIRED;
             }
 
-            return $this->logged() ? 1 : 0;
+            return $this->logged() ? self::LOGIN_OK : self::ERROR_NOT_AUTHORIZED;
         }
         $this->_setRetryCount($oAdmin->cLogin);
 
-        return (($oAdmin->nLoginVersuch + 1) >= 3) ? -2 : -1;
+        return (($oAdmin->nLoginVersuch + 1) >= 3)
+            ? self::ERROR_INVALID_PASSWORD_LOCKED
+            : self::ERROR_INVALID_PASSWORD;
     }
 
     /**
@@ -390,11 +410,9 @@ class AdminAccount
      */
     public function favorites()
     {
-        if (!$this->logged()) {
-            return [];
-        }
-
-        return AdminFavorite::fetchAll($_SESSION['AdminAccount']->kAdminlogin);
+        return $this->logged()
+            ? AdminFavorite::fetchAll($_SESSION['AdminAccount']->kAdminlogin)
+            : [];
     }
 
     /**
@@ -469,7 +487,7 @@ class AdminAccount
     {
         $kAdminlogingruppe = (int)$kAdminlogingruppe;
         $oGroup            = Shop::DB()->select('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
-        if (isset($oGroup->kAdminlogingruppe)) {
+        if ($oGroup !== null && isset($oGroup->kAdminlogingruppe)) {
             $oPermission_arr = Shop::DB()->selectAll(
                 'tadminrechtegruppe',
                 'kAdminlogingruppe',
@@ -510,9 +528,8 @@ class AdminAccount
     private function checkAndUpdateHash($password)
     {
         $passwordService = Shop::Container()->getPasswordService();
-        //only update hash if the db update to 4.00+ was already executed
-        if (
-            isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin)
+        // only update hash if the db update to 4.00+ was already executed
+        if (isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin)
             && $passwordService->needsRehash($_SESSION['AdminAccount']->cPass)
         ) {
             $_upd        = new stdClass();

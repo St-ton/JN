@@ -54,12 +54,12 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         $cPass   = $_POST['passwort'];
         $nReturn = $oAccount->login($cLogin, $cPass);
         switch ($nReturn) {
-            case -2:
+            case AdminAccount::ERROR_INVALID_PASSWORD_LOCKED:
                 @touch(CAPTCHA_LOCKFILE);
                 break;
 
-            case -3:
-            case -1:
+            case AdminAccount::ERROR_USER_NOT_FOUND:
+            case AdminAccount::ERROR_INVALID_PASSWORD:
                 $cFehler = 'Benutzername oder Passwort falsch';
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Auth-Code abgelaufen';
@@ -71,11 +71,11 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 );
                 break;
 
-            case -4:
+            case AdminAccount::ERROR_USER_DISABLED:
                 $cFehler = 'Anmeldung zur Zeit nicht m&ouml;glich';
                 break;
 
-            case -5:
+            case AdminAccount::ERROR_LOGIN_EXPIRED:
                 $cFehler = 'Anmeldedaten nicht mehr g&uuml;ltig';
                 Jtllog::writeLog(
                     'Login für Nutzer ' . $loginName . ' fehlgeschlagen - abgelaufene Anmeldedaten.',
@@ -84,7 +84,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 );
                 break;
 
-            case -6:
+            case AdminAccount::ERROR_TWO_FACTOR_AUTH_EXPIRED:
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
                     Jtllog::writeLog(
@@ -95,11 +95,11 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 }
                 break;
 
-            case 0:
+            case AdminAccount::ERROR_NOT_AUTHORIZED:
                 $cFehler = 'Keine Berechtigungen vorhanden';
                 break;
 
-            case 1:
+            case AdminAccount::LOGIN_OK:
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if (file_exists(CAPTCHA_LOCKFILE)) {
                     unlink(CAPTCHA_LOCKFILE);

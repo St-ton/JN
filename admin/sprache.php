@@ -86,15 +86,16 @@ if (isset($_REQUEST['action']) && validateToken()) {
                 ->select('tsprachsektion', 'kSprachsektion', (int)$oVariable->kSprachsektion)
                 ->cName;
 
-            $oWertDB_arr = Shop::DB()->query(
+            $oWertDB_arr = Shop::DB()->queryPrepared(
                 "SELECT s.cNameDeutsch AS cSpracheName, sw.cWert, si.cISO
                     FROM tsprachwerte AS sw
                         JOIN tsprachiso AS si
                             ON si.kSprachISO = sw.kSprachISO
                         JOIN tsprache AS s
                             ON s.cISO = si.cISO 
-                    WHERE sw.cName = '" . $oVariable->cName . "'
-                        AND sw.kSprachsektion = " . $oVariable->kSprachsektion,
+                    WHERE sw.cName = :cName
+                        AND sw.kSprachsektion = :kSprachsektion",
+                ['cName' => $oVariable->cName, 'kSprachsektion' => $oVariable->kSprachsektion],
                 2
             );
 

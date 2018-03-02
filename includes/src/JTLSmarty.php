@@ -262,8 +262,14 @@ class JTLSmarty extends SmartyBC
         if ($minifyJS === true) {
             $options['jsMinifier'] = ['\JSMin\JSMin', 'minify'];
         }
+        try {
+            $res = (new Minify_HTML($html, $options))->process();
+        } catch (JSMin\UnterminatedStringException $e) {
+            $res = $html;
+        }
 
-        return (new Minify_HTML($html, $options))->process();
+        return $res;
+
     }
 
     /**

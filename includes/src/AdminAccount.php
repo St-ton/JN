@@ -43,6 +43,7 @@ class AdminAccount
      * @param string $hash - the hash received via email
      * @param string $mail - the admin account's email address
      * @return bool - true if successfully verified
+     * @throws Exception
      */
     public function verifyResetPasswordHash($hash, $mail)
     {
@@ -65,7 +66,7 @@ class AdminAccount
                     return false;
                 }
                 // check the submitted hash against the saved one
-                return password_verify($hash, $originalHash);
+                return Shop::Container()->getPasswordService()->verify($hash, $originalHash);
             }
         }
 
@@ -77,14 +78,17 @@ class AdminAccount
      *
      * @param string $mail - the admin account's email address
      * @return bool - true if valid admin account
+     * @throws Exception
      */
     public function prepareResetPassword($mail)
     {
+        $cryptoService            = Shop::Container()->getCryptoService();
+        $passwordService          = Shop::Container()->getPasswordService();
         $now                      = new DateTime();
         $timestamp                = $now->format('U');
-        $stringToSend             = md5($mail . microtime(true));
+        $stringToSend             = md5($mail . $cryptoService->randomString(30));
         $_upd                     = new stdClass();
-        $_upd->cResetPasswordHash = $timestamp . ':' . password_hash($stringToSend, PASSWORD_DEFAULT);
+        $_upd->cResetPasswordHash = $timestamp . ':' . $passwordService->hash($stringToSend);
         $res                      = Shop::DB()->update('tadminlogin', 'cMail', $mail, $_upd);
         if ($res > 0) {
             $user = Shop::DB()->select('tadminlogin', 'cMail', $mail);
@@ -491,10 +495,12 @@ class AdminAccount
     /**
      * @param string $password
      * @return false|string
+     * @deprecated since 4.07
+     * @throws Exception
      */
     public static function generatePasswordHash($password)
     {
-        return password_hash($password, PASSWORD_DEFAULT);
+        return Shop::Container()->getPasswordService()->hash($password);
     }
 
     /**
@@ -502,16 +508,18 @@ class AdminAccount
      *
      * @param string $password
      * @return bool - true when hash was updated
+     * @throws Exception
      */
     private function checkAndUpdateHash($password)
     {
+        $passwordService = Shop::Container()->getPasswordService();
         //only update hash if the db update to 4.00+ was already executed
-        if (isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin)
-            && password_needs_rehash($_SESSION['AdminAccount']->cPass, PASSWORD_DEFAULT)
-            && version_compare(Shop::getShopVersion(), 400, '>=') === true
+        if (
+            isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin)
+            && $passwordService->needsRehash($_SESSION['AdminAccount']->cPass)
         ) {
             $_upd        = new stdClass();
-            $_upd->cPass = password_hash($password, PASSWORD_DEFAULT);
+            $_upd->cPass = $passwordService->hash($password);
             Shop::DB()->update('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, $_upd);
 
             return true;

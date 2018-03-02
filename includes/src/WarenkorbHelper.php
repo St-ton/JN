@@ -482,7 +482,7 @@ class WarenkorbHelper
         // Alle Konfigurationsartikel können in den WK gelegt werden
         if ($bValid) {
             // Eindeutige ID
-            $cUnique = gibUID(10);
+            $cUnique = uniqid('', true);
             // Hauptartikel in den WK legen
             fuegeEinInWarenkorb($articleID, $count, $attributes, 0, $cUnique);
             // Konfigartikel in den WK legen

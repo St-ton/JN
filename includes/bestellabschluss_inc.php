@@ -330,7 +330,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     }
     //BestellID füllen
     $bestellid              = new stdClass();
-    $bestellid->cId         = gibUID(40, $Bestellung->kBestellung . md5(time()));
+    $bestellid->cId         = uniqid('', true);
     $bestellid->kBestellung = $Bestellung->kBestellung;
     $bestellid->dDatum      = 'now()';
     Shop::DB()->insert('tbestellid', $bestellid);
@@ -338,7 +338,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $bestellstatus              = new stdClass();
     $bestellstatus->kBestellung = $Bestellung->kBestellung;
     $bestellstatus->dDatum      = 'now()';
-    $bestellstatus->cUID        = gibUID(40, (time() . $Bestellung->kBestellung) . substr(time(), -8));
+    $bestellstatus->cUID        = uniqid('', true);
     Shop::DB()->insert('tbestellstatus', $bestellstatus);
     //füge ZahlungsInfo ein, falls es die Versandart erfordert
     if (isset($_SESSION['Zahlungsart']->ZahlungsInfo) && $_SESSION['Zahlungsart']->ZahlungsInfo) {

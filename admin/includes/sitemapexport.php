@@ -369,7 +369,7 @@ function generateSitemapXML()
             ++$nStat_arr['artikelbild'];
         }
     }
-    //Artikel sonstige Sprachen
+    // Artikel sonstige Sprachen
     foreach ($Sprachen as $SpracheTMP) {
         if ($SpracheTMP->kSprache === $defaultLangID) {
             continue;
@@ -419,7 +419,7 @@ function generateSitemapXML()
     }
 
     if ($conf['sitemap']['sitemap_seiten_anzeigen'] === 'Y') {
-        //Links alle sprachen
+        // Links alle sprachen
         $res = Shop::DB()->queryPrepared(
             "SELECT tlink.nLinkart, tlinksprache.kLink, tlinksprache.cISOSprache, tlink.bSSL
                      FROM tlink
@@ -484,7 +484,7 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_kategorien_anzeigen'] === 'Y') {
         $categoryHelper = new KategorieListe();
-        //Kategorien STD Sprache
+        // Kategorien STD Sprache
         $res = Shop::DB()->queryPrepared(
             "SELECT tkategorie.kKategorie, tseo.cSeo, tkategorie.dLetzteAktualisierung
                  FROM tkategorie
@@ -535,7 +535,7 @@ function generateSitemapXML()
                 }
             }
         }
-        //Kategorien sonstige Sprachen
+        // Kategorien sonstige Sprachen
         foreach ($Sprachen as $SpracheTMP) {
             $strSQL = "SELECT tkategorie.kKategorie, tkategorie.dLetzteAktualisierung, tseo.cSeo
                       FROM tkategoriesprache, tkategorie
@@ -638,7 +638,6 @@ function generateSitemapXML()
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 continue;
             }
-
             $res = Shop::DB()->queryPrepared(
                   "SELECT ttag.kTag, ttag.cName, tseo.cSeo
                       FROM ttag
@@ -762,7 +761,6 @@ function generateSitemapXML()
                 }
             }
         }
-
         // Livesuche sonstige Sprachen
         foreach ($Sprachen as $SpracheTMP) {
             if ($SpracheTMP->kSprache === $defaultLangID) {
@@ -829,7 +827,6 @@ function generateSitemapXML()
                 ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
             NiceDB::RET_QUERYSINGLE
         );
-
         while (($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL_arr = baueExportURL(
                 $oMerkmalWert->kMerkmalWert,
@@ -882,17 +879,16 @@ function generateSitemapXML()
                             AND tmerkmalsprache.kSprache = :langID
                         GROUP BY tmerkmalwert.kMerkmalWert
                         ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
-                ['langID' => $defaultLangID],
+                ['langID' => $SpracheTMP->kSprache],
                 NiceDB::RET_QUERYSINGLE
             );
-
             while (($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) !== false) {
                 $cURL_arr = baueExportURL(
                     $oMerkmalWert->kMerkmalWert,
                     'kMerkmalWert',
                     null,
                     $Sprachen,
-                    $defaultLangID,
+                    $SpracheTMP->kSprache,
                     $nArtikelProSeite,
                     $conf
                 );

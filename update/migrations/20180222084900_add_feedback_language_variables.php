@@ -38,12 +38,6 @@ class Migration_20180222084900 extends Migration implements IMigration
 
         $this->setLocalization('ger', 'product rating', 'edit', 'Bewertung Ändern');
         $this->setLocalization('eng', 'product rating', 'edit', 'Edit feedback');
-
-        $this->setLocalization('ger', 'product rating', 'delete', 'Bewertung löschen');
-        $this->setLocalization('eng', 'product rating', 'delete', 'Delete feedback');
-
-        $this->setLocalization('ger', 'product rating', 'delete all', 'Alle Bewertungen löschen');
-        $this->setLocalization('eng', 'product rating', 'delete all', 'Delete all feedback');
     }
     public function down()
     {
@@ -52,7 +46,5 @@ class Migration_20180222084900 extends Migration implements IMigration
         $this->removeLocalization('feedback deactivated');
         $this->removeLocalization('reply');
         $this->removeLocalization('edit');
-        $this->removeLocalization('delete');
-        $this->removeLocalization('delete all');
     }
 }

@@ -173,7 +173,7 @@ function eosZahlungsHash($Bestellung)
     // In DB einfuegen
     $Zahlung              = new stdClass();
     $Zahlung->kBestellung = (int)$Bestellung->kBestellung;
-    $Zahlung->cId         = gibUID(40, (string)$Bestellung->kBestellung);
+    $Zahlung->cId         = uniqid('', true);
 
     return Shop::DB()->insert('tzahlungsid', $Zahlung);
 }
@@ -196,7 +196,7 @@ function eosZahlungsNachricht($Bestellung)
         // Falls die Bezahlung nicht erfolgreich war, wird eine neue BestellID
         // generiert, damit der Kunde spaeter bezahlen kann.
         $BestellID              = new stdClass();
-        $BestellID->cId         = gibUID(40, $Bestellung->kBestellung . md5(time()));
+        $BestellID->cId         = uniqid('', true);
         $BestellID->kBestellung = $Bestellung->kBestellung;
         $BestellID->dDatum      = 'now()';
         Shop::DB()->insert('tbestellid', $BestellID);

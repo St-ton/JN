@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Services\Container as Container;
+
 /**
  * Class Shop
  * @method static NiceDB DB()
@@ -327,7 +329,7 @@ final class Shop
     /**
      * @var \Services\DefaultServicesInterface
      */
-    public static $container;
+    private static $container;
 
     /**
      * @var array
@@ -1682,7 +1684,7 @@ final class Shop
      *
      * @return \Services\DefaultServicesInterface
      */
-    public function getContainer()
+    public static function Container()
     {
 
         if (!static::$container) {
@@ -1693,16 +1695,29 @@ final class Shop
     }
 
     /**
-     * Create the default container of the jtl shop
+     * Get the default container of the jtl shop
      *
-     * @return null
+     * @return \Services\DefaultServicesInterface
      */
-    private function createContainer()
+    public function _Container()
     {
-        $l                 = new \Services\Container();
-        static::$container = $l;
-        $l->setSingleton(Services\JTL\ExampleServiceInterface::class, function ($locator) {
-            return new Services\JTL\ExampleService();
+        return self::Container();
+    }
+
+    /**
+     * Create the default container of the jtl shop
+     */
+    private static function createContainer()
+    {
+        $container         = new \Services\Container();
+        static::$container = $container;
+
+        $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function(){
+            return new \Services\JTL\CryptoService();
+        });
+
+        $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function(Container $container){
+            return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
         });
     }
 }

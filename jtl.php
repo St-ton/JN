@@ -382,7 +382,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                         Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
                     } elseif ($nOeffentlich === 1) {
-                        $cURLID = gibUID(32, substr(md5($kWunschliste), 0, 16) . time());
+                        $cURLID = uniqid('', true);
                         // Kampagne
                         $oKampagne = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
                         if ($oKampagne->kKampagne > 0) {

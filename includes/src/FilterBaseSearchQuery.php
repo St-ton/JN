@@ -16,6 +16,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      */
     private static $mapping = [
         'kSuchanfrage' => 'ID',
+        'kSuchcache'   => 'SearchCacheID',
         'cSuche'       => 'Name',
         'Fehler'       => 'Error'
     ];
@@ -28,8 +29,9 @@ class FilterBaseSearchQuery extends AbstractFilter
 
     /**
      * @var int
+     * @former kSuchCache
      */
-    public $kSuchCache = 0;
+    private $searchCacheID = 0;
 
     /**
      * @var string
@@ -47,6 +49,25 @@ class FilterBaseSearchQuery extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('suche')
              ->setUrlParamSEO(null);
+    }
+
+    /**
+     * @return int
+     */
+    public function getSearchCacheID()
+    {
+        return $this->searchCacheID;
+    }
+
+    /**
+     * @param int $id
+     * @return $this
+     */
+    public function setSearchCacheID($id)
+    {
+        $this->searchCacheID = (int)$id;
+
+        return $this;
     }
 
     /**
@@ -206,12 +227,12 @@ class FilterBaseSearchQuery extends AbstractFilter
         if (is_array($searchFilter)) {
             $count = count($searchFilter);
             foreach ($searchFilter as $oSuchFilter) {
-                if (isset($oSuchFilter->kSuchCache)) {
-                    $kSucheCache_arr[] = (int)$oSuchFilter->kSuchCache;
+                if ($oSuchFilter->getSearchCacheID() > 0) {
+                    $kSucheCache_arr[] = $oSuchFilter->getSearchCacheID();
                 }
             }
-        } elseif (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0) {
-            $kSucheCache_arr[] = (int)$searchFilter->kSuchCache;
+        } elseif ($searchFilter->getSearchCacheID() > 0) {
+            $kSucheCache_arr[] = $searchFilter->getSearchCacheID();
             $count             = 1;
         } else {
             $kSucheCache_arr = [$searchFilter->getValue()];
@@ -228,7 +249,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                               HAVING COUNT(*) = ' . $count . '
                           ) AS jSuche')
             ->setOn('jSuche.kArtikel = tartikel.kArtikel')
-            ->setComment('JOIN1 from BaseFilterSearch')
+            ->setComment('JOIN1 from ' . __METHOD__)
             ->setOrigin(__CLASS__);
     }
 
@@ -251,19 +272,19 @@ class FilterBaseSearchQuery extends AbstractFilter
             $state      = $this->productFilter->getCurrentStateData();
 
             $state->joins[] = (new FilterJoin())
-                ->setComment('join1 from getSearchFilterOptions')
+                ->setComment('JOIN1 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tsuchcachetreffer')
                 ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
                 ->setOrigin(__CLASS__);
             $state->joins[] = (new FilterJoin())
-                ->setComment('join2 from getSearchFilterOptions')
+                ->setComment('JOIN2 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tsuchcache')
                 ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
                 ->setOrigin(__CLASS__);
             $state->joins[] = (new FilterJoin())
-                ->setComment('join3 from getSearchFilterOptions')
+                ->setComment('JOIN3 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tsuchanfrage')
                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
@@ -965,8 +986,15 @@ class FilterBaseSearchQuery extends AbstractFilter
         static $active = null;
 
         if ($active === null) {
-            $active = Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
-            && Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1);
+            $active = Shop::DB()->query(
+                "SHOW INDEX FROM tartikel 
+                    WHERE KEY_NAME = 'idx_tartikel_fulltext'",
+                NiceDB::RET_SINGLE_OBJECT)
+            && Shop::DB()->query(
+                "SHOW INDEX 
+                    FROM tartikelsprache 
+                    WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
+                NiceDB::RET_SINGLE_OBJECT);
         }
 
         return $active;

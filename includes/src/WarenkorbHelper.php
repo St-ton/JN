@@ -650,7 +650,7 @@ class WarenkorbHelper
                 '?a=' . $articleID .
                 '&n=' . $qty .
                 '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
-            exit();
+            exit;
         }
 
         if ($articleID > 0 && Session::Customer()->getID() > 0) {

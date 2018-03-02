@@ -51,7 +51,7 @@ class Redirect
     public function loadFromDB($kRedirect)
     {
         $obj = Shop::DB()->select('tredirect', 'kRedirect', (int)$kRedirect);
-        if (is_object($obj) && $obj->kRedirect > 0) {
+        if ($obj !== null && $obj->kRedirect > 0) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
                 $this->$member = $obj->$member;
@@ -113,7 +113,7 @@ class Redirect
         $cDestination = isset($xPath_arr['path']) ? $xPath_arr['path'] . '/' . $cDestination : $cDestination;
         $oObj         = Shop::DB()->select('tredirect', 'cFromUrl', $cDestination, 'cToUrl', $cSource);
 
-        return isset($oObj->kRedirect) && (int)$oObj->kRedirect > 0;
+        return $oObj !== null && (int)$oObj->kRedirect > 0;
     }
 
     /**

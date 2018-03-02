@@ -157,12 +157,7 @@
                     <div class="row">
                         {block name="productdetails-info-price"}
                         <div class="col-xs-7">
-                            {if isset($Artikel->Preise->strPreisGrafik_Detail)}
-                                {assign var=priceImage value=$Artikel->Preise->strPreisGrafik_Detail}
-                            {else}
-                                {assign var=priceImage value=null}
-                            {/if}
-                            {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$priceImage tplscope="detail"}
+                            {include file="productdetails/price.tpl" Artikel=$Artikel tplscope="detail"}
                         </div>
                         {/block}
                         {block name="productdetails-info-stock"}
@@ -187,11 +182,7 @@
             <div id="product-configurator" class="col-sm-12">
                 <div class="product-config top10">
                     {*KONFIGURATOR*}
-                    {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]) && file_exists("tpl_inc/{$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}")}
-                        {include file='tpl_inc/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}
-                    {else}
-                        {include file="productdetails/config.tpl"}
-                    {/if}
+                    {include file="productdetails/config.tpl"}
                 </div>
             </div>
             {/block}

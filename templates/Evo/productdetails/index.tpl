@@ -29,11 +29,7 @@
                 {include file='snippets/opc_mount_point.tpl' id='editor_replace_all'}
             {else}
                 {include file='snippets/extension.tpl'}
-                {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]) && $currentTemplateDirFullPath|cat:'productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]|file_exists}
-                    {include file='productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]}
-                {else}
-                    {include file='productdetails/details.tpl'}
-                {/if}
+                {include file='productdetails/details.tpl'}
             {/if}
         </div>
     {/if}

@@ -178,21 +178,21 @@ class FilterItemPriceRange extends AbstractFilter
     {
         return [
             (new FilterJoin())
-                ->setComment('join1 from FilterItemPriceRange')
+                ->setComment('join1 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tpreise')
                 ->setOn('tartikel.kArtikel = tpreise.kArtikel 
                         AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID())
                 ->setOrigin(__CLASS__),
             (new FilterJoin())
-                ->setComment('join2 from FilterItemPriceRange')
+                ->setComment('join2 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tartikelkategorierabatt')
                 ->setOn('tartikelkategorierabatt.kKundengruppe = ' . $this->getCustomerGroupID() .
                     ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel')
                 ->setOrigin(__CLASS__),
             (new FilterJoin())
-                ->setComment('join3 from FilterItemPriceRange')
+                ->setComment('join3 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tartikelsonderpreis')
                 ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
@@ -201,7 +201,7 @@ class FilterItemPriceRange extends AbstractFilter
                          AND (tartikelsonderpreis.dEnde >= curDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')")
                 ->setOrigin(__CLASS__),
             (new FilterJoin())
-                ->setComment('join4 from FilterItemPriceRange')
+                ->setComment('join4 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tsonderpreise')
                 ->setOn('tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis 
@@ -315,14 +315,14 @@ class FilterItemPriceRange extends AbstractFilter
                         AND tsonderpreise.kKundengruppe = ' . $this->getCustomerGroupID())
             ->setOrigin(__CLASS__);
         $state->joins[] = (new FilterJoin())
-            ->setComment('join1 from FilterItemPriceRange::getOptions()')
+            ->setComment('join1 from ' . __METHOD__)
             ->setTable('tpreise')
             ->setType('JOIN')
             ->setOn('tpreise.kArtikel = tartikel.kArtikel 
                         AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID())
             ->setOrigin(__CLASS__);
         $state->joins[] = (new FilterJoin())
-            ->setComment('join2 from FilterItemPriceRange::getOptions()')
+            ->setComment('join2 from ' . __METHOD__)
             ->setTable('tartikelsichtbarkeit')
             ->setType('LEFT JOIN')
             ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 

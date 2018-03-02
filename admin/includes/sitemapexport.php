@@ -1197,34 +1197,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
     $shopURLSSL      = Shop::getURL(true);
     $search          = [$shopURL . '/', $shopURLSSL . '/'];
     $replace         = ['', ''];
-    if ($oSuchergebnisse->getProductCount() > 0) {
-        if (($max = $oSuchergebnisse->getPages()->MaxSeiten) > 1) {
-            for ($i = 1; $i <= $max; ++$i) {
-                if ($i > 1) {
-                    $cURL_arr[] = makeURL(
-                        str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()) . '_s' . $i,
-                        $dLetzteAktualisierung,
-                        FREQ_WEEKLY,
-                        PRIO_NORMAL
-                    );
-                } else {
-                    $cURL_arr[] = makeURL(
-                        str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
-                        $dLetzteAktualisierung,
-                        FREQ_WEEKLY,
-                        PRIO_NORMAL
-                    );
-                }
-            }
-        } else {
-            $cURL_arr[] = makeURL(
-                str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
-                $dLetzteAktualisierung,
-                FREQ_WEEKLY,
-                PRIO_NORMAL
-            );
-        }
-    } elseif ($cKey === 'kKategorie' && $kKey > 0) {
+    if ($oSuchergebnisse->getProductCount() > 0 || ($cKey === 'kKategorie' && $kKey > 0)) {
         $cURL_arr[] = makeURL(
             str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
             $dLetzteAktualisierung,

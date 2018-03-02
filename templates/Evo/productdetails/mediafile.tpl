@@ -88,29 +88,7 @@
 
                     {* Video *}
                 {elseif $oMedienDatei->nMedienTyp == 3}
-                    <div class="col-xs-12">
-                        <div class="panel-wrap">
-                            <div class="panel panel-default">
-                                <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
-                                <div class="panel-body">
-                                    <p>{$oMedienDatei->cBeschreibung}</p>
-                                    {if !empty($oMedienDatei->cPfad)}
-                                        <object type="application/x-shockwave-flash" data="{$PFAD_FLASHPLAYER}player_flv_multi.swf" width="320" height="240">
-                                            <param name="movie" value="{$PFAD_FLASHPLAYER}player_flv_maxi.swf" />
-                                            <param name="allowFullScreen" value="true" />
-                                            <param name="FlashVars" value="flv={$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}&width=320&height=240&showvolume=1&showtime=1&showfullscreen=1" />
-                                        </object>
-                                    {elseif !empty($oMedienDatei->cURL)}
-                                        <object type="application/x-shockwave-flash" data="{$PFAD_FLASHPLAYER}player_flv_multi.swf" width="320" height="240">
-                                            <param name="movie" value="{$PFAD_FLASHPLAYER}player_flv_maxi.swf" />
-                                            <param name="allowFullScreen" value="true" />
-                                            <param name="FlashVars" value="flv={$oMedienDatei->cURL}&width=320&height=240&showvolume=1&showtime=1&showfullscreen=1" />
-                                        </object>
-                                    {/if}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- flash videos are not supported any more. Use html5 videos instead. -->
                     {* Sonstiges *}
                 {elseif $oMedienDatei->nMedienTyp == 4}
                     <div class="col-xs-12">

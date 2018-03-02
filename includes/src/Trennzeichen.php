@@ -45,7 +45,7 @@ class Trennzeichen
     private static $unitObject = [];
 
     /**
-     * Constructor
+     * Trennzeichen constructor.
      *
      * @param int $kTrennzeichen
      */
@@ -126,12 +126,14 @@ class Trennzeichen
 
         if ($nEinheit > 0 && $kSprache > 0) {
             $oObj = self::getUnitObject($nEinheit, $kSprache);
+            if ($oObj === null && self::insertMissingRow($nEinheit, $kSprache) === 1) {
+                $oObj = self::getUnitObject($nEinheit, $kSprache);
+            }
             if (isset($oObj->kTrennzeichen) && $oObj->kTrennzeichen > 0) {
                 return $fAmount >= 0
                     ? number_format($fAmount, $oObj->nDezimalstellen, $oObj->cDezimalZeichen, $oObj->cTausenderZeichen)
                     : new self($oObj->kTrennzeichen);
             }
-            self::insertMissingRow($nEinheit, $kSprache);
         }
 
         return $fAmount;
@@ -184,7 +186,8 @@ class Trennzeichen
                     VALUES (
                       NULL, {$kSprache}, {$nEinheit}, {$xRowAssoc_arr[$kSprache][$nEinheit]['nDezimalstellen']}, 
                       '{$xRowAssoc_arr[$kSprache][$nEinheit]['cDezimalZeichen']}',
-                    '{$xRowAssoc_arr[$kSprache][$nEinheit]['cTausenderZeichen']}')", 3
+                    '{$xRowAssoc_arr[$kSprache][$nEinheit]['cTausenderZeichen']}')",
+                NiceDB::RET_AFFECTED_ROWS
             );
         }
 
@@ -388,54 +391,48 @@ class Trennzeichen
      */
     public static function migrateUpdate()
     {
-        $oEinstellungen = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_ARTIKELUEBERSICHT]);
-        $oSprache_arr   = gibAlleSprachen();
-        if (is_array($oSprache_arr) && count($oSprache_arr) > 0) {
-            Shop::DB()->query('TRUNCATE ttrennzeichen', 3);
-            $nEinheit_arr = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH];
-            foreach ($oSprache_arr as $oSprache) {
-                foreach ($nEinheit_arr as $nEinheit) {
-                    $oTrennzeichen = new self();
-                    $oTrennzeichen->setSprache($oSprache->kSprache)->setEinheit($nEinheit);
-
-                    if ($nEinheit === JTL_SEPARATOR_WEIGHT) {
-                        if (isset($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl'])
-                            && strlen($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) > 0
-                        ) {
-                            $oTrennzeichen->setDezimalstellen($oEinstellungen['artikeldetails']['artikeldetails_gewicht_stellenanzahl']);
-                        } else {
-                            $oTrennzeichen->setDezimalstellen(2);
-                        }
+        $conf      = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_ARTIKELUEBERSICHT]);
+        $languages = gibAlleSprachen();
+        if (is_array($languages) && count($languages) > 0) {
+            Shop::DB()->query('TRUNCATE ttrennzeichen', NiceDB::RET_AFFECTED_ROWS);
+            $units = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH];
+            foreach ($languages as $language) {
+                foreach ($units as $unit) {
+                    $sep = new self();
+                    if ($unit === JTL_SEPARATOR_WEIGHT) {
+                        $dec = isset($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl'])
+                            && strlen($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) > 0
+                            ? $conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']
+                            : 2;
+                        $sep->setDezimalstellen($dec);
                     } else {
-                        $oTrennzeichen->setDezimalstellen(2);
+                        $sep->setDezimalstellen(2);
                     }
-
-                    if (isset($oEinstellungen['artikeldetails']['artikeldetails_zeichen_nachkommatrenner'])
-                        && strlen($oEinstellungen['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']) > 0
-                    ) {
-                        $oTrennzeichen->setDezimalZeichen($oEinstellungen['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']);
-                    } else {
-                        $oTrennzeichen->setDezimalZeichen(',');
-                    }
-
-                    if (isset($oEinstellungen['artikeldetails']['artikeldetails_zeichen_tausendertrenner'])
-                        && strlen($oEinstellungen['artikeldetails']['artikeldetails_zeichen_tausendertrenner']) > 0
-                    ) {
-                        $oTrennzeichen->setTausenderZeichen($oEinstellungen['artikeldetails']['artikeldetails_zeichen_tausendertrenner']);
-                    } else {
-                        $oTrennzeichen->setTausenderZeichen('.');
-                    }
-
-                    $oTrennzeichen->save();
+                    $sep10 = isset($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner'])
+                        && strlen($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']) > 0
+                        ? $conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']
+                        : ',';
+                    $sep1000 = isset($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner'])
+                        && strlen($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']) > 0
+                        ? $conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']
+                        : '.';
+                    $sep->setDezimalZeichen($sep10)
+                        ->setTausenderZeichen($sep1000)
+                        ->setSprache($language->kSprache)
+                        ->setEinheit($unit)
+                        ->save();
                 }
             }
+            Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
 
             return Shop::DB()->query(
                 "DELETE teinstellungen, teinstellungenconf
                     FROM teinstellungenconf
                     LEFT JOIN teinstellungen 
                         ON teinstellungen.cName = teinstellungenconf.cWertName
-                    WHERE teinstellungenconf.kEinstellungenConf IN (1458, 1459, 495, 497, 499, 501)", 3);
+                    WHERE teinstellungenconf.kEinstellungenConf IN (1458, 1459, 495, 497, 499, 501)",
+                NiceDB::RET_AFFECTED_ROWS
+                );
         }
 
         return false;

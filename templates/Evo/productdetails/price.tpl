@@ -20,17 +20,15 @@
         {/if}
         <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
             <span>{$Artikel->Preise->cVKLocalized[$NettoPreise]}</span>{if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
-            <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">
-            <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+            {block name="price-snippets"}
+                <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">
+                <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+            {/block}
             {if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv}
                 <meta itemprop="priceValidUntil" content="{$Artikel->Preise->SonderpreisBis_en}">
             {/if}
         </strong>
         {if $tplscope === 'detail'}
-            {block name="price-snippets"}
-                <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">
-                <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
-            {/block}
             <div class="price-note">
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}
                     <span class="price_label per_unit"> {lang key="vpePer" section="global"} 1 {$Artikel->cEinheit}</span>

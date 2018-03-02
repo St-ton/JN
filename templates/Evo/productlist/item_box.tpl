@@ -14,7 +14,6 @@
                 {assign var="alt" value=$Artikel->cName}
             {/if}
         {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cURLNormal alt=$alt}
-        <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
 
         {if isset($Artikel->oSuchspecialBild)}
             <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cURLKlein}"

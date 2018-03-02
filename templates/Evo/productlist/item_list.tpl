@@ -17,7 +17,6 @@
                     {/if}
 
                     {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cURLNormal alt=$alt tplscope=$tplscope}
-                    <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
 
                     {if isset($Artikel->oSuchspecialBild)}
                         <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cURLKlein}"
@@ -47,14 +46,15 @@
                             || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B')
                             && !empty($Artikel->cHerstellerBildKlein)}
                             <div class="media-left">
-                                {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}" itemprop="url">{/if}
+                                {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
                                     <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
                                     <meta itemprop="image" content="{$ShopURL}/{$Artikel->cHerstellerBildKlein}">
                                 {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
                             </div>
                         {/if}
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
-                            || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
+                            || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y')
+                            && !empty($Artikel->cHersteller)}
                             <div class="media-body">
                                 <span class="small text-uppercase">
                                     {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}" itemprop="url">{/if}

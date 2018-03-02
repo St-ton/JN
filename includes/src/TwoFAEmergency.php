@@ -42,9 +42,11 @@ class TwoFAEmergency
      *
      * @param object  $oUserTuple; user-data, as delivered from TwoFA-object
      * @return array  new created emergency-codes (as written into the DB)
+     * @throws Exception
      */
     public function createNewCodes($oUserTuple)
     {
+        $passwordService = Shop::Container()->getPasswordService();
         $vAnalogyArray  = [];
         $szSqlRowValues = '';
         $iValCount      = 'a';
@@ -55,7 +57,7 @@ class TwoFAEmergency
             if ('' !== $szSqlRowValues) {
                 $szSqlRowValues .= ', ';
             }
-            $szEmergeCode = password_hash($szEmergeCode, PASSWORD_DEFAULT);
+            $szEmergeCode = $passwordService->hash($szEmergeCode);
 
             // to prevent the fireing from within a loop against the DB
             // we build a values-string (like this: "(:a, :b), (:c, :d), ... " )

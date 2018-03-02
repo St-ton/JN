@@ -154,7 +154,7 @@ function parse_mysql_dump($url)
 function schreibeConfigDateiInstall($cDBHost, $cDBUser, $cDBPass, $cDBName, $cDBSocket = null)
 {
     if (strlen($cDBHost) > 0 && strlen($cDBUser) > 0 && strlen($cDBPass) > 0 && strlen($cDBName) > 0) {
-        define('BLOWFISH_KEY', gibUID(30));
+        define('BLOWFISH_KEY', Shop::Container()->getCryptoService()->randomString(30));
         $socket = '';
         if ($cDBSocket !== null) {
             $socket = "\ndefine('DB_SOCKET', '" . $cDBSocket . "');";

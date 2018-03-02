@@ -240,9 +240,6 @@ define('FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN', 'stuecklistenkomponenten');
 define('FKT_ATTRIBUT_INHALT', 'inhalt');
 define('FKT_ATTRIBUT_CANONICALURL_VARKOMBI', 'varkombi_canonicalurl');
 define('FKT_ATTRIBUT_KONFIG_MAX_ITEMS', 'konfig_max_items'); // deprecated? not in use anywhere
-define('FKT_ATTRIBUT_ARTIKELDETAILS_TPL', 'tpl_artikeldetails');
-define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL', 'tpl_artikelkonfig');
-define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS', 'tpl_js_artikelkonfig');
 // Special Content
 define('SC_KONTAKTFORMULAR', '1');
 // Suchspecials
@@ -490,9 +487,3 @@ define('SHOP_SEO', true);
 define('ES_SESSIONS', 0);
 // Max Anzahl an Variationswerten für Warenkorbmatrix
 define('ART_MATRIX_MAX', 250);
-
-// security
-defined('NEWSLETTER_USE_SECURITY') || define('NEWSLETTER_USE_SECURITY', true);
-defined('MAILTEMPLATE_USE_SECURITY') || define('MAILTEMPLATE_USE_SECURITY', true);
-defined('EXPORTFORMAT_USE_SECURITY') || define('EXPORTFORMAT_USE_SECURITY', true);
-defined('EXPORTFORMAT_ALLOWED_FORMATS') || define('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');

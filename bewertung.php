@@ -13,12 +13,9 @@ Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
 $cParameter_arr = Shop::getParameters();
 $Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
-$kBewertung = verifyGPDataString('kBewertung');
-$conf       = Shop::getSettings([CONF_BEWERTUNG]);
 
 // Bewertung in die Datenbank speichern
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
-    checkeBewertungGuthabenBonus($kBewertung, $conf);
     speicherBewertung(
             $cParameter_arr['kArtikel'],
             $_SESSION['Kunde']->kKunde,
@@ -27,7 +24,6 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
             verifyGPDataString('cText'),
             $cParameter_arr['nSterne']
         );
-//    }
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) { // Hilfreich abspeichern
     // Bewertungen holen
     $bewertung_seite  = verifyGPCDataInteger('btgseite');

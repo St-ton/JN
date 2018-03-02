@@ -614,19 +614,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         }
     }
 
-    // Lösche Bewertung
-    if (isset($_POST['del_bew']) && (int)$_POST['del_bew']) {
-        Shop::DB()->delete('tbewertung', 'kBewertung', (int)$_POST['del_bew']);
-        Shop::DB()->delete('tbewertungguthabenbonus', 'kBewertung', (int)$_POST['del_bew']);
-    }
 
-    // Lösche alle Bewertungen
-    if (isset($_POST['del_all_bew']) && (int)$_POST['del_all_bew'] === 1) {
-        Shop::DB()->delete('tbewertung', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
-        Shop::DB()->delete('tbewertungguthabenbonus', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
-    }
-
-        if (isset($_POST['del_acc']) && (int)$_POST['del_acc'] === 1) {
+    if (isset($_POST['del_acc']) && (int)$_POST['del_acc'] === 1) {
         $csrfTest = validateToken();
         if ($csrfTest === false) {
             $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
@@ -872,10 +861,16 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 
 
     if ($step === 'bewertungen') {
-        $bewertungen = Shop::DB()->query(
-            'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum 
-                  FROM tbewertung LEFT JOIN tbewertungguthabenbonus ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung 
-                  WHERE tbewertung.kKunde = ' . (int)$_SESSION['Kunde']->kKunde, 2);
+        $bewertungen = Shop::DB()->executeQueryPrepared(
+            'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum
+                  FROM tbewertung LEFT JOIN tbewertungguthabenbonus ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
+                  WHERE tbewertung.kKunde = :customer',
+            [
+                'customer' => (int)$_SESSION['Kunde']->kKunde
+            ],
+            2
+        );
+
         $smarty ->assign('bewertungen', $bewertungen);
    }
 

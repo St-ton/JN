@@ -69,7 +69,7 @@
                                         {if $bereitsBewertet === false}
                                            value="{lang key="productAssess" section="product rating"}"
                                        {else}
-                                           value="Bewertung &Auml;ndern"{/if}
+                                           value="{lang key="edit" section="product rating"}"{/if}
                                        class="submit btn btn-primary" />
                             </div>
                         </div>

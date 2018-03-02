@@ -51,7 +51,6 @@
                 </div>
                 <input name="bfh" type="hidden" value="1">
                 <input name="a" type="hidden" value="{$Artikel->kArtikel}">
-                <input type="hidden" name="kBewertung" value="{$oBewertung->kBewertung|default:""}" />
                 <input name="submit" type="submit" value="{lang key="submitRating" section="product rating"}" class="submit btn btn-primary">
             {/if}
         </form>

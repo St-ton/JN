@@ -37,8 +37,16 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
         $cFehler .= 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben. ';
     }
 } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-    Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE]);
-    $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
+
+    // Validierung
+    if (verifyGPDataString('bewertung_guthaben_nutzen') === 'Y' &&
+        verifyGPDataString('bewertung_freischalten') !== 'Y'
+    ) {
+        $cFehler = 'Guthabenbonus kann nur mit "Bewertung freischalten" verwendet werden.';
+    } else {
+        Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE]);
+        $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
+    }
 } elseif (isset($_POST['bewertung_nicht_aktiv']) && (int)$_POST['bewertung_nicht_aktiv'] === 1) {
     // Bewertungen aktivieren
     if (isset($_POST['aktivieren'])) {

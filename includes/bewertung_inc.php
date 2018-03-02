@@ -61,7 +61,8 @@ function speicherBewertung($kArtikel, $kKunde, $kSprache, $cTitel, $cText, $nSte
                 // Speicher Bewertung
 
                 if(is_object(Shop::DB()->select('tbewertung', ['kArtikel', 'kKunde'], [$kArtikel, $kKunde]))) {
-                    $kBewertung = Shop::DB()->update('tbewertung',['kArtikel', 'kKunde'], [$kArtikel, $kKunde], $oBewertung);
+                    Shop::DB()->update('tbewertung',['kArtikel', 'kKunde'], [$kArtikel, $kKunde], $oBewertung);
+                    $kBewertung = Shop::DB()->select('tbewertung', ['kArtikel', 'kKunde'], [$kArtikel, $kKunde])->kBewertung;
                 } else {
                     $kBewertung = Shop::DB()->insert('tbewertung', $oBewertung);
                 }
@@ -342,19 +343,11 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                     $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe2_guthaben'];
                 }
 
-//                // tkunde Guthaben updaten
-//                Shop::DB()->query("
-//                    UPDATE tkunde
-//                        SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
-//                            WHERE kKunde = " . $kKunde, 3
-//                );
-
                 // tkunde Guthaben updaten
-                Shop::DB()->query('
+                Shop::DB()->query("
                     UPDATE tkunde
-                        SET fGuthaben = 
-                        (SELECT sum(fGuthabenBonus) FROM tbewertungguthabenbonus WHERE kKunde = ' . $kKunde . ')
-                            WHERE kKunde = ' . $kKunde, 3
+                        SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
+                            WHERE kKunde = " . $kKunde, 3
                 );
 
                 // tbewertungguthabenbonus eintragen
@@ -366,7 +359,14 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 $oBewertungGuthabenBonus->dDatum         = 'now()';
 
                     if(is_object(Shop::DB()->select('tbewertungguthabenbonus', ['kBewertung', 'kKunde'], [$kBewertung, $kKunde]))) {
-                        Shop::DB()->query('UPDATE tbewertungguthabenbonus SET fGuthabenBonus = ' . $fBelohnung . ' WHERE kBewertung = ' . $kBewertung, 1) ;
+                        Shop::DB()->executeQueryPrepared('UPDATE tbewertungguthabenbonus SET fGuthabenBonus = :reward WHERE kBewertung = :feedback',
+                            [
+                                'reward' => $fBelohnung,
+                                'feedback' => $kBewertung
+                            ],
+                            1
+                        );
+
                     } else {
                         Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
                     }
@@ -383,19 +383,11 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                     $fBelohnung = $Einstellungen['bewertung']['bewertung_stufe1_guthaben'];
                 }
 
-//                // tkunde Guthaben updaten
-//                Shop::DB()->query("
-//                    UPDATE tkunde
-//                        SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
-//                        WHERE kKunde = " . $kKunde, 3
-//                );
-
                 // tkunde Guthaben updaten
-                Shop::DB()->query('
+                Shop::DB()->query("
                     UPDATE tkunde
-                        SET fGuthaben = 
-                        (SELECT sum(fGuthabenBonus) FROM tbewertungguthabenbonus WHERE kKunde = ' . $kKunde . ')
-                            WHERE kKunde = ' . $kKunde, 3
+                        SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
+                        WHERE kKunde = " . $kKunde, 3
                 );
 
                 // tbewertungguthabenbonus eintragen
@@ -406,7 +398,13 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 $oBewertungGuthabenBonus->dDatum         = 'now()';
 
                 if(is_object(Shop::DB()->select('tbewertungguthabenbonus', ['kBewertung', 'kKunde'], [$kBewertung, $kKunde]))) {
-                    Shop::DB()->query('UPDATE tbewertungguthabenbonus SET fGuthabenBonus = ' . $fBelohnung . ' WHERE kBewertung = ' . $kBewertung, 1) ;
+                    Shop::DB()->executeQueryPrepared('UPDATE tbewertungguthabenbonus SET fGuthabenBonus = :reward WHERE kBewertung = :feedback',
+                        [
+                            'reward' => $fBelohnung,
+                            'feedback' => $kBewertung
+                        ],
+                        1
+                    );
                 } else {
                     Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
                 }

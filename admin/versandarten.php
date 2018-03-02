@@ -134,28 +134,23 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                 "SELECT tversandzuschlagplz.*
                     FROM tversandzuschlagplz, tversandzuschlag
                     WHERE (tversandzuschlagplz.cPLZ = :surchargeZip
-                        OR (tversandzuschlagplz.cPLZAb <= :surchargeZip
-                        AND tversandzuschlagplz.cPLZBis >= :surchargeZip))
+                        OR :surchargeZip BETWEEN tversandzuschlagplz.cPLZAb AND tversandzuschlagplz.cPLZBis)
                         AND tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                        AND tversandzuschlag.cISO = ':surchargeISO'
+                        AND tversandzuschlag.cISO = :surchargeISO
                         AND tversandzuschlag.kVersandart = :surchargeShipmentMode",
                 [
                     'surchargeZip'          => $ZuschlagPLZ->cPLZ,
                     'surchargeISO'          => $versandzuschlag->cISO,
                     'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
                 ],
-                2
+                Shop::DB()::RET_ARRAY_OF_OBJECTS
             );
         } else {
             $plz_x = Shop::DB()->queryPrepared(
                 "SELECT tversandzuschlagplz.*
                     FROM tversandzuschlagplz, tversandzuschlag
-                    WHERE ((tversandzuschlagplz.cPLZ <= :surchargeZipTo
-                        AND tversandzuschlagplz.cPLZ >= :surchargeZipFrom)
-                        OR (tversandzuschlagplz.cPLZAb >= :surchargeZipFrom
-                        AND tversandzuschlagplz.cPLZAb <= :surchargeZipTo)
-                        OR (tversandzuschlagplz.cPLZBis >= :surchargeZipFrom
-                        AND tversandzuschlagplz.cPLZBis <= :surchargeZipTo))
+                    WHERE (tversandzuschlagplz.cPLZ BETWEEN :surchargeZipFrom AND :surchargeZipTo
+                        OR :surchargeZipTo >= tversandzuschlagplz.cPLZAb AND tversandzuschlagplz.cPLZBis >= :surchargeZipFrom)
                         AND tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                         AND tversandzuschlag.cISO = :surchargeISO
                         AND tversandzuschlag.kVersandart = :surchargeShipmentMode",
@@ -165,7 +160,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                     'surchargeISO'          => $versandzuschlag->cISO,
                     'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
                 ],
-                2
+                Shop::DB()::RET_ARRAY_OF_OBJECTS
             );
         }
         // (string-)merge the possible resulting 'overlaps'

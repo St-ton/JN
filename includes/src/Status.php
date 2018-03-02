@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use function Functional\some;
+
 /**
  * Class Status
  */
@@ -400,4 +402,23 @@ class Status
         $emailConf = Shop::getConfig([CONF_EMAILS])['emails'];
         return $emailConf['email_methode'] === 'smtp' && empty(trim($emailConf['email_smtp_verschluesselung']));
     }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    protected function needPasswordRehash2FA()
+    {
+        $passwordService = Shop::Container()->getPasswordService();
+        $hashes          = Shop::DB()->query("
+            SELECT *
+            FROM tadmin2facodes
+            GROUP BY kAdminlogin", 2
+        );
+
+        return some($hashes, function ($hash) use ($passwordService) {
+            return $passwordService->needsRehash($hash->cEmergencyCode);
+        });
+    }
+
 }

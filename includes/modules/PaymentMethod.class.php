@@ -265,7 +265,7 @@ class PaymentMethod
             $oZahlungSession->cSID         = session_id();
             $oZahlungSession->cNotifyID    = '';
             $oZahlungSession->dZeitBezahlt = '0000-00-00 00:00:00';
-            $oZahlungSession->cZahlungsID  = gibUID($length, md5($oZahlungSession->cSID . mt_rand()) . time());
+            $oZahlungSession->cZahlungsID  = uniqid('', true);
             $oZahlungSession->dZeit        = 'now()';
             Shop::DB()->insert('tzahlungsession', $oZahlungSession);
             $hash = '_' . $oZahlungSession->cZahlungsID;

@@ -1058,10 +1058,10 @@ function speicherKampagne($oKampagne)
         return 5;//  Kampagnenwert ist leer
     }
     // Name schon vorhanden?
-    $oKampagneTMP = Shop::DB()->query(
+    $oKampagneTMP = Shop::DB()->queryPrepared(
         "SELECT kKampagne
             FROM tkampagne
-            WHERE cName = '" . $oKampagne->cName . "'", 1
+            WHERE cName = :cName", ['cName' => $oKampagne->cName], 1
     );
 
     if (isset($oKampagneTMP->kKampagne) && $oKampagneTMP->kKampagne > 0 && (!isset($oKampagne->kKampagne) || $oKampagne->kKampagne == 0)) {
@@ -1069,10 +1069,10 @@ function speicherKampagne($oKampagne)
     }
     // Parameter schon vorhanden?
     if (isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1) {
-        $oKampagneTMP = Shop::DB()->query(
+        $oKampagneTMP = Shop::DB()->queryPrepared(
             "SELECT kKampagne
                 FROM tkampagne
-                WHERE cParameter = '" . $oKampagne->cParameter . "'", 1
+                WHERE cParameter = :param", ['param' => $oKampagne->cParameter], 1
         );
 
         if (isset($oKampagneTMP->kKampagne) && $oKampagneTMP->kKampagne > 0 && (!isset($oKampagne->kKampagne) || $oKampagne->kKampagne == 0)) {

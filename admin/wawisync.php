@@ -11,14 +11,28 @@ $cFehler  = '';
 $cHinweis = '';
 
 if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
-    $upd = new stdClass();
-    $upd->cName = $_POST['wawi-user'];
-    $upd->cPass = $_POST['wawi-pass'];
-    Shop::DB()->update('tsynclogin', 1, 1, $upd);
+    $passwordService = Shop::Container()->getPasswordService();
+    $passInfo        = $passwordService->getInfo($_POST['wawi-pass']);
+    $upd             = new stdClass();
+    $upd->cName      = $_POST['wawi-user'];
+    $upd->cPass      = $passInfo['algo'] > 0
+        ? $_POST['wawi-pass'] // hashed password was not changed
+        : $passwordService->hash($_POST['wawi-pass']); // new clear text password was given
+
+    Shop::DB()->queryPrepared(
+        "INSERT INTO `tsynclogin` (kSynclogin, cName, cPass)
+            VALUES (1, :cName, :cPass)
+            ON DUPLICATE KEY UPDATE
+            cName = :cName,
+            cPass = :cPass",
+        ['cName' => $upd->cName, 'cPass' => $upd->cPass],
+        NiceDB::RET_AFFECTED_ROWS
+    );
+
     $cHinweis = 'Erfolgreich gespeichert.';
 }
 
-$user = Shop::DB()->query("SELECT cName, cPass FROM tsynclogin", 1);
+$user = Shop::DB()->select('tsynclogin', 'kSynclogin', 1);
 $smarty->assign('wawiuser', $user->cName)
        ->assign('cHinweis', $cHinweis)
        ->assign('wawipass', $user->cPass)

@@ -1,10 +1,29 @@
 {$tabanzeige = $Einstellungen.artikeldetails.artikeldetails_tabs_nutzen !== 'N'}
-{$useDescription = ($Artikel->cBeschreibung|strlen > 0 || $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'
-    && $Artikel->oMerkmale_arr|count > 1)}
-{$useDownloads = (isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0)}
-{$useMediaFiles = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
+{$showProductWeight = false}
+{$showShippingWeight = false}
+{if isset($Artikel->cArtikelgewicht) && $Artikel->fArtikelgewicht > 0
+    && $Einstellungen.artikeldetails.artikeldetails_artikelgewicht_anzeigen === 'Y'}
+    {$showProductWeight = true}
+{/if}
+{if isset($Artikel->cGewicht) && $Artikel->fGewicht > 0
+    && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y'}
+    {$showShippingWeight = true}
+{/if}
+{$dimension = $Artikel->getDimension()}
+{$showAttributesTable = ($Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'
+    && !empty($Artikel->oMerkmale_arr) || $showProductWeight || $showShippingWeight
+    || $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'
+    && (!empty($dimension['length']) || !empty($dimension['width']) || !empty($dimension['height']))
+    || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0
+    && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
+    || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y'
+    || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN])
+    && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)) && !empty($Artikel->Attribute))}
+{$useDescriptionWithMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
     && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung')
     && !empty($Artikel->cMedienTyp_arr))}
+{$useDescription = (($Artikel->cBeschreibung|strlen > 0) || $useDescriptionWithMediaGroup || $showAttributesTable)}
+{$useDownloads = (isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0)}
 {$useVotes = $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
 {$useQuestionOnItem = $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}
 {$usePriceFlow = ($Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && $bPreisverlauf)}
@@ -33,7 +52,7 @@
     {/if}
 {/section}
 
-{if useDescription || $useDownloads || $useMediaFiles || $useVotes || $useQuestionOnItem || $usePriceFlow
+{if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
     || $useAvailabilityNotification || $useMediaGroup || $useTags || !empty($separatedTabs)}
     {if $tabanzeige}
         <ul class="nav nav-tabs bottom15" role="tablist">
@@ -140,20 +159,30 @@
                     <div class="panel-body" id="tab-description">
             {/if}
             <div class="tab-content-wrapper">
-                {block name="tab-description-content"}
-                    <div class="desc">
-                        {$Artikel->cBeschreibung}
-                        {if $useMediaFiles && !empty($Artikel->cMedienTyp_arr)}
-                            {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
-                                <div class="media">
-                                    {include file='productdetails/mediafile.tpl'}
-                                </div>
-                            {/foreach}
+                {block name="tab-description"}
+                    {block name="tab-description-content"}
+                        <div class="desc">
+                            {$Artikel->cBeschreibung}
+                            {if $useDescriptionWithMediaGroup}
+                                {if $Artikel->cBeschreibung|strlen > 0}
+                                    <hr>
+                                {/if}
+                                {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
+                                    <div class="media">
+                                        {include file='productdetails/mediafile.tpl'}
+                                    </div>
+                                {/foreach}
+                            {/if}
+                        </div>
+                    {/block}
+                    {block name="tab-description-attributes"}
+                        {if (!empty($Artikel->cBeschreibung) || $useDescriptionWithMediaGroup) && $showAttributesTable}
+                            <hr>
                         {/if}
-                    </div>
-                {/block}
-                {block name="tab-description-attributes"}
-                    {include file="productdetails/attributes.tpl" tplscope="details"}
+                        {include file="productdetails/attributes.tpl" tplscope="details"
+                            showProductWeight=$showProductWeight showShippingWeight=$showShippingWeight
+                            dimension=$dimension showAttributesTable=$showAttributesTable}
+                    {/block}
                 {/block}
             </div>
             {if $tabanzeige}

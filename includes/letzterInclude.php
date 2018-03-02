@@ -4,26 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-$smarty                = Shop::Smarty();
-$oBrowser              = getBrowser();
-$linkHelper            = LinkHelper::getInstance();
-$oTemplate             = Template::getInstance();
-$bMobilAktiv           = $oTemplate->isMobileTemplateActive();
-$currentTemplateFolder = $oTemplate->getDir();
-$currentTemplateDir    = PFAD_TEMPLATES . $currentTemplateFolder . '/';
-$bMobile               = false;
-$shopLogo              = Shop::getLogo();
-$shopURL               = Shop::getURL();
-$cart                  = isset($_SESSION['Warenkorb']) ? $_SESSION['Warenkorb'] : new Warenkorb();
-$EinstellungenTmp      = Shopsetting::getInstance()->getAll();
-$Einstellungen         = isset($Einstellungen) ? array_merge($Einstellungen, $EinstellungenTmp) : $EinstellungenTmp;
-$themeDir              = empty($Einstellungen['template']['theme']['theme_default'])
+$smarty        = Shop::Smarty();
+$oBrowser      = getBrowser();
+$linkHelper    = LinkHelper::getInstance();
+$oTemplate     = Template::getInstance();
+$bMobilAktiv   = $oTemplate->isMobileTemplateActive();
+$tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
+$bMobile       = false;
+$shopLogo      = Shop::getLogo();
+$shopURL       = Shop::getURL();
+$cart          = isset($_SESSION['Warenkorb']) ? $_SESSION['Warenkorb'] : new Warenkorb();
+$Einstellungen = Shopsetting::getInstance()->getAll();
+$themeDir      = empty($Einstellungen['template']['theme']['theme_default'])
     ? 'evo'
     : $Einstellungen['template']['theme']['theme_default'];
-$cShopName             = empty($Einstellungen['global']['global_shopname'])
+$cShopName     = empty($Einstellungen['global']['global_shopname'])
     ? 'JTL-Shop'
     : $Einstellungen['global']['global_shopname'];
-//Wechsel auf Mobil-Template
 if (!$bMobilAktiv && $oBrowser->bMobile && !isset($_SESSION['bAskMobil']) && $oTemplate->hasMobileTemplate()) {
     $_SESSION['bAskMobil'] = true;
     $bMobile               = true;
@@ -75,11 +72,8 @@ if (!isset($AktuelleKategorie)) {
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
-if ($smarty->getTemplateVars('NaviFilter') === null) {
-    $smarty->assign('NaviFilter', $NaviFilter);
-}
-// assign variables moved from $_SESSION to cache to smarty
 $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
+       ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie, false))
@@ -90,11 +84,11 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('cCSS_arr', $cCSS_arr)
        ->assign('cJS_arr', $cJS_arr)
        ->assign('nTemplateVersion', $oTemplate->getVersion())
-       ->assign('currentTemplateDir', $currentTemplateDir)
-       ->assign('currentTemplateDirFull', $shopURL . '/' . $currentTemplateDir)
-       ->assign('currentTemplateDirFullPath', PFAD_ROOT . $currentTemplateDir)
-       ->assign('currentThemeDir', $currentTemplateDir . 'themes/' . $themeDir . '/')
-       ->assign('currentThemeDirFull', $shopURL . '/' . $currentTemplateDir . 'themes/' . $themeDir . '/')
+       ->assign('currentTemplateDir', $tplDir)
+       ->assign('currentTemplateDirFull', $shopURL . '/' . $tplDir)
+       ->assign('currentTemplateDirFullPath', PFAD_ROOT . $tplDir)
+       ->assign('currentThemeDir', $tplDir . 'themes/' . $themeDir . '/')
+       ->assign('currentThemeDirFull', $shopURL . '/' . $tplDir . 'themes/' . $themeDir . '/')
        ->assign('session_name', session_name())
        ->assign('session_id', session_id())
        ->assign('SID', SID)
@@ -171,10 +165,10 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
        ->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE)
        ->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE)
-       ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK);
+       ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK)
+       ->assign('Suchergebnisse', isset($oSuchergebnisse) ? $oSuchergebnisse : new ProductFilterSearchResults());
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 // Kampagnen
 pruefeKampagnenParameter();

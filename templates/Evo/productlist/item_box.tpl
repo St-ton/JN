@@ -7,38 +7,33 @@
 {/if}
 <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell text-center{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if isset($listStyle) && $listStyle === 'gallery'} active{/if}{if isset($class)} {$class}{/if}">
     {block name="productlist-image"}
-        <a class="image-wrapper" href="{$Artikel->cURL}">
+        <a class="image-wrapper" href="{$Artikel->cURLFull}">
             {if isset($Artikel->Bilder[0]->cAltAttribut)}
                 {assign var="alt" value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:"html"}
             {else}
                 {assign var="alt" value=$Artikel->cName}
             {/if}
-
-        {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt}
+        {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cURLNormal alt=$alt}
 
         {if isset($Artikel->oSuchspecialBild)}
-            <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
+            <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cURLKlein}"
                  alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}" />
         {/if}
 
         {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
-            <span class="quickview badge hidden-xs" data-src="{$Artikel->cURL}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
+            <span class="quickview badge hidden-xs" data-src="{$Artikel->cURLFull}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
         {/if}
     </a>
     {/block}
     {block name="productlist-image-caption"}
     <div class="caption">
-        <h4 class="title" itemprop="name"><a href="{$Artikel->cURL}">{$Artikel->cKurzbezeichnung}</a></h4>
+        <h4 class="title" itemprop="name"><a href="{$Artikel->cURLFull}">{$Artikel->cKurzbezeichnung}</a></h4>
         {if $Artikel->cName !== $Artikel->cKurzbezeichnung}<meta itemprop="alternateName" content="{$Artikel->cName}">{/if}
-        <meta itemprop="url" content="{$ShopURL}/{$Artikel->cURL}">
+        <meta itemprop="url" content="{$Artikel->cURLFull}">
         {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
             {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>
         {/if}
-        {assign var=price_image value=""}
-        {if isset($Artikel->Preise->strPreisGrafik_Suche)}
-            {assign var=$price_image value=$Artikel->Preise->strPreisGrafik_Suche}
-        {/if}
-        {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$price_image tplscope=$tplscope}
+        {include file="productdetails/price.tpl" Artikel=$Artikel tplscope=$tplscope}
     </div>{* /caption *}
     {/block}
     <form id="buy_form_{$Artikel->kArtikel}" action="index.php" method="post" class="form form-basket" data-toggle="basket-add">
@@ -93,24 +88,30 @@
                     (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig
                 }
                     <div class="quantity-wrapper form-group top7">
-                        <div class="input-group input-group-sm">
-                            <input type="number" min="0"
-                                   {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if} size="2"
-                                   id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl"
-                                   autocomplete="off"
-                                   value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}">
+                        {if $Artikel->nIstVater && $Artikel->kVaterArtikel == 0}
+                            <p class="alert alert-info choose-variations">{lang key="chooseVariations" section="messages"}</p>
+                        {else}
+                            <div class="quantity-wrapper form-group top7">
+                                <div class="input-group input-group-sm">
+                                    <input type="number" min="0"
+                                           {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if} size="2"
+                                           id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl"
+                                           autocomplete="off"
+                                           value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}">
 
-                            <span class="change_quantity input-group-btn">
-                                <button type="submit" class="btn btn-primary" id="submit{$Artikel->kArtikel}"
-                                        title="{lang key="addToCart" section="global"}">
-                                    <span><i class="fa fa-shopping-cart"></i> {lang key="addToCart" section="global"}</span>
-                                </button>
-                            </span>
-                        </div>
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-primary" id="submit{$Artikel->kArtikel}"
+                                                title="{lang key="addToCart" section="global"}">
+                                            <span><i class="fa fa-shopping-cart"></i> {lang key="addToCart" section="global"}</span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        {/if}
                     </div>
                 {else}
                     <div class="top7 form-group">
-                        <a class="btn btn-default btn-md btn-block" role="button" href="{$Artikel->cURL}">{lang key="details"}</a>
+                        <a class="btn btn-default btn-md btn-block" role="button" href="{$Artikel->cURLFull}">{lang key="details"}</a>
                     </div>
                 {/if}
                 {/block}
@@ -126,8 +127,8 @@
             <input type="hidden" name="wke" value="1" />
             <input type="hidden" name="overview" value="1" />
             <input type="hidden" name="Sortierung" value="{if !empty($Suchergebnisse->Sortierung)}{$Suchergebnisse->Sortierung}{/if}" />
-            {if isset($Suchergebnisse->Seitenzahlen->AktuelleSeite) && $Suchergebnisse->Seitenzahlen->AktuelleSeite > 1}
-                <input type="hidden" name="seite" value="{$Suchergebnisse->Seitenzahlen->AktuelleSeite}" />
+            {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
+                <input type="hidden" name="seite" value="{$Suchergebnisse->getPages()->AktuelleSeite}" />
             {/if}
             {if $NaviFilter->hasCategory()}
                 <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />

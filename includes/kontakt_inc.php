@@ -141,21 +141,6 @@ function baueKontaktFormularVorgaben()
 }
 
 /**
- * @param array $fehlendeAngaben
- * @return int
- */
-function eingabenKorrekt($fehlendeAngaben)
-{
-    foreach ($fehlendeAngaben as $angabe) {
-        if ($angabe > 0) {
-            return 0;
-        }
-    }
-
-    return 1;
-}
-
-/**
  * @return bool
  */
 function pruefeBetreffVorhanden()

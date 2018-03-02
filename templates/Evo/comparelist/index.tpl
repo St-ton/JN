@@ -19,24 +19,19 @@
                     {foreach name=vergleich from=$oVergleichsliste->oArtikel_arr item=oArtikel}
                         <td style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center">
                             <div class="thumbnail">
-                                <a href="{$oArtikel->cURL}">
+                                <a href="{$oArtikel->cURLFull}">
                                     {image src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
                                 </a>
                             </div>
                             <p>
-                                <a href="{$oArtikel->cURL}">{$oArtikel->cName}</a>
+                                <a href="{$oArtikel->cURLFull}">{$oArtikel->cName}</a>
                             </p>
     
                             {if $oArtikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                                 <p>{lang key="priceOnApplication" section="global"}</p>
                             {else}
                                 <p>
-                                    {if isset($oArtikel->Preise->strPreisGrafik_Detail)}
-                                        {assign var=priceImage value=$oArtikel->Preise->strPreisGrafik_Detail}
-                                    {else}
-                                        {assign var=priceImage value=null}
-                                    {/if}
-                                    {include file="productdetails/price.tpl" Artikel=$oArtikel price_image=$priceImage tplscope="detail"}
+                                    {include file="productdetails/price.tpl" Artikel=$oArtikel tplscope="detail"}
                                 </p>
                             {/if}
                             <p>
@@ -221,7 +216,7 @@
             </table>
         </div>
     {else}
-        {lang key="compareListNoItems" sektion="global"}
+        {lang key='compareListNoItems'}
     {/if}
     
     {if !empty($cFehler)}
@@ -235,7 +230,7 @@
         <script type="text/javascript">
             $('.modal a.remove').click(function(e) {
                 var kArtikel = $(e.currentTarget).data('id');
-                $('section.box-compare tr[data-id="' + kArtikel + '"]').remove();
+                $('section.box-compare li[data-id="' + kArtikel + '"]').remove();
                 eModal.ajax({
                     size: 'lg',
                     url: e.currentTarget.href,
@@ -243,22 +238,16 @@
                     keyboard: true,
                     tabindex: -1
                 });
-    
+
                 return false;
             });
             new function(){
                 var clCount = {if isset($oVergleichsliste->oArtikel_arr)}{$oVergleichsliste->oArtikel_arr|count}{else}0{/if};
+                $('.navbar-nav .compare-list-menu .badge em').html(clCount);
                 if (clCount > 1) {
-                    $('.navbar-nav .compare-list-menu .badge em').html(clCount);
-                    $('.navbar-nav .compare-list-menu').removeClass('hidden');
                     $('section.box-compare .panel-body').removeClass('hidden');
                 } else {
-                    if (clCount == 1) {
-                        $('section.box-compare .panel-body').addClass('hidden');
-                    } else {
-                        $('section.box-compare').html('').addClass('hidden');
-                    }
-                    $('.navbar-nav .compare-list-menu').addClass('hidden');
+                    $('.navbar-nav .compare-list-menu .link_to_comparelist').removeAttr('href').removeClass('popup');
                     eModal.close();
                 }
             }();

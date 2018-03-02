@@ -13,8 +13,8 @@
                     <ul class="list-inline bundle-list">
                         {foreach name=bundles from=$Products item=Product}
                             <li>
-                                <a href="{$Product->cURL}">
-                                    <img src="{if $Product->Bilder[0]->cPfadKlein}{$Product->Bilder[0]->cPfadKlein}{else}{$BILD_KEIN_ARTIKELBILD_VORHANDEN}{/if}" alt="{$Product->cName}" title="{$Product->cName}" />
+                                <a href="{$Product->cURLFull}">
+                                    <img src="{if $Product->Bilder[0]->cURLKlein}{$Product->Bilder[0]->cURLKlein}{else}{$BILD_KEIN_ARTIKELBILD_VORHANDEN}{/if}" alt="{$Product->cName}" title="{$Product->cName}" />
                                 </a>
                             </li>
                             {if !$smarty.foreach.bundles.last}
@@ -56,7 +56,7 @@
                                         {break}
                                     {/if}
                                 {/foreach}
-                                <a href="{$Product->cURL}">{$Product->cName}</a>
+                                <a href="{$Product->cURLFull}">{$Product->cName}</a>
                                 <strong class="price price-xs">{$Product->Preise->cVKLocalized[0]}</strong>
                             </li>
                         {/foreach}

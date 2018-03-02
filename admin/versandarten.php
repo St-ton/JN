@@ -65,12 +65,14 @@ if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart']) &&
 
 if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && validateToken()) {
     $step = 'Zuschlagsliste';
-    Shop::DB()->query(
+    Shop::DB()->queryPrepared(
         "DELETE tversandzuschlag, tversandzuschlagsprache
             FROM tversandzuschlag
             LEFT JOIN tversandzuschlagsprache
               ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-            WHERE tversandzuschlag.kVersandzuschlag = " . (int)$_GET['delzus'], 4
+            WHERE tversandzuschlag.kVersandzuschlag = :kVersandzuschlag",
+        ['kVersandzuschlag' => $_GET['delzus']],
+        4
     );
     Shop::DB()->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
@@ -109,10 +111,10 @@ if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && validateToken()) {
 }
 
 if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && validateToken()) {
-    $step        = 'Zuschlagsliste';
-
+    $step          = 'Zuschlagsliste';
     $oZipValidator = new ZipValidator($_POST['cISO']);
     $ZuschlagPLZ   = new stdClass();
+
     $ZuschlagPLZ->kVersandzuschlag = (int)$_POST['kVersandzuschlag'];
     if (!empty($_POST['cPLZ'])) {
         $ZuschlagPLZ->cPLZ = $oZipValidator->validateZip($_POST['cPLZ']);
@@ -145,7 +147,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                     'surchargeISO'          => $versandzuschlag->cISO,
                     'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
                 ],
-                Shop::DB()::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
         } else {
             $plz_x = Shop::DB()->queryPrepared(
@@ -162,7 +164,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                     'surchargeISO'          => $versandzuschlag->cISO,
                     'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
                 ],
-                Shop::DB()::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
         }
         // (string-)merge the possible resulting 'overlaps'
@@ -171,12 +173,12 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
         foreach ($plz_x as $oResult) {
             if (!empty($oResult->cPLZ) && (0 < strlen($szPLZ))) {
                 $szPLZ .= ', ' . $oResult->cPLZ;
-            } elseif(!empty($oResult->cPLZ) && (0 === strlen($szPLZ))) {
+            } elseif (!empty($oResult->cPLZ) && (0 === strlen($szPLZ))) {
                 $szPLZ = $oResult->cPLZ;
             }
             if (!empty($oResult->cPLZAb) && (0 < strlen($szPLZRange))) {
                 $szPLZRange .= ', ' . $oResult->cPLZAb . '-' . $oResult->cPLZBis;
-            } elseif(!empty($oResult->cPLZAb) && (0 === strlen($szPLZRange))) {
+            } elseif (!empty($oResult->cPLZAb) && (0 === strlen($szPLZRange))) {
                 $szPLZRange = $oResult->cPLZAb . '-' . $oResult->cPLZBis;
             }
         }
@@ -232,6 +234,7 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && vali
         }
         $sprachen        = gibAlleSprachen();
         $zuschlagSprache = new stdClass();
+
         $zuschlagSprache->kVersandzuschlag = $kVersandzuschlag;
         foreach ($sprachen as $sprache) {
             $zuschlagSprache->cISOSprache = $sprache->cISO;
@@ -259,7 +262,7 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && vali
 }
 
 if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && validateToken()) {
-    $Versandart = new stdClass();
+    $Versandart                           = new stdClass();
     $Versandart->cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $Versandart->kVersandberechnung       = (int)$_POST['kVersandberechnung'];
     $Versandart->cAnzeigen                = $_POST['cAnzeigen'];
@@ -286,6 +289,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
     $Versandart->fDeckelung = (isset($_POST['versanddeckelungAktiv']) && (int)$_POST['versanddeckelungAktiv'] === 1)
         ? (float)$_POST['fDeckelung']
         : 0;
+
     $Versandart->cLaender = '';
     $Laender              = $_POST['land'];
     if (is_array($Laender)) {
@@ -366,7 +370,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
         $kVersandart = 0;
         if ((int)$_POST['kVersandart'] === 0) {
             $kVersandart = Shop::DB()->insert('tversandart', $Versandart);
-            $cHinweis .= "Die Versandart <strong>$Versandart->cName</strong> wurde erfolgreich hinzugef&uuml;gt. ";
+            $cHinweis   .= "Die Versandart <strong>$Versandart->cName</strong> wurde erfolgreich hinzugef&uuml;gt. ";
         } else {
             //updaten
             $kVersandart = (int)$_POST['kVersandart'];
@@ -387,6 +391,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
             }
             $sprachen       = gibAlleSprachen();
             $versandSprache = new stdClass();
+
             $versandSprache->kVersandart = $kVersandart;
             foreach ($sprachen as $sprache) {
                 $versandSprache->cISOSprache = $sprache->cISO;
@@ -489,12 +494,13 @@ if ($step === 'uebersicht') {
                 WHERE tversandartzahlungsart.kVersandart = " . (int)$versandarten[$i]->kVersandart . "
                 ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName", 2
         );
+
         $count = count($versandarten[$i]->versandartzahlungsarten);
         for ($o = 0; $o < $count; $o++) {
             $versandarten[$i]->versandartzahlungsarten[$o]->zahlungsart = Shop::DB()->select(
                 'tzahlungsart',
                 'kZahlungsart',
-                (int)$versandarten[$i]->versandartzahlungsarten[$o]->kZahlungsart ,
+                (int)$versandarten[$i]->versandartzahlungsarten[$o]->kZahlungsart,
                 'nActive',
                 1
             );
@@ -550,7 +556,7 @@ if ($step === 'uebersicht') {
             $versandarten[$i]->einheit = 'St&uuml;ck';
         }
         $versandarten[$i]->land_arr = explode(' ', $versandarten[$i]->cLaender);
-        $count = count($versandarten[$i]->land_arr);
+        $count                      = count($versandarten[$i]->land_arr);
         for ($o = 0; $o < $count; $o++) {
             unset($zuschlag);
             $zuschlag = Shop::DB()->select(

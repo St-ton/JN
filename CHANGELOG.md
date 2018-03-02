@@ -2,10 +2,9 @@
 
 ## [4.06.3]
 
-Dieses Update enthält Bugfixes und Sicherheitsupdates
+Dieses Update enthält Bugfixes und Sicherheitsupdates.
 
-* [SHOP-1881] - Bugfix: JavaScript-Exception in jtl.io.js, wenn im DOM ein iFrame enthalten ist (z.B. Recaptcha)
-* [SHOP-1882] - Bugfix: Markup-Fehler im Evo-Template, wenn über JTL-Search Kindartikel in Listenansicht angezeigt werden
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: http://jtl-url.de/cl4063
 
 ## [4.06.2]
 

@@ -18,7 +18,7 @@
         <meta property="og:site_name" content="{$meta_title}" />
         <meta property="og:title" content="{$meta_title}" />
         <meta property="og:description" content="{$meta_description|truncate:1000:"":true}" />
-        <meta property="og:image" content="{$ShopLogoURL}" />
+        <meta property="og:image" content="{$ShopURL}/{$ShopLogoURL}" />
         <meta property="og:url" content="{$cCanonicalURL}"/>
     {/block}
 
@@ -28,26 +28,24 @@
         <link rel="canonical" href="{$cCanonicalURL}">
     {/if}
 
-    {block name="head-base"}
-        <base href="{$ShopURL}/">
-    {/block}
+    {block name="head-base"}{/block}
 
     {block name="head-icons"}
         {if !empty($Einstellungen.template.theme.favicon)}
             {if file_exists("{$currentTemplateDir}{$Einstellungen.template.theme.favicon}")}
-                <link type="image/x-icon" href="{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
+                <link type="image/x-icon" href="{$ShopURL}/{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
                     rel="shortcut icon">
             {else}
                 <link type="image/x-icon"
-                    href="{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}"
+                    href="{$ShopURL}/{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}"
                         rel="shortcut icon">
             {/if}
         {else}
-            <link type="image/x-icon" href="favicon-default.ico" rel="shortcut icon">
+            <link type="image/x-icon" href="{$ShopURL}/favicon-default.ico" rel="shortcut icon">
         {/if}
-        {if $nSeitenTyp == 1 && isset($Artikel) && !empty($Artikel->Bilder)}
-            <link rel="image_src" href="{$ShopURL}/{$Artikel->Bilder[0]->cPfadGross}">
-            <meta property="og:image" content="{$ShopURL}/{$Artikel->Bilder[0]->cPfadGross}">
+        {if $nSeitenTyp === 1 && !empty($Artikel->Bilder)}
+            <link rel="image_src" href="{$Artikel->Bilder[0]->cURLGross}">
+            <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
         {/if}
     {/block}
 
@@ -55,39 +53,39 @@
         {* css *}
         {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
             {foreach from=$cCSS_arr item="cCSS"}
-                <link type="text/css" href="{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
+                <link type="text/css" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
             {/foreach}
 
             {if isset($cPluginCss_arr)}
                 {foreach from=$cPluginCss_arr item="cCSS"}
-                    <link type="text/css" href="{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
+                    <link type="text/css" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
                 {/foreach}
             {/if}
         {else}
-            <link type="text/css" href="asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
+            <link type="text/css" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
         {/if}
         {* RSS *}
         {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}
-            <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="rss.xml">
+            <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="{$ShopURL}/rss.xml">
         {/if}
         {* Languages *}
         {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
             {foreach item=oSprache from=$smarty.session.Sprachen}
                 {if $oSprache->kSprache != $smarty.session.kSprache}
-                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURL}">
+                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
                 {elseif $oSprache->kSprache == $smarty.session.kSprache && $oSprache->cStandard === 'Y' && isset($oSprache->cURL)}
-                    <link rel="alternate" hreflang="x-default" href="{$oSprache->cURL}">
+                    <link rel="alternate" hreflang="x-default" href="{$oSprache->cURLFull}">
                 {/if}
             {/foreach}
         {/if}
     {/block}
 
     {* Pagination *}
-    {if isset($Suchergebnisse->Seitenzahlen->maxSeite) && $Suchergebnisse->Seitenzahlen->maxSeite > 1 && isset($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
-        {if $Suchergebnisse->Seitenzahlen->AktuelleSeite>1}
+    {if isset($Suchergebnisse) && $Suchergebnisse->getPages()->maxSeite > 1 && isset($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
+        {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
             <link rel="prev" href="{$oNaviSeite_arr.zurueck->cURL}">
         {/if}
-        {if $Suchergebnisse->Seitenzahlen->AktuelleSeite < $Suchergebnisse->Seitenzahlen->maxSeite}
+        {if $Suchergebnisse->getPages()->AktuelleSeite < $Suchergebnisse->getPages()->maxSeite}
             <link rel="next" href="{$oNaviSeite_arr.vor->cURL}">
         {/if}
     {/if}
@@ -98,7 +96,7 @@
         </style>
     {/if}
     {block name="head-resources-jquery"}
-        <script src="{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
+        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
 </head>
@@ -229,7 +227,7 @@
     {/block}
     
     {block name="content-starttag"}
-    <div id="content" class="col-xs-12{if !$bExclusive && !empty($boxes.left)} {if $nSeitenTyp === 2} col-md-8 col-md-push-4 {/if} col-lg-9 col-lg-push-3{/if}">
+    <div id="content" class="col-xs-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim)} {if $nSeitenTyp === 2} col-md-8 col-md-push-4 {/if} col-lg-9 col-lg-push-3{/if}">
     {/block}
     
     {block name="header-breadcrumb"}

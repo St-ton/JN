@@ -39,22 +39,17 @@
             {foreach name=wunschlistepos from=$CWunschliste->CWunschlistePos_arr item=CWunschlistePos}
                 <tr>
                     <td class="img-col hidden-xs hidden-sm">
-                        <a href="{$CWunschlistePos->Artikel->cURL}">
+                        <a href="{$CWunschlistePos->Artikel->cURLFull}">
                             <img alt="{$CWunschlistePos->Artikel->cName}" src="{$CWunschlistePos->Artikel->cVorschaubild}" class="img-responsive">
                         </a>
                     </td>
                     <td>
                         <div class="text-content">
-                            <a href="{$CWunschlistePos->Artikel->cURL}">{$CWunschlistePos->cArtikelName}</a>
+                            <a href="{$CWunschlistePos->Artikel->cURLFull}">{$CWunschlistePos->cArtikelName}</a>
                             {if $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                                 <p>{lang key="priceOnApplication" section="global"}</p>
                             {else}
-                                {if isset($CWunschlistePos->Artikel->Preise->strPreisGrafik_Detail)}
-                                    {assign var=priceImage value=$CWunschlistePos->Artikel->Preise->strPreisGrafik_Detail}
-                                {else}
-                                    {assign var=priceImage value=null}
-                                {/if}
-                                {include file="productdetails/price.tpl" Artikel=$CWunschlistePos->Artikel price_image=$priceImage tplscope="wishlist"}
+                                {include file="productdetails/price.tpl" Artikel=$CWunschlistePos->Artikel tplscope="wishlist"}
                             {/if}
                             {foreach name=eigenschaft from=$CWunschlistePos->CWunschlistePosEigenschaft_arr item=CWunschlistePosEigenschaft}
                                 {if $CWunschlistePosEigenschaft->cFreifeldWert}
@@ -91,7 +86,7 @@
                             <div class="btn-group-vertical">
                                 {* @todo: button href? *}
                                 {if $CWunschlistePos->Artikel->bHasKonfig}
-                                    <a href="{$CWunschlistePos->Artikel->cURL}" class="btn btn-default" title="{lang key="product" section="global"} {lang key="configure" section="global"}">
+                                    <a href="{$CWunschlistePos->Artikel->cURLFull}" class="btn btn-default" title="{lang key="product" section="global"} {lang key="configure" section="global"}">
                                         <span class="fa fa-gears"></span>
                                     </a>
                                 {else}

@@ -1,17 +1,17 @@
 {* template to display products in slider *}
 
 <div class="product-cell text-center{if isset($class)} {$class}{/if} thumbnail">
-    <a class="image-wrapper" href="{$Artikel->cURL}">
+    <a class="image-wrapper" href="{$Artikel->cURLFull}">
         {if isset($Artikel->Bilder[0]->cAltAttribut)}
             {assign var="alt" value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:"html"}
         {else}
             {assign var="alt" value=$Artikel->cName}
         {/if}
 
-        {*include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadKlein alt=$alt*}
-        <img src="{$Artikel->Bilder[0]->cPfadKlein}" alt="{$alt}" />
+        {*include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cURLKlein alt=$alt*}
+        <img src="{$Artikel->Bilder[0]->cURLKlein}" alt="{$alt}" />
         {if isset($Artikel->oSuchspecialBild) && !isset($hideOverlays)}
-            <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cPfadKlein}"
+            <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cURLKlein}"
                  alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
         {/if}
     </a>
@@ -22,13 +22,9 @@
                     <span class="bundle-amount">{$Artikel->fAnzahl_stueckliste}</span> <span class="bundle-times">x</span>
                 </span>
             {/if}
-            <a href="{$Artikel->cURL}">{$Artikel->cKurzbezeichnung}</a>
+            <a href="{$Artikel->cURLFull}">{$Artikel->cKurzbezeichnung}</a>
         </h4>
         {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}<small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>{/if}
-        {if isset($Artikel->Preise->strPreisGrafik_Suche)}
-            {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$Artikel->Preise->strPreisGrafik_Suche tplscope=$tplscope}
-        {else}
-            {include file="productdetails/price.tpl" Artikel=$Artikel price_image=null tplscope=$tplscope}
-        {/if}
+        {include file="productdetails/price.tpl" Artikel=$Artikel tplscope=$tplscope}
     </div>
 </div>{* /product-cell *}

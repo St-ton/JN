@@ -9,21 +9,23 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
 Shop::setPageType(PAGE_NEWSLETTER);
 $AktuelleSeite = 'NEWSLETTER';
-$oLink         = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_NEWSLETTER);
-if (isset($oLink->kLink)) {
-    $kLink = $oLink->kLink;
-} else {
-    $kLink        = 0;
-    $oLink        = new stdClass();
-    $oLink->kLink = 0;
+$links         = Shop::DB()->selectAll('tlink', 'nLinkart', LINKTYP_NEWSLETTER);
+$oLink         = new stdClass();
+$oLink->kLink  = 0;
+foreach ($links as $l) {
+    $customerGroupIDs = StringHandler::parseSSK($l->cKundengruppen);
+    $ok               = array_reduce($customerGroupIDs, function ($c, $p) {
+        return $c === true || $p === 'NULL' || (int)$p === Session::CustomerGroup()->getID();
+    }, false);
+    if ($ok === true) {
+        $oLink = $l;
+        break;
+    }
 }
-
 $Link       = new stdClass();
 $linkHelper = LinkHelper::getInstance();
 if (isset($oLink->kLink) && $oLink->kLink > 0) {
-    //hole Link
-    $Link = $linkHelper->getPageLink($oLink->kLink);
-    //url
+    $Link          = $linkHelper->getPageLink($oLink->kLink);
     $requestURL    = baueURL($Link, URLART_SEITE);
     $sprachURL     = isset($Link->languageURLs)
         ? $Link->languageURLs
@@ -31,15 +33,14 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
     $Link->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
     Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->Sprache->cName, $requestURL));
 } else {
-    Shop::Smarty()->assign('Navigation',
-        createNavigation(
-            $AktuelleSeite,
-            0,
-            0,
-            Shop::Lang()->get('newsletter', 'breadcrumb'),
-            'newsletter.php'
-        )
-    );
+    $oLink                   = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
+    $bFileNotFound           = true;
+    Shop::$kLink             = (int)$oLink->kLink;
+    Shop::$bFileNotFound     = true;
+    Shop::$is404             = true;
+    $cParameter_arr['is404'] = true;
+    require_once PFAD_ROOT . 'seite.php';
+    return;
 }
 
 $cHinweis      = '';
@@ -122,11 +123,9 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
 
         Shop::DB()->insert('tnewsletterempfaengerhistory', $hist);
 
-        executeHook(
-            HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN,
+        executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN,
             ['oNewsletterEmpfaengerHistory' => $hist]
         );
-        // Blacklist
         $oBlacklist            = new stdClass();
         $oBlacklist->cMail     = $recicpient->cEmail;
         $oBlacklist->dErstellt = 'now()';
@@ -169,6 +168,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($_POST));
 } elseif (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 2) {
     // weiterleitung vom Footer zu newsletter.php
+    $oPlausi = new stdClass();
     $oPlausi->cPost_arr['cEmail'] = isset($_POST['cEmail'])
         ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail'])))
         : null;

@@ -76,6 +76,9 @@ function sendeMail($ModulId, $Object, $mail = null)
                ->setDebugging(0)
                ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
                ->setTemplateDir(PFAD_ROOT . PFAD_EMAILTEMPLATES);
+    if (MAILTEMPLATE_USE_SECURITY) {
+        $mailSmarty->activateBackendSecurityMode();
+    }
     if (!isset($Object->tkunde)) {
         $Object->tkunde = new stdClass();
     }
@@ -250,7 +253,10 @@ function sendeMail($ModulId, $Object, $mail = null)
                 $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(
                     StringHandler::convertISO2ISO639($langID)
                 );
-                if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
+                if ($oTrustedShopsKundenbewertung !== false
+                    && strlen($oTrustedShopsKundenbewertung->cTSID) > 0
+                    && $oTrustedShopsKundenbewertung->nStatus == 1
+                ) {
                     $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr

@@ -20,14 +20,11 @@ $cPass  = $_POST['uPWD'];
 $_POST['uID']  = '*';
 $_POST['uPWD'] = '*';
 
-$loginDaten = new Synclogin();
-$version    = '';
-$oVersion   = null;
+$login    = new Synclogin();
+$version  = '';
+$oVersion = null;
 
-Jtllog::writeLog(print_r($loginDaten, true), JTLLOG_LEVEL_DEBUG, false, 'Sync_xml');
-Jtllog::writeLog("{$cName} - {$cPass}", JTLLOG_LEVEL_DEBUG, false, 'Sync_xml');
-
-if ($cName && $cPass && $cName === $loginDaten->cName && $cPass === $loginDaten->cPass) {
+if ($login->checkLogin($cName, $cPass) === true) {
     $return = 0;
     if (isset($_POST['kKunde']) && (int)$_POST['kKunde'] > 0) {
         $oStatus = Shop::DB()->query("SHOW TABLE STATUS LIKE 'tkunde'", 1);

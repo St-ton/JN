@@ -8,7 +8,6 @@
 define('JTL_VERSION', 407);
 define('JTL_MIN_WAWI_VERSION', 100000);
 define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
-define('JTL_BUILD_TIMESTAMP', '#JTL_BUILD_TIMESTAMP#');
 // Einstellungssektionen
 define('CONF_GLOBAL', 1);
 define('CONF_STARTSEITE', 2);
@@ -40,7 +39,6 @@ define('CONF_SITEMAP', 114);
 define('CONF_UMFRAGE', 115);
 define('CONF_KUNDENWERBENKUNDEN', 116);
 define('CONF_TRUSTEDSHOPS', 117);
-define('CONF_PREISANZEIGE', 118);
 define('CONF_SUCHSPECIAL', 119);
 define('CONF_CHECKBOX', 120);
 define('CONF_AUSWAHLASSISTENT', 121);
@@ -130,6 +128,7 @@ define('MAILTEMPLATE_RMA_ABGESENDET', 'core_jtl_rma_submitted');
 define('MAILTEMPLATE_BEWERTUNG_GUTHABEN', 'core_jtl_bewertung_guthaben');
 define('MAILTEMPLATE_BESTELLUNG_TEILVERSANDT', 'core_jtl_bestellung_teilversandt');
 define('MAILTEMPLATE_ANBIETERKENNZEICHNUNG', 'core_jtl_anbieterkennzeichnung');
+
 // Suche
 define('SEARCH_SORT_STANDARD', 100);
 define('SEARCH_SORT_NAME_ASC', 1);
@@ -242,9 +241,6 @@ define('FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN', 'stuecklistenkomponenten');
 define('FKT_ATTRIBUT_INHALT', 'inhalt');
 define('FKT_ATTRIBUT_CANONICALURL_VARKOMBI', 'varkombi_canonicalurl');
 define('FKT_ATTRIBUT_KONFIG_MAX_ITEMS', 'konfig_max_items'); // deprecated? not in use anywhere
-define('FKT_ATTRIBUT_ARTIKELDETAILS_TPL', 'tpl_artikeldetails');
-define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL', 'tpl_artikelkonfig');
-define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS', 'tpl_js_artikelkonfig');
 // Special Content
 define('SC_KONTAKTFORMULAR', '1');
 // Suchspecials
@@ -492,3 +488,11 @@ define('SHOP_SEO', true);
 define('ES_SESSIONS', 0);
 //Max Anzahl an Variationswerten für Warenkorbmatrix
 define('ART_MATRIX_MAX', 250);
+
+
+// security
+defined('NEWSLETTER_USE_SECURITY') || define('NEWSLETTER_USE_SECURITY', true);
+defined('MAILTEMPLATE_USE_SECURITY') || define('MAILTEMPLATE_USE_SECURITY', true);
+defined('EXPORTFORMAT_USE_SECURITY') || define('EXPORTFORMAT_USE_SECURITY', true);
+defined('EXPORTFORMAT_ALLOWED_FORMATS') || define('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');
+defined('PASSWORD_DEFAULT_LENGTH') || define('PASSWORD_DEFAULT_LENGTH', 12);

@@ -38,7 +38,7 @@ if (!function_exists('Shop')) {
     }
 }
 // PHP memory_limit work around
-if (!Shop()->PHPSettingsHelper()->hasMinLimit(64)) {
+if (!Shop()->PHPSettingsHelper()->hasMinLimit(64 * 1024 * 1024)) {
     ini_set('memory_limit', '64M');
 }
 
@@ -77,9 +77,9 @@ if (PHP_SAPI !== 'cli'
 }
 
 if (!JTL_INCLUDE_ONLY_DB) {
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
-    require_once PFAD_ROOT . PFAD_XAJAX . 'xajax_core/xajax.inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_ext_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
     $oPluginHookListe_arr = Plugin::getHookList();

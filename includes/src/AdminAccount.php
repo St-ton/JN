@@ -111,6 +111,7 @@ class AdminAccount
      * @param string $cLogin
      * @param string $cPass
      * @return int
+     * @throws Exception
      */
     public function login($cLogin, $cPass)
     {
@@ -125,24 +126,22 @@ class AdminAccount
             false,
             '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
         );
-        if (!is_object($oAdmin)) {
+        if ($oAdmin === null || !is_object($oAdmin)) {
             return -3;
         }
         $oAdmin->kAdminlogingruppe = (int)$oAdmin->kAdminlogingruppe;
         if (!$oAdmin->bAktiv && $oAdmin->kAdminlogingruppe !== ADMINGROUP) {
             return -4;
         }
-        if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== ADMINGROUP) {
-            if ($oAdmin->dGueltigTS < time()) {
-                return -5;
-            }
+        if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== ADMINGROUP && $oAdmin->dGueltigTS < time()) {
+            return -5;
         }
         $verified     = false;
         $cPassCrypted = null;
         if (strlen($oAdmin->cPass) === 32) {
             // old md5 hash support
             $oAdminTmp = Shop::DB()->select('tadminlogin', 'cLogin', $cLogin, 'cPass', md5($cPass));
-            if (!isset($oAdminTmp->cLogin)) {
+            if ($oAdminTmp === null || !isset($oAdminTmp->cLogin)) {
                 //login failed
                 $this->_setRetryCount($oAdmin->cLogin);
 
@@ -178,11 +177,9 @@ class AdminAccount
         if ($verified === true || ($cPassCrypted !== null && $oAdmin->cPass === $cPassCrypted)) {
             // Wartungsmodus aktiv? Nein => loesche Session
             $settings = Shop::getSettings(CONF_GLOBAL);
-            if ($settings['global']['wartungsmodus_aktiviert'] === 'N') {
-                if (is_array($_SESSION) && count($_SESSION) > 0) {
-                    foreach ($_SESSION as $i => $xSession) {
-                        unset($_SESSION[$i]);
-                    }
+            if ($settings['global']['wartungsmodus_aktiviert'] === 'N' && is_array($_SESSION) && count($_SESSION) > 0) {
+                foreach ($_SESSION as $i => $xSession) {
+                    unset($_SESSION[$i]);
                 }
             }
 

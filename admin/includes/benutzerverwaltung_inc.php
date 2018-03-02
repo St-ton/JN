@@ -162,6 +162,10 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
                 $shortText = StringHandler::filterXSS($value);
             }
 
+            $key       = Shop::DB()->escape($key);
+            $shortText = Shop::DB()->escape($shortText);
+            $longText  = Shop::DB()->escape($longText);
+
             if (!Shop::DB()->query(
                 "INSERT INTO tadminloginattribut (kAdminlogin, cName, cAttribValue, cAttribText)
                     VALUES (" . (int)$oAccount->kAdminlogin . ", '" . $key . "', '" . $shortText . "', " .

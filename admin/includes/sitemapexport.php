@@ -581,8 +581,8 @@ function generateSitemapXML()
                LEFT JOIN tseo 
                   ON tseo.cKey = 'kTag'
                   AND tseo.kKey = ttag.kTag
-                  AND tseo.kSprache = " . $Sprache->kSprache . '
-               WHERE ttag.kSprache = ' . $Sprache->kSprache . '
+                  AND tseo.kSprache = " . (int)$Sprache->kSprache . '
+               WHERE ttag.kSprache = ' . (int)$Sprache->kSprache . '
                   AND ttag.nAktiv = 1
                ORDER BY ttag.kTag', 10
         );

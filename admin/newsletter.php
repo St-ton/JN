@@ -150,7 +150,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         }
     }
 } elseif (strlen(verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
-    $cSuche = StringHandler::filterXSS(verifyGPDataString('cSucheInaktiv'));
+    $cSuche = Shop::DB()->escape(StringHandler::filterXSS(verifyGPDataString('cSucheInaktiv')));
 
     if (strlen($cSuche) > 0) {
         $cInaktiveSucheSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $cSuche .
@@ -160,7 +160,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
 
     $smarty->assign('cSucheInaktiv', $cSuche);
 } elseif (strlen(verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
-    $cSuche = StringHandler::filterXSS(verifyGPDataString('cSucheAktiv'));
+    $cSuche = Shop::DB()->escape(StringHandler::filterXSS(verifyGPDataString('cSucheAktiv')));
 
     if (strlen($cSuche) > 0) {
         $cAktiveSucheSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $cSuche .

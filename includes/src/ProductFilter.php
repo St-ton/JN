@@ -399,7 +399,7 @@ class ProductFilter
 
     /**
      * @param bool $products
-     * @return ProductFilterSearchResults|Collection
+     * @return ProductFilterSearchResults|\Tightenco\Collect\Support\Collection
      */
     public function getSearchResults($products = true)
     {
@@ -1651,7 +1651,7 @@ class ProductFilter
      * @param Kategorie|null $currentCategory
      * @param bool           $fillProducts - if true, return Artikel class instances, otherwise keys only
      * @param int            $limit
-     * @return ProductFilterSearchResults|Collection
+     * @return ProductFilterSearchResults|\Tightenco\Collect\Support\Collection
      */
     public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = null)
     {

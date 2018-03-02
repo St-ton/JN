@@ -130,31 +130,42 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
     if (!empty($ZuschlagPLZ->cPLZ) || !empty($ZuschlagPLZ->cPLZAb)) {
         //schaue, ob sich PLZ ueberschneiden
         if (!empty($ZuschlagPLZ->cPLZ)) {
-            $plz_x = Shop::DB()->query(
+            $plz_x = Shop::DB()->queryPrepared(
                 "SELECT tversandzuschlagplz.*
                     FROM tversandzuschlagplz, tversandzuschlag
-                    WHERE (tversandzuschlagplz.cPLZ = '" . $ZuschlagPLZ->cPLZ . "'
-                        OR (tversandzuschlagplz.cPLZAb <= '" . $ZuschlagPLZ->cPLZ . "'
-                        AND tversandzuschlagplz.cPLZBis >= '" . $ZuschlagPLZ->cPLZ . "'))
+                    WHERE (tversandzuschlagplz.cPLZ = :surchargeZip
+                        OR (tversandzuschlagplz.cPLZAb <= :surchargeZip
+                        AND tversandzuschlagplz.cPLZBis >= :surchargeZip))
                         AND tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                        AND tversandzuschlag.cISO = '" . $versandzuschlag->cISO . "'
-                        AND tversandzuschlag.kVersandart = " . (int)$versandzuschlag->kVersandart
-                , 2
+                        AND tversandzuschlag.cISO = ':surchargeISO'
+                        AND tversandzuschlag.kVersandart = :surchargeShipmentMode",
+                [
+                    'surchargeZip'          => $ZuschlagPLZ->cPLZ,
+                    'surchargeISO'          => $versandzuschlag->cISO,
+                    'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
+                ],
+                2
             );
         } else {
-            $plz_x = Shop::DB()->query(
+            $plz_x = Shop::DB()->queryPrepared(
                 "SELECT tversandzuschlagplz.*
                     FROM tversandzuschlagplz, tversandzuschlag
-                    WHERE ((tversandzuschlagplz.cPLZ <= '" . $ZuschlagPLZ->cPLZBis . "'
-                        AND tversandzuschlagplz.cPLZ >= '" . $ZuschlagPLZ->cPLZAb . "')
-                        OR (tversandzuschlagplz.cPLZAb >= '" . $ZuschlagPLZ->cPLZAb . "'
-                        AND tversandzuschlagplz.cPLZAb <= '" . $ZuschlagPLZ->cPLZBis . "')
-                        OR (tversandzuschlagplz.cPLZBis >= '" . $ZuschlagPLZ->cPLZAb . "'
-                        AND tversandzuschlagplz.cPLZBis <= '" . $ZuschlagPLZ->cPLZBis . "'))
+                    WHERE ((tversandzuschlagplz.cPLZ <= :surchargeZipTo
+                        AND tversandzuschlagplz.cPLZ >= :surchargeZipFrom)
+                        OR (tversandzuschlagplz.cPLZAb >= :surchargeZipFrom
+                        AND tversandzuschlagplz.cPLZAb <= :surchargeZipTo)
+                        OR (tversandzuschlagplz.cPLZBis >= :surchargeZipFrom
+                        AND tversandzuschlagplz.cPLZBis <= :surchargeZipTo))
                         AND tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                        AND tversandzuschlag.cISO = '" . $versandzuschlag->cISO . "'
-                        AND tversandzuschlag.kVersandart = " . $versandzuschlag->kVersandart
-                , 2
+                        AND tversandzuschlag.cISO = :surchargeISO
+                        AND tversandzuschlag.kVersandart = :surchargeShipmentMode",
+                [
+                    'surchargeZipTo'        => $ZuschlagPLZ->cPLZBis,
+                    'surchargeZipFrom'      => $ZuschlagPLZ->cPLZAb,
+                    'surchargeISO'          => $versandzuschlag->cISO,
+                    'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
+                ],
+                2
             );
         }
         // (string-)merge the possible resulting 'overlaps'

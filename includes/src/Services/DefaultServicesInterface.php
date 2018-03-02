@@ -6,6 +6,7 @@
 
 namespace Services;
 
+use DB\DbInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
 use Services\JTL\CryptoServiceInterface;
@@ -21,6 +22,11 @@ use Services\JTL\PasswordServiceInterface;
  */
 interface DefaultServicesInterface extends ContainerInterface
 {
+    /**
+     * @return DbInterface
+     */
+    public function getDB();
+
     /**
      * @return PasswordServiceInterface
      * @throws ServiceNotFoundException

@@ -8,7 +8,6 @@ use Services\Container as Container;
 
 /**
  * Class Shop
- * @method static NiceDB DB()
  * @method static JTLCache Cache()
  * @method static Sprache Lang()
  * @method static JTLSmarty Smarty(bool $fast_init = false, bool $isAdmin = false)
@@ -476,11 +475,21 @@ final class Shop
     /**
      * get db adapter instance
      *
-     * @return NiceDB
+     * @return \DB\DbInterface
+     * @deprecated since Shop 5 use Shop::Container()->getDB() instead
      */
     public function _DB() : NiceDB
     {
-        return NiceDB::getInstance();
+        return self::Container()->getDB();
+    }
+
+    /**
+     * @return \DB\DbInterface
+     * @deprecated since Shop 5 use Shop::Container()->getDB() instead
+     */
+    public static function DB()
+    {
+        return self::Container()->getDB();
     }
 
     /**
@@ -1726,6 +1735,10 @@ final class Shop
     {
         $container         = new \Services\Container();
         static::$container = $container;
+
+        $container->setSingleton(\DB\DbInterface::class, function() {
+            return new DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        });
 
         $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function(){
             return new \Services\JTL\CryptoService();

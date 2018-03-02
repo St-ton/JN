@@ -362,8 +362,8 @@ class Kunde
     public function checkCredentials($cBenutzername, $cPasswort)
     {
         $passwordService = Shop::Container()->getPasswordService();
-
-        $oUser           = Shop::DB()->select(
+        $db              = Shop::Container()->getDB();
+        $oUser           = $db->select(
             'tkunde',
             'cMail',
             $cBenutzername,
@@ -374,6 +374,9 @@ class Kunde
             false,
             '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag_formatted'
         );
+        if (!$oUser) {
+            return false;
+        }
         $oUser->kKunde         = (int)$oUser->kKunde;
         $oUser->kKundengruppe  = (int)$oUser->kKundengruppe;
         $oUser->kSprache       = (int)$oUser->kSprache;

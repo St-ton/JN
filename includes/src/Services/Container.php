@@ -7,6 +7,7 @@
 namespace Services;
 
 
+use DB\DbInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 
@@ -20,6 +21,14 @@ use Services\JTL\PasswordServiceInterface;
  */
 class Container extends ContainerBase implements DefaultServicesInterface
 {
+    /**
+     * @inheritdoc
+     */
+    public function getDB()
+    {
+        return $this->get(DbInterface::class);
+    }
+
     /**
      * @inheritdoc
      */

@@ -23,8 +23,8 @@
     {else}
         <div id="result-wrapper" itemprop="mainEntity" itemscope itemtype="http://schema.org/Product" itemid="{$ShopURL}/{$Artikel->cSeo}">
             <meta itemprop="url" content="{$ShopURL}/{$Artikel->cSeo}">
-            {if !empty($oCMSPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.frontedit)}
-                {$oCMSPage->cFinalHtml_arr['editor_replace_all']}
+            {if !empty($opcPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.frontedit)}
+                {$opcPage->cFinalHtml_arr['editor_replace_all']}
             {elseif (!empty($smarty.get.frontedit) && !empty($smarty.get.cAction) && $smarty.get.cAction === 'replace')}
                 {include file='snippets/opc_mount_point.tpl' id='editor_replace_all'}
             {else}

@@ -164,12 +164,12 @@
                     </div>
                     <div class="tab-pane" id="revisions">
                         <div class="list-group">
-                            {if isset($oCMSPage)}
+                            {if isset($opcPage)}
                                 <a class="list-group-item revision-btn" href="#" data-revision-id="0">
                                     Aktuelle Version
                                 </a>
                                 <div id="revision-list">
-                                    {foreach $oCMSPage->getRevisions() as $oRevision}
+                                    {foreach $opcPage->getRevisions() as $oRevision}
                                         <a class="list-group-item revision-btn" href="#" data-revision-id="{$oRevision->id}">
                                             {$oRevision->timestamp}
                                         </a>

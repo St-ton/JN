@@ -6,8 +6,8 @@
 
 {block name="content"}
     <div id="result-wrapper">
-        {if (!empty($oCMSPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.editpage))}
-            {$oCMSPage->cFinalHtml_arr['editor_replace_all']}
+        {if (!empty($opcPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.editpage))}
+            {$opcPage->cFinalHtml_arr['editor_replace_all']}
         {elseif (!empty($smarty.get.editpage) && !empty($smarty.get.cAction) && $smarty.get.cAction === 'replace')}
             {include file='snippets/opc_mount_point.tpl' id='editor_replace_all'}
         {else}

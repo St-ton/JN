@@ -60,17 +60,17 @@ class OPCPage
     public function __construct($kPage = 0)
     {
         if ($kPage > 0) {
-            $oCMSPageDB = Shop::DB()->select('topcpage', 'kPage', $kPage);
+            $opcPageDB = Shop::DB()->select('topcpage', 'kPage', $kPage);
 
-            if ($oCMSPageDB !== null) {
-                $oCMSPageDB->cJson   = empty($oCMSPageDB->cJson) ? '{}' : $oCMSPageDB->cJson;
-                $this->kPage         = $oCMSPageDB->kPage;
-                $this->cIdHash       = $oCMSPageDB->cIdHash;
-                $this->cPageUrl      = $oCMSPageDB->cPageURL;
-                $this->data          = json_decode($oCMSPageDB->cJson, true);
-                $this->dLastModified = $oCMSPageDB->dLastModified;
-                $this->cLockedBy     = $oCMSPageDB->cLockedBy;
-                $this->dLockedAt     = $oCMSPageDB->dLockedAt;
+            if ($opcPageDB !== null) {
+                $opcPageDB->cJson    = empty($opcPageDB->cJson) ? '{}' : $opcPageDB->cJson;
+                $this->kPage         = $opcPageDB->kPage;
+                $this->cIdHash       = $opcPageDB->cIdHash;
+                $this->cPageUrl      = $opcPageDB->cPageURL;
+                $this->data          = json_decode($opcPageDB->cJson, true);
+                $this->dLastModified = $opcPageDB->dLastModified;
+                $this->cLockedBy     = $opcPageDB->cLockedBy;
+                $this->dLockedAt     = $opcPageDB->dLockedAt;
             }
         }
     }

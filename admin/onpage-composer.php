@@ -46,5 +46,5 @@ $smarty
     ->assign('cAction', $cAction)
     ->assign('cPageUrl', $cPageUrl)
     ->assign('cPageIdHash', $cPageIdHash)
-    ->assign('oCMSPage', $opcPage)
+    ->assign('opcPage', $opcPage)
     ->display('onpage-composer.tpl');

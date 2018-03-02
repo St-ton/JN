@@ -10,12 +10,12 @@
             <div class="switcher-content">
                 <form id="start-editor" action="admin/onpage-composer.php" method="get" class="form-group">
                     <input type="hidden" name="token" value="{$smarty.session.jtl_token}">
-                    <input type="hidden" name="cCmsPageIdHash" value="{$oCMSPage->cIdHash}">
+                    <input type="hidden" name="cCmsPageIdHash" value="{$opcPage->cIdHash}">
                     <input type="hidden" name="cPageUrl" value="{$smarty.server.REQUEST_URI}">
-                    {if !empty($oCMSPage->cFinalHtml_arr)}
+                    {if !empty($opcPage->cFinalHtml_arr)}
                         <p>
                             <button type="submit" name="cAction" class="btn btn-primary"
-                                    value="{if empty($oCMSPage->cFinalHtml_arr['editor_replace_all'])}extend{else}replace{/if}">
+                                    value="{if empty($opcPage->cFinalHtml_arr['editor_replace_all'])}extend{else}replace{/if}">
                                 Inhalt bearbeiten
                             </button>
                         </p>

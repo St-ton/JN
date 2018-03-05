@@ -37,7 +37,6 @@ class AuthLoggerService implements AuthLoggerServiceInterface
      */
     protected $logger;
 
-
     /**
      * @return string
      */

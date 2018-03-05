@@ -6,14 +6,17 @@
 
 namespace Services\JTL;
 
+use Monolog\Formatter\LineFormatter;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Processor\PsrLogMessageProcessor;
+
 /**
  * Class AuthLoggerService
  * @package Services\JTL
  */
 class AuthLoggerService implements AuthLoggerServiceInterface
 {
-    const LOGFILE = PFAD_LOGFILES . 'auth.log';
-
     /**
      * @var string
      */
@@ -30,9 +33,15 @@ class AuthLoggerService implements AuthLoggerServiceInterface
     private $user;
 
     /**
+     * @var Logger
+     */
+    protected $logger;
+
+
+    /**
      * @return string
      */
-    protected function getIP() : string
+    protected function getIP(): string
     {
         return $this->ip ?? 'unknown ip';
     }
@@ -40,7 +49,7 @@ class AuthLoggerService implements AuthLoggerServiceInterface
     /**
      * @return int
      */
-    protected function getCode() : int
+    protected function getCode(): int
     {
         return $this->code ?? \AdminAccount::ERROR_UNKNOWN;
     }
@@ -48,7 +57,7 @@ class AuthLoggerService implements AuthLoggerServiceInterface
     /**
      * @return string
      */
-    protected function getUser() : string
+    protected function getUser(): string
     {
         return $this->user !== null
             ? \StringHandler::filterXSS($this->user)
@@ -89,43 +98,47 @@ class AuthLoggerService implements AuthLoggerServiceInterface
      * @param int $code
      * @return string
      */
-    protected function mapLoginCode($code) : string
+    protected function mapLoginCode($code): string
     {
         switch ($code) {
             case \AdminAccount::LOGIN_OK:
-                return 'logged in';
+                return 'user {user}@{ip} successfully logged in';
             case \AdminAccount::ERROR_NOT_AUTHORIZED:
-                return 'not authorized';
+                return 'user {user}@{ip} is not authorized';
             case \AdminAccount::ERROR_INVALID_PASSWORD_LOCKED:
             case \AdminAccount::ERROR_INVALID_PASSWORD:
-                return 'invalid password';
+                return 'invalid password for user {user}@{ip}';
             case \AdminAccount::ERROR_USER_NOT_FOUND:
-                return 'user not found';
+                return 'user {user}@{ip} not found';
             case \AdminAccount::ERROR_USER_DISABLED:
-                return 'user disabled';
+                return 'user {user}@{ip} disabled';
             case \AdminAccount::ERROR_LOGIN_EXPIRED:
-                return 'login expired';
+                return 'login for user {user}@{ip} expired';
             case \AdminAccount::ERROR_TWO_FACTOR_AUTH_EXPIRED:
-                return 'two factor authentication token expired';
+                return 'two factor authentication token for user {user}@{ip} expired';
             case \AdminAccount::ERROR_UNKNOWN:
             default:
-                return 'unknown error';
+                return 'unknown error for user {user}@{ip}';
         }
     }
 
     /**
      * @inheritdoc
      */
-    public function log() : bool
+    public function log(): bool
     {
-        $date = new \DateTime();
-        $msg = $date->format(DATE_RFC822) . ' JTL-Shop ';
-        $code = $this->getCode();
-        $msg .= $code < 1 ? 'ERROR: ' : 'SUCCESS: ';
-        $msg .= 'User ' . $this->getUser() . ' from ' . $this->getIP() . ' ';
-        $msg .= $this->mapLoginCode($code);
-        $msg .= "\n";
+        $code   = $this->getCode();
+        $method = $code < 1
+            ? 'error'
+            : 'info';
+        $this->logger->$method($this->mapLoginCode($code),
+            [
+                'user' => $this->getUser(),
+                'ip'   => $this->getIP(),
+                'code' => $code,
+                'type' => $method
+            ]);
 
-        return file_put_contents(self::LOGFILE, $msg, FILE_APPEND) > 0;
+        return true;
     }
 }

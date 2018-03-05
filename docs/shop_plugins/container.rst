@@ -2,14 +2,14 @@ Container
 =========
 
 Seit Shop 5.0 steht im JTL-Shop ein sogenannter "Dependency Injection Container" zur Verfügung. In Zukunft wird ein
-großteil aller JTL-Shop-Komponenten über diesen Container bereitgestellt. Zudem kann das Verhalten des Shops über die im
-Container registrierten Komponenten von Plugins modifiziert oder erweitert werden.
+Großteil aller JTL-Shop-Komponenten über diesen Container bereit gestellt. Zudem kann das Verhalten des Shops über die
+im Container registrierten Komponenten von Plugins modifiziert oder erweitert werden.
 
 SOLID & Dependency Inversion
 ----------------------------
 
 Der Container dient der Umsetzung des Dependency Inversion Principles. Zu diesem Themenkomplex gibt es viele Erklärungen
-im Internet. Wir empfehlen Entwicklern daher zunächst, sich mit SOLID und im besonderen mit Dependeny Inversion vertraut
+im Internet. Wir empfehlen Entwicklern daher zunächst, sich mit SOLID und im Besonderen mit Dependeny Inversion vertraut
 zu machen.
 
 Container / Komponente holen
@@ -26,8 +26,8 @@ Container / Komponente holen
     $randomPassword  = $passwordService->generate(12);
 
 Wie hier zu sehen ist, können über den Container Dienste und andere Komponenten vom JTL-Shop bezogen werden. Der
-Container ist hierbei gem. PSR-11 von der PHP-FIG entworfen. `Link zur Spezifikation <https://www.php-fig.org/psr/psr-11/>`
-Für den Fall, dass Sie eine IDE mit IntelliSense verwenden, haben wir zudem für alle vom JTL-Shop bereitgestellten
+Container ist hierbei gemäß PSR-11 von der PHP-FIG entworfen. (https://www.php-fig.org/psr/psr-11/)
+Für den Fall, dass Sie eine IDE mit IntelliSense verwenden, haben wir zudem für alle vom JTL-Shop bereit gestellten
 Komponenten eine Methode zum Container hinzugefügt.
 
 .. code-block:: php
@@ -97,7 +97,7 @@ Nun können Sie die entsprechende Komponente im Container registrieren:
         return new HelloWorldGenerator();
     });
 
-Nun steht ihre Komponente über den Container bereit und kann so abgerufen werden:
+Nun steht ihre Komponente über den Container bereit und kann wie folgt abgerufen werden:
 
 .. code-block:: php
 
@@ -189,7 +189,7 @@ wählen.
     $container->setFactory(HelloWorldGeneratorInterface::class, function() { ... });
 
 Nicht zu verwechseln ist dies mit der sogenannten "Factory Method". Sowohl ein Singleton, als auch eine Factory
-benötigen eine Factory Method, welche die Erzeugung des jeweiligen Objektes übernimmt. Die Factory Method kann sowohl
+benötigen eine Factory Method, welche die Erzeugung des jeweiligen Objektes übernimmt. Die Factory-Method kann sowohl
 für ein Singleton als auch für eine Factory auf die gleiche Weise geholt werden:
 
 .. code-block:: php

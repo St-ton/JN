@@ -456,18 +456,19 @@ final class Shop
     /**
      * get remote service instance
      *
-     * @return RemoteService
+     * @return \Network\JTLApi
+     * @deprecated since Shop 5.0 use Shop::Container()->get(JTLApi::class) instead
+     * @throws
      */
     public function RS() : RemoteService
     {
-        return RemoteService::getInstance();
+        return self::Container()->get(\Network\JTLApi::class);
     }
 
     /**
      * get session instance
      *
      * @return Session
-     * @deprecated
      */
     public function Session() : Session
     {
@@ -1566,6 +1567,11 @@ final class Shop
         return JTL_VERSION;
     }
 
+    public function _getVersion()
+    {
+        return JTL_VERSION;
+    }
+
     /**
      * get logo from db, fallback to first file in logo dir
      *
@@ -1743,9 +1749,14 @@ final class Shop
         $container         = new \Services\Container();
         static::$container = $container;
 
+        // BASE
+
         $container->setSingleton(\DB\DbInterface::class, function () {
             return new DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         });
+
+
+        // SECURITY
 
         $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function () {
             return new \Services\JTL\CryptoService();
@@ -1756,7 +1767,15 @@ final class Shop
         });
 
 
-        // DB Services
+        // NETWORK & API
+
+        $container->setFactory(\Network\JTLApi::class, function () {
+            return new \Network\JTLApi($_SESSION, Nice::getInstance(), self::getInstance());
+        });
+
+
+        // DB SERVICES
+
         $container->setSingleton(DbService\GcServiceInterface::class, function (Container $container) {
             return new DbService\GcService($container->getDB());
         });

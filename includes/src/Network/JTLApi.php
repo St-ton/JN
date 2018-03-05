@@ -4,22 +4,31 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-/**
- * Class RemoteService
- */
-class RemoteService
-{
-    use SingletonTrait;
+namespace Network;
 
+
+final class JTLApi
+{
     const URI = 'https://api.jtl-software.de/shop';
+
+    protected $session;
+    protected $nice;
+    protected $shop;
+
+    public function __construct(array &$session, \Nice $nice, \Shop $shop)
+    {
+        $this->session = $session;
+        $this->nice    = $nice;
+        $this->shop    = $shop;
+    }
 
     /**
      *
      */
     protected function init()
     {
-        if (!isset($_SESSION['rs'])) {
-            $_SESSION['rs'] = [];
+        if (!isset($this->session['rs'])) {
+            $this->session['rs'] = [];
         }
     }
 
@@ -28,19 +37,18 @@ class RemoteService
      */
     public function getSubscription()
     {
-        if (!isset($_SESSION['rs']['subscription'])) {
-            $nice = Nice::getInstance();
+        if (!isset($this->session['rs']['subscription'])) {
 
             $subscription = $this->call('check/subscription', [
-                'key' =>  $nice->getAPIKey(),
-                'domain' =>  $nice->getDomain(),
+                'key'    => $this->nice->getAPIKey(),
+                'domain' => $this->nice->getDomain(),
             ]);
 
-            $_SESSION['rs']['subscription'] = (isset($subscription->kShop) && $subscription->kShop > 0)
+            $this->session['rs']['subscription'] = (isset($subscription->kShop) && $subscription->kShop > 0)
                 ? $subscription : null;
         }
 
-        return $_SESSION['rs']['subscription'];
+        return $this->session['rs']['subscription'];
     }
 
     /**
@@ -48,11 +56,11 @@ class RemoteService
      */
     public function getAvailableVersions()
     {
-        if (!isset($_SESSION['rs']['versions'])) {
-            $_SESSION['rs']['versions'] = $this->call('v2/versions');
+        if (!isset($this->session['rs']['versions'])) {
+            $this->session['rs']['versions'] = $this->call('v2/versions');
         }
 
-        return $_SESSION['rs']['versions'];
+        return $this->session['rs']['versions'];
     }
 
     /**
@@ -60,11 +68,11 @@ class RemoteService
      */
     public function getLatestVersion()
     {
-        $nVersion = Shop::getVersion();
+        $nVersion      = $this->shop->_getVersion();
         $nMinorVersion = (int)JTL_MINOR_VERSION;
-        $oVersions = $this->getAvailableVersions();
+        $oVersions     = $this->getAvailableVersions();
 
-        $oStableVersions = array_filter((array)$oVersions, function($v) use($nVersion, $nMinorVersion) {
+        $oStableVersions = array_filter((array)$oVersions, function ($v) use ($nVersion, $nMinorVersion) {
             return $v->channel === 'Stable' && (int)$v->version >= $nVersion;
         });
 
@@ -84,9 +92,9 @@ class RemoteService
             return false;
         }
 
-        $nVersion = Shop::getVersion();
+        $nVersion      = $this->shop->_getVersion();
         $nMinorVersion = (int)JTL_MINOR_VERSION;
-        $oVersion = $this->getLatestVersion();
+        $oVersion      = $this->getLatestVersion();
 
         return $oVersion
             && ((int)$oVersion->version > $nVersion

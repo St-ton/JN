@@ -177,9 +177,10 @@ function getShopInfoIO($cTpl, $cWrapperID)
 {
     $response = new IOResponse();
 
-    $oSubscription = Shop()->RS()->getSubscription();
-    $oLatestVersion = Shop()->RS()->getLatestVersion();
-    $bUpdateAvailable = Shop()->RS()->hasNewerVersion();
+    $api = Shop::Container()->get(\Network\JTLApi::class);
+    $oSubscription = $api->getSubscription();
+    $oLatestVersion = $api->getLatestVersion();
+    $bUpdateAvailable = $api->hasNewerVersion();
 
     $strLatestVersion = $oLatestVersion
         ? sprintf('%.2f', $oLatestVersion->version / 100)

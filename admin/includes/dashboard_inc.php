@@ -10,7 +10,7 @@
  */
 function getWidgets($bActive = true)
 {
-    $oWidget_arr = Shop::DB()->selectAll('tadminwidgets', 'bActive', (int)$bActive, '*', 'eContainer ASC, nPos ASC');
+    $oWidget_arr = Shop::Container()->getDB()->selectAll('tadminwidgets', 'bActive', (int)$bActive, '*', 'eContainer ASC, nPos ASC');
     if ($bActive && is_array($oWidget_arr) && count($oWidget_arr) > 0) {
         foreach ($oWidget_arr as $i => $oWidget) {
             $oWidget_arr[$i]->cContent = '';
@@ -50,7 +50,7 @@ function setWidgetPosition($kWidget, $eContainer, $nPos)
     $upd             = new stdClass();
     $upd->eContainer = $eContainer;
     $upd->nPos       = (int)$nPos;
-    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**
@@ -60,7 +60,7 @@ function closeWidget($kWidget)
 {
     $upd          = new stdClass();
     $upd->bActive = 0;
-    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**
@@ -70,7 +70,7 @@ function addWidget($kWidget)
 {
     $upd          = new stdClass();
     $upd->bActive = 1;
-    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**
@@ -81,7 +81,7 @@ function expandWidget($kWidget, $bExpand)
 {
     $upd            = new stdClass();
     $upd->bExpanded = (int)$bExpand;
-    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**
@@ -91,7 +91,7 @@ function expandWidget($kWidget, $bExpand)
 function getWidgetContent($kWidget)
 {
     $cContent = '';
-    $oWidget  = Shop::DB()->select('tadminwidgets', 'kWidget', (int)$kWidget);
+    $oWidget  = Shop::Container()->getDB()->select('tadminwidgets', 'kWidget', (int)$kWidget);
 
     if (!is_object($oWidget)) {
         return '';

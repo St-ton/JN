@@ -104,11 +104,11 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     }
 }
 
-$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KUNDENFELD, '*', 'nSort');
+$oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KUNDENFELD, '*', 'nSort');
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$oConfig_arr[$i]->kEinstellungenConf,
@@ -117,7 +117,7 @@ for ($i = 0; $i < $configCount; $i++) {
         );
     }
 
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         CONF_KUNDENFELD,

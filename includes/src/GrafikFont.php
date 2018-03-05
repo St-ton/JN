@@ -131,7 +131,7 @@ class GrafikFont
         $strHTML  = '<div class="grafikpreis">';
         $Waehrung = Session::Currency();
         if (!$Waehrung->kWaehrung) {
-            $Waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+            $Waehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
         }
         $strTrennzeichenCent = $Waehrung->cTrennzeichenCent;
         $nLength             = strlen($strInputString);

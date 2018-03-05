@@ -304,7 +304,7 @@ class JobQueue
     public function holeJobArt()
     {
         if ($this->kKey > 0 && strlen($this->cTabelle) > 0) {
-            return Shop::DB()->select(Shop::DB()->escape($this->cTabelle), Shop::DB()->escape($this->cKey), (int)$this->kKey);
+            return Shop::Container()->getDB()->select(Shop::Container()->getDB()->escape($this->cTabelle), Shop::Container()->getDB()->escape($this->cKey), (int)$this->kKey);
         }
 
         return null;
@@ -325,7 +325,7 @@ class JobQueue
             $queue = kopiereMembers($this);
             unset($queue->kJobQueue);
 
-            return Shop::DB()->insert('tjobqueue', $queue);
+            return Shop::Container()->getDB()->insert('tjobqueue', $queue);
         }
 
         return 0;
@@ -349,7 +349,7 @@ class JobQueue
             $_upd->dStartZeit       = $this->dStartZeit;
             $_upd->dZuletztGelaufen = $this->dZuletztGelaufen;
 
-            return Shop::DB()->update('tjobqueue', 'kJobQueue', (int)$this->kJobQueue, $_upd);
+            return Shop::Container()->getDB()->update('tjobqueue', 'kJobQueue', (int)$this->kJobQueue, $_upd);
         }
 
         return 0;
@@ -361,7 +361,7 @@ class JobQueue
     public function deleteJobInDB()
     {
         return ($this->kJobQueue > 0)
-            ? Shop::DB()->delete('tjobqueue', 'kJobQueue', (int)$this->kJobQueue)
+            ? Shop::Container()->getDB()->delete('tjobqueue', 'kJobQueue', (int)$this->kJobQueue)
             : 0;
     }
 
@@ -371,7 +371,7 @@ class JobQueue
     public function updateExportformatQueueBearbeitet()
     {
         if ($this->kJobQueue > 0) {
-            Shop::DB()->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$this->kJobQueue);
+            Shop::Container()->getDB()->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$this->kJobQueue);
 
             $ins                   = new stdClass();
             $ins->kJobQueue        = $this->kJobQueue;
@@ -382,7 +382,7 @@ class JobQueue
             $ins->dStartZeit       = $this->dStartZeit;
             $ins->dZuletztGelaufen = $this->dZuletztGelaufen;
 
-            Shop::DB()->insert('texportformatqueuebearbeitet', $ins);
+            Shop::Container()->getDB()->insert('texportformatqueuebearbeitet', $ins);
 
             return true;
         }

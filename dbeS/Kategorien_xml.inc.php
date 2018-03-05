@@ -18,12 +18,12 @@ function rebuildCategoryTree($parent_id, $left, $level = 0)
     // the right value of this node is the left value + 1
     $right = $left + 1;
     // get all children of this node
-    $result = Shop::DB()->selectAll('tkategorie', 'kOberKategorie', (int)$parent_id, 'kKategorie', 'nSort, cName');
+    $result = Shop::Container()->getDB()->selectAll('tkategorie', 'kOberKategorie', (int)$parent_id, 'kKategorie', 'nSort, cName');
     foreach ($result as $_res) {
         $right = rebuildCategoryTree($_res->kKategorie, $right, $level + 1);
     }
     // we've got the left value, and now that we've processed the children of this node we also know the right value
-    Shop::DB()->update('tkategorie', 'kKategorie', $parent_id, (object)[
+    Shop::Container()->getDB()->update('tkategorie', 'kKategorie', $parent_id, (object)[
         'lft'    => $left,
         'rght'   => $right,
         'nLevel' => $level,

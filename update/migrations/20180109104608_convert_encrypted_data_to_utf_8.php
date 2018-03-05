@@ -48,7 +48,7 @@ class Migration_20180109104608 extends Migration implements IMigration
                     $dataObj->$propName = verschluesselXTEA($dataObj->$propName);
                 }
 
-                Shop::DB()->update($tableName, $keyName, $dataObj->$keyName, $dataObj);
+                Shop::Container()->getDB()->update($tableName, $keyName, $dataObj->$keyName, $dataObj);
             }
         }
     }
@@ -71,7 +71,7 @@ class Migration_20180109104608 extends Migration implements IMigration
                     $dataObj->$propName = verschluesselXTEA($dataObj->$propName);
                 }
 
-                Shop::DB()->update($tableName, $keyName, $dataObj->$keyName, $dataObj);
+                Shop::Container()->getDB()->update($tableName, $keyName, $dataObj->$keyName, $dataObj);
             }
         }
     }

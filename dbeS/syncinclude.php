@@ -170,7 +170,7 @@ function auth()
  */
 function DBinsert($tablename, $object)
 {
-    $key = Shop::DB()->insert($tablename, $object);
+    $key = Shop::Container()->getDB()->insert($tablename, $object);
     if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
         Jtllog::writeLog('DBinsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
             print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
@@ -188,7 +188,7 @@ function DBDelInsert($tablename, $object_arr, $del)
 {
     if (is_array($object_arr)) {
         if ($del) {
-            Shop::DB()->query("DELETE FROM $tablename", 4);
+            Shop::Container()->getDB()->query("DELETE FROM $tablename", 4);
         }
         foreach ($object_arr as $object) {
             //hack? unset arrays/objects that would result in nicedb exceptions
@@ -197,7 +197,7 @@ function DBDelInsert($tablename, $object_arr, $del)
                     unset($object->$key);
                 }
             }
-            $key = Shop::DB()->insert($tablename, $object);
+            $key = Shop::Container()->getDB()->insert($tablename, $object);
             if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
                 Jtllog::writeLog('DBDelInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
                     print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
@@ -217,12 +217,12 @@ function DBUpdateInsert($tablename, $object_arr, $pk1, $pk2 = 0)
     if (is_array($object_arr)) {
         foreach ($object_arr as $object) {
             if (isset($object->$pk1) && !$pk2 && $pk1 && $object->$pk1) {
-                Shop::DB()->delete($tablename, $pk1, $object->$pk1);
+                Shop::Container()->getDB()->delete($tablename, $pk1, $object->$pk1);
             }
             if (isset($object->$pk2) && $pk1 && $pk2 && $object->$pk1 && $object->$pk2) {
-                Shop::DB()->delete($tablename, [$pk1, $pk2], [$object->$pk1, $object->$pk2]);
+                Shop::Container()->getDB()->delete($tablename, [$pk1, $pk2], [$object->$pk1, $object->$pk2]);
             }
-            $key = Shop::DB()->insert($tablename, $object);
+            $key = Shop::Container()->getDB()->insert($tablename, $object);
             if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
                 Jtllog::writeLog('DBUpdateInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
                     print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
@@ -510,10 +510,10 @@ function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
  */
 function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
 {
-    Shop::DB()->delete('tartikelkategorierabatt', 'kArtikel', (int)$oArtikel->kArtikel);
+    Shop::Container()->getDB()->delete('tartikelkategorierabatt', 'kArtikel', (int)$oArtikel->kArtikel);
     if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
         foreach ($oKundengruppe_arr as $oKundengruppe) {
-            $oMaxRabatt = Shop::DB()->query(
+            $oMaxRabatt = Shop::Container()->getDB()->query(
                 "SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
                     FROM tkategoriekundengruppe
                     JOIN tkategorieartikel 
@@ -535,7 +535,7 @@ function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
                 $oArtikelKategorieRabatt->kKategorie    = $oMaxRabatt->kKategorie;
                 $oArtikelKategorieRabatt->fRabatt       = $oMaxRabatt->fRabatt;
 
-                Shop::DB()->insert('tartikelkategorierabatt', $oArtikelKategorieRabatt);
+                Shop::Container()->getDB()->insert('tartikelkategorierabatt', $oArtikelKategorieRabatt);
                 // Clear Artikel Cache
                 $cache = Shop::Cache();
                 $cache->flushTags([CACHING_GROUP_ARTICLE . '_' . $oArtikel->kArtikel]);
@@ -550,7 +550,7 @@ function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
 function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
 {
     if ($oArtikel->fLagerbestand > 0 && $oArtikel->kArtikel) {
-        $Benachrichtigungen = Shop::DB()->selectAll(
+        $Benachrichtigungen = Shop::Container()->getDB()->selectAll(
             'tverfuegbarkeitsbenachrichtigung',
             ['nStatus', 'kArtikel'],
             [0, $oArtikel->kArtikel]
@@ -583,7 +583,7 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
                 $upd->nStatus           = 1;
                 $upd->dBenachrichtigtAm = 'now()';
                 $upd->cAbgeholt         = 'N';
-                Shop::DB()->update(
+                Shop::Container()->getDB()->update(
                     'tverfuegbarkeitsbenachrichtigung',
                     'kVerfuegbarkeitsbenachrichtigung',
                     $Benachrichtigung->kVerfuegbarkeitsbenachrichtigung,
@@ -605,7 +605,7 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
     $kKundengruppe = (int)$kKundengruppe;
     $fVKNetto      = (float)$fVKNetto;
 
-    $oPreis_arr = Shop::DB()->query(
+    $oPreis_arr = Shop::Container()->getDB()->query(
         "SELECT kPreisverlauf, fVKNetto, dDate, IF(dDate = CURDATE(), 1, 0) bToday
             FROM tpreisverlauf
             WHERE kArtikel = {$kArtikel}
@@ -621,10 +621,10 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
         }
         if (!empty($oPreis_arr[1]) && round($oPreis_arr[1]->fVKNetto * 100) === round($fVKNetto * 100)) {
             // delete todays price if the new price for today is the same as the latest price
-            Shop::DB()->delete('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf);
+            Shop::Container()->getDB()->delete('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf);
         } else {
             // update if prices are different
-            Shop::DB()->update('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf, (object)[
+            Shop::Container()->getDB()->update('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf, (object)[
                 'fVKNetto' => $fVKNetto,
             ]);
         }
@@ -634,7 +634,7 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
             // return if there is no difference
             return;
         }
-        Shop::DB()->insert('tpreisverlauf', (object)[
+        Shop::Container()->getDB()->insert('tpreisverlauf', (object)[
             'kArtikel'      => $kArtikel,
             'kKundengruppe' => $kKundengruppe,
             'fVKNetto'      => $fVKNetto,
@@ -716,13 +716,13 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
 {
     $kArtikelPict = (int)$kArtikelPict;
     if ($oArtikelPict === null && $kArtikelPict > 0) {
-        $oArtikelPict = Shop::DB()->select('tartikelpict', 'kArtikelPict', $kArtikelPict);
+        $oArtikelPict = Shop::Container()->getDB()->select('tartikelpict', 'kArtikelPict', $kArtikelPict);
         $kArtikel     = isset($oArtikelPict->kArtikel) ? (int)$oArtikelPict->kArtikel : 0;
     }
     // Das Bild ist eine Verknüpfung
     if (isset($oArtikelPict->kMainArtikelBild) && $oArtikelPict->kMainArtikelBild > 0 && $kArtikel > 0) {
         // Existiert der Artikel vom Mainbild noch?
-        $oMainArtikel = Shop::DB()->query(
+        $oMainArtikel = Shop::Container()->getDB()->query(
             "SELECT kArtikel
                 FROM tartikel
                 WHERE kArtikel =
@@ -735,7 +735,7 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
         // Main Artikel existiert nicht mehr
         if (!isset($oMainArtikel->kArtikel) || $oMainArtikel->kArtikel == 0) {
             // Existiert noch eine andere aktive Verknüpfung auf das Mainbild?
-            $oArtikelPictPara_arr = Shop::DB()->query(
+            $oArtikelPictPara_arr = Shop::Container()->getDB()->query(
                 "SELECT kArtikelPict
                     FROM tartikelpict
                     WHERE kMainArtikelBild = " . (int)$oArtikelPict->kMainArtikelBild . "
@@ -749,22 +749,22 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
                 @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_NORMAL . $oArtikelPict->cPfad);
                 @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_GROSS . $oArtikelPict->cPfad);
                 // Bild vom Main aus DB löschen
-                Shop::DB()->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kMainArtikelBild);
+                Shop::Container()->getDB()->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kMainArtikelBild);
             }
         }
         // Bildverknüpfung aus DB löschen
-        Shop::DB()->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kArtikelPict);
+        Shop::Container()->getDB()->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kArtikelPict);
     } elseif (isset($oArtikelPict->kMainArtikelBild) && $oArtikelPict->kMainArtikelBild == 0) {
         // Das Bild ist ein Hauptbild
         // Gibt es Artikel die auf Bilder des zu löschenden Artikel verknüpfen?
-        $oVerknuepfteArtikel_arr = Shop::DB()->query(
+        $oVerknuepfteArtikel_arr = Shop::Container()->getDB()->query(
             "SELECT kArtikelPict
                 FROM tartikelpict
                 WHERE kMainArtikelBild = " . (int)$oArtikelPict->kArtikelPict, 2
         );
         if (count($oVerknuepfteArtikel_arr) === 0) {
             // Gibt ein neue Artikel die noch auf den physikalischen Pfad zeigen?
-            $oObj = Shop::DB()->query(
+            $oObj = Shop::Container()->getDB()->query(
                 "SELECT count(*) AS nCount
                     FROM tartikelpict
                     WHERE cPfad = '{$oArtikelPict->cPfad}'", 1
@@ -780,14 +780,14 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
             //Reorder linked images because master imagelink will be deleted
             $kArtikelPictNext = $oVerknuepfteArtikel_arr[0]->kArtikelPict;
             //this will be the next masterimage
-            Shop::DB()->update(
+            Shop::Container()->getDB()->update(
                 'tartikelpict',
                 'kArtikelPict',
                 (int)$kArtikelPictNext,
                 (object)['kMainArtikelBild' => 0]
             );
             //now link other images to the new masterimage
-            Shop::DB()->update(
+            Shop::Container()->getDB()->update(
                 'tartikelpict',
                 'kMainArtikelBild',
                 (int)$oArtikelPict->kArtikelPict,
@@ -795,7 +795,7 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
             );
         }
         // Bild aus DB löschen
-        Shop::DB()->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kArtikelPict);
+        Shop::Container()->getDB()->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kArtikelPict);
     }
     // Clear Artikel Cache
     $cache = Shop::Cache();
@@ -851,12 +851,12 @@ function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
     if ($kKey > 0 && strlen($cKey) > 0) {
         if ($kSprache !== null && (int)$kSprache > 0) {
             $kSprache = (int)$kSprache;
-            $oSeo     = Shop::DB()->select('tseo', 'kKey', $kKey, 'cKey', $cKey, 'kSprache', $kSprache);
+            $oSeo     = Shop::Container()->getDB()->select('tseo', 'kKey', $kKey, 'cKey', $cKey, 'kSprache', $kSprache);
             if (isset($oSeo->kKey) && (int)$oSeo->kKey > 0) {
                 return $oSeo;
             }
         } else {
-            $oSeo_arr = Shop::DB()->selectAll('tseo', ['kKey', 'cKey'], [$kKey, $cKey]);
+            $oSeo_arr = Shop::Container()->getDB()->selectAll('tseo', ['kKey', 'cKey'], [$kKey, $cKey]);
             if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
                 if ($cAssoc !== null && strlen($cAssoc) > 0) {
                     $oAssoc_arr = [];
@@ -896,7 +896,7 @@ function handlePriceFormat($kArtikel, $kKundengruppe, $kKunde = null)
         flushCustomerPriceCache($o->kKunde);
     }
 
-    return Shop::DB()->insert('tpreis', $o);
+    return Shop::Container()->getDB()->insert('tpreis', $o);
 }
 
 /**
@@ -942,7 +942,7 @@ function handleNewPriceFormat($xml)
         $preise = mapArray($xml, 'tpreis', $GLOBALS['mPreis']);
         if (is_array($preise) && count($preise) > 0) {
             $kArtikel  = (int)$preise[0]->kArtikel;
-            $Kunde_arr = Shop::DB()->selectAll('tpreis', ['kArtikel', 'kKundengruppe'], [$kArtikel, 0], 'kKunde');
+            $Kunde_arr = Shop::Container()->getDB()->selectAll('tpreis', ['kArtikel', 'kKundengruppe'], [$kArtikel, 0], 'kKunde');
             if (!empty($Kunde_arr)) {
                 foreach ($Kunde_arr as $Kunde) {
                     $kKunde = (int)$Kunde->kKunde;
@@ -951,7 +951,7 @@ function handleNewPriceFormat($xml)
                     }
                 }
             }
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "DELETE p, d
                     FROM tpreis AS p
                     LEFT JOIN tpreisdetail AS d 
@@ -973,7 +973,7 @@ function handleNewPriceFormat($xml)
                         'nAnzahlAb' => $preisdetail->nAnzahlAb,
                         'fVKNetto'  => $preisdetail->fNettoPreis
                     ];
-                    Shop::DB()->insert('tpreisdetail', $o);
+                    Shop::Container()->getDB()->insert('tpreisdetail', $o);
                     if ($o->nAnzahlAb == 0) {
                         $hasDefaultPrice = true;
                     }
@@ -985,7 +985,7 @@ function handleNewPriceFormat($xml)
                         'nAnzahlAb' => 0,
                         'fVKNetto'  => $xml['fStandardpreisNetto']
                     ];
-                    Shop::DB()->insert('tpreisdetail', $o);
+                    Shop::Container()->getDB()->insert('tpreisdetail', $o);
                 }
                 $customerGroupHandled[] = (int)$preis->kKundenGruppe;
             }
@@ -1001,7 +1001,7 @@ function handleNewPriceFormat($xml)
                         'nAnzahlAb' => 0,
                         'fVKNetto'  => $xml['fStandardpreisNetto']
                     ];
-                    Shop::DB()->insert('tpreisdetail', $o);
+                    Shop::Container()->getDB()->insert('tpreisdetail', $o);
                 }
             }
         }
@@ -1015,7 +1015,7 @@ function handleOldPriceFormat($objs)
 {
     if (is_array($objs) && count($objs) > 0) {
         $kArtikel  = (int)$objs[0]->kArtikel;
-        $Kunde_arr = Shop::DB()->selectAll('tpreis', ['kArtikel', 'kKundengruppe'], [$kArtikel, 0], 'kKunde');
+        $Kunde_arr = Shop::Container()->getDB()->selectAll('tpreis', ['kArtikel', 'kKundengruppe'], [$kArtikel, 0], 'kKunde');
         if (!empty($Kunde_arr)) {
             foreach ($Kunde_arr as $Kunde) {
                 $kKunde = (int)$Kunde->kKunde;
@@ -1024,7 +1024,7 @@ function handleOldPriceFormat($objs)
                 }
             }
         }
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "DELETE p, d
                 FROM tpreis AS p
                 LEFT JOIN tpreisdetail AS d 
@@ -1058,7 +1058,7 @@ function insertPriceDetail($obj, $index, $priceId)
         $o->nAnzahlAb = ($index === 0) ? 0 : $obj->{$count};
         $o->fVKNetto  = ($index === 0) ? $obj->fVKNetto : $obj->{$price};
 
-        Shop::DB()->insert('tpreisdetail', $o);
+        Shop::Container()->getDB()->insert('tpreisdetail', $o);
     }
 }
 

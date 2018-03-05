@@ -304,7 +304,7 @@ class KategorieListe
                         AND tkategorie.kOberKategorie = " . $kKategorie . "
                     GROUP BY tkategorie.kKategorie
                     ORDER BY tkategorie.nSort, " . $cSortSQLName . "tkategorie.cName";
-            $oKategorie_arr                                                = Shop::DB()->query($categorySQL, 2);
+            $oKategorie_arr                                                = Shop::Container()->getDB()->query($categorySQL, 2);
             $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] = [];
             if (is_array($oKategorie_arr) && count($oKategorie_arr) > 0) {
                 $shopURL      = Shop::getURL();
@@ -333,7 +333,7 @@ class KategorieListe
                     ) {
                         $kDefaultLang = (int)$oSpracheTmp->kSprache;
                         if ($kSprache !== $kDefaultLang) {
-                            $oSeo = Shop::DB()->select(
+                            $oSeo = Shop::Container()->getDB()->select(
                                 'tseo',
                                 'cKey', 'kKategorie',
                                 'kSprache', $kDefaultLang,
@@ -365,7 +365,7 @@ class KategorieListe
                     // Attribute holen
                     $oKategorie->categoryFunctionAttributes = [];
                     $oKategorie->categoryAttributes         = [];
-                    $oKategorieAttribut_arr                 = Shop::DB()->query(
+                    $oKategorieAttribut_arr                 = Shop::Container()->getDB()->query(
                         "SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                                 COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                                 tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
@@ -398,7 +398,7 @@ class KategorieListe
                     //hat die Kat Unterkategorien?
                     $oKategorie->bUnterKategorien = 0;
                     if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
-                        $oUnterkategorien = Shop::DB()->select('tkategorie', 'kOberKategorie', $oKategorie->kKategorie);
+                        $oUnterkategorien = Shop::Container()->getDB()->select('tkategorie', 'kOberKategorie', $oKategorie->kKategorie);
                         if (isset($oUnterkategorien->kKategorie)) {
                             $oKategorie->bUnterKategorien = 1;
                         }
@@ -458,7 +458,7 @@ class KategorieListe
 
                         return true;
                     }
-                    $objArr = Shop::DB()->query(
+                    $objArr = Shop::Container()->getDB()->query(
                         "SELECT tkategorie.kKategorie
                             FROM tkategorie
                             LEFT JOIN tkategoriesichtbarkeit 
@@ -497,7 +497,7 @@ class KategorieListe
         $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $kKategorie    = (int)$kKategorie;
         $kKundengruppe = (int)$kKundengruppe;
-        $obj           = Shop::DB()->query(
+        $obj           = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel
                 FROM tkategorieartikel, tartikel
                 LEFT JOIN tartikelsichtbarkeit 

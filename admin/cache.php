@@ -25,7 +25,7 @@ try {
     $error = 'Ausnahme: ' . $exc->getMessage();
 }
 //get disabled cache types
-$deactivated       = Shop::DB()->select(
+$deactivated       = Shop::Container()->getDB()->select(
     'teinstellungen',
     ['kEinstellungenSektion', 'cName'],
     [CONF_CACHING, 'caching_types_disabled']
@@ -73,7 +73,7 @@ switch ($action) {
                     }
                     $upd        = new stdClass();
                     $upd->cWert = serialize($currentlyDisabled);
-                    $res        = Shop::DB()->update(
+                    $res        = Shop::Container()->getDB()->update(
                         'teinstellungen',
                         ['kEinstellungenSektion', 'cName'],
                         [CONF_CACHING, 'caching_types_disabled'],
@@ -95,7 +95,7 @@ switch ($action) {
                     $currentlyDisabled = array_unique($currentlyDisabled);
                     $upd               = new stdClass();
                     $upd->cWert        = serialize($currentlyDisabled);
-                    $res               = Shop::DB()->update(
+                    $res               = Shop::Container()->getDB()->update(
                         'teinstellungen',
                         ['kEinstellungenSektion', 'cName'],
                         [CONF_CACHING, 'caching_types_disabled'],
@@ -124,7 +124,7 @@ switch ($action) {
         }
         break;
     case 'settings' :
-        $settings = Shop::DB()->selectAll(
+        $settings = Shop::Container()->getDB()->selectAll(
             'teinstellungenconf',
             ['kEinstellungenSektion', 'cConf'],
             [CONF_CACHING, 'Y'],
@@ -191,12 +191,12 @@ switch ($action) {
                         $notice .= 'Konnte keine funktionierende Cache-Methode ausw&auml;hlen.';
                     }
                 }
-                Shop::DB()->delete(
+                Shop::Container()->getDB()->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
                     [CONF_CACHING, $settings[$i]->cWertName]
                 );
-                Shop::DB()->insert('teinstellungen', $value);
+                Shop::Container()->getDB()->insert('teinstellungen', $value);
             }
             ++$i;
         }
@@ -284,7 +284,7 @@ if ($cache !== null) {
            ->assign('all_methods', $cache->getAllMethods())
            ->assign('stats', $cache->getStats());
 }
-$settings      = Shop::DB()->selectAll(
+$settings      = Shop::Container()->getDB()->selectAll(
     'teinstellungenconf',
     ['nStandardAnzeigen', 'kEinstellungenSektion'],
     [1, CONF_CACHING],
@@ -294,7 +294,7 @@ $settings      = Shop::DB()->selectAll(
 $settingsCount = count($settings);
 for ($i = 0; $i < $settingsCount; ++$i) {
     if ($settings[$i]->cInputTyp === 'selectbox') {
-        $settings[$i]->ConfWerte = Shop::DB()->selectAll(
+        $settings[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$settings[$i]->kEinstellungenConf,
@@ -302,14 +302,14 @@ for ($i = 0; $i < $settingsCount; ++$i) {
             'nSort'
         );
     }
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $settings[$i]->cWertName]
     );
     $settings[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
-$advancedSettings = Shop::DB()->query(
+$advancedSettings = Shop::Container()->getDB()->query(
     "SELECT * 
         FROM teinstellungenconf 
         WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
@@ -319,7 +319,7 @@ $advancedSettings = Shop::DB()->query(
 $settingsCount    = count($advancedSettings);
 for ($i = 0; $i < $settingsCount; ++$i) {
     if ($advancedSettings[$i]->cInputTyp === 'selectbox') {
-        $advancedSettings[$i]->ConfWerte = Shop::DB()->selectAll(
+        $advancedSettings[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$advancedSettings[$i]->kEinstellungenConf,
@@ -327,7 +327,7 @@ for ($i = 0; $i < $settingsCount; ++$i) {
             'nSort'
         );
     }
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $advancedSettings[$i]->cWertName]

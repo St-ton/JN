@@ -283,7 +283,7 @@ class Metadata
             return $globalMeta;
         }
         $globalMeta = [];
-        $globalTmp  = Shop::DB()->query("SELECT cName, kSprache, cWertName FROM tglobalemetaangaben ORDER BY kSprache",
+        $globalTmp  = Shop::Container()->getDB()->query("SELECT cName, kSprache, cWertName FROM tglobalemetaangaben ORDER BY kSprache",
             2);
         foreach ($globalTmp as $data) {
             if (!isset($globalMeta[$data->kSprache])) {
@@ -306,7 +306,7 @@ class Metadata
         $cacheID = 'jtl_glob_excl';
         if (($exclude = Shop::Cache()->get($cacheID)) === false) {
             $exclude  = [];
-            $keyWords = Shop::DB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
+            $keyWords = Shop::Container()->getDB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
             foreach ($keyWords as $keyWord) {
                 $exclude[$keyWord->cISOSprache] = $keyWord;
             }

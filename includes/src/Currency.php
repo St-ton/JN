@@ -73,7 +73,7 @@ class Currency
     public function __construct($id = null)
     {
         if ($id > 0) {
-            $this->extract(Shop::DB()->select('twaehrung', 'kWaehrung', (int)$id));
+            $this->extract(Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', (int)$id));
         }
     }
 
@@ -314,7 +314,7 @@ class Currency
      */
     public function getDefault()
     {
-        return $this->extract(Shop::DB()->select('twaehrung', 'cStandard', 'Y'));
+        return $this->extract(Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y'));
     }
 
     /**

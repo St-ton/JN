@@ -47,7 +47,7 @@ class TagArticle
      */
     private function loadFromDB($kTag, $kArtikel)
     {
-        $obj = Shop::DB()->select('ttagartikel', 'kTag', (int)$kTag, 'kArtikel', (int)$kArtikel);
+        $obj = Shop::Container()->getDB()->select('ttagartikel', 'kTag', (int)$kTag, 'kArtikel', (int)$kArtikel);
         if ($obj !== null) {
             foreach (get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
@@ -66,7 +66,7 @@ class TagArticle
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->insert('ttagartikel', $obj);
+        return Shop::Container()->getDB()->insert('ttagartikel', $obj);
     }
 
     /**
@@ -78,6 +78,6 @@ class TagArticle
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->update('ttagartikel', ['kTag', 'kArtikel'], [$obj->kTag, $obj->kArtikel], $obj);
+        return Shop::Container()->getDB()->update('ttagartikel', ['kTag', 'kArtikel'], [$obj->kTag, $obj->kArtikel], $obj);
     }
 }

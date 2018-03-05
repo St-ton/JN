@@ -140,7 +140,7 @@ class Merkmal
                             AND tmerkmalsprache.kSprache = {$kSprache}";
         }
         $kMerkmal = (int)$kMerkmal;
-        $oMerkmal = Shop::DB()->query(
+        $oMerkmal = Shop::Container()->getDB()->query(
             "SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, 
                   {$cSelect}
                 FROM tmerkmal
@@ -169,7 +169,7 @@ class Merkmal
                                         AND standardSprache.kSprache = {$kSprache}";
                 $cOrderBy         = "ORDER BY tmw.nSort, standardSprache.cWert";
             }
-            $oMerkmalWertTMP_arr = Shop::DB()->query(
+            $oMerkmalWertTMP_arr = Shop::Container()->getDB()->query(
                 "SELECT tmw.kMerkmalWert
                     FROM tmerkmalwert tmw
                     {$cJoinMerkmalwert}
@@ -247,7 +247,7 @@ class Merkmal
 
             $cSQL = ' IN(' . implode(', ', array_filter($kMerkmal_arr, 'intval')) . ') ';
 
-            $oMerkmal_arr = Shop::DB()->query(
+            $oMerkmal_arr = Shop::Container()->getDB()->query(
                 "SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, 
                       {$cSelect}
                     FROM tmerkmal

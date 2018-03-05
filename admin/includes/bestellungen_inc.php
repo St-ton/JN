@@ -16,7 +16,7 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
     if (strlen($cSuchFilter)) {
         $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . Shop::DB()->escape($cSuchFilter) . "%'";
     }
-    $oBestellungToday_arr = Shop::DB()->query(
+    $oBestellungToday_arr = Shop::Container()->getDB()->query(
         "SELECT kBestellung
             FROM tbestellung
             " . $cSuchFilterSQL . "
@@ -44,7 +44,7 @@ function gibAnzahlBestellungen($cSuchFilter)
     $cSuchFilterSQL = (strlen($cSuchFilter) > 0)
         ? " WHERE cBestellNr LIKE '%" . Shop::DB()->escape($cSuchFilter) . "%'"
         : '';
-    $oBestellung = Shop::DB()->query(
+    $oBestellung = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tbestellung" . $cSuchFilterSQL, 1
     );
@@ -64,7 +64,7 @@ function setzeAbgeholtZurueck($kBestellung_arr)
     if (is_array($kBestellung_arr) && count($kBestellung_arr) > 0) {
         $kBestellung_arr = array_map(function ($i) { return (int)$i; }, $kBestellung_arr);
         // Kunden cAbgeholt zurücksetzen
-        $oKunde_arr = Shop::DB()->query(
+        $oKunde_arr = Shop::Container()->getDB()->query(
             "SELECT kKunde
                 FROM tbestellung
                 WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
@@ -78,14 +78,14 @@ function setzeAbgeholtZurueck($kBestellung_arr)
                     $kKunde_arr[] = $oKunde->kKunde;
                 }
             }
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "UPDATE tkunde
                     SET cAbgeholt = 'N'
                     WHERE kKunde IN(" . implode(',', $kKunde_arr) . ")", 3
             );
         }
         // Bestellungen cAbgeholt zurücksetzen
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "UPDATE tbestellung
                 SET cAbgeholt = 'N'
                 WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
@@ -93,7 +93,7 @@ function setzeAbgeholtZurueck($kBestellung_arr)
         );
 
         // Zahlungsinfo cAbgeholt zurücksetzen
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "UPDATE tzahlungsinfo
                 SET cAbgeholt = 'N'
                 WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")

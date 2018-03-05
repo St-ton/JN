@@ -14,17 +14,17 @@ $cAction  = (isset($_POST['a']) && validateToken()) ? $_POST['a'] : null;
 
 switch ($cAction) {
     case 'update':
-        Shop::DB()->query("UPDATE twarenlager SET nAktiv = 0", 3);
+        Shop::Container()->getDB()->query("UPDATE twarenlager SET nAktiv = 0", 3);
         if (isset($_REQUEST['kWarenlager']) && is_array($_REQUEST['kWarenlager']) && count($_REQUEST['kWarenlager']) > 0) {
             $wl = [];
             foreach ($_REQUEST['kWarenlager'] as $_wl) {
                 $wl[] = (int)$_wl;
             }
-            Shop::DB()->query("UPDATE twarenlager SET nAktiv = 1 WHERE kWarenlager IN (" . implode(', ', $wl) . ")", 3);
+            Shop::Container()->getDB()->query("UPDATE twarenlager SET nAktiv = 1 WHERE kWarenlager IN (" . implode(', ', $wl) . ")", 3);
         }
         if (is_array($_REQUEST['cNameSprache']) && count($_REQUEST['cNameSprache']) > 0) {
             foreach ($_REQUEST['cNameSprache'] as $kWarenlager => $cSpracheAssoc_arr) {
-                Shop::DB()->delete('twarenlagersprache', 'kWarenlager', (int)$kWarenlager);
+                Shop::Container()->getDB()->delete('twarenlagersprache', 'kWarenlager', (int)$kWarenlager);
 
                 foreach ($cSpracheAssoc_arr as $kSprache => $cName) {
                     if (strlen(trim($cName)) > 1) {
@@ -33,7 +33,7 @@ switch ($cAction) {
                         $oObj->kSprache    = (int)$kSprache;
                         $oObj->cName       = htmlspecialchars(trim($cName), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
 
-                        Shop::DB()->insert('twarenlagersprache', $oObj);
+                        Shop::Container()->getDB()->insert('twarenlagersprache', $oObj);
                     }
                 }
             }

@@ -22,8 +22,8 @@ function createSearchIndex($index, $create)
     }
 
     try {
-        if (Shop::DB()->query("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'", 1)) {
-            Shop::DB()->executeQuery("ALTER TABLE $index DROP KEY idx_{$index}_fulltext", 10);
+        if (Shop::Container()->getDB()->query("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'", 1)) {
+            Shop::Container()->getDB()->executeQuery("ALTER TABLE $index DROP KEY idx_{$index}_fulltext", 10);
         }
     } catch (Exception $e) {
         // Fehler beim Index löschen ignorieren
@@ -51,11 +51,11 @@ function createSearchIndex($index, $create)
         }
 
         try {
-            Shop::DB()->executeQuery(
+            Shop::Container()->getDB()->executeQuery(
                 "UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)",
                 NiceDB::RET_QUERYSINGLE
             );
-            $res = Shop::DB()->executeQuery(
+            $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
                 NiceDB::RET_QUERYSINGLE

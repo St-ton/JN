@@ -14,7 +14,7 @@ function getNames($kZahlungsart)
     if (!$kZahlungsart) {
         return $namen;
     }
-    $zanamen = Shop::DB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$kZahlungsart);
+    $zanamen = Shop::Container()->getDB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$kZahlungsart);
     $zCount  = count($zanamen);
     for ($i = 0; $i < $zCount; $i++) {
         $namen[$zanamen[$i]->cISOSprache] = $zanamen[$i]->cName;
@@ -33,7 +33,7 @@ function getshippingTimeNames($kZahlungsart)
     if (!$kZahlungsart) {
         return $namen;
     }
-    $zanamen = Shop::DB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$kZahlungsart);
+    $zanamen = Shop::Container()->getDB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$kZahlungsart);
     $zCount  = count($zanamen);
     for ($i = 0; $i < $zCount; $i++) {
         $namen[$zanamen[$i]->cISOSprache] = $zanamen[$i]->cGebuehrname;
@@ -52,7 +52,7 @@ function getHinweisTexte($kZahlungsart)
     if (!$kZahlungsart) {
         return $cHinweisTexte_arr;
     }
-    $oZahlungsartSprache_arr = Shop::DB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$kZahlungsart);
+    $oZahlungsartSprache_arr = Shop::Container()->getDB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$kZahlungsart);
     if (is_array($oZahlungsartSprache_arr) && count($oZahlungsartSprache_arr) > 0) {
         foreach ($oZahlungsartSprache_arr as $oZahlungsartSprache) {
             $cHinweisTexte_arr[$oZahlungsartSprache->cISOSprache] = $oZahlungsartSprache->cHinweisText;
@@ -72,7 +72,7 @@ function getHinweisTexteShop($kZahlungsart)
     if (!$kZahlungsart) {
         return $cHinweisTexte_arr;
     }
-    $oZahlungsartSprache_arr = Shop::DB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$kZahlungsart);
+    $oZahlungsartSprache_arr = Shop::Container()->getDB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$kZahlungsart);
     if (is_array($oZahlungsartSprache_arr) && count($oZahlungsartSprache_arr) > 0) {
         foreach ($oZahlungsartSprache_arr as $oZahlungsartSprache) {
             $cHinweisTexte_arr[$oZahlungsartSprache->cISOSprache] = $oZahlungsartSprache->cHinweisTextShop;
@@ -116,13 +116,13 @@ function getPaymentMethodsByName($cSearch)
         trim($cSearchPos);
         // Nur Eingaben mit mehr als 2 Zeichen
         if (strlen($cSearchPos) > 2) {
-            $paymentMethodsByName_arr = Shop::DB()->query(
+            $paymentMethodsByName_arr = Shop::Container()->getDB()->query(
                 "SELECT za.kZahlungsart, za.cName
                     FROM tzahlungsart AS za
                     LEFT JOIN tzahlungsartsprache AS zs ON zs.kZahlungsart = za.kZahlungsart
-                        AND zs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'
-                    WHERE za.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%' 
-                    OR zs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'", 2
+                        AND zs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'
+                    WHERE za.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%' 
+                    OR zs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'", 2
             );
             // Berücksichtige keine fehlerhaften Eingaben
             if (!empty($paymentMethodsByName_arr)) {

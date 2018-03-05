@@ -78,7 +78,7 @@ function speicherFragenInSession($cPost_arr)
     if (is_array($cPost_arr['kUmfrageFrage']) && count($cPost_arr['kUmfrageFrage']) > 0) {
         foreach ($cPost_arr['kUmfrageFrage'] as $i => $kUmfrageFrage) {
             $kUmfrageFrage = (int)$kUmfrageFrage;
-            $oUmfrageFrage = Shop::DB()->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
+            $oUmfrageFrage = Shop::Container()->getDB()->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
             if ($oUmfrageFrage === null
                 || $oUmfrageFrage->cTyp === 'text_statisch_seitenwechsel'
                 || $oUmfrageFrage->cTyp === 'text_statisch'
@@ -88,7 +88,7 @@ function speicherFragenInSession($cPost_arr)
             if ($oUmfrageFrage->cTyp === 'matrix_single') {
                 $_SESSION['Umfrage']->oUmfrageFrage_arr[$kUmfrageFrage]->oUmfrageFrageAntwort_arr = [];
 
-                $oUmfrageFrageAntwort_arr = Shop::DB()->selectAll(
+                $oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->selectAll(
                     'tumfragefrageantwort',
                     'kUmfrageFrage',
                     $kUmfrageFrage,
@@ -117,7 +117,7 @@ function findeFragenUndUpdateSession($cPost_arr)
     if (is_array($cPost_arr['kUmfrageFrage']) && count($cPost_arr['kUmfrageFrage']) > 0) {
         foreach ($cPost_arr['kUmfrageFrage'] as $kUmfrageFrage) {
             $kUmfrageFrage = (int)$kUmfrageFrage;
-            $oUmfrageFrage = Shop::DB()->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
+            $oUmfrageFrage = Shop::Container()->getDB()->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
             unset($_SESSION['Umfrage']->oUmfrageFrage_arr[$kUmfrageFrage]->oUmfrageFrageAntwort_arr);
             $_SESSION['Umfrage']->oUmfrageFrage_arr[$kUmfrageFrage]->oUmfrageFrageAntwort_arr = $cPost_arr[$kUmfrageFrage];
             if ($oUmfrageFrage->cTyp === 'matrix_single' || $oUmfrageFrage->cTyp === 'matrix_multi') {
@@ -188,7 +188,7 @@ function setzeUmfrageErgebnisse()
         $oUmfrageDurchfuehrung->kUmfrage       = $_SESSION['Umfrage']->kUmfrage;
         $oUmfrageDurchfuehrung->dDurchgefuehrt = 'now()';
 
-        $kUmfrageDurchfuehrung = Shop::DB()->insert('tumfragedurchfuehrung', $oUmfrageDurchfuehrung);
+        $kUmfrageDurchfuehrung = Shop::Container()->getDB()->insert('tumfragedurchfuehrung', $oUmfrageDurchfuehrung);
 
         // Daten der Umfrage in die Datenbank (tumfragedurchfuehrungantwort) speichern
         foreach ($_SESSION['Umfrage']->oUmfrageFrage_arr as $j => $oUmfrageFrage) {
@@ -239,7 +239,7 @@ function setzeUmfrageErgebnisse()
                     }
                 }
 
-                Shop::DB()->insert('tumfragedurchfuehrungantwort', $oUmfrageDurchfuehrungAntwort);
+                Shop::Container()->getDB()->insert('tumfragedurchfuehrungantwort', $oUmfrageDurchfuehrungAntwort);
             }
         }
     }
@@ -259,11 +259,11 @@ function pruefeEingabe($cPost_arr)
     }
     foreach ($cPost_arr['kUmfrageFrage'] as $i => $kUmfrageFrage) {
         $kUmfrageFrage = (int)$kUmfrageFrage;
-        $oUmfrageFrage = Shop::DB()->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
+        $oUmfrageFrage = Shop::Container()->getDB()->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
         if ($oUmfrageFrage === null || (int)$oUmfrageFrage->nNotwendig !== 1) {
             continue;
         }
-        $oUmfrageFrageAntwort_arr = Shop::DB()->selectAll(
+        $oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->selectAll(
             'tumfragefrageantwort',
             'kUmfrageFrage',
             (int)$oUmfrageFrage->kUmfrageFrage,
@@ -328,7 +328,7 @@ function pruefeUserUmfrage($kUmfrage, $kKunde, $cIP = '')
     $kUmfrage = (int)$kUmfrage;
     $kKunde   = (int)$kKunde;
     if ($kKunde > 0) {
-        $exec = Shop::DB()->select(
+        $exec = Shop::Container()->getDB()->select(
             'tumfragedurchfuehrung',
             'kUmfrage',
             $kUmfrage,
@@ -342,7 +342,7 @@ function pruefeUserUmfrage($kUmfrage, $kKunde, $cIP = '')
 
         return !(isset($exec->kUmfrageDurchfuehrung) && $exec->kUmfrageDurchfuehrung > 0);
     }
-    $exec = Shop::DB()->select(
+    $exec = Shop::Container()->getDB()->select(
         'tumfragedurchfuehrung',
         'kUmfrage',
         $kUmfrage,
@@ -365,7 +365,7 @@ function pruefeUserUmfrage($kUmfrage, $kKunde, $cIP = '')
 function gibKundeGuthaben($fGuthaben, $kKunde)
 {
     if ($kKunde > 0) {
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "UPDATE tkunde
                 SET fGuthaben = fGuthaben + " . (float)$fGuthaben . "
                 WHERE kKunde = " . (int)$kKunde, 4
@@ -389,7 +389,7 @@ function holeAktuelleUmfrage($kUmfrage)
         return null;
     }
     // Umfrage holen
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe, tumfrage.cName, 
             tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, tumfrage.nAktiv, tumfrage.dGueltigVon, 
             tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo, count(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
@@ -430,7 +430,7 @@ function holeUmfrageUebersicht()
         return null;
     }
     // Umfrage Übersicht
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe, tumfrage.cName, 
             tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, tumfrage.nAktiv, tumfrage.dGueltigVon, 
             tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo, count(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen, 
@@ -487,8 +487,8 @@ function bearbeiteUmfrageAuswertung($oUmfrage)
     if ($_SESSION['Kunde']->kKunde > 0) {
         // Bekommt der Kunde einen Kupon und ist dieser Gültig?
         if ($oUmfrage->kKupon > 0) {
-            $oSprache = Shop::DB()->select('tsprache', 'kSprache', Shop::getLanguage());
-            $oKupon   = Shop::DB()->query(
+            $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', Shop::getLanguage());
+            $oKupon   = Shop::Container()->getDB()->query(
                 "SELECT tkuponsprache.cName, tkupon.kKupon, tkupon.cCode
                     FROM tkupon
                     JOIN tkuponsprache 
@@ -561,7 +561,7 @@ function bearbeiteUmfrageDurchfuehrung($kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_
     }
     $kUmfrage = (int)$kUmfrage;
     // Ersten Trenner suchen
-    $oUmfrageFrageTMP_arr = Shop::DB()->selectAll('tumfragefrage', 'kUmfrage', $kUmfrage, '*', 'nSort');
+    $oUmfrageFrageTMP_arr = Shop::Container()->getDB()->selectAll('tumfragefrage', 'kUmfrage', $kUmfrage, '*', 'nSort');
 
     $oNavi_arr      = baueSeitenNavi($oUmfrageFrageTMP_arr, $oUmfrage->nAnzahlFragen);
     $cSQL           = '';
@@ -604,14 +604,14 @@ function bearbeiteUmfrageDurchfuehrung($kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_
         $cSQL .= $oNavi_arr[$nAktuelleSeite - 1]->nVon . ', ' . $oNavi_arr[$nAktuelleSeite - 1]->nAnzahl;
     }
     // Fragen zur Umfrage holen
-    $oUmfrageFrage_arr = Shop::DB()->selectAll('tumfragefrage', 'kUmfrage', $kUmfrage, '*', 'nSort', $cSQL);
+    $oUmfrageFrage_arr = Shop::Container()->getDB()->selectAll('tumfragefrage', 'kUmfrage', $kUmfrage, '*', 'nSort', $cSQL);
     foreach ($oUmfrageFrage_arr as $i => $oUmfrageFrage) {
         if ($oUmfrageFrage->cTyp !== 'text_klein' ||
             $oUmfrageFrage->cTyp !== 'text_gross' ||
             $oUmfrageFrage->cTyp !== 'text_statisch') {
             $oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = [];
             $oUmfrageFrage_arr[$i]->oUmfrageMatrixOption_arr = [];
-            $oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = Shop::DB()->selectAll(
+            $oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->selectAll(
                 'tumfragefrageantwort',
                 'kUmfrageFrage',
                 (int)$oUmfrageFrage->kUmfrageFrage,
@@ -619,7 +619,7 @@ function bearbeiteUmfrageDurchfuehrung($kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_
                 'nSort'
             );
             if ($oUmfrageFrage->cTyp === 'matrix_single' || $oUmfrageFrage->cTyp === 'matrix_multi') {
-                $oUmfrageFrage->oUmfrageMatrixOption_arr = Shop::DB()->selectAll(
+                $oUmfrageFrage->oUmfrageMatrixOption_arr = Shop::Container()->getDB()->selectAll(
                     'tumfragematrixoption',
                     'kUmfrageFrage',
                     (int)$oUmfrageFrage->kUmfrageFrage,

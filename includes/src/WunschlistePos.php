@@ -108,7 +108,7 @@ class WunschlistePos
         $oTemp->cKommentar    = $this->cKommentar;
         $oTemp->dHinzugefuegt = $this->dHinzugefuegt;
 
-        $this->kWunschlistePos = Shop::DB()->insert('twunschlistepos', $oTemp);
+        $this->kWunschlistePos = Shop::Container()->getDB()->insert('twunschlistepos', $oTemp);
 
         return $this;
     }
@@ -127,7 +127,7 @@ class WunschlistePos
         $oTemp->cKommentar      = $this->cKommentar;
         $oTemp->dHinzugefuegt   = $this->dHinzugefuegt;
 
-        Shop::DB()->update('twunschlistepos', 'kWunschlistePos', $this->kWunschlistePos, $oTemp);
+        Shop::Container()->getDB()->update('twunschlistepos', 'kWunschlistePos', $this->kWunschlistePos, $oTemp);
 
         return $this;
     }

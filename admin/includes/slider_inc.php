@@ -10,5 +10,5 @@
  */
 function holeExtension($kSlider)
 {
-    return Shop::DB()->select('textensionpoint', 'cClass', 'Slider', 'kInitial', (int)$kSlider);
+    return Shop::Container()->getDB()->select('textensionpoint', 'cClass', 'Slider', 'kInitial', (int)$kSlider);
 }

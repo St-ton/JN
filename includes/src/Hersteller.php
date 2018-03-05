@@ -141,7 +141,7 @@ class Hersteller
         $cacheTags   = [CACHING_GROUP_MANUFACTURER];
         $cached      = true;
         if ($noCache === true || ($oHersteller = Shop::Cache()->get($cacheID)) === false) {
-            $oHersteller = Shop::DB()->queryPrepared(
+            $oHersteller = Shop::Container()->getDB()->queryPrepared(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                     therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
@@ -233,7 +233,7 @@ class Hersteller
                             ")
                         )";
         }
-        $objs = Shop::DB()->query(
+        $objs = Shop::Container()->getDB()->query(
             "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo

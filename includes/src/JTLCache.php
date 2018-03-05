@@ -400,7 +400,7 @@ class JTLCache
         if (!class_exists('Shop')) {
             return [];
         }
-        $cacheConfig = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING);
+        $cacheConfig = Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING);
         $cacheInit   = [];
         if (!empty($cacheConfig)) {
             foreach ($cacheConfig as $_conf) {

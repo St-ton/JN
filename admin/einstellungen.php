@@ -50,7 +50,7 @@ switch ($kSektion) {
         break;
 }
 
-$standardwaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+$standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
 $cHinweis         = '';
 $cFehler          = '';
 $section          = null;
@@ -58,10 +58,10 @@ $step             = 'uebersicht';
 $oSections        = [];
 if ($kSektion > 0) {
     $step    = 'einstellungen bearbeiten';
-    $section = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+    $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
     $smarty->assign('kEinstellungenSektion', $section->kEinstellungenSektion);
 } else {
-    $section = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', 1);
+    $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', 1);
     $smarty->assign('kEinstellungenSektion', 1);
 }
 
@@ -88,8 +88,8 @@ if (isset($_POST['einstellungen_bearbeiten']) &&
         $Conf = $oSQL->oEinstellung_arr;
         $smarty->assign('cSearch', $oSQL->cSearch);
     } else {
-        $section = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
-        $Conf    = Shop::DB()->query(
+        $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+        $Conf    = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
@@ -122,7 +122,7 @@ if (isset($_POST['einstellungen_bearbeiten']) &&
                     break;
             }
             if ($oSection->validate($Conf[$i], $_POST[$Conf[$i]->cWertName])) {
-                Shop::DB()->delete(
+                Shop::Container()->getDB()->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
                     [$Conf[$i]->kEinstellungenSektion, $Conf[$i]->cWertName]
@@ -130,16 +130,16 @@ if (isset($_POST['einstellungen_bearbeiten']) &&
                 if (is_array($_POST[$Conf[$i]->cWertName])) {
                     foreach ($_POST[$Conf[$i]->cWertName] as $cWert) {
                         $aktWert->cWert = $cWert;
-                        Shop::DB()->insert('teinstellungen', $aktWert);
+                        Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
                     }
                 } else {
-                    Shop::DB()->insert('teinstellungen', $aktWert);
+                    Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
                 }
             }
         }
     }
 
-    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
     $cHinweis    = 'Die Einstellungen wurden erfolgreich gespeichert.';
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5) {
@@ -155,10 +155,10 @@ if (isset($_POST['einstellungen_bearbeiten']) &&
 }
 
 if ($step === 'uebersicht') {
-    $sections     = Shop::DB()->query("SELECT * FROM teinstellungensektion ORDER BY kEinstellungenSektion", 2);
+    $sections     = Shop::Container()->getDB()->query("SELECT * FROM teinstellungensektion ORDER BY kEinstellungenSektion", 2);
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
-        $anz_einstellunen = Shop::DB()->query(
+        $anz_einstellunen = Shop::Container()->getDB()->query(
             "SELECT count(*) AS anz
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = " . (int)$sections[$i]->kEinstellungenSektion . "
@@ -186,7 +186,7 @@ if ($step === 'einstellungen bearbeiten') {
         $smarty->assign('cSearch', $oSQL->cSearch)
                ->assign('cSuche', $oSQL->cSuche);
     } else {
-        $Conf = Shop::DB()->query(
+        $Conf = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM teinstellungenconf
                 WHERE nModul = 0 
@@ -201,13 +201,13 @@ if ($step === 'einstellungen bearbeiten') {
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
         if ($Conf[$i]->cInputTyp === 'listbox' && $Conf[$i]->kEinstellungenConf == 492) {
-            $Conf[$i]->ConfWerte = Shop::DB()->query(
+            $Conf[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 "SELECT kKundengruppe AS cWert, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC", 2
             );
         } elseif (in_array($Conf[$i]->cInputTyp, ['selectbox', 'listbox'], true)) {
-            $Conf[$i]->ConfWerte = Shop::DB()->selectAll(
+            $Conf[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
                 'teinstellungenconfwerte',
                 'kEinstellungenConf',
                 (int)$Conf[$i]->kEinstellungenConf,
@@ -217,7 +217,7 @@ if ($step === 'einstellungen bearbeiten') {
         }
 
         if ($Conf[$i]->cInputTyp === 'listbox') {
-            $setValue                = Shop::DB()->select(
+            $setValue                = Shop::Container()->getDB()->select(
                 'teinstellungen',
                 'kEinstellungenSektion',
                 CONF_BEWERTUNG,
@@ -226,7 +226,7 @@ if ($step === 'einstellungen bearbeiten') {
             );
             $Conf[$i]->gesetzterWert = $setValue;
         } else {
-            $setValue                = Shop::DB()->select(
+            $setValue                = Shop::Container()->getDB()->select(
                 'teinstellungen',
                 'kEinstellungenSektion',
                 (int)$Conf[$i]->kEinstellungenSektion,

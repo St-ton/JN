@@ -69,7 +69,7 @@ class WarenkorbPersPosEigenschaft
     {
         $obj = kopiereMembers($this);
         unset($obj->kWarenkorbPersPosEigenschaft);
-        $this->kWarenkorbPersPosEigenschaft = Shop::DB()->insert('twarenkorbpersposeigenschaft', $obj);
+        $this->kWarenkorbPersPosEigenschaft = Shop::Container()->getDB()->insert('twarenkorbpersposeigenschaft', $obj);
 
         return $this;
     }

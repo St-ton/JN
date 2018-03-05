@@ -51,7 +51,7 @@ class FilterBaseAttribute extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_arr = Shop::DB()->selectAll(
+        $oSeo_arr = Shop::Container()->getDB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['kMerkmalWert', $this->getValue()],
@@ -77,7 +77,7 @@ class FilterBaseAttribute extends AbstractFilter
                                      AND tmerkmalsprache.kSprache = ' . Shop::getLanguage();
         }
         $oSQL->cMMWhere   = 'tmerkmalwert.kMerkmalWert = ' . $this->getValue();
-        $oMerkmalWert_arr = Shop::DB()->query(
+        $oMerkmalWert_arr = Shop::Container()->getDB()->query(
             'SELECT tmerkmalwertsprache.cWert, ' . $oSQL->cMMSelect . '
                 FROM tmerkmalwert
                 JOIN tmerkmalwertsprache 

@@ -19,7 +19,7 @@ if (isset($_POST['mail']) && validateToken()) {
         if ($verified === true) {
             $_upd                     = new stdClass();
             $_upd->cPass              = AdminAccount::generatePasswordHash($_POST['pw_new']);
-            $update                   = Shop::DB()->update('tadminlogin', 'cMail', $_POST['fpm'], $_upd);
+            $update                   = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $_POST['fpm'], $_upd);
             if ($update > 0) {
                 $cHinweis = 'Passwort wurde erfolgreich ge&auml;ndert.';
                 header('Location: index.php?pw_updated=true');

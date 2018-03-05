@@ -22,7 +22,7 @@ if (validateToken()) {
         $obj = (object)[
             'cWert' => isset($_REQUEST['nLevelFlags']) ? Jtllog::setBitFlag($_REQUEST['nLevelFlags']) : 0
         ];
-        Shop::DB()->update('teinstellungen', 'cName', 'systemlog_flag', $obj);
+        Shop::Container()->getDB()->update('teinstellungen', 'cName', 'systemlog_flag', $obj);
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
         $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
         $smarty->assign('cTab', 'config');

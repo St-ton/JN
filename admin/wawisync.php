@@ -19,7 +19,7 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
         ? $_POST['wawi-pass'] // hashed password was not changed
         : $passwordService->hash($_POST['wawi-pass']); // new clear text password was given
 
-    Shop::DB()->queryPrepared(
+    Shop::Container()->getDB()->queryPrepared(
         "INSERT INTO `tsynclogin` (kSynclogin, cName, cPass)
             VALUES (1, :cName, :cPass)
             ON DUPLICATE KEY UPDATE
@@ -32,7 +32,7 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
     $cHinweis = 'Erfolgreich gespeichert.';
 }
 
-$user = Shop::DB()->select('tsynclogin', 'kSynclogin', 1);
+$user = Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);
 $smarty->assign('wawiuser', $user->cName)
        ->assign('cHinweis', $cHinweis)
        ->assign('wawipass', $user->cPass)

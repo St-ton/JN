@@ -9,7 +9,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
 if (auth()) {
-    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
     $cError = '';
     // TMP Verzeichnis leeren
     if (!KEEP_SYNC_FILES) {

@@ -382,7 +382,7 @@ final class Shop
     }
 
     /**
-     * static wrapper - this allows to call Shop::DB()->query() etc.
+     * static wrapper - this allows to call Shop::Container()->getDB()->query() etc.
      *
      * @param string $method
      * @param mixed $arguments

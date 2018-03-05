@@ -27,7 +27,7 @@ trait MigrationTrait
             $query = utf8_convert_recursive($query, false);
         }
 
-        return Shop::DB()->executeQuery($query, $return, $echo, $bExecuteHook);
+        return Shop::Container()->getDB()->executeQuery($query, $return, $echo, $bExecuteHook);
     }
 
     /**

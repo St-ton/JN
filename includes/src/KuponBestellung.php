@@ -71,7 +71,7 @@ class KuponBestellung
      */
     private function loadFromDB($kKupon = 0, $kBestellung = 0)
     {
-        $oObj = Shop::DB()->select(
+        $oObj = Shop::Container()->getDB()->select(
             'tkuponbestelllung',
             'kKupon', (int)$kKupon,
             'kBestellung', (int)$kBestellung
@@ -103,7 +103,7 @@ class KuponBestellung
             }
         }
 
-        $kPrim = Shop::DB()->insert('tkuponbestellung', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tkuponbestellung', $oObj);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -129,7 +129,7 @@ class KuponBestellung
         $_upd->cKuponTyp           = $this->cKuponTyp;
         $_upd->dErstellt           = $this->dErstellt;
 
-        return Shop::DB()->update(
+        return Shop::Container()->getDB()->update(
             'tkuponbestellung',
             ['kKupon','kBestellung'],
             [(int)$this->kKupon,(int)$this->kBestellung],
@@ -144,7 +144,7 @@ class KuponBestellung
      */
     public function delete()
     {
-        return Shop::DB()->delete('tkupon', ['kKupon','kBestellung'], [(int)$this->kKupon,(int)$this->kBestellung]);
+        return Shop::Container()->getDB()->delete('tkupon', ['kKupon','kBestellung'], [(int)$this->kKupon,(int)$this->kBestellung]);
     }
 
     /**
@@ -186,7 +186,7 @@ class KuponBestellung
      */
     public function setBestellNr($cBestellNr)
     {
-        $this->cBestellNr = Shop::DB()->escape($cBestellNr);
+        $this->cBestellNr = Shop::Container()->getDB()->escape($cBestellNr);
 
         return $this;
     }
@@ -219,7 +219,7 @@ class KuponBestellung
      */
     public function setKuponTyp($cKuponTyp)
     {
-        $this->cKuponTyp = Shop::DB()->escape($cKuponTyp);
+        $this->cKuponTyp = Shop::Container()->getDB()->escape($cKuponTyp);
 
         return $this;
     }
@@ -230,7 +230,7 @@ class KuponBestellung
      */
     public function setErstellt($dErstellt)
     {
-        $this->dErstellt = Shop::DB()->escape($dErstellt);
+        $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
 
         return $this;
     }
@@ -309,7 +309,7 @@ class KuponBestellung
      */
     public static function getOrdersWithUsedCoupons($dStart, $dEnd, $kKupon = 0)
     {
-        return Shop::DB()->query(
+        return Shop::Container()->getDB()->query(
             "SELECT kbs.*, wkp.cName, kp.kKupon
                 FROM tkuponbestellung AS kbs
                 LEFT JOIN tbestellung AS bs 

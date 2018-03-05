@@ -176,14 +176,14 @@ final class Shopsetting implements ArrayAccess
                     Jtllog::writeLog('Setting Caching Exception: ' . $exc->getMessage());
                 }
                 if ($section === CONF_PLUGINZAHLUNGSARTEN) {
-                    $settings = Shop::DB()->query("
+                    $settings = Shop::Container()->getDB()->query("
                          SELECT cName, cWert
                              FROM tplugineinstellungen
                              WHERE cName LIKE '%_min%' 
                               OR cName LIKE '%_max'", 2
                      );
                 } else {
-                    $settings = Shop::DB()->selectAll(
+                    $settings = Shop::Container()->getDB()->selectAll(
                         'teinstellungen',
                         'kEinstellungenSektion',
                         $section,
@@ -266,7 +266,7 @@ final class Shopsetting implements ArrayAccess
         if ($this->allSettings !== null) {
             return $this->allSettings;
         }
-        $settings = Shop::DB()->query(
+        $settings = Shop::Container()->getDB()->query(
                 "SELECT kEinstellungenSektion, cName, cWert
                     FROM teinstellungen
                     ORDER BY kEinstellungenSektion", 9

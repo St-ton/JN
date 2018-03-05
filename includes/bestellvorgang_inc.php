@@ -167,7 +167,7 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
         }
     } elseif ((int)$cPost_arr['kLieferadresse'] > 0) {
         //vorhandene lieferadresse
-        $LA = Shop::DB()->query(
+        $LA = Shop::Container()->getDB()->query(
             "SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = " . Session::Customer()->getID() . "
@@ -193,7 +193,7 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
     ) {
         $delVersand = stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
         //ist die plz im zuschlagsbereich?
-        $plz_x = Shop::DB()->executeQueryPrepared(
+        $plz_x = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT kVersandzuschlagPlz
                 FROM tversandzuschlagplz, tversandzuschlag
                 WHERE tversandzuschlag.kVersandart = :id
@@ -543,7 +543,7 @@ function gibStepUnregistriertBestellen()
 {
     global $Kunde;
     $conf      = Shop::getSettings([CONF_KUNDEN]);
-    $herkunfte = Shop::DB()->query("SELECT * FROM tkundenherkunft ORDER BY nSort", 2);
+    $herkunfte = Shop::Container()->getDB()->query("SELECT * FROM tkundenherkunft ORDER BY nSort", 2);
     if (isset($Kunde->dGeburtstag) && preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
         list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
         $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
@@ -590,7 +590,7 @@ function gibStepLieferadresse()
 
     if ($_SESSION['Kunde']->kKunde > 0) {
         $Lieferadressen        = [];
-        $oLieferadresseTMP_arr = Shop::DB()->query(
+        $oLieferadresseTMP_arr = Shop::Container()->getDB()->query(
             "SELECT DISTINCT(kLieferadresse)
                 FROM tlieferadresse
                 WHERE kKunde = " . Session::Customer()->getID(), 2
@@ -965,16 +965,16 @@ function plausiNeukundenKupon()
             $values['kkunde'] = $_SESSION['Kunde']->kKunde;
         }
         $query      .= " LIMIT 1";
-        $oBestellung = Shop::DB()->executeQueryPrepared($query, $values, 1);
+        $oBestellung = Shop::Container()->getDB()->executeQueryPrepared($query, $values, 1);
 
         if (empty($oBestellung)) {
             $NeukundenKupons = (new Kupon())->getNewCustomerCoupon();
             if (!empty($NeukundenKupons)) {
-                $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
+                $verwendet = Shop::Container()->getDB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
                 $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
                 foreach ($NeukundenKupons as $NeukundenKupon) {
                     // teste ob Kunde mit cMail den Neukundenkupon schon verwendet hat...
-                    $oDbKuponKunde = Shop::DB()->select(
+                    $oDbKuponKunde = Shop::Container()->getDB()->select(
                         'tkuponkunde',
                         ['kKupon', 'cMail'],
                         [$NeukundenKupon->kKupon, $_SESSION['Kunde']->cMail]
@@ -1185,7 +1185,7 @@ function zahlungsartKorrekt($kZahlungsart)
         isset($_SESSION['Versandart']->kVersandart) &&
         (int)$_SESSION['Versandart']->kVersandart > 0
     ) {
-        $Zahlungsart = Shop::DB()->query(
+        $Zahlungsart = Shop::Container()->getDB()->query(
             "SELECT tversandartzahlungsart.*, tzahlungsart.*
                 FROM tversandartzahlungsart, tzahlungsart
                 WHERE tversandartzahlungsart.kVersandart = " . (int)$_SESSION['Versandart']->kVersandart . "
@@ -1193,7 +1193,7 @@ function zahlungsartKorrekt($kZahlungsart)
                     AND tversandartzahlungsart.kZahlungsart = " . $kZahlungsart, 1
         );
         if (isset($Zahlungsart->cModulId) && strlen($Zahlungsart->cModulId) > 0) {
-            $einstellungen = Shop::DB()->selectAll(
+            $einstellungen = Shop::Container()->getDB()->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cModulId'],
                 [CONF_ZAHLUNGSARTEN, $Zahlungsart->cModulId]
@@ -1207,7 +1207,7 @@ function zahlungsartKorrekt($kZahlungsart)
             return 0;
         }
         // Hinweistext
-        $oObj                      = Shop::DB()->select(
+        $oObj                      = Shop::Container()->getDB()->select(
             'tzahlungsartsprache',
             'kZahlungsart',
             (int)$Zahlungsart->kZahlungsart,
@@ -1237,7 +1237,7 @@ function zahlungsartKorrekt($kZahlungsart)
         $Spezialpos->cName = [];
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             if ($Zahlungsart->kZahlungsart > 0) {
-                $name_spr = Shop::DB()->select(
+                $name_spr = Shop::Container()->getDB()->select(
                     'tzahlungsartsprache',
                     'kZahlungsart',
                     (int)$Zahlungsart->kZahlungsart,
@@ -1365,7 +1365,7 @@ function getPaymentSurchageDiscount($Zahlungsart)
         $Spezialpos->cGebuehrname = [];
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             if ($Zahlungsart->kZahlungsart > 0) {
-                $name_spr = Shop::DB()->select(
+                $name_spr = Shop::Container()->getDB()->select(
                     'tzahlungsartsprache',
                     'kZahlungsart',
                     (int)$Zahlungsart->kZahlungsart,
@@ -1436,9 +1436,9 @@ function gibPluginZahlungsart($cModulId)
 function gibZahlungsart($kZahlungsart)
 {
     $kZahlungsart = (int)$kZahlungsart;
-    $Zahlungsart  = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
+    $Zahlungsart  = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
     foreach ($_SESSION['Sprachen'] as $Sprache) {
-        $name_spr                                     = Shop::DB()->select(
+        $name_spr                                     = Shop::Container()->getDB()->select(
             'tzahlungsartsprache',
             'kZahlungsart',
             $kZahlungsart,
@@ -1451,7 +1451,7 @@ function gibZahlungsart($kZahlungsart)
         );
         $Zahlungsart->angezeigterName[$Sprache->cISO] = $name_spr->cName ?? null;
     }
-    $einstellungen = Shop::DB()->query(
+    $einstellungen = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungen
             WHERE kEinstellungenSektion = " . CONF_ZAHLUNGSARTEN . "
@@ -1475,7 +1475,7 @@ function gibZahlungsart($kZahlungsart)
 function gibKundenKontodaten($kKunde)
 {
     if ($kKunde > 0) {
-        $oKundenKontodaten = Shop::DB()->select('tkundenkontodaten', 'kKunde', (int)$kKunde);
+        $oKundenKontodaten = Shop::Container()->getDB()->select('tkundenkontodaten', 'kKunde', (int)$kKunde);
 
         if (isset($oKundenKontodaten->kKunde) && $oKundenKontodaten->kKunde > 0) {
             if (strlen($oKundenKontodaten->cBLZ) > 0) {
@@ -1516,7 +1516,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
     $fSteuersatz   = 0.0;
     $Zahlungsarten = [];
     if ($kVersandart > 0) {
-        $Zahlungsarten = Shop::DB()->query(
+        $Zahlungsarten = Shop::Container()->getDB()->query(
             "SELECT tversandartzahlungsart.*, tzahlungsart.*
                 FROM tversandartzahlungsart, tzahlungsart
                 WHERE tversandartzahlungsart.kVersandart = {$kVersandart}
@@ -1538,7 +1538,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
         $Zahlungsarten[$i]->angezeigterName = [];
         $Zahlungsarten[$i]->cGebuehrname    = [];
         foreach ($_SESSION['Sprachen'] as $Sprache) {
-            $name_spr = Shop::DB()->select(
+            $name_spr = Shop::Container()->getDB()->select(
                 'tzahlungsartsprache',
                 'kZahlungsart',
                 (int)$Zahlungsarten[$i]->kZahlungsart,
@@ -1555,7 +1555,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
                 $Zahlungsarten[$i]->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisTextShop;
             }
         }
-        $einstellungen = Shop::DB()->selectAll(
+        $einstellungen = Shop::Container()->getDB()->selectAll(
             'teinstellungen',
             ['kEinstellungenSektion', 'cModulId'],
             [CONF_ZAHLUNGSARTEN, $Zahlungsarten[$i]->cModulId]
@@ -1745,7 +1745,7 @@ function pruefeZahlungsartMinBestellungen($nMinBestellungen)
 {
     if ($nMinBestellungen > 0) {
         if ($_SESSION['Kunde']->kKunde > 0) {
-            $anzahl_obj = Shop::DB()->query(
+            $anzahl_obj = Shop::Container()->getDB()->query(
                 "SELECT count(*) AS anz
                     FROM tbestellung
                     WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
@@ -1833,7 +1833,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
         $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG);
         foreach ($kVerpackung_arr as $i => $kVerpackung) {
             $kVerpackung = (int)$kVerpackung;
-            $oVerpackung = Shop::DB()->query(
+            $oVerpackung = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM tverpackung
                     WHERE kVerpackung = " . $kVerpackung . "
@@ -1847,7 +1847,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
             $oVerpackung->kVerpackung = (int)$oVerpackung->kVerpackung;
             if ($oVerpackung->kVerpackung > 0) {
                 $cName_arr              = [];
-                $oVerpackungSprache_arr = Shop::DB()->selectAll('tverpackungsprache', 'kVerpackung', (int)$oVerpackung->kVerpackung);
+                $oVerpackungSprache_arr = Shop::Container()->getDB()->selectAll('tverpackungsprache', 'kVerpackung', (int)$oVerpackung->kVerpackung);
                 if (count($oVerpackungSprache_arr) > 0) {
                     foreach ($oVerpackungSprache_arr as $oVerpackungSprache) {
                         $cName_arr[$oVerpackungSprache->cISOSprache] = $oVerpackungSprache->cName;
@@ -1886,7 +1886,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
             $cNurAbhaengigeVersandart = 'Y';
         }
         $cISO       = $lieferland;
-        $versandart = Shop::DB()->query(
+        $versandart = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM tversandart
                 WHERE cLaender LIKE '%" . $cISO . "%'
@@ -1910,7 +1910,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
             }
             $Spezialpos->cName = [];
             foreach ($_SESSION['Sprachen'] as $Sprache) {
-                $name_spr = Shop::DB()->select(
+                $name_spr = Shop::Container()->getDB()->select(
                     'tversandartsprache',
                     'kVersandart',
                     (int)$versandart->kVersandart,
@@ -1955,7 +1955,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                 //posname lokalisiert ablegen
                 $Spezialpos->cName = [];
                 foreach ($_SESSION['Sprachen'] as $Sprache) {
-                    $name_spr                          = Shop::DB()->select(
+                    $name_spr                          = Shop::Container()->getDB()->select(
                         'tversandzuschlagsprache',
                         'kVersandzuschlag',
                         (int)$versandart->Zuschlag->kVersandzuschlag,
@@ -2080,7 +2080,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         $ret['fax'] = checkeTel($data['fax']);
     }
     $deliveryCountry = ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N')
-        ? Shop::DB()->select('tland', 'cISO', $data['land'])
+        ? Shop::Container()->getDB()->select('tland', 'cISO', $data['land'])
         : null;
 
     if (isset($deliveryCountry->nEU)
@@ -2177,7 +2177,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             }
         }
         //existiert diese email bereits?
-        $obj = Shop::DB()->selectAll('tkunde', 'cMail', Shop::DB()->escape($data['email']));
+        $obj = Shop::Container()->getDB()->selectAll('tkunde', 'cMail', Shop::Container()->getDB()->escape($data['email']));
         foreach ($obj as $customer) {
             if (!empty($customer->cPasswort) && !empty($customer->kKunde)) {
                 $ret['email_vorhanden'] = 1;
@@ -2186,7 +2186,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             //emailadresse anders und existiert dennoch?
-            $mail = Shop::DB()->select('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
+            $mail = Shop::Container()->getDB()->select('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
             if (isset($mail->cMail) && $data['email'] === $mail->cMail) {
                 unset($ret['email_vorhanden']);
             }
@@ -2194,7 +2194,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
     }
     // Selbstdef. Kundenfelder
     if (isset($conf['kundenfeld']['kundenfeld_anzeigen']) && $conf['kundenfeld']['kundenfeld_anzeigen'] === 'Y') {
-        $oKundenfeld_arr = Shop::DB()->selectAll(
+        $oKundenfeld_arr = Shop::Container()->getDB()->selectAll(
             'tkundenfeld',
             'kSprache',
             Shop::getLanguage(),
@@ -2491,7 +2491,7 @@ function checkeKupon($Kupon)
     }
     if ($alreadyUsedSQL !== '') {
         //hat der kunde schon die max. Verwendungsanzahl erreicht?
-        $anz = Shop::DB()->executeQueryPrepared($alreadyUsedSQL, $bindings, 1);
+        $anz = Shop::Container()->getDB()->executeQueryPrepared($alreadyUsedSQL, $bindings, 1);
         if (isset($Kupon->nVerwendungenProKunde, $anz->nVerwendungen) &&
             $anz->nVerwendungen >= $Kupon->nVerwendungenProKunde &&
             $Kupon->nVerwendungenProKunde > 0
@@ -2548,7 +2548,7 @@ function kuponAnnehmen($Kupon)
             && $Kupon->cKuponTyp !== 'neukundenkupon'
         ) {
             $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '% ';
-            $discountForArticle                 = Shop::DB()->select(
+            $discountForArticle                 = Shop::Container()->getDB()->select(
                 'tsprachwerte',
                 'cName',
                 'discountForArticle',
@@ -2705,7 +2705,7 @@ function warenkorbKuponFaehigKategorien($Kupon, array $PositionenArr)
         if (ArtikelHelper::isVariChild($kArtikel)) {
             $kArtikel = ArtikelHelper::getParent($kArtikel);
         }
-        $Kats_arr = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$kArtikel, 'kKategorie');
+        $Kats_arr = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kArtikel', (int)$kArtikel, 'kKategorie');
         if (is_array($Kats_arr)) {
             foreach ($Kats_arr as $Kat) {
                 $Kat->kKategorie = (int)$Kat->kKategorie;
@@ -2795,7 +2795,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
 function getKundenattribute($cPost_arr)
 {
     $cKundenattribut_arr = [];
-    $oKundenfeld_arr     = Shop::DB()->selectAll(
+    $oKundenfeld_arr     = Shop::Container()->getDB()->selectAll(
         'tkundenfeld',
         'kSprache',
         Shop::getLanguage(),
@@ -2823,7 +2823,7 @@ function getKundenattribute($cPost_arr)
  */
 function getKundenattributeNichtEditierbar()
 {
-    return Shop::DB()->selectAll('tkundenfeld', ['kSprache', 'nEditierbar'], [Shop::getLanguage(), 0], 'kKundenfeld');
+    return Shop::Container()->getDB()->selectAll('tkundenfeld', ['kSprache', 'nEditierbar'], [Shop::getLanguage(), 0], 'kKundenfeld');
 }
 
 /**
@@ -2832,7 +2832,7 @@ function getKundenattributeNichtEditierbar()
 function getNonEditableCustomerFields()
 {
     $cKundenAttribute_arr = [];
-    $oKundenattribute_arr = Shop::DB()->query(
+    $oKundenattribute_arr = Shop::Container()->getDB()->query(
         "SELECT ka.kKundenfeld
              FROM tkundenattribut AS ka
              LEFT JOIN tkundenfeld AS kf
@@ -2915,7 +2915,7 @@ function getArtikelQry($PositionenArr)
         foreach ($PositionenArr as $Pos) {
             if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
                 $ret .= " OR FIND_IN_SET('" .
-                    str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->cArtNr))
+                    str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->cArtNr))
                     . "', REPLACE(cArtikel, ';', ',')) > 0";
             }
         }
@@ -2954,12 +2954,12 @@ function kuponMoeglich()
         foreach ($cart->PositionenArr as $Pos) {
             if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
                 $Artikel_qry .= " OR FIND_IN_SET('" .
-                    str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->cArtNr))
+                    str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->cArtNr))
                     . "', REPLACE(cArtikel, ';', ',')) > 0";
             }
             if (isset($Pos->Artikel->cHersteller) && strlen($Pos->Artikel->cHersteller) > 0) {
                 $Hersteller_qry .= " OR FIND_IN_SET('" .
-                    str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->kHersteller))
+                    str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->kHersteller))
                     . "', REPLACE(cHersteller, ';', ',')) > 0";
             }
             if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
@@ -2971,7 +2971,7 @@ function kuponMoeglich()
                 if (ArtikelHelper::isVariChild($kArtikel)) {
                     $kArtikel = ArtikelHelper::getParent($kArtikel);
                 }
-                $Kats_arr = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$kArtikel, 'kKategorie');
+                $Kats_arr = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kArtikel', (int)$kArtikel, 'kKategorie');
                 if (is_array($Kats_arr) && count($Kats_arr) > 0) {
                     foreach ($Kats_arr as $Kat) {
                         $Kat->kKategorie = (int)$Kat->kKategorie;
@@ -2990,7 +2990,7 @@ function kuponMoeglich()
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $Kunden_qry = " OR FIND_IN_SET('{$_SESSION['Kunde']->kKunde}', REPLACE(cKunden, ';', ',')) > 0";
     }
-    $kupons_mgl = Shop::DB()->query(
+    $kupons_mgl = Shop::Container()->getDB()->query(
         "SELECT * FROM tkupon
             WHERE cAktiv = 'Y'
                 AND dGueltigAb <= now()
@@ -3029,7 +3029,7 @@ function freeGiftStillValid()
     foreach ($cart->PositionenArr as $oPosition) {
         if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             // Prüfen ob der Artikel wirklich ein Gratisgeschenk ist und ob die Mindestsumme erreicht wird
-            $oArtikelGeschenk = Shop::DB()->query(
+            $oArtikelGeschenk = Shop::Container()->getDB()->query(
                 "SELECT kArtikel
                     FROM tartikelattribut
                     WHERE kArtikel = " . (int)$oPosition->kArtikel . "
@@ -3063,7 +3063,7 @@ function valid_plzort($plz, $ort, $land)
     // Länder die wir mit Ihren Postleitzahlen in der Datenbank haben
     $cSupportedCountry_arr = ['DE', 'AT', 'CH'];
     if (in_array(strtoupper($land), $cSupportedCountry_arr, true)) {
-        $obj = Shop::DB()->executeQueryPrepared(
+        $obj = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT kPLZ
                 FROM tplz
                 WHERE cPLZ = :plz
@@ -3079,7 +3079,7 @@ function valid_plzort($plz, $ort, $land)
         if (isset($obj->kPLZ) && $obj->kPLZ > 0) {
             return true;
         }
-        $obj = Shop::DB()->executeQueryPrepared(
+        $obj = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT kPLZ
                 FROM tplz
                 WHERE cPLZ = :plz
@@ -3095,7 +3095,7 @@ function valid_plzort($plz, $ort, $land)
         if (isset($obj->kPLZ) && $obj->kPLZ > 0) {
             return true;
         }
-        $obj = Shop::DB()->executeQueryPrepared(
+        $obj = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT kPLZ
                 FROM tplz
                 WHERE cPLZ = :plz
@@ -3242,7 +3242,7 @@ function setzeLieferadresseAusRechnungsadresse()
  */
 function gibSelbstdefKundenfelder()
 {
-    $oKundenfeld_arr = Shop::DB()->query(
+    $oKundenfeld_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tkundenfeld
             WHERE kSprache = " . Shop::getLanguage(). "
@@ -3251,7 +3251,7 @@ function gibSelbstdefKundenfelder()
     // tkundenfeldwert nachschauen ob dort Werte für tkundenfeld enthalten sind
     foreach ($oKundenfeld_arr as $oKundenfeld) {
         if ($oKundenfeld->cTyp === 'auswahl') {
-            $oKundenfeld->oKundenfeldWert_arr = Shop::DB()->selectAll(
+            $oKundenfeld->oKundenfeldWert_arr = Shop::Container()->getDB()->selectAll(
                 'tkundenfeldwert',
                 'kKundenfeld',
                 (int)$oKundenfeld->kKundenfeld,
@@ -3273,7 +3273,7 @@ function pruefeAjaxEinKlick()
     if (($customerID = Session::Customer()->getID()) > 0) {
         $customerGroupID = Session::CustomerGroup()->getID();
         // Prüfe ob Kunde schon bestellt hat, falls ja --> Lieferdaten laden
-        $oLetzteBestellung = Shop::DB()->query(
+        $oLetzteBestellung = Shop::Container()->getDB()->query(
             "SELECT tbestellung.kBestellung, tbestellung.kLieferadresse, tbestellung.kZahlungsart, tbestellung.kVersandart
                 FROM tbestellung
                 JOIN tzahlungsart
@@ -3296,7 +3296,7 @@ function pruefeAjaxEinKlick()
         if (isset($oLetzteBestellung->kBestellung) && $oLetzteBestellung->kBestellung > 0) {
             // Hat der Kunde eine Lieferadresse angegeben?
             if ($oLetzteBestellung->kLieferadresse > 0) {
-                $oLieferdaten = Shop::DB()->query(
+                $oLieferdaten = Shop::Container()->getDB()->query(
                     "SELECT kLieferadresse
                         FROM tlieferadresse
                         WHERE kKunde = " . $customerID . "
@@ -3414,7 +3414,7 @@ function setzeSesssionAccountwahlLogin($oKunde)
         if (isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0) {
             $_upd         = new stdClass();
             $_upd->kKunde = (int)$oKunde->kKunde;
-            Shop::DB()->update('tbesucher', 'kBesucher', (int)$_SESSION['oBesucher']->kBesucher, $_upd);
+            Shop::Container()->getDB()->update('tbesucher', 'kBesucher', (int)$_SESSION['oBesucher']->kBesucher, $_upd);
         }
         Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
                        ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
@@ -3494,7 +3494,7 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0)
 {
     global $step;
     $conf      = Shop::getSettings([CONF_KUNDEN]);
-    $herkunfte = Shop::DB()->query("SELECT * FROM tkundenherkunft ORDER BY nSort", 2);
+    $herkunfte = Shop::Container()->getDB()->query("SELECT * FROM tkundenherkunft ORDER BY nSort", 2);
     if ($nUnreg) {
         Shop::Smarty()->assign('step', 'formular');
     } else {
@@ -3533,7 +3533,7 @@ function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, 
 {
     $conf = Shop::getSettings([CONF_KUNDEN]);
     setzeFehlendeAngaben($cFehlendeEingaben_arr);
-    $herkunfte  = Shop::DB()->query(
+    $herkunfte  = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tkundenherkunft
             ORDER BY nSort", 2
@@ -3578,7 +3578,7 @@ function plausiLieferadresse($cPost_arr)
     }
     if ((int)$cPost_arr['kLieferadresse'] > 0) {
         //vorhandene lieferadresse
-        $oLieferadresse = Shop::DB()->select(
+        $oLieferadresse = Shop::Container()->getDB()->select(
             'tlieferadresse',
             'kKunde',
             (int)$_SESSION['Kunde']->kKunde,
@@ -3598,7 +3598,7 @@ function plausiLieferadresse($cPost_arr)
     if ($_SESSION['Lieferadresse'] && $_SESSION['Versandart']) {
         $delVersand = (stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false);
         //ist die plz im zuschlagsbereich?
-        $plz_x = Shop::DB()->executeQueryPrepared(
+        $plz_x = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT kVersandzuschlagPlz
                 FROM tversandzuschlagplz, tversandzuschlag
                 WHERE tversandzuschlag.kVersandart = :id
@@ -3645,7 +3645,7 @@ function setzeSessionLieferadresse($cPost_arr)
         $_SESSION['Lieferadresse'] = getLieferdaten($cPost_arr);
     } elseif ($kLieferadresse > 0) {
         //vorhandene lieferadresse
-        $LA = Shop::DB()->query(
+        $LA = Shop::Container()->getDB()->query(
             "SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = " . Session::Customer()->getID() . "
@@ -3678,7 +3678,7 @@ function setzeSmartyLieferadresse()
     $kKundengruppe = Session::CustomerGroup()->getID();
     if (Session::Customer()->getID() > 0) {
         $Lieferadressen      = [];
-        $oLieferdatenTMP_arr = Shop::DB()->selectAll(
+        $oLieferdatenTMP_arr = Shop::Container()->getDB()->selectAll(
             'tlieferadresse',
             'kKunde',
             Session::Customer()->getID(),
@@ -3712,7 +3712,7 @@ function setzeFehlerSmartyLieferadresse($cFehlendeEingaben_arr, $cPost_arr)
     $kKundengruppe = Session::CustomerGroup()->getID();
     if (Session::Customer()->getID() > 0) {
         $Lieferadressen      = [];
-        $oLieferdatenTMP_arr = Shop::DB()->selectAll(
+        $oLieferdatenTMP_arr = Shop::Container()->getDB()->selectAll(
             'tlieferadresse',
             'kKunde',
             (int)$_SESSION['Kunde']->kKunde,
@@ -4037,7 +4037,7 @@ function mappeBestellvorgangZahlungshinweis($nHinweisCode)
  */
 function isEmailAvailable($email)
 {
-    return strlen($email) > 0 && (Shop::DB()->select('tkunde', 'cMail', $email, 'nRegistriert', 1) === null);
+    return strlen($email) > 0 && (Shop::Container()->getDB()->select('tkunde', 'cMail', $email, 'nRegistriert', 1) === null);
 }
 
 /**

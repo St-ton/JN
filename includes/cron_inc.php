@@ -22,7 +22,7 @@ if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
     exit;
 }
 
-$oCron_arr = Shop::DB()->query(
+$oCron_arr = Shop::Container()->getDB()->query(
     "SELECT tcron.*
         FROM tcron
         LEFT JOIN tjobqueue ON tjobqueue.kCron = tcron.kCron

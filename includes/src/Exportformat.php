@@ -159,7 +159,7 @@ class Exportformat
      */
     private function loadFromDB($kExportformat = 0)
     {
-        $oObj = Shop::DB()->query(
+        $oObj = Shop::Container()->getDB()->query(
             "SELECT texportformat.*, tkampagne.cParameter AS campaignParameter, tkampagne.cWert AS campaignValue
                FROM texportformat
                LEFT JOIN tkampagne 
@@ -170,7 +170,7 @@ class Exportformat
             foreach (get_object_vars($oObj) as $k => $v) {
                 $this->$k = $v;
             }
-            $confObj = Shop::DB()->selectAll('texportformateinstellungen', 'kExportformat', $kExportformat);
+            $confObj = Shop::Container()->getDB()->selectAll('texportformateinstellungen', 'kExportformat', $kExportformat);
             foreach ($confObj as $conf) {
                 $this->config[$conf->cName] = $conf->cWert;
             }
@@ -236,7 +236,7 @@ class Exportformat
         $ins->dZuletztErstellt = $this->dZuletztErstellt;
         $ins->nUseCache        = $this->nUseCache;
 
-        $this->kExportformat = Shop::DB()->insert('texportformat', $ins);
+        $this->kExportformat = Shop::Container()->getDB()->insert('texportformat', $ins);
         if ($this->kExportformat > 0) {
             return $bPrim ? $this->kExportformat : true;
         }
@@ -269,7 +269,7 @@ class Exportformat
         $upd->dZuletztErstellt = $this->dZuletztErstellt;
         $upd->nUseCache        = $this->nUseCache;
 
-        return Shop::DB()->update('texportformat', 'kExportformat', $this->getExportformat(), $upd);
+        return Shop::Container()->getDB()->update('texportformat', 'kExportformat', $this->getExportformat(), $upd);
     }
 
     /**
@@ -290,7 +290,7 @@ class Exportformat
      */
     public function delete()
     {
-        return Shop::DB()->delete('texportformat', 'kExportformat', $this->getExportformat());
+        return Shop::Container()->getDB()->delete('texportformat', 'kExportformat', $this->getExportformat());
     }
 
     /**
@@ -622,7 +622,7 @@ class Exportformat
                     }
                     $oObj->kExportformat = $this->getExportformat();
                 }
-                $ok = $ok && (Shop::DB()->insert('texportformateinstellungen', $oObj) > 0);
+                $ok = $ok && (Shop::Container()->getDB()->insert('texportformateinstellungen', $oObj) > 0);
             }
         }
 
@@ -647,7 +647,7 @@ class Exportformat
                 if (in_array($einstellungAssoc_arr['cName'], $cExportEinstellungenToImport_arr, true)) {
                     $_upd        = new stdClass();
                     $_upd->cWert = $einstellungAssoc_arr['cWert'];
-                    $ok          = $ok && (Shop::DB()->update(
+                    $ok          = $ok && (Shop::Container()->getDB()->update(
                                 'tboxensichtbar',
                                 ['kExportformat', 'cName'],
                                 [$this->getExportformat(), $einstellungAssoc_arr['cName']],
@@ -697,7 +697,7 @@ class Exportformat
             ? new Currency($this->kWaehrung)
             : (new Currency())->getDefault();
         setzeSteuersaetze();
-        $net = Shop::DB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
+        $net = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
 
         $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))
             ->setMayViewPrices(1)
@@ -705,7 +705,7 @@ class Exportformat
             ->setIsMerchant($net !== null ? $net->nNettoPreise : 0);
         $_SESSION['kKundengruppe'] = $this->getKundengruppe();
         $_SESSION['kSprache']      = $this->getSprache();
-        $_SESSION['Sprachen']      = Shop::DB()->query("SELECT * FROM tsprache", 2);
+        $_SESSION['Sprachen']      = Shop::Container()->getDB()->query("SELECT * FROM tsprache", 2);
         $_SESSION['Waehrung']      = $this->currency;
 
         return $this;
@@ -1032,7 +1032,7 @@ class Exportformat
                 str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
             if (isset($queueObject->kExportqueue)) {
-                Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$queueObject->kExportqueue);
+                Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$queueObject->kExportqueue);
             }
             if (isset($_GET['back']) && $_GET['back'] === 'admin') {
                 header('Location: exportformate.php?action=exported&token=' .
@@ -1053,7 +1053,7 @@ class Exportformat
         }
         $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
-            $maxObj = Shop::DB()->executeQuery($this->getExportSQL(true), 1);
+            $maxObj = Shop::Container()->getDB()->executeQuery($this->getExportSQL(true), 1);
             $max    = (int)$maxObj->nAnzahl;
         } else {
             $max = (int)$max;
@@ -1107,7 +1107,7 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach (Shop::DB()->query($this->getExportSQL(), 10) as $iterArticle) {
+        foreach (Shop::Container()->getDB()->query($this->getExportSQL(), 10) as $iterArticle) {
             $started = true;
             $Artikel = new Artikel();
             $Artikel->fuelleArtikel(
@@ -1240,7 +1240,7 @@ class Exportformat
         if ($isCron === false) {
             if ($max > $this->queue->nLimitN + $this->queue->nLimitM) {
                 fclose($datei);
-                Shop::DB()->query("
+                Shop::Container()->getDB()->query("
                     UPDATE texportqueue 
                       SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " 
                       WHERE kExportqueue = " . (int)$this->queue->kExportqueue, 4
@@ -1268,12 +1268,12 @@ class Exportformat
                     header('Location: ' . $cURL);
                 }
             } else {
-                Shop::DB()->query("
+                Shop::Container()->getDB()->query("
                     UPDATE texportformat 
                         SET dZuletztErstellt = now() 
                         WHERE kExportformat = " . $this->getExportformat(), 4
                 );
-                Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
+                Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
 
                 $this->writeFooter($datei);
                 fclose($datei);
@@ -1314,7 +1314,7 @@ class Exportformat
             //finalize job when there are no more articles to export
             if (($queueObject->nLimitN >= $max) || $started === false) {
                 Jtllog::cronLog('Finalizing job.', 2);
-                Shop::DB()->update(
+                Shop::Container()->getDB()->update(
                     'texportformat',
                     'kExportformat',
                     (int)$queueObject->kKey,
@@ -1432,7 +1432,7 @@ class Exportformat
         $error = false;
         try {
             $article       = null;
-            $articleObject = Shop::DB()->query("
+            $articleObject = Shop::Container()->getDB()->query("
                 SELECT * 
                     FROM tartikel 
                     WHERE kVaterArtikel = 0 

@@ -303,7 +303,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         }
 
         // X-Selling
-        $oXSellingTMP_arr = Shop::DB()->query(
+        $oXSellingTMP_arr = Shop::Container()->getDB()->query(
             "SELECT kXSellArtikel
                 FROM txsell
                 WHERE kArtikel = " . (int)$Artikel->kArtikel, 9
@@ -318,7 +318,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $cVarianten       = '';
         $kKategorie_arr   = []; // Alle Kategorien vom Artikel
         $kYatKategoie_arr = []; // Alle Yatego Kategorien vom Artikel
-        $oKategorie_arr   = Shop::DB()->selectAll(
+        $oKategorie_arr   = Shop::Container()->getDB()->selectAll(
             'tkategorieartikel',
             'kArtikel',
             (int)$Artikel->kArtikel,
@@ -354,7 +354,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                 $combinationsPass           = [];
 
                 foreach ($oVariation->Werte as $oWert) {
-                    $oVariationsBild = Shop::DB()->select(
+                    $oVariationsBild = Shop::Container()->getDB()->select(
                         'teigenschaftwertpict',
                         'kEigenschaftWert',
                         (int)$oWert->kEigenschaftWert,
@@ -406,7 +406,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
 
             if ((int)$Artikel->nIstVater > 0) {
                 // Hole VarKombi-Kinder
-                $combinations = Shop::DB()->query(
+                $combinations = Shop::Container()->getDB()->query(
                     "SELECT a.kArtikel, ekw.kEigenschaftKombi,
                             GROUP_CONCAT(ekw.kEigenschaft ORDER BY ekw.kEigenschaft SEPARATOR ',') AS cEigenschaften,
                             GROUP_CONCAT(ekw.kEigenschaftWert ORDER BY ekw.kEigenschaft SEPARATOR ',') AS cEigenschaftWerte
@@ -561,7 +561,7 @@ function getEinstellungenExport($kExportformat)
     $kExportformat = (int)$kExportformat;
     $ret           = [];
     if ($kExportformat > 0) {
-        $einst = Shop::DB()->selectAll(
+        $einst = Shop::Container()->getDB()->selectAll(
             'texportformateinstellungen',
             'kExportformat',
             $kExportformat,
@@ -651,7 +651,7 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
         return $count;
     }
 
-    $count = Shop::DB()->query(
+    $count = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tartikel
             LEFT JOIN tartikelattribut 

@@ -23,8 +23,8 @@ function checkSeo($cSeo)
         return '';
     }
 
-    Shop::DB()->query("SET @IKEY := 0", 10);
-    $obj = Shop::DB()->query(
+    Shop::Container()->getDB()->query("SET @IKEY := 0", 10);
+    $obj = Shop::Container()->getDB()->query(
         "SELECT oseo.newSeo
             FROM (
 	            SELECT CONCAT('{$cSeo}', '_', @IKEY:=@IKEY+1) newSeo, @IKEY nOrder

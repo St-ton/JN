@@ -44,7 +44,7 @@ class KategorieArtikel
      */
     public function loadFromDB($kKategorieArtikel)
     {
-        $obj = Shop::DB()->select('tkategorieartikel', 'kKategorieArtikel', (int)$kKategorieArtikel);
+        $obj = Shop::Container()->getDB()->select('tkategorieartikel', 'kKategorieArtikel', (int)$kKategorieArtikel);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -59,7 +59,7 @@ class KategorieArtikel
      */
     public function insertInDB()
     {
-        return Shop::DB()->insert('tkategorieartikel', kopiereMembers($this));
+        return Shop::Container()->getDB()->insert('tkategorieartikel', kopiereMembers($this));
     }
 
     /**
@@ -71,7 +71,7 @@ class KategorieArtikel
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->update('tkategorieartikel', 'kKategorieArtikel', $obj->kKategorieArtikel, $obj);
+        return Shop::Container()->getDB()->update('tkategorieartikel', 'kKategorieArtikel', $obj->kKategorieArtikel, $obj);
     }
 
     /**

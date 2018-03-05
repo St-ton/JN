@@ -41,7 +41,7 @@ $smarty->assign('cRnd', time())
  */
 function gibBrandings()
 {
-    return Shop::DB()->selectAll('tbranding', [], [], '*', 'cBildKategorie');
+    return Shop::Container()->getDB()->selectAll('tbranding', [], [], '*', 'cBildKategorie');
 }
 
 /**
@@ -50,7 +50,7 @@ function gibBrandings()
  */
 function gibBranding($kBranding)
 {
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT tbranding.*, tbranding.kBranding AS kBrandingTMP, tbrandingeinstellung.*
             FROM tbranding
             LEFT JOIN tbrandingeinstellung 
@@ -80,7 +80,7 @@ function speicherEinstellung($kBranding, $cPost_arr, $cFiles_arr)
         $oBrandingEinstellung->cBrandingBild = 'kBranding_' . $kBranding .
             mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
     } else {
-        $oBrandingEinstellungTMP             = Shop::DB()->select('tbrandingeinstellung', 'kBranding', $kBranding);
+        $oBrandingEinstellungTMP             = Shop::Container()->getDB()->select('tbrandingeinstellung', 'kBranding', $kBranding);
         $oBrandingEinstellung->cBrandingBild = (!empty($oBrandingEinstellungTMP->cBrandingBild))
             ? $oBrandingEinstellungTMP->cBrandingBild
             : '';
@@ -90,14 +90,14 @@ function speicherEinstellung($kBranding, $cPost_arr, $cFiles_arr)
         strlen($oBrandingEinstellung->cPosition) > 0 &&
         strlen($oBrandingEinstellung->cBrandingBild) > 0) {
         // Alte Einstellung loeschen
-        Shop::DB()->delete('tbrandingeinstellung', 'kBranding', $kBranding);
+        Shop::Container()->getDB()->delete('tbrandingeinstellung', 'kBranding', $kBranding);
 
         if (strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
             loescheBrandingBild($oBrandingEinstellung->kBranding);
             speicherBrandingBild($cFiles_arr, $oBrandingEinstellung->kBranding);
         }
 
-        Shop::DB()->insert('tbrandingeinstellung', $oBrandingEinstellung);
+        Shop::Container()->getDB()->insert('tbrandingeinstellung', $oBrandingEinstellung);
         MediaImage::clearCache('product');
 
         return true;

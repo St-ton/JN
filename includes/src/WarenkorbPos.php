@@ -200,7 +200,7 @@ class WarenkorbPos
         $NeueWarenkorbPosEigenschaft->kEigenschaftWert   = $kEigenschaftWert;
         $NeueWarenkorbPosEigenschaft->fGewichtsdifferenz = $EigenschaftWert->fGewichtDiff;
         $NeueWarenkorbPosEigenschaft->fAufpreis          = $EigenschaftWert->fAufpreisNetto;
-        $Aufpreis_obj                                    = Shop::DB()->select(
+        $Aufpreis_obj                                    = Shop::Container()->getDB()->select(
             'teigenschaftwertaufpreis',
             'kEigenschaftWert',  (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
             'kKundengruppe',  Session::CustomerGroup()->getID()
@@ -224,7 +224,7 @@ class WarenkorbPos
             $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $EigenschaftWert->cName;
 
             if ($Sprache->cStandard !== 'Y') {
-                $eigenschaft_spr = Shop::DB()->select(
+                $eigenschaft_spr = Shop::Container()->getDB()->select(
                     'teigenschaftsprache',
                     'kEigenschaft', (int)$NeueWarenkorbPosEigenschaft->kEigenschaft,
                     'kSprache', (int)$Sprache->kSprache
@@ -232,7 +232,7 @@ class WarenkorbPos
                 if (!empty($eigenschaft_spr->cName)) {
                     $NeueWarenkorbPosEigenschaft->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
                 }
-                $eigenschaftwert_spr = Shop::DB()->select(
+                $eigenschaftwert_spr = Shop::Container()->getDB()->select(
                     'teigenschaftwertsprache',
                     'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
                     'kSprache', (int)$Sprache->kSprache
@@ -243,7 +243,7 @@ class WarenkorbPos
             }
 
             if ($freifeld || strlen(trim($freifeld)) > 0) {
-                $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = Shop::DB()->escape($freifeld);
+                $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = Shop::Container()->getDB()->escape($freifeld);
             }
         }
         $this->WarenkorbPosEigenschaftArr[] = $NeueWarenkorbPosEigenschaft;
@@ -392,7 +392,7 @@ class WarenkorbPos
      */
     public function loadFromDB($kWarenkorbPos)
     {
-        $obj     = Shop::DB()->select('twarenkorbpos', 'kWarenkorbPos', $kWarenkorbPos);
+        $obj     = Shop::Container()->getDB()->select('twarenkorbpos', 'kWarenkorbPos', $kWarenkorbPos);
         $members = array_keys(get_object_vars($obj));
         foreach ($members as $member) {
             $this->$member = $obj->$member;
@@ -439,7 +439,7 @@ class WarenkorbPos
             $obj->nLongestMaxDelivery = $this->oEstimatedDelivery->longestMax;
         }
 
-        $this->kWarenkorbPos = Shop::DB()->insert('twarenkorbpos', $obj);
+        $this->kWarenkorbPos = Shop::Container()->getDB()->insert('twarenkorbpos', $obj);
 
         return $this->kWarenkorbPos;
     }

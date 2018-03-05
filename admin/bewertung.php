@@ -46,7 +46,7 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {
                 $upd = new stdClass();
                 $upd->nAktiv = 1;
-                Shop::DB()->update('tbewertung', 'kBewertung', (int)$kBewertung, $upd);
+                Shop::Container()->getDB()->update('tbewertung', 'kBewertung', (int)$kBewertung, $upd);
                 // Durchschnitt neu berechnen
                 aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
                 // Berechnet BewertungGuthabenBonus
@@ -61,7 +61,7 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
     } elseif (isset($_POST['loeschen']) && validateToken()) { // Bewertungen loeschen
         if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
             foreach ($_POST['kBewertung'] as $kBewertung) {
-                Shop::DB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
+                Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
             }
             $cHinweis .= count($_POST['kBewertung']) . " Bewertung(en) wurde(n) erfolgreich gel&ouml;scht.";
         }
@@ -69,7 +69,7 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
 } elseif (isset($_POST['bewertung_aktiv']) && (int)$_POST['bewertung_aktiv'] === 1) {
     if (isset($_POST['cArtNr'])) {
         // Bewertungen holen
-        $oBewertungAktiv_arr = Shop::DB()->executeQueryPrepared(
+        $oBewertungAktiv_arr = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
                 FROM tbewertung
                 LEFT JOIN tartikel 
@@ -93,7 +93,7 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
             // Loesche Guthaben aus tbewertungguthabenbonus und aktualisiere tkunde
             BewertungsGuthabenBonusLoeschen($kBewertung);
 
-            Shop::DB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
+            Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
             // Durchschnitt neu berechnen
             aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
             $cacheTags[] = $kArtikel_arr[$i];
@@ -118,18 +118,18 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
     }
 
     // Config holen
-    $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_BEWERTUNG, '*', 'nSort');
+    $oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_BEWERTUNG, '*', 'nSort');
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
                 'teinstellungenconfwerte',
                 'kEinstellungenConf',
                 (int)$oConfig_arr[$i]->kEinstellungenConf,
                 '*', 'nSort'
             );
         } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
                 'tkundengruppe',
                 [],
                 [],
@@ -139,7 +139,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         }
 
         if ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oSetValue = Shop::DB()->selectAll(
+            $oSetValue = Shop::Container()->getDB()->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName],
@@ -147,7 +147,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             );
             $oConfig_arr[$i]->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = Shop::DB()->select(
+            $oSetValue = Shop::Container()->getDB()->select(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName]
@@ -157,14 +157,14 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
     }
 
     // Bewertungen Anzahl holen
-    $nBewertungen = (int)Shop::DB()->query(
+    $nBewertungen = (int)Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND nAktiv = 0", 1
     )->nAnzahl;
     // Aktive Bewertungen Anzahl holen
-    $nBewertungenAktiv = (int)Shop::DB()->query(
+    $nBewertungenAktiv = (int)Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
@@ -180,7 +180,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         ->assemble();
 
     // Bewertungen holen
-    $oBewertung_arr = Shop::DB()->query(
+    $oBewertung_arr = Shop::Container()->getDB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
@@ -191,7 +191,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             LIMIT " . $oPagiInaktiv->getLimitSQL(), 2
     );
     // Aktive Bewertungen
-    $oBewertungLetzten50_arr = Shop::DB()->query(
+    $oBewertungLetzten50_arr = Shop::Container()->getDB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 

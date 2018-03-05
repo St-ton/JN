@@ -153,7 +153,7 @@ function pruefeBetreffVorhanden()
         }
     }
 
-    $oBetreff_arr = Shop::DB()->query(
+    $oBetreff_arr = Shop::Container()->getDB()->query(
         "SELECT kKontaktBetreff
             FROM tkontaktbetreff
             WHERE FIND_IN_SET('" . $kKundengruppe . "', REPLACE(cKundengruppen, ';', ',')) > 0
@@ -169,10 +169,10 @@ function pruefeBetreffVorhanden()
 function bearbeiteNachricht()
 {
     $betreff = isset($_POST['subject'])
-        ? Shop::DB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_POST['subject'])
+        ? Shop::Container()->getDB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_POST['subject'])
         : null;
     if (!empty($betreff->kKontaktBetreff)) {
-        $betreffSprache               = Shop::DB()->select(
+        $betreffSprache               = Shop::Container()->getDB()->select(
             'tkontaktbetreffsprache',
             'kKontaktBetreff',
             (int)$betreff->kKontaktBetreff,
@@ -185,7 +185,7 @@ function bearbeiteNachricht()
 
         $conf     = Shop::getSettings([CONF_KONTAKTFORMULAR, CONF_GLOBAL]);
         $from     = new stdClass();
-        $from_arr = Shop::DB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
+        $from_arr = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
         $mail     = new stdClass();
         if (is_array($from_arr) && count($from_arr)) {
             foreach ($from_arr as $f) {
@@ -254,7 +254,7 @@ function bearbeiteNachricht()
         $KontaktHistory->cIP             = gibIP();
         $KontaktHistory->dErstellt       = 'now()';
 
-        return Shop::DB()->insert('tkontakthistory', $KontaktHistory);
+        return Shop::Container()->getDB()->insert('tkontakthistory', $KontaktHistory);
     }
 
     return false;
@@ -270,12 +270,12 @@ function floodSchutz($min)
         return false;
     }
     $min     = (int)$min;
-    $history = Shop::DB()->executeQueryPrepared(
+    $history = Shop::Container()->getDB()->executeQueryPrepared(
         "SELECT kKontaktHistory 
             FROM tkontakthistory 
             WHERE cIP = :ip 
                 AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt",
-        ['ip' => Shop::DB()->escape(gibIP()), 'min' => $min],
+        ['ip' => Shop::Container()->getDB()->escape(gibIP()), 'min' => $min],
         1
     );
 

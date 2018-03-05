@@ -8,6 +8,7 @@ namespace Services;
 
 
 use DB\DbInterface;
+use DB\Services\GcServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 
@@ -43,5 +44,13 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getCryptoService()
     {
         return $this->get(CryptoServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDBServiceGC()
+    {
+        return $this->get(GcServiceInterface::class);
     }
 }

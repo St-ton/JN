@@ -7,6 +7,7 @@
 namespace Services;
 
 use DB\DbInterface;
+use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
 use Services\JTL\CryptoServiceInterface;
@@ -29,15 +30,16 @@ interface DefaultServicesInterface extends ContainerInterface
 
     /**
      * @return PasswordServiceInterface
-     * @throws ServiceNotFoundException
-     * @throws CircularReferenceException
      */
     public function getPasswordService();
 
     /**
      * @return CryptoServiceInterface
-     * @throws ServiceNotFoundException
-     * @throws CircularReferenceException
      */
     public function getCryptoService();
+
+    /**
+     * @return GcServiceInterface
+     */
+    public function getDBServiceGC();
 }

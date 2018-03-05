@@ -68,8 +68,7 @@ if (auth()) {
                         if (isset($conf['global']['garbagecollector_wawiabgleich']) &&
                             $conf['global']['garbagecollector_wawiabgleich'] === 'Y'
                         ) {
-                            $oGarbageCollector = new GarbageCollector();
-                            $oGarbageCollector->run();
+                            Shop::Container()->getDBServiceGC()->run();
                             updateJob(LASTJOBS_GARBAGECOLLECTOR);
                         }
                         break;

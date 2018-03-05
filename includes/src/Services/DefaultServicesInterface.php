@@ -6,6 +6,7 @@
 
 namespace Services;
 
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
@@ -42,4 +43,9 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return GcServiceInterface
      */
     public function getDBServiceGC();
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache();
 }

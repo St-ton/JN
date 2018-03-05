@@ -37,7 +37,7 @@ class Status
      */
     protected function getObjectCache()
     {
-        return JTLCache::getInstance()->setJtlCacheConfig();
+        return Shop::Container()->getCache()->setJtlCacheConfig();
     }
 
     /**

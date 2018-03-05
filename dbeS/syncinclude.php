@@ -49,7 +49,7 @@ if (!function_exists('Shop')) {
 }
 
 $DB    = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-$cache = JTLCache::getInstance()->setJtlCacheConfig();
+$cache = Shop::Container()->getCache()->setJtlCacheConfig();
 
 $GLOBALS['bSeo'] = true; //compatibility!
 // Liste aller Hooks, die momentan im Shop gebraucht werden könnten

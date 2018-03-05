@@ -547,11 +547,12 @@ final class Shop
     /**
      * get cache instance
      *
-     * @return JTLCache
+     * @return \Cache\JTLCacheInterface
+     * @deprecated since shop 5.0
      */
     public function _Cache() : JTLCache
     {
-        return JTLCache::getInstance();
+        return self::Container()->getCache();
     }
 
     /**
@@ -1753,6 +1754,10 @@ final class Shop
 
         $container->setSingleton(\DB\DbInterface::class, function () {
             return new DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        });
+
+        $container->setSingleton(\Cache\JTLCacheInterface::class, function () {
+            return new \Cache\JTLCache();
         });
 
 

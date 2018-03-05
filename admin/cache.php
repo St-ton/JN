@@ -19,7 +19,7 @@ if (0 < strlen(verifyGPDataString('tab'))) {
     $smarty->assign('tab', verifyGPDataString('tab'));
 }
 try {
-    $cache = JTLCache::getInstance();
+    $cache = Shop::Container()->getCache();
     $cache->setJtlCacheConfig();
 } catch (Exception $exc) {
     $error = 'Ausnahme: ' . $exc->getMessage();

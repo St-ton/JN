@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Cache\Methods;
+
+use Cache\ICachingMethod;
+use Cache\JTLCacheTrait;
+
 /**
  * Class cache_apc
  * implements the APC Opcode Cache
@@ -144,7 +149,7 @@ class cache_apc implements ICachingMethod
                 'inserts' => $tmp['num_inserts'] ?? 0,
                 'mem'     => $tmp['mem_size'] ?? 0
             ];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $stats = [];
         }
 

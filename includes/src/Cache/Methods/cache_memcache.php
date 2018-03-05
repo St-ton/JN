@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Cache\Methods;
+
+use Cache\ICachingMethod;
+use Cache\JTLCacheTrait;
+
 /**
  * Class cache_memcache
  * Implements the Memcache memory object caching system - no "d" at the end
@@ -18,7 +23,7 @@ class cache_memcache implements ICachingMethod
     public static $instance;
 
     /**
-     * @var Memcache
+     * @var cache_memcache
      */
     private $_memcache;
 
@@ -48,7 +53,7 @@ class cache_memcache implements ICachingMethod
         if ($this->_memcache !== null) {
             $this->_memcache->close();
         }
-        $this->_memcache = new Memcache();
+        $this->_memcache = new cache_memcache();
         $this->_memcache->addServer($host, (int)$port);
 
         return $this;

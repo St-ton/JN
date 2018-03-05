@@ -383,7 +383,7 @@ function doMigrateToInnoDB_utf8($status = 'start', $table = '', $step = 1, $excl
         case 'clear cache':
             // Objektcache leeren
             try {
-                $cache = JTLCache::getInstance();
+                $cache = Shop::Container()->getCache();
 
                 if ($cache !== null) {
                     $cache->setJtlCacheConfig();

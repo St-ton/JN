@@ -23,7 +23,7 @@ try {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
 //datenbankverbindung aufbauen
-$cache = JTLCache::getInstance();
+$cache = Shop::Container()->getCache();
 $cache->setJtlCacheConfig();
 $options            = $cache->getOptions();
 $options['enabled'] = false;

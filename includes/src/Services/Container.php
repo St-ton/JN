@@ -7,6 +7,7 @@
 namespace Services;
 
 
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -52,5 +53,13 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getDBServiceGC()
     {
         return $this->get(GcServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCache()
+    {
+        return $this->get(JTLCacheInterface::class);
     }
 }

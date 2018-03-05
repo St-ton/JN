@@ -16,7 +16,6 @@ class ContainerBase implements ContainerInterface
 {
     /** @var ContainerEntry[] */
     protected $entries = [];
-    protected $current = [];
 
     /**
      * @inheritdoc
@@ -29,7 +28,6 @@ class ContainerBase implements ContainerInterface
         $this->checkUninitialized($id);
         $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_SINGLETON);
         $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_SINGLETON);
-        $this->current[$id] = false;
     }
 
     /**
@@ -42,7 +40,6 @@ class ContainerBase implements ContainerInterface
         }
         $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_FACTORY);
         $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_FACTORY);
-        $this->current[$id] = false;
     }
 
     /**
@@ -61,12 +58,12 @@ class ContainerBase implements ContainerInterface
     public function get($id)
     {
         $this->checkExistence($id);
-        if ($this->current[$id]) {
+        $entry = $this->entries[$id];
+        if ($entry->isLocked()) {
             throw new CircularReferenceException($id);
         }
-        $this->current[$id] = true;
-        $entry              = $this->entries[$id];
-        $factory            = $entry->getFactory();
+        $entry->lock();
+        $factory = $entry->getFactory();
 
         if ($entry->getType() === ContainerEntry::TYPE_FACTORY) {
             $result = $factory($this);
@@ -78,7 +75,7 @@ class ContainerBase implements ContainerInterface
             $result = $instance;
         }
 
-        $this->current[$id] = false;
+        $entry->unlock();
 
         return $result;
     }

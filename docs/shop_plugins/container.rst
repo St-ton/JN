@@ -206,6 +206,9 @@ Hook zum Registrieren, Erweitern oder Überschreiben von Komponenten
 -------------------------------------------------------------------
 
 Komponenten müssen möglichst früh registriert, erweitert oder überschrieben werden, da anstonsten Inkonstistenzen
-auftreten können. Daher haben wir einen Hook bereitgestellt, der für diese Aufgabe verwendet werden sollte.
+auftreten können. Daher sollte der Hook HOOK_GLOBALINCLUDE_INC (131) genutzt werden.
 
-Diese Hook lautet HOOK_CONTAINER und hat die Nummer 262.
+Hinweis: Manche Komponenten können nicht überschrieben werden, da diese schon im Voraus genutzt wurden. Daher sind
+folgende Komponenten nicht überschreibbar:
+
+- DbInterface

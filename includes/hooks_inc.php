@@ -1771,9 +1771,3 @@ define('HOOK_PRICES_CONSTRUCT', 260);
  * @param array   redirectParam
  */
 define('HOOK_ADD_TO_CART_CHECK', 261);
-
-/**
- * @since 5.0
- * @file /includes/src/Shop.php
- */
-define('HOOK_CONTAINER', 262);

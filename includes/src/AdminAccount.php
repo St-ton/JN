@@ -135,11 +135,16 @@ class AdminAccount
     private function handleLoginResult($code, $user)
     {
         $ip         = getRealIp();
-        $logService = Shop::Container()->getAuthLoggerService();
+        $logService = Shop::Container()->getAuthLoggerFileService();
         $logService->setIP(getRealIp())
             ->setCode($code)
             ->setUser($user)
             ->log();
+        $logService = Shop::Container()->getAuthLoggerDatabaseService();
+        $logService->setIP(getRealIp())
+                   ->setCode($code)
+                   ->setUser($user)
+                   ->log();
 
         return $code;
     }

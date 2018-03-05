@@ -63,11 +63,6 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Auth-Code abgelaufen';
                 }
-                Jtllog::writeLog(
-                    'Login für Nutzer ' . $loginName . ' fehlgeschlagen.',
-                    JTLLOG_LEVEL_ERROR,
-                    true
-                );
                 break;
 
             case AdminAccount::ERROR_USER_DISABLED:
@@ -76,21 +71,11 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
 
             case AdminAccount::ERROR_LOGIN_EXPIRED:
                 $cFehler = 'Anmeldedaten nicht mehr g&uuml;ltig';
-                Jtllog::writeLog(
-                    'Login für Nutzer ' . $loginName . ' fehlgeschlagen - abgelaufene Anmeldedaten.',
-                    JTLLOG_LEVEL_ERROR,
-                    true
-                );
                 break;
 
             case AdminAccount::ERROR_TWO_FACTOR_AUTH_EXPIRED:
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
-                    Jtllog::writeLog(
-                        'Login für Nutzer ' . $loginName . ' fehlgeschlagen - 2-Faktor-Authentifizierung abgelaufen.',
-                        JTLLOG_LEVEL_ERROR,
-                        true
-                    );
                 }
                 break;
 
@@ -103,10 +88,6 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 if (file_exists(CAPTCHA_LOCKFILE)) {
                     unlink(CAPTCHA_LOCKFILE);
                 }
-                Jtllog::writeLog(
-                    'Nutzer ' . $loginName . ' hat sich erfolgreich angemeldet.',
-                    JTLLOG_LEVEL_NOTICE
-                );
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
                     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
                     exit;
@@ -121,18 +102,8 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         }
     } elseif ($ret['captcha'] !== 0) {
         $cFehler = 'Captcha-Code falsch';
-        Jtllog::writeLog(
-            'Login für Nutzer ' . $loginName . ' fehlgeschlagen - fehlerhafter Captcha-Code.',
-            JTLLOG_LEVEL_ERROR,
-            true
-        );
     } elseif ($ret['csrf'] !== 0) {
         $cFehler = 'Cross site request forgery! Sind Cookies aktiviert?';
-        Jtllog::writeLog(
-            'Login für Nutzer ' . $loginName . ' fehlgeschlagen - kein CSRF-Token.',
-            JTLLOG_LEVEL_ERROR,
-            true
-        );
     }
 }
 $type          = '';

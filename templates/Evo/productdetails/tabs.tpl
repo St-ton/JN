@@ -85,7 +85,7 @@
             {/if}
             {if $useVotes}
                 <li role="presentation"
-                    {if $setActive}
+                    {if $setActive || !$useDescription && !$useDownloads && empty($separatedTabs)}
                         class="active"
                     {/if}>
                     <a href="#tab-votes" aria-controls="tab-votes" role="tab" data-toggle="tab">
@@ -95,7 +95,7 @@
             {/if}
             {if $useQuestionOnItem}
                 <li role="presentation"
-                    {if !$setActive && !$useDescription && !$useDownloads && !empty($separatedTabs)
+                    {if !$setActive && !$useDescription && !$useDownloads && empty($separatedTabs)
                         && !$useVotes} class="active"{/if}>
                     <a href="#tab-questionOnItem" aria-controls="tab-questionOnItem" role="tab" data-toggle="tab">
                         {lang key="productQuestion" section="productDetails"}
@@ -236,7 +236,7 @@
         {/if}
         {if $useVotes}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade {if $setActive} in active{/if}" id="tab-votes">
+                <div role="tabpanel" class="tab-pane fade {if $setActive || !$useDescription && !$useDownloads && empty($separatedTabs)} in active{/if}" id="tab-votes">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">

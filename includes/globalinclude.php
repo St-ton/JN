@@ -46,7 +46,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 try {
-    $GLOBALS['DB'] = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $GLOBALS['DB'] = Shop::Container()->getDB();
 } catch (Exception $exc) {
     die($exc->getMessage());
 }

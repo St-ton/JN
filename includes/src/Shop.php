@@ -1723,5 +1723,13 @@ final class Shop
         $container->setSingleton(\Services\JTL\AuthLoggerServiceInterface::class, function(Container $container){
             return new \Services\JTL\AuthLoggerService();
         });
+
+        $container->setSingleton(\Services\JTL\AuthLoggerFileService::class, function(Container $container){
+            return new \Services\JTL\AuthLoggerFileService();
+        });
+
+        $container->setSingleton(\Services\JTL\AuthLoggerDatabaseService::class, function(Container $container){
+            return new \Services\JTL\AuthLoggerDatabaseService();
+        });
     }
 }

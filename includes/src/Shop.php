@@ -1719,5 +1719,9 @@ final class Shop
         $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function(Container $container){
             return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
         });
+
+        $container->setSingleton(\Services\JTL\AuthLoggerServiceInterface::class, function(Container $container){
+            return new \Services\JTL\AuthLoggerService();
+        });
     }
 }

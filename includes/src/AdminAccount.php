@@ -25,6 +25,8 @@ class AdminAccount
 
     const ERROR_TWO_FACTOR_AUTH_EXPIRED = -6;
 
+    const ERROR_UNKNOWN = -7;
+
     /**
      * @var bool
      */
@@ -124,6 +126,25 @@ class AdminAccount
     }
 
     /**
+     * @param int    $code
+     * @param string $user
+     * @return int
+     * @throws \Exceptions\CircularReferenceException
+     * @throws \Exceptions\ServiceNotFoundException
+     */
+    private function handleLoginResult($code, $user)
+    {
+        $ip         = getRealIp();
+        $logService = Shop::Container()->getAuthLoggerService();
+        $logService->setIP(getRealIp())
+            ->setCode($code)
+            ->setUser($user)
+            ->log();
+
+        return $code;
+    }
+
+    /**
      * @param string $cLogin
      * @param string $cPass
      * @return int
@@ -143,14 +164,14 @@ class AdminAccount
             '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
         );
         if ($oAdmin === null || !is_object($oAdmin)) {
-            return self::ERROR_USER_NOT_FOUND;
+            return $this->handleLoginResult(self::ERROR_USER_NOT_FOUND, $cLogin);
         }
         $oAdmin->kAdminlogingruppe = (int)$oAdmin->kAdminlogingruppe;
         if (!$oAdmin->bAktiv && $oAdmin->kAdminlogingruppe !== ADMINGROUP) {
-            return self::ERROR_USER_DISABLED;
+            return $this->handleLoginResult(self::ERROR_USER_DISABLED, $cLogin);
         }
         if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== ADMINGROUP && $oAdmin->dGueltigTS < time()) {
-            return self::ERROR_LOGIN_EXPIRED;
+            return $this->handleLoginResult(self::ERROR_LOGIN_EXPIRED, $cLogin);
         }
         $verified     = false;
         $cPassCrypted = null;
@@ -161,9 +182,9 @@ class AdminAccount
                 //login failed
                 $this->_setRetryCount($oAdmin->cLogin);
 
-                return (($oAdmin->nLoginVersuch + 1) >= 3)
+                return $this->handleLoginResult(($oAdmin->nLoginVersuch + 1) >= 3
                     ? self::ERROR_INVALID_PASSWORD_LOCKED
-                    : self::ERROR_INVALID_PASSWORD;
+                    : self::ERROR_INVALID_PASSWORD, $cLogin);
             }
             if (!isset($_SESSION['AdminAccount'])) {
                 $_SESSION['AdminAccount'] = new stdClass();
@@ -205,16 +226,16 @@ class AdminAccount
             //check password hash and update if necessary
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
-                return self::ERROR_TWO_FACTOR_AUTH_EXPIRED;
+                return $this->handleLoginResult(self::ERROR_TWO_FACTOR_AUTH_EXPIRED);
             }
 
-            return $this->logged() ? self::LOGIN_OK : self::ERROR_NOT_AUTHORIZED;
+            return $this->handleLoginResult($this->logged() ? self::LOGIN_OK : self::ERROR_NOT_AUTHORIZED, $cLogin);
         }
         $this->_setRetryCount($oAdmin->cLogin);
 
-        return (($oAdmin->nLoginVersuch + 1) >= 3)
+        return $this->handleLoginResult(($oAdmin->nLoginVersuch + 1) >= 3
             ? self::ERROR_INVALID_PASSWORD_LOCKED
-            : self::ERROR_INVALID_PASSWORD;
+            : self::ERROR_INVALID_PASSWORD, $cLogin);
     }
 
     /**

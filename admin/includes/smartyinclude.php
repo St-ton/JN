@@ -12,12 +12,9 @@ $currentTemplateDir        = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDi
 $resourcePaths             = $template->getResources(isset($Einstellungen['template']['general']['use_minify'])
     && $Einstellungen['template']['general']['use_minify'] === 'Y');
 $oAccount                  = new AdminAccount();
-// Account
-if (!isset($oAccount) || get_class_methods($oAccount) === null) {
-    require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
-    $oAccount = new AdminAccount();
-}
-$adminLoginGruppe          = !empty($oAccount->account()->oGroup->kAdminlogingruppe) ? (int)$oAccount->account()->oGroup->kAdminlogingruppe : -1;
+$adminLoginGruppe          = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
+    ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
+    : -1;
 // Einstellungen
 $configSections = Shop::DB()->query(
     "SELECT teinstellungensektion.*, COUNT(teinstellungenconf.kEinstellungenSektion) AS anz

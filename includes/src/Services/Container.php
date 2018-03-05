@@ -7,6 +7,7 @@
 namespace Services;
 
 
+use Services\JTL\AuthLoggerServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 
@@ -34,5 +35,13 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getCryptoService()
     {
         return $this->get(CryptoServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAuthLoggerService()
+    {
+        return $this->get(AuthLoggerServiceInterface::class);
     }
 }

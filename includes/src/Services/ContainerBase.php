@@ -18,15 +18,25 @@ class ContainerBase implements ContainerInterface
     protected $entries = [];
     protected $current = [];
 
+    /**
+     * @param string   $id
+     * @param callable $factory
+     * @return null|void
+     */
     public function setSingleton($id, $factory)
     {
-        if (!is_callable($factory) || !is_string($id)) {
+        if (!is_string($id) || !is_callable($factory)) {
             throw new \InvalidArgumentException();
         }
         $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_SINGLETON);
         $this->current[$id] = false;
     }
 
+    /**
+     * @param string   $id
+     * @param callable $factory
+     * @return null|void
+     */
     public function setFactory($id, $factory)
     {
         if (!is_callable($factory) || !is_string($id)) {
@@ -36,6 +46,11 @@ class ContainerBase implements ContainerInterface
         $this->current[$id] = false;
     }
 
+    /**
+     * @param string $id
+     * @return callable
+     * @throws ServiceNotFoundException
+     */
     public function getFactory($id)
     {
         $this->checkExistance($id);
@@ -43,6 +58,12 @@ class ContainerBase implements ContainerInterface
         return $this->entries[$id]->getFactory();
     }
 
+    /**
+     * @param string $id
+     * @return mixed|object
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     */
     public function get($id)
     {
         $this->checkExistance($id);
@@ -68,11 +89,19 @@ class ContainerBase implements ContainerInterface
         return $result;
     }
 
+    /**
+     * @param string $id
+     * @return bool
+     */
     public function has($id)
     {
         return isset($this->entries[$id]);
     }
 
+    /**
+     * @param string $id
+     * @throws ServiceNotFoundException
+     */
     protected function checkExistance($id)
     {
         if (!$this->has($id)) {

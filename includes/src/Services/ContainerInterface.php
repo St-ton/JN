@@ -18,6 +18,7 @@ interface ContainerInterface extends \Psr\Container\ContainerInterface
      * @param callable $factory
      * @return null
      * @throws \InvalidArgumentException
+     * @throws \Exception
      */
     public function setSingleton($id, $factory);
 

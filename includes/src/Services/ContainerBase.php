@@ -18,34 +18,49 @@ class ContainerBase implements ContainerInterface
     protected $entries = [];
     protected $current = [];
 
+    /**
+     * @inheritdoc
+     */
     public function setSingleton($id, $factory)
     {
         if (!is_callable($factory) || !is_string($id)) {
             throw new \InvalidArgumentException();
         }
+        $this->checkUninitialized($id);
+        $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_SINGLETON);
         $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_SINGLETON);
         $this->current[$id] = false;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setFactory($id, $factory)
     {
         if (!is_callable($factory) || !is_string($id)) {
             throw new \InvalidArgumentException();
         }
+        $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_FACTORY);
         $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_FACTORY);
         $this->current[$id] = false;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getFactoryMethod($id)
     {
-        $this->checkExistance($id);
+        $this->checkExistence($id);
 
         return $this->entries[$id]->getFactory();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function get($id)
     {
-        $this->checkExistance($id);
+        $this->checkExistence($id);
         if ($this->current[$id]) {
             throw new CircularReferenceException($id);
         }
@@ -68,15 +83,46 @@ class ContainerBase implements ContainerInterface
         return $result;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function has($id)
     {
         return isset($this->entries[$id]);
     }
 
-    protected function checkExistance($id)
+    /**
+     * @param $id
+     * @throws ServiceNotFoundException
+     */
+    protected function checkExistence($id)
     {
         if (!$this->has($id)) {
             throw new ServiceNotFoundException($id);
+        }
+    }
+
+    /**
+     * @param $id
+     * @throws \Exception
+     */
+    protected function checkUninitialized($id)
+    {
+        if (isset($this->entries[$id]) && $this->entries[$id]->hasInstance()) {
+            throw new \Exception('Singleton Service already used');
+        }
+    }
+
+    /**
+     * @param $id
+     * @param $type
+     * @throws \Exception
+     */
+    protected function checkOverrideMatchingType($id, $type)
+    {
+        if ($this->has($id) && $this->entries[$id]->getType() !== $type) {
+            $actual = $this->entries[$id]->getType();
+            throw new \Exception("Overriding type $actual with $type is not allowed. (component-id: $id)");
         }
     }
 }

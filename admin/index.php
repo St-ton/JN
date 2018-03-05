@@ -26,7 +26,6 @@ if ($oUpdater->getCurrentDatabaseVersion() < 308) {
         Shop::DB()->query("UPDATE `tadminlogin` SET `kAdminlogingruppe`=1;", 3);
     }
 }
-// Login
 if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     $ret['captcha'] = 0;
     $ret['csrf']    = 0;
@@ -223,9 +222,7 @@ if ($oAccount->getIsAuthenticated()) {
     if (!$oAccount->getIsTwoFaAuthenticated()) {
         // activate the 2FA-code input-field in the login-template(-page)
         $_SESSION['AdminAccount']->TwoFA_active = true;
-        $_SESSION['jtl_token']                  = isset($_POST['jtl_token'])
-            ? $_POST['jtl_token']
-            : ''; // restore first generated token from POST!
+        $_SESSION['jtl_token']                  = $_POST['jtl_token'] ?? ''; // restore first generated token from POST!
         // if our check failed, we redirect to login
         if (isset($_POST['TwoFA_code']) && '' !== $_POST['TwoFA_code']) {
             if ($oAccount->doTwoFA()) {

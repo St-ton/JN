@@ -45,7 +45,7 @@ $NaviFilter->getMetaData()->setUserSort($AktuelleKategorie);
 $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
 $pages           = $oSuchergebnisse->getPages();
 if ($pages->AktuelleSeite > 0 && $pages->MaxSeiten > 0
-    && ($oSuchergebnisse->getProductCount() === 0 || ($pages->AktuelleSeite > $pages->MaxSeiten))
+    && ($oSuchergebnisse->getVisibleProductCount() === 0 || ($pages->AktuelleSeite > $pages->MaxSeiten))
 ) {
     // diese Seite hat keine Artikel -> 301 redirect auf 1. Seite
     http_response_code(301);
@@ -53,7 +53,7 @@ if ($pages->AktuelleSeite > 0 && $pages->MaxSeiten > 0
     exit;
 }
 // Umleiten falls SEO keine Artikel ergibt
-doMainwordRedirect($NaviFilter, $oSuchergebnisse->getProductCount(), true);
+doMainwordRedirect($NaviFilter, $oSuchergebnisse->getVisibleProductCount(), true);
 // Bestsellers
 if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
     $productsIDs = $oSuchergebnisse->getProducts()->map(function ($article) {

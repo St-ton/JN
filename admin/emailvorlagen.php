@@ -520,7 +520,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
             $obj->tkundengruppe                    = $Kundengruppe;
             $obj->tbestellung                      = $bestellung;
             $obj->neues_passwort                   = $Neues_Passwort;
-            $obj->passwordResetLink                = Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd&mail=' . $kunde->cMail;
+            $obj->passwordResetLink                = Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd';
             $obj->tgutschein                       = $gutschein;
             $obj->AGB                              = $oAGBWRB;
             $obj->WRB                              = $oAGBWRB;

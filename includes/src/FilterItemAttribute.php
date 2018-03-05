@@ -12,11 +12,6 @@ class FilterItemAttribute extends FilterBaseAttribute
     use MagicCompatibilityTrait;
 
     /**
-     * @var string
-     */
-    public $cWert;
-
-    /**
      * @var int
      */
     private $attributeValueID;
@@ -37,7 +32,8 @@ class FilterItemAttribute extends FilterBaseAttribute
     private static $mapping = [
         'kMerkmal'     => 'AttributeIDCompat',
         'kMerkmalWert' => 'ValueCompat',
-        'cName'        => 'Name'
+        'cName'        => 'Name',
+        'cWert'        => 'Name'
     ];
 
     /**
@@ -173,12 +169,11 @@ class FilterItemAttribute extends FilterBaseAttribute
                 'lid' => Shop::getLanguage(),
                 'val' => $value
             ],
-            1
+            NiceDB::RET_SINGLE_OBJECT
         );
         if (!empty($seo_obj->kMerkmal)) {
-            $this->setAttributeID($seo_obj->kMerkmal);
-            $this->cWert    = $seo_obj->cWert;
-            $this->setName($seo_obj->cWert)
+            $this->setAttributeID($seo_obj->kMerkmal)
+                 ->setName($seo_obj->cWert)
                  ->setFrontendName($seo_obj->cWert);
         }
 
@@ -215,7 +210,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             ->setType('JOIN')
             ->setTable('tartikelmerkmal')
             ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
-            ->setComment('join from FilterItemAttribute::getSQLJoin()')
+            ->setComment('join from ' . __METHOD__)
             ->setOrigin(__CLASS__);
     }
 
@@ -254,8 +249,12 @@ class FilterItemAttribute extends FilterBaseAttribute
         $attributeFilters    = [];
         $activeValues        = [];
         $useAttributeFilter  = $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N';
-        $attributeLimit      = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
-        $attributeValueLimit = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
+        $attributeLimit      = $bForce
+            ? 0
+            : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
+        $attributeValueLimit = $bForce
+            ? 0
+            : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
 
         if (!$bForce && !$useAttributeFilter) {
             return $attributeFilters;
@@ -275,24 +274,23 @@ class FilterItemAttribute extends FilterBaseAttribute
         }
         $select = 'tmerkmal.cName';
         $state  = $this->productFilter->getCurrentStateData('FilterItemAttribute');
-
         // @todo?
         if (true || (!$this->productFilter->hasAttributeValue() && !$this->productFilter->hasAttributeFilter())) {
             $state->joins[] = (new FilterJoin())
-                ->setComment('join1 from FilterItemAttribute::getOptions()')
+                ->setComment('join1 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tartikelmerkmal')
                 ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
                 ->setOrigin(__CLASS__);
         }
         $state->joins[] = (new FilterJoin())
-            ->setComment('join2 from FilterItemAttribute::getOptions()')
+            ->setComment('join2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tmerkmalwert')
             ->setOn('tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert')
             ->setOrigin(__CLASS__);
         $state->joins[] = (new FilterJoin())
-            ->setComment('join4 from FilterItemAttribute::getOptions()')
+            ->setComment('join4 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tmerkmal')
             ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal')
@@ -305,21 +303,21 @@ class FilterItemAttribute extends FilterBaseAttribute
                 'COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo, ' .
                 'COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert';
             $state->joins[] = (new FilterJoin())
-                ->setComment('join1 non default lang from FilterItemAttribute::getOptions()')
+                ->setComment('non default lang join1 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tmerkmalsprache')
                 ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal 
                             AND tmerkmalsprache.kSprache = ' . $kSprache)
                 ->setOrigin(__CLASS__);
             $state->joins[] = (new FilterJoin())
-                ->setComment('join2 non default lang from FilterItemAttribute::getOptions()')
+                ->setComment('non default lang join2 from ' . __METHOD__)
                 ->setType('INNER JOIN')
                 ->setTable('tmerkmalwertsprache AS standardSprache')
                 ->setOn('standardSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
                             AND standardSprache.kSprache = ' . $kStandardSprache)
                 ->setOrigin(__CLASS__);
             $state->joins[] = (new FilterJoin())
-                ->setComment('join3 non default lang from FilterItemAttribute::getOptions()')
+                ->setComment('non default lang join3 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tmerkmalwertsprache AS fremdSprache')
                 ->setOn('fremdSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert 
@@ -328,7 +326,7 @@ class FilterItemAttribute extends FilterBaseAttribute
         } else {
             $select         = 'tmerkmalwertsprache.cWert, tmerkmalwertsprache.cSeo, tmerkmal.cName';
             $state->joins[] = (new FilterJoin())
-                ->setComment('join default lang from FilterItemAttribute::getOptions()')
+                ->setComment('join default lang from ' . __METHOD__)
                 ->setType('INNER JOIN')
                 ->setTable('tmerkmalwertsprache')
                 ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
@@ -361,7 +359,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             }
             if (count($activeAndFilterIDs) > 0) {
                 $state->joins[] = (new FilterJoin())
-                    ->setComment('join active AND filters from FilterItemAttribute::getOptions()')
+                    ->setComment('join active AND filters from ' . __METHOD__)
                     ->setType('JOIN')
                     ->setTable('(SELECT kArtikel
                                     FROM tartikelmerkmal
@@ -375,7 +373,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             if (count($activeOrFilterIDs) > 0) {
                 $select         .= ', IF(tmerkmal.nMehrfachauswahl, tartikel.kArtikel, ssj2.kArtikel) AS kArtikel';
                 $state->joins[] = (new FilterJoin())
-                    ->setComment('join active OR filter from FilterItemAttribute::getOptions()')
+                    ->setComment('join active OR filter from ' . __METHOD__)
                     ->setType('LEFT JOIN')
                     ->setTable('(SELECT DISTINCT kArtikel
                                     FROM tartikelmerkmal
@@ -410,8 +408,8 @@ class FilterItemAttribute extends FilterBaseAttribute
         );
         $qryRes                = Shop::DB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
-            ssMerkmal.nMehrfachauswahl,
-            ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
+            ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
+            ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
             FROM (" . $baseQry . ") AS ssMerkmal
             #LEFT JOIN tseo 
                 #ON tseo.kKey = ssMerkmal.kMerkmalWert
@@ -419,7 +417,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 #AND tseo.kSprache = " . $this->getLanguageID() . "
             GROUP BY ssMerkmal.kMerkmalWert
             ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert",
-            2
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
         $currentAttributeValue = $this->productFilter->getAttributeValue()->getValue();
         $additionalFilter      = new self($this->productFilter);
@@ -443,7 +441,12 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attribute->attributeValues                           = [];
                 $attributeFilterCollection[$attributeValue->kMerkmal] = $attribute;
             }
-            unset($attributeValue->nMehrfachauswahl, $attributeValue->cMMBildPfad, $attributeValue->cName, $attributeValue->cTyp);
+            unset(
+                $attributeValue->nMehrfachauswahl,
+                $attributeValue->cMMBildPfad,
+                $attributeValue->cName,
+                $attributeValue->cTyp
+            );
         }
         // add attribute values to corresponding attributes
         foreach ($qryRes as $attributeValue) {

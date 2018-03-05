@@ -482,7 +482,7 @@ class WarenkorbHelper
         // Alle Konfigurationsartikel können in den WK gelegt werden
         if ($bValid) {
             // Eindeutige ID
-            $cUnique = gibUID(10);
+            $cUnique = uniqid('', true);
             // Hauptartikel in den WK legen
             fuegeEinInWarenkorb($articleID, $count, $attributes, 0, $cUnique);
             // Konfigartikel in den WK legen
@@ -650,7 +650,7 @@ class WarenkorbHelper
                 '?a=' . $articleID .
                 '&n=' . $qty .
                 '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
-            exit();
+            exit;
         }
 
         if ($articleID > 0 && Session::Customer()->getID() > 0) {

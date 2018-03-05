@@ -74,7 +74,7 @@ class FilterBaseCategory extends AbstractFilter
     public function setSeo($languages)
     {
         if ($this->getValue() > 0) {
-            $oSeo_arr = Shop::DB()->query(
+            $oSeo_arr = Shop::DB()->queryPrepared(
                 "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                     FROM tseo
                         LEFT JOIN tkategorie
@@ -83,8 +83,9 @@ class FilterBaseCategory extends AbstractFilter
                             ON tkategoriesprache.kKategorie = tkategorie.kKategorie
                             AND tkategoriesprache.kSprache = tseo.kSprache
                     WHERE cKey = 'kKategorie' 
-                        AND kKey = " . $this->getValue() . "
+                        AND kKey = :val
                     ORDER BY tseo.kSprache",
+                ['val' => $this->getValue()],
                 NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
@@ -150,6 +151,6 @@ class FilterBaseCategory extends AbstractFilter
             ->setOrigin(__CLASS__)
             ->setTable('tkategorieartikel')
             ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
-            ->setComment('join from FilterBaseCategory');
+            ->setComment('JOIN from ' . __METHOD__);
     }
 }

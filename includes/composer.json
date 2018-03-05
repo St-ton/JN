@@ -3,7 +3,7 @@
     "type": "library",
     "homepage": "http://www.jtl-software.de",
     "require": {
-        "php": ">=5.4",
+        "php": ">=5.6",
         "Imanee/Imanee": "dev-master",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
@@ -18,7 +18,9 @@
         "erusev/parsedown": "dev-master",
         "pclzip/pclzip": "^2.8",
         "paragonie/random_compat": "~2.0",
-        "psr/container": "1.0.0"
+        "psr/container": "1.0.0",
+        "lstrojny/functional-php": "~1.7",
+        "mrclay/minify": "~3.0.0"
     },
     "require-dev": {
         "phpunit/php-token-stream": "~1.2",

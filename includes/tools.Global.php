@@ -276,11 +276,23 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'VERGLEICHSLISTE':
-            $url                = $linkHelper->getStaticRoute('news.php', false);
-            $urlFull            = $linkHelper->getStaticRoute('news.php');
+            $url                = $linkHelper->getStaticRoute('vergleichsliste.php', false);
+            $urlFull            = $linkHelper->getStaticRoute('vergleichsliste.php');
             $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
                 Shop::Lang()->get('compare') . '</a>';
             $ele->name          = Shop::Lang()->get('compare');
+            $ele->url           = $url;
+            $ele->urlFull       = $urlFull;
+            $brotnavi[]         = $ele;
+            $SieSindHierString .= '<br />';
+            break;
+
+        case 'WUNSCHLISTE':
+            $url                = $linkHelper->getStaticRoute('wunschliste.php', false);
+            $urlFull            = $linkHelper->getStaticRoute('wunschliste.php');
+            $SieSindHierString .= ' &gt; <a href="' . $urlFull . '">' .
+                Shop::Lang()->get('wishlist') . '</a>';
+            $ele->name          = Shop::Lang()->get('wishlist');
             $ele->url           = $url;
             $ele->urlFull       = $urlFull;
             $brotnavi[]         = $ele;
@@ -327,62 +339,61 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
 }
 
 /**
- * @param float $preis
- * @return mixed
- */
-function gibPreisString($preis)
-{
-    return str_replace(',', '.', sprintf('%.2f', $preis));
-}
-
-/**
- * @param float      $preis
- * @param object|int $waehrung
- * @param int        $html
- * @param int        $nNachkommastellen
+ * @param float $price
  * @return string
  */
-function gibPreisStringLocalized($preis, $waehrung = 0, $html = 1, $nNachkommastellen = 2)
+function gibPreisString($price)
 {
-    if (!$waehrung || is_numeric($waehrung)) {
-        $waehrung = Session::Currency();
-    }
-    if (get_class($waehrung) === 'stdClass') {
-        $waehrung = new Currency($waehrung->kWaehrung);
-    }
-    $localized    = number_format(
-        $preis * $waehrung->getConversionFactor(),
-        $nNachkommastellen,
-        $waehrung->getDecimalSeparator(),
-        $waehrung->getThousandsSeparator()
-    );
-    $waherungname = $html ? $waehrung->getHtmlEntity() : $waehrung->getName();
-
-    return $waehrung->getForcePlacementBeforeNumber()
-        ? ($waherungname . ' ' . $localized)
-        : ($localized . ' ' . $waherungname);
+    return str_replace(',', '.', sprintf('%.2f', $price));
 }
 
 /**
- * @param float $preis
- * @param float $MwSt
- * @param int   $nGenauigkeit
+ * @param float      $price
+ * @param object|int $currency
+ * @param int        $html
+ * @param int        $decimals
+ * @return string
+ */
+function gibPreisStringLocalized($price, $currency = 0, $html = 1, $decimals = 2)
+{
+    if ($currency === 0 || is_numeric($currency)) {
+        $currency = Session::Currency();
+    } elseif (get_class($currency) === 'stdClass') {
+        $currency = new Currency($currency->kWaehrung);
+    }
+    $localized    = number_format(
+        $price * $currency->getConversionFactor(),
+        $decimals,
+        $currency->getDecimalSeparator(),
+        $currency->getThousandsSeparator()
+    );
+    $currencyName = $html ? $currency->getHtmlEntity() : $currency->getName();
+
+    return $currency->getForcePlacementBeforeNumber()
+        ? ($currencyName . ' ' . $localized)
+        : ($localized . ' ' . $currencyName);
+}
+
+/**
+ * @param float $price
+ * @param float $taxRate
+ * @param int   $precision
  * @return float
  */
-function berechneBrutto($preis, $MwSt, $nGenauigkeit = 2)
+function berechneBrutto($price, $taxRate, $precision = 2)
 {
-    return round($preis * (100 + $MwSt) / 100, (int)$nGenauigkeit);
+    return round($price * (100 + $taxRate) / 100, (int)$precision);
 }
 
 /**
  * @param float $fPreisBrutto
- * @param float $fMwSt
- * @param int   $nGenauigkeit
+ * @param float $taxRate
+ * @param int   $precision
  * @return float
  */
-function berechneNetto($fPreisBrutto, $fMwSt, $nGenauigkeit = 2)
+function berechneNetto($fPreisBrutto, $taxRate, $precision = 2)
 {
-    return round($fPreisBrutto / (100 + (float)$fMwSt) * 100, $nGenauigkeit);
+    return round($fPreisBrutto / (100 + (float)$taxRate) * 100, $precision);
 }
 
 /**
@@ -2349,12 +2360,13 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
  */
 function gibCaptchaCode($sec)
 {
-    $code = '';
+    $cryptoService = Shop::Container()->getCryptoService();
+    $code          = '';
     switch ((int)$sec) {
         case 1:
             $chars = '1234567890';
             for ($i = 0; $i < 4; $i++) {
-                $code .= $chars{rand(0, strlen($chars) - 1)};
+                $code .= $chars{$cryptoService->randomInt(0, strlen($chars) - 1)};
             }
             break;
         case 2:
@@ -2362,7 +2374,7 @@ function gibCaptchaCode($sec)
         default:
             $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             for ($i = 0; $i < 4; $i++) {
-                $code .= $chars{rand(0, strlen($chars) - 1)};
+                $code .= $chars{$cryptoService->randomInt(0, strlen($chars) - 1)};
             }
             break;
     }
@@ -2376,6 +2388,7 @@ function gibCaptchaCode($sec)
  */
 function encodeCode($klartext)
 {
+    $cryptoService = Shop::Container()->getCryptoService();
     if (strlen($klartext) !== 4) {
         return '0';
     }
@@ -2388,7 +2401,12 @@ function encodeCode($klartext)
     $s3 = ord($klartext{2}) + $mod1 + 345;
     $s4 = ord($klartext{3}) + $mod2 + 456;
 
-    return rand(100, 999) . $s3 . rand(0, 9) . $s4 . rand(10, 99) . $s1 . $s2 . rand(1000, 9999);
+    $r1 = $cryptoService->randomInt(100, 999);
+    $r2 = $cryptoService->randomInt(0, 9);
+    $r3 = $cryptoService->randomInt(10, 99);
+    $r4 = $cryptoService->randomInt(1000, 9999);
+
+    return $r1 . $s3 . $r2 . $s4 . $r3 . $s1 . $s2 . $r4;
 }
 
 /**
@@ -2413,38 +2431,40 @@ function generiereCaptchaCode($sec)
         return false;
     }
 
+    $cryptoService = Shop::Container()->getCryptoService();
+
     $code = new stdClass();
     if ((int)$sec === 4) {
         $rnd       = time() % 4 + 1;
         $code->art = $rnd;
         switch ($rnd) {
             case 1:
-                $x1          = rand(1, 10);
-                $x2          = rand(1, 10);
+                $x1          = $cryptoService->randomInt(1, 10);
+                $x2          = $cryptoService->randomInt(1, 10);
                 $code->code  = $x1 + $x2;
                 $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
                     Shop::Lang()->get('captchaAddition') . ' ' . $x2 . '?';
                 break;
 
             case 2:
-                $x1          = rand(3, 10);
-                $x2          = rand(1, $x1 - 1);
+                $x1          = $cryptoService->randomInt(3, 10);
+                $x2          = $cryptoService->randomInt(1, $x1 - 1);
                 $code->code  = $x1 - $x2;
                 $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
                     Shop::Lang()->get('captchaSubtraction') . ' ' . $x2 . '?';
                 break;
 
             case 3:
-                $x1          = rand(2, 5);
-                $x2          = rand(2, 5);
+                $x1          = $cryptoService->randomInt(2, 5);
+                $x2          = $cryptoService->randomInt(2, 5);
                 $code->code  = $x1 * $x2;
                 $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
                     Shop::Lang()->get('captchaMultiplication') . ' ' . $x2 . '?';
                 break;
 
             case 4:
-                $x1          = rand(2, 5);
-                $x2          = rand(2, 5);
+                $x1          = $cryptoService->randomInt(2, 5);
+                $x2          = $cryptoService->randomInt(2, 5);
                 $code->code  = $x1;
                 $x1         *= $x2;
                 $code->frage = Shop::Lang()->get('captchaMathQuestion') . ' ' . $x1 . ' ' .
@@ -2457,7 +2477,7 @@ function generiereCaptchaCode($sec)
     } else {
         $code->code    = gibCaptchaCode($sec);
         $code->codeURL = Shop::getURL() . '/' . PFAD_INCLUDES . 'captcha/captcha.php?c=' .
-            encodeCode($code->code) . '&amp;s=' . $sec . '&amp;l=' . rand(0, 9);
+            encodeCode($code->code) . '&amp;s=' . $sec . '&amp;l=' . $cryptoService->randomInt(0, 9);
     }
     $code->codemd5 = md5(PFAD_ROOT . $code->code);
 
@@ -3415,6 +3435,7 @@ function baueSuchSpecialURL($kKey)
  * @param string      $cPasswort
  * @param null{string $cHashPasswort
  * @return bool|string
+ * @deprecated since 4.07
  */
 function cryptPasswort($cPasswort, $cHashPasswort = null)
 {
@@ -3708,6 +3729,7 @@ function pruefeSSL()
  * @param int    $nAnzahlStellen
  * @param string $cString
  * @return bool|string
+ * @deprecated since 4.07
  */
 function gibUID($nAnzahlStellen = 40, $cString = '')
 {
@@ -4751,10 +4773,10 @@ function validToken()
  * @param string $iso - EUR / USD
  * @param int    $id - kWaehrung
  * @param bool   $useRounding
- * @param int    $nGenauigkeit
+ * @param int    $precision
  * @return float|bool
  */
-function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $nGenauigkeit = 2)
+function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $precision = 2)
 {
     if (count(Session::Currencies()) === 0) {
         $_SESSION['Waehrungen'] = [];
@@ -4767,7 +4789,7 @@ function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $
         if (($iso !== null && $currency->getCode() === $iso) || ($id !== null && $currency->getID() === (int)$id)) {
             $newprice = $price * $currency->getConversionFactor();
 
-            return $useRounding ? round($newprice, $nGenauigkeit) : $newprice;
+            return $useRounding ? round($newprice, $precision) : $newprice;
         }
     }
 
@@ -5016,16 +5038,18 @@ function getDefaultLanguageID()
  * creates an csrf token
  *
  * @return string
+ * @throws Exception
  */
 function generateCSRFToken()
 {
-    return md5(uniqid(rand(), true));
+    return Shop::Container()->getCryptoService()->randomString(32);
 }
 
 /**
  * create a hidden input field for xsrf validation
  *
  * @return string
+ * @throws Exception
  */
 function getTokenInput()
 {
@@ -5565,14 +5589,14 @@ function checkeWarenkorbEingang()
  * @param Artikel|object $Artikel
  * @param int            $anzahl
  * @param array          $oEigenschaftwerte_arr
- * @param int            $nGenauigkeit
+ * @param int            $precision
  * @return array
  * @deprecated since 4.07
  */
-function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $nGenauigkeit = 2)
+function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $precision = 2)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return WarenkorbHelper::addToCartCheck($Artikel, $anzahl, $oEigenschaftwerte_arr, $nGenauigkeit);
+    return WarenkorbHelper::addToCartCheck($Artikel, $anzahl, $oEigenschaftwerte_arr, $precision);
 }
 
 /**

@@ -104,13 +104,13 @@ class FilterBaseTag extends AbstractFilter
                 ->setType('JOIN')
                 ->setTable('ttagartikel')
                 ->setOn('tartikel.kArtikel = ttagartikel.kArtikel')
-                ->setComment('JOIN1 from FilterBaseTag')
+                ->setComment('JOIN1 from ' . __METHOD__)
                 ->setOrigin(__CLASS__),
             (new FilterJoin())
                 ->setType('JOIN')
                 ->setTable('ttag')
                 ->setOn('ttagartikel.kTag = ttag.kTag')
-                ->setComment('JOIN2 from FilterBaseTag')
+                ->setComment('JOIN2 from ' . __METHOD__)
                 ->setOrigin(__CLASS__)
         ];
     }
@@ -130,13 +130,13 @@ class FilterBaseTag extends AbstractFilter
             $state        = $this->productFilter->getCurrentStateData();
 
             $state->joins[] = (new FilterJoin())
-                ->setComment('join1 from FilterBaseTag::getOptions()')
+                ->setComment('join1 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('ttagartikel')
                 ->setOn('ttagartikel.kArtikel = tartikel.kArtikel')
                 ->setOrigin(__CLASS__);
             $state->joins[] = (new FilterJoin())
-                ->setComment('join2 from FilterBaseTag::getOptions()')
+                ->setComment('join2 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('ttag')
                 ->setOn('ttagartikel.kTag = ttag.kTag')

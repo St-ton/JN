@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Services\Container as Container;
+
 /**
  * Class Shop
  * @method static NiceDB DB()
@@ -215,8 +217,9 @@ final class Shop
 
     /**
      * @var bool
+     * @deprecated since 4.07
      */
-    public static $isSeoMainword;
+    public static $isSeoMainword = false;
 
     /**
      * @var null|Shop
@@ -326,7 +329,7 @@ final class Shop
     /**
      * @var \Services\DefaultServicesInterface
      */
-    public static $container;
+    private static $container;
 
     /**
      * @var array
@@ -684,7 +687,7 @@ final class Shop
                   FROM tplugin 
                   WHERE nStatus = 2 
                     AND bBootstrap = 1 
-                  ORDER BY nPrio ASC', 2) ?: [];
+                  ORDER BY nPrio ASC', NiceDB::RET_ARRAY_OF_OBJECTS) ?: [];
             self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
 
@@ -736,8 +739,6 @@ final class Shop
         self::$is404           = false;
 
         self::$nSterne = verifyGPCDataInteger('nSterne');
-        // @todo:
-        self::$isSeoMainword = !(!isset($oSeo) || !is_object($oSeo) || !isset($oSeo->cSeo) || trim($oSeo->cSeo) === '');
 
         self::$kWunschliste = checkeWunschlisteParameter();
 
@@ -866,7 +867,7 @@ final class Shop
             'TagFilter'              => self::$TagFilter,
             'vergleichsliste'        => self::$vergleichsliste,
             'nDarstellung'           => self::$nDarstellung,
-            'isSeoMainword'          => self::$isSeoMainword,
+            'isSeoMainword'          => false,
             'nNewsKat'               => self::$nNewsKat,
             'cDatum'                 => self::$cDatum,
             'nAnzahl'                => self::$nAnzahl,
@@ -1269,7 +1270,7 @@ final class Shop
                 || self::$kSuchspecial > 0
                 || self::$kSuchFilter > 0)
                 || (self::$cPreisspannenFilter !== null && self::$cPreisspannenFilter > 0))
-            && (self::$isSeoMainword || self::$productFilter->getFilterCount() === 0 || !self::$bSeo)
+            && (self::$productFilter->getFilterCount() === 0 || !self::$bSeo)
         ) {
             self::$fileName      = 'filter.php';
             self::$AktuelleSeite = 'ARTIKEL';
@@ -1317,7 +1318,8 @@ final class Shop
                     $link              = self::DB()->query(
                         'SELECT kLink 
                             FROM tlink
-                            WHERE nLinkart = ' . LINKTYP_STARTSEITE . $cKundengruppenSQL, 1
+                            WHERE nLinkart = ' . LINKTYP_STARTSEITE . $cKundengruppenSQL,
+                        NiceDB::RET_SINGLE_OBJECT
                     );
                 }
                 self::$kLink = isset($link->kLink)
@@ -1421,10 +1423,7 @@ final class Shop
             }
         }
         if (self::$is404 === true) {
-            if (!isset($seo)) {
-                $seo = null;
-            }
-            executeHook(HOOK_INDEX_SEO_404, ['seo' => $seo]);
+            executeHook(HOOK_INDEX_SEO_404, ['seo' => self::getRequestUri()]);
             if (!self::$kLink) {
                 $hookInfos     = urlNotFoundRedirect([
                     'key'   => 'kLink',
@@ -1449,7 +1448,7 @@ final class Shop
      */
     public static function buildNaviFilter($cParameter_arr, $productFilter = null)
     {
-        trigger_error('class.core.Shop.php: calling buildNaviFilter() is deprecated.', E_USER_DEPRECATED);
+        trigger_error(__METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead', E_USER_DEPRECATED);
         return self::buildProductFilter($cParameter_arr, $productFilter);
     }
 
@@ -1478,7 +1477,7 @@ final class Shop
      */
     public static function getNaviFilter()
     {
-        trigger_error('class.core.Shop.php: calling getNaviFilter() is deprecated.', E_USER_DEPRECATED);
+        trigger_error(__METHOD__ . 'is deprecated. Use ' . __CLASS__ . '::getProductFilter() instead', E_USER_DEPRECATED);
         return self::getProductFilter();
     }
 
@@ -1508,6 +1507,7 @@ final class Shop
      */
     public static function checkNaviFilter($productFilter = null)
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     }
 
     /**
@@ -1515,7 +1515,7 @@ final class Shop
      */
     public static function getShopVersion()
     {
-        $oVersion = self::DB()->query('SELECT nVersion FROM tversion', 1);
+        $oVersion = self::DB()->query('SELECT nVersion FROM tversion', NiceDB::RET_SINGLE_OBJECT);
 
         return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
             ? (int)$oVersion->nVersion
@@ -1684,7 +1684,7 @@ final class Shop
      *
      * @return \Services\DefaultServicesInterface
      */
-    public function getContainer()
+    public static function Container()
     {
 
         if (!static::$container) {
@@ -1695,16 +1695,29 @@ final class Shop
     }
 
     /**
-     * Create the default container of the jtl shop
+     * Get the default container of the jtl shop
      *
-     * @return null
+     * @return \Services\DefaultServicesInterface
      */
-    private function createContainer()
+    public function _Container()
     {
-        $l                 = new \Services\Container();
-        static::$container = $l;
-        $l->setSingleton(Services\JTL\ExampleServiceInterface::class, function ($locator) {
-            return new Services\JTL\ExampleService();
+        return self::Container();
+    }
+
+    /**
+     * Create the default container of the jtl shop
+     */
+    private static function createContainer()
+    {
+        $container         = new \Services\Container();
+        static::$container = $container;
+
+        $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function(){
+            return new \Services\JTL\CryptoService();
+        });
+
+        $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function(Container $container){
+            return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
         });
     }
 }

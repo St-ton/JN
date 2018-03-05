@@ -140,7 +140,7 @@ class FilterBaseManufacturer extends AbstractFilter
             );
 
             $state->joins[] = (new FilterJoin())
-                ->setComment('join from FilterManufacturer::getOptions()')
+                ->setComment('JOIN from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('thersteller')
                 ->setOn('tartikel.kHersteller = thersteller.kHersteller')

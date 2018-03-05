@@ -46,7 +46,7 @@
                 {if $showXSellingCart}
                     <div class="col-xs-7 recommendations hidden-xs">
                         <h4 class="text-center">{lang key='customerWhoBoughtXBoughtAlsoY' section='productDetails'}</h4>
-                        {include file='snippets/product_slider.tpl' id='slider-xsell' productlist=$Xselling->Kauf->Artikel title='' showPanel=false}
+                        {include file='snippets/product_slider.tpl' id='' productlist=$Xselling->Kauf->Artikel title='' showPanel=false}
                     </div>
                 {/if}
                 {/block}

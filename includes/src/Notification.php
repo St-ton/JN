@@ -149,12 +149,6 @@ class Notification implements IteratorAggregate, Countable
             $this->add(NotificationEntry::TYPE_WARNING, 'Volltextsuche', 'Der Volltextindex ist nicht vorhanden!', 'sucheinstellungen.php');
         }
 
-        if ($status->usesDeprecatedPriceImages()) {
-            $this->add(NotificationEntry::TYPE_WARNING, 'Konfiguration',
-                'Sie nutzen Grafikpreise. Diese Funktion ist als "deprecated" markiert.<br/>Bitte beachten Sie die Hinweise unter "Storefront->Artikel->Preisanzeige".',
-                'preisanzeige.php');
-        }
-
         if ($status->hasInvalidPasswordResetMailTemplate()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
@@ -171,6 +165,13 @@ class Notification implements IteratorAggregate, Countable
                 URL_SHOP . '/admin/einstellungen.php?kSektion=3'
             );
         }
+
+        if ($status->needPasswordRehash2FA()) {
+            $this->add(NotificationEntry::TYPE_DANGER, 'Benutzerverwaltung',
+                'Der Algorithmus zur Passwortspeicherung hat sich ge&auml;ndert.<br/>Bitte erzeugen Sie neue Notfall-Codes f&uuml;r die Zwei-Faktor-Authentifizierung.',
+                'benutzerverwaltung.php');
+        }
+
 
         return $this;
     }

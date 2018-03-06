@@ -149,7 +149,7 @@
     <div class="tab-content" id="article-tabs">
         {if $useDescription}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade {if !$hasVotesHash} in active{/if}" id="tab-description">
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.description} in active{/if}" id="tab-description">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -195,7 +195,7 @@
         {/if}
         {if $useDownloads}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade {if !$hasVotesHash && !$useDescription} in active{/if}"
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.downloads} in active{/if}"
                     id="tab-downloads">
             {else}
                 <div class="panel panel-default">
@@ -213,11 +213,10 @@
             {/if}
         {/if}
         {if !empty($separatedTabs)}
-            {foreach from=$separatedTabs item=separatedTab name=separatedTabsHeader}
+            {foreach from=$separatedTabs item=separatedTab name=separatedTabsBody}
                 {if $tabanzeige}
                     <div role="tabpanel" class="tab-pane fade
-                        {if !$hasVotesHash && !$useDescription && !$useDownloads
-                            && $smarty.foreach.separatedTabsHeader.first} in active{/if}"
+                        {if $setActiveClass.separatedTabs && $smarty.foreach.separatedTabsBody.first} in active{/if}"
                         id="tab-{$separatedTab.id}">
                 {else}
                     <div class="panel panel-default">
@@ -237,7 +236,7 @@
         {/if}
         {if $useVotes}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade {if $hasVotesHash || !$useDescription && !$useDownloads && empty($separatedTabs)} in active{/if}" id="tab-votes">
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.votes} in active{/if}" id="tab-votes">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -255,8 +254,7 @@
         {/if}
         {if $useQuestionOnItem}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade
-                    {if !$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)} in active{/if}"
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.questionOnItem} in active{/if}"
                     id="tab-questionOnItem">
             {else}
                 <div class="panel panel-default">
@@ -275,9 +273,8 @@
         {/if}
         {if $usePriceFlow}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade
-                    {if !$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
-                        && !$useQuestionOnItem} in active{/if}" id="tab-priceFlow">
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.priceFlow} in active{/if}"
+                    id="tab-priceFlow">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -295,9 +292,8 @@
         {/if}
         {if $useAvailabilityNotification}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade
-                    {if !$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
-                        && !$useQuestionOnItem && !$usePriceFlow} in active{/if}" id="tab-availabilityNotification">
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.availabilityNotification} in active{/if}"
+                    id="tab-availabilityNotification">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -318,9 +314,8 @@
                 {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
                 {if $tabanzeige}
                     <div role="tabpanel" class="tab-pane fade
-                        {if !$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
-                            && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification
-                            && $smarty.foreach.mediendateigruppen.first} in active{/if}" id="tab-{$cMedienTypId}">
+                        {if $setActiveClass.mediaGroup && $smarty.foreach.mediendateigruppen.first} in active{/if}"
+                        id="tab-{$cMedienTypId}">
                 {else}
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -339,10 +334,7 @@
         {/if}
         {if $useTags}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade
-                    {if !$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
-                        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification
-                        && !$useMediaGroup} in active{/if}" id="tab-tags">
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.tags} in active{/if}" id="tab-tags">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">

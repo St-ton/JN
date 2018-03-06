@@ -735,8 +735,8 @@ class Sprache
                     $kSprachsektion  = Shop::DB()->insert('tsprachsektion', $oSektion);
                 }
 
-                $cName   = Shop::DB()->escape($cData_arr[1]);
-                $cWert   = Shop::DB()->escape($cData_arr[2]);
+                $cName   = $cData_arr[1];
+                $cWert   = $cData_arr[2];
                 $bSystem = (int)$cData_arr[3];
 
                 switch ($nTyp) {

@@ -5,95 +5,115 @@
  */
 include PFAD_ROOT . PFAD_INCLUDES . 'spiderlist_inc.php';
 
-
 $userAgent    = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 $kBesucherBot = istSpider($userAgent);
-$bJustCreated = false;
-//besucherzähler
-if (!isset($_SESSION['oBesucher'])) {
-    if ($kBesucherBot > 0) {
-        Shop::DB()->query("UPDATE tbesucherbot SET dZeit = now() WHERE kBesucherBot = " . $kBesucherBot, 4);
-    }
-    archiviereBesucher();
-    //schaue, ob für diese SessionID schon ein Besucher existiert
-    $besucher = Shop::DB()->select('tbesucher', 'cSessID', session_id());
-    if (!isset($besucher->kBesucher)) {
-        //schaue, ob für diese IP + Browser schon ein Besucher existiert
-        $besucher = Shop::DB()->select('tbesucher', 'cID', md5($userAgent . gibIP()));
-    }
-    if (!isset($besucher->kBesucher)) {
-        //erstelle neuen Besucher
-        //alltime BEsucherzähler hochsetzen
-        Shop::DB()->query("UPDATE tbesucherzaehler SET nZaehler = nZaehler+1", 4);
-        //neuen Besucher erstellen
-        $besucher = createVisitorEntry($userAgent, $kBesucherBot);
-    }
-    //Besucher in der Session festhalten, falls einer erstellt oder rausgeholt
-    if (isset($besucher->kBesucher) && $besucher->kBesucher > 0) {
-        $besucher->kBesucher   = (int)$besucher->kBesucher;
-        $besucher->kKunde      = (int)$besucher->kKunde;
-        $_SESSION['oBesucher'] = $besucher;
-    }
-    $bJustCreated = true;
+// check, if the visitor is a bot and save that
+if ($kBesucherBot > 0) {
+    Shop::DB()->queryPrepared("UPDATE tbesucherbot SET dZeit = now() WHERE kBesucherBot = :_kBesucherBot",
+        ['_kBesucherBot' => $kBesucherBot],
+        Shop::DB()::RET_AFFECTED_ROWS
+    );
 }
-//Besucheraktivität aktualisieren
-if ($bJustCreated !== true && isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0) {
-    $oVisitorReNew = restoreVisitorEntry($userAgent, $kBesucherBot);
-    // update the session (if visitor is a known customer)
-    $_SESSION['oBesucher']->kKunde = isset($_SESSION['Kunde']->kKunde)
-        ? $_SESSION['Kunde']->kKunde
-        : 0;
-    // update the databse
-    Shop::DB()->executeQueryPrepared(
-        "INSERT INTO
-            tbesucher(kBesucher, cIP, cSessID, cID, kKunde, kBestellung, cReferer, cUserAgent, cEinstiegsseite,
-                cBrowser, cAusstiegsseite, kBesucherBot, dLetzteAktivitaet, dZeit)
-            VALUES(:_kBesucher, :_cIP, :_cSessID, :_cID, :_kKunde, :_kBestellung, :_cReferer, :_cUserAgent,
-                :_cEinstiegsseite, :_cBrowser, :_cAusstiegsseite, :_kBesucherBot, :_dLetzteAktivitaet, :_dZeit
-            )
-            ON DUPLICATE KEY UPDATE
-                cIP = VALUES(cIP), cSessID = VALUES(cSessID), cID = VALUES(cID), kKunde = VALUES(kKunde),
-                kBestellung = VALUES(kBestellung), cReferer = VALUES(cReferer), cUserAgent = VALUES(cUserAgent),
-                cEinstiegsseite = VALUES(cEinstiegsseite), cBrowser = VALUES(cBrowser),
-                cAusstiegsseite = VALUES(cAusstiegsseite), kBesucherBot = VALUES(kBesucherBot),
-                dLetzteAktivitaet = VALUES(dLetzteAktivitaet), dZeit = VALUES(dZeit)
-        ;",
-        [
-            "_kBesucher" => (int)$oVisitorReNew->kBesucher, "_cIP" => $oVisitorReNew->cIP,
-            "_cSessID" => $oVisitorReNew->cSessID, "_cID" => $oVisitorReNew->cID,
-            "_kKunde" => (int)$oVisitorReNew->kKunde, "_kBestellung" => (int)$oVisitorReNew->kBestellung,
-            "_cReferer" => $oVisitorReNew->cReferer, "_cUserAgent" => $oVisitorReNew->cUserAgent,
-            "_cEinstiegsseite" => $oVisitorReNew->cEinstiegsseite, "_cBrowser" => $oVisitorReNew->cBrowser,
-            "_cAusstiegsseite" => $oVisitorReNew->cAusstiegsseite, "_kBesucherBot" => (int)$oVisitorReNew->kBesucherBot,
-            "_dLetzteAktivitaet" => $oVisitorReNew->dLetzteAktivitaet, "_dZeit" => $oVisitorReNew->dZeit
-        ],
-        3);
+// cleanup `tbesucher`
+archiviereBesucher();
+
+$oVisitor = null;
+$oVisitor = dbLookupVisitor($userAgent, gibIP());
+if (null === $oVisitor) {
+    if (isset($_SESSION['oBesucher'])) {
+        // update the session-object with a new kBesucher-ID(!) (re-write it in the session at the end of the script)
+        $oVisitor = updateVisitorObject($_SESSION['oBesucher'], 0, $userAgent, $kBesucherBot);
+    } else {
+        // create a new visitor-object
+        $oVisitor = createVisitorObject($userAgent, $kBesucherBot);
+    }
+    // get back the new ID of that visitor (and write it back into the session)
+    $oVisitor->kBesucher = dbInsertVisitor($oVisitor);
+    // allways increment the visitor-counter (if no bot)
+    Shop::DB()->query("UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1",
+        Shop::DB()::RET_AFFECTED_ROWS
+    );
+} else {
+    // prevent counting internal redirects by counting only the next request above 3 seconds
+    $iTimeDiff = (new DateTime())->getTimestamp() - (new DateTime($oVisitor->dLetzteAktivitaet))->getTimestamp();
+    if (2 < $iTimeDiff) {
+        $oVisitor = updateVisitorObject($oVisitor, $oVisitor->kBesucher, $userAgent, $kBesucherBot);
+        // update the db and simultaneously retrieve the ID to update the session below
+        $oVisitor->kBesucher = dbUpdateVisitor($oVisitor, $oVisitor->kBesucher);
+    } else {
+        // time-diff is to low! so we do nothing but update this "last-action"-time in the session
+        $oVisitor->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
+    }
+}
+// "update" the session
+$_SESSION['oBesucher'] = $oVisitor;
+
+
+/**
+ * @param string $szUserAgent
+ * @param string $szIp
+ * @return object
+ */
+function dbLookupVisitor($szUserAgent, $szIp) {
+    // check if we know that visitor (first by session-id)
+    $oVisitor = Shop::DB()->select('tbesucher', 'cSessID', session_id());
+    if (null === $oVisitor) {
+        // try to identify the visitor by its ip and user-agent
+        $oVisitor = Shop::DB()->select('tbesucher', 'cID', md5($szUserAgent . $szIp));
+    }
+
+    return $oVisitor;
+}
+
+/**
+ * @param object $oVisitor
+ * @param int    $oVisitorId
+ * @param string $szUserAgent
+ * @param int    $kBesucherBot
+ * @return object
+ */
+function updateVisitorObject($oVisitor, $oVisitorId,  $szUserAgent, $kBesucherBot)
+{
+    $oVisitor->kBesucher         = (int)$oVisitorId;
+    $oVisitor->cIP               = gibIP();
+    $oVisitor->cSessID           = session_id();
+    $oVisitor->cID               = md5($szUserAgent . gibIP());
+    $oVisitor->kKunde            = (isset($_SESSION['Kunde']) ? $_SESSION['Kunde']->kKunde : 0);
+    $oVisitor->kBestellung       = (isset($_SESSION['Kunde']) ? (refreshCustomerOrderId((int)$oVisitor->kKunde)) : 0);
+    $oVisitor->cReferer          = gibReferer();
+    $oVisitor->cUserAgent        = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
+    $oVisitor->cBrowser          = gibBrowser();
+    $oVisitor->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
+    $oVisitor->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
+    $oVisitor->kBesucherBot      = $kBesucherBot;
+
+    return $oVisitor;
 }
 
 /**
  * @param string $szUserAgent
- * @param int $kBesucherBot
+ * @param int    $kBesucherBot
  * @return object
  */
-function createVisitorEntry($szUserAgent, $kBesucherBot)
+function createVisitorObject($szUserAgent, $kBesucherBot)
 {
     $oVisitor                    = new stdClass();
+    $oVisitor->kBesucher         = 0;
     $oVisitor->cIP               = gibIP();
     $oVisitor->cSessID           = session_id();
     $oVisitor->cID               = md5($szUserAgent . gibIP());
-    $oVisitor->kKunde            = 0;
-    $oVisitor->kBestellung       = 0;
+    $oVisitor->kKunde            = (isset($_SESSION['Kunde']) ? $_SESSION['Kunde']->kKunde : 0);
+    $oVisitor->kBestellung       = (isset($_SESSION['Kunde']) ? (refreshCustomerOrderId((int)$oVisitor->kKunde)) : 0);
     $oVisitor->cEinstiegsseite   = $_SERVER['REQUEST_URI'];
     $oVisitor->cReferer          = gibReferer();
     $oVisitor->cUserAgent        = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
     $oVisitor->cBrowser          = gibBrowser();
     $oVisitor->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
-    $oVisitor->dLetzteAktivitaet = 'now()';
-    $oVisitor->dZeit             = 'now()';
+    $oVisitor->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
+    $oVisitor->dZeit             = (new \DateTime())->format('Y-m-d H:i:s');
     $oVisitor->kBesucherBot      = $kBesucherBot;
-    $oVisitor->kBesucher         = Shop::DB()->insert('tbesucher', $oVisitor);
-    //falls SuMa -> Suchstrings festhalten
-    if ($oVisitor->cReferer) {
+    // store search-string from search-engine too
+    if ('' !== $oVisitor->cReferer) {
         werteRefererAus($oVisitor->kBesucher, $oVisitor->cReferer);
     }
 
@@ -101,46 +121,39 @@ function createVisitorEntry($szUserAgent, $kBesucherBot)
 }
 
 /**
- * @param string $szUserAgent
- * @param int $kBesucherBot
- * @return object
+ * @param object $oVisitor
+ * @return int [LAST_INSERT_ID|0(on fail)]
  */
-function restoreVisitorEntry($szUserAgent, $kBesucherBot)
+function dbInsertVisitor($oVisitor)
 {
-    $oVisitor                    = new stdClass();
-    $oVisitor->cIP               = gibIP();
-    $oVisitor->cSessID           = session_id();
-    $oVisitor->cID               = md5($szUserAgent . gibIP());
-    $oVisitor->kKunde            = $_SESSION['oBesucher']->kKunde;
-    $oVisitor->kBestellung       = refreshCustomerOrderId((int)$_SESSION['oBesucher']->kKunde);
-    $oVisitor->cEinstiegsseite   = $_SESSION['oBesucher']->cEinstiegsseite;
-    $oVisitor->cReferer          = $_SESSION['oBesucher']->cReferer;
-    $oVisitor->cUserAgent        = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
-    $oVisitor->cBrowser          = gibBrowser();
-    $oVisitor->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
-    $oVisitor->dLetzteAktivitaet = 'now()';
-    $oVisitor->dZeit             = 'now()';
-    $oVisitor->kBesucherBot      = $kBesucherBot;
-    $oVisitor->kBesucher         = $_SESSION['oBesucher']->kBesucher;
+    return Shop::DB()->insert('tbesucher', $oVisitor);
+}
 
-    return $oVisitor;
+/**
+ * @param object $oVisitor
+ * @param int    $kBesucher
+ */
+function dbUpdateVisitor($oVisitor, $kBesucher)
+{
+    return Shop::DB()->update('tbesucher', 'kBesucher', $kBesucher, $oVisitor);
 }
 
 /**
  * @param int $nCustomerId
- * @return int
+ * @return int [$kBestellung|0]
  */
 function refreshCustomerOrderId($nCustomerId)
 {
     $oOrder = Shop::DB()->queryPrepared('
         SELECT `kBestellung` FROM `tbestellung` WHERE `kKunde` = :_nCustomerId
         ORDER BY `dErstellt` DESC LIMIT 1',
-    [
-        '_nCustomerId' => $nCustomerId
-    ],
-    1);
+        [
+            '_nCustomerId' => $nCustomerId
+        ],
+        Shop::DB()::RET_SINGLE_OBJECT
+    );
 
-    return $oOrder->kBestellung;
+    return (isset($oOrder->kBestellung)) ? $oOrder->kBestellung : 0;
 }
 
 /**

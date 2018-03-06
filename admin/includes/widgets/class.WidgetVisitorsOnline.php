@@ -28,8 +28,8 @@ class WidgetVisitorsOnline extends WidgetBase
         $oVisitors_arr = Shop::DB()->query(
             "SELECT
                 `otab`.*,
-                `tbestellung`.`fGesamtsumme` AS fGesamtsumme, `tkunde`.`cVorname` as cVorname,
-                `tkunde`.`cNachname` AS cNachname, `tkunde`.`dErstellt` as dErstellt,
+                `tbestellung`.`fGesamtsumme` AS fGesamtsumme, `tbestellung`.`dErstellt` as dErstellt,
+                `tkunde`.`cVorname` as cVorname, `tkunde`.`cNachname` AS cNachname,
                 `tkunde`.`cNewsletter` AS cNewsletter
             FROM `tbesucher` AS `otab`
                 INNER JOIN `tkunde` ON `otab`.`kKunde` = `tkunde`.`kKunde`
@@ -37,13 +37,15 @@ class WidgetVisitorsOnline extends WidgetBase
             WHERE `otab`.`kKunde` != 0
                 AND `otab`.`kBesucherBot` = 0
                 AND `otab`.`dLetzteAktivitaet` = (
-                    SELECT MAX(tbesucher.dLetzteAktivitaet) FROM tbesucher WHERE tbesucher.kKunde = `otab`.`kKunde`
+                    SELECT MAX(`tbesucher`.`dLetzteAktivitaet`)
+                    FROM `tbesucher`
+                    WHERE `tbesucher`.`kKunde` = `otab`.`kKunde`
                 )
             UNION
             SELECT
                 `tbesucher`.*,
-                `tbestellung`.`fGesamtsumme` as fGesamtsumme, `tkunde`.`cVorname` as cVorname,
-                `tkunde`.`cNachname` as cNachname, `tkunde`.`dErstellt` as dErstellt,
+                `tbestellung`.`fGesamtsumme` as fGesamtsumme, `tbestellung`.`dErstellt` as dErstellt,
+                `tkunde`.`cVorname` as cVorname, `tkunde`.`cNachname` as cNachname,
                 `tkunde`.`cNewsletter` as cNewsletter
             FROM
                 `tbesucher`

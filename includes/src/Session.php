@@ -278,29 +278,11 @@ class Session
             }
             $linkHelper = LinkHelper::getInstance();
             $linkGroups = $linkHelper->getLinkGroups();
-            if (TEMPLATE_COMPATIBILITY === true || Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CORE) === false) {
+            if (Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CORE) === false) {
                 $_SESSION['Linkgruppen'] = $linkGroups;
                 $manufacturerHelper      = HerstellerHelper::getInstance();
                 $manufacturers           = $manufacturerHelper->getManufacturers();
                 $_SESSION['Hersteller']  = $manufacturers;
-            }
-            if (TEMPLATE_COMPATIBILITY === true) {
-                /**
-                 * Zahlungsarten Ticket #6042
-                 * @depcrecated since 4.05
-                 */
-                $_SESSION['Zahlungsarten'] = Zahlungsart::loadAll();
-                /**
-                 * Lieferlaender Ticket #6042
-                 * @depcrecated since 4.05
-                 */
-                $_SESSION['Lieferlaender'] = Shop::DB()->query(
-                    "SELECT l.* 
-                        FROM tland AS l
-                        JOIN tversandart AS v 
-                            ON v.cLaender LIKE CONCAT('%', l.cISO, '%')
-                        GROUP BY l.cISO", 2
-                );
             }
             $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
             setzeSteuersaetze();

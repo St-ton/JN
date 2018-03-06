@@ -208,11 +208,6 @@ class AuswahlAssistent
                 $oFrage                    = $this->oFrage_assoc[$oMerkmalFilter->getValue()];
                 $oFrage->oWert_arr         = $oMerkmalFilter->getOptions();
                 $oFrage->nTotalResultCount = 0;
-
-                if (TEMPLATE_COMPATIBILITY === true) {
-                    // Used by old AWA
-                    $oFrage->oMerkmalWert_arr = $oFrage->oWert_arr;
-                }
                 foreach ($oMerkmalFilter->getOptions() as $oWert) {
                     $oFrage->nTotalResultCount                           += $oWert->getCount();
                     $oFrage->oWert_assoc[$oWert->getData('kMerkmalWert')] = $oWert;

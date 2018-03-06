@@ -24,17 +24,10 @@ class Vergleichsliste
     {
         $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
-            //new slim variant for compare list
-            if (TEMPLATE_COMPATIBILITY === false) {
-                $oArtikel           = new stdClass();
-                $tmpName            = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'cName');
-                $oArtikel->kArtikel = $kArtikel;
-                $oArtikel->cName    = $tmpName->cName;
-            } else {
-                //default mode
-                $oArtikel = new Artikel();
-                $oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
-            }
+            $oArtikel           = new stdClass();
+            $tmpName            = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'cName');
+            $oArtikel->kArtikel = $kArtikel;
+            $oArtikel->cName    = $tmpName->cName;
             if (is_array($oVariationen_arr) && count($oVariationen_arr) > 0) {
                 $oArtikel->Variationen = $oVariationen_arr;
             }
@@ -53,20 +46,10 @@ class Vergleichsliste
      */
     public function umgebungsWechsel()
     {
-        if (count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0) {
-            $defaultOptions = Artikel::getDefaultOptions();
-            foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
-                //new slim variant for compare list
-                if (TEMPLATE_COMPATIBILITY === false) {
-                    $oArtikel_tmp           = new stdClass();
-                    $oArtikel_tmp->kArtikel = $oArtikel->kArtikel;
-                } else {
-                    //default mode
-                    $oArtikel_tmp = new Artikel($oArtikel->kArtikel);
-                    $oArtikel_tmp->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
-                }
-                $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $oArtikel_tmp;
-            }
+        foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
+            $oArtikel_tmp           = new stdClass();
+            $oArtikel_tmp->kArtikel = $oArtikel->kArtikel;
+            $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $oArtikel_tmp;
         }
 
         return $this;
@@ -85,11 +68,7 @@ class Vergleichsliste
         if ($kArtikel > 0 && !$this->artikelVorhanden($kArtikel)) {
             //new slim variant for compare list
             $oArtikel = new Artikel();
-            if (TEMPLATE_COMPATIBILITY === false) {
-                $oArtikel->kArtikel = $kArtikel;
-            } else {
-                $oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
-            }
+            $oArtikel->kArtikel = $kArtikel;
             if ($kKonfigitem > 0) {
                 // Falls Konfigitem gesetzt Preise + Name überschreiben
                 if ((int)$kKonfigitem > 0 && class_exists('Konfigitem')) {

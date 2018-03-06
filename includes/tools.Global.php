@@ -2415,19 +2415,7 @@ function encodeCode($klartext)
  */
 function generiereCaptchaCode($sec)
 {
-    if ($sec === 'N' || !$sec) {
-        return false;
-    }
-
-    //fix: #340 - Sicherheitscode Unterstützung für Tiny (Shop3) Templates
-    if (TEMPLATE_COMPATIBILITY === true && $sec === 'Y') {
-        $conf = Shop::getSettings([CONF_GLOBAL]);
-        $_sec = $conf['global']['anti_spam_method'];
-        if ($_sec !== '7') {
-            $sec = $_sec;
-        }
-    }
-    if ((int)$sec === 7 || $sec === 'Y') {
+    if ($sec === 'N' || !$sec || ((int)$sec === 7 || $sec === 'Y')) {
         return false;
     }
 

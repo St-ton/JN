@@ -2250,10 +2250,7 @@ class Artikel
                 $tmpVariation->fAufpreisNetto_teigenschaftwertaufpreis = $tmpVariation->fAufpreisNetto;
             }
             $tmpVariation->kEigenschaft = (int)$tmpVariation->kEigenschaft;
-            if (($cached = Shop::get('kew_' . $tmpVariation->kEigenschaftWert)) !== null) {
-                $this->Variationen[$nZaehler]->Werte[$i] = $cached;
-                continue;
-            }
+
             $value                   = new stdClass();
             $value->kEigenschaftWert = (int)$tmpVariation->kEigenschaftWert;
             $value->kEigenschaft     = (int)$tmpVariation->kEigenschaft;
@@ -2416,7 +2413,6 @@ class Artikel
                 }
             }
             $this->Variationen[$nZaehler]->Werte[$i] = $value;
-            Shop::set('kew_' . $tmpVariation->kEigenschaftWert, $value);
         }
         foreach ($this->Variationen as $i => $oVariation) {
             $oVariation->Werte = array_merge($oVariation->Werte);

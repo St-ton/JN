@@ -215,7 +215,7 @@ class TemplateHelper
         $res      = [];
         $iterator = new DirectoryIterator(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES);
         foreach ($iterator as $fileinfo) {
-            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
+            if (!$fileinfo->isDot() && $fileinfo->isDir() && ($fileinfo->getFilename() !== 'default' || !empty($path) && $path !== 'default')) { // default template is decrapted since 5.0
                 $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
             }
         }

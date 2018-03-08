@@ -20,7 +20,8 @@
         "paragonie/random_compat": "~2.0",
         "psr/container": "1.0.0",
         "lstrojny/functional-php": "~1.7",
-        "tightenco/collect": "~5.5.0"
+        "tightenco/collect": "~5.5.0",
+        "mrclay/minify": "~3.0.0"
     },
     "require-dev": {
         "phpunit/php-token-stream": "~1.2",

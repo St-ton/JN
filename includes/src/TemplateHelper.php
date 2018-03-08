@@ -210,12 +210,12 @@ class TemplateHelper
      * @param bool $path
      * @return array
      */
-    private function getAdminTemplateFolders(bool $path = false) : array
+    private function getAdminTemplateFolders($path = false) : array
     {
         $res      = [];
         $iterator = new DirectoryIterator(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES);
         foreach ($iterator as $fileinfo) {
-            if (!$fileinfo->isDot() && $fileinfo->isDir() && $fileinfo->getFilename() !== 'default') {
+            if ($fileinfo->isDir() && $fileinfo->getFilename() !== 'default') {
                 // default template is decrapted since 5.0
                 $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
             }

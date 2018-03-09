@@ -2,24 +2,9 @@
 {assign var=show_filters value=$Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0
         || count($NaviFilter->getSearchResults(true)) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
         || $NaviFilter->getFilterCount() > 0}
-<style>
-    /*@todo: remove inline styles*/
-    ul.no-dropdown {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-    .no-dropdown .btn {
-        border-radius: 4px;
-    }
-    li span.value {
-        padding-right:40px;
-    }
-</style>
-
 <div id="result-options" class="panel-wrap{if !$show_filters} hidden-xs{/if}">
     <div class="row">
-        <div class="col-sm-8 col-sm-push-4 displayoptions form-inline text-right hidden-xs">
+        <div class="col-sm-8 col-sm-push-4 displayoptions form-inline text-right hidden-xs fs-0">
             {block name='productlist-result-options-sort'}
             <div class="form-group dropdown filter-type-FilterItemSort">
                 <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="true">
@@ -79,7 +64,7 @@
             <div id="filter-collapsible" class="collapse in top10" aria-expanded="true">
                 <nav class="panel panel-default">
                     <div id="navbar-filter" class="panel-body">
-                        <div class="form-inline2">
+                        <div class="fs-0">
                             {foreach $contentFilters as $filter}
                                 {if count($filter->getFilterCollection()) > 0}
                                     {block name='productlist-result-options-'|cat:$filter->getClassName()}

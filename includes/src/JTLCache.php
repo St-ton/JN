@@ -144,7 +144,7 @@ class JTLCache
      */
     public static function getInstance($options = [])
     {
-        return self::$instance ?? self::$instance;
+        return self::$instance ?? new self($options);
     }
 
     /**

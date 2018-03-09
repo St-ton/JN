@@ -131,12 +131,12 @@ function sendeMail($ModulId, $Object, $mail = null)
         ['kSprache', 'kKundengruppe'],
         [(int)$Sprache->kSprache, (int)$Object->tkunde->kKundengruppe]
     );
-    $AGB->cContentText     = isset($oAGBWRB->cAGBContentText) ? $oAGBWRB->cAGBContentText : '';
-    $AGB->cContentHtml     = isset($oAGBWRB->cAGBContentHtml) ? $oAGBWRB->cAGBContentHtml : '';
-    $WRB->cContentText     = isset($oAGBWRB->cWRBContentText) ? $oAGBWRB->cWRBContentText : '';
-    $WRB->cContentHtml     = isset($oAGBWRB->cWRBContentHtml) ? $oAGBWRB->cWRBContentHtml : '';
-    $WRBForm->cContentHtml = isset($oAGBWRB->cWRBFormContentHtml) ? $oAGBWRB->cWRBFormContentHtml : '';
-    $WRBForm->cContentText = isset($oAGBWRB->cWRBFormContentText) ? $oAGBWRB->cWRBFormContentText : '';
+    $AGB->cContentText     = $oAGBWRB->cAGBContentText ?? '';
+    $AGB->cContentHtml     = $oAGBWRB->cAGBContentHtml ?? '';
+    $WRB->cContentText     = $oAGBWRB->cWRBContentText ?? '';
+    $WRB->cContentHtml     = $oAGBWRB->cWRBContentHtml ?? '';
+    $WRBForm->cContentHtml = $oAGBWRB->cWRBFormContentHtml ?? '';
+    $WRBForm->cContentText = $oAGBWRB->cWRBFormContentText ?? '';
 
     $mailSmarty->assign('AGB', $AGB)
                ->assign('WRB', $WRB)
@@ -203,9 +203,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         ['kEmailvorlage', 'kSprache'],
         [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]
     );
-    $Emailvorlage->cBetreff = injectSubject(
-        $Object, (isset($Emailvorlagesprache->cBetreff) ? $Emailvorlagesprache->cBetreff : null)
-    );
+    $Emailvorlage->cBetreff = injectSubject($Object, $Emailvorlagesprache->cBetreff ?? null);
 
     if (isset($Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'])) {
         $absender_name = $Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'];
@@ -223,9 +221,7 @@ function sendeMail($ModulId, $Object, $mail = null)
 
         case MAILTEMPLATE_BESTELLBESTAETIGUNG:
             $mailSmarty->assign('Bestellung', $Object->tbestellung)
-                       ->assign('Verfuegbarkeit_arr', isset($Object->cVerfuegbarkeit_arr)
-                           ? $Object->cVerfuegbarkeit_arr
-                           : null)
+                       ->assign('Verfuegbarkeit_arr', $Object->cVerfuegbarkeit_arr ?? null)
                        ->assign('oTrustedShopsBewertenButton', null);
             // Zahlungsart Einstellungen
             if (isset($Object->tbestellung->Zahlungsart->cModulId) &&
@@ -246,9 +242,8 @@ function sendeMail($ModulId, $Object, $mail = null)
             }
             // Trusted Shops
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $langID = isset($_SESSION['cISOSprache'])
-                    ? $_SESSION['cISOSprache']
-                    : 'ger'; //workaround for testmails from backend
+                $langID = $_SESSION['cISOSprache'] ?? 'ger'; //workaround for testmails from backend
+
                 $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($langID));
                 $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(
                     StringHandler::convertISO2ISO639($langID)
@@ -712,9 +707,8 @@ function verschickeMail($mail)
                 $phpmailer->Username      = $mail->smtp_user;
                 $phpmailer->Password      = $mail->smtp_pass;
                 $phpmailer->SMTPSecure    = $mail->SMTPSecure;
-                $phpmailer->SMTPAutoTLS   = isset($mail->SMTPAutoTLS)
-                    ? $mail->SMTPAutoTLS
-                    : (empty($mail->SMTPSecure)
+                $phpmailer->SMTPAutoTLS   = $mail->SMTPAutoTLS
+                    ?? (empty($mail->SMTPSecure)
                         ? false
                         : true);
                 break;
@@ -766,7 +760,7 @@ function verschickeMail($mail)
                       ->setSubject($mail->subject)
                       ->setFromName($mail->fromName)
                       ->setFromEmail($mail->fromEmail)
-                      ->setToName((isset($mail->toName) ? $mail->toName : ''))
+                      ->setToName($mail->toName ?? '')
                       ->setToEmail($mail->toEmail)
                       ->setSent('now()')
                       ->save();
@@ -940,7 +934,7 @@ function getPDFAttachments($cPDFs, $cNames)
             if (!empty($pdfFile) && file_exists($cUploadPath . $pdfFile)) {
                 $result[] = (object)[
                     'fileName'   => $pdfFile,
-                    'publicName' => isset($cNames_arr[$key]) ? $cNames_arr[$key] : $pdfFile,
+                    'publicName' => $cNames_arr[$key] ?? $pdfFile,
                 ];
             }
         }

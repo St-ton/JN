@@ -229,9 +229,7 @@ function gibFormularDaten($nCheckout = 0)
     global $smarty, $cKundenattribut_arr, $Kunde, $Einstellungen;
 
     if (count($cKundenattribut_arr) === 0) {
-        $cKundenattribut_arr = isset($_SESSION['Kunde']->cKundenattribut_arr)
-            ? $_SESSION['Kunde']->cKundenattribut_arr
-            : [];
+        $cKundenattribut_arr = $_SESSION['Kunde']->cKundenattribut_arr ?? [];
     }
 
     if (isset($Kunde->dGeburtstag) && preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {

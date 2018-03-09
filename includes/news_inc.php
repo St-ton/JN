@@ -399,9 +399,7 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
         //url
         global $sprachURL, $requestURL;
         $requestURL = baueURL($Link, URLART_SEITE);
-        $sprachURL  = isset($Link->languageURLs)
-            ? $Link->languageURLs
-            : baueSprachURLS($Link, URLART_SEITE);
+        $sprachURL  = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
         // Canonical
         if (strpos($requestURL, '.php') === false) {
             $cCanonicalURL = Shop::getURL() . '/' . $requestURL;

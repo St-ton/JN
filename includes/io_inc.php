@@ -175,7 +175,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         fuegeEinInWarenkorbPers($kArtikel, $anzahl, $oEigenschaftwerte_arr);
     }
     $boxes         = Boxen::getInstance();
-    $pageType      = (Shop::getPageType() !== null) ? Shop::getPageType() : PAGE_UNBEKANNT;
+    $pageType      = Shop::getPageType();
     $boxesToShow   = $boxes->build($pageType, true)->render();
     $warensumme[0] = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
     $warensumme[1] = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
@@ -580,7 +580,7 @@ function getBasketItems($nTyp)
         case 0:
             $kKundengruppe = Session::CustomerGroup()->getID();
             $nAnzahl       = $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
-            $cLand         = isset($_SESSION['cLieferlandISO']) ? $_SESSION['cLieferlandISO'] : '';
+            $cLand         = $_SESSION['cLieferlandISO'] ?? '';
             $cPLZ          = '*';
 
             if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
@@ -633,9 +633,9 @@ function buildConfiguration($aValues)
     $oResponse       = new IOResponse();
     $Artikel         = new Artikel();
     $articleId       = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : (int)$aValues['a'];
-    $items           = isset($aValues['item']) ? $aValues['item'] : [];
-    $quantities      = isset($aValues['quantity']) ? $aValues['quantity'] : [];
-    $variationValues = isset($aValues['eigenschaftwert']) ? $aValues['eigenschaftwert'] : [];
+    $items           = $aValues['item'] ?? [];
+    $quantities      = $aValues['quantity'] ?? [];
+    $variationValues = $aValues['eigenschaftwert'] ?? [];
     $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, []);
     $net             = Session::CustomerGroup()->getIsMerchant();
     $Artikel->fuelleArtikel($articleId, null);

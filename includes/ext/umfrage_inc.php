@@ -57,7 +57,7 @@ function baueSeitenNavi($oUmfrageFrage_arr, $nAnzahlFragen)
                 $oNavi_arr[$i] = new stdClass();
             }
             $oNavi_arr[$i]->nSeite  = $i + 1;
-            $oNavi_arr[$i]->nVon    = isset($nSeitenAnfang_arr[$i]) ? $nSeitenAnfang_arr[$i] : 0;
+            $oNavi_arr[$i]->nVon    = $nSeitenAnfang_arr[$i] ?? 0;
             $oNavi_arr[$i]->nAnzahl = 0;
             if ($i === (count($nSeitenAnfang_arr) - 1)) {
                 $oNavi_arr[$i]->nAnzahl = $nAnzahlFragen - $nSeitenAnfang_arr[$i];

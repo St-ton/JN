@@ -29,9 +29,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                 $upload->cDateiTyp_arr      = self::formatTypen($upload->cDateiTyp);
                 $upload->cDateiListe        = implode(';', $upload->cDateiTyp_arr);
                 $upload->bVorhanden         = is_file(PFAD_UPLOADS . $upload->cUnique);
-                $uploadDatei                = isset($_SESSION['Uploader'][$upload->cUnique])
-                    ? $_SESSION['Uploader'][$upload->cUnique]
-                    : null;
+                $uploadDatei                = $_SESSION['Uploader'][$upload->cUnique] ?? null;
                 if ($uploadDatei !== null && is_object($uploadDatei)) {
                     $upload->cDateiname    = $uploadDatei->cName;
                     $upload->cDateigroesse = self::formatGroesse($uploadDatei->nBytes);
@@ -142,9 +140,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             $kBestellung = (int)$kBestellung;
             foreach (self::gibWarenkorbUploads($oWarenkorb) as &$oUploadSchema) {
                 foreach ($oUploadSchema->oUpload_arr as &$oUploadDatei) {
-                    $oUploadInfo = isset($_SESSION['Uploader'][$oUploadDatei->cUnique])
-                        ? $_SESSION['Uploader'][$oUploadDatei->cUnique]
-                        : null;
+                    $oUploadInfo = $_SESSION['Uploader'][$oUploadDatei->cUnique] ?? null;
                     if ($oUploadInfo !== null && is_object($oUploadInfo)) {
                         self::setzeUploadQueue($kBestellung, $oUploadDatei->kCustomID);
                         self::setzeUploadDatei(

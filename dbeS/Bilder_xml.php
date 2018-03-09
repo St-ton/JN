@@ -1026,13 +1026,13 @@ function erstelleThumbnail(
 function bearbeiteDeletes($xml)
 {
     executeHook(HOOK_BILDER_XML_BEARBEITEDELETES, [
-        'Artikel'          => isset($xml['del_bilder']['kArtikelPict']) ? $xml['del_bilder']['kArtikelPict'] : [],
-        'Kategorie'        => isset($xml['del_bilder']['kKategoriePict']) ? $xml['del_bilder']['kKategoriePict'] : [],
-        'KategoriePK'      => isset($xml['del_bilder']['kKategorie']) ? $xml['del_bilder']['kKategorie'] : [],
-        'Eigenschaftswert' => isset($xml['del_bilder']['kEigenschaftWertPict']) ? $xml['del_bilder']['kEigenschaftWertPict'] : [],
-        'Hersteller'       => isset($xml['del_bilder']['kHersteller']) ? $xml['del_bilder']['kHersteller'] : [],
-        'Merkmal'          => isset($xml['del_bilder']['kMerkmal']) ? $xml['del_bilder']['kMerkmal'] : [],
-        'Merkmalwert'      => isset($xml['del_bilder']['kMerkmalWert']) ? $xml['del_bilder']['kMerkmalWert'] : [],
+        'Artikel'          => $xml['del_bilder']['kArtikelPict'] ?? [],
+        'Kategorie'        => $xml['del_bilder']['kKategoriePict'] ?? [],
+        'KategoriePK'      => $xml['del_bilder']['kKategorie'] ?? [],
+        'Eigenschaftswert' => $xml['del_bilder']['kEigenschaftWertPict'] ?? [],
+        'Hersteller'       => $xml['del_bilder']['kHersteller'] ?? [],
+        'Merkmal'          => $xml['del_bilder']['kMerkmal'] ?? [],
+        'Merkmalwert'      => $xml['del_bilder']['kMerkmalWert'] ?? [],
     ]);
 
     //Artikelbilder löschen Wawi <= .99923
@@ -1173,7 +1173,7 @@ function loescheArtikelPict($kArtikelPict, $nNr = null)
         $oArtikelPict = null;
         if ((int)$nNr > 0) {
             $oArtikelPict = Shop::DB()->select('tartikelpict', 'kArtikel', $kArtikelPict, 'nNr', (int)$nNr);
-            $kArtikelPict = isset($oArtikelPict->kArtikelPict) ? $oArtikelPict->kArtikelPict : 0;
+            $kArtikelPict = $oArtikelPict->kArtikelPict ?? 0;
         }
         deleteArticleImage(null, 0, $kArtikelPict);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {

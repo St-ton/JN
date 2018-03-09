@@ -95,7 +95,7 @@ class Template
      */
     public static function getInstance()
     {
-        return self::$frontEndInstance !== null ? self::$frontEndInstance : new self();
+        return self::$frontEndInstance ?? new self();
     }
 
     /**
@@ -187,7 +187,7 @@ class Template
      */
     public function leseXML($dir = null)
     {
-        return self::$helper->getXML($dir !== null ? $dir : self::$cTemplate);
+        return self::$helper->getXML($dir ?? self::$cTemplate);
     }
 
     /**
@@ -283,7 +283,7 @@ class Template
             $_settingComparison = '==';
         }
         foreach ($hierarchy as $_h) {
-            $conf = isset($conf[$_h]) ? $conf[$_h] : null;
+            $conf = $conf[$_h] ?? null;
             if ($conf === null) {
                 return false;
             }
@@ -527,7 +527,7 @@ class Template
              self::$cTemplate]
         );
 
-        return isset($cSkin->cWert) ? $cSkin->cWert : null;
+        return $cSkin->cWert ?? null;
     }
 
     /**
@@ -707,7 +707,7 @@ class Template
     {
         $oItem_arr     = [];
         $cOrdner_arr   = self::$parent !== null ? [self::$parent] : [];
-        $cOrdner_arr[] = $cOrdner !== null ? $cOrdner : self::$cTemplate;
+        $cOrdner_arr[] = $cOrdner ?? self::$cTemplate;
 
         foreach ($cOrdner_arr as $dir) {
             $oXML = self::$helper->getXML($dir);
@@ -946,7 +946,7 @@ class Template
         if (isset($_GET['mt'])) {
             $this->setzeKundenTemplate((boolean)(int)$_GET['mt']);
             $cUrlShop_arr    = parse_url(Shop::getURL());
-            $ref             = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+            $ref             = $_SERVER['HTTP_REFERER'] ?? '';
             $cUrlReferer_arr = parse_url($ref);
             if ($bRedirect
                 && $ref !== ''

@@ -71,7 +71,7 @@ switch (true) {
             'where'  => []
         ];
 
-        $filter = isset($_GET['filter']) ? $_GET['filter'] : [];
+        $filter = $_GET['filter'] ?? [];
         $filter = array_merge($defaultFilter, $filter);
 
         // validate filter

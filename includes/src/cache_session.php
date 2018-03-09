@@ -38,9 +38,7 @@ class cache_session implements ICachingMethod
         $_SESSION[$this->options['prefix'] . $cacheID] = [
             'value'     => $content,
             'timestamp' => time(),
-            'lifetime'  => ($expiration === null)
-                ? $this->options['lifetime']
-                : $expiration
+            'lifetime'  => $expiration ?? $this->options['lifetime']
         ];
 
         return true;

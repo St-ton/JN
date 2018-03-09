@@ -123,7 +123,7 @@ class Sprache
      */
     public static function getInstance($bAutoload = true)
     {
-        return self::$instance !== null ? self::$instance : new self($bAutoload);
+        return self::$instance ?? new self($bAutoload);
     }
 
     /**
@@ -175,7 +175,7 @@ class Sprache
      */
     private static function map($method)
     {
-        return isset(self::$mapping[$method]) ? self::$mapping[$method] : null;
+        return self::$mapping[$method] ?? null;
     }
 
     /**
@@ -258,7 +258,7 @@ class Sprache
     {
         $section = Shop::DB()->select('tsprachsektion', 'kSprachsektion', (int)$kSektion);
 
-        return isset($section->cName) ? $section->cName : $default;
+        return $section->cName ?? $default;
     }
 
     /**
@@ -371,9 +371,7 @@ class Sprache
             $this->langVars[$this->cISOSprache][$cSektion] = $this->gibSektionsWerte($cSektion);
             $save                                          = true;
         }
-        $cValue = isset($this->langVars[$this->cISOSprache][$cSektion][$cName])
-            ? $this->langVars[$this->cISOSprache][$cSektion][$cName]
-            : null;
+        $cValue = $this->langVars[$this->cISOSprache][$cSektion][$cName] ?? null;
         if ($save === true) {
             // only save if values changed
             $this->saveLangVars();
@@ -408,7 +406,7 @@ class Sprache
         $oSprachWerte_arr = [];
         if ($kSektion === null) {
             $oSektion = Shop::DB()->select('tsprachsektion', 'cName', $cSektion);
-            $kSektion = isset($oSektion->kSprachsektion) ? $oSektion->kSprachsektion : 0;
+            $kSektion = $oSektion->kSprachsektion ?? 0;
         }
         $kSektion = (int)$kSektion;
         if ($kSektion > 0) {
@@ -675,9 +673,7 @@ class Sprache
 
         foreach ($oWerte_arr as $oWert) {
             if (strlen($oWert->cWert) === 0) {
-                $oWert->cWert = isset($oWert->cStandard)
-                    ? $oWert->cStandard
-                    : null;
+                $oWert->cWert = $oWert->cStandard ?? null;
             }
             $cCSVData_arr[] = [
                 $oWert->cSektionName,

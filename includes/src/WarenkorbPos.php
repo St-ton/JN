@@ -421,7 +421,7 @@ class WarenkorbPos
         $obj->cName                     = $this->cName;
         $obj->cLieferstatus             = $this->cLieferstatus;
         $obj->cArtNr                    = $this->cArtNr;
-        $obj->cEinheit                  = ($this->cEinheit === null) ? '' : $this->cEinheit;
+        $obj->cEinheit                  = $this->cEinheit ?? '';
         $obj->fPreisEinzelNetto         = $this->fPreisEinzelNetto;
         $obj->fPreis                    = $this->fPreis;
         $obj->fMwSt                     = $this->fMwSt;

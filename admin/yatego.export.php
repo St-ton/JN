@@ -75,9 +75,7 @@ if ($bWaehrungsCheck) {
                     'cName',
                     $Conf[$i]->cWertName
                 );
-                $Conf[$i]->gesetzterWert = isset($setValue->cWert)
-                    ? $setValue->cWert
-                    : null;
+                $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
             }
         }
 
@@ -111,9 +109,7 @@ function setzeEinstellung($cPost_arr, $kWaehrung)
         $exportformat->cContent        = isset($cPost_arr['cContent'])
             ? str_replace("<tab>", "\t", $cPost_arr['cContent'])
             : null;
-        $exportformat->cDateiname      = isset($cPost_arr['cDateiname'])
-            ? $cPost_arr['cDateiname']
-            : null;
+        $exportformat->cDateiname      = $cPost_arr['cDateiname'] ?? null;
         $exportformat->cKopfzeile      = isset($cPost_arr['cKopfzeile'])
             ? str_replace("<tab>", "\t", $cPost_arr['cKopfzeile'])
             : null;

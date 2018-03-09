@@ -592,9 +592,7 @@ class CheckBox
     {
         $cAnzeigeOrt_arr = self::gibCheckBoxAnzeigeOrte();
 
-        return isset($cAnzeigeOrt_arr[$nAnzeigeOrt])
-            ? $cAnzeigeOrt_arr[$nAnzeigeOrt]
-            : '';
+        return $cAnzeigeOrt_arr[$nAnzeigeOrt] ?? '';
     }
 
     /**

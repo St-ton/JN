@@ -97,7 +97,7 @@ class cache_redis implements ICachingMethod
     {
         try {
             $res = $this->_redis->set($cacheID, $content);
-            $exp = $expiration === null ? $this->options['lifetime'] : $expiration;
+            $exp = $expiration ?? $this->options['lifetime'];
             // the journal and negative expiration values should not cause an expiration
             if ($cacheID !== $this->journalID && $exp > -1) {
                 $this->_redis->setTimeout($cacheID, $exp);
@@ -121,10 +121,7 @@ class cache_redis implements ICachingMethod
         try {
             $res = $this->_redis->mset($idContent);
             foreach (array_keys($idContent) as $_cacheID) {
-                $this->_redis->setTimeout($_cacheID, (($expiration === null)
-                    ? $this->options['lifetime']
-                    : $expiration)
-                );
+                $this->_redis->setTimeout($_cacheID, $expiration ?? $this->options['lifetime']);
             }
 
             return $res;
@@ -333,9 +330,7 @@ class cache_redis implements ICachingMethod
 
         return [
             'entries'  => $numEntries,
-            'uptime'   => isset($stats['uptime_in_seconds'])
-                ? $stats['uptime_in_seconds']
-                : null, //uptime in seconds
+            'uptime'   => $stats['uptime_in_seconds'] ?? null, //uptime in seconds
             'uptime_h' => isset($stats['uptime_in_seconds'])
                 ? $this->secondsToTime($stats['uptime_in_seconds'])
                 : null, //human readable

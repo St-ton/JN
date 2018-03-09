@@ -36,9 +36,7 @@ function getAdminSectionSettings($kEinstellungenSektion)
                     ['kEinstellungenSektion', 'cName'],
                     [$kEinstellungenSektion, $conf->cWertName]
                 );
-                $conf->gesetzterWert = isset($oSetValue->cWert)
-                    ? $oSetValue->cWert
-                    : null;
+                $conf->gesetzterWert = $oSetValue->cWert ?? null;
             }
         }
     }
@@ -66,9 +64,7 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
     if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
         foreach ($oConfig_arr as $config) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = isset($cPost_arr[$config->cWertName])
-                ? $cPost_arr[$config->cWertName]
-                : null;
+            $aktWert->cWert                 = $cPost_arr[$config->cWertName] ?? null;
             $aktWert->cName                 = $config->cWertName;
             $aktWert->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
             switch ($config->cInputTyp) {
@@ -166,9 +162,7 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
     if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
         foreach ($oConfig_arr as $config) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = isset($cPost_arr[$config->cWertName])
-                ? $cPost_arr[$config->cWertName]
-                : null;
+            $aktWert->cWert                 = $cPost_arr[$config->cWertName] ?? null;
             $aktWert->cName                 = $config->cWertName;
             $aktWert->kEinstellungenSektion = $kEinstellungenSektion;
             switch ($config->cInputTyp) {
@@ -273,9 +267,7 @@ function getArrangedArray($oXML_arr, $nLevel = 1)
                         }
                         //kein Attributzweig, kein numerischer Anfang
                         $tmp_arr           = [];
-                        $tmp_arr['0 attr'] = isset($oXML_arr[$cArrayKeys[$i] . ' attr'])
-                            ? $oXML_arr[$cArrayKeys[$i] . ' attr']
-                            : null;
+                        $tmp_arr['0 attr'] = $oXML_arr[$cArrayKeys[$i] . ' attr'] ?? null;
                         $tmp_arr['0']      = $oXML_arr[$cArrayKeys[$i]];
                         unset($oXML_arr[$cArrayKeys[$i]], $oXML_arr[$cArrayKeys[$i] . ' attr']);
                         $oXML_arr[$cArrayKeys[$i]] = $tmp_arr;

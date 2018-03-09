@@ -84,9 +84,7 @@ if ($step === 'kwk_uebersicht') {
                 'cName',
                 $oConfig_arr[$i]->cWertName
             );
-            $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-                ? $oSetValue->cWert
-                : null;
+            $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
         }
     }
 

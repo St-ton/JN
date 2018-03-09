@@ -465,7 +465,7 @@ function generateSitemapXML()
                         $sitemap_data            = '';
                     }
 
-                    $tlink->cLocalizedSeo[$tlink->cISOSprache] = isset($tlink->cSeo) ? $tlink->cSeo : null;
+                    $tlink->cLocalizedSeo[$tlink->cISOSprache] = $tlink->cSeo ?? null;
                     $link                                      = baueURL($tlink, URLART_SEITE);
                     if (strlen($tlink->cSeo) > 0) {
                         $link = $tlink->cSeo;
@@ -1071,9 +1071,7 @@ function holeGoogleImage($artikel)
         );
     }
 
-    return isset($oBild->cPfad)
-        ? $oBild->cPfad
-        : null;
+    return $oBild->cPfad ?? null;
 }
 
 /**

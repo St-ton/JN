@@ -100,9 +100,8 @@ if (auth()) {
 
             if (count($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']) > 0) {
                 // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
-                $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnrede'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnredeLocalized'])
-                    ? $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnredeLocalized']
-                    : null;
+                $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnrede'] =
+                    $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cAnredeLocalized'] ?? null;
                 // Am Ende zusätzlich Ländercode cISO mitgeben
                 $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cISO'] = $cISO;
             }
@@ -122,9 +121,8 @@ if (auth()) {
 
             if (count($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']) > 0) {
                 // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
-                $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cAnrede'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cAnredeLocalized'])
-                    ? $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cAnredeLocalized']
-                    : null;
+                $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cAnrede'] =
+                    $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cAnredeLocalized'] ?? null;
                 // Am Ende zusätzlich Ländercode cISO mitgeben
                 $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cISO'] = $cISO;
             }

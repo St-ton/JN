@@ -360,9 +360,7 @@ class AuswahlAssistent
         $oFrage         = end($this->oFrage_arr);
         $kSelectedValue = end($this->kSelection_arr);
 
-        return isset($oFrage->oWert_assoc[$kSelectedValue])
-            ? $oFrage->oWert_assoc[$kSelectedValue]
-            : null;
+        return $oFrage->oWert_assoc[$kSelectedValue] ?? null;
     }
 
     /**

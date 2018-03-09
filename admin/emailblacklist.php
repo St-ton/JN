@@ -61,13 +61,11 @@ for ($i = 0; $i < $configCount; $i++) {
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-        ? $oSetValue->cWert
-        : null;
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
 // Emails auslesen und in Smarty assignen
-$oEmailBlacklist_arr = Shop::DB()->query("SELECT * FROM temailblacklist", 2);
+$oEmailBlacklist_arr = Shop::DB()->query('SELECT * FROM temailblacklist', 2);
 // Geblockte Emails auslesen und assignen
 $oEmailBlacklistBlock_arr = Shop::DB()->query("
     SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum

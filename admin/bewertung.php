@@ -152,7 +152,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
                 ['kEinstellungenSektion', 'cName'],
                 [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName]
             );
-            $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
+            $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
         }
     }
 
@@ -206,7 +206,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         ->assign('oPagiAktiv', $oPageAktiv)
         ->assign('oBewertung_arr', $oBewertung_arr)
         ->assign('oBewertungLetzten50_arr', $oBewertungLetzten50_arr)
-        ->assign('oBewertungAktiv_arr', (isset($oBewertungAktiv_arr) ? $oBewertungAktiv_arr : null))
+        ->assign('oBewertungAktiv_arr', $oBewertungAktiv_arr ?? null)
         ->assign('oConfig_arr', $oConfig_arr)
         ->assign('Sprachen', gibAlleSprachen());
 }

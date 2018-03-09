@@ -443,10 +443,7 @@ function plzimportActionDelTempImport()
  */
 function plzimportActionLoadAvailableDownloads()
 {
-    $oLand_arr = isset($_SESSION['plzimport.oLand_arr'])
-        ? $_SESSION['plzimport.oLand_arr']
-        : Shop::Cache()->get('plzimport.oLand_arr');
-
+    $oLand_arr = $_SESSION['plzimport.oLand_arr'] ?? Shop::Cache()->get('plzimport.oLand_arr');
     if ($oLand_arr === false) {
         $ch = curl_init();
         @curl_setopt($ch, CURLOPT_URL, PLZIMPORT_URL);

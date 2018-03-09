@@ -85,7 +85,7 @@ class AdminTemplate
      */
     public static function getInstance()
     {
-        return (self::$instance !== null) ? self::$instance : new self();
+        return self::$instance ?? new self();
     }
 
     /**

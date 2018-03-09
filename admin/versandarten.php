@@ -271,16 +271,10 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
     $Versandart->nMinLiefertage           = (int)$_POST['nMinLiefertage'];
     $Versandart->nMaxLiefertage           = (int)$_POST['nMaxLiefertage'];
     $Versandart->cNurAbhaengigeVersandart = $_POST['cNurAbhaengigeVersandart'];
-    $Versandart->cSendConfirmationMail    = isset($_POST['cSendConfirmationMail'])
-        ? $_POST['cSendConfirmationMail']
-        : 'Y';
-    $Versandart->cIgnoreShippingProposal  = isset($_POST['cIgnoreShippingProposal'])
-        ? $_POST['cIgnoreShippingProposal']
-        : 'N';
+    $Versandart->cSendConfirmationMail    = $_POST['cSendConfirmationMail'] ?? 'Y';
+    $Versandart->cIgnoreShippingProposal  = $_POST['cIgnoreShippingProposal'] ?? 'N';
     $Versandart->eSteuer                  = $_POST['eSteuer'];
-    $Versandart->fPreis                   = (float)str_replace(',', '.', isset($_POST['fPreis'])
-        ? $_POST['fPreis']
-        : 0);
+    $Versandart->fPreis                   = (float)str_replace(',', '.', $_POST['fPreis'] ?? 0);
     // Versandkostenfrei ab X
     $Versandart->fVersandkostenfreiAbX = (isset($_POST['versandkostenfreiAktiv']) && (int)$_POST['versandkostenfreiAktiv'] === 1)
         ? (float)$_POST['fVersandkostenfreiAbX']

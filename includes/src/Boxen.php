@@ -51,7 +51,7 @@ class Boxen
      */
     public static function getInstance()
     {
-        return self::$_instance === null ? new self() : self::$_instance;
+        return self::$_instance ?? new self();
     }
 
     /**
@@ -825,9 +825,7 @@ class Boxen
                 }
                 $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
                 foreach ($CWunschlistePos_arr as $CWunschlistePos) {
-                    $cRequestURI  = isset($_SERVER['REQUEST_URI'])
-                        ? $_SERVER['REQUEST_URI']
-                        : $_SERVER['SCRIPT_NAME'];
+                    $cRequestURI  = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'];
                     $nPosAnd      = strrpos($cRequestURI, '&');
                     $nPosQuest    = strrpos($cRequestURI, '?');
                     $nPosWD       = strpos($cRequestURI, 'wlplo=');
@@ -1951,7 +1949,7 @@ class Boxen
             if ($iCur++ >= $iMax) {
                 break;
             }
-            $cName               = isset($oCloud->cName) ? $oCloud->cName : $oCloud->cSuche;
+            $cName               = $oCloud->cName ?? $oCloud->cSuche;
             $cRandomColor        = (!$cColor || !$cColorHover) ? $gibTagFarbe() : '';
             $cName               = urlencode($cName);
             $cName               = str_replace('+', ' ', $cName); /* fix :) */

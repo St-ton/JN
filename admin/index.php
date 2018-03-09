@@ -142,7 +142,7 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)
        ->assign('pw_updated', isset($_GET['pw_updated']) && $_GET['pw_updated'] === 'true')
        ->assign('cFehler', $cFehler)
-       ->assign('updateMessage', (isset($updateMessage) ? $updateMessage : null));
+       ->assign('updateMessage', $updateMessage ?? null);
 
 
 /**
@@ -193,9 +193,7 @@ if ($oAccount->getIsAuthenticated()) {
     if (!$oAccount->getIsTwoFaAuthenticated()) {
         // activate the 2FA-code input-field in the login-template(-page)
         $_SESSION['AdminAccount']->TwoFA_active = true;
-        $_SESSION['jtl_token']                  = isset($_POST['jtl_token'])
-            ? $_POST['jtl_token']
-            : ''; // restore first generated token from POST!
+        $_SESSION['jtl_token']                  = $_POST['jtl_token'] ?? ''; // restore first generated token from POST!
         // if our check failed, we redirect to login
         if (isset($_POST['TwoFA_code']) && '' !== $_POST['TwoFA_code']) {
             if ($oAccount->doTwoFA()) {

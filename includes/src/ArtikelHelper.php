@@ -588,9 +588,7 @@ class ArtikelHelper
             return $_POST[$idx];
         }
 
-        return isset($_POST['eigenschaftwert'][$groupId])
-            ? $_POST['eigenschaftwert'][$groupId]
-            : false;
+        return $_POST['eigenschaftwert'][$groupId] ?? false;
     }
 
     /**

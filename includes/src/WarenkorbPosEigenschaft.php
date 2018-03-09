@@ -80,9 +80,7 @@ class WarenkorbPosEigenschaft
     {
         $obj = Shop::DB()->select('teigenschaft', 'kEigenschaft', $this->kEigenschaft);
 
-        return isset($obj->cName)
-            ? $obj->cName
-            : '';
+        return $obj->cName ?? '';
     }
 
     /**
@@ -94,9 +92,7 @@ class WarenkorbPosEigenschaft
     {
         $obj = Shop::DB()->select('teigenschaftwert', 'kEigenschaftWert', $this->kEigenschaftWert);
 
-        return isset($obj->cName)
-            ? $obj->cName
-            : '';
+        return $obj->cName ?? '';
     }
 
     /**

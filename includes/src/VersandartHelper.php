@@ -44,7 +44,7 @@ class VersandartHelper
      */
     public static function getInstance()
     {
-        return self::$_instance === null ? new self() : self::$_instance;
+        return self::$_instance ?? new self();
     }
 
     /**
@@ -52,9 +52,7 @@ class VersandartHelper
      */
     public function getShippingMethods()
     {
-        return $this->shippingMethods === null
-            ? Shop::DB()->query("SELECT * FROM tversandart", 2) 
-            : $this->shippingMethods;
+        return $this->shippingMethods ?? Shop::DB()->query('SELECT * FROM tversandart', NiceDB::RET_ARRAY_OF_OBJECTS);
     }
 
     /**
@@ -245,9 +243,7 @@ class VersandartHelper
                 }
             } else {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
-                $shippingMethod->cPreisLocalized = gibPreisStringLocalized($shippingCosts) . ($vatNote !== null
-                        ? $vatNote
-                        : '');
+                $shippingMethod->cPreisLocalized = gibPreisStringLocalized($shippingCosts) . ($vatNote ?? '');
                 if ($hasSpecificShippingcosts === true) {
                     $shippingMethod->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK(
                         $lieferland,
@@ -352,7 +348,7 @@ class VersandartHelper
         if (!is_array($oArtikel_arr) || count($oArtikel_arr) === 0) {
             return null;
         }
-        $cLandISO = isset($_SESSION['cLieferlandISO']) ? $_SESSION['cLieferlandISO'] : false;
+        $cLandISO = $_SESSION['cLieferlandISO'] ?? false;
         $cart     = Session::Cart();
         if (!$cLandISO) {
             //Falls kein Land in tfirma da

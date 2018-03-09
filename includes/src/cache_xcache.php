@@ -45,9 +45,7 @@ class cache_xcache implements ICachingMethod
             ($this->must_be_serialized($content)
                 ? serialize($content)
                 : $content),
-            ($expiration === null)
-                ? $this->options['lifetime']
-                : $expiration
+            $expiration ?? $this->options['lifetime']
         );
     }
 

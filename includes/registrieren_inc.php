@@ -228,7 +228,7 @@ function gibFormularDaten($nCheckout = 0)
 {
     global $smarty, $cKundenattribut_arr, $Kunde, $Einstellungen;
 
-    if (count($cKundenattribut_arr) === 0) {
+    if ($cKundenattribut_arr === null || count($cKundenattribut_arr) === 0) {
         $cKundenattribut_arr = $_SESSION['Kunde']->cKundenattribut_arr ?? [];
     }
 

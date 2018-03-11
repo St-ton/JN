@@ -22,7 +22,7 @@ final class ImageCloud
      */
     public static function getInstance()
     {
-        return self::$instance === null ?? new self();
+        return self::$instance ?? new self();
     }
 
     /**

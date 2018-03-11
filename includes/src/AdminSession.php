@@ -24,7 +24,7 @@ class AdminSession
      */
     public static function getInstance()
     {
-        return self::$_instance === null ?? new self();
+        return self::$_instance ?? new self();
     }
 
     /**

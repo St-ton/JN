@@ -8,8 +8,7 @@ namespace Services;
 
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
-use Services\JTL\AuthLoggerDatabaseService;
-use Services\JTL\AuthLoggerServiceInterface;
+use Psr\Log\LoggerInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 
@@ -38,23 +37,9 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getCryptoService();
 
     /**
-     * @return AuthLoggerServiceInterface
+     * @return LoggerInterface
      * @throws ServiceNotFoundException
      * @throws CircularReferenceException
      */
-    public function getAuthLoggerService();
-
-    /**
-     * @return AuthLoggerServiceInterface
-     * @throws ServiceNotFoundException
-     * @throws CircularReferenceException
-     */
-    public function getAuthLoggerFileService();
-
-    /**
-     * @return AuthLoggerDatabaseService
-     * @throws ServiceNotFoundException
-     * @throws CircularReferenceException
-     */
-    public function getAuthLoggerDatabaseService();
+    public function getAuthLoggerService() : LoggerInterface;
 }

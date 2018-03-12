@@ -395,13 +395,13 @@ class ProductFilter
 
     /**
      * @param bool $products
-     * @return ProductFilterSearchResults|Collection
+     * @return ProductFilterSearchResults|\Tightenco\Collect\Support\Collection
      */
     public function getSearchResults($products = true)
     {
         if ($this->searchResults === null) {
             $this->searchResults = new ProductFilterSearchResults();
-            $this->searchResults->setProducts(new Collection());
+            $this->searchResults->setProducts(new \Tightenco\Collect\Support\Collection());
         }
 
         return $products === true
@@ -1643,7 +1643,7 @@ class ProductFilter
      * @param Kategorie|null $currentCategory
      * @param bool           $fillProducts - if true, return Artikel class instances, otherwise keys only
      * @param int            $limit
-     * @return ProductFilterSearchResults|Collection
+     * @return ProductFilterSearchResults|\Tightenco\Collect\Support\Collection
      */
     public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = null)
     {
@@ -1652,7 +1652,7 @@ class ProductFilter
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         $error        = false;
         if ($this->searchResults === null) {
-            $productList         = new Collection();
+            $productList         = new \Tightenco\Collect\Support\Collection();
             $productKeys         = $this->getProductKeys();
             $productCount        = count($productKeys);
             $this->searchResults = (new ProductFilterSearchResults())
@@ -1719,7 +1719,7 @@ class ProductFilter
                 $limitPerPage = null;
             }
             foreach (array_slice($productKeys, $nLimitN, $limitPerPage) as $id) {
-                $productList->addItem((new Artikel())->fuelleArtikel($id, $opt));
+                $productList->push((new Artikel())->fuelleArtikel($id, $opt));
             }
             $this->searchResults->setVisibleProductCount($productList->count());
         }

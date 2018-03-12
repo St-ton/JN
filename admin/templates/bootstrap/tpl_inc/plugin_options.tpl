@@ -52,8 +52,6 @@
                                 {/foreach}
                             </select>
                         {elseif $oPluginEinstellungConf->cInputTyp === 'colorpicker'}
-                            {*<input class="form-control" type="text" name="{$oPluginEinstellungConf->cWertName}" id="{$oPluginEinstellungConf->cWertName}" value="{$cEinstellungWert}" />*}
-                            {*<span class="colorpicker-component input-group-addon"><i></i></span>*}
                             <div id="{$oPluginEinstellungConf->cWertName}" style="display:inline-block">
                                 <div style="background-color: {$cEinstellungWert}" class="colorSelector"></div>
                             </div>
@@ -75,7 +73,6 @@
                                     {rdelim}
                                 {rdelim});
                             </script>
-
                         {elseif $oPluginEinstellungConf->cInputTyp === 'password'}
                             <input autocomplete="off" class="form-control" id="{$oPluginEinstellungConf->cWertName}" name="{$oPluginEinstellungConf->cWertName}" type="password" value="{$cEinstellungWert}" />
                         {elseif $oPluginEinstellungConf->cInputTyp === 'textarea'}

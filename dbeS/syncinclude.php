@@ -54,6 +54,16 @@ require_once PFAD_ROOT . PFAD_DBES . 'xml_tools.php';
 require_once PFAD_ROOT . PFAD_PCLZIP . 'pclzip.lib.php';
 require_once PFAD_ROOT . PFAD_DBES . 'mappings.php';
 
+if (!function_exists('Shop')) {
+    /**
+     * @return Shop
+     */
+    function Shop()
+    {
+        return Shop::getInstance();
+    }
+}
+
 //datenbankverbindung aufbauen
 $DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.JTLCache.php';

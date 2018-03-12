@@ -1503,7 +1503,7 @@ class Artikel
                 $cMerkmalname = preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/u', '', $oMerkmal->cName);
                 if (strlen($oMerkmal->cName) > 0) {
                     $values = array_filter(array_map(function ($e) {
-                        return isset($e->cWert) ? $e->cWert : null;
+                        return $e->cWert ?? null;
                     }, $oMerkmal->oMerkmalWert_arr));
                     $this->cMerkmalAssoc_arr[$cMerkmalname] = implode(', ', $values);
                 }
@@ -1595,19 +1595,13 @@ class Artikel
             }
 
             $this->oProduktBundlePrice->fPriceDiff         = $this->oProduktBundlePrice->fVKNetto -
-                (isset($this->oProduktBundleMain->Preise->fVKNetto)
-                    ? $this->oProduktBundleMain->Preise->fVKNetto
-                    : 0);
-            $this->oProduktBundlePrice->fVKNetto           = isset($this->oProduktBundleMain->Preise->fVKNetto)
-                ? $this->oProduktBundleMain->Preise->fVKNetto
-                : 0;
+                ($this->oProduktBundleMain->Preise->fVKNetto ?? 0);
+            $this->oProduktBundlePrice->fVKNetto           = $this->oProduktBundleMain->Preise->fVKNetto ?? 0;
             $this->oProduktBundlePrice->cPriceLocalized    = [];
             $this->oProduktBundlePrice->cPriceLocalized[0] = gibPreisStringLocalized(
                 berechneBrutto(
                     $this->oProduktBundlePrice->fVKNetto,
-                    (isset($_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse])
-                        ? $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse]
-                        : null)
+                    $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse] ?? null
                 ),
                 $currency
             );
@@ -1620,9 +1614,7 @@ class Artikel
             $this->oProduktBundlePrice->cPriceDiffLocalized[0] = gibPreisStringLocalized(
                 berechneBrutto(
                     $this->oProduktBundlePrice->fPriceDiff,
-                    (isset($_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse])
-                        ? $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse]
-                        : null)
+                    $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse] ?? null
                 ),
                 $currency
             );
@@ -2270,21 +2262,11 @@ class Artikel
             }
             if ($this->kVaterArtikel > 0 || $this->nIstVater === 1) {
                 $varCombi                         = new stdClass();
-                $varCombi->kArtikel               = isset($tmpVariation->tartikel_kArtikel)
-                    ? $tmpVariation->tartikel_kArtikel
-                    : null;
-                $varCombi->tartikel_fLagerbestand = isset($tmpVariation->tartikel_fLagerbestand)
-                    ? $tmpVariation->tartikel_fLagerbestand
-                    : null;
-                $varCombi->cLagerBeachten         = isset($tmpVariation->cLagerBeachten)
-                    ? $tmpVariation->cLagerBeachten
-                    : null;
-                $varCombi->cLagerKleinerNull      = isset($tmpVariation->cLagerKleinerNull)
-                    ? $tmpVariation->cLagerKleinerNull
-                    : null;
-                $varCombi->cLagerVariation        = isset($tmpVariation->cLagerVariation)
-                    ? $tmpVariation->cLagerVariation
-                    : null;
+                $varCombi->kArtikel               = $tmpVariation->tartikel_kArtikel ?? null;
+                $varCombi->tartikel_fLagerbestand = $tmpVariation->tartikel_fLagerbestand ?? null;
+                $varCombi->cLagerBeachten         = $tmpVariation->cLagerBeachten ?? null;
+                $varCombi->cLagerKleinerNull      = $tmpVariation->cLagerKleinerNull ?? null;
+                $varCombi->cLagerVariation        = $tmpVariation->cLagerVariation ?? null;
 
                 $value->oVariationsKombi = $varCombi;
             }
@@ -2629,9 +2611,7 @@ class Artikel
                                     $req = MediaImageRequest::create([
                                         'type' => 'product',
                                         'id'   => $this->kArtikel,
-                                        'path' => isset($matrixImages[$oVariationWert1->kEigenschaftWert]->cPfad)
-                                            ? $matrixImages[$oVariationWert1->kEigenschaftWert]->cPfad
-                                            : null
+                                        'path' => $matrixImages[$oVariationWert1->kEigenschaftWert]->cPfad ?? null
                                     ]);
 
                                     $nHorizontal_arr                       = [];
@@ -2979,13 +2959,13 @@ class Artikel
                 $collapse = function ($node, $props) {
                     if (is_array($props)) {
                         foreach ($props as $prop) {
-                            $node = !isset($node->$prop) ? null : $node->$prop;
+                            $node = $node->$prop ?? null;
                         }
 
                         return $node;
                     }
                     
-                    return !isset($node->$props) ? null : $node->$props;
+                    return $node->$props ?? null;
                 };
                 $aProp = $collapse($a, $k);
                 $bProp = $collapse($b, $k);
@@ -3652,9 +3632,7 @@ class Artikel
                 }
             }
         }
-        $this->cCachedCountryCode = isset($_SESSION['cLieferlandISO'])
-            ? $_SESSION['cLieferlandISO']
-            : null;
+        $this->cCachedCountryCode = $_SESSION['cLieferlandISO'] ?? null;
         $nSchwelleBestseller      = isset($this->conf['global']['global_bestseller_minanzahl'])
             ? (float)$this->conf['global']['global_bestseller_minanzahl']
             : 10;
@@ -4023,7 +4001,7 @@ class Artikel
            gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
         if (is_object($this->Preise) && $this->kVaterArtikel === 0 && $this->nIstVater === 1) {
-            $fVKNetto         = ($this->Preise->fVKNetto !== null) ? $this->Preise->fVKNetto : 0.0;
+            $fVKNetto         = $this->Preise->fVKNetto ?? 0.0;
             $oKindSonderpreis = Shop::DB()->query(
                 "SELECT COUNT(a.kArtikel) AS nVariationsAufpreisVorhanden
                     FROM tartikel AS a
@@ -4432,7 +4410,7 @@ class Artikel
             NiceDB::RET_SINGLE_OBJECT
         );
 
-        return isset($oBewertet->bIsTopBewertet) ? $oBewertet->bIsTopBewertet : false;
+        return $oBewertet->bIsTopBewertet ?? false;
     }
 
     /**
@@ -4460,7 +4438,7 @@ class Artikel
             NiceDB::RET_SINGLE_OBJECT
         );
 
-        return isset($oBestseller->bIsBestseller) ? $oBestseller->bIsBestseller : false;
+        return $oBestseller->bIsBestseller ?? false;
     }
 
     /**
@@ -4780,9 +4758,7 @@ class Artikel
                 ),
                 $basePriceUnit->fBasePreis,
             ];
-            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = isset($this->fStaffelpreisVPE_arr[$key])
-                ? $this->fStaffelpreisVPE_arr[$key]
-                : null;
+            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = $this->fStaffelpreisVPE_arr[$key] ?? null;
         }
 
         return $this;
@@ -4833,7 +4809,7 @@ class Artikel
      */
     public function aufLagerSichtbarkeit($oArtikel = null)
     {
-        $oArtikel = $oArtikel !== null ? $oArtikel : $this;
+        $oArtikel = $oArtikel ?? $this;
         if ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
             if (isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y') {
                 return true;
@@ -5833,9 +5809,7 @@ class Artikel
         } elseif ($this->conf['global']['global_ust_auszeichnung'] === 'endpreis') {
             $ust = Shop::Lang()->get('finalprice', 'productDetails');
         }
-        $taxText = isset($this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT])
-            ? $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT]
-            : false;
+        $taxText = $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT] ?? false;
         if (!$taxText) {
             $taxText = $this->gibAttributWertNachName(ART_ATTRIBUT_STEUERTEXT);
         }
@@ -6023,9 +5997,11 @@ class Artikel
         });
 
         if (($excludeWords = Shop::Cache()->get($cacheID)) === false) {
-            $exclude      = Shop::DB()->select('texcludekeywords', 'cISOSprache', isset($_SESSION['cISOSprache'])
-                ? $_SESSION['cISOSprache']
-                : gibStandardsprache()->cISO);
+            $exclude      = Shop::DB()->select(
+                'texcludekeywords',
+                'cISOSprache',
+                $_SESSION['cISOSprache'] ?? gibStandardsprache()->cISO
+            );
             $excludeWords = isset($exclude->cKeywords)
                 ? explode(' ', $exclude->cKeywords)
                 : [];
@@ -6241,15 +6217,9 @@ class Artikel
             foreach ($this->Preise->nAnzahl_arr as $_idx => $_nAnzahl) {
                 $_v                        = [];
                 $_v['nAnzahl']             = $_nAnzahl;
-                $_v['fStaffelpreis']       = isset($this->Preise->fStaffelpreis_arr[$_idx])
-                    ? $this->Preise->fStaffelpreis_arr[$_idx]
-                    : null;
-                $_v['fPreis']              = isset($this->Preise->fPreis_arr[$_idx])
-                    ? $this->Preise->fPreis_arr[$_idx]
-                    : null;
-                $_v['cPreisLocalized']     = isset($this->Preise->cPreisLocalized_arr[$_idx])
-                    ? $this->Preise->cPreisLocalized_arr[$_idx]
-                    : null;
+                $_v['fStaffelpreis']       = $this->Preise->fStaffelpreis_arr[$_idx] ?? null;
+                $_v['fPreis']              = $this->Preise->fPreis_arr[$_idx] ?? null;
+                $_v['cPreisLocalized']     = $this->Preise->cPreisLocalized_arr[$_idx] ?? null;
                 $tierPrices[]              = $_v;
             }
         }
@@ -6274,9 +6244,7 @@ class Artikel
         if (!isset($_SESSION['Link_Versandseite'])) {
             setzeLinks();
         }
-        $taxText = isset($this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT])
-            ? $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT]
-            : false;
+        $taxText = $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT] ?? false;
 
         if (!$taxText) {
             $taxText = $this->gibAttributWertNachName(ART_ATTRIBUT_STEUERTEXT);

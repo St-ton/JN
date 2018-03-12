@@ -280,9 +280,7 @@ class Preise
                         $priceGetter = "fPreis{$i}";
 
                         $this->{$scaleGetter} = (int)$price->nAnzahlAb;
-                        $this->{$priceGetter} = ($specialPriceValue !== null)
-                            ? $specialPriceValue
-                            : (double)$price->fVKNetto;
+                        $this->{$priceGetter} = $specialPriceValue ?? (double)$price->fVKNetto;
                     }
 
                     $this->nAnzahl_arr[] = (int)$price->nAnzahlAb;

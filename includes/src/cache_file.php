@@ -59,14 +59,10 @@ class cache_file implements ICachingMethod
 
         return file_put_contents(
                 $fileName,
-                serialize(
-                    [
-                        'value'    => $content,
-                        'lifetime' => ($expiration === null)
-                            ? $this->options['lifetime']
-                            : $expiration
-                    ]
-                )
+                serialize([
+                    'value'    => $content,
+                    'lifetime' => $expiration ?? $this->options['lifetime']
+                ])
             ) !== false;
     }
 

@@ -83,7 +83,7 @@ class KategorieHelper
         self::$kKundengruppe = $kKundengruppe;
         self::$config        = $config;
 
-        return self::$instance === null ? new self() : self::$instance;
+        return self::$instance ?? new self();
     }
 
     /**
@@ -243,12 +243,8 @@ class KategorieHelper
                 }
                 unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
                 // Attribute holen
-                $_cat->categoryFunctionAttributes = isset($functionAttributes[$_cat->kKategorie])
-                    ? $functionAttributes[$_cat->kKategorie]
-                    : [];
-                $_cat->categoryAttributes         = isset($localizedAttributes[$_cat->kKategorie])
-                    ? $localizedAttributes[$_cat->kKategorie]
-                    : [];
+                $_cat->categoryFunctionAttributes = $functionAttributes[$_cat->kKategorie] ?? [];
+                $_cat->categoryAttributes         = $localizedAttributes[$_cat->kKategorie] ?? [];
                 /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
                 $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
                 //interne Verlinkung $#k:X:Y#$
@@ -455,12 +451,8 @@ class KategorieHelper
                 }
             }
             unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
-            $_cat->categoryFunctionAttributes = isset($functionAttributes[$_cat->kKategorie])
-                ? $functionAttributes[$_cat->kKategorie]
-                : [];
-            $_cat->categoryAttributes         = isset($localizedAttributes[$_cat->kKategorie])
-                ? $localizedAttributes[$_cat->kKategorie]
-                : [];
+            $_cat->categoryFunctionAttributes = $functionAttributes[$_cat->kKategorie] ?? [];
+            $_cat->categoryAttributes         = $localizedAttributes[$_cat->kKategorie] ?? [];
             /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
             $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
             //interne Verlinkung $#k:X:Y#$
@@ -740,9 +732,7 @@ class KategorieHelper
                 $cKategorielistenHTML_arr[0] = function_exists('gibKategorienHTML')
                     ? gibKategorienHTML(
                         $startCat,
-                        isset($expanded->elemente)
-                            ? $expanded->elemente
-                            : null,
+                        $expanded->elemente ?? null,
                         0,
                         isset($currentCategory->kKategorie)
                             ? (int)$currentCategory->kKategorie

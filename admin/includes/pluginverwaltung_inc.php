@@ -1841,9 +1841,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     $oPlugin->cBeschreibung        = $baseNode['Description'];
     $oPlugin->cAutor               = $baseNode['Author'];
     $oPlugin->cURL                 = $baseNode['URL'];
-    $oPlugin->cIcon                = isset($baseNode['Icon'])
-        ? $baseNode['Icon']
-        : null;
+    $oPlugin->cIcon                = $baseNode['Icon'] ?? null;
     $oPlugin->cVerzeichnis         = $cVerzeichnis;
     $oPlugin->cPluginID            = $baseNode['PluginID'];
     $oPlugin->cFehler              = '';
@@ -1921,9 +1919,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
         }
         $nVersionTMP = (int)$Version_arr['nr'];
         $xy          = trim(str_replace('attr', '', $i));
-        $cSQLDatei   = isset($versionNode[$xy]['SQL'])
-            ? $versionNode[$xy]['SQL']
-            : '';
+        $cSQLDatei   = $versionNode[$xy]['SQL'] ?? '';
         if ($cSQLDatei === '') {
             continue;
         }
@@ -2027,17 +2023,15 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     && count($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) > 0
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']
         : [];
-    $cTemplate_arr  = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates']) &&
-    is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
+    $cTemplate_arr  = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
         ? (array)$XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template']
         : [];
     $mailNode       = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'])
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template']
         : [];
-    $localeNode     = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable'])
-        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable']
-        : [];
+    $localeNode     = $XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable'] ?? [];
     $widgetsNode    = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']
@@ -2327,7 +2321,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oLink->nLinkart           = LINKTYP_PLUGIN;
         $oLink->cSichtbarNachLogin = $Link_arr['VisibleAfterLogin'];
         $oLink->cDruckButton       = $Link_arr['PrintButton'];
-        $oLink->cNoFollow          = isset($Link_arr['NoFollow']) ? $Link_arr['NoFollow'] : null;
+        $oLink->cNoFollow          = $Link_arr['NoFollow'] ?? null;
         $oLink->nSort              = LINKTYP_PLUGIN;
         $oLink->bSSL               = isset($Link_arr['SSL'])
             ? (int)$Link_arr['SSL']
@@ -2434,15 +2428,9 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             $oPluginLinkDatei                      = new stdClass();
             $oPluginLinkDatei->kPlugin             = $kPlugin;
             $oPluginLinkDatei->kLink               = $kLink;
-            $oPluginLinkDatei->cDatei              = isset($Link_arr['Filename'])
-                ? $Link_arr['Filename']
-                : null;
-            $oPluginLinkDatei->cTemplate           = isset($Link_arr['Template'])
-                ? $Link_arr['Template']
-                : null;
-            $oPluginLinkDatei->cFullscreenTemplate = isset($Link_arr['FullscreenTemplate'])
-                ? $Link_arr['FullscreenTemplate']
-                : null;
+            $oPluginLinkDatei->cDatei              = $Link_arr['Filename'] ?? null;
+            $oPluginLinkDatei->cTemplate           = $Link_arr['Template'] ?? null;
+            $oPluginLinkDatei->cFullscreenTemplate = $Link_arr['FullscreenTemplate'] ?? null;
 
             Shop::DB()->insert('tpluginlinkdatei', $oPluginLinkDatei);
         } else {
@@ -2461,12 +2449,8 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oZahlungsart->cName                  = $Method_arr['Name'];
         $oZahlungsart->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
         $oZahlungsart->cKundengruppen         = '';
-        $oZahlungsart->cPluginTemplate        = isset($Method_arr['TemplateFile'])
-            ? $Method_arr['TemplateFile']
-            : null;
-        $oZahlungsart->cZusatzschrittTemplate = isset($Method_arr['AdditionalTemplateFile'])
-            ? $Method_arr['AdditionalTemplateFile']
-            : null;
+        $oZahlungsart->cPluginTemplate        = $Method_arr['TemplateFile'] ?? null;
+        $oZahlungsart->cZusatzschrittTemplate = $Method_arr['AdditionalTemplateFile'] ?? null;
         $oZahlungsart->nSort                  = isset($Method_arr['Sort'])
             ? (int)$Method_arr['Sort']
             : 0;
@@ -2512,18 +2496,10 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oPluginZahlungsartKlasse                         = new stdClass();
         $oPluginZahlungsartKlasse->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
         $oPluginZahlungsartKlasse->kPlugin                = $kPlugin;
-        $oPluginZahlungsartKlasse->cClassPfad             = isset($Method_arr['ClassFile'])
-            ? $Method_arr['ClassFile']
-            : null;
-        $oPluginZahlungsartKlasse->cClassName             = isset($Method_arr['ClassName'])
-            ? $Method_arr['ClassName']
-            : null;
-        $oPluginZahlungsartKlasse->cTemplatePfad          = isset($Method_arr['TemplateFile'])
-            ? $Method_arr['TemplateFile']
-            : null;
-        $oPluginZahlungsartKlasse->cZusatzschrittTemplate = isset($Method_arr['AdditionalTemplateFile'])
-            ? $Method_arr['AdditionalTemplateFile']
-            : null;
+        $oPluginZahlungsartKlasse->cClassPfad             = $Method_arr['ClassFile'] ?? null;
+        $oPluginZahlungsartKlasse->cClassName             = $Method_arr['ClassName'] ?? null;
+        $oPluginZahlungsartKlasse->cTemplatePfad          = $Method_arr['TemplateFile'] ?? null;
+        $oPluginZahlungsartKlasse->cZusatzschrittTemplate = $Method_arr['AdditionalTemplateFile'] ?? null;
 
         Shop::DB()->insert('tpluginzahlungsartklasse', $oPluginZahlungsartKlasse);
 
@@ -2781,28 +2757,14 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oTemplate->cBeschreibung = is_array($Template_arr['Description'])
             ? $Template_arr['Description'][0]
             : $Template_arr['Description'];
-        $oTemplate->cMailTyp      = isset($Template_arr['Type'])
-            ? $Template_arr['Type']
-            : 'text/html';
+        $oTemplate->cMailTyp      = $Template_arr['Type'] ?? 'text/html';
         $oTemplate->cModulId      = $Template_arr['ModulId'];
-        $oTemplate->cDateiname    = isset($Template_arr['Filename'])
-            ? $Template_arr['Filename']
-            : null;
-        $oTemplate->cAktiv        = isset($Template_arr['Active'])
-            ? $Template_arr['Active']
-            : 'N';
-        $oTemplate->nAKZ          = isset($Template_arr['AKZ'])
-            ? $Template_arr['AKZ']
-            : 0;
-        $oTemplate->nAGB          = isset($Template_arr['AGB'])
-            ? $Template_arr['AGB']
-            : 0;
-        $oTemplate->nWRB          = isset($Template_arr['WRB'])
-            ? $Template_arr['WRB']
-            : 0;
-        $oTemplate->nWRBForm      = isset($Template_arr['WRBForm'])
-            ? $Template_arr['WRBForm']
-            : 0;
+        $oTemplate->cDateiname    = $Template_arr['Filename'] ?? null;
+        $oTemplate->cAktiv        = $Template_arr['Active'] ?? 'N';
+        $oTemplate->nAKZ          = $Template_arr['AKZ'] ?? 0;
+        $oTemplate->nAGB          = $Template_arr['AGB'] ?? 0;
+        $oTemplate->nWRB          = $Template_arr['WRB'] ?? 0;
+        $oTemplate->nWRBForm      = $Template_arr['WRBForm'] ?? 0;
         // tpluginemailvorlage füllen
         $kEmailvorlage = Shop::DB()->insert('tpluginemailvorlage', $oTemplate);
 
@@ -2832,12 +2794,8 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                 $oTemplateSprache->cBetreff      = $TemplateLanguage_arr['Subject'];
                 $oTemplateSprache->cContentHtml  = $TemplateLanguage_arr['ContentHtml'];
                 $oTemplateSprache->cContentText  = $TemplateLanguage_arr['ContentText'];
-                $oTemplateSprache->cPDFS         = isset($TemplateLanguage_arr['PDFS'])
-                    ? $TemplateLanguage_arr['PDFS']
-                    : null;
-                $oTemplateSprache->cDateiname    = isset($TemplateLanguage_arr['Filename'])
-                    ? $TemplateLanguage_arr['Filename']
-                    : null;
+                $oTemplateSprache->cPDFS         = $TemplateLanguage_arr['PDFS'] ?? null;
+                $oTemplateSprache->cDateiname    = $TemplateLanguage_arr['Filename'] ?? null;
 
                 if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
                     Shop::DB()->insert('tpluginemailvorlagesprache', $oTemplateSprache);
@@ -3026,19 +2984,11 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oExportformat->cContent         = (isset($Format_arr['Content']) && strlen($Format_arr['Content']) > 0)
             ? $Format_arr['Content']
             : 'PluginContentFile_' . $Format_arr['ContentFile'];
-        $oExportformat->cFusszeile       = isset($Format_arr['Footer'])
-            ? $Format_arr['Footer']
-            : null;
-        $oExportformat->cKodierung       = isset($Format_arr['Encoding'])
-            ? $Format_arr['Encoding']
-            : 'ASCII';
+        $oExportformat->cFusszeile       = $Format_arr['Footer'] ?? null;
+        $oExportformat->cKodierung       = $Format_arr['Encoding'] ?? 'ASCII';
         $oExportformat->nSpecial         = 0;
-        $oExportformat->nVarKombiOption  = isset($Format_arr['VarCombiOption'])
-            ? $Format_arr['VarCombiOption']
-            : 1;
-        $oExportformat->nSplitgroesse    = isset($Format_arr['SplitSize'])
-            ? $Format_arr['SplitSize']
-            : 0;
+        $oExportformat->nVarKombiOption  = $Format_arr['VarCombiOption'] ?? 1;
+        $oExportformat->nSplitgroesse    = $Format_arr['SplitSize'] ?? 0;
         $oExportformat->dZuletztErstellt = '0000-00-00 00:00:00';
         if (is_array($oExportformat->cKopfzeile)) {
             //@todo: when cKopfzeile is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
@@ -3118,7 +3068,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             $oFile->kPlugin = $kPlugin;
             $oFile->type    = 'css';
             $oFile->path     = $file['name'];
-            $oFile->priority = isset($file['priority']) ? $file['priority'] : 5;
+            $oFile->priority = $file['priority'] ?? 5;
             Shop::DB()->insert('tplugin_resources', $oFile);
             unset($oFile);
         }
@@ -3129,8 +3079,8 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             $oFile->kPlugin = $kPlugin;
             $oFile->type    = 'js';
             $oFile->path     = $file['name'];
-            $oFile->priority = isset($file['priority']) ? $file['priority'] : 5;
-            $oFile->position = isset($file['position']) ? $file['position'] : 'head';
+            $oFile->priority = $file['priority'] ?? 5;
+            $oFile->position = $file['position'] ?? 'head';
             Shop::DB()->insert('tplugin_resources', $oFile);
             unset($oFile);
         }
@@ -3668,12 +3618,10 @@ function makeXMLToObj($XML)
         $nLastVersionKey = count($node['Install'][0]['Version']) / 2 - 1;
 
         $oObj->cName           = $node['Name'];
-        $oObj->cDescription    = isset($node['Description']) ? $node['Description'] : '';
-        $oObj->cAuthor         = isset($node['Author']) ? $node['Author'] : '';
+        $oObj->cDescription    = $node['Description'] ?? '';
+        $oObj->cAuthor         = $node['Author'] ?? '';
         $oObj->cPluginID       = $node['PluginID'];
-        $oObj->cIcon           = isset($node['Icon'])
-            ? $node['Icon']
-            : null;
+        $oObj->cIcon           = $node['Icon'] ?? null;
         $oObj->cVerzeichnis    = $XML['cVerzeichnis'];
         $oObj->shop4compatible = !empty($XML['shop4compatible'])
             ? $XML['shop4compatible']

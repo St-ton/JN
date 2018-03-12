@@ -89,8 +89,8 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
             Shop::Lang()->get('bewertung', 'breadcrumb'),
             'bewertung.php?a=' . $AktuellerArtikel->kArtikel . '&bfa=1'))
         ->assign('Artikel', $AktuellerArtikel)
-        ->assign('requestURL', isset($requestURL) ? $requestURL : null)
-        ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null);
+        ->assign('requestURL', $requestURL ?? null)
+        ->assign('sprachURL', $sprachURL ?? null);
 
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     Shop::Smarty()->display('productdetails/review_form.tpl');

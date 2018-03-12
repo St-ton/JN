@@ -174,7 +174,7 @@ class Session
             // session upgrade from 4.05 -> 4.06 - update with class instance
             $globalsAktualisieren = true;
         }
-        $lang    = isset($_GET['lang']) ? $_GET['lang'] : '';
+        $lang    = $_GET['lang'] ?? '';
         $checked = false;
         if (isset($_SESSION['kSprache'])) {
             checkeSpracheWaehrung($lang);
@@ -380,7 +380,7 @@ class Session
      */
     public function getBrowserLanguage($cAllowed_arr, $cDefault)
     {
-        $cLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : null;
+        $cLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
 
         if (empty($cLanguage)) {
             return $cDefault;
@@ -444,7 +444,7 @@ class Session
         );
         $_SESSION['Warenkorb'] = new Warenkorb();
         // WarenkorbPers loeschen
-        $oWarenkorbPers = new WarenkorbPers((isset($_SESSION['Kunde']->kKunde) ? $_SESSION['Kunde']->kKunde : 0));
+        $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde ?? 0);
         $oWarenkorbPers->entferneAlles();
 
         return $this;
@@ -475,9 +475,7 @@ class Session
      */
     public static function Customer()
     {
-        return isset($_SESSION['Kunde'])
-            ? $_SESSION['Kunde']
-            : new Kunde();
+        return $_SESSION['Kunde'] ?? new Kunde();
     }
 
     /**
@@ -485,9 +483,7 @@ class Session
      */
     public static function CustomerGroup()
     {
-        return isset($_SESSION['Kundengruppe'])
-            ? $_SESSION['Kundengruppe']
-            : (new Kundengruppe())->loadDefaultGroup();
+        return $_SESSION['Kundengruppe'] ?? (new Kundengruppe())->loadDefaultGroup();
     }
 
     /**
@@ -508,9 +504,7 @@ class Session
      */
     public static function Languages()
     {
-        return isset($_SESSION['Sprachen'])
-            ? $_SESSION['Sprachen']
-            : [];
+        return $_SESSION['Sprachen'] ?? [];
     }
 
     /**
@@ -534,9 +528,7 @@ class Session
      */
     public static function Currency()
     {
-        return isset($_SESSION['Waehrung'])
-            ? $_SESSION['Waehrung']
-            : (new Currency())->getDefault();
+        return $_SESSION['Waehrung'] ?? (new Currency())->getDefault();
     }
 
     /**
@@ -544,9 +536,7 @@ class Session
      */
     public static function Cart()
     {
-        return isset($_SESSION['Warenkorb'])
-            ? $_SESSION['Warenkorb']
-            : new Warenkorb();
+        return $_SESSION['Warenkorb'] ?? new Warenkorb();
     }
 
     /**
@@ -554,9 +544,7 @@ class Session
      */
     public static function Currencies()
     {
-        return isset($_SESSION['Waehrungen'])
-            ? $_SESSION['Waehrungen']
-            : [];
+        return $_SESSION['Waehrungen'] ?? [];
     }
 
     /**

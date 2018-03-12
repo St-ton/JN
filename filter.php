@@ -116,7 +116,7 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
             $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
             $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
                 $KategorieInhalt->Unterkategorien,
-                isset($KategorieInhalt->TopArtikel) ? $KategorieInhalt->TopArtikel : 0
+                $KategorieInhalt->TopArtikel ?? 0
             );
         }
         $smarty->assign('KategorieInhalt', $KategorieInhalt);
@@ -156,8 +156,8 @@ $smarty->assign('NaviFilter', $NaviFilter)
        ->assign('Navigation', $oNavigationsinfo->getBreadCrumb())
        ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())
        ->assign('Suchergebnisse', $oSuchergebnisse)
-       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
-       ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null)
+       ->assign('requestURL', $requestURL ?? null)
+       ->assign('sprachURL', $sprachURL ?? null)
        ->assign('oNavigationsinfo', $oNavigationsinfo)
        ->assign('SEO', true)
        ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->getProductCount() >=

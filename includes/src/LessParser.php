@@ -84,8 +84,7 @@ class LessParser
      */
     public function get($key, $type = null)
     {
-        $value = isset($this->_stack[$key]) ?
-            $this->_stack[$key] : null;
+        $value = $this->_stack[$key] ?? null;
 
         if ($value !== null && !$type !== null) {
             $typedValue = $this->getAs($value, $type);

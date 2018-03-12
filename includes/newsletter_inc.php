@@ -167,9 +167,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                         '/newsletter.php?lang=' . $_SESSION['cISOSprache'] . '&fc=' .
                         $oNewsletterEmpfaenger->cOptCode;
                     $oObjekt = new stdClass();
-                    $oObjekt->tkunde               = isset($_SESSION['Kunde'])
-                        ? $_SESSION['Kunde']
-                        : null;
+                    $oObjekt->tkunde               = $_SESSION['Kunde'] ?? null;
                     $oObjekt->NewsletterEmpfaenger = $oNewsletterEmpfaenger;
 
                     $mail = sendeMail(MAILTEMPLATE_NEWSLETTERANMELDEN, $oObjekt);

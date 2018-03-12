@@ -456,7 +456,7 @@ function pruefeZahlungsartwahlStep($cPost_arr)
             $fNetto        = $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr[StringHandler::htmlentities(
                 StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt'])
             )];
-            $cLandISO      = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : '';
+            $cLandISO      = $_SESSION['Lieferadresse']->cLand ?? '';
             $kSteuerklasse = Session::Cart()->gibVersandkostenSteuerklasse($cLandISO);
             $fPreis        = Session::CustomerGroup()->isMerchant()
                 ? $fNetto
@@ -550,7 +550,7 @@ function gibStepUnregistriertBestellen()
     }
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
-        ->assign('Kunde', (isset($Kunde) ? $Kunde : null))
+        ->assign('Kunde', $Kunde ?? null)
         ->assign('laender', gibBelieferbareLaender(Session::CustomerGroup()->getID()))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
@@ -605,9 +605,7 @@ function gibStepLieferadresse()
     }
     Shop::Smarty()->assign('laender', gibBelieferbareLaender($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'])
-        ->assign('kLieferadresse', (isset($_SESSION['Bestellung']->kLieferadresse)
-            ? $_SESSION['Bestellung']->kLieferadresse
-            : null));
+        ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
     if (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse == -1) {
         Shop::Smarty()->assign('Lieferadresse', $Lieferadresse);
     }
@@ -646,15 +644,15 @@ function gibStepZahlung()
         Shop::Smarty()->assign('URL_SHOP', Shop::getURL());
     }
 
-    $lieferland = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : null;
+    $lieferland = $_SESSION['Lieferadresse']->cLand ?? null;
     if (!$lieferland) {
         $lieferland = $_SESSION['Kunde']->cLand;
     }
-    $plz = isset($_SESSION['Lieferadresse']->cPLZ) ? $_SESSION['Lieferadresse']->cPLZ : null;
+    $plz = $_SESSION['Lieferadresse']->cPLZ ?? null;
     if (!$plz) {
         $plz = $_SESSION['Kunde']->cPLZ;
     }
-    $kKundengruppe = isset($_SESSION['Kunde']->kKundengruppe) ? $_SESSION['Kunde']->kKundengruppe : null;
+    $kKundengruppe = $_SESSION['Kunde']->kKundengruppe ?? null;
     if (!$kKundengruppe) {
         $kKundengruppe = Session::CustomerGroup()->getID();
     }
@@ -757,9 +755,7 @@ function gibStepZahlungZusatzschritt($cPost_arr)
         Shop::Smarty()->assign('oKundenKontodaten', $oKundenKontodaten);
     }
     if (!isset($cPost_arr['zahlungsartzusatzschritt']) || !$cPost_arr['zahlungsartzusatzschritt']) {
-        Shop::Smarty()->assign('ZahlungsInfo', (isset($_SESSION['Zahlungsart']->ZahlungsInfo)
-            ? $_SESSION['Zahlungsart']->ZahlungsInfo
-            : null));
+        Shop::Smarty()->assign('ZahlungsInfo', $_SESSION['Zahlungsart']->ZahlungsInfo ?? null);
     } else {
         setzeFehlendeAngaben(checkAdditionalPayment($Zahlungsart));
         Shop::Smarty()->assign('ZahlungsInfo', gibPostZahlungsInfo());
@@ -844,15 +840,15 @@ function gibStepVersand()
     unset($_SESSION['TrustedShopsZahlung']);
     pruefeVersandkostenfreiKuponVorgemerkt();
     $cart       = Session::Cart();
-    $lieferland = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : null;
+    $lieferland = $_SESSION['Lieferadresse']->cLand ?? null;
     if (!$lieferland) {
         $lieferland = $_SESSION['Kunde']->cLand;
     }
-    $plz = isset($_SESSION['Lieferadresse']->cPLZ) ? $_SESSION['Lieferadresse']->cPLZ : null;
+    $plz = $_SESSION['Lieferadresse']->cPLZ ?? null;
     if (!$plz) {
         $plz = $_SESSION['Kunde']->cPLZ;
     }
-    $kKundengruppe = isset($_SESSION['Kunde']->kKundengruppe) ? $_SESSION['Kunde']->kKundengruppe : null;
+    $kKundengruppe = $_SESSION['Kunde']->kKundengruppe ?? null;
     if (!$kKundengruppe) {
         $kKundengruppe = Session::CustomerGroup()->getID();
     }
@@ -1346,7 +1342,7 @@ function getPaymentSurchageDiscount($Zahlungsart)
         $Zahlungsart->cPreisLocalized = gibPreisStringLocalized($Zahlungsart->fAufpreis);
         $Aufpreis = $Zahlungsart->fAufpreis;
         if ($Zahlungsart->cAufpreisTyp === 'prozent') {
-            $fGuthaben = isset($_SESSION['Bestellung']->fGuthabenGenutzt) ? $_SESSION['Bestellung']->fGuthabenGenutzt : 0;
+            $fGuthaben = $_SESSION['Bestellung']->fGuthabenGenutzt ?? 0;
             $Aufpreis = (($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
                             [
                                 C_WARENKORBPOS_TYP_ARTIKEL,
@@ -1453,7 +1449,7 @@ function gibZahlungsart($kZahlungsart)
             false,
             'cName'
         );
-        $Zahlungsart->angezeigterName[$Sprache->cISO] = isset($name_spr->cName) ? $name_spr->cName : null;
+        $Zahlungsart->angezeigterName[$Sprache->cISO] = $name_spr->cName ?? null;
     }
     $einstellungen = Shop::DB()->query(
         "SELECT *
@@ -1876,11 +1872,11 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
     }
     unset($_SESSION['Versandart']);
     if ($kVersandart > 0) {
-        $lieferland = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : null;
+        $lieferland = $_SESSION['Lieferadresse']->cLand ?? null;
         if (!$lieferland) {
             $lieferland = $_SESSION['Kunde']->cLand;
         }
-        $plz = isset($_SESSION['Lieferadresse']->cPLZ) ? $_SESSION['Lieferadresse']->cPLZ : null;
+        $plz = $_SESSION['Lieferadresse']->cPLZ ?? null;
         if (!$plz) {
             $plz = $_SESSION['Kunde']->cPLZ;
         }
@@ -2284,7 +2280,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         && $data['editRechnungsadresse'] != 1
         && $conf['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
     ) {
-        $dRegZeit = !isset($_SESSION['dRegZeit']) ? 0 : $_SESSION['dRegZeit'];
+        $dRegZeit = $_SESSION['dRegZeit'] ?? 0;
         if (!($dRegZeit + 5 < time())) {
             $ret['formular_zeit'] = 1;
         }
@@ -2382,7 +2378,7 @@ function checkLieferFormularArray($data)
  */
 function checkLieferFormular($cPost_arr = null)
 {
-    return checkLieferFormularArray(isset($cPost_arr) ? $cPost_arr : $_POST);
+    return checkLieferFormularArray($cPost_arr ?? $_POST);
 }
 
 /**

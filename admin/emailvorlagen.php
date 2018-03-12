@@ -676,15 +676,9 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
         }
         $Emailvorlagesprache->cDateiname   = '';
         $Emailvorlagesprache->kSprache     = $Sprache->kSprache;
-        $Emailvorlagesprache->cBetreff     = isset($_POST['cBetreff_' . $Sprache->kSprache])
-            ? $_POST['cBetreff_' . $Sprache->kSprache]
-            : null;
-        $Emailvorlagesprache->cContentHtml = isset($_POST['cContentHtml_' . $Sprache->kSprache])
-            ? $_POST['cContentHtml_' . $Sprache->kSprache]
-            : null;
-        $Emailvorlagesprache->cContentText = isset($_POST['cContentText_' . $Sprache->kSprache])
-            ? $_POST['cContentText_' . $Sprache->kSprache]
-            : null;
+        $Emailvorlagesprache->cBetreff     = $_POST['cBetreff_' . $Sprache->kSprache] ?? null;
+        $Emailvorlagesprache->cContentHtml = $_POST['cContentHtml_' . $Sprache->kSprache] ?? null;
+        $Emailvorlagesprache->cContentText = $_POST['cContentText_' . $Sprache->kSprache] ?? null;
 
         $Emailvorlagesprache->cPDFS = '';
         if (count($cPDFS_arr) > 0) {

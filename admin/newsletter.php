@@ -193,8 +193,8 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
             FROM tkundengruppe
             ORDER BY cStandard DESC", 2
     );
-    $cArtNr_arr        = isset($_POST['cArtNr']) ? $_POST['cArtNr'] : null;
-    $kKundengruppe_arr = isset($_POST['kKundengruppe']) ? $_POST['kKundengruppe'] : null;
+    $cArtNr_arr        = $_POST['cArtNr'] ?? null;
+    $kKundengruppe_arr = $_POST['kKundengruppe'] ?? null;
     $cKundengruppe     = '';
     // Kundengruppen in einen String bauen
     if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
@@ -265,12 +265,8 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
            ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
 
-    $cArtNr_arr        = isset($_POST['cArtNr'])
-        ? $_POST['cArtNr']
-        : null;
-    $kKundengruppe_arr = isset($_POST['kKundengruppe'])
-        ? $_POST['kKundengruppe']
-        : null;
+    $cArtNr_arr        = $_POST['cArtNr'] ?? null;
+    $kKundengruppe_arr = $_POST['kKundengruppe'] ?? null;
     $cKundengruppe     = '';
     // Kundengruppen in einen String bauen
     if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
@@ -675,9 +671,7 @@ if ($step === 'uebersicht') {
     );
     if (is_array($oNewsletterEmpfaenger_arr) && count($oNewsletterEmpfaenger_arr) > 0) {
         foreach ($oNewsletterEmpfaenger_arr as $i => $oNewsletterEmpfaenger) {
-            $oKunde                                   = new Kunde((isset($oNewsletterEmpfaenger->kKunde)
-                ? $oNewsletterEmpfaenger->kKunde
-                : null));
+            $oKunde                                   = new Kunde($oNewsletterEmpfaenger->kKunde ?? null);
             $oNewsletterEmpfaenger_arr[$i]->cNachname = $oKunde->cNachname;
         }
 
@@ -715,9 +709,7 @@ if ($step === 'uebersicht') {
             ['kEinstellungenSektion', 'cName'],
             [CONF_NEWSLETTER,  $oConfig_arr[$i]->cWertName]
         );
-        $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-            ? $oSetValue->cWert
-            : null;
+        $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
     }
 
     $kundengruppen = Shop::DB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2);

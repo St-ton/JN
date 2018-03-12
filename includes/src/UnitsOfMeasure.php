@@ -99,7 +99,7 @@ class UnitsOfMeasure
     {
         $units = self::getUnits();
 
-        return isset($units[(int)$kMassEinheit]) ? $units[(int)$kMassEinheit] : null;
+        return $units[(int)$kMassEinheit] ?? null;
     }
 
     /**

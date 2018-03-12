@@ -242,33 +242,15 @@ function bearbeiteNachricht()
         $KontaktHistory                  = new stdClass();
         $KontaktHistory->kKontaktBetreff = $betreff->kKontaktBetreff;
         $KontaktHistory->kSprache        = $_SESSION['kSprache'];
-        $KontaktHistory->cAnrede         = isset($Objekt->tnachricht->cAnrede)
-            ? $Objekt->tnachricht->cAnrede
-            : null;
-        $KontaktHistory->cVorname        = isset($Objekt->tnachricht->cVorname)
-            ? $Objekt->tnachricht->cVorname
-            : null;
-        $KontaktHistory->cNachname       = isset($Objekt->tnachricht->cNachname)
-            ? $Objekt->tnachricht->cNachname
-            : null;
-        $KontaktHistory->cFirma          = isset($Objekt->tnachricht->cFirma)
-            ? $Objekt->tnachricht->cFirma
-            : null;
-        $KontaktHistory->cTel            = isset($Objekt->tnachricht->cTel)
-            ? $Objekt->tnachricht->cTel
-            : null;
-        $KontaktHistory->cMobil          = isset($Objekt->tnachricht->cMobil)
-            ? $Objekt->tnachricht->cMobil
-            : null;
-        $KontaktHistory->cFax            = isset($Objekt->tnachricht->cFax)
-            ? $Objekt->tnachricht->cFax
-            : null;
-        $KontaktHistory->cMail           = isset($Objekt->tnachricht->cMail)
-            ? $Objekt->tnachricht->cMail
-            : null;
-        $KontaktHistory->cNachricht      = isset($Objekt->tnachricht->cNachricht)
-            ? $Objekt->tnachricht->cNachricht
-            : null;
+        $KontaktHistory->cAnrede         = $Objekt->tnachricht->cAnrede ?? null;
+        $KontaktHistory->cVorname        = $Objekt->tnachricht->cVorname ?? null;
+        $KontaktHistory->cNachname       = $Objekt->tnachricht->cNachname ?? null;
+        $KontaktHistory->cFirma          = $Objekt->tnachricht->cFirma ?? null;
+        $KontaktHistory->cTel            = $Objekt->tnachricht->cTel ?? null;
+        $KontaktHistory->cMobil          = $Objekt->tnachricht->cMobil ?? null;
+        $KontaktHistory->cFax            = $Objekt->tnachricht->cFax ?? null;
+        $KontaktHistory->cMail           = $Objekt->tnachricht->cMail ?? null;
+        $KontaktHistory->cNachricht      = $Objekt->tnachricht->cNachricht ?? null;
         $KontaktHistory->cIP             = gibIP();
         $KontaktHistory->dErstellt       = 'now()';
 

@@ -254,7 +254,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         $oDown->kDownload,
                         $kSprache,
                         true,
-                        (isset($oDown->kBestellung) ? $oDown->kBestellung : 0)
+                        $oDown->kBestellung ?? 0
                     );
                     if (($kBestellung > 0 || $kKunde > 0) && $oDownload_arr[$i]->getAnzahl() > 0) {
                         $oDownloadHistory_arr = DownloadHistory::getOrderHistory($oDown->kKunde, $oDown->kBestellung);

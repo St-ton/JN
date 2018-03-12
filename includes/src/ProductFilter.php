@@ -258,12 +258,8 @@ class ProductFilter
         $urls->cNoFilter         = null;
 
         $this->url               = $urls;
-        $this->languages         = $languages === null
-            ? Sprache::getInstance()->getLangArray()
-            : $languages;
-        $this->conf              = $config === null
-            ? Shopsetting::getInstance()->getAll()
-            : $config;
+        $this->languages         = $languages ?? Sprache::getInstance()->getLangArray();
+        $this->conf              = $config ?? Shopsetting::getInstance()->getAll();
         $this->languageID        = $currentLanguageID === null
             ? Shop::getLanguageID()
             : (int)$currentLanguageID;
@@ -815,9 +811,7 @@ class ProductFilter
                 'cValue'                     => &$this->EchteSuche->cSuche,
                 'nArtikelProSeite'           => &$limit,
                 'nSeite'                     => &$this->nSeite,
-                'nSortierung'                => isset($_SESSION['Usersortierung'])
-                    ? $_SESSION['Usersortierung']
-                    : null,
+                'nSortierung'                => $_SESSION['Usersortierung'] ?? null,
                 'bLagerbeachten'             => (int)$this->getConfig()['global']['artikel_artikelanzeigefilter'] ===
                     EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
@@ -954,9 +948,7 @@ class ProductFilter
             $this->activeFilters,
             function ($carry, $item) use ($filterClassName) {
                 /** @var IFilter $item */
-                return $carry !== null
-                    ? $carry
-                    : ($item->getClassName() === $filterClassName
+                return $carry ?? ($item->getClassName() === $filterClassName
                         ? $item->getValue()
                         : null);
             }
@@ -1655,7 +1647,7 @@ class ProductFilter
      */
     public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = null)
     {
-        $limitPerPage = $limit !== null ? $limit : $this->metaData->getProductsPerPageLimit();
+        $limitPerPage = $limit ?? $this->metaData->getProductsPerPageLimit();
         $nLimitN      = $limitPerPage * ($this->nSeite - 1);
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         $error        = false;
@@ -1933,9 +1925,7 @@ class ProductFilter
      */
     public function getUnsetAllFiltersURL()
     {
-        return isset($this->url->cNoFilter)
-            ? $this->url->cNoFilter
-            : null;
+        return $this->url->cNoFilter ?? null;
     }
 
     /**

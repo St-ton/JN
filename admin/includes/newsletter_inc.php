@@ -58,7 +58,7 @@ function versendeNewsletter(
                ->assign('Kampagne', $oKampagne)
                ->assign('cNewsletterURL', Shop::getURL() .
                    '/newsletter.php?show=' .
-                   (isset($oNewsletter->kNewsletter) ? $oNewsletter->kNewsletter : '0')
+                   ($oNewsletter->kNewsletter ?? '0')
                );
 
     // Nettopreise?
@@ -83,15 +83,12 @@ function versendeNewsletter(
     if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
         $cPixel = '<br /><img src="' . Shop::getURL() . '/' . PFAD_INCLUDES .
             'newslettertracker.php?kK=' . $oKampagne->kKampagne .
-            '&kN=' . (isset($oNewsletter->kNewsletter) ? $oNewsletter->kNewsletter : 0) . '&kNE=' .
-            (isset($oEmailempfaenger->kNewsletterEmpfaenger)
-                ? $oEmailempfaenger->kNewsletterEmpfaenger
-                : 0
-            ) . '" alt="Newsletter" />';
+            '&kN=' . ($oNewsletter->kNewsletter ?? 0) . '&kNE=' .
+            ($oEmailempfaenger->kNewsletterEmpfaenger ?? 0) . '" alt="Newsletter" />';
     }
 
     $cTyp = 'VL';
-    $nKey = isset($oNewsletter->kNewsletterVorlage) ? $oNewsletter->kNewsletterVorlage : 0;
+    $nKey = $oNewsletter->kNewsletterVorlage ?? 0;
     if (isset($oNewsletter->kNewsletter) && $oNewsletter->kNewsletter > 0) {
         $cTyp = 'NL';
         $nKey = $oNewsletter->kNewsletter;
@@ -118,22 +115,9 @@ function versendeNewsletter(
         $mail = new stdClass();
     }
     $mail->toEmail = $oEmailempfaenger->cEmail;
-    $mail->toName  = (isset($oEmailempfaenger->cVorname)
-            ? $oEmailempfaenger->cVorname
-            : ''
-        ) . ' ' .
-        (isset($oEmailempfaenger->cNachname)
-            ? $oEmailempfaenger->cNachname
-            : ''
-        );
+    $mail->toName  = ($oEmailempfaenger->cVorname ?? '') . ' ' . ($oEmailempfaenger->cNachname ?? '');
     if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-        $mail->toName = (isset($oKunde->cVorname)
-                ? $oKunde->cVorname
-                : '') . ' ' . (
-            isset($oKunde->cNachname)
-                ? $oKunde->cNachname
-                : ''
-            );
+        $mail->toName = ($oKunde->cVorname ?? '') . ' ' . ($oKunde->cNachname ?? '');
     }
 
     $oSpracheTMP = Shop::DB()->select('tsprache', 'kSprache', (int)$oNewsletter->kSprache);
@@ -189,9 +173,7 @@ function gibStaticHtml(
                ->assign('Kampagne', $oKampagne);
 
     $cTyp = 'VL';
-    $nKey = isset($oNewsletter->kNewsletterVorlage)
-        ? $oNewsletter->kNewsletterVorlage
-        : null;
+    $nKey = $oNewsletter->kNewsletterVorlage ?? null;
     if ($oNewsletter->kNewsletter > 0) {
         $cTyp = 'NL';
         $nKey = $oNewsletter->kNewsletter;
@@ -883,7 +865,7 @@ function holeArtikelnummer($kArtikel)
         $oArtikel = Shop::DB()->select('tartikel', 'kArtikel', (int)$kArtikel);
     }
 
-    return isset($oArtikel->cArtNr) ? $oArtikel->cArtNr : $cArtNr;
+    return $oArtikel->cArtNr ?? $cArtNr;
 }
 
 /**

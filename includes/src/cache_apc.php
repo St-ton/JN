@@ -46,9 +46,7 @@ class cache_apc implements ICachingMethod
     {
         $func = $this->u ? 'apcu_store' : 'apc_store';
 
-        return $func($this->options['prefix'] . $cacheID, $content, ($expiration === null)
-            ? $this->options['lifetime']
-            : $expiration);
+        return $func($this->options['prefix'] . $cacheID, $content, $expiration ?? $this->options['lifetime']);
     }
 
     /**
@@ -60,9 +58,7 @@ class cache_apc implements ICachingMethod
     {
         $func = $this->u ? 'apcu_store' : 'apc_store';
 
-        return $func($this->prefixArray($keyValue), null, ($expiration === null)
-            ? $this->options['lifetime']
-            : $expiration);
+        return $func($this->prefixArray($keyValue), null, $expiration ?? $this->options['lifetime']);
     }
 
     /**
@@ -142,11 +138,11 @@ class cache_apc implements ICachingMethod
         try {
             $tmp   = $this->u ? apcu_cache_info() : apc_cache_info('user');
             $stats = [
-                'entries' => isset($tmp['num_entries']) ? $tmp['num_entries'] : 0,
-                'hits'    => isset($tmp['num_hits']) ? $tmp['num_hits'] : 0,
-                'misses'  => isset($tmp['num_misses']) ? $tmp['num_misses'] : 0,
-                'inserts' => isset($tmp['num_inserts']) ? $tmp['num_inserts'] : 0,
-                'mem'     => isset($tmp['mem_size']) ? $tmp['mem_size'] : 0
+                'entries' => $tmp['num_entries'] ?? 0,
+                'hits'    => $tmp['num_hits'] ?? 0,
+                'misses'  => $tmp['num_misses'] ?? 0,
+                'inserts' => $tmp['num_inserts'] ?? 0,
+                'mem'     => $tmp['mem_size'] ?? 0
             ];
         } catch (Exception $e) {
             $stats = [];

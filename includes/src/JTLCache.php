@@ -144,7 +144,7 @@ class JTLCache
      */
     public static function getInstance($options = [])
     {
-        return self::$instance !== null ? self::$instance : new self($options);
+        return self::$instance ?? new self($options);
     }
 
     /**
@@ -210,7 +210,7 @@ class JTLCache
             'benchmark'          => '_benchmark',
         ];
 
-        return isset($mapping[$method]) ? $mapping[$method] : null;
+        return $mapping[$method] ?? null;
     }
 
     /**
@@ -926,9 +926,7 @@ class JTLCache
         // add customer ID
         if ($customerID === true) {
             $baseID .= '_cid';
-            $baseID .= isset($_SESSION['Kunde']->kKunde)
-                ? $_SESSION['Kunde']->kKunde
-                : '-1';
+            $baseID .= $_SESSION['Kunde']->kKunde ?? '-1';
         }
         // add customer group
         if ($customerGroup === true) {

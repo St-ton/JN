@@ -14,7 +14,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $cHinweis = '';
 $cFehler  = '';
-$tab      = isset($_REQUEST['tab']) ? $_REQUEST['tab'] : 'variables';
+$tab      = $_REQUEST['tab'] ?? 'variables';
 $step     = 'overview';
 setzeSprache();
 $kSprache    = (int)$_SESSION['kSprache'];
@@ -33,7 +33,7 @@ if (validateToken() && verifyGPDataString('importcsv') === 'langvars' && isset($
 }
 
 $oSprachISO            = Shop::Lang()->getLangIDFromIso($cISOSprache);
-$kSprachISO            = isset($oSprachISO->kSprachISO) ? $oSprachISO->kSprachISO : 0;
+$kSprachISO            = $oSprachISO->kSprachISO ?? 0;
 $oSpracheInstalled_arr = Shop::Lang()->getInstalled();
 $oSpracheAvailable_arr = Shop::Lang()->getAvailable();
 $oSektion_arr          = Shop::Lang()->getSections();
@@ -63,7 +63,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
             $step                      = 'newvar';
             $oVariable                 = new stdClass();
             $oVariable->kSprachsektion = isset($_REQUEST['kSprachsektion']) ? (int)$_REQUEST['kSprachsektion'] : 1;
-            $oVariable->cName          = isset($_REQUEST['cName']) ? $_REQUEST['cName'] : '';
+            $oVariable->cName          = $_REQUEST['cName'] ?? '';
             $oVariable->cWert_arr      = [];
             break;
         case 'delvar':
@@ -80,7 +80,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
             $oVariable->cName          = $_REQUEST['cName'];
             $oVariable->cWert_arr      = $_REQUEST['cWert_arr'];
             $oVariable->cWertAlt_arr   = [];
-            $oVariable->bOverwrite_arr = isset($_REQUEST['bOverwrite_arr']) ? $_REQUEST['bOverwrite_arr'] : [];
+            $oVariable->bOverwrite_arr = $_REQUEST['bOverwrite_arr'] ?? [];
             $cFehler_arr               = [];
             $oVariable->cSprachsektion = Shop::DB()
                 ->select('tsprachsektion', 'kSprachsektion', (int)$oVariable->kSprachsektion)

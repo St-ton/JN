@@ -93,9 +93,7 @@ class FilterOption extends AbstractFilter
      */
     private static function getMapping($value)
     {
-        return isset(self::$mapping[$value])
-            ? self::$mapping[$value]
-            : null;
+        return self::$mapping[$value] ?? null;
     }
 
     /**
@@ -262,7 +260,7 @@ class FilterOption extends AbstractFilter
      */
     public function getData($name)
     {
-        return isset($this->data[$name]) ? $this->data[$name] : null;
+        return $this->data[$name] ?? null;
     }
 
     /**
@@ -295,9 +293,7 @@ class FilterOption extends AbstractFilter
             return $this->$method();
         }
 
-        return isset($this->data[$name])
-            ? $this->data[$name]
-            : null;
+        return $this->data[$name] ?? null;
     }
 
     /**

@@ -42,7 +42,7 @@ function checkSeo($cSeo)
             LIMIT 1", 1
     );
 
-    return isset($obj->newSeo) ? $obj->newSeo : $cSeo;
+    return $obj->newSeo ?? $cSeo;
 }
 
 /**

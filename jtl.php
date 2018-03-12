@@ -43,9 +43,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 // wird dieser hier her umgeleitet und es werden die passenden Parameter erstellt.
 // Nach dem erfolgreichen einloggen wird die zuvor angestrebte Aktion durchgeführt.
 if (isset($_SESSION['JTL_REDIRECT']) || verifyGPCDataInteger('r') > 0) {
-    Shop::Smarty()->assign('oRedirect', (isset($_SESSION['JTL_REDIRECT'])
-        ? $_SESSION['JTL_REDIRECT']
-        : gibRedirect(verifyGPCDataInteger('r'))));
+    Shop::Smarty()->assign('oRedirect', $_SESSION['JTL_REDIRECT'] ?? gibRedirect(verifyGPCDataInteger('r')));
     executeHook(HOOK_JTL_PAGE_REDIRECT_DATEN);
 }
 // Upload zum Download freigeben
@@ -241,11 +239,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             if (!empty($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
                 $step                    = 'wunschliste anzeigen';
                 $cHinweis               .= wunschlisteAktualisieren($kWunschliste);
-                $_SESSION['Wunschliste'] = new Wunschliste(
-                    isset($_SESSION['Wunschliste']->kWunschliste)
-                    ? $_SESSION['Wunschliste']->kWunschliste
-                    : $kWunschliste
-                );
+                $_SESSION['Wunschliste'] = new Wunschliste($_SESSION['Wunschliste']->kWunschliste ?? $kWunschliste);
                 $cBrotNavi               = createNavigation(
                     '',
                     0,
@@ -588,7 +582,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             Shop::Smarty()->assign('Bestellung', $bestellung)
                 ->assign('Kunde', $bestellung->oRechnungsadresse)// Work Around Daten von trechnungsadresse
                 ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr)
-                ->assign('Lieferadresse', (isset($bestellung->Lieferadresse) ? $bestellung->Lieferadresse : null));
+                ->assign('Lieferadresse', $bestellung->Lieferadresse ?? null);
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 Shop::Smarty()->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
                     $bestellung->oRechnungsadresse->cMail,
@@ -868,7 +862,7 @@ Shop::Smarty()->assign('cHinweis', $cHinweis)
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
     ->assign('Navigation', $cBrotNavi)
-    ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+    ->assign('requestURL', $requestURL ?? null)
     ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
     ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
     ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)

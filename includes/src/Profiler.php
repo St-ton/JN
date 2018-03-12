@@ -128,7 +128,7 @@ class Profiler
      */
     public static function getInstance($flags = -1, $options = [], $dir = '/tmp')
     {
-        return (self::$_instance === null) ? new self($flags, $options, $dir) : self::$_instance;
+        return self::$_instance ?? new self($flags, $options, $dir);
     }
 
     /**
@@ -239,7 +239,7 @@ class Profiler
         if (PROFILE_QUERIES_ECHO !== true && count(self::$sqlProfile) > 0) {
             //create run object
             $run        = new stdClass();
-            $run->url   = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+            $run->url   = $_SERVER['REQUEST_URI'] ?? '';
             $run->ptype = 'sql';
             //build stats for this run
             $run->total_count = 0; //total number of queries
@@ -300,7 +300,7 @@ class Profiler
         self::$stopProfiling = true;
         if (defined('PROFILE_PLUGINS') && PROFILE_PLUGINS === true && count(self::$pluginProfile) > 0) {
             $run              = new stdClass();
-            $run->url         = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+            $run->url         = $_SERVER['REQUEST_URI'] ?? '';
             $run->ptype       = 'plugin';
             $run->total_count = 0;
             $run->total_time  = 0.0;
@@ -344,7 +344,7 @@ class Profiler
                 foreach (self::$pluginProfile as $_fileRun) {
                     $obj           = new stdClass();
                     $obj->runID    = $runID;
-                    $obj->hookID   = isset($_fileRun['hookID']) ? $_fileRun['hookID'] : 0;
+                    $obj->hookID   = $_fileRun['hookID'] ?? 0;
                     $obj->filename = $_fileRun['file'];
                     $obj->runtime  = $_fileRun['runtime'];
                     $obj->runcount = $_fileRun['runcount'];

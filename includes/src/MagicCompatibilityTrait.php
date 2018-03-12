@@ -24,9 +24,7 @@ trait MagicCompatibilityTrait
      */
     private static function getMapping($value)
     {
-        return isset(self::$mapping[$value])
-            ? self::$mapping[$value]
-            : null;
+        return self::$mapping[$value] ?? null;
     }
 
     /**
@@ -46,9 +44,7 @@ trait MagicCompatibilityTrait
             return $this->$method();
         }
 
-        return isset($this->data[$name])
-            ? $this->data[$name]
-            : null;
+        return $this->data[$name] ?? null;
     }
 
     /**

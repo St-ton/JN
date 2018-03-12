@@ -360,8 +360,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 break;
             case 2:    // Monat
                 $cStampTextParts_arr = isset($oStats_arr[0]->cStampText) ? explode('.', $oStats_arr[0]->cStampText) : [];
-                $cMonat              = isset($cStampTextParts_arr [0]) ? $cStampTextParts_arr [0] : '';
-                $cJahr               = isset($cStampTextParts_arr [1]) ? $cStampTextParts_arr [1] : '';
+                $cMonat              = $cStampTextParts_arr [0] ?? '';
+                $cJahr               = $cStampTextParts_arr [1] ?? '';
                 $cStampText          = mappeENGMonat($cMonat) . ' ' . $cJahr;
                 break;
             case 3:    // Woche
@@ -398,8 +398,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
                     foreach ($oDaten_arr as $i => $oDaten) {
                         $cCustomDataParts_arr = explode(';', $oDaten->cCustomData);
-                        $cEinstiegsseite      = isset($cCustomDataParts_arr [0]) ? $cCustomDataParts_arr [0] : '';
-                        $cReferer             = isset($cCustomDataParts_arr [1]) ? $cCustomDataParts_arr [1] : '';
+                        $cEinstiegsseite      = $cCustomDataParts_arr [0] ?? '';
+                        $cReferer             = $cCustomDataParts_arr [1] ?? '';
 
                         $oDaten_arr[$i]->cEinstiegsseite = $cEinstiegsseite;
                         $oDaten_arr[$i]->cReferer        = $cReferer;
@@ -1221,8 +1221,8 @@ function checkGesamtStatZeitParam()
     if (strlen(verifyGPDataString('cZeitParam')) > 0) {
         $cZeitraum          = base64_decode(verifyGPDataString('cZeitParam'));
         $cZeitraumParts_arr = explode(' - ', $cZeitraum);
-        $cStartDatum        = isset($cZeitraumParts_arr[0]) ? $cZeitraumParts_arr[0] : '';
-        $cEndDatum          = isset($cZeitraumParts_arr[1]) ? $cZeitraumParts_arr[1] : '';
+        $cStartDatum        = $cZeitraumParts_arr[0] ?? '';
+        $cEndDatum          = $cZeitraumParts_arr[1] ?? '';
 
         // Ansicht war Tag
         if (strlen($cEndDatum) === 0) {

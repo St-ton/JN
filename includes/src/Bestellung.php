@@ -466,7 +466,7 @@ class Bestellung
                 $nNettoPreis = 1;
             }
         }
-        $this->cBestellwertLocalized = gibPreisStringLocalized((isset($warenwert->wert) ? $warenwert->wert : 0), $htmlWaehrung);
+        $this->cBestellwertLocalized = gibPreisStringLocalized($warenwert->wert ?? 0, $htmlWaehrung);
         $this->Status                = lang_bestellstatus($this->cStatus);
         if ($this->kWaehrung > 0) {
             $this->Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
@@ -610,8 +610,8 @@ class Bestellung
 
                     foreach ($this->Positionen as $nPos => $_pos) {
                         if ($position->cUnique === $_pos->cUnique) {
-                            $fPreisNetto += $_pos->fPreis * $_pos->nAnzahl;
-                            $ust = gibUst(isset($_pos->kSteuerklasse) ? $_pos->kSteuerklasse : null);
+                            $fPreisNetto  += $_pos->fPreis * $_pos->nAnzahl;
+                            $ust          = gibUst($_pos->kSteuerklasse ?? null);
                             $fPreisBrutto += berechneBrutto($_pos->fPreis * $_pos->nAnzahl, $ust);
                             if ((int)$_pos->kKonfigitem === 0 &&
                                 is_string($_pos->cUnique) &&
@@ -661,9 +661,7 @@ class Bestellung
         $this->fGesamtsummeKundenwaehrung = optionaleRundung($this->fWarensummeKundenwaehrung + $this->fVersandKundenwaehrung);
 
         $oData       = new stdClass();
-        $oData->cPLZ = isset($this->oRechnungsadresse->cPLZ)
-            ? $this->oRechnungsadresse->cPLZ
-            : $this->Lieferadresse->cPLZ;
+        $oData->cPLZ = $this->oRechnungsadresse->cPLZ ?? $this->Lieferadresse->cPLZ;
         $this->oLieferschein_arr = [];
         if ((int)$this->kBestellung > 0) {
             $kLieferschein_arr = Shop::DB()->selectAll(
@@ -818,9 +816,7 @@ class Bestellung
         $obj->nLongestMaxDelivery  = $this->oEstimatedDelivery->longestMax;
         $obj->dVersandDatum        = $this->dVersandDatum;
         $obj->dBezahltDatum        = $this->dBezahltDatum;
-        $obj->dBewertungErinnerung = ($this->dBewertungErinnerung !== null)
-            ? $this->dBewertungErinnerung
-            : '0000-00-00 00:00:00';
+        $obj->dBewertungErinnerung = $this->dBewertungErinnerung ?? '0000-00-00 00:00:00';
         $obj->cTracking            = $this->cTracking;
         $obj->cKommentar           = $this->cKommentar;
         $obj->cLogistiker          = $this->cLogistiker;
@@ -1011,10 +1007,10 @@ class Bestellung
                     && get_class($oPosition->Artikel) === 'Artikel'
                 ) {
                     $oPosition->Artikel->getDeliveryTime(
-                        isset($this->Lieferadresse->cLand) ? $this->Lieferadresse->cLand : null,
+                        $this->Lieferadresse->cLand ?? null,
                         $oPosition->nAnzahl,
                         $oPosition->fLagerbestandVorAbschluss,
-                        isset($lang->cISOSprache) ? $lang->cISOSprache : null,
+                        $lang->cISOSprache ?? null,
                         $this->kVersandart
                     );
                     WarenkorbPos::setEstimatedDelivery(

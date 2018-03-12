@@ -109,7 +109,7 @@ function bearbeiteNewsletterversand($oJobQueue)
                 $oHersteller_arr,
                 $oKategorie_arr[$kKundengruppeTMP],
                 $oKampagne,
-                (isset($oKunde) ? $oKunde : null)
+                $oKunde ?? null
             );
             // Newsletterempfaenger updaten
             Shop::DB()->query(

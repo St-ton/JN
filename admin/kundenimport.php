@@ -53,9 +53,9 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
 }
 
 $smarty->assign('sprachen', gibAlleSprachen())
-       ->assign('kundengruppen', Shop::DB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
-       ->assign('step', (isset($step) ? $step : null))
-       ->assign('hinweis', (isset($hinweis) ? $hinweis : null))
+       ->assign('kundengruppen', Shop::DB()->query('SELECT * FROM tkundengruppe ORDER BY cName', 2))
+       ->assign('step', $step ?? null)
+       ->assign('hinweis', $hinweis ?? null)
        ->display('kundenimport.tpl');
 
 

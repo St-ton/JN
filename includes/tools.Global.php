@@ -1365,7 +1365,7 @@ function ISO2land($cISO)
     $cSpalte = $_SESSION['cISOSprache'] === 'ger' ? 'cDeutsch' : 'cEnglisch';
     $land    = Shop::DB()->select('tland', 'cISO', $cISO, null, null, null, null, false, $cSpalte);
 
-    return isset($land->$cSpalte) ? $land->$cSpalte : $cISO;
+    return $land->$cSpalte ?? $cISO;
 }
 
 /**
@@ -1546,9 +1546,7 @@ function baueSprachURLS($obj, $art)
                             WHERE tkategorie.kKategorie = " . (int)$obj->kKategorie, 1
                     );
                 }
-                $url = isset($seoobj->cSeo)
-                    ? $seoobj->cSeo
-                    : 'index.php?k=' . $obj->kKategorie . '&amp;lang=' . $Sprache->cISO;
+                $url = $seoobj->cSeo ?? 'index.php?k=' . $obj->kKategorie . '&amp;lang=' . $Sprache->cISO;
                 break;
 
             case URLART_SEITE:
@@ -2176,7 +2174,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))
     ) {
         $fArticleSpecific = VersandartHelper::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
-        $preis           += isset($fArticleSpecific->fKosten) ? $fArticleSpecific->fKosten : 0;
+        $preis           += $fArticleSpecific->fKosten ?? 0;
     }
     //Deckelung?
     if ($preis >= $versandart->fDeckelung && $versandart->fDeckelung > 0) {
@@ -2586,7 +2584,7 @@ function makeHTTPHeader($nStatusCode)
         504 => $proto . ' 504 Gateway Time-out'
     ];
 
-    return isset($codes[$nStatusCode]) ? $codes[$nStatusCode] : '';
+    return $codes[$nStatusCode] ?? '';
 }
 
 /**
@@ -3265,8 +3263,8 @@ function gibAGBWRB($kSprache, $kKundengruppe)
     }
     $oAGBWRB = Shop::DB()->select('ttext', 'kKundengruppe', (int)$kKundengruppe, 'kSprache', (int)$kSprache);
     if (!empty($oAGBWRB->kText)) {
-        $oAGBWRB->cURLAGB  = isset($oLinkAGB->cURL) ? $oLinkAGB->cURL : '';
-        $oAGBWRB->cURLWRB  = isset($oLinkWRB->cURL) ? $oLinkWRB->cURL : '';
+        $oAGBWRB->cURLAGB  = $oLinkAGB->cURL ?? '';
+        $oAGBWRB->cURLWRB  = $oLinkWRB->cURL ?? '';
         $oAGBWRB->kLinkAGB = (isset($oLinkAGB->kLink) && $oLinkAGB->kLink > 0)
             ? (int)$oLinkAGB->kLink
             : 0;
@@ -3278,8 +3276,8 @@ function gibAGBWRB($kSprache, $kKundengruppe)
     }
     $oAGBWRB = Shop::DB()->select('ttext', 'nStandard', 1);
     if (!empty($oAGBWRB->kText)) {
-        $oAGBWRB->cURLAGB  = isset($oLinkAGB->cURL) ? $oLinkAGB->cURL : '';
-        $oAGBWRB->cURLWRB  = isset($oLinkWRB->cURL) ? $oLinkWRB->cURL : '';
+        $oAGBWRB->cURLAGB  = $oLinkAGB->cURL ?? '';
+        $oAGBWRB->cURLWRB  = $oLinkWRB->cURL ?? '';
         $oAGBWRB->kLinkAGB = (isset($oLinkAGB->kLink) && $oLinkAGB->kLink > 0)
             ? (int)$oLinkAGB->kLink
             : 0;

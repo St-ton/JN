@@ -218,9 +218,7 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
     $smarty->assign('oTagArtikel_arr', $oTagArtikel_arr)
         ->assign('oPagiTagDetail', $oPagiTagDetail)
         ->assign('kTag', verifyGPCDataInteger('kTag'))
-        ->assign('cTagName', isset($oTagArtikel_arr[0]->cName)
-            ? $oTagArtikel_arr[0]->cName
-            : '');
+        ->assign('cTagName', $oTagArtikel_arr[0]->cName ?? '');
 } else {
     // Anzahl Tags fuer diese Sprache
     $nAnzahlTags = Shop::DB()->query(
@@ -284,9 +282,7 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
             'cName',
             $oConfig_arr[$i]->cWertName
         );
-        $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-            ? $oSetValue->cWert
-            : null;
+        $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
     }
 
     $smarty->assign('oConfig_arr', $oConfig_arr)

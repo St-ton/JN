@@ -173,7 +173,7 @@ class JTLSmarty extends SmartyBC
      */
     public static function getInstance($fast_init = false, $isAdmin = false)
     {
-        return self::$_instance === null ? new self($fast_init, $isAdmin) : self::$_instance;
+        return self::$_instance ?? new self($fast_init, $isAdmin);
     }
 
     /**

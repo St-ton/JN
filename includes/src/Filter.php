@@ -45,7 +45,7 @@ class Filter
             $this->cId = $cId;
         }
 
-        $this->cAction = isset($_GET['action']) ? $_GET['action'] : '';
+        $this->cAction = $_GET['action'] ?? '';
         $this->loadSessionStore();
     }
 
@@ -168,9 +168,7 @@ class Filter
      */
     public function loadSessionStore()
     {
-        $idx = 'filter_' . $this->cId;
-
-        $this->cSession_arr = isset($_SESSION[$idx]) ? $_SESSION[$idx] : [];
+        $this->cSession_arr = $_SESSION['filter_' . $this->cId] ?? [];
     }
 
     /**

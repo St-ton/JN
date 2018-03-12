@@ -22,17 +22,17 @@ interface AuthLoggerServiceInterface
      * @param string $ip
      * @return $this
      */
-    public function setIP(string $ip);
+    public function setIP(string $ip) : self;
 
     /**
      * @param string $user
      * @return $this
      */
-    public function setUser(string $user);
+    public function setUser(string $user) : self;
 
     /**
      * @param int $code
      * @return $this
      */
-    public function setCode(int $code);
+    public function setCode(int $code) : self;
 }

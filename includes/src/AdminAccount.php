@@ -63,7 +63,7 @@ class AdminAccount
      * @return bool - true if successfully verified
      * @throws Exception
      */
-    public function verifyResetPasswordHash($hash, $mail)
+    public function verifyResetPasswordHash($hash, $mail) : bool
     {
         $user = Shop::DB()->select('tadminlogin', 'cMail', $mail);
         if ($user !== null) {
@@ -134,17 +134,17 @@ class AdminAccount
      */
     private function handleLoginResult($code, $user)
     {
-        $ip         = getRealIp();
-        $logService = Shop::Container()->getAuthLoggerFileService();
-        $logService->setIP(getRealIp())
+        $ip = getRealIp();
+        Shop::Container()->getAuthLoggerFileService()
+            ->setIP(getRealIp())
             ->setCode($code)
             ->setUser($user)
             ->log();
-        $logService = Shop::Container()->getAuthLoggerDatabaseService();
-        $logService->setIP(getRealIp())
-                   ->setCode($code)
-                   ->setUser($user)
-                   ->log();
+        Shop::Container()->getAuthLoggerDatabaseService()
+            ->setIP(getRealIp())
+            ->setCode($code)
+            ->setUser($user)
+            ->log();
 
         return $code;
     }
@@ -339,7 +339,7 @@ class AdminAccount
     /**
      * @param int   $nAdminLoginGroup
      * @param int   $nAdminMenuGroup
-     * @return object
+     * @return array
      */
     public function getVisibleMenu($nAdminLoginGroup, $nAdminMenuGroup)
     {
@@ -358,14 +358,16 @@ class AdminAccount
             $oLink_arr = Shop::DB()->queryPrepared(
                 'SELECT tadminmenu.* 
                     FROM tadminmenu 
-                        JOIN tadminrechtegruppe ON tadminmenu.cRecht = tadminrechtegruppe.cRecht 
-                    WHERE kAdminmenueGruppe = :kAdminmenueGruppe AND kAdminlogingruppe = :kAdminlogingruppe 
+                        JOIN tadminrechtegruppe 
+                        ON tadminmenu.cRecht = tadminrechtegruppe.cRecht 
+                    WHERE kAdminmenueGruppe = :kAdminmenueGruppe 
+                        AND kAdminlogingruppe = :kAdminlogingruppe 
                     ORDER BY cLinkname, nSort;',
                 [
                     'kAdminmenueGruppe' => $nAdminMenuGroup,
                     'kAdminlogingruppe' => $nAdminLoginGroup
                 ],
-                2
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
         }
 
@@ -397,8 +399,8 @@ class AdminAccount
     private function _validateSession()
     {
         $this->_bLogged = false;
-        if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL) &&
-            $_SESSION['AdminAccount']->cURL === Shop::getURL()
+        if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL)
+            && $_SESSION['AdminAccount']->cURL === Shop::getURL()
         ) {
             $oAccount = Shop::DB()->select(
                 'tadminlogin',
@@ -417,7 +419,7 @@ class AdminAccount
     /**
      * @return bool
      */
-    public function doTwoFA()
+    public function doTwoFA() : bool
     {
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $oTwoFA = new TwoFA();
@@ -495,10 +497,12 @@ class AdminAccount
         if ($bReset) {
             Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, (object)['nLoginVersuch' => 0]);
         } else {
-            Shop::DB()->executeQueryPrepared("
-                UPDATE tadminlogin
+            Shop::DB()->queryPrepared(
+                "UPDATE tadminlogin
                     SET nLoginVersuch = nLoginVersuch+1
-                    WHERE cLogin = :login", ['login' => $cLogin], 3
+                    WHERE cLogin = :login",
+                ['login' => $cLogin],
+                NiceDB::RET_AFFECTED_ROWS
             );
         }
 
@@ -551,7 +555,7 @@ class AdminAccount
      * @return bool - true when hash was updated
      * @throws Exception
      */
-    private function checkAndUpdateHash($password)
+    private function checkAndUpdateHash($password) : bool
     {
         $passwordService = Shop::Container()->getPasswordService();
         // only update hash if the db update to 4.00+ was already executed

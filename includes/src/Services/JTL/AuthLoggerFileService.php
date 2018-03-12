@@ -24,10 +24,8 @@ class AuthLoggerFileService extends AuthLoggerService
      */
     public function __construct()
     {
-        $this->logger = new Logger('auth');
-        $handler   = (new StreamHandler(self::LOGFILE, Logger::INFO))
+        $handler      = (new StreamHandler(self::LOGFILE, Logger::INFO))
             ->setFormatter(new LineFormatter(null, null, false, true));
-        $this->logger->pushHandler($handler)
-                  ->pushProcessor(new PsrLogMessageProcessor());
+        $this->logger = new Logger('auth', [$handler], [new PsrLogMessageProcessor()]);
     }
 }

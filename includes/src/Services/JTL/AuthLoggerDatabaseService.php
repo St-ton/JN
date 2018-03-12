@@ -24,10 +24,8 @@ class AuthLoggerDatabaseService extends AuthLoggerService
      */
     public function __construct()
     {
-        $this->logger = new Logger('auth');
         $handler      = (new NiceDBHandler(\Shop::DB(), Logger::INFO))
-            ->setFormatter(new LineFormatter(null, null, false, true));
-        $this->logger->pushHandler($handler)
-                     ->pushProcessor(new PsrLogMessageProcessor());
+            ->setFormatter(new LineFormatter("%message%\n", null, false, true));
+        $this->logger = new Logger('auth', [$handler], [new PsrLogMessageProcessor()]);
     }
 }

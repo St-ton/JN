@@ -40,7 +40,7 @@ class AuthLoggerService implements AuthLoggerServiceInterface
     /**
      * @return string
      */
-    protected function getIP(): string
+    protected function getIP() : string
     {
         return $this->ip ?? 'unknown ip';
     }
@@ -48,7 +48,7 @@ class AuthLoggerService implements AuthLoggerServiceInterface
     /**
      * @return int
      */
-    protected function getCode(): int
+    protected function getCode() : int
     {
         return $this->code ?? \AdminAccount::ERROR_UNKNOWN;
     }
@@ -56,7 +56,7 @@ class AuthLoggerService implements AuthLoggerServiceInterface
     /**
      * @return string
      */
-    protected function getUser(): string
+    protected function getUser() : string
     {
         return $this->user !== null
             ? \StringHandler::filterXSS($this->user)
@@ -66,7 +66,7 @@ class AuthLoggerService implements AuthLoggerServiceInterface
     /**
      * @inheritdoc
      */
-    public function setIP(string $ip)
+    public function setIP(string $ip) : AuthLoggerServiceInterface
     {
         $this->ip = $ip;
 
@@ -76,7 +76,7 @@ class AuthLoggerService implements AuthLoggerServiceInterface
     /**
      * @inheritdoc
      */
-    public function setCode(int $code)
+    public function setCode(int $code) : AuthLoggerServiceInterface
     {
         $this->code = $code;
 
@@ -86,7 +86,7 @@ class AuthLoggerService implements AuthLoggerServiceInterface
     /**
      * @inheritdoc
      */
-    public function setUser(string $user)
+    public function setUser(string $user) : AuthLoggerServiceInterface
     {
         $this->user = $user;
 
@@ -97,7 +97,7 @@ class AuthLoggerService implements AuthLoggerServiceInterface
      * @param int $code
      * @return string
      */
-    protected function mapLoginCode($code): string
+    protected function mapLoginCode($code) : string
     {
         switch ($code) {
             case \AdminAccount::LOGIN_OK:
@@ -124,7 +124,7 @@ class AuthLoggerService implements AuthLoggerServiceInterface
     /**
      * @inheritdoc
      */
-    public function log(): bool
+    public function log() : bool
     {
         $code   = $this->getCode();
         $method = $code < 1

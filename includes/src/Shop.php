@@ -460,7 +460,7 @@ final class Shop
      * @deprecated since Shop 5.0 use Shop::Container()->get(JTLApi::class) instead
      * @throws
      */
-    public function RS() : RemoteService
+    public function RS() : \Network\JTLApi
     {
         return self::Container()->get(\Network\JTLApi::class);
     }
@@ -481,7 +481,7 @@ final class Shop
      * @return \DB\DbInterface
      * @deprecated since Shop 5 use Shop::Container()->getDB() instead
      */
-    public function _DB() : NiceDB
+    public function _DB() : \DB\DbInterface
     {
         return self::Container()->getDB();
     }
@@ -521,7 +521,7 @@ final class Shop
      * @return DbService\GcServiceInterface
      * @deprecated since 5.0 -> use Shop::Container()->getGc() instead
      */
-    public function Gc() : GarbageCollector
+    public function Gc() : DbService\GcService
     {
         return static::Container()->getDBServiceGC();
     }
@@ -550,7 +550,7 @@ final class Shop
      * @return \Cache\JTLCacheInterface
      * @deprecated since shop 5.0
      */
-    public function _Cache() : JTLCache
+    public function _Cache() : \Cache\JTLCacheInterface
     {
         return self::Container()->getCache();
     }

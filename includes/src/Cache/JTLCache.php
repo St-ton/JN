@@ -51,7 +51,7 @@ define('CACHING_GROUP_FILTER', 'fltr');
  * @method array checkAvailability()
  * @method int getResultCode()
  */
-final class JTLCache
+final class JTLCache implements JTLCacheInterface
 {
     /**
      * default port for redis caching method

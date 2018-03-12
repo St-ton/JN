@@ -38,10 +38,28 @@ class AdminAccount
     private $twoFaAuthenticated = false;
 
     /**
+     * @var \Monolog\Logger
+     */
+    private $authLogger;
+
+    /**
+     * @var \Mapper\AdminLoginStatusToLogLevel
+     */
+    private $levelMapper;
+
+    /**
+     * @var AdminLoginStatusMessageGenerator
+     */
+    private $messageGenerator;
+
+    /**
      * @param bool $bInitialize
      */
     public function __construct($bInitialize = true)
     {
+        $this->authLogger = Shop::Container()->getAuthLoggerService();
+        $this->messageGenerator = new AdminLoginStatusMessageGenerator();
+        $this->levelMapper = new \Mapper\AdminLoginStatusToLogLevel();
         if ($bInitialize) {
             AdminSession::getInstance();
             $this->_validateSession();
@@ -128,25 +146,21 @@ class AdminAccount
     /**
      * @param int    $code
      * @param string $user
-     * @return int
-     * @throws \Exceptions\CircularReferenceException
-     * @throws \Exceptions\ServiceNotFoundException
+     * @return bool
      */
-    private function handleLoginResult($code, $user)
+    private function handleLoginResult($code, $user) : bool
     {
-        $ip = getRealIp();
-        Shop::Container()->getAuthLoggerFileService()
-            ->setIP(getRealIp())
-            ->setCode($code)
-            ->setUser($user)
-            ->log();
-        Shop::Container()->getAuthLoggerDatabaseService()
-            ->setIP(getRealIp())
-            ->setCode($code)
-            ->setUser($user)
-            ->log();
+        $log = new \Model\AuthLogEntry();
 
-        return $code;
+        $log->setIP(getRealIp())
+            ->setCode($code)
+            ->setUser($user);
+
+        return $this->authLogger->log(
+            $this->levelMapper->map($code),
+            $this->messageGenerator->generate($code),
+            $log->asArray()
+        );
     }
 
     /**
@@ -182,9 +196,7 @@ class AdminAccount
         $cPassCrypted = null;
         if (strlen($oAdmin->cPass) === 32) {
             // old md5 hash support
-            $oAdminTmp = Shop::DB()->select('tadminlogin', 'cLogin', $cLogin, 'cPass', md5($cPass));
-            if ($oAdminTmp === null || !isset($oAdminTmp->cLogin)) {
-                //login failed
+            if (md5($cPass) !== $oAdmin->cPass) {
                 $this->_setRetryCount($oAdmin->cLogin);
 
                 return $this->handleLoginResult(($oAdmin->nLoginVersuch + 1) >= 3
@@ -194,7 +206,7 @@ class AdminAccount
             if (!isset($_SESSION['AdminAccount'])) {
                 $_SESSION['AdminAccount'] = new stdClass();
             }
-            //login successful - update password hash
+            // login successful - update password hash
             $_SESSION['AdminAccount']->cPass  = md5($cPass);
             $_SESSION['AdminAccount']->cLogin = $cLogin;
             $verified                         = true;

@@ -22,12 +22,8 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
  */
 function getRevisions($params, &$smarty)
 {
-    $secondary = isset($params['secondary'])
-        ? $params['secondary']
-        : false;
-    $data      = isset($params['data'])
-        ? $params['data']
-        : null;
+    $secondary = $params['secondary'] ?? false;
+    $data      = $params['data'] ?? null;
     $revision  = new Revision();
 
     return $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
@@ -65,9 +61,7 @@ function getCurrencyConversionSmarty($params, &$smarty)
  */
 function getCurrencyConversionTooltipButton($params, &$smarty)
 {
-    $placement = isset($params['placement'])
-        ? $params['placement']
-        : 'left';
+    $placement = $params['placement'] ?? 'left';
 
     if (isset($params['inputId'])) {
         $inputId = $params['inputId'];
@@ -102,7 +96,7 @@ function getCurrentPage($params, &$smarty)
  */
 function getHelpDesc($params, &$smarty)
 {
-    $placement   = isset($params['placement']) ? $params['placement'] : 'left';
+    $placement   = $params['placement'] ?? 'left';
     $cID         = !empty($params['cID']) ? $params['cID'] : null;
     $description = isset($params['cDesc'])
         ? str_replace('"', '\'', $params['cDesc'])
@@ -193,7 +187,7 @@ function getExtensionCategory($params, &$smarty)
         12 => 'Auswertungen'
     ];
 
-    $key = isset($catNames[$params['cat']]) ? $catNames[$params['cat']] : null;
+    $key = $catNames[$params['cat']] ?? null;
     $smarty->assign('catName', $key);
 }
 
@@ -227,7 +221,7 @@ function formatVersion($params, &$smarty)
  */
 function gravatarImage($params, &$smarty)
 {
-    $email = isset($params['email']) ? $params['email'] : null;
+    $email = $params['email'] ?? null;
     if ($email === null) {
         $email = JTLSUPPORT_EMAIL;
     } else {

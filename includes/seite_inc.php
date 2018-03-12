@@ -498,12 +498,12 @@ function gibSitemapGlobaleMerkmale()
                     ++$nPos;
                 }
             } else { // Erster Durchlauf
-                $oMerkmal->kMerkmal         = isset($oMerkmalTMP->kMerkmal) ? $oMerkmalTMP->kMerkmal : null;
-                $oMerkmal->cName            = isset($oMerkmalTMP->cName) ? $oMerkmalTMP->cName : null;
-                $oMerkmal->nSort            = isset($oMerkmalTMP->nSort) ? $oMerkmalTMP->nSort : null;
-                $oMerkmal->nGlobal          = isset($oMerkmalTMP->nGlobal) ? $oMerkmalTMP->nGlobal : null;
-                $oMerkmal->cBildpfad        = isset($oMerkmalTMP->cBildpfad) ? $oMerkmalTMP->cBildpfad : null;
-                $oMerkmal->cTyp             = isset($oMerkmalTMP->cTyp) ? $oMerkmalTMP->cTyp : null;
+                $oMerkmal->kMerkmal         = $oMerkmalTMP->kMerkmal ?? null;
+                $oMerkmal->cName            = $oMerkmalTMP->cName ?? null;
+                $oMerkmal->nSort            = $oMerkmalTMP->nSort ?? null;
+                $oMerkmal->nGlobal          = $oMerkmalTMP->nGlobal ?? null;
+                $oMerkmal->cBildpfad        = $oMerkmalTMP->cBildpfad ?? null;
+                $oMerkmal->cTyp             = $oMerkmalTMP->cTyp ?? null;
                 $oMerkmal->oMerkmalWert_arr = [];
 
                 verarbeiteMerkmalBild($oMerkmal);

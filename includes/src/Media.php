@@ -24,7 +24,7 @@ class Media
      */
     public static function getInstance()
     {
-        return (self::$_instance === null) ? new self() : self::$_instance;
+        return self::$_instance ?? new self();
     }
 
     /**

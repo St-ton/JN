@@ -142,7 +142,7 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)
        ->assign('pw_updated', isset($_GET['pw_updated']) && $_GET['pw_updated'] === 'true')
        ->assign('cFehler', $cFehler)
-       ->assign('updateMessage', (isset($updateMessage) ? $updateMessage : null));
+       ->assign('updateMessage', $updateMessage ?? null);
 
 
 /**

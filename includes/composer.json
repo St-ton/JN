@@ -21,6 +21,7 @@
         "psr/container": "1.0.0",
         "lstrojny/functional-php": "~1.7",
         "monolog/monolog": "^1.23",
+        "tightenco/collect": "~5.5.0",
         "mrclay/minify": "~3.0.0"
     },
     "require-dev": {

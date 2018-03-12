@@ -59,9 +59,7 @@ class Revision
      */
     private function getMapping($type)
     {
-        return isset($this->mapping[$type])
-            ? $this->mapping[$type]
-            : null;
+        return $this->mapping[$type] ?? null;
     }
 
     /**
@@ -102,9 +100,7 @@ class Revision
         $key = (int)$key;
         if (!empty($key) && ($mapping = $this->getMapping($type)) !== null) {
             if ($author === null) {
-                $author = isset($_SESSION['AdminAccount']->cLogin)
-                    ? $_SESSION['AdminAccount']->cLogin
-                    : '?';
+                $author = $_SESSION['AdminAccount']->cLogin ?? '?';
             }
             $field           = $mapping['id'];
             $currentRevision = Shop::DB()->select($mapping['table'], $mapping['id'], $key);

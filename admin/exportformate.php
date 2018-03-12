@@ -225,9 +225,7 @@ if ($step === 'neuer Export') {
                 ['kExportformat', 'cName'],
                 [(int)$exportformat->kExportformat, $Conf[$i]->cWertName]
             );
-            $Conf[$i]->gesetzterWert = isset($setValue->cWert)
-                ? $setValue->cWert
-                : null;
+            $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
         }
     }
     $smarty->assign('Conf', $Conf);

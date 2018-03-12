@@ -110,7 +110,7 @@ function bearbeiteInsert($xml)
                 $merkmal_arr[$i]->nMehrfachauswahl = 0;
             }
             $oMerkmal                   = merkeBildPfad($merkmal_arr[$i]->kMerkmal);
-            $merkmal_arr[$i]->cBildpfad = isset($oMerkmal->cBildpfad) ? $oMerkmal->cBildpfad : '';
+            $merkmal_arr[$i]->cBildpfad = $oMerkmal->cBildpfad ?? '';
             $oMM_arr[$i]->oMMW_arr      = [];
 
             if ($mmCount < 2) {
@@ -398,7 +398,7 @@ function bearbeiteInsert($xml)
             $kMerkmalWert     = $MerkmalWert_arr[$o]->kMerkmalWert;
             $oMerkmalWertBild = Shop::DB()->select('tmerkmalwertbild', 'kMerkmalWert', (int)$kMerkmalWert);
 
-            $MerkmalWert_arr[$o]->cBildpfad = isset($oMerkmalWertBild->cBildpfad) ? $oMerkmalWertBild->cBildpfad : '';
+            $MerkmalWert_arr[$o]->cBildpfad = $oMerkmalWertBild->cBildpfad ?? '';
             DBUpdateInsert('tmerkmalwert', [$MerkmalWert_arr[$o]], 'kMerkmalWert');
         }
         fuelleFehlendeMMWInSeo($oMM_arr); // tseo prüfen und falls Seo einer Sprache leer => nachfüllen
@@ -456,12 +456,12 @@ function fuelleFehlendeMMWInSeo($oMM_arr)
                             $oMerkmalWertSprache                   = new stdClass();
                             $oMerkmalWertSprache->kMerkmalWert     = (int)$oMMW->kMerkmalWert;
                             $oMerkmalWertSprache->kSprache         = (int)$oSprache->kSprache;
-                            $oMerkmalWertSprache->cWert            = isset($oMMW->cNameSTD) ? $oMMW->cNameSTD : '';
-                            $oMerkmalWertSprache->cSeo             = isset($oSeo->cSeo) ? $oSeo->cSeo : '';
-                            $oMerkmalWertSprache->cMetaTitle       = isset($oMMW->cMetaTitleSTD) ? $oMMW->cMetaTitleSTD : '';
-                            $oMerkmalWertSprache->cMetaKeywords    = isset($oMMW->cMetaKeywordsSTD) ? $oMMW->cMetaKeywordsSTD : '';
-                            $oMerkmalWertSprache->cMetaDescription = isset($oMMW->cMetaDescriptionSTD) ? $oMMW->cMetaDescriptionSTD : '';
-                            $oMerkmalWertSprache->cBeschreibung    = isset($oMMW->cBeschreibungSTD) ? $oMMW->cBeschreibungSTD : '';
+                            $oMerkmalWertSprache->cWert            = $oMMW->cNameSTD ?? '';
+                            $oMerkmalWertSprache->cSeo             = $oSeo->cSeo ?? '';
+                            $oMerkmalWertSprache->cMetaTitle       = $oMMW->cMetaTitleSTD ?? '';
+                            $oMerkmalWertSprache->cMetaKeywords    = $oMMW->cMetaKeywordsSTD ?? '';
+                            $oMerkmalWertSprache->cMetaDescription = $oMMW->cMetaDescriptionSTD ?? '';
+                            $oMerkmalWertSprache->cBeschreibung    = $oMMW->cBeschreibungSTD ?? '';
                             Shop::DB()->insert('tmerkmalwertsprache', $oMerkmalWertSprache);
                         }
                     }

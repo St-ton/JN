@@ -417,11 +417,8 @@ class WarenkorbHelper
                     continue;
                 }
                 $oKonfigitem          = new Konfigitem($kKonfigitem);
-                $oKonfigitem->fAnzahl = (float)(
-                isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()])
-                    ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
-                    : $oKonfigitem->getInitial()
-                );
+                $oKonfigitem->fAnzahl = (float)($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
+                    ?? $oKonfigitem->getInitial());
                 if ($nKonfigitemAnzahl_arr && isset($nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()])) {
                     $oKonfigitem->fAnzahl = (float)$nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()];
                 }
@@ -520,7 +517,7 @@ class WarenkorbHelper
                 fuegeEinInWarenkorbPers(
                     $oKonfigitem->getArtikelKey(),
                     $oKonfigitem->fAnzahlWK,
-                    isset($oKonfigitem->oEigenschaftwerte_arr) ? $oKonfigitem->oEigenschaftwerte_arr : [],
+                    $oKonfigitem->oEigenschaftwerte_arr ?? [],
                     $cUnique,
                     $oKonfigitem->getKonfigitem()
                 );

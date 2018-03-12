@@ -16,8 +16,6 @@ ifndef('ADMIN_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SHOP_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SMARTY_LOG_LEVEL', E_ERROR | E_PARSE);
 error_reporting(SHOP_LOG_LEVEL);
-// if this is set to false, Hersteller, Linkgruppen and oKategorie_arr will not be added to $_SESSION
-// this requires changes in templates!
 ifndef('TEMPLATE_COMPATIBILITY', false);
 // Image compatibility level 0 => disabled, 1 => referenced in history table, 2 => automatic detection
 ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);

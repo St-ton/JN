@@ -98,17 +98,16 @@ for ($i = 0; $i < $configCount; $i++) {
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-        ? $oSetValue->cWert
-        : null;
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr);
 // Max Anzahl Vergleiche
 $oVergleichAnzahl = Shop::DB()->query(
-    "SELECT count(*) AS nAnzahl
-        FROM tvergleichsliste",
-    1);
+    'SELECT count(*) AS nAnzahl
+        FROM tvergleichsliste',
+    NiceDB::RET_SINGLE_OBJECT
+);
 // Pagination
 $oPagination = (new Pagination())
     ->setItemCount($oVergleichAnzahl->nAnzahl)

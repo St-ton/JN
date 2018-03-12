@@ -119,12 +119,8 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     }
 
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
-        $land          = isset($_SESSION['Lieferadresse']->cLand)
-            ? $_SESSION['Lieferadresse']->cLand
-            : $_SESSION['Kunde']->cLand;
-        $plz           = isset($_SESSION['Lieferadresse']->cPLZ)
-            ? $_SESSION['Lieferadresse']->cPLZ
-            : $_SESSION['Kunde']->cPLZ;
+        $land          = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
+        $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
         $kKundengruppe = Session::CustomerGroup()->getID();
 
         $oGuenstigsteVersandart = null;
@@ -260,7 +256,7 @@ Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('bestellschritt', gibBestellschritt($step))
-    ->assign('requestURL', (isset($requestURL) ? $requestURL : null))
+    ->assign('requestURL', $requestURL ?? null)
     ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
     ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 

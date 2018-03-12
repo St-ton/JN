@@ -7,7 +7,7 @@ include PFAD_ROOT . PFAD_INCLUDES . 'spiderlist_inc.php';
 
 //besucherzähler
 if (!isset($_SESSION['oBesucher'])) {
-    $userAgent    = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+    $userAgent    = $_SERVER['HTTP_USER_AGENT'] ?? '';
     $kBesucherBot = istSpider($userAgent);
     if ($kBesucherBot > 0) {
         Shop::DB()->query("UPDATE tbesucherbot SET dZeit = now() WHERE kBesucherBot = " . $kBesucherBot, 4);

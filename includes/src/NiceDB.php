@@ -182,9 +182,7 @@ class NiceDB implements Serializable
      */
     public static function getInstance($DBHost = null, $DBUser = null, $DBpass = null, $DBdatabase = null)
     {
-        return self::$instance !== null
-            ? self::$instance
-            : new self($DBHost, $DBUser, $DBpass, $DBdatabase);
+        return self::$instance ?? new self($DBHost, $DBUser, $DBpass, $DBdatabase);
     }
 
     /**
@@ -292,7 +290,7 @@ class NiceDB implements Serializable
             'isConnected'     => 'isConnected'
         ];
 
-        return isset($mapping[$method]) ? $mapping[$method] : null;
+        return $mapping[$method] ?? null;
     }
 
     /**

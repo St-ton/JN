@@ -27,9 +27,7 @@ $linkHelper = LinkHelper::getInstance();
 if (isset($oLink->kLink) && $oLink->kLink > 0) {
     $Link          = $linkHelper->getPageLink($oLink->kLink);
     $requestURL    = baueURL($Link, URLART_SEITE);
-    $sprachURL     = isset($Link->languageURLs)
-        ? $Link->languageURLs
-        : baueSprachURLS($Link, URLART_SEITE);
+    $sprachURL     = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
     $Link->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
     Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->Sprache->cName, $requestURL));
 } else {

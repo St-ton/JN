@@ -186,7 +186,7 @@ class MigrationManager
                     $id    = MigrationHelper::getIdFromFileName($baseName);
                     $info  = MigrationHelper::getInfoFromFileName($baseName);
                     $class = MigrationHelper::mapFileNameToClassName($baseName);
-                    $date  = isset($executed[(int)$id]) ? $executed[(int)$id] : null;
+                    $date  = $executed[(int)$id] ?? null;
 
                     require_once $filePath;
 

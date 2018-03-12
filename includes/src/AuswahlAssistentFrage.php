@@ -103,11 +103,6 @@ class AuswahlAssistentFrage
             $this->kMerkmal                = (int)$this->kMerkmal;
             $this->nSort                   = (int)$this->nSort;
             $this->nAktiv                  = (int)$this->nAktiv;
-
-            if (TEMPLATE_COMPATIBILITY === true) {
-                // Used by old AWA
-                $this->oMerkmal = self::getMerkmal($this->kMerkmal, true);
-            }
         }
     }
 

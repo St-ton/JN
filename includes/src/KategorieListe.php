@@ -264,16 +264,13 @@ class KategorieListe
         $kSprache      = (int)$kSprache;
         $kKundengruppe = (int)$kKundengruppe;
         $categoryList  = self::getCategoryList($kKundengruppe, $kSprache);
-        $subCategories = isset($categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie])
-            ? $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie]
-            : null;
+        $subCategories = $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] ?? null;
 
         if ($subCategories !== null && is_array($subCategories)) {
             //nimm kats aus session
             foreach ($subCategories as $kUnterKategorie) {
-                $oKategorie_arr[$kUnterKategorie] = !isset($categoryList['oKategorie_arr'][$kUnterKategorie])
-                    ? new Kategorie($kUnterKategorie)
-                    : $categoryList['oKategorie_arr'][$kUnterKategorie];
+                $oKategorie_arr[$kUnterKategorie] = $categoryList['oKategorie_arr'][$kUnterKategorie]
+                    ?? new Kategorie($kUnterKategorie);
             }
         } else {
             if ($kKategorie > 0) {

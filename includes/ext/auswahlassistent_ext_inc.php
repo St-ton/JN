@@ -127,9 +127,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         if ($kKategorie > 0) {
             $cParameter_arr['kKategorie'] = $kKategorie;
         } else {
-            $cParameter_arr['kMerkmalWert'] = isset($_SESSION['AuswahlAssistent']->oAuswahl_arr[0]->kMerkmalWert) ?
-                $_SESSION['AuswahlAssistent']->oAuswahl_arr[0]->kMerkmalWert
-                : null;
+            $cParameter_arr['kMerkmalWert'] = $_SESSION['AuswahlAssistent']->oAuswahl_arr[0]->kMerkmalWert ?? null;
         }
         if ($NaviFilter === null) {
             $NaviFilter = new stdClass();

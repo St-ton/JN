@@ -192,9 +192,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
 
                 if (!$kSprache) {
-                    $kSprache = isset($_SESSION['kSprache'])
-                        ? $_SESSION['kSprache']
-                        : getDefaultLanguageID();
+                    $kSprache = $_SESSION['kSprache'] ?? getDefaultLanguageID();
                 }
                 if (!$kKundengruppe) {
                     $kKundengruppe = Session::CustomerGroup()->getID();
@@ -542,7 +540,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $isConverted = false;
             if ($this->oArtikel && $this->bPreis) {
                 //get price from associated article
-                $fVKPreis = isset($this->oArtikel->Preise->fVKNetto) ? $this->oArtikel->Preise->fVKNetto : 0;
+                $fVKPreis = $this->oArtikel->Preise->fVKNetto ?? 0;
                 // Zuschlag / Rabatt berechnen
                 $fSpecial = $this->oPreis->getPreis($bConvertCurrency);
                 if ($fSpecial != 0) {
@@ -579,7 +577,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $isConverted = false;
             if ($this->oArtikel && $this->bPreis) {
                 //get price from associated article
-                $fVKPreis = isset($this->oArtikel->Preise->fVKNetto) ? $this->oArtikel->Preise->fVKNetto : 0;
+                $fVKPreis = $this->oArtikel->Preise->fVKNetto ?? 0;
                 // Zuschlag / Rabatt berechnen
                 $fSpecial = $this->oPreis->getPreis($bConvertCurrency);
                 if ($fSpecial != 0) {

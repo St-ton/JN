@@ -238,12 +238,8 @@ class FilterItemAttribute extends FilterBaseAttribute
         if ($this->options !== null) {
             return $this->options;
         }
-        $currentCategory     = isset($data['oAktuelleKategorie'])
-            ? $data['oAktuelleKategorie']
-            : null;
-        $bForce              = isset($data['bForce']) // auswahlassistent
-            ? $data['bForce']
-            : false;
+        $currentCategory     = $data['oAktuelleKategorie'] ?? null;
+        $bForce              = $data['bForce'] ?? false;
         $catAttributeFilters = [];
         $activeOrFilterIDs   = [];
         $attributeFilters    = [];

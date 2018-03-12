@@ -40,7 +40,7 @@ trait JTLCacheTrait
      */
     public static function getInstance($options)
     {
-        return self::$instance !== null ? self::$instance : new self($options);
+        return self::$instance ?? new self($options);
     }
 
     /**
@@ -169,9 +169,7 @@ trait JTLCacheTrait
         // load journal from extra cache
         $this->getJournal();
         if (is_string($tags)) {
-            return isset($this->journal[$tags])
-                ? $this->journal[$tags]
-                : [];
+            return $this->journal[$tags] ?? [];
         }
         if (is_array($tags)) {
             $res = [];

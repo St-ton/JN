@@ -138,8 +138,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             }
         }
     } elseif (isset($_POST['news_speichern']) && (int)$_POST['news_speichern'] === 1) { // News speichern
-        $kKundengruppe_arr  = (isset($_POST['kKundengruppe']) ? $_POST['kKundengruppe'] : null);
-        $kNewsKategorie_arr = (isset($_POST['kNewsKategorie']) ? $_POST['kNewsKategorie'] : null);
+        $kKundengruppe_arr  = $_POST['kKundengruppe'] ?? null;
+        $kNewsKategorie_arr = $_POST['kNewsKategorie'] ?? null;
         $cBetreff           = $_POST['betreff'];
         $cSeo               = $_POST['seo'];
         $cText              = $_POST['text'];
@@ -808,9 +808,7 @@ if ($step === 'news_uebersicht') {
             'cName',
             $oConfig_arr[$i]->cWertName
         );
-        $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-            ? $oSetValue->cWert
-            : null;
+        $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
     }
 
     // Praefix
@@ -823,9 +821,7 @@ if ($step === 'news_uebersicht') {
             $oNewsMonatsPraefix_arr[$i]->cNameDeutsch  = $oSprache->cNameDeutsch;
             $oNewsMonatsPraefix_arr[$i]->cISOSprache   = $oSprache->cISO;
             $oNewsMonatsPraefix                        = Shop::DB()->select('tnewsmonatspraefix', 'kSprache', (int)$oSprache->kSprache);
-            $oNewsMonatsPraefix_arr[$i]->cPraefix      = isset($oNewsMonatsPraefix->cPraefix)
-                ? $oNewsMonatsPraefix->cPraefix
-                : null;
+            $oNewsMonatsPraefix_arr[$i]->cPraefix      = $oNewsMonatsPraefix->cPraefix ?? null;
         }
         $smarty->assign('oNewsMonatsPraefix_arr', $oNewsMonatsPraefix_arr);
     }

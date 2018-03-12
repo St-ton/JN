@@ -20,7 +20,7 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
     $fMindestbestellwert = isset($_POST['fMindestbestellwert']) ? (float)$_POST['fMindestbestellwert'] : 0;
     $fKostenfrei         = isset($_POST['fKostenfrei']) ? (float)$_POST['fKostenfrei'] : 0;
     $kSteuerklasse       = isset($_POST['kSteuerklasse']) ? (int)$_POST['kSteuerklasse'] : 0;
-    $kKundengruppe_arr   = isset($_POST['kKundengruppe']) ? $_POST['kKundengruppe'] : null;
+    $kKundengruppe_arr   = $_POST['kKundengruppe'] ?? null;
     $nAktiv              = isset($_POST['nAktiv']) ? (int)$_POST['nAktiv'] : 0;
 
     if (isset($_POST['cName_' . $oSprache_arr[0]->cISO]) && strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0) {

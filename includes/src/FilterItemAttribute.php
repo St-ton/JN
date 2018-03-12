@@ -249,8 +249,12 @@ class FilterItemAttribute extends FilterBaseAttribute
         $attributeFilters    = [];
         $activeValues        = [];
         $useAttributeFilter  = $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N';
-        $attributeLimit      = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
-        $attributeValueLimit = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
+        $attributeLimit      = $bForce
+            ? 0
+            : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
+        $attributeValueLimit = $bForce
+            ? 0
+            : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
 
         if (!$bForce && !$useAttributeFilter) {
             return $attributeFilters;
@@ -404,8 +408,8 @@ class FilterItemAttribute extends FilterBaseAttribute
         );
         $qryRes                = Shop::DB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
-            ssMerkmal.nMehrfachauswahl,
-            ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
+            ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
+            ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
             FROM (" . $baseQry . ") AS ssMerkmal
             #LEFT JOIN tseo 
                 #ON tseo.kKey = ssMerkmal.kMerkmalWert
@@ -437,7 +441,12 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attribute->attributeValues                           = [];
                 $attributeFilterCollection[$attributeValue->kMerkmal] = $attribute;
             }
-            unset($attributeValue->nMehrfachauswahl, $attributeValue->cMMBildPfad, $attributeValue->cName, $attributeValue->cTyp);
+            unset(
+                $attributeValue->nMehrfachauswahl,
+                $attributeValue->cMMBildPfad,
+                $attributeValue->cName,
+                $attributeValue->cTyp
+            );
         }
         // add attribute values to corresponding attributes
         foreach ($qryRes as $attributeValue) {

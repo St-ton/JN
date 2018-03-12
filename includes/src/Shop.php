@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Services\Container as Container;
+use Services\Container;
 use DB\Services as DbService;
 
 /**
@@ -421,7 +421,7 @@ final class Shop
      * @param string $key
      * @return bool
      */
-    public function _has($key)
+    public function _has($key) : bool
     {
         return isset($this->registry[$key]);
     }
@@ -521,7 +521,7 @@ final class Shop
      * @return DbService\GcServiceInterface
      * @deprecated since 5.0 -> use Shop::Container()->getGc() instead
      */
-    public function Gc() : DbService\GcService
+    public function Gc() : DbService\GcServiceInterface
     {
         return static::Container()->getDBServiceGC();
     }
@@ -718,7 +718,7 @@ final class Shop
                   FROM tplugin 
                   WHERE nStatus = 2 
                     AND bBootstrap = 1 
-                  ORDER BY nPrio ASC', NiceDB::RET_ARRAY_OF_OBJECTS) ?: [];
+                  ORDER BY nPrio ASC', \DB\NiceDB::RET_ARRAY_OF_OBJECTS) ?: [];
             self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
 
@@ -1351,7 +1351,7 @@ final class Shop
                         'SELECT kLink 
                             FROM tlink
                             WHERE nLinkart = ' . LINKTYP_STARTSEITE . $cKundengruppenSQL,
-                        NiceDB::RET_SINGLE_OBJECT
+                        \DB\NiceDB::RET_SINGLE_OBJECT
                     );
                 }
                 self::$kLink = isset($link->kLink)
@@ -1478,7 +1478,7 @@ final class Shop
      * @return ProductFilter
      * @deprecated since 4.07
      */
-    public static function buildNaviFilter($cParameter_arr, $productFilter = null)
+    public static function buildNaviFilter($cParameter_arr, $productFilter = null) : ProductFilter
     {
         trigger_error(__METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead',
             E_USER_DEPRECATED);
@@ -1493,7 +1493,7 @@ final class Shop
      * @param stdClass|null|ProductFilter $productFilter
      * @return ProductFilter
      */
-    public static function buildProductFilter($cParameter_arr, $productFilter = null)
+    public static function buildProductFilter($cParameter_arr, $productFilter = null) : ProductFilter
     {
         $pf = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
         if ($productFilter !== null) {
@@ -1509,7 +1509,7 @@ final class Shop
      * @return ProductFilter
      * @deprecated since 4.07
      */
-    public static function getNaviFilter()
+    public static function getNaviFilter() : ProductFilter
     {
         trigger_error(__METHOD__ . 'is deprecated. Use ' . __CLASS__ . '::getProductFilter() instead',
             E_USER_DEPRECATED);
@@ -1520,7 +1520,7 @@ final class Shop
     /**
      * @return ProductFilter
      */
-    public static function getProductFilter()
+    public static function getProductFilter() : ProductFilter
     {
         if (self::$productFilter === null) {
             self::$productFilter = self::buildProductFilter([]);
@@ -1551,7 +1551,7 @@ final class Shop
      */
     public static function getShopVersion() : int
     {
-        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', NiceDB::RET_SINGLE_OBJECT);
+        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\NiceDB::RET_SINGLE_OBJECT);
 
         return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
             ? (int)$oVersion->nVersion
@@ -1568,7 +1568,10 @@ final class Shop
         return JTL_VERSION;
     }
 
-    public function _getVersion()
+    /**
+     * @return int
+     */
+    public function _getVersion() : int
     {
         return JTL_VERSION;
     }

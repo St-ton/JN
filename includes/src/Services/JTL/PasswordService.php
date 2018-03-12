@@ -6,8 +6,6 @@
 
 namespace Services\JTL;
 
-use function Functional\true;
-
 /**
  * Class PasswordService
  * @package Services\JTL

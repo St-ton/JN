@@ -5,6 +5,11 @@
  */
 
 use Services\Container as Container;
+use JTL\ProcessingHandler\NiceDBHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Logger;
+use Monolog\Processor\PsrLogMessageProcessor;
 
 /**
  * Class Shop
@@ -1713,16 +1718,13 @@ final class Shop
             return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
         });
 
-        $container->setSingleton(\Services\JTL\AuthLoggerServiceInterface::class, function(Container $container){
-            return new \Services\JTL\AuthLoggerService();
-        });
+        $container->setSingleton('AuthLogger', function (Container $container) {
+            $niceDbHandler = (new NiceDBHandler(\Shop::DB(), Logger::INFO))
+                ->setFormatter(new LineFormatter("%message%\n", null, false, true));
+            $fileHandler   = (new StreamHandler(PFAD_LOGFILES . 'auth.log', Logger::INFO))
+                ->setFormatter(new LineFormatter(null, null, false, true));
 
-        $container->setSingleton(\Services\JTL\AuthLoggerFileService::class, function(Container $container){
-            return new \Services\JTL\AuthLoggerFileService();
-        });
-
-        $container->setSingleton(\Services\JTL\AuthLoggerDatabaseService::class, function(Container $container){
-            return new \Services\JTL\AuthLoggerDatabaseService();
+            return new Logger('auth', [$niceDbHandler, $fileHandler], [new PsrLogMessageProcessor()]);
         });
     }
 }

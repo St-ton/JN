@@ -9,7 +9,7 @@ use DB\Services as DbService;
 
 /**
  * Class Shop
- * @method static JTLCache Cache()
+ * @method static \Cache\JTLCacheInterface Cache()
  * @method static Sprache Lang()
  * @method static JTLSmarty Smarty(bool $fast_init = false, bool $isAdmin = false)
  * @method static Media Media()
@@ -490,7 +490,7 @@ final class Shop
      * @return \DB\DbInterface
      * @deprecated since Shop 5 use Shop::Container()->getDB() instead
      */
-    public static function DB()
+    public static function DB() : \DB\DbInterface
     {
         return self::Container()->getDB();
     }
@@ -713,7 +713,7 @@ final class Shop
     {
         $cacheID = 'plgnbtsrp';
         if (($plugins = self::Cache()->get($cacheID)) === false) {
-            $plugins = self::DB()->query(
+            $plugins = self::Container()->getDB()->query(
                 'SELECT kPlugin 
                   FROM tplugin 
                   WHERE nStatus = 2 
@@ -1093,7 +1093,7 @@ final class Shop
             }
             // custom filter
             foreach ($customSeo as $className => $data) {
-                $oSeo = self::DB()->select($data['table'], 'cSeo', $data['cSeo']);
+                $oSeo = self::Container()->getDB()->select($data['table'], 'cSeo', $data['cSeo']);
                 if (isset($oSeo->filterval)) {
                     self::$customFilters[$className] = (int)$oSeo->filterval;
                 } else {
@@ -1105,7 +1105,7 @@ final class Shop
             }
             // category filter
             if (strlen($katseo) > 0) {
-                $oSeo = self::DB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
+                $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
                 if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $katseo) === 0) {
                     self::$kKategorieFilter = (int)$oSeo->kKey;
                 } else {
@@ -1115,14 +1115,14 @@ final class Shop
             // manufacturer filter
             if (($seoCount = count($manufSeo)) > 0) {
                 if ($seoCount === 1) {
-                    $oSeo = self::DB()->selectAll('tseo', ['cKey', 'cSeo'], ['kHersteller', $manufSeo[0]], 'kKey');
+                    $oSeo = self::Container()->getDB()->selectAll('tseo', ['cKey', 'cSeo'], ['kHersteller', $manufSeo[0]], 'kKey');
                 } else {
                     $bindValues = [];
                     // PDO::bindValue() is 1-based
                     foreach ($manufSeo as $i => $t) {
                         $bindValues[$i + 1] = $t;
                     }
-                    $oSeo = self::DB()->queryPrepared(
+                    $oSeo = self::Container()->getDB()->queryPrepared(
                         "SELECT kKey 
                             FROM tseo 
                             WHERE cKey = 'kHersteller' 
@@ -1151,7 +1151,7 @@ final class Shop
                 self::$bSEOMerkmalNotFound = false;
                 foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
                     if ($i > 0 && strlen($cSEOMerkmal) > 0) {
-                        $oSeo = self::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
+                        $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
                         if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
                             //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
                             $_GET['mf'][] = (int)$oSeo->kKey;
@@ -1161,7 +1161,7 @@ final class Shop
                     }
                 }
             }
-            $oSeo = self::DB()->select('tseo', 'cSeo', $seo);
+            $oSeo = self::Container()->getDB()->select('tseo', 'cSeo', $seo);
             // EXPERIMENTAL_MULTILANG_SHOP
             if (isset($oSeo->kSprache) && self::$kSprache !== $oSeo->kSprache &&
                 defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
@@ -1170,7 +1170,7 @@ final class Shop
             // EXPERIMENTAL_MULTILANG_SHOP END
             // Link active?
             if (isset($oSeo->cKey) && $oSeo->cKey === 'kLink') {
-                $bIsActive = self::DB()->select('tlink', 'kLink', (int)$oSeo->kKey);
+                $bIsActive = self::Container()->getDB()->select('tlink', 'kLink', (int)$oSeo->kKey);
                 if ($bIsActive !== null && (int)$bIsActive->bIsActive === 0) {
                     $oSeo = false;
                 }
@@ -1347,7 +1347,7 @@ final class Shop
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
                         OR tlink.cKundengruppen = '')";
-                    $link              = self::DB()->query(
+                    $link              = self::Container()->getDB()->query(
                         'SELECT kLink 
                             FROM tlink
                             WHERE nLinkart = ' . LINKTYP_STARTSEITE . $cKundengruppenSQL,
@@ -1376,7 +1376,7 @@ final class Shop
                         exit;
                     }
                     self::setPageType(PAGE_EIGENE);
-                    $oSeite = self::DB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
+                    $oSeite = self::Container()->getDB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
                     if ($link->nLinkart === LINKTYP_STARTSEITE) {
                         self::setPageType(PAGE_STARTSEITE);
                     } elseif ($link->nLinkart === LINKTYP_DATENSCHUTZ) {
@@ -1551,7 +1551,7 @@ final class Shop
      */
     public static function getShopVersion() : int
     {
-        $oVersion = self::DB()->query('SELECT nVersion FROM tversion', NiceDB::RET_SINGLE_OBJECT);
+        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', NiceDB::RET_SINGLE_OBJECT);
 
         return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
             ? (int)$oVersion->nVersion

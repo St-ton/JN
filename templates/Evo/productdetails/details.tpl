@@ -36,7 +36,6 @@
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
-
 <form id="buy_form" method="post" action="{$Artikel->cURLFull}" >
     {$jtl_token}
     <div class="row product-primary" id="product-offer">

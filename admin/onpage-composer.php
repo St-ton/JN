@@ -10,11 +10,23 @@
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
-
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-$cHinweis    = '';
-$cFehler     = '';
+$pageId      = verifyGPDataString('pageId');
+$pageUrl     = verifyGPDataString('pageUrl');
+$action      = verifyGPDataString('action');
+$templateUrl = \Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir;
+$opc         = new \OPC\Service();
+
+$smarty
+    ->assign('pageUrl', $pageUrl)
+    ->assign('pageId', $pageId)
+    ->assign('action', $action)
+    ->assign('templateUrl', $templateUrl)
+    ->assign('opc', $opc)
+    ->display('onpage-composer.tpl');
+
+/*
 $opc         = OPC::getInstance()->setAdminAccount($oAccount);
 $opcPage     = null;
 $portlets    = $opc->getPortlets();
@@ -48,3 +60,4 @@ $smarty
     ->assign('cPageIdHash', $cPageIdHash)
     ->assign('opcPage', $opcPage)
     ->display('onpage-composer.tpl');
+*/

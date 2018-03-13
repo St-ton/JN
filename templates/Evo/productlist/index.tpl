@@ -6,10 +6,8 @@
 
 {block name="content"}
     <div id="result-wrapper">
-        {if (!empty($opcPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.editpage))}
-            {$opcPage->cFinalHtml_arr['editor_replace_all']}
-        {elseif (!empty($smarty.get.editpage) && !empty($smarty.get.cAction) && $smarty.get.cAction === 'replace')}
-            {include file='snippets/opc_mount_point.tpl' id='editor_replace_all'}
+        {if $opcPage->isReplace()}
+            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
         {else}
             {assign var='grid' value='col-xs-6 col-md-4'}
         {/if}
@@ -85,7 +83,7 @@
 
             {block name="productlist-footer"}
                 {include file='productlist/footer.tpl'}
-                {include file='snippets/opc_mount_point.tpl' id='editor_productlist_footer'}
+                {include file='snippets/opc_mount_point.tpl' id='opc_productlist_footer'}
             {/block}
         {/if}
     </div>

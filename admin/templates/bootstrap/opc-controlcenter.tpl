@@ -1,8 +1,26 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='cmslinks'}
-{*TODO Editor: Texte bearbeiten*}
-{include file='tpl_inc/seite_header.tpl' cTitel=#cmsLinks# cBeschreibung=#cmsLinksDesc# cDokuURL=#cmsLinksUrl#}
+{config_load file="$lang.conf" section='opc'}
+{include file='tpl_inc/seite_header.tpl' cTitel=#opc# cBeschreibung=#opcDesc# cDokuURL=#opcUrl#}
 
+<ul class="nav nav-tabs">
+    <li class="active">
+        <a data-toggle="tab" href="#portlets">{#opcPortlets#}</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="portlets">
+        <div class="panel panel-default">
+            {foreach $portlets as $portlet}
+                <div>
+                    {$portlet->getModel()->getTitle()}
+                </div>
+            {/foreach}
+        </div>
+    </div>
+</div>
+
+{*
 {if $links|@count > 0 && $links}
     {include file='tpl_inc/pagination.tpl' oPagination=$oPagiCmsLinks cAnchor='cmsLinks'}
     <div class="panel panel-default">
@@ -72,5 +90,6 @@
         });
     {/literal}
 </script>
+*}
 
 {include file='tpl_inc/footer.tpl'}

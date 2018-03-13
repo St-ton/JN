@@ -89,7 +89,7 @@ EditorGUI.prototype = {
 
         this.iframeCtx  = this.iframe[0].contentWindow;
         this.iframeJq   = this.iframeCtx.$;
-        this.iframeBody = this.iframeJq('body');
+        this.body = this.iframeJq('body');
         this.loadIframeStylesheet(this.templateUrl + 'css/live-editor/iframe.less', true);
         this.loadIframeScript('//cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js');
         this.loadIframeScript('https://unpkg.com/popper.js/dist/umd/popper.min.js', onPopperLoad);
@@ -100,8 +100,8 @@ EditorGUI.prototype = {
             .click(function(e) { e.preventDefault(); });
 
         this.rootAreas = this.iframeJq('.cle-rootarea');
-        this.portletPreviewLabel.appendTo(this.iframeBody);
-        this.portletToolbar.appendTo(this.iframeBody);
+        this.portletPreviewLabel.appendTo(this.body);
+        this.portletToolbar.appendTo(this.body);
 
         this.enableEditingEvents();
 
@@ -731,7 +731,7 @@ EditorGUI.prototype = {
             this.dropTarget.replaceWith(this.draggedElm);
             this.updateDropTargets();
             this.setSelected();
-            this.setSelected(this.draggedElm, true);
+            this.setSelected(this.draggedElm);
             this.editor.io.savePageToWebStorage();
         }
     },

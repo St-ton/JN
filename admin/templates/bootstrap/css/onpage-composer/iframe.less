@@ -1,10 +1,10 @@
 @import "variables.less";
 
-#switcher {
+#opc-switcher {
     display: none;
 }
 
-[data-portletid]:not(.opc-preview) {
+[data-portlet]:not(.opc-preview) {
     min-height: 2em;
     outline: 2px dashed #eee;
     position: relative;
@@ -13,6 +13,24 @@
 
 .opc-area {
     min-height: 2em;
+}
+
+.opc-dragged {
+    opacity: 0.5;
+    box-shadow: 4px 4px 4px #000;
+    position: relative;
+    top: -4px;
+    left: -4px;
+}
+
+.opc-hovered {
+    outline: 2px dashed #abd1f6 !important;
+    cursor: pointer;
+}
+
+.opc-selected {
+    outline: 2px dashed #5cbcf6 !important;
+    cursor: pointer;
 }
 
 .opc-droptarget {
@@ -29,24 +47,7 @@
     background-color: #5cbcf6;
 }
 
-.opc-hovered {
-    outline: 2px dashed #abd1f6 !important;
-    cursor: pointer;
-}
-
-.opc-selected {
-    outline: 2px dashed #5cbcf6 !important;
-    cursor: pointer;
-}
-
-.opc-dragged {
-    opacity: 0.5;
-    box-shadow: 4px 4px 4px #000;
-    position: relative;
-    top: -4px;
-    left: -4px;
-}
-.opc-pinbar {
+.opc-portlet-toolbar {
     position: absolute;
     min-width: 1em;
     min-height: 1em;
@@ -54,21 +55,24 @@
     border: solid 1px @jtl-shop;
     border-bottom: 0;
     border-radius: 4px 4px 0 0;
-    .cle-label {
+
+    .opc-label {
         border-radius: 0;
     }
 
+    .btn-default {
+        background: #fff;
+        color: #23527c;
+        border: 0;
+        border-radius: 0;
+
+        &:hover {
+            background: #eee;
+        }
+    }
 }
-.cle-pinbar .btn-default {
-    background: #fff;
-    color: #23527c;
-    border: 0;
-    border-radius: 0;
-}
-.cle-pinbar .btn-default:hover {
-    background: #eee;
-}
-.cle-label {
+
+.opc-label {
     position: absolute;
     background-color: @jtl-shop;
     color: #fff;

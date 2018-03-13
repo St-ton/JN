@@ -172,7 +172,11 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 
-$smarty->assign('opcPage', OPC::getInstance()->getCurrentPage()->renderFinal());
+$opc = new \OPC\Service();
+
+$smarty
+    ->assign('opc', $opc)
+    ->assign('opcPage', $opc->getCurrentPage());
 
 // Kampagnen
 pruefeKampagnenParameter();

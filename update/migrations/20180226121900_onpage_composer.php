@@ -21,33 +21,38 @@ class Migration_20180226121900 extends Migration implements IMigration
             bActive TINYINT NOT NULL DEFAULT 1
         )");
 
-        $this->execute("CREATE TABLE topctemplate (
-            kTemplate INT AUTO_INCREMENT PRIMARY KEY,
+        $this->execute("CREATE TABLE topcblueprint (
+            kBlueprint INT AUTO_INCREMENT PRIMARY KEY,
             cName VARCHAR(255) NOT NULL,
             cJson LONGTEXT
         )");
 
         $this->execute("CREATE TABLE topcpage (
             kPage INT AUTO_INCREMENT PRIMARY KEY,
-            cIdHash CHAR(32) NOT NULL,
-            cPageURL VARCHAR(255) NOT NULL,
-            cJson LONGTEXT NOT NULL,
-            dLastModified DATETIME,
-            cLockedBy VARCHAR(255),
-            dLockedAt DATETIME
+            cPageId CHAR(32) NOT NULL,
+            cPageUrl VARCHAR(255) NOT NULL,
+            cAreasJson LONGTEXT NOT NULL,
+            dLastModified DATETIME NOT NULL,
+            cLockedBy VARCHAR(255) NOT NULL,
+            dLockedAt DATETIME NOT NULL,
+            bReplace BOOL NOT NULL
         )");
 
         $this->execute("INSERT INTO tadminmenu (kAdminmenueGruppe, cModulId, cLinkname, cURL, cRecht, nSort)
-            VALUES ('4', 'core_jtl', 'OnPage Composer', 'cms-live-editor-backend.php', 'CONTENT_PAGE_VIEW', '115');");
+            VALUES ('4', 'core_jtl', 'OnPage Composer', 'opc-controlcenter.php', 'CONTENT_PAGE_VIEW', '115');");
 
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Heading', 'Heading', 'content')");
 
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Image', 'Image', 'content')");
+            VALUES (0, 'Row', 'Row', 'layout')");
+
+        /*
+        $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
+            VALUES (0, 'Heading', 'Heading', 'content')");
 
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Row', 'Row', 'layout')");
+            VALUES (0, 'Image', 'Image', 'content')");
 
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Button', 'Button', 'content')");
@@ -90,12 +95,13 @@ class Migration_20180226121900 extends Migration implements IMigration
 
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Container', 'Container', 'layout')");
+        */
     }
 
     public function down()
     {
         $this->execute("DROP TABLE topcportlet");
-        $this->execute("DROP TABLE topctemplate");
+        $this->execute("DROP TABLE topcblueprint");
         $this->execute("DROP TABLE topcpage");
 
         $this->execute("DELETE FROM tadminmenu WHERE cLinkname='OnPage Composer';");

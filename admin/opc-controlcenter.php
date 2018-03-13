@@ -13,6 +13,10 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
+$opc      = new \OPC\Service();
+$portlets = $opc->getAllPortlets();
+
+/*
 $hinweis       = '';
 $fehler        = '';
 $step          = 'uebersicht';
@@ -22,7 +26,7 @@ $continue      = true;
 $oPagiCmsLinks = null;
 
 if ($step === 'uebersicht') {
-    $lCount = Shop::DB()->query("SELECT COUNT(kPage) AS anz FROM topcpage", 1);
+    $lCount = Shop::DB()->query("SELECT COUNT(cPageId) AS anz FROM topcpage", 1);
 
     // Paginationen
     $oPagiCmsLinks = (new Pagination('cmsLinks'))
@@ -49,4 +53,9 @@ $smarty->assign('step', $step)
     ->assign('fehler', $fehler)
     ->assign('links', $links)
     ->assign('oPagiCmsLinks', $oPagiCmsLinks)
-    ->display('cmslinks.tpl');
+    ->display('opc-controlcenter.tpl');
+*/
+
+$smarty
+    ->assign('portlets', $portlets)
+    ->display('opc-controlcenter.tpl');

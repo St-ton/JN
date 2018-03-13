@@ -15,10 +15,8 @@
     {elseif $step === 'news_kategorieuebersicht'}
         {include file='blog/overview.tpl'}
     {elseif $step === 'news_detailansicht'}
-        {if !empty($opcPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.editpage)}
-            {$opcPage->cFinalHtml_arr['editor_replace_all']}
-        {elseif !empty($smarty.get.editpage) && !empty($smarty.get.cAction) && $smarty.get.cAction === 'replace'}
-            {include file='snippets/opc_mount_point.tpl' id='editor_replace_all'}
+        {if $opcPage->isReplace()}
+            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
         {else}
             {include file='blog/details.tpl'}
         {/if}

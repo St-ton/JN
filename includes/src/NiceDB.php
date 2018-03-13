@@ -1158,7 +1158,7 @@ class NiceDB implements Serializable
             $where     = $keyname . '=?';
         }
 
-        $stmt = 'DELETE FROM ' . $tableName . ' WHERE ' . $where;
+        $stmt = 'DELETE FROM ' . $tableName . ($where !== '' ? ' WHERE ' . $where : '');
 
         if ($echo) {
             echo $stmt;

@@ -1,7 +1,7 @@
 {
     "name": "jtl/shop4",
     "type": "library",
-    "homepage": "http://www.jtl-software.de",
+    "homepage": "https://www.jtl-software.de",
     "require": {
         "php": ">=7.0",
         "Imanee/Imanee": "dev-master",

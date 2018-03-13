@@ -2,9 +2,12 @@
 {assign var=max_subsub_items value=5}
 
 {block name="megamenu-categories"}
-{if isset($Einstellungen.template.megamenu.show_categories) && $Einstellungen.template.megamenu.show_categories !== 'N' && isset($Einstellungen.global.global_sichtbarkeit) && ($Einstellungen.global.global_sichtbarkeit != 3 || isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde != 0)}
+{if $Einstellungen.template.megamenu.show_categories !== 'N'
+    && ($Einstellungen.global.global_sichtbarkeit != 3
+        || isset($smarty.session.Kunde->kKunde)
+        && $smarty.session.Kunde->kKunde != 0)}
     {assign var='show_subcategories' value=false}
-    {if isset($Einstellungen.template.megamenu.show_subcategories) && $Einstellungen.template.megamenu.show_subcategories !== 'N'}
+    {if $Einstellungen.template.megamenu.show_subcategories !== 'N'}
         {assign var='show_subcategories' value=true}
     {/if}
 
@@ -46,17 +49,14 @@
                                 <hr class="hr-sm">
                                 <div class="row">
                                     {assign var=hasInfoColumn value=false}
-                                    {if isset($Einstellungen.template.megamenu.show_maincategory_info)
-                                        && $Einstellungen.template.megamenu.show_maincategory_info !== 'N'
-                                        && (isset($Einstellungen.template.megamenu.show_category_images)
-                                            && $Einstellungen.template.megamenu.show_category_images !== 'N'
+                                    {if $Einstellungen.template.megamenu.show_maincategory_info !== 'N'
+                                        && ($Einstellungen.template.megamenu.show_category_images !== 'N'
                                             && $category->cBildURL !== 'gfx/keinBild.gif'
                                             || !empty($category->cBeschreibung))}
                                         {assign var=hasInfoColumn value=true}
                                         <div class="col-lg-3 visible-lg">
                                             <div class="mega-info-lg top15">
-                                                {if isset($Einstellungen.template.megamenu.show_category_images)
-                                                    && $Einstellungen.template.megamenu.show_category_images !== 'N'
+                                                {if $Einstellungen.template.megamenu.show_category_images !== 'N'
                                                     && $category->cBildURL !== 'gfx/keinBild.gif'}
                                                     <a href="{$category->cURLFull}">
                                                         <img src="{$category->cBildURLFull}" class="img-responsive"
@@ -79,8 +79,7 @@
                                                 {foreach name='sub_categories' from=$sub_categories item='sub'}
                                                     <div class="col-xs-6 col-sm-3 col-lg-3">
                                                         <div class="category-wrapper top15{if $sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie)} active{/if}">
-                                                            {if isset($Einstellungen.template.megamenu.show_category_images)
-                                                                && $Einstellungen.template.megamenu.show_category_images !== 'N'}
+                                                            {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                                 <div class="img text-center">
                                                                     <a href="{$sub->cURLFull}">
                                                                         <img src="{$sub->cBildURLFull}" class="image"
@@ -88,7 +87,7 @@
                                                                     </a>
                                                                 </div>
                                                             {/if}
-                                                            <div class="caption{if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">
+                                                            <div class="caption{if $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">
                                                                 <h5 class="title">
                                                                     <a href="{$sub->cURLFull}">
                                                                         <span>
@@ -137,13 +136,16 @@
 {/block}{* /megamenu-categories*}
 
 {block name="megamenu-pages"}
-{if isset($Einstellungen.template.megamenu.show_pages) && $Einstellungen.template.megamenu.show_pages !== 'N'}
+{if $Einstellungen.template.megamenu.show_pages !== 'N'}
     {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier='megamenu' dropdownSupport=true tplscope='megamenu'}
 {/if}
 {/block}{* megamenu-pages *}
 
 {block name="megamenu-manufacturers"}
-{if isset($Einstellungen.template.megamenu.show_manufacturers) && $Einstellungen.template.megamenu.show_manufacturers !== 'N' && isset($Einstellungen.global.global_sichtbarkeit) && ($Einstellungen.global.global_sichtbarkeit != 3 || isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde != 0)}
+{if $Einstellungen.template.megamenu.show_manufacturers !== 'N'
+    && ($Einstellungen.global.global_sichtbarkeit != 3
+        || isset($smarty.session.Kunde->kKunde)
+        && $smarty.session.Kunde->kKunde != 0)}
     {get_manufacturers assign='manufacturers'}
     {if !empty($manufacturers)}
         <li class="dropdown megamenu-fw{if $NaviFilter->hasManufacturer() || $nSeitenTyp == PAGE_HERSTELLER} active{/if}">
@@ -177,12 +179,12 @@
                                     {foreach name=hersteller from=$manufacturers item=hst}
                                         <div class="col-xs-6 col-sm-3 col-lg-3">
                                             <div class="category-wrapper manufacturer top15{if $NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() == $hst->kHersteller} active{/if}">
-                                                {if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'}
+                                                {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                     <div class="img text-center">
                                                         <a href="{$hst->cURLFull}"><img src="{$hst->cBildURLNormal}" class=image alt="{$hst->cName|escape:'html'}"></a>
                                                     </div>
                                                 {/if}
-                                                <div class="caption{if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">
+                                                <div class="caption{if $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">
                                                     <h5 class="title"><a href="{$hst->cURLFull}"><span>{$hst->cName}</span></a></h5>
                                                 </div>
                                             </div>{* /category-wrapper *}

@@ -1,4 +1,4 @@
-##{include file='tpl_inc/header.tpl'}
+{include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='shoptemplate'}
 {assign var="cBeschreibung" value=#shoptemplatesDesc#}
 {if isset($oEinstellungenXML) && $oEinstellungenXML}

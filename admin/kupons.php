@@ -12,15 +12,25 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
-$cHinweis     = '';
-$cFehler      = '';
-$action       = '';
-$tab          = 'standard';
-$oSprache_arr = gibAlleSprachen();
-$oKupon       = null;
+$cHinweis         = '';
+$cFehler          = '';
+$action           = '';
+$tab              = 'standard';
+$oSprache_arr     = gibAlleSprachen();
+$oKupon           = null;
+$importDeleteDone = false;
 
 // CSV Import ausgeloest?
-$res = handleCsvImportAction('kupon', function ($obj) {
+$res = handleCsvImportAction('kupon', function ($obj, $importType = 2)
+{
+    global $importDeleteDone;
+
+    if ($importType === 0 && $importDeleteDone === false) {
+        Shop::DB()->delete('tkupon', [], []);
+        Shop::DB()->delete('tkuponsprache', [], []);
+        $importDeleteDone = true;
+    }
+
     $couponNames = [];
 
     foreach (get_object_vars($obj) as $key => $val) {
@@ -30,10 +40,13 @@ $res = handleCsvImportAction('kupon', function ($obj) {
         }
     }
 
-    if (isset($obj->cCode) && Shop::DB()->select('tkupon', 'cCode', $obj->cCode) !== null) {
+    if (isset($obj->cCode) &&
+        Shop::DB()->select('tkupon', 'cCode', $obj->cCode) !== null
+    ) {
         return false;
     }
 
+    unset($obj->dLastUse);
     $kKupon = Shop::DB()->insert('tkupon', $obj);
 
     if ($kKupon === 0) {

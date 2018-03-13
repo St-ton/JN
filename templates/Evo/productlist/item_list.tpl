@@ -74,23 +74,49 @@
                     {/if}
                     <ul class="attr-group list-unstyled small text-muted top10 hidden-xs">
                         <li class="item row attr-sku">
-                            <span class="attr-label col-sm-5">{lang key="productNo" section="global"}: </span> <span class="value col-sm-7">{$Artikel->cArtNr}</span>
+                            <span class="attr-label col-sm-5">{lang key="productNo"}: </span> <span class="value col-sm-7">{$Artikel->cArtNr}</span>
                         </li>
+                        {if !empty($Artikel->cISBN)
+                            && ($Einstellungen.artikeldetails.isbn_display === 'L'
+                                || $Einstellungen.artikeldetails.isbn_display === 'DL')}
+                            <li class="item row">
+                                <span class="attr-label col-sm-5">{lang key="isbn"}: </span> <span class="value col-sm-7">{$Artikel->cISBN}</span>
+                            </li>
+                        {/if}
+                        {if !empty($Artikel->cUNNummer) && !empty($Artikel->cGefahrnr)
+                            && ($Einstellungen.artikeldetails.adr_hazard_display === 'L'
+                                || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
+                            <li class="item row">
+                                <span class="attr-label col-sm-5">
+                                    {lang key="adrHazardSign"}:
+                                </span>
+                                <div class="value col-sm-7">
+                                    <table class="adr-table value">
+                                        <tr>
+                                            <td>{$Artikel->cGefahrnr}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{$Artikel->cUNNummer}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </li>
+                        {/if}
                         {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
                             <li class="item row attr-best-before" title="{lang key='productMHDTool' section='global'}">
-                                <span class="attr-label col-sm-5">{lang key="productMHD" section="global"}: </span> <span class="value col-sm-7">{$Artikel->dMHD_de}</span>
+                                <span class="attr-label col-sm-5">{lang key="productMHD"}: </span> <span class="value col-sm-7">{$Artikel->dMHD_de}</span>
                             </li>
                         {/if}
                         {if $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && isset($Artikel->cGewicht) && $Artikel->fGewicht > 0}
                             <li class="item row attr-weight">
-                                <span class="attr-label col-sm-5">{lang key="shippingWeight" section="global"}: </span>
-                                <span class="value col-sm-7">{$Artikel->cGewicht} {lang key="weightUnit" section="global"}</span>
+                                <span class="attr-label col-sm-5">{lang key="shippingWeight"}: </span>
+                                <span class="value col-sm-7">{$Artikel->cGewicht} {lang key="weightUnit"}</span>
                             </li>
                         {/if}
                         {if $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && isset($Artikel->cArtikelgewicht) && $Artikel->fArtikelgewicht > 0}
                             <li class="item row attr-weight weight-unit-article hidden-sm">
-                                <span class="attr-label col-sm-5">{lang key="productWeight" section="global"}: </span>
-                                <span class="value col-sm-7">{$Artikel->cArtikelgewicht} {lang key="weightUnit" section="global"}</span>
+                                <span class="attr-label col-sm-5">{lang key="productWeight"}: </span>
+                                <span class="value col-sm-7">{$Artikel->cArtikelgewicht} {lang key="weightUnit"}</span>
                             </li>
                         {/if}
                         {if $Einstellungen.artikeluebersicht.artikeluebersicht_artikelintervall_anzeigen === 'Y' && $Artikel->fAbnahmeintervall > 0}
@@ -127,10 +153,10 @@
                             {assign var=anzeige value=$Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}
                             {if $Artikel->nErscheinendesProdukt}
                                 <div class="availablefrom">
-                                    <small>{lang key="productAvailable" section="global"}: {$Artikel->Erscheinungsdatum_de}</small>
+                                    <small>{lang key="productAvailable"}: {$Artikel->Erscheinungsdatum_de}</small>
                                 </div>
                                 {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar === 1}
-                                    <div class="attr attr-preorder"><small class="value">{lang key="preorderPossible" section="global"}</small></div>
+                                    <div class="attr attr-preorder"><small class="value">{lang key="preorderPossible"}</small></div>
                                 {/if}
                             {elseif $anzeige !== 'nichts'
                                 && $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N'
@@ -150,7 +176,7 @@
                                 && $Artikel->fLieferzeit > 0
                                 && ($Artikel->cLagerKleinerNull === 'N'
                                     || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
-                                <div class="signal_image status-1"><small>{lang key="supplierStockNotice" section="global" printf=$Artikel->fLieferzeit}</small></div>
+                                <div class="signal_image status-1"><small>{lang key="supplierStockNotice" printf=$Artikel->fLieferzeit}</small></div>
                             {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
                                 <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</small></div>
                             {elseif $anzeige === 'ampel'}
@@ -158,7 +184,7 @@
                             {/if}
                             {if $Artikel->cEstimatedDelivery}
                                 <div class="estimated_delivery hidden-xs">
-                                    <small>{lang key="shippingTime" section="global"}: {$Artikel->cEstimatedDelivery}</small>
+                                    <small>{lang key="shippingTime"}: {$Artikel->cEstimatedDelivery}</small>
                                 </div>
                             {/if}
                         {/block}
@@ -184,7 +210,7 @@
                                     {/if}
                                     {if $Artikel->verfuegbarkeitsBenachrichtigung === 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
                                         <div class="btn-group btn-group-xs" role="group">
-                                            <button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn btn-default btn-left" title="{lang key="requestNotification" section="global"}">
+                                            <button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn btn-default btn-left" title="{lang key="requestNotification"}">
                                                 <span class="fa fa-bell"></span>
                                             </button>
                                         </div>
@@ -221,8 +247,8 @@
 
                                                         <span class="input-group-btn">
                                                             <button type="submit" class="btn btn-primary" id="submit{$Artikel->kArtikel}"
-                                                                    title="{lang key="addToCart" section="global"}">
-                                                                <span><i class="fa fa-shopping-cart"></i> {lang key="addToCart" section="global"}</span>
+                                                                    title="{lang key="addToCart"}">
+                                                                <span><i class="fa fa-shopping-cart"></i> {lang key="addToCart"}</span>
                                                             </button>
                                                         </span>
                                                     </div>

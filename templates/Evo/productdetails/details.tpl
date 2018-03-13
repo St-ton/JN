@@ -36,6 +36,7 @@
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
+
 <form id="buy_form" method="post" action="{$Artikel->cURLFull}" >
     {$jtl_token}
     <div class="row product-primary" id="product-offer">
@@ -76,10 +77,33 @@
                         {block name="productdetails-info-essential"}
                         {if isset($Artikel->cArtNr) || isset($Artikel->dMHD)}
                             <div class="col-xs-8">
-                                <p class="text-muted product-sku">{lang key="sortProductno" section="global"}: <span itemprop="sku">{$Artikel->cArtNr}</span></p>
+                                <p class="text-muted product-sku">{lang key="sortProductno"}: <span itemprop="sku">{$Artikel->cArtNr}</span></p>
                                 {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
-                                    <p title="{lang key='productMHDTool' section='global'}" class="best-before text-muted">{lang key="productMHD" section="global"}: <span itemprop="best-before">{$Artikel->dMHD_de}</span></p>
+                                    <p title="{lang key='productMHDTool'}" class="best-before text-muted">{lang key="productMHD"}: <span itemprop="best-before">{$Artikel->dMHD_de}</span></p>
                                 {/if}
+                            </div>
+                        {/if}
+                        {if !empty($Artikel->cISBN)
+                            && ($Einstellungen.artikeldetails.isbn_display === 'D'
+                                || $Einstellungen.artikeldetails.isbn_display === 'DL')}
+                            <div class="col-xs-8">
+                                <p class="text-muted">{lang key="isbn"}: <span>{$Artikel->cISBN}</span></p>
+                            </div>
+                        {/if}
+                        {if !empty($Artikel->cUNNummer) && !empty($Artikel->cGefahrnr)
+                            && ($Einstellungen.artikeldetails.adr_hazard_display === 'D'
+                                || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
+                            <div class="col-xs-8">
+                                <div class="title text-muted">{lang key="adrHazardSign"}:
+                                    <table class="adr-table">
+                                        <tr>
+                                            <td>{$Artikel->cGefahrnr}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{$Artikel->cUNNummer}</td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
                         {/if}
                         {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
@@ -117,7 +141,7 @@
                 {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
                     {block name="productdetails-info-category"}
                     <p class="product-category word-break">
-                        <span class="text-muted">{lang key="category" section="global"}: </span>
+                        <span class="text-muted">{lang key="category"}: </span>
                         {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
                         <a href="{$Brotnavi[$i_kat]->url}" itemprop="category">{$Brotnavi[$i_kat]->name}</a>
                     </p>

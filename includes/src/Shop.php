@@ -823,7 +823,7 @@ final class Shop
         self::$productFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
 
         self::seoCheck();
-        self::$imageBaseURL = self::getURL() . '/';
+        self::$imageBaseURL = defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL : self::getURL() . '/';
         self::Event()->fire('shop.run');
 
         self::$productFilter->initStates(self::getParameters());

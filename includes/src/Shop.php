@@ -1579,7 +1579,7 @@ final class Shop
         return $ret === null
             ? null
             : ($fullUrl === true
-                ? self::getURL() . '/'
+                ? self::getImageBaseURL()
                 : '') . $ret;
     }
 

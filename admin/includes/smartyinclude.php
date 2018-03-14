@@ -146,8 +146,7 @@ if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];
 }
 
-$smarty->assign('SID', SID)
-       ->assign('URL_SHOP', $shopURL)
+$smarty->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', getTokenInput())
        ->assign('shopURL', $shopURL)
        ->assign('shopVersion', Shop::getVersion())

@@ -92,7 +92,6 @@ class Session
                 $this->setStandardSessionVars();
             }
         }
-        defined('SID') || define('SID', '');
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
         executeHook(HOOK_CORE_SESSION_CONSTRUCTOR);

@@ -185,7 +185,8 @@ class Hersteller
      */
     public function getExtras(stdClass $obj)
     {
-        $shopURL = Shop::getURL() . '/';
+        $shopURL      = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
             $this->cURL = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
@@ -200,8 +201,8 @@ class Hersteller
             $this->cBildpfadKlein  = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
             $this->cBildpfadNormal = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
         }
-        $this->cBildURLKlein  = $shopURL . $this->cBildpfadKlein;
-        $this->cBildURLNormal = $shopURL . $this->cBildpfadNormal;
+        $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
+        $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
 
         return $this;
     }

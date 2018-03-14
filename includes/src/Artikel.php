@@ -1222,10 +1222,10 @@ class Artikel
         if ($this->kArtikel === 0 || $this->kArtikel === null) {
             return $this;
         }
-        $shopURL = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
 
         $this->cVorschaubild    = BILD_KEIN_ARTIKELBILD_VORHANDEN;
-        $this->cVorschaubildURL = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->cVorschaubildURL = $imageBaseURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
         // pruefe ob Funktionsattribut "artikelbildlink" ART_ATTRIBUT_BILDLINK gesetzt ist
         // Falls ja, lade die Bilder des anderen Artikels
         $bilder_arr = [];
@@ -1261,10 +1261,10 @@ class Artikel
             $image->cPfadKlein   = BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->cPfadNormal  = BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->cPfadGross   = BILD_KEIN_ARTIKELBILD_VORHANDEN;
-            $image->cURLMini     = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
-            $image->cURLKlein    = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
-            $image->cURLNormal   = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
-            $image->cURLGross    = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+            $image->cURLMini     = $imageBaseURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+            $image->cURLKlein    = $imageBaseURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+            $image->cURLNormal   = $imageBaseURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+            $image->cURLGross    = $imageBaseURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->nNr          = 1;
             $image->cAltAttribut = str_replace(['"', "'"], '', $this->cName);
             $image->galleryJSON  = $this->prepareImageDetails($image);
@@ -1279,10 +1279,10 @@ class Artikel
                 $image->cPfadNormal = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_MD, $imgNo);
                 $image->cPfadGross  = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_LG, $imgNo);
                 $image->nNr         = $imgNo;
-                $image->cURLMini    = $shopURL . $image->cPfadMini;
-                $image->cURLKlein   = $shopURL . $image->cPfadKlein;
-                $image->cURLNormal  = $shopURL . $image->cPfadNormal;
-                $image->cURLGross   = $shopURL . $image->cPfadGross;
+                $image->cURLMini    = $imageBaseURL . $image->cPfadMini;
+                $image->cURLKlein   = $imageBaseURL . $image->cPfadKlein;
+                $image->cURLNormal  = $imageBaseURL . $image->cPfadNormal;
+                $image->cURLGross   = $imageBaseURL . $image->cPfadGross;
 
                 if ($i === 0) {
                     $this->cVorschaubild = $image->cURLKlein;
@@ -1381,7 +1381,7 @@ class Artikel
         }
 
         return (object)[
-            'src'  => Shop::getURL() . '/' . $imagePath,
+            'src'  => Shop::getImageBaseURL() . $imagePath,
             'size' => (object)[
                 'width'  => $width,
                 'height' => $height
@@ -2191,7 +2191,7 @@ class Artikel
         $kKundengruppe  = (int)$kKundengruppe;
         $currency       = Session::Currency();
         $currencyFactor = $currency->getConversionFactor();
-        $shopURL        = Shop::getURL() . '/';
+        $imageBaseURL   = Shop::getImageBaseURL();
         $isDefaultLang  = standardspracheAktiv();
         $mayViewPrices  = Session::CustomerGroup()->mayViewPrices();
 
@@ -2308,19 +2308,19 @@ class Artikel
                 $value->cBildPfad                  = PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
                 $value->cBildPfadGross             = PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
 
-                $value->cBildPfadMiniFull  = $shopURL . PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
-                $value->cBildPfadFull      = $shopURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cBildPfadGrossFull = $shopURL . PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
+                $value->cBildPfadMiniFull  = $imageBaseURL . PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
+                $value->cBildPfadFull      = $imageBaseURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
+                $value->cBildPfadGrossFull = $imageBaseURL . PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
                 // compatibility
                 $value->cPfadMini   = PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
                 $value->cPfadKlein  = PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
                 $value->cPfadNormal = PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
                 $value->cPfadGross  = PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
 
-                $value->cPfadMiniFull   = $shopURL . PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
-                $value->cPfadKleinFull  = $shopURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cPfadNormalFull = $shopURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cPfadGrossFull  = $shopURL . PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
+                $value->cPfadMiniFull   = $imageBaseURL . PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
+                $value->cPfadKleinFull  = $imageBaseURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
+                $value->cPfadNormalFull = $imageBaseURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
+                $value->cPfadGrossFull  = $imageBaseURL . PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
             }
             if (!$mayViewPrices) {
                 unset($value->fAufpreisNetto, $value->cAufpreisLocalized, $value->cPreisInklAufpreis);
@@ -2704,7 +2704,7 @@ class Artikel
                 // Gleiche Farben entfernen + komplette Vorschau nicht anzeigen
                 foreach ($oVariBoxMatrixBild_arr as $oVariBoxMatrixBild) {
                     $oVariBoxMatrixBild->kEigenschaft = (int)$oVariBoxMatrixBild->kEigenschaft;
-                    $oVariBoxMatrixBild->cBild        = $shopURL .
+                    $oVariBoxMatrixBild->cBild        = $imageBaseURL .
                         PFAD_VARIATIONSBILDER_MINI .
                         $oVariBoxMatrixBild->cPfad;
                     if (!in_array($oVariBoxMatrixBild->kEigenschaft, $kEigenschaft_arr, true)
@@ -3919,7 +3919,7 @@ class Artikel
             $oArtikelTMP->fNettoPreis       = null;
         }
         if (strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
-            $this->cBildpfad_thersteller = Shop::getURL() . '/' .
+            $this->cBildpfad_thersteller = Shop::getImageBaseURL() .
                 PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
         }
         // Lokalisieren
@@ -4329,7 +4329,7 @@ class Artikel
             }
             $this->bSuchspecial_arr = $bSuchspecial_arr;
             // SuchspecialBild anhand der hächsten Prio und des gesetzten Suchspecials festlegen
-            $shopURL = Shop::getURL() . '/';
+            $imageBaseURL = Shop::getImageBaseURL();
             foreach ($searchSpecial_arr as $oSuchspecialoverlay) {
                 if (!isset($oSuchspecialoverlay->kSuchspecialOverlay)
                     || empty($this->bSuchspecial_arr[$oSuchspecialoverlay->kSuchspecialOverlay])
@@ -4345,9 +4345,9 @@ class Artikel
                 $this->oSuchspecialBild->nTransparenz = $oSuchspecialoverlay->nTransparenz;
                 $this->oSuchspecialBild->nGroesse     = $oSuchspecialoverlay->nGroesse;
                 $this->oSuchspecialBild->nPosition    = $oSuchspecialoverlay->nPosition;
-                $this->oSuchspecialBild->cURLGross    = $shopURL . $this->oSuchspecialBild->cPfadGross;
-                $this->oSuchspecialBild->cURLNormal   = $shopURL . $this->oSuchspecialBild->cPfadNormal;
-                $this->oSuchspecialBild->cURLKlein    = $shopURL . $this->oSuchspecialBild->cPfadKlein;
+                $this->oSuchspecialBild->cURLGross    = $imageBaseURL . $this->oSuchspecialBild->cPfadGross;
+                $this->oSuchspecialBild->cURLNormal   = $imageBaseURL . $this->oSuchspecialBild->cPfadNormal;
+                $this->oSuchspecialBild->cURLKlein    = $imageBaseURL . $this->oSuchspecialBild->cPfadKlein;
                 break;
             }
         }

@@ -332,6 +332,11 @@ final class Shop
     private static $container;
 
     /**
+     * @var string
+     */
+    private static $imageBaseURL = '';
+
+    /**
      * @var array
      */
     private static $mapping = [
@@ -430,6 +435,22 @@ final class Shop
     private static function map($method)
     {
         return self::$mapping[$method] ?? null;
+    }
+
+    /**
+     * @param string $url
+     */
+    public static function setImageBaseURL(string $url)
+    {
+        self::$imageBaseURL = $url;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getImageBaseURL() : string
+    {
+        return self::$imageBaseURL;
     }
 
     /**
@@ -802,6 +823,7 @@ final class Shop
         self::$productFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
 
         self::seoCheck();
+        self::$imageBaseURL = self::getURL() . '/';
         self::Event()->fire('shop.run');
 
         self::$productFilter->initStates(self::getParameters());

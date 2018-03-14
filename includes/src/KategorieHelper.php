@@ -116,6 +116,7 @@ class KategorieHelper
             $currentParent       = null;
             $descriptionSelect   = ", '' AS cBeschreibung";
             $shopURL             = Shop::getURL(true);
+            $imageBaseURL        = Shop::getImageBaseURL();
             $isDefaultLang       = standardspracheAktiv();
             $visibilityWhere     = " AND tartikelsichtbarkeit.kArtikel IS NULL";
             $depthWhere          = self::$limitReached === true
@@ -228,7 +229,7 @@ class KategorieHelper
                 $_cat->cBildURL       = empty($_cat->cPfad)
                     ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                     : PFAD_KATEGORIEBILDER . $_cat->cPfad;
-                $_cat->cBildURLFull   = $shopURL . '/' . $_cat->cBildURL;
+                $_cat->cBildURLFull   = $imageBaseURL . '/' . $_cat->cBildURL;
                 $_cat->cURL           = empty($_cat->cSeo)
                     ? baueURL($_cat, URLART_KATEGORIE, 0, true)
                     : baueURL($_cat, URLART_KATEGORIE);
@@ -331,6 +332,7 @@ class KategorieHelper
         $fullCats            = [];
         $descriptionSelect   = ", '' AS cBeschreibung";
         $shopURL             = Shop::getURL(true);
+        $imageBaseURL        = Shop::getImageBaseURL();
         $isDefaultLang       = standardspracheAktiv();
         $visibilityWhere     = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
         $getDescription      = (!(isset(self::$config['template']['megamenu']['show_maincategory_info'])
@@ -436,7 +438,7 @@ class KategorieHelper
             $_cat->cBildURL       = empty($_cat->cPfad)
                 ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                 : PFAD_KATEGORIEBILDER . $_cat->cPfad;
-            $_cat->cBildURLFull   = $shopURL . '/' . $_cat->cBildURL;
+            $_cat->cBildURLFull   = $imageBaseURL . '/' . $_cat->cBildURL;
             $_cat->cURL           = empty($_cat->cSeo)
                 ? baueURL($_cat, URLART_KATEGORIE, 0, true)
                 : baueURL($_cat, URLART_KATEGORIE);

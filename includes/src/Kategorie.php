@@ -255,8 +255,8 @@ class Kategorie
         if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
             $this->mapData($oKategorie);
         }
-        $shopURL = Shop::getURL() . '/';
-        $helper  = KategorieHelper::getInstance($kSprache, $kKundengruppe);
+        $imageBaseURL = Shop::getImageBaseURL();
+        $helper       = KategorieHelper::getInstance($kSprache, $kKundengruppe);
         // URL bauen
         $this->cURL     = baueURL($this, URLART_KATEGORIE);
         $this->cURLFull = baueURL($this, URLART_KATEGORIE, 0, false, true);
@@ -265,11 +265,11 @@ class Kategorie
         $this->cKategoriePfad     = implode(' > ', $this->cKategoriePfad_arr);
         // Bild holen
         $this->cBildURL       = BILD_KEIN_KATEGORIEBILD_VORHANDEN;
-        $this->cBild          = $shopURL . BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+        $this->cBild          = $imageBaseURL . BILD_KEIN_KATEGORIEBILD_VORHANDEN;
         $this->nBildVorhanden = 0;
         if (isset($oKategorie->cPfad) && strlen($oKategorie->cPfad) > 0) {
             $this->cBildURL       = PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
-            $this->cBild          = $shopURL . PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
+            $this->cBild          = $imageBaseURL . PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
             $this->nBildVorhanden = 1;
         }
         // Attribute holen
@@ -448,9 +448,9 @@ class Kategorie
                 }
             }
 
-            return ($full === false)
+            return $full === false
                 ? $res
-                : (Shop::getURL() . '/' . $res);
+                : (Shop::getImageBaseURL() . $res);
         }
 
         return null;

@@ -227,7 +227,7 @@ function get_img_tag($params, &$smarty)
     $imageTITLE    = isset($params['title']) ? ' title="' . truncate($params['title'], 75) . '"' : '';
     $imageCLASS    = isset($params['class']) ? ' class="' . truncate($params['class'], 75) . '"' : '';
     if (strpos($imageURL, 'http') !== 0) {
-        $imageURL = Shop::getURL() . '/' . ltrim($imageURL, '/');
+        $imageURL = Shop::getImageBaseURL() . ltrim($imageURL, '/');
     }
     if ($oImgSize !== null && $oImgSize->size->width > 0 && $oImgSize->size->height > 0) {
         return '<img src="' . $imageURL . '" width="' . $oImgSize->size->width . '" height="' .
@@ -598,7 +598,12 @@ function prepare_image_details($params, &$smarty)
             $result = $result[$type];
         }
     }
-
+    $imageBaseURL = Shop::getImageBaseURL();
+    foreach ($result as $size => $data) {
+        if (isset($data->src) && strpos($data->src, 'http') !== 0) {
+            $data->src = $imageBaseURL . $data->src;
+        }
+    }
     $result = (object)$result;
 
     return (isset($params['json']) && $params['json'])

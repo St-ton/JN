@@ -12,13 +12,13 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="robots" content="{if $bNoIndex === true  || (isset($Link->cNoFollow) && $Link->cNoFollow === 'Y')}noindex{else}index, follow{/if}">
 
-        <meta itemprop="image" content="{$ShopURL}/{$ShopLogoURL}" />
+        <meta itemprop="image" content="{$imageBaseURL}{$ShopLogoURL}" />
         <meta itemprop="url" content="{$cCanonicalURL}"/>
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="{$meta_title}" />
         <meta property="og:title" content="{$meta_title}" />
         <meta property="og:description" content="{$meta_description|truncate:1000:"":true}" />
-        <meta property="og:image" content="{$ShopURL}/{$ShopLogoURL}" />
+        <meta property="og:image" content="{$imageBaseURL}{$ShopLogoURL}" />
         <meta property="og:url" content="{$cCanonicalURL}"/>
     {/block}
 
@@ -144,7 +144,7 @@
                                 {block name="logo"}
                                 <span itemprop="name" class="hidden">{$meta_publisher}</span>
                                 <meta itemprop="url" content="{$ShopURL}">
-                                <meta itemprop="logo" content="{$ShopURL}/{$ShopLogoURL}">
+                                <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
                                 <a href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}">
                                     {if isset($ShopLogoURL)}
                                         {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive"}

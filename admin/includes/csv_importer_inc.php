@@ -50,7 +50,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             }
 
             if ($importType === 0 && is_string($target)) {
-                Shop::DB()->delete($target, [], []);
+                Shop::DB()->query("TRUNCATE $target", NiceDB::RET_AFFECTED_ROWS);
             }
 
             while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {

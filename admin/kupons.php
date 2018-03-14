@@ -21,13 +21,12 @@ $oKupon           = null;
 $importDeleteDone = false;
 
 // CSV Import ausgeloest?
-$res = handleCsvImportAction('kupon', function ($obj, $importType = 2)
-{
+$res = handleCsvImportAction('kupon', function ($obj, $importType = 2) {
     global $importDeleteDone;
 
     if ($importType === 0 && $importDeleteDone === false) {
-        Shop::DB()->delete('tkupon', [], []);
-        Shop::DB()->delete('tkuponsprache', [], []);
+        Shop::DB()->query('TRUNCATE TABLE tkupon', NiceDB::RET_AFFECTED_ROWS);
+        Shop::DB()->query('TRUNCATE TABLE tkuponsprache', NiceDB::RET_AFFECTED_ROWS);
         $importDeleteDone = true;
     }
 
@@ -40,8 +39,8 @@ $res = handleCsvImportAction('kupon', function ($obj, $importType = 2)
         }
     }
 
-    if (isset($obj->cCode) &&
-        Shop::DB()->select('tkupon', 'cCode', $obj->cCode) !== null
+    if (isset($obj->cCode)
+        && Shop::DB()->select('tkupon', 'cCode', $obj->cCode) !== null
     ) {
         return false;
     }

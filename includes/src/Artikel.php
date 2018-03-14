@@ -3312,7 +3312,7 @@ class Artikel
                 $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[0] =
                     $cAufpreisVorzeichen .
                     gibPreisStringLocalized(
-                        abs($oArtikelTMP->Preise->fVK[0] - $this->Preise->fVK[0])*((100-$discount)/100),
+                        abs($oArtikelTMP->Preise->fVK[0] - $this->Preise->fVK[0]) * ((100 - $discount) / 100),
                         $currency,
                         1,
                         2
@@ -3320,7 +3320,7 @@ class Artikel
                 $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[1] =
                     $cAufpreisVorzeichen .
                     gibPreisStringLocalized(
-                        abs($oArtikelTMP->Preise->fVK[1] - $this->Preise->fVK[1])*((100-$discount)/100),
+                        abs($oArtikelTMP->Preise->fVK[1] - $this->Preise->fVK[1]) * ((100 - $discount) / 100),
                         $currency,
                         1,
                         2

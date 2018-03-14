@@ -3860,18 +3860,18 @@ function gibTrustedShopsBewertenButton($cMail, $cBestellNr)
                 && $tsRating->kTrustedshopsKundenbewertung > 0
                 && (int)$tsRating->nStatus === 1
             ) {
-                $button   = new stdClass();
-                $basePath = Shop::getURL() . '/' .
+                $button       = new stdClass();
+                $imageBaseURL = Shop::getImageBaseURL() .
                     PFAD_TEMPLATES .
                     Template::getInstance()->getDir() .
                     '/themes/base/images/trustedshops/rate_now_';
-                $images   = [
-                    'de' => $basePath . 'de.png',
-                    'en' => $basePath . 'en.png',
-                    'fr' => $basePath . 'fr.png',
-                    'es' => $basePath . 'es.png',
-                    'nl' => $basePath . 'nl.png',
-                    'pl' => $basePath . 'pl.png'
+                $images       = [
+                    'de' => $imageBaseURL . 'de.png',
+                    'en' => $imageBaseURL . 'en.png',
+                    'fr' => $imageBaseURL . 'fr.png',
+                    'es' => $imageBaseURL . 'es.png',
+                    'nl' => $imageBaseURL . 'nl.png',
+                    'pl' => $imageBaseURL . 'pl.png'
                 ];
 
                 $button->cURL    = 'https://www.trustedshops.com/buyerrating/rate_' .

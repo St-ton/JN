@@ -309,19 +309,23 @@ class AuswahlAssistentOrt
         if ((int)$kKategorie === 0 || (int)$kSprache === 0) {
             return false;
         }
-        $cOrtSQL = '';
-        if ($kAuswahlAssistentGruppe > 0) {
-            $cOrtSQL = " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . (int)$kAuswahlAssistentGruppe;
-        }
-        $oOrt = Shop::DB()->query(
+        $cOrtSQL = $kAuswahlAssistentGruppe > 0
+            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . (int)$kAuswahlAssistentGruppe
+            : '';
+        $oOrt    = Shop::DB()->queryPrepared(
             "SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort
                 JOIN tauswahlassistentgruppe 
                     ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
-                    AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
-                WHERE tauswahlassistentort.cKey = '" . AUSWAHLASSISTENT_ORT_KATEGORIE . "'
-                    " . $cOrtSQL . "
-                    AND tauswahlassistentort.kKey = " . (int)$kKategorie, 1
+                    AND tauswahlassistentgruppe.kSprache = :langID
+                WHERE tauswahlassistentort.cKey = :keyID" . $cOrtSQL . "
+                    AND tauswahlassistentort.kKey = :catID",
+            [
+                'keyID'  => AUSWAHLASSISTENT_ORT_KATEGORIE,
+                'catID'  => (int)$kKategorie,
+                'langID' => (int)$kSprache,
+            ],
+            NiceDB::RET_SINGLE_OBJECT
         );
 
         return isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0;
@@ -338,19 +342,23 @@ class AuswahlAssistentOrt
         if ((int)$kLink === 0 || (int)$kSprache === 0) {
             return false;
         }
-        $cOrtSQL = '';
-        if ($kAuswahlAssistentGruppe > 0) {
-            $cOrtSQL = " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . (int)$kAuswahlAssistentGruppe;
-        }
-        $oOrt = Shop::DB()->query(
+        $cOrtSQL = $kAuswahlAssistentGruppe > 0
+            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . (int)$kAuswahlAssistentGruppe
+            : '';
+        $oOrt    = Shop::DB()->queryPrepared(
             "SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort
                 JOIN tauswahlassistentgruppe 
                     ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
-                    AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
-                WHERE tauswahlassistentort.cKey = '" . AUSWAHLASSISTENT_ORT_LINK . "'
-                    " . $cOrtSQL . "
-                    AND tauswahlassistentort.kKey = " . (int)$kLink, 1
+                    AND tauswahlassistentgruppe.kSprache = :langID
+                WHERE tauswahlassistentort.cKey = :keyID" . $cOrtSQL . "
+                    AND tauswahlassistentort.kKey = :linkID",
+            [
+                'langID' => (int)$kSprache,
+                'keyID'  => AUSWAHLASSISTENT_ORT_LINK,
+                'linkID' => (int)$kLink
+            ],
+            NiceDB::RET_SINGLE_OBJECT
         );
 
         return isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0;
@@ -371,15 +379,16 @@ class AuswahlAssistentOrt
             $cOrtSQL = " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . (int)$kAuswahlAssistentGruppe;
         }
 
-        $oOrt = Shop::DB()->query(
+        $oOrt = Shop::DB()->queryPrepared(
             "SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort
                 JOIN tauswahlassistentgruppe 
                     ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
-                    AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
-                WHERE tauswahlassistentort.cKey = '" . AUSWAHLASSISTENT_ORT_STARTSEITE . "'
-                    " . $cOrtSQL . "
-                    AND tauswahlassistentort.kKey = 1", 1
+                    AND tauswahlassistentgruppe.kSprache = :langID
+                WHERE tauswahlassistentort.cKey = :keyID" . $cOrtSQL . "
+                    AND tauswahlassistentort.kKey = 1",
+            ['langID' => (int)$kSprache, 'keyID'  => AUSWAHLASSISTENT_ORT_STARTSEITE],
+            NiceDB::RET_SINGLE_OBJECT
         );
 
         return isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0;
@@ -400,11 +409,15 @@ class AuswahlAssistentOrt
                         FROM tauswahlassistentort
                         JOIN tauswahlassistentgruppe 
                             ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
-                            AND tauswahlassistentgruppe.kSprache = :lang
-                        WHERE tauswahlassistentort.cKey = :ckey
+                            AND tauswahlassistentgruppe.kSprache = :langID
+                        WHERE tauswahlassistentort.cKey = :keyID
                             AND tauswahlassistentort.kKey = :kkey",
-                ['lang' => (int)$kSprache, 'ckey' => $cKey, 'kkey' => (int)$kKey],
-                1
+                [
+                    'langID' => (int)$kSprache,
+                    'keyID'  => $cKey,
+                    'kkey'   => (int)$kKey
+                ],
+                NiceDB::RET_SINGLE_OBJECT
             );
 
             if (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0) {

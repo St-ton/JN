@@ -141,19 +141,24 @@ class Hersteller
         $cacheTags   = [CACHING_GROUP_MANUFACTURER];
         $cached      = true;
         if ($noCache === true || ($oHersteller = Shop::Cache()->get($cacheID)) === false) {
-            $oHersteller = Shop::DB()->query(
+            $oHersteller = Shop::DB()->queryPrepared(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                     therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                     FROM thersteller
                     LEFT JOIN therstellersprache 
                         ON therstellersprache.kHersteller = thersteller.kHersteller
-                        AND therstellersprache.kSprache = " . $kSprache . "
+                        AND therstellersprache.kSprache = :langID
                     LEFT JOIN tseo 
                         ON tseo.kKey = thersteller.kHersteller
                         AND tseo.cKey = 'kHersteller'
-                        AND tseo.kSprache = " . $kSprache . "
-                    WHERE thersteller.kHersteller = " . $kHersteller, 1
+                        AND tseo.kSprache = :langID
+                    WHERE thersteller.kHersteller = :manfID",
+                [
+                    'langID' => $kSprache,
+                    'manfID' => $kHersteller
+                ],
+                NiceDB::RET_SINGLE_OBJECT
             );
             $cached = false;
             executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [

@@ -81,15 +81,14 @@ class AuswahlAssistentGruppe
     private function loadFromDB($kAuswahlAssistentGruppe, $bAktiv, $bAktivFrage, $bBackend)
     {
         if ($kAuswahlAssistentGruppe > 0) {
-            $cAktivSQL = '';
-            if ($bAktiv) {
-                $cAktivSQL = " AND nAktiv = 1";
-            }
-            $oGruppe = Shop::DB()->query(
+            $cAktivSQL = $bAktiv ? ' AND nAktiv = 1' : '';
+            $oGruppe   = Shop::DB()->queryPrepared(
                 "SELECT *
                     FROM tauswahlassistentgruppe
-                    WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe .
-                    $cAktivSQL, 1
+                    WHERE kAuswahlAssistentGruppe = :groupID" .
+                    $cAktivSQL,
+                ['groupID' => (int)$kAuswahlAssistentGruppe],
+                NiceDB::RET_SINGLE_OBJECT
             );
             if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) {
                 $cMember_arr = array_keys(get_object_vars($oGruppe));
@@ -112,22 +111,22 @@ class AuswahlAssistentGruppe
                     $bBackend
                 );
                 $this->oAuswahlAssistentOrt_arr   = $oAuswahlAssistentOrt->oOrt_arr;
-                if (count($this->oAuswahlAssistentOrt_arr) > 0) {
-                    foreach ($this->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt) {
-                        // Kategorien
-                        if ($oAuswahlAssistentOrt->cKey === AUSWAHLASSISTENT_ORT_KATEGORIE) {
-                            $this->cKategorie .= $oAuswahlAssistentOrt->kKey . ';';
-                        }
-                        // Startseite
-                        if ($oAuswahlAssistentOrt->cKey === AUSWAHLASSISTENT_ORT_STARTSEITE) {
-                            $this->nStartseite = 1;
-                        }
+                foreach ($this->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt) {
+                    // Kategorien
+                    if ($oAuswahlAssistentOrt->cKey === AUSWAHLASSISTENT_ORT_KATEGORIE) {
+                        $this->cKategorie .= $oAuswahlAssistentOrt->kKey . ';';
+                    }
+                    // Startseite
+                    if ($oAuswahlAssistentOrt->cKey === AUSWAHLASSISTENT_ORT_STARTSEITE) {
+                        $this->nStartseite = 1;
                     }
                 }
-                $oSprache       = Shop::DB()->query(
-                    "SELECT cNameDeutsch 
+                $oSprache       = Shop::DB()->queryPrepared(
+                    'SELECT cNameDeutsch 
                         FROM tsprache 
-                        WHERE kSprache = " . (int)$this->kSprache, 1
+                        WHERE kSprache = :langID',
+                    ['langID' => (int)$this->kSprache],
+                    NiceDB::RET_SINGLE_OBJECT
                 );
                 $this->cSprache = $oSprache->cNameDeutsch;
             }
@@ -143,16 +142,16 @@ class AuswahlAssistentGruppe
      */
     public static function getGroups($kSprache, $bAktiv = true, $bAktivFrage = true, $bBackend = false)
     {
-        $oGruppe_arr = [];
-        $cAktivSQL   = '';
-        if ($bAktiv) {
-            $cAktivSQL = " AND nAktiv = 1";
-        }
-        $oGruppeTMP_arr = Shop::DB()->query("
-            SELECT kAuswahlAssistentGruppe
+        $oGruppe_arr    = [];
+        $cAktivSQL      = $bAktiv ? ' AND nAktiv = 1' : '';
+        $oGruppeTMP_arr = Shop::DB()->queryPrepared(
+            'SELECT kAuswahlAssistentGruppe
                 FROM tauswahlassistentgruppe
-                WHERE kSprache = " . (int)$kSprache .
-                $cAktivSQL, 2
+                WHERE kSprache = :langID',
+            ['langID' => (int)$kSprache],
+            $cAktivSQL,
+            [],
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
         foreach ($oGruppeTMP_arr as $oGruppeTMP) {
             $oGruppe_arr[] = new self($oGruppeTMP->kAuswahlAssistentGruppe, $bAktiv, $bAktivFrage, $bBackend);
@@ -261,14 +260,16 @@ class AuswahlAssistentGruppe
             && count($cParam_arr['kAuswahlAssistentGruppe_arr']) > 0
         ) {
             foreach ($cParam_arr['kAuswahlAssistentGruppe_arr'] as $kAuswahlAssistentGruppe) {
-                Shop::DB()->query(
-                    "DELETE tag, taf, tao
+                Shop::DB()->queryPrepared(
+                    'DELETE tag, taf, tao
                         FROM tauswahlassistentgruppe tag
                         LEFT JOIN tauswahlassistentfrage taf
                             ON taf.kAuswahlAssistentGruppe = tag.kAuswahlAssistentGruppe
                         LEFT JOIN tauswahlassistentort tao
                             ON tao.kAuswahlAssistentGruppe = tag.kAuswahlAssistentGruppe
-                        WHERE tag.kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe, 3
+                        WHERE tag.kAuswahlAssistentGruppe = :groupID', 
+                    ['groupID' => (int)$kAuswahlAssistentGruppe],
+                    NiceDB::RET_AFFECTED_ROWS
                 );
             }
 
@@ -285,10 +286,12 @@ class AuswahlAssistentGruppe
     public static function getLanguage($kAuswahlAssistentGruppe)
     {
         if ($kAuswahlAssistentGruppe > 0) {
-            $oGruppe = Shop::DB()->query(
-                "SELECT kSprache
+            $oGruppe = Shop::DB()->queryPrepared(
+                'SELECT kSprache
                     FROM tauswahlassistentgruppe
-                    WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe, 1
+                    WHERE kAuswahlAssistentGruppe = :groupID',
+                ['groupID' => (int)$kAuswahlAssistentGruppe], 
+                NiceDB::RET_SINGLE_OBJECT
             );
             if (isset($oGruppe->kSprache) && $oGruppe->kSprache > 0) {
                 return (int)$oGruppe->kSprache;

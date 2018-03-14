@@ -156,15 +156,16 @@ class Slider implements IExtensionPoint
             if ($cSlider_arr === null) {
                 return false;
             }
-            $slides = Shop::DB()->query(
-                "SELECT kslide
+            $slides = Shop::DB()->queryPrepared(
+                'SELECT kSlide
                     FROM tslide
-                    WHERE kSlider = " . $kSlider . "
-                    ORDER BY nSort ASC",
-                2
+                    WHERE kSlider = :sliderID
+                    ORDER BY nSort ASC',
+                ['sliderID' => $kSlider],
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($slides as $slide) {
-                $this->oSlide_arr[] = new Slide($cSlider_arr['kSlider'], $slide->kslide);
+                $this->oSlide_arr[] = new Slide($cSlider_arr['kSlider'], $slide->kSlide);
             }
 
             if (is_array($cSlider_arr)) {

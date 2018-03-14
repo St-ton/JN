@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-
 /**
  * Class AuswahlAssistentFrage
  */

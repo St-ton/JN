@@ -4079,8 +4079,12 @@ class Artikel
             $this->cHerstellerBeschreibung    = parseNewsText($oArtikelTMP->cBeschreibung_hersteller_spr);
             $this->cHerstellerSortNr          = $oArtikelTMP->nSortNr_thersteller;
             if (strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
-                $this->cHerstellerBildKlein  = PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
-                $this->cHerstellerBildNormal = PFAD_HERSTELLERBILDER_NORMAL . $oArtikelTMP->cBildpfad_thersteller;
+                $imageBaseURL = Shop::getImageBaseURL();
+
+                $this->cHerstellerBildKlein     = PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
+                $this->cHerstellerBildNormal    = PFAD_HERSTELLERBILDER_NORMAL . $oArtikelTMP->cBildpfad_thersteller;
+                $this->cHerstellerBildURLKlein  = $imageBaseURL . $this->cHerstellerBildKlein;
+                $this->cHerstellerBildURLNormal = $imageBaseURL . $this->cHerstellerBildNormal;
             }
         }
         //datum umformatieren

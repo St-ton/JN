@@ -520,7 +520,8 @@ function get_navigation($params, &$smarty)
     $linkgroupIdentifier = $params['linkgroupIdentifier'];
     $oLinkGruppe         = null;
     if (strlen($linkgroupIdentifier) > 0) {
-        $linkGroups  = LinkHelper::getInstance()->getLinkGroups();
+        $linkGroups  = $smarty->getTemplateVars('linkgroups') ?? LinkHelper::getInstance()->getLinkGroups();
+
         $oLinkGruppe = $linkGroups->{$linkgroupIdentifier} ?? null;
     }
 
@@ -543,13 +544,12 @@ function build_navigation_subs($oLink_arr, $kVaterLink = 0)
     }
     $cISO = $_SESSION['cISOSprache'];
     foreach ($oLink_arr->Links as &$oLink) {
-        $oLink->kVaterLink = (int)$oLink->kVaterLink;
         if ($oLink->kVaterLink !== $kVaterLink) {
             continue;
         }
         $oLink->oSub_arr = build_navigation_subs($oLink_arr, $oLink->kLink);
         //append bIsActive property
-        $oLink->bIsActive = Shop::$kLink > 0 && Shop::$kLink === (int)$oLink->kLink;
+        $oLink->bIsActive = $oLink->aktiv === 1 || (Shop::$kLink > 0 && Shop::$kLink === $oLink->kLink);
         //append cTitle property
         $oLink->cTitle = (isset($oLink->cLocalizedTitle[$cISO])
             && $oLink->cLocalizedTitle[$cISO] !== $oLink->cLocalizedName[$cISO])

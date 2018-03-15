@@ -374,12 +374,10 @@ class AuswahlAssistentOrt
         if ((int)$kSprache === 0) {
             return false;
         }
-        $cOrtSQL = '';
-        if ($kAuswahlAssistentGruppe > 0) {
-            $cOrtSQL = " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . (int)$kAuswahlAssistentGruppe;
-        }
-
-        $oOrt = Shop::DB()->queryPrepared(
+        $cOrtSQL = $kAuswahlAssistentGruppe > 0
+            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . (int)$kAuswahlAssistentGruppe
+            : '';
+        $oOrt    = Shop::DB()->queryPrepared(
             "SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort
                 JOIN tauswahlassistentgruppe 

@@ -2778,8 +2778,9 @@ function baueGewicht(array $articles, $weightAcc = 2, $shippingWeightAcc = 2)
 function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
 {
     // Ticket #1018
-    $versandklassen = VersandartHelper::getShippingClasses(Session::Cart());
-    $cacheID        = 'vkfrei_' . $kKundengruppe . '_' .
+    $versandklassen            = VersandartHelper::getShippingClasses(Session::Cart());
+    $isStandardProductShipping = VersandartHelper::normalerArtikelversand($cLand);
+    $cacheID                   = 'vkfrei_' . $kKundengruppe . '_' .
         $cLand . '_' . $versandklassen . '_' . Shop::getLanguageCode();
     if (($oVersandart = Shop::Cache()->get($cacheID)) === false) {
         if (strlen($cLand) > 0) {
@@ -2797,6 +2798,10 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                 $cKundeSQLWhere = " AND cLaender LIKE '%{$landIso->cISO}%'";
             }
         }
+        $cProductSpecificSQLWhere = "";
+        if ($isStandardProductShipping) {
+            $cProductSpecificSQLWhere = " AND cNurAbhaengigeVersandart = 'N' ";
+        }
         $oVersandart = Shop::DB()->query(
             "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized
                 FROM tversandart
@@ -2808,7 +2813,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                         OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')
                     AND (cKundengruppen = '-1'
                         OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)
-                    " . $cKundeSQLWhere . "
+                    " . $cKundeSQLWhere . $cProductSpecificSQLWhere . "
                 ORDER BY fVersandkostenfreiAbX
                 LIMIT 1", 1
         );

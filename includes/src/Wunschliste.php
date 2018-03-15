@@ -176,11 +176,11 @@ class Wunschliste
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function entferneAllePos()
     {
-        return Shop::DB()->query(
+        return Shop::DB()->queryPrepared(
             'DELETE twunschlistepos, twunschlisteposeigenschaft 
                 FROM twunschlistepos
                 LEFT JOIN twunschlisteposeigenschaft 

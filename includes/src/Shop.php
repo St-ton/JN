@@ -442,7 +442,7 @@ final class Shop
      */
     public static function setImageBaseURL(string $url)
     {
-        self::$imageBaseURL = $url;
+        self::$imageBaseURL = rtrim($url, '/') . '/';
     }
 
     /**
@@ -823,7 +823,7 @@ final class Shop
         self::$productFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
 
         self::seoCheck();
-        self::$imageBaseURL = defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL : self::getURL() . '/';
+        self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL  : self::getURL());
         self::Event()->fire('shop.run');
 
         self::$productFilter->initStates(self::getParameters());

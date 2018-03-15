@@ -211,7 +211,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
            ->assign('oKampagne_arr', holeAlleKampagnen(false, true))
            ->assign('cTime', time());
     // Vorlage speichern
-    if (verifyGPCDataInteger('vorlage_std_speichern') === 1) {
+    if (verifyGPCDataInteger('vorlage_std_speichern') === 1 && validateToken()) {
         $kNewslettervorlageStd = verifyGPCDataInteger('kNewslettervorlageStd');
         if ($kNewslettervorlageStd > 0) {
             $step               = 'vorlage_std_erstellen';
@@ -330,7 +330,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (isset($_GET['editieren'])) {
             $cOption = 'editieren';
         }
-    } elseif (isset($_POST['speichern'])) { // Vorlage speichern
+    } elseif (isset($_POST['speichern']) && validateToken()) { // Vorlage speichern
         $cPlausiValue_arr = speicherVorlage($_POST);
 
         if (is_array($cPlausiValue_arr) && count($cPlausiValue_arr) > 0) {
@@ -475,7 +475,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
 
             $cHinweis .= 'Der Newsletter "' . $oNewsletter->cName . '" wurde zum Versenden vorbereitet.<br />';
         }
-    } elseif (isset($_POST['speichern_und_testen'])) { // Vorlage speichern und testen
+    } elseif (isset($_POST['speichern_und_testen']) && validateToken()) { // Vorlage speichern und testen
         $oNewsletterVorlage = speicherVorlage($_POST);
         // Baue Arrays mit kKeys
         $kArtikel_arr    = gibAHKKeys($oNewsletterVorlage->cArtikel, true);

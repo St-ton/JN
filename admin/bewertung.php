@@ -23,7 +23,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
 // Bewertung editieren
-if (verifyGPCDataInteger('bewertung_editieren') === 1) {
+if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
     if (editiereBewertung($_POST)) {
         $cHinweis .= 'Ihre Bewertung wurde erfolgreich editiert. ';
 
@@ -40,7 +40,7 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
 } elseif (isset($_POST['bewertung_nicht_aktiv']) && (int)$_POST['bewertung_nicht_aktiv'] === 1) {
     // Bewertungen aktivieren
-    if (isset($_POST['aktivieren'])) {
+    if (isset($_POST['aktivieren'])  && validateToken()) {
         if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
             $kArtikel_arr = $_POST['kArtikel'];
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {
@@ -58,7 +58,7 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
             Shop::Cache()->flushTags($cacheTags);
             $cHinweis .= count($_POST['kBewertung']) . " Bewertung(en) wurde(n) erfolgreich aktiviert.";
         }
-    } elseif (isset($_POST['loeschen'])) { // Bewertungen loeschen
+    } elseif (isset($_POST['loeschen']) && validateToken()) { // Bewertungen loeschen
         if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
             foreach ($_POST['kBewertung'] as $kBewertung) {
                 Shop::DB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
@@ -82,7 +82,7 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
         $smarty->assign('cArtNr', $_POST['cArtNr']);
     }
     // Bewertungen loeschen
-    if (isset($_POST['loeschen'])) {
+    if (isset($_POST['loeschen']) && validateToken()) {
         if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
             $kArtikel_arr = $_POST['kArtikel'];
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {

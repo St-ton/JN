@@ -108,7 +108,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 }
 
 if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
-    if (isset($_POST['suche_fulltext']) && in_array($_POST['suche_fulltext'], ['Y', 'B'], true)) {
+    $sucheFulltext = isset($_POST['suche_fulltext']) ? in_array($_POST['suche_fulltext'], ['Y', 'B'], true) : false;
+
+    if ($sucheFulltext) {
         if (version_compare($mysqlVersion, '5.6', '<')) {
             //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
             $_POST['suche_fulltext'] = 'N';
@@ -145,10 +147,10 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
         }
     }
     if ($fulltextChanged) {
-        $createIndex = in_array($_POST['suche_fulltext'], ['Y', 'B'], true) ? 'Y' : 'N';
+        $createIndex = $sucheFulltext ? 'Y' : 'N';
     }
 
-    if (isset($_POST['suche_fulltext']) && in_array($_POST['suche_fulltext'], ['Y', 'B'], true) && $fulltextChanged) {
+    if ($sucheFulltext && $fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde aktiviert.';
     } elseif ($fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde deaktiviert.';

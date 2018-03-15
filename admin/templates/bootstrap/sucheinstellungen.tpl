@@ -30,7 +30,18 @@
             if (createCount >= 2) {
                 $('.alert.alert-danger').hide(300);
                 updateNotifyDrop();
+                ioCall('clearSearchCache', [], showCacheNotification, showCacheNotification);
             }
+        }
+
+        function showCacheNotification(pResult) {
+            var isError = pResult && pResult.error;
+            createNotify({
+                title: 'Sucheinstellungen &auml;ndern',
+                message: isError ? pResult.error.message : pResult.hinweis
+            }, {
+                type: isError ? 'danger' : 'info'
+            });
         }
 
         ioCall('createSearchIndex', ['tartikel', createIndex], showIndexNotification, showIndexNotification);

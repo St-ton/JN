@@ -256,14 +256,19 @@ class Wunschliste
     {
         if (strlen($cSuche) > 0) {
             $oWunschlistePosSuche_arr = [];
-            $oSuchergebnis_arr        = Shop::DB()->query(
+            $oSuchergebnis_arr        = Shop::DB()->queryPrepared(
                 "SELECT twunschlistepos.*, date_format(twunschlistepos.dHinzugefuegt, '%d.%m.%Y %H:%i') AS dHinzugefuegt_de
-                    FROM twunschliste
-                    JOIN twunschlistepos 
-                        ON twunschlistepos.kWunschliste = twunschliste.kWunschliste
-                        AND (twunschlistepos.cArtikelName LIKE '%" . addcslashes($cSuche, '%_') . "%'
-                        OR twunschlistepos.cKommentar LIKE '%" . addcslashes($cSuche, '%_') . "%')
-                    WHERE twunschliste.kWunschliste = " . (int)$this->kWunschliste, 2
+                FROM twunschliste
+                JOIN twunschlistepos 
+                    ON twunschlistepos.kWunschliste = twunschliste.kWunschliste
+                    AND (twunschlistepos.cArtikelName LIKE :search
+                    OR twunschlistepos.cKommentar LIKE :search)
+                WHERE twunschliste.kWunschliste = :wlID",
+                [
+                    'search' => '%' . $cSuche . '%',
+                    'wlID'   => (int)$this->kWunschliste
+                ],
+                2
             );
 
             if (is_array($oSuchergebnis_arr) && count($oSuchergebnis_arr) > 0) {

@@ -6,6 +6,9 @@
 
 use Services\Container;
 use DB\Services as DbService;
+use \Services\JTL\Validation\ValidationServiceInterface;
+use \Services\JTL\Validation\ValidationService;
+use Services\JTL\Validation\RuleSet;
 
 /**
  * Class Shop
@@ -1774,7 +1777,14 @@ final class Shop
             return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
         });
 
+        $container->setSingleton(ValidationServiceInterface::class, function(){
+            $vs = new ValidationService($_GET, $_POST, $_COOKIE);
+            $vs->setRuleSet('identity', (new RuleSet())->integer()->gt(0));
 
+            return $vs;
+        });
+            
+            
         // NETWORK & API
 
         $container->setFactory(\Network\JTLApi::class, function () {

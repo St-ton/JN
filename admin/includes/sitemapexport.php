@@ -347,7 +347,7 @@ function generateSitemapXML()
                 $number
             );
             if (strlen($cGoogleImage) > 0) {
-                $cGoogleImage = $imageBaseURL . '/' . $cGoogleImage;
+                $cGoogleImage = $imageBaseURL . $cGoogleImage;
             }
         }
         $cUrl = baueURL($oArtikel, URLART_ARTIKEL);

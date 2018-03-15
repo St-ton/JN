@@ -14,7 +14,6 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.AjaxRe
 
 $hasPermission = $oAccount->permission('SHOP_UPDATE_VIEW', false, false);
 $action        = isset($_GET['action']) ? $_GET['action'] : null;
-
 if ($action === null && !$hasPermission) {
     $oAccount->redirectOnFailure();
     exit;

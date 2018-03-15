@@ -170,15 +170,22 @@ class VersandartHelper
         $cNurAbhaengigeVersandart = self::normalerArtikelversand($lieferland) === false
             ? 'Y'
             : 'N';
-        $methods                  = Shop::DB()->query(
+        $methods                  = Shop::DB()->queryPrepared(
             "SELECT * FROM tversandart
-                WHERE cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
-                    AND cLaender LIKE '%" . addcslashes($cISO, '%_') . "%'
+                WHERE cNurAbhaengigeVersandart = :depOnly
+                    AND cLaender LIKE :iso
                     AND (cVersandklassen = '-1'
-                    OR cVersandklassen RLIKE '^([0-9 -]* )?" . addcslashes($versandklassen, '%_') . " ')
+                    OR cVersandklassen RLIKE :sClasses)
                     AND (cKundengruppen = '-1'
-                    OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)
-                ORDER BY nSort", 2
+                    OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
+                ORDER BY nSort",
+            [
+                'iso'      => '%' . $cISO . '%',
+                'cGroupID' => $kKundengruppe,
+                'sClasses' => '^([0-9 -]* )?' . $versandklassen . ' ',
+                'depOnly'  => $cNurAbhaengigeVersandart
+            ],
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
         $netPricesActive          = Session::CustomerGroup()->isMerchant();
 

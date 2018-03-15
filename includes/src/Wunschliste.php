@@ -263,12 +263,12 @@ class Wunschliste
 
     /**
      * @param string $cSuche
-     * @return array|bool
+     * @return array
      */
     public function sucheInWunschliste($cSuche)
     {
         if (empty($cSuche)) {
-            return false;
+            return [];
         }
         $oWunschlistePosSuche_arr = [];
         $oSuchergebnis_arr        = Shop::DB()->queryPrepared(
@@ -280,19 +280,13 @@ class Wunschliste
                     OR twunschlistepos.cKommentar LIKE :search)
                 WHERE twunschliste.kWunschliste = :wlID",
             [
-                'search' => '%' . addcslashes($cSuche, '%_') . '%',
+                'search' => '%' . $cSuche . '%',
                 'wlID'   => (int)$this->kWunschliste
             ],
             NiceDB::RET_ARRAY_OF_OBJECTS
         );
-
-        if (!is_array($oSuchergebnis_arr) || count($oSuchergebnis_arr) === 0) {
-            return $oWunschlistePosSuche_arr;
-        }
         foreach ($oSuchergebnis_arr as $i => $oSuchergebnis) {
-            $oWunschlistePosSuche_arr[$i] = new stdClass();
-            $oWunschlistePosSuche_arr[$i]->CWunschlistePosEigenschaft_arr = [];
-            $oWunschlistePosSuche_arr[$i]                                 = new WunschlistePos(
+            $oWunschlistePosSuche_arr[$i] = new WunschlistePos(
                 $oSuchergebnis->kArtikel,
                 $oSuchergebnis->cArtikelName,
                 $oSuchergebnis->fAnzahl,

@@ -367,7 +367,7 @@ class Status
         $conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
 
         return isset($conf['artikeluebersicht']['suche_fulltext'])
-            && $conf['artikeluebersicht']['suche_fulltext'] === 'Y'
+            && $conf['artikeluebersicht']['suche_fulltext'] !== 'N'
             && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
                 || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1));
     }
@@ -389,7 +389,7 @@ class Status
         );
         foreach ($translations as $t) {
             $old = '{$neues_passwort}';
-            if(strpos($t->cContentHtml, $old) !== false || strpos($t->cContentText, $old) !== false) {
+            if (strpos($t->cContentHtml, $old) !== false || strpos($t->cContentText, $old) !== false) {
                 return true;
             }
         }

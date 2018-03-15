@@ -64,6 +64,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         }
 
         try {
+            Shop::DB()->executeQuery(
+                "UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)",
+                10
+            );
+
             $res = Shop::DB()->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
@@ -74,12 +79,22 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         }
 
         if ($res === 0) {
-            $cFehler = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
-            $param   = ['suche_fulltext' => 'N'];
-            saveAdminSectionSettings($kSektion, $param);
+            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
+            $shopSettings = Shopsetting::getInstance();
+            $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
-            Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
-            $shopSettings->reset();
+            if ($settings['suche_fulltext'] !== 'N') {
+                $settings['suche_fulltext'] = 'N';
+                saveAdminSectionSettings($kSektion, $settings);
+
+                Shop::Cache()->flushTags([
+                    CACHING_GROUP_OPTION,
+                    CACHING_GROUP_CORE,
+                    CACHING_GROUP_ARTICLE,
+                    CACHING_GROUP_CATEGORY
+                ]);
+                $shopSettings->reset();
+            }
         } else {
             $cHinweis = 'Der Volltextindex für ' . $index . ' wurde angelegt!';
         }
@@ -93,9 +108,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 }
 
 if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
-    if ($_POST['suche_fulltext'] === 'Y') {
+    $sucheFulltext = isset($_POST['suche_fulltext']) ? in_array($_POST['suche_fulltext'], ['Y', 'B'], true) : false;
+
+    if ($sucheFulltext) {
         // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
-        $oValue = Shop::DB()->query('select @@ft_min_word_len AS ft_min_word_len', 1);
+        $oValue                     = Shop::DB()->query('select @@ft_min_word_len AS ft_min_word_len', 1);
         $_POST['suche_min_zeichen'] = $oValue ? $oValue->ft_min_word_len : $_POST['suche_min_zeichen'];
     }
 
@@ -124,12 +141,12 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
         }
     }
     if ($fulltextChanged) {
-        $smarty->assign('createIndex', $_POST['suche_fulltext']);
+        $smarty->assign('createIndex', $sucheFulltext ? 'Y' : 'N');
     } else {
         $smarty->assign('createIndex', false);
     }
 
-    if ($_POST['suche_fulltext'] === 'Y' && $fulltextChanged) {
+    if ($sucheFulltext && $fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde aktiviert.';
     } elseif ($fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde deaktiviert.';
@@ -166,7 +183,7 @@ for ($i = 0; $i < $configCount; $i++) {
     }
 }
 
-if ($Einstellungen['artikeluebersicht']['suche_fulltext'] === 'Y'
+if ($Einstellungen['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
         || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
     $cFehler = 'Der Volltextindex ist nicht vorhanden! ' .

@@ -18,7 +18,7 @@ function createSearchIndex($index, $create)
     $cFehler  = '';
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
-        return new IOError('Ung¸ltiger Index angegeben', 403);
+        return new IOError('Ung√ºltiger Index angegeben', 403);
     }
 
     try {
@@ -26,7 +26,7 @@ function createSearchIndex($index, $create)
             Shop::DB()->executeQuery("ALTER IGNORE TABLE $index DROP KEY idx_{$index}_fulltext", 10);
         }
     } catch (Exception $e) {
-        // Fehler beim Index lˆschen ignorieren
+        // Fehler beim Index l√∂schen ignorieren
         null;
     }
 
@@ -48,10 +48,15 @@ function createSearchIndex($index, $create)
                 $cSpalten_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
                 break;
             default:
-                return new IOError('Ung¸ltiger Index angegeben', 403);
+                return new IOError('Ung√ºltiger Index angegeben', 403);
         }
 
         try {
+            Shop::DB()->executeQuery(
+                "UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)",
+                10
+            );
+
             $res = Shop::DB()->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
@@ -62,24 +67,39 @@ function createSearchIndex($index, $create)
         }
 
         if ($res === 0) {
-            $cFehler = 'Der Index f¸r die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
-            $param   = ['suche_fulltext' => 'N'];
-            saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $param);
+            $cFehler      = 'Der Index f√ºr die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
+            $shopSettings = Shopsetting::getInstance();
+            $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
-            Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
-            Shopsetting::getInstance()->reset();
+            if ($settings['suche_fulltext'] !== 'N') {
+                $settings['suche_fulltext'] = 'N';
+                saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $settings);
+
+                Shop::Cache()->flushTags([
+                    CACHING_GROUP_OPTION,
+                    CACHING_GROUP_CORE,
+                    CACHING_GROUP_ARTICLE,
+                    CACHING_GROUP_CATEGORY
+                ]);
+                $shopSettings->reset();
+            }
         } else {
-            $cHinweis = 'Der Volltextindex f¸r ' . $index . ' wurde angelegt!';
+            $cHinweis = 'Der Volltextindex f√ºr ' . $index . ' wurde angelegt!';
         }
     } else {
-        $cHinweis = 'Der Volltextindex f¸r ' . $index . ' wurde gelˆscht!';
+        $cHinweis = 'Der Volltextindex f√ºr ' . $index . ' wurde gel√∂scht!';
     }
 
-    if ($cFehler !== '') {
-        return new IOError($cFehler);
-    } else {
-        return [
-            'hinweis' => $cHinweis
-        ];
-    }
+    return $cFehler !== '' ? new IOError($cFehler) : ['hinweis' => $cHinweis];
+}
+
+/**
+ * @return array|IOError
+ */
+function clearSearchCache()
+{
+    Shop::DB()->executeQuery("DELETE FROM tsuchcachetreffer", 10);
+    Shop::DB()->executeQuery("DELETE FROM tsuchcache", 10);
+
+    return ['hinweis' => 'Der Such-Cache wurde gel√∂scht'];
 }

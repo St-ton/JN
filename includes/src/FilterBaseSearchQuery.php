@@ -471,7 +471,7 @@ class FilterBaseSearchQuery extends AbstractFilter
         $oSuchCache->dErstellt = 'now()';
         $kSuchCache            = Shop::DB()->insert('tsuchcache', $oSuchCache);
 
-        if ($this->getConfig()['artikeluebersicht']['suche_fulltext'] === 'Y'
+        if ($this->getConfig()['artikeluebersicht']['suche_fulltext'] !== 'N'
             && $this->isFulltextIndexActive()
         ) {
             $oSuchCache->kSuchCache = $kSuchCache;
@@ -479,7 +479,9 @@ class FilterBaseSearchQuery extends AbstractFilter
             return $this->editFullTextSearchCache(
                 $oSuchCache,
                 $searchColumnn_arr,
-                $cSuch_arr, $this->getConfig()['artikeluebersicht']['suche_max_treffer']
+                $cSuch_arr,
+                $this->getConfig()['artikeluebersicht']['suche_max_treffer'],
+                $this->getConfig()['artikeluebersicht']['suche_fulltext']
             );
         }
 
@@ -860,10 +862,11 @@ class FilterBaseSearchQuery extends AbstractFilter
      * @param array $searchColumnn_arr
      * @param array $cSuch_arr
      * @param int $nLimit
+     * @param string $cFullText
      * @return int
      * @former bearbeiteSuchCacheFulltext
      */
-    private function editFullTextSearchCache($oSuchCache, $searchColumnn_arr, $cSuch_arr, $nLimit = 0)
+    private function editFullTextSearchCache($oSuchCache, $searchColumnn_arr, $cSuch_arr, $nLimit = 0, $cFullText = 'Y')
     {
         $nLimit = (int)$nLimit;
 
@@ -878,21 +881,34 @@ class FilterBaseSearchQuery extends AbstractFilter
                 return preg_match('/tartikelsprache\.(.*)/', $item) ? true : false;
             });
 
-            $match = "MATCH (" . implode(', ', $cArtikelSpalten_arr) . ") 
+            $score = "MATCH (" . implode(', ', $cArtikelSpalten_arr) . ")
                         AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
-            $cSQL  = "SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
+            if ($cFullText === 'B') {
+                $match = "MATCH (" . implode(', ', $cArtikelSpalten_arr) . ")
+                        AGAINST ('" . implode('* ', $cSuch_arr) . "*' IN BOOLEAN MODE)";
+            } else {
+                $match = $score;
+            }
+
+            $cSQL = "SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
                     IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
-                    $match AS score
+                    $score AS score
                     FROM tartikel
                     WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . " ";
 
             if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
-                $match  = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ") 
+                $score = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ")
                             AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
-                $cSQL  .= "UNION DISTINCT
+                if ($cFullText === 'B') {
+                    $score = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ")
+                            AGAINST ('" . implode('* ', $cSuch_arr) . "*' IN BOOLEAN MODE)";
+                } else {
+                    $match = $score;
+                }
+                $cSQL .= "UNION DISTINCT
                 SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
                     IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
-                    $match AS score
+                    $score AS score
                     FROM tartikel
                     INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
                     WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . " ";

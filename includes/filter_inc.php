@@ -1921,9 +1921,11 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                 $oSuchCache->kSuchCache = $kSuchCache;
 
                 return bearbeiteSuchCacheFulltext(
-                    $oSuchCache, $cSuchspalten_arr,
-                    $cSuch_arr, $conf['artikeluebersicht']['suche_max_treffer'],
-                    $this->getConfig()['artikeluebersicht']['suche_fulltext']
+                    $oSuchCache,
+                    $cSuchspalten_arr,
+                    $cSuch_arr,
+                    $conf['artikeluebersicht']['suche_max_treffer'],
+                    $conf['artikeluebersicht']['suche_fulltext']
                 );
             }
 

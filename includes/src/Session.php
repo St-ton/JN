@@ -39,6 +39,7 @@ class Session
      * @param bool   $force - force new instance?
      * @param string $sessionName - if null, then default to current session name
      * @return Session
+     * @throws Exception
      */
     public static function getInstance($start = true, $force = false, $sessionName = self::DefaultSession)
     {
@@ -52,8 +53,10 @@ class Session
     }
 
     /**
-     * @param bool   $start - call session_start()?
+     * Session constructor.
+     * @param bool   $start
      * @param string $sessionName
+     * @throws Exception
      */
     public function __construct($start = true, $sessionName = self::DefaultSession)
     {
@@ -79,10 +82,8 @@ class Session
                 session_id('jtl-bot');
             }
             if ($saveBotSession === 2 || $saveBotSession === 3) {
-                $save = false;
-                if ($saveBotSession === 2 && (Shop::Cache()->isAvailable() && Shop::Cache()->isActive())) {
-                    $save = true;
-                }
+                $save = $saveBotSession === 2 && (Shop::Cache()->isAvailable() && Shop::Cache()->isActive());
+
                 self::$_handler = new SessionHandlerBot($save);
                 self::$_storage = new SessionStorage(self::$_handler);
                 $this->setStandardSessionVars();
@@ -134,6 +135,7 @@ class Session
      * setzt Sessionvariablen beim ersten Sessionaufbau oder wenn globale Daten aktualisiert werden müssen
      *
      * @return $this
+     * @throws Exception
      */
     public function setStandardSessionVars()
     {

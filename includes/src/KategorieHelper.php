@@ -229,7 +229,7 @@ class KategorieHelper
                 $_cat->cBildURL       = empty($_cat->cPfad)
                     ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                     : PFAD_KATEGORIEBILDER . $_cat->cPfad;
-                $_cat->cBildURLFull   = $imageBaseURL . '/' . $_cat->cBildURL;
+                $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
                 $_cat->cURL           = empty($_cat->cSeo)
                     ? baueURL($_cat, URLART_KATEGORIE, 0, true)
                     : baueURL($_cat, URLART_KATEGORIE);
@@ -438,7 +438,7 @@ class KategorieHelper
             $_cat->cBildURL       = empty($_cat->cPfad)
                 ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                 : PFAD_KATEGORIEBILDER . $_cat->cPfad;
-            $_cat->cBildURLFull   = $imageBaseURL . '/' . $_cat->cBildURL;
+            $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
             $_cat->cURL           = empty($_cat->cSeo)
                 ? baueURL($_cat, URLART_KATEGORIE, 0, true)
                 : baueURL($_cat, URLART_KATEGORIE);

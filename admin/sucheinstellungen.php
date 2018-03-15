@@ -185,7 +185,7 @@ for ($i = 0; $i < $configCount; $i++) {
     }
 }
 
-if (in_array($Einstellungen['artikeluebersicht']['suche_fulltext'], ['Y', 'B'], true)
+if ($Einstellungen['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
         || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
     $cFehler = 'Der Volltextindex ist nicht vorhanden! ' .

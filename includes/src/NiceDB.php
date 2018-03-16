@@ -1446,7 +1446,7 @@ class NiceDB implements Serializable
      */
     protected function isValidEntityName(string $name): bool
     {
-        return preg_match('/^[a-z_]+$/i', $name) === 1;
+        return preg_match('/^[a-z_0-9]+$/i', $name) === 1;
     }
 
     /**

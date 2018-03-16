@@ -5053,9 +5053,17 @@ function getTokenInput()
  */
 function validateToken()
 {
-    return isset($_SESSION['jtl_token'])
-        && (filter_input(INPUT_POST, 'jtl_token') === $_SESSION['jtl_token']
-            || filter_input(INPUT_GET, 'token') === $_SESSION['jtl_token']);
+    if (!isset($_SESSION['jtl_token'])) {
+        return false;
+    }
+
+    $token = $_POST['jtl_token'] ?? $_GET['token'] ?? null;
+
+    if ($token === null) {
+        return false;
+    }
+
+    return Shop::Container()->getCryptoService()->stableStringEquals($_SESSION['jtl_token'], $token);
 }
 
 /**

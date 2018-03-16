@@ -1,5 +1,5 @@
 {assign var='show_filters' value=false}
-{if $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0 || count($Suchergebnisse->Artikel->elemente) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab || $NaviFilter->nAnzahlFilter > 0}
+{if $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0 || $Suchergebnisse->GesamtanzahlArtikel >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab || $NaviFilter->nAnzahlFilter > 0}
     {assign var='show_filters' value=true}
 {/if}
 <div id="result-options" class="panel-wrap{if !$show_filters} hidden-xs{/if}">

@@ -2798,24 +2798,26 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                 $cKundeSQLWhere = " AND cLaender LIKE '%{$landIso->cISO}%'";
             }
         }
-        $cProductSpecificSQLWhere = "";
-        if ($isStandardProductShipping) {
-            $cProductSpecificSQLWhere = " AND cNurAbhaengigeVersandart = 'N' ";
-        }
-        $oVersandart = Shop::DB()->query(
+        $cProductSpecificSQLWhere = !empty($isStandardProductShipping) ? " AND cNurAbhaengigeVersandart = 'N' " : "";
+        $oVersandart = Shop::DB()->queryPrepared(
             "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized
                 FROM tversandart
                 LEFT JOIN tversandartsprache
                     ON tversandart.kVersandart = tversandartsprache.kVersandart
-                    AND tversandartsprache.cISOSprache = '" . Shop::getLanguageCode() . "'
+                    AND tversandartsprache.cISOSprache = :cLangID
                 WHERE fVersandkostenfreiAbX > 0
                     AND (cVersandklassen = '-1'
-                        OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')
+                        OR cVersandklassen RLIKE :cShippingClass)
                     AND (cKundengruppen = '-1'
-                        OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)
+                        OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
                     " . $cKundeSQLWhere . $cProductSpecificSQLWhere . "
                 ORDER BY fVersandkostenfreiAbX
-                LIMIT 1", 1
+                LIMIT 1",
+            [   'cLangID' => Shop::getLanguageCode(),
+                'cShippingClass' => $versandklassen,
+                'cGroupID' => '^([0-9 -]* )?'.$kKundengruppe. ' '
+            ],
+            NiceDB::RET_SINGLE_OBJECT
         );
         Shop::Cache()->set($cacheID, $oVersandart, [CACHING_GROUP_OPTION]);
     }

@@ -32,7 +32,7 @@ class Migration_20180202145224 extends Migration implements IMigration
             kKunde INT PRIMARY KEY ,
             cKey VARCHAR(255) UNIQUE,
             dExpires DATETIME
-          );
+          ) ENGINE=InnoDB COLLATE utf8_unicode_ci;
           CREATE INDEX tpasswordreset_cKey ON tpasswordreset(cKey);
           ALTER TABLE tkunde DROP COLUMN cResetPasswordHash;
         ");

@@ -21,6 +21,7 @@
         "psr/container": "1.0.0",
         "lstrojny/functional-php": "~1.7",
         "tightenco/collect": "~5.5.0",
+        "eloquent/pathogen": "~0.6",
         "mrclay/minify": "~3.0.0"
     },
     "require-dev": {

@@ -602,7 +602,7 @@ class Bestellung
                 // Konfigurationsartikel: mapto: 9a87wdgad
                 if ((int)$position->kKonfigitem > 0 &&
                     is_string($position->cUnique) &&
-                    strlen($position->cUnique) === 10
+                    !empty($position->cUnique)
                 ) {
                     $fPreisNetto  = 0;
                     $fPreisBrutto = 0;
@@ -615,7 +615,7 @@ class Bestellung
                             $fPreisBrutto += berechneBrutto($_pos->fPreis * $_pos->nAnzahl, $ust);
                             if ((int)$_pos->kKonfigitem === 0 &&
                                 is_string($_pos->cUnique) &&
-                                strlen($_pos->cUnique) === 10
+                                !empty($_pos->cUnique)
                             ) {
                                 $nVaterPos = $nPos;
                             }
@@ -724,7 +724,7 @@ class Bestellung
             // Wenn Konfig-Vater, alle Kinder ueberpruefen
             foreach ($this->oLieferschein_arr as &$oLieferschein) {
                 foreach ($oLieferschein->oPosition_arr as &$deliveryPosition) {
-                    if ($deliveryPosition->kKonfigitem == 0 && strlen($deliveryPosition->cUnique) > 0) {
+                    if ($deliveryPosition->kKonfigitem == 0 && !empty($deliveryPosition->cUnique)) {
                         $bAlleAusgeliefert = true;
                         foreach ($this->Positionen as $oKind) {
                             if ($oKind->cUnique === $deliveryPosition->cUnique

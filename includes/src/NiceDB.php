@@ -25,6 +25,7 @@ use Exceptions\InvalidEntityNameException;
  * @method mixed getErrorCode()
  * @method string getErrorMessage()
  * @method mixed getError()
+ * @todo validate $limit, $orderBy & $select in some methods
  */
 class NiceDB implements Serializable
 {
@@ -738,7 +739,7 @@ class NiceDB implements Serializable
         if ($keyname2 !== null) {
             $this->validateEntityName($keyname2);
         }
-        // TODO validate $select
+
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
             : 0;
@@ -839,7 +840,6 @@ class NiceDB implements Serializable
             $this->validateEntityName($key);
         }
 
-        // TODO verify $orderBy and $limit
         $keys   = is_array($keys) ? $keys : [$keys];
         $values = is_array($values) ? $values : [$values];
         $kv     = [];

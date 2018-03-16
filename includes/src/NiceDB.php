@@ -10,14 +10,14 @@ use Exceptions\InvalidEntityNameException;
  * Class NiceDB
  * Class for handling mysql DB
  *
- * @method int|object|array query(string $stmt, int $return, int|bool $echo = false, bool $bExecuteHook = false)
- * @method int|object|array queryPrepared(string $stmt, array $params, int $return, int|bool $echo = false, bool $bExecuteHook = false)
+ * @method int|object|array query(string $stmt, int $return, int | bool $echo = false, bool $bExecuteHook = false)
+ * @method int|object|array queryPrepared(string $stmt, array $params, int $return, int | bool $echo = false, bool $bExecuteHook = false)
  * @method PDOStatement|int exQuery(string $stmt)
- * @method null|object select(string $tableName, string|array $keyname, string|int|array $keyvalue, string|null $keyname1 = null, string|int $keyvalue1 = null, string|null $keyname2 = null, string|int $keyvalue2 = null, bool $echo = false, string $select = '*')
- * @method int insert(string $tableName, object $object, int|bool $echo = false, bool $bExecuteHook = false)
- * @method int delete(string $tableName, string|array $keyname, string|int|array $keyvalue, bool|int $echo = false)
- * @method int update(string $tableName, string|array $keyname, string|int|array $keyvalue, object $object, int|bool $echo = false)
- * @method array selectAll(string $tableName, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '', string $limit = '')
+ * @method null|object select(string $tableName, string | array $keyname, string | int | array $keyvalue, string | null $keyname1 = null, string | int $keyvalue1 = null, string | null $keyname2 = null, string | int $keyvalue2 = null, bool $echo = false, string $select = '*')
+ * @method int insert(string $tableName, object $object, int | bool $echo = false, bool $bExecuteHook = false)
+ * @method int delete(string $tableName, string | array $keyname, string | int | array $keyvalue, bool | int $echo = false)
+ * @method int update(string $tableName, string | array $keyname, string | int | array $keyvalue, object $object, int | bool $echo = false)
+ * @method array selectAll(string $tableName, string | array $keys, string | int | array $values, string $select = '*', string $orderBy = '', string $limit = '')
  * @method string realEscape($string)
  * @method string pdoEscape($string)
  * @method string info()
@@ -92,14 +92,14 @@ class NiceDB implements Serializable
      */
     private $transactionCount = 0;
 
-    const RET_SINGLE_OBJECT         = 1;
-    const RET_ARRAY_OF_OBJECTS      = 2;
-    const RET_AFFECTED_ROWS         = 3;
-    const RET_LAST_INSERTED_ID      = 7;
-    const RET_SINGLE_ASSOC_ARRAY    = 8;
+    const RET_SINGLE_OBJECT = 1;
+    const RET_ARRAY_OF_OBJECTS = 2;
+    const RET_AFFECTED_ROWS = 3;
+    const RET_LAST_INSERTED_ID = 7;
+    const RET_SINGLE_ASSOC_ARRAY = 8;
     const RET_ARRAY_OF_ASSOC_ARRAYS = 9;
-    const RET_QUERYSINGLE           = 10;
-    const RET_ARRAY_OF_BOTH_ARRAYS  = 11;
+    const RET_QUERYSINGLE = 10;
+    const RET_ARRAY_OF_BOTH_ARRAYS = 11;
 
     /**
      * create DB Connection with default parameters
@@ -511,6 +511,7 @@ class NiceDB implements Serializable
                     "\n\nBacktrace:" . print_r(debug_backtrace(), 1)
                 );
             }
+
             return 0;
         }
         $id = $this->pdo->lastInsertId();
@@ -564,10 +565,10 @@ class NiceDB implements Serializable
      * update table row
      *
      * @param string           $tableName - table name
-     * @param string|array     $keyname   - Name of Key which should be compared
-     * @param int|string|array $keyvalue  - Value of Key which should be compared
-     * @param object           $object    - object to update with
-     * @param int|bool         $echo      - true -> print statement
+     * @param string|array     $keyname - Name of Key which should be compared
+     * @param int|string|array $keyvalue - Value of Key which should be compared
+     * @param object           $object - object to update with
+     * @param int|bool         $echo - true -> print statement
      * @throws InvalidArgumentException
      * @throws InvalidEntityNameException
      * @return int - -1 if fails, number of affected rows if successful
@@ -633,7 +634,7 @@ class NiceDB implements Serializable
             $keynamePrepared = array_map(function ($_v) {
                 return $_v . '=?';
             }, $keyname);
-            $where = ' WHERE ' . implode(' AND ', $keynamePrepared);
+            $where           = ' WHERE ' . implode(' AND ', $keynamePrepared);
             foreach ($keyvalue as $_v) {
                 $assigns[] = $_v;
             }
@@ -692,7 +693,7 @@ class NiceDB implements Serializable
                 }
                 $where = ' WHERE ' . implode(' AND ', $combined);
             } else {
-                $where = ' WHERE ' . $keyname . '=' .  $this->pdo->quote($keyvalue);
+                $where = ' WHERE ' . $keyname . '=' . $this->pdo->quote($keyvalue);
             }
             $stmt = 'UPDATE ' . $tableName . ' SET ' . implode(',', $updates) . $where;
             $this->analyzeQuery('update', $stmt, $end - $start, $backtrace);
@@ -747,7 +748,7 @@ class NiceDB implements Serializable
         $i       = 0;
         foreach ($keys as &$_key) {
             if ($_key !== null) {
-                $_key     .= '=?';
+                $_key      .= '=?';
                 $assigns[] = $values[$i];
             } else {
                 unset($keys[$i]);
@@ -834,12 +835,8 @@ class NiceDB implements Serializable
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
         $this->validateEntityName($tableName);
-        if (is_array($keys)) {
-            foreach ($keys as $key) {
-                $this->validateEntityName($key);
-            }
-        } else {
-            $this->validateEntityName($keys);
+        foreach ((array)$keys as $key) {
+            $this->validateEntityName($key);
         }
 
         // TODO verify $orderBy and $limit
@@ -908,8 +905,14 @@ class NiceDB implements Serializable
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws InvalidArgumentException
      */
-    public function executeQueryPrepared($stmt, array $params, $return, $echo = false, $bExecuteHook = false, $fnInfo = null)
-    {
+    public function executeQueryPrepared(
+        $stmt,
+        array $params,
+        $return,
+        $echo = false,
+        $bExecuteHook = false,
+        $fnInfo = null
+    ) {
         return $this->_execute(1, $stmt, $params, $return, $echo, $bExecuteHook, $fnInfo);
     }
 
@@ -1120,7 +1123,9 @@ class NiceDB implements Serializable
     public function deleteRow($tableName, $keyname, $keyvalue, $echo = false)
     {
         $this->validateEntityName($tableName);
-        $this->validateEntityName($keyname);
+        foreach ((array)$keyname as $i) {
+            $this->validateEntityName($i);
+        }
         $start = 0;
         if ($this->debug === true || $this->collectData === true) {
             $start = microtime(true);
@@ -1141,7 +1146,7 @@ class NiceDB implements Serializable
             $keyname = array_map(function ($_v) {
                 return $_v . '=?';
             }, $keyname);
-            $where = implode(' AND ', $keyname);
+            $where   = implode(' AND ', $keyname);
             foreach ($keyvalue as $_v) {
                 $assigns[] = $_v;
             }

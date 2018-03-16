@@ -3300,13 +3300,19 @@ class Artikel
             } elseif ($oArtikelTMP->Preise->fVK[0] < $this->Preise->fVK[0]) {
                 $cAufpreisVorzeichen = '- ';
             }
+
+            if (!$kKundengruppe) {
+                $kKundengruppe = Session::CustomerGroup()->getID();
+            }
+            $discount = $this->getDiscount($kKundengruppe, $this->kArtikel);
+
             if ($oArtikelTMP->Preise->fVK[0] > $this->Preise->fVK[0]
                 || $oArtikelTMP->Preise->fVK[0] < $this->Preise->fVK[0]
             ) {
                 $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[0] =
                     $cAufpreisVorzeichen .
                     gibPreisStringLocalized(
-                        abs($oArtikelTMP->Preise->fVK[0] - $this->Preise->fVK[0]),
+                        abs($oArtikelTMP->Preise->fVK[0] - $this->Preise->fVK[0]) * ((100 - $discount) / 100),
                         $currency,
                         1,
                         2
@@ -3314,7 +3320,7 @@ class Artikel
                 $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[1] =
                     $cAufpreisVorzeichen .
                     gibPreisStringLocalized(
-                        abs($oArtikelTMP->Preise->fVK[1] - $this->Preise->fVK[1]),
+                        abs($oArtikelTMP->Preise->fVK[1] - $this->Preise->fVK[1]) * ((100 - $discount) / 100),
                         $currency,
                         1,
                         2
@@ -4205,8 +4211,7 @@ class Artikel
             foreach (get_object_vars($oArtikelTMP) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->holPreise($kKundengruppe, $this)
-                 ->rabattierePreise($kKundengruppe);
+            $this->holPreise($kKundengruppe, $this);
         }
 
         return $this;

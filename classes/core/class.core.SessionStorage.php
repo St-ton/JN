@@ -47,7 +47,9 @@ class SessionStorage
             //native php session handler
             $res = true;
         } elseif ($this->_handler instanceof SessionHandlerInterface) {
-            ini_set('session.save_handler', 'user');
+            if (version_compare(PHP_VERSION, '7.0', '<')) {
+                ini_set('session.save_handler', 'user');
+            }
             if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
                 $res = session_set_save_handler($this->_handler, true);
             } else {

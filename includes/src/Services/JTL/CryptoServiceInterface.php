@@ -36,9 +36,9 @@ interface CryptoServiceInterface
     public function randomInt($min, $max);
 
     /**
-     * @param $string1
-     * @param $string2
-     * @return mixed
+     * @param string $string1
+     * @param string $string2
+     * @return bool
      */
     public function stableStringEquals(string $string1, string $string2) : bool;
 }

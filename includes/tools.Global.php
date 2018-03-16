@@ -5059,7 +5059,7 @@ function validateToken()
 
     $token = $_POST['jtl_token'] ?? $_GET['token'] ?? null;
 
-    if($token === null) {
+    if ($token === null) {
         return false;
     }
 

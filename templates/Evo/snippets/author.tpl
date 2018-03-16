@@ -9,8 +9,8 @@
             <div class="modal-content">
                 <div class="modal-header v-wrap">
                     {if !empty($oAuthor->cAvatarImgSrc)}
-                        <img alt="{$oAuthor->cName}" src="{$oAuthor->cAvatarImgSrc}" height="80" class="img-circle" />
-                        <meta itemprop="image" content="{$imageBaseURL}{$oAuthor->cAvatarImgSrc}">
+                        <img alt="{$oAuthor->cName}" src="{$oAuthor->cAvatarImgSrcFull}" height="80" class="img-circle" />
+                        <meta itemprop="image" content="{$oAuthor->cAvatarImgSrcFull}">
                     {/if}
                     <div itemprop="name" class="top10">{$oAuthor->cName}</div>
                 </div>

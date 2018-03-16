@@ -226,7 +226,7 @@ class MediaImageRequest
      */
     public function getThumbUrl($size = null)
     {
-        return Shop::getURL() . '/' . $this->getThumb($size);
+        return Shop::getImageBaseURL() . $this->getThumb($size);
     }
 
     /**

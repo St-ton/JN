@@ -450,7 +450,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attributeFilterCollection[$attributeValue->kMerkmal]->attributeValues[] = $attributeValue;
             }
         }
-        $shopURL            = Shop::getURL() . '/';
+        $imageBaseURL       = Shop::getImageBaseURL();
         $filterURLGenerator = $this->productFilter->getFilterURL();
         foreach ($attributeFilterCollection as $i => $attributeFilter) {
             $baseSrcSmall  = strlen($attributeFilter->cMMBildPfad) > 0
@@ -473,8 +473,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setData('kMerkmal', $attributeFilter->kMerkmal)
                 ->setData('cBildpfadKlein', $baseSrcSmall)
                 ->setData('cBildpfadNormal', $baseSrcNormal)
-                ->setData('cBildURLKlein', $shopURL . $baseSrcSmall)
-                ->setData('cBildURLNormal', $shopURL . $baseSrcNormal)
+                ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
+                ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal)
                 ->setType($attributeFilter->nMehrfachauswahl === 1
                     ? AbstractFilter::FILTER_TYPE_OR
                     : AbstractFilter::FILTER_TYPE_AND

@@ -10,7 +10,7 @@
                 <div class="modal-header v-wrap">
                     {if !empty($oAuthor->cAvatarImgSrc)}
                         <img alt="{$oAuthor->cName}" src="{$oAuthor->cAvatarImgSrc}" height="80" class="img-circle" />
-                        <meta itemprop="image" content="{$ShopURL}{$oAuthor->cAvatarImgSrc}">
+                        <meta itemprop="image" content="{$imageBaseURL}{$oAuthor->cAvatarImgSrc}">
                     {/if}
                     <div itemprop="name" class="top10">{$oAuthor->cName}</div>
                 </div>
@@ -33,6 +33,6 @@
 <div itemprop="publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
     <span itemprop="name">{$meta_publisher}</span>
     <meta itemprop="url" content="{$ShopURL}">
-    <meta itemprop="logo" content="{$ShopURL}/{$ShopLogoURL}">
+    <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
 </div>
 {/block}

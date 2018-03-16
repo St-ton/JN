@@ -622,7 +622,7 @@ class ArtikelHelper
                 $artikel->Bilder[$key]->nNr = $nNr++;
             }
 
-            $artikel->cVorschaubild = $artikel->Bilder[0]->cPfadKlein;
+            $artikel->cVorschaubild = $artikel->Bilder[0]->cURLKlein;
         }
     }
 

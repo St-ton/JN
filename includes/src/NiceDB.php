@@ -1438,13 +1438,13 @@ class NiceDB implements Serializable
     }
 
     /**
-     * Verifies, that a database entity name matches the preconditions. Those preconditions are enforced, to prevent
+     * Verifies that a database entity name matches the preconditions. Those preconditions are enforced to prevent
      * SQL-Injection through not preparable sql command components.
      *
-     * @param $name
+     * @param string $name
      * @return bool
      */
-    protected function isValidEntityName($name)
+    protected function isValidEntityName(string $name): bool
     {
         return preg_match('/^[a-z_]+$/i', $name) === 1;
     }
@@ -1455,7 +1455,7 @@ class NiceDB implements Serializable
      * @param string $name
      * @throws InvalidEntityNameException
      */
-    protected function validateEntityName($name)
+    protected function validateEntityName(string $name)
     {
         if (!$this->isValidEntityName($name)) {
             throw new InvalidEntityNameException($name);
@@ -1463,7 +1463,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * This method shall prevent SQL-Injection through the member names of objects, because they are not preparable.
+     * This method shall prevent SQL-Injection through the member names of objects because they are not preparable.
      *
      * @param object $obj
      * @throws InvalidEntityNameException

@@ -65,7 +65,7 @@
         {foreach name=unterkats from=$oUnterKategorien_arr item=Unterkat}
             <div class="col-xs-6 col-md-4 col-lg-3">
                 <div class="thumbnail">
-                    <a href="{$Unterkat->cURL}">
+                    <a href="{$Unterkat->cURLFull}">
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                             <img src="{$Unterkat->cBildURLFull}" alt="{$Unterkat->cName}"/>
                         {/if}

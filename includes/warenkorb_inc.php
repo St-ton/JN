@@ -25,7 +25,7 @@ function loescheWarenkorbPositionen($nPos_arr)
         }
         $cUnique = $cart->PositionenArr[$nPos]->cUnique;
         // Kindartikel?
-        if (strlen($cUnique) > 0 && $cart->PositionenArr[$nPos]->kKonfigitem > 0) {
+        if (!empty($cUnique) && $cart->PositionenArr[$nPos]->kKonfigitem > 0) {
             return;
         }
         executeHook(HOOK_WARENKORB_LOESCHE_POSITION, [
@@ -44,7 +44,7 @@ function loescheWarenkorbPositionen($nPos_arr)
     $cart->PositionenArr = array_merge($cart->PositionenArr);
     foreach ($cUnique_arr as $cUnique) {
         // Kindartikel löschen
-        if (strlen($cUnique) > 0) {
+        if (!empty($cUnique)) {
             $positionCount = count($cart->PositionenArr);
             for ($i = 0; $i < $positionCount; $i++) {
                 if (isset($cart->PositionenArr[$i]->cUnique)

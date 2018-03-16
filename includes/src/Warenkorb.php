@@ -569,7 +569,7 @@ class Warenkorb
             // Konfigurationsartikel: mapto: 9a87wdgad
             if ((int)$NeuePosition->kKonfigitem > 0
                 && is_string($NeuePosition->cUnique)
-                && strlen($NeuePosition->cUnique) === 10
+                && !empty($NeuePosition->cUnique)
             ) {
                 $fPreisNetto  = 0;
                 $fPreisBrutto = 0;
@@ -585,7 +585,7 @@ class Warenkorb
 
                         if ((int)$oPosition->kKonfigitem === 0
                             && is_string($oPosition->cUnique)
-                            && strlen($oPosition->cUnique) === 10
+                            && !empty($oPosition->cUnique)
                         ) {
                             $nVaterPos = $nPos;
                         }

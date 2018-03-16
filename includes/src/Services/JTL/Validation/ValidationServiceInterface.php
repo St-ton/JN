@@ -16,14 +16,14 @@ interface ValidationServiceInterface
      * @param string $name
      * @return RuleSet
      */
-    public function getRuleSet($name);
+    public function getRuleSet(string $name);
 
     /**
      * @param string  $name
      * @param RuleSet $ruleSet
      * @return void
      */
-    public function setRuleSet($name, RuleSet $ruleSet);
+    public function setRuleSet(string $name, RuleSet $ruleSet);
 
     /**
      * @param mixed          $value
@@ -36,66 +36,66 @@ interface ValidationServiceInterface
      * @param string $name
      * @return bool
      */
-    public function hasGet($name);
+    public function hasGet(string $name): bool;
 
     /**
      * @param string $name
      * @return bool
      */
-    public function hasPost($name);
+    public function hasPost(string $name): bool;
 
     /**
      * @param string $name
      * @return bool
      */
-    public function hasCookie($name);
+    public function hasCookie(string $name): bool;
 
     /**
      * @param string $name
      * @return bool
      */
-    public function hasGPC($name);
+    public function hasGPC(string $name): bool;
 
     /**
      * @param string $name
      * @return bool
      */
-    public function hasGP($name);
+    public function hasGP(string $name): bool;
 
     /**
      * @param string         $name
      * @param string|RuleSet $ruleSet
      * @return ValidationResultInterface
      */
-    public function validateGet($name, $ruleSet);
+    public function validateGet(string $name, $ruleSet): ValidationResultInterface;
 
     /**
      * @param string         $name
      * @param string|RuleSet $ruleSet
      * @return ValidationResultInterface
      */
-    public function validatePost($name, $ruleSet);
+    public function validatePost(string $name, $ruleSet): ValidationResultInterface;
 
     /**
      * @param string         $name
      * @param string|RuleSet $ruleSet
      * @return ValidationResultInterface
      */
-    public function validateCookie($name, $ruleSet);
+    public function validateCookie(string $name, $ruleSet): ValidationResultInterface;
 
     /**
      * @param string         $name
      * @param string|RuleSet $ruleSet
      * @return ValidationResultInterface
      */
-    public function validateGPC($name, $ruleSet);
+    public function validateGPC(string $name, $ruleSet): ValidationResultInterface;
 
     /**
      * @param string         $name
      * @param string|RuleSet $ruleSet
      * @return ValidationResultInterface
      */
-    public function validateGP($name, $ruleSet);
+    public function validateGP(string $name, $ruleSet): ValidationResultInterface;
 
 
     /**
@@ -103,24 +103,24 @@ interface ValidationServiceInterface
      * @param array        $rulesConfig
      * @return SetValidationResultInterface
      */
-    public function validateSet($set, $rulesConfig);
+    public function validateSet($set, $rulesConfig): SetValidationResultInterface;
 
 
     /**
      * @param array $rulesConfig
      * @return SetValidationResultInterface
      */
-    public function validateFullGet($rulesConfig);
+    public function validateFullGet(array $rulesConfig): SetValidationResultInterface;
 
     /**
      * @param array $rulesConfig
      * @return SetValidationResultInterface
      */
-    public function validateFullPost($rulesConfig);
+    public function validateFullPost(array $rulesConfig): SetValidationResultInterface;
 
     /**
      * @param array $rulesConfig
      * @return SetValidationResultInterface
      */
-    public function validateFullCookie($rulesConfig);
+    public function validateFullCookie(array $rulesConfig): SetValidationResultInterface;
 }

@@ -6,7 +6,10 @@
 
 namespace Services\JTL\Validation;
 
-
+/**
+ * Class ValidationService
+ * @package Services\JTL\Validation
+ */
 class ValidationService implements ValidationServiceInterface
 {
     protected $ruleSets = [];
@@ -17,7 +20,13 @@ class ValidationService implements ValidationServiceInterface
     protected $post;
     protected $cookie;
 
-    public function __construct($get, $post, $cookie)
+    /**
+     * ValidationService constructor.
+     * @param array $get
+     * @param array $post
+     * @param array $cookie
+     */
+    public function __construct(array $get, array $post, array $cookie)
     {
         $this->get    = $get;
         $this->post   = $post;
@@ -27,7 +36,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function getRuleSet($name)
+    public function getRuleSet(string $name)
     {
         return $this->ruleSets[$name];
     }
@@ -35,7 +44,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function setRuleSet($name, RuleSet $ruleSet)
+    public function setRuleSet(string $name, RuleSet $ruleSet)
     {
         $this->ruleSets[$name] = $ruleSet;
     }
@@ -76,7 +85,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function hasGet($name)
+    public function hasGet(string $name): bool
     {
         return isset($this->get[$name]);
     }
@@ -84,7 +93,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function hasPost($name)
+    public function hasPost(string $name): bool
     {
         return isset($this->post[$name]);
     }
@@ -92,7 +101,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function hasCookie($name)
+    public function hasCookie(string $name): bool
     {
         return isset($this->cookie[$name]);
     }
@@ -100,7 +109,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function hasGPC($name)
+    public function hasGPC(string $name): bool
     {
         return $this->hasGP($name) || $this->hasCookie($name);
     }
@@ -108,7 +117,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function hasGP($name)
+    public function hasGP(string $name): bool
     {
         return $this->hasGet($name) || $this->hasPost($name);
     }
@@ -116,7 +125,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function validateGet($name, $ruleSet)
+    public function validateGet(string $name, $ruleSet): ValidationResultInterface
     {
         if ($this->hasGet($name)) {
             return $this->validate($this->get[$name], $ruleSet);
@@ -128,7 +137,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function validatePost($name, $ruleSet)
+    public function validatePost(string $name, $ruleSet): ValidationResultInterface
     {
         if ($this->hasPost($name)) {
             return $this->validate($this->post[$name], $ruleSet);
@@ -140,7 +149,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function validateCookie($name, $ruleSet)
+    public function validateCookie(string $name, $ruleSet): ValidationResultInterface
     {
         if ($this->hasCookie($name)) {
             return $this->validate($this->cookie[$name], $ruleSet);
@@ -152,7 +161,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function validateGPC($name, $ruleSet)
+    public function validateGPC(string $name, $ruleSet): ValidationResultInterface
     {
         if ($this->hasGet($name)) {
             return $this->validateGet($name, $ruleSet);
@@ -168,7 +177,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function validateGP($name, $ruleSet)
+    public function validateGP(string $name, $ruleSet): ValidationResultInterface
     {
         if ($this->hasGet($name)) {
             return $this->validateGet($name, $ruleSet);
@@ -183,7 +192,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function validateSet($set, $rulesConfig)
+    public function validateSet($set, $rulesConfig): SetValidationResultInterface
     {
         $keyDiff = array_diff(array_keys($set), array_keys($rulesConfig));
         if (!empty($keyDiff)) {
@@ -208,7 +217,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function validateFullGet($rulesConfig)
+    public function validateFullGet(array $rulesConfig): SetValidationResultInterface
     {
         return $this->validateSet($this->get, $rulesConfig);
     }
@@ -216,7 +225,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function validateFullPost($rulesConfig)
+    public function validateFullPost(array $rulesConfig): SetValidationResultInterface
     {
         return $this->validateSet($this->post, $rulesConfig);
     }
@@ -224,7 +233,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function validateFullCookie($rulesConfig)
+    public function validateFullCookie(array $rulesConfig): SetValidationResultInterface
     {
         return $this->validateSet($this->cookie, $rulesConfig);
     }

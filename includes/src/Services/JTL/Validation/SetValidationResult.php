@@ -86,6 +86,4 @@ class SetValidationResult implements SetValidationResultInterface
 
         return true;
     }
-
-
 }

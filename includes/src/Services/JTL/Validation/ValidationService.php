@@ -118,7 +118,7 @@ class ValidationService implements ValidationServiceInterface
      */
     public function validateGet($name, $ruleSet)
     {
-        if($this->hasGet($name)) {
+        if ($this->hasGet($name)) {
             return $this->validate($this->get[$name], $ruleSet);
         } else {
             return $this->createMissingValueResult();
@@ -130,7 +130,7 @@ class ValidationService implements ValidationServiceInterface
      */
     public function validatePost($name, $ruleSet)
     {
-        if($this->hasPost($name)) {
+        if ($this->hasPost($name)) {
             return $this->validate($this->post[$name], $ruleSet);
         } else {
             return $this->createMissingValueResult();
@@ -142,7 +142,7 @@ class ValidationService implements ValidationServiceInterface
      */
     public function validateCookie($name, $ruleSet)
     {
-        if($this->hasCookie($name)) {
+        if ($this->hasCookie($name)) {
             return $this->validate($this->cookie[$name], $ruleSet);
         } else {
             return $this->createMissingValueResult();
@@ -234,6 +234,7 @@ class ValidationService implements ValidationServiceInterface
         $result = new ValidationResult(null);
         $result->setValue(null);
         $result->addRuleResult(new RuleResult(false, 'missing value', null));
+
         return $result;
     }
 }

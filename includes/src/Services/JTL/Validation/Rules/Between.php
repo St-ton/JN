@@ -39,7 +39,7 @@ class Between implements RuleInterface
      */
     public function validate($value)
     {
-        if($value < $this->lower) {
+        if ($value < $this->lower) {
             return new RuleResult(false, 'value too low', $value);
         } elseif ($value > $this->upper) {
             return new RuleResult(false, 'value too high', $value);

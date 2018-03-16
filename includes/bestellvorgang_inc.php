@@ -1627,7 +1627,7 @@ function gibAktiveZahlungsart($oZahlungsarten_arr)
     } elseif (!empty($_SESSION['AktiveZahlungsart']) && is_array($oZahlungsarten_arr) && count($oZahlungsarten_arr) > 0) {
         $active = (int)$_SESSION['AktiveZahlungsart'];
         if (array_reduce($oZahlungsarten_arr, function ($carry, $item) use ($active) {
-            return (int)$item->kZahlungsart == $active ? (int)$item->kZahlungsart : $carry;
+            return (int)$item->kZahlungsart === $active ? (int)$item->kZahlungsart : $carry;
         }, 0) !== (int)$_SESSION['AktiveZahlungsart']) {
             $_SESSION['AktiveZahlungsart'] = $oZahlungsarten_arr[0]->kZahlungsart;
         }

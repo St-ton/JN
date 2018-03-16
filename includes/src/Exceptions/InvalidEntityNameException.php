@@ -4,10 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Exceptions;
+
 /**
  * Class InvalidEntityNameException
  */
-class InvalidEntityNameException extends Exception
+class InvalidEntityNameException extends \Exception
 {
     /**
      * @var string

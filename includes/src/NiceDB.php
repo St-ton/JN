@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Exceptions\InvalidEntityNameException;
+
 /**
  * Class NiceDB
  * Class for handling mysql DB
@@ -179,6 +181,7 @@ class NiceDB implements Serializable
      * @param null|string $DBpass
      * @param null|string $DBdatabase
      * @return NiceDB
+     * @throws Exception
      */
     public static function getInstance($DBHost = null, $DBUser = null, $DBpass = null, $DBdatabase = null)
     {
@@ -711,6 +714,7 @@ class NiceDB implements Serializable
      * @param bool             $echo - true -> print statement
      * @param string           $select - the key to select
      * @return null|object - null if fails, resultObject if successful
+     * @throws InvalidEntityNameException
      */
     public function selectSingleRow(
         $tableName,
@@ -825,6 +829,7 @@ class NiceDB implements Serializable
      * @param string       $limit
      * @return array
      * @throws InvalidArgumentException
+     * @throws InvalidEntityNameException
      */
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
@@ -1110,6 +1115,7 @@ class NiceDB implements Serializable
      * @param string|int|array $keyvalue - Value of Key which should be compared
      * @param bool|int         $echo - true -> print statement
      * @return int - -1 if fails, #affectedRows if successful
+     * @throws InvalidEntityNameException
      */
     public function deleteRow($tableName, $keyname, $keyvalue, $echo = false)
     {

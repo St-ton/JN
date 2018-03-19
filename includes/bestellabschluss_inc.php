@@ -597,8 +597,8 @@ function aktualisiereXselling($kArtikel, $kZielArtikel)
     if (isset($obj->nAnzahl) && $obj->nAnzahl > 0) {
         Shop::DB()->query(
             "UPDATE txsellkauf
-              SET nAnzahl = nAnzahl + 1 
-              WHERE kArtikel = " . $kArtikel . " 
+              SET nAnzahl = nAnzahl + 1
+              WHERE kArtikel = " . $kArtikel . "
                 AND kXSellArtikel = " . $kZielArtikel, 4
         );
     } else {
@@ -644,7 +644,7 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
             } else {
                 Shop::DB()->query(
                     "UPDATE tartikel
-                        SET fLagerbestand = IF (fLagerbestand >= " . ($nAnzahl * $Artikel->fPackeinheit) . ", 
+                        SET fLagerbestand = IF (fLagerbestand >= " . ($nAnzahl * $Artikel->fPackeinheit) . ",
                         (fLagerbestand - " . ($nAnzahl * $Artikel->fPackeinheit) . "), fLagerbestand)
                         WHERE kArtikel = " . (int)$Artikel->kArtikel, 4
                 );
@@ -871,7 +871,7 @@ function KuponVerwendungen($oBestellung)
         $KuponKunde->nVerwendungen = 1;
         $KuponKundeBisher          = Shop::DB()->query(
             "SELECT SUM(nVerwendungen) AS nVerwendungen
-                FROM tkuponkunde 
+                FROM tkuponkunde
                 WHERE cMail = '{$KuponKunde->cMail}'", 1
         );
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
@@ -1285,7 +1285,7 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     $_upd              = new stdClass();
     $_upd->kKunde      = (int)$_SESSION['Warenkorb']->kKunde;
     $_upd->kBestellung = (int)$bestellung->kBestellung;
-    Shop::DB()->update('tbesucher', 'cIP', gibIP(), $_upd);
+    Shop::DB()->update('tbesucher', 'kKunde', $_upd->kKunde, $_upd);
     //mail versenden
     $obj->tkunde      = $_SESSION['Kunde'];
     $obj->tbestellung = $bestellung;

@@ -4257,16 +4257,20 @@ function aktiviereZahlungsart($oZahlungsart)
  */
 function archiviereBesucher()
 {
-    Shop::DB()->query(
+    $iInterval = 3;
+    Shop::DB()->queryPrepared(
         "INSERT INTO tbesucherarchiv
             (kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser,
               cAusstiegsseite, nBesuchsdauer, kBesucherBot, dZeit)
             SELECT kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser, cAusstiegsseite,
             (UNIX_TIMESTAMP(dLetzteAktivitaet) - UNIX_TIMESTAMP(dZeit)) AS nBesuchsdauer, kBesucherBot, dZeit
               FROM tbesucher
-              WHERE dLetzteAktivitaet <= date_sub(now(),INTERVAL 3 HOUR)", 4
-    );
-    Shop::DB()->query("DELETE FROM tbesucher WHERE dLetzteAktivitaet <= date_sub(now(),INTERVAL 3 HOUR)", 4);
+              WHERE dLetzteAktivitaet <= date_sub(now(), INTERVAL :interval HOUR)",
+    [ 'interval' => $iInterval ],
+    Shop::DB()::RET_AFFECTED_ROWS);
+    Shop::DB()->queryPrepared("DELETE FROM tbesucher WHERE dLetzteAktivitaet <= date_sub(now(), INTERVAL :interval HOUR)",
+    [ 'interval' => $iInterval ],
+    Shop::DB()::RET_AFFECTED_ROWS);
 }
 
 /**

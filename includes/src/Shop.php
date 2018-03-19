@@ -1741,16 +1741,16 @@ final class Shop
         });
 
         $container->setSingleton('BackendAuthLogger', function (Container $container) {
-            $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? 0;
-            $loggingConf = (int)$loggingConf;
+            $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
             $handlers    = [];
-            if ($loggingConf === 1 || $loggingConf === 3) {
-                $handlers[] = (new NiceDBHandler(\Shop::DB(), Logger::INFO))
-                    ->setFormatter(new LineFormatter("%message%\n", null, false, true));
-            }
-            if ($loggingConf === 2 || $loggingConf === 3) {
-                $handlers[] = (new StreamHandler(PFAD_LOGFILES . 'auth.log', Logger::INFO))
-                    ->setFormatter(new LineFormatter(null, null, false, true));
+            foreach ($loggingConf as $value) {
+                if ($value === AdminLoginConfig::CONFIG_DB) {
+                    $handlers[] = (new NiceDBHandler(\Shop::DB(), Logger::INFO))
+                        ->setFormatter(new LineFormatter('%message%', null, false, true));
+                } elseif ($value === AdminLoginConfig::CONFIG_FILE) {
+                    $handlers[] = (new StreamHandler(PFAD_LOGFILES . 'auth.log', Logger::INFO))
+                        ->setFormatter(new LineFormatter(null, null, false, true));
+                }
             }
 
             return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);

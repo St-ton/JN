@@ -15,7 +15,7 @@ class AdminLoginStatusMessageMapper
      * @param int $code
      * @return string
      */
-    public function generate(int $code) : string
+    public function map(int $code) : string
     {
         switch ($code) {
             case \AdminLoginStatus::LOGIN_OK:

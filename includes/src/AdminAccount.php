@@ -158,7 +158,7 @@ class AdminAccount
 
         $this->authLogger->log(
             $this->levelMapper->map($code),
-            $this->messageMapper->generate($code),
+            $this->messageMapper->map($code),
             $log->asArray()
         );
 

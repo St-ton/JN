@@ -22,15 +22,13 @@ class Migration_20180319103900 extends Migration implements IMigration
             '1',
             CONF_GLOBAL,
             'Adminloginversuche loggen?',
-            'selectbox',
+            'listbox',
             1503,
             (object) [
                 'cBeschreibung' => 'Sollen Backend-Loginversuche geloggt werden?',
                 'inputOptions'  => [
-                    '0' => 'Nein',
-                    '1' => 'Ja, in Datenbank',
-                    '2' => 'Ja, in Textdatei',
-                    '3' => 'Ja, in Datenbank und Textdatei'
+                    AdminLoginConfig::CONFIG_DB   => 'in Datenbank',
+                    AdminLoginConfig::CONFIG_FILE => 'in Textdatei'
                 ]
             ]
         );

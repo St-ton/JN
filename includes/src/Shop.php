@@ -1732,21 +1732,28 @@ final class Shop
         $container         = new \Services\Container();
         static::$container = $container;
 
-        $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function(){
+        $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function () {
             return new \Services\JTL\CryptoService();
         });
 
-        $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function(Container $container){
+        $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function (Container $container) {
             return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
         });
 
         $container->setSingleton('AuthLogger', function (Container $container) {
-            $niceDbHandler = (new NiceDBHandler(\Shop::DB(), Logger::INFO))
-                ->setFormatter(new LineFormatter("%message%\n", null, false, true));
-            $fileHandler   = (new StreamHandler(PFAD_LOGFILES . 'auth.log', Logger::INFO))
-                ->setFormatter(new LineFormatter(null, null, false, true));
+            $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? 0;
+            $loggingConf = (int)$loggingConf;
+            $handlers    = [];
+            if ($loggingConf === 1 || $loggingConf === 3) {
+                $handlers[] = (new NiceDBHandler(\Shop::DB(), Logger::INFO))
+                    ->setFormatter(new LineFormatter("%message%\n", null, false, true));
+            }
+            if ($loggingConf === 2 || $loggingConf === 3) {
+                $handlers[] = (new StreamHandler(PFAD_LOGFILES . 'auth.log', Logger::INFO))
+                    ->setFormatter(new LineFormatter(null, null, false, true));
+            }
 
-            return new Logger('auth', [$niceDbHandler, $fileHandler], [new PsrLogMessageProcessor()]);
+            return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
         });
     }
 }

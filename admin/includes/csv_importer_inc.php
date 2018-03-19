@@ -21,7 +21,7 @@
  *      2 = insert only non-existing
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  */
-function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
+function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
 {
     if (validateToken() && verifyGPDataString('importcsv') === $importerId) {
         if (isset($_FILES['csvfile']['type']) &&
@@ -50,7 +50,7 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
             }
 
             if ($importType === 0 && is_string($target)) {
-                Shop::DB()->delete($target, [], []);
+                Shop::DB()->query("TRUNCATE $target", NiceDB::RET_AFFECTED_ROWS);
             }
 
             while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {
@@ -62,7 +62,7 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
                 }
 
                 if (is_callable($target)) {
-                    $res = $target($obj);
+                    $res = $target($obj, $importType);
 
                     if ($res === false) {
                         ++$nErrors;

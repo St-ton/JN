@@ -325,7 +325,7 @@ class Status
         $conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
 
         return isset($conf['artikeluebersicht']['suche_fulltext'])
-            && $conf['artikeluebersicht']['suche_fulltext'] === 'Y'
+            && $conf['artikeluebersicht']['suche_fulltext'] !== 'N'
             && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
                 || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1));
     }
@@ -339,7 +339,6 @@ class Status
         // get installed plugins from DB
         $oPluginsDB = Shop::DB()->query('SELECT `cVerzeichnis`, `nVersion` FROM `tplugin`', 2);
         if (!is_array($oPluginsDB) || 1 > count($oPluginsDB)) {
-
             return false; // there are no plugins installed
         }
         $vPluginsDB = [];

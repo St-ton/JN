@@ -43,7 +43,7 @@ if ($link->nLinkart === LINKTYP_STARTSEITE) {
 } elseif (strpos($requestURL, '.php') === false) {
     $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
 }
-$sprachURL = isset($link->languageURLs) ? $link->languageURLs : baueSprachURLS($link, URLART_SEITE);
+$sprachURL = $link->languageURLs ?? baueSprachURLS($link, URLART_SEITE);
 //hole aktuelle Kategorie, falls eine gesetzt
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
@@ -119,7 +119,7 @@ if (Shop::getPageType() === PAGE_404) {
         $AktuelleSeite,
         0,
         0,
-        (isset($link->Sprache->cName) ? $link->Sprache->cName : ''),
+        $link->Sprache->cName ?? '',
         $requestURL,
         Shop::$kLink
     );
@@ -132,14 +132,12 @@ $smarty->assign('Navigation', $Navigation)
        ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
        ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
 
-$cMetaTitle       = isset($link->Sprache->cMetaTitle) ? $link->Sprache->cMetaTitle : null;
-$cMetaDescription = isset($link->Sprache->cMetaDescription) ? $link->Sprache->cMetaDescription : null;
-$cMetaKeywords    = isset($link->Sprache->cMetaKeywords) ? $link->Sprache->cMetaKeywords : null;
+$cMetaTitle       = $link->Sprache->cMetaTitle ?? null;
+$cMetaDescription = $link->Sprache->cMetaDescription ?? null;
+$cMetaKeywords    = $link->Sprache->cMetaKeywords ?? null;
 if (empty($cMetaTitle) || empty($cMetaDescription) || empty($cMetaKeywords)) {
     $kSprache            = Shop::getLanguage();
-    $oGlobaleMetaAngaben = isset($oGlobaleMetaAngabenAssoc_arr[$kSprache])
-        ? $oGlobaleMetaAngabenAssoc_arr[$kSprache]
-        : null;
+    $oGlobaleMetaAngaben = $oGlobaleMetaAngabenAssoc_arr[$kSprache] ?? null;
 
     if (is_object($oGlobaleMetaAngaben)) {
         if (empty($cMetaTitle)) {

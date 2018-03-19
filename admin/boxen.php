@@ -34,7 +34,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
         case 'new':
             $kBox       = $_REQUEST['item'];
             $ePosition  = $_REQUEST['position'];
-            $kContainer = (isset($_REQUEST['container']) ? $_REQUEST['container'] : 0);
+            $kContainer = $_REQUEST['container'] ?? 0;
             if (is_numeric($kBox)) {
                 $kBox = (int)$kBox;
                 if ($kBox === 0) {
@@ -127,14 +127,14 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
         case 'resort':
             $nPage     = (int)$_REQUEST['page'];
             $ePosition = $_REQUEST['position'];
-            $box_arr   = isset($_REQUEST['box']) ? $_REQUEST['box'] : null;
-            $sort_arr  = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : null;
-            $aktiv_arr = isset($_REQUEST['aktiv']) ? $_REQUEST['aktiv'] : [];
+            $box_arr   = $_REQUEST['box'] ?? null;
+            $sort_arr  = $_REQUEST['sort'] ?? null;
+            $aktiv_arr = $_REQUEST['aktiv'] ?? [];
             $boxCount  = count($box_arr);
             foreach ($box_arr as $i => $kBox) {
                 $idx = 'box-filter-' . $kBox;
                 $oBoxen->sortBox($kBox, $nPage, $sort_arr[$i], in_array($kBox, $aktiv_arr));
-                $oBoxen->filterBoxVisibility((int)$kBox, $nPage, isset($_POST[$idx]) ? $_POST[$idx] : '');
+                $oBoxen->filterBoxVisibility((int)$kBox, $nPage, $_POST[$idx] ?? '');
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
             if ($ePosition !== 'left' || $nPage > 0) {
@@ -178,10 +178,10 @@ $oBoxenContainer = Template::getInstance()->getBoxLayoutXML();
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('bBoxenAnzeigen', $oBoxen->holeBoxAnzeige($nPage))
-       ->assign('oBoxenLeft_arr', isset($oBoxen_arr['left']) ? $oBoxen_arr['left'] : null)
-       ->assign('oBoxenTop_arr', isset($oBoxen_arr['top'])? $oBoxen_arr['top'] : null)
-       ->assign('oBoxenBottom_arr', isset($oBoxen_arr['bottom']) ? $oBoxen_arr['bottom'] : null)
-       ->assign('oBoxenRight_arr', isset($oBoxen_arr['right']) ? $oBoxen_arr['right'] : null)
+       ->assign('oBoxenLeft_arr', $oBoxen_arr['left'] ?? null)
+       ->assign('oBoxenTop_arr', $oBoxen_arr['top'] ?? null)
+       ->assign('oBoxenBottom_arr', $oBoxen_arr['bottom'] ?? null)
+       ->assign('oBoxenRight_arr', $oBoxen_arr['right'] ?? null)
        ->assign('oContainerTop_arr', $oBoxen->holeContainer('top'))
        ->assign('oContainerBottom_arr', $oBoxen->holeContainer('bottom'))
        ->assign('oSprachen_arr', Shop::Lang()->getAvailable())

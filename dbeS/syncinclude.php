@@ -403,7 +403,7 @@ function mappe(&$obj, $xml, $map)
 
     if (!is_assoc($map)) {
         foreach ($map as $key) {
-            $obj->$key = isset($xml[$key]) ? $xml[$key] : null;
+            $obj->$key = $xml[$key] ?? null;
         }
     } else {
         foreach ($map as $key => $value) {

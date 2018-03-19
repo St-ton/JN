@@ -79,7 +79,7 @@ class ImageMap implements IExtensionPoint
 
         $oImageMap->oArea_arr = Shop::DB()->selectAll('timagemaparea', 'kImageMap', (int)$oImageMap->kImageMap);
         $cBildPfad            = PFAD_ROOT . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
-        $oImageMap->cBildPfad = Shop::getURL() . '/' . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
+        $oImageMap->cBildPfad = Shop::getImageBaseURL() . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
         $cParse_arr           = parse_url($oImageMap->cBildPfad);
         $oImageMap->cBild     = substr($cParse_arr['path'], strrpos($cParse_arr['path'], '/') + 1);
         list($width, $height) = getimagesize($cBildPfad);

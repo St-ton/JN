@@ -238,13 +238,11 @@ if ($step === 'einstellen') {
                     'cName',
                     $Conf[$i]->cWertName
                 );
-                $Conf[$i]->gesetzterWert = isset($setValue->cWert)
-                    ? $setValue->cWert
-                    : null;
+                $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
             }
         }
 
-        $kundengruppen = Shop::DB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2);
+        $kundengruppen = Shop::DB()->query('SELECT * FROM tkundengruppe ORDER BY cName', 2);
         $smarty->assign('Conf', $Conf)
                ->assign('zahlungsart', $zahlungsart)
                ->assign('kundengruppen', $kundengruppen)

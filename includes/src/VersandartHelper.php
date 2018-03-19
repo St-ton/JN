@@ -44,7 +44,7 @@ class VersandartHelper
      */
     public static function getInstance()
     {
-        return self::$_instance === null ? new self() : self::$_instance;
+        return self::$_instance ?? new self();
     }
 
     /**
@@ -52,9 +52,7 @@ class VersandartHelper
      */
     public function getShippingMethods()
     {
-        return $this->shippingMethods === null
-            ? Shop::DB()->query("SELECT * FROM tversandart", 2) 
-            : $this->shippingMethods;
+        return $this->shippingMethods ?? Shop::DB()->query('SELECT * FROM tversandart', NiceDB::RET_ARRAY_OF_OBJECTS);
     }
 
     /**
@@ -172,15 +170,22 @@ class VersandartHelper
         $cNurAbhaengigeVersandart = self::normalerArtikelversand($lieferland) === false
             ? 'Y'
             : 'N';
-        $methods                  = Shop::DB()->query(
+        $methods                  = Shop::DB()->queryPrepared(
             "SELECT * FROM tversandart
-                WHERE cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
-                    AND cLaender LIKE '%" . addcslashes($cISO, '%_') . "%'
+                WHERE cNurAbhaengigeVersandart = :depOnly
+                    AND cLaender LIKE :iso
                     AND (cVersandklassen = '-1'
-                    OR cVersandklassen RLIKE '^([0-9 -]* )?" . addcslashes($versandklassen, '%_') . " ')
+                    OR cVersandklassen RLIKE :sClasses)
                     AND (cKundengruppen = '-1'
-                    OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)
-                ORDER BY nSort", 2
+                    OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
+                ORDER BY nSort",
+            [
+                'iso'      => '%' . $cISO . '%',
+                'cGroupID' => $kKundengruppe,
+                'sClasses' => '^([0-9 -]* )?' . $versandklassen . ' ',
+                'depOnly'  => $cNurAbhaengigeVersandart
+            ],
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
         $netPricesActive          = Session::CustomerGroup()->isMerchant();
 
@@ -245,9 +250,7 @@ class VersandartHelper
                 }
             } else {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
-                $shippingMethod->cPreisLocalized = gibPreisStringLocalized($shippingCosts) . ($vatNote !== null
-                        ? $vatNote
-                        : '');
+                $shippingMethod->cPreisLocalized = gibPreisStringLocalized($shippingCosts) . ($vatNote ?? '');
                 if ($hasSpecificShippingcosts === true) {
                     $shippingMethod->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK(
                         $lieferland,
@@ -352,7 +355,7 @@ class VersandartHelper
         if (!is_array($oArtikel_arr) || count($oArtikel_arr) === 0) {
             return null;
         }
-        $cLandISO = isset($_SESSION['cLieferlandISO']) ? $_SESSION['cLieferlandISO'] : false;
+        $cLandISO = $_SESSION['cLieferlandISO'] ?? false;
         $cart     = Session::Cart();
         if (!$cLandISO) {
             //Falls kein Land in tfirma da

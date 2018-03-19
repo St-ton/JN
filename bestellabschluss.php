@@ -117,7 +117,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Firma', Shop::DB()->query("SELECT * FROM tfirma", 1))
        ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Bestellung', $bestellung)
-       ->assign('Kunde', isset($_SESSION['Kunde']) ? $_SESSION['Kunde'] : null)
+       ->assign('Kunde', $_SESSION['Kunde'] ?? null)
        ->assign('bOrderConf', true)
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);

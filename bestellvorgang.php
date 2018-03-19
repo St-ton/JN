@@ -119,41 +119,22 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     }
 
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
-        $land          = isset($_SESSION['Lieferadresse']->cLand)
-            ? $_SESSION['Lieferadresse']->cLand
-            : $_SESSION['Kunde']->cLand;
-        $plz           = isset($_SESSION['Lieferadresse']->cPLZ)
-            ? $_SESSION['Lieferadresse']->cPLZ
-            : $_SESSION['Kunde']->cPLZ;
+        $land          = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
+        $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
         $kKundengruppe = Session::CustomerGroup()->getID();
 
-        $oGuenstigsteVersandart = null;
-        $oVersandart_arr        = VersandartHelper::getPossibleShippingMethods(
+        $oVersandart_arr  = VersandartHelper::getPossibleShippingMethods(
             $land,
             $plz,
             VersandartHelper::getShippingClasses($cart),
             $kKundengruppe
         );
-        $activeVersandart       = gibAktiveVersandart($oVersandart_arr);
+        $activeVersandart = gibAktiveVersandart($oVersandart_arr);
 
-        if (empty($activeVersandart)) {
-            foreach ($oVersandart_arr as $oVersandart) {
-                if ($oGuenstigsteVersandart === null || $oVersandart->fEndpreis < $oGuenstigsteVersandart->fEndpreis) {
-                    $oGuenstigsteVersandart = $oVersandart;
-                }
-            }
-            if ($oGuenstigsteVersandart !== null) {
-                pruefeVersandartWahl(
-                    $oGuenstigsteVersandart->kVersandart,
-                    ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
-                );
-            }
-        } else {
-            pruefeVersandartWahl(
-                $activeVersandart,
-                ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
-            );
-        }
+        pruefeVersandartWahl(
+            $activeVersandart,
+            ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
+        );
     }
 }
 // Download-Artikel vorhanden?
@@ -260,7 +241,7 @@ Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('bestellschritt', gibBestellschritt($step))
-    ->assign('requestURL', (isset($requestURL) ? $requestURL : null))
+    ->assign('requestURL', $requestURL ?? null)
     ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
     ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 

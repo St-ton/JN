@@ -98,7 +98,7 @@ class CustomerFields
      */
     public function getCustomerField($kCustomerField)
     {
-        return array_key_exists($kCustomerField, $this->customerFields) ? $this->customerFields[$kCustomerField] : null;
+        return $this->customerFields[$kCustomerField] ?? null;
     }
 
     /**
@@ -190,7 +190,7 @@ class CustomerFields
     public function save($customerField, $customerFieldValues = null)
     {
         $this->prepare($customerField);
-        $key = isset($customerField->kKundenfeld) ? $customerField->kKundenfeld : null;
+        $key = $customerField->kKundenfeld ?? null;
         $ret = false;
 
         if ($key !== null && isset($this->customerFields[$key])) {

@@ -151,7 +151,7 @@ class Image
                 'format'     => strtolower($settings['bilder_dateiformat']),
                 'scale'      => $settings['bilder_skalieren'] === 'Y',
                 'quality'    => (int)$settings['bilder_jpg_quali'],
-                'branding'   => isset($branding[self::TYPE_PRODUCT]) ? $branding[self::TYPE_PRODUCT] : null,
+                'branding'   => $branding[self::TYPE_PRODUCT] ?? null,
                 'size'       => [
                     self::SIZE_XS => [
                         'width'  => (int)$settings['bilder_artikel_mini_breite'],

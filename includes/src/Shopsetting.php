@@ -86,7 +86,7 @@ final class Shopsetting implements ArrayAccess
      */
     public static function getInstance()
     {
-        return self::$_instance === null ? new self() : self::$_instance;
+        return self::$_instance ?? new self();
     }
 
     /**
@@ -202,7 +202,7 @@ final class Shopsetting implements ArrayAccess
             }
         }
 
-        return isset($this->_container[$offset]) ? $this->_container[$offset] : null;
+        return $this->_container[$offset] ?? null;
     }
 
     /**
@@ -235,9 +235,7 @@ final class Shopsetting implements ArrayAccess
         $settings    = $this->getSettings([$section]);
         $sectionName = self::mapSettingName($section);
 
-        return isset($settings[$sectionName][$option])
-            ? $settings[$sectionName][$option]
-            : null;
+        return $settings[$sectionName][$option] ?? null;
     }
 
     /**

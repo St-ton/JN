@@ -634,9 +634,7 @@ class Kundengruppe
      */
     public function getAttribute($attributeName)
     {
-        return isset($this->Attribute[$attributeName])
-            ? $this->Attribute[$attributeName]
-            : null;
+        return $this->Attribute[$attributeName] ?? null;
     }
 
     /**

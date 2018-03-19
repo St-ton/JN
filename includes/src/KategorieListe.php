@@ -264,16 +264,13 @@ class KategorieListe
         $kSprache      = (int)$kSprache;
         $kKundengruppe = (int)$kKundengruppe;
         $categoryList  = self::getCategoryList($kKundengruppe, $kSprache);
-        $subCategories = isset($categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie])
-            ? $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie]
-            : null;
+        $subCategories = $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] ?? null;
 
         if ($subCategories !== null && is_array($subCategories)) {
             //nimm kats aus session
             foreach ($subCategories as $kUnterKategorie) {
-                $oKategorie_arr[$kUnterKategorie] = !isset($categoryList['oKategorie_arr'][$kUnterKategorie])
-                    ? new Kategorie($kUnterKategorie)
-                    : $categoryList['oKategorie_arr'][$kUnterKategorie];
+                $oKategorie_arr[$kUnterKategorie] = $categoryList['oKategorie_arr'][$kUnterKategorie]
+                    ?? new Kategorie($kUnterKategorie);
             }
         } else {
             if ($kKategorie > 0) {
@@ -310,8 +307,9 @@ class KategorieListe
             $oKategorie_arr                                                = Shop::DB()->query($categorySQL, 2);
             $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] = [];
             if (is_array($oKategorie_arr) && count($oKategorie_arr) > 0) {
-                $shopURL     = Shop::getURL();
-                $oSpracheTmp = gibStandardsprache();
+                $shopURL      = Shop::getURL();
+                $imageBaseURL = Shop::getImageBaseURL();
+                $oSpracheTmp  = gibStandardsprache();
                 foreach ($oKategorie_arr as $i => $oKategorie) {
                     // Leere Kategorien ausblenden?
                     if (!$this->nichtLeer($oKategorie->kKategorie, $kKundengruppe)) {
@@ -324,10 +322,10 @@ class KategorieListe
                     //Bildpfad setzen
                     if ($oKategorie->cPfad && file_exists(PFAD_ROOT . PFAD_KATEGORIEBILDER . $oKategorie->cPfad)) {
                         $oKategorie->cBildURL     = PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
-                        $oKategorie->cBildURLFull = $shopURL . '/' . PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
+                        $oKategorie->cBildURLFull = $imageBaseURL . PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
                     } else {
                         $oKategorie->cBildURL     = BILD_KEIN_KATEGORIEBILD_VORHANDEN;
-                        $oKategorie->cBildURLFull = $shopURL . '/' . BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+                        $oKategorie->cBildURLFull = $imageBaseURL . BILD_KEIN_KATEGORIEBILD_VORHANDEN;
                     }
                     //EXPERIMENTAL_MULTILANG_SHOP
                     if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') 

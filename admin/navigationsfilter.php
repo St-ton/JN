@@ -64,7 +64,7 @@ foreach ($oConfig_arr as $oConfig) {
         'cName',
         $oConfig->cWertName
     );
-    $oConfig->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
+    $oConfig->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
 $oPreisspannenfilter_arr = Shop::DB()->query("SELECT * FROM tpreisspannenfilter", 2);

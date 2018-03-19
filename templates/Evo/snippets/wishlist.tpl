@@ -104,8 +104,8 @@
                         {foreach name=wunschlistepos from=$CWunschliste->CWunschlistePos_arr item=CWunschlistePos}
                             <tr>
                                 <td class="img-col hidden-xs hidden-sm">
-                                    <a href="{$CWunschlistePos->Artikel->cURL}">
-                                        <img alt="{$CWunschlistePos->Artikel->cName}" src="{$CWunschlistePos->Artikel->cVorschaubild}" class="img-responsive">
+                                    <a href="{$CWunschlistePos->Artikel->cURLFull}">
+                                        <img alt="{$CWunschlistePos->Artikel->cName}" src="{$CWunschlistePos->Artikel->cVorschaubildURL}" class="img-responsive">
                                     </a>
                                 </td>
                                 <td>

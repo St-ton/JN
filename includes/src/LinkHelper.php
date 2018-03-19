@@ -63,7 +63,7 @@ class LinkHelper
      */
     public static function getInstance()
     {
-        return self::$_instance === null ? new self() : self::$_instance;
+        return self::$_instance ?? new self();
     }
 
     /**
@@ -620,9 +620,7 @@ class LinkHelper
             $oObj->nLinkart = (int)$oLink->nLinkart;
             $oObj->cName    = $oLink->cName;
             $oLink          = $this->findCMSLinkInSession($oLink->kLink);
-            $oObj->cURL     = isset($oLink->cURLFull)
-                ? $oLink->cURLFull
-                : '';
+            $oObj->cURL     = $oLink->cURLFull ?? '';
             if (isset($oLink->cLocalizedName) && array_key_exists($cISO, $oLink->cLocalizedName)) {
                 $oLink->cName = $oLink->cLocalizedName[$cISO];
             }
@@ -1039,12 +1037,8 @@ class LinkHelper
         if (isset($this->linkGroups->staticRoutes[$id])) {
             $index = $this->linkGroups->staticRoutes[$id];
             if (is_array($index)) {
-                $language        = $langISO !== null
-                    ? $langISO
-                    : Shop::getLanguageCode();
-                $localized       = isset($index[$language])
-                    ? $index[$language]
-                    : null;
+                $language        = $langISO ?? Shop::getLanguageCode();
+                $localized       = $index[$language] ?? null;
                 $customerGroupID = isset($_SESSION['Kundengruppe'])
                     ? Session::CustomerGroup()->getID()
                     : 0;
@@ -1066,12 +1060,7 @@ class LinkHelper
                     ? $localized[0]->$attr
                     : null;
 
-                return $res !== null
-                    ? $res
-                    : ($fallback !== null
-                        ? $fallback
-                        : $base . $id
-                    );
+                return $res ?? ($fallback ?? $base . $id);
             }
 
             return $index;

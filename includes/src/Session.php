@@ -92,7 +92,6 @@ class Session
                 $this->setStandardSessionVars();
             }
         }
-        defined('SID') || define('SID', '');
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
         executeHook(HOOK_CORE_SESSION_CONSTRUCTOR);
@@ -148,19 +147,23 @@ class Session
         }
         if (isset($_SESSION['Globals_TS'])) {
             $globalsAktualisieren = false;
-            $ts                   = Shop::DB()->executeQueryPrepared(
-                  "SELECT dLetzteAenderung 
-                      FROM tglobals 
-                      WHERE dLetzteAenderung > :ts",
+            $ts                   = Shop::DB()->queryPrepared(
+                'SELECT dLetzteAenderung 
+                    FROM tglobals 
+                    WHERE dLetzteAenderung > :ts',
                 ['ts' => $_SESSION['Globals_TS']],
-                1
+                NiceDB::RET_SINGLE_OBJECT
             );
             if (isset($ts->dLetzteAenderung)) {
                 $_SESSION['Globals_TS'] = $ts->dLetzteAenderung;
                 $globalsAktualisieren   = true;
             }
         } else {
-            $ts                     = Shop::DB()->query("SELECT dLetzteAenderung FROM tglobals", 1);
+            $ts                     = Shop::DB()->query(
+                'SELECT dLetzteAenderung 
+                    FROM tglobals',
+                NiceDB::RET_SINGLE_OBJECT
+            );
             $_SESSION['Globals_TS'] = $ts->dLetzteAenderung;
         }
         if (isset($_GET['lang']) && (!isset($_SESSION['cISOSprache']) || $_GET['lang'] !== $_SESSION['cISOSprache'])) {
@@ -174,7 +177,7 @@ class Session
             // session upgrade from 4.05 -> 4.06 - update with class instance
             $globalsAktualisieren = true;
         }
-        $lang    = isset($_GET['lang']) ? $_GET['lang'] : '';
+        $lang    = $_GET['lang'] ?? '';
         $checked = false;
         if (isset($_SESSION['kSprache'])) {
             checkeSpracheWaehrung($lang);
@@ -218,7 +221,9 @@ class Session
 
             if (!isset($_SESSION['kSprache'])) {
                 foreach ($_SESSION['Sprachen'] as $Sprache) {
-                    if ($Sprache->cISO === $cDefaultLanguage || (empty($cDefaultLanguage) && $Sprache->cShopStandard === 'Y')) {
+                    if ($Sprache->cISO === $cDefaultLanguage
+                        || (empty($cDefaultLanguage) && $Sprache->cShopStandard === 'Y')
+                    ) {
                         $_SESSION['kSprache']    = $Sprache->kSprache;
                         $_SESSION['cISOSprache'] = trim($Sprache->cISO);
                         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
@@ -278,29 +283,11 @@ class Session
             }
             $linkHelper = LinkHelper::getInstance();
             $linkGroups = $linkHelper->getLinkGroups();
-            if (TEMPLATE_COMPATIBILITY === true || Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CORE) === false) {
+            if (Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CORE) === false) {
                 $_SESSION['Linkgruppen'] = $linkGroups;
                 $manufacturerHelper      = HerstellerHelper::getInstance();
                 $manufacturers           = $manufacturerHelper->getManufacturers();
                 $_SESSION['Hersteller']  = $manufacturers;
-            }
-            if (TEMPLATE_COMPATIBILITY === true) {
-                /**
-                 * Zahlungsarten Ticket #6042
-                 * @depcrecated since 4.05
-                 */
-                $_SESSION['Zahlungsarten'] = Zahlungsart::loadAll();
-                /**
-                 * Lieferlaender Ticket #6042
-                 * @depcrecated since 4.05
-                 */
-                $_SESSION['Lieferlaender'] = Shop::DB()->query(
-                    "SELECT l.* 
-                        FROM tland AS l
-                        JOIN tversandart AS v 
-                            ON v.cLaender LIKE CONCAT('%', l.cISO, '%')
-                        GROUP BY l.cISO", 2
-                );
             }
             $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
             setzeSteuersaetze();
@@ -398,7 +385,7 @@ class Session
      */
     public function getBrowserLanguage($cAllowed_arr, $cDefault)
     {
-        $cLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : null;
+        $cLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
 
         if (empty($cLanguage)) {
             return $cDefault;
@@ -462,7 +449,7 @@ class Session
         );
         $_SESSION['Warenkorb'] = new Warenkorb();
         // WarenkorbPers loeschen
-        $oWarenkorbPers = new WarenkorbPers((isset($_SESSION['Kunde']->kKunde) ? $_SESSION['Kunde']->kKunde : 0));
+        $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde ?? 0);
         $oWarenkorbPers->entferneAlles();
 
         return $this;
@@ -493,9 +480,7 @@ class Session
      */
     public static function Customer()
     {
-        return isset($_SESSION['Kunde'])
-            ? $_SESSION['Kunde']
-            : new Kunde();
+        return $_SESSION['Kunde'] ?? new Kunde();
     }
 
     /**
@@ -503,9 +488,7 @@ class Session
      */
     public static function CustomerGroup()
     {
-        return isset($_SESSION['Kundengruppe'])
-            ? $_SESSION['Kundengruppe']
-            : (new Kundengruppe())->loadDefaultGroup();
+        return $_SESSION['Kundengruppe'] ?? (new Kundengruppe())->loadDefaultGroup();
     }
 
     /**
@@ -526,9 +509,7 @@ class Session
      */
     public static function Languages()
     {
-        return isset($_SESSION['Sprachen'])
-            ? $_SESSION['Sprachen']
-            : [];
+        return $_SESSION['Sprachen'] ?? [];
     }
 
     /**
@@ -552,9 +533,7 @@ class Session
      */
     public static function Currency()
     {
-        return isset($_SESSION['Waehrung'])
-            ? $_SESSION['Waehrung']
-            : (new Currency())->getDefault();
+        return $_SESSION['Waehrung'] ?? (new Currency())->getDefault();
     }
 
     /**
@@ -562,9 +541,7 @@ class Session
      */
     public static function Cart()
     {
-        return isset($_SESSION['Warenkorb'])
-            ? $_SESSION['Warenkorb']
-            : new Warenkorb();
+        return $_SESSION['Warenkorb'] ?? new Warenkorb();
     }
 
     /**
@@ -572,9 +549,7 @@ class Session
      */
     public static function Currencies()
     {
-        return isset($_SESSION['Waehrungen'])
-            ? $_SESSION['Waehrungen']
-            : [];
+        return $_SESSION['Waehrungen'] ?? [];
     }
 
     /**

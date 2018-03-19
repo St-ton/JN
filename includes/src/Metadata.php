@@ -485,9 +485,7 @@ class Metadata
         $cKatDescription = '';
         $languageID      = $this->productFilter->getLanguageID();
         if ($this->productFilter->hasCategory()) {
-            $category = $category !== null
-                ? $category
-                : new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaDescription)) {
                 // meta description via new method
                 return prepareMeta(
@@ -601,9 +599,7 @@ class Metadata
         // Kategorieattribut?
         $cKatKeywords = '';
         if ($this->productFilter->hasCategory()) {
-            $category = $category !== null
-                ? $category
-                : new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaKeywords)) {
                 // meta keywords via new method
                 return strip_tags($category->cMetaKeywords);
@@ -722,9 +718,7 @@ class Metadata
         $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
         // Kategorieattribute koennen Standard-Titles ueberschreiben
         if ($this->productFilter->hasCategory()) {
-            $category = $category !== null
-                ? $category
-                : new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cTitleTag)) {
                 // meta title via new method
                 $cMetaTitle = strip_tags($category->cTitleTag);

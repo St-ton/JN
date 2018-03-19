@@ -81,14 +81,8 @@ class WarenkorbPers
                         //kEigenschaftsWert is not set when using free text variations
                         if (!$oWarenkorbPersPos->istEigenschaftEnthalten(
                             $oEigenschaftwerte->kEigenschaft,
-                            (isset($oEigenschaftwerte->kEigenschaftWert)
-                                ? $oEigenschaftwerte->kEigenschaftWert
-                                : null
-                            ),
-                            (isset($oEigenschaftwerte->cFreifeldWert)
-                                ? $oEigenschaftwerte->cFreifeldWert
-                                : null
-                            )
+                            $oEigenschaftwerte->kEigenschaftWert ?? null,
+                            $oEigenschaftwerte->cFreifeldWert ?? null
                         )) {
                             $bBereitsEnthalten = false;
                             break;
@@ -252,9 +246,9 @@ class WarenkorbPers
         }
 
         if ($oWarenkorbPers !== false && $oWarenkorbPers !== null) {
-            $this->kWarenkorbPers = isset($oWarenkorbPers->kWarenkorbPers) ? $oWarenkorbPers->kWarenkorbPers : null;
-            $this->kKunde         = isset($oWarenkorbPers->kKunde) ? $oWarenkorbPers->kKunde : 0;
-            $this->dErstellt      = isset($oWarenkorbPers->dErstellt) ? $oWarenkorbPers->dErstellt : null;
+            $this->kWarenkorbPers = $oWarenkorbPers->kWarenkorbPers ?? null;
+            $this->kKunde         = $oWarenkorbPers->kKunde ?? 0;
+            $this->dErstellt      = $oWarenkorbPers->dErstellt ?? null;
 
             if ($this->kWarenkorbPers > 0) {
                 // Hole alle Positionen für eine WarenkorbPers
@@ -285,9 +279,7 @@ class WarenkorbPers
                         );
 
                         $oWarenkorbPersPos->kWarenkorbPersPos = $oWarenkorbPersPosTMP->kWarenkorbPersPos;
-                        $oWarenkorbPersPos->cKommentar        = isset($oWarenkorbPersPosTMP->cKommentar)
-                            ? $oWarenkorbPersPosTMP->cKommentar
-                            : null;
+                        $oWarenkorbPersPos->cKommentar        = $oWarenkorbPersPosTMP->cKommentar ?? null;
                         $oWarenkorbPersPos->dHinzugefuegt     = $oWarenkorbPersPosTMP->dHinzugefuegt;
                         $oWarenkorbPersPos->dHinzugefuegt_de  = $oWarenkorbPersPosTMP->dHinzugefuegt_de;
 
@@ -300,9 +292,7 @@ class WarenkorbPers
                                 $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
                                     $oWarenkorbPersPosEigenschaftTMP->kEigenschaft,
                                     $oWarenkorbPersPosEigenschaftTMP->kEigenschaftWert,
-                                    (isset($oWarenkorbPersPosEigenschaftTMP->cFreifeldWert)
-                                        ? $oWarenkorbPersPosEigenschaftTMP->cFreifeldWert
-                                        : null),
+                                    $oWarenkorbPersPosEigenschaftTMP->cFreifeldWert ?? null,
                                     $oWarenkorbPersPosEigenschaftTMP->cEigenschaftName,
                                     $oWarenkorbPersPosEigenschaftTMP->cEigenschaftWertName,
                                     $oWarenkorbPersPosEigenschaftTMP->kWarenkorbPersPos
@@ -442,7 +432,7 @@ class WarenkorbPers
 
             $this->fuegeEin(
                 $oPosition->kArtikel,
-                isset($oPosition->Artikel->cName) ? $oPosition->Artikel->cName : null,
+                $oPosition->Artikel->cName ?? null,
                 $oEigenschaftwerte_arr,
                 $oPosition->nAnzahl,
                 $oPosition->cUnique,

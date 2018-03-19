@@ -1077,12 +1077,13 @@ class Exportformat
         $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
         $oArtikelOptionen->nMedienDatei              = 1;
 
-        $helper     = KategorieHelper::getInstance($this->getSprache(), $this->getKundengruppe());
-        $shopURL    = Shop::getURL();
-        $find       = ['<br />', '<br>', '</'];
-        $replace    = [' ', ' ', ' </'];
-        $findTwo    = ["\r\n", "\r", "\n", "\x0B", "\x0"];
-        $replaceTwo = [' ', ' ', ' ', ' ', ''];
+        $helper       = KategorieHelper::getInstance($this->getSprache(), $this->getKundengruppe());
+        $shopURL      = Shop::getURL();
+        $imageBaseURL = Shop::getImageBaseURL();
+        $find         = ['<br />', '<br>', '</'];
+        $replace      = [' ', ' ', ' </'];
+        $findTwo      = ["\r\n", "\r", "\n", "\x0B", "\x0"];
+        $replaceTwo   = [' ', ' ', ' ', ' ', ''];
 
         if (isset($this->config['exportformate_quot']) && $this->config['exportformate_quot'] !== 'N') {
             $findTwo[] = '"';
@@ -1188,13 +1189,9 @@ class Exportformat
                     !$this->useCache()
                 );
                 // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
-                $Artikel->Kategoriepfad = $Artikel->Kategorie->cKategoriePfad !== null
-                    ? $Artikel->Kategorie->cKategoriePfad
-                    : $helper->getPath($Artikel->Kategorie);
+                $Artikel->Kategoriepfad = $Artikel->Kategorie->cKategoriePfad ?? $helper->getPath($Artikel->Kategorie);
                 $Artikel->Versandkosten = gibGuenstigsteVersandkosten(
-                    isset($this->config['exportformate_lieferland'])
-                        ? $this->config['exportformate_lieferland']
-                        : '',
+                    $this->config['exportformate_lieferland'] ?? '',
                     $Artikel,
                     0,
                     $this->kKundengruppe
@@ -1213,11 +1210,11 @@ class Exportformat
 
                 $Artikel->cDeeplink             = $shopURL . '/' . $Artikel->cURL;
                 $Artikel->Artikelbild           = $Artikel->Bilder[0]->cPfadGross
-                    ? $shopURL . '/' . $Artikel->Bilder[0]->cPfadGross
+                    ? $imageBaseURL . $Artikel->Bilder[0]->cPfadGross
                     : '';
-                $Artikel->Lieferbar             = ($Artikel->fLagerbestand <= 0) ? 'N' : 'Y';
-                $Artikel->Lieferbar_01          = ($Artikel->fLagerbestand <= 0) ? 0 : 1;
-                $Artikel->Verfuegbarkeit_kelkoo = ($Artikel->fLagerbestand > 0) ? '001' : '003';
+                $Artikel->Lieferbar             = $Artikel->fLagerbestand <= 0 ? 'N' : 'Y';
+                $Artikel->Lieferbar_01          = $Artikel->fLagerbestand <= 0 ? 0 : 1;
+                $Artikel->Verfuegbarkeit_kelkoo = $Artikel->fLagerbestand > 0 ? '001' : '003';
 
                 $_out = $this->smarty->assign('Artikel', $Artikel)->fetch('db:' . $this->getExportformat());
                 if (!empty($_out)) {
@@ -1410,9 +1407,9 @@ class Exportformat
                  ->setSplitgroesse($post['nSplitgroesse'])
                  ->setSpecial(0)
                  ->setKodierung($post['cKodierung'])
-                 ->setPlugin(isset($post['kPlugin']) ? $post['kPlugin'] : 0)
+                 ->setPlugin($post['kPlugin'] ?? 0)
                  ->setExportformat(!empty($post['kExportformat']) ? $post['kExportformat'] : 0)
-                 ->setKampagne(isset($post['kKampagne']) ? $post['kKampagne'] : 0);
+                 ->setKampagne($post['kKampagne'] ?? 0);
             if (isset($post['cFusszeile'])) {
                 $this->setFusszeile(str_replace('<tab>', "\t", $post['cFusszeile']));
             }

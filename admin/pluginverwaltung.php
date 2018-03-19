@@ -83,8 +83,7 @@ if (!empty($_FILES['file_data'])) {
 
 if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()) {
     // Eine Aktion wurde von der Uebersicht aus gestartet
-    $kPlugin_arr = isset($_POST['kPlugin']) ? $_POST['kPlugin'] : [];
-
+    $kPlugin_arr = $_POST['kPlugin'] ?? [];
     // Lizenzkey eingeben
     if (isset($_POST['lizenzkey']) && (int)$_POST['lizenzkey'] > 0) {
         $kPlugin = (int)$_POST['lizenzkey'];

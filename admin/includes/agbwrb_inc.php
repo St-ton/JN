@@ -35,7 +35,7 @@ function speicherAGBWRB($kKundengruppe, $kSprache, $cPost_arr, $kText = 0)
         $oAGBWRB->cWRBContentHtml     = $cPost_arr['cWRBContentHtml'];
         $oAGBWRB->cWRBFormContentText = $cPost_arr['cWRBFormContentText'];
         $oAGBWRB->cWRBFormContentHtml = $cPost_arr['cWRBFormContentHtml'];
-        $oAGBWRB->nStandard           = isset($cPost_arr['nStandard']) ? $cPost_arr['nStandard'] : 0;
+        $oAGBWRB->nStandard           = $cPost_arr['nStandard'] ?? 0;
 
         Shop::DB()->insert('ttext', $oAGBWRB);
 

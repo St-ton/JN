@@ -397,7 +397,7 @@ class Redirect
                     ? '?' . $cUrlQueryString
                     : '';
             }
-            $cReferer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+            $cReferer = $_SERVER['HTTP_REFERER'] ?? '';
             if (strlen($cReferer) > 0) {
                 $cReferer = $this->normalize($cReferer);
             }

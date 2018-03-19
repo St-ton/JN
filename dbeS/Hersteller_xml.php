@@ -96,17 +96,14 @@ function bearbeiteHersteller($xml)
                     $hersteller_arr[$i]->cSeo = getFlatSeoPath($hersteller_arr[$i]->cName);
                 }
                 //alten Bildpfad merken
-                $oHerstellerBild               = Shop::DB()->query("
-                    SELECT cBildPfad 
+                $oHerstellerBild               = Shop::DB()->query(
+                    "SELECT cBildPfad 
                         FROM thersteller 
                         WHERE kHersteller = " . (int)$hersteller_arr[$i]->kHersteller, 1
                 );
-                $hersteller_arr[$i]->cBildPfad = isset($oHerstellerBild->cBildPfad)
-                    ? $oHerstellerBild->cBildPfad
-                    : '';
-                //seo checken
-                $hersteller_arr[$i]->cSeo = getSeo($hersteller_arr[$i]->cSeo);
-                $hersteller_arr[$i]->cSeo = checkSeo($hersteller_arr[$i]->cSeo);
+                $hersteller_arr[$i]->cBildPfad = $oHerstellerBild->cBildPfad ?? '';
+                $hersteller_arr[$i]->cSeo      = getSeo($hersteller_arr[$i]->cSeo);
+                $hersteller_arr[$i]->cSeo      = checkSeo($hersteller_arr[$i]->cSeo);
                 DBUpdateInsert('thersteller', [$hersteller_arr[$i]], 'kHersteller');
 
                 $cXMLSprache = '';

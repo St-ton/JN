@@ -1222,10 +1222,10 @@ class Artikel
         if ($this->kArtikel === 0 || $this->kArtikel === null) {
             return $this;
         }
-        $shopURL = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
 
         $this->cVorschaubild    = BILD_KEIN_ARTIKELBILD_VORHANDEN;
-        $this->cVorschaubildURL = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        $this->cVorschaubildURL = $imageBaseURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
         // pruefe ob Funktionsattribut "artikelbildlink" ART_ATTRIBUT_BILDLINK gesetzt ist
         // Falls ja, lade die Bilder des anderen Artikels
         $bilder_arr = [];
@@ -1261,10 +1261,10 @@ class Artikel
             $image->cPfadKlein   = BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->cPfadNormal  = BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->cPfadGross   = BILD_KEIN_ARTIKELBILD_VORHANDEN;
-            $image->cURLMini     = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
-            $image->cURLKlein    = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
-            $image->cURLNormal   = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
-            $image->cURLGross    = $shopURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+            $image->cURLMini     = $imageBaseURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+            $image->cURLKlein    = $imageBaseURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+            $image->cURLNormal   = $imageBaseURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
+            $image->cURLGross    = $imageBaseURL . BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->nNr          = 1;
             $image->cAltAttribut = str_replace(['"', "'"], '', $this->cName);
             $image->galleryJSON  = $this->prepareImageDetails($image);
@@ -1279,10 +1279,10 @@ class Artikel
                 $image->cPfadNormal = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_MD, $imgNo);
                 $image->cPfadGross  = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_LG, $imgNo);
                 $image->nNr         = $imgNo;
-                $image->cURLMini    = $shopURL . $image->cPfadMini;
-                $image->cURLKlein   = $shopURL . $image->cPfadKlein;
-                $image->cURLNormal  = $shopURL . $image->cPfadNormal;
-                $image->cURLGross   = $shopURL . $image->cPfadGross;
+                $image->cURLMini    = $imageBaseURL . $image->cPfadMini;
+                $image->cURLKlein   = $imageBaseURL . $image->cPfadKlein;
+                $image->cURLNormal  = $imageBaseURL . $image->cPfadNormal;
+                $image->cURLGross   = $imageBaseURL . $image->cPfadGross;
 
                 if ($i === 0) {
                     $this->cVorschaubild = $image->cURLKlein;
@@ -1381,7 +1381,7 @@ class Artikel
         }
 
         return (object)[
-            'src'  => Shop::getURL() . '/' . $imagePath,
+            'src'  => Shop::getImageBaseURL() . $imagePath,
             'size' => (object)[
                 'width'  => $width,
                 'height' => $height
@@ -1503,7 +1503,7 @@ class Artikel
                 $cMerkmalname = preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/u', '', $oMerkmal->cName);
                 if (strlen($oMerkmal->cName) > 0) {
                     $values = array_filter(array_map(function ($e) {
-                        return isset($e->cWert) ? $e->cWert : null;
+                        return $e->cWert ?? null;
                     }, $oMerkmal->oMerkmalWert_arr));
                     $this->cMerkmalAssoc_arr[$cMerkmalname] = implode(', ', $values);
                 }
@@ -1595,19 +1595,13 @@ class Artikel
             }
 
             $this->oProduktBundlePrice->fPriceDiff         = $this->oProduktBundlePrice->fVKNetto -
-                (isset($this->oProduktBundleMain->Preise->fVKNetto)
-                    ? $this->oProduktBundleMain->Preise->fVKNetto
-                    : 0);
-            $this->oProduktBundlePrice->fVKNetto           = isset($this->oProduktBundleMain->Preise->fVKNetto)
-                ? $this->oProduktBundleMain->Preise->fVKNetto
-                : 0;
+                ($this->oProduktBundleMain->Preise->fVKNetto ?? 0);
+            $this->oProduktBundlePrice->fVKNetto           = $this->oProduktBundleMain->Preise->fVKNetto ?? 0;
             $this->oProduktBundlePrice->cPriceLocalized    = [];
             $this->oProduktBundlePrice->cPriceLocalized[0] = gibPreisStringLocalized(
                 berechneBrutto(
                     $this->oProduktBundlePrice->fVKNetto,
-                    (isset($_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse])
-                        ? $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse]
-                        : null)
+                    $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse] ?? null
                 ),
                 $currency
             );
@@ -1620,9 +1614,7 @@ class Artikel
             $this->oProduktBundlePrice->cPriceDiffLocalized[0] = gibPreisStringLocalized(
                 berechneBrutto(
                     $this->oProduktBundlePrice->fPriceDiff,
-                    (isset($_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse])
-                        ? $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse]
-                        : null)
+                    $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse] ?? null
                 ),
                 $currency
             );
@@ -2199,7 +2191,7 @@ class Artikel
         $kKundengruppe  = (int)$kKundengruppe;
         $currency       = Session::Currency();
         $currencyFactor = $currency->getConversionFactor();
-        $shopURL        = Shop::getURL() . '/';
+        $imageBaseURL   = Shop::getImageBaseURL();
         $isDefaultLang  = standardspracheAktiv();
         $mayViewPrices  = Session::CustomerGroup()->mayViewPrices();
 
@@ -2250,10 +2242,7 @@ class Artikel
                 $tmpVariation->fAufpreisNetto_teigenschaftwertaufpreis = $tmpVariation->fAufpreisNetto;
             }
             $tmpVariation->kEigenschaft = (int)$tmpVariation->kEigenschaft;
-            if (($cached = Shop::get('kew_' . $tmpVariation->kEigenschaftWert)) !== null) {
-                $this->Variationen[$nZaehler]->Werte[$i] = $cached;
-                continue;
-            }
+
             $value                   = new stdClass();
             $value->kEigenschaftWert = (int)$tmpVariation->kEigenschaftWert;
             $value->kEigenschaft     = (int)$tmpVariation->kEigenschaft;
@@ -2273,21 +2262,11 @@ class Artikel
             }
             if ($this->kVaterArtikel > 0 || $this->nIstVater === 1) {
                 $varCombi                         = new stdClass();
-                $varCombi->kArtikel               = isset($tmpVariation->tartikel_kArtikel)
-                    ? $tmpVariation->tartikel_kArtikel
-                    : null;
-                $varCombi->tartikel_fLagerbestand = isset($tmpVariation->tartikel_fLagerbestand)
-                    ? $tmpVariation->tartikel_fLagerbestand
-                    : null;
-                $varCombi->cLagerBeachten         = isset($tmpVariation->cLagerBeachten)
-                    ? $tmpVariation->cLagerBeachten
-                    : null;
-                $varCombi->cLagerKleinerNull      = isset($tmpVariation->cLagerKleinerNull)
-                    ? $tmpVariation->cLagerKleinerNull
-                    : null;
-                $varCombi->cLagerVariation        = isset($tmpVariation->cLagerVariation)
-                    ? $tmpVariation->cLagerVariation
-                    : null;
+                $varCombi->kArtikel               = $tmpVariation->tartikel_kArtikel ?? null;
+                $varCombi->tartikel_fLagerbestand = $tmpVariation->tartikel_fLagerbestand ?? null;
+                $varCombi->cLagerBeachten         = $tmpVariation->cLagerBeachten ?? null;
+                $varCombi->cLagerKleinerNull      = $tmpVariation->cLagerKleinerNull ?? null;
+                $varCombi->cLagerVariation        = $tmpVariation->cLagerVariation ?? null;
 
                 $value->oVariationsKombi = $varCombi;
             }
@@ -2329,19 +2308,19 @@ class Artikel
                 $value->cBildPfad                  = PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
                 $value->cBildPfadGross             = PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
 
-                $value->cBildPfadMiniFull  = $shopURL . PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
-                $value->cBildPfadFull      = $shopURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cBildPfadGrossFull = $shopURL . PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
+                $value->cBildPfadMiniFull  = $imageBaseURL . PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
+                $value->cBildPfadFull      = $imageBaseURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
+                $value->cBildPfadGrossFull = $imageBaseURL . PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
                 // compatibility
                 $value->cPfadMini   = PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
                 $value->cPfadKlein  = PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
                 $value->cPfadNormal = PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
                 $value->cPfadGross  = PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
 
-                $value->cPfadMiniFull   = $shopURL . PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
-                $value->cPfadKleinFull  = $shopURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cPfadNormalFull = $shopURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cPfadGrossFull  = $shopURL . PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
+                $value->cPfadMiniFull   = $imageBaseURL . PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
+                $value->cPfadKleinFull  = $imageBaseURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
+                $value->cPfadNormalFull = $imageBaseURL . PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
+                $value->cPfadGrossFull  = $imageBaseURL . PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
             }
             if (!$mayViewPrices) {
                 unset($value->fAufpreisNetto, $value->cAufpreisLocalized, $value->cPreisInklAufpreis);
@@ -2416,7 +2395,6 @@ class Artikel
                 }
             }
             $this->Variationen[$nZaehler]->Werte[$i] = $value;
-            Shop::set('kew_' . $tmpVariation->kEigenschaftWert, $value);
         }
         foreach ($this->Variationen as $i => $oVariation) {
             $oVariation->Werte = array_merge($oVariation->Werte);
@@ -2633,9 +2611,7 @@ class Artikel
                                     $req = MediaImageRequest::create([
                                         'type' => 'product',
                                         'id'   => $this->kArtikel,
-                                        'path' => isset($matrixImages[$oVariationWert1->kEigenschaftWert]->cPfad)
-                                            ? $matrixImages[$oVariationWert1->kEigenschaftWert]->cPfad
-                                            : null
+                                        'path' => $matrixImages[$oVariationWert1->kEigenschaftWert]->cPfad ?? null
                                     ]);
 
                                     $nHorizontal_arr                       = [];
@@ -2728,7 +2704,7 @@ class Artikel
                 // Gleiche Farben entfernen + komplette Vorschau nicht anzeigen
                 foreach ($oVariBoxMatrixBild_arr as $oVariBoxMatrixBild) {
                     $oVariBoxMatrixBild->kEigenschaft = (int)$oVariBoxMatrixBild->kEigenschaft;
-                    $oVariBoxMatrixBild->cBild        = $shopURL .
+                    $oVariBoxMatrixBild->cBild        = $imageBaseURL .
                         PFAD_VARIATIONSBILDER_MINI .
                         $oVariBoxMatrixBild->cPfad;
                     if (!in_array($oVariBoxMatrixBild->kEigenschaft, $kEigenschaft_arr, true)
@@ -2983,13 +2959,13 @@ class Artikel
                 $collapse = function ($node, $props) {
                     if (is_array($props)) {
                         foreach ($props as $prop) {
-                            $node = !isset($node->$prop) ? null : $node->$prop;
+                            $node = $node->$prop ?? null;
                         }
 
                         return $node;
                     }
                     
-                    return !isset($node->$props) ? null : $node->$props;
+                    return $node->$props ?? null;
                 };
                 $aProp = $collapse($a, $k);
                 $bProp = $collapse($b, $k);
@@ -3324,13 +3300,19 @@ class Artikel
             } elseif ($oArtikelTMP->Preise->fVK[0] < $this->Preise->fVK[0]) {
                 $cAufpreisVorzeichen = '- ';
             }
+
+            if (!$kKundengruppe) {
+                $kKundengruppe = Session::CustomerGroup()->getID();
+            }
+            $discount = $this->getDiscount($kKundengruppe, $this->kArtikel);
+
             if ($oArtikelTMP->Preise->fVK[0] > $this->Preise->fVK[0]
                 || $oArtikelTMP->Preise->fVK[0] < $this->Preise->fVK[0]
             ) {
                 $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[0] =
                     $cAufpreisVorzeichen .
                     gibPreisStringLocalized(
-                        abs($oArtikelTMP->Preise->fVK[0] - $this->Preise->fVK[0]),
+                        abs($oArtikelTMP->Preise->fVK[0] - $this->Preise->fVK[0]) * ((100 - $discount) / 100),
                         $currency,
                         1,
                         2
@@ -3338,7 +3320,7 @@ class Artikel
                 $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[1] =
                     $cAufpreisVorzeichen .
                     gibPreisStringLocalized(
-                        abs($oArtikelTMP->Preise->fVK[1] - $this->Preise->fVK[1]),
+                        abs($oArtikelTMP->Preise->fVK[1] - $this->Preise->fVK[1]) * ((100 - $discount) / 100),
                         $currency,
                         1,
                         2
@@ -3656,9 +3638,7 @@ class Artikel
                 }
             }
         }
-        $this->cCachedCountryCode = isset($_SESSION['cLieferlandISO'])
-            ? $_SESSION['cLieferlandISO']
-            : null;
+        $this->cCachedCountryCode = $_SESSION['cLieferlandISO'] ?? null;
         $nSchwelleBestseller      = isset($this->conf['global']['global_bestseller_minanzahl'])
             ? (float)$this->conf['global']['global_bestseller_minanzahl']
             : 10;
@@ -3945,7 +3925,7 @@ class Artikel
             $oArtikelTMP->fNettoPreis       = null;
         }
         if (strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
-            $this->cBildpfad_thersteller = Shop::getURL() . '/' .
+            $this->cBildpfad_thersteller = Shop::getImageBaseURL() .
                 PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
         }
         // Lokalisieren
@@ -4027,7 +4007,7 @@ class Artikel
            gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
         if (is_object($this->Preise) && $this->kVaterArtikel === 0 && $this->nIstVater === 1) {
-            $fVKNetto         = ($this->Preise->fVKNetto !== null) ? $this->Preise->fVKNetto : 0.0;
+            $fVKNetto         = $this->Preise->fVKNetto ?? 0.0;
             $oKindSonderpreis = Shop::DB()->query(
                 "SELECT COUNT(a.kArtikel) AS nVariationsAufpreisVorhanden
                     FROM tartikel AS a
@@ -4105,8 +4085,12 @@ class Artikel
             $this->cHerstellerBeschreibung    = parseNewsText($oArtikelTMP->cBeschreibung_hersteller_spr);
             $this->cHerstellerSortNr          = $oArtikelTMP->nSortNr_thersteller;
             if (strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
-                $this->cHerstellerBildKlein  = PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
-                $this->cHerstellerBildNormal = PFAD_HERSTELLERBILDER_NORMAL . $oArtikelTMP->cBildpfad_thersteller;
+                $imageBaseURL = Shop::getImageBaseURL();
+
+                $this->cHerstellerBildKlein     = PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
+                $this->cHerstellerBildNormal    = PFAD_HERSTELLERBILDER_NORMAL . $oArtikelTMP->cBildpfad_thersteller;
+                $this->cHerstellerBildURLKlein  = $imageBaseURL . $this->cHerstellerBildKlein;
+                $this->cHerstellerBildURLNormal = $imageBaseURL . $this->cHerstellerBildNormal;
             }
         }
         //datum umformatieren
@@ -4227,8 +4211,7 @@ class Artikel
             foreach (get_object_vars($oArtikelTMP) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->holPreise($kKundengruppe, $this)
-                 ->rabattierePreise($kKundengruppe);
+            $this->holPreise($kKundengruppe, $this);
         }
 
         return $this;
@@ -4355,7 +4338,7 @@ class Artikel
             }
             $this->bSuchspecial_arr = $bSuchspecial_arr;
             // SuchspecialBild anhand der hächsten Prio und des gesetzten Suchspecials festlegen
-            $shopURL = Shop::getURL() . '/';
+            $imageBaseURL = Shop::getImageBaseURL();
             foreach ($searchSpecial_arr as $oSuchspecialoverlay) {
                 if (!isset($oSuchspecialoverlay->kSuchspecialOverlay)
                     || empty($this->bSuchspecial_arr[$oSuchspecialoverlay->kSuchspecialOverlay])
@@ -4371,9 +4354,9 @@ class Artikel
                 $this->oSuchspecialBild->nTransparenz = $oSuchspecialoverlay->nTransparenz;
                 $this->oSuchspecialBild->nGroesse     = $oSuchspecialoverlay->nGroesse;
                 $this->oSuchspecialBild->nPosition    = $oSuchspecialoverlay->nPosition;
-                $this->oSuchspecialBild->cURLGross    = $shopURL . $this->oSuchspecialBild->cPfadGross;
-                $this->oSuchspecialBild->cURLNormal   = $shopURL . $this->oSuchspecialBild->cPfadNormal;
-                $this->oSuchspecialBild->cURLKlein    = $shopURL . $this->oSuchspecialBild->cPfadKlein;
+                $this->oSuchspecialBild->cURLGross    = $imageBaseURL . $this->oSuchspecialBild->cPfadGross;
+                $this->oSuchspecialBild->cURLNormal   = $imageBaseURL . $this->oSuchspecialBild->cPfadNormal;
+                $this->oSuchspecialBild->cURLKlein    = $imageBaseURL . $this->oSuchspecialBild->cPfadKlein;
                 break;
             }
         }
@@ -4436,7 +4419,7 @@ class Artikel
             NiceDB::RET_SINGLE_OBJECT
         );
 
-        return isset($oBewertet->bIsTopBewertet) ? $oBewertet->bIsTopBewertet : false;
+        return $oBewertet->bIsTopBewertet ?? false;
     }
 
     /**
@@ -4464,7 +4447,7 @@ class Artikel
             NiceDB::RET_SINGLE_OBJECT
         );
 
-        return isset($oBestseller->bIsBestseller) ? $oBestseller->bIsBestseller : false;
+        return $oBestseller->bIsBestseller ?? false;
     }
 
     /**
@@ -4784,9 +4767,7 @@ class Artikel
                 ),
                 $basePriceUnit->fBasePreis,
             ];
-            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = isset($this->fStaffelpreisVPE_arr[$key])
-                ? $this->fStaffelpreisVPE_arr[$key]
-                : null;
+            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = $this->fStaffelpreisVPE_arr[$key] ?? null;
         }
 
         return $this;
@@ -4837,7 +4818,7 @@ class Artikel
      */
     public function aufLagerSichtbarkeit($oArtikel = null)
     {
-        $oArtikel = $oArtikel !== null ? $oArtikel : $this;
+        $oArtikel = $oArtikel ?? $this;
         if ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
             if (isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y') {
                 return true;
@@ -5837,9 +5818,7 @@ class Artikel
         } elseif ($this->conf['global']['global_ust_auszeichnung'] === 'endpreis') {
             $ust = Shop::Lang()->get('finalprice', 'productDetails');
         }
-        $taxText = isset($this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT])
-            ? $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT]
-            : false;
+        $taxText = $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT] ?? false;
         if (!$taxText) {
             $taxText = $this->gibAttributWertNachName(ART_ATTRIBUT_STEUERTEXT);
         }
@@ -6027,9 +6006,11 @@ class Artikel
         });
 
         if (($excludeWords = Shop::Cache()->get($cacheID)) === false) {
-            $exclude      = Shop::DB()->select('texcludekeywords', 'cISOSprache', isset($_SESSION['cISOSprache'])
-                ? $_SESSION['cISOSprache']
-                : gibStandardsprache()->cISO);
+            $exclude      = Shop::DB()->select(
+                'texcludekeywords',
+                'cISOSprache',
+                $_SESSION['cISOSprache'] ?? gibStandardsprache()->cISO
+            );
             $excludeWords = isset($exclude->cKeywords)
                 ? explode(' ', $exclude->cKeywords)
                 : [];
@@ -6245,15 +6226,9 @@ class Artikel
             foreach ($this->Preise->nAnzahl_arr as $_idx => $_nAnzahl) {
                 $_v                        = [];
                 $_v['nAnzahl']             = $_nAnzahl;
-                $_v['fStaffelpreis']       = isset($this->Preise->fStaffelpreis_arr[$_idx])
-                    ? $this->Preise->fStaffelpreis_arr[$_idx]
-                    : null;
-                $_v['fPreis']              = isset($this->Preise->fPreis_arr[$_idx])
-                    ? $this->Preise->fPreis_arr[$_idx]
-                    : null;
-                $_v['cPreisLocalized']     = isset($this->Preise->cPreisLocalized_arr[$_idx])
-                    ? $this->Preise->cPreisLocalized_arr[$_idx]
-                    : null;
+                $_v['fStaffelpreis']       = $this->Preise->fStaffelpreis_arr[$_idx] ?? null;
+                $_v['fPreis']              = $this->Preise->fPreis_arr[$_idx] ?? null;
+                $_v['cPreisLocalized']     = $this->Preise->cPreisLocalized_arr[$_idx] ?? null;
                 $tierPrices[]              = $_v;
             }
         }
@@ -6278,9 +6253,7 @@ class Artikel
         if (!isset($_SESSION['Link_Versandseite'])) {
             setzeLinks();
         }
-        $taxText = isset($this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT])
-            ? $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT]
-            : false;
+        $taxText = $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT] ?? false;
 
         if (!$taxText) {
             $taxText = $this->gibAttributWertNachName(ART_ATTRIBUT_STEUERTEXT);

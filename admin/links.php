@@ -97,7 +97,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
         $link->kPlugin            = (int)$_POST['kPlugin'];
         $link->cName              = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $link->nLinkart           = (int)$_POST['nLinkart'];
-        $link->cURL               = isset($_POST['cURL']) ? $_POST['cURL'] : null;
+        $link->cURL               = $_POST['cURL']?? null;
         $link->nSort              = !empty($_POST['nSort']) ? $_POST['nSort'] : 0;
         $link->bSSL               = (int)$_POST['bSSL'];
         $link->bIsActive          = 1;

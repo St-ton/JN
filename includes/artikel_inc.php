@@ -571,9 +571,7 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
         }
         if ($nArrayPos === 0) {
             // Artikel ist an der ersten Position => es gibt nur einen nächsten Artikel (oder keinen :))
-            $kArtikelNaechster = isset($_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1])
-                ? $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]
-                : null;
+            $kArtikelNaechster = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1] ?? null;
         } elseif ($nArrayPos === (count($_SESSION['oArtikelUebersichtKey_arr']) - 1)) {
             // Artikel ist an der letzten Position => es gibt nur einen voherigen Artikel
             $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1];
@@ -1061,20 +1059,12 @@ function fasseVariVaterUndKindZusammen($oVaterArtikel, $oKindArtikel)
     $oArtikel->kEigenschaftKombi                = $oVaterArtikel->kEigenschaftKombi;
     $oArtikel->kEigenschaftKombi_arr            = $oVaterArtikel->kEigenschaftKombi_arr;
     $oArtikel->fDurchschnittsBewertung          = $oVaterArtikel->fDurchschnittsBewertung;
-    $oArtikel->Bewertungen                      = isset($oVaterArtikel->Bewertungen)
-        ? $oVaterArtikel->Bewertungen
-        : null;
-    $oArtikel->HilfreichsteBewertung            = isset($oVaterArtikel->HilfreichsteBewertung)
-        ? $oVaterArtikel->HilfreichsteBewertung
-        : null;
-    $oArtikel->oVariationKombiVorschau_arr      = isset($oVaterArtikel->oVariationKombiVorschau_arr)
-        ? $oVaterArtikel->oVariationKombiVorschau_arr
-        : [];
+    $oArtikel->Bewertungen                      = $oVaterArtikel->Bewertungen ?? null;
+    $oArtikel->HilfreichsteBewertung            = $oVaterArtikel->HilfreichsteBewertung ?? null;
+    $oArtikel->oVariationKombiVorschau_arr      = $oVaterArtikel->oVariationKombiVorschau_arr ?? [];
     $oArtikel->oVariationDetailPreis_arr        = $oVaterArtikel->oVariationDetailPreis_arr;
     $oArtikel->nVariationKombiNichtMoeglich_arr = $oVaterArtikel->nVariationKombiNichtMoeglich_arr;
-    $oArtikel->oVariationKombiVorschauText      = isset($oVaterArtikel->oVariationKombiVorschauText)
-        ? $oVaterArtikel->oVariationKombiVorschauText
-        : null;
+    $oArtikel->oVariationKombiVorschauText      = $oVaterArtikel->oVariationKombiVorschauText ?? null;
     $oArtikel->cVaterURL                        = $oVaterArtikel->cURL;
     $oArtikel->VaterFunktionsAttribute          = $oVaterArtikel->FunktionsAttribute;
 
@@ -1362,14 +1352,12 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     foreach ($oKonfig->oKonfig_arr as $i => &$oKonfiggruppe) {
         $oKonfiggruppe->bAktiv = false;
         $kKonfiggruppe         = $oKonfiggruppe->getKonfiggruppe();
-        $nKonfigitem_arr       = isset($nKonfiggruppe_arr[$kKonfiggruppe]) ? $nKonfiggruppe_arr[$kKonfiggruppe] : [];
+        $nKonfigitem_arr       = $nKonfiggruppe_arr[$kKonfiggruppe] ?? [];
         foreach ($oKonfiggruppe->oItem_arr as $j => &$oKonfigitem) {
             /** @var Konfigitem $oKonfigitem */
             $kKonfigitem          = $oKonfigitem->getKonfigitem();
             $oKonfigitem->fAnzahl = (float)(
-            isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()])
-                ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
-                : $oKonfigitem->getInitial()
+                $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] ?? $oKonfigitem->getInitial()
             );
             if ($oKonfigitem->fAnzahl > $oKonfigitem->getMax() || $oKonfigitem->fAnzahl < $oKonfigitem->getMin()) {
                 $oKonfigitem->fAnzahl = $oKonfigitem->getInitial();

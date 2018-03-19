@@ -199,15 +199,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $cTyp                     = $_POST['cTyp'];
             $nSort                    = isset($_POST['nSort']) ? (int)$_POST['nSort'] : 0;
-            $cBeschreibung            = isset($_POST['cBeschreibung']) ? $_POST['cBeschreibung'] : '';
-            $cNameOption              = isset($_POST['cNameOption']) ? $_POST['cNameOption'] : null;
-            $cNameAntwort             = isset($_POST['cNameAntwort']) ? $_POST['cNameAntwort'] : null;
-            $nFreifeld                = isset($_POST['nFreifeld']) ? $_POST['nFreifeld'] : null;
-            $nNotwendig               = isset($_POST['nNotwendig']) ? $_POST['nNotwendig'] : null;
-            $kUmfrageFrageAntwort_arr = isset($_POST['kUmfrageFrageAntwort']) ? $_POST['kUmfrageFrageAntwort'] : null;
-            $kUmfrageMatrixOption_arr = isset($_POST['kUmfrageMatrixOption']) ? $_POST['kUmfrageMatrixOption'] : null;
-            $nSortAntwort_arr         = isset($_POST['nSortAntwort']) ? $_POST['nSortAntwort'] : 0;
-            $nSortOption_arr          = isset($_POST['nSortOption']) ? $_POST['nSortOption'] : null;
+            $cBeschreibung            = $_POST['cBeschreibung'] ?? '';
+            $cNameOption              = $_POST['cNameOption'] ?? null;
+            $cNameAntwort             = $_POST['cNameAntwort'] ?? null;
+            $nFreifeld                = $_POST['nFreifeld'] ?? null;
+            $nNotwendig               = $_POST['nNotwendig'] ?? null;
+            $kUmfrageFrageAntwort_arr = $_POST['kUmfrageFrageAntwort'] ?? null;
+            $kUmfrageMatrixOption_arr = $_POST['kUmfrageMatrixOption'] ?? null;
+            $nSortAntwort_arr         = $_POST['nSortAntwort'] ?? 0;
+            $nSortOption_arr          = $_POST['nSortOption'] ?? null;
 
             if (isset($_POST['nocheinefrage'])) {
                 $step = 'umfrage_frage_erstellen';
@@ -563,9 +563,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 'cName',
                 $oConfig_arr[$i]->cWertName
             );
-            $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-                ? $oSetValue->cWert
-                : null;
+            $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
         }
 
         $smarty->assign('oConfig_arr', $oConfig_arr)

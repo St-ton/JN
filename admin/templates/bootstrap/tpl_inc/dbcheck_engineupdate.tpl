@@ -16,9 +16,9 @@
             <h3 class="panel-title">Veraltete Datenbankversion!</h3>
             Die verwendete Datenbankversion {$DB_Version->server} unterstützt nicht alle Möglichkeiten dieser Shop-Version! Einige Features stehen deshalb nach der
             Migration nicht mehr zur Verfügung.
-            {if (isset($Einstellungen.artikeluebersicht.suche_fulltext) && $Einstellungen.artikeluebersicht.suche_fulltext === 'Y') || $FulltextIndizes !== false}
+            {if (isset($Einstellungen.artikeluebersicht.suche_fulltext) && $Einstellungen.artikeluebersicht.suche_fulltext !== 'N') || $FulltextIndizes !== false}
                 <ul>
-                    {if (isset($Einstellungen.artikeluebersicht.suche_fulltext) && $Einstellungen.artikeluebersicht.suche_fulltext === 'Y')}
+                    {if (isset($Einstellungen.artikeluebersicht.suche_fulltext) && $Einstellungen.artikeluebersicht.suche_fulltext !== 'N')}
                     <li>Die Volltextsuche wird deaktiviert.</li>
                     {/if}
                     {if $FulltextIndizes !== false}

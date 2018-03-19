@@ -18,7 +18,7 @@ handleCsvImportAction('redirects', 'tredirect');
 
 $cHinweis  = '';
 $cFehler   = '';
-$redirects = isset($_POST['redirects']) ? $_POST['redirects'] : [];
+$redirects = $_POST['redirects'] ?? [];
 
 if (validateToken()) {
     switch (verifyGPDataString('action')) {

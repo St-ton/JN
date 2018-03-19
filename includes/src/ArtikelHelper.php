@@ -588,9 +588,7 @@ class ArtikelHelper
             return $_POST[$idx];
         }
 
-        return isset($_POST['eigenschaftwert'][$groupId])
-            ? $_POST['eigenschaftwert'][$groupId]
-            : false;
+        return $_POST['eigenschaftwert'][$groupId] ?? false;
     }
 
     /**
@@ -624,7 +622,7 @@ class ArtikelHelper
                 $artikel->Bilder[$key]->nNr = $nNr++;
             }
 
-            $artikel->cVorschaubild = $artikel->Bilder[0]->cPfadKlein;
+            $artikel->cVorschaubild = $artikel->Bilder[0]->cURLKlein;
         }
     }
 

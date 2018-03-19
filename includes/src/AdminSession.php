@@ -24,7 +24,7 @@ class AdminSession
      */
     public static function getInstance()
     {
-        return self::$_instance === null ? new self() : self::$_instance;
+        return self::$_instance ?? new self();
     }
 
     /**
@@ -51,11 +51,11 @@ class AdminSession
         $conf           = Shop::getSettings([CONF_GLOBAL]);
         $cookieDefaults = session_get_cookie_params();
         $set            = false;
-        $lifetime       = isset($cookieDefaults['lifetime']) ? $cookieDefaults['lifetime'] : 0;
-        $path           = isset($cookieDefaults['path']) ? $cookieDefaults['path'] : '';
-        $domain         = isset($cookieDefaults['domain']) ? $cookieDefaults['domain'] : '';
-        $secure         = isset($cookieDefaults['secure']) ? $cookieDefaults['secure'] : false;
-        $httpOnly       = isset($cookieDefaults['httponly']) ? $cookieDefaults['httponly'] : false;
+        $lifetime       = $cookieDefaults['lifetime'] ?? 0;
+        $path           = $cookieDefaults['path'] ?? '';
+        $domain         = $cookieDefaults['domain'] ?? '';
+        $secure         = $cookieDefaults['secure'] ?? false;
+        $httpOnly       = $cookieDefaults['httponly'] ?? false;
         if (isset($conf['global']['global_cookie_secure']) && $conf['global']['global_cookie_secure'] !== 'S') {
             $set    = true;
             $secure = $conf['global']['global_cookie_secure'] === 'Y';
@@ -138,15 +138,18 @@ class AdminSession
      */
     public function read($sessID)
     {
-        $res = Shop::DB()->executeQueryPrepared("
+        $res = Shop::DB()->executeQueryPrepared('
             SELECT cSessionData FROM tadminsession
                 WHERE cSessionId = :sid
-                AND nSessionExpires > :time",
-            ['sid' => $sessID, 'time' => time()],
-            1
+                AND nSessionExpires > :time',
+            [
+                'sid' => $sessID,
+                'time' => time()
+            ],
+            NiceDB::RET_SINGLE_OBJECT
         );
 
-        return isset($res->cSessionData) ? $res->cSessionData : '';
+        return $res->cSessionData ?? '';
     }
 
     /**
@@ -195,6 +198,11 @@ class AdminSession
      */
     public function gc($sessMaxLifeTime)
     {
-        return Shop::DB()->query("DELETE FROM tadminsession WHERE nSessionExpires < " . time(), 3);
+        return Shop::DB()->queryPrepared(
+            'DELETE FROM tadminsession
+                WHERE nSessionExpires < :time',
+            ['time' => time()],
+            NiceDB::RET_AFFECTED_ROWS
+        );
     }
 }

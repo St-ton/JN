@@ -39,8 +39,8 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getAuthLoggerService() : LoggerInterface
+    public function getBackendLogService() : LoggerInterface
     {
-        return $this->get('AuthLogger');
+        return $this->get('BackendAuthLogger');
     }
 }

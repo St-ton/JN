@@ -57,7 +57,7 @@ class AdminAccount
      */
     public function __construct($bInitialize = true)
     {
-        $this->authLogger       = Shop::Container()->getAuthLoggerService();
+        $this->authLogger       = Shop::Container()->getBackendLogService();
         $this->messageGenerator = new AdminLoginStatusMessageGenerator();
         $this->levelMapper      = new \Mapper\AdminLoginStatusToLogLevel();
         if ($bInitialize) {

@@ -41,5 +41,5 @@ interface DefaultServicesInterface extends ContainerInterface
      * @throws ServiceNotFoundException
      * @throws CircularReferenceException
      */
-    public function getAuthLoggerService() : LoggerInterface;
+    public function getBackendLogService() : LoggerInterface;
 }

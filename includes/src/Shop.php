@@ -1740,7 +1740,7 @@ final class Shop
             return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
         });
 
-        $container->setSingleton('AuthLogger', function (Container $container) {
+        $container->setSingleton('BackendAuthLogger', function (Container $container) {
             $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? 0;
             $loggingConf = (int)$loggingConf;
             $handlers    = [];

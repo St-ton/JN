@@ -72,10 +72,9 @@
                 {/if}
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <a href="systemlog.php?action=clearsyslog&token={$smarty.session.jtl_token}"
-                           class="btn btn-danger">
+                        <button name="action" value="clearsyslog" class="btn btn-danger">
                             <i class="fa fa-trash"></i> {#systemlogReset#}
-                        </a>
+                        </button>
                         <button name="action" value="delselected" class="btn btn-warning">
                             <i class="fa fa-trash"></i> {#deleteSelected#}
                         </button>

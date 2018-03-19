@@ -49,13 +49,10 @@ class AuthLogEntry
 
     /**
      * @param string $ip
-     * @return AuthLogEntry
      */
-    public function setIP($ip) : self
+    public function setIP($ip)
     {
         $this->ip = $ip;
-
-        return $this;
     }
 
     /**
@@ -68,13 +65,10 @@ class AuthLogEntry
 
     /**
      * @param string $user
-     * @return AuthLogEntry
      */
-    public function setUser(string $user) : self
+    public function setUser(string $user)
     {
         $this->user = $user;
-
-        return $this;
     }
 
     /**
@@ -87,12 +81,9 @@ class AuthLogEntry
 
     /**
      * @param int $code
-     * @return AuthLogEntry
      */
-    public function setCode(int $code) : self
+    public function setCode(int $code)
     {
         $this->code = $code;
-
-        return $this;
     }
 }

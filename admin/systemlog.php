@@ -71,7 +71,9 @@ $nLevelFlag_arr = [
 ];
 
 foreach ($oLog_arr as $oLog) {
-    $oLog->cLog = preg_replace(
+    $oLog->kLog   = (int)$oLog->kLog;
+    $oLog->nLevel = (int)$oLog->nLevel;
+    $oLog->cLog   = preg_replace(
         '/\[(.*)\] => (.*)/',
         '<span class="text-primary">$1</span>: <span class="text-success">$2</span>',
         $oLog->cLog

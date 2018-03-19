@@ -2813,9 +2813,10 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                     " . $cKundeSQLWhere . $cProductSpecificSQLWhere . "
                 ORDER BY fVersandkostenfreiAbX
                 LIMIT 1",
-            [   'cLangID' => Shop::getLanguageCode(),
+            [
+                'cLangID'        => Shop::getLanguageCode(),
                 'cShippingClass' => $versandklassen,
-                'cGroupID' => '^([0-9 -]* )?'.$kKundengruppe. ' '
+                'cGroupID'       => '^([0-9 -]* )?' . $kKundengruppe . ' '
             ],
             NiceDB::RET_SINGLE_OBJECT
         );

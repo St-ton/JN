@@ -65,10 +65,14 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         }
 
         try {
+            Shop::DB()->executeQuery(
+                "UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)",
+                NiceDB::RET_QUERYSINGLE
+            );
             $res = Shop::DB()->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
-                10
+                NiceDB::RET_QUERYSINGLE
             );
         } catch (Exception $e) {
             $res = 0;
@@ -79,7 +83,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
-            if ($settings['suche_fulltext'] === 'Y') {
+            if ($settings['suche_fulltext'] !== 'N') {
                 $settings['suche_fulltext'] = 'N';
                 saveAdminSectionSettings($kSektion, $settings);
 
@@ -104,7 +108,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 }
 
 if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
-    if (isset($_POST['suche_fulltext']) && $_POST['suche_fulltext'] === 'Y') {
+    $sucheFulltext = isset($_POST['suche_fulltext']) ? in_array($_POST['suche_fulltext'], ['Y', 'B'], true) : false;
+
+    if ($sucheFulltext) {
         if (version_compare($mysqlVersion, '5.6', '<')) {
             //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
             $_POST['suche_fulltext'] = 'N';
@@ -141,10 +147,10 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
         }
     }
     if ($fulltextChanged) {
-        $createIndex = StringHandler::filterXSS($_POST['suche_fulltext']);
+        $createIndex = $sucheFulltext ? 'Y' : 'N';
     }
 
-    if (isset($_POST['suche_fulltext']) && $_POST['suche_fulltext'] === 'Y' && $fulltextChanged) {
+    if ($sucheFulltext && $fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde aktiviert.';
     } elseif ($fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde deaktiviert.';
@@ -179,7 +185,7 @@ for ($i = 0; $i < $configCount; $i++) {
     }
 }
 
-if ($Einstellungen['artikeluebersicht']['suche_fulltext'] === 'Y'
+if ($Einstellungen['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
         || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
     $cFehler = 'Der Volltextindex ist nicht vorhanden! ' .

@@ -184,7 +184,7 @@ class Merkmal
                 }
             }
         }
-        $shopURL = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
 
         $this->cBildpfadKlein      = BILD_KEIN_MERKMALBILD_VORHANDEN;
         $this->nBildKleinVorhanden = 0;
@@ -201,9 +201,9 @@ class Merkmal
                 $this->nBildGrossVorhanden = 1;
             }
         }
-        $this->cBildURLGross  = $shopURL . $this->cBildpfadGross;
-        $this->cBildURLNormal = $shopURL . $this->cBildpfadNormal;
-        $this->cBildURLKlein  = $shopURL . $this->cBildpfadKlein;
+        $this->cBildURLGross  = $imageBaseURL . $this->cBildpfadGross;
+        $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
+        $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
 
         executeHook(HOOK_MERKMAL_CLASS_LOADFROMDB);
         Shop::set($id, $this);
@@ -257,7 +257,7 @@ class Merkmal
             );
 
             if ($bMMW && is_array($oMerkmal_arr) && count($oMerkmal_arr) > 0) {
-                $shopURL = Shop::getURL() . '/';
+                $imageBaseURL = Shop::getImageBaseURL();
                 foreach ($oMerkmal_arr as $i => $oMerkmal) {
                     $oMerkmalWert                       = new MerkmalWert(0, $this->kSprache);
                     $oMerkmal_arr[$i]->oMerkmalWert_arr = $oMerkmalWert->holeAlleMerkmalWerte($oMerkmal->kMerkmal);
@@ -269,8 +269,8 @@ class Merkmal
                         $oMerkmal_arr[$i]->cBildpfadKlein  = BILD_KEIN_MERKMALBILD_VORHANDEN;
                         $oMerkmal_arr[$i]->cBildpfadNormal = BILD_KEIN_MERKMALBILD_VORHANDEN;
                     }
-                    $oMerkmal_arr[$i]->cBildURLKlein  = $shopURL . $oMerkmal_arr[$i]->cBildpfadKlein;
-                    $oMerkmal_arr[$i]->cBildURLNormal = $shopURL . $oMerkmal_arr[$i]->cBildpfadNormal;
+                    $oMerkmal_arr[$i]->cBildURLKlein  = $imageBaseURL . $oMerkmal_arr[$i]->cBildpfadKlein;
+                    $oMerkmal_arr[$i]->cBildURLNormal = $imageBaseURL . $oMerkmal_arr[$i]->cBildpfadNormal;
                 }
             }
         }

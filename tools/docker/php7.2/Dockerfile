@@ -1,4 +1,4 @@
-FROM php:5.6
+FROM php:7.2
 RUN apt-get update
 RUN apt-get install -y wget git unzip
 RUN cd /root \

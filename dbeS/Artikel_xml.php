@@ -75,10 +75,7 @@ function bearbeiteDeletes($xml, $conf)
     if (!is_array($xml['del_artikel']['kArtikel'])) {
         $xml['del_artikel']['kArtikel'] = [$xml['del_artikel']['kArtikel']];
     }
-    $articles = array_filter($xml['del_artikel']['kArtikel'], function ($e) {
-        return isset($e->kArtikel) && (int)$e->kArtikel > 0;
-    });
-    foreach ($articles as $kArtikel) {
+    foreach ($xml['del_artikel']['kArtikel'] as $kArtikel) {
         $kArtikel      = (int)$kArtikel;
         $kVaterArtikel = ArtikelHelper::getParent($kArtikel);
         $nIstVater     = $kVaterArtikel > 0 ? 0 : 1;

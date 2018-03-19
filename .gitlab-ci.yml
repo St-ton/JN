@@ -34,3 +34,14 @@ testphp71:
     - includes/vendor/bin/phpunit tests
   tags:
       - docker
+
+testphp72:
+  image: gitlab.jtl-software.de:4567/jtlshop/shop4/php72
+  stage: test
+  script:
+    - cd includes
+    - php /root/composer.phar install
+    - cd ../
+    - includes/vendor/bin/phpunit tests
+  tags:
+      - docker

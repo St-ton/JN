@@ -450,8 +450,9 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attributeFilterCollection[$attributeValue->kMerkmal]->attributeValues[] = $attributeValue;
             }
         }
-        $shopURL = Shop::getURL() . '/';
-        foreach ($attributeFilterCollection as $attributeFilter) {
+        $imageBaseURL       = Shop::getImageBaseURL();
+        $filterURLGenerator = $this->productFilter->getFilterURL();
+        foreach ($attributeFilterCollection as $i => $attributeFilter) {
             $baseSrcSmall  = strlen($attributeFilter->cMMBildPfad) > 0
                 ? PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
                 : BILD_KEIN_MERKMALBILD_VORHANDEN;
@@ -472,8 +473,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setData('kMerkmal', $attributeFilter->kMerkmal)
                 ->setData('cBildpfadKlein', $baseSrcSmall)
                 ->setData('cBildpfadNormal', $baseSrcNormal)
-                ->setData('cBildURLKlein', $shopURL . $baseSrcSmall)
-                ->setData('cBildURLNormal', $shopURL . $baseSrcNormal)
+                ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
+                ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal)
                 ->setType($attributeFilter->nMehrfachauswahl === 1
                     ? AbstractFilter::FILTER_TYPE_OR
                     : AbstractFilter::FILTER_TYPE_AND
@@ -503,14 +504,15 @@ class FilterItemAttribute extends FilterBaseAttribute
                 if ($attributeValue->isActive()) {
                     $attribute->setIsActive(true);
                 }
-                $attributeValueURL = $this->productFilter->getFilterURL()->getURL(
+                $attributeValueURL = $filterURLGenerator->getURL(
                     $additionalFilter->init($filterValue->kMerkmalWert)
                 );
                 $attribute->addOption($attributeValue->setURL($attributeValueURL));
             }
-            // backwards-compatible
-            $attribute->setData('oMerkmalWerte_arr', $attribute->getOptions());
-            if (($optionsCount = count($attribute->getOptions())) > 0) {
+            // backwards compatibility
+            $attributeOptions = $attribute->getOptions() ?? [];
+            $attribute->setData('oMerkmalWerte_arr', $attributeOptions);
+            if (($optionsCount = count($attributeOptions)) > 0) {
                 $attributeFilters[] = $attribute->setCount($optionsCount);
             }
         }

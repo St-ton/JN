@@ -242,17 +242,17 @@ class WarenkorbHelper
         if ($wkPos->variationPicturesArr === null) {
             $wkPos->variationPicturesArr = [];
         }
-        $shopURL  = Shop::getURL() . '/';
-        $oPicture = (object)[
+        $imageBaseURL          = Shop::getImageBaseURL();
+        $oPicture              = (object)[
             'isVariation'  => true,
             'cPfadMini'    => $variation->cPfadMini,
             'cPfadKlein'   => $variation->cPfadKlein,
             'cPfadNormal'  => $variation->cPfadNormal,
             'cPfadGross'   => $variation->cPfadGross,
-            'cURLMini'     => $shopURL . $variation->cPfadMini,
-            'cURLKlein'    => $shopURL . $variation->cPfadKlein,
-            'cURLNormal'   => $shopURL . $variation->cPfadNormal,
-            'cURLGross'    => $shopURL . $variation->cPfadGross,
+            'cURLMini'     => $imageBaseURL . $variation->cPfadMini,
+            'cURLKlein'    => $imageBaseURL . $variation->cPfadKlein,
+            'cURLNormal'   => $imageBaseURL . $variation->cPfadNormal,
+            'cURLGross'    => $imageBaseURL . $variation->cPfadGross,
             'nNr'          => count($wkPos->variationPicturesArr) + 1,
             'cAltAttribut' => str_replace(['"', "'"], '', $wkPos->Artikel->cName . ' - ' . $variation->cName),
         ];

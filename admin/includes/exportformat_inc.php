@@ -287,7 +287,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $Artikel->cDeeplink   = Shop::getURL() . '/' . $Artikel->cURL;
         $Artikel->Artikelbild = '';
         if (isset($Artikel->Bilder[0]->cPfadGross) && strlen($Artikel->Bilder[0]->cPfadGross) > 0) {
-            $Artikel->Artikelbild = Shop::getURL() . '/' . $Artikel->Bilder[0]->cPfadGross;
+            $Artikel->Artikelbild = Shop::getImageBaseURL() . $Artikel->Bilder[0]->cPfadGross;
         }
         $Artikel->Lieferbar = 'Y';
         if ($Artikel->fLagerbestand <= 0) {
@@ -338,7 +338,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $oVariationsLager_arr = [];
         if (is_array($Artikel->Variationen)) {
             $defaultOptions       = Artikel::getDefaultOptions();
-            $shopURL              = Shop::getURL();
+            $imageBaseURL         = Shop::getImageBaseURL();
             $combinations         = [];
             $oVariationsListe_arr = [];
 
@@ -367,7 +367,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                     );
 
                     $cBild = !empty($oVariationsBild->cPfad)
-                        ? $shopURL . '/' . PFAD_VARIATIONSBILDER_GROSS . $oVariationsBild->cPfad
+                        ? $imageBaseURL . PFAD_VARIATIONSBILDER_GROSS . $oVariationsBild->cPfad
                         : '';
 
                     $oGlobal_arr['variantenwerte'][] = [

@@ -92,7 +92,6 @@ class Session
                 $this->setStandardSessionVars();
             }
         }
-        defined('SID') || define('SID', '');
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
         executeHook(HOOK_CORE_SESSION_CONSTRUCTOR);
@@ -148,19 +147,23 @@ class Session
         }
         if (isset($_SESSION['Globals_TS'])) {
             $globalsAktualisieren = false;
-            $ts                   = Shop::DB()->executeQueryPrepared(
-                  "SELECT dLetzteAenderung 
-                      FROM tglobals 
-                      WHERE dLetzteAenderung > :ts",
+            $ts                   = Shop::DB()->queryPrepared(
+                'SELECT dLetzteAenderung 
+                    FROM tglobals 
+                    WHERE dLetzteAenderung > :ts',
                 ['ts' => $_SESSION['Globals_TS']],
-                1
+                NiceDB::RET_SINGLE_OBJECT
             );
             if (isset($ts->dLetzteAenderung)) {
                 $_SESSION['Globals_TS'] = $ts->dLetzteAenderung;
                 $globalsAktualisieren   = true;
             }
         } else {
-            $ts                     = Shop::DB()->query("SELECT dLetzteAenderung FROM tglobals", 1);
+            $ts                     = Shop::DB()->query(
+                'SELECT dLetzteAenderung 
+                    FROM tglobals',
+                NiceDB::RET_SINGLE_OBJECT
+            );
             $_SESSION['Globals_TS'] = $ts->dLetzteAenderung;
         }
         if (isset($_GET['lang']) && (!isset($_SESSION['cISOSprache']) || $_GET['lang'] !== $_SESSION['cISOSprache'])) {
@@ -218,7 +221,9 @@ class Session
 
             if (!isset($_SESSION['kSprache'])) {
                 foreach ($_SESSION['Sprachen'] as $Sprache) {
-                    if ($Sprache->cISO === $cDefaultLanguage || (empty($cDefaultLanguage) && $Sprache->cShopStandard === 'Y')) {
+                    if ($Sprache->cISO === $cDefaultLanguage
+                        || (empty($cDefaultLanguage) && $Sprache->cShopStandard === 'Y')
+                    ) {
                         $_SESSION['kSprache']    = $Sprache->kSprache;
                         $_SESSION['cISOSprache'] = trim($Sprache->cISO);
                         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);

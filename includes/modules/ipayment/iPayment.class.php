@@ -38,7 +38,7 @@ class iPayment extends PaymentMethod
             $trx_amount       = round($order->fGesamtsummeKundenwaehrung * 100, 0);
             $trx_securityhash = md5($trx_userid . $trx_amount . $trx_currency . $trx_password . $trx_securitykey);
             $paymentHash      = $this->generateHash($order);
-            $cFailureURL      = Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1&' . SID;
+            $cFailureURL      = Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1';
             $cReturnURL       = $this->getReturnURL($order);
             if ($_SESSION['Zahlungsart']->nWaehrendBestellung == 1) {
                 $cReturnURL = $this->getNotificationURL($paymentHash);

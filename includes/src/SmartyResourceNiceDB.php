@@ -43,13 +43,15 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 && $pcs[3] === 'anbieterkennzeichnung'
             ) {
                 // Anbieterkennzeichnungsvorlage holen
-                $vl = Shop::DB()->query(
+                $vl = Shop::DB()->queryPrepared(
                     "SELECT tevs.cContentHtml, tevs.cContentText
                         FROM temailvorlageoriginal tevo
                         JOIN temailvorlagesprache tevs
                             ON tevs.kEmailVorlage = tevo.kEmailvorlage
-                            AND tevs.kSprache = " . (int)$pcs[4] . "
-                        WHERE tevo.cModulId = 'core_jtl_anbieterkennzeichnung'", 1
+                            AND tevs.kSprache = :langID
+                        WHERE tevo.cModulId = 'core_jtl_anbieterkennzeichnung'",
+                    ['langID' => (int)$pcs[4]],
+                    NiceDB::RET_SINGLE_OBJECT
                 );
             } else {
                 // Plugin Emailvorlage?

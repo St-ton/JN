@@ -78,7 +78,7 @@ class MediaImageCompatibility implements IMedia
 
         if (is_object($fallback) && (int)$fallback->kArtikel > 0) {
             $number   = $req['number'] ?? 1;
-            $thumbUrl = Shop::getURL() . '/' .
+            $thumbUrl = Shop::getImageBaseURL() .
                 MediaImage::getThumb(
                     Image::TYPE_PRODUCT,
                     $fallback->kArtikel,

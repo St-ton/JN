@@ -21,7 +21,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 }
 // Suche
 if (strlen(verifyGPDataString('cSuche')) > 0) {
-    $cSuche = StringHandler::filterXSS(verifyGPDataString('cSuche'));
+    $cSuche = Shop::DB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
 
     if (strlen($cSuche) > 0) {
         $cSucheSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'

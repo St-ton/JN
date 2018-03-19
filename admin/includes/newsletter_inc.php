@@ -1287,7 +1287,8 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
 {
     $oArtikel_arr = [];
     if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
-        $shopURL = Shop::getURL() . '/';
+        $shopURL        = Shop::getURL() . '/';
+        $imageBaseURL   = Shop::getImageBaseURL();
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($kArtikel_arr as $kArtikel) {
             if ((int)$kArtikel > 0) {
@@ -1317,12 +1318,12 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
                 $imageCount = count($oArtikel->Bilder);
                 if (is_array($oArtikel->Bilder) && $imageCount > 0) {
                     for ($i = 0; $i < $imageCount; $i++) {
-                        $oArtikel->Bilder[$i]->cPfadMini   = $shopURL . $oArtikel->Bilder[$i]->cPfadMini;
-                        $oArtikel->Bilder[$i]->cPfadKlein  = $shopURL . $oArtikel->Bilder[$i]->cPfadKlein;
-                        $oArtikel->Bilder[$i]->cPfadNormal = $shopURL . $oArtikel->Bilder[$i]->cPfadNormal;
-                        $oArtikel->Bilder[$i]->cPfadGross  = $shopURL . $oArtikel->Bilder[$i]->cPfadGross;
+                        $oArtikel->Bilder[$i]->cPfadMini   = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadMini;
+                        $oArtikel->Bilder[$i]->cPfadKlein  = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadKlein;
+                        $oArtikel->Bilder[$i]->cPfadNormal = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadNormal;
+                        $oArtikel->Bilder[$i]->cPfadGross  = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadGross;
                     }
-                    $oArtikel->cVorschaubild = $shopURL . $oArtikel->cVorschaubild;
+                    $oArtikel->cVorschaubild = $imageBaseURL . $oArtikel->cVorschaubild;
                 }
                 $oArtikel_arr[] = $oArtikel;
             }
@@ -1344,6 +1345,7 @@ function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
 {
     $oHersteller_arr = [];
     $shopURL         = Shop::getURL() . '/';
+    $imageBaseURL    = Shop::getImageBaseURL();
     if (is_array($kHersteller_arr) && count($kHersteller_arr) > 0) {
         foreach ($kHersteller_arr as $kHersteller) {
             $kHersteller = (int)$kHersteller;
@@ -1361,8 +1363,8 @@ function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
                     $oHersteller->cURL = $oHersteller->cURL . $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
                 }
                 // Herstellerbilder absolut machen
-                $oHersteller->cBildpfadKlein  = $shopURL . $oHersteller->cBildpfadKlein;
-                $oHersteller->cBildpfadNormal = $shopURL . $oHersteller->cBildpfadNormal;
+                $oHersteller->cBildpfadKlein  = $imageBaseURL . $oHersteller->cBildpfadKlein;
+                $oHersteller->cBildpfadNormal = $imageBaseURL . $oHersteller->cBildpfadNormal;
 
                 $oHersteller_arr[] = $oHersteller;
             }

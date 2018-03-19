@@ -271,13 +271,15 @@ class Sprache
     {
         $_lv = $this->generateLangVars();
         if ($this->kSprachISO > 0 && $this->cISOSprache !== '' && !isset($_lv[$this->cISOSprache])) {
-            $allLangVars = Shop::DB()->query(
+            $allLangVars = Shop::DB()->queryPrepared(
                 'SELECT tsprachwerte.kSprachsektion, tsprachwerte.cWert, 
                     tsprachwerte.cName, tsprachsektion.cName AS sectionName
                     FROM tsprachwerte 
                     LEFT JOIN tsprachsektion
                         ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
-                    WHERE tsprachwerte.kSprachISO = ' . $this->kSprachISO, 2
+                    WHERE tsprachwerte.kSprachISO = :iso',
+                ['iso' => $this->kSprachISO],
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             $this->langVars[$this->cISOSprache] = [];
             foreach ($allLangVars as $_langVar) {
@@ -463,7 +465,7 @@ class Sprache
     {
         $where = $currentLang === true ? ' WHERE kSprachISO = ' . (int)$this->kSprachISO : '';
 
-        return Shop::DB()->query('DELETE FROM tsprachlog' . $where, 3);
+        return Shop::DB()->query('DELETE FROM tsprachlog' . $where, NiceDB::RET_AFFECTED_ROWS);
     }
 
     /**
@@ -499,7 +501,7 @@ class Sprache
     public function gibInstallierteSprachen()
     {
         return array_filter(
-            Shop::DB()->query('SELECT * FROM tsprache', 2),
+            Shop::DB()->query('SELECT * FROM tsprache', NiceDB::RET_ARRAY_OF_OBJECTS),
             function ($l) {
                 return $this->mappekISO($l->cISO) > 0;
             }
@@ -511,7 +513,7 @@ class Sprache
      */
     public function gibVerfuegbareSprachen()
     {
-        return Shop::DB()->query('SELECT * FROM tsprache', 2);
+        return Shop::DB()->query('SELECT * FROM tsprache', NiceDB::RET_ARRAY_OF_OBJECTS);
     }
 
     /**
@@ -519,7 +521,7 @@ class Sprache
      */
     public function gibSektionen()
     {
-        return Shop::DB()->query('SELECT * FROM tsprachsektion ORDER BY cNAME ASC', 2);
+        return Shop::DB()->query('SELECT * FROM tsprachsektion ORDER BY cNAME ASC', NiceDB::RET_ARRAY_OF_OBJECTS);
     }
 
     /**
@@ -636,37 +638,43 @@ class Sprache
         switch ($nTyp) {
             default:
             case 0: // Alle
-                $oWerte_arr = Shop::DB()->query(
+                $oWerte_arr = Shop::DB()->queryPrepared(
                     'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
                         LEFT JOIN tsprachsektion 
                             ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
-                        WHERE kSprachISO = ' . (int)$this->kSprachISO, 2
+                        WHERE kSprachISO = :iso',
+                    ['iso' => (int)$this->kSprachISO],
+                    NiceDB::RET_ARRAY_OF_OBJECTS
                 );
                 break;
 
             case 1: // System
-                $oWerte_arr = Shop::DB()->query(
+                $oWerte_arr = Shop::DB()->queryPrepared(
                     'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
                         LEFT JOIN tsprachsektion 
                             ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
-                        WHERE kSprachISO = ' . (int)$this->kSprachISO . ' 
-                            AND bSystem = 1', 2
+                        WHERE kSprachISO = :iso
+                            AND bSystem = 1',
+                    ['iso' => (int)$this->kSprachISO],
+                    NiceDB::RET_ARRAY_OF_OBJECTS
                 );
                 break;
 
             case 2: // Eigene
-                $oWerte_arr = Shop::DB()->query(
+                $oWerte_arr = Shop::DB()->queryPrepared(
                     'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
                         LEFT JOIN tsprachsektion 
                           ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
-                        WHERE kSprachISO = ' . (int)$this->kSprachISO . ' 
-                            AND bSystem = 0', 2
+                        WHERE kSprachISO = :iso 
+                            AND bSystem = 0',
+                    ['iso' => (int)$this->kSprachISO],
+                    NiceDB::RET_ARRAY_OF_OBJECTS
                 );
                 break;
         }
@@ -827,7 +835,7 @@ class Sprache
 
                         return $e;
                     },
-                    Shop::DB()->query('SELECT kSprache FROM tsprache', 2)
+                    Shop::DB()->query('SELECT kSprache FROM tsprache', NiceDB::RET_ARRAY_OF_OBJECTS)
                 );
                 Shop::Cache()->set($cacheID, $this->oSprache_arr, [CACHING_GROUP_LANGUAGE]);
             }

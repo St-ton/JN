@@ -34,7 +34,7 @@
     <div class="desc clearfix">
         {if $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif' && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
           <div class="img pull-left">
-            <img class="img-responsive" src="{$ShopURL}/{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
+            <img class="img-responsive" src="{$imageBaseURL}/{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
           </div>
         {/if}
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
@@ -65,7 +65,7 @@
         {foreach name=unterkats from=$oUnterKategorien_arr item=Unterkat}
             <div class="col-xs-6 col-md-4 col-lg-3">
                 <div class="thumbnail">
-                    <a href="{$Unterkat->cURL}">
+                    <a href="{$Unterkat->cURLFull}">
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                             <img src="{$Unterkat->cBildURLFull}" alt="{$Unterkat->cName}"/>
                         {/if}

@@ -138,12 +138,15 @@ class AdminSession
      */
     public function read($sessID)
     {
-        $res = Shop::DB()->executeQueryPrepared("
+        $res = Shop::DB()->executeQueryPrepared('
             SELECT cSessionData FROM tadminsession
                 WHERE cSessionId = :sid
-                AND nSessionExpires > :time",
-            ['sid' => $sessID, 'time' => time()],
-            1
+                AND nSessionExpires > :time',
+            [
+                'sid' => $sessID,
+                'time' => time()
+            ],
+            NiceDB::RET_SINGLE_OBJECT
         );
 
         return $res->cSessionData ?? '';
@@ -195,6 +198,11 @@ class AdminSession
      */
     public function gc($sessMaxLifeTime)
     {
-        return Shop::DB()->query("DELETE FROM tadminsession WHERE nSessionExpires < " . time(), 3);
+        return Shop::DB()->queryPrepared(
+            'DELETE FROM tadminsession
+                WHERE nSessionExpires < :time',
+            ['time' => time()],
+            NiceDB::RET_AFFECTED_ROWS
+        );
     }
 }

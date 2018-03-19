@@ -25,11 +25,8 @@ class Email implements RuleInterface
      */
     public function validate($value)
     {
-        $valid = filter_var($value, FILTER_VALIDATE_EMAIL);
-        if ($valid) {
-            return new RuleResult(true, '', $value);
-        } else {
-            return new RuleResult(false, 'invalid email', $value);
-        }
+        return filter_var($value, FILTER_VALIDATE_EMAIL)
+            ? new RuleResult(true, '', $value)
+            : new RuleResult(false, 'invalid email', $value);
     }
 }

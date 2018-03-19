@@ -6,6 +6,8 @@
 
 namespace Services\JTL\Validation;
 
+use function Functional\none;
+
 /**
  * Class ValidationResult
  * @package Services\JTL\Validation
@@ -46,13 +48,9 @@ class ValidationResult implements ValidationResultInterface
      */
     public function isValid()
     {
-        /** @var RuleResultInterface $item */
-        foreach($this->ruleResults as $item) {
-            if(!$item->isValid()) {
-                return false;
-            }
-        }
-        return true;
+        return none($this->ruleResults, function (RuleResultInterface $item) {
+            return !$item->isValid();
+        });
     }
 
     /**

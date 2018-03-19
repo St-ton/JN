@@ -56,11 +56,13 @@ class ValidationService implements ValidationServiceInterface
     {
         if ($ruleSet instanceof RuleSet) {
             return $this->_validate($value, $ruleSet);
-        } elseif (isset($this->ruleSets[$ruleSet])) {
-            return $this->_validate($value, $this->ruleSets[$ruleSet]);
-        } else {
-            throw new \InvalidArgumentException('Invalid RuleSet');
         }
+
+        if (isset($this->ruleSets[$ruleSet])) {
+            return $this->_validate($value, $this->ruleSets[$ruleSet]);
+        }
+
+        throw new \InvalidArgumentException('Invalid RuleSet');
     }
 
     /**
@@ -127,11 +129,7 @@ class ValidationService implements ValidationServiceInterface
      */
     public function validateGet(string $name, $ruleSet): ValidationResultInterface
     {
-        if ($this->hasGet($name)) {
-            return $this->validate($this->get[$name], $ruleSet);
-        } else {
-            return $this->createMissingValueResult();
-        }
+        return $this->hasGet($name) ? $this->validate($this->get[$name], $ruleSet) : $this->createMissingResult();
     }
 
     /**
@@ -139,11 +137,7 @@ class ValidationService implements ValidationServiceInterface
      */
     public function validatePost(string $name, $ruleSet): ValidationResultInterface
     {
-        if ($this->hasPost($name)) {
-            return $this->validate($this->post[$name], $ruleSet);
-        } else {
-            return $this->createMissingValueResult();
-        }
+        return $this->hasPost($name) ? $this->validate($this->post[$name], $ruleSet) : $this->createMissingResult();
     }
 
     /**
@@ -151,11 +145,7 @@ class ValidationService implements ValidationServiceInterface
      */
     public function validateCookie(string $name, $ruleSet): ValidationResultInterface
     {
-        if ($this->hasCookie($name)) {
-            return $this->validate($this->cookie[$name], $ruleSet);
-        } else {
-            return $this->createMissingValueResult();
-        }
+        return $this->hasCookie($name) ? $this->validate($this->cookie[$name], $ruleSet) : $this->createMissingResult();
     }
 
     /**
@@ -165,13 +155,17 @@ class ValidationService implements ValidationServiceInterface
     {
         if ($this->hasGet($name)) {
             return $this->validateGet($name, $ruleSet);
-        } elseif ($this->hasPost($name)) {
-            return $this->validatePost($name, $ruleSet);
-        } elseif ($this->hasCookie($name)) {
-            return $this->validateCookie($name, $ruleSet);
-        } else {
-            return $this->createMissingValueResult();
         }
+
+        if ($this->hasPost($name)) {
+            return $this->validatePost($name, $ruleSet);
+        }
+
+        if ($this->hasCookie($name)) {
+            return $this->validateCookie($name, $ruleSet);
+        }
+
+        return $this->createMissingResult();
     }
 
     /**
@@ -181,11 +175,13 @@ class ValidationService implements ValidationServiceInterface
     {
         if ($this->hasGet($name)) {
             return $this->validateGet($name, $ruleSet);
-        } elseif ($this->hasPost($name)) {
-            return $this->validatePost($name, $ruleSet);
-        } else {
-            return $this->createMissingValueResult();
         }
+
+        if ($this->hasPost($name)) {
+            return $this->validatePost($name, $ruleSet);
+        }
+
+        return $this->createMissingResult();
     }
 
 
@@ -238,7 +234,7 @@ class ValidationService implements ValidationServiceInterface
         return $this->validateSet($this->cookie, $rulesConfig);
     }
 
-    protected function createMissingValueResult()
+    protected function createMissingResult()
     {
         $result = new ValidationResult(null);
         $result->setValue(null);

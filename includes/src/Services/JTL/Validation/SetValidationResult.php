@@ -6,6 +6,8 @@
 
 namespace Services\JTL\Validation;
 
+use function Functional\none;
+
 /**
  * Class ObjectValidationResult
  * @package Services\JTL\Validation
@@ -77,13 +79,8 @@ class SetValidationResult implements SetValidationResultInterface
      */
     public function isValid()
     {
-        /** @var ValidationResultInterface $fieldResult */
-        foreach ($this->fieldResults as $fieldResult) {
-            if (!$fieldResult->isValid()) {
-                return false;
-            }
-        }
-
-        return true;
+        return none($this->fieldResults, function (ValidationResultInterface $fieldResult) {
+            return !$fieldResult->isValid();
+        });
     }
 }

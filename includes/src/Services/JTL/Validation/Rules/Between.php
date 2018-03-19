@@ -41,10 +41,12 @@ class Between implements RuleInterface
     {
         if ($value < $this->lower) {
             return new RuleResult(false, 'value too low', $value);
-        } elseif ($value > $this->upper) {
-            return new RuleResult(false, 'value too high', $value);
-        } else {
-            return new RuleResult(true, '', $value);
         }
+
+        if ($value > $this->upper) {
+            return new RuleResult(false, 'value too high', $value);
+        }
+
+        return new RuleResult(true, '', $value);
     }
 }

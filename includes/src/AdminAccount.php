@@ -48,18 +48,18 @@ class AdminAccount
     private $levelMapper;
 
     /**
-     * @var AdminLoginStatusMessageGenerator
+     * @var \Mapper\AdminLoginStatusMessageMapper
      */
-    private $messageGenerator;
+    private $messageMapper;
 
     /**
      * @param bool $bInitialize
      */
     public function __construct($bInitialize = true)
     {
-        $this->authLogger       = Shop::Container()->getBackendLogService();
-        $this->messageGenerator = new AdminLoginStatusMessageGenerator();
-        $this->levelMapper      = new \Mapper\AdminLoginStatusToLogLevel();
+        $this->authLogger    = Shop::Container()->getBackendLogService();
+        $this->messageMapper = new \Mapper\AdminLoginStatusMessageMapper();
+        $this->levelMapper   = new \Mapper\AdminLoginStatusToLogLevel();
         if ($bInitialize) {
             AdminSession::getInstance();
             $this->_validateSession();
@@ -158,7 +158,7 @@ class AdminAccount
 
         $this->authLogger->log(
             $this->levelMapper->map($code),
-            $this->messageGenerator->generate($code),
+            $this->messageMapper->generate($code),
             $log->asArray()
         );
 

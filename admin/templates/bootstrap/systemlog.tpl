@@ -42,11 +42,13 @@
                                     <div class="col-md-3 col-xs-12">
                                         <label>
                                             <input type="checkbox" name="selected[]" value="{$oLog->kLog}">
-                                            {if $oLog->nLevel == 1 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_ERROR}
+                                            {if $oLog->nLevel === $smarty.const.JTLLOG_LEVEL_WARNING}
+                                                <span class="label label-danger">{#systemlogWarning#}</span>
+                                            {elseif $oLog->nLevel === 1 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_ERROR}
                                                 <span class="label label-danger">{#systemlogError#}</span>
-                                            {elseif $oLog->nLevel == 2 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_INFO}
+                                            {elseif $oLog->nLevel === 2 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_INFO}
                                                 <span class="label label-success">{#systemlogNotice#}</span>
-                                            {elseif $oLog->nLevel == 4 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_DEBUG}
+                                            {elseif $oLog->nLevel === 4 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_DEBUG}
                                                 <span class="label label-info info">{#systemlogDebug#}</span>
                                             {/if}
                                             {$oLog->dErstellt|date_format:"d.m.Y - H:i:s"}
@@ -54,9 +56,9 @@
                                     </div>
                                     <div class="col-md-9 col-xs-12">
                                         <pre class="logtext
-                                            {if $oLog->nLevel == 1 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_ERROR}bg-danger
-                                            {elseif $oLog->nLevel == 2 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_INFO}bg-success
-                                            {elseif $oLog->nLevel == 4 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_DEBUG}bg-info{/if}">{$oLog->cLog}</pre>
+                                            {if $oLog->nLevel === 1 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_WARNING}bg-danger
+                                            {elseif $oLog->nLevel === 2 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_INFO}bg-success
+                                            {elseif $oLog->nLevel === 4 || $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_DEBUG}bg-info{/if}">{$oLog->cLog}</pre>
                                     </div>
                                 </div>
                             </div>

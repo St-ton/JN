@@ -146,21 +146,23 @@ class AdminAccount
     /**
      * @param int    $code
      * @param string $user
-     * @return bool
+     * @return int
      */
-    private function handleLoginResult($code, $user) : bool
+    private function handleLoginResult($code, $user) : int
     {
         $log = new \Model\AuthLogEntry();
 
-        $log->setIP(getRealIp())
-            ->setCode($code)
-            ->setUser($user);
+        $log->setIP(getRealIp());
+        $log->setCode($code);
+        $log->setUser($user);
 
-        return $this->authLogger->log(
+        $this->authLogger->log(
             $this->levelMapper->map($code),
             $this->messageGenerator->generate($code),
             $log->asArray()
         );
+
+        return $code;
     }
 
     /**

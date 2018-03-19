@@ -68,11 +68,10 @@ if ($kSektion > 0) {
 if ($bSuche) {
     $step = 'einstellungen bearbeiten';
 }
-
-if (isset($_POST['einstellungen_bearbeiten']) &&
-    (int)$_POST['einstellungen_bearbeiten'] === 1 &&
-    $kSektion > 0 &&
-    validateToken()
+if (isset($_POST['einstellungen_bearbeiten'])
+    && (int)$_POST['einstellungen_bearbeiten'] === 1
+    && $kSektion > 0
+    && validateToken()
 ) {
     // Einstellungssuche
     $oSQL = new stdClass();
@@ -96,7 +95,8 @@ if (isset($_POST['einstellungen_bearbeiten']) &&
                     AND cConf = 'Y'
                     AND nModul = 0
                     {$oSQL->cWHERE}
-                ORDER BY nSort", 2
+                ORDER BY nSort",
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
     }
     foreach ($Conf as $i => $oConfig) {
@@ -155,7 +155,12 @@ if (isset($_POST['einstellungen_bearbeiten']) &&
 }
 
 if ($step === 'uebersicht') {
-    $sections     = Shop::DB()->query("SELECT * FROM teinstellungensektion ORDER BY kEinstellungenSektion", 2);
+    $sections     = Shop::DB()->query(
+        "SELECT * 
+            FROM teinstellungensektion 
+            ORDER BY kEinstellungenSektion",
+        NiceDB::RET_ARRAY_OF_OBJECTS
+    );
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
         $anz_einstellunen = Shop::DB()->query(
@@ -163,7 +168,8 @@ if ($step === 'uebersicht') {
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = " . (int)$sections[$i]->kEinstellungenSektion . "
                     AND cConf = 'Y'
-                    AND nModul = 0", 1
+                    AND nModul = 0",
+            NiceDB::RET_SINGLE_OBJECT
         );
 
         $sections[$i]->anz = $anz_einstellunen->anz;
@@ -192,53 +198,57 @@ if ($step === 'einstellungen bearbeiten') {
                 WHERE nModul = 0 
                     AND kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
                 {$oSQL->cWHERE}
-                ORDER BY nSort", 2
+                ORDER BY nSort",
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
     }
-    $configCount = count($Conf);
-    for ($i = 0; $i < $configCount; $i++) {
-        $oSection = SettingSection::getInstance((int)$Conf[$i]->kEinstellungenSektion);
+    foreach($Conf as $config) {
+        $config->kEinstellungenConf    = (int)$config->kEinstellungenConf;
+        $config->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
+        $config->nStandardAnzeigen     = (int)$config->nStandardAnzeigen;
+        $config->nSort                 = (int)$config->nSort;
+        $config->nModul                = (int)$config->nModul;
+        $oSection = SettingSection::getInstance((int)$config->kEinstellungenSektion);
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
-        if ($Conf[$i]->cInputTyp === 'listbox' && $Conf[$i]->kEinstellungenConf == 492) {
-            $Conf[$i]->ConfWerte = Shop::DB()->query(
+        if ($config->cInputTyp === 'listbox' && $config->kEinstellungenConf === 492) {
+            $config->ConfWerte = Shop::DB()->query(
                 "SELECT kKundengruppe AS cWert, cName
                     FROM tkundengruppe
-                    ORDER BY cStandard DESC", 2
+                    ORDER BY cStandard DESC",
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
-        } elseif (in_array($Conf[$i]->cInputTyp, ['selectbox', 'listbox'], true)) {
-            $Conf[$i]->ConfWerte = Shop::DB()->selectAll(
+        } elseif (in_array($config->cInputTyp, ['selectbox', 'listbox'], true)) {
+            $config->ConfWerte = Shop::DB()->selectAll(
                 'teinstellungenconfwerte',
                 'kEinstellungenConf',
-                (int)$Conf[$i]->kEinstellungenConf,
+                (int)$config->kEinstellungenConf,
                 '*',
                 'nSort'
             );
         }
 
-        if ($Conf[$i]->cInputTyp === 'listbox') {
-            $setValue                = Shop::DB()->select(
+        if ($config->cInputTyp === 'listbox') {
+            $setValue                = Shop::DB()->selectAll(
                 'teinstellungen',
-                'kEinstellungenSektion',
-                CONF_BEWERTUNG,
-                'cName',
-                $Conf[$i]->cWertName
+                ['kEinstellungenSektion', 'cName'],
+                [(int)$config->kEinstellungenSektion, $config->cWertName]
             );
-            $Conf[$i]->gesetzterWert = $setValue;
+            $config->gesetzterWert = $setValue;
         } else {
             $setValue                = Shop::DB()->select(
                 'teinstellungen',
                 'kEinstellungenSektion',
-                (int)$Conf[$i]->kEinstellungenSektion,
+                (int)$config->kEinstellungenSektion,
                 'cName',
-                $Conf[$i]->cWertName
+                $config->cWertName
             );
-            $Conf[$i]->gesetzterWert = isset($setValue->cWert)
+            $config->gesetzterWert = isset($setValue->cWert)
                 ? StringHandler::htmlentities($setValue->cWert)
                 : null;
         }
-        $oSection->setValue($Conf[$i], $setValue);
-        $oSections[(int)$Conf[$i]->kEinstellungenSektion] = $oSection;
+        $oSection->setValue($config, $setValue);
+        $oSections[(int)$config->kEinstellungenSektion] = $oSection;
     }
 
     $smarty->assign('Sektion', $section)

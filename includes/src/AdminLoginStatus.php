@@ -9,8 +9,6 @@
  */
 abstract class AdminLoginStatus
 {
-    const __default = self::ERROR_UNKNOWN;
-
     const LOGIN_OK = 1;
 
     const ERROR_NOT_AUTHORIZED = 0;

@@ -33,6 +33,7 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Shopsetting.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
 //datenbankverbindung aufbauen
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.JTLCache.php';
+require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.JTLCache.php';
 $cache = JTLCache::getInstance();
 $cache->setJtlCacheConfig();
 $options            = $cache->getOptions();
@@ -43,6 +44,12 @@ session_name('eSIdAdm');
 session_start();
 if (!isset($_SESSION['AdminAccount'])) {
     header('Location: ' . URL_SHOP . '/' . PFAD_ADMIN . 'index.php');
+    exit;
+}
+
+$oVersion = $GLOBALS['DB']->executeQuery("SELECT * FROM tversion", 1);
+if ((int)$oVersion->nVersion > 319) {
+    header('Location: ' . URL_SHOP . "/" . PFAD_ADMIN . "index.php");
     exit;
 }
 
@@ -62,8 +69,6 @@ if (intval($_GET['nFirstStart']) === 1) {
     resetteUpdateDB();// Fuegt Spalten hinzu die vielleicht noch nicht vorhanden sind und setzt alle wichtigen Spalten auf 0
     updateZeilenBis($cSQLDatei);// Laeuft die Datei durch und zaehlt die Reihen. Danach wird die Anzahl in der DB hinterlegt.
 }
-
-$oVersion = Shop::DB()->query('SELECT * FROM tversion', 1);
 
 // Logging
 define('UPDATER_LOGFILE', PFAD_LOGFILES . 'update_' . intval($oVersion->nVersion) . '.log');

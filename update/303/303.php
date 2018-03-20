@@ -29,6 +29,12 @@
         exit;
     }
     
+    $oVersion = $GLOBALS['DB']->executeQuery("SELECT * FROM tversion", 1);
+    if ((int)$oVersion->nVersion > 303) {
+        header('Location: ' . URL_SHOP . "/" . PFAD_ADMIN . "index.php");
+        exit;
+    }
+
     // ##### Anfang Script
     
     
@@ -47,8 +53,6 @@
         resetteUpdateDB();                  // Fügt Spalten hinzu die vielleicht noch nicht vorhanden sind und setzt alle wichtigen Spalten auf 0
         updateZeilenBis($cSQLDatei);     // Läuft die Datei durch und zählt die Reihen. Danach wird die Anzahl in der DB hinterlegt.
     }
-    
-    $oVersion = $GLOBALS['DB']->executeQuery("SELECT * FROM tversion", 1);
     
     if (!file_exists($cSQLDatei)) {
         header("Location: " . URL_SHOP . "/" . PFAD_ADMIN . "dbupdater.php?nErrorCode=1");

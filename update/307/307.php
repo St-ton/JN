@@ -28,7 +28,13 @@
         header('Location: ' . URL_SHOP . "/" . PFAD_ADMIN . "index.php");
         exit;
     }
-    
+
+    $oVersion = $GLOBALS['DB']->executeQuery("SELECT * FROM tversion", 1);
+    if ((int)$oVersion->nVersion > 307) {
+        header('Location: ' . URL_SHOP . "/" . PFAD_ADMIN . "index.php");
+        exit;
+    }
+
     // ###############################
     // Version worauf upgedated wird
     $nVersionAfter = 308;
@@ -52,8 +58,6 @@
         resetteUpdateDB();                  // Fügt Spalten hinzu die vielleicht noch nicht vorhanden sind und setzt alle wichtigen Spalten auf 0
         updateZeilenBis($cSQLDatei);     // Läuft die Datei durch und zählt die Reihen. Danach wird die Anzahl in der DB hinterlegt.
     }
-    
-    $oVersion = $GLOBALS['DB']->executeQuery("SELECT * FROM tversion", 1);
     
     // Logging
     define("UPDATER_LOGFILE", PFAD_LOGFILES . "update_" . intval($oVersion->nVersion) . ".log");

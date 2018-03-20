@@ -23,10 +23,8 @@ class WidgetServerSettings extends WidgetBase
                       ->assign('bMemoryLimit', $this->checkMemoryLimit())
                       ->assign('postMaxSize', ini_get('post_max_size'))
                       ->assign('bPostMaxSize', $this->checkPostMaxSize())
-                      ->assign('bAllowUrlFopen', $this->checkAllowUrlFopen());
-        if (false === $this->SOAPcheck()) {
-            $this->oSmarty->assign('SOAPCheck', false);
-        }
+                      ->assign('bAllowUrlFopen', $this->checkAllowUrlFopen())
+                      ->assign('SOAPCheck', $this->SOAPcheck());
     }
 
     /**
@@ -54,7 +52,7 @@ class WidgetServerSettings extends WidgetBase
         if (class_exists('Systemcheck_Environment')) {
             $oSystemCheck  = new Systemcheck_Environment();
             $vCheckResults = $oSystemCheck->executeTestGroup('Shop4');
-            if (in_array('recommendations', array_keys($vCheckResults))) {
+            if (in_array('recommendations', array_keys($vCheckResults, true))) {
                 foreach ($vCheckResults['recommendations'] as $object) {
                     if ($object instanceof Systemcheck_Tests_Shop4_PhpSoapExtension) {
                         // SOAP is OFF

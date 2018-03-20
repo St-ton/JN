@@ -147,10 +147,8 @@ class AuswahlAssistentGruppe
         $oGruppeTMP_arr = Shop::DB()->queryPrepared(
             'SELECT kAuswahlAssistentGruppe
                 FROM tauswahlassistentgruppe
-                WHERE kSprache = :langID',
+                WHERE kSprache = :langID' . $cAktivSQL,
             ['langID' => (int)$kSprache],
-            $cAktivSQL,
-            [],
             NiceDB::RET_ARRAY_OF_OBJECTS
         );
         foreach ($oGruppeTMP_arr as $oGruppeTMP) {

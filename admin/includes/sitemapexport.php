@@ -283,6 +283,7 @@ function generateSitemapXML()
     $nSitemapLimit  = 25000;
     $sitemap_data   = '';
     $shopURL        = Shop::getURL();
+    $imageBaseURL   = Shop::getImageBaseURL();
     //Hauptseite
     $sitemap_data .= makeURL('', null, FREQ_ALWAYS, PRIO_VERYHIGH);
     //Alte Sitemaps löschen
@@ -346,7 +347,7 @@ function generateSitemapXML()
                 $number
             );
             if (strlen($cGoogleImage) > 0) {
-                $cGoogleImage = $shopURL . '/' . $cGoogleImage;
+                $cGoogleImage = $imageBaseURL . $cGoogleImage;
             }
         }
         $cUrl = baueURL($oArtikel, URLART_ARTIKEL);

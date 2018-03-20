@@ -51,8 +51,8 @@
                     <div class="manufacturer-row text-right small" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">
                         <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'Y' && (!empty($Artikel->cBildpfad_thersteller) || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B') && isset($Artikel->cHerstellerBildKlein)}
-                                <img src="{$Artikel->cHerstellerBildKlein}" alt="{$Artikel->cHersteller}" class="img-sm">
-                                <meta itemprop="image" content="{$ShopURL}/{$Artikel->cHerstellerBildKlein}">
+                                <img src="{$Artikel->cHerstellerBildURLKlein}" alt="{$Artikel->cHersteller}" class="img-sm">
+                                <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                 <meta itemprop="url" content="{$ShopURL}/{$Artikel->cHerstellerSeo}">
                             {/if}
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
@@ -63,7 +63,7 @@
                     {/block}
                 {/if}
                 {/block}
-    
+
                 <div class="product-headline hidden-xs">
                     {block name="productdetails-info-product-title"}
                     <h1 class="fn product-title" itemprop="name">{$Artikel->cName}</h1>
@@ -147,7 +147,7 @@
                     {/block}
                 {/if}
                 {/block}
-                
+
                 <div class="product-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                     <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                     {block name="productdetails-info-hidden"}
@@ -191,7 +191,7 @@
                     {include file="productdetails/basket.tpl"}
                     <hr>
                 </div>
-    
+
                 {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
                     {include file="productdetails/actions.tpl"}
                 {/if}

@@ -35,4 +35,12 @@ class CryptoService implements CryptoServiceInterface
     {
         return random_int($min, $max);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function stableStringEquals(string $string1, string $string2): bool
+    {
+        return hash_equals($string1, $string2);
+    }
 }

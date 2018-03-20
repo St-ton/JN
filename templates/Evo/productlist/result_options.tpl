@@ -1,6 +1,6 @@
 {assign var=contentFilters value=$NaviFilter->getAvailableContentFilters()}
 {assign var=show_filters value=$Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0
-        || count($NaviFilter->getSearchResults(true)) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
+        || $NaviFilter->getSearchResults(false)->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
         || $NaviFilter->getFilterCount() > 0}
 <div id="result-options" class="panel-wrap{if !$show_filters} hidden-xs{/if}">
     <div class="row">

@@ -17,7 +17,7 @@
                     <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
                         <span itemprop="name">{$meta_publisher}</span>
                         <meta itemprop="url" content="{$ShopURL}">
-                        <meta itemprop="logo" content="{$ShopURL}/{$ShopLogoURL}">
+                        <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
                     </div>
                 {/if}
                 {if isset($oNewsUebersicht->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsUebersicht->dErstellt}</time>{/if}
@@ -44,10 +44,10 @@
             {if !empty($oNewsUebersicht->cPreviewImageFull)}
                 <div class="col-sm-4 col-xs-12">
                     <a href="{$oNewsUebersicht->cURLFull}" title="{$oNewsUebersicht->cBetreff|escape:'quotes'}">
-                        <img src="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}"
+                        <img src="{$imageBaseURL}{$oNewsUebersicht->cPreviewImage}"
                              alt="{$oNewsUebersicht->cBetreff|escape:'quotes'} - {$oNewsUebersicht->cMetaTitle|escape:'quotes'}"
                              class="img-responsive center-block"/>
-                        <meta itemprop="image" content="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}">
+                        <meta itemprop="image" content="{$imageBaseURL}{$oNewsUebersicht->cPreviewImage}">
                     </a>
                 </div>
             {/if}

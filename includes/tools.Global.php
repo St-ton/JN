@@ -2777,8 +2777,9 @@ function baueGewicht(array $articles, $weightAcc = 2, $shippingWeightAcc = 2)
 function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
 {
     // Ticket #1018
-    $versandklassen = VersandartHelper::getShippingClasses(Session::Cart());
-    $cacheID        = 'vkfrei_' . $kKundengruppe . '_' .
+    $versandklassen            = VersandartHelper::getShippingClasses(Session::Cart());
+    $isStandardProductShipping = VersandartHelper::normalerArtikelversand($cLand);
+    $cacheID                   = 'vkfrei_' . $kKundengruppe . '_' .
         $cLand . '_' . $versandklassen . '_' . Shop::getLanguageCode();
     if (($oVersandart = Shop::Cache()->get($cacheID)) === false) {
         if (strlen($cLand) > 0) {
@@ -2796,20 +2797,27 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                 $cKundeSQLWhere = " AND cLaender LIKE '%{$landIso->cISO}%'";
             }
         }
-        $oVersandart = Shop::DB()->query(
+        $cProductSpecificSQLWhere = !empty($isStandardProductShipping) ? " AND cNurAbhaengigeVersandart = 'N' " : "";
+        $oVersandart = Shop::DB()->queryPrepared(
             "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized
                 FROM tversandart
                 LEFT JOIN tversandartsprache
                     ON tversandart.kVersandart = tversandartsprache.kVersandart
-                    AND tversandartsprache.cISOSprache = '" . Shop::getLanguageCode() . "'
+                    AND tversandartsprache.cISOSprache = :cLangID
                 WHERE fVersandkostenfreiAbX > 0
                     AND (cVersandklassen = '-1'
-                        OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')
+                        OR cVersandklassen RLIKE :cShippingClass)
                     AND (cKundengruppen = '-1'
-                        OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)
-                    " . $cKundeSQLWhere . "
+                        OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
+                    " . $cKundeSQLWhere . $cProductSpecificSQLWhere . "
                 ORDER BY fVersandkostenfreiAbX
-                LIMIT 1", 1
+                LIMIT 1",
+            [
+                'cLangID'        => Shop::getLanguageCode(),
+                'cShippingClass' => $versandklassen,
+                'cGroupID'       => '^([0-9 -]* )?' . $kKundengruppe . ' '
+            ],
+            NiceDB::RET_SINGLE_OBJECT
         );
         Shop::Cache()->set($cacheID, $oVersandart, [CACHING_GROUP_OPTION]);
     }
@@ -3859,18 +3867,18 @@ function gibTrustedShopsBewertenButton($cMail, $cBestellNr)
                 && $tsRating->kTrustedshopsKundenbewertung > 0
                 && (int)$tsRating->nStatus === 1
             ) {
-                $button   = new stdClass();
-                $basePath = Shop::getURL() . '/' .
+                $button       = new stdClass();
+                $imageBaseURL = Shop::getImageBaseURL() .
                     PFAD_TEMPLATES .
                     Template::getInstance()->getDir() .
                     '/themes/base/images/trustedshops/rate_now_';
-                $images   = [
-                    'de' => $basePath . 'de.png',
-                    'en' => $basePath . 'en.png',
-                    'fr' => $basePath . 'fr.png',
-                    'es' => $basePath . 'es.png',
-                    'nl' => $basePath . 'nl.png',
-                    'pl' => $basePath . 'pl.png'
+                $images       = [
+                    'de' => $imageBaseURL . 'de.png',
+                    'en' => $imageBaseURL . 'en.png',
+                    'fr' => $imageBaseURL . 'fr.png',
+                    'es' => $imageBaseURL . 'es.png',
+                    'nl' => $imageBaseURL . 'nl.png',
+                    'pl' => $imageBaseURL . 'pl.png'
                 ];
 
                 $button->cURL    = 'https://www.trustedshops.com/buyerrating/rate_' .
@@ -4256,16 +4264,20 @@ function aktiviereZahlungsart($oZahlungsart)
  */
 function archiviereBesucher()
 {
-    Shop::DB()->query(
+    $iInterval = 3;
+    Shop::DB()->queryPrepared(
         "INSERT INTO tbesucherarchiv
             (kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser,
               cAusstiegsseite, nBesuchsdauer, kBesucherBot, dZeit)
             SELECT kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser, cAusstiegsseite,
             (UNIX_TIMESTAMP(dLetzteAktivitaet) - UNIX_TIMESTAMP(dZeit)) AS nBesuchsdauer, kBesucherBot, dZeit
               FROM tbesucher
-              WHERE dLetzteAktivitaet <= date_sub(now(),INTERVAL 3 HOUR)", 4
-    );
-    Shop::DB()->query("DELETE FROM tbesucher WHERE dLetzteAktivitaet <= date_sub(now(),INTERVAL 3 HOUR)", 4);
+              WHERE dLetzteAktivitaet <= date_sub(now(), INTERVAL :interval HOUR)",
+    [ 'interval' => $iInterval ],
+    Shop::DB()::RET_AFFECTED_ROWS);
+    Shop::DB()->queryPrepared("DELETE FROM tbesucher WHERE dLetzteAktivitaet <= date_sub(now(), INTERVAL :interval HOUR)",
+    [ 'interval' => $iInterval ],
+    Shop::DB()::RET_AFFECTED_ROWS);
 }
 
 /**
@@ -5052,9 +5064,17 @@ function getTokenInput()
  */
 function validateToken()
 {
-    return isset($_SESSION['jtl_token'])
-        && (filter_input(INPUT_POST, 'jtl_token') === $_SESSION['jtl_token']
-            || filter_input(INPUT_GET, 'token') === $_SESSION['jtl_token']);
+    if (!isset($_SESSION['jtl_token'])) {
+        return false;
+    }
+
+    $token = $_POST['jtl_token'] ?? $_GET['token'] ?? null;
+
+    if ($token === null) {
+        return false;
+    }
+
+    return Shop::Container()->getCryptoService()->stableStringEquals($_SESSION['jtl_token'], $token);
 }
 
 /**

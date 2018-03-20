@@ -484,7 +484,7 @@ class Boxen
                         // Prüft alle X Stunden ob ein Zertifikat noch gültig ist
                         $oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639($lang));
                     }
-                    $oBox->cBildPfad    = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . $filename;
+                    $oBox->cBildPfad    = Shop::getImageBaseURL() . PFAD_GFX_TRUSTEDSHOPS . $filename;
                     $oBox->cBildPfadURL = $cURLSprachISO_arr[StringHandler::convertISO2ISO639($lang)];
                     $oBox->oStatistik   = $oTrustedShops->gibKundenbewertungsStatistik();
                 }

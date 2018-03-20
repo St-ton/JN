@@ -144,11 +144,12 @@ function gibNews($conf)
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
         );
         // URLs bauen
-        $shopURL = Shop::getURL() . '/';
+        $shopURL      = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
         foreach ($oNews_arr as $oNews) {
             $oNews->cPreviewImageFull = empty($oNews->cPreviewImage)
                 ? ''
-                : $shopURL . $oNews->cPreviewImage;
+                : $imageBaseURL . $oNews->cPreviewImage;
             $oNews->cText             = parseNewsText($oNews->cText);
             $oNews->cURL              = baueURL($oNews, URLART_NEWS);
             $oNews->cURLFull          = $shopURL . $oNews->cURL;
@@ -532,7 +533,7 @@ function gibSitemapGlobaleMerkmale()
  */
 function verarbeiteMerkmalBild(&$oMerkmal)
 {
-    $shopURL = Shop::getURL() . '/';
+    $imageBaseURL = Shop::getImageBaseURL();
 
     $oMerkmal->cBildpfadKlein       = BILD_KEIN_MERKMALBILD_VORHANDEN;
     $oMerkmal->nBildKleinVorhanden  = 0;
@@ -548,8 +549,8 @@ function verarbeiteMerkmalBild(&$oMerkmal)
             $oMerkmal->nBildGrossVorhanden = 1;
         }
     }
-    $oMerkmal->cBildURLKlein  = $shopURL . $oMerkmal->cBildpfadKlein;
-    $oMerkmal->cBildURLNormal = $shopURL . $oMerkmal->cBildpfadNormal;
+    $oMerkmal->cBildURLKlein  = $imageBaseURL . $oMerkmal->cBildpfadKlein;
+    $oMerkmal->cBildURLNormal = $imageBaseURL . $oMerkmal->cBildpfadNormal;
 }
 
 /**
@@ -557,7 +558,7 @@ function verarbeiteMerkmalBild(&$oMerkmal)
  */
 function verarbeiteMerkmalWertBild(&$oMerkmalWert)
 {
-    $shopURL = Shop::getURL() . '/';
+    $imageBaseURL = Shop::getImageBaseURL();
 
     $oMerkmalWert->cBildpfadKlein       = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
     $oMerkmalWert->nBildKleinVorhanden  = 0;
@@ -573,8 +574,8 @@ function verarbeiteMerkmalWertBild(&$oMerkmalWert)
             $oMerkmalWert->nBildNormalVorhanden = 1;
         }
     }
-    $oMerkmalWert->cBildURLKlein  = $shopURL . $oMerkmalWert->cBildpfadKlein;
-    $oMerkmalWert->cBildURLNormal = $shopURL . $oMerkmalWert->cBildpfadNormal;
+    $oMerkmalWert->cBildURLKlein  = $imageBaseURL . $oMerkmalWert->cBildpfadKlein;
+    $oMerkmalWert->cBildURLNormal = $imageBaseURL . $oMerkmalWert->cBildpfadNormal;
 }
 
 /**

@@ -271,7 +271,7 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
     ) {
         foreach ($cart->PositionenArr as $i => $oPosition) {
             // Wenn die Position ein Artikel ist
-            $bKonfig = (isset($oPosition->cUnique) && strlen($oPosition->cUnique) === 10);
+            $bKonfig = !empty($oPosition->cUnique);
             if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && !$bKonfig) {
                 // Artikelsichtbarkeit prüfen
                 $oArtikelSichtbarkeit = Shop::DB()->query(

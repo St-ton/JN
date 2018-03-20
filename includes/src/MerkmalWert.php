@@ -167,7 +167,7 @@ class MerkmalWert
             $this->cURLFull = baueURL($this, URLART_MERKMAL, 0, false, true);
             executeHook(HOOK_MERKMALWERT_CLASS_LOADFROMDB, ['oMerkmalWert' => &$this]);
         }
-        $shopURL = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
 
         $this->cBildpfadKlein       = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
         $this->nBildKleinVorhanden  = 0;
@@ -187,8 +187,8 @@ class MerkmalWert
                 $this->nBildNormalVorhanden = 1;
             }
         }
-        $this->cBildURLKlein  = $shopURL . $this->cBildpfadKlein;
-        $this->cBildURLNormal = $shopURL . $this->cBildpfadNormal;
+        $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
+        $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
         Shop::set($id, $this);
 
         return $this;
@@ -240,7 +240,7 @@ class MerkmalWert
                 WHERE tmerkmalwert.kMerkmal = " . (int)$kMerkmal . "
                 ORDER BY tmerkmalwert.nSort", 2
         );
-        $shopURL = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
         foreach ($oMerkmalWert_arr as $i => $oMerkmalWert) {
             $oMerkmalWert_arr[$i]->cURL     = baueURL($oMerkmalWert, URLART_MERKMAL);
             $oMerkmalWert_arr[$i]->cURLFull = baueURL($oMerkmalWert, URLART_MERKMAL, 0, false, true);
@@ -252,8 +252,8 @@ class MerkmalWert
                 $oMerkmalWert_arr[$i]->cBildpfadKlein  = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                 $oMerkmalWert_arr[$i]->cBildpfadNormal = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
             }
-            $oMerkmalWert_arr[$i]->cBildURLKlein   = $shopURL . $oMerkmalWert_arr[$i]->cBildpfadKlein;
-            $oMerkmalWert_arr[$i]->cBildpURLNormal = $shopURL . $oMerkmalWert_arr[$i]->cBildpfadNormal;
+            $oMerkmalWert_arr[$i]->cBildURLKlein   = $imageBaseURL . $oMerkmalWert_arr[$i]->cBildpfadKlein;
+            $oMerkmalWert_arr[$i]->cBildpURLNormal = $imageBaseURL . $oMerkmalWert_arr[$i]->cBildpfadNormal;
         }
 
         return $oMerkmalWert_arr;

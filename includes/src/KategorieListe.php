@@ -307,8 +307,9 @@ class KategorieListe
             $oKategorie_arr                                                = Shop::DB()->query($categorySQL, 2);
             $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] = [];
             if (is_array($oKategorie_arr) && count($oKategorie_arr) > 0) {
-                $shopURL     = Shop::getURL();
-                $oSpracheTmp = gibStandardsprache();
+                $shopURL      = Shop::getURL();
+                $imageBaseURL = Shop::getImageBaseURL();
+                $oSpracheTmp  = gibStandardsprache();
                 foreach ($oKategorie_arr as $i => $oKategorie) {
                     // Leere Kategorien ausblenden?
                     if (!$this->nichtLeer($oKategorie->kKategorie, $kKundengruppe)) {
@@ -321,10 +322,10 @@ class KategorieListe
                     //Bildpfad setzen
                     if ($oKategorie->cPfad && file_exists(PFAD_ROOT . PFAD_KATEGORIEBILDER . $oKategorie->cPfad)) {
                         $oKategorie->cBildURL     = PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
-                        $oKategorie->cBildURLFull = $shopURL . '/' . PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
+                        $oKategorie->cBildURLFull = $imageBaseURL . PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
                     } else {
                         $oKategorie->cBildURL     = BILD_KEIN_KATEGORIEBILD_VORHANDEN;
-                        $oKategorie->cBildURLFull = $shopURL . '/' . BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+                        $oKategorie->cBildURLFull = $imageBaseURL . BILD_KEIN_KATEGORIEBILD_VORHANDEN;
                     }
                     //EXPERIMENTAL_MULTILANG_SHOP
                     if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') 

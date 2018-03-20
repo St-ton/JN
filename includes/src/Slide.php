@@ -128,11 +128,11 @@ class Slide
      */
     private function setAbsoluteImagePaths()
     {
-        $shopURL                 = Shop::getURL();
-        $this->cBildAbsolut      = $shopURL . '/' . PFAD_MEDIAFILES .
-            str_replace($shopURL . '/' . PFAD_MEDIAFILES, '', $this->cBild);
-        $this->cThumbnailAbsolut = $shopURL . '/' . PFAD_MEDIAFILES .
-            str_replace($shopURL . '/' . PFAD_MEDIAFILES, '', $this->cThumbnail);
+        $imageBaseURL = Shop::getImageBaseURL();
+        $this->cBildAbsolut      = $imageBaseURL . PFAD_MEDIAFILES .
+            str_replace($imageBaseURL . PFAD_MEDIAFILES, '', $this->cBild);
+        $this->cThumbnailAbsolut = $imageBaseURL . PFAD_MEDIAFILES .
+            str_replace($imageBaseURL . PFAD_MEDIAFILES, '', $this->cThumbnail);
 
         return $this;
     }

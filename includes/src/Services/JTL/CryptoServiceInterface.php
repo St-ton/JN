@@ -34,4 +34,11 @@ interface CryptoServiceInterface
      * @throws \Exception
      */
     public function randomInt($min, $max);
+
+    /**
+     * @param string $string1
+     * @param string $string2
+     * @return bool
+     */
+    public function stableStringEquals(string $string1, string $string2) : bool;
 }

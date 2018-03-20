@@ -51,10 +51,14 @@ function createSearchIndex($index, $create)
         }
 
         try {
+            Shop::DB()->executeQuery(
+                "UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)",
+                NiceDB::RET_QUERYSINGLE
+            );
             $res = Shop::DB()->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
-                10
+                NiceDB::RET_QUERYSINGLE
             );
         } catch (Exception $e) {
             $res = 0;
@@ -65,7 +69,7 @@ function createSearchIndex($index, $create)
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
-            if ($settings['suche_fulltext'] === 'Y') {
+            if ($settings['suche_fulltext'] !== 'N') {
                 $settings['suche_fulltext'] = 'N';
                 saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $settings);
 
@@ -85,4 +89,15 @@ function createSearchIndex($index, $create)
     }
 
     return $cFehler !== '' ? new IOError($cFehler) : ['hinweis' => $cHinweis];
+}
+
+/**
+ * @return array|IOError
+ */
+function clearSearchCache()
+{
+    Shop::DB()->executeQuery("DELETE FROM tsuchcachetreffer", NiceDB::RET_AFFECTED_ROWS);
+    Shop::DB()->executeQuery("DELETE FROM tsuchcache", NiceDB::RET_AFFECTED_ROWS);
+
+    return ['hinweis' => 'Der Such-Cache wurde gelöscht'];
 }

@@ -339,7 +339,7 @@ final class Shop
     /**
      * @var string
      */
-    private static $imageBaseURL = '';
+    private static $imageBaseURL;
 
     /**
      * @var array
@@ -455,6 +455,9 @@ final class Shop
      */
     public static function getImageBaseURL() : string
     {
+        if (self::$imageBaseURL === null) {
+            self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL  : self::getURL());
+        }
         return self::$imageBaseURL;
     }
 

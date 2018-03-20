@@ -203,9 +203,11 @@ final class Shopsetting implements ArrayAccess
                                 $this->_container[$offset][$setting->cName] = [];
                             }
                             $this->_container[$offset][$setting->cName][] = $setting->cWert;
-                            continue;
+                        } elseif ($setting->type === 'number') {
+                            $this->_container[$offset][$setting->cName] = (int)$setting->cWert;
+                        } else {
+                            $this->_container[$offset][$setting->cName] = $setting->cWert;
                         }
-                        $this->_container[$offset][$setting->cName] = $setting->cWert;
                     }
                     Shop::Cache()->set($cacheID, $settings, [CACHING_GROUP_OPTION]);
                 }
@@ -236,11 +238,11 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param string $section
+     * @param int    $section
      * @param string $option
-     * @return string|array|int
+     * @return string|array|int|null
      */
-    public function getValue($section, $option)
+    public function getValue(int $section, $option)
     {
         $settings    = $this->getSettings([$section]);
         $sectionName = self::mapSettingName($section);
@@ -299,6 +301,8 @@ final class Shopsetting implements ArrayAccess
                             $result[$sectionName][$setting['cName']] = [];
                         }
                         $result[$sectionName][$setting['cName']][] = $setting['cWert'];
+                    } elseif ($setting['type'] === 'number') {
+                        $result[$sectionName][$setting['cName']] = (int)$setting['cWert'];
                     } else {
                         $result[$sectionName][$setting['cName']] = $setting['cWert'];
                     }

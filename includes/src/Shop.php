@@ -681,21 +681,21 @@ final class Shop
     }
 
     /**
-     * @param string $section
+     * @param int    $section
      * @param string $option
-     * @return string|array|int
+     * @return string|array|int|null
      */
-    public static function getSettingValue($section, $option)
+    public static function getSettingValue(int $section, $option)
     {
         return self::getConfigValue($section, $option);
     }
 
     /**
-     * @param string $section
+     * @param int    $section
      * @param string $option
-     * @return string|array|int
+     * @return string|array|int|null
      */
-    public static function getConfigValue($section, $option)
+    public static function getConfigValue(int $section, $option)
     {
         return self::$_settings->getValue($section, $option);
     }

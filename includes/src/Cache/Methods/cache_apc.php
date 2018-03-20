@@ -37,7 +37,7 @@ class cache_apc implements ICachingMethod
         $this->isInitialized = true;
         $this->journalID     = 'apc_journal';
         $this->options       = $options;
-        $this->u             = function_exists('apcu_store');
+        $this->u             = \function_exists('apcu_store');
         self::$instance      = $this;
     }
 
@@ -47,7 +47,7 @@ class cache_apc implements ICachingMethod
      * @param int|null $expiration
      * @return bool
      */
-    public function store($cacheID, $content, $expiration = null)
+    public function store($cacheID, $content, $expiration = null) : bool
     {
         $func = $this->u ? 'apcu_store' : 'apc_store';
 
@@ -83,7 +83,7 @@ class cache_apc implements ICachingMethod
      */
     public function loadMulti($cacheIDs)
     {
-        if (!is_array($cacheIDs)) {
+        if (!\is_array($cacheIDs)) {
             return false;
         }
         $func         = $this->u ? 'apcu_fetch' : 'apc_fetch';
@@ -99,17 +99,17 @@ class cache_apc implements ICachingMethod
     /**
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable() : bool
     {
-        return ((function_exists('apc_store') && function_exists('apc_exists'))
-            || (function_exists('apcu_store') && function_exists('apcu_exists')));
+        return ((\function_exists('apc_store') && \function_exists('apc_exists'))
+            || (\function_exists('apcu_store') && \function_exists('apcu_exists')));
     }
 
     /**
      * @param string $cacheID
      * @return bool
      */
-    public function flush($cacheID)
+    public function flush($cacheID) : bool
     {
         $func = $this->u ? 'apcu_delete' : 'apc_delete';
 
@@ -119,16 +119,16 @@ class cache_apc implements ICachingMethod
     /**
      * @return bool
      */
-    public function flushAll()
+    public function flushAll() : bool
     {
         return $this->u ? apcu_clear_cache() : apc_clear_cache('user');
     }
 
     /**
      * @param string $cacheID
-     * @return bool|string[]
+     * @return bool
      */
-    public function keyExists($cacheID)
+    public function keyExists($cacheID) : bool
     {
         $func = $this->u ? 'apcu_exists' : 'apc_exists';
 
@@ -138,7 +138,7 @@ class cache_apc implements ICachingMethod
     /**
      * @return array
      */
-    public function getStats()
+    public function getStats() : array
     {
         try {
             $tmp   = $this->u ? apcu_cache_info() : apc_cache_info('user');

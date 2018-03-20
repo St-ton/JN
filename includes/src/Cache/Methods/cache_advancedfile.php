@@ -43,7 +43,7 @@ class cache_advancedfile implements ICachingMethod
      */
     private function getFileName($cacheID)
     {
-        return is_string($cacheID)
+        return \is_string($cacheID)
             ? $this->options['cache_dir'] . $cacheID . $this->options['file_extension']
             : false;
     }
@@ -54,7 +54,7 @@ class cache_advancedfile implements ICachingMethod
      * @param int|null $expiration
      * @return bool
      */
-    public function store($cacheID, $content, $expiration = null)
+    public function store($cacheID, $content, $expiration = null) : bool
     {
         $fileName = $this->getFileName($cacheID);
         $dir      = $this->options['cache_dir'];
@@ -124,7 +124,7 @@ class cache_advancedfile implements ICachingMethod
     /**
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable() : bool
     {
         if (!is_dir($this->options['cache_dir'])
             && !mkdir($this->options['cache_dir'])
@@ -139,7 +139,7 @@ class cache_advancedfile implements ICachingMethod
     /**
      * @return bool
      */
-    public function test()
+    public function test() : bool
     {
         return $this->traitTest()
             && touch($this->options['cache_dir'] . 'check')
@@ -153,17 +153,17 @@ class cache_advancedfile implements ICachingMethod
      * @param string $cacheID
      * @return bool
      */
-    public function flush($cacheID)
+    public function flush($cacheID) : bool
     {
         $fileName = $this->getFileName($cacheID);
 
-        return ($fileName !== false && file_exists($fileName)) ? unlink($fileName) : false;
+        return $fileName !== false && file_exists($fileName) && unlink($fileName);
     }
 
     /**
      * @return bool
      */
-    public function flushAll()
+    public function flushAll() : bool
     {
         $rdi = new \RecursiveDirectoryIterator(
             $this->options['cache_dir'],
@@ -186,7 +186,7 @@ class cache_advancedfile implements ICachingMethod
      *
      * @return array
      */
-    public function getStats()
+    public function getStats() : array
     {
         $dir   = opendir($this->options['cache_dir']);
         $total = 0;
@@ -215,17 +215,17 @@ class cache_advancedfile implements ICachingMethod
      * @param string       $cacheID
      * @return bool
      */
-    public function setCacheTag($tags = [], $cacheID)
+    public function setCacheTag($tags = [], $cacheID) : bool
     {
         $fileName = $this->getFileName($cacheID);
         if ($fileName === false || !file_exists($fileName) || is_link($fileName)) {
             return false;
         }
         $res = false;
-        if (is_string($tags)) {
+        if (\is_string($tags)) {
             $tags = [$tags];
         }
-        if (count($tags) > 0) {
+        if (\count($tags) > 0) {
             foreach ($tags as $tag) {
                 //create subdirs for every underscore
                 $dirs = explode('_', $tag);
@@ -255,10 +255,10 @@ class cache_advancedfile implements ICachingMethod
      * @param array|string $tags
      * @return int
      */
-    public function flushTags($tags)
+    public function flushTags($tags) : int
     {
         $deleted = 0;
-        if (is_string($tags)) {
+        if (\is_string($tags)) {
             $tags = [$tags];
         }
         foreach ($tags as $tag) {
@@ -276,11 +276,9 @@ class cache_advancedfile implements ICachingMethod
                     $res = false;
                     if ($value->isLink()) {
                         //cache entries may have multiple tags - so check if the real entry still exists
-                        if (($target = readlink($value)) !== false) {
-                            if (is_file($target)) {
-                                //delete real cache entry
-                                $res = unlink($target);
-                            }
+                        if (($target = readlink($value)) !== false && is_file($target)) {
+                            //delete real cache entry
+                            $res = unlink($target);
                         }
                         // delete symlink to the entry
                         unlink($value);
@@ -303,7 +301,7 @@ class cache_advancedfile implements ICachingMethod
      * @param string|array $tags
      * @return bool
      */
-    public function clearCacheTags($tags)
+    public function clearCacheTags($tags) : bool
     {
         return true;
     }
@@ -314,12 +312,12 @@ class cache_advancedfile implements ICachingMethod
      * @param array|string $tags
      * @return array
      */
-    public function getKeysByTag($tags)
+    public function getKeysByTag($tags) : array
     {
-        if (is_string($tags)) {
+        if (\is_string($tags)) {
             $tags = [$tags];
         }
-        if (is_array($tags)) {
+        if (\is_array($tags)) {
             $res = [];
             foreach ($tags as $tag) {
                 $dirs = explode('_', $tag);

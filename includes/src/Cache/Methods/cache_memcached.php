@@ -25,7 +25,7 @@ class cache_memcached implements ICachingMethod
     public static $instance;
 
     /**
-     * @var cache_memcached
+     * @var \Memcached
      */
     private $_memcached;
 
@@ -55,7 +55,7 @@ class cache_memcached implements ICachingMethod
         if ($this->_memcached !== null) {
             $this->_memcached->quit();
         }
-        $this->_memcached = new cache_memcached();
+        $this->_memcached = new \Memcached();
         $this->_memcached->addServer($host, (int)$port);
 
         return $this;
@@ -67,7 +67,7 @@ class cache_memcached implements ICachingMethod
      * @param int|null $expiration
      * @return bool
      */
-    public function store($cacheID, $content, $expiration = null)
+    public function store($cacheID, $content, $expiration = null) : bool
     {
         return $this->_memcached->set(
             $this->options['prefix'] . $cacheID,
@@ -101,7 +101,7 @@ class cache_memcached implements ICachingMethod
      */
     public function loadMulti($cacheIDs)
     {
-        if (!is_array($cacheIDs)) {
+        if (!\is_array($cacheIDs)) {
             return false;
         }
         $prefixedKeys = [];
@@ -116,7 +116,7 @@ class cache_memcached implements ICachingMethod
     /**
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable() : bool
     {
         return class_exists('Memcached');
     }
@@ -125,7 +125,7 @@ class cache_memcached implements ICachingMethod
      * @param string $cacheID
      * @return bool
      */
-    public function flush($cacheID)
+    public function flush($cacheID) : bool
     {
         return $this->_memcached->delete($this->options['prefix'] . $cacheID);
     }
@@ -133,7 +133,7 @@ class cache_memcached implements ICachingMethod
     /**
      * @return bool
      */
-    public function flushAll()
+    public function flushAll() : bool
     {
         return $this->_memcached->flush();
     }
@@ -142,22 +142,22 @@ class cache_memcached implements ICachingMethod
      * @param string $cacheID
      * @return bool
      */
-    public function keyExists($cacheID)
+    public function keyExists($cacheID) : bool
     {
         $res = $this->_memcached->get($this->options['prefix'] . $cacheID);
 
-        return ($res !== false || $this->_memcached->getResultCode() === cache_memcached::RES_SUCCESS);
+        return ($res !== false || $this->_memcached->getResultCode() === \Memcached::RES_SUCCESS);
     }
 
     /**
      * @todo: get the right array index, not just the first one
      * @return array
      */
-    public function getStats()
+    public function getStats() : array
     {
         if (method_exists($this->_memcached, 'getStats')) {
             $stats = $this->_memcached->getStats();
-            if (is_array($stats)) {
+            if (\is_array($stats)) {
                 foreach ($stats as $key => $_stat) {
                     return [
                         'entries' => $_stat['curr_items'],

@@ -26,9 +26,9 @@ class Migration_20161103110000 extends Migration implements IMigration
 
     public function up()
     {
-        $cContentHtml = Shop::DB()->escape(file_get_contents(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'eng/email_bericht_html.tpl'));
-        $cContentText = Shop::DB()->escape(file_get_contents(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'eng/email_bericht_plain.tpl'));
-        $oSpracheEng  = Shop::DB()->select('tsprache', 'cIso', 'eng', null, null, null, null, false, 'kSprache');
+        $cContentHtml = Shop::Container()->getDB()->escape(file_get_contents(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'eng/email_bericht_html.tpl'));
+        $cContentText = Shop::Container()->getDB()->escape(file_get_contents(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'eng/email_bericht_plain.tpl'));
+        $oSpracheEng  = Shop::Container()->getDB()->select('tsprache', 'cIso', 'eng', null, null, null, null, false, 'kSprache');
 
         if ($oSpracheEng !== null) {
             $this->execute("
@@ -60,7 +60,7 @@ class Migration_20161103110000 extends Migration implements IMigration
 
     public function down()
     {
-        $oSpracheEng = Shop::DB()->select('tsprache', 'cIso', 'eng', null, null, null, null, false, 'kSprache');
+        $oSpracheEng = Shop::Container()->getDB()->select('tsprache', 'cIso', 'eng', null, null, null, null, false, 'kSprache');
 
         if ($oSpracheEng !== null) {
             $this->execute("

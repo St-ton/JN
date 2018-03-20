@@ -48,7 +48,7 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
     }
     // Prüfen ob Name schon vergeben
     if ($nNewskategorieEditSpeichern == 0) {
-        $oNewsKategorieTMP = Shop::DB()->select('tnewskategorie', 'cName', $cName);
+        $oNewsKategorieTMP = Shop::Container()->getDB()->select('tnewskategorie', 'cName', $cName);
         if (isset($oNewsKategorieTMP->kNewsKategorie) && $oNewsKategorieTMP->kNewsKategorie > 0) {
             $cPlausiValue_arr['cName'] = 2;
         }
@@ -214,7 +214,7 @@ function speicherNewsKommentar($kNewsKommentar, $cPost_arr)
         $upd->cName      = $cPost_arr['cName'];
         $upd->cKommentar = $cPost_arr['cKommentar'];
 
-        return Shop::DB()->update('tnewskommentar', 'kNewsKommentar', (int)$kNewsKommentar, $upd) >= 0;
+        return Shop::Container()->getDB()->update('tnewskommentar', 'kNewsKommentar', (int)$kNewsKommentar, $upd) >= 0;
     }
 
     return false;
@@ -258,7 +258,7 @@ function holeNewskategorie($kSprache = null, $cLimitSQL = '')
     }
     $kSprache = (int)$kSprache;
 
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT" . (!empty($cLimitSQL) ? " SQL_CALC_FOUND_ROWS" : '') . 
             " *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
             FROM tnewskategorie
@@ -360,11 +360,11 @@ function loescheNewsKategorie($kNewsKategorie_arr)
     if (is_array($kNewsKategorie_arr) && count($kNewsKategorie_arr) > 0) {
         foreach ($kNewsKategorie_arr as $kNewsKategorie) {
             $kNewsKategorie = (int)$kNewsKategorie;
-            Shop::DB()->delete('tnewskategorie', 'kNewsKategorie', $kNewsKategorie);
+            Shop::Container()->getDB()->delete('tnewskategorie', 'kNewsKategorie', $kNewsKategorie);
             // tseo löschen
-            Shop::DB()->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $kNewsKategorie]);
+            Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $kNewsKategorie]);
             // tnewskategorienews löschen
-            Shop::DB()->delete('tnewskategorienews', 'kNewsKategorie', $kNewsKategorie);
+            Shop::Container()->getDB()->delete('tnewskategorienews', 'kNewsKategorie', $kNewsKategorie);
         }
 
         return true;
@@ -384,7 +384,7 @@ function editiereNewskategorie($kNewsKategorie, $kSprache)
     $kNewsKategorie = (int)$kNewsKategorie;
     $kSprache       = (int)$kSprache;
     if ($kNewsKategorie > 0 && $kSprache > 0) {
-        $oNewsKategorie = Shop::DB()->query(
+        $oNewsKategorie = Shop::Container()->getDB()->query(
             "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
                 tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
                 tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
@@ -459,9 +459,9 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
                     $upd                = new stdClass();
                     $upd->cPreviewImage = '';
                     if (strpos($cUploadVerzeichnis, PFAD_NEWSKATEGORIEBILDER) === false){
-                        Shop::DB()->update('tnews', 'kNews', $kNews, $upd);
+                        Shop::Container()->getDB()->update('tnews', 'kNews', $kNews, $upd);
                     } else {
-                        Shop::DB()->update('tnewskategorie', 'kNewsKategorie', $kNews, $upd);
+                        Shop::Container()->getDB()->update('tnewskategorie', 'kNewsKategorie', $kNews, $upd);
                     }
                 }
 

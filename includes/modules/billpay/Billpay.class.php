@@ -875,7 +875,7 @@ class Billpay extends PaymentMethod
 
         // order history
         if ($eCustomerType == 'e') {
-            $oOrder_arr = Shop::DB()->query(
+            $oOrder_arr = Shop::Container()->getDB()->query(
                 "SELECT tbestellung.dErstellt, tbestellung.fGesamtsumme, twaehrung.cISO, tbestellung.kBestellung
                     FROM tbestellung
                     LEFT JOIN twaehrung
@@ -1577,7 +1577,7 @@ class BPHelper
         if (strlen($_SESSION['cISOSprache']) > 0) {
             $cISOSprache = $_SESSION['cISOSprache'];
         } else {
-            $oSprache = Shop::DB()->query("SELECT kSprache, cISO FROM tsprache WHERE cShopStandard = 'Y'", 1);
+            $oSprache = Shop::Container()->getDB()->query("SELECT kSprache, cISO FROM tsprache WHERE cShopStandard = 'Y'", 1);
             if ($oSprache->kSprache > 0) {
                 $cISOSprache = $oSprache->cISO;
             }

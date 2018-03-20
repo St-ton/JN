@@ -149,7 +149,7 @@ class Session
         }
         if (isset($_SESSION['Globals_TS'])) {
             $globalsAktualisieren = false;
-            $ts                   = Shop::DB()->queryPrepared(
+            $ts                   = Shop::Container()->getDB()->queryPrepared(
                 'SELECT dLetzteAenderung 
                     FROM tglobals 
                     WHERE dLetzteAenderung > :ts',
@@ -161,7 +161,7 @@ class Session
                 $globalsAktualisieren   = true;
             }
         } else {
-            $ts                     = Shop::DB()->query(
+            $ts                     = Shop::Container()->getDB()->query(
                 'SELECT dLetzteAenderung 
                     FROM tglobals',
                 NiceDB::RET_SINGLE_OBJECT
@@ -195,7 +195,7 @@ class Session
             $_SESSION['ks']                               = [];
             $_SESSION['Waehrungen']                       = [];
             $_SESSION['Sprachen']                         = Sprache::getInstance(false)->gibInstallierteSprachen();
-            $allCurrencies = Shop::DB()->selectAll('twaehrung', [], [], 'kWaehrung');
+            $allCurrencies = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
             foreach ($allCurrencies as $currency) {
                 $_SESSION['Waehrungen'][] = new Currency($currency->kWaehrung);
             }
@@ -315,7 +315,7 @@ class Session
             && $_SESSION['Kunde']->kKunde > 0
             && !isset($_SESSION['kundendaten_aktualisiert'])
         ) {
-            $Kunde = Shop::DB()->query(
+            $Kunde = Shop::Container()->getDB()->query(
                 "SELECT kKunde
                     FROM tkunde
                     WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "

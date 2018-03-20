@@ -1,5 +1,7 @@
 <?php
 
+namespace Cache;
+
 /**
  * Interface ICachingMethod - interface class for caching methods
  */

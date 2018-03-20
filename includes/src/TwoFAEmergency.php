@@ -70,7 +70,7 @@ class TwoFAEmergency
             $iValCount++;
         }
         // now write into the DB what we got till now
-        $iEffectedRows = Shop::DB()->executeQueryPrepared(
+        $iEffectedRows = Shop::Container()->getDB()->executeQueryPrepared(
             'INSERT INTO `tadmin2facodes`(`kAdminlogin`, `cEmergencyCode`) VALUES' . $szSqlRowValues
             , $vAnalogyArray
             , 3
@@ -87,7 +87,7 @@ class TwoFAEmergency
      */
     public function removeExistingCodes($oUserTuple)
     {
-        $iEffectedRows = Shop::DB()->deleteRow('tadmin2facodes', 'kAdminlogin', $oUserTuple->kAdminlogin);
+        $iEffectedRows = Shop::Container()->getDB()->deleteRow('tadmin2facodes', 'kAdminlogin', $oUserTuple->kAdminlogin);
         if ($this->iCodeCount !== $iEffectedRows) {
             // write this error into shop-system-log
             Jtllog::writeLog('2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.');
@@ -105,7 +105,7 @@ class TwoFAEmergency
      */
     public function isValidEmergencyCode($iAdminID, $szCode)
     {
-        $voHashes = Shop::DB()->selectArray('tadmin2facodes', 'kAdminlogin', $iAdminID);
+        $voHashes = Shop::Container()->getDB()->selectArray('tadmin2facodes', 'kAdminlogin', $iAdminID);
         if (1 > count($voHashes)) {
 
             return false; // no emergency-codes are there
@@ -114,7 +114,7 @@ class TwoFAEmergency
         foreach ($voHashes as $oElement) {
             if (true === password_verify($szCode, $oElement->cEmergencyCode)) {
                 // valid code found. remove it from DB and return a 'true'
-                $iEffectedRows = Shop::DB()->delete('tadmin2facodes'
+                $iEffectedRows = Shop::Container()->getDB()->delete('tadmin2facodes'
                     , ['kAdminlogin', 'cEmergencyCode'], [$iAdminID, $oElement->cEmergencyCode]
                     , 3
                 );

@@ -56,7 +56,7 @@ class Tag
      */
     private function loadFromDB($kTag)
     {
-        $obj = Shop::DB()->select('ttag', 'kTag', (int)$kTag);
+        $obj = Shop::Container()->getDB()->select('ttag', 'kTag', (int)$kTag);
         if (!empty($obj)) {
             foreach (get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
@@ -77,7 +77,7 @@ class Tag
     public function getByName($cName = '')
     {
         $cName = StringHandler::filterXSS($cName);
-        $obj = Shop::DB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $cName);
+        $obj = Shop::Container()->getDB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $cName);
         if (!empty($obj)) {
             foreach (get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
@@ -99,7 +99,7 @@ class Tag
         $obj = kopiereMembers($this);
         unset($obj->kTag);
 
-        return Shop::DB()->insert('ttag', $obj);
+        return Shop::Container()->getDB()->insert('ttag', $obj);
     }
 
     /**
@@ -111,6 +111,6 @@ class Tag
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->update('ttag', 'kTag', $obj->kTag, $obj);
+        return Shop::Container()->getDB()->update('ttag', 'kTag', $obj->kTag, $obj);
     }
 }

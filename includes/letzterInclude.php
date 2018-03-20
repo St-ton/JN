@@ -183,7 +183,7 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)Shop::DB()->query('SELECT nZaehler FROM tbesucherzaehler', NiceDB::RET_SINGLE_OBJECT)->nZaehler
+    ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', NiceDB::RET_SINGLE_OBJECT)->nZaehler
     : 0;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('nIsSSL', pruefeSSL())

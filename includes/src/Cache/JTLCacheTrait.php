@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Cache;
+
 /**
  * Class JTLCacheTrait
  */
@@ -327,8 +329,8 @@ trait JTLCacheTrait
      */
     protected function secondsToTime($seconds)
     {
-        $dtF = new DateTime("@0");
-        $dtT = new DateTime("@$seconds");
+        $dtF = new \DateTime("@0");
+        $dtT = new \DateTime("@$seconds");
 
         return $dtF->diff($dtT)->format('%a Tage, %h Stunden, %i Minuten und %s Sekunden');
     }

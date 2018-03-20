@@ -78,7 +78,7 @@ class UnitsOfMeasure
         static $units = [];
 
         if (count($units) === 0) {
-            $units_tmp = Shop::DB()->query(
+            $units_tmp = Shop::Container()->getDB()->query(
                 "SELECT kMassEinheit, cCode
                     FROM tmasseinheit
                     WHERE cCode IN ('" . implode("', '", array_keys(self::$UCUMcodeToPrint)) . "')", 2

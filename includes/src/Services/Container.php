@@ -7,6 +7,9 @@
 namespace Services;
 
 
+use Cache\JTLCacheInterface;
+use DB\DbInterface;
+use DB\Services\GcServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 
@@ -23,6 +26,14 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
+    public function getDB()
+    {
+        return $this->get(DbInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getPasswordService()
     {
         return $this->get(PasswordServiceInterface::class);
@@ -34,5 +45,21 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getCryptoService()
     {
         return $this->get(CryptoServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDBServiceGC()
+    {
+        return $this->get(GcServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCache()
+    {
+        return $this->get(JTLCacheInterface::class);
     }
 }

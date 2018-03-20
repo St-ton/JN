@@ -54,7 +54,7 @@ class Lieferscheinposinfo
      */
     private function loadFromDB($kLieferscheinPosInfo = 0)
     {
-        $oObj = Shop::DB()->select('tlieferscheinposinfo', 'kLieferscheinPosInfo', (int)$kLieferscheinPosInfo);
+        $oObj = Shop::Container()->getDB()->select('tlieferscheinposinfo', 'kLieferscheinPosInfo', (int)$kLieferscheinPosInfo);
 
         if ($oObj !== null && $oObj->kLieferscheinPosInfo > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
@@ -84,7 +84,7 @@ class Lieferscheinposinfo
 
         unset($oObj->kLieferscheinPosInfo);
 
-        $kPrim = Shop::DB()->insert('tlieferscheinposinfo', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tlieferscheinposinfo', $oObj);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -106,7 +106,7 @@ class Lieferscheinposinfo
         $_upd->cChargeNr        = $this->getChargeNr();
         $_upd->dMHD             = $this->getMHD();
 
-        return Shop::DB()->update('tlieferscheinposinfo', 'kLieferscheinPosInfo', $this->getLieferscheinPosInfo(), $_upd);
+        return Shop::Container()->getDB()->update('tlieferscheinposinfo', 'kLieferscheinPosInfo', $this->getLieferscheinPosInfo(), $_upd);
     }
 
     /**
@@ -116,7 +116,7 @@ class Lieferscheinposinfo
      */
     public function delete()
     {
-        return Shop::DB()->delete('tlieferscheinposinfo', 'kLieferscheinPosInfo', $this->getLieferscheinPosInfo());
+        return Shop::Container()->getDB()->delete('tlieferscheinposinfo', 'kLieferscheinPosInfo', $this->getLieferscheinPosInfo());
     }
 
     /**
@@ -147,7 +147,7 @@ class Lieferscheinposinfo
      */
     public function setSeriennummer($cSeriennummer)
     {
-        $this->cSeriennummer = Shop::DB()->escape($cSeriennummer);
+        $this->cSeriennummer = Shop::Container()->getDB()->escape($cSeriennummer);
 
         return $this;
     }
@@ -158,7 +158,7 @@ class Lieferscheinposinfo
      */
     public function setChargeNr($cChargeNr)
     {
-        $this->cChargeNr = Shop::DB()->escape($cChargeNr);
+        $this->cChargeNr = Shop::Container()->getDB()->escape($cChargeNr);
 
         return $this;
     }
@@ -169,7 +169,7 @@ class Lieferscheinposinfo
      */
     public function setMHD($dMHD)
     {
-        $this->dMHD = Shop::DB()->escape($dMHD);
+        $this->dMHD = Shop::Container()->getDB()->escape($dMHD);
 
         return $this;
     }

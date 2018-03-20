@@ -62,7 +62,7 @@ function bearbeiteStatusemail($oJobQueue)
             if ($oMailObjekt) {
                 $oMailObjekt->cIntervall = $cIntervalAdj . ' Status-Email';
                 sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $oMailObjekt->mail);
-                Shop::DB()->query(
+                Shop::Container()->getDB()->query(
                     "UPDATE tstatusemail
                         SET " . $dLetzterVersandCol . " = now()
                         WHERE nAktiv = " . (int)$oJobQueue->kKey,

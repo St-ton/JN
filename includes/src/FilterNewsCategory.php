@@ -52,7 +52,7 @@ class FilterNewsCategory extends AbstractFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_obj = Shop::DB()->queryPrepared(
+        $oSeo_obj = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tseo.cSeo, tseo.kSprache, tnewskategorie.cName
                     FROM tseo
                     LEFT JOIN tnewskategorie

@@ -40,20 +40,20 @@ $res = handleCsvImportAction('kupon', function ($obj, $importType = 2) {
     }
 
     if (isset($obj->cCode)
-        && Shop::DB()->select('tkupon', 'cCode', $obj->cCode) !== null
+        && Shop::Container()->getDB()->select('tkupon', 'cCode', $obj->cCode) !== null
     ) {
         return false;
     }
 
     unset($obj->dLastUse);
-    $kKupon = Shop::DB()->insert('tkupon', $obj);
+    $kKupon = Shop::Container()->getDB()->insert('tkupon', $obj);
 
     if ($kKupon === 0) {
         return false;
     }
 
     foreach ($couponNames as $key => $val) {
-        $res = Shop::DB()->insert(
+        $res = Shop::Container()->getDB()->insert(
             'tkuponsprache',
             (object)['kKupon' => $kKupon, 'cISOSprache' => $key, 'cName' => $val]
         );
@@ -144,8 +144,8 @@ if ($action === 'bearbeiten') {
 // Seite ausgeben
 if ($action === 'bearbeiten') {
     // Seite: Bearbeiten
-    $oSteuerklasse_arr = Shop::DB()->query("SELECT kSteuerklasse, cName FROM tsteuerklasse", 2);
-    $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
+    $oSteuerklasse_arr = Shop::Container()->getDB()->query("SELECT kSteuerklasse, cName FROM tsteuerklasse", 2);
+    $oKundengruppe_arr = Shop::Container()->getDB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
     $oHersteller_arr   = getManufacturers($oKupon->cHersteller);
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $kKunde_arr        = array_filter(

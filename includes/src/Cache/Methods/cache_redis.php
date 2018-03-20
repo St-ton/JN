@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Cache\Methods;
+
+use Cache\ICachingMethod;
+use Cache\JTLCacheTrait;
+
 /**
  * Class cache_redis
  * Implements caching via phpredis
@@ -59,7 +64,7 @@ class cache_redis implements ICachingMethod
      */
     private function setRedis($host = null, $port = null, $pass = null, $database = null, $persist = false)
     {
-        $redis   = new Redis();
+        $redis   = new \Redis();
         $connect = $persist === false ? 'connect' : 'pconnect';
         if ($host !== null) {
             $res = ($port !== null && $host[0] !== '/')
@@ -75,9 +80,9 @@ class cache_redis implements ICachingMethod
                 return false;
             }
             // set custom prefix
-            $redis->setOption(Redis::OPT_PREFIX, $this->options['prefix']);
+            $redis->setOption(\Redis::OPT_PREFIX, $this->options['prefix']);
             // set php serializer for objects and arrays
-            $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
+            $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
 
             $this->_redis = $redis;
 
@@ -104,7 +109,7 @@ class cache_redis implements ICachingMethod
             }
 
             return $res;
-        } catch (RedisException $e) {
+        } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
             return false;
@@ -125,7 +130,7 @@ class cache_redis implements ICachingMethod
             }
 
             return $res;
-        } catch (RedisException $e) {
+        } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
             return false;
@@ -140,7 +145,7 @@ class cache_redis implements ICachingMethod
     {
         try {
             return $this->_redis->get($cacheID);
-        } catch (RedisException $e) {
+        } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
             return false;
@@ -163,7 +168,7 @@ class cache_redis implements ICachingMethod
             }
 
             return $return;
-        } catch (RedisException $e) {
+        } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
             return false;
@@ -186,7 +191,7 @@ class cache_redis implements ICachingMethod
     {
         try {
             return $this->_redis->delete($cacheID);
-        } catch (RedisException $e) {
+        } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
             return false;
@@ -263,7 +268,7 @@ class cache_redis implements ICachingMethod
                 // phpredis will throw an exception when unserializing unserialized data
                 try {
                     $_cid = $this->_redis->_unserialize($_cid);
-                } catch (RedisException $e) {
+                } catch (\RedisException $e) {
                     // we know we don't have to continue unserializing when there was an exception
                     break;
                 }
@@ -292,7 +297,7 @@ class cache_redis implements ICachingMethod
         $slowLogData = [];
         try {
             $stats = $this->_redis->info();
-        } catch (RedisException $e) {
+        } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
             return [];
@@ -301,7 +306,7 @@ class cache_redis implements ICachingMethod
             $slowLog = method_exists($this->_redis, 'slowlog')
                 ? $this->_redis->slowlog('get', 25)
                 : [];
-        } catch (RedisException $e) {
+        } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
         }
         $db  = $this->_redis->getDBNum();

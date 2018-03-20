@@ -27,30 +27,30 @@ $oVersion = null;
 if ($login->checkLogin($cName, $cPass) === true) {
     $return = 0;
     if (isset($_POST['kKunde']) && (int)$_POST['kKunde'] > 0) {
-        $oStatus = Shop::DB()->query("SHOW TABLE STATUS LIKE 'tkunde'", 1);
+        $oStatus = Shop::Container()->getDB()->query("SHOW TABLE STATUS LIKE 'tkunde'", 1);
         if ($oStatus->Auto_increment < (int)$_POST['kKunde']) {
-            Shop::DB()->query("ALTER TABLE tkunde AUTO_INCREMENT = " . (int)$_POST['kKunde'], 4);
+            Shop::Container()->getDB()->query("ALTER TABLE tkunde AUTO_INCREMENT = " . (int)$_POST['kKunde'], 4);
         }
     }
     if (isset($_POST['kBestellung']) && (int)$_POST['kBestellung'] > 0) {
-        $oStatus = Shop::DB()->query("SHOW TABLE STATUS LIKE 'tbestellung'", 1);
+        $oStatus = Shop::Container()->getDB()->query("SHOW TABLE STATUS LIKE 'tbestellung'", 1);
         if ($oStatus->Auto_increment < (int)$_POST['kBestellung']) {
-            Shop::DB()->query("ALTER TABLE tbestellung AUTO_INCREMENT = " . (int)$_POST['kBestellung'], 4);
+            Shop::Container()->getDB()->query("ALTER TABLE tbestellung AUTO_INCREMENT = " . (int)$_POST['kBestellung'], 4);
         }
     }
     if (isset($_POST['kLieferadresse']) && (int)$_POST['kLieferadresse'] > 0) {
-        $oStatus = Shop::DB()->query("SHOW TABLE STATUS LIKE 'tlieferadresse'", 1);
+        $oStatus = Shop::Container()->getDB()->query("SHOW TABLE STATUS LIKE 'tlieferadresse'", 1);
         if ($oStatus->Auto_increment < (int)$_POST['kLieferadresse']) {
-            Shop::DB()->query("ALTER TABLE tlieferadresse AUTO_INCREMENT = " . (int)$_POST['kLieferadresse'], 4);
+            Shop::Container()->getDB()->query("ALTER TABLE tlieferadresse AUTO_INCREMENT = " . (int)$_POST['kLieferadresse'], 4);
         }
     }
     if (isset($_POST['kZahlungseingang']) && (int)$_POST['kZahlungseingang'] > 0) {
-        $oStatus = Shop::DB()->query("SHOW TABLE STATUS LIKE 'tzahlungseingang'", 1);
+        $oStatus = Shop::Container()->getDB()->query("SHOW TABLE STATUS LIKE 'tzahlungseingang'", 1);
         if ($oStatus->Auto_increment < (int)$_POST['kZahlungseingang']) {
-            Shop::DB()->query("ALTER TABLE tzahlungseingang AUTO_INCREMENT  = " . (int)$_POST['kZahlungseingang'], 4);
+            Shop::Container()->getDB()->query("ALTER TABLE tzahlungseingang AUTO_INCREMENT  = " . (int)$_POST['kZahlungseingang'], 4);
         }
     }
-    $oVersion = Shop::DB()->query("SELECT nVersion FROM tversion", 1);
+    $oVersion = Shop::Container()->getDB()->query("SELECT nVersion FROM tversion", 1);
 } else {
     Jtllog::writeLog("Result: {$return}", JTLLOG_LEVEL_DEBUG, false, 'Sync_xml');
     syncException("{$return}");

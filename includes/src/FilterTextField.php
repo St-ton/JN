@@ -75,15 +75,15 @@ class FilterTextField extends FilterField
             $cClausePart_arr = [];
             foreach ($cColumn_arr as $cColumn) {
                 switch ($this->nTestOp) {
-                    case 1: $cClausePart_arr[] = $cColumn . " LIKE '%" . Shop::DB()->escape($this->cValue) . "%'"; break;
-                    case 2: $cClausePart_arr[] = $cColumn . " LIKE '" . Shop::DB()->escape($this->cValue) . "%'"; break;
-                    case 3: $cClausePart_arr[] = $cColumn . " LIKE '%" . Shop::DB()->escape($this->cValue) . "'"; break;
-                    case 4: $cClausePart_arr[] = $cColumn . " = '" . Shop::DB()->escape($this->cValue) . "'"; break;
-                    case 5: $cClausePart_arr[] = $cColumn . " < '" . Shop::DB()->escape($this->cValue) . "'"; break;
-                    case 6: $cClausePart_arr[] = $cColumn . " > '" . Shop::DB()->escape($this->cValue) . "'"; break;
-                    case 7: $cClausePart_arr[] = $cColumn . " <= '" . Shop::DB()->escape($this->cValue) . "'"; break;
-                    case 8: $cClausePart_arr[] = $cColumn . " >= '" . Shop::DB()->escape($this->cValue) . "'"; break;
-                    case 9: $cClausePart_arr[] = $cColumn . " != '" . Shop::DB()->escape($this->cValue) . "'"; break;
+                    case 1: $cClausePart_arr[] = $cColumn . " LIKE '%" . Shop::Container()->getDB()->escape($this->cValue) . "%'"; break;
+                    case 2: $cClausePart_arr[] = $cColumn . " LIKE '" . Shop::Container()->getDB()->escape($this->cValue) . "%'"; break;
+                    case 3: $cClausePart_arr[] = $cColumn . " LIKE '%" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
+                    case 4: $cClausePart_arr[] = $cColumn . " = '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
+                    case 5: $cClausePart_arr[] = $cColumn . " < '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
+                    case 6: $cClausePart_arr[] = $cColumn . " > '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
+                    case 7: $cClausePart_arr[] = $cColumn . " <= '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
+                    case 8: $cClausePart_arr[] = $cColumn . " >= '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
+                    case 9: $cClausePart_arr[] = $cColumn . " != '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
                 }
             }
 

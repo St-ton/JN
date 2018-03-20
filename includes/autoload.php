@@ -9,4 +9,5 @@ if (!file_exists(PFAD_ROOT . PFAD_INCLUDES . 'vendor/autoload.php')) {
     exit;
 }
 
-require PFAD_ROOT . PFAD_INCLUDES . 'vendor/autoload.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'vendor/autoload.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'class_aliases.php';

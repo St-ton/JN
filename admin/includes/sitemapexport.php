@@ -318,7 +318,7 @@ function generateSitemapXML()
                     AND tseo.kKey = tartikel.kArtikel
                     AND tseo.kSprache = :langID
             WHERE tartikelsichtbarkeit.kArtikel IS NULL" . $andWhere;
-    $res = Shop::DB()->queryPrepared(
+    $res = Shop::Container()->getDB()->queryPrepared(
         $strSQL, 
         [
             'kGrpID' => $defaultCustomerGroupID,
@@ -441,7 +441,7 @@ function generateSitemapXML()
         );
         while (($tlink = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if (spracheEnthalten($tlink->cISOSprache, $Sprachen)) {
-                $oSeo = Shop::DB()->queryPrepared(
+                $oSeo = Shop::Container()->getDB()->queryPrepared(
                     "SELECT cSeo
                         FROM tseo
                         WHERE cKey = 'kLink'
@@ -486,7 +486,7 @@ function generateSitemapXML()
     if ($conf['sitemap']['sitemap_kategorien_anzeigen'] === 'Y') {
         $categoryHelper = new KategorieListe();
         // Kategorien STD Sprache
-        $res = Shop::DB()->queryPrepared(
+        $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tkategorie.kKategorie, tseo.cSeo, tkategorie.dLetzteAktualisierung
                  FROM tkategorie
                  JOIN tseo 
@@ -551,7 +551,7 @@ function generateSitemapXML()
                           AND tkategorie.kKategorie = tkategoriesprache.kKategorie
                           AND tkategoriesprache.kSprache = :langID
                       ORDER BY tkategorie.kKategorie";
-            $res = Shop::DB()->queryPrepared(
+            $res = Shop::Container()->getDB()->queryPrepared(
                 $strSQL,
                 [
                     'langID' => $SpracheTMP->kSprache,
@@ -595,7 +595,7 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_tags_anzeigen'] === 'Y') {
         // Tags
-        $res = Shop::DB()->queryPrepared(
+        $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT ttag.kTag, ttag.cName, tseo.cSeo
                FROM ttag               
                JOIN tseo 
@@ -639,7 +639,7 @@ function generateSitemapXML()
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 continue;
             }
-            $res = Shop::DB()->queryPrepared(
+            $res = Shop::Container()->getDB()->queryPrepared(
                   "SELECT ttag.kTag, ttag.cName, tseo.cSeo
                       FROM ttag
                       JOIN tseo 
@@ -683,7 +683,7 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_hersteller_anzeigen'] === 'Y') {
         // Hersteller
-        $res = Shop::DB()->queryPrepared(
+        $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT thersteller.kHersteller, thersteller.cName, tseo.cSeo
                  FROM thersteller
                  JOIN tseo 
@@ -723,7 +723,7 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_livesuche_anzeigen'] === 'Y') {
         // Livesuche STD Sprache
-        $res = Shop::DB()->queryPrepared(
+        $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht
                  FROM tsuchanfrage
                  JOIN tseo 
@@ -767,7 +767,7 @@ function generateSitemapXML()
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 continue;
             }
-            $res = Shop::DB()->queryPrepared(
+            $res = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht
                      FROM tsuchanfrage
                      JOIN tseo 
@@ -810,7 +810,7 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y') {
         // Merkmale STD Sprache
-        $res = Shop::DB()->query(
+        $res = Shop::Container()->getDB()->query(
             "SELECT tmerkmal.cName, tmerkmal.kMerkmal, tmerkmalwertsprache.cWert, 
                 tseo.cSeo, tmerkmalwert.kMerkmalWert
                 FROM tmerkmal
@@ -859,7 +859,7 @@ function generateSitemapXML()
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 continue;
             }
-            $res = Shop::DB()->queryPrepared(
+            $res = Shop::Container()->getDB()->queryPrepared(
                     "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
                         tseo.cSeo, tmerkmalwert.kMerkmalWert
                         FROM tmerkmalsprache
@@ -912,7 +912,7 @@ function generateSitemapXML()
         }
     }
     if ($conf['sitemap']['sitemap_news_anzeigen'] === 'Y') {
-        $res = Shop::DB()->query(
+        $res = Shop::Container()->getDB()->query(
             "SELECT tnews.*, tseo.cSeo
                 FROM tnews
                 JOIN tseo 
@@ -949,7 +949,7 @@ function generateSitemapXML()
         }
     }
     if ($conf['sitemap']['sitemap_newskategorien_anzeigen'] === 'Y') {
-        $res = Shop::DB()->query(
+        $res = Shop::Container()->getDB()->query(
             "SELECT tnewskategorie.*, tseo.cSeo
                  FROM tnewskategorie
                  JOIN tseo 
@@ -1045,7 +1045,7 @@ function holeGoogleImage($artikel)
         && strlen($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]) > 0
     ) {
         $cArtNr = StringHandler::filterXSS($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]);
-        $oBild  = Shop::DB()->queryPrepared(
+        $oBild  = Shop::Container()->getDB()->queryPrepared(
             "SELECT tartikelpict.cPfad
                 FROM tartikelpict
                 JOIN tartikel 
@@ -1060,7 +1060,7 @@ function holeGoogleImage($artikel)
     }
 
     if (empty($oBild->cPfad)) {
-        $oBild = Shop::DB()->queryPrepared(
+        $oBild = Shop::Container()->getDB()->queryPrepared(
             'SELECT cPfad 
                 FROM tartikelpict 
                 WHERE kArtikel = :articleID 
@@ -1111,7 +1111,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
         $oSitemapReport->fVerarbeitungszeit = number_format($fTotalZeit, 2);
         $oSitemapReport->dErstellt          = 'now()';
 
-        $kSitemapReport = Shop::DB()->insert('tsitemapreport', $oSitemapReport);
+        $kSitemapReport = Shop::Container()->getDB()->insert('tsitemapreport', $oSitemapReport);
         $bGZ            = function_exists('gzopen');
         Jtllog::writeLog('Sitemaps Report: ' . var_export($nAnzahlURL_arr, true), JTLLOG_LEVEL_DEBUG);
         foreach ($nAnzahlURL_arr as $i => $nAnzahlURL) {
@@ -1126,7 +1126,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
                 $oSitemapReportFile->fGroesse   = is_file($file)
                     ? number_format(filesize(PFAD_ROOT . PFAD_EXPORT . $oSitemapReportFile->cDatei) / 1024, 2)
                     : 0;
-                Shop::DB()->insert('tsitemapreportfile', $oSitemapReportFile);
+                Shop::Container()->getDB()->insert('tsitemapreportfile', $oSitemapReportFile);
             }
         }
     }
@@ -1167,7 +1167,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
             $params['kSuchanfrage'] = $kKey;
             $naviFilter->initStates($params);
             if ($kKey > 0) {
-                $oSuchanfrage = Shop::DB()->queryPrepared(
+                $oSuchanfrage = Shop::Container()->getDB()->queryPrepared(
                     "SELECT cSuche
                         FROM tsuchanfrage
                         WHERE kSuchanfrage = :ks

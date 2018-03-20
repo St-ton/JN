@@ -22,7 +22,7 @@ class Preisradar
         $nLimit        = (int)$nLimit;
         $oProduct_arr  = [];
         // Hole alle Produkte, die mindestens zwei mal den Preis in der angegebenden Zeit geändert haben
-        $oObj_arr = Shop::DB()->query(
+        $oObj_arr = Shop::Container()->getDB()->query(
             "SELECT kArtikel
                 FROM tpreisverlauf
                 WHERE DATE_SUB(now(), INTERVAL {$nTage} DAY) < dDate
@@ -43,7 +43,7 @@ class Preisradar
             }
             $cArtikelSQL .= ")";
             // Hole Daten von jenen Produkten, die mindestens zwei mal den Preis geändert haben
-            $oObj_arr = Shop::DB()->query(
+            $oObj_arr = Shop::Container()->getDB()->query(
                 "SELECT
                     x.*
                   FROM

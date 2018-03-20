@@ -9,6 +9,7 @@ Plugins
     variablen
     hooks
     hinweise
+    container
     cache
     hook_list
     fehlercodes

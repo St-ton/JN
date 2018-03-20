@@ -48,7 +48,7 @@ class ZahlungsLog
         $nLevel    = (int)$nLevel;
         $cSQLLevel = ($nLevel >= 0) ? ('AND nLevel = ' . $nLevel) : '';
 
-        return Shop::DB()->query(
+        return Shop::Container()->getDB()->query(
             "SELECT * FROM tzahlungslog
                 WHERE cModulId = '" . $this->cModulId . "' " . $cSQLLevel . "
                 ORDER BY dDatum DESC, kZahlunglog DESC 
@@ -61,7 +61,7 @@ class ZahlungsLog
      */
     public function logCount()
     {
-        $oCount = Shop::DB()->executeQueryPrepared(
+        $oCount = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT COUNT(*) AS nCount 
                 FROM tzahlungslog 
                 WHERE cModulId = :module",
@@ -77,7 +77,7 @@ class ZahlungsLog
      */
     public function loeschen()
     {
-        return Shop::DB()->delete('tzahlungslog', 'cModulId', $this->cModulId);
+        return Shop::Container()->getDB()->delete('tzahlungslog', 'cModulId', $this->cModulId);
     }
 
     /**
@@ -111,7 +111,7 @@ class ZahlungsLog
         $oZahlungsLog->nLevel   = $nLevel;
         $oZahlungsLog->dDatum   = 'now()';
 
-        return Shop::DB()->insert('tzahlungslog', $oZahlungsLog);
+        return Shop::Container()->getDB()->insert('tzahlungslog', $oZahlungsLog);
     }
 
     /**
@@ -133,7 +133,7 @@ class ZahlungsLog
         $cSQLModulId = implode(',', $cModulId_arr);
         $cSQLLevel   = ($nLevel >= 0) ? ('AND nLevel = ' . $nLevel) : '';
 
-        return Shop::DB()->query(
+        return Shop::Container()->getDB()->query(
             "SELECT * FROM tzahlungslog
                 WHERE cModulId IN(" . $cSQLModulId . ") " . $cSQLLevel . "
                 ORDER BY dDatum DESC, kZahlunglog DESC 
@@ -149,13 +149,13 @@ class ZahlungsLog
     public static function count($cModulId, $nLevel = -1)
     {
         if ($nLevel === -1) {
-            $count = (int)Shop::DB()->queryPrepared(
+            $count = (int)Shop::Container()->getDB()->queryPrepared(
                 "SELECT COUNT(*) AS count FROM tzahlungslog WHERE cModulId = :cModulId",
                 ['cModulId' => $cModulId],
                 1
             )->count;
         } else {
-            $count = (int)Shop::DB()->queryPrepared(
+            $count = (int)Shop::Container()->getDB()->queryPrepared(
                 "SELECT COUNT(*) AS count FROM tzahlungslog WHERE cModulId = :cModulId AND nLevel = :nLevel",
                 ['nLevel' => $nLevel, 'cModulId' => $cModulId],
                 1

@@ -107,7 +107,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         private function loadFromDB($kKonfiggruppe = 0, $kSprache = 0)
         {
-            $oObj = Shop::DB()->select('tkonfiggruppe', 'kKonfiggruppe', (int)$kKonfiggruppe);
+            $oObj = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', (int)$kKonfiggruppe);
             if (isset($oObj->kKonfiggruppe) && $oObj->kKonfiggruppe > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
@@ -139,7 +139,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $oObj->nSort      = $this->nSort;
             $oObj->cKommentar = $this->cKommentar;
 
-            $kPrim = Shop::DB()->insert('tkonfiggruppe', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppe', $oObj);
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
             }
@@ -162,7 +162,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $_upd->nSort      = $this->nSort;
             $_upd->cKommentar = $this->cKommentar;
 
-            return Shop::DB()->update('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe, $_upd);
+            return Shop::Container()->getDB()->update('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe, $_upd);
         }
 
         /**
@@ -172,7 +172,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe);
+            return Shop::Container()->getDB()->delete('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe);
         }
 
         /**
@@ -192,7 +192,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function setBildPfad($cBildPfad)
         {
-            $this->cBildPfad = Shop::DB()->escape($cBildPfad);
+            $this->cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
 
             return $this;
         }
@@ -298,7 +298,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function getItemCount()
         {
-            $oCount = Shop::DB()->query("
+            $oCount = Shop::Container()->getDB()->query("
                 SELECT COUNT(*) AS nCount 
                     FROM tkonfigitem 
                     WHERE kKonfiggruppe = " . (int)$this->kKonfiggruppe, 1

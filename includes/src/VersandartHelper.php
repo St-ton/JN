@@ -52,7 +52,7 @@ class VersandartHelper
      */
     public function getShippingMethods() : array
     {
-        return $this->shippingMethods ?? Shop::DB()->query('SELECT * FROM tversandart', NiceDB::RET_ARRAY_OF_OBJECTS);
+        return $this->shippingMethods ?? Shop::Container()->getDB()->query('SELECT * FROM tversandart', NiceDB::RET_ARRAY_OF_OBJECTS);
     }
 
     /**
@@ -85,7 +85,7 @@ class VersandartHelper
             if (!isset($this->countries[$kKundengruppe])) {
                 $this->countries[$kKundengruppe] = [];
             }
-            $this->countries[$kKundengruppe][$versandklasse] = Shop::DB()->queryPrepared(
+            $this->countries[$kKundengruppe][$versandklasse] = Shop::Container()->getDB()->queryPrepared(
                 "SELECT *
                     FROM tversandart
                     WHERE fVersandkostenfreiAbX > 0
@@ -170,7 +170,7 @@ class VersandartHelper
         $cNurAbhaengigeVersandart = self::normalerArtikelversand($lieferland) === false
             ? 'Y'
             : 'N';
-        $methods                  = Shop::DB()->queryPrepared(
+        $methods                  = Shop::Container()->getDB()->queryPrepared(
             "SELECT * FROM tversandart
                 WHERE cNurAbhaengigeVersandart = :depOnly
                     AND cLaender LIKE :iso
@@ -220,7 +220,7 @@ class VersandartHelper
             $shippingMethod->cLieferdauer              = [];
             $shippingMethod->specificShippingcosts_arr = null;
             foreach ($_SESSION['Sprachen'] as $Sprache) {
-                $name_spr = Shop::DB()->select(
+                $name_spr = Shop::Container()->getDB()->select(
                     'tversandartsprache',
                     'kVersandart',
                     (int)$shippingMethod->kVersandart,
@@ -259,7 +259,7 @@ class VersandartHelper
                 }
             }
             // Abfrage ob die Zahlungsart/en zur Versandart gesetzt ist/sind
-            $zahlungsarten = Shop::DB()->queryPrepared(
+            $zahlungsarten = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tversandartzahlungsart.*, tzahlungsart.*
                      FROM tversandartzahlungsart, tzahlungsart
                      WHERE tversandartzahlungsart.kVersandart = :methodID
@@ -660,7 +660,7 @@ class VersandartHelper
         $depOnly         = ($checkProductDepedency && self::normalerArtikelversand($deliveryCountry) === false)
             ? 'Y'
             : 'N';
-        $shippingMethods = Shop::DB()->queryPrepared(
+        $shippingMethods = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
             FROM tversandart
             WHERE cNurAbhaengigeVersandart = :depOnly
@@ -798,7 +798,7 @@ class VersandartHelper
         $netPricesActive = Session::CustomerGroup()->isMerchant();
         // Steuersatz nur benötigt, wenn Nettokunde
         if ($netPricesActive === true) {
-            $steuerSatz = Shop::DB()->select(
+            $steuerSatz = Shop::Container()->getDB()->select(
                 'tsteuersatz',
                 'kSteuerklasse',
                 Session::Cart()->gibVersandkostenSteuerklasse()

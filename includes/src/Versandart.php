@@ -129,7 +129,7 @@ class Versandart
      */
     public function loadFromDB($kVersandart)
     {
-        $obj = Shop::DB()->select('tversandart', 'kVersandart', (int)$kVersandart);
+        $obj = Shop::Container()->getDB()->select('tversandart', 'kVersandart', (int)$kVersandart);
         if ($obj === null || !$obj->kVersandart) {
             return 0;
         }
@@ -138,14 +138,14 @@ class Versandart
             $this->$member = $obj->$member;
         }
         // VersandartSprache
-        $oVersandartSprache_arr = Shop::DB()->selectAll('tversandartsprache', 'kVersandart', (int)$this->kVersandart);
+        $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll('tversandartsprache', 'kVersandart', (int)$this->kVersandart);
         if (is_array($oVersandartSprache_arr) && count($oVersandartSprache_arr) > 0) {
             foreach ($oVersandartSprache_arr as $oVersandartSprache) {
                 $this->oVersandartSprache_arr[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
             }
         }
         // Versandstaffel
-        $this->oVersandartStaffel_arr = Shop::DB()->selectAll(
+        $this->oVersandartStaffel_arr = Shop::Container()->getDB()->selectAll(
             'tversandartstaffel',
             'kVersandart',
             (int)$this->kVersandart
@@ -169,7 +169,7 @@ class Versandart
             $obj->nMinLiefertage,
             $obj->nMaxLiefertage
         );
-        $this->kRechnungsadresse = Shop::DB()->insert('tversandart', $obj);
+        $this->kRechnungsadresse = Shop::Container()->getDB()->insert('tversandart', $obj);
 
         return $this->kVersandart;
     }
@@ -190,7 +190,7 @@ class Versandart
             $obj->nMaxLiefertage
         );
 
-        return Shop::DB()->update('tversandart', 'kVersandart', $obj->kVersandart, $obj);
+        return Shop::Container()->getDB()->update('tversandart', 'kVersandart', $obj->kVersandart, $obj);
     }
 
     /**
@@ -201,11 +201,11 @@ class Versandart
     {
         $kVersandart = (int)$kVersandart;
         if ($kVersandart > 0) {
-            Shop::DB()->delete('tversandart', 'kVersandart', $kVersandart);
-            Shop::DB()->delete('tversandartsprache', 'kVersandart', $kVersandart);
-            Shop::DB()->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
-            Shop::DB()->delete('tversandartstaffel', 'kVersandart', $kVersandart);
-            Shop::DB()->query(
+            Shop::Container()->getDB()->delete('tversandart', 'kVersandart', $kVersandart);
+            Shop::Container()->getDB()->delete('tversandartsprache', 'kVersandart', $kVersandart);
+            Shop::Container()->getDB()->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
+            Shop::Container()->getDB()->delete('tversandartstaffel', 'kVersandart', $kVersandart);
+            Shop::Container()->getDB()->query(
                 "DELETE tversandzuschlag, tversandzuschlagplz, tversandzuschlagsprache
                     FROM tversandzuschlag
                     LEFT JOIN tversandzuschlagplz 
@@ -235,11 +235,11 @@ class Versandart
             'tversandzuschlag'       => 'kVersandzuschlag'
         ];
 
-        $oVersandart = Shop::DB()->select('tversandart', 'kVersandart', $kVersandart);
+        $oVersandart = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $kVersandart);
 
         if (isset($oVersandart->kVersandart) && $oVersandart->kVersandart > 0) {
             unset($oVersandart->kVersandart);
-            $kVersandartNew = Shop::DB()->insert('tversandart', $oVersandart);
+            $kVersandartNew = Shop::Container()->getDB()->insert('tversandart', $oVersandart);
 
             if ($kVersandartNew > 0) {
                 foreach ($cSection_arr as $cSection => $cKey) {
@@ -265,7 +265,7 @@ class Versandart
         $value = (int)$value;
 
         if ($value > 0 && strlen($table) > 0 && strlen($key) > 0) {
-            $Objs = Shop::DB()->selectAll($table, $key, $value);
+            $Objs = Shop::Container()->getDB()->selectAll($table, $key, $value);
 
             if (is_array($Objs)) {
                 return $Objs;
@@ -296,7 +296,7 @@ class Versandart
                 if ($table === 'tversandartzahlungsart' && empty($Obj->fAufpreis)) {
                     $Obj->fAufpreis = 0;
                 }
-                $kKey = Shop::DB()->insert($table, $Obj);
+                $kKey = Shop::Container()->getDB()->insert($table, $Obj);
 
                 if ($kKey > 0 && $table === 'tversandzuschlag') {
                     self::cloneShippingSectionSpecial($kKeyPrim, $kKey);

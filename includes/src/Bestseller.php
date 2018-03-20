@@ -154,7 +154,7 @@ class Bestseller
             }
             // Storage SQL
             $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $obj_arr    = Shop::DB()->query(
+            $obj_arr    = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel
                     FROM tartikel
                     JOIN tbestseller

@@ -139,7 +139,7 @@ class Staat
     public static function getRegions($cLandIso)
     {
         if (strlen($cLandIso) === 2) {
-            $oObj_arr = Shop::DB()->selectAll('tstaat', 'cLandIso', $cLandIso);
+            $oObj_arr = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $cLandIso);
             if (is_array($oObj_arr) && count($oObj_arr) > 0) {
                 $oStaat_arr = [];
                 foreach ($oObj_arr as $oObj) {
@@ -174,7 +174,7 @@ class Staat
                 $key2 = 'cLandIso';
                 $val2 = $cLandISO;
             }
-            $oObj = Shop::DB()->select('tstaat', 'cCode', $cCode, $key2, $val2);
+            $oObj = Shop::Container()->getDB()->select('tstaat', 'cCode', $cCode, $key2, $val2);
             if (isset($oObj->kStaat) && $oObj->kStaat > 0) {
                 $options = [
                     'Staat'   => $oObj->kStaat,
@@ -197,7 +197,7 @@ class Staat
     public static function getRegionByName($cName)
     {
         if (strlen($cName) > 0) {
-            $oObj = Shop::DB()->select('tstaat', 'cName', $cName);
+            $oObj = Shop::Container()->getDB()->select('tstaat', 'cName', $cName);
             if (isset($oObj->kStaat) && $oObj->kStaat > 0) {
                 $options = [
                     'Staat'   => $oObj->kStaat,

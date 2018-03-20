@@ -70,7 +70,7 @@ class HerstellerHelper
         if (($manufacturers = Shop::Cache()->get($this->cacheID)) === false) {
             $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             // fixes for admin backend
-            $manufacturers   = Shop::DB()->query(
+            $manufacturers   = Shop::Container()->getDB()->query(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                         thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                         therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
@@ -137,7 +137,7 @@ class HerstellerHelper
      */
     public static function getDataByAttribute($attribute, $value, callable $callback = null)
     {
-        $res = Shop::DB()->select('thersteller', $attribute, $value);
+        $res = Shop::Container()->getDB()->select('thersteller', $attribute, $value);
 
         return is_callable($callback)
             ? $callback($res)

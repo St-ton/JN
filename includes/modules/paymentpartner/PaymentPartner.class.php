@@ -176,9 +176,9 @@ class PaymentPartner extends ServerPaymentMethod
             $this->setOrderStatusToPaid($order);
             $this->sendConfirmationMail($order);
             $_upd            = new stdClass();
-            $_upd->cNofifyID = Shop::DB()->escape($args['IDENTIFICATION_UNIQUEID']);
+            $_upd->cNofifyID = Shop::Container()->getDB()->escape($args['IDENTIFICATION_UNIQUEID']);
             $_upd->dNotify   = 'now()';
-            Shop::DB()->update('tzahlungsession', 'cZahlungsID', substr($paymentHash, 1), $_upd);
+            Shop::Container()->getDB()->update('tzahlungsession', 'cZahlungsID', substr($paymentHash, 1), $_upd);
         }
         // PaymentPartner redirects to:
         echo $this->getReturnURL($order);

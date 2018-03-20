@@ -23,18 +23,18 @@ class DBMigrationHelper
         if ($versionInfo === null) {
             $versionInfo = new stdClass();
 
-            $innodbSupport = Shop::DB()->query(
+            $innodbSupport = Shop::Container()->getDB()->query(
                 "SELECT `SUPPORT`
                     FROM information_schema.ENGINES
                     WHERE `ENGINE` = 'InnoDB'",
                 NiceDB::RET_SINGLE_OBJECT
             );
-            $utf8Support   = Shop::DB()->query(
+            $utf8Support   = Shop::Container()->getDB()->query(
                 "SELECT `IS_COMPILED` FROM information_schema.COLLATIONS
                     WHERE `COLLATION_NAME` = 'utf8_unicode_ci'",
                 NiceDB::RET_SINGLE_OBJECT
             );
-            $innodbPath    = Shop::DB()->query('SELECT @@innodb_data_file_path AS path', NiceDB::RET_SINGLE_OBJECT);
+            $innodbPath    = Shop::Container()->getDB()->query('SELECT @@innodb_data_file_path AS path', NiceDB::RET_SINGLE_OBJECT);
             $innodbSize    = 'auto';
 
             if ($innodbPath && stripos($innodbPath->path, 'autoextend') === false) {
@@ -62,11 +62,11 @@ class DBMigrationHelper
                 }
             }
 
-            $versionInfo->server = Shop::DB()->info();
+            $versionInfo->server = Shop::Container()->getDB()->info();
             $versionInfo->innodb = new stdClass();
 
             $versionInfo->innodb->support = $innodbSupport && in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
-            $versionInfo->innodb->version = Shop::DB()->query(
+            $versionInfo->innodb->version = Shop::Container()->getDB()->query(
                 "SHOW VARIABLES LIKE 'innodb_version'", NiceDB::RET_SINGLE_OBJECT
             )->Value;
             $versionInfo->innodb->size    = $innodbSize;
@@ -81,9 +81,9 @@ class DBMigrationHelper
      */
     public static function getTablesNeedMigration()
     {
-        $database = Shop::DB()->getConfig()['database'];
+        $database = Shop::Container()->getDB()->getConfig()['database'];
 
-        return Shop::DB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_COMMENT`
                 FROM information_schema.TABLES
                 WHERE `TABLE_SCHEMA` = :schema
@@ -101,10 +101,10 @@ class DBMigrationHelper
      */
     public static function getNextTableNeedMigration($excludeTables = [])
     {
-        $database   = Shop::DB()->getConfig()['database'];
+        $database   = Shop::Container()->getDB()->getConfig()['database'];
         $excludeStr = implode("','", StringHandler::filterXSS($excludeTables));
 
-        return Shop::DB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`
                 FROM information_schema.TABLES
                 WHERE `TABLE_SCHEMA` = :schema
@@ -123,9 +123,9 @@ class DBMigrationHelper
      */
     public static function getTable($cTable)
     {
-        $database = Shop::DB()->getConfig()['database'];
+        $database = Shop::Container()->getDB()->getConfig()['database'];
 
-        return Shop::DB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_COMMENT`
                 FROM information_schema.TABLES
                 WHERE `TABLE_SCHEMA` = :schema
@@ -143,7 +143,7 @@ class DBMigrationHelper
      */
     public static function getFulltextIndizes($cTable = null)
     {
-        $params = ['schema' => Shop::DB()->getConfig()['database']];
+        $params = ['schema' => Shop::Container()->getDB()->getConfig()['database']];
         $filter = "AND `INDEX_NAME` NOT IN ('idx_tartikel_fulltext', 'idx_tartikelsprache_fulltext')";
 
         if (!empty($cTable)) {
@@ -151,7 +151,7 @@ class DBMigrationHelper
             $filter          = "AND `TABLE_NAME` = :table";
         }
 
-        return Shop::DB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             "SELECT DISTINCT `TABLE_NAME`, `INDEX_NAME`
                 FROM information_schema.STATISTICS
                 WHERE `TABLE_SCHEMA` = :schema
@@ -181,7 +181,7 @@ class DBMigrationHelper
     public static function isTableInUse($cTable)
     {
         $mysqlVersion = self::getMySQLVersion();
-        $database     = Shop::DB()->getConfig()['database'];
+        $database     = Shop::Container()->getDB()->getConfig()['database'];
 
         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
             $oTable = self::getTable($cTable);
@@ -189,7 +189,7 @@ class DBMigrationHelper
             return strpos($oTable->TABLE_COMMENT, ':Migrating') !== false;
         }
 
-        $tableStatus = Shop::DB()->queryPrepared(
+        $tableStatus = Shop::Container()->getDB()->queryPrepared(
             "SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
                     AND `Table` LIKE :table", [
@@ -207,9 +207,9 @@ class DBMigrationHelper
      */
     public static function getColumnsNeedMigration($cTable)
     {
-        $database = Shop::DB()->getConfig()['database'];
+        $database = Shop::Container()->getDB()->getConfig()['database'];
 
-        return Shop::DB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             "SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `COLUMN_DEFAULT`, `IS_NULLABLE`
                 FROM information_schema.COLUMNS
                 WHERE `TABLE_SCHEMA` = :schema
@@ -316,15 +316,15 @@ class DBMigrationHelper
 
         if (self::isTableNeedMigration($oTable)) {
             $sql = self::sqlMoveToInnoDB($oTable);
-            if (Shop::DB()->executeQuery($sql, 10)) {
+            if (Shop::Container()->getDB()->executeQuery($sql, 10)) {
                 $sql = self::sqlConvertUTF8($oTable);
-                if (empty($sql) || Shop::DB()->executeQuery($sql, 10)) {
+                if (empty($sql) || Shop::Container()->getDB()->executeQuery($sql, 10)) {
                     return self::SUCCESS;
                 }
             }
         } else {
             $sql = self::sqlConvertUTF8($oTable);
-            if (empty($sql) || Shop::DB()->executeQuery($sql, 10)) {
+            if (empty($sql) || Shop::Container()->getDB()->executeQuery($sql, 10)) {
                 return self::SUCCESS;
             }
         }

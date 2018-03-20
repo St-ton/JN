@@ -93,7 +93,7 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
     }
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $kNews > 0) {
         // Kunde ist eingeloggt
-        $oNewsKommentar = Shop::DB()->query(
+        $oNewsKommentar = Shop::Container()->getDB()->query(
             "SELECT count(*) AS nAnzahl
                 FROM tnewskommentar
                 WHERE kNews = " . (int)$kNews . "
@@ -179,7 +179,7 @@ function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
                     " . $cDatumSQL;
     }
 
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
             tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
             tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
@@ -368,7 +368,7 @@ function baueNewsMetaStart($oNewsNaviFilter)
     }
     // Kategoriefilter gesetzt
     if ($oNewsNaviFilter->nNewsKat != -1) {
-        $oNewsKat = Shop::DB()->select(
+        $oNewsKat = Shop::Container()->getDB()->select(
             'tnewskategorie',
             'kNewsKategorie',
             (int)$oNewsNaviFilter->nNewsKat,
@@ -390,7 +390,7 @@ function baueNewsMetaStart($oNewsNaviFilter)
  */
 function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
 {
-    $oLink = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_NEWS);
+    $oLink = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_NEWS);
     if (isset($oLink->kLink) && $oLink->kLink > 0) {
         //hole Link
         $linkHelper    = LinkHelper::getInstance();
@@ -432,7 +432,7 @@ function getNewsArchive($kNews, $bActiveOnly = false)
 {
     $activeFilter = $bActiveOnly ? ' AND tnews.nAktiv = 1 ' : '';
 
-    return Shop::DB()->query("
+    return Shop::Container()->getDB()->query("
         SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
             tnews.cVorschauText, tnews.cPreviewImage, tnews.cMetaTitle, tnews.cMetaDescription, 
             tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tnews.dGueltigVon, tseo.cSeo,
@@ -461,7 +461,7 @@ function getCurrentNewsCategory($kNewsKategorie, $bActiveOnly = false)
 {
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
 
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT tnewskategorie.cName, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription, tseo.cSeo
             FROM tnewskategorie
             LEFT JOIN tseo 
@@ -480,7 +480,7 @@ function getCurrentNewsCategory($kNewsKategorie, $bActiveOnly = false)
 function getNewsCategory($kNews)
 {
     $cSQL                  = '';
-    $oNewsKategorieKey_arr = Shop::DB()->selectAll('tnewskategorienews', 'kNews', (int)$kNews, 'kNewsKategorie');
+    $oNewsKategorieKey_arr = Shop::Container()->getDB()->selectAll('tnewskategorienews', 'kNews', (int)$kNews, 'kNewsKategorie');
 
     if (is_array($oNewsKategorieKey_arr) && count($oNewsKategorieKey_arr) > 0) {
         $cSQL = '';
@@ -495,7 +495,7 @@ function getNewsCategory($kNews)
         }
     }
 
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
             tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
             tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
@@ -523,7 +523,7 @@ function getNewsCategory($kNews)
  */
 function getNewsComments($kNews, $cLimitSQL)
 {
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
             FROM tnewskommentar
             WHERE tnewskommentar.kNews = " . (int)$kNews . "
@@ -539,7 +539,7 @@ function getNewsComments($kNews, $cLimitSQL)
  */
 function getCommentCount($kNews)
 {
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tnewskommentar
             WHERE kNews = " . (int)$kNews . "
@@ -553,7 +553,7 @@ function getCommentCount($kNews)
  */
 function getMonthOverview($kNewsMonatsUebersicht)
 {
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
             FROM tnewsmonatsuebersicht
             LEFT JOIN tseo 
@@ -571,7 +571,7 @@ function getMonthOverview($kNewsMonatsUebersicht)
  */
 function getNewsOverview($oSQL, $cLimitSQL)
 {
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, 
             count(*) AS nAnzahl, count(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
             FROM tnews
@@ -601,7 +601,7 @@ function getNewsOverview($oSQL, $cLimitSQL)
  */
 function getFullNewsOverview($oSQL)
 {
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT count(DISTINCT(tnews.kNews)) AS nAnzahl
             FROM tnews
             " . $oSQL->cNewsKatSQL . "
@@ -621,7 +621,7 @@ function getFullNewsOverview($oSQL)
  */
 function getNewsDateArray($oSQL)
 {
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
       "SELECT month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr
             FROM tnews
             " . $oSQL->cNewsKatSQL . "

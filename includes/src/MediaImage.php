@@ -200,7 +200,7 @@ class MediaImage implements IMedia
             $request  = '/' . ltrim($request, '/');
             $mediaReq = $this->create($request);
 
-            $imgNames = Shop::DB()->executeQueryPrepared(
+            $imgNames = Shop::Container()->getDB()->executeQueryPrepared(
                 "SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
                     FROM tartikel AS a
                     WHERE kArtikel = :kArtikel
@@ -384,7 +384,7 @@ class MediaImage implements IMedia
                     }
                     $limitStmt .= (int)$limit;
                 }
-                $images = Shop::DB()->query(
+                $images = Shop::Container()->getDB()->query(
                     'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
                         FROM tartikelpict
                         INNER JOIN tartikel
@@ -468,7 +468,7 @@ class MediaImage implements IMedia
     {
         $prepared = self::getImageStmt($type, $id);
         if ($prepared !== null) {
-            $primary = Shop::DB()->queryPrepared($prepared->stmt, $prepared->bind, 1);
+            $primary = Shop::Container()->getDB()->queryPrepared($prepared->stmt, $prepared->bind, 1);
             if (is_object($primary)) {
                 return max(1, (int)$primary->number);
             }
@@ -546,7 +546,7 @@ class MediaImage implements IMedia
         $prepared = static::getImageStmt($type, $id);
 
         if ($prepared !== null) {
-            $imageCount = Shop::DB()->queryPrepared($prepared->stmt, $prepared->bind, 3);
+            $imageCount = Shop::Container()->getDB()->queryPrepared($prepared->stmt, $prepared->bind, 3);
 
             return is_numeric($imageCount) ? (int)$imageCount : 0;
         }

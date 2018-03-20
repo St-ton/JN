@@ -78,7 +78,7 @@ class Statistik
                 $this->nAnzeigeIntervall = (int)$nAnzeigeIntervall;
             }
             $oDatumSQL    = $this->baueDatumSQL('dZeit');
-            $oStatTMP_arr = Shop::DB()->query(
+            $oStatTMP_arr = Shop::Container()->getDB()->query(
                 "SELECT * , sum( t.nCount ) AS nCount
                     FROM (
                     SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
@@ -125,7 +125,7 @@ class Statistik
 
             $oDatumSQL = $this->baueDatumSQL('dZeit');
 
-            $oStatTMP_arr = Shop::DB()->query(
+            $oStatTMP_arr = Shop::Container()->getDB()->query(
                 "SELECT * , sum( t.nCount ) AS nCount
                     FROM (
                         SELECT if(cReferer = '', 'direkter Einstieg', cReferer) AS cReferer, 
@@ -165,7 +165,7 @@ class Statistik
 
             $oDatumSQL = $this->baueDatumSQL('dZeit');
 
-            $oStatTMP_arr = Shop::DB()->query(
+            $oStatTMP_arr = Shop::Container()->getDB()->query(
                 "SELECT tbesucherbot.cUserAgent, SUM(t.nCount) AS nCount
                     FROM
                     (
@@ -204,7 +204,7 @@ class Statistik
 
             $oDatumSQL = $this->baueDatumSQL("tbestellung.dErstellt");
 
-            $oStatTMP_arr = Shop::DB()->query(
+            $oStatTMP_arr = Shop::Container()->getDB()->query(
                 "SELECT tbestellung.dErstellt AS dZeit, SUM(tbestellung.fGesamtsumme) AS nCount,
                     DATE_FORMAT(tbestellung.dErstellt, '%m') AS nMonth, 
                     DATE_FORMAT(tbestellung.dErstellt, '%H') AS nHour,
@@ -235,7 +235,7 @@ class Statistik
             $this->gibAnzeigeIntervall();
 
             $oDatumSQL    = $this->baueDatumSQL('dZeit');
-            $oStatTMP_arr = Shop::DB()->query(
+            $oStatTMP_arr = Shop::Container()->getDB()->query(
                 "SELECT *, sum(t.nCount) AS nCount
                     FROM
                     (
@@ -266,7 +266,7 @@ class Statistik
     private function gibDifferenz()
     {
         if (count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0) {
-            $oDay = Shop::DB()->query("
+            $oDay = Shop::Container()->getDB()->query("
                 SELECT DATEDIFF('" . $this->cDatumBis_arr['cDatum'] . "', '" .
                 $this->cDatumVon_arr['cDatum'] . "') AS nTage", 1
             );

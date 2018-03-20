@@ -26,7 +26,7 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
     {
         $this->lifeTime = get_cfg_var('session.gc_maxlifetime');
 
-        return Shop::DB()->isConnected();
+        return Shop::Container()->getDB()->isConnected();
     }
 
     /**
@@ -43,7 +43,7 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
      */
     public function read($sessID)
     {
-        $res = Shop::DB()->executeQueryPrepared(
+        $res = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT cSessionData FROM tsession
                 WHERE cSessionId = :id
                 AND nSessionExpires > :time",
@@ -61,11 +61,11 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
      */
     public function write($sessID, $sessData)
     {
-        $sessID = Shop::DB()->escape($sessID);
+        $sessID = Shop::Container()->getDB()->escape($sessID);
         // set new session expiration
         $newExp = time() + $this->lifeTime;
         // is a session with this id already in the database?
-        $res = Shop::DB()->select('tsession', 'cSessionId', $sessID);
+        $res = Shop::Container()->getDB()->select('tsession', 'cSessionId', $sessID);
         // if yes,
         if (!empty($res)) {
             //...update session data
@@ -73,7 +73,7 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
             $update->nSessionExpires = $newExp;
             $update->cSessionData    = $sessData;
             // if something happened, return true
-            if (Shop::DB()->update('tsession', 'cSessionId', $sessID, $update) > 0) {
+            if (Shop::Container()->getDB()->update('tsession', 'cSessionId', $sessID, $update) > 0) {
                 return true;
             }
         } else { // if no session was found, create a new row
@@ -82,7 +82,7 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
             $session->nSessionExpires = $newExp;
             $session->cSessionData    = $sessData;
 
-            if (Shop::DB()->insert('tsession', $session) > 0) {
+            if (Shop::Container()->getDB()->insert('tsession', $session) > 0) {
                 return true;
             }
         }
@@ -100,7 +100,7 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
     public function destroy($sessID)
     {
         // if session was deleted, return true,
-        return Shop::DB()->delete('tsession', 'cSessionId', $sessID) > 0;
+        return Shop::Container()->getDB()->delete('tsession', 'cSessionId', $sessID) > 0;
     }
 
     /**
@@ -112,6 +112,6 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
     public function gc($sessMaxLifeTime)
     {
         // return affected rows
-        return Shop::DB()->query("DELETE FROM tsession WHERE nSessionExpires < " . time(), 3);
+        return Shop::Container()->getDB()->query("DELETE FROM tsession WHERE nSessionExpires < " . time(), 3);
     }
 }

@@ -12,7 +12,7 @@ if (auth()) {
     if (isset($_POST['b']) && strlen($_POST['b']) > 0) {
         $cBrocken = StringHandler::filterXSS($_POST['b']);    // Wawi Brocken
         // Schau ob bereits Brocken vorhanden und ob sich Brocken geändert hat
-        $oBrocken = Shop::DB()->query(
+        $oBrocken = Shop::Container()->getDB()->query(
             "SELECT cBrocken
                 FROM tbrocken
                 ORDER BY dErstellt DESC
@@ -24,10 +24,10 @@ if (auth()) {
             $oBrocken->cBrocken  = $cBrocken;
             $oBrocken->dErstellt = 'now()';
 
-            Shop::DB()->insert('tbrocken', $oBrocken);
+            Shop::Container()->getDB()->insert('tbrocken', $oBrocken);
         } elseif (isset($oBrocken->cBrocken) && $oBrocken->cBrocken !== $cBrocken && strlen($oBrocken->cBrocken) > 0) {
             // Update
-            Shop::DB()->update(
+            Shop::Container()->getDB()->update(
                 'tbrocken',
                 'cBrocken',
                 $oBrocken->cBrocken,

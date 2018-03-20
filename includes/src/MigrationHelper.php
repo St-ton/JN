@@ -135,7 +135,7 @@ class MigrationHelper
      */
     public static function verifyIntegrity()
     {
-        Shop::DB()->query("
+        Shop::Container()->getDB()->query("
             CREATE TABLE IF NOT EXISTS tmigration 
             (
                 kMigration bigint(14) NOT NULL, 
@@ -144,7 +144,7 @@ class MigrationHelper
                 PRIMARY KEY (kMigration)
             ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'", 3
         );
-        Shop::DB()->query("
+        Shop::Container()->getDB()->query("
             CREATE TABLE IF NOT EXISTS tmigrationlog 
             (
                 kMigrationlog int(10) NOT NULL AUTO_INCREMENT, 

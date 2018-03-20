@@ -12,7 +12,7 @@ if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !validateToken()) {
     die('0');
 }
 
-$queue = Shop::DB()->select('texportqueue', 'kExportqueue', (int)$_GET['e']);
+$queue = Shop::Container()->getDB()->select('texportqueue', 'kExportqueue', (int)$_GET['e']);
 if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {
     die('1');
 }

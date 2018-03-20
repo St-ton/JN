@@ -115,7 +115,7 @@ class Warenkorb
                 } elseif (!empty($Position->Artikel->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])) {
                     $delete = true;
                 } else {
-                    $delete = (Shop::DB()->select('tartikel', 'kArtikel', $Position->kArtikel) === null);
+                    $delete = (Shop::Container()->getDB()->select('tartikel', 'kArtikel', $Position->kArtikel) === null);
                 }
 
                 executeHook(HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS, [
@@ -241,7 +241,7 @@ class Warenkorb
             $NeuePosition->cName[$Sprache->cISO]         = $NeuePosition->Artikel->cName;
             $NeuePosition->cLieferstatus[$Sprache->cISO] = $cLieferstatus_StdSprache;
             if ($Sprache->cStandard === 'Y') {
-                $artikel_spr = Shop::DB()->select(
+                $artikel_spr = Shop::Container()->getDB()->select(
                     'tartikel',
                     'kArtikel', (int)$NeuePosition->kArtikel,
                     null, null,
@@ -250,7 +250,7 @@ class Warenkorb
                     'cName'
                 );
             } else {
-                $artikel_spr = Shop::DB()->select(
+                $artikel_spr = Shop::Container()->getDB()->select(
                     'tartikelsprache',
                     'kArtikel', (int)$NeuePosition->kArtikel,
                     'kSprache', (int)$Sprache->kSprache,
@@ -263,7 +263,7 @@ class Warenkorb
             $NeuePosition->cName[$Sprache->cISO] = (isset($artikel_spr->cName) && strlen(trim($artikel_spr->cName)) > 0)
                 ? $artikel_spr->cName
                 : $NeuePosition->Artikel->cName;
-            $lieferstatus_spr = Shop::DB()->select(
+            $lieferstatus_spr = Shop::Container()->getDB()->select(
                 'tlieferstatus',
                 'kLieferstatus', (isset($NeuePosition->Artikel->kLieferstatus)
                     ? (int)$NeuePosition->Artikel->kLieferstatus
@@ -630,24 +630,24 @@ class Warenkorb
             && $this->config['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y'
             && ($ip = gibIP(true))
         ) {
-            $cnt = Shop::DB()->executeQueryPrepared(
+            $cnt = Shop::Container()->getDB()->executeQueryPrepared(
                 "SELECT count(*) AS anz 
                     FROM tbestellung 
                     WHERE cIP = :ip 
                         AND dErstellt > now()-INTERVAL 1 DAY",
-                ['ip' => Shop::DB()->escape($ip)],
+                ['ip' => Shop::Container()->getDB()->escape($ip)],
                 1
             );
             if ($cnt->anz > 0) {
                 $min                = pow(2, $cnt->anz);
                 $min                = min([$min, 1440]);
-                $bestellungMoeglich = Shop::DB()->executeQueryPrepared(
+                $bestellungMoeglich = Shop::Container()->getDB()->executeQueryPrepared(
                     "SELECT dErstellt+INTERVAL $min MINUTE < now() AS moeglich
                         FROM tbestellung
                         WHERE cIP = :ip
                             AND dErstellt>now()-INTERVAL 1 day
                         ORDER BY kBestellung DESC",
-                    ['ip' => Shop::DB()->escape($ip)],
+                    ['ip' => Shop::Container()->getDB()->escape($ip)],
                     1
                 );
                 if (!$bestellungMoeglich->moeglich) {
@@ -1229,7 +1229,7 @@ class Warenkorb
                 foreach ($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                     if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $this->PositionenArr[$i]->nAnzahl > 0) {
                         //schaue in DB, ob Lagerbestand ausreichend
-                        $oEigenschaftLagerbestand = Shop::DB()->query(
+                        $oEigenschaftLagerbestand = Shop::Container()->getDB()->query(
                             "SELECT kEigenschaftWert, fLagerbestand >= " . $this->PositionenArr[$i]->nAnzahl . " AS bAusreichend, fLagerbestand
                                 FROM teigenschaftwert
                                 WHERE kEigenschaftWert = " . (int)$oWarenkorbPosEigenschaft->kEigenschaftWert, 1
@@ -1248,7 +1248,7 @@ class Warenkorb
             } else {
                 // Position ohne Variationen bzw. Variationen ohne eigenen Lagerbestand
                 // schaue in DB, ob Lagerbestand ausreichend
-                $oArtikelLagerbestand = Shop::DB()->query(
+                $oArtikelLagerbestand = Shop::Container()->getDB()->query(
                     "SELECT kArtikel, fLagerbestand >= " . $this->PositionenArr[$i]->nAnzahl . " AS bAusreichend, fLagerbestand
                         FROM tartikel
                         WHERE kArtikel = " . (int)$this->PositionenArr[$i]->kArtikel, 1
@@ -1282,7 +1282,7 @@ class Warenkorb
      */
     public function loadFromDB($kWarenkorb)
     {
-        $obj = Shop::DB()->select('twarenkorb', 'kWarenkorb', (int)$kWarenkorb);
+        $obj = Shop::Container()->getDB()->select('twarenkorb', 'kWarenkorb', (int)$kWarenkorb);
         if ($obj !== null) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
@@ -1308,7 +1308,7 @@ class Warenkorb
         if (!isset($obj->kZahlungsInfo) || $obj->kZahlungsInfo === '') {
             $obj->kZahlungsInfo = 0;
         }
-        $this->kWarenkorb = Shop::DB()->insert('twarenkorb', $obj);
+        $this->kWarenkorb = Shop::Container()->getDB()->insert('twarenkorb', $obj);
 
         return $this->kWarenkorb;
     }
@@ -1327,7 +1327,7 @@ class Warenkorb
             'kZahlungsInfo'  => $this->kZahlungsInfo,
         ];
 
-        return Shop::DB()->update('twarenkorb', 'kWarenkorb', $obj->kWarenkorb, $obj);
+        return Shop::Container()->getDB()->update('twarenkorb', 'kWarenkorb', $obj->kWarenkorb, $obj);
     }
 
     /**
@@ -1451,7 +1451,7 @@ class Warenkorb
         if ($this->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON)) {
             // Kupon darf nicht im leeren Warenkorb eingelöst werden
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
-                $Kupon = Shop::DB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
+                $Kupon = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
                     $isValid = (1 === angabenKorrekt(checkeKupon($Kupon)));
                     $this->updateCouponValue();
@@ -1472,7 +1472,7 @@ class Warenkorb
             && $_SESSION['Kupon']->cWertTyp === 'prozent'
         ) {
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
-                $Kupon   = Shop::DB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
+                $Kupon   = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 $isValid = false;
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
                     $isValid = (1 === angabenKorrekt(checkeKupon($Kupon)));
@@ -1509,7 +1509,7 @@ class Warenkorb
             $Spezialpos        = new stdClass();
             $Spezialpos->cName = [];
             foreach ($_SESSION['Sprachen'] as $Sprache) {
-                $name_spr                          = Shop::DB()->select(
+                $name_spr                          = Shop::Container()->getDB()->select(
                     'tkuponsprache',
                     'kKupon', (int)$Kupon->kKupon,
                     'cISOSprache', $Sprache->cISO,
@@ -1653,7 +1653,7 @@ class Warenkorb
         }
 
         // cheapest shipping except shippings that offer cash payment
-        $shipping = Shop::DB()->query(
+        $shipping = Shop::Container()->getDB()->query(
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas

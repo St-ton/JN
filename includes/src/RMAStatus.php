@@ -54,7 +54,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         private function loadFromDB($kRMAStatus)
         {
-            $oObj = Shop::DB()->select('trmastatus', 'kRMAStatus', (int)$kRMAStatus);
+            $oObj = Shop::Container()->getDB()->select('trmastatus', 'kRMAStatus', (int)$kRMAStatus);
             if (isset($oObj->kRMAStatus) && $oObj->kRMAStatus > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
@@ -80,7 +80,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             }
             unset($oObj->kRMAStatus);
 
-            $kPrim = Shop::DB()->insert('trmastatus', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('trmastatus', $oObj);
 
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
@@ -102,7 +102,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $_upd->eFunktion = $this->getFunktion();
             $_upd->nAktiv    = $this->getAktiv();
 
-            return Shop::DB()->update('trmastatus', 'kRMAStatus', $this->getRMAStatus(), $_upd);
+            return Shop::Container()->getDB()->update('trmastatus', 'kRMAStatus', $this->getRMAStatus(), $_upd);
         }
 
         /**
@@ -112,7 +112,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('trmastatus', 'kRMAStatus', $this->getRMAStatus());
+            return Shop::Container()->getDB()->delete('trmastatus', 'kRMAStatus', $this->getRMAStatus());
         }
 
         /**
@@ -143,7 +143,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setStatus($cStatus)
         {
-            $this->cStatus = Shop::DB()->escape($cStatus);
+            $this->cStatus = Shop::Container()->getDB()->escape($cStatus);
 
             return $this;
         }
@@ -154,7 +154,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setFunktion($eFunktion)
         {
-            $this->eFunktion = Shop::DB()->escape($eFunktion);
+            $this->eFunktion = Shop::Container()->getDB()->escape($eFunktion);
 
             return $this;
         }
@@ -275,7 +275,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         private function checkDoubleFunction()
         {
             if ($this->kSprache > 0 && strlen($this->eFunktion) > 0) {
-                $oObj = Shop::DB()->query(
+                $oObj = Shop::Container()->getDB()->query(
                     "SELECT kRMAStatus
                         FROM trmastatus
                         WHERE kSprache = " . $this->kSprache . "
@@ -305,7 +305,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 if ($bAktiv) {
                     $cSQL = " AND nAktiv = 1";
                 }
-                $oObj_arr = Shop::DB()->query(
+                $oObj_arr = Shop::Container()->getDB()->query(
                     "SELECT kRMAStatus
                         FROM trmastatus
                         WHERE kSprache = " . $kSprache . $cSQL, 2
@@ -339,7 +339,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 if ($bAktiv) {
                     $cSQL = " AND nAktiv = 1";
                 }
-                $oObj = Shop::DB()->query(
+                $oObj = Shop::Container()->getDB()->query(
                     "SELECT kRMAStatus
                         FROM trmastatus
                         WHERE kSprache = " . (int)$kSprache . "

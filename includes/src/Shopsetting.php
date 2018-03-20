@@ -62,7 +62,6 @@ final class Shopsetting implements ArrayAccess
         CONF_CHECKBOX            => 'checkbox',
         CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
         CONF_RMA                 => 'rma',
-        CONF_OBJECTCACHING       => 'objectcaching',
         CONF_CACHING             => 'caching'
     ];
 

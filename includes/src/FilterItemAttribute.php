@@ -143,7 +143,7 @@ class FilterItemAttribute extends FilterBaseAttribute
     public function setSeo($languages)
     {
         $value    = $this->getValue();
-        $oSeo_arr = Shop::DB()->selectAll(
+        $oSeo_arr = Shop::Container()->getDB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['kMerkmalWert', $value],
@@ -158,7 +158,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 }
             }
         }
-        $seo_obj = Shop::DB()->executeQueryPrepared('
+        $seo_obj = Shop::Container()->getDB()->executeQueryPrepared('
             SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
@@ -402,7 +402,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             '',
             [] // ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
         );
-        $qryRes                = Shop::DB()->executeQuery(
+        $qryRes                = Shop::Container()->getDB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
             ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl

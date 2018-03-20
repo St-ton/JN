@@ -28,7 +28,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 //#7482
                 return self::$oGruppen_arr[$kArtikel];
             }
-            $oGruppen_arr = Shop::DB()->selectAll(
+            $oGruppen_arr = Shop::Container()->getDB()->selectAll(
                 'tartikelkonfiggruppe',
                 'kArtikel',
                 (int)$kArtikel,
@@ -57,7 +57,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public static function hasKonfig($kArtikel)
         {
-            $oGruppen_arr = Shop::DB()->query(
+            $oGruppen_arr = Shop::Container()->getDB()->query(
                 "SELECT kArtikel, kKonfigGruppe
                      FROM tartikelkonfiggruppe
                      WHERE tartikelkonfiggruppe.kArtikel = " . (int)$kArtikel . "

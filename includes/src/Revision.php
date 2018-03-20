@@ -80,7 +80,7 @@ class Revision
      */
     public function getRevision($id)
     {
-        return Shop::DB()->select('trevisions', 'id', (int)$id);
+        return Shop::Container()->getDB()->select('trevisions', 'id', (int)$id);
     }
 
     /**
@@ -103,7 +103,7 @@ class Revision
                 $author = $_SESSION['AdminAccount']->cLogin ?? '?';
             }
             $field           = $mapping['id'];
-            $currentRevision = Shop::DB()->select($mapping['table'], $mapping['id'], $key);
+            $currentRevision = Shop::Container()->getDB()->select($mapping['table'], $mapping['id'], $key);
             if ($currentRevision === null || empty($currentRevision->$field)) {
                 return false;
             }
@@ -117,7 +117,7 @@ class Revision
 
             if ($secondary !== false && !empty($mapping['reference'])) {
                 $field               = $mapping['reference_key'];
-                $referencedRevisions = Shop::DB()->selectAll($mapping['reference'], $mapping['reference_id'], $key);
+                $referencedRevisions = Shop::Container()->getDB()->selectAll($mapping['reference'], $mapping['reference_id'], $key);
                 if (empty($referencedRevisions)) {
                     return false;
                 }
@@ -147,7 +147,7 @@ class Revision
             $e->content = json_decode($e->content);
 
             return $e;
-        }, Shop::DB()->selectAll(
+        }, Shop::Container()->getDB()->selectAll(
             'trevisions',
             ['type', 'reference_primary'],
             [$type, $primary],
@@ -161,7 +161,7 @@ class Revision
      */
     public function deleteAll()
     {
-        Shop::DB()->query('TRUNCATE table trevisions', 3);
+        Shop::Container()->getDB()->query('TRUNCATE table trevisions', 3);
 
         return $this;
     }
@@ -172,7 +172,7 @@ class Revision
      */
     private function storeRevision($revision)
     {
-        return Shop::DB()->insert('trevisions', $revision);
+        return Shop::Container()->getDB()->insert('trevisions', $revision);
     }
 
     /**
@@ -197,7 +197,7 @@ class Revision
             $updates    = 0;
             unset($oldCOntent->$primaryRow);
             if ($secondary === false) {
-                $updates = Shop::DB()->update($mapping['table'], $primaryRow, $primaryKey, $oldCOntent);
+                $updates = Shop::Container()->getDB()->update($mapping['table'], $primaryRow, $primaryKey, $oldCOntent);
             }
             if ($secondary === true && isset($mapping['reference_key'], $oldCOntent->references)) {
                 $tableToUpdate = $mapping['reference'];
@@ -205,7 +205,7 @@ class Revision
                 foreach ($oldCOntent->references as $key => $value) {
                     // $key is the index in the reference array - which corresponds to the foreign key
                     unset($value->$primaryRow, $value->$secondaryRow);
-                    $updates += Shop::DB()->update(
+                    $updates += Shop::Container()->getDB()->update(
                         $tableToUpdate,
                         [$primaryRow, $secondaryRow],
                         [$primaryKey, $key],
@@ -214,7 +214,7 @@ class Revision
                 }
             }
             if ($updates > 0) {
-                Shop::DB()->delete('trevisions', 'id', $id);
+                Shop::Container()->getDB()->delete('trevisions', 'id', $id);
 
                 return true;
             }
@@ -231,7 +231,7 @@ class Revision
      */
     public function deleteRevision($id)
     {
-        return Shop::DB()->delete('trevisions', 'id', (int)$id);
+        return Shop::Container()->getDB()->delete('trevisions', 'id', (int)$id);
     }
 
     /**
@@ -243,7 +243,7 @@ class Revision
      */
     private function housekeeping($type, $key) : int
     {
-        return Shop::DB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             'DELETE a 
                 FROM trevisions AS a 
                 JOIN ( 

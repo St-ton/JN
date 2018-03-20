@@ -588,9 +588,9 @@ class Link extends MainModel
     public function load($kKey, $oObj = null, $xOption = null, $kLinkgruppe = null)
     {
         if (!empty($kLinkgruppe)) {
-            $oObj = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'], [(int)$kKey, (int)$kLinkgruppe]);
+            $oObj = Shop::Container()->getDB()->select('tlink', ['kLink', 'kLinkgruppe'], [(int)$kKey, (int)$kLinkgruppe]);
         } else {
-            $oObj = Shop::DB()->select('tlink', 'kLink', (int)$kKey);
+            $oObj = Shop::Container()->getDB()->select('tlink', 'kLink', (int)$kKey);
         }
         if (!empty($oObj->kLink)) {
             $this->loadObject($oObj);
@@ -614,10 +614,10 @@ class Link extends MainModel
         $kVaterLinkgruppe = (int)$kVaterLinkgruppe;
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
-                $oLink_arr = Shop::DB()->selectAll('tlink', ['kVaterLink', 'kLinkgruppe'],
+                $oLink_arr = Shop::Container()->getDB()->selectAll('tlink', ['kVaterLink', 'kLinkgruppe'],
                     [$kVaterLink, $kVaterLinkgruppe]);
             } else {
-                $oLink_arr = Shop::DB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
+                $oLink_arr = Shop::Container()->getDB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
             }
 
             if (is_array($oLink_arr) && count($oLink_arr) > 0) {
@@ -659,7 +659,7 @@ class Link extends MainModel
             $oObj->cIdentifier        = $this->cIdentifier;
         }
 
-        $kPrim = Shop::DB()->insert('tlink', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tlink', $oObj);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -685,7 +685,7 @@ class Link extends MainModel
                     $val        = $this->$cMethod();
                     $mValue     = $val === null
                         ? 'NULL'
-                        : ("'" . Shop::DB()->realEscape($val) . "'");
+                        : ("'" . Shop::Container()->getDB()->realEscape($val) . "'");
                     $cSet_arr[] = "{$cMember} = {$mValue}";
                 }
             }
@@ -693,7 +693,7 @@ class Link extends MainModel
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kLink = {$this->getLink()} AND klinkgruppe = {$this->getLinkgruppe()}";
 
-            return Shop::DB()->query($cQuery, 3);
+            return Shop::Container()->getDB()->query($cQuery, 3);
         }
         throw new Exception("ERROR: Object has no members!");
     }
@@ -708,14 +708,14 @@ class Link extends MainModel
         $nRows = 0;
         if ($this->kLink > 0) {
             if (!empty($kLinkgruppe)) {
-                $nRows = Shop::DB()->delete('tlink', ['kLink', 'kLinkgruppe'], [$this->getLink(), $kLinkgruppe]);
+                $nRows = Shop::Container()->getDB()->delete('tlink', ['kLink', 'kLinkgruppe'], [$this->getLink(), $kLinkgruppe]);
             } else {
-                $nRows = Shop::DB()->delete('tlink', 'kLink', $this->getLink());
+                $nRows = Shop::Container()->getDB()->delete('tlink', 'kLink', $this->getLink());
             }
-            $nLinkAnz = Shop::DB()->selectAll('tlink', 'kLink', $this->getLink());
+            $nLinkAnz = Shop::Container()->getDB()->selectAll('tlink', 'kLink', $this->getLink());
             if (count($nLinkAnz) === 0) {
-                Shop::DB()->delete('tlinksprache', 'kLink', $this->getLink());
-                Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$this->getLink(), 'kLink']);
+                Shop::Container()->getDB()->delete('tlinksprache', 'kLink', $this->getLink());
+                Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$this->getLink(), 'kLink']);
 
                 $cDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER . $this->getLink();
                 if (is_dir($cDir) && $this->getLink() > 0 && delDirRecursively($cDir)) {

@@ -3,7 +3,13 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-define('CACHING_ROOT_DIR', __DIR__ . '/');
+
+
+namespace Cache;
+
+use Cache\Methods\cache_null;
+
+define('CACHING_ROOT_DIR', __DIR__ . 'JTLCache.php/');
 define('CACHING_METHODS_DIR', CACHING_ROOT_DIR . 'CachingMethods/');
 define('CACHING_GROUP_ARTICLE', 'art');
 define('CACHING_GROUP_CATEGORY', 'cat');
@@ -44,9 +50,8 @@ define('CACHING_GROUP_FILTER', 'fltr');
  * @method ICachingMethod getActiveMethod()
  * @method array checkAvailability()
  * @method int getResultCode()
- * @method array benchmark(array|string $methods = 'all', mixed|string $testData = 'simple string', int $runCount = 1000, int $repeat = 1, bool $echo = true, bool $format = false)
  */
-class JTLCache
+final class JTLCache implements JTLCacheInterface
 {
     /**
      * default port for redis caching method
@@ -137,17 +142,6 @@ class JTLCache
     }
 
     /**
-     * singleton
-     *
-     * @param array $options
-     * @return JTLCache
-     */
-    public static function getInstance($options = [])
-    {
-        return self::$instance ?? new self($options);
-    }
-
-    /**
      * object wrapper
      *
      * @param string $method
@@ -207,7 +201,6 @@ class JTLCache
             'getActiveMethod'    => '_getActiveMethod',
             'checkAvailability'  => '_checkAvailability',
             'getResultCode'      => '_getResultCode',
-            'benchmark'          => '_benchmark',
         ];
 
         return $mapping[$method] ?? null;
@@ -363,7 +356,7 @@ class JTLCache
     {
         $cache = null;
         /** @var ICachingMethod $className */
-        $className = 'cache_' . $methodName;
+        $className = '\Cache\Methods\cache_' . $methodName;
         $cache     = $className::getInstance($this->options);
         // check method's health
         if (!empty($cache) && $cache instanceof ICachingMethod && $cache->isInitialized() && $cache->isAvailable()) {
@@ -400,7 +393,7 @@ class JTLCache
         if (!class_exists('Shop')) {
             return [];
         }
-        $cacheConfig = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING);
+        $cacheConfig = \Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING);
         $cacheInit   = [];
         if (!empty($cacheConfig)) {
             foreach ($cacheConfig as $_conf) {
@@ -453,9 +446,9 @@ class JTLCache
             // set the configure caching method
             $this->setCache($this->options['method']);
             // preload shop settings and lang vars to avoid single cache/mysql requests
-            $settings = Shopsetting::getInstance();
+            $settings = \Shopsetting::getInstance();
             $settings->preLoad();
-            Shop::Lang()->preLoad();
+            \Shop::Lang()->preLoad();
         } else {
             // set fallback null method
             $this->setCache('null');
@@ -542,7 +535,7 @@ class JTLCache
                         ? ' could not be'
                         : 'successfully') . ' loaded.';
             } else {
-                Profiler::setCacheProfile('get', (($res !== false) ? 'success' : 'failure'), $cacheID);
+                \Profiler::setCacheProfile('get', (($res !== false) ? 'success' : 'failure'), $cacheID);
             }
         }
         if ($callback !== null && $this->resultCode !== self::RES_SUCCESS && is_callable($callback)) {
@@ -585,7 +578,7 @@ class JTLCache
             if ($this->options['debug_method'] === 'echo') {
                 echo '<br />Key ' . $cacheID . (($res !== false) ? 'successfully' : 'could not be') . ' set.';
             } else {
-                Profiler::setCacheProfile('set', (($res !== false) ? 'success' : 'failure'), $cacheID);
+                \Profiler::setCacheProfile('set', (($res !== false) ? 'success' : 'failure'), $cacheID);
             }
         }
         $this->resultCode = $res === false ? self::RES_FAIL : self::RES_SUCCESS;
@@ -745,7 +738,7 @@ class JTLCache
             if ($this->options['debug_method'] === 'echo') {
                 echo '<br />Key ' . $cacheID . (($res !== false) ? ' ' : ' not') . ' flushed';
             } else {
-                Profiler::setCacheProfile('flush', (($res !== false) ? 'success' : 'failure'), $cacheID);
+                \Profiler::setCacheProfile('flush', (($res !== false) ? 'success' : 'failure'), $cacheID);
             }
         }
         if ($hookInfo !== null && defined('HOOK_CACHE_FLUSH_AFTER') && function_exists('executeHook')) {
@@ -897,7 +890,7 @@ class JTLCache
     {
         $available = [];
         foreach ($this->_getAllMethods() as $methodName) {
-            $class = 'cache_' . $methodName;
+            $class = 'Cache\Methods\cache_' . $methodName;
             /** @var ICachingMethod $instance */
             $instance               = new $class($this->options);
             $available[$methodName] = [
@@ -930,18 +923,18 @@ class JTLCache
         }
         // add customer group
         if ($customerGroup === true) {
-            $baseID .= '_cgid' . Session::CustomerGroup()->getID();
+            $baseID .= '_cgid' . \Session::CustomerGroup()->getID();
         } elseif (is_numeric($customerGroup)) {
             $baseID .= '_cgid' . (int)$customerGroup;
         }
         // add language ID
         if ($languageID === true) {
             $baseID .= '_lid';
-            $lang = Shop::getLanguage();
+            $lang = \Shop::getLanguage();
             if ($lang > 0) {
                 $baseID .= $lang;
-            } elseif (Shop::getLanguage() > 0) {
-                $baseID .= Shop::getLanguage();
+            } elseif (\Shop::getLanguage() > 0) {
+                $baseID .= \Shop::getLanguage();
             } else {
                 $baseID .= '0';
             }
@@ -950,7 +943,7 @@ class JTLCache
         }
         // add currency ID
         if ($currencyID === true) {
-            $baseID .= '_curid' . Session::Currency()->getID();
+            $baseID .= '_curid' . \Session::Currency()->getID();
         } elseif (is_numeric($currencyID)) {
             $baseID .= '_curid' . (int)$currencyID;
         }
@@ -977,7 +970,7 @@ class JTLCache
      * @param bool         $format - german number format
      * @return array
      */
-    public function _benchmark($methods = 'all', $testData = 'simple string', $runCount = 1000, $repeat = 1, $echo = true, $format = false)
+    public function benchmark($methods = 'all', $testData = 'simple string', $runCount = 1000, $repeat = 1, $echo = true, $format = false)
     {
         $this->options['activated'] = true;
         $this->options['lifetime']  = self::DEFAULT_LIFETIME;
@@ -995,7 +988,7 @@ class JTLCache
         if (is_array($methods)) {
             foreach ($methods as $method) {
                 if ($method !== 'null') {
-                    $results[] = $this->_benchmark($method, $testData, $runCount, $repeat, $echo, $format);
+                    $results[] = $this->benchmark($method, $testData, $runCount, $repeat, $echo, $format);
                 }
             }
         } else {

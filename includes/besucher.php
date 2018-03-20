@@ -9,7 +9,7 @@ $userAgent    = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT']
 $kBesucherBot = istSpider($userAgent);
 // check, if the visitor is a bot and save that
 if ($kBesucherBot > 0) {
-    Shop::DB()->queryPrepared("UPDATE tbesucherbot SET dZeit = now() WHERE kBesucherBot = :_kBesucherBot",
+    Shop::Container()->getDB()->queryPrepared("UPDATE tbesucherbot SET dZeit = now() WHERE kBesucherBot = :_kBesucherBot",
         ['_kBesucherBot' => $kBesucherBot],
         Shop::DB()::RET_AFFECTED_ROWS
     );
@@ -30,7 +30,7 @@ if (null === $oVisitor) {
     // get back the new ID of that visitor (and write it back into the session)
     $oVisitor->kBesucher = dbInsertVisitor($oVisitor);
     // allways increment the visitor-counter (if no bot)
-    Shop::DB()->query("UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1",
+    Shop::Container()->getDB()->query("UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1",
         Shop::DB()::RET_AFFECTED_ROWS
     );
 } else {
@@ -291,7 +291,7 @@ function werteRefererAus($kBesucher, $referer)
         preg_match("/(\?$param|&$param)=[^&]+/i", $roh, $treffer);
         $ausdruck->cSuchanfrage = isset($treffer[0]) ? urldecode(substr($treffer[0], 3)) : null;
         if ($ausdruck->cSuchanfrage) {
-            Shop::DB()->insert('tbesuchersuchausdruecke', $ausdruck);
+            Shop::Container()->getDB()->insert('tbesuchersuchausdruecke', $ausdruck);
         }
     }
 }
@@ -334,7 +334,7 @@ function istSpider($cUserAgent)
     $cBotUserAgent_arr = array_keys($cSpider_arr);
     foreach ($cBotUserAgent_arr as $cBotUserAgent) {
         if (strpos($cUserAgent, $cBotUserAgent) !== false) {
-            $oBesucherBot = Shop::DB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
+            $oBesucherBot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
 
             break;
         }

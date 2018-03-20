@@ -121,7 +121,7 @@ class Firma
      */
     public function loadFromDB()
     {
-        $obj = Shop::DB()->query("SELECT * FROM tfirma LIMIT 1", 1);
+        $obj = Shop::Container()->getDB()->query("SELECT * FROM tfirma LIMIT 1", 1);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -158,7 +158,7 @@ class Firma
         $obj->cIBAN         = $this->cIBAN;
         $obj->cBIC          = $this->cBIC;
 
-        return Shop::DB()->update('tfirma', 1, 1, $obj);
+        return Shop::Container()->getDB()->update('tfirma', 1, 1, $obj);
     }
 
     /**

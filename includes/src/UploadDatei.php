@@ -56,7 +56,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function loadFromDB($kUpload)
         {
-            $oUpload = Shop::DB()->select('tuploaddatei', 'kUpload', (int)$kUpload);
+            $oUpload = Shop::Container()->getDB()->select('tuploaddatei', 'kUpload', (int)$kUpload);
             if (isset($oUpload->kUpload) && (int)$oUpload->kUpload > 0) {
                 self::copyMembers($oUpload, $this);
 
@@ -71,7 +71,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function save()
         {
-            return Shop::DB()->insert('tuploaddatei', self::copyMembers($this));
+            return Shop::Container()->getDB()->insert('tuploaddatei', self::copyMembers($this));
         }
 
         /**
@@ -79,7 +79,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function update()
         {
-            return Shop::DB()->update('tuploaddatei', 'kUpload', (int)$this->kUpload, self::copyMembers($this));
+            return Shop::Container()->getDB()->update('tuploaddatei', 'kUpload', (int)$this->kUpload, self::copyMembers($this));
         }
 
         /**
@@ -87,7 +87,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('tuploaddatei', 'kUpload', (int)$this->kUpload);
+            return Shop::Container()->getDB()->delete('tuploaddatei', 'kUpload', (int)$this->kUpload);
         }
 
         /**
@@ -97,7 +97,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function fetchAll($kCustomID, $nTyp)
         {
-            $oUploadDatei_arr = Shop::DB()->selectAll(
+            $oUploadDatei_arr = Shop::Container()->getDB()->selectAll(
                 'tuploaddatei',
                 ['kCustomID', 'nTyp'],
                 [(int)$kCustomID, (int)$nTyp]

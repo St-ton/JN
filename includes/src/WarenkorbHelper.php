@@ -555,7 +555,7 @@ class WarenkorbHelper
             || $qty > count($_SESSION['Vergleichsliste']->oArtikel_arr)
         ) {
             // Prüfe auf kArtikel
-            $productExists = Shop::DB()->select(
+            $productExists = Shop::Container()->getDB()->select(
                 'tartikel', '
                 kArtikel', $kArtikel,
                 null, null,
@@ -566,7 +566,7 @@ class WarenkorbHelper
             // Falls Artikel vorhanden
             if ($productExists !== null && $productExists->kArtikel > 0) {
                 // Sichtbarkeit Prüfen
-                $vis = Shop::DB()->select(
+                $vis = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $kArtikel,
                     'kKundengruppe', Session::CustomerGroup()->getID(),
@@ -652,7 +652,7 @@ class WarenkorbHelper
 
         if ($articleID > 0 && Session::Customer()->getID() > 0) {
             // Prüfe auf kArtikel
-            $productExists = Shop::DB()->select(
+            $productExists = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel', $articleID,
                 null, null,
@@ -664,7 +664,7 @@ class WarenkorbHelper
             if ($productExists !== null && $productExists->kArtikel > 0) {
                 $attributes = [];
                 // Sichtbarkeit Prüfen
-                $vis = Shop::DB()->select(
+                $vis = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $articleID,
                     'kKundengruppe', Session::CustomerGroup()->getID(),

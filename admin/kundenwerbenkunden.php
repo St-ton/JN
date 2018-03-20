@@ -31,7 +31,7 @@ if (verifyGPCDataInteger('KwK') === 1 && validateToken()) {
         $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];
         if (is_array($kKundenWerbenKunden_arr) && count($kKundenWerbenKunden_arr) > 0) {
             foreach ($kKundenWerbenKunden_arr as $kKundenWerbenKunden) {
-                Shop::DB()->delete('tkundenwerbenkunden', 'kKundenWerbenKunden', (int)$kKundenWerbenKunden);
+                Shop::Container()->getDB()->delete('tkundenwerbenkunden', 'kKundenWerbenKunden', (int)$kKundenWerbenKunden);
             }
             $cHinweis .= 'Ihre markierten Neukunden wurden erfolgreich gel&ouml;scht.<br />';
         } else {
@@ -43,7 +43,7 @@ if (verifyGPCDataInteger('KwK') === 1 && validateToken()) {
 //
 if ($step === 'kwk_uebersicht') {
     // Einstellungen
-    $oConfig_arr = Shop::DB()->selectAll(
+    $oConfig_arr = Shop::Container()->getDB()->selectAll(
         'teinstellungenconf',
         'kEinstellungenSektion',
         CONF_KUNDENWERBENKUNDEN,
@@ -53,7 +53,7 @@ if ($step === 'kwk_uebersicht') {
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
                 'teinstellungenconfwerte',
                 'kEinstellungenConf',
                 (int)$oConfig_arr[$i]->kEinstellungenConf,
@@ -61,7 +61,7 @@ if ($step === 'kwk_uebersicht') {
                 'nSort'
             );
         } elseif ($oConfig_arr[$i]->cInputTyp === 'selectkdngrp') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
+            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 "SELECT kKundengruppe, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC", 2
@@ -69,7 +69,7 @@ if ($step === 'kwk_uebersicht') {
         }
 
         if ($oConfig_arr[$i]->cInputTyp === 'selectkdngrp') {
-            $oSetValue = Shop::DB()->selectAll(
+            $oSetValue = Shop::Container()->getDB()->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [CONF_KUNDENWERBENKUNDEN,
@@ -77,7 +77,7 @@ if ($step === 'kwk_uebersicht') {
             );
             $oConfig_arr[$i]->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = Shop::DB()->select(
+            $oSetValue = Shop::Container()->getDB()->select(
                 'teinstellungen',
                 'kEinstellungenSektion',
                 CONF_KUNDENWERBENKUNDEN,
@@ -89,17 +89,17 @@ if ($step === 'kwk_uebersicht') {
     }
 
     // Anzahl
-    $oAnzahlReg = Shop::DB()->query(
+    $oAnzahlReg = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tkundenwerbenkunden
             WHERE nRegistriert = 0", 1
     );
-    $oAnzahlNichtReg = Shop::DB()->query(
+    $oAnzahlNichtReg = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tkundenwerbenkunden
             WHERE nRegistriert = 1", 1
     );
-    $oAnzahlPraemie = Shop::DB()->query(
+    $oAnzahlPraemie = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tkundenwerbenkundenbonus", 1
     );
@@ -116,7 +116,7 @@ if ($step === 'kwk_uebersicht') {
         ->assemble();
 
     // tkundenwerbenkunden Nicht registrierte Kunden
-    $oKwKNichtReg_arr = Shop::DB()->query(
+    $oKwKNichtReg_arr = Shop::Container()->getDB()->query(
         "SELECT tkundenwerbenkunden.*, tkunde.kKunde AS kKundeBestand, tkunde.cMail, 
             DATE_FORMAT(tkundenwerbenkunden.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de,
             tkunde.cVorname AS cBestandVorname, tkunde.cNachname AS cBestandNachname
@@ -135,7 +135,7 @@ if ($step === 'kwk_uebersicht') {
         }
     }
     // tkundenwerbenkunden registrierte Kunden
-    $oKwKReg_arr = Shop::DB()->query(
+    $oKwKReg_arr = Shop::Container()->getDB()->query(
         "SELECT tkundenwerbenkunden.*, 
             DATE_FORMAT(tkundenwerbenkunden.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de,
             DATE_FORMAT(tkunde.dErstellt, '%d.%m.%Y') AS dBestandErstellt_de
@@ -156,7 +156,7 @@ if ($step === 'kwk_uebersicht') {
         }
     }
     // letzten 100 Bestandskunden die Guthaben erhalten haben
-    $oKwKBestandBonus_arr = Shop::DB()->query(
+    $oKwKBestandBonus_arr = Shop::Container()->getDB()->query(
         "SELECT tkundenwerbenkundenbonus.*, tkunde.kKunde AS kKundeBestand, tkunde.cMail, 
             DATE_FORMAT(tkundenwerbenkundenbonus.dErhalten, '%d.%m.%Y %H:%i') AS dErhalten_de,
             tkunde.cVorname AS cBestandVorname, tkunde.cNachname AS cBestandNachname

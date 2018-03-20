@@ -45,7 +45,7 @@ if (!empty($_POST['addToCart'])) {
 if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde) && validateToken()) {
     $kWunschliste = (int)$_POST['kWunschliste'];
     // check if wishlist belongs to logged in customer
-    $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
+    $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
     $userOK       = (int)$_SESSION['Kunde']->kKunde === (int)$oWunschliste->kKunde;
 
     switch ($action) {
@@ -64,7 +64,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
 
         case 'sendViaMail':
             // Pruefen, ob der MD5 vorhanden ist
-            $oWunschliste = Shop::DB()->select(
+            $oWunschliste = Shop::Container()->getDB()->select(
                 'twunschliste',
                 ['kWunschliste', 'kKunde'],
                 [$kWunschliste, (int)$_SESSION['Kunde']->kKunde]
@@ -134,10 +134,10 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
 
         case 'update':
             if ($userOK === true) {
-                $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
+                $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
                 if (!empty($_POST['wishlistName']) && $_POST['wishlistName'] !== $oWunschliste->cName) {
                     $oWunschliste->cName = $_POST['wishlistName'];
-                    Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $oWunschliste);
+                    Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $oWunschliste);
                 }
                 if (!empty($oWunschliste->kKunde) && !empty($_SESSION['Kunde']->kKunde) &&
                     (int)$oWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde
@@ -162,7 +162,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
                 $upd               = new stdClass();
                 $upd->nOeffentlich = 1;
                 $upd->cURLID       = $cURLID;
-                Shop::DB()->update('twunschliste', 'kWunschliste', (int)$_POST['kWunschlisteTarget'], $upd);
+                Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', (int)$_POST['kWunschlisteTarget'], $upd);
                 $cHinweis .= Shop::Lang()->get('wishlistSetPublic', 'messages');
             }
             break;
@@ -172,7 +172,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
                 $upd               = new stdClass();
                 $upd->nOeffentlich = 0;
                 $upd->cURLID       = '';
-                Shop::DB()->update('twunschliste', 'kWunschliste', (int)$_POST['kWunschlisteTarget'], $upd);
+                Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', (int)$_POST['kWunschlisteTarget'], $upd);
                 $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
             }
             break;
@@ -187,11 +187,11 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
                 $cHinweis .= wunschlisteLoeschen((int)$_POST['kWunschlisteTarget']);
                 if ((int)$_POST['kWunschlisteTarget'] === $kWunschliste) {
                     //the currently active one was deleted, search for a new one
-                    $newWishlist = Shop::DB()->select('twunschliste', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
+                    $newWishlist = Shop::Container()->getDB()->select('twunschliste', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                     if (isset($newWishlist->kWunschliste)) {
                         $kWunschliste           = (int)$newWishlist->kWunschliste;
                         $newWishlist->nStandard = 1;
-                        Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $newWishlist);
+                        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $newWishlist);
                     } else {
                         //the only existing wishlist was deleted, create a new one
                         if (empty($_SESSION['Wunschliste']->kWunschliste)) {
@@ -241,7 +241,7 @@ if (verifyGPCDataInteger('wlidmsg') > 0) {
 // Falls Wunschliste vielleicht vorhanden aber nicht öffentlich
 if (verifyGPCDataInteger('error') === 1) {
     if (strlen($cURLID) > 0) {
-        $oWunschliste = Shop::DB()->select('twunschliste', 'cURLID', $cURLID);
+        $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'cURLID', $cURLID);
         if (!isset($oWunschliste->kWunschliste, $oWunschliste->nOeffentlich) ||
             $oWunschliste->kWunschliste >= 0 ||
             $oWunschliste->nOeffentlich <= 0
@@ -253,7 +253,7 @@ if (verifyGPCDataInteger('error') === 1) {
     }
 } elseif (!$kWunschliste) {
     if (!empty($_SESSION['Kunde']->kKunde)) {
-        $wishLists = Shop::DB()->selectAll('twunschliste', 'kKunde', $_SESSION['Kunde']->kKunde);
+        $wishLists = Shop::Container()->getDB()->selectAll('twunschliste', 'kKunde', $_SESSION['Kunde']->kKunde);
         //try to find active wishlist
         foreach ($wishLists as $wishList) {
             if ($wishList->nStandard === '1') {
@@ -268,7 +268,7 @@ if (verifyGPCDataInteger('error') === 1) {
             $newWishlist            = $wishLists[0];
             $kWunschliste           = (int)$newWishlist->kWunschliste;
             $newWishlist->nStandard = 1;
-            Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $newWishlist);
+            Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $newWishlist);
         }
     }
     if (!$kWunschliste) {
@@ -287,7 +287,7 @@ if (empty($CWunschliste)) {
     $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
 }
 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-    $oWunschliste_arr = Shop::DB()->selectAll(
+    $oWunschliste_arr = Shop::Container()->getDB()->selectAll(
         'twunschliste',
         'kKunde',
         (int)$_SESSION['Kunde']->kKunde,
@@ -325,7 +325,7 @@ if (isset($CWunschliste->kWunschliste) && $CWunschliste->kWunschliste > 0) {
         $oKampagnenVorgang->cParamWert   = $oKampagne->cWert;
         $oKampagnenVorgang->dErstellt    = 'now()';
 
-        Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);
+        Shop::Container()->getDB()->insert('tkampagnevorgang', $oKampagnenVorgang);
         $_SESSION['Kampagnenbesucher'] = $oKampagne;
     }
 }

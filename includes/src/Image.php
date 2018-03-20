@@ -94,8 +94,8 @@ class Image
     public static function getByPath($path, $type, $number = 1)
     {
         $number = (int)$number;
-        $path   = Shop::DB()->escape($path);
-        $item   = Shop::DB()->executeQueryPrepared(
+        $path   = Shop::Container()->getDB()->escape($path);
+        $item   = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT kArtikel AS id, nNr AS number, cPfad AS path 
                 FROM tartikelpict 
                 WHERE cPfad = :path 
@@ -122,7 +122,7 @@ class Image
     {
         $id     = (int)$id;
         $number = (int)$number;
-        $item   = Shop::DB()->query("
+        $item   = Shop::Container()->getDB()->query("
             SELECT kArtikel AS id, nNr AS number, cPfad AS path 
                 FROM tartikelpict 
                 WHERE kArtikel = '{$id}' 
@@ -244,7 +244,7 @@ class Image
     private static function getBranding()
     {
         $branding    = [];
-        $brandingTmp = Shop::DB()->query("SELECT tbranding.cBildKategorie 
+        $brandingTmp = Shop::Container()->getDB()->query("SELECT tbranding.cBildKategorie 
             AS type, tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
             tbrandingeinstellung.dTransparenz AS transparency, tbrandingeinstellung.dGroesse AS size
             FROM tbrandingeinstellung

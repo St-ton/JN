@@ -70,7 +70,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
             // Variable loeschen
             Shop::Lang()->loesche($_GET['kSprachsektion'], $_GET['cName']);
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-            Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
             $cHinweis = 'Variable ' . $_GET['cName'] . ' wurde erfolgreich gel&ouml;scht.';
             break;
         case 'savevar':
@@ -82,11 +82,11 @@ if (isset($_REQUEST['action']) && validateToken()) {
             $oVariable->cWertAlt_arr   = [];
             $oVariable->bOverwrite_arr = $_REQUEST['bOverwrite_arr'] ?? [];
             $cFehler_arr               = [];
-            $oVariable->cSprachsektion = Shop::DB()
+            $oVariable->cSprachsektion = Shop::Container()->getDB()
                 ->select('tsprachsektion', 'kSprachsektion', (int)$oVariable->kSprachsektion)
                 ->cName;
 
-            $oWertDB_arr = Shop::DB()->queryPrepared(
+            $oWertDB_arr = Shop::Container()->getDB()->queryPrepared(
                 "SELECT s.cNameDeutsch AS cSpracheName, sw.cWert, si.cISO
                     FROM tsprachwerte AS sw
                         JOIN tsprachiso AS si
@@ -132,11 +132,11 @@ if (isset($_REQUEST['action']) && validateToken()) {
                     }
                 }
 
-                Shop::DB()->delete(
+                Shop::Container()->getDB()->delete(
                     'tsprachlog', ['cSektion', 'cName'], [$oVariable->cSprachsektion, $oVariable->cName]
                 );
                 Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-                Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+                Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
             }
 
             break;
@@ -156,7 +156,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
             }
 
             Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
-            Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
 
             $cHinweis = count($cChanged_arr) > 0
                 ? 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr)
@@ -169,7 +169,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
                 ->setzeSprache($cISOSprache)
                 ->clearLog();
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-            Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
             $cHinweis .= 'Liste erfolgreich zur&uuml;ckgesetzt.';
             break;
         default:
@@ -200,7 +200,7 @@ if ($step === 'newvar') {
     $oFilter->assemble();
     $cFilterSQL = $oFilter->getWhereSQL();
 
-    $oWert_arr = Shop::DB()->query(
+    $oWert_arr = Shop::Container()->getDB()->query(
         "SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
             FROM tsprachwerte AS sw
                 JOIN tsprachsektion AS ss
@@ -218,7 +218,7 @@ if ($step === 'newvar') {
         ->setItemArray($oWert_arr)
         ->assemble();
 
-    $oNotFound_arr = Shop::DB()->query(
+    $oNotFound_arr = Shop::Container()->getDB()->query(
         "SELECT sl.*, ss.kSprachsektion
             FROM tsprachlog AS sl
                 LEFT JOIN tsprachsektion AS ss

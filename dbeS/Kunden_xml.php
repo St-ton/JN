@@ -59,7 +59,7 @@ function aktiviereKunden($xml)
             $kunde_db = new Kunde($kunde->kKunde);
 
             if ($kunde_db->kKunde > 0 && $kunde_db->kKundengruppe != $kunde->kKundenGruppe) {
-                Shop::DB()->update(
+                Shop::Container()->getDB()->update(
                     'tkunde',
                     'kKunde',
                     (int)$kunde->kKunde,
@@ -73,7 +73,7 @@ function aktiviereKunden($xml)
                     sendeMail(MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj);
                 }
             }
-            Shop::DB()->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['cAktiv' => 'Y']);
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['cAktiv' => 'Y']);
         }
     }
 }
@@ -106,9 +106,9 @@ function bearbeiteDeletes($xml)
             foreach ($xml['del_kunden']['kKunde'] as $kKunde) {
                 $kKunde = (int)$kKunde;
                 if ($kKunde > 0) {
-                    Shop::DB()->delete('tkunde', 'kKunde', $kKunde);
-                    Shop::DB()->delete('tlieferadresse', 'kKunde', $kKunde);
-                    Shop::DB()->delete('tkundenattribut', 'kKunde', $kKunde);
+                    Shop::Container()->getDB()->delete('tkunde', 'kKunde', $kKunde);
+                    Shop::Container()->getDB()->delete('tlieferadresse', 'kKunde', $kKunde);
+                    Shop::Container()->getDB()->delete('tkundenattribut', 'kKunde', $kKunde);
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                         Jtllog::writeLog('Kunde geloescht: ' . $kKunde, JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
                     }
@@ -116,9 +116,9 @@ function bearbeiteDeletes($xml)
             }
         } elseif ((int)$xml['del_kunden']['kKunde'] > 0) {
             $kKunde = (int)$xml['del_kunden']['kKunde'];
-            Shop::DB()->delete('tkunde', 'kKunde', $kKunde);
-            Shop::DB()->delete('tlieferadresse', 'kKunde', $kKunde);
-            Shop::DB()->delete('tkundenattribut', 'kKunde', $kKunde);
+            Shop::Container()->getDB()->delete('tkunde', 'kKunde', $kKunde);
+            Shop::Container()->getDB()->delete('tlieferadresse', 'kKunde', $kKunde);
+            Shop::Container()->getDB()->delete('tkundenattribut', 'kKunde', $kKunde);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('Kunde geloescht: ' . $kKunde, JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
             }
@@ -139,7 +139,7 @@ function bearbeiteAck($xml)
             foreach ($xml['ack_kunden']['kKunde'] as $kKunde) {
                 $kKunde = (int)$kKunde;
                 if ($kKunde > 0) {
-                    Shop::DB()->update('tkunde', 'kKunde', $kKunde, (object)['cAbgeholt' => 'Y']);
+                    Shop::Container()->getDB()->update('tkunde', 'kKunde', $kKunde, (object)['cAbgeholt' => 'Y']);
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                         Jtllog::writeLog('Kunde erfolgreich abgeholt: ' .
                             $kKunde, JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
@@ -159,20 +159,20 @@ function bearbeiteGutscheine($xml)
         $gutscheine_arr = mapArray($xml['gutscheine'], 'gutschein', $GLOBALS['mGutschein']);
         foreach ($gutscheine_arr as $gutschein) {
             if ($gutschein->kGutschein > 0 && $gutschein->kKunde > 0) {
-                $gutschein_exists = Shop::DB()->select('tgutschein', 'kGutschein', (int)$gutschein->kGutschein);
+                $gutschein_exists = Shop::Container()->getDB()->select('tgutschein', 'kGutschein', (int)$gutschein->kGutschein);
                 if (!isset($gutschein_exists->kGutschein) || !$gutschein_exists->kGutschein) {
-                    $kGutschein = Shop::DB()->insert('tgutschein', $gutschein);
+                    $kGutschein = Shop::Container()->getDB()->insert('tgutschein', $gutschein);
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                         Jtllog::writeLog('Gutschein fuer kKunde ' . (int)$gutschein->kKunde . ' wurde eingeloest. ' .
                             print_r($gutschein, true), JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
                     }
                     //kundenkto erhöhen
-                    Shop::DB()->query("
+                    Shop::Container()->getDB()->query("
                         UPDATE tkunde 
                           SET fGuthaben = fGuthaben+" . (float)$gutschein->fWert . " 
                           WHERE kKunde = " . (int)$gutschein->kKunde, 4
                     );
-                    Shop::DB()->query("
+                    Shop::Container()->getDB()->query("
                         UPDATE tkunde 
                           SET fGuthaben = 0 
                           WHERE kKunde = " . (int)$gutschein->kKunde . " 

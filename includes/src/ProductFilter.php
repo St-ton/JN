@@ -752,7 +752,7 @@ class ProductFilter
         }
         // @todo: how to handle strlen($params['cSuche']) === 0?
         if ($params['kSuchanfrage'] > 0) {
-            $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
+            $oSuchanfrage = Shop::Container()->getDB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
                 $this->search->setName($oSuchanfrage->cSuche);
             }
@@ -771,7 +771,7 @@ class ProductFilter
             $params['cSuche'] = StringHandler::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
             $this->searchQuery->setName($params['cSuche']);
-            $oSuchanfrage                  = Shop::DB()->select(
+            $oSuchanfrage                  = Shop::Container()->getDB()->select(
                 'tsuchanfrage',
                 'cSuche', $params['cSuche'],
                 'kSprache', $this->getLanguageID(),
@@ -831,8 +831,8 @@ class ProductFilter
                         && (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = is_array($_GET[$filterParam])
-                        ? array_map([Shop::DB(), 'realEscape'], $_GET[$filterParam])
-                        : Shop::DB()->realEscape($_GET[$filterParam]);
+                        ? array_map([Shop::Container()->getDB(), 'realEscape'], $_GET[$filterParam])
+                        : Shop::Container()->getDB()->realEscape($_GET[$filterParam]);
                     $this->addActiveFilter($filter, $filterValue);
                     $params[$filterParam] = $filterValue;
                 }
@@ -863,7 +863,7 @@ class ProductFilter
         if (count($values) === 0) {
             return $this;
         }
-        $attributes = Shop::DB()->executeYield(
+        $attributes = Shop::Container()->getDB()->executeYield(
             'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
                 FROM tmerkmalwert
                 JOIN tmerkmal 
@@ -1591,7 +1591,7 @@ class ProductFilter
             function ($e) {
                 return (int)$e->kArtikel;
             },
-            Shop::DB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS)
+            Shop::Container()->getDB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS)
         );
         $order             = $this->getFilterSQL()->getOrder();
         $orderData         = new stdClass();

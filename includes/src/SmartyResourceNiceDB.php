@@ -32,7 +32,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
     public function fetch($name, &$source, &$mtime)
     {
         if ($this->type === 'export') {
-            $exportformat = Shop::DB()->select('texportformat', 'kExportformat', (int)$name);
+            $exportformat = Shop::Container()->getDB()->select('texportformat', 'kExportformat', (int)$name);
             if (empty($exportformat->kExportformat) || $exportformat->kExportformat <= 0) {
                 return false;
             }
@@ -43,7 +43,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 && $pcs[3] === 'anbieterkennzeichnung'
             ) {
                 // Anbieterkennzeichnungsvorlage holen
-                $vl = Shop::DB()->queryPrepared(
+                $vl = Shop::Container()->getDB()->queryPrepared(
                     "SELECT tevs.cContentHtml, tevs.cContentText
                         FROM temailvorlageoriginal tevo
                         JOIN temailvorlagesprache tevs
@@ -59,7 +59,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 if (isset($pcs[3]) && (int)$pcs[3] > 0) {
                     $cTableSprache = 'tpluginemailvorlagesprache';
                 }
-                $vl = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$pcs[1], (int)$pcs[2]]);
+                $vl = Shop::Container()->getDB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$pcs[1], (int)$pcs[2]]);
             }
             if ($vl !== null && $vl !== false) {
                 if ($pcs[0] === 'html') {
@@ -83,7 +83,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 $cTabelle = 'tnewsletter';
                 $cFeld    = 'kNewsletter';
             }
-            $oNewsletter = Shop::DB()->select($cTabelle, $cFeld, $cTeile_arr[1]);
+            $oNewsletter = Shop::Container()->getDB()->select($cTabelle, $cFeld, $cTeile_arr[1]);
 
             if ($cTeile_arr[2] === 'html') {
                 $source = $oNewsletter->cInhaltHTML;

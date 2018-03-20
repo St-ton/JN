@@ -198,7 +198,7 @@ class Kategorie
             $oSQLKategorie->cJOIN  = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
             $oSQLKategorie->cWHERE = ' AND tkategoriesprache.kSprache = ' . $kSprache;
         }
-        $oKategorie = Shop::DB()->query(
+        $oKategorie = Shop::Container()->getDB()->query(
             "SELECT tkategorie.kKategorie, " . $oSQLKategorie->cSELECT . " tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType
@@ -239,7 +239,7 @@ class Kategorie
             $kDefaultLang = $oSpracheTmp !== null ? $oSpracheTmp->kSprache : gibStandardsprache()->kSprache;
             $kDefaultLang = (int)$kDefaultLang;
             if ($kSprache !== $kDefaultLang) {
-                $oSeo = Shop::DB()->select(
+                $oSeo = Shop::Container()->getDB()->select(
                     'tseo',
                     'cKey', 'kKategorie',
                     'kSprache', $kDefaultLang,
@@ -276,7 +276,7 @@ class Kategorie
         $this->categoryFunctionAttributes = [];
         $this->categoryAttributes         = [];
         if ($this->kKategorie > 0) {
-            $oKategorieAttribut_arr = Shop::DB()->query(
+            $oKategorieAttribut_arr = Shop::Container()->getDB()->query(
                 "SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                         COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                         tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
@@ -332,7 +332,7 @@ class Kategorie
         }
         //hat die Kat Unterkategorien?
         if ($this->kKategorie > 0) {
-            $oUnterkategorien = Shop::DB()->select('tkategorie', 'kOberKategorie', (int)$this->kKategorie);
+            $oUnterkategorien = Shop::Container()->getDB()->select('tkategorie', 'kOberKategorie', (int)$this->kKategorie);
             if (isset($oUnterkategorien->kKategorie)) {
                 $this->bUnterKategorien = 1;
             }
@@ -372,7 +372,7 @@ class Kategorie
         $obj->nSort                 = $this->nSort;
         $obj->dLetzteAktualisierung = 'now()';
 
-        return Shop::DB()->insert('tkategorie', $obj);
+        return Shop::Container()->getDB()->insert('tkategorie', $obj);
     }
 
     /**
@@ -391,7 +391,7 @@ class Kategorie
         $obj->nSort                 = $this->nSort;
         $obj->dLetzteAktualisierung = 'now()';
 
-        return Shop::DB()->update('tkategorie', 'kKategorie', $obj->kKategorie, $obj);
+        return Shop::Container()->getDB()->update('tkategorie', 'kKategorie', $obj->kKategorie, $obj);
     }
 
     /**
@@ -440,7 +440,7 @@ class Kategorie
             } else {
                 $cacheID = 'gkb_' . $this->kKategorie;
                 if (($res = Shop::Cache()->get($cacheID)) === false) {
-                    $resObj = Shop::DB()->select('tkategoriepict', 'kKategorie', (int)$this->kKategorie);
+                    $resObj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategorie', (int)$this->kKategorie);
                     $res    = (isset($resObj->cPfad) && $resObj->cPfad)
                         ? PFAD_KATEGORIEBILDER . $resObj->cPfad
                         : BILD_KEIN_KATEGORIEBILD_VORHANDEN;
@@ -467,7 +467,7 @@ class Kategorie
             if ($this->kOberKategorie !== null && $this->kOberKategorie > 0) {
                 return (int)$this->kOberKategorie;
             }
-            $oObj = Shop::DB()->query(
+            $oObj = Shop::Container()->getDB()->query(
                 "SELECT kOberKategorie
                     FROM tkategorie
                     WHERE kOberKategorie > 0
@@ -508,13 +508,13 @@ class Kategorie
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(
                 'checkCategoryVisibility',
-                Shop::DB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', 3) > 0
+                Shop::Container()->getDB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', 3) > 0
             );
         }
         if (!Shop::get('checkCategoryVisibility')) {
             return true;
         }
-        $obj = Shop::DB()->select(
+        $obj = Shop::Container()->getDB()->select(
             'tkategoriesichtbarkeit',
             'kKategorie', (int)$categoryId,
             'kKundengruppe', (int)$customerGroupId

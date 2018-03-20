@@ -4,4 +4,4 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-//this has been replaced by trait.JTL-Shop.JTLCache.php
+class_alias(\DB\NiceDB::class, 'NiceDB', true);

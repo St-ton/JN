@@ -9,8 +9,8 @@ $oAccount->permission('STATS_COUPON_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 $step        = 'kuponstatistik_uebersicht';
 $cWhere      = '';
-$coupons_arr = Shop::DB()->query("SELECT kKupon, cName FROM tkupon ORDER BY cName DESC", 9);
-$oDateShop   = Shop::DB()->query("SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv", 1);
+$coupons_arr = Shop::Container()->getDB()->query("SELECT kKupon, cName FROM tkupon ORDER BY cName DESC", 9);
+$oDateShop   = Shop::Container()->getDB()->query("SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv", 1);
 $startDate   = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
 $endDate     = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
@@ -57,7 +57,7 @@ $dEnd   = $endDate->format('Y-m-d 23:59:59');
 
 $usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons($dStart, $dEnd, verifyGPDataString('kKupon'));
 
-$nCountOrders_arr = Shop::DB()->query(
+$nCountOrders_arr = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nCount
         FROM tbestellung
         WHERE dErstellt BETWEEN '" . $dStart . "'
@@ -80,7 +80,7 @@ if (isset($usedCouponsOrder) && is_array($usedCouponsOrder)) {
             gibPreisLocalizedOhneFaktor($usedCouponOrder['fKuponwertBrutto']);
         $usedCouponsOrder[$key]['nShoppingCartAmount'] =
             gibPreisLocalizedOhneFaktor($usedCouponOrder['fGesamtsummeBrutto']);
-        $usedCouponsOrder[$key]['cOrderPos_arr']       = Shop::DB()->query("
+        $usedCouponsOrder[$key]['cOrderPos_arr']       = Shop::Container()->getDB()->query("
             SELECT CONCAT_WS(' ',wk.cName,wk.cHinweis) AS cName,
                 wk.fPreis+(wk.fPreis/100*wk.fMwSt) AS nPreis, wk.nAnzahl
                 FROM twarenkorbpos AS wk

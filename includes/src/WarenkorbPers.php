@@ -128,13 +128,13 @@ class WarenkorbPers
         if (is_array($this->oWarenkorbPersPos_arr) && count($this->oWarenkorbPersPos_arr) > 0) {
             foreach ($this->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
                 // Eigenschaften löschen
-                Shop::DB()->delete(
+                Shop::Container()->getDB()->delete(
                     'twarenkorbpersposeigenschaft',
                     'kWarenkorbPersPos',
                     (int)$oWarenkorbPersPos->kWarenkorbPersPos
                 );
                 // Postitionen löschen
-                Shop::DB()->delete(
+                Shop::Container()->getDB()->delete(
                     'twarenkorbperspos',
                     'kWarenkorbPers',
                     (int)$oWarenkorbPersPos->kWarenkorbPers
@@ -156,7 +156,7 @@ class WarenkorbPers
             // Entferne Pos und PosEigenschaft
             $this->entferneAlles();
             // Entferne Pers
-            Shop::DB()->delete('twarenkorbpers', 'kWarenkorbPers', (int)$this->kWarenkorbPers);
+            Shop::Container()->getDB()->delete('twarenkorbpers', 'kWarenkorbPers', (int)$this->kWarenkorbPers);
 
             return true;
         }
@@ -171,7 +171,7 @@ class WarenkorbPers
     public function entfernePos($kWarenkorbPersPos)
     {
         $kWarenkorbPersPos = (int)$kWarenkorbPersPos;
-        $oKunde            = Shop::DB()->query(
+        $oKunde            = Shop::Container()->getDB()->query(
             "SELECT twarenkorbpers.kKunde
                 FROM twarenkorbpers
                 JOIN twarenkorbperspos 
@@ -181,9 +181,9 @@ class WarenkorbPers
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WarenkorbPersPos ist
         if (isset($oKunde->kKunde) && $oKunde->kKunde == $_SESSION['Kunde']->kKunde) {
             // Alle Eigenschaften löschen
-            Shop::DB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $kWarenkorbPersPos);
+            Shop::Container()->getDB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $kWarenkorbPersPos);
             // Die Position mit ID $kWarenkorbPersPos löschen
-            Shop::DB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $kWarenkorbPersPos);
+            Shop::Container()->getDB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $kWarenkorbPersPos);
             // WarenkorbPers Position aus der Session löschen
             if (isset($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr) && is_array($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr) &&
                 count($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr) > 0) {
@@ -226,7 +226,7 @@ class WarenkorbPers
         $oTemp                = new stdClass();
         $oTemp->kKunde        = $this->kKunde;
         $oTemp->dErstellt     = $this->dErstellt;
-        $this->kWarenkorbPers = Shop::DB()->insert('twarenkorbpers', $oTemp);
+        $this->kWarenkorbPers = Shop::Container()->getDB()->insert('twarenkorbpers', $oTemp);
         unset($oTemp);
 
         return $this;
@@ -239,7 +239,7 @@ class WarenkorbPers
     public function ladeWarenkorbPers($bArtikel)
     {
         // Prüfe ob die WarenkorbPers dem eingeloggten Kunden gehört
-        $oWarenkorbPers = Shop::DB()->select('twarenkorbpers', 'kKunde', (int)$this->kKunde);
+        $oWarenkorbPers = Shop::Container()->getDB()->select('twarenkorbpers', 'kKunde', (int)$this->kKunde);
         if (!isset($oWarenkorbPers->kWarenkorbPers) || $oWarenkorbPers->kWarenkorbPers < 1) {
             $this->dErstellt = 'now()';
             $this->schreibeDB();
@@ -252,7 +252,7 @@ class WarenkorbPers
 
             if ($this->kWarenkorbPers > 0) {
                 // Hole alle Positionen für eine WarenkorbPers
-                $oWarenkorbPersPos_arr = Shop::DB()->selectAll(
+                $oWarenkorbPersPos_arr = Shop::Container()->getDB()->selectAll(
                     'twarenkorbperspos', 
                     'kWarenkorbPers', 
                     (int)$this->kWarenkorbPers, 
@@ -283,7 +283,7 @@ class WarenkorbPers
                         $oWarenkorbPersPos->dHinzugefuegt     = $oWarenkorbPersPosTMP->dHinzugefuegt;
                         $oWarenkorbPersPos->dHinzugefuegt_de  = $oWarenkorbPersPosTMP->dHinzugefuegt_de;
 
-                        $oWarenkorbPersPosEigenschaft_arr = Shop::DB()->selectAll(
+                        $oWarenkorbPersPosEigenschaft_arr = Shop::Container()->getDB()->selectAll(
                             'twarenkorbpersposeigenschaft',
                             'kWarenkorbPersPos', (int)$oWarenkorbPersPosTMP->kWarenkorbPersPos
                         );
@@ -331,18 +331,18 @@ class WarenkorbPers
             // Hat die Position einen Artikel
             if ($WarenkorbPersPos->kArtikel > 0) {
                 // Prüfe auf kArtikel
-                $oArtikelVorhanden = Shop::DB()->select('tartikel', 'kArtikel', (int)$WarenkorbPersPos->kArtikel);
+                $oArtikelVorhanden = Shop::Container()->getDB()->select('tartikel', 'kArtikel', (int)$WarenkorbPersPos->kArtikel);
                 // Falls Artikel vorhanden
                 if (isset($oArtikelVorhanden->kArtikel) && $oArtikelVorhanden->kArtikel > 0) {
                     // Sichtbarkeit Prüfen
-                    $oSichtbarkeit = Shop::DB()->select(
+                    $oSichtbarkeit = Shop::Container()->getDB()->select(
                         'tartikelsichtbarkeit',
                         'kArtikel', (int)$WarenkorbPersPos->kArtikel,
                         'kKundengruppe', Session::CustomerGroup()->getID()
                     );
                     if ($oSichtbarkeit === null || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
                         // Prüfe welche kEigenschaft gesetzt ist
-                        $oEigenschaft_arr = Shop::DB()->selectAll(
+                        $oEigenschaft_arr = Shop::Container()->getDB()->selectAll(
                             'teigenschaft',
                             'kArtikel', (int)$WarenkorbPersPos->kArtikel,
                             'kEigenschaft, cName, cTyp'
@@ -354,7 +354,7 @@ class WarenkorbPers
                             ) {
                                 foreach ($WarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
                                     if ($oWarenkorbPersPosEigenschaft->kEigenschaft === $oEigenschaft->kEigenschaft) {
-                                        $oEigenschaftWertVorhanden = Shop::DB()->select(
+                                        $oEigenschaftWertVorhanden = Shop::Container()->getDB()->select(
                                             'teigenschaftwert',
                                             'kEigenschaftWert',
                                             (int)$oWarenkorbPersPosEigenschaft->kEigenschaftWert,
@@ -363,8 +363,8 @@ class WarenkorbPers
                                         );
                                         // Prüfe ob die Eigenschaft vorhanden ist
                                         if (!isset($oEigenschaftWertVorhanden->kEigenschaftWert) || !$oEigenschaftWertVorhanden->kEigenschaftWert) {
-                                            Shop::DB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
-                                            Shop::DB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
+                                            Shop::Container()->getDB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
+                                            Shop::Container()->getDB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
                                             $cArtikel_arr[] = $WarenkorbPersPos->cArtikelName;
                                             $hinweis .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                                         }

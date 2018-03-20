@@ -91,7 +91,7 @@ class Cron
     public function holeCronArt()
     {
         return ($this->kKey > 0 && strlen($this->cTabelle) > 0)
-            ? Shop::DB()->selectAll($this->cTabelle, $this->cKey, (int)$this->kKey)
+            ? Shop::Container()->getDB()->selectAll($this->cTabelle, $this->cKey, (int)$this->kKey)
             : false;
     }
 
@@ -101,7 +101,7 @@ class Cron
     public function speicherInDB()
     {
         return $this->kKey > 0 && $this->cKey && $this->cTabelle && $this->cName && $this->nAlleXStd && $this->dStart
-            ? Shop::DB()->insert('tcron', $this)
+            ? Shop::Container()->getDB()->insert('tcron', $this)
             : false;
     }
 
@@ -125,7 +125,7 @@ class Cron
             $oJobQueue->nLimitM    = $nLimitM;
             $oJobQueue->nInArbeit  = 0;
 
-            return Shop::DB()->insert('tjobqueue', $oJobQueue);
+            return Shop::Container()->getDB()->insert('tjobqueue', $oJobQueue);
         }
 
         return false;
@@ -147,7 +147,7 @@ class Cron
             $_upd->dStart        = $this->dStart;
             $_upd->dLetzterStart = $this->dLetzterStart;
 
-            return Shop::DB()->update('tcron', 'kCron', $this->kCron, $_upd) >= 0;
+            return Shop::Container()->getDB()->update('tcron', 'kCron', $this->kCron, $_upd) >= 0;
         }
 
         return false;

@@ -26,20 +26,20 @@ if (isset($_POST['speichern']) && validateToken()) {
         && count($_POST['nBis']) > 0
     ) {
         // Tabelle leeren
-        Shop::DB()->query("TRUNCATE TABLE tpreisspannenfilter", 3);
+        Shop::Container()->getDB()->query("TRUNCATE TABLE tpreisspannenfilter", 3);
 
         foreach ($_POST['nVon'] as $i => $nVon) {
             $nVon = (float)$nVon;
             $nBis = (float)$_POST['nBis'][$i];
 
             if ($nVon >= 0 && $nBis >= 0) {
-                Shop::DB()->insert('tpreisspannenfilter', (object)['nVon' => $nVon, 'nBis' => $nBis]);
+                Shop::Container()->getDB()->insert('tpreisspannenfilter', (object)['nVon' => $nVon, 'nBis' => $nBis]);
             }
         }
     }
 }
 
-$oConfig_arr = Shop::DB()->selectAll(
+$oConfig_arr = Shop::Container()->getDB()->selectAll(
     'teinstellungenconf',
     'kEinstellungenSektion',
     CONF_NAVIGATIONSFILTER,
@@ -49,7 +49,7 @@ $oConfig_arr = Shop::DB()->selectAll(
 
 foreach ($oConfig_arr as $oConfig) {
     if ($oConfig->cInputTyp === 'selectbox') {
-        $oConfig->ConfWerte = Shop::DB()->selectAll(
+        $oConfig->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$oConfig->kEinstellungenConf,
@@ -57,7 +57,7 @@ foreach ($oConfig_arr as $oConfig) {
             'nSort'
         );
     }
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         CONF_NAVIGATIONSFILTER,
@@ -67,7 +67,7 @@ foreach ($oConfig_arr as $oConfig) {
     $oConfig->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
-$oPreisspannenfilter_arr = Shop::DB()->query("SELECT * FROM tpreisspannenfilter", 2);
+$oPreisspannenfilter_arr = Shop::Container()->getDB()->query("SELECT * FROM tpreisspannenfilter", 2);
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oPreisspannenfilter_arr', $oPreisspannenfilter_arr)

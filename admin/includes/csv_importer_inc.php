@@ -50,14 +50,14 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             }
 
             if ($importType === 0 && is_string($target)) {
-                Shop::DB()->query("TRUNCATE $target", NiceDB::RET_AFFECTED_ROWS);
+                Shop::Container()->getDB()->query("TRUNCATE $target", NiceDB::RET_AFFECTED_ROWS);
             }
 
             while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {
                 $obj = new stdClass();
 
                 foreach ($fields as $i => $field) {
-                    $row[$i]     = Shop::DB()->escape($row[$i]);
+                    $row[$i]     = Shop::Container()->getDB()->escape($row[$i]);
                     $obj->$field = $row[$i];
                 }
 
@@ -71,14 +71,14 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
                     $cTable = $target;
 
                     if ($importType === 0 || $importerId === 2) {
-                        $res = Shop::DB()->insert($cTable, $obj);
+                        $res = Shop::Container()->getDB()->insert($cTable, $obj);
 
                         if ($res === 0) {
                             ++$nErrors;
                         }
                     } elseif ($importType === 1) {
-                        Shop::DB()->delete($target, $fields, $row);
-                        $res = Shop::DB()->insert($cTable, $obj);
+                        Shop::Container()->getDB()->delete($target, $fields, $row);
+                        $res = Shop::Container()->getDB()->insert($cTable, $obj);
 
                         if ($res === 0) {
                             ++$nErrors;

@@ -78,7 +78,7 @@ function cleanupStorage($index)
             continue;
         }
         ++$checkedInThisRun;
-        $imageIsUsed = Shop::DB()->select('tartikelpict', 'cPfad', $fileInfo->getFilename()) !== null;
+        $imageIsUsed = Shop::Container()->getDB()->select('tartikelpict', 'cPfad', $fileInfo->getFilename()) !== null;
         // files in the storage folder that have no associated entry in tartikelpict are considered orphaned
         if (!$imageIsUsed) {
             $result->deletes[] = $fileInfo->getFilename();
@@ -202,7 +202,7 @@ function getCorruptedImages($type, $limit)
                     'article' => [],
                     'picture' => ''
                 ];
-                $articleDB           = Shop::DB()->select('tartikel', 'kArtikel', $image->getId());
+                $articleDB           = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $image->getId());
                 $articleDB->cURLFull = baueURL($articleDB, URLART_ARTIKEL, 0, false, true);
                 $article             = (object) [
                     'articleNr'      => $articleDB->cArtNr,

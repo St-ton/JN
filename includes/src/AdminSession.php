@@ -96,7 +96,7 @@ class AdminSession
             $_SESSION['jtl_token'] = generateCSRFToken();
         }
         if (!isset($_SESSION['kSprache'])) {
-            $lang                 = Shop::DB()->select('tsprache', 'cISO', 'ger');
+            $lang                 = Shop::Container()->getDB()->select('tsprache', 'cISO', 'ger');
             $_SESSION['kSprache'] = isset($lang->kSprache) ? (int)$lang->kSprache : 1;
         }
         if (isset($_SESSION['Kundengruppe']) && get_class($_SESSION['Kundengruppe']) === 'stdClass') {
@@ -118,7 +118,7 @@ class AdminSession
         $this->lifeTime = get_cfg_var('session.gc_maxlifetime');
 
         // return success
-        return Shop::DB()->isConnected();
+        return Shop::Container()->getDB()->isConnected();
     }
 
     /**
@@ -138,7 +138,7 @@ class AdminSession
      */
     public function read($sessID)
     {
-        $res = Shop::DB()->executeQueryPrepared('
+        $res = Shop::Container()->getDB()->executeQueryPrepared('
             SELECT cSessionData FROM tadminsession
                 WHERE cSessionId = :sid
                 AND nSessionExpires > :time',
@@ -162,7 +162,7 @@ class AdminSession
         // new session-expire-time
         $newExp = time() + $this->lifeTime;
         // is a session with this id in the database?
-        $res = Shop::DB()->select('tadminsession', 'cSessionId', $sessID);
+        $res = Shop::Container()->getDB()->select('tadminsession', 'cSessionId', $sessID);
         // if yes,
         if (isset($res->cSessionId)) {
             // ...update session-data
@@ -170,7 +170,7 @@ class AdminSession
             $_upd->nSessionExpires = $newExp;
             $_upd->cSessionData    = $sessData;
 
-            return Shop::DB()->update('tadminsession', 'cSessionId', $sessID, $_upd) >= 0;
+            return Shop::Container()->getDB()->update('tadminsession', 'cSessionId', $sessID, $_upd) >= 0;
         }
         // if no session-data was found, create a new row
         $_ins                  = new stdClass();
@@ -178,7 +178,7 @@ class AdminSession
         $_ins->nSessionExpires = $newExp;
         $_ins->cSessionData    = $sessData;
 
-        return Shop::DB()->insert('tadminsession', $_ins) > 0;
+        return Shop::Container()->getDB()->insert('tadminsession', $_ins) > 0;
     }
 
     /**
@@ -189,7 +189,7 @@ class AdminSession
      */
     public function destroy($sessID)
     {
-        return Shop::DB()->delete('tadminsession', 'cSessionId', $sessID) > 0;
+        return Shop::Container()->getDB()->delete('tadminsession', 'cSessionId', $sessID) > 0;
     }
 
     /**
@@ -198,7 +198,7 @@ class AdminSession
      */
     public function gc($sessMaxLifeTime)
     {
-        return Shop::DB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tadminsession
                 WHERE nSessionExpires < :time',
             ['time' => time()],

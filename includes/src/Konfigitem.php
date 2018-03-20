@@ -183,7 +183,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         private function loadFromDB($kKonfigitem = 0, $kSprache = 0, $kKundengruppe = 0)
         {
-            $oObj = Shop::DB()->select('tkonfigitem', 'kKonfigitem', (int)$kKonfigitem);
+            $oObj = Shop::Container()->getDB()->select('tkonfigitem', 'kKonfigitem', (int)$kKonfigitem);
 
             if (isset($oObj->kKonfigitem) && $oObj->kKonfigitem > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
@@ -269,7 +269,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $oObj->fInitial          = $this->fInitial;
             $oObj->nSort             = $this->nSort;
 
-            $kPrim = Shop::DB()->insert('tkonfigitem', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('tkonfigitem', $oObj);
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
             }
@@ -298,7 +298,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $_upd->fInitial          = $this->fInitial;
             $_upd->nSort             = $this->nSort;
 
-            return Shop::DB()->update('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem, $_upd);
+            return Shop::Container()->getDB()->update('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem, $_upd);
         }
 
         /**
@@ -306,7 +306,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem);
+            return Shop::Container()->getDB()->delete('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem);
         }
 
         /**
@@ -315,7 +315,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public static function fetchAll($kKonfiggruppe)
         {
-            $oItem_arr = Shop::DB()->query("
+            $oItem_arr = Shop::Container()->getDB()->query("
                 SELECT kKonfigitem 
                     FROM tkonfigitem 
                     WHERE kKonfiggruppe = " . (int)$kKonfiggruppe . " 
@@ -596,7 +596,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 if (isset($_SESSION['Waehrung'])) {
                     $waehrung = $_SESSION['Waehrung'];
                 } else {
-                    $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+                    $waehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
                 }
                 $fVKPreis *= (float)$waehrung->fFaktor;
             }

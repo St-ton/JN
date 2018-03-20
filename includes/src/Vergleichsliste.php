@@ -25,7 +25,7 @@ class Vergleichsliste
         $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
             $oArtikel           = new stdClass();
-            $tmpName            = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'cName');
+            $tmpName            = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'cName');
             $oArtikel->kArtikel = $kArtikel;
             $oArtikel->cName    = $tmpName->cName;
             if (is_array($oVariationen_arr) && count($oVariationen_arr) > 0) {

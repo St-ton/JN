@@ -44,7 +44,7 @@ class Nummern
      */
     private function loadFromDB($nArt = 0)
     {
-        $oObj = Shop::DB()->select('tnummern', 'nArt', (int)$nArt);
+        $oObj = Shop::Container()->getDB()->select('tnummern', 'nArt', (int)$nArt);
         if ($oObj !== null && $oObj->nArt > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
@@ -70,7 +70,7 @@ class Nummern
                 $oObj->$cMember = $this->$cMember;
             }
         }
-        $kPrim = Shop::DB()->insert('tnummern', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tnummern', $oObj);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }
@@ -93,7 +93,7 @@ class Nummern
         $_upd->nNummer       = $this->nNummer;
         $_upd->dAktualisiert = $this->dAktualisiert;
 
-        return Shop::DB()->update('tnummern', 'nArt', $this->nArt, $_upd);
+        return Shop::Container()->getDB()->update('tnummern', 'nArt', $this->nArt, $_upd);
     }
 
     /**
@@ -103,7 +103,7 @@ class Nummern
      */
     public function delete()
     {
-        return Shop::DB()->delete('tnummern', 'nArt', $this->nArt);
+        return Shop::Container()->getDB()->delete('tnummern', 'nArt', $this->nArt);
     }
 
     /**
@@ -136,7 +136,7 @@ class Nummern
     {
         $this->dAktualisiert = $dAktualisiert === 'now()'
             ? date('Y-m-d H:i:s')
-            : Shop::DB()->escape($dAktualisiert);
+            : Shop::Container()->getDB()->escape($dAktualisiert);
 
         return $this;
     }

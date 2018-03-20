@@ -9,7 +9,7 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
     //session starten
     $session       = Session::getInstance();
     $Einstellungen = Shop::getSettings([CONF_PREISVERLAUF]);
-    $oConfig_arr   = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_PREISVERLAUF);
+    $oConfig_arr   = Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_PREISVERLAUF);
     $kArtikel      = (int)$_GET['kArtikel'];
     $kKundengruppe = (int)$_GET['kKundengruppe'];
     $kSteuerklasse = (int)$_GET['kSteuerklasse'];
@@ -21,7 +21,7 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
         $oPreisConfig->Netto    = Session::CustomerGroup()->isMerchant()
             ? 0
             : $_SESSION['Steuersatz'][$kSteuerklasse];
-        $oPreisverlauf          = Shop::DB()->query(
+        $oPreisverlauf          = Shop::Container()->getDB()->query(
             "SELECT kPreisverlauf
                 FROM tpreisverlauf
                 WHERE kArtikel = " . $kArtikel . "

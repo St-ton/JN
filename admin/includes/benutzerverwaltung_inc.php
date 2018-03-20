@@ -10,7 +10,7 @@
  */
 function getAdmin($kAdminlogin)
 {
-    return Shop::DB()->select('tadminlogin', 'kAdminlogin', (int)$kAdminlogin);
+    return Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', (int)$kAdminlogin);
 }
 
 /**
@@ -18,7 +18,7 @@ function getAdmin($kAdminlogin)
  */
 function getAdminList()
 {
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT * FROM tadminlogin
             LEFT JOIN tadminlogingruppe
                 ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
@@ -31,9 +31,9 @@ function getAdminList()
  */
 function getAdminGroups()
 {
-    $oGroups_arr = Shop::DB()->query("SELECT * FROM tadminlogingruppe", 2);
+    $oGroups_arr = Shop::Container()->getDB()->query("SELECT * FROM tadminlogingruppe", 2);
     foreach ($oGroups_arr as &$oGroup) {
-        $oCount         = Shop::DB()->query("
+        $oCount         = Shop::Container()->getDB()->query("
             SELECT COUNT(*) AS nCount
               FROM tadminlogin
               WHERE kAdminlogingruppe = " . (int)$oGroup->kAdminlogingruppe, 1
@@ -49,9 +49,9 @@ function getAdminGroups()
  */
 function getAdminDefPermissions()
 {
-    $oGroups_arr = Shop::DB()->selectAll('tadminrechtemodul', [], [], '*', 'nSort ASC');
+    $oGroups_arr = Shop::Container()->getDB()->selectAll('tadminrechtemodul', [], [], '*', 'nSort ASC');
     foreach ($oGroups_arr as &$oGroup) {
-        $oGroup->oPermission_arr = Shop::DB()->selectAll(
+        $oGroup->oPermission_arr = Shop::Container()->getDB()->selectAll(
             'tadminrecht',
             'kAdminrechtemodul',
             (int)$oGroup->kAdminrechtemodul
@@ -67,7 +67,7 @@ function getAdminDefPermissions()
  */
 function getAdminGroup($kAdminlogingruppe)
 {
-    return Shop::DB()->select('tadminlogingruppe', 'kAdminlogingruppe', (int)$kAdminlogingruppe);
+    return Shop::Container()->getDB()->select('tadminlogingruppe', 'kAdminlogingruppe', (int)$kAdminlogingruppe);
 }
 
 /**
@@ -77,7 +77,7 @@ function getAdminGroup($kAdminlogingruppe)
 function getAdminGroupPermissions($kAdminlogingruppe)
 {
     $oPerm_arr       = [];
-    $oPermission_arr = Shop::DB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', (int)$kAdminlogingruppe);
+    $oPermission_arr = Shop::Container()->getDB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', (int)$kAdminlogingruppe);
 
     foreach ($oPermission_arr as $oPermission) {
         $oPerm_arr[] = $oPermission->cRecht;
@@ -93,7 +93,7 @@ function getAdminGroupPermissions($kAdminlogingruppe)
  */
 function getInfoInUse($cRow, $cValue)
 {
-    $oAdmin = Shop::DB()->select('tadminlogin', $cRow, $cValue, null, null, null, null, false, $cRow);
+    $oAdmin = Shop::Container()->getDB()->select('tadminlogin', $cRow, $cValue, null, null, null, null, false, $cRow);
 
     return is_object($oAdmin);
 }
@@ -104,7 +104,7 @@ function getInfoInUse($cRow, $cValue)
  */
 function benutzerverwaltungGetAttributes($kAdminlogin)
 {
-    $extAttribs = Shop::DB()->selectAll(
+    $extAttribs = Shop::Container()->getDB()->selectAll(
         'tadminloginattribut',
         'kAdminlogin',
         (int)$kAdminlogin,
@@ -181,7 +181,7 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
             $handledKeys[] = $key;
         }
         // nicht (mehr) vorhandene Attribute löschen
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "DELETE FROM tadminloginattribut
                 WHERE kAdminlogin = " . (int)$oAccount->kAdminlogin . "
                     AND cName NOT IN ('" . implode("', '", $handledKeys) . "')", 4
@@ -197,7 +197,7 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
  */
 function benutzerverwaltungDeleteAttributes(stdClass $oAccount)
 {
-    return Shop::DB()->delete('tadminloginattribut', 'kAdminlogin', (int)$oAccount->kAdminlogin) >= 0;
+    return Shop::Container()->getDB()->delete('tadminloginattribut', 'kAdminlogin', (int)$oAccount->kAdminlogin) >= 0;
 }
 
 /**
@@ -208,7 +208,7 @@ function benutzerverwaltungDeleteAttributes(stdClass $oAccount)
 function benutzerverwaltungActionAccountLock(JTLSmarty $smarty, array &$messages)
 {
     $kAdminlogin = (int)$_POST['id'];
-    $oAccount    = Shop::DB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
+    $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
 
     if (!empty($oAccount->kAdminlogin) && $oAccount->kAdminlogin == $_SESSION['AdminAccount']->kAdminlogin) {
         $messages['error'] .= 'Sie k&ouml;nnen sich nicht selbst sperren.';
@@ -217,7 +217,7 @@ function benutzerverwaltungActionAccountLock(JTLSmarty $smarty, array &$messages
             $messages['error'] .= 'Administratoren k&ouml;nnen nicht gesperrt werden.';
         } else {
             $result = true;
-            Shop::DB()->update('tadminlogin', 'kAdminlogin', $kAdminlogin, (object)['bAktiv' => 0]);
+            Shop::Container()->getDB()->update('tadminlogin', 'kAdminlogin', $kAdminlogin, (object)['bAktiv' => 0]);
             executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
                 'oAccount' => $oAccount,
                 'type'     => 'LOCK',
@@ -244,11 +244,11 @@ function benutzerverwaltungActionAccountLock(JTLSmarty $smarty, array &$messages
 function benutzerverwaltungActionAccountUnLock(JTLSmarty $smarty, array &$messages)
 {
     $kAdminlogin = (int)$_POST['id'];
-    $oAccount    = Shop::DB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
+    $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
 
     if (is_object($oAccount)) {
         $result = true;
-        Shop::DB()->update('tadminlogin', 'kAdminlogin', $kAdminlogin, (object)['bAktiv' => 1]);
+        Shop::Container()->getDB()->update('tadminlogin', 'kAdminlogin', $kAdminlogin, (object)['bAktiv' => 1]);
         executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
             'oAccount' => $oAccount,
             'type'     => 'UNLOCK',
@@ -344,7 +344,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         }
         if ($oTmpAcc->kAdminlogin > 0) {
             $oOldAcc = getAdmin($oTmpAcc->kAdminlogin);
-            $oCount  = Shop::DB()->query("
+            $oCount  = Shop::Container()->getDB()->query("
                 SELECT COUNT(*) AS nCount
                     FROM tadminlogin
                     WHERE kAdminlogingruppe = 1", 1
@@ -381,7 +381,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                     unset($oTmpAcc->cPass);
                 }
 
-                if (Shop::DB()->update('tadminlogin', 'kAdminlogin', $oTmpAcc->kAdminlogin, $oTmpAcc) >= 0
+                if (Shop::Container()->getDB()->update('tadminlogin', 'kAdminlogin', $oTmpAcc->kAdminlogin, $oTmpAcc) >= 0
                     && benutzerverwaltungSaveAttributes($oTmpAcc, $tmpAttribs, $messages, $cError_arr)
                 ) {
                     $result = true;
@@ -413,7 +413,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                 }
                 $oTmpAcc->cPass = AdminAccount::generatePasswordHash($oTmpAcc->cPass);
 
-                if (($oTmpAcc->kAdminlogin = Shop::DB()->insert('tadminlogin', $oTmpAcc))
+                if (($oTmpAcc->kAdminlogin = Shop::Container()->getDB()->insert('tadminlogin', $oTmpAcc))
                     && benutzerverwaltungSaveAttributes($oTmpAcc, $tmpAttribs, $messages, $cError_arr)
                 ) {
                     $result = true;
@@ -466,7 +466,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         'content'  => &$extContent,
     ]);
 
-    $oCount = Shop::DB()->query("
+    $oCount = Shop::Container()->getDB()->query("
         SELECT COUNT(*) AS nCount
             FROM tadminlogin
             WHERE kAdminlogingruppe = 1", 1
@@ -486,12 +486,12 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
 function benutzerverwaltungActionAccountDelete(JTLSmarty $smarty, array &$messages)
 {
     $kAdminlogin = (int)$_POST['id'];
-    $oCount      = Shop::DB()->query("
+    $oCount      = Shop::Container()->getDB()->query("
         SELECT COUNT(*) AS nCount
             FROM tadminlogin
             WHERE kAdminlogingruppe = 1", 1
     );
-    $oAccount    = Shop::DB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
+    $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
 
     if (isset($oAccount->kAdminlogin) && (int)$oAccount->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
         $messages['error'] .= 'Sie k&ouml;nnen sich nicht selbst l&ouml;schen';
@@ -499,7 +499,7 @@ function benutzerverwaltungActionAccountDelete(JTLSmarty $smarty, array &$messag
         if ((int)$oAccount->kAdminlogingruppe === ADMINGROUP && $oCount->nCount <= 1) {
             $messages['error'] .= 'Es muss mindestens ein Administrator im System vorhanden sein.';
         } elseif (benutzerverwaltungDeleteAttributes($oAccount) &&
-            Shop::DB()->delete('tadminlogin', 'kAdminlogin', $kAdminlogin)) {
+            Shop::Container()->getDB()->delete('tadminlogin', 'kAdminlogin', $kAdminlogin)) {
             $result = true;
             executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
                 'oAccount' => $oAccount,
@@ -564,14 +564,14 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
         } else {
             if ($oAdminGroup->kAdminlogingruppe > 0) {
                 // update sql
-                Shop::DB()->update(
+                Shop::Container()->getDB()->update(
                     'tadminlogingruppe',
                     'kAdminlogingruppe',
                     (int)$oAdminGroup->kAdminlogingruppe,
                     $oAdminGroup
                 );
                 // remove old perms
-                Shop::DB()->delete(
+                Shop::Container()->getDB()->delete(
                     'tadminrechtegruppe',
                     'kAdminlogingruppe',
                     (int)$oAdminGroup->kAdminlogingruppe
@@ -581,7 +581,7 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
                 $oPerm->kAdminlogingruppe = (int)$oAdminGroup->kAdminlogingruppe;
                 foreach ($oAdminGroupPermission_arr as $oAdminGroupPermission) {
                     $oPerm->cRecht = $oAdminGroupPermission;
-                    Shop::DB()->insert('tadminrechtegruppe', $oPerm);
+                    Shop::Container()->getDB()->insert('tadminrechtegruppe', $oPerm);
                 }
                 $messages['notice'] .= 'Gruppe wurde erfolgreich bearbeitet.';
 
@@ -589,15 +589,15 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
             } else {
                 // insert sql
                 unset($oAdminGroup->kAdminlogingruppe);
-                $kAdminlogingruppe = Shop::DB()->insert('tadminlogingruppe', $oAdminGroup);
+                $kAdminlogingruppe = Shop::Container()->getDB()->insert('tadminlogingruppe', $oAdminGroup);
                 // remove old perms
-                Shop::DB()->delete('tadminrechtegruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
+                Shop::Container()->getDB()->delete('tadminrechtegruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
                 // insert new perms
                 $oPerm                    = new stdClass();
                 $oPerm->kAdminlogingruppe = $kAdminlogingruppe;
                 foreach ($oAdminGroupPermission_arr as $oAdminGroupPermission) {
                     $oPerm->cRecht = $oAdminGroupPermission;
-                    Shop::DB()->insert('tadminrechtegruppe', $oPerm);
+                    Shop::Container()->getDB()->insert('tadminrechtegruppe', $oPerm);
                 }
                 $messages['notice'] .= 'Gruppe wurde erfolgreich angelegt.';
 
@@ -625,7 +625,7 @@ function benutzerverwaltungActionGroupDelete(JTLSmarty $smarty, array &$messages
 {
     $kAdminlogingruppe = (int)$_POST['id'];
 
-    $oResult = Shop::DB()->query("
+    $oResult = Shop::Container()->getDB()->query("
                     SELECT count(*) AS member_count
                       FROM tadminlogin
                       WHERE kAdminlogingruppe = " . $kAdminlogingruppe, 1
@@ -645,8 +645,8 @@ function benutzerverwaltungActionGroupDelete(JTLSmarty $smarty, array &$messages
     }
 
     if ($kAdminlogingruppe !== ADMINGROUP) {
-        Shop::DB()->delete('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
-        Shop::DB()->delete('tadminrechtegruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
+        Shop::Container()->getDB()->delete('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
+        Shop::Container()->getDB()->delete('tadminrechtegruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
         $messages['notice'] .= 'Gruppe wurde erfolgreich gel&ouml;scht.';
     } else {
         $messages['error'] .= 'Gruppe kann nicht entfernt werden.';

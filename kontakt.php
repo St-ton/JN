@@ -54,7 +54,7 @@ if (pruefeBetreffVorhanden()) {
         }
     }
     $lang     = $_SESSION['cISOSprache'];
-    $Contents = Shop::DB()->selectAll(
+    $Contents = Shop::Container()->getDB()->selectAll(
         'tspezialcontentsprache',
         ['nSpezialContent', 'cISOSprache'],
         [(int)SC_KONTAKTFORMULAR, $lang]
@@ -63,7 +63,7 @@ if (pruefeBetreffVorhanden()) {
     foreach ($Contents as $Content) {
         $SpezialContent->{$Content->cTyp} = $Content->cContent;
     }
-    $subjects = Shop::DB()->query(
+    $subjects = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0 
@@ -73,7 +73,7 @@ if (pruefeBetreffVorhanden()) {
     );
     foreach ($subjects as $subject) {
         if ($subject->kKontaktBetreff > 0) {
-            $localization = Shop::DB()->select(
+            $localization = Shop::Container()->getDB()->select(
                 'tkontaktbetreffsprache',
                 'kKontaktBetreff',
                 (int)$subject->kKontaktBetreff,

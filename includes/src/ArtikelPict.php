@@ -42,7 +42,7 @@ class ArtikelPict
      */
     public function loadFromDB($kArtikel)
     {
-        $obj = Shop::DB()->select('tartikelpict', 'kArtikel', (int)$kArtikel);
+        $obj = Shop::Container()->getDB()->select('tartikelpict', 'kArtikel', (int)$kArtikel);
         if ($obj !== null && $obj->kArtikel > 0) {
             foreach (get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
@@ -61,7 +61,7 @@ class ArtikelPict
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->insert('tartikelpict', $obj);
+        return Shop::Container()->getDB()->insert('tartikelpict', $obj);
     }
 
     /**
@@ -73,7 +73,7 @@ class ArtikelPict
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->update('tartikelpict', 'kArtikel', $obj->kArtikel, $obj);
+        return Shop::Container()->getDB()->update('tartikelpict', 'kArtikel', $obj->kArtikel, $obj);
     }
 
     /**

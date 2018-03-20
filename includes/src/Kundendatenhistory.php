@@ -170,7 +170,7 @@ class Kundendatenhistory extends MainModel
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {
-        $data = Shop::DB()->select('tkundendatenhistory', 'kKundendatenHistory', (int)$kKey);
+        $data = Shop::Container()->getDB()->select('tkundendatenhistory', 'kKundendatenHistory', (int)$kKey);
         if (isset($data->kKundendatenHistory) && $data->kKundendatenHistory > 0) {
             $this->loadObject($data);
         }
@@ -192,7 +192,7 @@ class Kundendatenhistory extends MainModel
             }
         }
         unset($oObj->kKundendatenHistory);
-        $kPrim = Shop::DB()->insert('tkundendatenhistory', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tkundendatenhistory', $oObj);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }
@@ -216,14 +216,14 @@ class Kundendatenhistory extends MainModel
                     $val        = $this->$cMethod();
                     $mValue     = $val === null
                         ? 'NULL'
-                        : ("'" . Shop::DB()->escape($val) . "'");
+                        : ("'" . Shop::Container()->getDB()->escape($val) . "'");
                     $cSet_arr[] = "{$cMember} = {$mValue}";
                 }
             }
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kKundendatenHistory = {$this->getKundendatenHistory()}";
 
-            return Shop::DB()->query($cQuery, 3);
+            return Shop::Container()->getDB()->query($cQuery, 3);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -233,7 +233,7 @@ class Kundendatenhistory extends MainModel
      */
     public function delete()
     {
-        return Shop::DB()->delete('tkundendatenhistory', 'kKundendatenHistory', $this->getKundendatenHistory());
+        return Shop::Container()->getDB()->delete('tkundendatenhistory', 'kKundendatenHistory', $this->getKundendatenHistory());
     }
 
     /**

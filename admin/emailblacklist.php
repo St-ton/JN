@@ -22,20 +22,20 @@ if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && va
     $cEmail_arr = explode(';', $_POST['cEmail']);
 
     if (is_array($cEmail_arr) && count($cEmail_arr) > 0) {
-        Shop::DB()->query("TRUNCATE temailblacklist", 3);
+        Shop::Container()->getDB()->query("TRUNCATE temailblacklist", 3);
 
         foreach ($cEmail_arr as $cEmail) {
             $cEmail = strip_tags(trim($cEmail));
             if (strlen($cEmail) > 0) {
                 $oEmailBlacklist         = new stdClass();
                 $oEmailBlacklist->cEmail = $cEmail;
-                Shop::DB()->insert('temailblacklist', $oEmailBlacklist);
+                Shop::Container()->getDB()->insert('temailblacklist', $oEmailBlacklist);
             }
         }
     }
 }
 
-$oConfig_arr = Shop::DB()->selectAll(
+$oConfig_arr = Shop::Container()->getDB()->selectAll(
     'teinstellungenconf',
     'kEinstellungenSektion',
     CONF_EMAILBLACKLIST,
@@ -45,7 +45,7 @@ $oConfig_arr = Shop::DB()->selectAll(
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$oConfig_arr[$i]->kEinstellungenConf,
@@ -54,7 +54,7 @@ for ($i = 0; $i < $configCount; $i++) {
         );
     }
 
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         CONF_EMAILBLACKLIST,
@@ -65,9 +65,9 @@ for ($i = 0; $i < $configCount; $i++) {
 }
 
 // Emails auslesen und in Smarty assignen
-$oEmailBlacklist_arr = Shop::DB()->query('SELECT * FROM temailblacklist', 2);
+$oEmailBlacklist_arr = Shop::Container()->getDB()->query("SELECT * FROM temailblacklist", 2);
 // Geblockte Emails auslesen und assignen
-$oEmailBlacklistBlock_arr = Shop::DB()->query("
+$oEmailBlacklistBlock_arr = Shop::Container()->getDB()->query("
     SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
         FROM temailblacklistblock
         ORDER BY dLetzterBlock DESC

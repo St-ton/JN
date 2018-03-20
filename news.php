@@ -127,7 +127,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
                         executeHook(HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$oNewsKommentar]);
 
-                        Shop::DB()->insert('tnewskommentar', $oNewsKommentar);
+                        Shop::Container()->getDB()->insert('tnewskommentar', $oNewsKommentar);
 
                         if ($Einstellungen['news']['news_kommentare_freischalten'] === 'Y') {
                             $cHinweis .= Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br>';
@@ -170,7 +170,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
                         executeHook(HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$oNewsKommentar]);
 
-                        Shop::DB()->insert('tnewskommentar', $oNewsKommentar);
+                        Shop::Container()->getDB()->insert('tnewskommentar', $oNewsKommentar);
 
                         if ($Einstellungen['news']['news_kommentare_freischalten'] === 'Y') {
                             $cHinweis .= Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br />';
@@ -386,7 +386,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         ->display('blog/index.tpl');
     require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';
 } else {
-    $oLink                   = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
+    $oLink                   = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_404);
     $bFileNotFound           = true;
     Shop::$kLink             = (int)$oLink->kLink;
     Shop::$bFileNotFound     = true;

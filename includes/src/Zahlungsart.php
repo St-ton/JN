@@ -515,7 +515,7 @@ class Zahlungsart extends MainModel
                 }
             }
 
-            $oObj = Shop::DB()->queryPrepared(
+            $oObj = Shop::Container()->getDB()->queryPrepared(
                 'SELECT *
                     FROM tzahlungsart AS z
                     LEFT JOIN tzahlungsartsprache AS s 
@@ -555,7 +555,7 @@ class Zahlungsart extends MainModel
             }
         }
 
-        $objs = Shop::DB()->queryPrepared(
+        $objs = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
                 FROM tzahlungsart AS z
                 LEFT JOIN tzahlungsartsprache AS s 

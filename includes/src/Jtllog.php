@@ -129,19 +129,11 @@ class Jtllog
 
     /**
      * @param int $nLevel
-     * @return int
+     * @return bool
      */
     public static function doLog($nLevel = JTLLOG_LEVEL_ERROR)
     {
-        $nSystemlogFlag = 0;
-        if (isset($GLOBALS['nSystemlogFlag']) && (int)$GLOBALS['nSystemlogFlag'] > 0) {
-            $nSystemlogFlag = $GLOBALS['nSystemlogFlag'];
-        }
-        if ($nSystemlogFlag === 0) {
-            $nSystemlogFlag = self::getSytemlogFlag();
-        }
-
-        return self::isBitFlagSet($nSystemlogFlag, $nLevel) > 0;
+        return $nLevel >= self::getSytemlogFlag();
     }
 
     /**
@@ -163,17 +155,15 @@ class Jtllog
         $kKey = '',
         $bPrim = true
     ) {
-        if ($bForce || self::doLog($nLevel)) {
-            if (strlen($cLog) > 0) {
-                $oLog = new self();
-                $oLog->setcLog($cLog)
-                     ->setLevel($nLevel)
-                     ->setcKey($cKey)
-                     ->setkKey($kKey)
-                     ->setErstellt('now()');
+        if (strlen($cLog) > 0 && ($bForce || self::doLog($nLevel))) {
+            $oLog = new self();
+            $oLog->setcLog($cLog)
+                 ->setLevel($nLevel)
+                 ->setcKey($cKey)
+                 ->setkKey($kKey)
+                 ->setErstellt('now()');
 
-                return $oLog->save($bPrim);
-            }
+            return $oLog->save($bPrim);
         }
 
         return false;
@@ -209,13 +199,12 @@ class Jtllog
                 FROM tjtllog
                 " . $cSQLWhere . "
                 ORDER BY dErstellt DESC, kLog DESC
-                LIMIT :limitfrom, :limitto", $values, 2
+                LIMIT :limitfrom, :limitto", $values,
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
-        if (is_array($oLog_arr) && count($oLog_arr) > 0) {
-            foreach ($oLog_arr as $oLog) {
-                if (isset($oLog->kLog) && (int)$oLog->kLog > 0) {
-                    $oJtllog_arr[] = new self($oLog->kLog);
-                }
+        foreach ($oLog_arr as $oLog) {
+            if (isset($oLog->kLog) && (int)$oLog->kLog > 0) {
+                $oJtllog_arr[] = new self($oLog->kLog);
             }
         }
 
@@ -376,18 +365,11 @@ class Jtllog
     /**
      * @param array $nFlag_arr
      * @return int
+     * @deprecated since 5.0.0
      */
     public static function setBitFlag($nFlag_arr)
     {
-        $nVal = 0;
-
-        if (is_array($nFlag_arr) && count($nFlag_arr) > 0) {
-            foreach ($nFlag_arr as $nFlag) {
-                $nVal |= (int)$nFlag;
-            }
-        }
-
-        return $nVal;
+        return JTLLOG_LEVEL_NOTICE;
     }
 
     /**
@@ -442,10 +424,11 @@ class Jtllog
      * @param int $nVal
      * @param int $nFlag
      * @return int
+     * @deprecated since 5.0.0
      */
     public static function isBitFlagSet($nVal, $nFlag)
     {
-        return ($nVal & $nFlag);
+        return false;
     }
 
     /**
@@ -476,11 +459,13 @@ class Jtllog
         if ($cache === true && isset($conf['global']['systemlog_flag'])) {
             return (int)$conf['global']['systemlog_flag'];
         }
-        $conf = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'systemlog_flag'", 1);
-        if (isset($conf->cWert)) {
-            return (int)$conf->cWert;
-        }
+        $conf = Shop::DB()->query(
+            "SELECT cWert 
+                FROM teinstellungen 
+                WHERE cName = 'systemlog_flag'",
+            NiceDB::RET_SINGLE_OBJECT
+        );
 
-        return 0;
+        return isset($conf->cWert) ? (int)$conf->cWert : 0;
     }
 }

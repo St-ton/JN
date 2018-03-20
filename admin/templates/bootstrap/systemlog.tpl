@@ -94,29 +94,19 @@
             <div class="panel-body">
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="JTLLOG_LEVEL_ERROR">{#systemlogError#}</label>
+                        <label for="minLogLevel">Min. Loglevel</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="checkbox" name="nLevelFlags[]" value="{$JTLLOG_LEVEL_ERROR}"
-                               id="JTLLOG_LEVEL_ERROR" {if $nLevelFlag_arr[$JTLLOG_LEVEL_ERROR] != 0}checked{/if}>
-                    </span>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="JTLLOG_LEVEL_NOTICE">{#systemlogNotice#}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <input type="checkbox" name="nLevelFlags[]" value="{$JTLLOG_LEVEL_NOTICE}"
-                               id="JTLLOG_LEVEL_NOTICE" {if $nLevelFlag_arr[$JTLLOG_LEVEL_NOTICE] != 0}checked{/if}>
-                    </span>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="JTLLOG_LEVEL_DEBUG">{#systemlogDebug#}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <input type="checkbox" name="nLevelFlags[]" value="{$JTLLOG_LEVEL_DEBUG}"
-                               id="JTLLOG_LEVEL_DEBUG" {if $nLevelFlag_arr[$JTLLOG_LEVEL_DEBUG] != 0}checked{/if}>
+                        <select name="minLogLevel" id="minLogLevel" class="form-control combo">
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_EMERGENCY} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_EMERGENCY}">Emergency</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_ALERT} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_ALERT}">Alert</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_CRITICAL} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_CRITICAL}">Critical</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_ERROR} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_ERROR}">Error</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_WARNING} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_WARNING}">Warning</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_NOTICE} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_NOTICE}">Notice</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_INFO} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_INFO}">Info</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_DEBUG} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_DEBUG}">Debug</option>
+                        </select>
                     </span>
                 </div>
             </div>

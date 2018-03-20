@@ -59,9 +59,7 @@ class Revision
      */
     private function getMapping($type)
     {
-        return isset($this->mapping[$type])
-            ? $this->mapping[$type]
-            : null;
+        return $this->mapping[$type] ?? null;
     }
 
     /**
@@ -102,9 +100,7 @@ class Revision
         $key = (int)$key;
         if (!empty($key) && ($mapping = $this->getMapping($type)) !== null) {
             if ($author === null) {
-                $author = isset($_SESSION['AdminAccount']->cLogin)
-                    ? $_SESSION['AdminAccount']->cLogin
-                    : '?';
+                $author = $_SESSION['AdminAccount']->cLogin ?? '?';
             }
             $field           = $mapping['id'];
             $currentRevision = Shop::DB()->select($mapping['table'], $mapping['id'], $key);
@@ -245,21 +241,25 @@ class Revision
      * @param int    $key
      * @return int
      */
-    private function housekeeping($type, $key)
+    private function housekeeping($type, $key) : int
     {
-        return Shop::DB()->query(
-            "DELETE a 
-              FROM trevisions AS a 
-                JOIN
-                    ( 
-                      SELECT id 
+        return Shop::DB()->queryPrepared(
+            'DELETE a 
+                FROM trevisions AS a 
+                JOIN ( 
+                    SELECT id 
                         FROM trevisions 
-                        WHERE type = '" . $type . "' 
-                            AND reference_primary = " . $key . " 
+                        WHERE type = :type 
+                            AND reference_primary = :prim
                         ORDER BY timestamp DESC 
-                        LIMIT 99999 OFFSET " . MAX_REVISIONS . "
-                    ) AS b
-                    ON a.id = b.id", 3
+                        LIMIT 99999 OFFSET :max) AS b
+                ON a.id = b.id',
+            [
+                'type' => $type,
+                'prim' => $key,
+                'max'  => MAX_REVISIONS
+            ],
+            NiceDB::RET_AFFECTED_ROWS
         );
     }
 }

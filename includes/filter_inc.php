@@ -739,29 +739,29 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
             FROM(
                 SELECT tartikel.kArtikel
                 FROM tartikel ' . 
-                (isset($FilterSQL->oSuchspecialFilterSQL->cJoin) ? $FilterSQL->oSuchspecialFilterSQL->cJoin : '') . ' ' . 
-                (isset($FilterSQL->oKategorieFilterSQL->cJoin) ? $FilterSQL->oKategorieFilterSQL->cJoin : '') . ' ' . 
-                (isset($FilterSQL->oSuchFilterSQL->cJoin) ? $FilterSQL->oSuchFilterSQL->cJoin : '') . ' ' . 
-                (isset($FilterSQL->oMerkmalFilterSQL->cJoin) ? $FilterSQL->oMerkmalFilterSQL->cJoin : '') . ' ' .
-                (isset($FilterSQL->oTagFilterSQL->cJoin) ? $FilterSQL->oTagFilterSQL->cJoin : '') . ' ' . 
-                (isset($FilterSQL->oBewertungSterneFilterSQL->cJoin) ? $FilterSQL->oBewertungSterneFilterSQL->cJoin : '') . ' ' . 
-                (isset($FilterSQL->oPreisspannenFilterSQL->cJoin) ? $FilterSQL->oPreisspannenFilterSQL->cJoin : '') .
+                ($FilterSQL->oSuchspecialFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oKategorieFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oSuchFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oMerkmalFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oTagFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oBewertungSterneFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oPreisspannenFilterSQL->cJoin ?? '') .
             ' LEFT JOIN tartikelsichtbarkeit 
                 ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = ' . Session::CustomerGroup()->getID() . '
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0 ' . 
                 gibLagerfilter() . ' ' . 
-                (isset($FilterSQL->oSuchspecialFilterSQL->cWhere) ? $FilterSQL->oSuchspecialFilterSQL->cWhere : '') . ' ' .
-                (isset($FilterSQL->oSuchFilterSQL->cWhere) ? $FilterSQL->oSuchFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oHerstellerFilterSQL->cWhere) ? $FilterSQL->oHerstellerFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oKategorieFilterSQL->cWhere) ? $FilterSQL->oKategorieFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oMerkmalFilterSQL->cWhere) ? $FilterSQL->oMerkmalFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oTagFilterSQL->cWhere) ? $FilterSQL->oTagFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oBewertungSterneFilterSQL->cWhere) ? $FilterSQL->oBewertungSterneFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oPreisspannenFilterSQL->cWhere) ? $FilterSQL->oPreisspannenFilterSQL->cWhere : '') . 
+                ($FilterSQL->oSuchspecialFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oSuchFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oHerstellerFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oKategorieFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oMerkmalFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oTagFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oBewertungSterneFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oPreisspannenFilterSQL->cWhere ?? '') .
                 ' GROUP BY tartikel.kArtikel ' . 
-                (isset($FilterSQL->oMerkmalFilterSQL->cHaving) ? $FilterSQL->oMerkmalFilterSQL->cHaving : '') . 
+                ($FilterSQL->oMerkmalFilterSQL->cHaving ?? '') .
                 ') AS tAnzahl',
         1
     );
@@ -775,7 +775,7 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
         ]
     );
     $conf                 = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
-    $nPage                = isset($GLOBALS['NaviFilter']->nSeite) ? $GLOBALS['NaviFilter']->nSeite : 1;
+    $nPage                = $GLOBALS['NaviFilter']->nSeite ?? 1;
     $nSettingMaxPageCount = (int)$conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
 
     $oSuchergebnisse->GesamtanzahlArtikel = $oAnzahl->nGesamtAnzahl;

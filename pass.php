@@ -95,7 +95,7 @@ Shop::Smarty()->assign('step', $step)
     ->assign('hinweis', $hinweis)
     ->assign('cFehler', $cFehler)
     ->assign('Navigation', createNavigation($AktuelleSeite))
-    ->assign('requestURL', isset($requestURL) ? $requestURL : null);
+    ->assign('requestURL', $requestURL ?? null);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 Shop::Smarty()->display('account/password.tpl');

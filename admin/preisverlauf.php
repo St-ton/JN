@@ -22,7 +22,7 @@ for ($i = 0; $i < $configCount; $i++) {
     }
 
     $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_PREISVERLAUF, $oConfig_arr[$i]->cWertName]);
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert) ? $oSetValue->cWert : null);
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)

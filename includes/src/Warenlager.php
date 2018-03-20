@@ -516,7 +516,7 @@ class Warenlager extends MainModel
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kWarenlager = {$this->kWarenlager}";
 
-            return Shop::DB()->query($cQuery, 3);
+            return Shop::DB()->query($cQuery, NiceDB::RET_AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -526,12 +526,14 @@ class Warenlager extends MainModel
      */
     public function delete()
     {
-        return Shop::DB()->query(
-            "DELETE twarenlager, twarenlagersprache
+        return Shop::DB()->queryPrepared(
+            'DELETE twarenlager, twarenlagersprache
                 FROM twarenlager
                 LEFT JOIN twarenlagersprache 
                     ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
-                WHERE twarenlager.kWarenlager = " . (int)$this->kWarenlager, 3
+                WHERE twarenlager.kWarenlager = :lid',
+            ['lid' => (int)$this->kWarenlager],
+            NiceDB::RET_AFFECTED_ROWS
         );
     }
 
@@ -567,7 +569,8 @@ class Warenlager extends MainModel
         $oObj_arr = Shop::DB()->query(
             "SELECT *
                FROM twarenlager
-               {$cSql}", 2
+               {$cSql}",
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
         foreach ($oObj_arr as $oObj) {
             $oWarenlager = new self(null, $oObj);
@@ -593,13 +596,15 @@ class Warenlager extends MainModel
         $kArtikel        = (int)$kArtikel;
         if ($kArtikel > 0) {
             $cSql     = $bActive ? " AND twarenlager.nAktiv = 1" : '';
-            $oObj_arr = Shop::DB()->query(
+            $oObj_arr = Shop::DB()->queryPrepared(
                 "SELECT tartikelwarenlager.*
                     FROM tartikelwarenlager
                     JOIN twarenlager 
                         ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager
                        {$cSql}
-                    WHERE tartikelwarenlager.kArtikel = {$kArtikel}", 2
+                    WHERE tartikelwarenlager.kArtikel = :articleID",
+                ['articleID' => $kArtikel],
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($oObj_arr as $oObj) {
                 $oWarenlager               = new self($oObj->kWarenlager, null, $kSprache);

@@ -12,9 +12,8 @@ $cURLID           = StringHandler::filterXSS(verifyGPDataString('wlid'));
 $Einstellungen    = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $kWunschliste     = (verifyGPCDataInteger('wl') > 0 && verifyGPCDataInteger('wlvm') === 0)
     ? verifyGPCDataInteger('wl') //one of multiple customer wishlists
-    : (isset($cParameter_arr['kWunschliste'])
-        ? $cParameter_arr['kWunschliste'] //default wishlist from Shop class
-        : $cURLID); //public link
+    : ($cParameter_arr['kWunschliste'] //default wishlist from Shop class
+        ?? $cURLID); //public link
 $AktuelleSeite    = 'WUNSCHLISTE';
 $cHinweis         = '';
 $cFehler          = '';
@@ -282,7 +281,7 @@ if (verifyGPCDataInteger('error') === 1) {
 }
 $link       = ($cParameter_arr['kLink'] > 0) ? $linkHelper->getPageLink($cParameter_arr['kLink']) : null;
 $requestURL = baueURL($link, URLART_SEITE);
-$sprachURL  = isset($link->languageURLs) ? $link->languageURLs : baueSprachURLS($link, URLART_SEITE);
+$sprachURL  = $link->languageURLs ?? baueSprachURLS($link, URLART_SEITE);
 // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
 if (empty($CWunschliste)) {
     $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));

@@ -23,7 +23,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
 // Bewertung editieren
-if (verifyGPCDataInteger('bewertung_editieren') === 1) {
+if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
     if (editiereBewertung($_POST)) {
         $cHinweis .= 'Ihre Bewertung wurde erfolgreich editiert. ';
 
@@ -40,7 +40,7 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
 } elseif (isset($_POST['bewertung_nicht_aktiv']) && (int)$_POST['bewertung_nicht_aktiv'] === 1) {
     // Bewertungen aktivieren
-    if (isset($_POST['aktivieren'])) {
+    if (isset($_POST['aktivieren'])  && validateToken()) {
         if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
             $kArtikel_arr = $_POST['kArtikel'];
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {
@@ -58,7 +58,7 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
             Shop::Cache()->flushTags($cacheTags);
             $cHinweis .= count($_POST['kBewertung']) . " Bewertung(en) wurde(n) erfolgreich aktiviert.";
         }
-    } elseif (isset($_POST['loeschen'])) { // Bewertungen loeschen
+    } elseif (isset($_POST['loeschen']) && validateToken()) { // Bewertungen loeschen
         if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
             foreach ($_POST['kBewertung'] as $kBewertung) {
                 Shop::DB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
@@ -87,7 +87,7 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
         $smarty->assign('cArtNr', StringHandler::filterXSS($_POST['cArtNr']));
     }
     // Bewertungen loeschen
-    if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
+    if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0 && validateToken()) {
         $kArtikel_arr = $_POST['kArtikel'];
         foreach ($_POST['kBewertung'] as $i => $kBewertung) {
             // Loesche Guthaben aus tbewertungguthabenbonus und aktualisiere tkunde
@@ -152,7 +152,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
                 ['kEinstellungenSektion', 'cName'],
                 [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName]
             );
-            $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
+            $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
         }
     }
 
@@ -206,7 +206,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         ->assign('oPagiAktiv', $oPageAktiv)
         ->assign('oBewertung_arr', $oBewertung_arr)
         ->assign('oBewertungLetzten50_arr', $oBewertungLetzten50_arr)
-        ->assign('oBewertungAktiv_arr', (isset($oBewertungAktiv_arr) ? $oBewertungAktiv_arr : null))
+        ->assign('oBewertungAktiv_arr', $oBewertungAktiv_arr ?? null)
         ->assign('oConfig_arr', $oConfig_arr)
         ->assign('Sprachen', gibAlleSprachen());
 }

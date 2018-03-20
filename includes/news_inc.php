@@ -399,9 +399,7 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
         //url
         global $sprachURL, $requestURL;
         $requestURL = baueURL($Link, URLART_SEITE);
-        $sprachURL  = isset($Link->languageURLs)
-            ? $Link->languageURLs
-            : baueSprachURLS($Link, URLART_SEITE);
+        $sprachURL  = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
         // Canonical
         if (strpos($requestURL, '.php') === false) {
             $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
@@ -657,23 +655,22 @@ function holeNewsBilder($kNews, $cUploadVerzeichnis)
 {
     $oDatei_arr = [];
     $kNews      = (int)$kNews;
-    if ($kNews > 0) {
-        if (is_dir($cUploadVerzeichnis . $kNews)) {
-            $DirHandle = opendir($cUploadVerzeichnis . $kNews);
-            $shopURL   = Shop::getURL() . '/';
-            while (false !== ($Datei = readdir($DirHandle))) {
-                if ($Datei !== '.' && $Datei !== '..') {
-                    $oDatei         = new stdClass();
-                    $oDatei->cName  = substr($Datei, 0, strpos($Datei, '.'));
-                    $oDatei->cURL   = PFAD_NEWSBILDER . $kNews . '/' . $Datei;
-                    $oDatei->cDatei = $Datei;
+    if ($kNews > 0 && is_dir($cUploadVerzeichnis . $kNews)) {
+        $DirHandle    = opendir($cUploadVerzeichnis . $kNews);
+        $imageBaseURL = Shop::getURL() . '/';
+        while (false !== ($Datei = readdir($DirHandle))) {
+            if ($Datei !== '.' && $Datei !== '..') {
+                $oDatei           = new stdClass();
+                $oDatei->cName    = substr($Datei, 0, strpos($Datei, '.'));
+                $oDatei->cURL     = PFAD_NEWSBILDER . $kNews . '/' . $Datei;
+                $oDatei->cURLFull = $imageBaseURL . PFAD_NEWSBILDER . $kNews . '/' . $Datei;
+                $oDatei->cDatei   = $Datei;
 
-                    $oDatei_arr[] = $oDatei;
-                }
+                $oDatei_arr[] = $oDatei;
             }
-
-            usort($oDatei_arr, 'cmp_obj');
         }
+
+        usort($oDatei_arr, 'cmp_obj');
     }
 
     return $oDatei_arr;

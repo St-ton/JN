@@ -139,9 +139,9 @@ if ($step === 'uebersicht') {
             'cName',
             $Conf[$i]->cWertName
         );
-        $Conf[$i]->gesetzterWert = (isset($setValue->cWert) ? $setValue->cWert : null);
+        $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
     }
-    $neuerBetreffs = Shop::DB()->query("SELECT * FROM tkontaktbetreff ORDER BY nSort", 2);
+    $neuerBetreffs = Shop::DB()->query('SELECT * FROM tkontaktbetreff ORDER BY nSort', 2);
     $nCount        = count($neuerBetreffs);
     for ($i = 0; $i < $nCount; $i++) {
         $kunden = '';

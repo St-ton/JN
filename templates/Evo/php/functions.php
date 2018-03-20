@@ -53,27 +53,27 @@ function get_product_list($params, &$smarty)
         ? setzeTagFilter(explode(';', $params['cTagFilter']))
         : null;
     $cParameter_arr     = [
-        'kKategorie'             => isset($params['kKategorie']) ? $params['kKategorie'] : null,
-        'kHersteller'            => isset($params['kHersteller']) ? $params['kHersteller'] : null,
-        'kArtikel'               => isset($params['kArtikel']) ? $params['kArtikel'] : null,
-        'kVariKindArtikel'       => isset($params['kVariKindArtikel']) ? $params['kVariKindArtikel'] : null,
-        'kSeite'                 => isset($params['kSeite']) ? $params['kSeite'] : null,
-        'kSuchanfrage'           => isset($params['kSuchanfrage']) ? $params['kSuchanfrage'] : null,
-        'kMerkmalWert'           => isset($params['kMerkmalWert']) ? $params['kMerkmalWert'] : null,
-        'kTag'                   => isset($params['kTag']) ? $params['kTag'] : null,
-        'kSuchspecial'           => isset($params['kSuchspecial']) ? $params['kSuchspecial'] : null,
-        'kKategorieFilter'       => isset($params['kKategorieFilter']) ? $params['kKategorieFilter'] : null,
-        'kHerstellerFilter'      => isset($params['kHerstellerFilter']) ? $params['kHerstellerFilter'] : null,
-        'nBewertungSterneFilter' => isset($params['nBewertungSterneFilter']) ? $params['nBewertungSterneFilter'] : null,
-        'cPreisspannenFilter'    => isset($params['cPreisspannenFilter']) ? $params['cPreisspannenFilter'] : null,
-        'kSuchspecialFilter'     => isset($params['kSuchspecialFilter']) ? $params['kSuchspecialFilter'] : null,
+        'kKategorie'             => $params['kKategorie'] ?? null,
+        'kHersteller'            => $params['kHersteller'] ?? null,
+        'kArtikel'               => $params['kArtikel'] ?? null,
+        'kVariKindArtikel'       => $params['kVariKindArtikel'] ?? null,
+        'kSeite'                 => $params['kSeite'] ?? null,
+        'kSuchanfrage'           => $params['kSuchanfrage'] ?? null,
+        'kMerkmalWert'           => $params['kMerkmalWert'] ?? null,
+        'kTag'                   => $params['kTag'] ?? null,
+        'kSuchspecial'           => $params['kSuchspecial'] ?? null,
+        'kKategorieFilter'       => $params['kKategorieFilter'] ?? null,
+        'kHerstellerFilter'      => $params['kHerstellerFilter'] ?? null,
+        'nBewertungSterneFilter' => $params['nBewertungSterneFilter'] ?? null,
+        'cPreisspannenFilter'    => $params['cPreisspannenFilter'] ?? null,
+        'kSuchspecialFilter'     => $params['kSuchspecialFilter'] ?? null,
         'nSortierung'            => $nSortierung,
         'MerkmalFilter_arr'      => $cMerkmalFilter_arr,
         'TagFilter_arr'          => $cTagFilter_arr,
         'SuchFilter_arr'         => $cSuchFilter_arr,
-        'nArtikelProSeite'       => isset($params['nArtikelProSeite']) ? $params['nArtikelProSeite'] : null,
-        'cSuche'                 => isset($params['cSuche']) ? $params['cSuche'] : null,
-        'seite'                  => isset($params['seite']) ? $params['seite'] : null
+        'nArtikelProSeite'       => $params['nArtikelProSeite'] ?? null,
+        'cSuche'                 => $params['cSuche'] ?? null,
+        'seite'                  => $params['seite'] ?? null
     ];
     if ($cParameter_arr['kArtikel'] !== null) {
         $oArtikel_arr = [];
@@ -147,7 +147,7 @@ function load_boxes_raw($params, &$smarty)
 {
     if (isset($params['array'], $params['assign']) && $params['array'] === true) {
         $rawData = Boxen::getInstance()->getRawData();
-        $smarty->assign($params['assign'], (isset($rawData[$params['type']]) ? $rawData[$params['type']] : null));
+        $smarty->assign($params['assign'], $rawData[$params['type']] ?? null);
     }
 }
 
@@ -227,7 +227,7 @@ function get_img_tag($params, &$smarty)
     $imageTITLE    = isset($params['title']) ? ' title="' . truncate($params['title'], 75) . '"' : '';
     $imageCLASS    = isset($params['class']) ? ' class="' . truncate($params['class'], 75) . '"' : '';
     if (strpos($imageURL, 'http') !== 0) {
-        $imageURL = Shop::getURL() . '/' . ltrim($imageURL, '/');
+        $imageURL = Shop::getImageBaseURL() . ltrim($imageURL, '/');
     }
     if ($oImgSize !== null && $oImgSize->size->width > 0 && $oImgSize->size->height > 0) {
         return '<img src="' . $imageURL . '" width="' . $oImgSize->size->width . '" height="' .
@@ -521,9 +521,7 @@ function get_navigation($params, &$smarty)
     $oLinkGruppe         = null;
     if (strlen($linkgroupIdentifier) > 0) {
         $linkGroups  = LinkHelper::getInstance()->getLinkGroups();
-        $oLinkGruppe = isset($linkGroups->{$linkgroupIdentifier})
-            ? $linkGroups->{$linkgroupIdentifier}
-            : null;
+        $oLinkGruppe = $linkGroups->{$linkgroupIdentifier} ?? null;
     }
 
     if (is_object($oLinkGruppe) && isset($params['assign'])) {
@@ -600,7 +598,12 @@ function prepare_image_details($params, &$smarty)
             $result = $result[$type];
         }
     }
-
+    $imageBaseURL = Shop::getImageBaseURL();
+    foreach ($result as $size => $data) {
+        if (isset($data->src) && strpos($data->src, 'http') !== 0) {
+            $data->src = $imageBaseURL . $data->src;
+        }
+    }
     $result = (object)$result;
 
     return (isset($params['json']) && $params['json'])

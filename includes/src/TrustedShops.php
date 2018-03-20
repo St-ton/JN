@@ -398,11 +398,9 @@ class TrustedShops
             && is_array($this->oKaeuferschutzProdukte->item)
             && count($this->oKaeuferschutzProdukte->item) > 0
         ) {
-            $cLandISO = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : null;
+            $cLandISO = $_SESSION['Lieferadresse']->cLand ?? null;
             if (!$cLandISO) {
-                $cLandISO = isset($_SESSION['TrustedShops']->oSprache->cISOSprache)
-                    ? $_SESSION['TrustedShops']->oSprache->cISOSprache
-                    : $_SESSION['Kunde']->cLand;
+                $cLandISO = $_SESSION['TrustedShops']->oSprache->cISOSprache ?? $_SESSION['Kunde']->cLand;
             }
 
             unset($_SESSION['Warenkorb']);
@@ -480,7 +478,7 @@ class TrustedShops
             && is_array($this->oKaeuferschutzProdukteDB->item)
             && count($this->oKaeuferschutzProdukteDB->item) > 0
         ) {
-            $cLandISO = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : null;
+            $cLandISO = $_SESSION['Lieferadresse']->cLand ?? null;
             $cLandISO = !$cLandISO && isset($_SESSION['Kunde']->cLand)
                 ? $_SESSION['Kunde']->cLand
                 : null;
@@ -528,7 +526,7 @@ class TrustedShops
                     }
                 }
                 $this->oKaeuferschutzProdukteDB->item[$i]->protectedAmountDecimalLocalized =
-                    gibPreisStringLocalized(isset($oItem->protectedAmountDecimal) ? $oItem->protectedAmountDecimal : 0);
+                    gibPreisStringLocalized($oItem->protectedAmountDecimal ?? 0);
             }
         }
 

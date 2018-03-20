@@ -332,6 +332,11 @@ final class Shop
     private static $container;
 
     /**
+     * @var string
+     */
+    private static $imageBaseURL = '';
+
+    /**
      * @var array
      */
     private static $mapping = [
@@ -358,9 +363,9 @@ final class Shop
     /**
      * @return Shop
      */
-    public static function getInstance()
+    public static function getInstance() : self
     {
-        return self::$_instance === null ? new self() : self::$_instance;
+        return self::$_instance ?? new self();
     }
 
     /**
@@ -392,14 +397,12 @@ final class Shop
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @return null|mixed
      */
     public function _get($key)
     {
-        return isset($this->registry[$key])
-            ? $this->registry[$key]
-            : null;
+        return $this->registry[$key] ?? null;
     }
 
     /**
@@ -407,7 +410,7 @@ final class Shop
      * @param mixed $value
      * @return $this
      */
-    public function _set($key, $value)
+    public function _set($key, $value) : self
     {
         $this->registry[$key] = $value;
 
@@ -431,9 +434,23 @@ final class Shop
      */
     private static function map($method)
     {
-        return isset(self::$mapping[$method])
-            ? self::$mapping[$method]
-            : null;
+        return self::$mapping[$method] ?? null;
+    }
+
+    /**
+     * @param string $url
+     */
+    public static function setImageBaseURL(string $url)
+    {
+        self::$imageBaseURL = rtrim($url, '/') . '/';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getImageBaseURL() : string
+    {
+        return self::$imageBaseURL;
     }
 
     /**
@@ -441,7 +458,7 @@ final class Shop
      *
      * @return RemoteService
      */
-    public function RS()
+    public function RS() : RemoteService
     {
         return RemoteService::getInstance();
     }
@@ -451,7 +468,7 @@ final class Shop
      *
      * @return Session
      */
-    public function Session()
+    public function Session() : Session
     {
         return Session::getInstance();
     }
@@ -461,7 +478,7 @@ final class Shop
      *
      * @return NiceDB
      */
-    public function _DB()
+    public function _DB() : NiceDB
     {
         return NiceDB::getInstance();
     }
@@ -471,7 +488,7 @@ final class Shop
      *
      * @return Sprache
      */
-    public function _Language()
+    public function _Language() : Sprache
     {
         return Sprache::getInstance();
     }
@@ -481,7 +498,7 @@ final class Shop
      *
      * @return Shopsetting
      */
-    public function Config()
+    public function Config() : Shopsetting
     {
         return self::$_settings;
     }
@@ -491,7 +508,7 @@ final class Shop
      *
      * @return GarbageCollector
      */
-    public function Gc()
+    public function Gc() : GarbageCollector
     {
         return new GarbageCollector();
     }
@@ -501,7 +518,7 @@ final class Shop
      *
      * @return Jtllog
      */
-    public function Logger()
+    public function Logger() : Jtllog
     {
         return new Jtllog();
     }
@@ -509,7 +526,7 @@ final class Shop
     /**
      * @return PHPSettingsHelper
      */
-    public function PHPSettingsHelper()
+    public function PHPSettingsHelper() : PHPSettingsHelper
     {
         return PHPSettingsHelper::getInstance();
     }
@@ -519,7 +536,7 @@ final class Shop
      *
      * @return JTLCache
      */
-    public function _Cache()
+    public function _Cache() : JTLCache
     {
         return JTLCache::getInstance();
     }
@@ -531,7 +548,7 @@ final class Shop
      * @param bool $isAdmin
      * @return JTLSmarty
      */
-    public function _Smarty($fast_init = false, $isAdmin = false)
+    public function _Smarty($fast_init = false, $isAdmin = false) : JTLSmarty
     {
         return JTLSmarty::getInstance($fast_init, $isAdmin);
     }
@@ -541,7 +558,7 @@ final class Shop
      *
      * @return Media
      */
-    public function _Media()
+    public function _Media() : Media
     {
         return Media::getInstance();
     }
@@ -551,7 +568,7 @@ final class Shop
      *
      * @return EventDispatcher
      */
-    public function _Event()
+    public function _Event() : EventDispatcher
     {
         return EventDispatcher::getInstance();
     }
@@ -607,7 +624,7 @@ final class Shop
      * @var bool $iso
      * @return int
      */
-    public static function getLanguageID()
+    public static function getLanguageID() : int
     {
         return (int)self::$kSprache;
     }
@@ -699,9 +716,9 @@ final class Shop
     }
 
     /**
-     *
+     * @return ProductFilter
      */
-    public static function run()
+    public static function run() : ProductFilter
     {
         self::$kKonfigPos             = verifyGPCDataInteger('ek');
         self::$kKategorie             = verifyGPCDataInteger('k');
@@ -806,6 +823,7 @@ final class Shop
         self::$productFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
 
         self::seoCheck();
+        self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL  : self::getURL());
         self::Event()->fire('shop.run');
 
         self::$productFilter->initStates(self::getParameters());
@@ -818,7 +836,7 @@ final class Shop
      *
      * @return array
      */
-    public static function getParameters()
+    public static function getParameters() : array
     {
         if (self::$kKategorie > 0 && !Kategorie::isVisible(self::$kKategorie, Session::CustomerGroup()->getID())) {
             self::$kKategorie = 0;
@@ -853,8 +871,8 @@ final class Shop
             'nSortierung'            => self::$nSortierung,
             'nSort'                  => self::$nSort,
             'MerkmalFilter_arr'      => self::$MerkmalFilter,
-            'TagFilter_arr'          => self::$TagFilter !== null ? self::$TagFilter : [],
-            'SuchFilter_arr'         => self::$SuchFilter !== null ? self::$SuchFilter : [],
+            'TagFilter_arr'          => self::$TagFilter ?? [],
+            'SuchFilter_arr'         => self::$SuchFilter ?? [],
             'nArtikelProSeite'       => self::$nArtikelProSeite,
             'cSuche'                 => self::$cSuche,
             'seite'                  => self::$seite,
@@ -1220,7 +1238,7 @@ final class Shop
             self::$productFilter->setLanguageID($languageID);
         }
         $spr   = self::Lang()->getIsoFromLangID($languageID);
-        $cLang = isset($spr->cISO) ? $spr->cISO : null;
+        $cLang = $spr->cISO ?? null;
         if ($cLang !== $_SESSION['cISOSprache']) {
             checkeSpracheWaehrung($cLang);
             setzeSteuersaetze();
@@ -1513,7 +1531,7 @@ final class Shop
     /**
      * @return int
      */
-    public static function getShopVersion()
+    public static function getShopVersion() : int
     {
         $oVersion = self::DB()->query('SELECT nVersion FROM tversion', NiceDB::RET_SINGLE_OBJECT);
 
@@ -1527,7 +1545,7 @@ final class Shop
      *
      * @return int
      */
-    public static function getVersion()
+    public static function getVersion() : int
     {
         return JTL_VERSION;
     }
@@ -1542,7 +1560,7 @@ final class Shop
     {
         $ret  = null;
         $conf = self::getSettings([CONF_LOGO]);
-        $file = isset($conf['logo']['shop_logo']) ? $conf['logo']['shop_logo'] : null;
+        $file = $conf['logo']['shop_logo'] ?? null;
         if ($file !== null && $file !== '') {
             $ret = PFAD_SHOPLOGO . $file;
         } elseif (is_dir(PFAD_ROOT . PFAD_SHOPLOGO)) {
@@ -1561,7 +1579,7 @@ final class Shop
         return $ret === null
             ? null
             : ($fullUrl === true
-                ? self::getURL() . '/'
+                ? self::getImageBaseURL()
                 : '') . $ret;
     }
 
@@ -1570,7 +1588,7 @@ final class Shop
      * @param bool $bMultilang
      * @return string - the shop URL without trailing slash
      */
-    public static function getURL($bForceSSL = false, $bMultilang = true)
+    public static function getURL($bForceSSL = false, $bMultilang = true) : string
     {
         $idx = (int)$bForceSSL;
         if (isset(self::$url[self::$kSprache][$idx])) {
@@ -1598,7 +1616,7 @@ final class Shop
      * @param bool $bForceSSL
      * @return string - the shop Admin URL without trailing slash
      */
-    public static function getAdminURL($bForceSSL = false)
+    public static function getAdminURL($bForceSSL = false) : string
     {
         return rtrim(static::getURL($bForceSSL, false) . '/' . PFAD_ADMIN, '/');
     }
@@ -1618,17 +1636,15 @@ final class Shop
      */
     public static function getPageType()
     {
-        return self::$pageType !== null ? self::$pageType : PAGE_UNBEKANNT;
+        return self::$pageType ?? PAGE_UNBEKANNT;
     }
 
     /**
      * @return string
      */
-    public static function getRequestUri()
+    public static function getRequestUri() : string
     {
-        $uri          = isset($_SERVER['HTTP_X_REWRITE_URL'])
-            ? $_SERVER['HTTP_X_REWRITE_URL']
-            : $_SERVER['REQUEST_URI'];
+        $uri          = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         $xShopurl_arr = parse_url(self::getURL());
         $xBaseurl_arr = parse_url($uri);
 
@@ -1644,7 +1660,7 @@ final class Shop
     /**
      * @return bool
      */
-    public static function isAdmin()
+    public static function isAdmin() : bool
     {
         if (is_bool(self::$_logged)) {
             return self::$_logged;
@@ -1674,7 +1690,7 @@ final class Shop
     /**
      * @return bool
      */
-    public static function isBrandfree()
+    public static function isBrandfree() : bool
     {
         return Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_BRANDFREE);
     }
@@ -1686,7 +1702,6 @@ final class Shop
      */
     public static function Container()
     {
-
         if (!static::$container) {
             static::createContainer();
         }

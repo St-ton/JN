@@ -21,7 +21,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 }
 // Suche
 if (strlen(verifyGPDataString('cSuche')) > 0) {
-    $cSuche = StringHandler::filterXSS(verifyGPDataString('cSuche'));
+    $cSuche = Shop::DB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
 
     if (strlen($cSuche) > 0) {
         $cSucheSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
@@ -168,9 +168,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
             'cName',
             $oConfig_arr[$i]->cWertName
         );
-        $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-            ? $oSetValue->cWert
-            : null;
+        $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
     }
 
     $smarty->assign('oConfig_arr', $oConfig_arr);

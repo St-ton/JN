@@ -307,9 +307,7 @@ for ($i = 0; $i < $settingsCount; ++$i) {
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $settings[$i]->cWertName]
     );
-    $settings[$i]->gesetzterWert = isset($oSetValue->cWert)
-        ? $oSetValue->cWert
-        : null;
+    $settings[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 $advancedSettings = Shop::DB()->query(
     "SELECT * 
@@ -334,9 +332,7 @@ for ($i = 0; $i < $settingsCount; ++$i) {
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $advancedSettings[$i]->cWertName]
     );
-    $advancedSettings[$i]->gesetzterWert = isset($oSetValue->cWert)
-        ? $oSetValue->cWert
-        : null;
+    $advancedSettings[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 if (function_exists('opcache_get_status')) {
     $_opcacheStatus             = opcache_get_status();
@@ -348,18 +344,10 @@ if (function_exists('opcache_get_status')) {
     $opcacheStats->memoryUsed   = isset($_opcacheStatus['memory_usage']['used_memory'])
         ? round($_opcacheStatus['memory_usage']['used_memory'] / 1024 / 1024, 2)
         : -1;
-    $opcacheStats->numberScrips = isset($_opcacheStatus['opcache_statistics']['num_cached_scripts'])
-        ? $_opcacheStatus['opcache_statistics']['num_cached_scripts']
-        : -1;
-    $opcacheStats->numberKeys   = isset($_opcacheStatus['opcache_statistics']['num_cached_keys'])
-        ? $_opcacheStatus['opcache_statistics']['num_cached_keys']
-        : -1;
-    $opcacheStats->hits         = isset($_opcacheStatus['opcache_statistics']['hits'])
-        ? $_opcacheStatus['opcache_statistics']['hits']
-        : -1;
-    $opcacheStats->misses       = isset($_opcacheStatus['opcache_statistics']['misses'])
-        ? $_opcacheStatus['opcache_statistics']['misses']
-        : -1;
+    $opcacheStats->numberScrips = $_opcacheStatus['opcache_statistics']['num_cached_scripts'] ?? -1;
+    $opcacheStats->numberKeys   = $_opcacheStatus['opcache_statistics']['num_cached_keys'] ?? -1;
+    $opcacheStats->hits         = $_opcacheStatus['opcache_statistics']['hits'] ?? -1;
+    $opcacheStats->misses       = $_opcacheStatus['opcache_statistics']['misses'] ?? -1;
     $opcacheStats->hitRate      = isset($_opcacheStatus['opcache_statistics']['opcache_hit_rate'])
         ? round($_opcacheStatus['opcache_statistics']['opcache_hit_rate'], 2)
         : -1;

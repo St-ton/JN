@@ -51,6 +51,28 @@
                                     <option value="{$oPluginEinstellungenConfWerte->cWert}"{if $selected} selected{/if}>{$oPluginEinstellungenConfWerte->cName}</option>
                                 {/foreach}
                             </select>
+                        {elseif $oPluginEinstellungConf->cInputTyp === 'colorpicker'}
+                            <div id="{$oPluginEinstellungConf->cWertName}" style="display:inline-block">
+                                <div style="background-color: {$cEinstellungWert}" class="colorSelector"></div>
+                            </div>
+                            <input type="hidden" name="{$oPluginEinstellungConf->cWertName}" class="{$oPluginEinstellungConf->cWertName}_data" value="{$cEinstellungWert}" />
+                            <script type="text/javascript">
+                                $('#{$oPluginEinstellungConf->cWertName}').ColorPicker({ldelim}
+                                    color:    '{$cEinstellungWert}',
+                                    onShow:   function (colpkr) {ldelim}
+                                        $(colpkr).fadeIn(500);
+                                        return false;
+                                    {rdelim},
+                                    onHide:   function (colpkr) {ldelim}
+                                        $(colpkr).fadeOut(500);
+                                        return false;
+                                    {rdelim},
+                                    onChange: function (hsb, hex, rgb) {ldelim}
+                                        $('#{$oPluginEinstellungConf->cWertName} div').css('backgroundColor', '#' + hex);
+                                        $('.{$oPluginEinstellungConf->cWertName}_data').val('#' + hex);
+                                    {rdelim}
+                                {rdelim});
+                            </script>
                         {elseif $oPluginEinstellungConf->cInputTyp === 'password'}
                             <input autocomplete="off" class="form-control" id="{$oPluginEinstellungConf->cWertName}" name="{$oPluginEinstellungConf->cWertName}" type="password" value="{$cEinstellungWert}" />
                         {elseif $oPluginEinstellungConf->cInputTyp === 'textarea'}

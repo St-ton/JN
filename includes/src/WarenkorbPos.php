@@ -421,7 +421,7 @@ class WarenkorbPos
         $obj->cName                     = $this->cName;
         $obj->cLieferstatus             = $this->cLieferstatus;
         $obj->cArtNr                    = $this->cArtNr;
-        $obj->cEinheit                  = ($this->cEinheit === null) ? '' : $this->cEinheit;
+        $obj->cEinheit                  = $this->cEinheit ?? '';
         $obj->fPreisEinzelNetto         = $this->fPreisEinzelNetto;
         $obj->fPreis                    = $this->fPreis;
         $obj->fMwSt                     = $this->fMwSt;
@@ -449,7 +449,7 @@ class WarenkorbPos
      */
     public function istKonfigVater()
     {
-        return (is_string($this->cUnique) && strlen($this->cUnique) === 10 && (int)$this->kKonfigitem === 0);
+        return (is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem === 0);
     }
 
     /**
@@ -457,7 +457,7 @@ class WarenkorbPos
      */
     public function istKonfigKind()
     {
-        return (is_string($this->cUnique) && strlen($this->cUnique) === 10 && (int)$this->kKonfigitem > 0);
+        return (is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem > 0);
     }
 
     /**

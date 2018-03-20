@@ -34,7 +34,7 @@ for ($i = 0; $i < $count; $i++) {
         );
     }
     $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_RSS, 'cName', $oConfig_arr[$i]->cWertName);
-    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
 if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {

@@ -56,7 +56,7 @@ class Wirecard extends PaymentMethod
 
         $cFailureURL = $this->getReturnURL($order);
         if ($_SESSION['Zahlungsart']->nWaehrendBestellung == 1) {
-            $cFailureURL = Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1&' . SID;
+            $cFailureURL = Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1';
         }
 
         $cReturnUrl = $this->getReturnURL($order);

@@ -16,16 +16,21 @@ ifndef('ADMIN_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SHOP_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SMARTY_LOG_LEVEL', E_ERROR | E_PARSE);
 error_reporting(SHOP_LOG_LEVEL);
-// if this is set to false, Hersteller, Linkgruppen and oKategorie_arr will not be added to $_SESSION
-// this requires changes in templates!
 ifndef('TEMPLATE_COMPATIBILITY', false);
 // Image compatibility level 0 => disabled, 1 => referenced in history table, 2 => automatic detection
 ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+
+/**
+ * WARNING !!! DO NOT USE PROFILE_QUERIES IN PRODUCTION ENVIRONMENT OR PUBLIC AVAILABLE SITES. THE PROFILER CANNOT USE
+ * PREPARED STATEMENTS WHEN QUERIES ARE ANALYZED. THEREFORE A LESS SECURE FALLBACK (ESCAPING) IS USED TO ANALYZE
+ * QUERIES.
+ */
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
+
 ifndef('IO_LOG_CONSOLE', false);
 ifndef('DEFAULT_CURL_OPT_VERIFYPEER', true);
 ifndef('DEFAULT_CURL_OPT_VERIFYHOST', 2);

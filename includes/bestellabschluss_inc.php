@@ -289,7 +289,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $Bestellung->dBezahltDatum    = 'now()';
         $Bestellung->cZahlungsartName = Shop::Lang()->get('paymentNotNecessary', 'checkout');
     }
-    $Bestellung->cIP = isset($_SESSION['IP']->cIP) ? $_SESSION['IP']->cIP : gibIP(true);
+    $Bestellung->cIP = $_SESSION['IP']->cIP ?? gibIP(true);
     //#8544
     $Bestellung->fWaehrungsFaktor = Session::Currency()->getConversionFactor();
 
@@ -597,8 +597,8 @@ function aktualisiereXselling($kArtikel, $kZielArtikel)
     if (isset($obj->nAnzahl) && $obj->nAnzahl > 0) {
         Shop::DB()->query(
             "UPDATE txsellkauf
-              SET nAnzahl = nAnzahl + 1 
-              WHERE kArtikel = " . $kArtikel . " 
+              SET nAnzahl = nAnzahl + 1
+              WHERE kArtikel = " . $kArtikel . "
                 AND kXSellArtikel = " . $kZielArtikel, 4
         );
     } else {
@@ -644,7 +644,7 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
             } else {
                 Shop::DB()->query(
                     "UPDATE tartikel
-                        SET fLagerbestand = IF (fLagerbestand >= " . ($nAnzahl * $Artikel->fPackeinheit) . ", 
+                        SET fLagerbestand = IF (fLagerbestand >= " . ($nAnzahl * $Artikel->fPackeinheit) . ",
                         (fLagerbestand - " . ($nAnzahl * $Artikel->fPackeinheit) . "), fLagerbestand)
                         WHERE kArtikel = " . (int)$Artikel->kArtikel, 4
                 );
@@ -871,7 +871,7 @@ function KuponVerwendungen($oBestellung)
         $KuponKunde->nVerwendungen = 1;
         $KuponKundeBisher          = Shop::DB()->query(
             "SELECT SUM(nVerwendungen) AS nVerwendungen
-                FROM tkuponkunde 
+                FROM tkuponkunde
                 WHERE cMail = '{$KuponKunde->cMail}'", 1
         );
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
@@ -1198,9 +1198,7 @@ function gibLieferadresseAusSession()
         $oLieferadresse              = new stdClass();
         $oLieferadresse->cVorname    = $_SESSION['Lieferadresse']->cVorname;
         $oLieferadresse->cNachname   = $_SESSION['Lieferadresse']->cNachname;
-        $oLieferadresse->cFirma      = isset($_SESSION['Lieferadresse']->cFirma)
-            ? $_SESSION['Lieferadresse']->cFirma
-            : null;
+        $oLieferadresse->cFirma      = $_SESSION['Lieferadresse']->cFirma ?? null;
         $oLieferadresse->kKunde      = $_SESSION['Lieferadresse']->kKunde;
         $oLieferadresse->cAnrede     = $_SESSION['Lieferadresse']->cAnrede;
         $oLieferadresse->cTitel      = $_SESSION['Lieferadresse']->cTitel;
@@ -1210,18 +1208,10 @@ function gibLieferadresseAusSession()
         $oLieferadresse->cOrt        = $_SESSION['Lieferadresse']->cOrt;
         $oLieferadresse->cLand       = $_SESSION['Lieferadresse']->cLand;
         $oLieferadresse->cTel        = $_SESSION['Lieferadresse']->cTel;
-        $oLieferadresse->cMobil      = isset($_SESSION['Lieferadresse']->cMobil)
-            ? $_SESSION['Lieferadresse']->cMobil
-            : null;
-        $oLieferadresse->cFax        = isset($_SESSION['Lieferadresse']->cFax)
-            ? $_SESSION['Lieferadresse']->cFax
-            : null;
-        $oLieferadresse->cUSTID      = isset($_SESSION['Lieferadresse']->cUSTID)
-            ? $_SESSION['Lieferadresse']->cUSTID
-            : null;
-        $oLieferadresse->cWWW        = isset($_SESSION['Lieferadresse']->cWWW)
-            ? $_SESSION['Lieferadresse']->cWWW
-            : null;
+        $oLieferadresse->cMobil      = $_SESSION['Lieferadresse']->cMobil ?? null;
+        $oLieferadresse->cFax        = $_SESSION['Lieferadresse']->cFax ?? null;
+        $oLieferadresse->cUSTID      = $_SESSION['Lieferadresse']->cUSTID ?? null;
+        $oLieferadresse->cWWW        = $_SESSION['Lieferadresse']->cWWW ?? null;
         $oLieferadresse->cMail       = $_SESSION['Lieferadresse']->cMail;
         $oLieferadresse->cAnrede     = $_SESSION['Lieferadresse']->cAnrede;
 
@@ -1295,7 +1285,7 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     $_upd              = new stdClass();
     $_upd->kKunde      = (int)$_SESSION['Warenkorb']->kKunde;
     $_upd->kBestellung = (int)$bestellung->kBestellung;
-    Shop::DB()->update('tbesucher', 'cIP', gibIP(), $_upd);
+    Shop::DB()->update('tbesucher', 'kKunde', $_upd->kKunde, $_upd);
     //mail versenden
     $obj->tkunde      = $_SESSION['Kunde'];
     $obj->tbestellung = $bestellung;

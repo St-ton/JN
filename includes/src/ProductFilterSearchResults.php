@@ -12,7 +12,7 @@ class ProductFilterSearchResults
     use MagicCompatibilityTrait;
 
     /**
-     * @var Collection
+     * @var \Tightenco\Collect\Support\Collection()
      * @former Artikel
      */
     private $products;
@@ -178,7 +178,7 @@ class ProductFilterSearchResults
      */
     public function __construct($legacy = null)
     {
-        $this->products             = new Collection();
+        $this->products             = new \Tightenco\Collect\Support\Collection();
         $this->pages                = new stdClass();
         $this->pages->AktuelleSeite = 0;
         $this->pages->MaxSeiten     = 0;
@@ -246,7 +246,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return Collection
+     * @return \Tightenco\Collect\Support\Collection()
      */
     public function getProducts()
     {
@@ -254,7 +254,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param Collection $products
+     * @param \Tightenco\Collect\Support\Collection() $products
      * @return ProductFilterSearchResults
      */
     public function setProducts($products)
@@ -821,7 +821,8 @@ class ProductFilterSearchResults
                 }
             }
         }
-        $productFilter->getAttributeFilterCollection()->setFilterCollection($attribtuteFilterOptions);
+        $productFilter->getAttributeFilterCollection()
+                      ->setFilterCollection($attribtuteFilterOptions);
 
         return $this;
     }

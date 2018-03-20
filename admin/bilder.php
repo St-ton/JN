@@ -31,7 +31,7 @@ for ($i = 0; $i < $configCount; $i++) {
         );
     }
     $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_BILDER, $oConfig_arr[$i]->cWertName]);
-    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 $Einstellungen = Shop::getSettings([CONF_BILDER]);
 

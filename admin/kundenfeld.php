@@ -17,7 +17,7 @@ $step           = 'uebersicht';
 setzeSprache();
 
 // Tabs
-$smarty->assign('cTab', (isset($cStep) ? $cStep : null));
+$smarty->assign('cTab', $cStep ?? null);
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
@@ -65,7 +65,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             'nEditierbar' => (int)$_POST['nEdit'],
         ];
 
-        $cfValues = isset($_POST['cfValues']) ? $_POST['cfValues'] : null;
+        $cfValues = $_POST['cfValues'] ?? null;
 
         // Plausi
         $oPlausi = new PlausiKundenfeld();
@@ -125,7 +125,7 @@ for ($i = 0; $i < $configCount; $i++) {
         $oConfig_arr[$i]->cWertName
     );
 
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert) ? $oSetValue->cWert : null);
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 // Kundenfelder auslesen und in Smarty assignen
 $oKundenfeld_arr = $customerFields->getCustomerFields();

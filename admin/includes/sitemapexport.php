@@ -283,6 +283,7 @@ function generateSitemapXML()
     $nSitemapLimit  = 25000;
     $sitemap_data   = '';
     $shopURL        = Shop::getURL();
+    $imageBaseURL   = Shop::getImageBaseURL();
     //Hauptseite
     $sitemap_data .= makeURL('', null, FREQ_ALWAYS, PRIO_VERYHIGH);
     //Alte Sitemaps löschen
@@ -346,7 +347,7 @@ function generateSitemapXML()
                 $number
             );
             if (strlen($cGoogleImage) > 0) {
-                $cGoogleImage = $shopURL . '/' . $cGoogleImage;
+                $cGoogleImage = $imageBaseURL . $cGoogleImage;
             }
         }
         $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
@@ -465,7 +466,7 @@ function generateSitemapXML()
                         $sitemap_data            = '';
                     }
 
-                    $tlink->cLocalizedSeo[$tlink->cISOSprache] = isset($tlink->cSeo) ? $tlink->cSeo : null;
+                    $tlink->cLocalizedSeo[$tlink->cISOSprache] = $tlink->cSeo ?? null;
                     $link                                      = baueURL($tlink, URLART_SEITE);
                     if (strlen($tlink->cSeo) > 0) {
                         $link = $tlink->cSeo;
@@ -1071,9 +1072,7 @@ function holeGoogleImage($artikel)
         );
     }
 
-    return isset($oBild->cPfad)
-        ? $oBild->cPfad
-        : null;
+    return $oBild->cPfad ?? null;
 }
 
 /**

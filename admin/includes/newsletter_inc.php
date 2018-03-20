@@ -58,7 +58,7 @@ function versendeNewsletter(
                ->assign('Kampagne', $oKampagne)
                ->assign('cNewsletterURL', Shop::getURL() .
                    '/newsletter.php?show=' .
-                   (isset($oNewsletter->kNewsletter) ? $oNewsletter->kNewsletter : '0')
+                   ($oNewsletter->kNewsletter ?? '0')
                );
 
     // Nettopreise?
@@ -83,15 +83,12 @@ function versendeNewsletter(
     if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
         $cPixel = '<br /><img src="' . Shop::getURL() . '/' . PFAD_INCLUDES .
             'newslettertracker.php?kK=' . $oKampagne->kKampagne .
-            '&kN=' . (isset($oNewsletter->kNewsletter) ? $oNewsletter->kNewsletter : 0) . '&kNE=' .
-            (isset($oEmailempfaenger->kNewsletterEmpfaenger)
-                ? $oEmailempfaenger->kNewsletterEmpfaenger
-                : 0
-            ) . '" alt="Newsletter" />';
+            '&kN=' . ($oNewsletter->kNewsletter ?? 0) . '&kNE=' .
+            ($oEmailempfaenger->kNewsletterEmpfaenger ?? 0) . '" alt="Newsletter" />';
     }
 
     $cTyp = 'VL';
-    $nKey = isset($oNewsletter->kNewsletterVorlage) ? $oNewsletter->kNewsletterVorlage : 0;
+    $nKey = $oNewsletter->kNewsletterVorlage ?? 0;
     if (isset($oNewsletter->kNewsletter) && $oNewsletter->kNewsletter > 0) {
         $cTyp = 'NL';
         $nKey = $oNewsletter->kNewsletter;
@@ -118,22 +115,9 @@ function versendeNewsletter(
         $mail = new stdClass();
     }
     $mail->toEmail = $oEmailempfaenger->cEmail;
-    $mail->toName  = (isset($oEmailempfaenger->cVorname)
-            ? $oEmailempfaenger->cVorname
-            : ''
-        ) . ' ' .
-        (isset($oEmailempfaenger->cNachname)
-            ? $oEmailempfaenger->cNachname
-            : ''
-        );
+    $mail->toName  = ($oEmailempfaenger->cVorname ?? '') . ' ' . ($oEmailempfaenger->cNachname ?? '');
     if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-        $mail->toName = (isset($oKunde->cVorname)
-                ? $oKunde->cVorname
-                : '') . ' ' . (
-            isset($oKunde->cNachname)
-                ? $oKunde->cNachname
-                : ''
-            );
+        $mail->toName = ($oKunde->cVorname ?? '') . ' ' . ($oKunde->cNachname ?? '');
     }
 
     $oSpracheTMP = Shop::DB()->select('tsprache', 'kSprache', (int)$oNewsletter->kSprache);
@@ -189,9 +173,7 @@ function gibStaticHtml(
                ->assign('Kampagne', $oKampagne);
 
     $cTyp = 'VL';
-    $nKey = isset($oNewsletter->kNewsletterVorlage)
-        ? $oNewsletter->kNewsletterVorlage
-        : null;
+    $nKey = $oNewsletter->kNewsletterVorlage ?? null;
     if ($oNewsletter->kNewsletter > 0) {
         $cTyp = 'NL';
         $nKey = $oNewsletter->kNewsletter;
@@ -883,7 +865,7 @@ function holeArtikelnummer($kArtikel)
         $oArtikel = Shop::DB()->select('tartikel', 'kArtikel', (int)$kArtikel);
     }
 
-    return isset($oArtikel->cArtNr) ? $oArtikel->cArtNr : $cArtNr;
+    return $oArtikel->cArtNr ?? $cArtNr;
 }
 
 /**
@@ -1305,7 +1287,8 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
 {
     $oArtikel_arr = [];
     if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
-        $shopURL = Shop::getURL() . '/';
+        $shopURL        = Shop::getURL() . '/';
+        $imageBaseURL   = Shop::getImageBaseURL();
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($kArtikel_arr as $kArtikel) {
             if ((int)$kArtikel > 0) {
@@ -1335,12 +1318,12 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
                 $imageCount = count($oArtikel->Bilder);
                 if (is_array($oArtikel->Bilder) && $imageCount > 0) {
                     for ($i = 0; $i < $imageCount; $i++) {
-                        $oArtikel->Bilder[$i]->cPfadMini   = $shopURL . $oArtikel->Bilder[$i]->cPfadMini;
-                        $oArtikel->Bilder[$i]->cPfadKlein  = $shopURL . $oArtikel->Bilder[$i]->cPfadKlein;
-                        $oArtikel->Bilder[$i]->cPfadNormal = $shopURL . $oArtikel->Bilder[$i]->cPfadNormal;
-                        $oArtikel->Bilder[$i]->cPfadGross  = $shopURL . $oArtikel->Bilder[$i]->cPfadGross;
+                        $oArtikel->Bilder[$i]->cPfadMini   = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadMini;
+                        $oArtikel->Bilder[$i]->cPfadKlein  = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadKlein;
+                        $oArtikel->Bilder[$i]->cPfadNormal = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadNormal;
+                        $oArtikel->Bilder[$i]->cPfadGross  = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadGross;
                     }
-                    $oArtikel->cVorschaubild = $shopURL . $oArtikel->cVorschaubild;
+                    $oArtikel->cVorschaubild = $imageBaseURL . $oArtikel->cVorschaubild;
                 }
                 $oArtikel_arr[] = $oArtikel;
             }
@@ -1362,6 +1345,7 @@ function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
 {
     $oHersteller_arr = [];
     $shopURL         = Shop::getURL() . '/';
+    $imageBaseURL    = Shop::getImageBaseURL();
     if (is_array($kHersteller_arr) && count($kHersteller_arr) > 0) {
         foreach ($kHersteller_arr as $kHersteller) {
             $kHersteller = (int)$kHersteller;
@@ -1379,8 +1363,8 @@ function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
                     $oHersteller->cURL = $oHersteller->cURL . $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
                 }
                 // Herstellerbilder absolut machen
-                $oHersteller->cBildpfadKlein  = $shopURL . $oHersteller->cBildpfadKlein;
-                $oHersteller->cBildpfadNormal = $shopURL . $oHersteller->cBildpfadNormal;
+                $oHersteller->cBildpfadKlein  = $imageBaseURL . $oHersteller->cBildpfadKlein;
+                $oHersteller->cBildpfadNormal = $imageBaseURL . $oHersteller->cBildpfadNormal;
 
                 $oHersteller_arr[] = $oHersteller;
             }

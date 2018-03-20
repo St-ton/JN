@@ -25,6 +25,7 @@
             $('.evo-box-slider:not(.slick-initialized)').slick({
                 //dots: true,
                 arrows: true,
+                lazyLoad: 'ondemand',
                 slidesToShow: 1
             });
 
@@ -34,6 +35,7 @@
             $('.evo-slider:not(.slick-initialized)').slick({
                 //dots: true,
                 arrows: true,
+                lazyLoad: 'ondemand',
                 slidesToShow: 3,
                 responsive: [
                     {

@@ -51,7 +51,7 @@ class Boxen
      */
     public static function getInstance()
     {
-        return self::$_instance === null ? new self() : self::$_instance;
+        return self::$_instance ?? new self();
     }
 
     /**
@@ -484,7 +484,7 @@ class Boxen
                         // Prüft alle X Stunden ob ein Zertifikat noch gültig ist
                         $oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639($lang));
                     }
-                    $oBox->cBildPfad    = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . $filename;
+                    $oBox->cBildPfad    = Shop::getImageBaseURL() . PFAD_GFX_TRUSTEDSHOPS . $filename;
                     $oBox->cBildPfadURL = $cURLSprachISO_arr[StringHandler::convertISO2ISO639($lang)];
                     $oBox->oStatistik   = $oTrustedShops->gibKundenbewertungsStatistik();
                 }
@@ -784,27 +784,20 @@ class Boxen
                         // z.b. index.php?
                         $cDeleteParam = 'vlplo=';
                     }
-                    if (TEMPLATE_COMPATIBILITY === false) {
-                        $artikel = new Artikel();
-                        $artikel->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
-                        $artikel->cURLDEL = $cRequestURI . $cDeleteParam . $oArtikel->kArtikel . $cZusatzParams;
-                        if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
-                            $artikel->Variationen = $oArtikel->oVariationen_arr;
-                        }
-                        if ($artikel->kArtikel > 0) {
-                            $oTMP_arr[] = $artikel;
-                        }
-                    } else {
-                        $oArtikel->cURLDEL = $cRequestURI . $cDeleteParam . $oArtikel->kArtikel . $cZusatzParams;
+                    $artikel = new Artikel();
+                    $artikel->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
+                    $artikel->cURLDEL = $cRequestURI . $cDeleteParam . $oArtikel->kArtikel . $cZusatzParams;
+                    if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
+                        $artikel->Variationen = $oArtikel->oVariationen_arr;
+                    }
+                    if ($artikel->kArtikel > 0) {
+                        $oTMP_arr[] = $artikel;
                     }
                 }
-
                 $oBox->anzeigen  = 'Y';
                 $oBox->cAnzeigen = $this->boxConfig['boxen']['boxen_vergleichsliste_anzeigen'];
                 $oBox->nAnzahl   = (int)$this->boxConfig['vergleichsliste']['vergleichsliste_anzahl'];
-                if (TEMPLATE_COMPATIBILITY === false) {
-                    $oBox->Artikel = $oTMP_arr;
-                }
+                $oBox->Artikel   = $oTMP_arr;
 
                 executeHook(HOOK_BOXEN_INC_VERGLEICHSLISTE, ['box' => $oBox]);
                 break;
@@ -825,9 +818,7 @@ class Boxen
                 }
                 $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
                 foreach ($CWunschlistePos_arr as $CWunschlistePos) {
-                    $cRequestURI  = isset($_SERVER['REQUEST_URI'])
-                        ? $_SERVER['REQUEST_URI']
-                        : $_SERVER['SCRIPT_NAME'];
+                    $cRequestURI  = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'];
                     $nPosAnd      = strrpos($cRequestURI, '&');
                     $nPosQuest    = strrpos($cRequestURI, '?');
                     $nPosWD       = strpos($cRequestURI, 'wlplo=');
@@ -1899,20 +1890,6 @@ class Boxen
                 $boxes[$_type][] = $_box['obj'];
             }
         }
-        if (TEMPLATE_COMPATIBILITY === true) {
-            $boxen = [];
-            foreach ($this->boxes as $_position => $_boxes) {
-                foreach ($_boxes as $_box) {
-                    $_box = $this->prepareBox($_box->kBoxvorlage, $_box);
-                    if (isset($_box->compatName)) {
-                        $boxen[$_box->compatName] = $_box->compatName === 'oGlobalMerkmal_arr' 
-                            ? $_box->globaleMerkmale 
-                            : $_box;
-                    }
-                }
-            }
-            Shop::Smarty()->assign('Boxen', $boxen);
-        }
 
         return $boxes;
     }
@@ -1951,7 +1928,7 @@ class Boxen
             if ($iCur++ >= $iMax) {
                 break;
             }
-            $cName               = isset($oCloud->cName) ? $oCloud->cName : $oCloud->cSuche;
+            $cName               = $oCloud->cName ?? $oCloud->cSuche;
             $cRandomColor        = (!$cColor || !$cColorHover) ? $gibTagFarbe() : '';
             $cName               = urlencode($cName);
             $cName               = str_replace('+', ' ', $cName); /* fix :) */

@@ -37,6 +37,20 @@ class Migration_20180319103900 extends Migration implements IMigration
         $this->execute("UPDATE tjtllog SET nLevel = " . Logger::ALERT . " WHERE nLevel = 1");
         $this->execute("UPDATE tjtllog SET nLevel = " . Logger::INFO . " WHERE nLevel = 2");
         $this->execute("UPDATE tjtllog SET nLevel = " . Logger::DEBUG . " WHERE nLevel = 4");
+
+        $this->execute("UPDATE teinstellungen 
+            SET cWert = " . Logger::DEBUG . " 
+            WHERE cName = 'systemlog_flag' 
+            AND (cWert = 4 OR cWert = 5 OR cWert = 6 OR cWert = 7)");
+        $this->execute("UPDATE teinstellungen 
+            SET cWert = " . Logger::INFO . " 
+            WHERE cName = 'systemlog_flag' 
+            AND (cWert = 2 OR cWert = 3)");
+        $this->execute("UPDATE teinstellungen 
+            SET cWert = " . Logger::ALERT . "
+             WHERE cName = 'systemlog_flag' 
+             AND cWert = 1");
+
     }
 
     /**

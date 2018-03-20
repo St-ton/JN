@@ -996,6 +996,11 @@ class Artikel
     private $conf;
 
     /**
+     * @var stdClass
+     */
+    private $options;
+
+    /**
      * Konstruktor
      *
      * @param int $kArtikel
@@ -1013,6 +1018,7 @@ class Artikel
             CONF_BEWERTUNG
         ]);
         $this->kSprache = (int)$kSprache;
+        $this->options  = new stdClass();
     }
 
     /**
@@ -1095,7 +1101,7 @@ class Artikel
         }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
         $this->Preise = new Preise($kKundengruppe, $oArtikelTMP->kArtikel, $kKunde, (int)$oArtikelTMP->kSteuerklasse);
-        if (!Session::CustomerGroup()->mayViewPrices()) {
+        if (!Session::CustomerGroup()->mayViewPrices() || ($this->getOption('nHidePrices', 0) === 1)) {
             $this->Preise->setPricesToZero();
         }
         $this->Preise->localizePreise();
@@ -3483,7 +3489,7 @@ class Artikel
      */
     public static function getDetailOptions()
     {
-        $conf                                    = Shop::getSettings([CONF_ARTIKELDETAILS]);
+        $conf                                    = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELDETAILS]);
         $oArtikelOptionen                        = new stdClass();
         $oArtikelOptionen->nMerkmale             = 1;
         $oArtikelOptionen->nKategorie            = 1;
@@ -3573,6 +3579,7 @@ class Artikel
         }
         $kSprache       = (int)$kSprache;
         $this->kSprache = $kSprache;
+        $this->options  = (object)array_merge((array)$this->options, (array)$oArtikelOptionen);
         // Work Around -.- wenn Einstellung global_sichtbarkeit aktiv ist
         if ($noCache === false) {
             $baseID        = Shop::Cache()->getBaseID(false, false, $kKundengruppe, $kSprache);
@@ -3776,6 +3783,23 @@ class Artikel
                     " . $cSichbarkeitSQL . "
                     " . $cLagerbestandSQL;
         $oArtikelTMP = Shop::DB()->query($productSQL, NiceDB::RET_SINGLE_OBJECT);
+        if (($oArtikelTMP === false || $oArtikelTMP === null)
+            && (!isset($oArtikelOptionen->nKeinLagerbestandBeachten) || $oArtikelOptionen->nKeinLagerbestandBeachten !== 1)
+            && (isset($this->conf['global']['artikel_artikelanzeigefilter_seo'])
+                && $this->conf['global']['artikel_artikelanzeigefilter_seo'] === 'seo')
+        ) {
+            $oArtikelTMPOptionen = clone $oArtikelOptionen;
+
+            $oArtikelTMPOptionen->nKeinLagerbestandBeachten = 1;
+            $oArtikelTMPOptionen->nHidePrices               = 1;
+            $oArtikelTMPOptionen->nShowOnlyOnSEORequest     = 1;
+
+            if ($this->fuelleArtikel($kArtikel, $oArtikelTMPOptionen, $kKundengruppe, $kSprache, $noCache) !== null) {
+                $this->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGER;
+            }
+
+            return $this;
+        }
         if ($oArtikelTMP === false || $oArtikelTMP === null) {
             $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $kArtikel, CACHING_GROUP_ARTICLE];
             executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
@@ -6468,5 +6492,15 @@ class Artikel
         }
 
         return $cValue_arr;
+    }
+
+    /**
+     * @param string     $option
+     * @param mixed|null $default
+     * @return mixed|null
+     */
+    public function getOption($option, $default = null)
+    {
+        return isset($this->options->$option) ? $this->options->$option : $default;
     }
 }

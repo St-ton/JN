@@ -81,17 +81,18 @@ if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'])
 // 404
 if (empty($AktuellerArtikel->kArtikel)) {
     // #6317 - send 301 redirect when filtered
-    if (((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
-        || ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL)
+    if ((((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
+        || ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL))
+        && $Einstellungen['global']['artikel_artikelanzeigefilter_seo'] === '301'
     ) {
         http_response_code(301);
         header('Location: ' . $shopURL);
         exit;
     }
     // 404 otherwise
-    Shop::$is404             = true;
-    Shop::$kLink             = 0;
-    Shop::$kArtikel          = 0;
+    Shop::$is404    = true;
+    Shop::$kLink    = 0;
+    Shop::$kArtikel = 0;
 
     return;
 }

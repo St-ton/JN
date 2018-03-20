@@ -556,8 +556,8 @@ class WarenkorbHelper
         ) {
             // Prüfe auf kArtikel
             $productExists = Shop::DB()->select(
-                'tartikel', '
-                kArtikel', $kArtikel,
+                'tartikel',
+                'kArtikel', $kArtikel,
                 null, null,
                 null, null,
                 false,

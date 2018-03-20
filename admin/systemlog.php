@@ -13,7 +13,7 @@ $oAccount->permission('SYSTEMLOG_VIEW', true, true);
 
 $cHinweis    = '';
 $cFehler     = '';
-$minLogLevel = (int)Shop::getConfig([CONF_GLOBAL])['global']['systemlog_flag'];
+$minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 if (validateToken()) {
     if (verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();

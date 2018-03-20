@@ -54,7 +54,7 @@ class Status
      */
     protected function getSystemLogInfo()
     {
-        $conf = (int)Shop::getSettings([CONF_GLOBAL])['global']['systemlog_flag'];
+        $conf = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 
         return (object)[
             'error'  => $conf >= JTLLOG_LEVEL_ERROR,

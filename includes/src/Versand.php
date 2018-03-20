@@ -66,7 +66,7 @@ class Versand
      */
     private function loadFromDB($kVersand = 0, $oData = null)
     {
-        $oObj = Shop::DB()->select('tversand', 'kVersand', (int)$kVersand);
+        $oObj = Shop::Container()->getDB()->select('tversand', 'kVersand', (int)$kVersand);
 
         $this->oData = $oData;
 
@@ -96,7 +96,7 @@ class Versand
 
         unset($oObj->kVersand);
 
-        $kPrim = Shop::DB()->insert('tversand', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tversand', $oObj);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -120,7 +120,7 @@ class Versand
         $_upd->cHinweis      = $this->cHinweis;
         $_upd->dErstellt     = $this->dErstellt;
 
-        return Shop::DB()->update('tversand', 'kVersand', (int)$this->kVersand, $_upd);
+        return Shop::Container()->getDB()->update('tversand', 'kVersand', (int)$this->kVersand, $_upd);
     }
 
     /**
@@ -130,7 +130,7 @@ class Versand
      */
     public function delete()
     {
-        return Shop::DB()->delete('tversand', 'kVersand', (int)$this->kVersand);
+        return Shop::Container()->getDB()->delete('tversand', 'kVersand', (int)$this->kVersand);
     }
 
     /**
@@ -161,7 +161,7 @@ class Versand
      */
     public function setLogistik($cLogistik)
     {
-        $this->cLogistik = Shop::DB()->escape($cLogistik);
+        $this->cLogistik = Shop::Container()->getDB()->escape($cLogistik);
 
         return $this;
     }
@@ -172,7 +172,7 @@ class Versand
      */
     public function setLogistikURL($cLogistikURL)
     {
-        $this->cLogistikURL = Shop::DB()->escape($cLogistikURL);
+        $this->cLogistikURL = Shop::Container()->getDB()->escape($cLogistikURL);
 
         return $this;
     }
@@ -183,7 +183,7 @@ class Versand
      */
     public function setIdentCode($cIdentCode)
     {
-        $this->cIdentCode = Shop::DB()->escape($cIdentCode);
+        $this->cIdentCode = Shop::Container()->getDB()->escape($cIdentCode);
 
         return $this;
     }
@@ -194,7 +194,7 @@ class Versand
      */
     public function setHinweis($cHinweis)
     {
-        $this->cHinweis = Shop::DB()->escape($cHinweis);
+        $this->cHinweis = Shop::Container()->getDB()->escape($cHinweis);
 
         return $this;
     }
@@ -205,7 +205,7 @@ class Versand
      */
     public function setErstellt($dErstellt)
     {
-        $this->dErstellt = Shop::DB()->escape($dErstellt);
+        $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
 
         return $this;
     }

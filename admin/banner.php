@@ -89,7 +89,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $cValue    = $_POST[$cKeyValue] ?? null;
         }
 
-        Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
+        Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
         // save extensionpoint
         $oExtension                = new stdClass();
         $oExtension->kSprache      = $kSprache;
@@ -100,7 +100,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $oExtension->cClass        = 'ImageMap';
         $oExtension->kInitial      = $kImageMap;
 
-        $ins = Shop::DB()->insert('textensionpoint', $oExtension);
+        $ins = Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
         // saved?
         if ($kImageMap && $ins > 0) {
             $cAction  = 'view';

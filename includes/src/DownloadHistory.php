@@ -50,7 +50,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         private function loadFromDB($kDownloadHistory)
         {
-            $oDownloadHistory = Shop::DB()->select('tdownloadhistory', 'kDownloadHistory', (int)$kDownloadHistory);
+            $oDownloadHistory = Shop::Container()->getDB()->select('tdownloadhistory', 'kDownloadHistory', (int)$kDownloadHistory);
             if ($oDownloadHistory !== null && (int)$oDownloadHistory->kDownloadHistory > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownloadHistory));
                 if (is_array($cMember_arr) && count($cMember_arr) > 0) {
@@ -70,7 +70,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             $kDownload            = (int)$kDownload;
             $oDownloadHistory_arr = [];
             if ($kDownload > 0) {
-                $oHistory_arr = Shop::DB()->selectAll(
+                $oHistory_arr = Shop::Container()->getDB()->selectAll(
                     'tdownloadhistory',
                     'kDownload',
                     $kDownload,
@@ -103,7 +103,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     $cSQLWhere .= ' AND kKunde = ' . $kKunde;
                 }
 
-                $oHistoryTMP_arr = Shop::DB()->query(
+                $oHistoryTMP_arr = Shop::Container()->getDB()->query(
                     "SELECT kDownload, kDownloadHistory
                          FROM tdownloadhistory
                          WHERE " . $cSQLWhere . "
@@ -133,7 +133,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             $oObj = $this->kopiereMembers();
             unset($oObj->kDownloadHistory);
 
-            $kDownloadHistory = Shop::DB()->insert('tdownloadhistory', $oObj);
+            $kDownloadHistory = Shop::Container()->getDB()->insert('tdownloadhistory', $oObj);
             if ($kDownloadHistory > 0) {
                 return $bPrimary ? $kDownloadHistory : true;
             }
@@ -152,7 +152,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             $_upd->kBestellung = $this->kBestellung;
             $_upd->dErstellt   = $this->dErstellt;
 
-            return Shop::DB()->update('tdownloadhistory', 'kDownloadHistory', (int)$this->kDownloadHistory, $_upd);
+            return Shop::Container()->getDB()->update('tdownloadhistory', 'kDownloadHistory', (int)$this->kDownloadHistory, $_upd);
         }
 
         /**

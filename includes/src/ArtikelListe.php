@@ -53,7 +53,7 @@ class ArtikelListe
             if (!$kKundengruppe) {
                 $kKundengruppe = Session::CustomerGroup()->getID();
             }
-            $objArr = Shop::DB()->query(
+            $objArr = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
@@ -115,7 +115,7 @@ class ArtikelListe
                 $hstSQL = ' AND tartikel.kHersteller = ' . Shop::getProductFilter()->getManufacturer()->getValue() . ' ';
             }
             $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $objArr      = Shop::DB()->query(
+            $objArr      = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -209,7 +209,7 @@ class ArtikelListe
                 : 'LIMIT 6';
             //top-Artikel
             $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $objArr      = Shop::DB()->query(
+            $objArr      = Shop::Container()->getDB()->query(
                 "SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -282,7 +282,7 @@ class ArtikelListe
                 ? ('LIMIT ' . (int)$conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
                 : 'LIMIT 6';
             $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $objArr      = Shop::DB()->query(
+            $objArr      = Shop::Container()->getDB()->query(
                 "SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tbestseller, tartikel
                     LEFT JOIN tartikelsichtbarkeit

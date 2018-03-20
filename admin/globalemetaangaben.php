@@ -19,7 +19,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
     $cMetaDesc        = $_POST['Meta_Description'];
     $cMetaKeys        = $_POST['Meta_Keywords'];
     $cMetaDescPraefix = $_POST['Meta_Description_Praefix'];
-    Shop::DB()->delete(
+    Shop::Container()->getDB()->delete(
         'tglobalemetaangaben',
         ['kSprache', 'kEinstellungenSektion'],
         [(int)$_SESSION['kSprache'], CONF_METAANGABEN]
@@ -31,7 +31,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
     $oGlobaleMetaAngaben->kSprache              = (int)$_SESSION['kSprache'];
     $oGlobaleMetaAngaben->cName                 = 'Title';
     $oGlobaleMetaAngaben->cWertName             = $cTitle;
-    Shop::DB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
+    Shop::Container()->getDB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
     // Meta Description
     unset($oGlobaleMetaAngaben);
     $oGlobaleMetaAngaben                        = new stdClass();
@@ -39,7 +39,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
     $oGlobaleMetaAngaben->kSprache              = (int)$_SESSION['kSprache'];
     $oGlobaleMetaAngaben->cName                 = 'Meta_Description';
     $oGlobaleMetaAngaben->cWertName             = $cMetaDesc;
-    Shop::DB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
+    Shop::Container()->getDB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
     // Meta Keywords
     unset($oGlobaleMetaAngaben);
     $oGlobaleMetaAngaben                        = new stdClass();
@@ -47,7 +47,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
     $oGlobaleMetaAngaben->kSprache              = (int)$_SESSION['kSprache'];
     $oGlobaleMetaAngaben->cName                 = 'Meta_Keywords';
     $oGlobaleMetaAngaben->cWertName             = $cMetaKeys;
-    Shop::DB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
+    Shop::Container()->getDB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
     // Meta Description Präfix
     unset($oGlobaleMetaAngaben);
     $oGlobaleMetaAngaben                        = new stdClass();
@@ -55,17 +55,17 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
     $oGlobaleMetaAngaben->kSprache              = (int)$_SESSION['kSprache'];
     $oGlobaleMetaAngaben->cName                 = 'Meta_Description_Praefix';
     $oGlobaleMetaAngaben->cWertName             = $cMetaDescPraefix;
-    Shop::DB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
+    Shop::Container()->getDB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
     Shop::Cache()->flushAll();
     $chinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.<br />';
     unset($oConfig_arr);
 }
 
-$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_METAANGABEN, '*', 'nSort');
+$oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_METAANGABEN, '*', 'nSort');
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$oConfig_arr[$i]->kEinstellungenConf,
@@ -73,7 +73,7 @@ for ($i = 0; $i < $configCount; $i++) {
             'nSort'
         );
     }
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         CONF_METAANGABEN,
@@ -83,7 +83,7 @@ for ($i = 0; $i < $configCount; $i++) {
     $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
-$oMetaangaben_arr = Shop::DB()->selectAll(
+$oMetaangaben_arr = Shop::Container()->getDB()->selectAll(
     'tglobalemetaangaben',
     ['kSprache', 'kEinstellungenSektion'],
     [(int)$_SESSION['kSprache'], CONF_METAANGABEN]

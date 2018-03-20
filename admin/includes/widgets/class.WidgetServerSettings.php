@@ -23,7 +23,8 @@ class WidgetServerSettings extends WidgetBase
                       ->assign('bMemoryLimit', $this->checkMemoryLimit())
                       ->assign('postMaxSize', ini_get('post_max_size'))
                       ->assign('bPostMaxSize', $this->checkPostMaxSize())
-                      ->assign('bAllowUrlFopen', $this->checkAllowUrlFopen());
+                      ->assign('bAllowUrlFopen', $this->checkAllowUrlFopen())
+                      ->assign('SOAPCheck', $this->SOAPcheck());
     }
 
     /**
@@ -40,6 +41,29 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkImageMagick()
     {
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function SOAPcheck()
+    {
+        if (class_exists('Systemcheck_Environment')) {
+            $oSystemCheck  = new Systemcheck_Environment();
+            $vCheckResults = $oSystemCheck->executeTestGroup('Shop4');
+            if (in_array('recommendations', array_keys($vCheckResults, true))) {
+                foreach ($vCheckResults['recommendations'] as $object) {
+                    if ($object instanceof Systemcheck_Tests_Shop4_PhpSoapExtension) {
+                        // SOAP is OFF
+
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // (we suppress errors here, if the Systemcheck is not present on this system)
         return true;
     }
 

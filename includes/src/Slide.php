@@ -95,7 +95,7 @@ class Slide
                 $kSlide = $this->kSlide;
             }
 
-            $oSlide = Shop::DB()->select('tslide', 'kSlide', (int)$kSlide);
+            $oSlide = Shop::Container()->getDB()->select('tslide', 'kSlide', (int)$kSlide);
 
             if (is_object($oSlide)) {
                 $this->set((array)$oSlide);
@@ -180,7 +180,7 @@ class Slide
         }
         unset($oSlide->cBildAbsolut, $oSlide->cThumbnailAbsolut, $oSlide->kSlide);
 
-        return Shop::DB()->update('tslide', 'kSlide', (int)$this->kSlide, $oSlide);
+        return Shop::Container()->getDB()->update('tslide', 'kSlide', (int)$this->kSlide, $oSlide);
     }
 
     /**
@@ -192,7 +192,7 @@ class Slide
             $oSlide = clone $this;
             unset($oSlide->cBildAbsolut, $oSlide->cThumbnailAbsolut, $oSlide->kSlide);
             if ($this->nSort === null) {
-                $oSort = Shop::DB()->queryPrepared(
+                $oSort = Shop::Container()->getDB()->queryPrepared(
                     'SELECT nSort
                         FROM tslide
                         WHERE kSlider = :sliderID
@@ -202,7 +202,7 @@ class Slide
                 );
                 $oSlide->nSort = (!is_object($oSort) || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
             }
-            $kSlide = Shop::DB()->insert('tslide', $oSlide);
+            $kSlide = Shop::Container()->getDB()->insert('tslide', $oSlide);
             if ($kSlide > 0) {
                 $this->kSlide = $kSlide;
 

@@ -50,7 +50,7 @@ class Redirect
      */
     public function loadFromDB($kRedirect)
     {
-        $obj = Shop::DB()->select('tredirect', 'kRedirect', (int)$kRedirect);
+        $obj = Shop::Container()->getDB()->select('tredirect', 'kRedirect', (int)$kRedirect);
         if ($obj !== null && $obj->kRedirect > 0) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
@@ -88,7 +88,7 @@ class Redirect
      */
     public function find($cUrl)
     {
-        return Shop::DB()->select('tredirect', 'cFromUrl', $this->normalize($cUrl));
+        return Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $this->normalize($cUrl));
     }
 
     /**
@@ -99,7 +99,7 @@ class Redirect
      */
     public function getRedirectByTarget($cToUrl)
     {
-        return Shop::DB()->select('tredirect', 'cToUrl', $this->normalize($cToUrl));
+        return Shop::Container()->getDB()->select('tredirect', 'cToUrl', $this->normalize($cToUrl));
     }
 
     /**
@@ -111,7 +111,7 @@ class Redirect
     {
         $xPath_arr    = parse_url(Shop::getURL());
         $cDestination = isset($xPath_arr['path']) ? $xPath_arr['path'] . '/' . $cDestination : $cDestination;
-        $oObj         = Shop::DB()->select('tredirect', 'cFromUrl', $cDestination, 'cToUrl', $cSource);
+        $oObj         = Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $cDestination, 'cToUrl', $cSource);
 
         return $oObj !== null && (int)$oObj->kRedirect > 0;
     }
@@ -135,7 +135,7 @@ class Redirect
                 && $cSource !== $cDestination)
         ) {
             if ($this->isDeadlock($cSource, $cDestination)) {
-                Shop::DB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$cSource, $cDestination]);
+                Shop::Container()->getDB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$cSource, $cDestination]);
             }
             $oTarget = $this->getRedirectByTarget($cSource);
             if (!empty($oTarget)) {
@@ -143,7 +143,7 @@ class Redirect
                 $oObj             = new stdClass();
                 $oObj->cToUrl     = StringHandler::convertUTF8($cDestination);
                 $oObj->cAvailable = 'y';
-                Shop::DB()->update('tredirect', 'cToUrl', $cSource, $oObj);
+                Shop::Container()->getDB()->update('tredirect', 'cToUrl', $cSource, $oObj);
             }
 
             $oRedirect = $this->find($cSource);
@@ -153,13 +153,13 @@ class Redirect
                 $oObj->cToUrl     = StringHandler::convertUTF8($cDestination);
                 $oObj->cAvailable = 'y';
 
-                $kRedirect = Shop::DB()->insert('tredirect', $oObj);
+                $kRedirect = Shop::Container()->getDB()->insert('tredirect', $oObj);
                 if ($kRedirect > 0) {
                     return true;
                 }
             } elseif ($this->normalize($oRedirect->cFromUrl) === $this->normalize($cSource)
                 && empty($oRedirect->cToUrl)
-                && (int)Shop::DB()->update(
+                && (int)Shop::Container()->getDB()->update(
                     'tredirect', 'cFromUrl', $this->normalize($cSource),
                     (object)['cToUrl' => StringHandler::convertUTF8($cDestination)]
                 ) > 0
@@ -270,7 +270,7 @@ class Redirect
         if (strlen($cArtNr) === 0) {
             return null;
         }
-        $oObj = Shop::DB()->executeQueryPrepared(
+        $oObj = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT tartikel.kArtikel, tseo.cSeo
                 FROM tartikel
                 LEFT JOIN tsprache 
@@ -337,7 +337,7 @@ class Redirect
         if (count($exploded) > 0) {
             $lastPath = $exploded[count($exploded) - 1];
             $filename = strtok($lastPath, '?');
-            $seoPath  = Shop::DB()->select('tseo', 'cSeo', $lastPath);
+            $seoPath  = Shop::Container()->getDB()->select('tseo', 'cSeo', $lastPath);
             if ($filename === 'jtl.php'
                 || $filename === 'warenkorb.php'
                 || $filename === 'kontakt.php'
@@ -389,7 +389,7 @@ class Redirect
                     $oItem->cFromUrl = $cUrl;
                     $oItem->cToUrl   = '';
                     unset($oItem->kRedirect);
-                    $oItem->kRedirect = Shop::DB()->insert('tredirect', $oItem);
+                    $oItem->kRedirect = Shop::Container()->getDB()->insert('tredirect', $oItem);
                 }
             } elseif (strlen($oItem->cToUrl) > 0) {
                 $cRedirectUrl  = $oItem->cToUrl;
@@ -403,7 +403,7 @@ class Redirect
             }
             $cIP = getRealIp();
             // Eintrag für diese IP bereits vorhanden?
-            $oEntry = Shop::DB()->query(
+            $oEntry = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM tredirectreferer tr
                     LEFT JOIN tredirect t 
@@ -420,10 +420,10 @@ class Redirect
                 $oReferer->cRefererUrl  = is_string($cReferer) ? $cReferer : '';
                 $oReferer->cIP          = $cIP;
                 $oReferer->dDate        = time();
-                Shop::DB()->insert('tredirectreferer', $oReferer);
+                Shop::Container()->getDB()->insert('tredirectreferer', $oReferer);
                 if ($oItem !== null) {
                     ++$oItem->nCount;
-                    Shop::DB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
+                    Shop::Container()->getDB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
                 }
             }
         }
@@ -502,7 +502,7 @@ class Redirect
             $qry  .= "cFromUrl LIKE :search";
             $prep = ['search' => '%' . $cSuchbegriff . '%'];
         }
-        $oCount = Shop::DB()->executeQueryPrepared($qry, $prep, 1);
+        $oCount = Shop::Container()->getDB()->executeQueryPrepared($qry, $prep, 1);
 
         return isset($oCount->nCount)
             ? (int)$oCount->nCount
@@ -562,7 +562,7 @@ class Redirect
      */
     public static function getRedirects($cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
     {
-        $oRedirect_arr = Shop::DB()->query("
+        $oRedirect_arr = Shop::Container()->getDB()->query("
             SELECT *
                 FROM tredirect" .
                 ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .
@@ -585,7 +585,7 @@ class Redirect
      */
     public static function getRedirectCount($cWhereSQL = '')
     {
-        return (int)Shop::DB()->query(
+        return (int)Shop::Container()->getDB()->query(
             "SELECT COUNT(kRedirect) AS nCount
                 FROM tredirect" .
                 ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : ""),
@@ -600,7 +600,7 @@ class Redirect
      */
     public static function getReferers($kRedirect, $nLimit = 100)
     {
-        return Shop::DB()->query(
+        return Shop::Container()->getDB()->query(
             "SELECT tredirectreferer.*, tbesucherbot.cName AS cBesucherBotName,
                     tbesucherbot.cUserAgent AS cBesucherBotAgent
                 FROM tredirectreferer
@@ -618,7 +618,7 @@ class Redirect
      */
     public static function getTotalRedirectCount()
     {
-        return (int)Shop::DB()->query("SELECT COUNT(kRedirect) AS nCount FROM tredirect", 1)->nCount;
+        return (int)Shop::Container()->getDB()->query("SELECT COUNT(kRedirect) AS nCount FROM tredirect", 1)->nCount;
     }
 
     /**
@@ -679,8 +679,8 @@ class Redirect
     public static function deleteRedirect($kRedirect)
     {
         $kRedirect = (int)$kRedirect;
-        Shop::DB()->delete('tredirect', 'kRedirect', $kRedirect);
-        Shop::DB()->delete('tredirectreferer', 'kRedirect', $kRedirect);
+        Shop::Container()->getDB()->delete('tredirect', 'kRedirect', $kRedirect);
+        Shop::Container()->getDB()->delete('tredirectreferer', 'kRedirect', $kRedirect);
     }
 
     /**
@@ -688,7 +688,7 @@ class Redirect
      */
     public static function deleteUnassigned()
     {
-        return Shop::DB()->query(
+        return Shop::Container()->getDB()->query(
             "DELETE tredirect, tredirectreferer
                 FROM tredirect
                 LEFT JOIN tredirectreferer 

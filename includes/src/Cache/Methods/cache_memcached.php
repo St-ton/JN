@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Cache\Methods;
+
+use Cache\ICachingMethod;
+use Cache\JTLCacheTrait;
+
 /**
  * Class cache_memcached
  * Implements the Memcached memory object caching system - notice the "d" at the end
@@ -20,7 +25,7 @@ class cache_memcached implements ICachingMethod
     public static $instance;
 
     /**
-     * @var Memcached
+     * @var cache_memcached
      */
     private $_memcached;
 
@@ -50,7 +55,7 @@ class cache_memcached implements ICachingMethod
         if ($this->_memcached !== null) {
             $this->_memcached->quit();
         }
-        $this->_memcached = new Memcached();
+        $this->_memcached = new cache_memcached();
         $this->_memcached->addServer($host, (int)$port);
 
         return $this;
@@ -141,7 +146,7 @@ class cache_memcached implements ICachingMethod
     {
         $res = $this->_memcached->get($this->options['prefix'] . $cacheID);
 
-        return ($res !== false || $this->_memcached->getResultCode() === Memcached::RES_SUCCESS);
+        return ($res !== false || $this->_memcached->getResultCode() === cache_memcached::RES_SUCCESS);
     }
 
     /**

@@ -15,6 +15,7 @@ class ContainerEntry
     protected $factory;
     protected $instance;
     protected $type;
+    protected $locked = false;
 
     /**
      * ContainerEntry constructor.
@@ -68,5 +69,23 @@ class ContainerEntry
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLocked(): bool
+    {
+        return $this->locked;
+    }
+
+    public function lock()
+    {
+        $this->locked = true;
+    }
+
+    public function unlock()
+    {
+        $this->locked = false;
     }
 }

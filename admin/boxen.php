@@ -169,7 +169,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             break;
     }
     $flushres = Shop::Cache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
-    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
 }
 $oBoxen_arr      = $oBoxen->holeBoxen($nPage, false, true, true);
 $oVorlagen_arr   = $oBoxen->holeVorlagen($nPage);

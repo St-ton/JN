@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Cache\Methods;
+
+use Cache\ICachingMethod;
+use Cache\JTLCacheTrait;
+
 /**
  * Class cache_null
  * emergency fallback caching method

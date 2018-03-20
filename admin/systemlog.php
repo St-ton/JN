@@ -20,7 +20,7 @@ if (validateToken()) {
         $cHinweis = 'Ihr Systemlog wurde erfolgreich gel&ouml;scht.';
     } elseif (verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
-        Shop::DB()->update('teinstellungen', 'cName', 'systemlog_flag', (object)['cWert' => $minLogLevel]);
+        Shop::Container()->getDB()->update('teinstellungen', 'cName', 'systemlog_flag', (object)['cWert' => $minLogLevel]);
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
         $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
         $smarty->assign('cTab', 'config');

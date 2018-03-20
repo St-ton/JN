@@ -419,7 +419,7 @@ class News extends MainModel
                 $kSprache = (int)$oSprache->kSprache;
             }
 
-            $oObj = Shop::DB()->query(
+            $oObj = Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, 
                     COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
                     FROM tnews
@@ -482,7 +482,7 @@ class News extends MainModel
             $oSprache = gibStandardsprache();
             $kSprache = (int)$oSprache->kSprache;
         }
-        $oObj_arr = Shop::DB()->query(
+        $oObj_arr = Shop::Container()->getDB()->query(
             "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, 
                 COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
                 FROM tnews

@@ -10,7 +10,7 @@ $return  = 3;
 $xml_obj = [];
 if (auth()) {
     $return          = 0;
-    $oBestellung_arr = Shop::DB()->query(
+    $oBestellung_arr = Shop::Container()->getDB()->query(
         "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse,
             tbestellung.kRechnungsadresse,  tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, 
             tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben,  tbestellung.cSession, 
@@ -47,7 +47,7 @@ if (auth()) {
         for ($i = 0; $i < $xml_obj['bestellungen attr']['anzahl']; $i++) {
             $xml_obj['bestellungen']['tbestellung'][$i . ' attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]);
 
-            $xml_obj['bestellungen']['tbestellung'][$i]['tkampagne'] = Shop::DB()->query(
+            $xml_obj['bestellungen']['tbestellung'][$i]['tkampagne'] = Shop::Container()->getDB()->query(
                 "SELECT tkampagne.cName,
                         tkampagne.cParameter cIdentifier,
                         COALESCE(tkampagnevorgang.cParamWert, '') cWert
@@ -59,14 +59,14 @@ if (auth()) {
                     ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1", 8
             );
 
-            $xml_obj['bestellungen']['tbestellung'][$i]['ttrackinginfo'] = Shop::DB()->query(
+            $xml_obj['bestellungen']['tbestellung'][$i]['ttrackinginfo'] = Shop::Container()->getDB()->query(
                 "SELECT cUserAgent, cReferer
                     FROM tbesucher
                     WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
                     LIMIT 1", 8
             );
 
-            $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'] = Shop::DB()->query(
+            $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'] = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM twarenkorbpos
                     WHERE kWarenkorb = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb'], 9
@@ -78,7 +78,7 @@ if (auth()) {
                     ['cUnique', 'kKonfigitem', 'kBestellpos']
                 );
                 $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']['kBestellung']    = $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'];
-                $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o]['twarenkorbposeigenschaft'] = Shop::DB()->query(
+                $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o]['twarenkorbposeigenschaft'] = Shop::Container()->getDB()->query(
                     "SELECT *
                         FROM twarenkorbposeigenschaft
                         WHERE kWarenkorbPos = " . (int)$xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']['kWarenkorbPos'], 9
@@ -92,7 +92,7 @@ if (auth()) {
                 }
             }
             $oLieferadresse        = new Lieferadresse((int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kLieferadresse']);
-            $land                  = Shop::DB()->select('tland', 'cISO', $oLieferadresse->cLand, null, null, null, null, false, 'cDeutsch');
+            $land                  = Shop::Container()->getDB()->select('tland', 'cISO', $oLieferadresse->cLand, null, null, null, null, false, 'cDeutsch');
             $cISO                  = $oLieferadresse->cLand;
             $oLieferadresse->cLand = isset($land) ? $land->cDeutsch : $oLieferadresse->angezeigtesLand;
             unset($oLieferadresse->angezeigtesLand);
@@ -113,7 +113,7 @@ if (auth()) {
             unset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
 
             $oRechnungsadresse        = new Rechnungsadresse($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kRechnungsadresse']);
-            $land                     = Shop::DB()->select('tland', 'cISO', $oRechnungsadresse->cLand, null, null, null, null, false, 'cDeutsch');
+            $land                     = Shop::Container()->getDB()->select('tland', 'cISO', $oRechnungsadresse->cLand, null, null, null, null, false, 'cDeutsch');
             $cISO                     = $oRechnungsadresse->cLand;
             $oRechnungsadresse->cLand = isset($land) ? $land->cDeutsch : $oRechnungsadresse->angezeigtesLand;
             unset($oRechnungsadresse->angezeigtesLand);
@@ -131,7 +131,7 @@ if (auth()) {
             $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse'] .= ' ' . trim($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cHausnummer']);
             unset($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cHausnummer']);
 
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo'] = Shop::DB()->query(
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo'] = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM tzahlungsinfo
                     WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
@@ -170,7 +170,7 @@ if (auth()) {
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']);
             unset($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kVersandArt'], $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb']);
 
-            $xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut'] = Shop::DB()->query(
+            $xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut'] = Shop::Container()->getDB()->query(
                 "SELECT cName AS 'key', cValue AS 'value'
                     FROM tbestellattribut
                     WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'], 9

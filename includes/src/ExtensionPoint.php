@@ -49,7 +49,7 @@ class ExtensionPoint
     public function load()
     {
         $oKey           = $this->getPageKey();
-        $oExtension_arr = Shop::DB()->query(
+        $oExtension_arr = Shop::Container()->getDB()->query(
             "SELECT * FROM textensionpoint
                 WHERE
                  (kSprache = '{$this->kSprache}' OR kSprache = 0)

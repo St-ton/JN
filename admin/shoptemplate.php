@@ -79,7 +79,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && validateToken()) {
     }
 }
 if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
-    $cOrdner      = Shop::DB()->escape($_POST['ordner']);
+    $cOrdner      = Shop::Container()->getDB()->escape($_POST['ordner']);
     $parentFolder = null;
     $tplXML       = $oTemplate->leseXML($cOrdner);
     if (!empty($tplXML->Parent)) {
@@ -90,9 +90,9 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
     $sectionCount = count($_POST['cSektion']);
     $faviconError = '';
     for ($i = 0; $i < $sectionCount; $i++) {
-        $cSektion = Shop::DB()->escape($_POST['cSektion'][$i]);
-        $cName    = Shop::DB()->escape($_POST['cName'][$i]);
-        $cWert    = Shop::DB()->escape($_POST['cWert'][$i]);
+        $cSektion = Shop::Container()->getDB()->escape($_POST['cSektion'][$i]);
+        $cName    = Shop::Container()->getDB()->escape($_POST['cName'][$i]);
+        $cWert    = Shop::Container()->getDB()->escape($_POST['cWert'][$i]);
         //for uploads, the value of an input field is the $_FILES index of the uploaded file
         if (strpos($cWert, 'upload-') === 0) {
             //all upload fields have to start with "upload-" - so check for that
@@ -139,14 +139,14 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
     } else {
         $cFehler = 'Template bzw. Einstellungen konnten nicht ge&auml;ndert werden.';
     }
-    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
     //re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .
         PFAD_ADMIN . 'shoptemplate.php?check=' .
         ($bCheck ? 'true' : 'false') . $faviconError, true, 301);
 }
 if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()) {
-    $cOrdner      = Shop::DB()->escape($_GET['settings']);
+    $cOrdner      = Shop::Container()->getDB()->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($cOrdner, $admin);
     $tplXML       = $templateHelper->getXML($cOrdner, false);
     $preview      = [];
@@ -169,7 +169,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
         } else {
             $cFehler = 'Template bzw. Einstellungen konnten nicht ge&auml;ndert werden.';
         }
-        Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+        Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
         //re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
     } else {
@@ -245,7 +245,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
         $cFehler = 'Template konnte nicht ge&auml;ndert werden.';
     }
 
-    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
 }
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())

@@ -55,7 +55,7 @@ class AdminFavorite
      */
     public function loadFromDB($kAdminfav)
     {
-        $obj = Shop::DB()->select('tadminfavs', 'kAdminfav', (int)$kAdminfav);
+        $obj = Shop::Container()->getDB()->select('tadminfavs', 'kAdminfav', (int)$kAdminfav);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -74,7 +74,7 @@ class AdminFavorite
         $obj = kopiereMembers($this);
         unset($obj->kAdminfav);
 
-        return Shop::DB()->insert('tadminfavs', $obj);
+        return Shop::Container()->getDB()->insert('tadminfavs', $obj);
     }
 
     /**
@@ -86,7 +86,7 @@ class AdminFavorite
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->update('tadminfavs', 'kAdminfav', $obj->kAdminfav, $obj);
+        return Shop::Container()->getDB()->update('tadminfavs', 'kAdminfav', $obj->kAdminfav, $obj);
     }
 
     /**
@@ -95,7 +95,7 @@ class AdminFavorite
      */
     public static function fetchAll($kAdminlogin)
     {
-        $favs = Shop::DB()->selectAll(
+        $favs = Shop::Container()->getDB()->selectAll(
             'tadminfavs',
             'kAdminlogin',
             $kAdminlogin,
@@ -153,7 +153,7 @@ class AdminFavorite
         ];
 
         if ($id > 0 && strlen($item->cTitel) > 0 && strlen($item->cUrl) > 0) {
-            Shop::DB()->insertRow('tadminfavs', $item);
+            Shop::Container()->getDB()->insertRow('tadminfavs', $item);
 
             return true;
         }
@@ -171,9 +171,9 @@ class AdminFavorite
         $kAdminlogin = (int)$kAdminlogin;
 
         if ($kAdminfav > 0) {
-            Shop::DB()->delete('tadminfavs', ['kAdminfav', 'kAdminlogin'], [$kAdminfav, $kAdminlogin]);
+            Shop::Container()->getDB()->delete('tadminfavs', ['kAdminfav', 'kAdminlogin'], [$kAdminfav, $kAdminlogin]);
         } else {
-            Shop::DB()->delete('tadminfavs', 'kAdminlogin', $kAdminlogin);
+            Shop::Container()->getDB()->delete('tadminfavs', 'kAdminlogin', $kAdminlogin);
         }
     }
 }

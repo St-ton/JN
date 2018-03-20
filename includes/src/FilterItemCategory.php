@@ -133,7 +133,7 @@ class FilterItemCategory extends FilterBaseCategory
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(
                 'checkCategoryVisibility',
-                Shop::DB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', NiceDB::RET_AFFECTED_ROWS) > 0
+                Shop::Container()->getDB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', NiceDB::RET_AFFECTED_ROWS) > 0
             );
         }
         if (Shop::get('checkCategoryVisibility')) {
@@ -172,7 +172,7 @@ class FilterItemCategory extends FilterBaseCategory
             '',
             ['tkategorie.kKategorie', 'tartikel.kArtikel']
         );
-        $categories       = Shop::DB()->executeQuery(
+        $categories       = Shop::Container()->getDB()->executeQuery(
             "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (" . $query . " ) AS ssMerkmal

@@ -37,7 +37,7 @@ function suggestions($keyword)
         ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
         : 10;
     if (strlen($keyword) >= 2) {
-        $results = Shop::DB()->executeQueryPrepared("
+        $results = Shop::Container()->getDB()->executeQueryPrepared("
             SELECT cSuche AS keyword, nAnzahlTreffer AS quantity
               FROM tsuchanfrage
               WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX(:keyword)), '%')
@@ -78,7 +78,7 @@ function getCitiesByZip($cityQuery, $country, $zip)
         $cityQuery = "%" . StringHandler::filterXSS($cityQuery) . "%";
         $country   = StringHandler::filterXSS($country);
         $zip       = StringHandler::filterXSS($zip);
-        $cities = Shop::DB()->queryPrepared(
+        $cities = Shop::Container()->getDB()->queryPrepared(
             "SELECT cOrt
             FROM tplz
             WHERE cLandISO = :country
@@ -411,7 +411,7 @@ function pushToWishlist($kArtikel, $qty)
         return $objResponse;
     }
 
-    $vals = Shop::DB()->query('SELECT * FROM teigenschaft WHERE kArtikel = '. $kArtikel, 2);
+    $vals = Shop::Container()->getDB()->query('SELECT * FROM teigenschaft WHERE kArtikel = '. $kArtikel, 2);
     if (!ArtikelHelper::isParent($kArtikel) && !empty($vals)) {
         // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
         // muss zum Artikel weitergeleitet werden um Variationen zu wählen
@@ -1029,7 +1029,7 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
         }
     }
 
-    return  Shop::DB()->query(
+    return  Shop::Container()->getDB()->query(
         "SELECT a.kArtikel, tseo.kKey AS kSeoKey, IF (tseo.cSeo IS NULL, a.cSeo, tseo.cSeo) AS cSeo, 
             a.fLagerbestand, a.cLagerBeachten, a.cLagerKleinerNull
             FROM teigenschaftkombiwert

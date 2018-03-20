@@ -28,7 +28,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
             if ($oTrustedShops->loescheTrustedShopsZertifikat($oTrustedShops->oZertifikat->kTrustedShopsZertifikat)) {
                 $cHinweis = 'Ihr Zertifikat wurde erfolgreich f&uuml;r die aktuelle Sprache gel&ouml;scht.';
 
-                Shop::DB()->query(
+                Shop::Container()->getDB()->query(
                     "DELETE FROM teinstellungen
                         WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
                             AND cName = 'trustedshops_nutzen'", 4
@@ -37,7 +37,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
                 $aktWert->cWert                 = 'N';
                 $aktWert->cName                 = 'trustedshops_nutzen';
                 $aktWert->kEinstellungenSektion = CONF_TRUSTEDSHOPS;
-                Shop::DB()->insert('teinstellungen', $aktWert);
+                Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
                 Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
             } else {
                 $cFehler .= 'Fehler: Es wurde kein Zertifikat f&uuml; die aktuelle Sprache gefunden.';
@@ -47,7 +47,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
         }
     } else { // Speicher die Einstellungen
         $cPreStatus  = $Einstellungen['trustedshops']['trustedshops_nutzen'];
-        $oConfig_arr = Shop::DB()->query(
+        $oConfig_arr = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
@@ -78,8 +78,8 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
             }
 
             if ($oConfig_arr[$i]->cInputTyp !== 'listbox') {
-                Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]);
-                Shop::DB()->insert('teinstellungen', $aktWert);
+                Shop::Container()->getDB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]);
+                Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
             }
             $settings = Shopsetting::getInstance();
             $settings->reset();
@@ -128,7 +128,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     $cPreStatus    = $Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'];
 
-    $oConfig_arr = Shop::DB()->selectAll(
+    $oConfig_arr = Shop::Container()->getDB()->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf', 'cWertName'],
         [CONF_TRUSTEDSHOPS, 'Y', 'trustedshops_kundenbewertung_anzeigen'],
@@ -158,12 +158,12 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
         }
 
         if ($oConfig_arr[$i]->cInputTyp !== 'listbox') {
-            Shop::DB()->delete(
+            Shop::Container()->getDB()->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]
             );
-            Shop::DB()->insert('teinstellungen', $aktWert);
+            Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
         }
     }
     $settings = Shopsetting::getInstance();
@@ -225,7 +225,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
 // Uebersicht
 if ($step === 'uebersicht') {
     // Config holen
-    $oConfig_arr = Shop::DB()->query(
+    $oConfig_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungenconf
             WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
@@ -234,14 +234,14 @@ if ($step === 'uebersicht') {
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
+            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM teinstellungenconfwerte
                     WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
                     ORDER BY nSort", 2
             );
         } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
+            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 "SELECT kKundengruppe, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC", 2
@@ -249,7 +249,7 @@ if ($step === 'uebersicht') {
         }
 
         if ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oSetValue = Shop::DB()->query(
+            $oSetValue = Shop::Container()->getDB()->query(
                 "SELECT cWert
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
@@ -257,7 +257,7 @@ if ($step === 'uebersicht') {
             );
             $oConfig_arr[$i]->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = Shop::DB()->query(
+            $oSetValue = Shop::Container()->getDB()->query(
                 "SELECT cWert
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "

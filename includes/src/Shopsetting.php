@@ -175,7 +175,7 @@ final class Shopsetting implements ArrayAccess
                     Jtllog::writeLog('Setting Caching Exception: ' . $exc->getMessage());
                 }
                 if ($section === CONF_PLUGINZAHLUNGSARTEN) {
-                    $settings = Shop::DB()->query(
+                    $settings = Shop::Container()->getDB()->query(
                         "SELECT cName, cWert
                              FROM tplugineinstellungen
                              WHERE cName LIKE '%_min%' 
@@ -183,7 +183,7 @@ final class Shopsetting implements ArrayAccess
                         NiceDB::RET_ARRAY_OF_OBJECTS
                      );
                 } else {
-                    $settings = Shop::DB()->queryPrepared(
+                    $settings = Shop::Container()->getDB()->queryPrepared(
                         'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
                             teinstellungenconf.cInputTyp AS type
                             FROM teinstellungen
@@ -278,7 +278,7 @@ final class Shopsetting implements ArrayAccess
         if ($this->allSettings !== null) {
             return $this->allSettings;
         }
-        $settings = Shop::DB()->query(
+        $settings = Shop::Container()->getDB()->query(
             "SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
                 teinstellungenconf.cInputTyp AS type
                 FROM teinstellungen

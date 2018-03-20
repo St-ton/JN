@@ -33,15 +33,15 @@ class Updater
 
             // While updating from 3.xx to 4.xx provide a default admin-template row
             if ($dbVersion < 400) {
-                $count = (int)Shop::DB()->query("SELECT * FROM `ttemplate` WHERE `eTyp`='admin'", 3);
+                $count = (int)Shop::Container()->getDB()->query("SELECT * FROM `ttemplate` WHERE `eTyp`='admin'", 3);
                 if ($count === 0) {
-                    Shop::DB()->query("ALTER TABLE `ttemplate` CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL", 3);
-                    Shop::DB()->query("INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')", 3);
+                    Shop::Container()->getDB()->query("ALTER TABLE `ttemplate` CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL", 3);
+                    Shop::Container()->getDB()->query("INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')", 3);
                 }
             }
 
             if ($dbVersion < 404) {
-                Shop::DB()->query("ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL", 3);
+                Shop::Container()->getDB()->query("ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL", 3);
             }
 
             static::$isVerified = true;
@@ -120,7 +120,7 @@ class Updater
      */
     public function getVersion()
     {
-        $v = Shop::DB()->query("SELECT * FROM tversion", 1);
+        $v = Shop::Container()->getDB()->query("SELECT * FROM tversion", 1);
         if ($v === null) {
             throw new \Exception('Unable to identify application version');
         }
@@ -271,18 +271,18 @@ class Updater
         $sqls        = $this->getSqlUpdates($currentVersion);
 
         try {
-            Shop::DB()->beginTransaction();
+            Shop::Container()->getDB()->beginTransaction();
 
             foreach ($sqls as $i => $sql) {
                 $currentLine = $i;
-                Shop::DB()->executeQuery($sql, 3);
+                Shop::Container()->getDB()->executeQuery($sql, 3);
             }
         } catch (\PDOException $e) {
             $code  = (int)$e->errorInfo[1];
-            $error = Shop::DB()->escape($e->errorInfo[2]);
+            $error = Shop::Container()->getDB()->escape($e->errorInfo[2]);
 
             if (!in_array($code, [1062, 1060, 1267], true)) {
-                Shop::DB()->rollback();
+                Shop::Container()->getDB()->rollback();
 
                 $errorCountForLine = 1;
                 $version           = $this->getVersion();
@@ -291,7 +291,7 @@ class Updater
                     $errorCountForLine = $version->nFehler + 1;
                 }
 
-                Shop::DB()->executeQuery(
+                Shop::Container()->getDB()->executeQuery(
                     "UPDATE tversion SET
                      nZeileVon = 1, nZeileBis = {$currentLine}, nFehler = {$errorCountForLine},
                      nTyp = {$code}, cFehlerSQL = '{$error}', dAktualisiert = now()", 3
@@ -347,7 +347,7 @@ class Updater
      */
     protected function setVersion($targetVersion)
     {
-        Shop::DB()->executeQuery(
+        Shop::Container()->getDB()->executeQuery(
             "UPDATE tversion SET 
             nVersion = {$targetVersion}, nZeileVon = 1, nZeileBis = 0, 
             nFehler = 0, nTyp = 1, cFehlerSQL = '', dAktualisiert = now()", 3

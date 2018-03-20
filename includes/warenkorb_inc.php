@@ -281,7 +281,7 @@ function uebernehmeWarenkorbAenderungen()
     // Gesamtsumme Warenkorb < Gratisgeschenk && Gratisgeschenk in den Pos?
     if ($kArtikelGratisgeschenk > 0) {
         // Prüfen, ob der Artikel wirklich ein Gratis Geschenk ist
-        $oArtikelGeschenk = Shop::DB()->query(
+        $oArtikelGeschenk = Shop::Container()->getDB()->query(
             "SELECT kArtikel
                 FROM tartikelattribut
                 WHERE kArtikel = " . $kArtikelGratisgeschenk . "
@@ -312,13 +312,13 @@ function checkeSchnellkauf()
         $hinweis = Shop::Lang()->get('eanNotExist') . ' ' .
             StringHandler::htmlentities(StringHandler::filterXSS($_POST['ean']));
         //gibts artikel mit dieser artnr?
-        $artikel = Shop::DB()->select(
+        $artikel = Shop::Container()->getDB()->select(
             'tartikel',
             'cArtNr',
             StringHandler::htmlentities(StringHandler::filterXSS($_POST['ean']))
         );
         if (empty($artikel->kArtikel)) {
-            $artikel = Shop::DB()->select(
+            $artikel = Shop::Container()->getDB()->select(
                 'tartikel',
                 'cBarcode',
                 StringHandler::htmlentities(StringHandler::filterXSS($_POST['ean']))
@@ -393,7 +393,7 @@ function gibXSelling()
 
             if (count($kArtikel_arr) > 0) {
                 $cArtikel_str   = implode(', ', $kArtikel_arr);
-                $oXsellkauf_arr = Shop::DB()->query(
+                $oXsellkauf_arr = Shop::Container()->getDB()->query(
                     "SELECT *
                         FROM txsellkauf
                         WHERE kArtikel IN ({$cArtikel_str})
@@ -438,7 +438,7 @@ function gibGratisGeschenke($Einstellungen)
             $cSQLSort = ' ORDER BY tartikel.fLagerbestand DESC';
         }
 
-        $oArtikelGeschenkeTMP_arr = Shop::DB()->query(
+        $oArtikelGeschenkeTMP_arr = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
                 JOIN tartikelattribut 

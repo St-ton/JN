@@ -55,7 +55,7 @@ class Attribut
      */
     public function loadFromDB($kAttribut)
     {
-        $obj = Shop::DB()->select('tattribut', 'kAttribut', (int)$kAttribut);
+        $obj = Shop::Container()->getDB()->select('tattribut', 'kAttribut', (int)$kAttribut);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -74,7 +74,7 @@ class Attribut
         $obj = kopiereMembers($this);
         unset($obj->kAttribut);
 
-        return Shop::DB()->insert('tattribut', $obj);
+        return Shop::Container()->getDB()->insert('tattribut', $obj);
     }
 
     /**
@@ -86,7 +86,7 @@ class Attribut
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->update('tattribut', 'kAttribut', $obj->kAttribut, $obj);
+        return Shop::Container()->getDB()->update('tattribut', 'kAttribut', $obj->kAttribut, $obj);
     }
 
     /**

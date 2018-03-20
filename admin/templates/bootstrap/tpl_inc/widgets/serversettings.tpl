@@ -17,7 +17,7 @@
                     <td>Maximale PHP Ausf&uuml;hrungszeit</td>
                     <td>{$maxExecutionTime}</td>
                     <td class="text-right">
-                        {if $bMaxExecutionTime} 
+                        {if $bMaxExecutionTime}
                             {$smarty.capture.testpassed}
                         {else}
                             {$smarty.capture.testfailed}
@@ -28,7 +28,7 @@
                     <td>PHP-Speicherlimit</td>
                     <td>{$memoryLimit}</td>
                     <td class="text-right">
-                        {if $bMemoryLimit} 
+                        {if $bMemoryLimit}
                             {$smarty.capture.testpassed}
                         {else}
                             {$smarty.capture.testfailed}
@@ -39,7 +39,7 @@
                     <td>Maximale PHP &Uuml;bertragungsgr&ouml;&szlig;e (FILE)</td>
                     <td>{$maxFilesize}</td>
                     <td class="text-right">
-                        {if $bMaxFilesize} 
+                        {if $bMaxFilesize}
                             {$smarty.capture.testpassed}
                         {else}
                             {$smarty.capture.testfailed}
@@ -50,7 +50,7 @@
                     <td>Maximale PHP &Uuml;bertragungsgr&ouml;&szlig;e (POST)</td>
                     <td>{$postMaxSize}</td>
                     <td class="text-right">
-                        {if $bPostMaxSize} 
+                        {if $bPostMaxSize}
                             {$smarty.capture.testpassed}
                         {else}
                             {$smarty.capture.testfailed}
@@ -61,13 +61,29 @@
                     <td>allow_url_fopen aktiviert</td>
                     <td>{if $bAllowUrlFopen}ja{else}nein{/if}</td>
                     <td class="text-right">
-                        {if $bAllowUrlFopen} 
+                        {if $bAllowUrlFopen}
                             {$smarty.capture.testpassed}
                         {else}
                             {$smarty.capture.testfailed}
                         {/if}
                     </td>
             </tr>
+
+            {* only show this, if something went wrong *}
+            {if isset($SOAPCheck) }
+            <tr>
+                    <td>SOAP-Erweiterung</td>
+                    <td>nein</td>
+                    <td class="text-right">
+                        {if $SOAPCheck}
+                            {$smarty.capture.testpassed}
+                        {else}
+                            {$smarty.capture.testfailed}
+                        {/if}
+                    </td>
+            </tr>
+            {/if}
+
         </tbody>
     </table>
 </div>

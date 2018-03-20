@@ -49,7 +49,7 @@ class KategoriePict
      */
     public function loadFromDB($kKategoriePict)
     {
-        $obj = Shop::DB()->select('tkategoriepict', 'kKategoriePict', (int)$kKategoriePict);
+        $obj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategoriePict', (int)$kKategoriePict);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -64,7 +64,7 @@ class KategoriePict
      */
     public function insertInDB()
     {
-        return Shop::DB()->insert('tkategoriepict', kopiereMembers($this));
+        return Shop::Container()->getDB()->insert('tkategoriepict', kopiereMembers($this));
     }
 
     /**
@@ -76,7 +76,7 @@ class KategoriePict
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->update('tkategoriepict', 'kKategoriePict', $obj->kKategoriePict, $obj);
+        return Shop::Container()->getDB()->update('tkategoriepict', 'kKategoriePict', $obj->kKategoriePict, $obj);
     }
 
     /**

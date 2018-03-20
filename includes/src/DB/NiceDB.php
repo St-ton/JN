@@ -4,30 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace DB;
+
 use Exceptions\InvalidEntityNameException;
+use \PDO;
+use \PDOStatement;
 
 /**
  * Class NiceDB
  * Class for handling mysql DB
- *
- * @method int|object|array query(string $stmt, int $return, int | bool $echo = false, bool $bExecuteHook = false)
- * @method int|object|array queryPrepared(string $stmt, array $params, int $return, int | bool $echo = false, bool $bExecuteHook = false)
- * @method PDOStatement|int exQuery(string $stmt)
- * @method null|object select(string $tableName, string | array $keyname, string | int | array $keyvalue, string | null $keyname1 = null, string | int $keyvalue1 = null, string | null $keyname2 = null, string | int $keyvalue2 = null, bool $echo = false, string $select = '*')
- * @method int insert(string $tableName, object $object, int | bool $echo = false, bool $bExecuteHook = false)
- * @method int delete(string $tableName, string | array $keyname, string | int | array $keyvalue, bool | int $echo = false)
- * @method int update(string $tableName, string | array $keyname, string | int | array $keyvalue, object $object, int | bool $echo = false)
- * @method array selectAll(string $tableName, string | array $keys, string | int | array $values, string $select = '*', string $orderBy = '', string $limit = '')
- * @method string realEscape($string)
- * @method string pdoEscape($string)
- * @method string info()
- * @method string stats()
- * @method mixed getErrorCode()
- * @method string getErrorMessage()
- * @method mixed getError()
  * @todo validate $limit, $orderBy & $select in some methods
  */
-class NiceDB implements Serializable
+class NiceDB implements DbInterface
 {
     /**
      * @var pdo
@@ -183,6 +171,7 @@ class NiceDB implements Serializable
      * @param null|string $DBdatabase
      * @return NiceDB
      * @throws Exception
+     * @deprecated since Shop 5 use Shop::Container()->getDB() instead
      */
     public static function getInstance($DBHost = null, $DBUser = null, $DBpass = null, $DBdatabase = null)
     {
@@ -201,9 +190,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * Database configuration
-     *
-     * @return array
+     * @inheritdoc
      */
     public function getConfig()
     {
@@ -211,9 +198,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * avoid destructer races with object cache
-     *
-     * @return $this
+     * @inheritdoc
      */
     public function reInit()
     {
@@ -231,70 +216,6 @@ class NiceDB implements Serializable
         }
 
         return $this;
-    }
-
-    /**
-     * object wrapper
-     * this allows to call NiceDB->query() etc.
-     *
-     * @param string $method
-     * @param array  $arguments
-     * @return mixed
-     */
-    public function __call($method, $arguments)
-    {
-        $mapping = self::map($method);
-
-        return $mapping !== null
-            ? call_user_func_array([$this, $mapping], $arguments)
-            : null;
-    }
-
-    /**
-     * static wrapper
-     * this allows to call NiceShop::DB()->query() etc.
-     *
-     * @param string $method
-     * @param array  $arguments
-     * @return mixed
-     */
-    public static function __callStatic($method, $arguments)
-    {
-        $mapping = self::map($method);
-
-        return $mapping !== null
-            ? call_user_func_array([self::$instance, $mapping], $arguments)
-            : null;
-    }
-
-    /**
-     * map function calls to real functions
-     *
-     * @param string $method
-     * @return string|null
-     */
-    private static function map($method)
-    {
-        static $mapping = [
-            'query'           => 'executeQuery',
-            'queryPrepared'   => 'executeQueryPrepared',
-            'exQuery'         => 'executeExQuery',
-            'select'          => 'selectSingleRow',
-            'insert'          => 'insertRow',
-            'delete'          => 'deleteRow',
-            'update'          => 'updateRow',
-            'realEscape'      => 'escape',
-            'pdoEscape'       => 'escape',
-            'info'            => 'getServerInfo',
-            'stats'           => 'getServerStats',
-            'getErrorCode'    => '_getErrorCode',
-            'getErrorMessage' => '_getErrorMessage',
-            'getError'        => '_getError',
-            'selectAll'       => 'selectArray',
-            'isConnected'     => 'isConnected'
-        ];
-
-        return $mapping[$method] ?? null;
     }
 
     /**
@@ -374,9 +295,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * close db connection
-     *
-     * @return bool
+     * @inheritdoc
      */
     public function close()
     {
@@ -386,9 +305,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * check if connected
-     *
-     * @return bool
+     * @inheritdoc
      */
     public function isConnected()
     {
@@ -396,9 +313,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * get server version information
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getServerInfo()
     {
@@ -406,13 +321,27 @@ class NiceDB implements Serializable
     }
 
     /**
-     * get server stats
-     *
-     * @return string
+     * @inheritdoc
+     */
+    public function info()
+    {
+        return $this->getServerInfo();
+    }
+
+    /**
+     * @inheritdoc
      */
     public function getServerStats()
     {
         return $this->pdo->getAttribute(PDO::ATTR_SERVER_INFO);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function stats()
+    {
+        return $this->getServerStats();
     }
 
     /**
@@ -434,15 +363,9 @@ class NiceDB implements Serializable
     }
 
     /**
-     * insert row into db
-     *
-     * @param string   $tableName - table name
-     * @param object   $object - object to insert
-     * @param int|bool $echo - true -> print statement
-     * @param bool     $bExecuteHook - true -> execute corresponding hook
+     * @inheritdoc
      * @throws InvalidEntityNameException
      * @throws InvalidArgumentException
-     * @return int - 0 if fails, PrimaryKeyValue if successful
      */
     public function insertRow($tableName, $object, $echo = false, $bExecuteHook = false)
     {
@@ -563,16 +486,15 @@ class NiceDB implements Serializable
     }
 
     /**
-     * update table row
-     *
-     * @param string           $tableName - table name
-     * @param string|array     $keyname - Name of Key which should be compared
-     * @param int|string|array $keyvalue - Value of Key which should be compared
-     * @param object           $object - object to update with
-     * @param int|bool         $echo - true -> print statement
-     * @throws InvalidArgumentException
-     * @throws InvalidEntityNameException
-     * @return int - -1 if fails, number of affected rows if successful
+     * @inheritdoc
+     */
+    public function insert($tableName, $object, $echo = false, $bExecuteHook = false)
+    {
+        return $this->insertRow($tableName, $object, $echo, $bExecuteHook);
+    }
+
+    /**
+     * @inheritdoc
      */
     public function updateRow($tableName, $keyname, $keyvalue, $object, $echo = false)
     {
@@ -704,18 +626,15 @@ class NiceDB implements Serializable
     }
 
     /**
-     * selects all (*) values in a single row from a table - gives just one row back!
-     *
-     * @param string           $tableName - Tabellenname
-     * @param string|array     $keyname - Name of Key which should be compared
-     * @param string|int|array $keyvalue - Value of Key which should be compared
-     * @param string|null      $keyname1 - Name of Key which should be compared
-     * @param string|int       $keyvalue1 - Value of Key which should be compared
-     * @param string|null      $keyname2 - Name of Key which should be compared
-     * @param string|int       $keyvalue2 - Value of Key which should be compared
-     * @param bool             $echo - true -> print statement
-     * @param string           $select - the key to select
-     * @return null|object - null if fails, resultObject if successful
+     * @inheritdoc
+     */
+    public function update($tableName, $keyname, $keyvalue, $object, $echo = false)
+    {
+        return $this->updateRow($tableName, $keyname, $keyvalue, $object, $echo);
+    }
+
+    /**
+     * @inheritdoc
      * @throws InvalidEntityNameException
      */
     public function selectSingleRow(
@@ -823,15 +742,24 @@ class NiceDB implements Serializable
     }
 
     /**
-     * @param string       $tableName
-     * @param string|array $keys
-     * @param string|array $values
-     * @param string       $select
-     * @param string       $orderBy
-     * @param string       $limit
-     * @return array
-     * @throws InvalidArgumentException
-     * @throws InvalidEntityNameException
+     * @inheritdoc
+     */
+    public function select(
+        $tableName,
+        $keyname,
+        $keyvalue,
+        $keyname1 = null,
+        $keyvalue1 = null,
+        $keyname2 = null,
+        $keyvalue2 = null,
+        $echo = false,
+        $select = '*'
+    ) {
+        return $this->selectSingleRow($tableName, $keyname, $keyvalue, $keyname1, $keyvalue1, $keyname2, $keyvalue2, $echo, $select);
+    }
+
+    /**
+     * @inheritdoc
      */
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
@@ -862,23 +790,15 @@ class NiceDB implements Serializable
     }
 
     /**
-     * executes query and returns misc data
-     *
-     * @param string   $stmt - Statement to be executed
-     * @param int      $return - what should be returned.
-     * 1  - single fetched object
-     * 2  - array of fetched objects
-     * 3  - affected rows
-     * 7  - last inserted id
-     * 8  - fetched assoc array
-     * 9  - array of fetched assoc arrays
-     * 10 - result of querysingle
-     * 11 - fetch both arrays
-     * @param int|bool $echo print current stmt
-     * @param bool     $bExecuteHook should function executeHook be executed
-     * @param callable $fnInfo statistic callback
-     * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
-     * @throws InvalidArgumentException
+     * @inheritdoc
+     */
+    public function selectAll($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
+    {
+        return $this->selectArray($tableName, $keys, $values, $select, $orderBy, $limit);
+    }
+
+    /**
+     * @inheritdoc
      */
     public function executeQuery($stmt, $return, $echo = false, $bExecuteHook = false, $fnInfo = null)
     {
@@ -886,24 +806,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * executes query and returns misc data
-     *
-     * @param string   $stmt - Statement to be executed
-     * @param array    $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
-     * @param int      $return - what should be returned.
-     * 1  - single fetched object
-     * 2  - array of fetched objects
-     * 3  - affected rows
-     * 7  - last inserted id
-     * 8  - fetched assoc array
-     * 9  - array of fetched assoc arrays
-     * 10 - result of querysingle
-     * 11 - fetch both arrays
-     * @param int|bool $echo print current stmt
-     * @param bool     $bExecuteHook should function executeHook be executed
-     * @param callable $fnInfo statistic callback
-     * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
-     * @throws InvalidArgumentException
+     * @inheritdoc
      */
     public function executeQueryPrepared(
         $stmt,
@@ -917,9 +820,15 @@ class NiceDB implements Serializable
     }
 
     /**
-     * @param string $stmt
-     * @param array  $params
-     * @return Generator|int
+     * @inheritdoc
+     */
+    public function queryPrepared($stmt, $params, $return, $echo = false, $bExecuteHook = false, $fnINfo = null)
+    {
+        return $this->executeQueryPrepared($stmt, $params, $return, $echo, $bExecuteHook, $fnINfo);
+    }
+
+    /**
+     * @inheritdoc
      */
     public function executeYield($stmt, array $params = [])
     {
@@ -1111,13 +1020,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * delete row from table
-     *
-     * @param string           $tableName - table name
-     * @param string|array     $keyname - Name of Key which should be compared
-     * @param string|int|array $keyvalue - Value of Key which should be compared
-     * @param bool|int         $echo - true -> print statement
-     * @return int - -1 if fails, #affectedRows if successful
+     * @inheritdoc
      * @throws InvalidEntityNameException
      */
     public function deleteRow($tableName, $keyname, $keyvalue, $echo = false)
@@ -1199,10 +1102,15 @@ class NiceDB implements Serializable
     }
 
     /**
-     * executes a query and gives back the result
-     *
-     * @param string $stmt - Statement to be executed
-     * @return PDOStatement|int
+     * @inheritdoc
+     */
+    public function delete($tableName, $keyname, $keyvalue, $echo = false)
+    {
+        return $this->deleteRow($tableName, $keyname, $keyvalue, $echo);
+    }
+
+    /**
+     * @inheritdoc
      */
     public function executeExQuery($stmt)
     {
@@ -1231,6 +1139,22 @@ class NiceDB implements Serializable
     }
 
     /**
+     * @inheritdoc
+     */
+    public function query($stmt, $return, $echo = false, $bExecuteHook = false)
+    {
+        return $this->executeQuery($stmt, $return, $echo, $bExecuteHook);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function exQuery($stmt)
+    {
+        return $this->executeExQuery($stmt);
+    }
+
+    /**
      * @param mixed $res
      * @return bool
      * @deprecated since 4.0
@@ -1250,10 +1174,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * Quotes a string with outer quotes for use in a query.
-     *
-     * @param string|bool $string
-     * @return string
+     * @inheritdoc
      */
     public function quote($string)
     {
@@ -1277,10 +1198,23 @@ class NiceDB implements Serializable
     }
 
     /**
-     * logger
-     *
-     * @param string $entry - entry to log
-     * @return $this
+     * @inheritdoc
+     */
+    public function pdoEscape($string)
+    {
+        return $this->escape($string);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function realEscape($string)
+    {
+        return $this->escape($string);
+    }
+
+    /**
+     * @inheritdoc
      */
     public function writeLog($entry)
     {
@@ -1296,7 +1230,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * @return mixed
+     * @inheritdoc
      */
     public function _getErrorCode()
     {
@@ -1306,7 +1240,15 @@ class NiceDB implements Serializable
     }
 
     /**
-     * @return mixed
+     * @inheritdoc
+     */
+    public function getErrorCode()
+    {
+        return $this->_getErrorCode();
+    }
+
+    /**
+     * @inheritdoc
      */
     public function _getError()
     {
@@ -1314,7 +1256,15 @@ class NiceDB implements Serializable
     }
 
     /**
-     * @return string
+     * @inheritdoc
+     */
+    public function getError()
+    {
+        return $this->_getError();
+    }
+
+    /**
+     * @inheritdoc
      */
     public function _getErrorMessage()
     {
@@ -1327,7 +1277,15 @@ class NiceDB implements Serializable
     }
 
     /**
-     * @return boolean
+     * @inheritdoc
+     */
+    public function getErrorMessage()
+    {
+        return $this->_getErrorMessage();
+    }
+
+    /**
+     * @inheritdoc
      */
     public function beginTransaction()
     {
@@ -1341,7 +1299,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function commit()
     {
@@ -1358,7 +1316,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function rollback()
     {
@@ -1413,9 +1371,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * @param string $query
-     * @param array  $params
-     * @return string
+     * @inheritdoc
      */
     public function readableQuery($query, $params)
     {
@@ -1483,7 +1439,7 @@ class NiceDB implements Serializable
     }
 
     /**
-     * @return null
+    @inheritdoc
      */
     public function serialize()
     {
@@ -1491,10 +1447,11 @@ class NiceDB implements Serializable
     }
 
     /**
-     * @param string $serialized
+     * @inheritdoc
      */
     public function unserialize($serialized)
     {
 
     }
+
 }

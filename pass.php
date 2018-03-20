@@ -24,7 +24,7 @@ $cFehler                         = '';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 //loginbenutzer?
 if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
-    $kunde = Shop::DB()->select(
+    $kunde = Shop::Container()->getDB()->select(
         'tkunde',
         'cMail',
         $_POST['email'],
@@ -48,14 +48,14 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     }
 } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
-        $resetItem = Shop::DB()->select('tpasswordreset', 'cKey', $_POST['fpwh']);
+        $resetItem = Shop::Container()->getDB()->select('tpasswordreset', 'cKey', $_POST['fpwh']);
         if ($resetItem) {
             $dateExpires = new DateTime($resetItem->dExpires);
             if ($dateExpires >= new DateTime()) {
                 $customer = new Kunde($resetItem->kKunde);
                 if ($customer && $customer->cSperre !== 'Y') {
                     $customer->updatePassword($_POST['pw_new']);
-                    Shop::DB()->delete('tpasswordreset', 'kKunde', $customer->kKunde);
+                    Shop::Container()->getDB()->delete('tpasswordreset', 'kKunde', $customer->kKunde);
                     header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
                     exit();
                 } else {
@@ -73,7 +73,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     $step = 'confirm';
     Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']));
 } elseif (isset($_GET['fpwh'])) {
-    $resetItem = Shop::DB()->select('tpasswordreset', 'cKey', $_GET['fpwh']);
+    $resetItem = Shop::Container()->getDB()->select('tpasswordreset', 'cKey', $_GET['fpwh']);
     if($resetItem) {
         $dateExpires = new DateTime($resetItem->dExpires);
         if($dateExpires >= new DateTime()) {

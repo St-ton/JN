@@ -152,7 +152,7 @@ class MerkmalWert
             $cJoin   = "INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                             AND tmerkmalwertsprache.kSprache = " . $kSprache;
         }
-        $oMerkmalWert = Shop::DB()->query(
+        $oMerkmalWert = Shop::Container()->getDB()->query(
             "SELECT tmerkmalwert.*, {$cSelect}
                 FROM tmerkmalwert
                 {$cJoin}
@@ -233,7 +233,7 @@ class MerkmalWert
             $cJoin   = "INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                             AND tmerkmalwertsprache.kSprache = " . $kSprache;
         }
-        $oMerkmalWert_arr = Shop::DB()->query(
+        $oMerkmalWert_arr = Shop::Container()->getDB()->query(
             "SELECT tmerkmalwert.*, {$cSelect}
                 FROM tmerkmalwert
                 {$cJoin}

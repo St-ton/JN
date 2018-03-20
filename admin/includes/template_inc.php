@@ -11,7 +11,7 @@
  */
 function __switchTemplate($cOrdner, $eTyp = 'standard')
 {
-    $cOrdner   = Shop::DB()->escape($cOrdner);
+    $cOrdner   = Shop::Container()->getDB()->escape($cOrdner);
     $oTemplate = Template::getInstance();
     $bCheck    = $oTemplate->setTemplate($cOrdner, $eTyp);
     if ($bCheck) {

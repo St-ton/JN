@@ -15,7 +15,7 @@ class DBManager
     public static function getTables()
     {
         $tables = [];
-        $rows   = Shop::DB()->query("SHOW FULL TABLES WHERE Table_type='BASE TABLE'", 2);
+        $rows   = Shop::Container()->getDB()->query("SHOW FULL TABLES WHERE Table_type='BASE TABLE'", 2);
 
         foreach ($rows as $row) {
             $tables[] = current($row);
@@ -31,8 +31,8 @@ class DBManager
     public static function getColumns($table)
     {
         $list    = [];
-        $table   = Shop::DB()->escape($table);
-        $columns = Shop::DB()->query("SHOW FULL COLUMNS FROM `{$table}`", 2);
+        $table   = Shop::Container()->getDB()->escape($table);
+        $columns = Shop::Container()->getDB()->query("SHOW FULL COLUMNS FROM `{$table}`", 2);
 
         foreach ($columns as $column) {
             $column->Type_info    = self::parseType($column->Type);
@@ -49,8 +49,8 @@ class DBManager
     public static function getIndexes($table)
     {
         $list    = [];
-        $table   = Shop::DB()->escape($table);
-        $indexes = Shop::DB()->query("SHOW INDEX FROM `{$table}`", 2);
+        $table   = Shop::Container()->getDB()->escape($table);
+        $indexes = Shop::Container()->getDB()->query("SHOW INDEX FROM `{$table}`", 2);
 
         foreach ($indexes as $index) {
             $container = (object)[
@@ -87,16 +87,16 @@ class DBManager
      */
     public static function getStatus($database, $table = null)
     {
-        $database = Shop::DB()->escape($database);
+        $database = Shop::Container()->getDB()->escape($database);
 
         if ($table !== null) {
-            $table = Shop::DB()->escape($table);
+            $table = Shop::Container()->getDB()->escape($table);
 
-            return Shop::DB()->query("SHOW TABLE STATUS FROM `{$database}` WHERE name='{$table}'", 1);
+            return Shop::Container()->getDB()->query("SHOW TABLE STATUS FROM `{$database}` WHERE name='{$table}'", 1);
         }
 
         $list   = [];
-        $status = Shop::DB()->query("SHOW TABLE STATUS FROM `{$database}`", 2);
+        $status = Shop::Container()->getDB()->query("SHOW TABLE STATUS FROM `{$database}`", 2);
         foreach ($status as $s) {
             $list[$s->Name] = $s;
         }

@@ -59,7 +59,7 @@ class Lieferscheinpos
      */
     private function loadFromDB($kLieferscheinPos = 0)
     {
-        $oObj = Shop::DB()->select('tlieferscheinpos', 'kLieferscheinPos', (int)$kLieferscheinPos);
+        $oObj = Shop::Container()->getDB()->select('tlieferscheinpos', 'kLieferscheinPos', (int)$kLieferscheinPos);
         if ($oObj !== null && $oObj->kLieferscheinPos > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
@@ -87,7 +87,7 @@ class Lieferscheinpos
         }
 
         unset($oObj->kLieferscheinPos, $oObj->oLieferscheinPosInfo_arr);
-        $kPrim = Shop::DB()->insert('tlieferscheinpos', $oObj);
+        $kPrim = Shop::Container()->getDB()->insert('tlieferscheinpos', $oObj);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -109,7 +109,7 @@ class Lieferscheinpos
         $_upd->kWarenlager   = $this->getWarenlager();
         $_upd->fAnzahl       = $this->getAnzahl();
 
-        return Shop::DB()->update('tlieferscheinpos', 'kLieferscheinPos', $this->getLieferscheinPos(), $_upd);
+        return Shop::Container()->getDB()->update('tlieferscheinpos', 'kLieferscheinPos', $this->getLieferscheinPos(), $_upd);
     }
 
     /**
@@ -119,7 +119,7 @@ class Lieferscheinpos
      */
     public function delete()
     {
-        return Shop::DB()->delete('tlieferscheinpos', 'kLieferscheinPos', $this->getLieferscheinPos());
+        return Shop::Container()->getDB()->delete('tlieferscheinpos', 'kLieferscheinPos', $this->getLieferscheinPos());
     }
 
     /**

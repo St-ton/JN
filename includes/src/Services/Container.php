@@ -6,6 +6,9 @@
 
 namespace Services;
 
+use Cache\JTLCacheInterface;
+use DB\DbInterface;
+use DB\Services\GcServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
@@ -20,6 +23,14 @@ use Psr\Log\LoggerInterface;
  */
 class Container extends ContainerBase implements DefaultServicesInterface
 {
+    /**
+     * @inheritdoc
+     */
+    public function getDB()
+    {
+        return $this->get(DbInterface::class);
+    }
+
     /**
      * @inheritdoc
      */
@@ -42,5 +53,21 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getBackendLogService() : LoggerInterface
     {
         return $this->get('BackendAuthLogger');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDBServiceGC()
+    {
+        return $this->get(GcServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCache()
+    {
+        return $this->get(JTLCacheInterface::class);
     }
 }

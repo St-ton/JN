@@ -266,7 +266,7 @@ class TemplateHelper
      */
     public function getConfig($cOrdner)
     {
-        $oSetting_arr = Shop::DB()->selectAll('ttemplateeinstellungen', 'cTemplate', $cOrdner);
+        $oSetting_arr = Shop::Container()->getDB()->selectAll('ttemplateeinstellungen', 'cTemplate', $cOrdner);
         if (is_array($oSetting_arr) && count($oSetting_arr) > 0) {
             $oFMTSettings_arr = [];
             foreach ($oSetting_arr as $oSetting) {
@@ -332,7 +332,7 @@ class TemplateHelper
             }
         }
 
-        $oTemplate_arr = Shop::DB()->query('SELECT * FROM ttemplate', NiceDB::RET_ARRAY_OF_OBJECTS);
+        $oTemplate_arr = Shop::Container()->getDB()->query('SELECT * FROM ttemplate', NiceDB::RET_ARRAY_OF_OBJECTS);
         foreach ($oTemplate_arr as $oTpl) {
             if (!isset($oTemplate->bAktiv) || !$oTemplate->bAktiv) {
                 $oTemplate->bAktiv = (strcasecmp($oTemplate->cOrdner, $oTpl->cTemplate) === 0);

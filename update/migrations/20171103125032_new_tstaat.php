@@ -1255,7 +1255,7 @@ SET NAMES latin1;
 SQL;
 
 		/*$this->execute($szSql);  see above for explanation*/
-        Shop::DB()->executeQuery($szSql, 3);
+        Shop::Container()->getDB()->executeQuery($szSql, 3);
     }
 
     public function down()

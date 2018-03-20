@@ -69,7 +69,7 @@ class Kampagne
      */
     public function loadFromDB($kKampagne)
     {
-        $oKampagne = Shop::DB()->query(
+        $oKampagne = Shop::Container()->getDB()->query(
             "SELECT tkampagne.*, DATE_FORMAT(tkampagne.dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
                 WHERE tkampagne.kKampagne = " . (int)$kKampagne, 1
@@ -100,7 +100,7 @@ class Kampagne
         $obj->nAktiv     = $this->nAktiv;
         $obj->dErstellt  = $this->dErstellt;
 
-        $this->kKampagne    = Shop::DB()->insert('tkampagne', $obj);
+        $this->kKampagne    = Shop::Container()->getDB()->insert('tkampagne', $obj);
         $cDatum_arr         = gibDatumTeile($this->dErstellt);
         $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
             $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
@@ -124,7 +124,7 @@ class Kampagne
         $obj->dErstellt  = $this->dErstellt;
         $obj->kKampagne  = $this->kKampagne;
 
-        $cReturn            = Shop::DB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
+        $cReturn            = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
         $cDatum_arr         = gibDatumTeile($this->dErstellt);
         $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
             $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
@@ -141,7 +141,7 @@ class Kampagne
     public function deleteInDB()
     {
         if ($this->kKampagne > 0) {
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "DELETE tkampagne, tkampagnevorgang
                     FROM tkampagne
                     LEFT JOIN tkampagnevorgang ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
@@ -161,7 +161,7 @@ class Kampagne
     {
         $cacheID = 'campaigns';
         if (($oKampagne_arr = Shop::Cache()->get($cacheID)) === false) {
-            $oKampagne_arr = Shop::DB()->selectAll(
+            $oKampagne_arr = Shop::Container()->getDB()->selectAll(
                 'tkampagne',
                 'nAktiv',
                 1,

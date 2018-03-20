@@ -83,7 +83,7 @@ class AdminAccount
      */
     public function verifyResetPasswordHash($hash, $mail) : bool
     {
-        $user = Shop::DB()->select('tadminlogin', 'cMail', $mail);
+        $user = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $mail);
         if ($user !== null) {
             //there should be a string <created_timestamp>:<hash> in the DB
             $timestampAndHash = explode(':', $user->cResetPasswordHash);
@@ -125,9 +125,9 @@ class AdminAccount
         $stringToSend             = md5($mail . $cryptoService->randomString(30));
         $_upd                     = new stdClass();
         $_upd->cResetPasswordHash = $timestamp . ':' . $passwordService->hash($stringToSend);
-        $res                      = Shop::DB()->update('tadminlogin', 'cMail', $mail, $_upd);
+        $res                      = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $mail, $_upd);
         if ($res > 0) {
-            $user = Shop::DB()->select('tadminlogin', 'cMail', $mail);
+            $user = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $mail);
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             $obj                    = new stdClass();
             $obj->passwordResetLink = Shop::getAdminURL() . '/pass.php?fpwh=' . $stringToSend . '&mail=' . $mail;
@@ -173,7 +173,7 @@ class AdminAccount
      */
     public function login($cLogin, $cPass)
     {
-        $oAdmin = Shop::DB()->select(
+        $oAdmin = Shop::Container()->getDB()->select(
             'tadminlogin',
             'cLogin',
             $cLogin,
@@ -213,7 +213,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin = $cLogin;
             $verified                         = true;
             if ($this->checkAndUpdateHash($cPass) === true) {
-                $oAdmin = Shop::DB()->select(
+                $oAdmin = Shop::Container()->getDB()->select(
                     'tadminlogin',
                     'cLogin',
                     $cLogin,
@@ -361,7 +361,7 @@ class AdminAccount
         $nAdminMenuGroup  = (int)$nAdminMenuGroup;
 
         if ($nAdminLoginGroup === ADMINGROUP) {
-            $oLink_arr = Shop::DB()->selectAll(
+            $oLink_arr = Shop::Container()->getDB()->selectAll(
                 'tadminmenu',
                 'kAdminmenueGruppe',
                 $nAdminMenuGroup,
@@ -369,7 +369,7 @@ class AdminAccount
                 'cLinkname, nSort'
             );
         } else {
-            $oLink_arr = Shop::DB()->queryPrepared(
+            $oLink_arr = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tadminmenu.* 
                     FROM tadminmenu 
                         JOIN tadminrechtegruppe 
@@ -416,7 +416,7 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL)
             && $_SESSION['AdminAccount']->cURL === Shop::getURL()
         ) {
-            $oAccount = Shop::DB()->select(
+            $oAccount = Shop::Container()->getDB()->select(
                 'tadminlogin',
                 'cLogin', $_SESSION['AdminAccount']->cLogin,
                 'cPass', $_SESSION['AdminAccount']->cPass
@@ -496,7 +496,7 @@ class AdminAccount
      */
     private function _setLastLogin($cLogin)
     {
-        Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'now()']);
+        Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'now()']);
 
         return $this;
     }
@@ -509,9 +509,9 @@ class AdminAccount
     private function _setRetryCount($cLogin, $bReset = false)
     {
         if ($bReset) {
-            Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, (object)['nLoginVersuch' => 0]);
+            Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['nLoginVersuch' => 0]);
         } else {
-            Shop::DB()->queryPrepared(
+            Shop::Container()->getDB()->queryPrepared(
                 "UPDATE tadminlogin
                     SET nLoginVersuch = nLoginVersuch+1
                     WHERE cLogin = :login",
@@ -530,9 +530,9 @@ class AdminAccount
     private function _getPermissionsByGroup($kAdminlogingruppe)
     {
         $kAdminlogingruppe = (int)$kAdminlogingruppe;
-        $oGroup            = Shop::DB()->select('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
+        $oGroup            = Shop::Container()->getDB()->select('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
         if ($oGroup !== null && isset($oGroup->kAdminlogingruppe)) {
-            $oPermission_arr = Shop::DB()->selectAll(
+            $oPermission_arr = Shop::Container()->getDB()->selectAll(
                 'tadminrechtegruppe',
                 'kAdminlogingruppe',
                 $kAdminlogingruppe,
@@ -578,7 +578,7 @@ class AdminAccount
         ) {
             $_upd        = new stdClass();
             $_upd->cPass = $passwordService->hash($password);
-            Shop::DB()->update('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, $_upd);
+            Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, $_upd);
 
             return true;
         }

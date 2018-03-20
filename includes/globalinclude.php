@@ -46,13 +46,13 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 try {
-    $GLOBALS['DB'] = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $GLOBALS['DB'] = Shop::Container()->getDB();
 } catch (Exception $exc) {
     die($exc->getMessage());
 }
 $GLOBALS['bSeo'] = true; //seo module is always available, keep global for compatibility reasons
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-$cache = JTLCache::getInstance()->setJtlCacheConfig();
+$cache = Shop::Container()->getCache()->setJtlCacheConfig();
 $conf  = Shop::getSettings([CONF_GLOBAL]);
 
 if (PHP_SAPI !== 'cli'

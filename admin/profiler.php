@@ -106,12 +106,12 @@ $smarty->assign('pluginProfilerData', $pluginProfilerData)
 function deleteProfileRun($all = false, $runID = 0)
 {
     if ($all === true) {
-        $count = Shop::DB()->query("DELETE FROM tprofiler", 3);
-        Shop::DB()->query("ALTER TABLE tprofiler AUTO_INCREMENT = 1", 3);
-        Shop::DB()->query("ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1", 3);
+        $count = Shop::Container()->getDB()->query("DELETE FROM tprofiler", 3);
+        Shop::Container()->getDB()->query("ALTER TABLE tprofiler AUTO_INCREMENT = 1", 3);
+        Shop::Container()->getDB()->query("ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1", 3);
 
         return $count;
     }
 
-    return Shop::DB()->delete('tprofiler', 'runID', $runID);
+    return Shop::Container()->getDB()->delete('tprofiler', 'runID', $runID);
 }

@@ -99,7 +99,7 @@ class UT extends PaymentMethod
     {
         $kSprache = (int)$kSprache;
         if ($kSprache > 0) {
-            $oSprache = Shop::DB()->query(
+            $oSprache = Shop::Container()->getDB()->query(
                 "SELECT kSprache, cISO
                     FROM tsprache
                     WHERE kSprache = " . $kSprache, 1
@@ -225,7 +225,7 @@ class UT extends PaymentMethod
                                     LEFT JOIN tzahlungsart ZA 
                                         ON ZA.kZahlungsart = ZID.kZahlungsart 
                                     WHERE ZID.cId = '$paymentHash' ";
-                $paymentId   = Shop::DB()->query($sql, 1);
+                $paymentId   = Shop::Container()->getDB()->query($sql, 1);
 
                 if ($paymentId->kBestellung > 0) {
                     $order = new Bestellung($paymentId->kBestellung);
@@ -239,7 +239,7 @@ class UT extends PaymentMethod
 
                 // Load from Session Hash / Session Hash starts with "_"
                 $sessionHash    = substr(StringHandler::htmlentities(StringHandler::filterXSS($cSh)), 1);
-                $paymentSession = Shop::DB()->select('tzahlungsession', 'cZahlungsID', $sessionHash);
+                $paymentSession = Shop::Container()->getDB()->select('tzahlungsession', 'cZahlungsID', $sessionHash);
                 if (strlen($paymentSession->cSID) > 0) {
                     /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                     // Load Session

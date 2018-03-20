@@ -30,7 +30,7 @@ if ($bestellung->oKunde !== null
     exit;
 }
 
-$bestellid         = Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung);
+$bestellid         = Shop::Container()->getDB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung);
 $successPaymentURL = Shop::getURL();
 if ($bestellid->cId) {
     $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php');
@@ -96,7 +96,7 @@ if (verifyGPCDataInteger('zusatzschritt') === 1) {
 
     if ($bZusatzangabenDa) {
         if (saveZahlungsInfo($bestellung->kKunde, $bestellung->kBestellung)) {
-            Shop::DB()->update(
+            Shop::Container()->getDB()->update(
                 'tbestellung',
                 'kBestellung',
                 (int)$bestellung->kBestellung,
@@ -249,7 +249,7 @@ $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
-    ->assign('Firma', Shop::DB()->query("SELECT * FROM tfirma", 1))
+    ->assign('Firma', Shop::Container()->getDB()->query("SELECT * FROM tfirma", 1))
     ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
     ->assign('Bestellung', $bestellung);
 

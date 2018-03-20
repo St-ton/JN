@@ -108,7 +108,7 @@ class SofortUeberweisung extends PaymentMethod
     public function getProjectPassword()
     {
         $cPasswort      = '';
-        $oEinstellungen = Shop::DB()->query(
+        $oEinstellungen = Shop::Container()->getDB()->query(
             "SELECT cWert
                 FROM teinstellungen
                 WHERE cName = 'zahlungsart_sofortueberweisung_project_password'", 1
@@ -130,7 +130,7 @@ class SofortUeberweisung extends PaymentMethod
     public function getNotificationPassword()
     {
         $cPasswort      = '';
-        $oEinstellungen = Shop::DB()->query(
+        $oEinstellungen = Shop::Container()->getDB()->query(
             "SELECT cWert
                 FROM teinstellungen
                 WHERE cName = 'zahlungsart_sofortueberweisung_benachrichtigung_password'", 1
@@ -304,7 +304,7 @@ class SofortUeberweisung extends PaymentMethod
                 Jtllog::writeLog(': verifyNotification pass. addIncomingPayment', JTLLOG_LEVEL_DEBUG);
             }
 
-            $transaction = Shop::DB()->query(
+            $transaction = Shop::Container()->getDB()->query(
                 "SELECT tzahlungseingang.cZahlungsanbieter, tzahlungseingang.fBetrag, tzahlungsession.nBezahlt
                     FROM tzahlungsession
                     INNER JOIN tzahlungseingang ON tzahlungseingang.kBestellung = " . (int)$order->kBestellung . "

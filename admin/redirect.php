@@ -29,7 +29,7 @@ if (validateToken()) {
                     if (Redirect::checkAvailability($redirect['cToUrl'])) {
                         $oRedirect->cToUrl     = $redirect['cToUrl'];
                         $oRedirect->cAvailable = 'y';
-                        Shop::DB()->update('tredirect', 'kRedirect', $oRedirect->kRedirect, $oRedirect);
+                        Shop::Container()->getDB()->update('tredirect', 'kRedirect', $oRedirect->kRedirect, $oRedirect);
                     } else {
                         $cFehler .=
                             "&Auml;nderungen konnten nicht gespeichert werden, da die weiterzuleitende URL " .
@@ -115,7 +115,7 @@ handleCsvExportAction(
         $cOrderSQL = $oPagination->getOrderSQL();
 
         for ($i = 0; $i < $nRedirectCount; $i += 1000) {
-            $oRedirectIter = Shop::DB()->query(
+            $oRedirectIter = Shop::Container()->getDB()->query(
                 "SELECT cFromUrl, cToUrl
                     FROM tredirect" .
                     ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .

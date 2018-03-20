@@ -108,7 +108,7 @@ if (strlen($oBillpay->getSetting('pid')) > 0 &&
 
 $smarty->assign('cFehlerBillpay', $cFehler);
 
-$Conf = Shop::DB()->selectAll('teinstellungenconf', ['cModulId', 'cConf'], ['za_billpay_jtl', 'Y'], '*', 'nSort');
+$Conf = Shop::Container()->getDB()->selectAll('teinstellungenconf', ['cModulId', 'cConf'], ['za_billpay_jtl', 'Y'], '*', 'nSort');
 
 if (isset($_POST['einstellungen_bearbeiten']) && validateToken()) {
     foreach ($Conf as $i => $oConfig) {
@@ -133,15 +133,15 @@ if (isset($_POST['einstellungen_bearbeiten']) && validateToken()) {
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
                     break;
             }
-            Shop::DB()->delete(
+            Shop::Container()->getDB()->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [(int)$Conf[$i]->kEinstellungenSektion, $Conf[$i]->cWertName]
             );
-            Shop::DB()->insert('teinstellungen', $aktWert);
+            Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
         }
     }
-    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 
     $smarty->assign('saved', true);
@@ -150,7 +150,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && validateToken()) {
 $configCount = count($Conf);
 for ($i = 0; $i < $configCount; $i++) {
     if ($Conf[$i]->cInputTyp === 'selectbox') {
-        $Conf[$i]->ConfWerte = Shop::DB()->selectAll(
+        $Conf[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$Conf[$i]->kEinstellungenConf,
@@ -158,7 +158,7 @@ for ($i = 0; $i < $configCount; $i++) {
             'nSort'
         );
     }
-    $setValue                = Shop::DB()->select(
+    $setValue                = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion', (int)$Conf[$i]->kEinstellungenSektion,
         'cName', $Conf[$i]->cWertName

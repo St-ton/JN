@@ -93,9 +93,9 @@ function bearbeite($xml)
         //Mappe Anrede
         $Kunde->cAnrede = mappeWawiAnrede2ShopAnrede($Kunde->cAnrede);
 
-        $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$Kunde->kSprache);
+        $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$Kunde->kSprache);
         if (empty($oSprache->kSprache)) {
-            $oSprache        = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+            $oSprache        = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
             $Kunde->kSprache = $oSprache->kSprache;
         }
 
@@ -118,7 +118,7 @@ function bearbeite($xml)
                 // E-Mail Adresse geändert - Verwendung prüfen!
                 if (!valid_email($Kunde->cMail) ||
                     pruefeEmailblacklist($Kunde->cMail) ||
-                    Shop::DB()->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null
+                    Shop::Container()->getDB()->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null
                 ) {
                     // E-Mail ist invalid, blacklisted bzw. wird bereits im Shop verwendet - die Änderung wird zurückgewiesen.
                     $res_obj['keys']['tkunde attr']['kKunde'] = 0;
@@ -172,17 +172,17 @@ function bearbeite($xml)
                 return $res_obj;
             }
             //Kunde existiert nicht im Shop - check, ob email schon belegt
-            $oKundeAlt = Shop::DB()->select(
+            $oKundeAlt = Shop::Container()->getDB()->select(
                 'tkunde',
                 'nRegistriert', 1,
-                'cMail', Shop::DB()->escape($Kunde->cMail),
+                'cMail', Shop::Container()->getDB()->escape($Kunde->cMail),
                 null, null,
                 false,
                 'kKunde'
             );
             if (isset($oKundeAlt->kKunde) && $oKundeAlt->kKunde > 0) {
                 //EMAIL SCHON BELEGT -> Kunde wird nicht neu angelegt, sondern der Kunde wird an Wawi zurückgegeben
-                $xml_obj['kunden']['tkunde']      = Shop::DB()->query(
+                $xml_obj['kunden']['tkunde']      = Shop::Container()->getDB()->query(
                     "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
                         cNachname, cFirma, cZusatz, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, 
                         cLand, cTel, cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
@@ -206,7 +206,7 @@ function bearbeite($xml)
 
                 unset($xml_obj['kunden']['tkunde'][0]['cPasswort']);
                 $xml_obj['kunden']['tkunde']['0 attr']             = buildAttributes($xml_obj['kunden']['tkunde'][0]);
-                $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = Shop::DB()->query(
+                $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = Shop::Container()->getDB()->query(
                     "SELECT *
                         FROM tkundenattribut
                          WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'], 9
@@ -365,7 +365,7 @@ function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
     $kSprache = (int)$kSprache;
     if ($kKunde > 0 && $kSprache > 0 && is_array($oKundenattribut_arr) && count($oKundenattribut_arr) > 0) {
         foreach ($oKundenattribut_arr as $oKundenattribut) {
-            $oKundenfeld = Shop::DB()->query(
+            $oKundenfeld = Shop::Container()->getDB()->query(
                 "SELECT tkundenfeld.kKundenfeld, tkundenfeldwert.cWert
                      FROM tkundenfeld
                      LEFT JOIN tkundenfeldwert
@@ -378,7 +378,7 @@ function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
                     continue;
                 }
                 if (!$bNeu) {
-                    Shop::DB()->delete(
+                    Shop::Container()->getDB()->delete(
                         'tkundenattribut',
                         ['kKunde', 'kKundenfeld'],
                         [$kKunde, (int)$oKundenfeld->kKundenfeld]
@@ -390,7 +390,7 @@ function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
                 $oKundenattributTMP->cName       = $oKundenattribut->cName;
                 $oKundenattributTMP->cWert       = $oKundenattribut->cWert;
 
-                Shop::DB()->insert('tkundenattribut', $oKundenattributTMP);
+                Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattributTMP);
             }
         }
     }

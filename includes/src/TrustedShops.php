@@ -466,7 +466,7 @@ class TrustedShops
                 $this->oKaeuferschutzProdukteDB = new stdClass();
             }
 
-            $this->oKaeuferschutzProdukteDB->item = Shop::DB()->query(
+            $this->oKaeuferschutzProdukteDB->item = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM ttrustedeshopsprodukt
                     WHERE kTrustedShopsZertifikat = " . $oZertifikat->kTrustedShopsZertifikat . $cSQL . "
@@ -487,7 +487,7 @@ class TrustedShops
                     $fPreis = $oItem->fNetto;
                     $nWert  = $oItem->nWert;
                     // Std Währung
-                    $oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+                    $oWaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
                     // Nicht Standard im Shop?
                     if (Session::Currency()->getID() !== (int)$oWaehrung->kWaehrung) {
                         $fPreis = $oItem->fNetto / Session::Currency()->getConversionFactor();
@@ -545,14 +545,14 @@ class TrustedShops
             && is_array($this->oKaeuferschutzProdukteDB->item)
             && count($this->oKaeuferschutzProdukteDB->item) > 0
         ) {
-            Shop::DB()->delete('ttrustedeshopsprodukt', 'kTrustedShopsZertifikat', (int)$kTrustedShopsZertifikat);
+            Shop::Container()->getDB()->delete('ttrustedeshopsprodukt', 'kTrustedShopsZertifikat', (int)$kTrustedShopsZertifikat);
             foreach ($this->oKaeuferschutzProdukteDB->item as $oKaeuferschutzProdukt) {
                 $oKaeuferschutzProdukt->kTrustedShopsZertifikat = $kTrustedShopsZertifikat;
                 if (!isset($oKaeuferschutzProdukt->kSprache)) {
                     $oKaeuferschutzProdukt->kSprache = 0;
                 }
                 unset($oKaeuferschutzProdukt->protectedAmountDecimalLocalized);
-                Shop::DB()->insert('ttrustedeshopsprodukt', $oKaeuferschutzProdukt);
+                Shop::Container()->getDB()->insert('ttrustedeshopsprodukt', $oKaeuferschutzProdukt);
             }
 
             return true;
@@ -606,7 +606,7 @@ class TrustedShops
 
                 $this->dChecked = date('Y-m-d H:i:s');
                 if (!$bSaved) {
-                    Shop::DB()->query(
+                    Shop::Container()->getDB()->query(
                         "UPDATE ttrustedshopszertifikat 
                             SET dChecked = '{$this->dChecked}' 
                             WHERE kTrustedShopsZertifikat = {$this->kTrustedShopsZertifikat}", 3
@@ -713,15 +713,15 @@ class TrustedShops
         if (strlen($cTSID) > 0) {
             $this->nAktiv = 0;
             // Prüfe ob das Zertifikat vorhanden ist
-            $oZertifikat = Shop::DB()->select(
+            $oZertifikat = Shop::Container()->getDB()->select(
                 'ttrustedshopszertifikat', 
                 'cTSID', 
-                Shop::DB()->escape($cTSID), 
+                Shop::Container()->getDB()->escape($cTSID), 
                 'cISOSprache', 
                 $cISOSprache
             );
             if (isset($oZertifikat->kTrustedShopsZertifikat) && $oZertifikat->kTrustedShopsZertifikat > 0) {
-                $nRow = Shop::DB()->query(
+                $nRow = Shop::Container()->getDB()->query(
                     "UPDATE ttrustedshopszertifikat
                         SET nAktiv = 0
                         WHERE kTrustedShopsZertifikat = " . (int)$oZertifikat->kTrustedShopsZertifikat, 3
@@ -748,10 +748,10 @@ class TrustedShops
     {
         $oZertifikat = null;
         if (strlen($cISOSprache) > 0 && strlen($tsId) > 0) {
-            $oZertifikat = Shop::DB()->select('ttrustedshopszertifikat', 'cISOSprache', $cISOSprache, 'cTSID', $tsId);
+            $oZertifikat = Shop::Container()->getDB()->select('ttrustedshopszertifikat', 'cISOSprache', $cISOSprache, 'cTSID', $tsId);
             $oZertifikat = $this->entschluesselTSDaten($oZertifikat);
         } elseif (strlen($cISOSprache) > 0) {
-            $oZertifikat = Shop::DB()->select('ttrustedshopszertifikat', 'cISOSprache', $cISOSprache);
+            $oZertifikat = Shop::Container()->getDB()->select('ttrustedshopszertifikat', 'cISOSprache', $cISOSprache);
             $oZertifikat = $this->entschluesselTSDaten($oZertifikat);
         }
 
@@ -768,7 +768,7 @@ class TrustedShops
     {
         $oZertifikat = null;
         if (strlen($cTSID) > 0) {
-            $oZertifikat = Shop::DB()->select('ttrustedshopszertifikat', 'cTSID', $cTSID);
+            $oZertifikat = Shop::Container()->getDB()->select('ttrustedshopszertifikat', 'cTSID', $cTSID);
             $oZertifikat = $this->entschluesselTSDaten($oZertifikat);
         }
 
@@ -829,7 +829,7 @@ class TrustedShops
                 }
             }
             $oZertifikat = $this->verschluesselTSDaten($oZertifikat);
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "DELETE ttrustedshopszertifikat, ttrustedeshopsprodukt 
                     FROM ttrustedshopszertifikat
                     LEFT JOIN ttrustedeshopsprodukt 
@@ -842,7 +842,7 @@ class TrustedShops
                 $oZertifikat->dChecked = 'now()';
             }
             unset($oZertifikat->kTrustedShopsZertifikat);
-            $kTrustedShopsZertifikat = Shop::DB()->insert('ttrustedshopszertifikat', $oZertifikat);
+            $kTrustedShopsZertifikat = Shop::Container()->getDB()->insert('ttrustedshopszertifikat', $oZertifikat);
 
             if ($kTrustedShopsZertifikat > 0) {
                 if ($this->eType === TS_BUYERPROT_EXCELLENCE) {
@@ -892,7 +892,7 @@ class TrustedShops
     public function loescheTrustedShopsZertifikat($kTrustedShopsZertifikat)
     {
         if ((int)$kTrustedShopsZertifikat > 0) {
-            $nRows = Shop::DB()->delete(
+            $nRows = Shop::Container()->getDB()->delete(
                 'ttrustedshopszertifikat', 
                 'kTrustedShopsZertifikat', 
                 (int)$kTrustedShopsZertifikat
@@ -913,10 +913,10 @@ class TrustedShops
     public function holeKundenbewertungsstatus($cISOSprache)
     {
         if (strlen($cISOSprache) > 0) {
-            $rating = Shop::DB()->select(
+            $rating = Shop::Container()->getDB()->select(
                 'ttrustedshopskundenbewertung', 
                 'cISOSprache', 
-                Shop::DB()->escape($cISOSprache)
+                Shop::Container()->getDB()->escape($cISOSprache)
             );
             
             return isset($rating->kTrustedshopsKundenbewertung) && $rating->kTrustedshopsKundenbewertung > 0
@@ -938,7 +938,7 @@ class TrustedShops
     {
         $ratings = [];
         if (strlen($cTSID) > 0 && strlen($cISOSprache) > 0) {
-            $ratings = Shop::DB()->executeQueryPrepared(
+            $ratings = Shop::Container()->getDB()->executeQueryPrepared(
                 "SELECT *
                     FROM ttrustedshopskundenbewertung
                     WHERE cTSID = :id
@@ -966,7 +966,7 @@ class TrustedShops
                 $_upd->nStatus       = (int)$nStatus;
                 $_upd->cISOSprache   = $cISOSprache;
                 $_upd->dAktualisiert = 'now()';
-                Shop::DB()->update(
+                Shop::Container()->getDB()->update(
                     'ttrustedshopskundenbewertung', 
                     'kTrustedshopsKundenbewertung', 
                     (int)$rating->kTrustedshopsKundenbewertung, 
@@ -979,7 +979,7 @@ class TrustedShops
                 $rating->cISOSprache   = $cISOSprache;
                 $rating->dAktualisiert = 'now()';
 
-                Shop::DB()->insert('ttrustedshopskundenbewertung', $rating);
+                Shop::Container()->getDB()->insert('ttrustedshopskundenbewertung', $rating);
             }
         }
 
@@ -1000,7 +1000,7 @@ class TrustedShops
                 // Updaten
                 $_upd        = new stdClass();
                 $_upd->cTSID = $cTSID;
-                Shop::DB()->update(
+                Shop::Container()->getDB()->update(
                     'ttrustedshopskundenbewertung',
                     'kTrustedshopsKundenbewertung',
                     (int)$rating->kTrustedshopsKundenbewertung,
@@ -1013,7 +1013,7 @@ class TrustedShops
                 $rating->cISOSprache   = $cISOSprache;
                 $rating->dAktualisiert = 'now()';
 
-                Shop::DB()->insert('ttrustedshopskundenbewertung', $rating);
+                Shop::Container()->getDB()->insert('ttrustedshopskundenbewertung', $rating);
             }
         }
 
@@ -1224,7 +1224,7 @@ class TrustedShops
      */
     public function gibKundenbewertungsStatistik()
     {
-        $arrStatistik = Shop::DB()->selectAll('ttrustedshopsstatistik', 'cTSID', trim($this->tsId));
+        $arrStatistik = Shop::Container()->getDB()->selectAll('ttrustedshopsstatistik', 'cTSID', trim($this->tsId));
 
         if (count($arrStatistik) === 0) {
             // Erstimport
@@ -1232,7 +1232,7 @@ class TrustedShops
 
             $oData->cTSID    = trim($this->tsId);
             $oData->dUpdated = 'now()';
-            Shop::DB()->insert('ttrustedshopsstatistik', $oData);
+            Shop::Container()->getDB()->insert('ttrustedshopsstatistik', $oData);
 
             $oStatistik                = new stdClass();
             $oStatistik->nAnzahl       = $oData->nAnzahl;
@@ -1249,7 +1249,7 @@ class TrustedShops
                 $oStatistikDB->nAnzahl       = $oData->nAnzahl;
                 $oStatistikDB->dDurchschnitt = $oData->dDurchschnitt;
                 $oStatistikDB->dUpdated      = 'now()';
-                Shop::DB()->update('ttrustedshopsstatistik', 'kStatistik', $oStatistikDB->kStatistik, $oStatistikDB);
+                Shop::Container()->getDB()->update('ttrustedshopsstatistik', 'kStatistik', $oStatistikDB->kStatistik, $oStatistikDB);
             }
 
             $oStatistik                = new stdClass();

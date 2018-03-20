@@ -210,7 +210,7 @@ class JSONAPI
      */
     public function getItems($table, $columns, $addCacheTag = null, $searchIn = null, $searchFor = null, $limit = 0)
     {
-        $table     = Shop::DB()->escape($table);
+        $table     = Shop::Container()->getDB()->escape($table);
         $limit     = (int)$limit;
         $cacheId   = 'jsonapi_' . $table . '_' . $limit . '_';
         $cacheId  .= md5(serialize($columns) . serialize($searchIn) . serialize($searchFor));
@@ -225,19 +225,19 @@ class JSONAPI
         }
 
         foreach ($columns as $i => $column) {
-            $columns[$i] = Shop::DB()->escape($column);
+            $columns[$i] = Shop::Container()->getDB()->escape($column);
         }
 
         if (is_array($searchIn) && is_string($searchFor)) {
             // full text search
-            $searchFor  = Shop::DB()->escape($searchFor);
+            $searchFor  = Shop::Container()->getDB()->escape($searchFor);
             $conditions = [];
 
             foreach ($searchIn as $i => $column) {
-                $conditions[] = Shop::DB()->escape($column) . " LIKE '%" . $searchFor . "%'";
+                $conditions[] = Shop::Container()->getDB()->escape($column) . " LIKE '%" . $searchFor . "%'";
             }
 
-            $result = Shop::DB()->query(
+            $result = Shop::Container()->getDB()->query(
                 "SELECT " . implode(',', $columns) . "
                     FROM " . $table . "
                     WHERE " . implode(' OR ', $conditions) . "
@@ -246,13 +246,13 @@ class JSONAPI
             );
         } elseif (is_string($searchIn) && is_array($searchFor)) {
             // key array select
-            $searchIn = Shop::DB()->escape($searchIn);
+            $searchIn = Shop::Container()->getDB()->escape($searchIn);
 
             foreach ($searchFor as $i => $key) {
-                $searchFor[$i] = "'" . Shop::DB()->escape($key) . "'";
+                $searchFor[$i] = "'" . Shop::Container()->getDB()->escape($key) . "'";
             }
 
-            $result = Shop::DB()->query(
+            $result = Shop::Container()->getDB()->query(
                 "SELECT " . implode(',', $columns) . "
                     FROM " . $table . "
                     WHERE " . $searchIn . " IN (" . implode(',', $searchFor) . ")
@@ -261,7 +261,7 @@ class JSONAPI
             );
         } elseif ($searchIn === null && $searchFor === null) {
             // select all
-            $result = Shop::DB()->query(
+            $result = Shop::Container()->getDB()->query(
                 "SELECT " . implode(',', $columns) . "
                     FROM " . $table . "
                     " . ($limit > 0 ? "LIMIT " . $limit : ""),

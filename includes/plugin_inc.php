@@ -118,7 +118,7 @@ function aenderPluginZahlungsartStatus(&$oPlugin, $nStatus)
         && count($oPlugin->oPluginZahlungsmethodeAssoc_arr) > 0
     ) {
         foreach ($oPlugin->oPluginZahlungsmethodeAssoc_arr as $cModulId => $oPluginZahlungsmethodeAssoc) {
-            Shop::DB()->update('tzahlungsart', 'cModulId', $cModulId, (object)['nActive' => (int)$nStatus]);
+            Shop::Container()->getDB()->update('tzahlungsart', 'cModulId', $cModulId, (object)['nActive' => (int)$nStatus]);
         }
     }
 }
@@ -131,7 +131,7 @@ function gibPluginEinstellungen($kPlugin)
 {
     $oPluginEinstellungen_arr = [];
     if ($kPlugin > 0) {
-        $oPluginEinstellungenTMP_arr = Shop::DB()->query(
+        $oPluginEinstellungenTMP_arr = Shop::Container()->getDB()->query(
             "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugin
                 JOIN tplugineinstellungen 
@@ -166,7 +166,7 @@ function gibPluginSprachvariablen($kPlugin, $cISO = '')
     if (strlen($cISO) > 0) {
         $cSQL = " AND tpluginsprachvariablesprache.cISO = '" . strtoupper($cISO) . "'";
     }
-    $oPluginSprachvariablen = Shop::DB()->query(
+    $oPluginSprachvariablen = Shop::Container()->getDB()->query(
         "SELECT tpluginsprachvariable.kPluginSprachvariable,
                 tpluginsprachvariable.kPlugin,
                 tpluginsprachvariable.cName,
@@ -184,7 +184,7 @@ function gibPluginSprachvariablen($kPlugin, $cISO = '')
                 WHERE tpluginsprachvariable.kPlugin = " . $kPlugin . $cSQL, 9
     );
     if (!is_array($oPluginSprachvariablen) || count($oPluginSprachvariablen) < 1) {
-        $oPluginSprachvariablen = Shop::DB()->query(
+        $oPluginSprachvariablen = Shop::Container()->getDB()->query(
              "SELECT tpluginsprachvariable.kPluginSprachvariable,
                     tpluginsprachvariable.kPlugin,
                     tpluginsprachvariable.cName,
@@ -214,7 +214,7 @@ function aenderPluginStatus($nStatus, $kPlugin)
     $nStatus = (int)$nStatus;
     $kPlugin = (int)$kPlugin;
     if ($nStatus > 0 && $kPlugin > 0) {
-        return Shop::DB()->query("UPDATE tplugin SET nStatus = " . $nStatus . " WHERE kPlugin = " . $kPlugin, 3) > 0;
+        return Shop::Container()->getDB()->query("UPDATE tplugin SET nStatus = " . $nStatus . " WHERE kPlugin = " . $kPlugin, 3) > 0;
     }
 
     return false;
@@ -252,7 +252,7 @@ function gibkPluginAuscModulId($cModulId)
  */
 function gibkPluginAuscPluginID($cPluginID)
 {
-    $oPlugin = Shop::DB()->select('tplugin', 'cPluginID', $cPluginID);
+    $oPlugin = Shop::Container()->getDB()->select('tplugin', 'cPluginID', $cPluginID);
 
     return isset($oPlugin->kPlugin) ? (int)$oPlugin->kPlugin : 0;
 }
@@ -263,7 +263,7 @@ function gibkPluginAuscPluginID($cPluginID)
 function gibPluginExtendedTemplates()
 {
     $cTemplate_arr = [];
-    $oTemplate_arr = Shop::DB()->query(
+    $oTemplate_arr = Shop::Container()->getDB()->query(
         "SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
             FROM tplugintemplate
             JOIN tplugin ON tplugintemplate.kPlugin = tplugin.kPlugin

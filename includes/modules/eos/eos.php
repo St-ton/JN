@@ -12,7 +12,7 @@ function eosNeueZahlung($Bestellung)
 {
     global $Einstellungen;
     // BestellungsHash aus DB holen
-    $BestellungsID   = Shop::DB()->query("SELECT cID FROM tbestellid WHERE kBestellung = " . (int)$Bestellung->kBestellung, 1);
+    $BestellungsID   = Shop::Container()->getDB()->query("SELECT cID FROM tbestellid WHERE kBestellung = " . (int)$Bestellung->kBestellung, 1);
     $BestellungsHash = $BestellungsID->cID;
     // Attribute setzen
     $BestellNr     = $Bestellung->cBestellNr;
@@ -175,7 +175,7 @@ function eosZahlungsHash($Bestellung)
     $Zahlung->kBestellung = (int)$Bestellung->kBestellung;
     $Zahlung->cId         = uniqid('', true);
 
-    return Shop::DB()->insert('tzahlungsid', $Zahlung);
+    return Shop::Container()->getDB()->insert('tzahlungsid', $Zahlung);
 }
 
 /**
@@ -184,9 +184,9 @@ function eosZahlungsHash($Bestellung)
  */
 function eosZahlungsNachricht($Bestellung)
 {
-    $ZahlungsHash = Shop::DB()->realEscape($_GET['zh']);
+    $ZahlungsHash = Shop::Container()->getDB()->realEscape($_GET['zh']);
     // uebermittelten Zahlungshash ueberpruefen
-    $Zahlung = Shop::DB()->select('tzahlungsid', 'cId', $ZahlungsHash, 'kBestellung', $Bestellung->kBestellung);
+    $Zahlung = Shop::Container()->getDB()->select('tzahlungsid', 'cId', $ZahlungsHash, 'kBestellung', $Bestellung->kBestellung);
     if ($Zahlung->kBestellung != $Bestellung->kBestellung) {
         // Richtiger BestellungsHash und falscher Zahlungshash!?!
         // Da versucht doch eine(r) was. Zur Strafe keine neue BestellID!
@@ -199,14 +199,14 @@ function eosZahlungsNachricht($Bestellung)
         $BestellID->cId         = uniqid('', true);
         $BestellID->kBestellung = $Bestellung->kBestellung;
         $BestellID->dDatum      = 'now()';
-        Shop::DB()->insert('tbestellid', $BestellID);
+        Shop::Container()->getDB()->insert('tbestellid', $BestellID);
 
         return false;
     }
     // Bezahlung war erfolgreich
     eosZahlungVerbuchen($Zahlung, $Bestellung);
     // ZahlungsID loeschen
-    Shop::DB()->delete('tzahlungsid', ['cId', 'kBestellung'], [$ZahlungsHash, (int)$Bestellung->kBestellung]);
+    Shop::Container()->getDB()->delete('tzahlungsid', ['cId', 'kBestellung'], [$ZahlungsHash, (int)$Bestellung->kBestellung]);
 
     return true;
 }
@@ -221,7 +221,7 @@ function eosZahlungVerbuchen($zahlung, $bestellung)
     $_upd                = new stdClass();
     $_upd->cStatus       = BESTELLUNG_STATUS_BEZAHLT;
     $_upd->dBezahltDatum = 'now()';
-    Shop::DB()->update('tbestellung', 'kBestellung', (int)$bestellung->kBestellung, $_upd);
+    Shop::Container()->getDB()->update('tbestellung', 'kBestellung', (int)$bestellung->kBestellung, $_upd);
     // Reload
     $bestellung = new Bestellung($zahlung->kBestellung);
     $bestellung->fuelleBestellung(0);
@@ -232,7 +232,7 @@ function eosZahlungVerbuchen($zahlung, $bestellung)
     $ZE->fBetrag           = $bestellung->fGesamtsumme;
     $ZE->cAbgeholt         = 'N';
     $ZE->dZeit             = 'now()';
-    Shop::DB()->insert('tzahlungseingang', $ZE);
+    Shop::Container()->getDB()->insert('tzahlungseingang', $ZE);
     $Kunde = new Kunde($bestellung->kKunde);
     // Benachrichtigung an den Kunden
     $Obj              = new stdClass();

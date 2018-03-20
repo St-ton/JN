@@ -21,8 +21,8 @@ class WidgetServerinfo extends WidgetBase
                       ->assign('phpLT55', version_compare(PHP_VERSION, '5.5') < 0)
                       ->assign('serverAddress', StringHandler::htmlentities($_SERVER['SERVER_ADDR']))
                       ->assign('serverHTTPHost', StringHandler::htmlentities($_SERVER['HTTP_HOST']))
-                      ->assign('mySQLVersion', StringHandler::htmlentities(Shop::DB()->info()))
-                      ->assign('mySQLStats', StringHandler::htmlentities(Shop::DB()->stats()))
+                      ->assign('mySQLVersion', StringHandler::htmlentities(Shop::Container()->getDB()->info()))
+                      ->assign('mySQLStats', StringHandler::htmlentities(Shop::Container()->getDB()->stats()))
                       ->assign('cShopHost', $cUrl['scheme'] . '://' . $cUrl['host']);
     }
 

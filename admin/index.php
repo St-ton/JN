@@ -12,18 +12,18 @@ $cFehler  = '';
 
 //Work Around => Update 300 => 308
 if ($oUpdater->getCurrentDatabaseVersion() < 308) {
-    $oAdmin = Shop::DB()->query("SELECT * FROM tadminlogin LIMIT 1", 1);
+    $oAdmin = Shop::Container()->getDB()->query("SELECT * FROM tadminlogin LIMIT 1", 1);
     if (is_object($oAdmin) && !isset($oAdmin->kAdminlogingruppe)) {
-        Shop::DB()->query("ALTER TABLE `tadminlogin` ADD `dLetzterLogin` DATETIME NOT NULL", 3);
-        Shop::DB()->query("ALTER TABLE `tadminlogin` CHANGE  `cName`  `cLogin` VARCHAR( 20 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;", 3);
-        Shop::DB()->query("ALTER TABLE `tadminlogin` ADD  `cName` VARCHAR( 255 ) NOT NULL AFTER  `cPass` ;", 3);
-        Shop::DB()->query("ALTER TABLE `tadminlogin` ADD  `bAktiv` BOOL NOT NULL DEFAULT  '1';", 3);
-        Shop::DB()->query("ALTER TABLE `tadminlogin` ADD  `kAdminlogin` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;", 3);
-        Shop::DB()->query("ALTER TABLE `tadminlogin` CHANGE  `dLetzterLogin`  `dLetzterLogin` DATETIME NULL;", 3);
-        Shop::DB()->query("ALTER TABLE `tadminlogin` ADD  `dGueltigBis` DATETIME NULL AFTER  `dLetzterLogin` ;", 3);
-        Shop::DB()->query("ALTER TABLE `tadminlogin` ADD  `cMail` VARCHAR( 255 ) NOT NULL AFTER  `cName` ;", 3);
-        Shop::DB()->query("ALTER TABLE `tadminlogin` ADD  `kAdminlogingruppe` INT( 10 ) UNSIGNED NOT NULL AFTER  `cMail` ;", 3);
-        Shop::DB()->query("UPDATE `tadminlogin` SET `kAdminlogingruppe`=1;", 3);
+        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD `dLetzterLogin` DATETIME NOT NULL", 3);
+        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` CHANGE  `cName`  `cLogin` VARCHAR( 20 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;", 3);
+        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `cName` VARCHAR( 255 ) NOT NULL AFTER  `cPass` ;", 3);
+        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `bAktiv` BOOL NOT NULL DEFAULT  '1';", 3);
+        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `kAdminlogin` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;", 3);
+        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` CHANGE  `dLetzterLogin`  `dLetzterLogin` DATETIME NULL;", 3);
+        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `dGueltigBis` DATETIME NULL AFTER  `dLetzterLogin` ;", 3);
+        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `cMail` VARCHAR( 255 ) NOT NULL AFTER  `cName` ;", 3);
+        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `kAdminlogingruppe` INT( 10 ) UNSIGNED NOT NULL AFTER  `cMail` ;", 3);
+        Shop::Container()->getDB()->query("UPDATE `tadminlogin` SET `kAdminlogingruppe`=1;", 3);
     }
 }
 if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {

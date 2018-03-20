@@ -11,7 +11,7 @@ use Exceptions\ServiceNotFoundException;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
+class ContainerBaseTest extends \PHPUnit_Framework_TestCase
 {
     public function test_singleton_happyPath()
     {
@@ -96,7 +96,7 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
         $container->setSingleton(HelloWorldServiceInterface::class, function () {
             return new HelloWorldService();
         });
-        $inner = $container->getFactory(HelloWorldServiceInterface::class);
+        $inner = $container->getFactoryMethod(HelloWorldServiceInterface::class);
         $container->setSingleton(HelloWorldServiceInterface::class, function () use ($inner) {
             return new HelloWorldTrimmingServiceDecorator($inner());
         });
@@ -115,7 +115,7 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
         $container->setFactory(HelloWorldServiceInterface::class, function () {
             return new HelloWorldService();
         });
-        $factory = $container->getFactory(HelloWorldServiceInterface::class);
+        $factory = $container->getFactoryMethod(HelloWorldServiceInterface::class);
         $container->setFactory(HelloWorldServiceInterface::class, function () use ($factory) {
             return new HelloWorldTrimmingServiceDecorator($factory());
         });
@@ -127,6 +127,7 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
 
 
     // CIRCULAR REFERENCES
+
     public function test_detectCircularReferences()
     {
         $container = new ContainerBase();
@@ -142,5 +143,47 @@ class ServiceLocatorBaseTest extends \PHPUnit_Framework_TestCase
         });
         $this->expectException(CircularReferenceException::class);
         $container->get('id1');
+    }
+
+
+    // WHAT HAPPENS, IF SINGLETON ALREADY USED
+
+    public function test_setSingleton_setAlreadyUsed_throws()
+    {
+        $container = new ContainerBase();
+        $container->setSingleton('id', function () {
+            return new ContainerBase();
+        });
+        $container->get('id');
+        $this->expectException(\Exception::class);
+        $container->setSingleton('id', function() {
+            return new ContainerBase();
+        });
+    }
+
+    // WHAT HAPPENS, IF SINGLETON IS OVERRIDDEN BY FACTORY AND VICE VERSA
+
+    public function test_overrideFactoryWithSingleton_throwsException()
+    {
+        $container = new ContainerBase();
+        $container->setFactory('id', function(){
+            return new ContainerBase();
+        });
+        $this->expectException(\Exception::class);
+        $container->setSingleton('id', function(){
+            return new ContainerBase();
+        });
+    }
+
+    public function test_ovverrideSingletonWithFactory_throwsException()
+    {
+        $container = new ContainerBase();
+        $container->setSingleton('id', function(){
+            return new ContainerBase();
+        });
+        $this->expectException(\Exception::class);
+        $container->setFactory('id', function(){
+            return new ContainerBase();
+        });
     }
 }

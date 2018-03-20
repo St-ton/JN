@@ -683,7 +683,7 @@ final class Shop
      */
     public static function getSettings($config)
     {
-        return self::$_settings->getSettings($config);
+        return (self::$_settings ?? Shopsetting::getInstance())->getSettings($config);
     }
 
     /**
@@ -703,7 +703,7 @@ final class Shop
      */
     public static function getConfigValue($section, $option)
     {
-        return self::$_settings->getValue($section, $option);
+        return (self::$_settings ?? Shopsetting::getInstance())->getValue($section, $option);
     }
 
     /**

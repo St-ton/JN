@@ -396,7 +396,6 @@ class LinkHelper
                 $links                                           = array_merge($links);
                 $linkGroups->{$Linkgruppe->cTemplatename}->Links = $links;
             }
-            $cDatei = 'index.php';
             // startseite
             $start_arr = Shop::DB()->query(
                 "SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
@@ -418,7 +417,7 @@ class LinkHelper
 
             $oSprache = gibStandardsprache();
             foreach ($start_arr as $start) {
-                $session['Link_Startseite'][$start->cISOSprache] = $cDatei . '?s=' . (int)$start->kLink;
+                $session['Link_Startseite'][$start->cISOSprache] = '?s=' . (int)$start->kLink;
                 if ($start->cSeo && strlen($start->cSeo) > 1) {
                     $session['Link_Startseite'][$start->cISOSprache] = $start->cSeo;
                     if ($start->cISOSprache === $oSprache->cISO) {
@@ -452,7 +451,7 @@ class LinkHelper
             $session['Link_Versandseite'] = [];
 
             foreach ($versand_arr as $versand) {
-                $session['Link_Versandseite'][$versand->cISOSprache] = $cDatei . '?s=' . (int)$versand->kLink;
+                $session['Link_Versandseite'][$versand->cISOSprache] = '?s=' . (int)$versand->kLink;
                 if ($versand->cSeo && strlen($versand->cSeo) > 1) {
                     $session['Link_Versandseite'][$versand->cISOSprache] = $versand->cSeo;
                 }
@@ -478,7 +477,7 @@ class LinkHelper
             $session['Link_AGB'] = [];
 
             foreach ($agb_arr as $agb) {
-                $session['Link_AGB'][$agb->cISOSprache] = $cDatei . '?s=' . (int)$agb->kLink;
+                $session['Link_AGB'][$agb->cISOSprache] = '?s=' . (int)$agb->kLink;
                 if ($agb->cSeo && strlen($agb->cSeo) > 1) {
                     $session['Link_AGB'][$agb->cISOSprache] = $agb->cSeo;
                 }
@@ -504,7 +503,7 @@ class LinkHelper
             $session['Link_Datenschutz'] = [];
 
             foreach ($agb_arr as $agb) {
-                $session['Link_Datenschutz'][$agb->cISOSprache] = $cDatei . '?s=' . (int)$agb->kLink;
+                $session['Link_Datenschutz'][$agb->cISOSprache] = '?s=' . (int)$agb->kLink;
                 if ($agb->cSeo && strlen($agb->cSeo) > 0) {
                     $session['Link_Datenschutz'][$agb->cISOSprache] = $agb->cSeo;
                 }
@@ -868,7 +867,7 @@ class LinkHelper
                 $linkInstance->nHTTPRedirectCode = 0;
                 $linkInstance->bHideContent      = false;
                 $urls[$linkInstance->cISO] = empty($linkInstance->cSeo)
-                    ? 'index.php?s=' . $item->kLink . '&amp;lang=' . $item->cISO
+                    ? '?s=' . $item->kLink . '&amp;lang=' . $item->cISO
                     : $linkInstance->cSeo;
                 if ($linkInstance->kSprache === $shopLangID) {
                     $link = $linkInstance;

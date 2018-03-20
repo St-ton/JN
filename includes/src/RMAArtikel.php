@@ -96,7 +96,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 if (isset($oTMP->cSeo) && strlen($oTMP->cSeo) > 0) {
                     $this->cArtikelURL = Shop::getURL() . '/' . $oTMP->cSeo;
                 } else {
-                    $this->cArtikelURL = Shop::getURL() . '/index.php?a=' . (int)$kArtikel;
+                    $this->cArtikelURL = Shop::getURL() . '/?a=' . (int)$kArtikel;
                 }
             }
 

@@ -166,7 +166,7 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
                     executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH, ['rating' => &$oBewertungHilfreich]);
 
                     Shop::DB()->insert('tbewertunghilfreich', $oBewertungHilfreich);
-                    header('Location: index.php?a=' . $kArtikel .
+                    header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel .
                         '&bewertung_anzeigen=1&cHinweis=h02' . $cWeiterleitung, true, 303);
                     exit;
                 }
@@ -193,7 +193,7 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
                         WHERE kBewertung = " . $kBewertung . "
                             AND kKunde = " . $kKunde, 3
                 );
-                header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel .
+                header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel .
                     '&bewertung_anzeigen=1&cHinweis=h03' . $cWeiterleitung, true, 303);
                 exit;
             }

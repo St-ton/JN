@@ -1246,7 +1246,7 @@ final class Shop
                     $cRP = '&cRP=' . base64_encode($cRP);
                 }
                 http_response_code(301);
-                header('Location: ' . self::getURL() . '/index.php?a=' . $kArtikel . $cRP);
+                header('Location: ' . self::getURL() . '/?a=' . $kArtikel . $cRP);
                 exit();
             }
 

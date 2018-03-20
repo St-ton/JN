@@ -422,7 +422,6 @@ function gibSitemapGlobaleMerkmale()
     $cacheID           = 'gsgm_' . (($isDefaultLanguage === true) ? 'd_' : '') . Shop::getLanguage();
     if (($oMerkmal_arr = Shop::Cache()->get($cacheID)) === false) {
         $oMerkmal_arr    = [];
-        $cDatei          = 'index.php';
         $cMerkmalTabelle = 'tmerkmal';
         $cSQL            = " JOIN tmerkmalwert ON tmerkmalwert.kMerkmal = tmerkmal.kMerkmal";
         $cSQL .= " JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert";
@@ -469,7 +468,7 @@ function gibSitemapGlobaleMerkmale()
                     // cURL bauen
                     $oMerkmalWert->cURL = strlen($oMerkmalWert->cSeo) > 0
                         ? $shopURL . $oMerkmalWert->cSeo
-                        : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                        : $shopURL . '?m=' . $oMerkmalWert->kMerkmalWert;
 
                     $oMerkmal_arr[$nPos]->oMerkmalWert_arr[] = $oMerkmalWert;
                 } else {
@@ -490,7 +489,7 @@ function gibSitemapGlobaleMerkmale()
                     // cURL bauen
                     $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
                         ? $shopURL . $oMerkmalWert->cSeo
-                        : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                        : $shopURL . '?m=' . $oMerkmalWert->kMerkmalWert;
 
                     $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
                     $oMerkmal_arr[]               = $oMerkmal;
@@ -516,7 +515,7 @@ function gibSitemapGlobaleMerkmale()
                 // cURL bauen
                 $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
                     ? $shopURL . $oMerkmalWert->cSeo
-                    : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                    : $shopURL . '?m=' . $oMerkmalWert->kMerkmalWert;
                 $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
                 $oMerkmal_arr[]               = $oMerkmal;
             }

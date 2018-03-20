@@ -3,6 +3,8 @@
  * Add backend logging option
  */
 
+use Monolog\Logger;
+
 /**
  * Class Migration_20180319103900
  */
@@ -32,6 +34,9 @@ class Migration_20180319103900 extends Migration implements IMigration
                 ]
             ]
         );
+        $this->execute("UPDATE tjtllog SET nLevel = " . Logger::ALERT . " WHERE nLevel = 1");
+        $this->execute("UPDATE tjtllog SET nLevel = " . Logger::INFO . " WHERE nLevel = 2");
+        $this->execute("UPDATE tjtllog SET nLevel = " . Logger::DEBUG . " WHERE nLevel = 4");
     }
 
     /**

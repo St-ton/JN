@@ -16,6 +16,7 @@
  * fetchArray         - array of fetched assoc arrays
  * dropColumn         - drops a column if exists
  * addLocalization    - add localization
+ * setLocalization    - add or update a localization
  * removeLocalization - remove localization
  * setConfig          - add / update config property
  * removeConfig       - remove config property
@@ -26,13 +27,13 @@ class Migration_20180306160913 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("UPDATE `tsprachwerte` SET `cWert` = 'Die Datei entspricht nicht dem geforderten Format', `cStandard`='Die Datei entspricht nicht dem geforderten Format' WHERE `kSprachISO` = 1 AND `cName` = 'uploadInvalidFormat'");
-        $this->execute("UPDATE `tsprachwerte` SET `cWert` = 'Hilfreich', `cStandard`='Hilfreich' WHERE `kSprachISO` = 1 AND `cName` = 'paginationOrderUsefulness'");
+        $this->setLocalization('ger', 'global', 'uploadInvalidFormat', 'Die Datei entspricht nicht dem geforderten Format');
+        $this->setLocalization('ger', 'global', 'paginationOrderUsefulness', 'Hilfreich');
     }
 
     public function down()
     {
-        $this->execute("UPDATE `tsprachwerte` SET `cWert` = 'Die Datei entspricht nicht dem geforderte Format', `cStandard`='Die Datei entspricht nicht dem geforderte Format' WHERE `kSprachISO` = 1 AND `cName` = 'uploadInvalidFormat'");
-        $this->execute("UPDATE `tsprachwerte` SET `cWert` = 'Hilreich', `cStandard`='Hilreich' WHERE `kSprachISO` = 1 AND `cName` = 'paginationOrderUsefulness'");
+        $this->setLocalization('ger', 'global', 'uploadInvalidFormat', 'Die Datei entspricht nicht dem geforderte Format');
+        $this->setLocalization('ger', 'global', 'paginationOrderUsefulness', 'Hilreich');
     }
 }

@@ -4,7 +4,7 @@
 
 Dieses Update enthält Bugfixes und Sicherheitsupdates.
 
-Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/23xid
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl4064
 
 ## [4.06.3]
 

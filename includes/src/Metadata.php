@@ -921,12 +921,13 @@ class Metadata
         if (strlen($cFilterShopURL) > 0) {
             $bSeo = false;
         }
-        $cURL       = '';
-        $oSeite_arr = [];
-        $nVon       = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
-        $nBis       = 0; // Begrenzt durch $nMaxAnzeige.
-        $naviURL    = $this->productFilter->getFilterURL()->getURL();
-        $bSeo       = $bSeo && strpos($naviURL, '?') === false;
+        $cURL        = '';
+        $oSeite_arr  = [];
+        $nVon        = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
+        $nBis        = 0; // Begrenzt durch $nMaxAnzeige.
+        $naviURL     = $this->productFilter->getFilterURL()->getURL();
+        $bSeo        = $bSeo && strpos($naviURL, '?') === false;
+        $nMaxAnzeige = (int)$nMaxAnzeige;
         if (isset($oSeitenzahlen->MaxSeiten, $oSeitenzahlen->AktuelleSeite)
             && $oSeitenzahlen->MaxSeiten > 0
             && $oSeitenzahlen->AktuelleSeite > 0

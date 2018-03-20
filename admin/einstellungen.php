@@ -94,6 +94,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
                 WHERE kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
                     AND nModul = 0
+                    AND nStandardanzeigen = 1
                     {$oSQL->cWHERE}
                 ORDER BY nSort",
             NiceDB::RET_ARRAY_OF_OBJECTS
@@ -168,6 +169,7 @@ if ($step === 'uebersicht') {
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = " . (int)$sections[$i]->kEinstellungenSektion . "
                     AND cConf = 'Y'
+                    AND nStandardAnzeigen = 1
                     AND nModul = 0",
             NiceDB::RET_SINGLE_OBJECT
         );
@@ -196,6 +198,7 @@ if ($step === 'einstellungen bearbeiten') {
             "SELECT *
                 FROM teinstellungenconf
                 WHERE nModul = 0 
+                    AND nStandardAnzeigen = 1
                     AND kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
                 {$oSQL->cWHERE}
                 ORDER BY nSort",

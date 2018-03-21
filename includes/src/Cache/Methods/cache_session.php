@@ -38,7 +38,7 @@ class cache_session implements ICachingMethod
      * @param int|null $expiration
      * @return bool
      */
-    public function store($cacheID, $content, $expiration = null)
+    public function store($cacheID, $content, $expiration = null) : bool
     {
         $_SESSION[$this->options['prefix'] . $cacheID] = [
             'value'     => $content,
@@ -101,16 +101,16 @@ class cache_session implements ICachingMethod
     /**
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable() : bool
     {
-        return isset($_SESSION);
+        return $_SESSION !== null;
     }
 
     /**
      * @param string $cacheID
      * @return bool
      */
-    public function flush($cacheID)
+    public function flush($cacheID) : bool
     {
         unset($_SESSION[$this->options['prefix'] . $cacheID]);
 
@@ -120,7 +120,7 @@ class cache_session implements ICachingMethod
     /**
      * @return bool
      */
-    public function flushAll()
+    public function flushAll() : bool
     {
         foreach ($_SESSION as $_sessionKey => $_sessionValue) {
             if (strpos($_sessionKey, $this->options['prefix']) === 0) {
@@ -135,7 +135,7 @@ class cache_session implements ICachingMethod
      * @param string $cacheID
      * @return bool
      */
-    public function keyExists($cacheID)
+    public function keyExists($cacheID) : bool
     {
         return isset($_SESSION[$this->options['prefix'] . $cacheID]);
     }
@@ -143,7 +143,7 @@ class cache_session implements ICachingMethod
     /**
      * @return array
      */
-    public function getStats()
+    public function getStats() : array
     {
         $num = 0;
         $tmp = [];

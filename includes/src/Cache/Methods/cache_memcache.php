@@ -23,7 +23,7 @@ class cache_memcache implements ICachingMethod
     public static $instance;
 
     /**
-     * @var cache_memcache
+     * @var \Memcache
      */
     private $_memcache;
 
@@ -53,7 +53,7 @@ class cache_memcache implements ICachingMethod
         if ($this->_memcache !== null) {
             $this->_memcache->close();
         }
-        $this->_memcache = new cache_memcache();
+        $this->_memcache = new \Memcache();
         $this->_memcache->addServer($host, (int)$port);
 
         return $this;
@@ -65,7 +65,7 @@ class cache_memcache implements ICachingMethod
      * @param int|null $expiration
      * @return bool
      */
-    public function store($cacheID, $content, $expiration = null)
+    public function store($cacheID, $content, $expiration = null) : bool
     {
         return $this->_memcache->set(
             $this->options['prefix'] . $cacheID,
@@ -100,7 +100,7 @@ class cache_memcache implements ICachingMethod
      */
     public function loadMulti($cacheIDs)
     {
-        if (!is_array($cacheIDs)) {
+        if (!\is_array($cacheIDs)) {
             return false;
         }
         $prefixedKeys = [];
@@ -115,7 +115,7 @@ class cache_memcache implements ICachingMethod
     /**
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable() : bool
     {
         return class_exists('Memcache');
     }
@@ -124,7 +124,7 @@ class cache_memcache implements ICachingMethod
      * @param string $cacheID
      * @return bool
      */
-    public function flush($cacheID)
+    public function flush($cacheID) : bool
     {
         return $this->_memcache->delete($this->options['prefix'] . $cacheID);
     }
@@ -132,7 +132,7 @@ class cache_memcache implements ICachingMethod
     /**
      * @return bool
      */
-    public function flushAll()
+    public function flushAll() : bool
     {
         return $this->_memcache->flush();
     }
@@ -140,7 +140,7 @@ class cache_memcache implements ICachingMethod
     /**
      * @return array
      */
-    public function getStats()
+    public function getStats() : array
     {
         $stats = $this->_memcache->getStats();
 

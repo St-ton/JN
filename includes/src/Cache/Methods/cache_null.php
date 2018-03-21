@@ -39,7 +39,7 @@ class cache_null implements ICachingMethod
      * @param int|null $expiration
      * @return bool
      */
-    public function store($cacheID, $content, $expiration = null)
+    public function store($cacheID, $content, $expiration = null) : bool
     {
         return false;
     }
@@ -75,7 +75,7 @@ class cache_null implements ICachingMethod
     /**
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable() : bool
     {
         return true;
     }
@@ -84,7 +84,7 @@ class cache_null implements ICachingMethod
      * @param string $cacheID
      * @return bool
      */
-    public function flush($cacheID)
+    public function flush($cacheID) : bool
     {
         return false;
     }
@@ -92,7 +92,7 @@ class cache_null implements ICachingMethod
     /**
      * @return bool
      */
-    public function flushAll()
+    public function flushAll() : bool
     {
         return false;
     }
@@ -100,7 +100,7 @@ class cache_null implements ICachingMethod
     /**
      * @return array
      */
-    public function getStats()
+    public function getStats() : array
     {
         return [];
     }

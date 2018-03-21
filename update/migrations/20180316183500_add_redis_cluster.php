@@ -61,7 +61,12 @@ class Migration_20180316183500 extends Migration implements IMigration
                 ]
             ]
         );
-        $this->execute("INSERT INTO teinstellungenconfwerte (kEinstellungenConf, cName, cWert, nSort) VALUES (1551, 'RedisCluster', 'redisCluster', 10)");
+        $this->execute(
+            "INSERT INTO teinstellungenconfwerte (
+                SELECT teinstellungenconf.kEinstellungenConf, 'RedisCluster', 'redisCluster', 10
+                FROM teinstellungenconf
+                WHERE teinstellungenconf.cWertName = 'caching_method')"
+        );
     }
 
     /**
@@ -72,6 +77,13 @@ class Migration_20180316183500 extends Migration implements IMigration
     {
         $this->removeConfig('caching_rediscluster_hosts');
         $this->removeConfig('caching_rediscluster_strategy');
-        $this->execute("DELETE FROM teinstellungenconfwerte WHERE kEinstellungenConf = 1551 AND cName = 'RedisCluster'");
+        $this->execute(
+            "DELETE teinstellungenconfwerte 
+                FROM teinstellungenconfwerte 
+                INNER JOIN teinstellungenconf 
+                    ON teinstellungenconf.kEinstellungenConf = teinstellungenconfwerte.kEinstellungenConf
+                WHERE teinstellungenconf.cWertName = 'caching_method'
+                    AND teinstellungenconfwerte.cWert = 'redisCluster'"
+        );
     }
 }

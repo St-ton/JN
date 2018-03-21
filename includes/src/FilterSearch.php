@@ -136,6 +136,19 @@ class FilterSearch extends AbstractFilter
         }
         if (!empty($oSeo_obj->cSuche)) {
             $this->setName($oSeo_obj->cSuche);
+        } elseif (!empty($oSeo_obj->cSeo)) {
+            $this->setName($oSeo_obj->cSeo);
+        } else  {
+            Shop::dbg($this->getValue(), false, 'no result for');
+            Shop::dbg("SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
+                FROM tseo
+                LEFT JOIN tsuchanfrage
+                    ON tsuchanfrage.kSuchanfrage = tseo.kKey
+                    AND tsuchanfrage.kSprache = tseo.kSprache
+                WHERE cKey = 'kSuchanfrage' 
+                    AND kKey = " . $this->getValue());
+//            Shop::dbg($oSeo_obj, true, 'no seo:');
+            $this->setName('Suchfilter!');
         }
 
         return $this;
@@ -408,7 +421,7 @@ class FilterSearch extends AbstractFilter
             $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 
             $query         = $this->productFilter->getFilterSQL()->getBaseQuery(
-                ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
+                ['tsuchcachetreffer.kSuchcache AS kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
                 $state->having,

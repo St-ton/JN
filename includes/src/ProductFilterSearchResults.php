@@ -724,7 +724,12 @@ class ProductFilterSearchResults
         $searchFilterOptions     = [];
         foreach ($productFilter->getSearchFilter() as $searchFilter) {
             // @todo: validate
-            $searchFilterOptions[] = $searchFilter->getOptions();
+            $opt = $searchFilter->getOptions();
+            if (is_array($opt)) {
+                foreach ($opt as $_o) {
+                    $searchFilterOptions[] = $_o;
+                }
+            }
         }
 
         $this->setManufacturerFilterOptions($manufacturerOptions)

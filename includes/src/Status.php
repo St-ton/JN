@@ -54,12 +54,12 @@ class Status
      */
     protected function getSystemLogInfo()
     {
-        $flags = Jtllog::getSytemlogFlag(false);
+        $conf = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 
         return (object)[
-            'error'  => Jtllog::isBitFlagSet(JTLLOG_LEVEL_ERROR, $flags) > 0,
-            'notice' => Jtllog::isBitFlagSet(JTLLOG_LEVEL_NOTICE, $flags) > 0,
-            'debug'  => Jtllog::isBitFlagSet(JTLLOG_LEVEL_DEBUG, $flags) > 0
+            'error'  => $conf >= JTLLOG_LEVEL_ERROR,
+            'notice' => $conf >= JTLLOG_LEVEL_NOTICE,
+            'debug'  => $conf >= JTLLOG_LEVEL_NOTICE
         ];
     }
 

@@ -26,7 +26,6 @@ if ($oUpdater->getCurrentDatabaseVersion() < 308) {
         Shop::Container()->getDB()->query("UPDATE `tadminlogin` SET `kAdminlogingruppe`=1;", 3);
     }
 }
-// Login
 if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     $ret['captcha'] = 0;
     $ret['csrf']    = 0;
@@ -46,44 +45,45 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
             $ret['csrf'] = 1;
         }
     }
-
+    $loginName = isset($_POST['benutzer'])
+        ? StringHandler::filterXSS(Shop::DB()->escape($_POST['benutzer']))
+        : '---';
     if ($ret['captcha'] === 0 && $ret['csrf'] === 0) {
-        $cLogin = $_POST['benutzer'];
-        $cPass  = $_POST['passwort'];
-
+        $cLogin  = $_POST['benutzer'];
+        $cPass   = $_POST['passwort'];
         $nReturn = $oAccount->login($cLogin, $cPass);
         switch ($nReturn) {
-            case -2:
+            case AdminAccount::ERROR_INVALID_PASSWORD_LOCKED:
                 @touch(CAPTCHA_LOCKFILE);
                 break;
 
-            case -3:
-            case -1:
+            case AdminAccount::ERROR_USER_NOT_FOUND:
+            case AdminAccount::ERROR_INVALID_PASSWORD:
                 $cFehler = 'Benutzername oder Passwort falsch';
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Auth-Code abgelaufen';
                 }
                 break;
 
-            case -4:
+            case AdminAccount::ERROR_USER_DISABLED:
                 $cFehler = 'Anmeldung zur Zeit nicht m&ouml;glich';
                 break;
 
-            case -5:
+            case AdminAccount::ERROR_LOGIN_EXPIRED:
                 $cFehler = 'Anmeldedaten nicht mehr g&uuml;ltig';
                 break;
 
-            case -6:
+            case AdminAccount::ERROR_TWO_FACTOR_AUTH_EXPIRED:
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
                 }
                 break;
 
-            case 0:
+            case AdminAccount::ERROR_NOT_AUTHORIZED:
                 $cFehler = 'Keine Berechtigungen vorhanden';
                 break;
 
-            case 1:
+            case AdminAccount::LOGIN_OK:
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if (file_exists(CAPTCHA_LOCKFILE)) {
                     unlink(CAPTCHA_LOCKFILE);
@@ -103,7 +103,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     } elseif ($ret['captcha'] !== 0) {
         $cFehler = 'Captcha-Code falsch';
     } elseif ($ret['csrf'] !== 0) {
-        $cFehler = 'Cross site request forgery!';
+        $cFehler = 'Cross site request forgery! Sind Cookies aktiviert?';
     }
 }
 $type          = '';

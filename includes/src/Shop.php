@@ -6,6 +6,12 @@
 
 use Services\Container;
 use DB\Services as DbService;
+
+use JTL\ProcessingHandler\NiceDBHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Logger;
+use Monolog\Processor\PsrLogMessageProcessor;
 use \Services\JTL\Validation\ValidationServiceInterface;
 use \Services\JTL\Validation\ValidationService;
 use Services\JTL\Validation\RuleSet;
@@ -337,7 +343,7 @@ final class Shop
     /**
      * @var string
      */
-    private static $imageBaseURL = '';
+    private static $imageBaseURL;
 
     /**
      * @var array
@@ -453,6 +459,9 @@ final class Shop
      */
     public static function getImageBaseURL() : string
     {
+        if (self::$imageBaseURL === null) {
+            self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL  : self::getURL());
+        }
         return self::$imageBaseURL;
     }
 
@@ -690,21 +699,21 @@ final class Shop
     }
 
     /**
-     * @param string $section
+     * @param int    $section
      * @param string $option
-     * @return string|array|int
+     * @return string|array|int|null
      */
-    public static function getSettingValue($section, $option)
+    public static function getSettingValue(int $section, $option)
     {
         return self::getConfigValue($section, $option);
     }
 
     /**
-     * @param string $section
+     * @param int    $section
      * @param string $option
-     * @return string|array|int
+     * @return string|array|int|null
      */
-    public static function getConfigValue($section, $option)
+    public static function getConfigValue(int $section, $option)
     {
         return (self::$_settings ?? Shopsetting::getInstance())->getValue($section, $option);
     }
@@ -1767,7 +1776,6 @@ final class Shop
         static::$container = $container;
 
         // BASE
-
         $container->setSingleton(\DB\DbInterface::class, function () {
             return new DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         });
@@ -1776,9 +1784,7 @@ final class Shop
             return new \Cache\JTLCache();
         });
 
-
         // SECURITY
-
         $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function () {
             return new \Services\JTL\CryptoService();
         });
@@ -1787,23 +1793,36 @@ final class Shop
             return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
         });
 
-        $container->setSingleton(ValidationServiceInterface::class, function(){
+        $container->setSingleton('BackendAuthLogger', function (Container $container) {
+            $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
+            $handlers    = [];
+            foreach ($loggingConf as $value) {
+                if ($value === AdminLoginConfig::CONFIG_DB) {
+                    $handlers[] = (new NiceDBHandler(\Shop::DB(), Logger::INFO))
+                        ->setFormatter(new LineFormatter('%message%', null, false, true));
+                } elseif ($value === AdminLoginConfig::CONFIG_FILE) {
+                    $handlers[] = (new StreamHandler(PFAD_LOGFILES . 'auth.log', Logger::INFO))
+                        ->setFormatter(new LineFormatter(null, null, false, true));
+                }
+            }
+
+            return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
+        });
+
+        $container->setSingleton(ValidationServiceInterface::class, function() {
             $vs = new ValidationService($_GET, $_POST, $_COOKIE);
             $vs->setRuleSet('identity', (new RuleSet())->integer()->gt(0));
 
             return $vs;
         });
             
-            
         // NETWORK & API
-
         $container->setFactory(\Network\JTLApi::class, function () {
             return new \Network\JTLApi($_SESSION, Nice::getInstance(), self::getInstance());
         });
 
 
         // DB SERVICES
-
         $container->setSingleton(DbService\GcServiceInterface::class, function (Container $container) {
             return new DbService\GcService($container->getDB());
         });

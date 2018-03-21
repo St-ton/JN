@@ -14,7 +14,9 @@ use Exceptions\ServiceNotFoundException;
  */
 class ContainerBase implements ContainerInterface
 {
-    /** @var ContainerEntry[] */
+    /**
+     * @var ContainerEntry[]
+     */
     protected $entries = [];
 
     /**
@@ -22,7 +24,7 @@ class ContainerBase implements ContainerInterface
      */
     public function setSingleton($id, $factory)
     {
-        if (!is_callable($factory) || !is_string($id)) {
+        if (!is_string($id) || !is_callable($factory)) {
             throw new \InvalidArgumentException();
         }
         $this->checkUninitialized($id);
@@ -35,7 +37,7 @@ class ContainerBase implements ContainerInterface
      */
     public function setFactory($id, $factory)
     {
-        if (!is_callable($factory) || !is_string($id)) {
+        if (!is_string($id) || !is_callable($factory)) {
             throw new \InvalidArgumentException();
         }
         $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_FACTORY);

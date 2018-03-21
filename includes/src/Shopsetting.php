@@ -62,7 +62,6 @@ final class Shopsetting implements ArrayAccess
         CONF_CHECKBOX            => 'checkbox',
         CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
         CONF_RMA                 => 'rma',
-        CONF_OBJECTCACHING       => 'objectcaching',
         CONF_CACHING             => 'caching'
     ];
 
@@ -176,27 +175,40 @@ final class Shopsetting implements ArrayAccess
                     Jtllog::writeLog('Setting Caching Exception: ' . $exc->getMessage());
                 }
                 if ($section === CONF_PLUGINZAHLUNGSARTEN) {
-                    $settings = Shop::Container()->getDB()->query("
-                         SELECT cName, cWert
+                    $settings = Shop::Container()->getDB()->query(
+                        "SELECT cName, cWert
                              FROM tplugineinstellungen
                              WHERE cName LIKE '%_min%' 
-                              OR cName LIKE '%_max'", 2
+                              OR cName LIKE '%_max'",
+                        NiceDB::RET_ARRAY_OF_OBJECTS
                      );
                 } else {
-                    $settings = Shop::Container()->getDB()->selectAll(
-                        'teinstellungen',
-                        'kEinstellungenSektion',
-                        $section,
-                        'kEinstellungenSektion, cName, cWert'
+                    $settings = Shop::Container()->getDB()->queryPrepared(
+                        'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
+                            teinstellungenconf.cInputTyp AS type
+                            FROM teinstellungen
+                            LEFT JOIN teinstellungenconf
+                                ON teinstellungenconf.cWertName = teinstellungen.cName
+                                AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
+                            WHERE teinstellungen.kEinstellungenSektion = :section',
+                        ['section' => $section],
+                        NiceDB::RET_ARRAY_OF_OBJECTS
                     );
                 }
                 if (is_array($settings) && count($settings) > 0) {
                     $this->_container[$offset] = [];
-
                     foreach ($settings as $setting) {
-                        $this->_container[$offset][$setting->cName] = $setting->cWert;
+                        if ($setting->type === 'listbox') {
+                            if (!isset($this->_container[$offset][$setting->cName])) {
+                                $this->_container[$offset][$setting->cName] = [];
+                            }
+                            $this->_container[$offset][$setting->cName][] = $setting->cWert;
+                        } elseif ($setting->type === 'number') {
+                            $this->_container[$offset][$setting->cName] = (int)$setting->cWert;
+                        } else {
+                            $this->_container[$offset][$setting->cName] = $setting->cWert;
+                        }
                     }
-
                     Shop::Cache()->set($cacheID, $settings, [CACHING_GROUP_OPTION]);
                 }
             }
@@ -226,11 +238,11 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param string $section
+     * @param int    $section
      * @param string $option
-     * @return string|array|int
+     * @return string|array|int|null
      */
-    public function getValue($section, $option)
+    public function getValue(int $section, $option)
     {
         $settings    = $this->getSettings([$section]);
         $sectionName = self::mapSettingName($section);
@@ -267,9 +279,14 @@ final class Shopsetting implements ArrayAccess
             return $this->allSettings;
         }
         $settings = Shop::Container()->getDB()->query(
-                "SELECT kEinstellungenSektion, cName, cWert
-                    FROM teinstellungen
-                    ORDER BY kEinstellungenSektion", 9
+            "SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
+                teinstellungenconf.cInputTyp AS type
+                FROM teinstellungen
+                LEFT JOIN teinstellungenconf
+                    ON teinstellungenconf.cWertName = teinstellungen.cName
+                    AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
+                ORDER BY kEinstellungenSektion",
+            NiceDB::RET_ARRAY_OF_ASSOC_ARRAYS
         );
         $result = [];
         foreach (self::$mapping as $mappingID => $sectionName) {
@@ -279,7 +296,16 @@ final class Shopsetting implements ArrayAccess
                     if (!isset($result[$sectionName])) {
                         $result[$sectionName] = [];
                     }
-                    $result[$sectionName][$setting['cName']] = $setting['cWert'];
+                    if ($setting['type'] === 'listbox') {
+                        if (!isset($result[$sectionName][$setting['cName']])) {
+                            $result[$sectionName][$setting['cName']] = [];
+                        }
+                        $result[$sectionName][$setting['cName']][] = $setting['cWert'];
+                    } elseif ($setting['type'] === 'number') {
+                        $result[$sectionName][$setting['cName']] = (int)$setting['cWert'];
+                    } else {
+                        $result[$sectionName][$setting['cName']] = $setting['cWert'];
+                    }
                 }
             }
         }

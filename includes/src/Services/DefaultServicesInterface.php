@@ -13,6 +13,7 @@ use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Interface DefaultServicesInterface
@@ -48,4 +49,11 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return JTLCacheInterface
      */
     public function getCache();
+
+    /**
+     * @return LoggerInterface
+     * @throws ServiceNotFoundException
+     * @throws CircularReferenceException
+     */
+    public function getBackendLogService() : LoggerInterface;
 }

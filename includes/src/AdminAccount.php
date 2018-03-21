@@ -9,6 +9,24 @@
  */
 class AdminAccount
 {
+    const LOGIN_OK = 1;
+
+    const ERROR_NOT_AUTHORIZED = 0;
+
+    const ERROR_INVALID_PASSWORD = -1;
+
+    const ERROR_INVALID_PASSWORD_LOCKED = -2;
+
+    const ERROR_USER_NOT_FOUND = -3;
+
+    const ERROR_USER_DISABLED = -4;
+
+    const ERROR_LOGIN_EXPIRED = -5;
+
+    const ERROR_TWO_FACTOR_AUTH_EXPIRED = -6;
+
+    const ERROR_UNKNOWN = -7;
+
     /**
      * @var bool
      */
@@ -20,10 +38,28 @@ class AdminAccount
     private $twoFaAuthenticated = false;
 
     /**
+     * @var \Monolog\Logger
+     */
+    private $authLogger;
+
+    /**
+     * @var \Mapper\AdminLoginStatusToLogLevel
+     */
+    private $levelMapper;
+
+    /**
+     * @var \Mapper\AdminLoginStatusMessageMapper
+     */
+    private $messageMapper;
+
+    /**
      * @param bool $bInitialize
      */
     public function __construct($bInitialize = true)
     {
+        $this->authLogger    = Shop::Container()->getBackendLogService();
+        $this->messageMapper = new \Mapper\AdminLoginStatusMessageMapper();
+        $this->levelMapper   = new \Mapper\AdminLoginStatusToLogLevel();
         if ($bInitialize) {
             AdminSession::getInstance();
             $this->_validateSession();
@@ -45,7 +81,7 @@ class AdminAccount
      * @return bool - true if successfully verified
      * @throws Exception
      */
-    public function verifyResetPasswordHash($hash, $mail)
+    public function verifyResetPasswordHash($hash, $mail) : bool
     {
         $user = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $mail);
         if ($user !== null) {
@@ -108,9 +144,32 @@ class AdminAccount
     }
 
     /**
+     * @param int    $code
+     * @param string $user
+     * @return int
+     */
+    private function handleLoginResult($code, $user) : int
+    {
+        $log = new \Model\AuthLogEntry();
+
+        $log->setIP(getRealIp());
+        $log->setCode($code);
+        $log->setUser($user);
+
+        $this->authLogger->log(
+            $this->levelMapper->map($code),
+            $this->messageMapper->map($code),
+            $log->asArray()
+        );
+
+        return $code;
+    }
+
+    /**
      * @param string $cLogin
      * @param string $cPass
      * @return int
+     * @throws Exception
      */
     public function login($cLogin, $cPass)
     {
@@ -125,33 +184,31 @@ class AdminAccount
             false,
             '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
         );
-        if (!is_object($oAdmin)) {
-            return -3;
+        if ($oAdmin === null || !is_object($oAdmin)) {
+            return $this->handleLoginResult(self::ERROR_USER_NOT_FOUND, $cLogin);
         }
         $oAdmin->kAdminlogingruppe = (int)$oAdmin->kAdminlogingruppe;
         if (!$oAdmin->bAktiv && $oAdmin->kAdminlogingruppe !== ADMINGROUP) {
-            return -4;
+            return $this->handleLoginResult(self::ERROR_USER_DISABLED, $cLogin);
         }
-        if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== ADMINGROUP) {
-            if ($oAdmin->dGueltigTS < time()) {
-                return -5;
-            }
+        if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== ADMINGROUP && $oAdmin->dGueltigTS < time()) {
+            return $this->handleLoginResult(self::ERROR_LOGIN_EXPIRED, $cLogin);
         }
         $verified     = false;
         $cPassCrypted = null;
         if (strlen($oAdmin->cPass) === 32) {
             // old md5 hash support
-            $oAdminTmp = Shop::Container()->getDB()->select('tadminlogin', 'cLogin', $cLogin, 'cPass', md5($cPass));
-            if (!isset($oAdminTmp->cLogin)) {
-                //login failed
+            if (md5($cPass) !== $oAdmin->cPass) {
                 $this->_setRetryCount($oAdmin->cLogin);
 
-                return (($oAdmin->nLoginVersuch + 1) >= 3) ? -2 : -1;
+                return $this->handleLoginResult(($oAdmin->nLoginVersuch + 1) >= 3
+                    ? self::ERROR_INVALID_PASSWORD_LOCKED
+                    : self::ERROR_INVALID_PASSWORD, $cLogin);
             }
             if (!isset($_SESSION['AdminAccount'])) {
                 $_SESSION['AdminAccount'] = new stdClass();
             }
-            //login successful - update password hash
+            // login successful - update password hash
             $_SESSION['AdminAccount']->cPass  = md5($cPass);
             $_SESSION['AdminAccount']->cLogin = $cLogin;
             $verified                         = true;
@@ -178,11 +235,9 @@ class AdminAccount
         if ($verified === true || ($cPassCrypted !== null && $oAdmin->cPass === $cPassCrypted)) {
             // Wartungsmodus aktiv? Nein => loesche Session
             $settings = Shop::getSettings(CONF_GLOBAL);
-            if ($settings['global']['wartungsmodus_aktiviert'] === 'N') {
-                if (is_array($_SESSION) && count($_SESSION) > 0) {
-                    foreach ($_SESSION as $i => $xSession) {
-                        unset($_SESSION[$i]);
-                    }
+            if ($settings['global']['wartungsmodus_aktiviert'] === 'N' && is_array($_SESSION) && count($_SESSION) > 0) {
+                foreach ($_SESSION as $i => $xSession) {
+                    unset($_SESSION[$i]);
                 }
             }
 
@@ -190,14 +245,16 @@ class AdminAccount
             //check password hash and update if necessary
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
-                return -6;
+                return $this->handleLoginResult(self::ERROR_TWO_FACTOR_AUTH_EXPIRED);
             }
 
-            return $this->logged() ? 1 : 0;
+            return $this->handleLoginResult($this->logged() ? self::LOGIN_OK : self::ERROR_NOT_AUTHORIZED, $cLogin);
         }
         $this->_setRetryCount($oAdmin->cLogin);
 
-        return (($oAdmin->nLoginVersuch + 1) >= 3) ? -2 : -1;
+        return $this->handleLoginResult(($oAdmin->nLoginVersuch + 1) >= 3
+            ? self::ERROR_INVALID_PASSWORD_LOCKED
+            : self::ERROR_INVALID_PASSWORD, $cLogin);
     }
 
     /**
@@ -296,7 +353,7 @@ class AdminAccount
     /**
      * @param int   $nAdminLoginGroup
      * @param int   $nAdminMenuGroup
-     * @return object
+     * @return array
      */
     public function getVisibleMenu($nAdminLoginGroup, $nAdminMenuGroup)
     {
@@ -315,14 +372,16 @@ class AdminAccount
             $oLink_arr = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tadminmenu.* 
                     FROM tadminmenu 
-                        JOIN tadminrechtegruppe ON tadminmenu.cRecht = tadminrechtegruppe.cRecht 
-                    WHERE kAdminmenueGruppe = :kAdminmenueGruppe AND kAdminlogingruppe = :kAdminlogingruppe 
+                        JOIN tadminrechtegruppe 
+                        ON tadminmenu.cRecht = tadminrechtegruppe.cRecht 
+                    WHERE kAdminmenueGruppe = :kAdminmenueGruppe 
+                        AND kAdminlogingruppe = :kAdminlogingruppe 
                     ORDER BY cLinkname, nSort;',
                 [
                     'kAdminmenueGruppe' => $nAdminMenuGroup,
                     'kAdminlogingruppe' => $nAdminLoginGroup
                 ],
-                2
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
         }
 
@@ -354,8 +413,8 @@ class AdminAccount
     private function _validateSession()
     {
         $this->_bLogged = false;
-        if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL) &&
-            $_SESSION['AdminAccount']->cURL === Shop::getURL()
+        if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL)
+            && $_SESSION['AdminAccount']->cURL === Shop::getURL()
         ) {
             $oAccount = Shop::Container()->getDB()->select(
                 'tadminlogin',
@@ -374,7 +433,7 @@ class AdminAccount
     /**
      * @return bool
      */
-    public function doTwoFA()
+    public function doTwoFA() : bool
     {
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $oTwoFA = new TwoFA();
@@ -393,11 +452,9 @@ class AdminAccount
      */
     public function favorites()
     {
-        if (!$this->logged()) {
-            return [];
-        }
-
-        return AdminFavorite::fetchAll($_SESSION['AdminAccount']->kAdminlogin);
+        return $this->logged()
+            ? AdminFavorite::fetchAll($_SESSION['AdminAccount']->kAdminlogin)
+            : [];
     }
 
     /**
@@ -454,10 +511,12 @@ class AdminAccount
         if ($bReset) {
             Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['nLoginVersuch' => 0]);
         } else {
-            Shop::Container()->getDB()->executeQueryPrepared("
-                UPDATE tadminlogin
+            Shop::Container()->getDB()->queryPrepared(
+                "UPDATE tadminlogin
                     SET nLoginVersuch = nLoginVersuch+1
-                    WHERE cLogin = :login", ['login' => $cLogin], 3
+                    WHERE cLogin = :login",
+                ['login' => $cLogin],
+                NiceDB::RET_AFFECTED_ROWS
             );
         }
 
@@ -472,7 +531,7 @@ class AdminAccount
     {
         $kAdminlogingruppe = (int)$kAdminlogingruppe;
         $oGroup            = Shop::Container()->getDB()->select('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
-        if (isset($oGroup->kAdminlogingruppe)) {
+        if ($oGroup !== null && isset($oGroup->kAdminlogingruppe)) {
             $oPermission_arr = Shop::Container()->getDB()->selectAll(
                 'tadminrechtegruppe',
                 'kAdminlogingruppe',
@@ -510,12 +569,11 @@ class AdminAccount
      * @return bool - true when hash was updated
      * @throws Exception
      */
-    private function checkAndUpdateHash($password)
+    private function checkAndUpdateHash($password) : bool
     {
         $passwordService = Shop::Container()->getPasswordService();
-        //only update hash if the db update to 4.00+ was already executed
-        if (
-            isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin)
+        // only update hash if the db update to 4.00+ was already executed
+        if (isset($_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cLogin)
             && $passwordService->needsRehash($_SESSION['AdminAccount']->cPass)
         ) {
             $_upd        = new stdClass();

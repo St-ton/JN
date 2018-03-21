@@ -259,7 +259,7 @@ class cache_redis implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : array_map('cache_redis::_keyFromTagName', $tags);
+            : array_map('Cache\Methods\cache_redis::_keyFromTagName', $tags);
         $res       = \count($tags) === 1
             ? $this->_redis->sMembers($matchTags[0])
             : $this->_redis->sUnion($matchTags);

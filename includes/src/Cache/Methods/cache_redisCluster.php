@@ -245,7 +245,7 @@ class cache_redisCluster implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : array_map('cache_redisCluster::_keyFromTagName', $tags);
+            : array_map('Cache\Methods\cache_redisCluster::_keyFromTagName', $tags);
         $res       = \count($tags) === 1
             ? $this->_redis->sMembers($matchTags[0])
             : $this->_redis->sUnion($matchTags);

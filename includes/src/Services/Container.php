@@ -6,12 +6,12 @@
 
 namespace Services;
 
-
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class ServiceLocator
@@ -45,6 +45,14 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getCryptoService()
     {
         return $this->get(CryptoServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getBackendLogService() : LoggerInterface
+    {
+        return $this->get('BackendAuthLogger');
     }
 
     /**

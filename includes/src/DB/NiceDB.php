@@ -1402,7 +1402,7 @@ class NiceDB implements DbInterface
      */
     protected function isValidEntityName(string $name): bool
     {
-        return preg_match('/^[a-z_0-9]+$/i', $name) === 1;
+        return preg_match('/^[a-z_0-9]+$/i', trim($name)) === 1;
     }
 
     /**

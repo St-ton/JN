@@ -5,6 +5,7 @@
                 <span class="badge pull-right">{$searchFilter->getCount()}</span>
                 <span class="value">
                     <i class="fa {if $searchFilter->isActive()}fa-check-square-o{else}fa-square-o{/if} text-muted"></i> {$searchFilter->getName()}
+                    <a href="{$searchFilter->getURL()}">test</a>
                 </span>
             </a>
         </li>

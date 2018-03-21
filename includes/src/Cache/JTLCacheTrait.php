@@ -51,7 +51,7 @@ trait JTLCacheTrait
     public function __destruct()
     {
         //save journal on destruct
-        if ($this->isInitialized === true && $this->journalHasChanged === true && count($this->journal) > 0) {
+        if ($this->isInitialized === true && $this->journalHasChanged === true && \count($this->journal) > 0) {
             $this->store($this->journalID, $this->journal, 0);
         }
     }
@@ -61,7 +61,7 @@ trait JTLCacheTrait
      *
      * @return bool
      */
-    public function test()
+    public function test() : bool
     {
         //if it's not available, it's not working
         if ($this->isInitialized === false || !$this->isAvailable()) {
@@ -84,10 +84,10 @@ trait JTLCacheTrait
      * @param string $data
      * @return bool
      */
-    public function is_serialized($data)
+    public function is_serialized($data) : bool
     {
         //if it isn't a string, it isn't serialized
-        if (!is_string($data)) {
+        if (!\is_string($data)) {
             return false;
         }
         $data = trim($data);
@@ -126,7 +126,7 @@ trait JTLCacheTrait
      */
     public function must_be_serialized($data)
     {
-        return is_object($data) || is_array($data);
+        return \is_object($data) || \is_array($data);
     }
 
     /**
@@ -142,12 +142,12 @@ trait JTLCacheTrait
             $this->getJournal();
         }
         $this->journalHasChanged = true;
-        if (is_string($tags)) {
+        if (\is_string($tags)) {
             $tags = [$tags];
         }
         foreach ($tags as $tag) {
             if (isset($this->journal[$tag])) {
-                if (!in_array($cacheID, $this->journal[$tag], true)) {
+                if (!\in_array($cacheID, $this->journal[$tag], true)) {
                     $this->journal[$tag][] = $cacheID;
                 }
             } else {
@@ -166,14 +166,14 @@ trait JTLCacheTrait
      * @param array|string $tags
      * @return array
      */
-    public function getKeysByTag($tags)
+    public function getKeysByTag($tags) : array
     {
         // load journal from extra cache
         $this->getJournal();
-        if (is_string($tags)) {
+        if (\is_string($tags)) {
             return $this->journal[$tags] ?? [];
         }
-        if (is_array($tags)) {
+        if (\is_array($tags)) {
             $res = [];
             foreach ($tags as $tag) {
                 if (isset($this->journal[$tag])) {
@@ -196,7 +196,7 @@ trait JTLCacheTrait
      * @param string $key
      * @return bool
      */
-    public function keyExists($key)
+    public function keyExists($key) : bool
     {
         return false;
     }
@@ -208,7 +208,7 @@ trait JTLCacheTrait
      * @param string       $cacheID
      * @return bool
      */
-    public function setCacheTag($tags, $cacheID)
+    public function setCacheTag($tags, $cacheID) : bool
     {
         return $this->writeJournal($tags, $cacheID);
     }
@@ -219,7 +219,7 @@ trait JTLCacheTrait
      * @param array $tags
      * @return int
      */
-    public function flushTags($tags)
+    public function flushTags($tags) : int
     {
         $deleted = 0;
         foreach ($this->getKeysByTag($tags) as $_id) {
@@ -241,9 +241,9 @@ trait JTLCacheTrait
      * @param array|string $tags
      * @return bool
      */
-    public function clearCacheTags($tags)
+    public function clearCacheTags($tags) : bool
     {
-        if (is_array($tags)) {
+        if (\is_array($tags)) {
             foreach ($tags as $tag) {
                 $this->clearCacheTags($tag);
             }
@@ -256,7 +256,7 @@ trait JTLCacheTrait
                 //search for key in meta values
                 if (($index = array_search($tags, $value, true)) !== false) {
                     unset($this->journal[$tagName][$index]);
-                    if (count($this->journal[$tagName]) === 0) {
+                    if (\count($this->journal[$tagName]) === 0) {
                         //remove empty tag nodes
                         unset($this->journal[$tagName]);
                     }
@@ -338,7 +338,7 @@ trait JTLCacheTrait
     /**
      * @return bool
      */
-    public function isInitialized()
+    public function isInitialized() : bool
     {
         return $this->isInitialized;
     }

@@ -137,7 +137,7 @@
                         {if isset($stats.mem) && $stats.mem !== null}
                             <tr class="cache-row">
                                 <td>Komplette Gr&ouml;&szlig;e:</td>
-                                <td>{$stats.mem} Bytes ({($stats.mem/1024/1024)|string_format:"%.2f"} MB)</td>
+                                <td>{$stats.mem} Bytes{if $stats.mem|strpos:'/' === false} ({($stats.mem/1024/1024)|string_format:"%.2f"} MB){/if}</td>
                             </tr>
                         {/if}
                         {if isset($stats.entries) && $stats.entries !== null}
@@ -150,7 +150,7 @@
                             <tr class="cache-row">
                                 <td>Misses:</td>
                                 <td>{$stats.misses}
-                                    {if isset($stats.mps) && $stats.mps !== null}
+                                    {if isset($stats.mps) && $stats.mps !== null && $stats.mps|strpos:'/' === false}
                                         <span class="inline"> ({$stats.mps|string_format:"%.2f"} Misses/s)</span>
                                     {/if}
                                 </td>
@@ -160,7 +160,7 @@
                             <tr class="cache-row">
                                 <td>Hits:</td>
                                 <td>{$stats.hits}
-                                    {if isset($stats.hps) && $stats.hps !== null}
+                                    {if isset($stats.hps) && $stats.hps !== null && $stats.hps|strpos:'/' === false}
                                         <span class="inline"> ({$stats.hps|string_format:"%.2f"} Hits/s)</span>
                                     {/if}
                                 </td>

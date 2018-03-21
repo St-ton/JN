@@ -291,13 +291,16 @@ $settings      = Shop::Container()->getDB()->selectAll(
     '*',
     'nSort'
 );
-$settingsCount = count($settings);
-for ($i = 0; $i < $settingsCount; ++$i) {
-    if ($settings[$i]->cInputTyp === 'selectbox') {
-        $settings[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
+foreach ($settings as $i => $setting) {
+    if ($setting->cName === 'caching_types_disabled') {
+        unset($settings[$i]);
+        continue;
+    }
+    if ($setting->cInputTyp === 'selectbox') {
+        $setting->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
-            (int)$settings[$i]->kEinstellungenConf,
+            (int)$setting->kEinstellungenConf,
             '*',
             'nSort'
         );
@@ -305,9 +308,9 @@ for ($i = 0; $i < $settingsCount; ++$i) {
     $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
-        [CONF_CACHING, $settings[$i]->cWertName]
+        [CONF_CACHING, $setting->cWertName]
     );
-    $settings[$i]->gesetzterWert = $oSetValue->cWert ?? null;
+    $setting->gesetzterWert = $oSetValue->cWert ?? null;
 }
 $advancedSettings = Shop::Container()->getDB()->query(
     "SELECT * 

@@ -43,7 +43,7 @@ class cache_xcache implements ICachingMethod
      * @param int|null $expiration
      * @return bool
      */
-    public function store($cacheID, $content, $expiration = null)
+    public function store($cacheID, $content, $expiration = null) : bool
     {
         return xcache_set(
             $this->options['prefix'] . $cacheID,
@@ -101,16 +101,16 @@ class cache_xcache implements ICachingMethod
     /**
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable() : bool
     {
-        return function_exists('xcache_set');
+        return \function_exists('xcache_set');
     }
 
     /**
      * @param string $cacheID
      * @return bool
      */
-    public function flush($cacheID)
+    public function flush($cacheID) : bool
     {
         return xcache_unset($this->options['prefix'] . $cacheID);
     }
@@ -118,7 +118,7 @@ class cache_xcache implements ICachingMethod
     /**
      * @return bool
      */
-    public function flushAll()
+    public function flushAll() : bool
     {
         return xcache_unset_by_prefix($this->options['prefix']);
     }
@@ -127,7 +127,7 @@ class cache_xcache implements ICachingMethod
      * @param string $cacheID
      * @return bool
      */
-    public function keyExists($cacheID)
+    public function keyExists($cacheID) : bool
     {
         return xcache_isset($cacheID);
     }
@@ -135,7 +135,7 @@ class cache_xcache implements ICachingMethod
     /**
      * @return array
      */
-    public function getStats()
+    public function getStats() : array
     {
         return [];
     }

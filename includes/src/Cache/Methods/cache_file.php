@@ -39,7 +39,7 @@ class cache_file implements ICachingMethod
      */
     private function getFileName($cacheID)
     {
-        return is_string($cacheID)
+        return \is_string($cacheID)
             ? $this->options['cache_dir'] . $cacheID . $this->options['file_extension']
             : false;
     }
@@ -50,7 +50,7 @@ class cache_file implements ICachingMethod
      * @param int|null $expiration
      * @return bool
      */
-    public function store($cacheID, $content, $expiration = null)
+    public function store($cacheID, $content, $expiration = null) : bool
     {
         $dir = $this->options['cache_dir'];
         if (!is_dir($dir) && mkdir($dir) === false && !is_dir($dir)) {
@@ -120,7 +120,7 @@ class cache_file implements ICachingMethod
     /**
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable() : bool
     {
         $res = !is_dir($this->options['cache_dir'])
             ? mkdir($this->options['cache_dir']) && is_dir($this->options['cache_dir'])
@@ -133,7 +133,7 @@ class cache_file implements ICachingMethod
      * @param string $str
      * @return bool
      */
-    private function recursiveDelete($str)
+    private function recursiveDelete(string $str) : bool
     {
         if (is_file($str)) {
             return unlink($str);
@@ -156,17 +156,17 @@ class cache_file implements ICachingMethod
      * @param string $cacheID
      * @return bool
      */
-    public function flush($cacheID)
+    public function flush($cacheID) : bool
     {
         $fileName = $this->getFileName($cacheID);
 
-        return ($fileName !== false && file_exists($fileName)) ? unlink($fileName) : false;
+        return $fileName !== false && file_exists($fileName) && unlink($fileName);
     }
 
     /**
      * @return bool
      */
-    public function flushAll()
+    public function flushAll() : bool
     {
         $this->journal = null;
         
@@ -176,7 +176,7 @@ class cache_file implements ICachingMethod
     /**
      * @return array
      */
-    public function getStats()
+    public function getStats() : array
     {
         $dir   = opendir($this->options['cache_dir']);
         $total = 0;

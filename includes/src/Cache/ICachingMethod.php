@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 namespace Cache;
 
@@ -15,7 +19,7 @@ interface ICachingMethod
      * @param int|null $expiration - expiration time in seconds
      * @return bool - success
      */
-    public function store($cacheID, $content, $expiration);
+    public function store($cacheID, $content, $expiration) : bool;
 
     /**
      * store multiple values to multiple keys at once to cache
@@ -40,7 +44,7 @@ interface ICachingMethod
      * @param string $key
      * @return bool
      */
-    public function keyExists($key);
+    public function keyExists($key) : bool;
 
     /**
      * get multiple values at once from cache
@@ -57,7 +61,7 @@ interface ICachingMethod
      * @param string       $cacheID
      * @return bool
      */
-    public function setCacheTag($tags, $cacheID);
+    public function setCacheTag($tags, $cacheID) : bool;
 
     /**
      * get cache IDs by cache tag(s)
@@ -65,7 +69,7 @@ interface ICachingMethod
      * @param array|string $tags
      * @return array
      */
-    public function getKeysByTag($tags);
+    public function getKeysByTag($tags) : array;
 
     /**
      * removes cache IDs associated with given tags from cache
@@ -73,12 +77,12 @@ interface ICachingMethod
      * @param array $tags
      * @return int
      */
-    public function flushTags($tags);
+    public function flushTags($tags) : int;
 
     /**
      * load journal
      *
-     * @return array
+     * @return array|null
      */
     public function getJournal();
 
@@ -95,14 +99,14 @@ interface ICachingMethod
      *
      * @return bool
      */
-    public function isAvailable();
+    public function isAvailable() : bool;
 
     /**
      * check if method was successfully initialized
      *
      * @return bool
      */
-    public function isInitialized();
+    public function isInitialized() : bool;
 
     /**
      * clear cache by cid or gid
@@ -110,26 +114,26 @@ interface ICachingMethod
      * @param string $cacheID
      * @return bool - success
      */
-    public function flush($cacheID);
+    public function flush($cacheID) : bool;
 
     /**
      * flushes all values from cache
      *
-     * @return bool - success
+     * @return bool
      */
-    public function flushAll();
+    public function flushAll() : bool;
 
     /**
      * test data integrity and if functions are working properly - default implementation @JTLCacheTrait
      *
      * @return bool - success
      */
-    public function test();
+    public function test() : bool;
 
     /**
      * get statistical data for caching method if supported
      *
-     * @return array|null - null if not supported
+     * @return array
      */
-    public function getStats();
+    public function getStats() : array;
 }

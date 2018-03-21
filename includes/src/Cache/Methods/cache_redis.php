@@ -25,7 +25,7 @@ class cache_redis implements ICachingMethod
     public static $instance;
 
     /**
-     * @var Redis
+     * @var \Redis
      */
     private $_redis;
 
@@ -62,7 +62,7 @@ class cache_redis implements ICachingMethod
      * @param bool        $persist
      * @return bool
      */
-    private function setRedis($host = null, $port = null, $pass = null, $database = null, $persist = false)
+    private function setRedis($host = null, $port = null, $pass = null, $database = null, $persist = false) : bool
     {
         $redis   = new \Redis();
         $connect = $persist === false ? 'connect' : 'pconnect';
@@ -98,7 +98,7 @@ class cache_redis implements ICachingMethod
      * @param int|null $expiration
      * @return bool
      */
-    public function store($cacheID, $content, $expiration = null)
+    public function store($cacheID, $content, $expiration = null) : bool
     {
         try {
             $res = $this->_redis->set($cacheID, $content);
@@ -178,7 +178,7 @@ class cache_redis implements ICachingMethod
     /**
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable() : bool
     {
         return class_exists('Redis');
     }
@@ -187,10 +187,10 @@ class cache_redis implements ICachingMethod
      * @param string $cacheID
      * @return bool|int
      */
-    public function flush($cacheID)
+    public function flush($cacheID) : bool
     {
         try {
-            return $this->_redis->delete($cacheID);
+            return $this->_redis->delete($cacheID) > 0;
         } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
@@ -203,14 +203,14 @@ class cache_redis implements ICachingMethod
      * @param string       $cacheID
      * @return bool
      */
-    public function setCacheTag($tags = [], $cacheID)
+    public function setCacheTag($tags = [], $cacheID) : bool
     {
         $res   = false;
         $redis = $this->_redis->multi();
-        if (is_string($tags)) {
+        if (\is_string($tags)) {
             $tags = [$tags];
         }
-        if (count($tags) > 0) {
+        if (\count($tags) > 0) {
             foreach ($tags as $tag) {
                 $redis->sAdd(self::_keyFromTagName($tag), $cacheID);
             }
@@ -227,7 +227,7 @@ class cache_redis implements ICachingMethod
      * @param string $tagName
      * @return string
      */
-    private static function _keyFromTagName($tagName)
+    private static function _keyFromTagName($tagName) : string
     {
         return 'tag_' . $tagName;
     }
@@ -238,7 +238,7 @@ class cache_redis implements ICachingMethod
      * @param array|string $tags
      * @return int
      */
-    public function flushTags($tags)
+    public function flushTags($tags) : int
     {
         return $this->flush(array_unique($this->getKeysByTag($tags)));
     }
@@ -246,7 +246,7 @@ class cache_redis implements ICachingMethod
     /**
      * @return bool
      */
-    public function flushAll()
+    public function flushAll() : bool
     {
         return $this->_redis->flushDB();
     }
@@ -255,12 +255,12 @@ class cache_redis implements ICachingMethod
      * @param array|string $tags
      * @return array
      */
-    public function getKeysByTag($tags = [])
+    public function getKeysByTag($tags = []) : array
     {
-        $matchTags = is_string($tags)
+        $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : array_map('cache_redis::_keyFromTagName', $tags);
-        $res       = count($tags) === 1
+            : array_map('Cache\Methods\cache_redis::_keyFromTagName', $tags);
+        $res       = \count($tags) === 1
             ? $this->_redis->sMembers($matchTags[0])
             : $this->_redis->sUnion($matchTags);
         if (PHP_SAPI === 'srv' || PHP_SAPI === 'cli') { // for some reason, hhvm does not unserialize values
@@ -275,14 +275,14 @@ class cache_redis implements ICachingMethod
             }
         }
 
-        return is_array($res) ? $res : [];
+        return \is_array($res) ? $res : [];
     }
 
     /**
      * @param string $cacheID
      * @return bool
      */
-    public function keyExists($cacheID)
+    public function keyExists($cacheID) : bool
     {
         return $this->_redis->exists($cacheID);
     }
@@ -290,7 +290,7 @@ class cache_redis implements ICachingMethod
     /**
      * @return array
      */
-    public function getStats()
+    public function getStats() : array
     {
         $numEntries  = null;
         $slowLog     = [];

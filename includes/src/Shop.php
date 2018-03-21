@@ -6,11 +6,15 @@
 
 use Services\Container;
 use DB\Services as DbService;
+
 use JTL\ProcessingHandler\NiceDBHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
+use \Services\JTL\Validation\ValidationServiceInterface;
+use \Services\JTL\Validation\ValidationService;
+use Services\JTL\Validation\RuleSet;
 
 /**
  * Class Shop
@@ -843,7 +847,6 @@ final class Shop
             exit;
         }
         self::$productFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
-
         self::seoCheck();
         self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL  : self::getURL());
         self::Event()->fire('shop.run');
@@ -922,9 +925,7 @@ final class Shop
      */
     public static function seoCheck()
     {
-        $uri                             = isset($_SERVER['HTTP_X_REWRITE$'])
-            ? $_SERVER['HTTP_X_REWRITE_URL']
-            : $_SERVER['REQUEST_URI'];
+        $uri                             = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         self::$uri                       = $uri;
         self::$bSEOMerkmalNotFound       = false;
         self::$bKatFilterNotFound        = false;
@@ -1349,6 +1350,7 @@ final class Shop
                 $link       = null;
                 $linkHelper = LinkHelper::getInstance();
                 self::setPageType(PAGE_STARTSEITE);
+                self::$fileName = 'seite.php';
                 if (Session::CustomerGroup()->getID() > 0) {
                     $cKundengruppenSQL = " AND (FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(cKundengruppen, ';', ',')) > 0
@@ -1383,6 +1385,7 @@ final class Shop
                         header('Location: ' . $link->cURL, true, 303);
                         exit;
                     }
+                    self::$fileName = 'seite.php';
                     self::setPageType(PAGE_EIGENE);
                     $oSeite = self::Container()->getDB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
                     if ($link->nLinkart === LINKTYP_STARTSEITE) {
@@ -1462,20 +1465,31 @@ final class Shop
                 self::setPageType(PAGE_EIGENE);
             }
         }
-        if (self::$is404 === true) {
-            executeHook(HOOK_INDEX_SEO_404, ['seo' => self::getRequestUri()]);
-            if (!self::$kLink) {
-                $hookInfos     = urlNotFoundRedirect([
-                    'key'   => 'kLink',
-                    'value' => self::$kLink
-                ]);
-                $kLink         = $hookInfos['value'];
-                $bFileNotFound = $hookInfos['isFileNotFound'];
-                if (!$kLink) {
-                    self::$kLink = LinkHelper::getInstance()->getSpecialPageLinkKey(LINKTYP_404);
-                }
+        self::check404();
+    }
+
+    /**
+     * @return bool
+     */
+    public static function check404() : bool
+    {
+        if (self::$is404 !== true) {
+            return false;
+        }
+        executeHook(HOOK_INDEX_SEO_404, ['seo' => self::getRequestUri()]);
+        if (!self::$kLink) {
+            $hookInfos     = urlNotFoundRedirect([
+                'key'   => 'kLink',
+                'value' => self::$kLink
+            ]);
+            $kLink         = $hookInfos['value'];
+            $bFileNotFound = $hookInfos['isFileNotFound'];
+            if (!$kLink) {
+                self::$kLink = LinkHelper::getInstance()->getSpecialPageLinkKey(LINKTYP_404);
             }
         }
+
+        return true;
     }
 
     /**
@@ -1795,6 +1809,13 @@ final class Shop
             return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
         });
 
+        $container->setSingleton(ValidationServiceInterface::class, function() {
+            $vs = new ValidationService($_GET, $_POST, $_COOKIE);
+            $vs->setRuleSet('identity', (new RuleSet())->integer()->gt(0));
+
+            return $vs;
+        });
+            
         // NETWORK & API
         $container->setFactory(\Network\JTLApi::class, function () {
             return new \Network\JTLApi($_SESSION, Nice::getInstance(), self::getInstance());

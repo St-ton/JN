@@ -75,7 +75,7 @@ class Bewertung
     {
         $this->oBewertung_arr = [];
         if ($kArtikel > 0 && $kSprache > 0) {
-            $oBewertungHilfreich = Shop::DB()->query(
+            $oBewertungHilfreich = Shop::Container()->getDB()->query(
                 "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                     FROM tbewertung
@@ -158,7 +158,7 @@ class Bewertung
                 if ($nSterne > 0) {
                     $cSQL = ' AND nSterne = ' . $nSterne;
                 }
-                $oBewertungAnzahl_arr = Shop::DB()->query(
+                $oBewertungAnzahl_arr = Shop::Container()->getDB()->query(
                     "SELECT count(*) AS nAnzahl, nSterne
                         FROM tbewertung
                         WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQLFreischalten . "
@@ -173,7 +173,7 @@ class Bewertung
                         ? ' LIMIT ' . (($nSeite - 1) * $nAnzahlSeite) . ', ' . $nAnzahlSeite
                         : ' LIMIT ' . $nAnzahlSeite;
                 }
-                $this->oBewertung_arr = Shop::DB()->query(
+                $this->oBewertung_arr = Shop::Container()->getDB()->query(
                     "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                             DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                         FROM tbewertung
@@ -181,7 +181,7 @@ class Bewertung
                         ORDER BY" . $cOrderSQL . $nLimit, 2
                 );
             }
-            $oBewertungGesamt = Shop::DB()->query(
+            $oBewertungGesamt = Shop::Container()->getDB()->query(
                 "SELECT count(*) AS nAnzahl, tartikelext.fDurchschnittsBewertung AS fDurchschnitt
                     FROM tartikelext
                     JOIN tbewertung ON tbewertung.kArtikel = tartikelext.kArtikel
@@ -189,7 +189,7 @@ class Bewertung
                     GROUP BY tartikelext.kArtikel", 1
             );
             // Anzahl Bewertungen für aktuelle Sprache
-            $oBewertungGesamtSprache = Shop::DB()->query(
+            $oBewertungGesamtSprache = Shop::Container()->getDB()->query(
                 "SELECT count(*) AS nAnzahlSprache
                     FROM tbewertung
                     WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQLFreischalten, 1

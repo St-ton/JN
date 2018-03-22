@@ -1048,7 +1048,7 @@ class Artikel
             $categoryFilter    = isset($_SESSION['LetzteKategorie'])
                 ? " AND tkategorieartikel.kKategorie = " . (int)$_SESSION['LetzteKategorie']
                 : '';
-            $oKategorieartikel = Shop::DB()->query(
+            $oKategorieartikel = Shop::Container()->getDB()->query(
                 "SELECT tkategorieartikel.kKategorie
                     FROM tkategorieartikel
                     LEFT JOIN tkategoriesichtbarkeit 
@@ -1060,7 +1060,7 @@ class Artikel
                         AND kArtikel = " . $id . $categoryFilter . "
                     ORDER BY tkategorie.nSort
                     LIMIT 1",
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\NiceDB::RET_SINGLE_OBJECT
             );
         }
 
@@ -1196,13 +1196,13 @@ class Artikel
             }
             $EW          = new EigenschaftWert($kEigenschaftWert);
             $aufpreis    = $EW->fAufpreisNetto;
-            $EW_aufpreis = Shop::DB()->select(
+            $EW_aufpreis = Shop::Container()->getDB()->select(
                 'teigenschaftwertaufpreis',
                 'kEigenschaftWert', $kEigenschaftWert,
                 'kKundengruppe', $kKundengruppe
             );
             if (!is_object($EW_aufpreis)) {
-                $EW_aufpreis = Shop::DB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
+                $EW_aufpreis = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
             }
             if ($EW_aufpreis !== null) {
                 $fMaxRabatt = $this->getDiscount($kKundengruppe, $this->kArtikel);
@@ -1236,7 +1236,7 @@ class Artikel
         // Falls ja, lade die Bilder des anderen Artikels
         $bilder_arr = [];
         if (!empty($this->FunktionsAttribute[ART_ATTRIBUT_BILDLINK])) {
-            $bilder_arr = Shop::DB()->executeQueryPrepared(
+            $bilder_arr = Shop::Container()->getDB()->executeQueryPrepared(
                 "SELECT tartikelpict.cPfad, tartikelpict.nNr
                     FROM tartikelpict
                     JOIN tartikel 
@@ -1245,18 +1245,18 @@ class Artikel
                     GROUP BY tartikelpict.cPfad
                     ORDER BY tartikelpict.nNr",
                 ['cartnr' => $this->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
             );
         }
 
         if (count($bilder_arr) === 0) {
-            $bilder_arr = Shop::DB()->query(
+            $bilder_arr = Shop::Container()->getDB()->query(
                 "SELECT cPfad, nNr
                     FROM tartikelpict 
                     WHERE kArtikel = " . (int)$this->kArtikel . " 
                     GROUP BY cPfad 
                     ORDER BY nNr",
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
             );
         }
         $imageCount = count($bilder_arr);
@@ -1413,7 +1413,7 @@ class Artikel
     {
         $this->FunktionsAttribute = [];
         if ($this->kArtikel > 0) {
-            $ArtikelAttribute = Shop::DB()->selectAll(
+            $ArtikelAttribute = Shop::Container()->getDB()->selectAll(
                 'tartikelattribut',
                 'kArtikel',
                 (int)$this->kArtikel,
@@ -1437,7 +1437,7 @@ class Artikel
         $this->Attribute      = [];
         $this->AttributeAssoc = [];
         $kSprache             = !$kSprache ? Shop::getLanguageID() : (int)$kSprache;
-        $eigenschaften_arr    = Shop::DB()->selectAll('tattribut', 'kArtikel', (int)$this->kArtikel, '*', 'nSort');
+        $eigenschaften_arr    = Shop::Container()->getDB()->selectAll('tattribut', 'kArtikel', (int)$this->kArtikel, '*', 'nSort');
         $isDefaultLanguage    = standardspracheAktiv();
         foreach ($eigenschaften_arr as $att) {
             $Attribut            = new stdClass();
@@ -1447,7 +1447,7 @@ class Artikel
             $Attribut->cName     = $att->cName;
             $Attribut->cWert     = $att->cTextWert ?: $att->cStringWert;
             if ($att->kAttribut > 0 && $kSprache > 0 && !$isDefaultLanguage) {
-                $attributsprache = Shop::DB()->select(
+                $attributsprache = Shop::Container()->getDB()->select(
                     'tattributsprache',
                     'kAttribut', (int)$att->kAttribut,
                     'kSprache', $kSprache
@@ -1479,7 +1479,7 @@ class Artikel
     public function holeMerkmale()
     {
         $this->oMerkmale_arr = [];
-        $oMerkmal_arr        = Shop::DB()->queryPrepared(
+        $oMerkmal_arr        = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
                 FROM tartikelmerkmal
                 JOIN tmerkmal 
@@ -1489,7 +1489,7 @@ class Artikel
                 WHERE tartikelmerkmal.kArtikel = :kArtikel
                 ORDER BY tmerkmal.nSort, tmerkmalwert.nSort, tartikelmerkmal.kMerkmal',
             ['kArtikel' => $this->kArtikel],
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
         );
         if (count($oMerkmal_arr) > 0) {
             $kMerkmal_arr = [];
@@ -1539,7 +1539,7 @@ class Artikel
             if (!$bGetInvisibleParts) {
                 $query .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL";
             }
-            $parts = Shop::DB()->query($query, NiceDB::RET_ARRAY_OF_OBJECTS);
+            $parts = Shop::Container()->getDB()->query($query, \DB\NiceDB::RET_ARRAY_OF_OBJECTS);
             if (count($parts) > 0) {
                 $oArtikelOptionen                             = self::getDefaultOptions();
                 $oArtikelOptionen->nKeineSichtbarkeitBeachten = $bGetInvisibleParts ? 1 : 0;
@@ -1568,7 +1568,7 @@ class Artikel
         $this->oProduktBundlePrice->fPriceDiff = 0.0;
         $this->oProduktBundle_arr              = [];
 
-        $Main = Shop::DB()->queryPrepared(
+        $Main = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikel.kArtikel, tartikel.kStueckliste
                 FROM
                 (
@@ -1579,7 +1579,7 @@ class Artikel
                 JOIN tartikel 
                     ON tartikel.kStueckliste = sub.kStueckliste',
             ['kArtikel' => $this->kArtikel],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\NiceDB::RET_SINGLE_OBJECT
         );
         if (isset($Main->kArtikel, $Main->kStueckliste) && $Main->kArtikel > 0 && $Main->kStueckliste > 0) {
             $oOption                             = new stdClass();
@@ -1590,7 +1590,7 @@ class Artikel
             $this->oProduktBundleMain->fuelleArtikel($Main->kArtikel, $oOption);
 
             $currency = Session::Currency();
-            $Obj_arr  = Shop::DB()->selectAll('tstueckliste', 'kStueckliste', $Main->kStueckliste, 'kArtikel, fAnzahl');
+            $Obj_arr  = Shop::Container()->getDB()->selectAll('tstueckliste', 'kStueckliste', $Main->kStueckliste, 'kArtikel, fAnzahl');
             foreach ($Obj_arr as $Obj) {
                 $oOption->nKeineSichtbarkeitBeachten = 0;
                 $oProduct                            = new self();
@@ -1677,8 +1677,8 @@ class Artikel
                     WHERE tmediendatei.kArtikel = " . (int)$this->kArtikel . "
                     ORDER BY tmediendatei.nSort ASC";
 
-        $this->oMedienDatei_arr = Shop::DB()->query($cSQL, NiceDB::RET_ARRAY_OF_OBJECTS);
-        $cMedienTyp_arr = []; // Wird im Template gebraucht um Tabs aufzubauen
+        $this->oMedienDatei_arr = Shop::Container()->getDB()->query($cSQL, \DB\NiceDB::RET_ARRAY_OF_OBJECTS);
+        $cMedienTyp_arr         = []; // Wird im Template gebraucht um Tabs aufzubauen
         foreach ($this->oMedienDatei_arr as $oMedienDatei) {
             $oMedienDatei->kSprache                 = (int)$oMedienDatei->kSprache;
             $oMedienDatei->nSort                    = (int)$oMedienDatei->nSort;
@@ -1695,14 +1695,14 @@ class Artikel
                 $oMedienDatei->cPfad = substr($oMedienDatei->cPfad, 1);
             }
             // Hole alle Attribute zu einer Mediendatei (falls vorhanden)
-            $oMedienDatei->oMedienDateiAttribut_arr = Shop::DB()->selectAll(
+            $oMedienDatei->oMedienDateiAttribut_arr = Shop::Container()->getDB()->selectAll(
                 'tmediendateiattribut',
                 ['kMedienDatei', 'kSprache'],
                 [(int)$oMedienDatei->kMedienDatei, $kSprache]
             );
             // pruefen, ob ein Attribut mit "tab" gesetzt wurde => falls ja, den Reiter anlegen
             $oMedienDatei->cAttributTab = '';
-            if (is_array($oMedienDatei->oMedienDateiAttribut_arr) 
+            if (is_array($oMedienDatei->oMedienDateiAttribut_arr)
                 && count($oMedienDatei->oMedienDateiAttribut_arr) > 0
             ) {
                 foreach ($oMedienDatei->oMedienDateiAttribut_arr as $oMedienDateiAttribut) {
@@ -1891,25 +1891,25 @@ class Artikel
                 ? (int)$this->kVaterArtikel
                 : (int)$this->kArtikel;
             if ($kArtikel === null) {
-                $oArtikelExt = Shop::DB()->query(
+                $oArtikelExt = Shop::Container()->getDB()->query(
                     "SELECT fDurchschnittsBewertung
                         FROM tartikelext
                         WHERE round(fDurchschnittsBewertung) >= " . $minStars . "
                             AND kArtikel = " . (int)$this->kArtikel,
-                    NiceDB::RET_SINGLE_OBJECT
+                    \DB\NiceDB::RET_SINGLE_OBJECT
                 );
                 if (!empty($oArtikelExt)) {
                     $this->fDurchschnittsBewertung = round($oArtikelExt->fDurchschnittsBewertung * 2) / 2;
                 }
             } else {
                 $kArtikel    = $kArtikel > 0 ? $kArtikel : (int)$this->kArtikel;
-                $oArtikelExt = Shop::DB()->queryPrepared(
+                $oArtikelExt = Shop::Container()->getDB()->queryPrepared(
                     'SELECT fDurchschnittsBewertung
                         FROM tartikelext
                         WHERE ROUND(fDurchschnittsBewertung) >= :minStars
                             AND kArtikel = :kArtikel',
                     ['minStars' => $minStars, 'kArtikel' => $kArtikel],
-                    NiceDB::RET_SINGLE_OBJECT
+                    \DB\NiceDB::RET_SINGLE_OBJECT
                 );
                 if (!empty($oArtikelExt)) {
                     $this->fDurchschnittsBewertung = round($oArtikelExt->fDurchschnittsBewertung * 2) / 2;
@@ -1942,7 +1942,7 @@ class Artikel
      */
     protected function execVariationSQL($kSprache, $kKundengruppe)
     {
-        $isDefaultLang  = standardspracheAktiv();
+        $isDefaultLang = standardspracheAktiv();
         // Nicht Standardsprache?
         $oSQLEigenschaft              = new stdClass();
         $oSQLEigenschaftWert          = new stdClass();
@@ -1962,7 +1962,7 @@ class Artikel
         }
         // Vater?
         if ($this->nIstVater === 1) {
-            $variations = Shop::DB()->query(
+            $variations = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel AS tartikel_kArtikel, tartikel.fLagerbestand AS tartikel_fLagerbestand, 
                     tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation, 
                     teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi, 
@@ -1999,10 +1999,10 @@ class Artikel
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     GROUP BY teigenschaftkombiwert.kEigenschaftWert
                     ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
             );
 
-            $oVariationVaterTMP_arr = Shop::DB()->query(
+            $oVariationVaterTMP_arr = Shop::Container()->getDB()->query(
                 "SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
                     teigenschaft.cTyp, teigenschaft.nSort, " . $oSQLEigenschaft->cSELECT . "
                     teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, " .
@@ -2032,11 +2032,12 @@ class Artikel
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         AND (teigenschaft.cTyp = 'FREIFELD' OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')
                     ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
             );
+
             $variations = array_merge($variations, $oVariationVaterTMP_arr);
         } elseif ($this->kVaterArtikel > 0) { //child?
-            $variations = Shop::DB()->query(
+            $variations = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel AS tartikel_kArtikel, tartikel.fLagerbestand AS tartikel_fLagerbestand,
                     tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation,
                     teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi,
@@ -2073,10 +2074,10 @@ class Artikel
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     GROUP BY teigenschaftkombiwert.kEigenschaftWert
                     ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
             );
 
-            $oVariationVaterTMP_arr = Shop::DB()->query(
+            $oVariationVaterTMP_arr = Shop::Container()->getDB()->query(
                 "SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
                     teigenschaft.cTyp, teigenschaft.nSort, " . $oSQLEigenschaft->cSELECT . "
                     teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, " .
@@ -2108,17 +2109,18 @@ class Artikel
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         AND (teigenschaft.cTyp = 'FREIFELD' OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')
                     ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
             );
+
             $variations = array_merge($variations, $oVariationVaterTMP_arr);
             // VariationKombi gesetzte Eigenschaften und EigenschaftWerte vom Kind
-            $this->oVariationKombi_arr = Shop::DB()->query(
+            $this->oVariationKombi_arr = Shop::Container()->getDB()->query(
                 "SELECT teigenschaftkombiwert.*
                     FROM teigenschaftkombiwert
                     JOIN tartikel 
                       ON tartikel.kArtikel = " . (int)$this->kArtikel . "
                       AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi",
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
             );
             $this->holeVariationDetailPreisKind(); // Baut die Variationspreise für ein Variationskombkind
             // String für javascript Funktion vorbereiten um Variationen auszufüllen
@@ -2134,7 +2136,7 @@ class Artikel
                 }
             }
         } else {
-            $variations = Shop::DB()->query(
+            $variations = Shop::Container()->getDB()->query(
                 "SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
                     teigenschaft.cTyp, teigenschaft.nSort, " . $oSQLEigenschaft->cSELECT . "
                     teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, " .
@@ -2164,7 +2166,7 @@ class Artikel
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     ORDER BY teigenschaft.nSort ASC, teigenschaft.cName, teigenschaftwert.nSort ASC, teigenschaftwert.cName",
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
             );
         }
 
@@ -2333,33 +2335,33 @@ class Artikel
             } elseif (isset($value->fVPEWert) && $value->fVPEWert > 0) {
                 $base                            = $value->fAufpreisNetto / $value->fVPEWert;
                 $value->cPreisVPEWertAufpreis[0] = gibPreisStringLocalized(
-                        berechneBrutto($base, $taxRate),
-                        $currency,
-                        1,
-                        $nGenauigkeit
-                    ) . $per;
+                    berechneBrutto($base, $taxRate),
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
 
                 $value->cPreisVPEWertAufpreis[1] = gibPreisStringLocalized(
-                        $base,
-                        $currency,
-                        1,
-                        $nGenauigkeit
-                    ) . $per;
+                    $base,
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
 
                 $base = ($value->fAufpreisNetto + $this->Preise->fVKNetto) / $value->fVPEWert;
 
                 $value->cPreisVPEWertInklAufpreis[0] = gibPreisStringLocalized(
-                        berechneBrutto($base, $taxRate),
-                        $currency,
-                        1,
-                        $nGenauigkeit
-                    ) . $per;
+                    berechneBrutto($base, $taxRate),
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
                 $value->cPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
-                        $base,
-                        $currency,
-                        1,
-                        $nGenauigkeit
-                    ) . $per;
+                    $base,
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
             }
 
             if (isset($value->fAufpreisNetto) && $value->fAufpreisNetto != 0) {
@@ -2471,7 +2473,7 @@ class Artikel
             // Gibt es nur 1 Variation?
             if (count($this->VariationenOhneFreifeld) === 1) {
                 // Baue Warenkorbmatrix Bildvorschau
-                $oVariBoxMatrixBild_arr = Shop::DB()->queryPrepared(
+                $oVariBoxMatrixBild_arr = Shop::Container()->getDB()->queryPrepared(
                     "SELECT tartikelpict.cPfad, tartikel.cName, tartikel.cSeo, tartikel.cArtNr,
                         tartikel.cBarcode, tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft,
                         teigenschaftkombiwert.kEigenschaftWert
@@ -2494,7 +2496,7 @@ class Artikel
                         'kArtikel'      => $this->kArtikel,
                         'kKundengruppe' => $kKundengruppe,
                     ],
-                    NiceDB::RET_ARRAY_OF_OBJECTS
+                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
                 );
 
                 $bFailure = false;
@@ -2518,7 +2520,7 @@ class Artikel
                 $this->oVariBoxMatrixBild_arr = [];
 
                 $matrixImages = [];
-                $matrixImgRes = Shop::DB()->queryPrepared(
+                $matrixImgRes = Shop::Container()->getDB()->queryPrepared(
                     "SELECT tartikelpict.cPfad, teigenschaftkombiwert.kEigenschaft,
                             teigenschaftkombiwert.kEigenschaftWert
                         FROM teigenschaftkombiwert
@@ -2541,7 +2543,7 @@ class Artikel
                         'kArtikel'      => $this->kArtikel,
                         'kKundengruppe' => $kKundengruppe,
                     ],
-                    NiceDB::RET_ARRAY_OF_OBJECTS
+                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
                 );
                 foreach ($matrixImgRes as $matrixImage) {
                     $matrixImage->kEigenschaftWert = (int)$matrixImage->kEigenschaftWert;
@@ -2662,7 +2664,7 @@ class Artikel
             $oVariBoxMatrixBild_arr = [];
             if (count($this->VariationenOhneFreifeld) === 1) {
                 // Baue Warenkorbmatrix Bildvorschau
-                $oVariBoxMatrixBild_arr = Shop::DB()->query(
+                $oVariBoxMatrixBild_arr = Shop::Container()->getDB()->query(
                     "SELECT teigenschaftwertpict.cPfad, teigenschaft.kEigenschaft, teigenschaftwertpict.kEigenschaftWert
                         FROM teigenschaft
                         JOIN teigenschaftwert 
@@ -2679,11 +2681,11 @@ class Artikel
                             AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                             AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
-                    NiceDB::RET_ARRAY_OF_OBJECTS
+                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
                 );
             } elseif (count($this->VariationenOhneFreifeld) === 2) {
                 // Baue Warenkorbmatrix Bildvorschau
-                $oVariBoxMatrixBild_arr = Shop::DB()->query(
+                $oVariBoxMatrixBild_arr = Shop::Container()->getDB()->query(
                     "SELECT teigenschaftwertpict.cPfad, teigenschaft.kEigenschaft, teigenschaftwertpict.kEigenschaftWert
                         FROM teigenschaft
                         JOIN teigenschaftwert 
@@ -2701,7 +2703,7 @@ class Artikel
                             AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         ORDER BY teigenschaft.nSort, teigenschaft.cName, 
                                  teigenschaftwert.nSort, teigenschaftwert.cName",
-                    NiceDB::RET_ARRAY_OF_OBJECTS
+                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
                 );
             }
             $bFailure = false;
@@ -2738,7 +2740,7 @@ class Artikel
         $kKundengruppe = (int)$kKundengruppe;
         $kArtikel      = $this->kVaterArtikel > 0 ? (int)$this->kVaterArtikel : (int)$this->kArtikel;
         // Soll die JavaScript-Kombihilfe aufgebaut werden?
-        $oAlleVariationKombi_arr = Shop::DB()->query(
+        $oAlleVariationKombi_arr = Shop::Container()->getDB()->query(
             "SELECT tekw.kEigenschaftWert, tekw.kEigenschaftKombi, tekw.kEigenschaft
                 FROM teigenschaftkombiwert tekw
                 JOIN tartikel 
@@ -2748,7 +2750,7 @@ class Artikel
                     AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 ORDER BY tekw.kEigenschaftKombi",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
         );
 
         $kAlleVariationKombi_arr                = [];
@@ -2831,7 +2833,7 @@ class Artikel
         if (!($kKundengruppe > 0 && $kSprache > 0 && $this->nIstVater)) {
             return [];
         }
-        $oVariationsKombiKinder_arr = Shop::DB()->query(
+        $oVariationsKombiKinder_arr = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel, teigenschaft.kEigenschaft, teigenschaftwert.kEigenschaftWert
                 FROM tartikel
                 JOIN teigenschaftkombiwert 
@@ -2847,7 +2849,7 @@ class Artikel
                 AND tartikelsichtbarkeit.kArtikel IS NULL
                 ORDER BY tartikel.kArtikel ASC, teigenschaft.nSort ASC, 
                          teigenschaft.cName, teigenschaftwert.nSort ASC, teigenschaftwert.cName",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
         );
         if (count($oVariationsKombiKinder_arr) === 0) {
             return [];
@@ -2901,20 +2903,20 @@ class Artikel
                         : 2;
 
                     $varCombChildren[$i]->Preise->cPreisVPEWertInklAufpreis[0] = gibPreisStringLocalized(
-                            berechneBrutto(
-                                $varCombChildren[$i]->Preise->fVKNetto / $varCombChildren[$i]->fVPEWert,
-                                $taxRate
-                            ),
-                            $currency,
-                            1,
-                            $nGenauigkeit
-                        ) . $per . $varCombChildren[$i]->cVPEEinheit;
-                    $varCombChildren[$i]->Preise->cPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
+                        berechneBrutto(
                             $varCombChildren[$i]->Preise->fVKNetto / $varCombChildren[$i]->fVPEWert,
-                            $currency,
-                            1,
-                            $nGenauigkeit
-                        ) . $per . $varCombChildren[$i]->cVPEEinheit;
+                            $taxRate
+                        ),
+                        $currency,
+                        1,
+                        $nGenauigkeit
+                    ) . $per . $varCombChildren[$i]->cVPEEinheit;
+                    $varCombChildren[$i]->Preise->cPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
+                        $varCombChildren[$i]->Preise->fVKNetto / $varCombChildren[$i]->fVPEWert,
+                        $currency,
+                        1,
+                        $nGenauigkeit
+                    ) . $per . $varCombChildren[$i]->cVPEEinheit;
                 }
                 // Lieferbar?
                 if ($varCombChildren[$i]->cLagerBeachten === 'Y'
@@ -2976,7 +2978,6 @@ class Artikel
                 $aProp = $collapse($a, $k);
                 $bProp = $collapse($b, $k);
                 if ($aProp != $bProp) {
-
                     return $v === SORT_ASC
                         ? strnatcasecmp($aProp, $bProp)
                         : strnatcasecmp($bProp, $aProp);
@@ -3035,7 +3036,7 @@ class Artikel
             }
             $cSQL .= ')';
         }
-        $previews = Shop::DB()->query(
+        $previews = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel, tartikelpict.cPfad, tartikel.cName, tartikel.cSeo, tartikel.cArtNr,
                 tartikel.cBarcode, tartikel.cLagerBeachten, tartikel.cLagerKleinerNull,
                 tartikel.fLagerbestand, tartikel.fZulauf,
@@ -3058,7 +3059,7 @@ class Artikel
                     AND tartikelpict.nNr = 1
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 ORDER BY tartikel.nSort",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
         );
         if (is_array($previews) && count($previews) > 0) {
             $cVorschauSQL   = ' IN(';
@@ -3079,7 +3080,7 @@ class Artikel
             if ($this->conf['artikeldetails']['artikeldetails_varikombi_vorschautext'] === 'S') {
                 $oEigenschaft = null;
                 if ($kSprache > 0 && !standardspracheAktiv()) {
-                    $oEigenschaft = Shop::DB()->query(
+                    $oEigenschaft = Shop::Container()->getDB()->query(
                         "SELECT teigenschaftsprache.cName
                             FROM teigenschaftsprache
                             JOIN teigenschaft 
@@ -3087,17 +3088,17 @@ class Artikel
                             WHERE teigenschaftsprache.kEigenschaft {$cVorschauSQL}
                                 AND teigenschaftsprache.kSprache = {$kSprache}
                             ORDER BY teigenschaft.nSort LIMIT 1",
-                        NiceDB::RET_SINGLE_OBJECT
+                        \DB\NiceDB::RET_SINGLE_OBJECT
                     );
 
                     $this->oVariationKombiVorschauText = Shop::Lang()->get('choosevariation') . ' ' . $oEigenschaft->cName;
                 } else {
-                    $oEigenschaft = Shop::DB()->query(
+                    $oEigenschaft = Shop::Container()->getDB()->query(
                         "SELECT cName
                             FROM teigenschaft
                             WHERE kEigenschaft {$cVorschauSQL}
                             ORDER BY nSort LIMIT 1",
-                        NiceDB::RET_SINGLE_OBJECT
+                        \DB\NiceDB::RET_SINGLE_OBJECT
                     );
 
                     $this->oVariationKombiVorschauText = $oEigenschaft->cName . ' ' . Shop::Lang()->get('choosevariation');
@@ -3255,7 +3256,7 @@ class Artikel
         if ($this->nVariationOhneFreifeldAnzahl !== 1) {
             return $this;
         }
-        $varDetailPrices = Shop::DB()->query(
+        $varDetailPrices = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert
                 FROM teigenschaftkombiwert
                 JOIN tartikel 
@@ -3266,7 +3267,7 @@ class Artikel
                     AND tartikelsichtbarkeit.kKundengruppe = {$kKundengruppe}
                 " . Preise::getPriceJoinSql($kKundengruppe) . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
         );
 
         if ($this->nIstVater === 1) {
@@ -3338,20 +3339,20 @@ class Artikel
                 && $oArtikelTMP->fVPEWert > 0
             ) {
                 $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[0] = gibPreisStringLocalized(
-                        berechneBrutto(
-                            $oArtikelTMP->Preise->fVKNetto / $oArtikelTMP->fVPEWert,
-                            $taxRate
-                        ),
-                        $currency,
-                        1,
-                        $nGenauigkeit
-                    ) . $per . $oArtikelTMP->cVPEEinheit;
-                $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
+                    berechneBrutto(
                         $oArtikelTMP->Preise->fVKNetto / $oArtikelTMP->fVPEWert,
-                        $currency,
-                        1,
-                        $nGenauigkeit
-                    ) . $per . $oArtikelTMP->cVPEEinheit;
+                        $taxRate
+                    ),
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per . $oArtikelTMP->cVPEEinheit;
+                $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
+                    $oArtikelTMP->Preise->fVKNetto / $oArtikelTMP->fVPEWert,
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per . $oArtikelTMP->cVPEEinheit;
             }
         }
 
@@ -3397,14 +3398,14 @@ class Artikel
         if (!$bSeo) {
             return $this;
         }
-        $oSeo_arr = Shop::DB()->queryPrepared(
+        $oSeo_arr = Shop::Container()->getDB()->queryPrepared(
             "SELECT cSeo, kSprache
                 FROM tseo
                 WHERE cKey = 'kArtikel'
                     AND kKey = :kArtikel 
                 ORDER BY kSprache",
             ['kArtikel' => $this->kArtikel],
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
         );
 
         $bSprachSeo    = true;
@@ -3632,8 +3633,10 @@ class Artikel
                             && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === 1
                             && isset($oArtikelOptionen->nMain) && $oArtikelOptionen->nMain === 1)
                     ) {
-                        $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($kKundengruppe,
-                            $kSprache);
+                        $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc(
+                            $kKundengruppe,
+                            $kSprache
+                        );
                     }
                     executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
                         'oArtikel'  => &$this,
@@ -3666,13 +3669,13 @@ class Artikel
         $oSQLSeo->cJOIN   = '';
         $oSQLSeo->cSELECT = "tseo.cSeo, ";
         $oSQLSeo->cJOIN   = "LEFT JOIN tseo ON tseo.cKey = 'kArtikel' AND tseo.kKey = tartikel.kArtikel";
-        $oSQLSeo->cJOIN   .= " AND tseo.kSprache = " . $kSprache;
+        $oSQLSeo->cJOIN  .= " AND tseo.kSprache = " . $kSprache;
         // Work Around um an kStueckliste zu kommen
-        $oStueckliste    = Shop::DB()->query(
+        $oStueckliste    = Shop::Container()->getDB()->query(
             "SELECT kStueckliste, fLagerbestand
                 FROM tartikel 
                 WHERE kArtikel = " . $kArtikel,
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\NiceDB::RET_SINGLE_OBJECT
         );
         $cStuecklisteSQL = " tartikel.fLagerbestand, ";
         if (isset($oStueckliste->kStueckliste) && $oStueckliste->kStueckliste > 0) {
@@ -3782,7 +3785,7 @@ class Artikel
                 WHERE tartikel.kArtikel = " . $kArtikel . "
                     " . $cSichbarkeitSQL . "
                     " . $cLagerbestandSQL;
-        $oArtikelTMP = Shop::DB()->query($productSQL, NiceDB::RET_SINGLE_OBJECT);
+        $oArtikelTMP = Shop::Container()->getDB()->query($productSQL, \DB\NiceDB::RET_SINGLE_OBJECT);
         if (($oArtikelTMP === false || $oArtikelTMP === null)
             && (!isset($oArtikelOptionen->nKeinLagerbestandBeachten) || $oArtikelOptionen->nKeinLagerbestandBeachten !== 1)
             && (isset($this->conf['global']['artikel_artikelanzeigefilter_seo'])
@@ -3821,13 +3824,13 @@ class Artikel
                 "LEFT JOIN tseo ON tseo.cKey = 'kArtikel' AND tseo.kKey = tartikel.kArtikel",
                 $productSQL
             );
-            $oArtikelTMP = Shop::DB()->query($productSQL, NiceDB::RET_SINGLE_OBJECT);
+            $oArtikelTMP = Shop::Container()->getDB()->query($productSQL, \DB\NiceDB::RET_SINGLE_OBJECT);
         }
         //EXPERIMENTAL_MULTILANG_SHOP END
         // Hersteller nicht leer? => Seo holen
         unset($oHerstellerSeo);
         if (isset($oArtikelTMP->kHersteller) && $oArtikelTMP->kHersteller > 0) {
-            $oHerstellerSeo = Shop::DB()->select('tseo', 'cKey', 'kHersteller', 'kKey', (int)$oArtikelTMP->kHersteller);
+            $oHerstellerSeo = Shop::Container()->getDB()->select('tseo', 'cKey', 'kHersteller', 'kKey', (int)$oArtikelTMP->kHersteller);
             if (isset($oHerstellerSeo->cSeo)) {
                 $oArtikelTMP->therstellercSeo = $oHerstellerSeo->cSeo;
             }
@@ -3955,14 +3958,14 @@ class Artikel
         // Lokalisieren
         if ($kSprache > 0 && !standardspracheAktiv()) {
             //VPE-Einheit
-            $oVPEEinheitRes = Shop::DB()->query(
+            $oVPEEinheitRes = Shop::Container()->getDB()->query(
                 "SELECT cName
                     FROM teinheit
                     WHERE kEinheit = (SELECT kEinheit
                                         FROM teinheit
                                         WHERE cName = '" . $this->cVPEEinheit . "' LIMIT 0, 1)
                                             AND kSprache = " . $kSprache . " LIMIT 0, 1",
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\NiceDB::RET_SINGLE_OBJECT
             );
             if (isset($oVPEEinheitRes->cName) && strlen($oVPEEinheitRes->cName) > 0) {
                 $this->cVPEEinheit = $oVPEEinheitRes->cName;
@@ -4032,7 +4035,7 @@ class Artikel
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
         if (is_object($this->Preise) && $this->kVaterArtikel === 0 && $this->nIstVater === 1) {
             $fVKNetto         = $this->Preise->fVKNetto ?? 0.0;
-            $oKindSonderpreis = Shop::DB()->query(
+            $oKindSonderpreis = Shop::Container()->getDB()->query(
                 "SELECT COUNT(a.kArtikel) AS nVariationsAufpreisVorhanden
                     FROM tartikel AS a
                     JOIN tpreis AS p 
@@ -4047,7 +4050,7 @@ class Artikel
                         AND sp.kKundengruppe = {$kKundengruppe}
                     WHERE a.kVaterArtikel = {$oArtikelTMP->kArtikel}
                         AND COALESCE(sp.fNettoPreis, d.fVKNetto) - {$fVKNetto} > 0.0001",
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\NiceDB::RET_SINGLE_OBJECT
             );
 
             $this->nVariationsAufpreisVorhanden = (int)$oKindSonderpreis->nVariationsAufpreisVorhanden > 0 ? 1 : 0;
@@ -4218,7 +4221,7 @@ class Artikel
      */
     public function getPriceData($kArtikel, $kKundengruppe)
     {
-        $oArtikelTMP = Shop::DB()->queryPrepared(
+        $oArtikelTMP = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse, 
                 tartikel.fPackeinheit, tartikel.cVPE, tartikel.fVPEWert, tartikel.cVPEEinheit
                 FROM tartikel 
@@ -4228,7 +4231,7 @@ class Artikel
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL 
                     AND tartikel.kArtikel = :kArtikel',
             ['kArtikel' => $kArtikel, 'kKundengruppe' => $kKundengruppe],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\NiceDB::RET_SINGLE_OBJECT
         );
 
         if ($oArtikelTMP !== null) {
@@ -4265,7 +4268,7 @@ class Artikel
         if ($kKundengruppe > 0) {
             $kKdgKey = (int)$kKundengruppe;
         }
-        $categories = Shop::DB()->query(
+        $categories = Shop::Container()->getDB()->query(
             "SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit 
@@ -4276,10 +4279,12 @@ class Artikel
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorieartikel.kKategorie > 0
                     AND tkategorieartikel.kArtikel = " . $kArtikelKey,
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
         );
 
-        return array_map(function ($e) { return (int)$e->kKategorie; }, $categories);
+        return array_map(function ($e) {
+            return (int)$e->kKategorie;
+        }, $categories);
     }
 
     /**
@@ -4308,7 +4313,7 @@ class Artikel
             $now = new DateTime();
             // Neu im Sortiment
             if (!empty($this->cNeu) && $this->cNeu === 'Y') {
-                $nAlterTage     = (isset($this->conf['boxen']['box_neuimsortiment_alter_tage'])
+                $nAlterTage  = (isset($this->conf['boxen']['box_neuimsortiment_alter_tage'])
                     && (int)$this->conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
                     ? (int)$this->conf['boxen']['box_neuimsortiment_alter_tage']
                     : 30;
@@ -4332,13 +4337,13 @@ class Artikel
             }
             // VariationskombiKinder Lagerbestand 0
             if ($this->kVaterArtikel > 0) {
-                $oVariKinder_arr = Shop::DB()->selectAll(
+                $oVariKinder_arr = Shop::Container()->getDB()->selectAll(
                     'tartikel',
                     'kVaterArtikel',
                     (int)$this->kVaterArtikel,
                     'fLagerbestand, cLagerBeachten, cLagerKleinerNull'
                 );
-                $bLieferbar = array_reduce($oVariKinder_arr, function ($carry, $item) {
+                $bLieferbar      = array_reduce($oVariKinder_arr, function ($carry, $item) {
                     return $carry
                         || $item->fLagerbestand > 0
                         || $item->cLagerBeachten === 'N'
@@ -4435,12 +4440,12 @@ class Artikel
         $minStars  = isset($oBoxenEinstellung_arr['boxen']['boxen_topbewertet_minsterne'])
             ? (int)$oBoxenEinstellung_arr['boxen']['boxen_topbewertet_minsterne']
             : 4;
-        $oBewertet = Shop::DB()->queryPrepared(
+        $oBewertet = Shop::Container()->getDB()->queryPrepared(
             'SELECT ROUND(fDurchschnittsBewertung) >= :threshold AS bIsTopBewertet
                 FROM tartikelext
                 WHERE kArtikel = :kArtikel',
             ['threshold' => $minStars, 'kArtikel' => $this->kArtikel],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\NiceDB::RET_SINGLE_OBJECT
         );
 
         return $oBewertet->bIsTopBewertet ?? false;
@@ -4463,12 +4468,12 @@ class Artikel
         $minSales    = isset($oGlobalEinstellung_arr['global']['global_bestseller_minanzahl'])
             ? (float)$this->conf['global']['global_bestseller_minanzahl']
             : 10;
-        $oBestseller = Shop::DB()->queryPrepared(
+        $oBestseller = Shop::Container()->getDB()->queryPrepared(
             'SELECT ROUND(fAnzahl) >= :threshold AS bIsBestseller
                 FROM tbestseller
                 WHERE kArtikel = :kArtikel',
             ['threshold' => $minSales, 'kArtikel' => $this->kArtikel],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\NiceDB::RET_SINGLE_OBJECT
         );
 
         return $oBestseller->bIsBestseller ?? false;
@@ -4577,6 +4582,7 @@ class Artikel
                 ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT]
                 : Shop::Lang()->get('ampelRot')
         ];
+
         $this->oWarenlager_arr = Warenlager::getByProduct($this->kArtikel, $languageID, $xOption_arr);
 
         return $this;
@@ -4600,17 +4606,17 @@ class Artikel
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
 
         $this->cLocalizedVPE[0] = gibPreisStringLocalized(
-                berechneBrutto($fPreis / $this->fVPEWert, gibUst($this->kSteuerklasse), $nGenauigkeit),
-                $currency,
-                1,
-                $nGenauigkeit
-            ) . $per;
+            berechneBrutto($fPreis / $this->fVPEWert, gibUst($this->kSteuerklasse), $nGenauigkeit),
+            $currency,
+            1,
+            $nGenauigkeit
+        ) . $per;
         $this->cLocalizedVPE[1] = gibPreisStringLocalized(
-                $fPreis / $this->fVPEWert,
-                $currency,
-                1,
-                $nGenauigkeit
-            ) . $per;
+            $fPreis / $this->fVPEWert,
+            $currency,
+            1,
+            $nGenauigkeit
+        ) . $per;
 
         return $this;
     }
@@ -4639,132 +4645,138 @@ class Artikel
     {
         $currency      = Session::Currency();
         $nGenauigkeit  = isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
-        && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
-            ? (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
-            : 2;
+            && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
+                ? (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
+                : 2;
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis1, $this->Preise->nAnzahl1);
+
         $this->cStaffelpreisLocalizedVPE1[0] = gibPreisStringLocalized(
-                berechneBrutto(
-                    $basePriceUnit->fBasePreis,
-                    gibUst($this->kSteuerklasse),
-                    $nGenauigkeit
-                ),
-                $currency,
-                1,
-                $nGenauigkeit
-            )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->cStaffelpreisLocalizedVPE1[1] = gibPreisStringLocalized(
+            berechneBrutto(
                 $basePriceUnit->fBasePreis,
-                $currency,
-                1,
+                gibUst($this->kSteuerklasse),
                 $nGenauigkeit
-            )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE1[0] = berechneBrutto(
+            ),
+            $currency,
+            1,
+            $nGenauigkeit
+        )  . $per . $basePriceUnit->cVPEEinheit;
+        $this->cStaffelpreisLocalizedVPE1[1] = gibPreisStringLocalized(
+            $basePriceUnit->fBasePreis,
+            $currency,
+            1,
+            $nGenauigkeit
+        )  . $per . $basePriceUnit->cVPEEinheit;
+        $this->fStaffelpreisVPE1[0]          = berechneBrutto(
             $basePriceUnit->fBasePreis,
             gibUst($this->kSteuerklasse),
             $nGenauigkeit
         );
-        $this->fStaffelpreisVPE1[1] = $basePriceUnit->fBasePreis;
+        $this->fStaffelpreisVPE1[1]          = $basePriceUnit->fBasePreis;
 
         $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis2, $this->Preise->nAnzahl2);
+
         $this->cStaffelpreisLocalizedVPE2[0] = gibPreisStringLocalized(
-                berechneBrutto(
-                    $basePriceUnit->fBasePreis,
-                    gibUst($this->kSteuerklasse),
-                    $nGenauigkeit
-                ),
-                $currency,
-                1,
-                $nGenauigkeit
-            )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->cStaffelpreisLocalizedVPE2[1] = gibPreisStringLocalized(
+            berechneBrutto(
                 $basePriceUnit->fBasePreis,
-                $currency,
-                1,
+                gibUst($this->kSteuerklasse),
                 $nGenauigkeit
-            )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE2[0] = berechneBrutto(
+            ),
+            $currency,
+            1,
+            $nGenauigkeit
+        )  . $per . $basePriceUnit->cVPEEinheit;
+        $this->cStaffelpreisLocalizedVPE2[1] = gibPreisStringLocalized(
+            $basePriceUnit->fBasePreis,
+            $currency,
+            1,
+            $nGenauigkeit
+        )  . $per . $basePriceUnit->cVPEEinheit;
+        $this->fStaffelpreisVPE2[0]          = berechneBrutto(
             $basePriceUnit->fBasePreis,
             gibUst($this->kSteuerklasse),
             $nGenauigkeit
         );
-        $this->fStaffelpreisVPE2[1] = $basePriceUnit->fBasePreis;
+        $this->fStaffelpreisVPE2[1]          = $basePriceUnit->fBasePreis;
 
         $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis3, $this->Preise->nAnzahl3);
+
         $this->cStaffelpreisLocalizedVPE3[0] = gibPreisStringLocalized(
-                berechneBrutto(
-                    $basePriceUnit->fBasePreis,
-                    gibUst($this->kSteuerklasse),
-                    $nGenauigkeit
-                ),
-                $currency,
-                1,
-                $nGenauigkeit
-            )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->cStaffelpreisLocalizedVPE3[1] = gibPreisStringLocalized(
+            berechneBrutto(
                 $basePriceUnit->fBasePreis,
-                $currency,
-                1,
+                gibUst($this->kSteuerklasse),
                 $nGenauigkeit
-            )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE3[0] = berechneBrutto(
+            ),
+            $currency,
+            1,
+            $nGenauigkeit
+        )  . $per . $basePriceUnit->cVPEEinheit;
+        $this->cStaffelpreisLocalizedVPE3[1] = gibPreisStringLocalized(
+            $basePriceUnit->fBasePreis,
+            $currency,
+            1,
+            $nGenauigkeit
+        )  . $per . $basePriceUnit->cVPEEinheit;
+        $this->fStaffelpreisVPE3[0]          = berechneBrutto(
             $basePriceUnit->fBasePreis,
             gibUst($this->kSteuerklasse),
             $nGenauigkeit
         );
-        $this->fStaffelpreisVPE3[1] = $basePriceUnit->fBasePreis;
+        $this->fStaffelpreisVPE3[1]          = $basePriceUnit->fBasePreis;
 
         $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis4, $this->Preise->nAnzahl4);
+
         $this->cStaffelpreisLocalizedVPE4[0] = gibPreisStringLocalized(
-                berechneBrutto(
-                    $basePriceUnit->fBasePreis,
-                    gibUst($this->kSteuerklasse),
-                    $nGenauigkeit
-                ),
-                $currency,
-                1,
-                $nGenauigkeit
-            )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->cStaffelpreisLocalizedVPE4[1] = gibPreisStringLocalized(
+            berechneBrutto(
                 $basePriceUnit->fBasePreis,
-                $currency,
-                1,
+                gibUst($this->kSteuerklasse),
                 $nGenauigkeit
-            )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE4[0] = berechneBrutto(
+            ),
+            $currency,
+            1,
+            $nGenauigkeit
+        )  . $per . $basePriceUnit->cVPEEinheit;
+        $this->cStaffelpreisLocalizedVPE4[1] = gibPreisStringLocalized(
+            $basePriceUnit->fBasePreis,
+            $currency,
+            1,
+            $nGenauigkeit
+        )  . $per . $basePriceUnit->cVPEEinheit;
+        $this->fStaffelpreisVPE4[0]          = berechneBrutto(
             $basePriceUnit->fBasePreis,
             gibUst($this->kSteuerklasse),
             $nGenauigkeit
         );
-        $this->fStaffelpreisVPE4[1] = $basePriceUnit->fBasePreis;
+        $this->fStaffelpreisVPE4[1]          = $basePriceUnit->fBasePreis;
 
         $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis5, $this->Preise->nAnzahl5);
+
         $this->cStaffelpreisLocalizedVPE5[0] = gibPreisStringLocalized(
-                berechneBrutto(
-                    $basePriceUnit->fBasePreis,
-                    gibUst($this->kSteuerklasse),
-                    $nGenauigkeit
-                ),
-                $currency,
-                1,
-                $nGenauigkeit
-            )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->cStaffelpreisLocalizedVPE5[1] = gibPreisStringLocalized(
+            berechneBrutto(
                 $basePriceUnit->fBasePreis,
-                $currency,
-                1,
+                gibUst($this->kSteuerklasse),
                 $nGenauigkeit
-            )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE5[0] = berechneBrutto(
+            ),
+            $currency,
+            1,
+            $nGenauigkeit
+        )  . $per . $basePriceUnit->cVPEEinheit;
+        $this->cStaffelpreisLocalizedVPE5[1] = gibPreisStringLocalized(
+            $basePriceUnit->fBasePreis,
+            $currency,
+            1,
+            $nGenauigkeit
+        )  . $per . $basePriceUnit->cVPEEinheit;
+        $this->fStaffelpreisVPE5[0]          = berechneBrutto(
             $basePriceUnit->fBasePreis,
             gibUst($this->kSteuerklasse),
             $nGenauigkeit
         );
-        $this->fStaffelpreisVPE5[1] = $basePriceUnit->fBasePreis;
+        $this->fStaffelpreisVPE5[1]          = $basePriceUnit->fBasePreis;
 
         foreach ($this->Preise->fPreis_arr as $key => $fPreis) {
             $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $fPreis, $this->Preise->nAnzahl_arr[$key]);
+
             $this->fStaffelpreisVPE_arr[] = [
                 gibPreisStringLocalized(
                     berechneBrutto(
@@ -4783,6 +4795,7 @@ class Artikel
                     $nGenauigkeit
                 )  . $per . $basePriceUnit->cVPEEinheit
             ];
+
             $this->cStaffelpreisLocalizedVPE_arr[] = [
                 berechneBrutto(
                     $basePriceUnit->fBasePreis,
@@ -4791,6 +4804,7 @@ class Artikel
                 ),
                 $basePriceUnit->fBasePreis,
             ];
+
             $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = $this->fStaffelpreisVPE_arr[$key] ?? null;
         }
 
@@ -4808,7 +4822,7 @@ class Artikel
         $oSprache = gibStandardsprache(false);
         if ($this->kArtikel > 0 && $kSprache !== $oSprache->kSprache) {
             //auf aktuelle Sprache setzen
-            $objSprache = Shop::DB()->query(
+            $objSprache = Shop::Container()->getDB()->query(
                 "SELECT tartikelsprache.cName, tseo.cSeo, tartikelsprache.cKurzBeschreibung, tartikelsprache.cBeschreibung
                     FROM tartikelsprache
                     LEFT JOIN tseo 
@@ -4817,7 +4831,7 @@ class Artikel
                         AND tseo.kSprache = tartikelsprache.kSprache
                     WHERE kArtikel = " . (int)$this->kArtikel . "
                         AND tartikelsprache.kSprache = " . (int)$kSprache,
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\NiceDB::RET_SINGLE_OBJECT
             );
             if (isset($objSprache->cName) && trim($objSprache->cName)) {
                 $this->cName = $objSprache->cName;
@@ -4884,9 +4898,9 @@ class Artikel
             }
         }
         $kSprache = (int)$kSprache;
-        $att      = Shop::DB()->select('tattribut', 'kArtikel', (int)$this->kArtikel, 'cName', $name);
+        $att      = Shop::Container()->getDB()->select('tattribut', 'kArtikel', (int)$this->kArtikel, 'cName', $name);
         if ($kSprache > 0 && isset($att->kAttribut) && $att->kAttribut > 0) {
-            $att  = Shop::DB()->select('tattributsprache', 'kAttribut', $att->kAttribut, 'kSprache', $kSprache);
+            $att  = Shop::Container()->getDB()->select('tattributsprache', 'kAttribut', $att->kAttribut, 'kSprache', $kSprache);
             $wert = $att->cStringWert;
             if ($att->cTextWert) {
                 $wert = $att->cTextWert;
@@ -4981,7 +4995,7 @@ class Artikel
         $obj->cEPID                    = $this->cEPID;
         $obj->nIstVater                = $this->nIstVater;
 
-        return Shop::DB()->insert('tartikel', $obj);
+        return Shop::Container()->getDB()->insert('tartikel', $obj);
     }
 
     /**
@@ -5048,7 +5062,7 @@ class Artikel
         $obj->cEPID                    = $this->cEPID;
         $obj->nIstVater                = $this->nIstVater;
 
-        Shop::DB()->update('tartikel', 'kArtikel', $obj->kArtikel, $obj);
+        Shop::Container()->getDB()->update('tartikel', 'kArtikel', $obj->kArtikel, $obj);
 
         return $this;
     }
@@ -5069,7 +5083,7 @@ class Artikel
             return $this;
         }
         if (Session::CustomerGroup()->isMerchant()) {
-            $this->fUVP                             /= (1 + gibUst($this->kSteuerklasse) / 100);
+            $this->fUVP                            /= (1 + gibUst($this->kSteuerklasse) / 100);
             $this->SieSparenX->anzeigen             = $anzeigen;
             $this->SieSparenX->nProzent             = round(
                 (($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP,
@@ -5084,8 +5098,10 @@ class Artikel
                 / $this->fUVP,
                 2
             );
-            $this->SieSparenX->fSparbetrag          = $this->fUVP - berechneBrutto($this->Preise->fVKNetto,
-                    gibUst($this->kSteuerklasse));
+            $this->SieSparenX->fSparbetrag          = $this->fUVP - berechneBrutto(
+                $this->Preise->fVKNetto,
+                gibUst($this->kSteuerklasse)
+            );
             $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
         }
 
@@ -5134,7 +5150,7 @@ class Artikel
         }
         $customerGroupID = Session::CustomerGroup()->getID();
         // cheapest shipping except shippings that offer cash payment
-        $shipping = Shop::DB()->query(
+        $shipping = Shop::Container()->getDB()->query(
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
@@ -5155,7 +5171,7 @@ class Artikel
                     OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND {$this->Preise->fVKNetto} <= vas.fBis )
                     )
                 ORDER BY minPrice, nSort ASC LIMIT 1",
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\NiceDB::RET_SINGLE_OBJECT
         );
         if (isset($shipping->kVersandart)) {
             $this->oFavourableShipping = new Versandart($shipping->kVersandart);
@@ -5201,13 +5217,13 @@ class Artikel
         $minDeliveryDays = (strlen(trim($favShipping->nMinLiefertage)) > 0) ? (int)$favShipping->nMinLiefertage : 2;
         $maxDeliveryDays = (strlen(trim($favShipping->nMaxLiefertage)) > 0) ? (int)$favShipping->nMaxLiefertage : 3;
         // get all pieces (even invisible) to calc delivery
-        $nAllPieces = Shop::DB()->query(
+        $nAllPieces = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel, tstueckliste.fAnzahl
                 FROM tartikel
                 JOIN tstueckliste 
                     ON tstueckliste.kArtikel = tartikel.kArtikel 
                     AND tstueckliste.kStueckliste = " . (int)$this->kStueckliste,
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\NiceDB::RET_AFFECTED_ROWS
         );
         // check if this is a set article - if so, calculate the delivery time from the set of articles
         // we don't have loaded the list of pieces yet, do so!
@@ -5222,14 +5238,14 @@ class Artikel
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
         if ($isPartsList) {
-            $oPiecesNotInShop = Shop::DB()->query(
+            $oPiecesNotInShop = Shop::Container()->getDB()->query(
                 "SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
                     FROM tstueckliste
                     LEFT JOIN tartikel
                       ON tartikel.kArtikel = tstueckliste.kArtikel
                     WHERE tstueckliste.kStueckliste = " . (int)$this->kStueckliste . "
                         AND tartikel.kArtikel IS NULL",
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\NiceDB::RET_SINGLE_OBJECT
             );
 
             if (is_object($oPiecesNotInShop) && (int)$oPiecesNotInShop->nAnzahl > 0) {
@@ -5332,7 +5348,7 @@ class Artikel
                 && new DateTime($this->dZulaufDatum) >= new DateTime()
             ) {
                 // supplierOrder incoming?
-                $offset          = $this->calculateDaysBetween($this->dZulaufDatum, date('Y-m-d'));
+                $offset           = $this->calculateDaysBetween($this->dZulaufDatum, date('Y-m-d'));
                 $minDeliveryDays += $offset;
                 $maxDeliveryDays += $offset;
             } elseif ($this->fLieferzeit > 0 && !$this->nErscheinendesProdukt) {
@@ -5547,7 +5563,7 @@ class Artikel
                 $cLimit = " LIMIT " . (int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
             }
             $lagerFilter           = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $return['oArtikelArr'] = Shop::DB()->query(
+            $return['oArtikelArr'] = Shop::Container()->getDB()->query(
                 "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
                     FROM (
                         SELECT DISTINCT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel, 
@@ -5572,11 +5588,11 @@ class Artikel
                     GROUP BY merkmalartikel.kArtikel
                     ORDER BY COUNT(similarMerkmal.kMerkmal) DESC
                 " . $cLimit,
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
             );
             if (!is_array($return['oArtikelArr']) || count($return['oArtikelArr']) < 1) {
                 // Falls es keine Merkmale gibt, in tsuchcachetreffer und ttagartikel suchen
-                $return['oArtikelArr'] = Shop::DB()->query(
+                $return['oArtikelArr'] = Shop::Container()->getDB()->query(
                     "SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
                         FROM
                         (
@@ -5600,11 +5616,11 @@ class Artikel
                         GROUP BY tsuchcachetreffer.kArtikel
                         ORDER BY COUNT(*) DESC
                         " . $cLimit,
-                    NiceDB::RET_ARRAY_OF_OBJECTS
+                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
                 );
             }
             if (!is_array($return['oArtikelArr']) || count($return['oArtikelArr']) < 1) {
-                $return['oArtikelArr'] = Shop::DB()->query(
+                $return['oArtikelArr'] = Shop::Container()->getDB()->query(
                     "SELECT ttagartikel.kArtikel, tartikel.kVaterArtikel
                         FROM
                         (
@@ -5627,7 +5643,7 @@ class Artikel
                         GROUP BY ttagartikel.kArtikel
                         ORDER BY COUNT(*) DESC
                         " . $cLimit,
-                    NiceDB::RET_ARRAY_OF_OBJECTS
+                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
                 );
             }
         }
@@ -5649,9 +5665,9 @@ class Artikel
                         OR tartikel.cLagerBeachten = 'N' 
                         OR tartikel.cLagerKleinerNull = 'Y')"
                 : '';
-            Shop::DB()->delete('tartikelmerkmal', 'kArtikel', $kVaterArtikel);
+            Shop::Container()->getDB()->delete('tartikelmerkmal', 'kArtikel', $kVaterArtikel);
 
-            return Shop::DB()->query(
+            return Shop::Container()->getDB()->query(
                 "INSERT INTO tartikelmerkmal
                   (
                     SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert, " . $kVaterArtikel . "
@@ -5662,7 +5678,7 @@ class Artikel
                             {$cSQL}
                         GROUP BY tartikelmerkmal.kMerkmalWert
                   )",
-                NiceDB::RET_AFFECTED_ROWS
+                \DB\NiceDB::RET_AFFECTED_ROWS
             );
         }
 
@@ -5702,13 +5718,13 @@ class Artikel
         if (!Shop::has('checkCategoryDiscount')) {
             Shop::set(
                 'checkCategoryDiscount',
-                Shop::DB()->query('SELECT kArtikel FROM tartikelkategorierabatt', NiceDB::RET_AFFECTED_ROWS) > 0
+                Shop::Container()->getDB()->query('SELECT kArtikel FROM tartikelkategorierabatt', \DB\NiceDB::RET_AFFECTED_ROWS) > 0
             );
         }
         // Existiert für diese Kundengruppe ein Kategorierabatt?
         if (Shop::get('checkCategoryDiscount')) {
             if ($this->kEigenschaftKombi != 0) {
-                $oArtikelKatRabatt = Shop::DB()->select(
+                $oArtikelKatRabatt = Shop::Container()->getDB()->select(
                     'tartikelkategorierabatt',
                     'kArtikel', $this->kVaterArtikel,
                     'kKundengruppe', $kKundengruppe
@@ -5717,7 +5733,7 @@ class Artikel
                     $Rabatt_arr[] = $oArtikelKatRabatt->fRabatt;
                 }
             } else {
-                $oArtikelKatRabatt = Shop::DB()->select(
+                $oArtikelKatRabatt = Shop::Container()->getDB()->select(
                     'tartikelkategorierabatt',
                     'kArtikel', $kArtikel,
                     'kKundengruppe', $kKundengruppe
@@ -5735,8 +5751,7 @@ class Artikel
             $Rabatt_arr[] = $kdgrp->getDiscount();
         }
         // Existiert für diesen Kunden ein Rabatt?
-        if (
-            array_key_exists('Kunde', $_SESSION)
+        if (array_key_exists('Kunde', $_SESSION)
             && isset($_SESSION['Kunde']->kKunde)
             && $_SESSION['Kunde']->kKunde > 0
             && $_SESSION['Kunde']->fRabatt != 0
@@ -5892,10 +5907,10 @@ class Artikel
             $cLaender = '';
             $cacheID  = 'jtl_ola_' . md5($cSQL);
             if (($oLand_arr = Shop::Cache()->get($cacheID)) === false) {
-                $oLand_arr = Shop::DB()->query(
+                $oLand_arr = Shop::Container()->getDB()->query(
                     "SELECT cISO, cDeutsch, cEnglisch 
                         FROM tland WHERE " . $cSQL,
-                    NiceDB::RET_ARRAY_OF_OBJECTS
+                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
                 );
                 Shop::Cache()->set(
                     $cacheID,
@@ -6030,7 +6045,7 @@ class Artikel
         });
 
         if (($excludeWords = Shop::Cache()->get($cacheID)) === false) {
-            $exclude      = Shop::DB()->select(
+            $exclude      = Shop::Container()->getDB()->select(
                 'texcludekeywords',
                 'cISOSprache',
                 $_SESSION['cISOSprache'] ?? gibStandardsprache()->cISO
@@ -6147,7 +6162,7 @@ class Artikel
                 ['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.'],
                 ' ',
                 $cBeschreibung
-                )));
+            )));
         }
 
         return $cBeschreibung;
@@ -6207,7 +6222,7 @@ class Artikel
             }
         }
         $kSprache = (int)$kSprache;
-        $tags     = Shop::DB()->query(
+        $tags     = Shop::Container()->getDB()->query(
             "SELECT ttag.kTag, ttag.cName, tseo.cSeo, (SELECT COUNT(*)
                                                         FROM ttagartikel
                                                           WHERE kTag = ttag.kTag) AS Anzahl
@@ -6223,7 +6238,7 @@ class Artikel
                     AND ttagartikel.kArtikel = " . (int)$this->kArtikel . "
                 GROUP BY ttag.kTag 
                 ORDER BY ttagartikel.nAnzahlTagging DESC {$tag_limit}",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
         );
         foreach ($tags as $tag) {
             $tag->kTag     = (int)$tag->kTag;
@@ -6231,7 +6246,9 @@ class Artikel
             $tag->cURL     = baueURL($tag, URLART_TAG);
             $tag->cURLFull = baueURL($tag, URLART_TAG, 0, false, true);
         }
-        executeHook(HOOK_ARTIKEL_INC_PRODUKTTAGGING, [
+        executeHook(
+            HOOK_ARTIKEL_INC_PRODUKTTAGGING,
+            [
                 'kArtikel' => $this->kArtikel,
                 'tags'     => &$tags
             ]
@@ -6248,12 +6265,12 @@ class Artikel
         $tierPrices = [];
         if (isset($this->Preise->nAnzahl_arr)) {
             foreach ($this->Preise->nAnzahl_arr as $_idx => $_nAnzahl) {
-                $_v                        = [];
-                $_v['nAnzahl']             = $_nAnzahl;
-                $_v['fStaffelpreis']       = $this->Preise->fStaffelpreis_arr[$_idx] ?? null;
-                $_v['fPreis']              = $this->Preise->fPreis_arr[$_idx] ?? null;
-                $_v['cPreisLocalized']     = $this->Preise->cPreisLocalized_arr[$_idx] ?? null;
-                $tierPrices[]              = $_v;
+                $_v                    = [];
+                $_v['nAnzahl']         = $_nAnzahl;
+                $_v['fStaffelpreis']   = $this->Preise->fStaffelpreis_arr[$_idx] ?? null;
+                $_v['fPreis']          = $this->Preise->fPreis_arr[$_idx] ?? null;
+                $_v['cPreisLocalized'] = $this->Preise->cPreisLocalized_arr[$_idx] ?? null;
+                $tierPrices[]          = $_v;
             }
         }
 
@@ -6385,22 +6402,23 @@ class Artikel
                 $kGesetzteEigenschaft = (int)$kGesetzteEigenschaft;
                 $kEigenschaftWert     = (int)$kEigenschaftWert;
                 if ($kEigenschaft !== $kGesetzteEigenschaft) {
-                    $cSQL[] = "INNER JOIN teigenschaftkombiwert e{$i} 
+                    $cSQL[] = "INNER JOIN teigenschaftkombiwert e{$i}
                                     ON e1.kEigenschaftKombi = e{$i}.kEigenschaftKombi 
                                     AND e{$i}.kEigenschaftWert = :kev{$i}";
+
                     $prepvalues['kev' . $i] = $kEigenschaftWert;
                     ++$i;
                 }
             }
             $cSQLStr          = implode(' ', $cSQL);
-            $oEigenschaft_arr = Shop::DB()->executeQueryPrepared(
+            $oEigenschaft_arr = Shop::Container()->getDB()->executeQueryPrepared(
                 "SELECT e1.*, k.cName, k.cLagerBeachten, k.cLagerKleinerNull, k.fLagerbestand 
                     FROM teigenschaftkombiwert e1
                     INNER JOIN tartikel k 
                         ON e1.kEigenschaftKombi = k.kEigenschaftKombi
                     {$cSQLStr}
                     WHERE e1.kEigenschaft = :where", $prepvalues,
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($oEigenschaft_arr as $oEigenschaft) {
                 $oEigenschaft->kEigenschaftWert = (int)$oEigenschaft->kEigenschaftWert;

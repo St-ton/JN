@@ -25,6 +25,10 @@ class PasswordService implements PasswordServiceInterface
     /** @var CryptoServiceInterface  */
     protected $cryptoService;
 
+    /**
+     * PasswordService constructor.
+     * @param CryptoServiceInterface $cryptoService
+     */
     public function __construct(CryptoServiceInterface $cryptoService)
     {
         $this->cryptoService = $cryptoService;
@@ -63,14 +67,15 @@ class PasswordService implements PasswordServiceInterface
     public function verify($password, $hash)
     {
         $length = strlen($hash);
-        if($length === 32) {
+        if ($length === 32) {
             // very old md5 hashes
             return md5($password) === $hash;
-        } elseif ($length === 40) {
-            return cryptPasswort($password, $hash) !== false;
-        } else {
-            return password_verify($password, $hash);
         }
+        if ($length === 40) {
+            return cryptPasswort($password, $hash) !== false;
+        }
+
+        return password_verify($password, $hash);
     }
 
     /**
@@ -79,11 +84,10 @@ class PasswordService implements PasswordServiceInterface
     public function needsRehash($hash)
     {
         $length = strlen($hash);
-        if($length === 32 || $length === 40) {
-            return true;
-        }
 
-        return password_needs_rehash($hash, PASSWORD_DEFAULT);
+        return $length === 32 || $length === 40
+            ? true
+            : password_needs_rehash($hash, PASSWORD_DEFAULT);
     }
 
     /**

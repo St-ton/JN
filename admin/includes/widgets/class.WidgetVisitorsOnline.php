@@ -25,7 +25,7 @@ class WidgetVisitorsOnline extends WidgetBase
     {
         // clause 'ANY_VALUE' is needed by servers, who has the 'sql_mode'-setting 'only_full_group_by' enabled.
         // this is the default since mysql version >= 5.7.x
-        $oVisitors_arr = Shop::DB()->query(
+        $oVisitors_arr = Shop::Container()->getDB()->query(
             "SELECT
                 `otab`.*,
                 `tbestellung`.`fGesamtsumme` AS fGesamtsumme, `tbestellung`.`dErstellt` as dErstellt,

@@ -96,7 +96,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         private function loadFromDB($kDownload, $kSprache, $bInfo, $kBestellung)
         {
-            $oDownload = Shop::DB()->select('tdownload', 'kDownload', (int)$kDownload);
+            $oDownload = Shop::Container()->getDB()->select('tdownload', 'kDownload', (int)$kDownload);
             $kBestellung = (int)$kBestellung;
             if ($oDownload !== null && isset($oDownload->kDownload) && (int)$oDownload->kDownload > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownload));
@@ -117,7 +117,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
 
                 if ($kBestellung > 0) {
                     $this->kBestellung = $kBestellung;
-                    $oBestellung       = Shop::DB()->select(
+                    $oBestellung       = Shop::Container()->getDB()->select(
                         'tbestellung',
                         'kBestellung',
                         $kBestellung,
@@ -141,7 +141,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 }
 
                 // Artikel
-                $this->oArtikelDownload_arr = Shop::DB()->query(
+                $this->oArtikelDownload_arr = Shop::Container()->getDB()->query(
                     "SELECT tartikeldownload.*
                         FROM tartikeldownload
                         JOIN tdownload 
@@ -168,7 +168,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 $oObj->dGueltigBis,
                 $oObj->kBestellung
             );
-            $kDownload = Shop::DB()->insert('tdownload', $oObj);
+            $kDownload = Shop::Container()->getDB()->insert('tdownload', $oObj);
             if ($kDownload > 0) {
                 return $bPrimary ? $kDownload : true;
             }
@@ -189,7 +189,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             $_upd->nTage         = $this->nTage;
             $_upd->dErstellt     = $this->dErstellt;
 
-            return Shop::DB()->update('tdownload', 'kDownload', (int)$this->kDownload, $_upd);
+            return Shop::Container()->getDB()->update('tdownload', 'kDownload', (int)$this->kDownload, $_upd);
         }
 
         /**
@@ -197,7 +197,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         public function delete()
         {
-            return Shop::DB()->query(
+            return Shop::Container()->getDB()->query(
                 "DELETE tdownload, tdownloadhistory, tdownloadsprache, tartikeldownload
                     FROM tdownload
                     JOIN tdownloadsprache 
@@ -241,7 +241,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                                    JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                         AND twarenkorbpos.nPosTyp = ' . C_WARENKORBPOS_TYP_ARTIKEL;
                 }
-                $oDown_arr = Shop::DB()->query(
+                $oDown_arr = Shop::Container()->getDB()->query(
                     'SELECT ' . $cSQLSelect . '
                         FROM tartikeldownload
                         ' . $cSQLJoin . '

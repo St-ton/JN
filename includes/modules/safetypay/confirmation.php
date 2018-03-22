@@ -9,8 +9,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
  */
 function show_confirmation($bestellung)
 {
-    $einstellungApiKey       = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_apikey'", 1);
-    $einstellungSignatureKey = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1);
+    $einstellungApiKey       = Shop::Container()->getDB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_apikey'", 1);
+    $einstellungSignatureKey = Shop::Container()->getDB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1);
     $TransactionData         = null;
 
     define('SAFETYPAY_APIKEY', $einstellungApiKey->cWert);

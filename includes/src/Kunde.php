@@ -246,7 +246,7 @@ class Kunde
     public function holRegKundeViaEmail($cEmail)
     {
         if (strlen($cEmail) > 0) {
-            $oKundeTMP = Shop::DB()->select(
+            $oKundeTMP = Shop::Container()->getDB()->select(
                 'tkunde',
                 'cMail', StringHandler::filterXSS($cEmail),
                 null, null,
@@ -276,7 +276,7 @@ class Kunde
             && $conf['kunden']['kundenlogin_max_loginversuche'] > 1
             && strlen($cBenutzername) > 0
         ) {
-            $attempts = Shop::DB()->select(
+            $attempts = Shop::Container()->getDB()->select(
                 'tkunde',
                 'cMail', StringHandler::filterXSS($cBenutzername),
                 'nRegistriert', 1,
@@ -331,7 +331,7 @@ class Kunde
                 if ((isset($oUser->cPasswort) && $passwordService->needsRehash($oUser->cPasswort))) {
                     $_upd            = new stdClass();
                     $_upd->cPasswort = $passwordService->hash($cPasswort);
-                    Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
+                    Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
                 }
             }
             executeHook(HOOK_KUNDE_CLASS_HOLLOGINKUNDE, [
@@ -362,8 +362,8 @@ class Kunde
     public function checkCredentials($cBenutzername, $cPasswort)
     {
         $passwordService = Shop::Container()->getPasswordService();
-
-        $oUser           = Shop::DB()->select(
+        $db              = Shop::Container()->getDB();
+        $oUser           = $db->select(
             'tkunde',
             'cMail',
             $cBenutzername,
@@ -374,6 +374,9 @@ class Kunde
             false,
             '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag_formatted'
         );
+        if (!$oUser) {
+            return false;
+        }
         $oUser->kKunde         = (int)$oUser->kKunde;
         $oUser->kKundengruppe  = (int)$oUser->kKundengruppe;
         $oUser->kSprache       = (int)$oUser->kSprache;
@@ -382,7 +385,7 @@ class Kunde
 
         if (!$passwordService->verify($cPasswort, $oUser->cPasswort)) {
             $tries = ++$oUser->nLoginversuche;
-            Shop::DB()->update('tkunde', 'cMail', $cBenutzername, (object)['nLoginversuche' => $tries]);
+            Shop::Container()->getDB()->update('tkunde', 'cMail', $cBenutzername, (object)['nLoginversuche' => $tries]);
             return false;
         }
 
@@ -400,7 +403,7 @@ class Kunde
         if($update) {
             $update = (array)$oUser;
             unset($update['dGeburtstag_formatted']);
-            Shop::DB()->update('tkunde', 'kKunde', $oUser->kKunde, (object)$update);
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', $oUser->kKunde, (object)$update);
         }
 
         return $oUser;
@@ -424,7 +427,7 @@ class Kunde
     {
         $kKunde = (int)$kKunde;
         if ($kKunde > 0) {
-            $obj = Shop::DB()->select('tkunde', 'kKunde', $kKunde);
+            $obj = Shop::Container()->getDB()->select('tkunde', 'kKunde', $kKunde);
             if ($obj !== null && isset($obj->kKunde) && $obj->kKunde > 0) {
                 $members = array_keys(get_object_vars($obj));
                 foreach ($members as $member) {
@@ -538,7 +541,7 @@ class Kunde
             $obj->dVeraendert = 'now()';
         }
         $obj->cLand   = $this->pruefeLandISO($obj->cLand);
-        $this->kKunde = Shop::DB()->insert('tkunde', $obj);
+        $this->kKunde = Shop::Container()->getDB()->insert('tkunde', $obj);
         $this->entschluesselKundendaten();
 
         $this->cAnredeLocalized   = mappeKundenanrede($this->cAnrede, $this->kSprache);
@@ -585,7 +588,7 @@ class Kunde
 
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'now()';
-        $cReturn          = Shop::DB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
+        $cReturn          = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
         if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
             $obj->cKundenattribut_arr = $cKundenattribut_arr;
         }
@@ -607,7 +610,7 @@ class Kunde
     public function holeKundenattribute()
     {
         $this->cKundenattribut_arr = [];
-        $oKundenattribut_arr       = Shop::DB()->selectAll(
+        $oKundenattribut_arr       = Shop::Container()->getDB()->selectAll(
             'tkundenattribut',
             'kKunde',
             (int)$this->kKunde,
@@ -659,7 +662,7 @@ class Kunde
      */
     public function verschluesselAlleKunden()
     {
-        foreach (Shop::DB()->query("SELECT * FROM tkunde", 2) as $oKunden) {
+        foreach (Shop::Container()->getDB()->query("SELECT * FROM tkunde", 2) as $oKunden) {
             if ($oKunden->kKunde > 0) {
                 unset($oKundeTMP);
                 $oKundeTMP = new self($oKunden->kKunde);
@@ -719,7 +722,7 @@ class Kunde
             $_upd                 = new stdClass();
             $_upd->cPasswort      = $this->cPasswort;
             $_upd->nLoginversuche = 0;
-            Shop::DB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
 
             $obj                 = new stdClass();
             $obj->tkunde         = $this;
@@ -731,7 +734,7 @@ class Kunde
             $_upd                 = new stdClass();
             $_upd->cPasswort      = $this->cPasswort;
             $_upd->nLoginversuche = 0;
-            Shop::DB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
         }
 
         return $this;
@@ -776,7 +779,7 @@ class Kunde
         $expires    = new DateTime();
         $interval   = new DateInterval('P1D');
         $expires->add($interval);
-        Shop::DB()->executeQueryPrepared(
+        Shop::Container()->getDB()->executeQueryPrepared(
             "INSERT INTO tpasswordreset(kKunde, cKey, dExpires)
             VALUES (:kKunde, :cKey, :dExpires)
             ON DUPLICATE KEY UPDATE cKey = :cKey, dExpires = :dExpires",

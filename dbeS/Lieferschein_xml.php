@@ -95,14 +95,14 @@ function bearbeiteDelete($oXml)
     }
     foreach ($kLieferschein_arr as $kLieferschein) {
         $kLieferschein = (int)$kLieferschein;
-        Shop::DB()->delete('tversand', 'kLieferschein', $kLieferschein);
-        Shop::DB()->delete('tlieferschein', 'kLieferschein', $kLieferschein);
+        Shop::Container()->getDB()->delete('tversand', 'kLieferschein', $kLieferschein);
+        Shop::Container()->getDB()->delete('tlieferschein', 'kLieferschein', $kLieferschein);
 
-        $oLieferscheinPos_arr = Shop::DB()->selectAll('tlieferscheinpos', 'kLieferschein', $kLieferschein, 'kLieferscheinPos');
+        $oLieferscheinPos_arr = Shop::Container()->getDB()->selectAll('tlieferscheinpos', 'kLieferschein', $kLieferschein, 'kLieferscheinPos');
         if (is_array($oLieferscheinPos_arr)) {
             foreach ($oLieferscheinPos_arr as $oLieferscheinPos) {
-                Shop::DB()->delete('tlieferscheinpos', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
-                Shop::DB()->delete('tlieferscheinposinfo', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
+                Shop::Container()->getDB()->delete('tlieferscheinpos', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
+                Shop::Container()->getDB()->delete('tlieferscheinposinfo', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
             }
         }
     }

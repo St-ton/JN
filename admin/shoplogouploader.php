@@ -18,7 +18,7 @@ if (isset($_POST['key'], $_POST['logo'])) {
         $option->kEinstellungenSektion = CONF_LOGO;
         $option->cName                 = 'shop_logo';
         $option->cWert                 = null;
-        Shop::DB()->update('teinstellungen', 'cName', 'shop_logo', $option);
+        Shop::Container()->getDB()->update('teinstellungen', 'cName', 'shop_logo', $option);
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
         $response->status = 'FAILED';

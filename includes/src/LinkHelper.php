@@ -293,7 +293,7 @@ class LinkHelper
             $linkObject = [];
         }
         if (!isset($linkObject[$kLink])) {
-            $linkObject[$kLink] = Shop::DB()->select('tlink', 'kLink', $kLink);
+            $linkObject[$kLink] = Shop::Container()->getDB()->select('tlink', 'kLink', $kLink);
             Shop::Cache()->set($cacheID, $linkObject, [CACHING_GROUP_CORE]);
         }
 
@@ -316,7 +316,7 @@ class LinkHelper
             $customerGroupID = isset($_SESSION['Kundengruppe'])
                 ? Session::CustomerGroup()->getID()
                 : Kundengruppe::getDefaultGroupID();
-            $Linkgruppen     = Shop::DB()->query("SELECT * FROM tlinkgruppe", 2);
+            $Linkgruppen     = Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", 2);
             $linkGroups      = new stdClass();
             $shopURL         = Shop::getURL() . '/';
             $shopURLSSL      = Shop::getURL(true) . '/';
@@ -328,7 +328,7 @@ class LinkHelper
                 $linkGroups->{$Linkgruppe->cTemplatename}->cName       = $Linkgruppe->cName;
                 $linkGroups->{$Linkgruppe->cTemplatename}->kLinkgruppe = (int)$Linkgruppe->kLinkgruppe;
 
-                $Linkgruppesprachen = Shop::DB()->selectAll(
+                $Linkgruppesprachen = Shop::Container()->getDB()->selectAll(
                     'tlinkgruppesprache',
                     'kLinkgruppe',
                     (int)$Linkgruppe->kLinkgruppe
@@ -341,7 +341,7 @@ class LinkHelper
                 $loginSichtbarkeit = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)
                     ? ''
                     : " AND tlink.cSichtbarNachLogin = 'N' ";
-                $linkData = Shop::DB()->query(
+                $linkData = Shop::Container()->getDB()->query(
                     "SELECT tlink.*, tplugin.nStatus AS nPluginStatus
                         FROM tlink
                         LEFT JOIN tplugin
@@ -360,7 +360,7 @@ class LinkHelper
                     if ($link->kPlugin > 0 && (int)$item->nPluginStatus !== 2) {
                         continue;
                     }
-                    $linkLanguages = Shop::DB()->query(
+                    $linkLanguages = Shop::Container()->getDB()->query(
                         "SELECT tlinksprache.cISOSprache, tlinksprache.cName, tlinksprache.cTitle, tseo.cSeo
                             FROM tlinksprache
                             JOIN tsprache
@@ -398,7 +398,7 @@ class LinkHelper
             }
             $cDatei = 'index.php';
             // startseite
-            $start_arr = Shop::DB()->query(
+            $start_arr = Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
                     FROM tlinksprache
                     JOIN tlink
@@ -433,7 +433,7 @@ class LinkHelper
                     . "', REPLACE(tlink.cKundengruppen, ';', ',')) > 0
                     OR tlink.cKundengruppen IS NULL OR tlink.cKundengruppen = 'NULL' OR tlink.cKundengruppen = '')";
             }
-            $versand_arr = Shop::DB()->query(
+            $versand_arr = Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
                     FROM tlinksprache
                     JOIN tlink
@@ -458,7 +458,7 @@ class LinkHelper
                 }
             }
             // AGB
-            $agb_arr = Shop::DB()->query(
+            $agb_arr = Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
                     FROM tlinksprache
                     JOIN tlink
@@ -484,7 +484,7 @@ class LinkHelper
                 }
             }
             // Link_Datenschutz
-            $agb_arr = Shop::DB()->query(
+            $agb_arr = Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tlinksprache.cISOSprache, tlink.kLink
                     FROM tlinksprache
                     JOIN tlink
@@ -516,7 +516,7 @@ class LinkHelper
             $linkGroups->Link_AGB          = $session['Link_AGB'];
             $linkGroups->Link_Versandseite = $session['Link_Versandseite'];
 
-            $staticRoutes_arr = Shop::DB()->query(
+            $staticRoutes_arr = Shop::Container()->getDB()->query(
                 "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, 
                         tspezialseite.nLinkart, tlink.kLink, tlinksprache.cName AS seoName, tlink.cKundengruppen, 
                         tseo.cSeo, tsprache.cISO, tsprache.kSprache, tlink.kVaterLink, tspezialseite.kPlugin, 
@@ -608,7 +608,7 @@ class LinkHelper
         }
         $oSpeziallinks            = [];
         $_SESSION['Speziallinks'] = [];
-        $oLink_arr                = Shop::DB()->query(
+        $oLink_arr                = Shop::Container()->getDB()->query(
             "SELECT kLink, nLinkart, cName 
                 FROM tlink 
                 WHERE nLinkart >= 5 
@@ -840,7 +840,7 @@ class LinkHelper
                 ? ''
                 : " AND tlink.cSichtbarNachLogin = 'N' ";
             // get links for ALL languages
-            $linkData = Shop::DB()->query(
+            $linkData = Shop::Container()->getDB()->query(
                 "SELECT tlink.*, tseo.cSeo, tseo.kSprache, tsprache.cISO
                     FROM tlink
                     LEFT JOIN tseo
@@ -888,7 +888,7 @@ class LinkHelper
             Shop::Cache()->set($cacheID, $links, [CACHING_GROUP_CORE]);
         }
         if (!isset($link->kLink)) {
-            $item = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_STARTSEITE);
+            $item = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_STARTSEITE);
             $link = new Link(null, $item);
             if ($link->kLink !== $kLink) {
                 $link->nHTTPRedirectCode = 301;
@@ -930,7 +930,7 @@ class LinkHelper
             && $_SESSION['kSprache'] > 0
             && strlen($_SESSION['cISOSprache']) > 0
         ) {
-            $oLinkSprache = Shop::DB()->executeQueryPrepared(
+            $oLinkSprache = Shop::Container()->getDB()->executeQueryPrepared(
                 "SELECT tlinksprache.kLink, tlinksprache.cISOSprache, tlinksprache.cName, tlinksprache.cTitle, 
                         tlinksprache.cContent, tlinksprache.cMetaTitle, tlinksprache.cMetaKeywords, 
                         tlinksprache.cMetaDescription , tseo.cSeo
@@ -975,7 +975,7 @@ class LinkHelper
             $allLinks = $this->getSpecialPages();
             $oLink    = isset($allLinks[$nLinkart]->kLink)
                 ? $allLinks[$nLinkart]
-                : Shop::DB()->select('tlink', 'nLinkart', (int)$nLinkart, null, null, null, null, false, 'kLink');
+                : Shop::Container()->getDB()->select('tlink', 'nLinkart', (int)$nLinkart, null, null, null, null, false, 'kLink');
 
             return (isset($oLink->kLink) && $oLink->kLink > 0) ? (int)$oLink->kLink : false;
         }
@@ -1005,7 +1005,7 @@ class LinkHelper
         $oMeta->cKeywords = '';
 
         if ($nLinkArt > 0 && strlen($cISOSprache) > 0) {
-            $oLink = Shop::DB()->executeQueryPrepared(
+            $oLink = Shop::Container()->getDB()->executeQueryPrepared(
                 "SELECT tlinksprache.*
                     FROM tlinksprache
                     JOIN tlink

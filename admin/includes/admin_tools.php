@@ -13,7 +13,7 @@ function getAdminSectionSettings($kEinstellungenSektion)
     $kEinstellungenSektion = (int)$kEinstellungenSektion;
     $oConfig_arr           = [];
     if ($kEinstellungenSektion > 0) {
-        $oConfig_arr = Shop::DB()->selectAll(
+        $oConfig_arr = Shop::Container()->getDB()->selectAll(
             'teinstellungenconf',
             'kEinstellungenSektion',
             $kEinstellungenSektion,
@@ -23,7 +23,7 @@ function getAdminSectionSettings($kEinstellungenSektion)
         if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
             foreach ($oConfig_arr as $conf) {
                 if ($conf->cInputTyp === 'selectbox') {
-                    $conf->ConfWerte = Shop::DB()->selectAll(
+                    $conf->ConfWerte = Shop::Container()->getDB()->selectAll(
                         'teinstellungenconfwerte',
                         'kEinstellungenConf',
                         $conf->kEinstellungenConf,
@@ -31,7 +31,7 @@ function getAdminSectionSettings($kEinstellungenSektion)
                         'nSort'
                     );
                 }
-                $oSetValue = Shop::DB()->select(
+                $oSetValue = Shop::Container()->getDB()->select(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
                     [$kEinstellungenSektion, $conf->cWertName]
@@ -55,7 +55,7 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
     array_walk($settingsIDs, function (&$i) {
         $i = (int)$i;
     });
-    $oConfig_arr = Shop::DB()->query(
+    $oConfig_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungenconf
             WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
@@ -83,12 +83,12 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
                     break;
             }
             if ($config->cInputTyp !== 'listbox') {
-                Shop::DB()->delete(
+                Shop::Container()->getDB()->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
                     [(int)$config->kEinstellungenSektion, $config->cWertName]
                 );
-                Shop::DB()->insert('teinstellungen', $aktWert);
+                Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
             }
         }
         Shop::Cache()->flushTags($tags);
@@ -108,22 +108,22 @@ function bearbeiteListBox($cListBox_arr, $cWertName, $kEinstellungenSektion)
 {
     $kEinstellungenSektion = (int)$kEinstellungenSektion;
     if (is_array($cListBox_arr) && count($cListBox_arr) > 0) {
-        Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [$kEinstellungenSektion, $cWertName]);
+        Shop::Container()->getDB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [$kEinstellungenSektion, $cWertName]);
         foreach ($cListBox_arr as $cListBox) {
             $oAktWert                        = new stdClass();
             $oAktWert->cWert                 = $cListBox;
             $oAktWert->cName                 = $cWertName;
             $oAktWert->kEinstellungenSektion = $kEinstellungenSektion;
 
-            Shop::DB()->insert('teinstellungen', $oAktWert);
+            Shop::Container()->getDB()->insert('teinstellungen', $oAktWert);
         }
     } else {
         // Leere Kundengruppen Work Around
         if ($cWertName === 'bewertungserinnerung_kundengruppen' || $cWertName === 'kwk_kundengruppen') {
             // Standard Kundengruppe aus DB holen
-            $oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+            $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
             if ($oKundengruppe->kKundengruppe > 0) {
-                Shop::DB()->delete(
+                Shop::Container()->getDB()->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
                     [$kEinstellungenSektion, $cWertName]
@@ -133,7 +133,7 @@ function bearbeiteListBox($cListBox_arr, $cWertName, $kEinstellungenSektion)
                 $oAktWert->cName                 = $cWertName;
                 $oAktWert->kEinstellungenSektion = CONF_BEWERTUNG;
 
-                Shop::DB()->insert('teinstellungen', $oAktWert);
+                Shop::Container()->getDB()->insert('teinstellungen', $oAktWert);
             }
         }
     }
@@ -151,7 +151,7 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
         return 'Fehler: Cross site request forgery.';
     }
     $kEinstellungenSektion = (int)$kEinstellungenSektion;
-    $oConfig_arr           = Shop::DB()->selectAll(
+    $oConfig_arr           = Shop::Container()->getDB()->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf'],
         [$kEinstellungenSektion, 'Y'],
@@ -183,12 +183,12 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
             }
 
             if ($config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
-                Shop::DB()->delete(
+                Shop::Container()->getDB()->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
                     [$kEinstellungenSektion, $config->cWertName]
                 );
-                Shop::DB()->insert('teinstellungen', $aktWert);
+                Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
             }
         }
         Shop::Cache()->flushTags($tags);
@@ -218,7 +218,7 @@ function holeAlleKampagnen($bInterneKampagne = false, $bAktivAbfragen = true)
         $cInternSQL = " WHERE kKampagne >= 1000";
     }
     $oKampagne_arr    = [];
-    $oKampagneTMP_arr = Shop::DB()->query(
+    $oKampagneTMP_arr = Shop::Container()->getDB()->query(
         "SELECT kKampagne
             FROM tkampagne
             " . $cAktivSQL . "
@@ -290,7 +290,7 @@ function holeBewertungserinnerungSettings()
 {
     $Einstellungen = [];
     // Einstellungen für die Bewertung holen
-    $oEinstellungen_arr = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_BEWERTUNG);
+    $oEinstellungen_arr = Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_BEWERTUNG);
     if (is_array($oEinstellungen_arr) && count($oEinstellungen_arr) > 0) {
         $Einstellungen['bewertung']                                       = [];
         $Einstellungen['bewertung']['bewertungserinnerung_kundengruppen'] = [];
@@ -318,7 +318,7 @@ function setzeSprache()
 {
     if (validateToken() && verifyGPCDataInteger('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
-        $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
+        $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
 
         if ((int)$oSprache->kSprache > 0) {
             $_SESSION['kSprache']    = (int)$oSprache->kSprache;
@@ -328,7 +328,7 @@ function setzeSprache()
 
     if (!isset($_SESSION['kSprache'])) {
         // Wähle Standardsprache als aktuelle Sprache
-        $oSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+        $oSprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
 
         if ((int)$oSprache->kSprache > 0) {
             $_SESSION['kSprache']    = (int)$oSprache->kSprache;
@@ -337,7 +337,7 @@ function setzeSprache()
     }
     if (isset($_SESSION['kSprache']) && empty($_SESSION['cISOSprache'])) {
         // Fehlendes cISO ergänzen
-        $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
+        $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 
         if ((int)$oSprache->kSprache > 0) {
             $_SESSION['cISOSprache'] = $oSprache->cISO;
@@ -479,7 +479,7 @@ function ermittleDatumWoche($cDatum)
 function getJTLVersionDB($bDate = false)
 {
     $nRet     = 0;
-    $nVersion = Shop::DB()->query("SELECT nVersion, dAktualisiert FROM tversion", 1);
+    $nVersion = Shop::Container()->getDB()->query("SELECT nVersion, dAktualisiert FROM tversion", 1);
     if (isset($nVersion->nVersion) && is_numeric($nVersion->nVersion)) {
         $nRet = (int)$nVersion->nVersion;
     }

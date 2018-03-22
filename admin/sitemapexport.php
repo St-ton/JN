@@ -33,7 +33,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $kSitemapTracker_arr = sichereArrayKeys($_POST['kSitemapTracker']);
 
     if (is_array($kSitemapTracker_arr) && count($kSitemapTracker_arr) > 0) {
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "DELETE
                 FROM tsitemaptracker
                 WHERE kSitemapTracker IN (" . implode(',', $kSitemapTracker_arr) . ")", 3
@@ -45,7 +45,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $kSitemapReport_arr = sichereArrayKeys($_POST['kSitemapReport']);
 
     if (is_array($kSitemapReport_arr) && count($kSitemapReport_arr) > 0) {
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "DELETE
                 FROM tsitemapreport
                 WHERE kSitemapReport IN (" . implode(',', $kSitemapReport_arr) . ")", 3
@@ -60,7 +60,7 @@ $nYearReports   = verifyGPCDataInteger('nYear_reports');
 
 // Sitemap Downloads - Jahr löschen
 if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && validateToken()) {
-    Shop::DB()->query(
+    Shop::Container()->getDB()->query(
         "DELETE FROM tsitemaptracker
             WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads, 3
     );
@@ -70,7 +70,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && v
 
 // Sitemap Reports - Jahr löschen
 if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && validateToken()) {
-    Shop::DB()->query(
+    Shop::Container()->getDB()->query(
         "DELETE FROM tsitemapreport
             WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports, 3
     );
@@ -79,7 +79,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && val
 }
 
 // Sitemap Downloads
-$oSitemapDownloadYears_arr = Shop::DB()->query(
+$oSitemapDownloadYears_arr = Shop::Container()->getDB()->query(
     "SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemaptracker
         GROUP BY 1
@@ -99,7 +99,7 @@ $oSitemapDownloadPagination = (new Pagination('SitemapDownload'))
         return $item->year == $nYearDownloads ? $item->count : $carry;
     }, 0))
     ->assemble();
-$oSitemapDownload_arr = Shop::DB()->query(
+$oSitemapDownload_arr = Shop::Container()->getDB()->query(
     "SELECT tsitemaptracker.*, IF(tsitemaptracker.kBesucherBot = 0, '', 
         IF(CHAR_LENGTH(tbesucherbot.cUserAgent) = 0, tbesucherbot.cName, tbesucherbot.cUserAgent)) AS cBot, 
         DATE_FORMAT(tsitemaptracker.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
@@ -112,7 +112,7 @@ $oSitemapDownload_arr = Shop::DB()->query(
 );
 
 // Sitemap Reports
-$oSitemapReportYears_arr = Shop::DB()->query(
+$oSitemapReportYears_arr = Shop::Container()->getDB()->query(
     "SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemapreport
         GROUP BY 1
@@ -132,7 +132,7 @@ $oSitemapReportPagination = (new Pagination('SitemapReport'))
         return $item->year == $nYearReports ? $item->count : $carry;
     }, 0))
     ->assemble();
-$oSitemapReport_arr = Shop::DB()->query(
+$oSitemapReport_arr = Shop::Container()->getDB()->query(
     "SELECT tsitemapreport.*, DATE_FORMAT(tsitemapreport.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
         FROM tsitemapreport
         WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports . "
@@ -143,7 +143,7 @@ $oSitemapReport_arr = Shop::DB()->query(
 if (is_array($oSitemapReport_arr) && count($oSitemapReport_arr) > 0) {
     foreach ($oSitemapReport_arr as $i => $oSitemapReport) {
         if (isset($oSitemapReport->kSitemapReport) && $oSitemapReport->kSitemapReport > 0) {
-            $oSitemapReport_arr[$i]->oSitemapReportFile_arr = Shop::DB()->selectAll(
+            $oSitemapReport_arr[$i]->oSitemapReportFile_arr = Shop::Container()->getDB()->selectAll(
                 'tsitemapreportfile',
                 'kSitemapReport',
                 (int)$oSitemapReport->kSitemapReport
@@ -155,7 +155,7 @@ if (is_array($oSitemapReport_arr) && count($oSitemapReport_arr) > 0) {
 }
 
 // Einstellungen
-$oConfig_arr = Shop::DB()->selectAll(
+$oConfig_arr = Shop::Container()->getDB()->selectAll(
     'teinstellungenconf',
     'kEinstellungenSektion',
     CONF_SITEMAP,
@@ -165,7 +165,7 @@ $oConfig_arr = Shop::DB()->selectAll(
 $count = count($oConfig_arr);
 for ($i = 0; $i < $count; ++$i) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$oConfig_arr[$i]->kEinstellungenConf,
@@ -174,7 +174,7 @@ for ($i = 0; $i < $count; ++$i) {
         );
     }
 
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         CONF_SITEMAP,

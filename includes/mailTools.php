@@ -16,14 +16,14 @@ function includeMailTemplate($params, &$smarty)
         $smarty->getTemplateVars('int_lang') !== null) {
         $res            = null;
         $currenLanguage = null;
-        $vorlage        = Shop::DB()->select('temailvorlageoriginal', 'cDateiname', $params['template']);
+        $vorlage        = Shop::Container()->getDB()->select('temailvorlageoriginal', 'cDateiname', $params['template']);
         if (isset($vorlage->kEmailvorlage) && $vorlage->kEmailvorlage > 0) {
             $row            = 'cContentText';
             $currenLanguage = $smarty->getTemplateVars('int_lang');
             if ($params['type'] === 'html') {
                 $row = 'cContentHtml';
             }
-            $res = Shop::DB()->query(
+            $res = Shop::Container()->getDB()->query(
                 "SELECT " . $row . " AS content
                     FROM temailvorlagesprache
                     WHERE kSprache = " . (int)$currenLanguage->kSprache .
@@ -85,14 +85,14 @@ function sendeMail($ModulId, $Object, $mail = null)
     if (!isset($Object->tkunde->kKundengruppe) || !$Object->tkunde->kKundengruppe) {
         $Object->tkunde->kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $Object->tfirma        = Shop::DB()->query("SELECT * FROM tfirma", 1);
-    $Object->tkundengruppe = Shop::DB()->select(
+    $Object->tfirma        = Shop::Container()->getDB()->query("SELECT * FROM tfirma", 1);
+    $Object->tkundengruppe = Shop::Container()->getDB()->select(
         'tkundengruppe',
         'kKundengruppe',
         (int)$Object->tkunde->kKundengruppe
     );
     if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
-        $kundengruppensprache = Shop::DB()->select(
+        $kundengruppensprache = Shop::Container()->getDB()->select(
             'tkundengruppensprache',
             'kKundengruppe',
             (int)$Object->tkunde->kKundengruppe,
@@ -105,13 +105,13 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
 
     if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
-        $Sprache = Shop::DB()->select('tsprache', 'kSprache', (int)$Object->tkunde->kSprache);
+        $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$Object->tkunde->kSprache);
     }
     if (isset($Object->NewsletterEmpfaenger->kSprache) && $Object->NewsletterEmpfaenger->kSprache > 0) {
-        $Sprache = Shop::DB()->select('tsprache', 'kSprache', $Object->NewsletterEmpfaenger->kSprache);
+        $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', $Object->NewsletterEmpfaenger->kSprache);
     }
     if (empty($Sprache)) {
-        $Sprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+        $Sprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
     }
     $oKunde = lokalisiereKunde($Sprache, $Object->tkunde);
 
@@ -126,7 +126,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     $AGB     = new stdClass();
     $WRB     = new stdClass();
     $WRBForm = new stdClass();
-    $oAGBWRB = Shop::DB()->select(
+    $oAGBWRB = Shop::Container()->getDB()->select(
         'ttext',
         ['kSprache', 'kKundengruppe'],
         [(int)$Sprache->kSprache, (int)$Object->tkunde->kKundengruppe]
@@ -158,7 +158,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         $mailSmarty->assign('oPluginMail', $Object);
     }
 
-    $Emailvorlage = Shop::DB()->query("SELECT * FROM " . $cTable . " WHERE " . $cSQLWhere, 1);
+    $Emailvorlage = Shop::Container()->getDB()->query("SELECT * FROM " . $cTable . " WHERE " . $cSQLWhere, 1);
     // Email aktiv?
     if (isset($Emailvorlage->cAktiv) && $Emailvorlage->cAktiv === 'N') {
         Jtllog::writeLog(
@@ -172,7 +172,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
     // Emailvorlageneinstellungen laden
     if (isset($Emailvorlage->kEmailvorlage) && $Emailvorlage->kEmailvorlage > 0) {
-        $Emailvorlage->oEinstellung_arr = Shop::DB()->selectAll(
+        $Emailvorlage->oEinstellung_arr = Shop::Container()->getDB()->selectAll(
             $cTableSetting,
             'kEmailvorlage',
             $Emailvorlage->kEmailvorlage
@@ -198,7 +198,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
     $mail->kEmailvorlage = $Emailvorlage->kEmailvorlage;
 
-    $Emailvorlagesprache    = Shop::DB()->select(
+    $Emailvorlagesprache    = Shop::Container()->getDB()->select(
         $cTableSprache,
         ['kEmailvorlage', 'kSprache'],
         [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]
@@ -228,7 +228,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                 strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
             ) {
                 $cModulId         = $Object->tbestellung->Zahlungsart->cModulId;
-                $oZahlungsartConf = Shop::DB()->query(
+                $oZahlungsartConf = Shop::Container()->getDB()->query(
                     "SELECT tzahlungsartsprache.*
                         FROM tzahlungsartsprache
                         JOIN tzahlungsart 
@@ -268,7 +268,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                 strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
             ) {
                 $cModulId         = $Object->tbestellung->Zahlungsart->cModulId;
-                $oZahlungsartConf = Shop::DB()->query(
+                $oZahlungsartConf = Shop::Container()->getDB()->query(
                     "SELECT tzahlungsartsprache.*
                         FROM tzahlungsartsprache
                         JOIN tzahlungsart 
@@ -452,7 +452,7 @@ function sendeMail($ModulId, $Object, $mail = null)
             $mailSmarty->assign('oRMA', $Object->oRMA);
             break;
         case MAILTEMPLATE_BEWERTUNG_GUTHABEN:
-            $waehrung                                                 = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+            $waehrung                                                 = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
             $Object->oBewertungGuthabenBonus->fGuthabenBonusLocalized = gibPreisStringLocalized(
                 $Object->oBewertungGuthabenBonus->fGuthabenBonus,
                 $waehrung,
@@ -622,14 +622,14 @@ function sendeMail($ModulId, $Object, $mail = null)
  */
 function pruefeGlobaleEmailBlacklist($cEmail)
 {
-    $oEmailBlacklist = Shop::DB()->select('temailblacklist', 'cEmail', Shop::DB()->escape($cEmail));
+    $oEmailBlacklist = Shop::Container()->getDB()->select('temailblacklist', 'cEmail', Shop::Container()->getDB()->escape($cEmail));
 
     if (isset($oEmailBlacklist->cEmail) && strlen($oEmailBlacklist->cEmail) > 0) {
         $oEmailBlacklistBlock                = new stdClass();
         $oEmailBlacklistBlock->cEmail        = $oEmailBlacklist->cEmail;
         $oEmailBlacklistBlock->dLetzterBlock = 'now()';
 
-        Shop::DB()->insert('temailblacklistblock', $oEmailBlacklistBlock);
+        Shop::Container()->getDB()->insert('temailblacklistblock', $oEmailBlacklistBlock);
 
         return true;
     }
@@ -848,7 +848,7 @@ function lokalisiereKunde($sprache, $kunde)
         if (strtolower($sprache->cISO) !== 'ger') {
             $sel_var = 'cEnglisch';
         }
-        $land = Shop::DB()->select(
+        $land = Shop::Container()->getDB()->select(
             'tland',
             'cISO',
             $kunde->cLand,
@@ -878,7 +878,7 @@ function lokalisiereKunde($sprache, $kunde)
 function lokalisiereLieferadresse($oSprache, $oLieferadresse)
 {
     $langRow = (strtolower($oSprache->cISO) === 'ger') ? 'cDeutsch' : 'cEnglisch';
-    $land    = Shop::DB()->select(
+    $land    = Shop::Container()->getDB()->select(
         'tland',
         'cISO', $oLieferadresse->cLand,
         null, null,

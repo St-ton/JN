@@ -24,13 +24,13 @@ class Migration_20171215121900 extends Migration implements IMigration
 
     public function up()
     {
-        Shop::DB()->update('tsprachwerte', 'cName', 'invalidHash', (object)["kSprachsektion" => 6]);
-        Shop::DB()->update('tsprachwerte', 'cName', 'invalidCustomer', (object)["kSprachsektion" => 6]);
+        Shop::Container()->getDB()->update('tsprachwerte', 'cName', 'invalidHash', (object)["kSprachsektion" => 6]);
+        Shop::Container()->getDB()->update('tsprachwerte', 'cName', 'invalidCustomer', (object)["kSprachsektion" => 6]);
     }
 
     public function down()
     {
-        Shop::DB()->update('tsprachwerte', 'cName', 'invalidHash', (object)["kSprachsektion" => 4]);
-        Shop::DB()->update('tsprachwerte', 'cName', 'invalidCustomer', (object)["kSprachsektion" => 4]);
+        Shop::Container()->getDB()->update('tsprachwerte', 'cName', 'invalidHash', (object)["kSprachsektion" => 4]);
+        Shop::Container()->getDB()->update('tsprachwerte', 'cName', 'invalidCustomer', (object)["kSprachsektion" => 4]);
     }
 }

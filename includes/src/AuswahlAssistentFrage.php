@@ -78,7 +78,7 @@ class AuswahlAssistentFrage
      */
     private function loadFromDB($kAuswahlAssistentFrage, $bOnlyActive = true)
     {
-        $oDbResult = Shop::DB()->query(
+        $oDbResult = Shop::Container()->getDB()->query(
             "SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
                 FROM tauswahlassistentfrage AS af
                     JOIN tauswahlassistentgruppe as ag
@@ -118,7 +118,7 @@ class AuswahlAssistentFrage
             if ($bAktiv) {
                 $cAktivSQL = " AND nAktiv = 1";
             }
-            $oFrage_arr = Shop::DB()->query(
+            $oFrage_arr = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM tauswahlassistentfrage
                     WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe .
@@ -150,7 +150,7 @@ class AuswahlAssistentFrage
             $obj->cFrage                  = $this->cFrage;
             $obj->nSort                   = $this->nSort;
             $obj->nAktiv                  = $this->nAktiv;
-            $kAuswahlAssistentFrage       = Shop::DB()->insert('tauswahlassistentfrage', $obj);
+            $kAuswahlAssistentFrage       = Shop::Container()->getDB()->insert('tauswahlassistentfrage', $obj);
 
             if ($kAuswahlAssistentFrage > 0) {
                 return $bPrimary ? $kAuswahlAssistentFrage : true;
@@ -176,7 +176,7 @@ class AuswahlAssistentFrage
             $_upd->nSort                   = $this->nSort;
             $_upd->nAktiv                  = $this->nAktiv;
 
-            Shop::DB()->update(
+            Shop::Container()->getDB()->update(
                 'tauswahlassistentfrage',
                 'kAuswahlAssistentFrage',
                 (int)$this->kAuswahlAssistentFrage,
@@ -200,7 +200,7 @@ class AuswahlAssistentFrage
             && count($cParam_arr['kAuswahlAssistentFrage_arr']) > 0
         ) {
             foreach ($cParam_arr['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
-                Shop::DB()->delete(
+                Shop::Container()->getDB()->delete(
                     'tauswahlassistentfrage',
                     'kAuswahlAssistentFrage',
                     (int)$kAuswahlAssistentFrage
@@ -258,7 +258,7 @@ class AuswahlAssistentFrage
     private function isMerkmalTaken($kMerkmal, $kAuswahlAssistentGruppe)
     {
         if ($kMerkmal > 0 && $kAuswahlAssistentGruppe > 0) {
-            $oFrage = Shop::DB()->select(
+            $oFrage = Shop::Container()->getDB()->select(
                 'tauswahlassistentfrage',
                 'kMerkmal',
                 (int)$kMerkmal,

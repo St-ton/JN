@@ -9,7 +9,7 @@
  */
 class WarenkorbHelper
 {
-    const NET = 0;
+    const NET   = 0;
     const GROSS = 1;
 
     /**
@@ -295,7 +295,6 @@ class WarenkorbHelper
                 ->assign('hinweis', $_SESSION['hinweis'])
                 ->assign('Xselling', isset($_POST['a']) ? gibArtikelXSelling($_POST['a']) : null);
             unset($_SESSION['hinweis'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['bWarenkorbHinzugefuegt']);
-
         }
         $fAnzahl = 0;
         if (isset($_POST['anzahl'])) {
@@ -362,7 +361,7 @@ class WarenkorbHelper
             return true;
         }
         if (ArtikelHelper::isParent($articleID)) { // Varikombi
-            $articleID   = ArtikelHelper::getArticleForParent($articleID);
+            $articleID  = ArtikelHelper::getArticleForParent($articleID);
             $attributes = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($articleID);
         } else {
             $attributes = ArtikelHelper::getSelectedPropertiesForArticle($articleID);
@@ -426,7 +425,7 @@ class WarenkorbHelper
                 if ($oKonfigitem->fAnzahl < 1) {
                     $oKonfigitem->fAnzahl = 1;
                 }
-                $count = max($count, 1);
+                $count                  = max($count, 1);
                 $oKonfigitem->fAnzahlWK = $oKonfigitem->fAnzahl;
                 if (!$oKonfigitem->ignoreMultiplier()) {
                     $oKonfigitem->fAnzahlWK *= $count;
@@ -555,7 +554,7 @@ class WarenkorbHelper
             || $qty > count($_SESSION['Vergleichsliste']->oArtikel_arr)
         ) {
             // Prüfe auf kArtikel
-            $productExists = Shop::DB()->select(
+            $productExists = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel', $kArtikel,
                 null, null,
@@ -566,7 +565,7 @@ class WarenkorbHelper
             // Falls Artikel vorhanden
             if ($productExists !== null && $productExists->kArtikel > 0) {
                 // Sichtbarkeit Prüfen
-                $vis = Shop::DB()->select(
+                $vis = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $kArtikel,
                     'kKundengruppe', Session::CustomerGroup()->getID(),
@@ -605,11 +604,15 @@ class WarenkorbHelper
                                     $oVergleichsliste->oArtikel_arr[] = $oArtikel;
                                 }
                                 $_SESSION['Vergleichsliste'] = $oVergleichsliste;
-                                Shop::Smarty()->assign('hinweis',
-                                    Shop::Lang()->get('comparelistProductadded', 'messages'));
+                                Shop::Smarty()->assign(
+                                    'hinweis',
+                                    Shop::Lang()->get('comparelistProductadded', 'messages')
+                                );
                             } else {
-                                Shop::Smarty()->assign('fehler',
-                                    Shop::Lang()->get('comparelistProductexists', 'messages'));
+                                Shop::Smarty()->assign(
+                                    'fehler',
+                                    Shop::Lang()->get('comparelistProductexists', 'messages')
+                                );
                             }
                         }
                     } else {
@@ -652,7 +655,7 @@ class WarenkorbHelper
 
         if ($articleID > 0 && Session::Customer()->getID() > 0) {
             // Prüfe auf kArtikel
-            $productExists = Shop::DB()->select(
+            $productExists = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel', $articleID,
                 null, null,
@@ -664,7 +667,7 @@ class WarenkorbHelper
             if ($productExists !== null && $productExists->kArtikel > 0) {
                 $attributes = [];
                 // Sichtbarkeit Prüfen
-                $vis = Shop::DB()->select(
+                $vis = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $articleID,
                     'kKundengruppe', Session::CustomerGroup()->getID(),
@@ -684,7 +687,7 @@ class WarenkorbHelper
                             exit;
                         }
 
-                        $articleID   = ArtikelHelper::getArticleForParent($articleID);
+                        $articleID  = ArtikelHelper::getArticleForParent($articleID);
                         $attributes = $articleID > 0
                             ? ArtikelHelper::getSelectedPropertiesForVarCombiArticle($articleID)
                             : [];
@@ -697,7 +700,7 @@ class WarenkorbHelper
                             $_SESSION['Wunschliste'] = new Wunschliste();
                             $_SESSION['Wunschliste']->schreibeDB();
                         }
-                        $qty         = max(1, $qty);
+                        $qty             = max(1, $qty);
                         $kWunschlistePos = $_SESSION['Wunschliste']->fuegeEin(
                             $articleID,
                             $productExists->cName,

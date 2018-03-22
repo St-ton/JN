@@ -133,7 +133,7 @@ class WarenkorbPersPos
         $oTemp->cUnique          = $this->cUnique;
         $oTemp->kKonfigitem      = $this->kKonfigitem;
         $oTemp->nPosTyp          = $this->nPosTyp;
-        $this->kWarenkorbPersPos = Shop::DB()->insert('twarenkorbperspos', $oTemp);
+        $this->kWarenkorbPersPos = Shop::Container()->getDB()->insert('twarenkorbperspos', $oTemp);
 
         return $this;
     }
@@ -154,7 +154,7 @@ class WarenkorbPersPos
         $oTemp->kKonfigitem       = $this->kKonfigitem;
         $oTemp->nPosTyp           = $this->nPosTyp;
 
-        return Shop::DB()->update('twarenkorbperspos', 'kWarenkorbPersPos', $this->kWarenkorbPersPos, $oTemp);
+        return Shop::Container()->getDB()->update('twarenkorbperspos', 'kWarenkorbPersPos', $this->kWarenkorbPersPos, $oTemp);
     }
 
     /**

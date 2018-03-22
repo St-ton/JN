@@ -9,7 +9,7 @@
  */
 function holeAlleKampagnenDefinitionen()
 {
-    $oKampagneDef_arr = Shop::DB()->query(
+    $oKampagneDef_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tkampagnedef
             ORDER BY kKampagneDef", 2
@@ -30,7 +30,7 @@ function holeKampagne($kKampagne)
 {
     $kKampagne = (int)$kKampagne;
     if ($kKampagne > 0) {
-        return Shop::DB()->query(
+        return Shop::Container()->getDB()->query(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
                 WHERE kKampagne = " . $kKampagne, 1
@@ -48,7 +48,7 @@ function holeKampagneDef($kKampagneDef)
 {
     $kKampagneDef = (int)$kKampagneDef;
     if ($kKampagneDef > 0) {
-        return Shop::DB()->select('tkampagnedef', 'kKampagneDef', $kKampagneDef);
+        return Shop::Container()->getDB()->select('tkampagnedef', 'kKampagneDef', $kKampagneDef);
     }
 
     return new stdClass();
@@ -93,7 +93,7 @@ function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
         }
     }
 
-    $oStats_arr = Shop::DB()->query(
+    $oStats_arr = Shop::Container()->getDB()->query(
         "SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl
             FROM tkampagnevorgang
             " . $cSQL . "
@@ -252,7 +252,7 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     // Zeitraum
     $cZeitraum_arr = gibDetailDatumZeitraum();
 
-    $oStats_arr = Shop::DB()->query(
+    $oStats_arr = Shop::Container()->getDB()->query(
         "SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl, " . $cSQLSELECT . "
             FROM tkampagnevorgang
             " . $cSQLWHERE . "
@@ -346,7 +346,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
         $cSQLWHERE  = '';
         baueDefDetailSELECTWHERE($cSQLSELECT, $cSQLWHERE, $cStamp);
 
-        $oStats_arr = Shop::DB()->query(
+        $oStats_arr = Shop::Container()->getDB()->query(
             "SELECT kKampagne, kKampagneDef, kKey " . $cSQLSELECT . "
                 FROM tkampagnevorgang
                 " . $cSQLWHERE . "
@@ -376,7 +376,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
         // Kampagnendefinitionen
         switch ((int)$oKampagneDef->kKampagneDef) {
             case KAMPAGNE_DEF_HIT:    // HIT
-                $oDaten_arr = Shop::DB()->query(
+                $oDaten_arr = Shop::Container()->getDB()->query(
                     "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
                         tkampagnevorgang.cCustomData, DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tbesucher.cIP IS NULL, tbesucherarchiv.cIP, tbesucher.cIP) AS cIP,
@@ -417,7 +417,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_VERKAUF:    // VERKAUF
-                $oDaten_arr = Shop::DB()->query(
+                $oDaten_arr = Shop::Container()->getDB()->query(
                     "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
@@ -477,7 +477,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_ANMELDUNG:    // ANMELDUNG
-                $oDaten_arr = Shop::DB()->query(
+                $oDaten_arr = Shop::Container()->getDB()->query(
                     "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
@@ -522,7 +522,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_VERKAUFSSUMME:    // VERKAUFSSUMME
-                $oDaten_arr = Shop::DB()->query(
+                $oDaten_arr = Shop::Container()->getDB()->query(
                     "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
@@ -581,7 +581,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_FRAGEZUMPRODUKT:    // FRAGEZUMPRODUKT
-                $oDaten_arr = Shop::DB()->query(
+                $oDaten_arr = Shop::Container()->getDB()->query(
                     "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tproduktanfragehistory.cVorname IS NULL, 'n.v.', tproduktanfragehistory.cVorname) AS cVorname,
@@ -619,7 +619,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                 break;
             case KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE:    // VERFUEGBARKEITSANFRAGE
-                $oDaten_arr = Shop::DB()->query(
+                $oDaten_arr = Shop::Container()->getDB()->query(
                     "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tverfuegbarkeitsbenachrichtigung.cVorname IS NULL, 'n.v.', tverfuegbarkeitsbenachrichtigung.cVorname) AS cVorname,
@@ -655,7 +655,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                 break;
             case KAMPAGNE_DEF_LOGIN:    // LOGIN
-                $oDaten_arr = Shop::DB()->query(
+                $oDaten_arr = Shop::Container()->getDB()->query(
                     "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
@@ -701,7 +701,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_WUNSCHLISTE:    // WUNSCHLISTE
-                $oDaten_arr = Shop::DB()->query(
+                $oDaten_arr = Shop::Container()->getDB()->query(
                     "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
@@ -755,7 +755,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
             case KAMPAGNE_DEF_WARENKORB:    // WARENKORB
                 $kKundengruppe = Kundengruppe::getDefaultGroupID();
 
-                $oDaten_arr = Shop::DB()->query(
+                $oDaten_arr = Shop::Container()->getDB()->query(
                     "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tartikel.kArtikel IS NULL, 'n.v.', tartikel.kArtikel) AS kArtikel,
@@ -798,7 +798,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_NEWSLETTER:    // NEWSLETTER
-                $oDaten_arr = Shop::DB()->query(
+                $oDaten_arr = Shop::Container()->getDB()->query(
                     "SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey " . $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tnewsletter.cName IS NULL, 'n.v.', tnewsletter.cName) AS cName,
@@ -841,7 +841,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
  */
 function baueDefDetailSELECTWHERE(&$cSQLSELECT, &$cSQLWHERE, $cStamp)
 {
-    $cStamp = Shop::DB()->escape($cStamp);
+    $cStamp = Shop::Container()->getDB()->escape($cStamp);
     switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
             $cSQLSELECT = ", DATE_FORMAT(tkampagnevorgang.dErstellt, '%Y') AS cStampText";
@@ -978,7 +978,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
 
         switch ((int)$nAnsicht) {
             case 1:    // Monat
-                $oDate = Shop::DB()->query("SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) > now(), 1, 0) AS nGroesser", 1);
+                $oDate = Shop::Container()->getDB()->query("SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) > now(), 1, 0) AS nGroesser", 1);
 
                 if ($oDate->nGroesser == 1) {
                     return date('Y-m-d');
@@ -989,7 +989,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                 return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
                 break;
             case 2:    // Woche
-                $oDate = Shop::DB()->query("SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) > now(), 1, 0) AS nGroesser", 1);
+                $oDate = Shop::Container()->getDB()->query("SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) > now(), 1, 0) AS nGroesser", 1);
 
                 if ($oDate->nGroesser == 1) {
                     return date('Y-m-d');
@@ -1000,7 +1000,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                 return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
                 break;
             case 3:    // Tag
-                $oDate = Shop::DB()->query("SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) > now(), 1, 0) AS nGroesser", 1);
+                $oDate = Shop::Container()->getDB()->query("SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) > now(), 1, 0) AS nGroesser", 1);
 
                 if ($oDate->nGroesser == 1) {
                     return date('Y-m-d');
@@ -1033,7 +1033,7 @@ function speicherKampagne($oKampagne)
 {
     // Standardkampagnen (Interne) Werte herstellen
     if (isset($oKampagne->kKampagne) && ($oKampagne->kKampagne < 1000 && $oKampagne->kKampagne > 0)) {
-        $oKampagneTMP = Shop::DB()->query(
+        $oKampagneTMP = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM tkampagne
                 WHERE kKampagne = " . (int)$oKampagne->kKampagne, 1
@@ -1057,7 +1057,7 @@ function speicherKampagne($oKampagne)
         return 5;//  Kampagnenwert ist leer
     }
     // Name schon vorhanden?
-    $oKampagneTMP = Shop::DB()->queryPrepared(
+    $oKampagneTMP = Shop::Container()->getDB()->queryPrepared(
         "SELECT kKampagne
             FROM tkampagne
             WHERE cName = :cName", ['cName' => $oKampagne->cName], 1
@@ -1068,7 +1068,7 @@ function speicherKampagne($oKampagne)
     }
     // Parameter schon vorhanden?
     if (isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1) {
-        $oKampagneTMP = Shop::DB()->queryPrepared(
+        $oKampagneTMP = Shop::Container()->getDB()->queryPrepared(
             "SELECT kKampagne
                 FROM tkampagne
                 WHERE cParameter = :param", ['param' => $oKampagne->cParameter], 1

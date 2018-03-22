@@ -9,7 +9,7 @@
  */
 function gibAlleSuchspecialOverlays()
 {
-    return Shop::DB()->query("
+    return Shop::Container()->getDB()->query("
         SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, 
             tsuchspecialoverlaysprache.cBildPfad, tsuchspecialoverlaysprache.nAktiv,
             tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin,
@@ -29,7 +29,7 @@ function gibAlleSuchspecialOverlays()
  */
 function gibSuchspecialOverlay($kSuchspecialOverlay)
 {
-    return Shop::DB()->query("
+    return Shop::Container()->getDB()->query("
         SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, tsuchspecialoverlaysprache.cBildPfad, 
             tsuchspecialoverlaysprache.nAktiv, tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin, 
             tsuchspecialoverlaysprache.nTransparenz, tsuchspecialoverlaysprache.nGroesse, 
@@ -71,7 +71,7 @@ function speicherEinstellung($kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
         $oSuchspecialoverlaySprache->cBildPfad = 'kSuchspecialOverlay_' . $_SESSION['kSprache'] . '_' .
             (int)$kSuchspecialOverlay . mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
     } else {
-        $oSuchspecialoverlaySpracheTMP = Shop::DB()->select(
+        $oSuchspecialoverlaySpracheTMP = Shop::Container()->getDB()->select(
             'tsuchspecialoverlaysprache',
             'kSuchspecialOverlay',
             (int)$kSuchspecialOverlay,
@@ -88,12 +88,12 @@ function speicherEinstellung($kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
             loescheBild($oSuchspecialoverlaySprache);
             speicherBild($cFiles_arr, $oSuchspecialoverlaySprache);
         }
-        Shop::DB()->delete(
+        Shop::Container()->getDB()->delete(
             'tsuchspecialoverlaysprache',
             ['kSuchspecialOverlay', 'kSprache'],
             [(int)$kSuchspecialOverlay, (int)$_SESSION['kSprache']]
         );
-        Shop::DB()->insert('tsuchspecialoverlaysprache', $oSuchspecialoverlaySprache);
+        Shop::Container()->getDB()->insert('tsuchspecialoverlaysprache', $oSuchspecialoverlaySprache);
 
         return true;
     }

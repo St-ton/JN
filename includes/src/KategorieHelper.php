@@ -104,7 +104,7 @@ class KategorieHelper
 
                 return $_SESSION['oKategorie_arr_new'];
             }
-            $categoryCountObj    = Shop::DB()->query('SELECT count(*) AS cnt FROM tkategorie', 1);
+            $categoryCountObj    = Shop::Container()->getDB()->query('SELECT count(*) AS cnt FROM tkategorie', 1);
             $categoryCount       = (int)$categoryCountObj->cnt;
             $categoryLimit       = CATEGORY_FULL_LOAD_LIMIT;
             self::$limitReached  = ($categoryCount >= $categoryLimit);
@@ -187,7 +187,7 @@ class KategorieHelper
                     $visibilityWhere      = "";
                 }
             }
-            $nodes            = Shop::DB()->query(
+            $nodes            = Shop::Container()->getDB()->query(
                 "SELECT node.kKategorie, node.kOberKategorie" . $nameSelect .
                 $descriptionSelect . $imageSelect . $seoSelect . $countSelect . "
                     FROM tkategorie AS node INNER JOIN tkategorie AS parent " . $langJoin . "                    
@@ -202,7 +202,7 @@ class KategorieHelper
                 GROUP BY node.kKategorie
                 ORDER BY node.lft", 2
             );
-            $_catAttribut_arr = Shop::DB()->query(
+            $_catAttribut_arr = Shop::Container()->getDB()->query(
                 "SELECT tkategorieattribut.kKategorie, 
                         COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName, 
                         COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
@@ -393,7 +393,7 @@ class KategorieHelper
                 $visibilityWhere      = "";
             }
         }
-        $nodes            = Shop::DB()->query(
+        $nodes            = Shop::Container()->getDB()->query(
             "SELECT parent.kKategorie, parent.kOberKategorie" . $nameSelect .
                 $descriptionSelect . $imageSelect . $seoSelect . $countSelect . "
                 FROM tkategorie AS node INNER JOIN tkategorie AS parent " . $langJoin . "                    
@@ -408,7 +408,7 @@ class KategorieHelper
             GROUP BY parent.kKategorie
             ORDER BY parent.lft", 2
         );
-        $_catAttribut_arr = Shop::DB()->query(
+        $_catAttribut_arr = Shop::Container()->getDB()->query(
             "SELECT tkategorieattribut.kKategorie, 
                     COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName, 
                     COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
@@ -524,7 +524,7 @@ class KategorieHelper
      */
     public static function categoryExists($id)
     {
-        return Shop::DB()->select('tkategorie', 'kKategorie', (int)$id) !== null;
+        return Shop::Container()->getDB()->select('tkategorie', 'kKategorie', (int)$id) !== null;
     }
 
     /**
@@ -630,7 +630,7 @@ class KategorieHelper
      */
     public static function getDataByAttribute($attribute, $value, callable $callback = null)
     {
-        $res = Shop::DB()->select('tkategorie', $attribute, $value);
+        $res = Shop::Container()->getDB()->select('tkategorie', $attribute, $value);
 
         return is_callable($callback)
             ? $callback($res)
@@ -742,7 +742,7 @@ class KategorieHelper
                     )
                     : '';
 
-                $dist_kategorieboxen = Shop::DB()->query(
+                $dist_kategorieboxen = Shop::Container()->getDB()->query(
                     "SELECT DISTINCT(cWert) 
                         FROM tkategorieattribut 
                         WHERE cName = '" . KAT_ATTRIBUT_KATEGORIEBOX . "'", 2

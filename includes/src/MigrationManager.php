@@ -134,12 +134,12 @@ class MigrationManager
         $id      = $migration->getId();
 
         try {
-            Shop::DB()->beginTransaction();
+            Shop::Container()->getDB()->beginTransaction();
             call_user_func([&$migration, $direction]);
-            Shop::DB()->commit();
+            Shop::Container()->getDB()->commit();
             $this->migrated($migration, $direction, $start);
         } catch (Exception $e) {
-            Shop::DB()->rollback();
+            Shop::Container()->getDB()->rollback();
             throw $e;
         }
     }
@@ -225,7 +225,7 @@ class MigrationManager
      */
     public function getCurrentId()
     {
-        $oVersion = Shop::DB()->executeQuery("SELECT kMigration FROM tmigration ORDER BY kMigration DESC", 1);
+        $oVersion = Shop::Container()->getDB()->executeQuery("SELECT kMigration FROM tmigration ORDER BY kMigration DESC", 1);
         if ($oVersion) {
             return $oVersion->kMigration;
         }
@@ -265,7 +265,7 @@ class MigrationManager
     protected function _getExecutedMigrations()
     {
         if ($this->executedMigrations === null) {
-            $migrations = Shop::DB()->executeQuery("SELECT * FROM tmigration ORDER BY kMigration ASC", 2);
+            $migrations = Shop::Container()->getDB()->executeQuery("SELECT * FROM tmigration ORDER BY kMigration ASC", 2);
             foreach ($migrations as $m) {
                 $this->executedMigrations[$m->kMigration] = new DateTime($m->dExecuted);
             }
@@ -285,12 +285,12 @@ class MigrationManager
         $sql = sprintf(
             "INSERT INTO tmigrationlog (kMigration, cDir, cState, cLog, dCreated) VALUES ('%s', %s, %s, %s, '%s');",
             $migration->getId(),
-            Shop::DB()->pdoEscape($direction),
-            Shop::DB()->pdoEscape($state),
-            Shop::DB()->pdoEscape($message),
+            Shop::Container()->getDB()->pdoEscape($direction),
+            Shop::Container()->getDB()->pdoEscape($state),
+            Shop::Container()->getDB()->pdoEscape($message),
             (new DateTime('now'))->format('Y-m-d H:i:s')
         );
-        Shop::DB()->executeQuery($sql, 3);
+        Shop::Container()->getDB()->executeQuery($sql, 3);
     }
 
     /**
@@ -306,10 +306,10 @@ class MigrationManager
                 "INSERT INTO tmigration (kMigration, dExecuted) VALUES ('%s', '%s');",
                 $migration->getId(), $executed->format('Y-m-d H:i:s')
             );
-            Shop::DB()->executeQuery($sql, 3);
+            Shop::Container()->getDB()->executeQuery($sql, 3);
         } else {
             $sql = sprintf("DELETE FROM tmigration WHERE kMigration = '%s'", $migration->getId());
-            Shop::DB()->executeQuery($sql, 3);
+            Shop::Container()->getDB()->executeQuery($sql, 3);
         }
 
         return $this;

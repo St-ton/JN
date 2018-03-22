@@ -26,7 +26,7 @@ $nSize       = verifyGPCDataInteger('s'); // Bildgröße
 
 if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
     // Standardkundengruppe holen
-    $oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+    $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
     if (!isset($oKundengruppe->kKundengruppe)) {
         exit();
     }
@@ -34,7 +34,7 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
     $qry_bildNr       = ($kArtikel === $nBildNummer)
         ? ''
         : " AND tartikelpict.nNr = " . $nBildNummer;
-    $oArtikelPict_arr = Shop::DB()->query(
+    $oArtikelPict_arr = Shop::Container()->getDB()->query(
         "SELECT tartikelpict.cPfad, tartikelpict.kArtikel, tartikel.cSeo, tartikelpict.nNr
                 FROM tartikelpict
                 JOIN tartikel

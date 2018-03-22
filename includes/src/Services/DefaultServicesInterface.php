@@ -6,10 +6,14 @@
 
 namespace Services;
 
+use Cache\JTLCacheInterface;
+use DB\DbInterface;
+use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Interface DefaultServicesInterface
@@ -22,16 +26,34 @@ use Services\JTL\PasswordServiceInterface;
 interface DefaultServicesInterface extends ContainerInterface
 {
     /**
+     * @return DbInterface
+     */
+    public function getDB();
+
+    /**
      * @return PasswordServiceInterface
-     * @throws ServiceNotFoundException
-     * @throws CircularReferenceException
      */
     public function getPasswordService();
 
     /**
      * @return CryptoServiceInterface
+     */
+    public function getCryptoService();
+
+    /**
+     * @return GcServiceInterface
+     */
+    public function getDBServiceGC();
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache();
+
+    /**
+     * @return LoggerInterface
      * @throws ServiceNotFoundException
      * @throws CircularReferenceException
      */
-    public function getCryptoService();
+    public function getBackendLogService() : LoggerInterface;
 }

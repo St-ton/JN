@@ -16,9 +16,9 @@ function generiereRSSXML()
         if ($Einstellungen['rss']['rss_nutzen'] !== 'Y') {
             return false;
         }
-        $Sprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+        $Sprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
         //$seoAktiv = pruefeSeo();
-        $stdKundengruppe         = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+        $stdKundengruppe         = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
         $_SESSION['kSprache']    = $Sprache->kSprache;
         $_SESSION['cISOSprache'] = $Sprache->cISO;
 
@@ -47,7 +47,7 @@ function generiereRSSXML()
         }
         // Artikel beachten?
         if ($Einstellungen['rss']['rss_artikel_beachten'] === 'Y') {
-            $artikelarr = Shop::DB()->query(
+            $artikelarr = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, 
                     tartikel.dLetzteAktualisierung, tartikel.dErstellt, 
                     DATE_FORMAT(tartikel.dErstellt, \"%a, %d %b %Y %H:%i:%s UTC\") AS erstellt
@@ -84,7 +84,7 @@ function generiereRSSXML()
 
         // News beachten?
         if ($Einstellungen['rss']['rss_news_beachten'] === 'Y') {
-            $oNews_arr = Shop::DB()->query(
+            $oNews_arr = Shop::Container()->getDB()->query(
                 "SELECT *, DATE_FORMAT(dGueltigVon, '%a, %d %b %Y %H:%i:%s UTC') AS dErstellt_RSS
                     FROM tnews
                     WHERE DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dGueltigVon
@@ -109,7 +109,7 @@ function generiereRSSXML()
         }
         // bewertungen beachten?
         if ($Einstellungen['rss']['rss_bewertungen_beachten'] === 'Y') {
-            $oBewertung_arr = Shop::DB()->query(
+            $oBewertung_arr = Shop::Container()->getDB()->query(
                 "SELECT *, dDatum, DATE_FORMAT(dDatum, \"%a, %d %b %y %h:%i:%s +0100\") AS dErstellt_RSS
                     FROM tbewertung
                     WHERE DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dDatum

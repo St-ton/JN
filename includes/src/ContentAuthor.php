@@ -31,7 +31,7 @@ class ContentAuthor
         $contentID = (int)$contentID;
 
         if ($authorID > 0) {
-            return Shop::DB()->query(
+            return Shop::Container()->getDB()->query(
                 "INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
                     VALUES('" . $realm . "', " . $authorID . ", " . $contentID . ")
                     ON DUPLICATE KEY UPDATE
@@ -48,7 +48,7 @@ class ContentAuthor
      */
     public function clearAuthor($realm, $contentID)
     {
-        Shop::DB()->delete('tcontentauthor', ['cRealm', 'kContentId'], [$realm, (int)$contentID]);
+        Shop::Container()->getDB()->delete('tcontentauthor', ['cRealm', 'kContentId'], [$realm, (int)$contentID]);
     }
 
     /**
@@ -62,7 +62,7 @@ class ContentAuthor
         $filter = $activeOnly ? 'AND tadminlogin.bAktiv = 1
                     AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()' : '';
 
-        $author  = Shop::DB()->query(
+        $author  = Shop::Container()->getDB()->query(
             "SELECT tcontentauthor.kContentAuthor, tcontentauthor.cRealm, 
                 tcontentauthor.kAdminlogin, tcontentauthor.kContentId,
                 tadminlogin.cName, tadminlogin.cMail
@@ -75,7 +75,7 @@ class ContentAuthor
         );
 
         if (is_object($author) && (int)$author->kAdminlogin > 0) {
-            $attribs = Shop::DB()->query(
+            $attribs = Shop::Container()->getDB()->query(
                 "SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, 
                     tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
                     FROM tadminloginattribut
@@ -107,7 +107,7 @@ class ContentAuthor
                         ))";
         }
 
-        return Shop::DB()->query(
+        return Shop::Container()->getDB()->query(
             "SELECT tadminlogin.kAdminlogin, tadminlogin.cLogin, tadminlogin.cName, tadminlogin.cMail 
                 FROM tadminlogin
                 WHERE tadminlogin.bAktiv = 1

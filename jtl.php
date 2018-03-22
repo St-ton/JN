@@ -235,7 +235,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $kWunschliste = verifyGPCDataInteger('wl');
         if ($kWunschliste) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
+            $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (!empty($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
                 $step                    = 'wunschliste anzeigen';
                 $cHinweis               .= wunschlisteAktualisieren($kWunschliste);
@@ -262,7 +262,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $step         = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? 'mein Konto' : 'login';
         // Pruefen, ob der MD5 vorhanden ist
         if ($kWunschliste > 0) {
-            $oWunschliste = Shop::DB()->select(
+            $oWunschliste = Shop::Container()->getDB()->select(
                 'twunschliste',
                 'kWunschliste',
                 $kWunschliste,
@@ -360,7 +360,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $kWunschliste = verifyGPCDataInteger('wl');
         if ($kWunschliste > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', (int)$kWunschliste);
+            $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', (int)$kWunschliste);
             if (isset($_SESSION['Kunde']->kKunde, $oWunschliste->kKunde)
                 && (int)$oWunschliste->kKunde === Session::Customer()->getID()
             ) {
@@ -373,7 +373,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                         $upd->nOeffentlich = 0;
                         $upd->cURLID       = '';
                         // nOeffentlich der Wunschliste updaten zu Privat
-                        Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
+                        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
                     } elseif ($nOeffentlich === 1) {
                         $cURLID = uniqid('', true);
@@ -386,7 +386,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                         $upd               = new stdClass();
                         $upd->nOeffentlich = 1;
                         $upd->cURLID       = $cURLID;
-                        Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
+                        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPublic', 'messages');
                     }
                 }
@@ -455,7 +455,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 if (is_array($nonEditableCustomerfields_arr) && count($nonEditableCustomerfields_arr) > 0) {
                     $cSQL = ' AND ' . implode(' AND ', $nonEditableCustomerfields_arr);
                 }
-                Shop::DB()->query(
+                Shop::Container()->getDB()->query(
                     "DELETE FROM tkundenattribut
                         WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . $cSQL, 3
                 );
@@ -470,7 +470,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                         $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
                         $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
 
-                        Shop::DB()->insert('tkundenattribut', $oKundenattribut);
+                        Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattribut);
                     }
                 } else {
                     foreach ($nKundenattributKey_arr as $kKundenfeld) {
@@ -480,7 +480,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                         $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
                         $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
 
-                        Shop::DB()->insert('tkundenattribut', $oKundenattribut);
+                        Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattribut);
                     }
                 }
             }
@@ -521,7 +521,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             strlen($_POST['neuesPasswort1']) >= $Einstellungen['kunden']['kundenregistrierung_passwortlaenge']
         ) {
             $oKunde = new Kunde($_SESSION['Kunde']->kKunde);
-            $oUser  = Shop::DB()->select(
+            $oUser  = Shop::Container()->getDB()->select(
                 'tkunde',
                 'kKunde',
                 (int)$_SESSION['Kunde']->kKunde,
@@ -608,7 +608,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             Jtllog::writeLog('CSRF-Warnung fuer Account-Loeschung und kKunde ' .
                 (int)$_SESSION['Kunde']->kKunde, JTLLOG_LEVEL_ERROR);
         } else {
-            $oBestellung = Shop::DB()->query(
+            $oBestellung = Shop::Container()->getDB()->query(
                 "SELECT COUNT(kBestellung) AS countBestellung
                     FROM tbestellung
                     WHERE cStatus NOT IN (" . BESTELLUNG_STATUS_VERSANDT . ", " . BESTELLUNG_STATUS_STORNO . ")
@@ -621,10 +621,10 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $_SESSION['Kunde']->cNachname . ' (' . $_SESSION['Kunde']->kKunde . ') hat am ' . date('d.m.Y') .
                     ' um ' . date('H:m:i') . ' Uhr sein Kundenkonto gelöscht. Es gab keine offenen Bestellungen mehr';
 
-                Shop::DB()->delete('tlieferadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
-                Shop::DB()->delete('trechnungsadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
-                Shop::DB()->delete('tkundenattribut', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
-                Shop::DB()->delete('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
+                Shop::Container()->getDB()->delete('tlieferadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
+                Shop::Container()->getDB()->delete('trechnungsadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
+                Shop::Container()->getDB()->delete('tkundenattribut', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
+                Shop::Container()->getDB()->delete('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
             } else {
                 // Es gibt noch Bestellungen, die noch nicht versandt oder storniert wurden - der Account wird in einen Gastzugang umgewandelt
                 $cText = 'Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
@@ -633,7 +633,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $oBestellung->countBestellung . ' offene Bestellungen.' .
                     ' Der Account wurde deshalb in einen temporären Gastzugang umgewandelt.';
 
-                Shop::DB()->update('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde, (object)[
+                Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde, (object)[
                     'cPasswort'    => '',
                     'nRegistriert' => 0,
                 ]);
@@ -641,8 +641,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 
             Jtllog::writeLog(PFAD_LOGFILES . 'geloeschteKundenkontos.log', $cText, 1);
             // Newsletter
-            Shop::DB()->delete('tnewsletterempfaenger', 'cEmail', $_SESSION['Kunde']->cMail);
-            Shop::DB()->insert('tnewsletterempfaengerhistory', (object)[
+            Shop::Container()->getDB()->delete('tnewsletterempfaenger', 'cEmail', $_SESSION['Kunde']->cMail);
+            Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', (object)[
                 'kSprache'     => (int)$_SESSION['Kunde']->kSprache,
                 'kKunde'       => (int)$_SESSION['Kunde']->kKunde,
                 'cAnrede'      => $_SESSION['Kunde']->cAnrede,
@@ -658,7 +658,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             ]);
 
             // Wunschliste
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
                         FROM twunschliste
                         LEFT JOIN twunschlistepos
@@ -671,7 +671,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             );
 
             // Pers. Warenkorb
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
                     FROM twarenkorbpers
                     LEFT JOIN twarenkorbperspos
@@ -714,7 +714,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 
         $Bestellungen = [];
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $Bestellungen = Shop::DB()->selectAll(
+            $Bestellungen = Shop::Container()->getDB()->selectAll(
                 'tbestellung', 'kKunde', (int)$_SESSION['Kunde']->kKunde,
                 '*, date_format(dErstellt,\'%d.%m.%Y\') AS dBestelldatum', 'kBestellung DESC'
             );
@@ -740,7 +740,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 if (isset($currencies[(int)$Bestellungen[$i]->kWaehrung])) {
                     $Bestellungen[$i]->Waehrung = $currencies[(int)$Bestellungen[$i]->kWaehrung];
                 } else {
-                    $Bestellungen[$i]->Waehrung                    = Shop::DB()->select(
+                    $Bestellungen[$i]->Waehrung                    = Shop::Container()->getDB()->select(
                         'twaehrung',
                         'kWaehrung',
                         (int)$Bestellungen[$i]->kWaehrung
@@ -773,7 +773,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         // Hole Wunschliste für eingeloggten Kunden
         $oWunschliste_arr = [];
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $oWunschliste_arr = Shop::DB()->selectAll(
+            $oWunschliste_arr = Shop::Container()->getDB()->selectAll(
                 'twunschliste',
                 'kKunde',
                 (int)$_SESSION['Kunde']->kKunde,
@@ -789,7 +789,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 
     if ($step === 'mein Konto') {
         $Lieferadressen      = [];
-        $oLieferdatenTMP_arr = Shop::DB()->selectAll(
+        $oLieferdatenTMP_arr = Shop::Container()->getDB()->selectAll(
             'tlieferadresse',
             'kKunde',
             (int)$_SESSION['Kunde']->kKunde,
@@ -822,12 +822,12 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             ->assign('cKundenattribut_arr', $cKundenattribut_arr)
             ->assign('laender', gibBelieferbareLaender($_SESSION['Kunde']->kKundengruppe));
         // selbstdef. Kundenfelder
-        $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', Shop::getLanguage(), '*', 'nSort DESC');
+        $oKundenfeld_arr = Shop::Container()->getDB()->selectAll('tkundenfeld', 'kSprache', Shop::getLanguage(), '*', 'nSort DESC');
         if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
             // tkundenfeldwert nachschauen ob dort Werte für tkundenfeld enthalten sind
             foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
                 if ($oKundenfeld->cTyp === 'auswahl') {
-                    $oKundenfeld_arr[$i]->oKundenfeldWert_arr = Shop::DB()->selectAll(
+                    $oKundenfeld_arr[$i]->oKundenfeldWert_arr = Shop::Container()->getDB()->selectAll(
                           'tkundenfeldwert'
                         , 'kKundenfeld'
                         , (int)$oKundenfeld->kKundenfeld

@@ -59,7 +59,7 @@ class Rechnungsadresse extends Adresse
      */
     public function loadFromDB($kRechnungsadresse)
     {
-        $obj = Shop::DB()->select('trechnungsadresse', 'kRechnungsadresse', (int)$kRechnungsadresse);
+        $obj = Shop::Container()->getDB()->select('trechnungsadresse', 'kRechnungsadresse', (int)$kRechnungsadresse);
 
         if ($obj === null || $obj->kRechnungsadresse < 1) {
             return 0;
@@ -93,7 +93,7 @@ class Rechnungsadresse extends Adresse
 
         unset($obj->kRechnungsadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
 
-        $this->kRechnungsadresse = Shop::DB()->insert('trechnungsadresse', $obj);
+        $this->kRechnungsadresse = Shop::Container()->getDB()->insert('trechnungsadresse', $obj);
         $this->decrypt();
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
@@ -115,7 +115,7 @@ class Rechnungsadresse extends Adresse
 
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
 
-        $cReturn = Shop::DB()->update('trechnungsadresse', 'kRechnungsadresse', $obj->kRechnungsadresse, $obj);
+        $cReturn = Shop::Container()->getDB()->update('trechnungsadresse', 'kRechnungsadresse', $obj->kRechnungsadresse, $obj);
         $this->decrypt();
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);

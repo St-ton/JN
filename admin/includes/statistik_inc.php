@@ -253,7 +253,7 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
                 $x_labels_arr[] = (string) $oStat->$cSpalteX;
             }
 
-            $oWaehrung = Shop::DB()->query(
+            $oWaehrung = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM twaehrung
                     WHERE cStandard = 'Y'", 1

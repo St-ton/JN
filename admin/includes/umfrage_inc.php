@@ -71,7 +71,7 @@ function updateAntwortUndOption($kUmfrageFrage, $cTyp, $cNameOption_arr, $cNameA
                 $_upd        = new stdClass();
                 $_upd->cName = $cNameAntwort_arr[$i];
                 $_upd->nSort = (int)$nSortAntwort_arr[$i];
-                Shop::DB()->update('tumfragefrageantwort', 'kUmfrageFrageAntwort', (int)$kUmfrageFrageAntwort, $_upd);
+                Shop::Container()->getDB()->update('tumfragefrageantwort', 'kUmfrageFrageAntwort', (int)$kUmfrageFrageAntwort, $_upd);
             }
         }
         // Matrix
@@ -81,7 +81,7 @@ function updateAntwortUndOption($kUmfrageFrage, $cTyp, $cNameOption_arr, $cNameA
                     $_upd        = new stdClass();
                     $_upd->cName = $cNameOption_arr[$j];
                     $_upd->nSort = (int)$nSortOption_arr[$j];
-                    Shop::DB()->update('tumfragematrixoption', 'kUmfrageMatrixOption', (int)$kUmfrageMatrixOption, $_upd);
+                    Shop::Container()->getDB()->update('tumfragematrixoption', 'kUmfrageMatrixOption', (int)$kUmfrageMatrixOption, $_upd);
                 }
             }
         }
@@ -113,7 +113,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                     $oUmfrageFrageAntwort->cName         = $cNameAntwort[$i];
                     $oUmfrageFrageAntwort->nSort         = $nSortAntwort_arr[$i];
 
-                    Shop::DB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
+                    Shop::Container()->getDB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
                 }
             }
             break;
@@ -127,7 +127,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                     $oUmfrageFrageAntwort->cName         = $cNameAntwort[$i];
                     $oUmfrageFrageAntwort->nSort         = $nSortAntwort_arr[$i];
 
-                    Shop::DB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
+                    Shop::Container()->getDB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
                 }
             }
             break;
@@ -141,7 +141,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                     $oUmfrageFrageAntwort->cName         = $cNameAntwort[$i];
                     $oUmfrageFrageAntwort->nSort         = $nSortAntwort_arr[$i];
 
-                    Shop::DB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
+                    Shop::Container()->getDB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
                 }
             }
             break;
@@ -155,7 +155,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                     $oUmfrageFrageAntwort->cName         = $cNameAntwort[$i];
                     $oUmfrageFrageAntwort->nSort         = $nSortAntwort_arr[$i];
 
-                    Shop::DB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
+                    Shop::Container()->getDB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
                 }
             }
             break;
@@ -169,7 +169,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                     $oUmfrageFrageAntwort->cName         = $cNameAntwort[$i];
                     $oUmfrageFrageAntwort->nSort         = $nSortAntwort_arr[$i];
 
-                    Shop::DB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
+                    Shop::Container()->getDB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
                 }
                 $count = count($cNameOption);
                 for ($i = $oAnzahlAUndOVorhanden->nAnzahlOptionen; $i < $count; $i++) {
@@ -179,7 +179,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                     $matrixOpt->cName         = $cNameOption[$i];
                     $matrixOpt->nSort         = $nSortOption_arr[$i];
 
-                    Shop::DB()->insert('tumfragematrixoption', $matrixOpt);
+                    Shop::Container()->getDB()->insert('tumfragematrixoption', $matrixOpt);
                 }
             }
             break;
@@ -193,7 +193,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                     $oUmfrageFrageAntwort->cName         = $cNameAntwort[$i];
                     $oUmfrageFrageAntwort->nSort         = $nSortAntwort_arr[$i];
 
-                    Shop::DB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
+                    Shop::Container()->getDB()->insert('tumfragefrageantwort', $oUmfrageFrageAntwort);
                 }
                 $count = count($cNameOption);
                 for ($i = $oAnzahlAUndOVorhanden->nAnzahlOptionen; $i < $count; $i++) {
@@ -203,7 +203,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                     $matrixOpt->cName         = $cNameOption[$i];
                     $matrixOpt->nSort         = $nSortOption_arr[$i];
 
-                    Shop::DB()->insert('tumfragematrixoption', $matrixOpt);
+                    Shop::Container()->getDB()->insert('tumfragematrixoption', $matrixOpt);
                 }
             }
             break;
@@ -217,15 +217,15 @@ function loescheFrage($kUmfrageFrage)
 {
     $kUmfrageFrage = (int)$kUmfrageFrage;
     if ($kUmfrageFrage > 0) {
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "DELETE tumfragefrage, tumfragedurchfuehrungantwort 
                 FROM tumfragefrage
                 LEFT JOIN tumfragedurchfuehrungantwort 
                     ON tumfragedurchfuehrungantwort.kUmfrageFrage = tumfragefrage.kUmfrageFrage
                 WHERE tumfragefrage.kUmfrageFrage = " . $kUmfrageFrage, 3
         );
-        Shop::DB()->delete('tumfragefrageantwort', 'kUmfrageFrage', $kUmfrageFrage);
-        Shop::DB()->delete('tumfragematrixoption', 'kUmfrageFrage', $kUmfrageFrage);
+        Shop::Container()->getDB()->delete('tumfragefrageantwort', 'kUmfrageFrage', $kUmfrageFrage);
+        Shop::Container()->getDB()->delete('tumfragematrixoption', 'kUmfrageFrage', $kUmfrageFrage);
     }
 }
 
@@ -236,7 +236,7 @@ function loescheFrage($kUmfrageFrage)
  */
 function pruefeTyp($cTyp, $kUmfrageFrage)
 {
-    $oUmfrageFrage = Shop::DB()->select('tumfragefrage', 'kUmfrageFrage', (int)$kUmfrageFrage);
+    $oUmfrageFrage = Shop::Container()->getDB()->select('tumfragefrage', 'kUmfrageFrage', (int)$kUmfrageFrage);
     // Wenn sich der Typ geändert hat, dann return false
     return $cTyp === $oUmfrageFrage->cTyp;
 }
@@ -249,7 +249,7 @@ function holeUmfrageStatistik($kUmfrage)
 {
     $kUmfrage = (int)$kUmfrage;
     // Umfragen Objekt
-    $oUmfrageStats = Shop::DB()->query(
+    $oUmfrageStats = Shop::Container()->getDB()->query(
         "SELECT *, DATE_FORMAT(dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, 
             DATE_FORMAT(dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de
             FROM tumfrage
@@ -259,7 +259,7 @@ function holeUmfrageStatistik($kUmfrage)
     if ($oUmfrageStats->kUmfrage > 0) {
         // Hole alle Fragen der Umfrage
         $oUmfrageStats->oUmfrageFrage_arr = [];
-        $oUmfrageFrage_arr                = Shop::DB()->query(
+        $oUmfrageFrage_arr                = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM tumfragefrage
                 WHERE kUmfrage = " . (int)$oUmfrageStats->kUmfrage . "
@@ -273,7 +273,7 @@ function holeUmfrageStatistik($kUmfrage)
         }
         $oUmfrageStats->oUmfrageFrage_arr = $oUmfrageFrage_arr;
         // Anzahl Durchführungen
-        $oUmfrageDurchfuehrung_arr = Shop::DB()->query(
+        $oUmfrageDurchfuehrung_arr = Shop::Container()->getDB()->query(
             "SELECT kUmfrageDurchfuehrung
                 FROM tumfragedurchfuehrung
                 WHERE kUmfrage = " . (int)$oUmfrageStats->kUmfrage, 2
@@ -291,7 +291,7 @@ function holeUmfrageStatistik($kUmfrage)
                         $matrixOpt_arr            = [];
                         $oErgebnisMatrix_arr      = [];
 
-                        $oUmfrageFrageAntwortTMP_arr = Shop::DB()->query(
+                        $oUmfrageFrageAntwortTMP_arr = Shop::Container()->getDB()->query(
                             "SELECT cName, kUmfrageFrageAntwort
                                 FROM tumfragefrageantwort
                                 WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
@@ -307,7 +307,7 @@ function holeUmfrageStatistik($kUmfrage)
                                 $oUmfrageFrageAntwort_arr[]                 = $oUmfrageFrageAntwort;
                             }
                         }
-                        $matrixOptTMP_arr = Shop::DB()->query(
+                        $matrixOptTMP_arr = Shop::Container()->getDB()->query(
                             "SELECT tumfragematrixoption.kUmfrageMatrixOption, tumfragematrixoption.cName, 
                                 count(tumfragedurchfuehrungantwort.kUmfrageMatrixOption) AS nAnzahlOption
                                 FROM tumfragematrixoption
@@ -347,7 +347,7 @@ function holeUmfrageStatistik($kUmfrage)
                         //hole pro Option die Anzahl raus
                         if (is_array($matrixOpt_arr) && count($matrixOpt_arr) > 0) {
                             foreach ($matrixOpt_arr as $matrixOpt) {
-                                $matrixOptAnzahlSpalte_arr = Shop::DB()->query(
+                                $matrixOptAnzahlSpalte_arr = Shop::Container()->getDB()->query(
                                     "SELECT count(*) AS nAnzahlOptionProAntwort, kUmfrageFrageAntwort
                                         FROM  tumfragedurchfuehrungantwort
                                         WHERE kUmfrageMatrixOption = " . (int)$matrixOpt->kUmfrageMatrixOption . "
@@ -395,7 +395,7 @@ function holeUmfrageStatistik($kUmfrage)
                         $oUmfrageStats->oUmfrageFrage_arr[$i]->oErgebnisMatrix_arr = $oErgebnisMatrix_arr;
                     } else {
                         if ($oUmfrageFrage->cTyp === 'text_klein' || $oUmfrageFrage->cTyp === 'text_gross') {
-                            $oUmfrageFrageAntwort_arr = Shop::DB()->query(
+                            $oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->query(
                                 "SELECT cText AS cName, count(cText) AS nAnzahlAntwort
                                     FROM tumfragedurchfuehrungantwort
                                     WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
@@ -411,7 +411,7 @@ function holeUmfrageStatistik($kUmfrage)
                                 }
                             }
                             // Anzahl Sonstiger Antworten
-                            $oUmfrageFrageAntwortTMP = Shop::DB()->query(
+                            $oUmfrageFrageAntwortTMP = Shop::Container()->getDB()->query(
                                 "SELECT SUM(b.nAnzahlAntwort) AS nAnzahlAntwort
                                      FROM
                                      (
@@ -446,7 +446,7 @@ function holeUmfrageStatistik($kUmfrage)
                                 $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[] = $oTMP;
                             }
                         } else {
-                            $oUmfrageFrageAntwort_arr = Shop::DB()->query(
+                            $oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->query(
                                 "SELECT tumfragefrageantwort.kUmfrageFrageAntwort, tumfragefrageantwort.cName, 
                                     count(tumfragedurchfuehrungantwort.kUmfrageFrageAntwort) AS nAnzahlAntwort
                                     FROM tumfragefrageantwort
@@ -456,7 +456,7 @@ function holeUmfrageStatistik($kUmfrage)
                                     GROUP BY tumfragefrageantwort.kUmfrageFrageAntwort
                                     ORDER BY nAnzahlAntwort DESC, tumfragefrageantwort.kUmfrageFrageAntwort", 2
                             );
-                            $oAnzahl = Shop::DB()->query(
+                            $oAnzahl = Shop::Container()->getDB()->query(
                                 "SELECT count(*) AS nAnzahl
                                     FROM tumfragedurchfuehrungantwort
                                     WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
@@ -464,7 +464,7 @@ function holeUmfrageStatistik($kUmfrage)
                             );
                             $oUmfrageFrageAntwortFreifeld_arr = [];
                             if ($oUmfrageStats->oUmfrageFrage_arr[$i]->nFreifeld == 1) {
-                                $oUmfrageFrageAntwortFreifeld_arr = Shop::DB()->query(
+                                $oUmfrageFrageAntwortFreifeld_arr = Shop::Container()->getDB()->query(
                                     "SELECT cText AS cName, count(cText) AS nAnzahlAntwort
                                         FROM tumfragedurchfuehrungantwort
                                         WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
@@ -499,7 +499,7 @@ function holeUmfrageStatistik($kUmfrage)
             if ($kKundengruppe == -1) {
                 $oUmfrageStats->cKundengruppe_arr[] = 'Alle';
             } else {
-                $oKundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
+                $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
                 if (!empty($oKundengruppe->cName)) {
                     $oUmfrageStats->cKundengruppe_arr[] = $oKundengruppe->cName;
                 }
@@ -523,12 +523,12 @@ function holeSonstigeTextAntworten($kUmfrageFrage, $nAnzahlAnwort, $nMaxAntworte
     if (!$kUmfrageFrage || !$nAnzahlAnwort || !$nMaxAntworten) {
         return $oUmfrageFrage;
     }
-    $oUmfrageFrage = Shop::DB()->query(
+    $oUmfrageFrage = Shop::Container()->getDB()->query(
         "SELECT kUmfrage, cName, cTyp
             FROM tumfragefrage
             WHERE kUmfrageFrage = " . (int)$kUmfrageFrage, 1
     );
-    $oUmfrageFrageAntwort_arr = Shop::DB()->query(
+    $oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->query(
         "SELECT cText AS cName, count(cText) AS nAnzahlAntwort
             FROM tumfragedurchfuehrungantwort
             WHERE kUmfrageFrage = " . (int)$kUmfrageFrage . "

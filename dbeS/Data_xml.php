@@ -53,7 +53,7 @@ function bearbeiteVerfuegbarkeitsbenachrichtigungenAck($xml)
             foreach ($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] as $kVerfuegbarkeitsbenachrichtigung) {
                 $kVerfuegbarkeitsbenachrichtigung = (int)$kVerfuegbarkeitsbenachrichtigung;
                 if ($kVerfuegbarkeitsbenachrichtigung > 0) {
-                    Shop::DB()->update(
+                    Shop::Container()->getDB()->update(
                         'tverfuegbarkeitsbenachrichtigung',
                         'kVerfuegbarkeitsbenachrichtigung',
                         $kVerfuegbarkeitsbenachrichtigung,
@@ -78,10 +78,10 @@ function bearbeiteUploadQueueAck($xml)
         foreach ($xml['ack_uploadqueue']['kuploadqueue'] as $kUploadqueue) {
             $kUploadqueue = (int)$kUploadqueue;
             if ($kUploadqueue > 0) {
-                Shop::DB()->delete('tuploadqueue', 'kUploadqueue', $kUploadqueue);
+                Shop::Container()->getDB()->delete('tuploadqueue', 'kUploadqueue', $kUploadqueue);
             }
         }
     } elseif ((int)$xml['ack_uploadqueue']['kuploadqueue'] > 0) {
-        Shop::DB()->delete('tuploadqueue', 'kUploadqueue', (int)$xml['ack_uploadqueue']['kuploadqueue']);
+        Shop::Container()->getDB()->delete('tuploadqueue', 'kUploadqueue', (int)$xml['ack_uploadqueue']['kuploadqueue']);
     }
 }

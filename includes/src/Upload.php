@@ -175,7 +175,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             $oUploadDatei->nBytes    = $nBytes;
             $oUploadDatei->dErstellt = 'now()';
 
-            Shop::DB()->insert('tuploaddatei', $oUploadDatei);
+            Shop::Container()->getDB()->insert('tuploaddatei', $oUploadDatei);
         }
 
         /**
@@ -188,7 +188,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             $oUploadQueue->kBestellung = $kBestellung;
             $oUploadQueue->kArtikel    = $kCustomID;
 
-            Shop::DB()->insert('tuploadqueue', $oUploadQueue);
+            Shop::Container()->getDB()->insert('tuploadqueue', $oUploadQueue);
         }
 
         /**

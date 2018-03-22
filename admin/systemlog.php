@@ -11,18 +11,16 @@
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
 
-$cHinweis = '';
-$cFehler  = '';
-
+$cHinweis    = '';
+$cFehler     = '';
+$minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 if (validateToken()) {
     if (verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
         $cHinweis = 'Ihr Systemlog wurde erfolgreich gel&ouml;scht.';
     } elseif (verifyGPDataString('action') === 'save') {
-        $obj = (object)[
-            'cWert' => isset($_REQUEST['nLevelFlags']) ? Jtllog::setBitFlag($_REQUEST['nLevelFlags']) : 0
-        ];
-        Shop::DB()->update('teinstellungen', 'cName', 'systemlog_flag', $obj);
+        $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
+        Shop::Container()->getDB()->update('teinstellungen', 'cName', 'systemlog_flag', (object)['cWert' => $minLogLevel]);
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
         $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
         $smarty->assign('cTab', 'config');
@@ -64,14 +62,10 @@ $oPagination = (new Pagination('syslog'))
 
 $oLog_arr       = Jtllog::getLogWhere($oFilter->getWhereSQL(), $oPagination->getLimitSQL());
 $nSystemlogFlag = Jtllog::getSytemlogFlag(false);
-$nLevelFlag_arr = [
-    JTLLOG_LEVEL_ERROR => Jtllog::isBitFlagSet(JTLLOG_LEVEL_ERROR, $nSystemlogFlag),
-    JTLLOG_LEVEL_NOTICE => Jtllog::isBitFlagSet(JTLLOG_LEVEL_NOTICE, $nSystemlogFlag),
-    JTLLOG_LEVEL_DEBUG => Jtllog::isBitFlagSet(JTLLOG_LEVEL_DEBUG, $nSystemlogFlag),
-];
-
 foreach ($oLog_arr as $oLog) {
-    $oLog->cLog = preg_replace(
+    $oLog->kLog   = (int)$oLog->kLog;
+    $oLog->nLevel = (int)$oLog->nLevel;
+    $oLog->cLog   = preg_replace(
         '/\[(.*)\] => (.*)/',
         '<span class="text-primary">$1</span>: <span class="text-success">$2</span>',
         $oLog->cLog
@@ -85,14 +79,13 @@ foreach ($oLog_arr as $oLog) {
         );
     }
 }
-
 $smarty
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
     ->assign('oFilter', $oFilter)
     ->assign('oPagination', $oPagination)
     ->assign('oLog_arr', $oLog_arr)
-    ->assign('nLevelFlag_arr', $nLevelFlag_arr)
+    ->assign('minLogLevel', $minLogLevel)
     ->assign('nTotalLogCount', $nTotalLogCount)
     ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
     ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)

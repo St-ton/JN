@@ -108,9 +108,9 @@ class ZahlungsInfo
         $kZahlungsInfo = (int)$kZahlungsInfo;
         $kBestellung   = (int)$kBestellung;
         if ($kZahlungsInfo > 0) {
-            $obj = Shop::DB()->select('tzahlungsinfo', 'kZahlungsInfo', $kZahlungsInfo);
+            $obj = Shop::Container()->getDB()->select('tzahlungsinfo', 'kZahlungsInfo', $kZahlungsInfo);
         } elseif ($kBestellung > 0) {
-            $obj = Shop::DB()->select('tzahlungsinfo', 'kBestellung', $kBestellung);
+            $obj = Shop::Container()->getDB()->select('tzahlungsinfo', 'kBestellung', $kBestellung);
         }
 
         if (is_object($obj)) {
@@ -174,7 +174,7 @@ class ZahlungsInfo
         $this->verschluesselZahlungsinfo();
         $obj = kopiereMembers($this);
         unset($obj->kZahlungsInfo);
-        $this->kZahlungsInfo = Shop::DB()->insert('tzahlungsinfo', $obj);
+        $this->kZahlungsInfo = Shop::Container()->getDB()->insert('tzahlungsinfo', $obj);
         $this->entschluesselZahlungsinfo();
 
         return $this->kZahlungsInfo;
@@ -189,7 +189,7 @@ class ZahlungsInfo
     {
         $this->verschluesselZahlungsinfo();
         $obj     = kopiereMembers($this);
-        $cReturn = Shop::DB()->update('tzahlungsinfo', 'kZahlungsInfo', $obj->kZahlungsInfo, $obj);
+        $cReturn = Shop::Container()->getDB()->update('tzahlungsinfo', 'kZahlungsInfo', $obj->kZahlungsInfo, $obj);
         $this->entschluesselZahlungsinfo();
 
         return $cReturn;

@@ -78,7 +78,7 @@ class WarenkorbPosEigenschaft
      */
     public function gibEigenschaftName()
     {
-        $obj = Shop::DB()->select('teigenschaft', 'kEigenschaft', $this->kEigenschaft);
+        $obj = Shop::Container()->getDB()->select('teigenschaft', 'kEigenschaft', $this->kEigenschaft);
 
         return $obj->cName ?? '';
     }
@@ -90,7 +90,7 @@ class WarenkorbPosEigenschaft
      */
     public function gibEigenschaftWertName()
     {
-        $obj = Shop::DB()->select('teigenschaftwert', 'kEigenschaftWert', $this->kEigenschaftWert);
+        $obj = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $this->kEigenschaftWert);
 
         return $obj->cName ?? '';
     }
@@ -103,7 +103,7 @@ class WarenkorbPosEigenschaft
      */
     public function loadFromDB($kWarenkorbPosEigenschaft)
     {
-        $obj     = Shop::DB()->select(
+        $obj     = Shop::Container()->getDB()->select(
             'twarenkorbposeigenschaft',
             'kWarenkorbPosEigenschaft',
             (int)$kWarenkorbPosEigenschaft
@@ -131,7 +131,7 @@ class WarenkorbPosEigenschaft
         if ($obj->fAufpreis === null || $obj->fAufpreis === '') {
             $obj->fAufpreis = 0;
         }
-        $this->kWarenkorbPosEigenschaft = Shop::DB()->insert('twarenkorbposeigenschaft', $obj);
+        $this->kWarenkorbPosEigenschaft = Shop::Container()->getDB()->insert('twarenkorbposeigenschaft', $obj);
 
         return $this;
     }
@@ -145,7 +145,7 @@ class WarenkorbPosEigenschaft
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->update(
+        return Shop::Container()->getDB()->update(
             'twarenkorbposeigenschaft',
             'kWarenkorbPosEigenschaft',
             $obj->kWarenkorbPosEigenschaft,

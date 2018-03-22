@@ -184,7 +184,7 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $besucherzaehler = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
-    ? Shop::DB()->query("SELECT * FROM tbesucherzaehler", 1)
+    ? Shop::Container()->getDB()->query("SELECT * FROM tbesucherzaehler", 1)
     : null;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('nIsSSL', pruefeSSL())

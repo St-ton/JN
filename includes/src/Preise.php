@@ -223,7 +223,7 @@ class Preise
                                 AND (p1.kKunde = {$kKunde} OR p1.kKunde IS NULL))";
         }
 
-        $prices = Shop::DB()->query("
+        $prices = Shop::Container()->getDB()->query("
             SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
@@ -234,7 +234,7 @@ class Preise
         if (count($prices) > 0) {
             if ($kSteuerklasse === 0) {
                 $tax           =
-                    Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kSteuerklasse');
+                    Shop::Container()->getDB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kSteuerklasse');
                 $kSteuerklasse = (int)$tax->kSteuerklasse;
             }
             $this->fUst          = gibUst($kSteuerklasse);
@@ -250,7 +250,7 @@ class Preise
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
                     $this->fVKNetto = (float)$price->fVKNetto;
-                    $specialPrice   = Shop::DB()->query("
+                    $specialPrice   = Shop::Container()->getDB()->query("
                         SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
                             FROM tsonderpreise
@@ -311,7 +311,7 @@ class Preise
         if ($kKunde > 0) {
             $cacheID = 'custprice_' . $kKunde;
             if (($oCustomPrice = Shop::Cache()->get($cacheID)) === false) {
-                $oCustomPrice = Shop::DB()->query(
+                $oCustomPrice = Shop::Container()->getDB()->query(
                     "SELECT count(kPreis) AS nAnzahl 
                         FROM tpreis
                         WHERE kKunde = {$kKunde}",
@@ -341,16 +341,16 @@ class Preise
     {
         $kKundengruppe = (int)$kKundengruppe;
         $kArtikel      = (int)$kArtikel;
-        $obj           = Shop::DB()->select('tpreise', 'kArtikel', $kArtikel, 'kKundengruppe', $kKundengruppe);
+        $obj           = Shop::Container()->getDB()->select('tpreise', 'kArtikel', $kArtikel, 'kKundengruppe', $kKundengruppe);
         if (!empty($obj->kArtikel)) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
                 $this->$member = $obj->$member;
             }
-            $ust_obj    = Shop::DB()->query("SELECT kSteuerklasse FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
+            $ust_obj    = Shop::Container()->getDB()->query("SELECT kSteuerklasse FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
             $this->fUst = gibUst($ust_obj->kSteuerklasse);
             //hat dieser Artikel fuer diese Kundengruppe einen Sonderpreis?
-            $sonderpreis = Shop::DB()->query(
+            $sonderpreis = Shop::Container()->getDB()->query(
                 "SELECT tsonderpreise.fNettoPreis
                     FROM tsonderpreise
                     JOIN tartikel 
@@ -519,7 +519,7 @@ class Preise
         $obj->fPreis4       = $this->fPreis4;
         $obj->fPreis5       = $this->fPreis5;
 
-        return Shop::DB()->insert('tpreise', $obj);
+        return Shop::Container()->getDB()->insert('tpreise', $obj);
     }
 
     /**
@@ -530,10 +530,10 @@ class Preise
     public function setzePostDaten()
     {
         /* @TODO
-        $this->kPreisverlauf = Shop::DB()->escape($_POST['PStaffelKey']);
-        $this->kArtikel = Shop::DB()->escape($_POST['KeyArtikel']);
-        $this->fPreisPrivat = Shop::DB()->escape($_POST['ArtikelVKBrutto']);
-        $this->fPreisHaendler = Shop::DB()->escape($_POST['ArtikelVKHaendlerBrutto']);
+        $this->kPreisverlauf = Shop::Container()->getDB()->escape($_POST['PStaffelKey']);
+        $this->kArtikel = Shop::Container()->getDB()->escape($_POST['KeyArtikel']);
+        $this->fPreisPrivat = Shop::Container()->getDB()->escape($_POST['ArtikelVKBrutto']);
+        $this->fPreisHaendler = Shop::Container()->getDB()->escape($_POST['ArtikelVKHaendlerBrutto']);
         $this->dDate = 'now()';
          */
         return $this->kArtikel > 0;

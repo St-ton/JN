@@ -111,7 +111,7 @@ class AuswahlAssistent
      */
     private function loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive = true)
     {
-        $oDbResult = Shop::DB()->queryPrepared(
+        $oDbResult = Shop::Container()->getDB()->queryPrepared(
                 'SELECT *
                     FROM tauswahlassistentort AS ao
                         JOIN tauswahlassistentgruppe AS ag
@@ -139,7 +139,7 @@ class AuswahlAssistent
             $this->kSprache                = (int)$this->kSprache;
             $this->nAktiv                  = (int)$this->nAktiv;
 
-            $questionIDs = Shop::DB()->queryPrepared(
+            $questionIDs = Shop::Container()->getDB()->queryPrepared(
                 'SELECT kAuswahlAssistentFrage AS id
                     FROM tauswahlassistentfrage
                     WHERE kAuswahlAssistentGruppe = :groupID' .
@@ -420,7 +420,7 @@ class AuswahlAssistent
      */
     public static function getLinks()
     {
-        return Shop::DB()->selectAll('tlink', 'nLinkart', LINKTYP_AUSWAHLASSISTENT);
+        return Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', LINKTYP_AUSWAHLASSISTENT);
     }
 
     /**
@@ -434,7 +434,7 @@ class AuswahlAssistent
     {
         trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
-            $oOrt = Shop::DB()->executeQueryPrepared(
+            $oOrt = Shop::Container()->getDB()->executeQueryPrepared(
                 'SELECT tao.kAuswahlAssistentGruppe
                         FROM tauswahlassistentort tao
                         JOIN tauswahlassistentgruppe  tag

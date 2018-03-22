@@ -59,7 +59,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         private function loadFromDB($kRMAGrund = 0)
         {
-            $oObj = Shop::DB()->query(
+            $oObj = Shop::Container()->getDB()->query(
                 "SELECT *
                   FROM trmagrund
                   WHERE kRMAGrund = " . (int)$kRMAGrund, 1
@@ -91,7 +91,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
             unset($oObj->kRMAGrund);
 
-            $kPrim = Shop::DB()->insert('trmagrund', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('trmagrund', $oObj);
 
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
@@ -107,7 +107,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function update()
         {
-            return Shop::DB()->query(
+            return Shop::Container()->getDB()->query(
                 "UPDATE trmagrund
                    SET kRMAGrund = " . $this->kRMAGrund . ",
                        kSprache = " . $this->kSprache . ",
@@ -126,7 +126,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('trmagrund', 'kRMAGrund', $this->getRMAGrund());
+            return Shop::Container()->getDB()->delete('trmagrund', 'kRMAGrund', $this->getRMAGrund());
         }
 
         /**
@@ -168,7 +168,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setGrund($cGrund)
         {
-            $this->cGrund = Shop::DB()->escape($cGrund);
+            $this->cGrund = Shop::Container()->getDB()->escape($cGrund);
 
             return $this;
         }
@@ -179,7 +179,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setKommentar($cKommentar)
         {
-            $this->cKommentar = Shop::DB()->escape($cKommentar);
+            $this->cKommentar = Shop::Container()->getDB()->escape($cKommentar);
 
             return $this;
         }
@@ -315,7 +315,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 if ($bAktiv) {
                     $cSQL = " AND nAktiv = 1";
                 }
-                $oObj_arr = Shop::DB()->query(
+                $oObj_arr = Shop::Container()->getDB()->query(
                     "SELECT kRMAGrund
                         FROM trmagrund
                         WHERE kSprache = " . $kSprache . "

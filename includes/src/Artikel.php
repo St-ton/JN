@@ -3490,7 +3490,7 @@ class Artikel
      */
     public static function getDetailOptions()
     {
-        $conf                                    = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELDETAILS]);
+        $conf                                    = Shop::getSettings([CONF_ARTIKELDETAILS]);
         $oArtikelOptionen                        = new stdClass();
         $oArtikelOptionen->nMerkmale             = 1;
         $oArtikelOptionen->nKategorie            = 1;

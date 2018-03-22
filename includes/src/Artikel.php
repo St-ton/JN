@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use \DB\NiceDB;
+
 /**
  * Class Artikel
  */
@@ -1060,7 +1062,7 @@ class Artikel
                         AND kArtikel = " . $id . $categoryFilter . "
                     ORDER BY tkategorie.nSort
                     LIMIT 1",
-                \DB\NiceDB::RET_SINGLE_OBJECT
+                NiceDB::RET_SINGLE_OBJECT
             );
         }
 
@@ -1245,7 +1247,7 @@ class Artikel
                     GROUP BY tartikelpict.cPfad
                     ORDER BY tartikelpict.nNr",
                 ['cartnr' => $this->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]],
-                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
         }
 
@@ -1256,7 +1258,7 @@ class Artikel
                     WHERE kArtikel = " . (int)$this->kArtikel . " 
                     GROUP BY cPfad 
                     ORDER BY nNr",
-                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
         }
         $imageCount = count($bilder_arr);
@@ -1489,7 +1491,7 @@ class Artikel
                 WHERE tartikelmerkmal.kArtikel = :kArtikel
                 ORDER BY tmerkmal.nSort, tmerkmalwert.nSort, tartikelmerkmal.kMerkmal',
             ['kArtikel' => $this->kArtikel],
-            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
         if (count($oMerkmal_arr) > 0) {
             $kMerkmal_arr = [];
@@ -1539,7 +1541,7 @@ class Artikel
             if (!$bGetInvisibleParts) {
                 $query .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL";
             }
-            $parts = Shop::Container()->getDB()->query($query, \DB\NiceDB::RET_ARRAY_OF_OBJECTS);
+            $parts = Shop::Container()->getDB()->query($query, NiceDB::RET_ARRAY_OF_OBJECTS);
             if (count($parts) > 0) {
                 $oArtikelOptionen                             = self::getDefaultOptions();
                 $oArtikelOptionen->nKeineSichtbarkeitBeachten = $bGetInvisibleParts ? 1 : 0;
@@ -1579,7 +1581,7 @@ class Artikel
                 JOIN tartikel 
                     ON tartikel.kStueckliste = sub.kStueckliste',
             ['kArtikel' => $this->kArtikel],
-            \DB\NiceDB::RET_SINGLE_OBJECT
+            NiceDB::RET_SINGLE_OBJECT
         );
         if (isset($Main->kArtikel, $Main->kStueckliste) && $Main->kArtikel > 0 && $Main->kStueckliste > 0) {
             $oOption                             = new stdClass();
@@ -1677,7 +1679,7 @@ class Artikel
                     WHERE tmediendatei.kArtikel = " . (int)$this->kArtikel . "
                     ORDER BY tmediendatei.nSort ASC";
 
-        $this->oMedienDatei_arr = Shop::Container()->getDB()->query($cSQL, \DB\NiceDB::RET_ARRAY_OF_OBJECTS);
+        $this->oMedienDatei_arr = Shop::Container()->getDB()->query($cSQL, NiceDB::RET_ARRAY_OF_OBJECTS);
         $cMedienTyp_arr         = []; // Wird im Template gebraucht um Tabs aufzubauen
         foreach ($this->oMedienDatei_arr as $oMedienDatei) {
             $oMedienDatei->kSprache                 = (int)$oMedienDatei->kSprache;
@@ -1896,7 +1898,7 @@ class Artikel
                         FROM tartikelext
                         WHERE round(fDurchschnittsBewertung) >= " . $minStars . "
                             AND kArtikel = " . (int)$this->kArtikel,
-                    \DB\NiceDB::RET_SINGLE_OBJECT
+                    NiceDB::RET_SINGLE_OBJECT
                 );
                 if (!empty($oArtikelExt)) {
                     $this->fDurchschnittsBewertung = round($oArtikelExt->fDurchschnittsBewertung * 2) / 2;
@@ -1909,7 +1911,7 @@ class Artikel
                         WHERE ROUND(fDurchschnittsBewertung) >= :minStars
                             AND kArtikel = :kArtikel',
                     ['minStars' => $minStars, 'kArtikel' => $kArtikel],
-                    \DB\NiceDB::RET_SINGLE_OBJECT
+                    NiceDB::RET_SINGLE_OBJECT
                 );
                 if (!empty($oArtikelExt)) {
                     $this->fDurchschnittsBewertung = round($oArtikelExt->fDurchschnittsBewertung * 2) / 2;
@@ -1999,7 +2001,7 @@ class Artikel
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     GROUP BY teigenschaftkombiwert.kEigenschaftWert
                     ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
-                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
 
             $oVariationVaterTMP_arr = Shop::Container()->getDB()->query(
@@ -2032,7 +2034,7 @@ class Artikel
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         AND (teigenschaft.cTyp = 'FREIFELD' OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')
                     ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
-                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
 
             $variations = array_merge($variations, $oVariationVaterTMP_arr);
@@ -2074,7 +2076,7 @@ class Artikel
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     GROUP BY teigenschaftkombiwert.kEigenschaftWert
                     ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
-                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
 
             $oVariationVaterTMP_arr = Shop::Container()->getDB()->query(
@@ -2109,7 +2111,7 @@ class Artikel
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         AND (teigenschaft.cTyp = 'FREIFELD' OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')
                     ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
-                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
 
             $variations = array_merge($variations, $oVariationVaterTMP_arr);
@@ -2120,7 +2122,7 @@ class Artikel
                     JOIN tartikel 
                       ON tartikel.kArtikel = " . (int)$this->kArtikel . "
                       AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi",
-                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             $this->holeVariationDetailPreisKind(); // Baut die Variationspreise für ein Variationskombkind
             // String für javascript Funktion vorbereiten um Variationen auszufüllen
@@ -2166,7 +2168,7 @@ class Artikel
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     ORDER BY teigenschaft.nSort ASC, teigenschaft.cName, teigenschaftwert.nSort ASC, teigenschaftwert.cName",
-                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
         }
 
@@ -2496,7 +2498,7 @@ class Artikel
                         'kArtikel'      => $this->kArtikel,
                         'kKundengruppe' => $kKundengruppe,
                     ],
-                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                    NiceDB::RET_ARRAY_OF_OBJECTS
                 );
 
                 $bFailure = false;
@@ -2543,7 +2545,7 @@ class Artikel
                         'kArtikel'      => $this->kArtikel,
                         'kKundengruppe' => $kKundengruppe,
                     ],
-                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                    NiceDB::RET_ARRAY_OF_OBJECTS
                 );
                 foreach ($matrixImgRes as $matrixImage) {
                     $matrixImage->kEigenschaftWert = (int)$matrixImage->kEigenschaftWert;
@@ -2681,7 +2683,7 @@ class Artikel
                             AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                             AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
-                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                    NiceDB::RET_ARRAY_OF_OBJECTS
                 );
             } elseif (count($this->VariationenOhneFreifeld) === 2) {
                 // Baue Warenkorbmatrix Bildvorschau
@@ -2703,7 +2705,7 @@ class Artikel
                             AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         ORDER BY teigenschaft.nSort, teigenschaft.cName, 
                                  teigenschaftwert.nSort, teigenschaftwert.cName",
-                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                    NiceDB::RET_ARRAY_OF_OBJECTS
                 );
             }
             $bFailure = false;
@@ -2750,7 +2752,7 @@ class Artikel
                     AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 ORDER BY tekw.kEigenschaftKombi",
-            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
 
         $kAlleVariationKombi_arr                = [];
@@ -2849,7 +2851,7 @@ class Artikel
                 AND tartikelsichtbarkeit.kArtikel IS NULL
                 ORDER BY tartikel.kArtikel ASC, teigenschaft.nSort ASC, 
                          teigenschaft.cName, teigenschaftwert.nSort ASC, teigenschaftwert.cName",
-            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
         if (count($oVariationsKombiKinder_arr) === 0) {
             return [];
@@ -3059,7 +3061,7 @@ class Artikel
                     AND tartikelpict.nNr = 1
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 ORDER BY tartikel.nSort",
-            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
         if (is_array($previews) && count($previews) > 0) {
             $cVorschauSQL   = ' IN(';
@@ -3088,7 +3090,7 @@ class Artikel
                             WHERE teigenschaftsprache.kEigenschaft {$cVorschauSQL}
                                 AND teigenschaftsprache.kSprache = {$kSprache}
                             ORDER BY teigenschaft.nSort LIMIT 1",
-                        \DB\NiceDB::RET_SINGLE_OBJECT
+                        NiceDB::RET_SINGLE_OBJECT
                     );
 
                     $this->oVariationKombiVorschauText = Shop::Lang()->get('choosevariation') . ' ' . $oEigenschaft->cName;
@@ -3098,7 +3100,7 @@ class Artikel
                             FROM teigenschaft
                             WHERE kEigenschaft {$cVorschauSQL}
                             ORDER BY nSort LIMIT 1",
-                        \DB\NiceDB::RET_SINGLE_OBJECT
+                        NiceDB::RET_SINGLE_OBJECT
                     );
 
                     $this->oVariationKombiVorschauText = $oEigenschaft->cName . ' ' . Shop::Lang()->get('choosevariation');
@@ -3267,7 +3269,7 @@ class Artikel
                     AND tartikelsichtbarkeit.kKundengruppe = {$kKundengruppe}
                 " . Preise::getPriceJoinSql($kKundengruppe) . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL",
-            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
 
         if ($this->nIstVater === 1) {
@@ -3405,7 +3407,7 @@ class Artikel
                     AND kKey = :kArtikel 
                 ORDER BY kSprache",
             ['kArtikel' => $this->kArtikel],
-            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
 
         $bSprachSeo    = true;
@@ -3675,7 +3677,7 @@ class Artikel
             "SELECT kStueckliste, fLagerbestand
                 FROM tartikel 
                 WHERE kArtikel = " . $kArtikel,
-            \DB\NiceDB::RET_SINGLE_OBJECT
+            NiceDB::RET_SINGLE_OBJECT
         );
         $cStuecklisteSQL = " tartikel.fLagerbestand, ";
         if (isset($oStueckliste->kStueckliste) && $oStueckliste->kStueckliste > 0) {
@@ -3785,7 +3787,7 @@ class Artikel
                 WHERE tartikel.kArtikel = " . $kArtikel . "
                     " . $cSichbarkeitSQL . "
                     " . $cLagerbestandSQL;
-        $oArtikelTMP = Shop::Container()->getDB()->query($productSQL, \DB\NiceDB::RET_SINGLE_OBJECT);
+        $oArtikelTMP = Shop::Container()->getDB()->query($productSQL, NiceDB::RET_SINGLE_OBJECT);
         if (($oArtikelTMP === false || $oArtikelTMP === null)
             && (!isset($oArtikelOptionen->nKeinLagerbestandBeachten) || $oArtikelOptionen->nKeinLagerbestandBeachten !== 1)
             && (isset($this->conf['global']['artikel_artikelanzeigefilter_seo'])
@@ -3824,7 +3826,7 @@ class Artikel
                 "LEFT JOIN tseo ON tseo.cKey = 'kArtikel' AND tseo.kKey = tartikel.kArtikel",
                 $productSQL
             );
-            $oArtikelTMP = Shop::Container()->getDB()->query($productSQL, \DB\NiceDB::RET_SINGLE_OBJECT);
+            $oArtikelTMP = Shop::Container()->getDB()->query($productSQL, NiceDB::RET_SINGLE_OBJECT);
         }
         //EXPERIMENTAL_MULTILANG_SHOP END
         // Hersteller nicht leer? => Seo holen
@@ -3965,7 +3967,7 @@ class Artikel
                                         FROM teinheit
                                         WHERE cName = '" . $this->cVPEEinheit . "' LIMIT 0, 1)
                                             AND kSprache = " . $kSprache . " LIMIT 0, 1",
-                \DB\NiceDB::RET_SINGLE_OBJECT
+                NiceDB::RET_SINGLE_OBJECT
             );
             if (isset($oVPEEinheitRes->cName) && strlen($oVPEEinheitRes->cName) > 0) {
                 $this->cVPEEinheit = $oVPEEinheitRes->cName;
@@ -4050,7 +4052,7 @@ class Artikel
                         AND sp.kKundengruppe = {$kKundengruppe}
                     WHERE a.kVaterArtikel = {$oArtikelTMP->kArtikel}
                         AND COALESCE(sp.fNettoPreis, d.fVKNetto) - {$fVKNetto} > 0.0001",
-                \DB\NiceDB::RET_SINGLE_OBJECT
+                NiceDB::RET_SINGLE_OBJECT
             );
 
             $this->nVariationsAufpreisVorhanden = (int)$oKindSonderpreis->nVariationsAufpreisVorhanden > 0 ? 1 : 0;
@@ -4231,7 +4233,7 @@ class Artikel
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL 
                     AND tartikel.kArtikel = :kArtikel',
             ['kArtikel' => $kArtikel, 'kKundengruppe' => $kKundengruppe],
-            \DB\NiceDB::RET_SINGLE_OBJECT
+            NiceDB::RET_SINGLE_OBJECT
         );
 
         if ($oArtikelTMP !== null) {
@@ -4279,7 +4281,7 @@ class Artikel
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorieartikel.kKategorie > 0
                     AND tkategorieartikel.kArtikel = " . $kArtikelKey,
-            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
 
         return array_map(function ($e) {
@@ -4445,7 +4447,7 @@ class Artikel
                 FROM tartikelext
                 WHERE kArtikel = :kArtikel',
             ['threshold' => $minStars, 'kArtikel' => $this->kArtikel],
-            \DB\NiceDB::RET_SINGLE_OBJECT
+            NiceDB::RET_SINGLE_OBJECT
         );
 
         return $oBewertet->bIsTopBewertet ?? false;
@@ -4473,7 +4475,7 @@ class Artikel
                 FROM tbestseller
                 WHERE kArtikel = :kArtikel',
             ['threshold' => $minSales, 'kArtikel' => $this->kArtikel],
-            \DB\NiceDB::RET_SINGLE_OBJECT
+            NiceDB::RET_SINGLE_OBJECT
         );
 
         return $oBestseller->bIsBestseller ?? false;
@@ -4831,7 +4833,7 @@ class Artikel
                         AND tseo.kSprache = tartikelsprache.kSprache
                     WHERE kArtikel = " . (int)$this->kArtikel . "
                         AND tartikelsprache.kSprache = " . (int)$kSprache,
-                \DB\NiceDB::RET_SINGLE_OBJECT
+                NiceDB::RET_SINGLE_OBJECT
             );
             if (isset($objSprache->cName) && trim($objSprache->cName)) {
                 $this->cName = $objSprache->cName;
@@ -5171,7 +5173,7 @@ class Artikel
                     OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND {$this->Preise->fVKNetto} <= vas.fBis )
                     )
                 ORDER BY minPrice, nSort ASC LIMIT 1",
-            \DB\NiceDB::RET_SINGLE_OBJECT
+            NiceDB::RET_SINGLE_OBJECT
         );
         if (isset($shipping->kVersandart)) {
             $this->oFavourableShipping = new Versandart($shipping->kVersandart);
@@ -5223,7 +5225,7 @@ class Artikel
                 JOIN tstueckliste 
                     ON tstueckliste.kArtikel = tartikel.kArtikel 
                     AND tstueckliste.kStueckliste = " . (int)$this->kStueckliste,
-            \DB\NiceDB::RET_AFFECTED_ROWS
+            NiceDB::RET_AFFECTED_ROWS
         );
         // check if this is a set article - if so, calculate the delivery time from the set of articles
         // we don't have loaded the list of pieces yet, do so!
@@ -5245,7 +5247,7 @@ class Artikel
                       ON tartikel.kArtikel = tstueckliste.kArtikel
                     WHERE tstueckliste.kStueckliste = " . (int)$this->kStueckliste . "
                         AND tartikel.kArtikel IS NULL",
-                \DB\NiceDB::RET_SINGLE_OBJECT
+                NiceDB::RET_SINGLE_OBJECT
             );
 
             if (is_object($oPiecesNotInShop) && (int)$oPiecesNotInShop->nAnzahl > 0) {
@@ -5588,7 +5590,7 @@ class Artikel
                     GROUP BY merkmalartikel.kArtikel
                     ORDER BY COUNT(similarMerkmal.kMerkmal) DESC
                 " . $cLimit,
-                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             if (!is_array($return['oArtikelArr']) || count($return['oArtikelArr']) < 1) {
                 // Falls es keine Merkmale gibt, in tsuchcachetreffer und ttagartikel suchen
@@ -5616,7 +5618,7 @@ class Artikel
                         GROUP BY tsuchcachetreffer.kArtikel
                         ORDER BY COUNT(*) DESC
                         " . $cLimit,
-                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                    NiceDB::RET_ARRAY_OF_OBJECTS
                 );
             }
             if (!is_array($return['oArtikelArr']) || count($return['oArtikelArr']) < 1) {
@@ -5643,7 +5645,7 @@ class Artikel
                         GROUP BY ttagartikel.kArtikel
                         ORDER BY COUNT(*) DESC
                         " . $cLimit,
-                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                    NiceDB::RET_ARRAY_OF_OBJECTS
                 );
             }
         }
@@ -5678,7 +5680,7 @@ class Artikel
                             {$cSQL}
                         GROUP BY tartikelmerkmal.kMerkmalWert
                   )",
-                \DB\NiceDB::RET_AFFECTED_ROWS
+                NiceDB::RET_AFFECTED_ROWS
             );
         }
 
@@ -5718,7 +5720,7 @@ class Artikel
         if (!Shop::has('checkCategoryDiscount')) {
             Shop::set(
                 'checkCategoryDiscount',
-                Shop::Container()->getDB()->query('SELECT kArtikel FROM tartikelkategorierabatt', \DB\NiceDB::RET_AFFECTED_ROWS) > 0
+                Shop::Container()->getDB()->query('SELECT kArtikel FROM tartikelkategorierabatt', NiceDB::RET_AFFECTED_ROWS) > 0
             );
         }
         // Existiert für diese Kundengruppe ein Kategorierabatt?
@@ -5910,7 +5912,7 @@ class Artikel
                 $oLand_arr = Shop::Container()->getDB()->query(
                     "SELECT cISO, cDeutsch, cEnglisch 
                         FROM tland WHERE " . $cSQL,
-                    \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                    NiceDB::RET_ARRAY_OF_OBJECTS
                 );
                 Shop::Cache()->set(
                     $cacheID,
@@ -6238,7 +6240,7 @@ class Artikel
                     AND ttagartikel.kArtikel = " . (int)$this->kArtikel . "
                 GROUP BY ttag.kTag 
                 ORDER BY ttagartikel.nAnzahlTagging DESC {$tag_limit}",
-            \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
         foreach ($tags as $tag) {
             $tag->kTag     = (int)$tag->kTag;
@@ -6418,7 +6420,7 @@ class Artikel
                         ON e1.kEigenschaftKombi = k.kEigenschaftKombi
                     {$cSQLStr}
                     WHERE e1.kEigenschaft = :where", $prepvalues,
-                \DB\NiceDB::RET_ARRAY_OF_OBJECTS
+                NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($oEigenschaft_arr as $oEigenschaft) {
                 $oEigenschaft->kEigenschaftWert = (int)$oEigenschaft->kEigenschaftWert;

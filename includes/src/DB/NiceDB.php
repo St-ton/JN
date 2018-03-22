@@ -1269,7 +1269,7 @@ class NiceDB implements DbInterface
     {
         $error = $this->_getError();
         if (is_array($error) && isset($error[2])) {
-            return \is_string($error[2]) ? $error[2] : '';
+            return is_string($error[2]) ? $error[2] : '';
         }
 
         return '';
@@ -1344,7 +1344,7 @@ class NiceDB implements DbInterface
                 case \is_bool($value):
                     $type = PDO::PARAM_BOOL;
                     break;
-                case \is_int($value):
+                case is_int($value):
                     $type = PDO::PARAM_INT;
                     break;
                 case $value === null:
@@ -1365,7 +1365,7 @@ class NiceDB implements DbInterface
      */
     protected function _bindName($name)
     {
-        return \is_string($name)
+        return is_string($name)
             ? (':' . ltrim($name, ':'))
             : $name;
     }
@@ -1379,11 +1379,11 @@ class NiceDB implements DbInterface
         $values = [];
 
         foreach ($params as $key => $value) {
-            $key    = \is_string($key)
+            $key    = is_string($key)
                 ? $this->_bindName($key)
                 : '[?]';
             $keys[] = '/' . $key . '/';
-            $value  = \is_int($value)
+            $value  = is_int($value)
                 ? $value
                 : $this->quote($value);
 

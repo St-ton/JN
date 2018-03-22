@@ -66,7 +66,7 @@ interface DbInterface extends \Serializable
     public function stats();
 
     /**
-     * @return PDO
+     * @return \PDO
      */
     public function getPDO();
 
@@ -170,7 +170,7 @@ interface DbInterface extends \Serializable
      * @param string       $orderBy
      * @param string       $limit
      * @return array
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '');
 
@@ -202,7 +202,7 @@ interface DbInterface extends \Serializable
      * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function executeQuery($stmt, $return, $echo = false, $bExecuteHook = false, $fnInfo = null);
 
@@ -233,7 +233,7 @@ interface DbInterface extends \Serializable
      * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function executeQueryPrepared(
         $stmt,
@@ -257,7 +257,7 @@ interface DbInterface extends \Serializable
     /**
      * @param string $stmt
      * @param array  $params
-     * @return Generator|int
+     * @return \Generator|int
      */
     public function executeYield($stmt, array $params = []);
 
@@ -285,7 +285,7 @@ interface DbInterface extends \Serializable
      * executes a query and gives back the result
      *
      * @param string $stmt - Statement to be executed
-     * @return PDOStatement|int
+     * @return \PDOStatement|int
      */
     public function executeExQuery($stmt);
 
@@ -383,4 +383,3 @@ interface DbInterface extends \Serializable
      */
     public function readableQuery($query, $params);
 }
-

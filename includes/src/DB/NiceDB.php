@@ -1177,7 +1177,7 @@ class NiceDB implements DbInterface
      */
     public function quote($string)
     {
-        if (\is_bool($string)) {
+        if (is_bool($string)) {
             $string = $string ?: '0';
         }
 
@@ -1341,7 +1341,7 @@ class NiceDB implements DbInterface
 
         if ($type === null) {
             switch (true) {
-                case \is_bool($value):
+                case is_bool($value):
                     $type = PDO::PARAM_BOOL;
                     break;
                 case is_int($value):

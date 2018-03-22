@@ -57,7 +57,7 @@ function gibRedirect($cRedirect)
             $oTMP->Wert                  = verifyGPCDataInteger('a');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_TAG;
-            $oRedirect->cURL             = 'index.php?a=' . verifyGPCDataInteger('a');
+            $oRedirect->cURL             = '?a=' . verifyGPCDataInteger('a');
             $oRedirect->cName            = Shop::Lang()->get('tag', 'redirect');
             break;
         case R_LOGIN_NEWSCOMMENT:
@@ -71,7 +71,7 @@ function gibRedirect($cRedirect)
             $oTMP->Wert                  = verifyGPCDataInteger('n');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_NEWSCOMMENT;
-            $oRedirect->cURL             = 'index.php?s=' . verifyGPCDataInteger('s') . '&n=' . verifyGPCDataInteger('n');
+            $oRedirect->cURL             = '?s=' . verifyGPCDataInteger('s') . '&n=' . verifyGPCDataInteger('n');
             $oRedirect->cName            = Shop::Lang()->get('news', 'redirect');
             break;
         case R_LOGIN_UMFRAGE:
@@ -81,7 +81,7 @@ function gibRedirect($cRedirect)
             $oTMP->Wert                  = verifyGPCDataInteger('u');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_UMFRAGE;
-            $oRedirect->cURL             = 'index.php?u=' . verifyGPCDataInteger('u');
+            $oRedirect->cURL             = '?u=' . verifyGPCDataInteger('u');
             $oRedirect->cName            = Shop::Lang()->get('poll', 'redirect');
             break;
         case R_LOGIN_RMA:
@@ -91,7 +91,7 @@ function gibRedirect($cRedirect)
             $oTMP->Wert                  = verifyGPCDataInteger('s');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_RMA;
-            $oRedirect->cURL             = 'index.php?s=' . verifyGPCDataInteger('s');
+            $oRedirect->cURL             = '?s=' . verifyGPCDataInteger('s');
             $oRedirect->cName            = Shop::Lang()->get('rma', 'redirect');
             break;
         default:

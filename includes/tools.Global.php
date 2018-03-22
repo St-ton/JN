@@ -1868,9 +1868,9 @@ function setzeLinks()
 {
     $linkHelper                    = LinkHelper::getInstance();
     $linkGroups                    = $linkHelper->getLinkGroups();
-//    $_SESSION['Link_Datenschutz']  = $linkGroups->Link_Datenschutz;
-//    $_SESSION['Link_AGB']          = $linkGroups->Link_AGB;
-//    $_SESSION['Link_Versandseite'] = $linkGroups->Link_Versandseite;
+    $_SESSION['Link_Datenschutz']  = $linkGroups->Link_Datenschutz;
+    $_SESSION['Link_AGB']          = $linkGroups->Link_AGB;
+    $_SESSION['Link_Versandseite'] = $linkGroups->Link_Versandseite;
     executeHook(HOOK_TOOLSGLOBAL_INC_SETZELINKS);
 
     return $linkGroups;

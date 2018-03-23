@@ -25,8 +25,8 @@ $res = handleCsvImportAction('kupon', function ($obj, $importType = 2) {
     global $importDeleteDone;
 
     if ($importType === 0 && $importDeleteDone === false) {
-        Shop::DB()->query('TRUNCATE TABLE tkupon', NiceDB::RET_AFFECTED_ROWS);
-        Shop::DB()->query('TRUNCATE TABLE tkuponsprache', NiceDB::RET_AFFECTED_ROWS);
+        Shop::DB()->query('TRUNCATE TABLE tkupon', 3);
+        Shop::DB()->query('TRUNCATE TABLE tkuponsprache', 3);
         $importDeleteDone = true;
     }
 

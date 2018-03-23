@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterSearch
+ * Class FilterItemSearch
  */
-class FilterSearch extends AbstractFilter
+class FilterItemSearch extends AbstractFilter
 {
     use MagicCompatibilityTrait;
 
@@ -43,7 +43,7 @@ class FilterSearch extends AbstractFilter
     ];
 
     /**
-     * FilterSearch constructor.
+     * FilterItemSearch constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -346,7 +346,7 @@ class FilterSearch extends AbstractFilter
         if (is_array($searchFilter)) {
             $count       = count($searchFilter);
             $searchCache = array_map(function ($f) {
-                /** @var FilterSearch $f */
+                /** @var FilterItemSearch $f */
                 return $f->getValue();
             }, $searchFilter);
         } elseif ($searchFilter->getSearchCacheID() > 0) {
@@ -458,7 +458,7 @@ class FilterSearch extends AbstractFilter
                 ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
                 : 0;
             $activeValues     = array_map(function($f) { // @todo: create method for this logic
-                /** @var FilterSearch $f */
+                /** @var FilterItemSearch $f */
                 return $f->getValue();
             }, $this->productFilter->getSearchFilter());
             foreach ($searchFilters as $searchFilter) {

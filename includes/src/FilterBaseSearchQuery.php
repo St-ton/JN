@@ -244,7 +244,11 @@ class FilterBaseSearchQuery extends AbstractFilter
             ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
                           MIN(tsuchcachetreffer.nSort) AS nSort
                               FROM tsuchcachetreffer
-                              WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $kSucheCache_arr) . ') 
+                              JOIN tsuchcache
+                                  ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
+                              JOIN tsuchanfrage
+                                  ON tsuchanfrage.cSuche = tsuchcache.cSuche
+                                  AND tsuchanfrage.kSuchanfrage IN (' . implode(',', $kSucheCache_arr) . ') 
                               GROUP BY tsuchcachetreffer.kArtikel
                               HAVING COUNT(*) = ' . $count . '
                           ) AS jSuche')

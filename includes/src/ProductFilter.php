@@ -51,7 +51,7 @@ class ProductFilter
     private $searchQuery;
 
     /**
-     * @var FilterSearch[]
+     * @var FilterItemSearch[]
      */
     private $searchFilter = [];
 
@@ -91,7 +91,7 @@ class ProductFilter
     private $searchSpecial;
 
     /**
-     * @var FilterSearch
+     * @var FilterItemSearch
      */
     private $search;
 
@@ -161,7 +161,7 @@ class ProductFilter
     private $attributeFilterCollection;
 
     /**
-     * @var FilterSearch
+     * @var FilterItemSearch
      */
     public $searchFilterCompat;
 
@@ -672,9 +672,9 @@ class ProductFilter
 
         $this->tagFilterCompat           = new FilterItemTag($this);
         $this->attributeFilterCollection = new FilterItemAttribute($this);
-        $this->searchFilterCompat        = new FilterSearch($this);
+        $this->searchFilterCompat        = new FilterItemSearch($this);
 
-        $this->search = new FilterSearch($this);
+        $this->search = new FilterItemSearch($this);
 
         $this->baseState = new FilterDummyState($this);
 
@@ -742,7 +742,7 @@ class ProductFilter
 
         // @todo - same as suchfilter?
         foreach ($params['SuchFilter_arr'] as $sf) {
-            $this->searchFilter[] = $this->addActiveFilter(new FilterSearch($this), $sf);
+            $this->searchFilter[] = $this->addActiveFilter(new FilterItemSearch($this), $sf);
         }
         if ($params['nSortierung'] > 0) {
             $this->nSortierung = (int)$params['nSortierung'];
@@ -1341,7 +1341,7 @@ class ProductFilter
     }
 
     /**
-     * @return FilterSearch
+     * @return FilterItemSearch
      */
     public function getSearch()
     {
@@ -1385,7 +1385,7 @@ class ProductFilter
 
     /**
      * @param null|int $idx
-     * @return FilterSearch|FilterSearch[]
+     * @return FilterItemSearch|FilterItemSearch[]
      */
     public function getSearchFilter($idx = null)
     {

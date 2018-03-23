@@ -11,7 +11,7 @@ $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
 $kSektion         = CONF_ARTIKELUEBERSICHT;
 $Einstellungen    = Shop::getSettings([$kSektion]);
 $standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
-$mysqlVersion     = Shop::Container()->getDB()->query("SHOW VARIABLES LIKE 'innodb_version'", NiceDB::RET_SINGLE_OBJECT)->Value;
+$mysqlVersion     = Shop::Container()->getDB()->query("SHOW VARIABLES LIKE 'innodb_version'", \DB\ReturnType::SINGLE_OBJECT)->Value;
 $step             = 'einstellungen bearbeiten';
 $cHinweis         = '';
 $cFehler          = '';
@@ -67,12 +67,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         try {
             Shop::Container()->getDB()->executeQuery(
                 "UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)",
-                NiceDB::RET_QUERYSINGLE
+                \DB\ReturnType::QUERYSINGLE
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
-                NiceDB::RET_QUERYSINGLE
+                \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {
             $res = 0;

@@ -173,7 +173,7 @@ class FilterBaseTag extends AbstractFilter
                     GROUP BY ssMerkmal.kTag
                     ORDER BY nAnzahl DESC LIMIT 0, " .
                     (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $additionalFilter = new FilterItemTag($this->productFilter);
             // Priorität berechnen

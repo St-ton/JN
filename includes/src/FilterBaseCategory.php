@@ -86,7 +86,7 @@ class FilterBaseCategory extends AbstractFilter
                         AND kKey = :val
                     ORDER BY tseo.kSprache",
                 ['val' => $this->getValue()],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';

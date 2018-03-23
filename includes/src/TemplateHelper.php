@@ -332,7 +332,7 @@ class TemplateHelper
             }
         }
 
-        $oTemplate_arr = Shop::Container()->getDB()->query('SELECT * FROM ttemplate', NiceDB::RET_ARRAY_OF_OBJECTS);
+        $oTemplate_arr = Shop::Container()->getDB()->query('SELECT * FROM ttemplate', \DB\ReturnType::ARRAY_OF_OBJECTS);
         foreach ($oTemplate_arr as $oTpl) {
             if (!isset($oTemplate->bAktiv) || !$oTemplate->bAktiv) {
                 $oTemplate->bAktiv = (strcasecmp($oTemplate->cOrdner, $oTpl->cTemplate) === 0);

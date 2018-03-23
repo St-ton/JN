@@ -187,7 +187,7 @@ class Trennzeichen
                       NULL, {$kSprache}, {$nEinheit}, {$xRowAssoc_arr[$kSprache][$nEinheit]['nDezimalstellen']}, 
                       '{$xRowAssoc_arr[$kSprache][$nEinheit]['cDezimalZeichen']}',
                     '{$xRowAssoc_arr[$kSprache][$nEinheit]['cTausenderZeichen']}')",
-                NiceDB::RET_AFFECTED_ROWS
+                \DB\ReturnType::AFFECTED_ROWS
             );
         }
 
@@ -394,7 +394,7 @@ class Trennzeichen
         $conf      = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_ARTIKELUEBERSICHT]);
         $languages = gibAlleSprachen();
         if (is_array($languages) && count($languages) > 0) {
-            Shop::Container()->getDB()->query('TRUNCATE ttrennzeichen', NiceDB::RET_AFFECTED_ROWS);
+            Shop::Container()->getDB()->query('TRUNCATE ttrennzeichen', \DB\ReturnType::AFFECTED_ROWS);
             $units = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH];
             foreach ($languages as $language) {
                 foreach ($units as $unit) {
@@ -431,7 +431,7 @@ class Trennzeichen
                     LEFT JOIN teinstellungen 
                         ON teinstellungen.cName = teinstellungenconf.cWertName
                     WHERE teinstellungenconf.kEinstellungenConf IN (1458, 1459, 495, 497, 499, 501)",
-                NiceDB::RET_AFFECTED_ROWS
+                \DB\ReturnType::AFFECTED_ROWS
                 );
         }
 

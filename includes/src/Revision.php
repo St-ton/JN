@@ -259,7 +259,7 @@ class Revision
                 'prim' => $key,
                 'max'  => MAX_REVISIONS
             ],
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
 }

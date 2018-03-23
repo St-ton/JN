@@ -162,7 +162,7 @@ class Slider implements IExtensionPoint
                     WHERE kSlider = :sliderID
                     ORDER BY nSort ASC',
                 ['sliderID' => $kSlider],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($slides as $slide) {
                 $this->oSlide_arr[] = new Slide($cSlider_arr['kSlider'], $slide->kSlide);

@@ -51,7 +51,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                             AND tevs.kSprache = :langID
                         WHERE tevo.cModulId = 'core_jtl_anbieterkennzeichnung'",
                     ['langID' => (int)$pcs[4]],
-                    NiceDB::RET_SINGLE_OBJECT
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
             } else {
                 // Plugin Emailvorlage?

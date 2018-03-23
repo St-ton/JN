@@ -2817,7 +2817,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                 'cShippingClass' => $versandklassen,
                 'cGroupID'       => '^([0-9 -]* )?' . $kKundengruppe . ' '
             ],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
         Shop::Cache()->set($cacheID, $oVersandart, [CACHING_GROUP_OPTION]);
     }

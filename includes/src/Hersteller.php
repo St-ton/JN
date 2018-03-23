@@ -158,7 +158,7 @@ class Hersteller
                     'langID' => $kSprache,
                     'manfID' => $kHersteller
                 ],
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             $cached = false;
             executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [

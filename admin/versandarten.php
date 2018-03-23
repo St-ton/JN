@@ -147,7 +147,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                     'surchargeISO'          => $versandzuschlag->cISO,
                     'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
                 ],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } else {
             $plz_x = Shop::Container()->getDB()->queryPrepared(
@@ -164,7 +164,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                     'surchargeISO'          => $versandzuschlag->cISO,
                     'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
                 ],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
         // (string-)merge the possible resulting 'overlaps'

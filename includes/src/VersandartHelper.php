@@ -52,7 +52,7 @@ class VersandartHelper
      */
     public function getShippingMethods() : array
     {
-        return $this->shippingMethods ?? Shop::Container()->getDB()->query('SELECT * FROM tversandart', NiceDB::RET_ARRAY_OF_OBJECTS);
+        return $this->shippingMethods ?? Shop::Container()->getDB()->query('SELECT * FROM tversandart', \DB\ReturnType::ARRAY_OF_OBJECTS);
     }
 
     /**
@@ -96,7 +96,7 @@ class VersandartHelper
                     'sClasses' => '^([0-9 -]* )?' . $versandklasse . ' ',
                     'cGroupID' => (int)$kKundengruppe
                 ],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
         $shippingFreeCountries = [];
@@ -185,7 +185,7 @@ class VersandartHelper
                 'sClasses' => '^([0-9 -]* )?' . $versandklassen . ' ',
                 'depOnly'  => $cNurAbhaengigeVersandart
             ],
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $netPricesActive          = Session::CustomerGroup()->isMerchant();
 
@@ -273,7 +273,7 @@ class VersandartHelper
                     'methodID' => (int)$shippingMethod->kVersandart,
                     'cGroupID' => $kKundengruppe
                 ],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $bVersandGueltig = false;
             foreach ($zahlungsarten as $zahlungsart) {
@@ -676,7 +676,7 @@ class VersandartHelper
                 'cGroupID' => $customerGroupID,
                 'sClasses' => '^([0-9 -]* )?' . $shippingClasses . ' '
             ],
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($shippingMethods as $i => $shippingMethod) {
             $shippingMethod->fEndpreis = berechneVersandpreis($shippingMethod, $cISO, $article);

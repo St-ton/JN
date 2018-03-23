@@ -180,7 +180,7 @@ final class Shopsetting implements ArrayAccess
                              FROM tplugineinstellungen
                              WHERE cName LIKE '%_min%' 
                               OR cName LIKE '%_max'",
-                        NiceDB::RET_ARRAY_OF_OBJECTS
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                      );
                 } else {
                     $settings = Shop::Container()->getDB()->queryPrepared(
@@ -192,7 +192,7 @@ final class Shopsetting implements ArrayAccess
                                 AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
                             WHERE teinstellungen.kEinstellungenSektion = :section',
                         ['section' => $section],
-                        NiceDB::RET_ARRAY_OF_OBJECTS
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                 }
                 if (is_array($settings) && count($settings) > 0) {
@@ -286,7 +286,7 @@ final class Shopsetting implements ArrayAccess
                     ON teinstellungenconf.cWertName = teinstellungen.cName
                     AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
                 ORDER BY kEinstellungenSektion",
-            NiceDB::RET_ARRAY_OF_ASSOC_ARRAYS
+            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         $result = [];
         foreach (self::$mapping as $mappingID => $sectionName) {

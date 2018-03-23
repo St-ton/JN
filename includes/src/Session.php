@@ -39,6 +39,7 @@ class Session
      * @param bool   $force - force new instance?
      * @param string $sessionName - if null, then default to current session name
      * @return Session
+     * @throws Exception
      */
     public static function getInstance($start = true, $force = false, $sessionName = self::DefaultSession)
     {
@@ -52,8 +53,10 @@ class Session
     }
 
     /**
-     * @param bool   $start - call session_start()?
+     * Session constructor.
+     * @param bool   $start
      * @param string $sessionName
+     * @throws Exception
      */
     public function __construct($start = true, $sessionName = self::DefaultSession)
     {
@@ -79,10 +82,8 @@ class Session
                 session_id('jtl-bot');
             }
             if ($saveBotSession === 2 || $saveBotSession === 3) {
-                $save = false;
-                if ($saveBotSession === 2 && (Shop::Cache()->isAvailable() && Shop::Cache()->isActive())) {
-                    $save = true;
-                }
+                $save = $saveBotSession === 2 && (Shop::Cache()->isAvailable() && Shop::Cache()->isActive());
+
                 self::$_handler = new SessionHandlerBot($save);
                 self::$_storage = new SessionStorage(self::$_handler);
                 $this->setStandardSessionVars();
@@ -101,7 +102,7 @@ class Session
      * @param string $userAgent
      * @return bool
      */
-    public static function getIsCrawler($userAgent)
+    public static function getIsCrawler($userAgent) : bool
     {
         return preg_match(
             '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .
@@ -134,6 +135,7 @@ class Session
      * setzt Sessionvariablen beim ersten Sessionaufbau oder wenn globale Daten aktualisiert werden müssen
      *
      * @return $this
+     * @throws Exception
      */
     public function setStandardSessionVars()
     {
@@ -317,7 +319,8 @@ class Session
                 "SELECT kKunde
                     FROM tkunde
                     WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
-                        AND date_sub(now(), INTERVAL 3 HOUR) < dVeraendert", 1
+                        AND date_sub(now(), INTERVAL 3 HOUR) < dVeraendert",
+                NiceDB::RET_SINGLE_OBJECT
             );
             if (isset($Kunde->kKunde) && $Kunde->kKunde > 0) {
                 $oKunde = new Kunde($_SESSION['Kunde']->kKunde);
@@ -349,29 +352,28 @@ class Session
     private function checkComparelistDeletes()
     {
         $kVergleichlistePos = verifyGPCDataInteger('vlplo');
-        if ($kVergleichlistePos !== 0) {
-            if (isset($_SESSION['Vergleichsliste']->oArtikel_arr)
-                && is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
-                && count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
-            ) {
-                // Wunschliste Position aus der Session löschen
-                foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
-                    if ((int)$oArtikel->kArtikel === $kVergleichlistePos) {
-                        unset($_SESSION['Vergleichsliste']->oArtikel_arr[$i]);
-                    }
+        if ($kVergleichlistePos !== 0
+            && isset($_SESSION['Vergleichsliste']->oArtikel_arr)
+            && is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
+            && count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
+        ) {
+            // Wunschliste Position aus der Session löschen
+            foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
+                if ((int)$oArtikel->kArtikel === $kVergleichlistePos) {
+                    unset($_SESSION['Vergleichsliste']->oArtikel_arr[$i]);
                 }
-                // Ist nach dem Löschen des Artikels aus der Vergleichslite kein weiterer Artikel vorhanden?
-                if (count($_SESSION['Vergleichsliste']->oArtikel_arr) === 0) {
-                    unset($_SESSION['Vergleichsliste']);
-                } else {
-                    // Positionen Array in der Wunschliste neu nummerieren
-                    $_SESSION['Vergleichsliste']->oArtikel_arr = array_merge($_SESSION['Vergleichsliste']->oArtikel_arr);
-                }
-                if (!isset($_SERVER['REQUEST_URI']) || strpos($_SERVER['REQUEST_URI'], 'index.php') !== false) {
-                    http_response_code(301);
-                    header('Location: ' . Shop::getURL() . '/');
-                    exit;
-                }
+            }
+            // Ist nach dem Löschen des Artikels aus der Vergleichslite kein weiterer Artikel vorhanden?
+            if (count($_SESSION['Vergleichsliste']->oArtikel_arr) === 0) {
+                unset($_SESSION['Vergleichsliste']);
+            } else {
+                // Positionen Array in der Wunschliste neu nummerieren
+                $_SESSION['Vergleichsliste']->oArtikel_arr = array_merge($_SESSION['Vergleichsliste']->oArtikel_arr);
+            }
+            if (!isset($_SERVER['REQUEST_URI']) || strpos($_SERVER['REQUEST_URI'], 'index.php') !== false) {
+                http_response_code(301);
+                header('Location: ' . Shop::getURL() . '/');
+                exit;
             }
         }
 
@@ -383,7 +385,7 @@ class Session
      * @param string $cDefault
      * @return string
      */
-    public function getBrowserLanguage($cAllowed_arr, $cDefault)
+    public function getBrowserLanguage($cAllowed_arr, $cDefault) : string
     {
         $cLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
 
@@ -461,14 +463,13 @@ class Session
      */
     public function setCustomer($Kunde)
     {
-        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         $Kunde->angezeigtesLand   = ISO2land($Kunde->cLand);
         $_SESSION['Kunde']        = $Kunde;
         $_SESSION['Kundengruppe'] = new Kundengruppe((int)$Kunde->kKundengruppe);
         $_SESSION['Kundengruppe']->setMayViewCategories(1)
                                  ->setMayViewPrices(1)
                                  ->initAttributes();
-        $_SESSION['Warenkorb']->setzePositionsPreise();
+        self::Cart()->setzePositionsPreise();
         setzeSteuersaetze();
         setzeLinks();
 
@@ -531,7 +532,7 @@ class Session
     /**
      * @return Currency
      */
-    public static function Currency()
+    public static function Currency() : Currency
     {
         return $_SESSION['Waehrung'] ?? (new Currency())->getDefault();
     }
@@ -539,7 +540,7 @@ class Session
     /**
      * @return Warenkorb
      */
-    public static function Cart()
+    public static function Cart() : Warenkorb
     {
         return $_SESSION['Warenkorb'] ?? new Warenkorb();
     }
@@ -547,7 +548,7 @@ class Session
     /**
      * @return Currency[]
      */
-    public static function Currencies()
+    public static function Currencies() : array
     {
         return $_SESSION['Waehrungen'] ?? [];
     }
@@ -555,25 +556,25 @@ class Session
     /**
      * @return Warenkorb
      */
-    public function Basket()
+    public function Basket() : Warenkorb
     {
-        return $_SESSION['Warenkorb'];
+        return $_SESSION['Warenkorb'] ?? new Warenkorb();
     }
 
     /**
      * @return Wunschliste
      */
-    public static function WishList()
+    public static function WishList() : Wunschliste
     {
-        return $_SESSION['Wunschliste'];
+        return $_SESSION['Wunschliste'] ?? new Wunschliste();
     }
 
     /**
      * @return Vergleichsliste
      */
-    public static function CompareList()
+    public static function CompareList() : Vergleichsliste
     {
-        return $_SESSION['Vergleichsliste'];
+        return $_SESSION['Vergleichsliste'] ?? new Vergleichsliste();
     }
 
     /**
@@ -582,7 +583,7 @@ class Session
      */
     public function Manufacturers()
     {
-        return $_SESSION['Hersteller'];
+        return [];
     }
 
     /**
@@ -591,7 +592,7 @@ class Session
      */
     public function LinkGroups()
     {
-        return $_SESSION['Linkgruppen'];
+        return LinkHelper::getInstance()->getLinkGroups();
     }
 
     /**
@@ -600,6 +601,6 @@ class Session
      */
     public function Categories()
     {
-        return $_SESSION['oKategorie_arr'];
+        return [];
     }
 }

@@ -1400,7 +1400,6 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
         ? ('&lang=' . Shop::getLanguageCode())
         : '';
     $sid    = '';
-    $cDatei = 'index.php';
     $prefix = $bFull === false ? '' : Shop::getURL() . '/';
     if ($bForceNonSeo) {
         $obj->cSeo = '';
@@ -1411,12 +1410,12 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
             case URLART_ARTIKEL:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . $cDatei . '?a=' . $obj->kArtikel . $lang . $sid;
+                    : $prefix . '?a=' . $obj->kArtikel . $lang . $sid;
 
             case URLART_KATEGORIE:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . $cDatei . '?k=' . $obj->kKategorie . $lang . $sid;
+                    : $prefix . '?k=' . $obj->kKategorie . $lang . $sid;
             case URLART_SEITE:
                 if (!$row
                     && isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
@@ -1429,52 +1428,52 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
 
                 return !empty($oSpezialseite->cDateiname)
                     ? $prefix . $oSpezialseite->cDateiname
-                    : $prefix . $cDatei . '?s=' . $obj->kLink . $lang . $sid;
+                    : $prefix . '?s=' . $obj->kLink . $lang . $sid;
 
             case URLART_HERSTELLER:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . $cDatei . '?h=' . $obj->kHersteller . $lang . $sid;
+                    : $prefix . '?h=' . $obj->kHersteller . $lang . $sid;
 
             case URLART_LIVESUCHE:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . $cDatei . '?l=' . $obj->kSuchanfrage . $lang . $sid;
+                    : $prefix . '?l=' . $obj->kSuchanfrage . $lang . $sid;
 
             case URLART_TAG:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . $cDatei . '?t=' . $obj->kTag . $lang . $sid;
+                    : $prefix . '?t=' . $obj->kTag . $lang . $sid;
 
             case URLART_MERKMAL:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . $cDatei . '?m=' . $obj->kMerkmalWert . $lang . $sid;
+                    : $prefix . '?m=' . $obj->kMerkmalWert . $lang . $sid;
 
             case URLART_NEWS:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . $cDatei . '?n=' . $obj->kNews . $lang . $sid;
+                    : $prefix . '?n=' . $obj->kNews . $lang . $sid;
 
             case URLART_NEWSMONAT:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . $cDatei . '?nm=' . $obj->kNewsMonatsUebersicht . $lang . $sid;
+                    : $prefix . '?nm=' . $obj->kNewsMonatsUebersicht . $lang . $sid;
 
             case URLART_NEWSKATEGORIE:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . $cDatei . '?nk=' . $obj->kNewsKategorie . $lang . $sid;
+                    : $prefix . '?nk=' . $obj->kNewsKategorie . $lang . $sid;
 
             case URLART_UMFRAGE:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . $cDatei . '?u=' . $obj->kUmfrage . $lang . $sid;
+                    : $prefix . '?u=' . $obj->kUmfrage . $lang . $sid;
 
             case URLART_SEARCHSPECIALS:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . $cDatei . '?q=' . $obj->kSuchspecial . $lang . $sid;
+                    : $prefix . '?q=' . $obj->kSuchspecial . $lang . $sid;
         }
     }
 
@@ -1522,7 +1521,7 @@ function baueSprachURLS($obj, $art)
                 }
                 $url = (isset($seoobj->cSeo) && $seoobj->cSeo)
                     ? $seoobj->cSeo
-                    : 'index.php?a=' . $obj->kArtikel . '&amp;lang=' . $Sprache->cISO;
+                    : '?a=' . $obj->kArtikel . '&amp;lang=' . $Sprache->cISO;
                 break;
 
             case URLART_KATEGORIE:
@@ -1546,7 +1545,7 @@ function baueSprachURLS($obj, $art)
                             WHERE tkategorie.kKategorie = " . (int)$obj->kKategorie, 1
                     );
                 }
-                $url = $seoobj->cSeo ?? 'index.php?k=' . $obj->kKategorie . '&amp;lang=' . $Sprache->cISO;
+                $url = $seoobj->cSeo ?? '?k=' . $obj->kKategorie . '&amp;lang=' . $Sprache->cISO;
                 break;
 
             case URLART_SEITE:
@@ -1562,7 +1561,7 @@ function baueSprachURLS($obj, $art)
                 );
                 $url    = (isset($seoobj->cSeo) && $seoobj->cSeo)
                     ? $seoobj->cSeo
-                    : 'index.php?s=' . $obj->kLink . '&amp;lang=' . $Sprache->cISO;
+                    : '?s=' . $obj->kLink . '&amp;lang=' . $Sprache->cISO;
                 break;
 
             default:
@@ -3662,7 +3661,7 @@ function setzeSpracheUndWaehrungLink()
                     }
                 }
             } elseif ($kLink > 0) {
-                $url = 'index.php?s=' . $kLink . '&lang=' . $_SESSION['cISOSprache'] . '&curr=' . $currency->getCode();
+                $url = '?s=' . $kLink . '&lang=' . $_SESSION['cISOSprache'] . '&curr=' . $currency->getCode();
             } else {
                 $url = $NaviFilter->getFilterURL()->getURL($oZusatzFilter);
                 $url .= strpos($url, '?') === false
@@ -4598,7 +4597,7 @@ function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
                 ? $NaviFilter->$function()
                 : null;
             if (isset($data->$cKey) && (int)$data->$cKey > 0) {
-                $cUrl = "index.php?{$cParam}={$data->$cKey}";
+                $cUrl = "?{$cParam}={$data->$cKey}";
                 if ($bSeo && isset($data->cSeo) && is_array($data->cSeo)) {
                     $cUrl = "{$data->cSeo[$kSprache]}";
                 }

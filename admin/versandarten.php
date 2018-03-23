@@ -196,6 +196,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                 $cFehler .= "Der PLZ-Bereich $ZuschlagPLZ->cPLZAb-$ZuschlagPLZ->cPLZBis";
             }
             $cFehler .= " &uuml;berschneidet sich mit $szOverlap.<br>Bitte geben Sie eine andere PLZ / PLZ Bereich an.";
+        } elseif (Shop::Container()->getDB()->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
             $cHinweis .= "PLZ wurde erfolgreich hinzugef&uuml;gt.";
         }
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);

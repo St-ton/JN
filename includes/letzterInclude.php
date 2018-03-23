@@ -70,7 +70,7 @@ if (!isset($AktuelleKategorie)) {
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
-$smarty->assign('linkgroups', $linkHelper->getLinkGroups())
+$smarty->assign('linkgroups', $linkHelper->activate($pagetType))
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
@@ -172,7 +172,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 pruefeKampagnenParameter();
 // Währungs- und Sprachlinks (um die Sprache oder Währung zu wechseln ohne die aktuelle Seite zu verlieren)
 setzeSpracheUndWaehrungLink();
-$linkGroups = $pagetType ? $linkHelper->activate($pagetType) : $smarty->getTemplateVars('linkGroups');
 // Extension Point
 $oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $kKundengruppe))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
@@ -183,12 +182,11 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     // Letzten angesehenden Artikel hinzufügen
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
-$besucherzaehler = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
-    ? Shop::Container()->getDB()->query("SELECT * FROM tbesucherzaehler", 1)
-    : null;
+$visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
+    ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', NiceDB::RET_SINGLE_OBJECT)->nZaehler
+    : 0;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('nIsSSL', pruefeSSL())
        ->assign('boxes', $boxesToShow)
-       ->assign('linkgroups', $linkGroups)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
-       ->assign('Besucherzaehler', !empty($besucherzaehler->nZaehler) ? (int)$besucherzaehler->nZaehler : 0);
+       ->assign('Besucherzaehler', $visitorCount);

@@ -383,4 +383,3 @@ interface DbInterface extends \Serializable
      */
     public function readableQuery($query, $params);
 }
-

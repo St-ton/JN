@@ -109,7 +109,7 @@ class Migration_20171116114700 extends Migration implements IMigration
                 foreach ($this->languages as $language) {
                     $seo->kSprache = $language->kSprache;
                     if ($language->cISO === 'ger') {
-                        $seo->cSeo = getSeo($seoGER);
+                        $seo->cSeo = checkSeo(getSeo($seoGER));
                         Shop::Container()->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
                             $langObj->kSprache    = $language->kSprache;
@@ -118,7 +118,7 @@ class Migration_20171116114700 extends Migration implements IMigration
                             Shop::Container()->getDB()->insert('tlinksprache', $langObj);
                         }
                     } elseif ($language->cISO === 'eng') {
-                        $seo->cSeo = getSeo($seoENG);
+                        $seo->cSeo = checkSeo(getSeo($seoENG));
                         Shop::Container()->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
                             $langObj->kSprache    = $language->kSprache;

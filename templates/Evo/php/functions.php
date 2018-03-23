@@ -170,8 +170,8 @@ function get_category_array($params, &$smarty)
     if (isset($params['categoryBoxNumber']) && (int)$params['categoryBoxNumber'] > 0) {
         $list2 = [];
         foreach ($list as $key => $oList) {
-            if (isset($oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX]) &&
-                $oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']
+            if (isset($oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX])
+                && $oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']
             ) {
                 $list2[$key] = $oList;
             }
@@ -433,7 +433,8 @@ function hasCheckBoxForLocation($params, &$smarty)
  */
 function getCheckBoxForLocation($params, &$smarty)
 {
-    $cid           = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . (int)$_SESSION['kSprache'];
+    $langID        = Shop::getLanguageID();
+    $cid           = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . $langID;
     $oCheckBox_arr = Shop::has($cid)
         ? Shop::get($cid)
         : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
@@ -456,11 +457,11 @@ function getCheckBoxForLocation($params, &$smarty)
             $bError                   = isset($params['cPlausi_arr'][$oCheckBox->cID]);
             $cPost_arr                = $params['cPost_arr'];
             $oCheckBox->isActive      = isset($cPost_arr[$oCheckBox->cID]);
-            $oCheckBox->cName         = $oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cText;
+            $oCheckBox->cName         = $oCheckBox->oCheckBoxSprache_arr[$langID]->cText;
             $oCheckBox->cLinkURL      = strlen($cLinkURL) > 0 ? $cLinkURL : '';
             $oCheckBox->cLinkURLFull  = $cLinkURLFull;
-            $oCheckBox->cBeschreibung = !empty($oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung)
-                ? $oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung
+            $oCheckBox->cBeschreibung = !empty($oCheckBox->oCheckBoxSprache_arr[$langID]->cBeschreibung)
+                ? $oCheckBox->oCheckBoxSprache_arr[$langID]->cBeschreibung
                 : '';
             $oCheckBox->cErrormsg     = $bError
                 ? Shop::Lang()->get('pleasyAccept', 'account data')
@@ -520,7 +521,8 @@ function get_navigation($params, &$smarty)
     $linkgroupIdentifier = $params['linkgroupIdentifier'];
     $oLinkGruppe         = null;
     if (strlen($linkgroupIdentifier) > 0) {
-        $linkGroups  = LinkHelper::getInstance()->getLinkGroups();
+        $linkGroups  = $smarty->getTemplateVars('linkgroups') ?? LinkHelper::getInstance()->getLinkGroups();
+
         $oLinkGruppe = $linkGroups->{$linkgroupIdentifier} ?? null;
     }
 
@@ -541,15 +543,14 @@ function build_navigation_subs($oLink_arr, $kVaterLink = 0)
     if ($oLink_arr->cName === 'hidden') {
         return $oNew_arr;
     }
-    $cISO = $_SESSION['cISOSprache'];
+    $cISO = Shop::getLanguageCode();
     foreach ($oLink_arr->Links as &$oLink) {
-        $oLink->kVaterLink = (int)$oLink->kVaterLink;
         if ($oLink->kVaterLink !== $kVaterLink) {
             continue;
         }
         $oLink->oSub_arr = build_navigation_subs($oLink_arr, $oLink->kLink);
         //append bIsActive property
-        $oLink->bIsActive = Shop::$kLink > 0 && Shop::$kLink === (int)$oLink->kLink;
+        $oLink->bIsActive = $oLink->aktiv === 1 || (Shop::$kLink > 0 && Shop::$kLink === $oLink->kLink);
         //append cTitle property
         $oLink->cTitle = (isset($oLink->cLocalizedTitle[$cISO])
             && $oLink->cLocalizedTitle[$cISO] !== $oLink->cLocalizedName[$cISO])
@@ -567,7 +568,7 @@ function build_navigation_subs($oLink_arr, $kVaterLink = 0)
  */
 function get_trustedshops_data($params, &$smarty)
 {
-    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
     $smarty->assign($params['assign'], [
         'tsId'   => $oTrustedShops->tsId,
         'nAktiv' => $oTrustedShops->nAktiv

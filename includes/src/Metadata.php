@@ -283,7 +283,7 @@ class Metadata
             return $globalMeta;
         }
         $globalMeta = [];
-        $globalTmp  = Shop::DB()->query("SELECT cName, kSprache, cWertName FROM tglobalemetaangaben ORDER BY kSprache",
+        $globalTmp  = Shop::Container()->getDB()->query("SELECT cName, kSprache, cWertName FROM tglobalemetaangaben ORDER BY kSprache",
             2);
         foreach ($globalTmp as $data) {
             if (!isset($globalMeta[$data->kSprache])) {
@@ -306,7 +306,7 @@ class Metadata
         $cacheID = 'jtl_glob_excl';
         if (($exclude = Shop::Cache()->get($cacheID)) === false) {
             $exclude  = [];
-            $keyWords = Shop::DB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
+            $keyWords = Shop::Container()->getDB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
             foreach ($keyWords as $keyWord) {
                 $exclude[$keyWord->cISOSprache] = $keyWord;
             }
@@ -485,9 +485,7 @@ class Metadata
         $cKatDescription = '';
         $languageID      = $this->productFilter->getLanguageID();
         if ($this->productFilter->hasCategory()) {
-            $category = $category !== null
-                ? $category
-                : new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaDescription)) {
                 // meta description via new method
                 return prepareMeta(
@@ -601,9 +599,7 @@ class Metadata
         // Kategorieattribut?
         $cKatKeywords = '';
         if ($this->productFilter->hasCategory()) {
-            $category = $category !== null
-                ? $category
-                : new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaKeywords)) {
                 // meta keywords via new method
                 return strip_tags($category->cMetaKeywords);
@@ -722,9 +718,7 @@ class Metadata
         $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
         // Kategorieattribute koennen Standard-Titles ueberschreiben
         if ($this->productFilter->hasCategory()) {
-            $category = $category !== null
-                ? $category
-                : new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cTitleTag)) {
                 // meta title via new method
                 $cMetaTitle = strip_tags($category->cTitleTag);
@@ -927,12 +921,13 @@ class Metadata
         if (strlen($cFilterShopURL) > 0) {
             $bSeo = false;
         }
-        $cURL       = '';
-        $oSeite_arr = [];
-        $nVon       = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
-        $nBis       = 0; // Begrenzt durch $nMaxAnzeige.
-        $naviURL    = $this->productFilter->getFilterURL()->getURL();
-        $bSeo       = $bSeo && strpos($naviURL, '?') === false;
+        $cURL        = '';
+        $oSeite_arr  = [];
+        $nVon        = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
+        $nBis        = 0; // Begrenzt durch $nMaxAnzeige.
+        $naviURL     = $this->productFilter->getFilterURL()->getURL();
+        $bSeo        = $bSeo && strpos($naviURL, '?') === false;
+        $nMaxAnzeige = (int)$nMaxAnzeige;
         if (isset($oSeitenzahlen->MaxSeiten, $oSeitenzahlen->AktuelleSeite)
             && $oSeitenzahlen->MaxSeiten > 0
             && $oSeitenzahlen->AktuelleSeite > 0

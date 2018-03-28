@@ -30,7 +30,7 @@ function handleData($kBestellung, $dRechnungErstellt, $kSprache)
     $kBestellung = (int)$kBestellung;
     $kSprache    = (int)$kSprache;
     if ($kBestellung > 0 && $kSprache > 0) {
-        $oBestellung = Shop::DB()->query(
+        $oBestellung = Shop::Container()->getDB()->query(
             "SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
                 FROM tbestellung
                 LEFT JOIN tzahlungsart

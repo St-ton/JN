@@ -78,7 +78,7 @@ class FilterItemSearchSpecial extends AbstractFilter
             if (!is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = Shop::DB()->query(
+            $oSeo_arr = Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial' 
@@ -364,7 +364,7 @@ class FilterItemSearchSpecial extends AbstractFilter
                 $state->conditions,
                 $state->having
             );
-            $qryRes  = Shop::DB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS);
+            $qryRes  = Shop::Container()->getDB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS);
 
             if (($count = count($qryRes)) > 0) {
                 $options[$i] = (new FilterOption())

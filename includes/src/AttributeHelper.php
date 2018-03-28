@@ -18,7 +18,7 @@ class AttributeHelper
      */
     public static function getDataByAttribute($attribute, $value, callable $callback = null)
     {
-        $res = Shop::DB()->select('tmerkmal', $attribute, $value);
+        $res = Shop::Container()->getDB()->select('tmerkmal', $attribute, $value);
 
         return is_callable($callback)
             ? $callback($res)

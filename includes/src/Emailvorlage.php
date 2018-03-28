@@ -104,7 +104,7 @@ class Emailvorlage
         $kEmailvorlage = (int)$kEmailvorlage;
         $cTable        = $bPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
         $cTableSetting = $bPlugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';
-        $oObj          = Shop::DB()->select($cTable, 'kEmailvorlage', $kEmailvorlage);
+        $oObj          = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', $kEmailvorlage);
 
         if (isset($oObj->kEmailvorlage) && $oObj->kEmailvorlage > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
@@ -112,7 +112,7 @@ class Emailvorlage
                 $this->$cMember = $oObj->$cMember;
             }
             // Settings
-            $this->oEinstellung_arr = Shop::DB()->selectAll($cTableSetting, 'kEmailvorlage', $this->kEmailvorlage);
+            $this->oEinstellung_arr = Shop::Container()->getDB()->selectAll($cTableSetting, 'kEmailvorlage', $this->kEmailvorlage);
             // Assoc bauen
             if (is_array($this->oEinstellung_arr) && count($this->oEinstellung_arr) > 0) {
                 $this->oEinstellungAssoc_arr = [];
@@ -362,9 +362,9 @@ class Emailvorlage
     {
         $modulId = StringHandler::filterXSS($modulId);
         $table   = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
-        $obj     = Shop::DB()->select(
+        $obj     = Shop::Container()->getDB()->select(
             $table,
-            'cModulId', Shop::DB()->escape($modulId),
+            'cModulId', Shop::Container()->getDB()->escape($modulId),
             null, null,
             null, null,
             false,

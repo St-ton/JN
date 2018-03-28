@@ -28,7 +28,7 @@ class MediaImageCompatibility implements IMedia
     {
         $req      = $this->parse($request);
         $path     = strtolower($req['path']);
-        $fallback = Shop::DB()->executeQueryPrepared(
+        $fallback = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT h.kArtikel, h.nNr, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
                 FROM tartikelpicthistory h 
                 INNER JOIN tartikel a 
@@ -60,12 +60,12 @@ class MediaImageCompatibility implements IMedia
             $articleNumber = $this->replaceVowelMutation($articleNumber);
             $barcode       = $this->replaceVowelMutation($barcode);
             // lowercase + escape
-            $name          = strtolower(Shop::DB()->escape($name));
-            $articleNumber = strtolower(Shop::DB()->escape($articleNumber));
-            $barcode       = strtolower(Shop::DB()->escape($barcode));
-            $seo           = strtolower(Shop::DB()->escape($seo));
+            $name          = strtolower(Shop::Container()->getDB()->escape($name));
+            $articleNumber = strtolower(Shop::Container()->getDB()->escape($articleNumber));
+            $barcode       = strtolower(Shop::Container()->getDB()->escape($barcode));
+            $seo           = strtolower(Shop::Container()->getDB()->escape($seo));
 
-            $fallback = Shop::DB()->executeQuery("
+            $fallback = Shop::Container()->getDB()->executeQuery("
               SELECT a.kArtikel, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
               FROM tartikel a 
               WHERE 
@@ -77,8 +77,8 @@ class MediaImageCompatibility implements IMedia
         }
 
         if (is_object($fallback) && (int)$fallback->kArtikel > 0) {
-            $number   = isset($req['number']) ? $req['number'] : 1;
-            $thumbUrl = Shop::getURL() . '/' .
+            $number   = $req['number'] ?? 1;
+            $thumbUrl = Shop::getImageBaseURL() .
                 MediaImage::getThumb(
                     Image::TYPE_PRODUCT,
                     $fallback->kArtikel,

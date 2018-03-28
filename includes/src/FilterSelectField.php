@@ -65,15 +65,15 @@ class FilterSelectField extends FilterField
 
         if ($cValue !== '' || $nTestOp === 4 || $nTestOp === 9) {
             switch ($nTestOp) {
-                case 1: return $this->cColumn . " LIKE '%" . Shop::DB()->escape($cValue) . "%'";
-                case 2: return $this->cColumn . " LIKE '" . Shop::DB()->escape($cValue) . "%'";
-                case 3: return $this->cColumn . " LIKE '%" . Shop::DB()->escape($cValue) . "'";
-                case 4: return $this->cColumn . " = '" . Shop::DB()->escape($cValue) . "'";
-                case 5: return $this->cColumn . " < '" . Shop::DB()->escape($cValue) . "'";
-                case 6: return $this->cColumn . " > '" . Shop::DB()->escape($cValue) . "'";
-                case 7: return $this->cColumn . " <= '" . Shop::DB()->escape($cValue) . "'";
-                case 8: return $this->cColumn . " >= '" . Shop::DB()->escape($cValue) . "'";
-                case 9: return $this->cColumn . " != '" . Shop::DB()->escape($cValue) . "'";
+                case 1: return $this->cColumn . " LIKE '%" . Shop::Container()->getDB()->escape($cValue) . "%'";
+                case 2: return $this->cColumn . " LIKE '" . Shop::Container()->getDB()->escape($cValue) . "%'";
+                case 3: return $this->cColumn . " LIKE '%" . Shop::Container()->getDB()->escape($cValue) . "'";
+                case 4: return $this->cColumn . " = '" . Shop::Container()->getDB()->escape($cValue) . "'";
+                case 5: return $this->cColumn . " < '" . Shop::Container()->getDB()->escape($cValue) . "'";
+                case 6: return $this->cColumn . " > '" . Shop::Container()->getDB()->escape($cValue) . "'";
+                case 7: return $this->cColumn . " <= '" . Shop::Container()->getDB()->escape($cValue) . "'";
+                case 8: return $this->cColumn . " >= '" . Shop::Container()->getDB()->escape($cValue) . "'";
+                case 9: return $this->cColumn . " != '" . Shop::Container()->getDB()->escape($cValue) . "'";
             }
         }
 

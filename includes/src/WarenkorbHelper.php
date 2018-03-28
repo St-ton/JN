@@ -242,17 +242,17 @@ class WarenkorbHelper
         if ($wkPos->variationPicturesArr === null) {
             $wkPos->variationPicturesArr = [];
         }
-        $shopURL  = Shop::getURL() . '/';
-        $oPicture = (object)[
+        $imageBaseURL          = Shop::getImageBaseURL();
+        $oPicture              = (object)[
             'isVariation'  => true,
             'cPfadMini'    => $variation->cPfadMini,
             'cPfadKlein'   => $variation->cPfadKlein,
             'cPfadNormal'  => $variation->cPfadNormal,
             'cPfadGross'   => $variation->cPfadGross,
-            'cURLMini'     => $shopURL . $variation->cPfadMini,
-            'cURLKlein'    => $shopURL . $variation->cPfadKlein,
-            'cURLNormal'   => $shopURL . $variation->cPfadNormal,
-            'cURLGross'    => $shopURL . $variation->cPfadGross,
+            'cURLMini'     => $imageBaseURL . $variation->cPfadMini,
+            'cURLKlein'    => $imageBaseURL . $variation->cPfadKlein,
+            'cURLNormal'   => $imageBaseURL . $variation->cPfadNormal,
+            'cURLGross'    => $imageBaseURL . $variation->cPfadGross,
             'nNr'          => count($wkPos->variationPicturesArr) + 1,
             'cAltAttribut' => str_replace(['"', "'"], '', $wkPos->Artikel->cName . ' - ' . $variation->cName),
         ];
@@ -417,11 +417,8 @@ class WarenkorbHelper
                     continue;
                 }
                 $oKonfigitem          = new Konfigitem($kKonfigitem);
-                $oKonfigitem->fAnzahl = (float)(
-                isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()])
-                    ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
-                    : $oKonfigitem->getInitial()
-                );
+                $oKonfigitem->fAnzahl = (float)($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
+                    ?? $oKonfigitem->getInitial());
                 if ($nKonfigitemAnzahl_arr && isset($nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()])) {
                     $oKonfigitem->fAnzahl = (float)$nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()];
                 }
@@ -482,7 +479,7 @@ class WarenkorbHelper
         // Alle Konfigurationsartikel können in den WK gelegt werden
         if ($bValid) {
             // Eindeutige ID
-            $cUnique = gibUID(10);
+            $cUnique = uniqid('', true);
             // Hauptartikel in den WK legen
             fuegeEinInWarenkorb($articleID, $count, $attributes, 0, $cUnique);
             // Konfigartikel in den WK legen
@@ -520,7 +517,7 @@ class WarenkorbHelper
                 fuegeEinInWarenkorbPers(
                     $oKonfigitem->getArtikelKey(),
                     $oKonfigitem->fAnzahlWK,
-                    isset($oKonfigitem->oEigenschaftwerte_arr) ? $oKonfigitem->oEigenschaftwerte_arr : [],
+                    $oKonfigitem->oEigenschaftwerte_arr ?? [],
                     $cUnique,
                     $oKonfigitem->getKonfigitem()
                 );
@@ -558,9 +555,9 @@ class WarenkorbHelper
             || $qty > count($_SESSION['Vergleichsliste']->oArtikel_arr)
         ) {
             // Prüfe auf kArtikel
-            $productExists = Shop::DB()->select(
-                'tartikel', '
-                kArtikel', $kArtikel,
+            $productExists = Shop::Container()->getDB()->select(
+                'tartikel',
+                'kArtikel', $kArtikel,
                 null, null,
                 null, null,
                 false,
@@ -569,7 +566,7 @@ class WarenkorbHelper
             // Falls Artikel vorhanden
             if ($productExists !== null && $productExists->kArtikel > 0) {
                 // Sichtbarkeit Prüfen
-                $vis = Shop::DB()->select(
+                $vis = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $kArtikel,
                     'kKundengruppe', Session::CustomerGroup()->getID(),
@@ -655,7 +652,7 @@ class WarenkorbHelper
 
         if ($articleID > 0 && Session::Customer()->getID() > 0) {
             // Prüfe auf kArtikel
-            $productExists = Shop::DB()->select(
+            $productExists = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel', $articleID,
                 null, null,
@@ -667,7 +664,7 @@ class WarenkorbHelper
             if ($productExists !== null && $productExists->kArtikel > 0) {
                 $attributes = [];
                 // Sichtbarkeit Prüfen
-                $vis = Shop::DB()->select(
+                $vis = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $articleID,
                     'kKundengruppe', Session::CustomerGroup()->getID(),

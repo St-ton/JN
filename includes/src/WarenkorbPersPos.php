@@ -105,10 +105,10 @@ class WarenkorbPersPos
             if (isset($oEigenschaftwerte->kEigenschaft)) {
                 $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
                     $oEigenschaftwerte->kEigenschaft,
-                    (isset($oEigenschaftwerte->kEigenschaftWert) ? $oEigenschaftwerte->kEigenschaftWert : null),
-                    (isset($oEigenschaftwerte->cFreifeldWert) ? $oEigenschaftwerte->cFreifeldWert : null),
-                    (isset($oEigenschaftwerte->cEigenschaftName) ? $oEigenschaftwerte->cEigenschaftName : null),
-                    (isset($oEigenschaftwerte->cEigenschaftWertName) ? $oEigenschaftwerte->cEigenschaftWertName : null),
+                    $oEigenschaftwerte->kEigenschaftWert ?? null,
+                    $oEigenschaftwerte->cFreifeldWert ?? null,
+                    $oEigenschaftwerte->cEigenschaftName ?? null,
+                    $oEigenschaftwerte->cEigenschaftWertName ?? null,
                     $this->kWarenkorbPersPos
                 );
                 $oWarenkorbPersPosEigenschaft->schreibeDB();
@@ -133,7 +133,7 @@ class WarenkorbPersPos
         $oTemp->cUnique          = $this->cUnique;
         $oTemp->kKonfigitem      = $this->kKonfigitem;
         $oTemp->nPosTyp          = $this->nPosTyp;
-        $this->kWarenkorbPersPos = Shop::DB()->insert('twarenkorbperspos', $oTemp);
+        $this->kWarenkorbPersPos = Shop::Container()->getDB()->insert('twarenkorbperspos', $oTemp);
 
         return $this;
     }
@@ -154,7 +154,7 @@ class WarenkorbPersPos
         $oTemp->kKonfigitem       = $this->kKonfigitem;
         $oTemp->nPosTyp           = $this->nPosTyp;
 
-        return Shop::DB()->update('twarenkorbperspos', 'kWarenkorbPersPos', $this->kWarenkorbPersPos, $oTemp);
+        return Shop::Container()->getDB()->update('twarenkorbperspos', 'kWarenkorbPersPos', $this->kWarenkorbPersPos, $oTemp);
     }
 
     /**

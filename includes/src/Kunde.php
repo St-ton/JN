@@ -246,7 +246,7 @@ class Kunde
     public function holRegKundeViaEmail($cEmail)
     {
         if (strlen($cEmail) > 0) {
-            $oKundeTMP = Shop::DB()->select(
+            $oKundeTMP = Shop::Container()->getDB()->select(
                 'tkunde',
                 'cMail', StringHandler::filterXSS($cEmail),
                 null, null,
@@ -276,7 +276,7 @@ class Kunde
             && $conf['kunden']['kundenlogin_max_loginversuche'] > 1
             && strlen($cBenutzername) > 0
         ) {
-            $attempts = Shop::DB()->select(
+            $attempts = Shop::Container()->getDB()->select(
                 'tkunde',
                 'cMail', StringHandler::filterXSS($cBenutzername),
                 'nRegistriert', 1,
@@ -305,9 +305,11 @@ class Kunde
      * @param string $cBenutzername
      * @param string $cPasswort
      * @return int 1 = Alles O.K., 2 = Kunde ist gesperrt
+     * @throws Exception
      */
     public function holLoginKunde($cBenutzername, $cPasswort)
     {
+        $passwordService = Shop::Container()->getPasswordService();
         if (strlen($cBenutzername) > 0 && strlen($cPasswort) > 0) {
             $oUser = $this->checkCredentials($cBenutzername, $cPasswort);
             if ($oUser === false) {
@@ -326,13 +328,10 @@ class Kunde
                 $this->angezeigtesLand = ISO2land($this->cLand);
                 $this->holeKundenattribute();
                 // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-                if ((isset($oUser->cPasswort)
-                        && password_needs_rehash($oUser->cPasswort, PASSWORD_DEFAULT))
-                    && version_compare(Shop::getShopVersion(), 350, '>=') === true
-                ) {
+                if ((isset($oUser->cPasswort) && $passwordService->needsRehash($oUser->cPasswort))) {
                     $_upd            = new stdClass();
-                    $_upd->cPasswort = password_hash($cPasswort, PASSWORD_DEFAULT);
-                    Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
+                    $_upd->cPasswort = $passwordService->hash($cPasswort);
+                    Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
                 }
             }
             executeHook(HOOK_KUNDE_CLASS_HOLLOGINKUNDE, [
@@ -358,12 +357,13 @@ class Kunde
      * @param string $cBenutzername
      * @param string $cPasswort
      * @return bool|stdClass
+     * @throws Exception
      */
     public function checkCredentials($cBenutzername, $cPasswort)
     {
-        $cBenutzername = StringHandler::filterXSS($cBenutzername);
-        // Work Around Passwort 32, 40 oder mehr Zeichen
-        $oUser           = Shop::DB()->select(
+        $passwordService = Shop::Container()->getPasswordService();
+        $db              = Shop::Container()->getDB();
+        $oUser           = $db->select(
             'tkunde',
             'cMail',
             $cBenutzername,
@@ -372,80 +372,41 @@ class Kunde
             null,
             null,
             false,
-            'kKunde, cPasswort, cSperre, cAktiv, nLoginversuche'
+            '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag_formatted'
         );
-        $updatePassword  = false;
-        $verify          = false;
-        $oldPasswordHash = '';
-        if ($oUser !== null && isset($oUser->cPasswort)) {
-            if (strlen($oUser->cPasswort) === 32) { // Alter md5
-                $oldPasswordHash = md5($cPasswort);
-                $updatePassword  = true;
-            } elseif (strlen($oUser->cPasswort) === 40) {  // Neuer Hash bis 4.0
-                $cCrypted = cryptPasswort($cPasswort, $oUser->cPasswort);
-                if (empty($cCrypted)) {
-                    return false;
-                }
-                $oldPasswordHash = $cCrypted;
-                $updatePassword  = true;
-            } else { //ab 4.0
-                $verify = password_verify($cPasswort, $oUser->cPasswort);
-            }
-            $oUser->kKunde         = (int)$oUser->kKunde;
-            $oUser->nLoginversuche = (int)$oUser->nLoginversuche;
+        if (!$oUser) {
+            return false;
         }
-        if ($updatePassword === true) {
-            // get customer by mail and old password hash
-            $obj = Shop::DB()->select(
-                'tkunde',
-                'cMail',
-                $cBenutzername,
-                'cPasswort',
-                $oldPasswordHash,
-                'kKunde',
-                (int)$oUser->kKunde,
-                false,
-                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag_formatted'
-            );
-        } elseif ($verify === true) {
-            // get customer by mail since new hash verification was successful
-            $obj = Shop::DB()->select(
-                'tkunde',
-                'kKunde',
-                (int)$oUser->kKunde,
-                null,
-                null,
-                null,
-                null,
-                false,
-                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag_formatted'
-            );
-            // reset unsuccessful login attempts
-            if ($oUser->nLoginversuche > 0) {
-                $upd = new stdClass();
+        $oUser->kKunde         = (int)$oUser->kKunde;
+        $oUser->kKundengruppe  = (int)$oUser->kKundengruppe;
+        $oUser->kSprache       = (int)$oUser->kSprache;
+        $oUser->nLoginversuche = (int)$oUser->nLoginversuche;
+        $oUser->nRegistriert   = (int)$oUser->nRegistriert;
 
-                $upd->nLoginversuche = 0;
-                Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $upd);
-            }
-        } else {
-            $obj = false;
-            if (isset($oUser->nLoginversuche)) {
-                // increment unsuccessful login attempts
-                $this->nLoginversuche = (int)$oUser->nLoginversuche + 1;
-                $_upd                 = new stdClass();
-                $_upd->nLoginversuche = $this->nLoginversuche;
-                Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
-            }
-        }
-        if (isset($obj->kKunde)) {
-            $obj->kKunde         = (int)$obj->kKunde;
-            $obj->kKundengruppe  = (int)$obj->kKundengruppe;
-            $obj->kSprache       = (int)$obj->kSprache;
-            $obj->nLoginversuche = (int)$obj->nLoginversuche;
-            $obj->nRegistriert   = (int)$obj->nRegistriert;
+        if (!$passwordService->verify($cPasswort, $oUser->cPasswort)) {
+            $tries = ++$oUser->nLoginversuche;
+            Shop::Container()->getDB()->update('tkunde', 'cMail', $cBenutzername, (object)['nLoginversuche' => $tries]);
+            return false;
         }
 
-        return $obj;
+        $update = false;
+        if ($passwordService->needsRehash($oUser->cPasswort)) {
+            $oUser->cPasswort = $passwordService->hash($cPasswort);
+            $update = true;
+        }
+
+        if($oUser->nLoginversuche > 0) {
+            $oUser->nLoginversuche = 0;
+            $update = true;
+        }
+
+        if($update) {
+            $update = (array)$oUser;
+            unset($update['dGeburtstag_formatted']);
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', $oUser->kKunde, (object)$update);
+        }
+
+        return $oUser;
     }
 
     /**
@@ -466,7 +427,7 @@ class Kunde
     {
         $kKunde = (int)$kKunde;
         if ($kKunde > 0) {
-            $obj = Shop::DB()->select('tkunde', 'kKunde', $kKunde);
+            $obj = Shop::Container()->getDB()->select('tkunde', 'kKunde', $kKunde);
             if ($obj !== null && isset($obj->kKunde) && $obj->kKunde > 0) {
                 $members = array_keys(get_object_vars($obj));
                 foreach ($members as $member) {
@@ -580,7 +541,7 @@ class Kunde
             $obj->dVeraendert = 'now()';
         }
         $obj->cLand   = $this->pruefeLandISO($obj->cLand);
-        $this->kKunde = Shop::DB()->insert('tkunde', $obj);
+        $this->kKunde = Shop::Container()->getDB()->insert('tkunde', $obj);
         $this->entschluesselKundendaten();
 
         $this->cAnredeLocalized   = mappeKundenanrede($this->cAnrede, $this->kSprache);
@@ -627,7 +588,7 @@ class Kunde
 
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'now()';
-        $cReturn          = Shop::DB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
+        $cReturn          = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
         if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
             $obj->cKundenattribut_arr = $cKundenattribut_arr;
         }
@@ -649,7 +610,7 @@ class Kunde
     public function holeKundenattribute()
     {
         $this->cKundenattribut_arr = [];
-        $oKundenattribut_arr       = Shop::DB()->selectAll(
+        $oKundenattribut_arr       = Shop::Container()->getDB()->selectAll(
             'tkundenattribut',
             'kKunde',
             (int)$this->kKunde,
@@ -701,7 +662,7 @@ class Kunde
      */
     public function verschluesselAlleKunden()
     {
-        foreach (Shop::DB()->query("SELECT * FROM tkunde", 2) as $oKunden) {
+        foreach (Shop::Container()->getDB()->query("SELECT * FROM tkunde", 2) as $oKunden) {
             if ($oKunden->kKunde > 0) {
                 unset($oKundeTMP);
                 $oKundeTMP = new self($oKunden->kKunde);
@@ -749,29 +710,31 @@ class Kunde
     /**
      * @param null|string $password
      * @return $this
+     * @throws Exception
      */
     public function updatePassword($password = null)
     {
+        $passwordService = Shop::Container()->getPasswordService();
         if ($password === null) {
-            $cPasswortKlartext = $this->generatePassword(12);
-            $this->cPasswort   = $this->generatePasswordHash($cPasswortKlartext);
+            $cPasswortKlartext = $passwordService->generate(12);
+            $this->cPasswort   = $passwordService->hash($cPasswortKlartext);
 
             $_upd                 = new stdClass();
             $_upd->cPasswort      = $this->cPasswort;
             $_upd->nLoginversuche = 0;
-            Shop::DB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
 
             $obj                 = new stdClass();
             $obj->tkunde         = $this;
             $obj->neues_passwort = $cPasswortKlartext;
             sendeMail(MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);
         } else {
-            $this->cPasswort = $this->generatePasswordHash($password);
+            $this->cPasswort = $passwordService->hash($password);
 
-            $_upd                     = new stdClass();
-            $_upd->cPasswort          = $this->cPasswort;
-            $_upd->nLoginversuche     = 0;
-            Shop::DB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
+            $_upd                 = new stdClass();
+            $_upd->cPasswort      = $this->cPasswort;
+            $_upd->nLoginversuche = 0;
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $_upd);
         }
 
         return $this;
@@ -780,23 +743,23 @@ class Kunde
     /**
      * @param int $length
      * @return bool|string
+     * @deprecated since 4.07
+     * @throws Exception
      */
     public function generatePassword($length = 12)
     {
-        return gibUID($length, strtoupper(substr(
-            md5($this->kKunde . $this->cMail . time() . $this->cStrasse),
-            5,
-            8
-        )));
+        return Shop::Container()->getPasswordService()->generate($length);
     }
 
     /**
      * @param string $password
      * @return false|string
+     * @deprecated since 4.07
+     * @throws Exception
      */
     public function generatePasswordHash($password)
     {
-        return password_hash($password, PASSWORD_DEFAULT);
+        return Shop::Container()->getPasswordService()->hash($password);
     }
 
     /**
@@ -807,15 +770,16 @@ class Kunde
      */
     public function prepareResetPassword()
     {
+        $cryptoService = Shop::Container()->getCryptoService();
         if (!$this->kKunde) {
             return false;
         }
-        $key        = bin2hex(random_bytes(32));
+        $key        = $cryptoService->randomString(32);
         $linkHelper = LinkHelper::getInstance();
         $expires    = new DateTime();
         $interval   = new DateInterval('P1D');
         $expires->add($interval);
-        Shop::DB()->executeQueryPrepared(
+        Shop::Container()->getDB()->executeQueryPrepared(
             "INSERT INTO tpasswordreset(kKunde, cKey, dExpires)
             VALUES (:kKunde, :cKey, :dExpires)
             ON DUPLICATE KEY UPDATE cKey = :cKey, dExpires = :dExpires",

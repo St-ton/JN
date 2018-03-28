@@ -143,7 +143,7 @@ class FilterItemAttribute extends FilterBaseAttribute
     public function setSeo($languages)
     {
         $value    = $this->getValue();
-        $oSeo_arr = Shop::DB()->selectAll(
+        $oSeo_arr = Shop::Container()->getDB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['kMerkmalWert', $value],
@@ -158,7 +158,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 }
             }
         }
-        $seo_obj = Shop::DB()->executeQueryPrepared('
+        $seo_obj = Shop::Container()->getDB()->executeQueryPrepared('
             SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
@@ -238,19 +238,19 @@ class FilterItemAttribute extends FilterBaseAttribute
         if ($this->options !== null) {
             return $this->options;
         }
-        $currentCategory     = isset($data['oAktuelleKategorie'])
-            ? $data['oAktuelleKategorie']
-            : null;
-        $bForce              = isset($data['bForce']) // auswahlassistent
-            ? $data['bForce']
-            : false;
+        $currentCategory     = $data['oAktuelleKategorie'] ?? null;
+        $bForce              = $data['bForce'] ?? false;
         $catAttributeFilters = [];
         $activeOrFilterIDs   = [];
         $attributeFilters    = [];
         $activeValues        = [];
         $useAttributeFilter  = $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N';
-        $attributeLimit      = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
-        $attributeValueLimit = $bForce ? 0 : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
+        $attributeLimit      = $bForce
+            ? 0
+            : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
+        $attributeValueLimit = $bForce
+            ? 0
+            : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
 
         if (!$bForce && !$useAttributeFilter) {
             return $attributeFilters;
@@ -402,10 +402,10 @@ class FilterItemAttribute extends FilterBaseAttribute
             '',
             [] // ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
         );
-        $qryRes                = Shop::DB()->executeQuery(
+        $qryRes                = Shop::Container()->getDB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
-            ssMerkmal.nMehrfachauswahl,
-            ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
+            ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
+            ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
             FROM (" . $baseQry . ") AS ssMerkmal
             #LEFT JOIN tseo 
                 #ON tseo.kKey = ssMerkmal.kMerkmalWert
@@ -437,7 +437,12 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attribute->attributeValues                           = [];
                 $attributeFilterCollection[$attributeValue->kMerkmal] = $attribute;
             }
-            unset($attributeValue->nMehrfachauswahl, $attributeValue->cMMBildPfad, $attributeValue->cName, $attributeValue->cTyp);
+            unset(
+                $attributeValue->nMehrfachauswahl,
+                $attributeValue->cMMBildPfad,
+                $attributeValue->cName,
+                $attributeValue->cTyp
+            );
         }
         // add attribute values to corresponding attributes
         foreach ($qryRes as $attributeValue) {
@@ -445,8 +450,9 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attributeFilterCollection[$attributeValue->kMerkmal]->attributeValues[] = $attributeValue;
             }
         }
-        $shopURL = Shop::getURL() . '/';
-        foreach ($attributeFilterCollection as $attributeFilter) {
+        $imageBaseURL       = Shop::getImageBaseURL();
+        $filterURLGenerator = $this->productFilter->getFilterURL();
+        foreach ($attributeFilterCollection as $i => $attributeFilter) {
             $baseSrcSmall  = strlen($attributeFilter->cMMBildPfad) > 0
                 ? PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
                 : BILD_KEIN_MERKMALBILD_VORHANDEN;
@@ -467,8 +473,8 @@ class FilterItemAttribute extends FilterBaseAttribute
                 ->setData('kMerkmal', $attributeFilter->kMerkmal)
                 ->setData('cBildpfadKlein', $baseSrcSmall)
                 ->setData('cBildpfadNormal', $baseSrcNormal)
-                ->setData('cBildURLKlein', $shopURL . $baseSrcSmall)
-                ->setData('cBildURLNormal', $shopURL . $baseSrcNormal)
+                ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
+                ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal)
                 ->setType($attributeFilter->nMehrfachauswahl === 1
                     ? AbstractFilter::FILTER_TYPE_OR
                     : AbstractFilter::FILTER_TYPE_AND
@@ -498,14 +504,15 @@ class FilterItemAttribute extends FilterBaseAttribute
                 if ($attributeValue->isActive()) {
                     $attribute->setIsActive(true);
                 }
-                $attributeValueURL = $this->productFilter->getFilterURL()->getURL(
+                $attributeValueURL = $filterURLGenerator->getURL(
                     $additionalFilter->init($filterValue->kMerkmalWert)
                 );
                 $attribute->addOption($attributeValue->setURL($attributeValueURL));
             }
-            // backwards-compatible
-            $attribute->setData('oMerkmalWerte_arr', $attribute->getOptions());
-            if (($optionsCount = count($attribute->getOptions())) > 0) {
+            // backwards compatibility
+            $attributeOptions = $attribute->getOptions() ?? [];
+            $attribute->setData('oMerkmalWerte_arr', $attributeOptions);
+            if (($optionsCount = count($attributeOptions)) > 0) {
                 $attributeFilters[] = $attribute->setCount($optionsCount);
             }
         }

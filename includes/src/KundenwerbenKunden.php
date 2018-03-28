@@ -90,7 +90,7 @@ class KundenwerbenKunden
         if (strlen($cEmail) > 0) {
             $cEmail = StringHandler::filterXSS($cEmail);
             // Hole Daten durch Email vom Neukunden
-            $oKwK = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $cEmail);
+            $oKwK = Shop::Container()->getDB()->select('tkundenwerbenkunden', 'cEmail', $cEmail);
             if (isset($oKwK->kKundenWerbenKunden) && $oKwK->kKundenWerbenKunden > 0) {
                 $cMember_arr = array_keys(get_object_vars($oKwK));
                 foreach ($cMember_arr as $cMember) {
@@ -115,7 +115,7 @@ class KundenwerbenKunden
         $oObj = kopiereMembers($this);
         unset($oObj->fGuthabenLocalized, $oObj->oNeukunde, $oObj->oBestandskunde);
 
-        $this->kKundenWerbenKunden = Shop::DB()->insert('tkundenwerbenkunden', $oObj);
+        $this->kKundenWerbenKunden = Shop::Container()->getDB()->insert('tkundenwerbenkunden', $oObj);
         if ($bLoadDB) {
             $this->loadFromDB($this->cEmail);
         }
@@ -137,7 +137,7 @@ class KundenwerbenKunden
             $oKundenWerbenKundenBoni->fGuthaben                = (float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
             $oKundenWerbenKundenBoni->nBonuspunkte             = 0;
             $oKundenWerbenKundenBoni->dErhalten                = 'now()';
-            $oKundenWerbenKundenBoni->kKundenWerbenKundenBonus = Shop::DB()->insert('tkundenwerbenkundenbonus', $oKundenWerbenKundenBoni);
+            $oKundenWerbenKundenBoni->kKundenWerbenKundenBonus = Shop::Container()->getDB()->insert('tkundenwerbenkundenbonus', $oKundenWerbenKundenBoni);
 
             return $oKundenWerbenKundenBoni;
         }
@@ -152,7 +152,7 @@ class KundenwerbenKunden
     public function verbucheBestandskundenBoni($cMail)
     {
         if (strlen($cMail) > 0) {
-            $oBestandskunde = Shop::DB()->query(
+            $oBestandskunde = Shop::Container()->getDB()->query(
                 "SELECT tkunde.kKunde
                     FROM tkunde
                     JOIN tkundenwerbenkunden ON tkundenwerbenkunden.kKunde = tkunde.kKunde
@@ -169,7 +169,7 @@ class KundenwerbenKunden
                     $oMail->oBestandskunde = $oMail->tkunde;
                     $oMail->Einstellungen  = $Einstellungen;
                     // Update das Guthaben vom Bestandskunden
-                    Shop::DB()->query("
+                    Shop::Container()->getDB()->query("
                         UPDATE tkunde
                             SET fGuthaben = fGuthaben + " . (float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben'] . "
                             WHERE kKunde = " . (int)$oBestandskunde->kKunde, 3
@@ -179,7 +179,7 @@ class KundenwerbenKunden
                     // tkundenwerbenkunden updaten und hinterlegen, dass der Bestandskunde das Guthaben erhalten hat
                     $_upd                    = new stdClass();
                     $_upd->nGuthabenVergeben = 1;
-                    Shop::DB()->update('tkundenwerbenkunden', 'cEmail', StringHandler::filterXSS($cMail), $_upd);
+                    Shop::Container()->getDB()->update('tkundenwerbenkunden', 'cEmail', StringHandler::filterXSS($cMail), $_upd);
 
                     $oKundenWerbenKundenBoni->fGuthaben = gibPreisStringLocalized((float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben']);
                     $oMail->BestandskundenBoni          = $oKundenWerbenKundenBoni;

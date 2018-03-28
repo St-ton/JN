@@ -258,12 +258,8 @@ class ProductFilter
         $urls->cNoFilter         = null;
 
         $this->url               = $urls;
-        $this->languages         = $languages === null
-            ? Sprache::getInstance()->getLangArray()
-            : $languages;
-        $this->conf              = $config === null
-            ? Shopsetting::getInstance()->getAll()
-            : $config;
+        $this->languages         = $languages ?? Sprache::getInstance()->getLangArray();
+        $this->conf              = $config ?? Shopsetting::getInstance()->getAll();
         $this->languageID        = $currentLanguageID === null
             ? Shop::getLanguageID()
             : (int)$currentLanguageID;
@@ -399,13 +395,13 @@ class ProductFilter
 
     /**
      * @param bool $products
-     * @return ProductFilterSearchResults|Collection
+     * @return ProductFilterSearchResults|\Tightenco\Collect\Support\Collection
      */
     public function getSearchResults($products = true)
     {
         if ($this->searchResults === null) {
             $this->searchResults = new ProductFilterSearchResults();
-            $this->searchResults->setProducts(new Collection());
+            $this->searchResults->setProducts(new \Tightenco\Collect\Support\Collection());
         }
 
         return $products === true
@@ -756,7 +752,7 @@ class ProductFilter
         }
         // @todo: how to handle strlen($params['cSuche']) === 0?
         if ($params['kSuchanfrage'] > 0) {
-            $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
+            $oSuchanfrage = Shop::Container()->getDB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
                 $this->search->setName($oSuchanfrage->cSuche);
             }
@@ -775,7 +771,7 @@ class ProductFilter
             $params['cSuche'] = StringHandler::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
             $this->searchQuery->setName($params['cSuche']);
-            $oSuchanfrage                  = Shop::DB()->select(
+            $oSuchanfrage                  = Shop::Container()->getDB()->select(
                 'tsuchanfrage',
                 'cSuche', $params['cSuche'],
                 'kSprache', $this->getLanguageID(),
@@ -815,9 +811,7 @@ class ProductFilter
                 'cValue'                     => &$this->EchteSuche->cSuche,
                 'nArtikelProSeite'           => &$limit,
                 'nSeite'                     => &$this->nSeite,
-                'nSortierung'                => isset($_SESSION['Usersortierung'])
-                    ? $_SESSION['Usersortierung']
-                    : null,
+                'nSortierung'                => $_SESSION['Usersortierung'] ?? null,
                 'bLagerbeachten'             => (int)$this->getConfig()['global']['artikel_artikelanzeigefilter'] ===
                     EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
@@ -837,8 +831,8 @@ class ProductFilter
                         && (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = is_array($_GET[$filterParam])
-                        ? array_map([Shop::DB(), 'realEscape'], $_GET[$filterParam])
-                        : Shop::DB()->realEscape($_GET[$filterParam]);
+                        ? array_map([Shop::Container()->getDB(), 'realEscape'], $_GET[$filterParam])
+                        : Shop::Container()->getDB()->realEscape($_GET[$filterParam]);
                     $this->addActiveFilter($filter, $filterValue);
                     $params[$filterParam] = $filterValue;
                 }
@@ -869,7 +863,7 @@ class ProductFilter
         if (count($values) === 0) {
             return $this;
         }
-        $attributes = Shop::DB()->executeYield(
+        $attributes = Shop::Container()->getDB()->executeYield(
             'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
                 FROM tmerkmalwert
                 JOIN tmerkmal 
@@ -954,9 +948,7 @@ class ProductFilter
             $this->activeFilters,
             function ($carry, $item) use ($filterClassName) {
                 /** @var IFilter $item */
-                return $carry !== null
-                    ? $carry
-                    : ($item->getClassName() === $filterClassName
+                return $carry ?? ($item->getClassName() === $filterClassName
                         ? $item->getValue()
                         : null);
             }
@@ -1599,7 +1591,7 @@ class ProductFilter
             function ($e) {
                 return (int)$e->kArtikel;
             },
-            Shop::DB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS)
+            Shop::Container()->getDB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS)
         );
         $order             = $this->getFilterSQL()->getOrder();
         $orderData         = new stdClass();
@@ -1651,16 +1643,16 @@ class ProductFilter
      * @param Kategorie|null $currentCategory
      * @param bool           $fillProducts - if true, return Artikel class instances, otherwise keys only
      * @param int            $limit
-     * @return ProductFilterSearchResults|Collection
+     * @return ProductFilterSearchResults|\Tightenco\Collect\Support\Collection
      */
     public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = null)
     {
-        $limitPerPage = $limit !== null ? $limit : $this->metaData->getProductsPerPageLimit();
+        $limitPerPage = $limit ?? $this->metaData->getProductsPerPageLimit();
         $nLimitN      = $limitPerPage * ($this->nSeite - 1);
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         $error        = false;
         if ($this->searchResults === null) {
-            $productList         = new Collection();
+            $productList         = new \Tightenco\Collect\Support\Collection();
             $productKeys         = $this->getProductKeys();
             $productCount        = count($productKeys);
             $this->searchResults = (new ProductFilterSearchResults())
@@ -1727,7 +1719,7 @@ class ProductFilter
                 $limitPerPage = null;
             }
             foreach (array_slice($productKeys, $nLimitN, $limitPerPage) as $id) {
-                $productList->addItem((new Artikel())->fuelleArtikel($id, $opt));
+                $productList->push((new Artikel())->fuelleArtikel($id, $opt));
             }
             $this->searchResults->setVisibleProductCount($productList->count());
         }
@@ -1933,9 +1925,7 @@ class ProductFilter
      */
     public function getUnsetAllFiltersURL()
     {
-        return isset($this->url->cNoFilter)
-            ? $this->url->cNoFilter
-            : null;
+        return $this->url->cNoFilter ?? null;
     }
 
     /**

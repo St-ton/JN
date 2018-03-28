@@ -121,7 +121,7 @@ class FilterItemRating extends AbstractFilter
             $state->conditions,
             $state->having
         );
-        $res              = Shop::DB()->query(
+        $res              = Shop::Container()->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
                 FROM (' . $query . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne

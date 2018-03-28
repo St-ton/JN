@@ -46,7 +46,7 @@ if (isset($_GET['err'])) {
 }
 // Emailvorlage zuruecksetzen
 if (isset($_POST['resetConfirm']) && (int)$_POST['resetConfirm'] > 0) {
-    $oEmailvorlage = Shop::DB()->select($cTable, 'kEmailvorlage', (int)$_POST['resetConfirm']);
+    $oEmailvorlage = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['resetConfirm']);
 
     if (isset($oEmailvorlage->kEmailvorlage) && $oEmailvorlage->kEmailvorlage > 0) {
         $step = 'zuruecksetzen';
@@ -55,29 +55,29 @@ if (isset($_POST['resetConfirm']) && (int)$_POST['resetConfirm'] > 0) {
     }
 }
 
-if (isset($_POST['resetEmailvorlage']) && (int)$_POST['resetEmailvorlage'] === 1) {
+if (isset($_POST['resetEmailvorlage']) && (int)$_POST['resetEmailvorlage'] === 1 && validateToken()) {
     if ((int)$_POST['kEmailvorlage'] > 0) {
-        $oEmailvorlage = Shop::DB()->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+        $oEmailvorlage = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
         if ($oEmailvorlage->kEmailvorlage > 0 && isset($_POST['resetConfirmJaSubmit'])) {
             // Resetten
             if (verifyGPCDataInteger('kPlugin') > 0) {
-                Shop::DB()->delete('tpluginemailvorlagesprache', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+                Shop::Container()->getDB()->delete('tpluginemailvorlagesprache', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
             } else {
-                Shop::DB()->query(
+                Shop::Container()->getDB()->query(
                     "DELETE temailvorlage, temailvorlagesprache
                         FROM temailvorlage
                         LEFT JOIN temailvorlagesprache
                             ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
                         WHERE temailvorlage.kEmailvorlage = " . (int)$_POST['kEmailvorlage'], 4
                 );
-                Shop::DB()->query(
+                Shop::Container()->getDB()->query(
                     "INSERT INTO temailvorlage
                         SELECT *
                         FROM temailvorlageoriginal
                         WHERE temailvorlageoriginal.kEmailvorlage = " . (int)$_POST['kEmailvorlage'], 4
                 );
             }
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "INSERT INTO " . $cTableSprache . "
                     SELECT *
                     FROM " . $cTableSpracheOriginal . "
@@ -85,7 +85,7 @@ if (isset($_POST['resetEmailvorlage']) && (int)$_POST['resetEmailvorlage'] === 1
             );
             $languages = gibAlleSprachen();
             if (empty(verifyGPCDataInteger('kPlugin'))) {
-                $vorlage   = Shop::DB()->select('temailvorlageoriginal', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+                $vorlage   = Shop::Container()->getDB()->select('temailvorlageoriginal', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
                 if (isset($vorlage->cDateiname) && strlen($vorlage->cDateiname) > 0) {
                     foreach ($languages as $_lang) {
                         $path = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
@@ -104,7 +104,7 @@ if (isset($_POST['resetEmailvorlage']) && (int)$_POST['resetEmailvorlage'] === 1
                                     : (StringHandler::is_utf8($text) === 1);
                                 $upd->cContentHtml = ($doDecodeHtml === true) ? StringHandler::convertUTF8($html) : $html;
                                 $upd->cContentText = ($doDecodeText === true) ? StringHandler::convertUTF8($text) : $text;
-                                Shop::DB()->update(
+                                Shop::Container()->getDB()->update(
                                     $cTableSprache,
                                     ['kEmailVorlage', 'kSprache'],
                                     [(int)$_POST['kEmailvorlage'], (int)$_lang->kSprache],
@@ -120,8 +120,8 @@ if (isset($_POST['resetEmailvorlage']) && (int)$_POST['resetEmailvorlage'] === 1
     }
 }
 if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
-    $Sprachen                     = Shop::DB()->query("SELECT * FROM tsprache ORDER BY cShopStandard DESC, cNameDeutsch", 2);
-    $Emailvorlage                 = Shop::DB()->select($cTable, 'kEmailvorlage', (int)$_POST['preview']);
+    $Sprachen                     = Shop::Container()->getDB()->query("SELECT * FROM tsprache ORDER BY cShopStandard DESC, cNameDeutsch", 2);
+    $Emailvorlage                 = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['preview']);
     $bestellung                   = new stdClass();
     $bestellung->kWaehrung        = 1;
     $bestellung->kSprache         = 1;
@@ -498,9 +498,9 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     foreach ($Sprachen as $Sprache) {
         $oAGBWRB = new stdClass();
         if ($kunde->kKundengruppe > 0 && $Sprache->kSprache > 0) {
-            $oAGBWRB = Shop::DB()->select('ttext', ['kKundengruppe', 'kSprache'], [$kunde->kKundengruppe, $Sprache->kSprache]);
+            $oAGBWRB = Shop::Container()->getDB()->select('ttext', ['kKundengruppe', 'kSprache'], [$kunde->kKundengruppe, $Sprache->kSprache]);
         }
-        $Emailvorlagesprache[$Sprache->kSprache] = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]);
+        $Emailvorlagesprache[$Sprache->kSprache] = Shop::Container()->getDB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]);
         if (!empty($Emailvorlagesprache[$Sprache->kSprache])) {
             $cModulId = $Emailvorlage->cModulId;
             if (verifyGPCDataInteger('kPlugin') > 0) {
@@ -520,7 +520,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
             $obj->tkundengruppe                    = $Kundengruppe;
             $obj->tbestellung                      = $bestellung;
             $obj->neues_passwort                   = $Neues_Passwort;
-            $obj->passwordResetLink                = Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd&mail=' . $kunde->cMail;
+            $obj->passwordResetLink                = Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd';
             $obj->tgutschein                       = $gutschein;
             $obj->AGB                              = $oAGBWRB;
             $obj->WRB                              = $oAGBWRB;
@@ -545,11 +545,11 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
         $cFehler = 'E-Mail konnte nicht versendet werden.';
     }
 }
-if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] === 1 && (int)$_POST['kEmailvorlage'] > 0) {
+if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] === 1 && (int)$_POST['kEmailvorlage'] > 0 && validateToken()) {
     $step                        = 'uebersicht';
     $kEmailvorlage               = (int)$_POST['kEmailvorlage'];
     $cUploadVerzeichnis          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    $oEmailvorlageSpracheTMP_arr = Shop::DB()->selectAll(
+    $oEmailvorlageSpracheTMP_arr = Shop::Container()->getDB()->selectAll(
         $cTableSprache,
         'kEmailvorlage',
         (int)$_POST['kEmailvorlage'],
@@ -561,7 +561,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
             $oEmailvorlageSprache_arr[$oEmailvorlageSpracheTMP->kSprache] = $oEmailvorlageSpracheTMP;
         }
     }
-    $Sprachen = Shop::DB()->query("SELECT * FROM tsprache ORDER BY cShopStandard DESC, cNameDeutsch", 2);
+    $Sprachen = Shop::Container()->getDB()->query("SELECT * FROM tsprache ORDER BY cShopStandard DESC, cNameDeutsch", 2);
     if (!isset($Emailvorlagesprache) || is_array($Emailvorlagesprache)) {
         $Emailvorlagesprache = new stdClass();
     }
@@ -676,15 +676,9 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
         }
         $Emailvorlagesprache->cDateiname   = '';
         $Emailvorlagesprache->kSprache     = $Sprache->kSprache;
-        $Emailvorlagesprache->cBetreff     = isset($_POST['cBetreff_' . $Sprache->kSprache])
-            ? $_POST['cBetreff_' . $Sprache->kSprache]
-            : null;
-        $Emailvorlagesprache->cContentHtml = isset($_POST['cContentHtml_' . $Sprache->kSprache])
-            ? $_POST['cContentHtml_' . $Sprache->kSprache]
-            : null;
-        $Emailvorlagesprache->cContentText = isset($_POST['cContentText_' . $Sprache->kSprache])
-            ? $_POST['cContentText_' . $Sprache->kSprache]
-            : null;
+        $Emailvorlagesprache->cBetreff     = $_POST['cBetreff_' . $Sprache->kSprache] ?? null;
+        $Emailvorlagesprache->cContentHtml = $_POST['cContentHtml_' . $Sprache->kSprache] ?? null;
+        $Emailvorlagesprache->cContentText = $_POST['cContentText_' . $Sprache->kSprache] ?? null;
 
         $Emailvorlagesprache->cPDFS = '';
         if (count($cPDFS_arr) > 0) {
@@ -700,13 +694,13 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
             $Emailvorlagesprache->cDateiname = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname;
         }
         if ($nFehler == 0) {
-            Shop::DB()->delete(
+            Shop::Container()->getDB()->delete(
                 $cTableSprache,
                 ['kSprache', 'kEmailvorlage'],
                 [(int)$Sprache->kSprache,
                  (int)$_POST['kEmailvorlage']]
             );
-            Shop::DB()->insert($cTableSprache, $Emailvorlagesprache);
+            Shop::Container()->getDB()->insert($cTableSprache, $Emailvorlagesprache);
             //Smarty Objekt bauen
             $mailSmarty = new JTLSmarty(true, false, false, 'mail');
             $mailSmarty->registerResource('db', new SmartyResourceNiceDB('mail'))
@@ -736,10 +730,10 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
     $_upd->nAGB     = isset($_POST['nAGB']) ? (int)$_POST['nAGB'] : 0;
     $_upd->nWRB     = isset($_POST['nWRB']) ? (int)$_POST['nWRB'] : 0;
     $_upd->nWRBForm = isset($_POST['nWRBForm']) ? (int)$_POST['nWRBForm'] : 0;
-    Shop::DB()->update($cTable, 'kEmailvorlage', $kEmailvorlage, $_upd);
+    Shop::Container()->getDB()->update($cTable, 'kEmailvorlage', $kEmailvorlage, $_upd);
 
     // Einstellungen
-    Shop::DB()->delete($cTableSetting, 'kEmailvorlage', $kEmailvorlage);
+    Shop::Container()->getDB()->delete($cTableSetting, 'kEmailvorlage', $kEmailvorlage);
     // Email Ausgangsadresse
     if (isset($_POST['cEmailOut']) && strlen($_POST['cEmailOut']) > 0) {
         saveEmailSetting($cTableSetting, $kEmailvorlage, 'cEmailOut', $_POST['cEmailOut']);
@@ -767,8 +761,13 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage']) && (int)$_POST['Aendern'] 
         setzeFehler($_POST['kEmailvorlage'], true);
     }
 }
-if ((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $continue === true) ||
-    $step === 'prebearbeiten' || (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen')) {
+if (
+    (
+        (isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $continue === true)
+        || $step === 'prebearbeiten'
+        || (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen')
+    ) && validateToken()
+) {
     $cUploadVerzeichnis  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     $Emailvorlagesprache = [];
 
@@ -784,7 +783,7 @@ if ((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $cont
     ) {
         $_POST['kEmailvorlage'] = $_GET['kEmailvorlage'];
         $_POST['kS']            = $_GET['kS'];
-        $oEmailvorlageSprache   = Shop::DB()->select(
+        $oEmailvorlageSprache   = Shop::Container()->getDB()->select(
             $cTableSprache,
             'kEmailvorlage',
             (int)$_POST['kEmailvorlage'],
@@ -807,7 +806,7 @@ if ((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $cont
         $upd             = new stdClass();
         $upd->cPDFS      = '';
         $upd->cDateiname = '';
-        Shop::DB()->update(
+        Shop::Container()->getDB()->update(
             $cTableSprache,
             ['kEmailvorlage', 'kSprache'],
             [(int)$_POST['kEmailvorlage'],
@@ -821,8 +820,8 @@ if ((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $cont
     $cFromTable = isset($_REQUEST['kPlugin']) ? $cTablePluginSetting : $cTableSetting;
 
     $Sprachen                   = gibAlleSprachen();
-    $Emailvorlage               = Shop::DB()->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
-    $oEmailEinstellung_arr      = Shop::DB()->selectAll($cFromTable, 'kEmailvorlage', (int)$Emailvorlage->kEmailvorlage);
+    $Emailvorlage               = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+    $oEmailEinstellung_arr      = Shop::Container()->getDB()->selectAll($cFromTable, 'kEmailvorlage', (int)$Emailvorlage->kEmailvorlage);
     $oEmailEinstellungAssoc_arr = [];
 
     if (is_array($oEmailEinstellung_arr) && count($oEmailEinstellung_arr) > 0) {
@@ -832,7 +831,7 @@ if ((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $cont
     }
 
     foreach ($Sprachen as $Sprache) {
-        $Emailvorlagesprache[$Sprache->kSprache] = Shop::DB()->select(
+        $Emailvorlagesprache[$Sprache->kSprache] = Shop::Container()->getDB()->select(
             $cTableSprache,
             'kEmailvorlage',
             (int)$_POST['kEmailvorlage'],
@@ -865,8 +864,8 @@ if ((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $cont
 }
 
 if ($step === 'uebersicht') {
-    $smarty->assign('emailvorlagen', Shop::DB()->selectAll('temailvorlage', [], [], '*', 'cModulId'))
-           ->assign('oPluginEmailvorlage_arr', Shop::DB()->selectAll('tpluginemailvorlage', [], [], '*', 'cModulId'));
+    $smarty->assign('emailvorlagen', Shop::Container()->getDB()->selectAll('temailvorlage', [], [], '*', 'cModulId'))
+           ->assign('oPluginEmailvorlage_arr', Shop::Container()->getDB()->selectAll('tpluginemailvorlage', [], [], '*', 'cModulId'));
 }
 
 if ($step === 'bearbeiten') {
@@ -933,7 +932,7 @@ function setzeFehler($kEmailvorlage, $bFehler = true, $bForce = false)
     if (!$bForce) {
         $upd->cAktiv = $cAktiv;
     }
-    Shop::DB()->update('temailvorlage', 'kEmailvorlage', (int)$kEmailvorlage, $upd);
+    Shop::Container()->getDB()->update('temailvorlage', 'kEmailvorlage', (int)$kEmailvorlage, $upd);
 }
 
 /**
@@ -950,6 +949,6 @@ function saveEmailSetting($cTableSetting, $kEmailvorlage, $cKey, $cValue)
         $oEmailvorlageEinstellung->cKey          = $cKey;
         $oEmailvorlageEinstellung->cValue        = $cValue;
 
-        Shop::DB()->insert($cTableSetting, $oEmailvorlageEinstellung);
+        Shop::Container()->getDB()->insert($cTableSetting, $oEmailvorlageEinstellung);
     }
 }

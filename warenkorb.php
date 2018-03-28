@@ -84,7 +84,7 @@ if (isset($_SESSION['checkCouponResult'])) {
 if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST['gratis_geschenk'] === 1) {
     $kArtikelGeschenk = (int)$_POST['gratisgeschenk'];
     // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-    $oArtikelGeschenk = Shop::DB()->query(
+    $oArtikelGeschenk = Shop::Container()->getDB()->query(
         "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
             tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
             FROM tartikelattribut
@@ -163,7 +163,7 @@ WarenkorbHelper::addVariationPictures($cart);
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('MsgWarning', $MsgWarning)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
-       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+       ->assign('requestURL', $requestURL ?? null)
        ->assign('laender', gibBelieferbareLaender($kKundengruppe))
        ->assign('KuponMoeglich', kuponMoeglich())
        ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
@@ -178,7 +178,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('BestellmengeHinweis', pruefeBestellMengeUndLagerbestand($Einstellungen))
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
-       ->assign('cErrorVersandkosten', isset($cErrorVersandkosten) ? $cErrorVersandkosten : null)
+       ->assign('cErrorVersandkosten', $cErrorVersandkosten ?? null)
        ->assign('KuponcodeUngueltig', $KuponcodeUngueltig)
        ->assign('nVersandfreiKuponGueltig', $nVersandfreiKuponGueltig)
        ->assign('Warenkorb', $cart)

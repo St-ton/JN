@@ -13,7 +13,7 @@ $step          = 'uebersicht';
 
 setzeSprache();
 
-$pluginID = isset($_GET['plugin_id']) ? $_GET['plugin_id'] : 's360_amazon_lpa_shop4';
+$pluginID = $_GET['plugin_id'] ?? 's360_amazon_lpa_shop4';
 $pp       = null;
 if (!empty($pluginID)) {
     $pp = new PremiumPlugin($pluginID);

@@ -424,7 +424,7 @@ class PreisverlaufGraph
      */
     public function holePreisverlauf($kArtikel, $kKundegruppe, $nMonat)
     {
-        $oPreisverlauf_arr = Shop::DB()->query(
+        $oPreisverlauf_arr = Shop::Container()->getDB()->query(
             "SELECT fVKNetto, UNIX_TIMESTAMP(dDate) AS timestamp
                 FROM tpreisverlauf
                 WHERE kArtikel = " . (int)$kArtikel . "

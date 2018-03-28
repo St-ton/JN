@@ -53,7 +53,7 @@ class ImageMap implements IExtensionPoint
      */
     public function fetchAll()
     {
-        return Shop::DB()->query("SELECT * FROM timagemap", 2);
+        return Shop::Container()->getDB()->query("SELECT * FROM timagemap", 2);
     }
 
     /**
@@ -72,14 +72,14 @@ class ImageMap implements IExtensionPoint
             // vDate und bDate sollten immer '0000-00-00 00:00:00' statt NULL enthalten
             $cSQL .= " AND (CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0)";
         }
-        $oImageMap = Shop::DB()->query($cSQL, 1);
+        $oImageMap = Shop::Container()->getDB()->query($cSQL, 1);
         if (!is_object($oImageMap)) {
             return false;
         }
 
-        $oImageMap->oArea_arr = Shop::DB()->selectAll('timagemaparea', 'kImageMap', (int)$oImageMap->kImageMap);
+        $oImageMap->oArea_arr = Shop::Container()->getDB()->selectAll('timagemaparea', 'kImageMap', (int)$oImageMap->kImageMap);
         $cBildPfad            = PFAD_ROOT . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
-        $oImageMap->cBildPfad = Shop::getURL() . '/' . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
+        $oImageMap->cBildPfad = Shop::getImageBaseURL() . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
         $cParse_arr           = parse_url($oImageMap->cBildPfad);
         $oImageMap->cBild     = substr($cParse_arr['path'], strrpos($cParse_arr['path'], '/') + 1);
         list($width, $height) = getimagesize($cBildPfad);
@@ -109,7 +109,7 @@ class ImageMap implements IExtensionPoint
                     );
                 } else {
                     $oArea->oArtikel->kArtikel = $oArea->kArtikel;
-                    $oArea->oArtikel->cName    = Shop::DB()->select(
+                    $oArea->oArtikel->cName    = Shop::Container()->getDB()->select(
                         'tartikel', 'kArtikel', $oArea->kArtikel, null, null, null, null, false, 'cName'
                     )->cName;
                 }
@@ -138,12 +138,12 @@ class ImageMap implements IExtensionPoint
     public function save($cTitel, $cBildPfad, $vDatum, $bDatum)
     {
         $oData            = new stdClass();
-        $oData->cTitel    = Shop::DB()->escape($cTitel);
-        $oData->cBildPfad = Shop::DB()->escape($cBildPfad);
+        $oData->cTitel    = Shop::Container()->getDB()->escape($cTitel);
+        $oData->cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
         $oData->vDatum    = $vDatum;
         $oData->bDatum    = $bDatum;
 
-        return Shop::DB()->insert('timagemap', $oData);
+        return Shop::Container()->getDB()->insert('timagemap', $oData);
     }
 
     /**
@@ -156,8 +156,8 @@ class ImageMap implements IExtensionPoint
      */
     public function update($kImageMap, $cTitel, $cBildPfad, $vDatum, $bDatum)
     {
-        $cTitel    = Shop::DB()->escape($cTitel);
-        $cBildPfad = Shop::DB()->escape($cBildPfad);
+        $cTitel    = Shop::Container()->getDB()->escape($cTitel);
+        $cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
 
         if (empty($vDatum)) {
             $vDatum = '0000-00-00 00:00:00';
@@ -171,7 +171,7 @@ class ImageMap implements IExtensionPoint
         $_upd->vDatum    = $vDatum;
         $_upd->bDatum    = $bDatum;
 
-        return Shop::DB()->update('timagemap', 'kImageMap', (int)$kImageMap, $_upd) >= 0;
+        return Shop::Container()->getDB()->update('timagemap', 'kImageMap', (int)$kImageMap, $_upd) >= 0;
     }
 
     /**
@@ -180,7 +180,7 @@ class ImageMap implements IExtensionPoint
      */
     public function delete($kImageMap)
     {
-        return Shop::DB()->delete('timagemap', 'kImageMap', (int)$kImageMap) >= 0;
+        return Shop::Container()->getDB()->delete('timagemap', 'kImageMap', (int)$kImageMap) >= 0;
     }
 
     /**
@@ -188,7 +188,7 @@ class ImageMap implements IExtensionPoint
      */
     public function saveAreas($oData)
     {
-        Shop::DB()->delete('timagemaparea', 'kImageMap', (int)$oData->kImageMap);
+        Shop::Container()->getDB()->delete('timagemaparea', 'kImageMap', (int)$oData->kImageMap);
         foreach ($oData->oArea_arr as $oArea) {
             $oTmp                = new stdClass();
             $oTmp->kImageMap     = $oArea->kImageMap;
@@ -199,7 +199,7 @@ class ImageMap implements IExtensionPoint
             $oTmp->cBeschreibung = $oArea->cBeschreibung;
             $oTmp->cCoords       = "{$oArea->oCoords->x},{$oArea->oCoords->y},{$oArea->oCoords->w},{$oArea->oCoords->h}";
 
-            Shop::DB()->insert('timagemaparea', $oTmp);
+            Shop::Container()->getDB()->insert('timagemaparea', $oTmp);
         }
     }
 }

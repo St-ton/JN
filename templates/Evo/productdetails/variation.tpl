@@ -133,8 +133,8 @@
                                                {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                                />
                                        <span class="label-variation">
-                                            {if !empty($Variationswert->cBildPfadMini)}
-                                                <img src="{$Variationswert->cBildPfadMini}" alt="{$Variationswert->cName|escape:'quotes'}"
+                                            {if !empty($Variationswert->cBildPfadMiniFull)}
+                                                <img src="{$Variationswert->cBildPfadMiniFull}" alt="{$Variationswert->cName|escape:'quotes'}"
                                                      data-list='{prepare_image_details item=$Variationswert json=true}'
                                                      title="{$Variationswert->cName}" />
                                             {else}

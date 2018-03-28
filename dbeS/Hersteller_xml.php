@@ -58,10 +58,10 @@ function bearbeiteHerstellerDeletes($xml)
         foreach ($xml['del_hersteller']['kHersteller'] as $kHersteller) {
             $kHersteller = (int)$kHersteller;
             if ($kHersteller > 0) {
-                $affectedArticles = Shop::DB()->selectAll('tartikel', 'kHersteller', $kHersteller, 'kArtikel');
-                Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$kHersteller, 'kHersteller']);
-                Shop::DB()->delete('thersteller', 'kHersteller', $kHersteller);
-                Shop::DB()->delete('therstellersprache', 'kHersteller', $kHersteller);
+                $affectedArticles = Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', $kHersteller, 'kArtikel');
+                Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$kHersteller, 'kHersteller']);
+                Shop::Container()->getDB()->delete('thersteller', 'kHersteller', $kHersteller);
+                Shop::Container()->getDB()->delete('therstellersprache', 'kHersteller', $kHersteller);
 
                 executeHook(HOOK_HERSTELLER_XML_BEARBEITEDELETES, ['kHersteller' => $kHersteller]);
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $kHersteller;
@@ -90,23 +90,20 @@ function bearbeiteHersteller($xml)
             $mfCount      = count($hersteller_arr);
             $cacheTags    = [];
             for ($i = 0; $i < $mfCount; $i++) {
-                $affectedArticles = Shop::DB()->selectAll('tartikel', 'kHersteller', (int)$hersteller_arr[$i]->kHersteller, 'kArtikel');
-                Shop::DB()->delete('tseo', ['kKey', 'cKey'], [(int)$hersteller_arr[$i]->kHersteller,'kHersteller']);
+                $affectedArticles = Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', (int)$hersteller_arr[$i]->kHersteller, 'kArtikel');
+                Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [(int)$hersteller_arr[$i]->kHersteller,'kHersteller']);
                 if (!trim($hersteller_arr[$i]->cSeo)) {
                     $hersteller_arr[$i]->cSeo = getFlatSeoPath($hersteller_arr[$i]->cName);
                 }
                 //alten Bildpfad merken
-                $oHerstellerBild               = Shop::DB()->query("
-                    SELECT cBildPfad 
+                $oHerstellerBild               = Shop::Container()->getDB()->query(
+                    "SELECT cBildPfad 
                         FROM thersteller 
                         WHERE kHersteller = " . (int)$hersteller_arr[$i]->kHersteller, 1
                 );
-                $hersteller_arr[$i]->cBildPfad = isset($oHerstellerBild->cBildPfad)
-                    ? $oHerstellerBild->cBildPfad
-                    : '';
-                //seo checken
-                $hersteller_arr[$i]->cSeo = getSeo($hersteller_arr[$i]->cSeo);
-                $hersteller_arr[$i]->cSeo = checkSeo($hersteller_arr[$i]->cSeo);
+                $hersteller_arr[$i]->cBildPfad = $oHerstellerBild->cBildPfad ?? '';
+                $hersteller_arr[$i]->cSeo      = getSeo($hersteller_arr[$i]->cSeo);
+                $hersteller_arr[$i]->cSeo      = checkSeo($hersteller_arr[$i]->cSeo);
                 DBUpdateInsert('thersteller', [$hersteller_arr[$i]], 'kHersteller');
 
                 $cXMLSprache = '';
@@ -130,11 +127,11 @@ function bearbeiteHersteller($xml)
                         $oSeo->cKey     = 'kHersteller';
                         $oSeo->kKey     = (int)$hersteller_arr[$i]->kHersteller;
                         $oSeo->kSprache = (int)$oSprache->kSprache;
-                        Shop::DB()->insert('tseo', $oSeo);
+                        Shop::Container()->getDB()->insert('tseo', $oSeo);
                     }
                 }
                 //therstellersprache
-                Shop::DB()->delete('therstellersprache', 'kHersteller', (int)$hersteller_arr[$i]->kHersteller);
+                Shop::Container()->getDB()->delete('therstellersprache', 'kHersteller', (int)$hersteller_arr[$i]->kHersteller);
 
                 updateXMLinDB($cXMLSprache, 'therstellersprache', $GLOBALS['mHerstellerSprache'], 'kHersteller', 'kSprache');
 

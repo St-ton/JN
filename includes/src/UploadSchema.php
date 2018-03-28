@@ -60,7 +60,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         private function loadFromDB($kUploadSchema)
         {
-            $oUpload = Shop::DB()->query(
+            $oUpload = Shop::Container()->getDB()->query(
                 "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
                     tuploadschema.cDateiTyp, tuploadschema.nPflicht, tuploadschemasprache.cName, 
                     tuploadschemasprache.cBeschreibung
@@ -81,7 +81,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function save()
         {
-            return Shop::DB()->insert('tuploadschema', self::copyMembers($this));
+            return Shop::Container()->getDB()->insert('tuploadschema', self::copyMembers($this));
         }
 
         /**
@@ -89,7 +89,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function update()
         {
-            return Shop::DB()->update(
+            return Shop::Container()->getDB()->update(
                 'tuploadschema',
                 'kUploadSchema',
                 (int)$this->kUploadSchema,
@@ -102,7 +102,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('tuploadschema', 'kUploadSchema', (int)$this->kUploadSchema);
+            return Shop::Container()->getDB()->delete('tuploadschema', 'kUploadSchema', (int)$this->kUploadSchema);
         }
 
         /**
@@ -117,7 +117,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                 $cSql = " AND kCustomID = '" . (int)$kCustomID . "'";
             }
 
-            return Shop::DB()->query(
+            return Shop::Container()->getDB()->query(
                 "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
                     tuploadschema.cDateiTyp, tuploadschema.nPflicht, 
                     IFNULL(tuploadschemasprache.cName,tuploadschema.cName ) cName,

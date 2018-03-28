@@ -405,9 +405,7 @@ abstract class AbstractFilter implements IFilter
     public function getSeo($idx = null)
     {
         return $idx !== null
-            ? (isset($this->cSeo[$idx])
-                ? $this->cSeo[$idx]
-                : null)
+            ? ($this->cSeo[$idx] ?? null)
             : $this->cSeo;
     }
 
@@ -700,9 +698,7 @@ abstract class AbstractFilter implements IFilter
      */
     public function getActiveValues($idx = null)
     {
-        $activeValues = $this->activeValues !== null
-            ? $this->activeValues
-            : $this;
+        $activeValues = $this->activeValues ?? $this;
         if (is_array($activeValues) && count($activeValues) === 1) {
             $activeValues = $activeValues[0];
         }

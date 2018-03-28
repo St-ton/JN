@@ -9,7 +9,7 @@ $return  = 3;
 $xml_obj = [];
 if (auth()) {
     $return                                           = 0;
-    $xml_obj['zahlungseingaenge']['tzahlungseingang'] = Shop::DB()->query(
+    $xml_obj['zahlungseingaenge']['tzahlungseingang'] = Shop::Container()->getDB()->query(
         "SELECT *, date_format(dZeit, '%d.%m.%Y') AS dZeit_formatted
             FROM tzahlungseingang
             WHERE cAbgeholt = 'N'

@@ -122,7 +122,7 @@ class CheckBox
     {
         $kCheckBox = (int)$kCheckBox;
         if ($kCheckBox > 0) {
-            $oCheckBox = Shop::DB()->query("
+            $oCheckBox = Shop::Container()->getDB()->query("
                 SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE 
                     FROM tcheckbox 
                     WHERE kCheckBox = " . $kCheckBox, 1
@@ -149,21 +149,21 @@ class CheckBox
                 // Falls mal kCheckBoxFunktion gesetzt war aber diese Funktion nicht mehr existiert (deinstallation vom Plugin)
                 // wird kCheckBoxFunktion auf 0 gesetzt
                 if ($this->kCheckBoxFunktion > 0) {
-                    $oCheckBoxFunktion = Shop::DB()->select('tcheckboxfunktion', 'kCheckBoxFunktion', (int)$this->kCheckBoxFunktion);
+                    $oCheckBoxFunktion = Shop::Container()->getDB()->select('tcheckboxfunktion', 'kCheckBoxFunktion', (int)$this->kCheckBoxFunktion);
                     if (isset($oCheckBoxFunktion->kCheckBoxFunktion) && $oCheckBoxFunktion->kCheckBoxFunktion > 0) {
                         $this->oCheckBoxFunktion = $oCheckBoxFunktion;
                     } else {
                         $this->kCheckBoxFunktion = 0;
                         $upd = new stdClass();
                         $upd->kCheckBoxFunktion = 0;
-                        Shop::DB()->update('tcheckbox', 'kCheckBox', (int)$this->kCheckBox, $upd);
+                        Shop::Container()->getDB()->update('tcheckbox', 'kCheckBox', (int)$this->kCheckBox, $upd);
                     }
                 }
                 // Mapping Kundengruppe
                 if (is_array($this->kKundengruppe_arr) && count($this->kKundengruppe_arr) > 0) {
                     $this->cKundengruppeAssoc_arr = [];
                     foreach ($this->kKundengruppe_arr as $kKundengruppe) {
-                        $oKundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
+                        $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
                         if (isset($oKundengruppe->cName) && strlen($oKundengruppe->cName) > 0) {
                             $this->cKundengruppeAssoc_arr[$kKundengruppe] = $oKundengruppe->cName;
                         }
@@ -171,7 +171,7 @@ class CheckBox
                 }
                 // Mapping Link
                 if ($this->kLink > 0) {
-                    $oLink = Shop::DB()->query("
+                    $oLink = Shop::Container()->getDB()->query("
                         SELECT tlink.*, tseo.cSeo, tseo.kSprache, tsprache.cISO
                             FROM tlink
                             LEFT JOIN tseo
@@ -189,7 +189,7 @@ class CheckBox
                 }
                 // Hole Sprachen
                 if ($bSprachWerte) {
-                    $oCheckBoxSpracheTMP_arr = Shop::DB()->selectAll('tcheckboxsprache', 'kCheckBox', (int)$this->kCheckBox);
+                    $oCheckBoxSpracheTMP_arr = Shop::Container()->getDB()->selectAll('tcheckboxsprache', 'kCheckBox', (int)$this->kCheckBox);
                     if (count($oCheckBoxSpracheTMP_arr) > 0) {
                         foreach ($oCheckBoxSpracheTMP_arr as $oCheckBoxSpracheTMP) {
                             $this->oCheckBoxSprache_arr[$oCheckBoxSpracheTMP->kSprache] = $oCheckBoxSpracheTMP;
@@ -232,7 +232,7 @@ class CheckBox
         if ($bLogging) {
             $cSQL .= ' AND nLogging = 1';
         }
-        $oCheckBoxTMP_arr = Shop::DB()->query(
+        $oCheckBoxTMP_arr = Shop::Container()->getDB()->query(
             "SELECT kCheckBox FROM tcheckbox
                 WHERE FIND_IN_SET('" . (int)$nAnzeigeOrt . "', REPLACE(cAnzeigeOrt, ';', ',')) > 0
                     AND FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppe, ';', ',')) > 0
@@ -349,7 +349,7 @@ class CheckBox
                 $oCheckBoxLogging->bChecked    = $checked;
                 $oCheckBoxLogging->dErstellt   = 'now()';
 
-                Shop::DB()->insert('tcheckboxlogging', $oCheckBoxLogging);
+                Shop::Container()->getDB()->insert('tcheckboxlogging', $oCheckBoxLogging);
             }
         }
 
@@ -369,7 +369,7 @@ class CheckBox
         if ($bAktiv) {
             $cSQL = ' WHERE nAktiv = 1';
         }
-        $oCheckBoxTMP_arr = Shop::DB()->query("
+        $oCheckBoxTMP_arr = Shop::Container()->getDB()->query("
             SELECT kCheckBox 
                 FROM tcheckbox" . $cSQL . " 
                 ORDER BY nSort " . $cLimitSQL, 2
@@ -393,7 +393,7 @@ class CheckBox
         if ($bAktiv) {
             $cSQL = ' WHERE nAktiv = 1';
         }
-        $oCheckBoxCount = Shop::DB()->query("SELECT count(*) AS nAnzahl FROM tcheckbox" . $cSQL, 1);
+        $oCheckBoxCount = Shop::Container()->getDB()->query("SELECT count(*) AS nAnzahl FROM tcheckbox" . $cSQL, 1);
 
         return isset($oCheckBoxCount->nAnzahl) ? (int)$oCheckBoxCount->nAnzahl : 0;
     }
@@ -408,7 +408,7 @@ class CheckBox
             return false;
         }
         foreach ($kCheckBox_arr as $kCheckBox) {
-            Shop::DB()->update('tcheckbox', 'kCheckBox', (int)$kCheckBox, (object)['nAktiv' => 1]);
+            Shop::Container()->getDB()->update('tcheckbox', 'kCheckBox', (int)$kCheckBox, (object)['nAktiv' => 1]);
         }
 
         return true;
@@ -424,7 +424,7 @@ class CheckBox
             return false;
         }
         foreach ($kCheckBox_arr as $kCheckBox) {
-            Shop::DB()->update('tcheckbox', 'kCheckBox', (int)$kCheckBox, (object)['nAktiv' => 0]);
+            Shop::Container()->getDB()->update('tcheckbox', 'kCheckBox', (int)$kCheckBox, (object)['nAktiv' => 0]);
         }
 
         return true;
@@ -440,7 +440,7 @@ class CheckBox
             return false;
         }
         foreach ($kCheckBox_arr as $kCheckBox) {
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "DELETE tcheckbox, tcheckboxsprache
                     FROM tcheckbox
                     LEFT JOIN tcheckboxsprache 
@@ -457,7 +457,7 @@ class CheckBox
      */
     public function getCheckBoxFunctions()
     {
-        return Shop::DB()->query("SELECT * FROM tcheckboxfunktion ORDER BY cName", 2);
+        return Shop::Container()->getDB()->query("SELECT * FROM tcheckboxfunktion ORDER BY cName", 2);
     }
 
     /**
@@ -481,7 +481,7 @@ class CheckBox
                 $oCheckBox->cLink
             );
 
-            $kCheckBox       = Shop::DB()->insert('tcheckbox', $oCheckBox);
+            $kCheckBox       = Shop::Container()->getDB()->insert('tcheckbox', $oCheckBox);
             $this->kCheckBox = !empty($oCheckBox->kCheckBox) ? $oCheckBox->kCheckBox : $kCheckBox;
             $this->insertDBSprache($cTextAssoc_arr, $cBeschreibungAssoc_arr);
         }
@@ -508,7 +508,7 @@ class CheckBox
                 if (isset($cBeschreibungAssoc_arr[$cISO]) && strlen($cBeschreibungAssoc_arr[$cISO]) > 0) {
                     $this->oCheckBoxSprache_arr[$cISO]->cBeschreibung = $cBeschreibungAssoc_arr[$cISO];
                 }
-                $this->oCheckBoxSprache_arr[$cISO]->kCheckBoxSprache = Shop::DB()->insert(
+                $this->oCheckBoxSprache_arr[$cISO]->kCheckBoxSprache = Shop::Container()->getDB()->insert(
                     'tcheckboxsprache',
                     $this->oCheckBoxSprache_arr[$cISO]
                 );
@@ -525,7 +525,7 @@ class CheckBox
     private function getSprachKeyByISO($cISO)
     {
         if (strlen($cISO) > 0) {
-            $oSprache = Shop::DB()->select('tsprache', 'cISO', StringHandler::filterXSS($cISO));
+            $oSprache = Shop::Container()->getDB()->select('tsprache', 'cISO', StringHandler::filterXSS($cISO));
             if ($oSprache !== null && (int)$oSprache->kSprache > 0) {
                 return (int)$oSprache->kSprache;
             }
@@ -592,9 +592,7 @@ class CheckBox
     {
         $cAnzeigeOrt_arr = self::gibCheckBoxAnzeigeOrte();
 
-        return isset($cAnzeigeOrt_arr[$nAnzeigeOrt])
-            ? $cAnzeigeOrt_arr[$nAnzeigeOrt]
-            : '';
+        return $cAnzeigeOrt_arr[$nAnzeigeOrt] ?? '';
     }
 
     /**

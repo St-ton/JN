@@ -17,7 +17,7 @@ $step           = 'uebersicht';
 setzeSprache();
 
 // Tabs
-$smarty->assign('cTab', (isset($cStep) ? $cStep : null));
+$smarty->assign('cTab', $cStep ?? null);
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
@@ -65,7 +65,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             'nEditierbar' => (int)$_POST['nEdit'],
         ];
 
-        $cfValues = isset($_POST['cfValues']) ? $_POST['cfValues'] : null;
+        $cfValues = $_POST['cfValues'] ?? null;
 
         // Plausi
         $oPlausi = new PlausiKundenfeld();
@@ -104,11 +104,11 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     }
 }
 
-$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KUNDENFELD, '*', 'nSort');
+$oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KUNDENFELD, '*', 'nSort');
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$oConfig_arr[$i]->kEinstellungenConf,
@@ -117,7 +117,7 @@ for ($i = 0; $i < $configCount; $i++) {
         );
     }
 
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         CONF_KUNDENFELD,
@@ -125,7 +125,7 @@ for ($i = 0; $i < $configCount; $i++) {
         $oConfig_arr[$i]->cWertName
     );
 
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert) ? $oSetValue->cWert : null);
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 // Kundenfelder auslesen und in Smarty assignen
 $oKundenfeld_arr = $customerFields->getCustomerFields();

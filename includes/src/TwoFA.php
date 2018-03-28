@@ -165,7 +165,7 @@ class TwoFA
      */
     public function setUserByID($iID)
     {
-        $this->oUserTuple = Shop::DB()->select('tadminlogin', 'kAdminlogin', (int)$iID);
+        $this->oUserTuple = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', (int)$iID);
     }
 
     /**
@@ -180,7 +180,7 @@ class TwoFA
         // write at least the user's name we get via e.g. ajax
         $this->oUserTuple->cLogin = $szUserName;
         // check if we know that user yet
-        if (($oTuple = Shop::DB()->select('tadminlogin', 'cLogin', $szUserName)) !== null) {
+        if (($oTuple = Shop::Container()->getDB()->select('tadminlogin', 'cLogin', $szUserName)) !== null) {
             $this->oUserTuple = $oTuple;
         }
     }
@@ -203,7 +203,7 @@ class TwoFA
     public function getShopName()
     {
         if ('' === $this->szShopName) {
-            $oResult          = Shop::DB()->select('teinstellungen', 'cName', 'global_shopname');
+            $oResult          = Shop::Container()->getDB()->select('teinstellungen', 'cName', 'global_shopname');
             $this->szShopName = $oResult->cWert;
         }
 

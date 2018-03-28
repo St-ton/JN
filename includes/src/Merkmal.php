@@ -140,7 +140,7 @@ class Merkmal
                             AND tmerkmalsprache.kSprache = {$kSprache}";
         }
         $kMerkmal = (int)$kMerkmal;
-        $oMerkmal = Shop::DB()->query(
+        $oMerkmal = Shop::Container()->getDB()->query(
             "SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, 
                   {$cSelect}
                 FROM tmerkmal
@@ -169,7 +169,7 @@ class Merkmal
                                         AND standardSprache.kSprache = {$kSprache}";
                 $cOrderBy         = "ORDER BY tmw.nSort, standardSprache.cWert";
             }
-            $oMerkmalWertTMP_arr = Shop::DB()->query(
+            $oMerkmalWertTMP_arr = Shop::Container()->getDB()->query(
                 "SELECT tmw.kMerkmalWert
                     FROM tmerkmalwert tmw
                     {$cJoinMerkmalwert}
@@ -184,7 +184,7 @@ class Merkmal
                 }
             }
         }
-        $shopURL = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
 
         $this->cBildpfadKlein      = BILD_KEIN_MERKMALBILD_VORHANDEN;
         $this->nBildKleinVorhanden = 0;
@@ -201,9 +201,9 @@ class Merkmal
                 $this->nBildGrossVorhanden = 1;
             }
         }
-        $this->cBildURLGross  = $shopURL . $this->cBildpfadGross;
-        $this->cBildURLNormal = $shopURL . $this->cBildpfadNormal;
-        $this->cBildURLKlein  = $shopURL . $this->cBildpfadKlein;
+        $this->cBildURLGross  = $imageBaseURL . $this->cBildpfadGross;
+        $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
+        $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
 
         executeHook(HOOK_MERKMAL_CLASS_LOADFROMDB);
         Shop::set($id, $this);
@@ -247,7 +247,7 @@ class Merkmal
 
             $cSQL = ' IN(' . implode(', ', array_filter($kMerkmal_arr, 'intval')) . ') ';
 
-            $oMerkmal_arr = Shop::DB()->query(
+            $oMerkmal_arr = Shop::Container()->getDB()->query(
                 "SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, 
                       {$cSelect}
                     FROM tmerkmal
@@ -257,7 +257,7 @@ class Merkmal
             );
 
             if ($bMMW && is_array($oMerkmal_arr) && count($oMerkmal_arr) > 0) {
-                $shopURL = Shop::getURL() . '/';
+                $imageBaseURL = Shop::getImageBaseURL();
                 foreach ($oMerkmal_arr as $i => $oMerkmal) {
                     $oMerkmalWert                       = new MerkmalWert(0, $this->kSprache);
                     $oMerkmal_arr[$i]->oMerkmalWert_arr = $oMerkmalWert->holeAlleMerkmalWerte($oMerkmal->kMerkmal);
@@ -269,8 +269,8 @@ class Merkmal
                         $oMerkmal_arr[$i]->cBildpfadKlein  = BILD_KEIN_MERKMALBILD_VORHANDEN;
                         $oMerkmal_arr[$i]->cBildpfadNormal = BILD_KEIN_MERKMALBILD_VORHANDEN;
                     }
-                    $oMerkmal_arr[$i]->cBildURLKlein  = $shopURL . $oMerkmal_arr[$i]->cBildpfadKlein;
-                    $oMerkmal_arr[$i]->cBildURLNormal = $shopURL . $oMerkmal_arr[$i]->cBildpfadNormal;
+                    $oMerkmal_arr[$i]->cBildURLKlein  = $imageBaseURL . $oMerkmal_arr[$i]->cBildpfadKlein;
+                    $oMerkmal_arr[$i]->cBildURLNormal = $imageBaseURL . $oMerkmal_arr[$i]->cBildpfadNormal;
                 }
             }
         }

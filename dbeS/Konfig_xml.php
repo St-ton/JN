@@ -132,7 +132,7 @@ function loescheKonfigitem($kKonfiggruppe)
         Jtllog::writeLog('Loesche kKonfigitem (gruppe): ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }
     if ($kKonfiggruppe > 0) {
-        Shop::DB()->delete('tkonfigitem', 'kKonfiggruppe', $kKonfiggruppe);
+        Shop::Container()->getDB()->delete('tkonfigitem', 'kKonfiggruppe', $kKonfiggruppe);
     }
 }
 

@@ -83,7 +83,7 @@ class KategorieHelper
         self::$kKundengruppe = $kKundengruppe;
         self::$config        = $config;
 
-        return self::$instance === null ? new self() : self::$instance;
+        return self::$instance ?? new self();
     }
 
     /**
@@ -104,7 +104,7 @@ class KategorieHelper
 
                 return $_SESSION['oKategorie_arr_new'];
             }
-            $categoryCountObj    = Shop::DB()->query('SELECT count(*) AS cnt FROM tkategorie', 1);
+            $categoryCountObj    = Shop::Container()->getDB()->query('SELECT count(*) AS cnt FROM tkategorie', 1);
             $categoryCount       = (int)$categoryCountObj->cnt;
             $categoryLimit       = CATEGORY_FULL_LOAD_LIMIT;
             self::$limitReached  = ($categoryCount >= $categoryLimit);
@@ -116,6 +116,7 @@ class KategorieHelper
             $currentParent       = null;
             $descriptionSelect   = ", '' AS cBeschreibung";
             $shopURL             = Shop::getURL(true);
+            $imageBaseURL        = Shop::getImageBaseURL();
             $isDefaultLang       = standardspracheAktiv();
             $visibilityWhere     = " AND tartikelsichtbarkeit.kArtikel IS NULL";
             $depthWhere          = self::$limitReached === true
@@ -186,7 +187,7 @@ class KategorieHelper
                     $visibilityWhere      = "";
                 }
             }
-            $nodes            = Shop::DB()->query(
+            $nodes            = Shop::Container()->getDB()->query(
                 "SELECT node.kKategorie, node.kOberKategorie" . $nameSelect .
                 $descriptionSelect . $imageSelect . $seoSelect . $countSelect . "
                     FROM tkategorie AS node INNER JOIN tkategorie AS parent " . $langJoin . "                    
@@ -201,7 +202,7 @@ class KategorieHelper
                 GROUP BY node.kKategorie
                 ORDER BY node.lft", 2
             );
-            $_catAttribut_arr = Shop::DB()->query(
+            $_catAttribut_arr = Shop::Container()->getDB()->query(
                 "SELECT tkategorieattribut.kKategorie, 
                         COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName, 
                         COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
@@ -228,7 +229,7 @@ class KategorieHelper
                 $_cat->cBildURL       = empty($_cat->cPfad)
                     ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                     : PFAD_KATEGORIEBILDER . $_cat->cPfad;
-                $_cat->cBildURLFull   = $shopURL . '/' . $_cat->cBildURL;
+                $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
                 $_cat->cURL           = empty($_cat->cSeo)
                     ? baueURL($_cat, URLART_KATEGORIE, 0, true)
                     : baueURL($_cat, URLART_KATEGORIE);
@@ -243,12 +244,8 @@ class KategorieHelper
                 }
                 unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
                 // Attribute holen
-                $_cat->categoryFunctionAttributes = isset($functionAttributes[$_cat->kKategorie])
-                    ? $functionAttributes[$_cat->kKategorie]
-                    : [];
-                $_cat->categoryAttributes         = isset($localizedAttributes[$_cat->kKategorie])
-                    ? $localizedAttributes[$_cat->kKategorie]
-                    : [];
+                $_cat->categoryFunctionAttributes = $functionAttributes[$_cat->kKategorie] ?? [];
+                $_cat->categoryAttributes         = $localizedAttributes[$_cat->kKategorie] ?? [];
                 /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
                 $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
                 //interne Verlinkung $#k:X:Y#$
@@ -335,6 +332,7 @@ class KategorieHelper
         $fullCats            = [];
         $descriptionSelect   = ", '' AS cBeschreibung";
         $shopURL             = Shop::getURL(true);
+        $imageBaseURL        = Shop::getImageBaseURL();
         $isDefaultLang       = standardspracheAktiv();
         $visibilityWhere     = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
         $getDescription      = (!(isset(self::$config['template']['megamenu']['show_maincategory_info'])
@@ -395,7 +393,7 @@ class KategorieHelper
                 $visibilityWhere      = "";
             }
         }
-        $nodes            = Shop::DB()->query(
+        $nodes            = Shop::Container()->getDB()->query(
             "SELECT parent.kKategorie, parent.kOberKategorie" . $nameSelect .
                 $descriptionSelect . $imageSelect . $seoSelect . $countSelect . "
                 FROM tkategorie AS node INNER JOIN tkategorie AS parent " . $langJoin . "                    
@@ -410,7 +408,7 @@ class KategorieHelper
             GROUP BY parent.kKategorie
             ORDER BY parent.lft", 2
         );
-        $_catAttribut_arr = Shop::DB()->query(
+        $_catAttribut_arr = Shop::Container()->getDB()->query(
             "SELECT tkategorieattribut.kKategorie, 
                     COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName, 
                     COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
@@ -440,7 +438,7 @@ class KategorieHelper
             $_cat->cBildURL       = empty($_cat->cPfad)
                 ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                 : PFAD_KATEGORIEBILDER . $_cat->cPfad;
-            $_cat->cBildURLFull   = $shopURL . '/' . $_cat->cBildURL;
+            $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
             $_cat->cURL           = empty($_cat->cSeo)
                 ? baueURL($_cat, URLART_KATEGORIE, 0, true)
                 : baueURL($_cat, URLART_KATEGORIE);
@@ -455,12 +453,8 @@ class KategorieHelper
                 }
             }
             unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
-            $_cat->categoryFunctionAttributes = isset($functionAttributes[$_cat->kKategorie])
-                ? $functionAttributes[$_cat->kKategorie]
-                : [];
-            $_cat->categoryAttributes         = isset($localizedAttributes[$_cat->kKategorie])
-                ? $localizedAttributes[$_cat->kKategorie]
-                : [];
+            $_cat->categoryFunctionAttributes = $functionAttributes[$_cat->kKategorie] ?? [];
+            $_cat->categoryAttributes         = $localizedAttributes[$_cat->kKategorie] ?? [];
             /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
             $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
             //interne Verlinkung $#k:X:Y#$
@@ -530,7 +524,7 @@ class KategorieHelper
      */
     public static function categoryExists($id)
     {
-        return Shop::DB()->select('tkategorie', 'kKategorie', (int)$id) !== null;
+        return Shop::Container()->getDB()->select('tkategorie', 'kKategorie', (int)$id) !== null;
     }
 
     /**
@@ -636,7 +630,7 @@ class KategorieHelper
      */
     public static function getDataByAttribute($attribute, $value, callable $callback = null)
     {
-        $res = Shop::DB()->select('tkategorie', $attribute, $value);
+        $res = Shop::Container()->getDB()->select('tkategorie', $attribute, $value);
 
         return is_callable($callback)
             ? $callback($res)
@@ -740,9 +734,7 @@ class KategorieHelper
                 $cKategorielistenHTML_arr[0] = function_exists('gibKategorienHTML')
                     ? gibKategorienHTML(
                         $startCat,
-                        isset($expanded->elemente)
-                            ? $expanded->elemente
-                            : null,
+                        $expanded->elemente ?? null,
                         0,
                         isset($currentCategory->kKategorie)
                             ? (int)$currentCategory->kKategorie
@@ -750,7 +742,7 @@ class KategorieHelper
                     )
                     : '';
 
-                $dist_kategorieboxen = Shop::DB()->query(
+                $dist_kategorieboxen = Shop::Container()->getDB()->query(
                     "SELECT DISTINCT(cWert) 
                         FROM tkategorieattribut 
                         WHERE cName = '" . KAT_ATTRIBUT_KATEGORIEBOX . "'", 2

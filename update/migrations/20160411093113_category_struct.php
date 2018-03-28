@@ -26,12 +26,12 @@ class Migration_20160411093113 extends Migration implements IMigration
         // the right value of this node is the left value + 1
         $right = $left + 1;
         // get all children of this node
-        $result = Shop::DB()->query("SELECT kKategorie FROM tkategorie WHERE kOberKategorie = " . (int)$parent_id . " ORDER BY nSort, cName", 2);
+        $result = Shop::Container()->getDB()->query("SELECT kKategorie FROM tkategorie WHERE kOberKategorie = " . (int)$parent_id . " ORDER BY nSort, cName", 2);
         foreach ($result as $_res) {
             $right = $this->rebuildCategoryTree($_res->kKategorie, $right);
         }
         // we've got the left value, and now that we've processed the children of this node we also know the right value
-        Shop::DB()->query("UPDATE tkategorie SET lft = " . $left . ", rght = " . $right . " WHERE kKategorie = " . $parent_id, 3);
+        Shop::Container()->getDB()->query("UPDATE tkategorie SET lft = " . $left . ", rght = " . $right . " WHERE kKategorie = " . $parent_id, 3);
 
         // return the right value of this node + 1
         return $right + 1;

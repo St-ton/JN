@@ -98,7 +98,7 @@ class Kundengruppe
      */
     public function loadDefaultGroup()
     {
-        $oObj = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+        $oObj = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
         if ($oObj !== null) {
             $conf = Shop::getSettings([CONF_GLOBAL]);
             $this->setID($oObj->kKundengruppe)
@@ -127,7 +127,7 @@ class Kundengruppe
     private function localize()
     {
         if ($this->id > 0 && $this->languageID > 0) {
-            $oKundengruppeSprache = Shop::DB()->select(
+            $oKundengruppeSprache = Shop::Container()->getDB()->select(
                 'tkundengruppensprache',
                 'kKundengruppe',
                 (int)$this->id,
@@ -150,7 +150,7 @@ class Kundengruppe
      */
     private function loadFromDB($kKundengruppe = 0)
     {
-        $oObj = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
+        $oObj = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
         if (isset($oObj->kKundengruppe) && $oObj->kKundengruppe > 0) {
             $this->setID($oObj->kKundengruppe)
                  ->setName($oObj->cName)
@@ -177,7 +177,7 @@ class Kundengruppe
         $obj->cStandard    = strtoupper($this->default);
         $obj->cShopLogin   = $this->cShopLogin;
         $obj->nNettoPreise = (int)$this->isMerchant;
-        $kPrim             = Shop::DB()->insert('tkundengruppe', $obj);
+        $kPrim             = Shop::Container()->getDB()->insert('tkundengruppe', $obj);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }
@@ -199,7 +199,7 @@ class Kundengruppe
         $_upd->cShopLogin   = $this->cShopLogin;
         $_upd->nNettoPreise = $this->isMerchant;
 
-        return Shop::DB()->update('tkundengruppe', 'kKundengruppe', (int)$this->id, $_upd);
+        return Shop::Container()->getDB()->update('tkundengruppe', 'kKundengruppe', (int)$this->id, $_upd);
     }
 
     /**
@@ -209,7 +209,7 @@ class Kundengruppe
      */
     public function delete()
     {
-        return Shop::DB()->delete('tkundengruppe', 'kKundengruppe', (int)$this->id);
+        return Shop::Container()->getDB()->delete('tkundengruppe', 'kKundengruppe', (int)$this->id);
     }
 
     /**
@@ -251,7 +251,7 @@ class Kundengruppe
      */
     public function setName($name)
     {
-        $this->name = Shop::DB()->escape($name);
+        $this->name = Shop::Container()->getDB()->escape($name);
 
         return $this;
     }
@@ -305,7 +305,7 @@ class Kundengruppe
      */
     public function setDefault($default)
     {
-        $this->default = Shop::DB()->escape($default);
+        $this->default = Shop::Container()->getDB()->escape($default);
 
         return $this;
     }
@@ -316,7 +316,7 @@ class Kundengruppe
      */
     public function setShopLogin($cShopLogin)
     {
-        $this->cShopLogin = Shop::DB()->escape($cShopLogin);
+        $this->cShopLogin = Shop::Container()->getDB()->escape($cShopLogin);
 
         return $this;
     }
@@ -495,7 +495,7 @@ class Kundengruppe
     public static function getGroups()
     {
         $oKdngrp_arr = [];
-        $oObj_arr    = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
+        $oObj_arr    = Shop::Container()->getDB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
 
         if (is_array($oObj_arr) && count($oObj_arr) > 0) {
             foreach ($oObj_arr as $oObj) {
@@ -513,7 +513,7 @@ class Kundengruppe
      */
     public static function getDefault()
     {
-        return Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+        return Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
     }
 
     /**
@@ -611,7 +611,7 @@ class Kundengruppe
     {
         if ($this->id > 0) {
             $this->Attribute = [];
-            $attributes      = Shop::DB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$this->id);
+            $attributes      = Shop::Container()->getDB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$this->id);
             foreach ($attributes as $attribute) {
                 $this->Attribute[strtolower($attribute->cName)] = $attribute->cWert;
             }
@@ -634,9 +634,7 @@ class Kundengruppe
      */
     public function getAttribute($attributeName)
     {
-        return isset($this->Attribute[$attributeName])
-            ? $this->Attribute[$attributeName]
-            : null;
+        return $this->Attribute[$attributeName] ?? null;
     }
 
     /**
@@ -648,7 +646,7 @@ class Kundengruppe
     {
         $attributes = [];
         if ($kKundengruppe > 0) {
-            $attr_arr = Shop::DB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$kKundengruppe);
+            $attr_arr = Shop::Container()->getDB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$kKundengruppe);
             foreach ($attr_arr as $Att) {
                 $attributes[strtolower($Att->cName)] = $Att->cWert;
             }

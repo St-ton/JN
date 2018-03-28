@@ -515,13 +515,19 @@ class Zahlungsart extends MainModel
                 }
             }
 
-            $oObj = Shop::DB()->query(
-                "SELECT *
+            $oObj = Shop::Container()->getDB()->queryPrepared(
+                'SELECT *
                     FROM tzahlungsart AS z
-                    LEFT JOIN tzahlungsartsprache AS s ON s.kZahlungsart = z.kZahlungsart
-                        AND s.cISOSprache = '{$iso}'
-                    WHERE z.kZahlungsart = {$kKey}
-                    LIMIT 1", 1
+                    LEFT JOIN tzahlungsartsprache AS s 
+                        ON s.kZahlungsart = z.kZahlungsart
+                        AND s.cISOSprache = :iso
+                    WHERE z.kZahlungsart = :pmID
+                    LIMIT 1',
+                [
+                    'iso'  => $iso,
+                    'pmID' => $kKey
+                ],
+                NiceDB::RET_SINGLE_OBJECT
             );
 
             $this->loadObject($oObj);
@@ -549,13 +555,15 @@ class Zahlungsart extends MainModel
             }
         }
 
-        $objs = Shop::DB()->query("
-            SELECT *
+        $objs = Shop::Container()->getDB()->queryPrepared(
+            "SELECT *
                 FROM tzahlungsart AS z
                 LEFT JOIN tzahlungsartsprache AS s 
                     ON s.kZahlungsart = z.kZahlungsart
-                    AND s.cISOSprache = '{$iso}'
-                {$where}", 2
+                    AND s.cISOSprache = :iso
+                {$where}",
+            ['iso' => $iso],
+            NiceDB::RET_ARRAY_OF_OBJECTS
         );
 
         foreach ($objs as $obj) {

@@ -141,19 +141,24 @@ class Hersteller
         $cacheTags   = [CACHING_GROUP_MANUFACTURER];
         $cached      = true;
         if ($noCache === true || ($oHersteller = Shop::Cache()->get($cacheID)) === false) {
-            $oHersteller = Shop::DB()->query(
+            $oHersteller = Shop::Container()->getDB()->queryPrepared(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                     therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                     FROM thersteller
                     LEFT JOIN therstellersprache 
                         ON therstellersprache.kHersteller = thersteller.kHersteller
-                        AND therstellersprache.kSprache = " . $kSprache . "
+                        AND therstellersprache.kSprache = :langID
                     LEFT JOIN tseo 
                         ON tseo.kKey = thersteller.kHersteller
                         AND tseo.cKey = 'kHersteller'
-                        AND tseo.kSprache = " . $kSprache . "
-                    WHERE thersteller.kHersteller = " . $kHersteller, 1
+                        AND tseo.kSprache = :langID
+                    WHERE thersteller.kHersteller = :manfID",
+                [
+                    'langID' => $kSprache,
+                    'manfID' => $kHersteller
+                ],
+                NiceDB::RET_SINGLE_OBJECT
             );
             $cached = false;
             executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [
@@ -185,7 +190,8 @@ class Hersteller
      */
     public function getExtras(stdClass $obj)
     {
-        $shopURL = Shop::getURL() . '/';
+        $shopURL      = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
             $this->cURL = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
@@ -200,8 +206,8 @@ class Hersteller
             $this->cBildpfadKlein  = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
             $this->cBildpfadNormal = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
         }
-        $this->cBildURLKlein  = $shopURL . $this->cBildpfadKlein;
-        $this->cBildURLNormal = $shopURL . $this->cBildpfadNormal;
+        $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
+        $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
 
         return $this;
     }
@@ -227,7 +233,7 @@ class Hersteller
                             ")
                         )";
         }
-        $objs = Shop::DB()->query(
+        $objs = Shop::Container()->getDB()->query(
             "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo

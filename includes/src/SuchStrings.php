@@ -50,7 +50,7 @@ class SuchStrings
     public function loadFromDB($kSuchStrings)
     {
         $kSuchStrings = (int)$kSuchStrings;
-        $obj          = Shop::DB()->select('tsuchstrings', 'kSuchStrings', $kSuchStrings);
+        $obj          = Shop::Container()->getDB()->select('tsuchstrings', 'kSuchStrings', $kSuchStrings);
         if ($obj !== null && $obj->kSuchStrings > 0) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
@@ -70,7 +70,7 @@ class SuchStrings
     {
         $obj = kopiereMembers($this);
         unset($obj->kSuchStrings);
-        $this->kSuchStrings = Shop::DB()->insert('tsuchstrings', $obj);
+        $this->kSuchStrings = Shop::Container()->getDB()->insert('tsuchstrings', $obj);
 
         return $this->kSuchStrings;
     }

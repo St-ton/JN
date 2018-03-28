@@ -30,7 +30,7 @@ if (isset($_POST['zeitfilter']) && (int)$_POST['zeitfilter'] === 1) {
 }
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && validateToken()) {
-    $oConfig_arr = Shop::DB()->query(
+    $oConfig_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungenconf
             WHERE (
@@ -59,19 +59,19 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
                 $aktWert->cWert = substr($aktWert->cWert, 0, 255);
                 break;
         }
-        Shop::DB()->delete(
+        Shop::Container()->getDB()->delete(
             'teinstellungen',
             ['kEinstellungenSektion', 'cName'],
             [(int)$oConfig_arr[$i]->kEinstellungenSektion, $oConfig_arr[$i]->cWertName]
         );
-        Shop::DB()->insert('teinstellungen', $aktWert);
+        Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
     }
 
     unset($oConfig_arr);
     $cHinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.';
 }
 
-$oConfig_arr = Shop::DB()->query(
+$oConfig_arr = Shop::Container()->getDB()->query(
     "SELECT *
         FROM teinstellungenconf
         WHERE (
@@ -83,7 +83,7 @@ $oConfig_arr = Shop::DB()->query(
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$oConfig_arr[$i]->kEinstellungenConf,
@@ -91,30 +91,29 @@ for ($i = 0; $i < $configCount; $i++) {
             'nSort'
         );
     }
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         (int)$oConfig_arr[$i]->kEinstellungenSektion,
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-        ? $oSetValue->cWert
-        : null;
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr);
 // Max Anzahl Vergleiche
-$oVergleichAnzahl = Shop::DB()->query(
-    "SELECT count(*) AS nAnzahl
-        FROM tvergleichsliste",
-    1);
+$oVergleichAnzahl = Shop::Container()->getDB()->query(
+    'SELECT count(*) AS nAnzahl
+        FROM tvergleichsliste',
+    NiceDB::RET_SINGLE_OBJECT
+);
 // Pagination
 $oPagination = (new Pagination())
     ->setItemCount($oVergleichAnzahl->nAnzahl)
     ->assemble();
 // Letzten 20 Vergleiche
-$oLetzten20Vergleichsliste_arr = Shop::DB()->query(
+$oLetzten20Vergleichsliste_arr = Shop::Container()->getDB()->query(
     "SELECT kVergleichsliste, DATE_FORMAT(dDate, '%d.%m.%Y  %H:%i') AS Datum
         FROM tvergleichsliste
         ORDER BY dDate DESC
@@ -124,7 +123,7 @@ $oLetzten20Vergleichsliste_arr = Shop::DB()->query(
 if (is_array($oLetzten20Vergleichsliste_arr) && count($oLetzten20Vergleichsliste_arr) > 0) {
     $oLetzten20VergleichslistePos_arr = [];
     foreach ($oLetzten20Vergleichsliste_arr as $oLetzten20Vergleichsliste) {
-        $oLetzten20VergleichslistePos_arr = Shop::DB()->selectAll(
+        $oLetzten20VergleichslistePos_arr = Shop::Container()->getDB()->selectAll(
             'tvergleichslistepos',
             'kVergleichsliste',
             (int)$oLetzten20Vergleichsliste->kVergleichsliste,
@@ -134,7 +133,7 @@ if (is_array($oLetzten20Vergleichsliste_arr) && count($oLetzten20Vergleichsliste
     }
 }
 // Top Vergleiche
-$oTopVergleichsliste_arr = Shop::DB()->query(
+$oTopVergleichsliste_arr = Shop::Container()->getDB()->query(
     "SELECT tvergleichsliste.dDate, tvergleichslistepos.kArtikel, 
         tvergleichslistepos.cArtikelName, count(tvergleichslistepos.kArtikel) AS nAnzahl
         FROM tvergleichsliste

@@ -11,14 +11,15 @@ $cFehler  = '';
 $cHinweis = '';
 
 if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
-    $passInfo   = password_get_info($_POST['wawi-pass']);
-    $upd        = new stdClass();
-    $upd->cName = $_POST['wawi-user'];
-    $upd->cPass = $passInfo['algo'] > 0
+    $passwordService = Shop::Container()->getPasswordService();
+    $passInfo        = $passwordService->getInfo($_POST['wawi-pass']);
+    $upd             = new stdClass();
+    $upd->cName      = $_POST['wawi-user'];
+    $upd->cPass      = $passInfo['algo'] > 0
         ? $_POST['wawi-pass'] // hashed password was not changed
-        : password_hash($_POST['wawi-pass'], PASSWORD_DEFAULT); // new clear text password was given
+        : $passwordService->hash($_POST['wawi-pass']); // new clear text password was given
 
-    Shop::DB()->queryPrepared(
+    Shop::Container()->getDB()->queryPrepared(
         "INSERT INTO `tsynclogin` (kSynclogin, cName, cPass)
             VALUES (1, :cName, :cPass)
             ON DUPLICATE KEY UPDATE
@@ -31,7 +32,7 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
     $cHinweis = 'Erfolgreich gespeichert.';
 }
 
-$user = Shop::DB()->select('tsynclogin', 'kSynclogin', 1);
+$user = Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);
 $smarty->assign('wawiuser', $user->cName)
        ->assign('cHinweis', $cHinweis)
        ->assign('wawipass', $user->cPass)

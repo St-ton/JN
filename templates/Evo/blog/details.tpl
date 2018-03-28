@@ -16,7 +16,7 @@
             {$oNewsArchiv->cBetreff}
         </h1>
         {if isset({$oNewsArchiv->cPreviewImage})}
-            <meta itemprop="image" content="{$ShopURL}/{$oNewsArchiv->cPreviewImage}">
+            <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->cPreviewImage}">
         {/if}
         <div class="author-meta text-muted bottom10">
             {if empty($oNewsArchiv->dGueltigVon)}{assign var=dDate value=$oNewsArchiv->dErstellt}{else}{assign var=dDate value=$oNewsArchiv->dGueltigVon}{/if}
@@ -25,7 +25,7 @@
             {else}
                 <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
                     <span itemprop="name">{$meta_publisher}</span>
-                    <meta itemprop="logo" content="{$ShopURL}/{$ShopLogoURL}" />
+                    <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}" />
                 </div>
                 <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="creation-date">{$oNewsArchiv->dGueltigVon_de}</span>
             {/if}

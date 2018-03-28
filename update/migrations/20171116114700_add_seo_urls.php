@@ -38,12 +38,12 @@ class Migration_20171116114700 extends Migration implements IMigration
      */
     public function up()
     {
-        $hiddenLinkGroup = Shop::DB()->select('tlinkgruppe', 'cName', 'hidden');
+        $hiddenLinkGroup = Shop::Container()->getDB()->select('tlinkgruppe', 'cName', 'hidden');
         if ($hiddenLinkGroup === null) {
             $hiddenLinkGroup                = new stdClass();
             $hiddenLinkGroup->cName         = 'hidden';
             $hiddenLinkGroup->cTemplatename = 'hidden';
-            $this->hiddenLinkGroupID        = Shop::DB()->insert('tlinkgruppe', $hiddenLinkGroup);
+            $this->hiddenLinkGroupID        = Shop::Container()->getDB()->insert('tlinkgruppe', $hiddenLinkGroup);
         } else {
             $this->hiddenLinkGroupID = (int)$hiddenLinkGroup->kLinkgruppe;
         }
@@ -87,7 +87,7 @@ class Migration_20171116114700 extends Migration implements IMigration
                 $link->bIsActive      = 1;
                 $link->kLinkgruppe    = $this->hiddenLinkGroupID;
                 $link->cKundengruppen = 'NULL';
-                $link->kLink          = Shop::DB()->insert('tlink', $link);
+                $link->kLink          = Shop::Container()->getDB()->insert('tlink', $link);
             } else {
                 $link->kLink = (int)$links->kLink;
             }
@@ -109,22 +109,22 @@ class Migration_20171116114700 extends Migration implements IMigration
                 foreach ($this->languages as $language) {
                     $seo->kSprache = $language->kSprache;
                     if ($language->cISO === 'ger') {
-                        $seo->cSeo = getSeo($seoGER);
-                        Shop::DB()->insert('tseo', $seo);
+                        $seo->cSeo = checkSeo(getSeo($seoGER));
+                        Shop::Container()->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
                             $langObj->kSprache    = $language->kSprache;
                             $langObj->cISOSprache = $language->cISO;
                             $langObj->cSeo        = $seo->cSeo;
-                            Shop::DB()->insert('tlinksprache', $langObj);
+                            Shop::Container()->getDB()->insert('tlinksprache', $langObj);
                         }
                     } elseif ($language->cISO === 'eng') {
-                        $seo->cSeo = getSeo($seoENG);
-                        Shop::DB()->insert('tseo', $seo);
+                        $seo->cSeo = checkSeo(getSeo($seoENG));
+                        Shop::Container()->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
                             $langObj->kSprache    = $language->kSprache;
                             $langObj->cISOSprache = $language->cISO;
                             $langObj->cSeo        = $seo->cSeo;
-                            Shop::DB()->insert('tlinksprache', $langObj);
+                            Shop::Container()->getDB()->insert('tlinksprache', $langObj);
                         }
                     }
                 }

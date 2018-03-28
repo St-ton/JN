@@ -276,7 +276,7 @@ class EOS extends ServerPaymentMethod
         }
 
         // tzahlungbackground
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "DELETE FROM tzahlungbackground
                 WHERE DATE_ADD(dErstellt,INTERVAL 1 DAY) < now()
                     AND cKey = 'eos'", 3
@@ -381,7 +381,7 @@ class EOS extends ServerPaymentMethod
     public function getEOSServerCom($cSh)
     {
         if (strlen($cSh) > 0) {
-            $oZahlungbackground = Shop::DB()->select('tzahlungbackground', 'cSID', StringHandler::filterXSS($cSh));
+            $oZahlungbackground = Shop::Container()->getDB()->select('tzahlungbackground', 'cSID', StringHandler::filterXSS($cSh));
 
             return isset($oZahlungbackground->kKey) ? (int)$oZahlungbackground->kKey : 0;
         }

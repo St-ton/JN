@@ -95,7 +95,7 @@ class Template
      */
     public static function getInstance()
     {
-        return self::$frontEndInstance !== null ? self::$frontEndInstance : new self();
+        return self::$frontEndInstance ?? new self();
     }
 
     /**
@@ -133,10 +133,10 @@ class Template
             return $this;
         }
         $type      = $bMobil ? 'mobil' : 'standard';
-        $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', $type);
+        $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', $type);
         if (empty($oTemplate)) {
             // fallback if no mobile/standard template exists
-            $oTemplate = Shop::DB()->query("SELECT * FROM ttemplate WHERE eTyp IN('mobil', 'standard')", 1);
+            $oTemplate = Shop::Container()->getDB()->query("SELECT * FROM ttemplate WHERE eTyp IN('mobil', 'standard')", 1);
         }
         if (!empty($oTemplate)) {
             self::$cTemplate   = $oTemplate->cTemplate;
@@ -174,7 +174,7 @@ class Template
      */
     public function getFrontendTemplate()
     {
-        $frontendTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
+        $frontendTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         self::$cTemplate  = empty($frontendTemplate->cTemplate) ? null : $frontendTemplate->cTemplate;
         self::$parent     = empty($frontendTemplate->parent) ? null : $frontendTemplate->parent;
 
@@ -187,7 +187,7 @@ class Template
      */
     public function leseXML($dir = null)
     {
-        return self::$helper->getXML($dir !== null ? $dir : self::$cTemplate);
+        return self::$helper->getXML($dir ?? self::$cTemplate);
     }
 
     /**
@@ -197,7 +197,7 @@ class Template
      */
     public function getPluginResources()
     {
-        $pluginResCSS = Shop::DB()->query(
+        $pluginResCSS = Shop::Container()->getDB()->query(
             "SELECT * FROM tplugin_resources
                 JOIN tplugin ON tplugin.kPlugin = tplugin_resources.kPlugin
                 WHERE tplugin_resources.type = 'CSS'
@@ -206,7 +206,7 @@ class Template
                     OR tplugin_resources.conditional = '')
                 ORDER BY tplugin_resources.priority DESC", 2
         );
-        $pluginResCSSconditional = Shop::DB()->query(
+        $pluginResCSSconditional = Shop::Container()->getDB()->query(
             "SELECT * FROM tplugin_resources
                 JOIN tplugin ON tplugin.kPlugin = tplugin_resources.kPlugin
                 WHERE tplugin_resources.type = 'CSS'
@@ -215,7 +215,7 @@ class Template
                     AND tplugin_resources.conditional != ''
                 ORDER BY tplugin_resources.priority DESC", 2
         );
-        $pluginResJSHead = Shop::DB()->query(
+        $pluginResJSHead = Shop::Container()->getDB()->query(
             "SELECT * FROM tplugin_resources
                 JOIN tplugin
                     ON tplugin.kPlugin = tplugin_resources.kPlugin
@@ -224,7 +224,7 @@ class Template
                     AND tplugin.nStatus = 2
                 ORDER BY tplugin_resources.priority DESC", 2
         );
-        $pluginResJSBody = Shop::DB()->query(
+        $pluginResJSBody = Shop::Container()->getDB()->query(
             "SELECT * FROM tplugin_resources
                 JOIN tplugin
                     ON tplugin.kPlugin = tplugin_resources.kPlugin
@@ -283,7 +283,7 @@ class Template
             $_settingComparison = '==';
         }
         foreach ($hierarchy as $_h) {
-            $conf = isset($conf[$_h]) ? $conf[$_h] : null;
+            $conf = $conf[$_h] ?? null;
             if ($conf === null) {
                 return false;
             }
@@ -476,7 +476,7 @@ class Template
     {
         $cacheID = 'mobile_template';
         if (($oTemplate = Shop::Cache()->get($cacheID)) === false) {
-            $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
+            $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
             if ($oTemplate === null) {
                 Shop::Cache()->set($cacheID, 'false', [CACHING_GROUP_TEMPLATE]);
             } else {
@@ -520,14 +520,14 @@ class Template
      */
     public function getSkin()
     {
-        $cSkin = Shop::DB()->select(
+        $cSkin = Shop::Container()->getDB()->select(
             'ttemplateeinstellungen',
             ['cName', 'cSektion', 'cTemplate'],
             ['theme_default', 'theme',
              self::$cTemplate]
         );
 
-        return isset($cSkin->cWert) ? $cSkin->cWert : null;
+        return $cSkin->cWert ?? null;
     }
 
     /**
@@ -707,7 +707,7 @@ class Template
     {
         $oItem_arr     = [];
         $cOrdner_arr   = self::$parent !== null ? [self::$parent] : [];
-        $cOrdner_arr[] = $cOrdner !== null ? $cOrdner : self::$cTemplate;
+        $cOrdner_arr[] = $cOrdner ?? self::$cTemplate;
 
         foreach ($cOrdner_arr as $dir) {
             $oXML = self::$helper->getXML($dir);
@@ -762,8 +762,8 @@ class Template
      */
     public function setTemplate($cOrdner, $eTyp = 'standard')
     {
-        Shop::DB()->delete('ttemplate', 'eTyp', $eTyp);
-        Shop::DB()->delete('ttemplate', 'cTemplate', $cOrdner);
+        Shop::Container()->getDB()->delete('ttemplate', 'eTyp', $eTyp);
+        Shop::Container()->getDB()->delete('ttemplate', 'cTemplate', $cOrdner);
         $tplConfig = self::$helper->getXML($cOrdner);
         if (!empty($tplConfig->Parent)) {
             if (!is_dir(PFAD_ROOT . PFAD_TEMPLATES . $tplConfig->Parent)) {
@@ -791,7 +791,7 @@ class Template
             ? (int)$parentConfig->ShopVersion
             : (int)$tplConfig->ShopVersion;
         $tplObject->preview     = (string)$tplConfig->Preview;
-        $bCheck                 = Shop::DB()->insert('ttemplate', $tplObject);
+        $bCheck                 = Shop::Container()->getDB()->insert('ttemplate', $tplObject);
         if ($bCheck) {
             if (!$dh = opendir(PFAD_ROOT . PFAD_COMPILEDIR)) {
                 return false;
@@ -831,14 +831,14 @@ class Template
      */
     public function setConfig($cOrdner, $cSektion, $cName, $cWert)
     {
-        $oSetting = Shop::DB()->select(
+        $oSetting = Shop::Container()->getDB()->select(
             'ttemplateeinstellungen',
             'cTemplate', $cOrdner,
             'cSektion', $cSektion,
             'cName', $cName
         );
         if ($oSetting !== null && isset($oSetting->cTemplate)) {
-            Shop::DB()->update(
+            Shop::Container()->getDB()->update(
                 'ttemplateeinstellungen',
                 ['cTemplate', 'cSektion', 'cName'],
                 [$cOrdner, $cSektion, $cName],
@@ -850,7 +850,7 @@ class Template
             $_ins->cSektion  = $cSektion;
             $_ins->cName     = $cName;
             $_ins->cWert     = $cWert;
-            Shop::DB()->insert('ttemplateeinstellungen', $_ins);
+            Shop::Container()->getDB()->insert('ttemplateeinstellungen', $_ins);
         }
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE]);
 
@@ -946,7 +946,7 @@ class Template
         if (isset($_GET['mt'])) {
             $this->setzeKundenTemplate((boolean)(int)$_GET['mt']);
             $cUrlShop_arr    = parse_url(Shop::getURL());
-            $ref             = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+            $ref             = $_SERVER['HTTP_REFERER'] ?? '';
             $cUrlReferer_arr = parse_url($ref);
             if ($bRedirect
                 && $ref !== ''

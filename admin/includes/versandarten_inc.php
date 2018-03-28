@@ -110,7 +110,7 @@ function gibGesetzteVersandklassen($cVersandklassen)
             $uniqueIDs[] = (int)$kVersandklasse;
         }
     }
-    $PVersandklassen = P(Shop::DB()->query(
+    $PVersandklassen = P(Shop::Container()->getDB()->query(
         "SELECT * 
             FROM tversandklasse
             WHERE kVersandklasse IN (" . implode(',', $uniqueIDs) . ")  
@@ -141,7 +141,7 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
             $uniqueIDs[] = (int)$kVersandklasse;
         }
     }
-    $PVersandklassen = P(Shop::DB()->query(
+    $PVersandklassen = P(Shop::Container()->getDB()->query(
         "SELECT * 
             FROM tversandklasse 
             WHERE kVersandklasse IN (" . implode(',', $uniqueIDs) . ")
@@ -164,7 +164,7 @@ function gibGesetzteKundengruppen($cKundengruppen)
 {
     $bGesetzteKG_arr   = [];
     $cKG_arr           = explode(';', trim($cKundengruppen));
-    $oKundengruppe_arr = Shop::DB()->query(
+    $oKundengruppe_arr = Shop::Container()->getDB()->query(
         "SELECT kKundengruppe
             FROM tkundengruppe
             ORDER BY kKundengruppe", 2
@@ -187,7 +187,7 @@ function gibGesetzteKundengruppen($cKundengruppen)
 function getShippingLanguage($kVersandart = 0, $oSprache_arr)
 {
     $oVersandartSpracheAssoc_arr = [];
-    $oVersandartSprache_arr      = Shop::DB()->selectAll('tversandartsprache', 'kVersandart', (int)$kVersandart);
+    $oVersandartSprache_arr      = Shop::Container()->getDB()->selectAll('tversandartsprache', 'kVersandart', (int)$kVersandart);
     if (is_array($oSprache_arr)) {
         foreach ($oSprache_arr as $oSprache) {
             $oVersandartSpracheAssoc_arr[$oSprache->cISO] = new stdClass();
@@ -212,7 +212,7 @@ function getZuschlagNames($kVersandzuschlag)
     if (!$kVersandzuschlag) {
         return $names;
     }
-    $zuschlagnamen = Shop::DB()->selectAll('tversandzuschlagsprache', 'kVersandzuschlag', (int)$kVersandzuschlag);
+    $zuschlagnamen = Shop::Container()->getDB()->selectAll('tversandzuschlagsprache', 'kVersandzuschlag', (int)$kVersandzuschlag);
     foreach ($zuschlagnamen as $name) {
         $names[$name->cISOSprache] = $name->cName;
     }
@@ -232,14 +232,14 @@ function getShippingByName($cSearch)
     foreach ($cSearch_arr as $cSearchPos) {
         trim($cSearchPos);
         if (strlen($cSearchPos) > 2) {
-            $shippingByName_arr = Shop::DB()->query(
+            $shippingByName_arr = Shop::Container()->getDB()->query(
                 "SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
                     LEFT JOIN tversandartsprache AS vs 
                         ON vs.kVersandart = va.kVersandart
-                        AND vs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'
-                    WHERE va.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%' 
-                    OR vs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'", 2
+                        AND vs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'
+                    WHERE va.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%' 
+                    OR vs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'", 2
             );
             if (!empty($shippingByName_arr)) {
                 if (count($shippingByName_arr) > 1) {

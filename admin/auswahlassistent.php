@@ -114,7 +114,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     } elseif ($step === 'edit-group') {
         $smarty->assign('oLink_arr', AuswahlAssistent::getLinks());
     } elseif ($step === 'edit-question') {
-        $StdSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+        $StdSprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
         $cSQLSelect = 'tmerkmal.*';
         $cSQLJoin   = '';
         if ((int)$StdSprache->kSprache !== (int)$_SESSION['kSprache']) {
@@ -122,7 +122,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $cSQLJoin   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = " . (int)$_SESSION['kSprache'];
         }
-        $oMerkmal_arr = Shop::DB()->query(
+        $oMerkmal_arr = Shop::Container()->getDB()->query(
             "SELECT " . $cSQLSelect . "
                 FROM tmerkmal
                 " . $cSQLJoin . "

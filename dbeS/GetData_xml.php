@@ -11,7 +11,7 @@ $xml_obj = [];
 if (auth()) {
     $return = 0;
     // verfuegbarkeitsbenachrichtigungen
-    $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] = Shop::DB()->query(
+    $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tverfuegbarkeitsbenachrichtigung
             WHERE cAbgeholt = 'N'
@@ -22,13 +22,13 @@ if (auth()) {
     for ($i = 0; $i < $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl']; $i++) {
         $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i . ' attr'] =
             buildAttributes($xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i]);
-        Shop::DB()->query("UPDATE tverfuegbarkeitsbenachrichtigung
+        Shop::Container()->getDB()->query("UPDATE tverfuegbarkeitsbenachrichtigung
             SET cAbgeholt = 'Y'
             WHERE kVerfuegbarkeitsbenachrichtigung = " . (int)$xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i . ' attr']['kVerfuegbarkeitsbenachrichtigung'], 4);
     }
 
     // uploadqueue
-    $xml_obj['queueddata']['uploadqueue']['tuploadqueue'] = Shop::DB()->query(
+    $xml_obj['queueddata']['uploadqueue']['tuploadqueue'] = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tuploadqueue
             LIMIT " . LIMIT_UPLOADQUEUE, 9

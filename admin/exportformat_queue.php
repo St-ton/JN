@@ -14,9 +14,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_queue_inc.ph
 
 $action   = isset($_GET['action'])
     ? [$_GET['action'] => 1]
-    : (isset($_POST['action'])
-        ? $_POST['action']
-        : ['uebersicht' => 1]);
+    : ($_POST['action'] ?? ['uebersicht' => 1]);
 $step     = 'uebersicht';
 $messages = [
     'notice' => '',

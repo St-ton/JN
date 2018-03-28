@@ -52,7 +52,7 @@ class FilterBaseManufacturer extends AbstractFilter
             if (!is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = Shop::DB()->query(
+            $oSeo_arr = Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                         JOIN thersteller
@@ -157,7 +157,7 @@ class FilterBaseManufacturer extends AbstractFilter
                 $state->conditions,
                 $state->having
             );
-            $manufacturers    = Shop::DB()->query(
+            $manufacturers    = Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
                     FROM (" .
                     $query .

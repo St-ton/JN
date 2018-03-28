@@ -13,7 +13,7 @@ $tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
 $bMobile       = false;
 $shopLogo      = Shop::getLogo();
 $shopURL       = Shop::getURL();
-$cart          = isset($_SESSION['Warenkorb']) ? $_SESSION['Warenkorb'] : new Warenkorb();
+$cart          = $_SESSION['Warenkorb'] ?? new Warenkorb();
 $Einstellungen = Shopsetting::getInstance()->getAll();
 $themeDir      = empty($Einstellungen['template']['theme']['theme_default'])
     ? 'evo'
@@ -26,8 +26,8 @@ if (!$bMobilAktiv && $oBrowser->bMobile && !isset($_SESSION['bAskMobil']) && $oT
     $bMobile               = true;
 }
 $cMinify_arr = $oTemplate->getMinifyArray();
-$cCSS_arr    = isset($cMinify_arr["{$themeDir}.css"]) ? $cMinify_arr["{$themeDir}.css"] : [];
-$cJS_arr     = isset($cMinify_arr['jtl3.js']) ? $cMinify_arr['jtl3.js'] : [];
+$cCSS_arr    = $cMinify_arr["{$themeDir}.css"] ?? [];
+$cJS_arr     = $cMinify_arr['jtl3.js'] ?? [];
 if (!$bMobilAktiv) {
     executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
         'cCSS_arr'                  => &$cCSS_arr,
@@ -49,9 +49,7 @@ $warensumme[1]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([
 $gesamtsumme[0]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(true, true));
 $gesamtsumme[1]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(false, true));
 $oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
-$oGlobaleMetaAngaben   = isset($oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()])
-    ? $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()]
-    : null;
+$oGlobaleMetaAngaben   = $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()] ?? null;
 $pagetType             = Shop::getPageType();
 
 if (is_object($oGlobaleMetaAngaben)) {
@@ -72,7 +70,7 @@ if (!isset($AktuelleKategorie)) {
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
-$smarty->assign('linkgroups', $linkHelper->getLinkGroups())
+$smarty->assign('linkgroups', $linkHelper->activate($pagetType))
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
@@ -91,10 +89,10 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('currentThemeDirFull', $shopURL . '/' . $tplDir . 'themes/' . $themeDir . '/')
        ->assign('session_name', session_name())
        ->assign('session_id', session_id())
-       ->assign('SID', SID)
        ->assign('session_notwendig', false)
        ->assign('lang', $_SESSION['cISOSprache'])
        ->assign('ShopURL', $shopURL)
+       ->assign('imageBaseURL', Shop::getImageBaseURL())
        ->assign('ShopURLSSL', Shop::getURL(true))
        ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
        ->assign('PFAD_GFX_BEWERTUNG_STERNE', PFAD_GFX_BEWERTUNG_STERNE)
@@ -117,9 +115,9 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
                [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
                true
            )))
-       ->assign('meta_title', isset($cMetaTitle) ? $cMetaTitle : '')
-       ->assign('meta_description', isset($cMetaDescription) ? $cMetaDescription : '')
-       ->assign('meta_keywords', isset($cMetaKeywords) ? $cMetaKeywords : '')
+       ->assign('meta_title', $cMetaTitle ?? '')
+       ->assign('meta_description', $cMetaDescription ?? '')
+       ->assign('meta_keywords', $cMetaKeywords ?? '')
        ->assign('meta_publisher', $Einstellungen['metaangaben']['global_meta_publisher'])
        ->assign('meta_copyright', $Einstellungen['metaangaben']['global_meta_copyright'])
        ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']))
@@ -159,7 +157,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('BILD_KEIN_HERSTELLERBILD_VORHANDEN', BILD_KEIN_HERSTELLERBILD_VORHANDEN)
        ->assign('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN)
        ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
-       ->assign('cCanonicalURL', isset($cCanonicalURL) ? $cCanonicalURL : null)
+       ->assign('cCanonicalURL', $cCanonicalURL ?? null)
        ->assign('AktuelleKategorie', $AktuelleKategorie)
        ->assign('bLiveEditMode', ((!empty($bLiveEditMode)) ? $bLiveEditMode : false))
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
@@ -167,7 +165,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE)
        ->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE)
        ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK)
-       ->assign('Suchergebnisse', isset($oSuchergebnisse) ? $oSuchergebnisse : new ProductFilterSearchResults());
+       ->assign('Suchergebnisse', $oSuchergebnisse ?? new ProductFilterSearchResults());
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
@@ -182,7 +180,6 @@ $smarty
 pruefeKampagnenParameter();
 // Währungs- und Sprachlinks (um die Sprache oder Währung zu wechseln ohne die aktuelle Seite zu verlieren)
 setzeSpracheUndWaehrungLink();
-$linkGroups = $pagetType ? $linkHelper->activate($pagetType) : $smarty->getTemplateVars('linkGroups');
 // Extension Point
 $oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $kKundengruppe))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
@@ -193,12 +190,11 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     // Letzten angesehenden Artikel hinzufügen
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
-$besucherzaehler = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
-    ? Shop::DB()->query("SELECT * FROM tbesucherzaehler", 1)
-    : null;
+$visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
+    ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', NiceDB::RET_SINGLE_OBJECT)->nZaehler
+    : 0;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('nIsSSL', pruefeSSL())
        ->assign('boxes', $boxesToShow)
-       ->assign('linkgroups', $linkGroups)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
-       ->assign('Besucherzaehler', !empty($besucherzaehler->nZaehler) ? (int)$besucherzaehler->nZaehler : 0);
+       ->assign('Besucherzaehler', $visitorCount);

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -96,7 +95,7 @@ class Slide
                 $kSlide = $this->kSlide;
             }
 
-            $oSlide = Shop::DB()->select('tslide', 'kSlide', (int)$kSlide);
+            $oSlide = Shop::Container()->getDB()->select('tslide', 'kSlide', (int)$kSlide);
 
             if (is_object($oSlide)) {
                 $this->set((array)$oSlide);
@@ -129,11 +128,11 @@ class Slide
      */
     private function setAbsoluteImagePaths()
     {
-        $shopURL                 = Shop::getURL();
-        $this->cBildAbsolut      = $shopURL . '/' . PFAD_MEDIAFILES .
-            str_replace($shopURL . '/' . PFAD_MEDIAFILES, '', $this->cBild);
-        $this->cThumbnailAbsolut = $shopURL . '/' . PFAD_MEDIAFILES .
-            str_replace($shopURL . '/' . PFAD_MEDIAFILES, '', $this->cThumbnail);
+        $imageBaseURL = Shop::getImageBaseURL();
+        $this->cBildAbsolut      = $imageBaseURL . PFAD_MEDIAFILES .
+            str_replace($imageBaseURL . PFAD_MEDIAFILES, '', $this->cBild);
+        $this->cThumbnailAbsolut = $imageBaseURL . PFAD_MEDIAFILES .
+            str_replace($imageBaseURL . PFAD_MEDIAFILES, '', $this->cThumbnail);
 
         return $this;
     }
@@ -181,7 +180,7 @@ class Slide
         }
         unset($oSlide->cBildAbsolut, $oSlide->cThumbnailAbsolut, $oSlide->kSlide);
 
-        return Shop::DB()->update('tslide', 'kSlide', (int)$this->kSlide, $oSlide);
+        return Shop::Container()->getDB()->update('tslide', 'kSlide', (int)$this->kSlide, $oSlide);
     }
 
     /**
@@ -193,15 +192,17 @@ class Slide
             $oSlide = clone $this;
             unset($oSlide->cBildAbsolut, $oSlide->cThumbnailAbsolut, $oSlide->kSlide);
             if ($this->nSort === null) {
-                $oSort = Shop::DB()->query("
-                SELECT nSort
-                    FROM tslide
-                    WHERE kSlider = " . $this->kSlider . "
-                    ORDER BY nSort DESC LIMIT 1", 1
+                $oSort = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT nSort
+                        FROM tslide
+                        WHERE kSlider = :sliderID
+                        ORDER BY nSort DESC LIMIT 1',
+                    ['sliderID' => $this->kSlider],
+                    NiceDB::RET_SINGLE_OBJECT
                 );
                 $oSlide->nSort = (!is_object($oSort) || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
             }
-            $kSlide = Shop::DB()->insert('tslide', $oSlide);
+            $kSlide = Shop::Container()->getDB()->insert('tslide', $oSlide);
             if ($kSlide > 0) {
                 $this->kSlide = $kSlide;
 
@@ -217,12 +218,8 @@ class Slide
      */
     public function delete()
     {
-        if ($this->kSlide !== null && (int)$this->kSlide > 0) {
-            $bSuccess = Shop::DB()->delete('tslide', 'kSlide', (int)$this->kSlide);
-
-            return $bSuccess > 0;
-        }
-
-        return false;
+        return $this->kSlide !== null
+            && (int)$this->kSlide > 0
+            && Shop::DB()->delete('tslide', 'kSlide', (int)$this->kSlide) > 0;
     }
 }

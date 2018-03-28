@@ -90,6 +90,11 @@ class WarenkorbPos
     public $cUnique = '';
 
     /**
+     * @var string
+     */
+    public $cResponsibility = '';
+
+    /**
      * @var int
      */
     public $kKonfigitem;
@@ -202,8 +207,8 @@ class WarenkorbPos
         $NeueWarenkorbPosEigenschaft->fAufpreis          = $EigenschaftWert->fAufpreisNetto;
         $Aufpreis_obj                                    = Shop::Container()->getDB()->select(
             'teigenschaftwertaufpreis',
-            'kEigenschaftWert',  (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
-            'kKundengruppe',  Session::CustomerGroup()->getID()
+            'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
+            'kKundengruppe', Session::CustomerGroup()->getID()
         );
         if (!empty($Aufpreis_obj->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
@@ -356,7 +361,7 @@ class WarenkorbPos
                 /** @var WarenkorbPos $oPosition */
                 foreach (Session::Cart()->PositionenArr as $nPos => $oPosition) {
                     if ($this->cUnique === $oPosition->cUnique) {
-                        $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
+                        $fPreisNetto  += $oPosition->fPreis * $oPosition->nAnzahl;
                         $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, gibUst($oPosition->kSteuerklasse), 4);
 
                         if ($oPosition->istKonfigVater()) {
@@ -429,6 +434,7 @@ class WarenkorbPos
         $obj->nPosTyp                   = $this->nPosTyp;
         $obj->cHinweis                  = $this->cHinweis;
         $obj->cUnique                   = $this->cUnique;
+        $obj->cResponsibility           = !empty($this->cResponsibility) ? $this->cResponsibility : 'core';
         $obj->kKonfigitem               = $this->kKonfigitem;
         $obj->kBestellpos               = $this->kBestellpos;
         $obj->fLagerbestandVorAbschluss = $this->fLagerbestandVorAbschluss;

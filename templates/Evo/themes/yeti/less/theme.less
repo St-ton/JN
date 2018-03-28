@@ -56,9 +56,13 @@
   font-size: 13px;
   font-weight: 300;
 
-  .navbar-toggle:hover .icon-bar {
-    background-color: #b3b3b3;
+  .navbar-toggle{
+    color: @component-active-color;
+    &:hover .icon-bar {
+      background-color: #b3b3b3;
+    }
   }
+
 
   &-collapse {
     border-top-color: @dropdown-divider-bg;

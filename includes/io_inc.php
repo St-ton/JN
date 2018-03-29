@@ -635,8 +635,9 @@ function buildConfiguration($aValues)
     $articleId       = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : (int)$aValues['a'];
     $items           = $aValues['item'] ?? [];
     $quantities      = $aValues['quantity'] ?? [];
+    $itemQuantities  = $aValues['item_quantity'] ?? [];
     $variationValues = $aValues['eigenschaftwert'] ?? [];
-    $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, []);
+    $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, $itemQuantities);
     $net             = Session::CustomerGroup()->getIsMerchant();
     $Artikel->fuelleArtikel($articleId, null);
     $Artikel->Preise->cVKLocalized[$net]

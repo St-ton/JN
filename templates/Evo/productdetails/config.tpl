@@ -73,6 +73,31 @@
                                                                 {/if}
                                                             </label>
                                                         </div>
+                                                        {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}
+                                                            {assign var=itemQuantity value=$oItem->getInitial()}
+                                                            {if isset($nKonfigitemAnzahl_arr) && array_key_exists($oItem->getKonfigitem(), $nKonfiggruppeAnzahl_arr)}
+                                                                {assign var=itemQuantity value=$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}
+                                                            {/if}
+                                                            {if $oItem->getMin() === $oItem->getMax()}
+                                                                <div class="item_quantity">
+                                                                    <input type="hidden" id="item_quantity{$oItem->getKonfigitem()}"
+                                                                           name="item_quantity[{$oItem->getKonfigitem()}]"
+                                                                           value="{$itemQuantity}" />
+                                                                </div>
+                                                            {else}
+                                                                <div class="item_quantity form-inline" data-id="{$oItem->getKonfigitem()}" style="display:none">
+                                                                    <label for="item_quantity{$oItem->getKonfigitem()}">{lang key="quantity" section="global"}:</label>
+
+                                                                    <div class="input-group">
+                                                                        <input class="form-control" size="2" type="number"
+                                                                               id="item_quantity{$oItem->getKonfigitem()}"
+                                                                               name="item_quantity[{$oItem->getKonfigitem()}]"
+                                                                               value="{$itemQuantity}" autocomplete="off"
+                                                                               min="{$oItem->getMin()}" max="{$oItem->getMax()}" />
+                                                                    </div>
+                                                                </div>
+                                                            {/if}
+                                                        {/if}
                                                     {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                         <option value="{$oItem->getKonfigitem()}"
                                                                 id="item{$oItem->getKonfigitem()}"

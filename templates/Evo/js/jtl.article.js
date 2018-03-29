@@ -796,6 +796,7 @@
                         item,
                         cBeschreibung,
                         quantityWrapper,
+                        itemQuantityWrapper,
                         grp,
                         value,
                         enableQuantity,
@@ -830,6 +831,7 @@
                             enableQuantity = grp.bAnzahl;
                             for (j = 0; j < grp.oItem_arr.length; j++) {
                                 item = grp.oItem_arr[j];
+                                itemQuantityWrapper = that.getConfigItemQuantity(item.kKonfigitem);
                                 if (item.bAktiv) {
                                     if (item.cBildPfad) {
                                         that.setConfigItemImage(grp.kKonfiggruppe, item.cBildPfad.cPfadKlein);
@@ -838,6 +840,7 @@
                                     }
                                     that.setConfigItemDescription(grp.kKonfiggruppe, item.cBeschreibung);
                                     enableQuantity = item.bAnzahl;
+                                    itemQuantityWrapper.slideDown(200);
                                     if (!enableQuantity) {
                                         quantityInput
                                             .attr('min', item.fInitial)
@@ -863,6 +866,8 @@
                                             quantityInput.val(item.fInitial);
                                         }
                                     }
+                                } else{
+                                    itemQuantityWrapper.slideUp(200);
                                 }
                             }
                         }
@@ -889,6 +894,10 @@
 
         getConfigGroupQuantityInput: function (groupId) {
             return $('.cfg-group[data-id="' + groupId + '"] .quantity input');
+        },
+
+        getConfigItemQuantity: function (itemId) {
+            return $('.item_quantity[data-id="' + itemId + '"]');
         },
 
         getConfigGroupImage: function (groupId) {

@@ -148,6 +148,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'bAktiv' => $this->{"bAktiv"}
             ];
             $override = [
+                'kKonfigitem'       => $this->getKonfigitem(),
                 'cName'             => $this->getName(),
                 'kArtikel'          => $this->getArtikelKey(),
                 'cBeschreibung'     => !empty($cKurzBeschreibung)

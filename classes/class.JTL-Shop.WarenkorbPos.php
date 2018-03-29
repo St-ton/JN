@@ -90,6 +90,11 @@ class WarenkorbPos
     public $cUnique = '';
 
     /**
+     * @var string
+     */
+    public $cResponsibility = '';
+
+    /**
      * @var int
      */
     public $kKonfigitem;
@@ -431,6 +436,7 @@ class WarenkorbPos
         $obj->nPosTyp                   = $this->nPosTyp;
         $obj->cHinweis                  = $this->cHinweis;
         $obj->cUnique                   = $this->cUnique;
+        $obj->cResponsibility           = !empty($this->cResponsibility) ? $this->cResponsibility : 'core';
         $obj->kKonfigitem               = $this->kKonfigitem;
         $obj->kBestellpos               = $this->kBestellpos;
         $obj->fLagerbestandVorAbschluss = $this->fLagerbestandVorAbschluss;

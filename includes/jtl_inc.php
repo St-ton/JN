@@ -211,7 +211,10 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                     $oWarenkorbPos->nAnzahl,
                     $oWarenkorbPos->WarenkorbPosEigenschaftArr,
                     $oWarenkorbPos->cUnique,
-                    $oWarenkorbPos->kKonfigitem
+                    $oWarenkorbPos->kKonfigitem,
+                    $oWarenkorbPos->nPosTyp,
+                    $oWarenkorbPos->cResponsibility
+
                 );
             }
         }
@@ -254,7 +257,11 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                     $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
                     1,
                     $oWarenkorbPersPos->cUnique,
-                    $oWarenkorbPersPos->kKonfigitem
+                    $oWarenkorbPersPos->kKonfigitem,
+                    null,
+                    true,
+                    $oWarenkorbPersPos->cResponsibility
+
                 );
             }
         }
@@ -433,7 +440,9 @@ function fuehreLoginAus($userLogin, $passLogin)
                                         $oWarenkorbPersPos->cUnique,
                                         $oWarenkorbPersPos->kKonfigitem,
                                         null,
-                                        false
+                                        false,
+                                        $oWarenkorbPersPos->cResponsibility
+
                                     );
                                 }
                             }

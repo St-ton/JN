@@ -137,10 +137,19 @@ class Warenkorb
      * @param bool  $cUnique
      * @param int   $kKonfigitem
      * @param bool  $setzePositionsPreise
+     * @param string $cResponsibility
      * @return $this
      */
-    public function fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, $nPosTyp = 1, $cUnique = false, $kKonfigitem = 0, $setzePositionsPreise = true)
-    {
+    public function fuegeEin(
+        $kArtikel,
+        $anzahl,
+        $oEigenschaftwerte_arr,
+        $nPosTyp = 1,
+        $cUnique = false,
+        $kKonfigitem = 0,
+        $setzePositionsPreise = true,
+        $cResponsibility = 'core'
+    ) {
         //toDo schaue, ob diese Pos nicht markiert werden muesste, wenn anzahl>lager gekauft wird
         //schaue, ob es nicht schon Positionen mit diesem Artikel gibt
         foreach ($this->PositionenArr as $i => $Position) {
@@ -200,12 +209,13 @@ class Warenkorb
         $NeuePosition->kSteuerklasse     = $NeuePosition->Artikel->kSteuerklasse;
         $NeuePosition->fPreisEinzelNetto = $NeuePosition->Artikel->gibPreis($NeuePosition->nAnzahl, []); // ????
         // $NeuePosition->Artikel->gibPreis(1, isset($Eigenschaft_arr) ? $Eigenschaft_arr : null); <--
-        $NeuePosition->fPreis      = $NeuePosition->Artikel->gibPreis($anzahl, isset($Eigenschaft_arr) ? $Eigenschaft_arr : null);
-        $NeuePosition->cArtNr      = $NeuePosition->Artikel->cArtNr;
-        $NeuePosition->nPosTyp     = $nPosTyp;
-        $NeuePosition->cEinheit    = $NeuePosition->Artikel->cEinheit;
-        $NeuePosition->cUnique     = $cUnique;
-        $NeuePosition->kKonfigitem = $kKonfigitem;
+        $NeuePosition->fPreis            = $NeuePosition->Artikel->gibPreis($anzahl, isset($Eigenschaft_arr) ? $Eigenschaft_arr : null);
+        $NeuePosition->cArtNr            = $NeuePosition->Artikel->cArtNr;
+        $NeuePosition->nPosTyp           = $nPosTyp;
+        $NeuePosition->cEinheit          = $NeuePosition->Artikel->cEinheit;
+        $NeuePosition->cUnique           = $cUnique;
+        $NeuePosition->cResponsibility   = $cResponsibility;
+        $NeuePosition->kKonfigitem       = $kKonfigitem;
 
         $NeuePosition->setzeGesamtpreisLocalized();
         //posname lokalisiert ablegen

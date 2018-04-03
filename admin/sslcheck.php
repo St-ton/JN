@@ -23,7 +23,6 @@ if ($action === null && !$hasPermission) {
 if ($hasPermission === false) {
     $action = 'login';
 }
-
 $response  = new AjaxResponse();
 \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
 

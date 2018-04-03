@@ -14,7 +14,7 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
     $oBestellung_arr = [];
     $cSuchFilterSQL  = '';
     if (strlen($cSuchFilter)) {
-        $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . $cSuchFilter . "%'";
+        $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . Shop::DB()->escape($cSuchFilter) . "%'";
     }
     $oBestellungToday_arr = Shop::DB()->query(
         "SELECT kBestellung
@@ -42,7 +42,7 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
 function gibAnzahlBestellungen($cSuchFilter)
 {
     $cSuchFilterSQL = (strlen($cSuchFilter) > 0)
-        ? " WHERE cBestellNr LIKE '%" . $cSuchFilter . "%'"
+        ? " WHERE cBestellNr LIKE '%" . Shop::DB()->escape($cSuchFilter) . "%'"
         : '';
     $oBestellung = Shop::DB()->query(
         "SELECT count(*) AS nAnzahl

@@ -6,7 +6,7 @@
                     <span class="sr-only">Toggle navigation</span>
                     <i class="fa fa-bars"></i> {lang key="allCategories" section="global"}
                 </button>
-                <ul class="nav navbar-nav navbar-right force-float action-nav visible-xs visible-sm">
+                <ul class="nav navbar-nav navbar-right force-float visible-xs visible-sm">
                     {if isset($smarty.session.Kunde) && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0}
                         <li>
                             <a href="{get_static_route id='jtl.php'}?logout=1" title="{lang key='logOut'}">

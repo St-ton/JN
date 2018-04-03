@@ -1399,7 +1399,6 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
     $lang   = !standardspracheAktiv(true)
         ? ('&lang=' . Shop::getLanguageCode())
         : '';
-    $sid    = '';
     $prefix = $bFull === false ? '' : Shop::getURL() . '/';
     if ($bForceNonSeo) {
         $obj->cSeo = '';
@@ -1410,12 +1409,12 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
             case URLART_ARTIKEL:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?a=' . $obj->kArtikel . $lang . $sid;
+                    : $prefix . '?a=' . $obj->kArtikel . $lang;
 
             case URLART_KATEGORIE:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?k=' . $obj->kKategorie . $lang . $sid;
+                    : $prefix . '?k=' . $obj->kKategorie . $lang;
             case URLART_SEITE:
                 if (!$row
                     && isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
@@ -1428,52 +1427,52 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
 
                 return !empty($oSpezialseite->cDateiname)
                     ? $prefix . $oSpezialseite->cDateiname
-                    : $prefix . '?s=' . $obj->kLink . $lang . $sid;
+                    : $prefix . '?s=' . $obj->kLink . $lang;
 
             case URLART_HERSTELLER:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?h=' . $obj->kHersteller . $lang . $sid;
+                    : $prefix . '?h=' . $obj->kHersteller . $lang;
 
             case URLART_LIVESUCHE:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?l=' . $obj->kSuchanfrage . $lang . $sid;
+                    : $prefix . '?l=' . $obj->kSuchanfrage . $lang;
 
             case URLART_TAG:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?t=' . $obj->kTag . $lang . $sid;
+                    : $prefix . '?t=' . $obj->kTag . $lang;
 
             case URLART_MERKMAL:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?m=' . $obj->kMerkmalWert . $lang . $sid;
+                    : $prefix . '?m=' . $obj->kMerkmalWert . $lang;
 
             case URLART_NEWS:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?n=' . $obj->kNews . $lang . $sid;
+                    : $prefix . '?n=' . $obj->kNews . $lang;
 
             case URLART_NEWSMONAT:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?nm=' . $obj->kNewsMonatsUebersicht . $lang . $sid;
+                    : $prefix . '?nm=' . $obj->kNewsMonatsUebersicht . $lang;
 
             case URLART_NEWSKATEGORIE:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?nk=' . $obj->kNewsKategorie . $lang . $sid;
+                    : $prefix . '?nk=' . $obj->kNewsKategorie . $lang;
 
             case URLART_UMFRAGE:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?u=' . $obj->kUmfrage . $lang . $sid;
+                    : $prefix . '?u=' . $obj->kUmfrage . $lang;
 
             case URLART_SEARCHSPECIALS:
                 return !empty($obj->cSeo) && !$row
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?q=' . $obj->kSuchspecial . $lang . $sid;
+                    : $prefix . '?q=' . $obj->kSuchspecial . $lang;
         }
     }
 

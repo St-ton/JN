@@ -331,7 +331,7 @@ class ProductFilterURL
             $searchSpecialFilter->setUnsetFilterURL($urls);
         }
 
-        $extraFilter = (new FilterItemSearch($this->productFilter))->init(null)->setDoUnset(true);
+        $extraFilter = (new FilterBaseSearchQuery($this->productFilter))->init(null)->setDoUnset(true);
         foreach ($this->productFilter->getSearchFilter() as $searchFilter) {
             /** @var FilterOption $option */
             if (($value = $searchFilter->getValue()) > 0) {

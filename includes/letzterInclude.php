@@ -164,7 +164,7 @@ $smarty->assign('linkgroups', $linkHelper->activate($pagetType))
        ->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE)
        ->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE)
        ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK)
-       ->assign('Suchergebnisse', $oSuchergebnisse ?? new ProductFilterSearchResults());
+       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\ProductFilterSearchResults());
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';

@@ -51,7 +51,7 @@ class ProductFilter
     private $searchQuery;
 
     /**
-     * @var FilterItemSearch[]
+     * @var FilterSearch[]
      */
     private $searchFilter = [];
 
@@ -91,7 +91,7 @@ class ProductFilter
     private $searchSpecial;
 
     /**
-     * @var FilterItemSearch
+     * @var FilterSearch
      */
     private $search;
 
@@ -161,7 +161,7 @@ class ProductFilter
     private $attributeFilterCollection;
 
     /**
-     * @var FilterItemSearch
+     * @var FilterSearch
      */
     public $searchFilterCompat;
 
@@ -672,9 +672,9 @@ class ProductFilter
 
         $this->tagFilterCompat           = new FilterItemTag($this);
         $this->attributeFilterCollection = new FilterItemAttribute($this);
-        $this->searchFilterCompat        = new FilterItemSearch($this);
+        $this->searchFilterCompat        = new FilterSearch($this);
 
-        $this->search = new FilterItemSearch($this);
+        $this->search = new FilterSearch($this);
 
         $this->baseState = new FilterDummyState($this);
 
@@ -742,7 +742,7 @@ class ProductFilter
 
         // @todo - same as suchfilter?
         foreach ($params['SuchFilter_arr'] as $sf) {
-            $this->searchFilter[] = $this->addActiveFilter(new FilterItemSearch($this), $sf);
+            $this->searchFilter[] = $this->addActiveFilter(new FilterSearch($this), $sf);
         }
         if ($params['nSortierung'] > 0) {
             $this->nSortierung = (int)$params['nSortierung'];
@@ -1341,7 +1341,7 @@ class ProductFilter
     }
 
     /**
-     * @return FilterItemSearch
+     * @return FilterSearch
      */
     public function getSearch()
     {
@@ -1385,7 +1385,7 @@ class ProductFilter
 
     /**
      * @param null|int $idx
-     * @return FilterItemSearch|FilterItemSearch[]
+     * @return FilterSearch|FilterSearch[]
      */
     public function getSearchFilter($idx = null)
     {
@@ -1593,9 +1593,6 @@ class ProductFilter
             },
             Shop::Container()->getDB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS)
         );
-        if (defined('DEBUG_LEVEL') && DEBUG_LEVEL === 3 && count($productKeys) === 0) {
-            Shop::dbg($qry, true, 'no results for query:');
-        }
         $order             = $this->getFilterSQL()->getOrder();
         $orderData         = new stdClass();
         $orderData->cJoin  = $order->join->getSQL();

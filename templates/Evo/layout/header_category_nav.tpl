@@ -37,7 +37,7 @@
                     {include file='snippets/categories_mega.tpl'}
                 </ul>
                 {if $Einstellungen.template.theme.static_header === 'Y'}
-                    <ul class="nav navbar-nav navbar-right">
+                    <ul class="nav navbar-nav navbar-right visible-affix hidden-xs hidden-sm">
                         <li class="cart-menu dropdown bs-hover-enabled {if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
                             {include file='basket/cart_dropdown_label.tpl'}
                         </li>

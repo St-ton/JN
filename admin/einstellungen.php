@@ -97,7 +97,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
                     AND nStandardanzeigen = 1
                     {$oSQL->cWHERE}
                 ORDER BY nSort",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
     foreach ($Conf as $i => $oConfig) {
@@ -160,7 +160,7 @@ if ($step === 'uebersicht') {
         "SELECT * 
             FROM teinstellungensektion 
             ORDER BY kEinstellungenSektion",
-        NiceDB::RET_ARRAY_OF_OBJECTS
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
@@ -171,7 +171,7 @@ if ($step === 'uebersicht') {
                     AND cConf = 'Y'
                     AND nStandardAnzeigen = 1
                     AND nModul = 0",
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         $sections[$i]->anz = $anz_einstellunen->anz;
@@ -202,7 +202,7 @@ if ($step === 'einstellungen bearbeiten') {
                     AND kEinstellungenSektion = " . (int)$section->kEinstellungenSektion . "
                 {$oSQL->cWHERE}
                 ORDER BY nSort",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
     foreach($Conf as $config) {
@@ -219,7 +219,7 @@ if ($step === 'einstellungen bearbeiten') {
                 "SELECT kKundengruppe AS cWert, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC",
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif (in_array($config->cInputTyp, ['selectbox', 'listbox'], true)) {
             $config->ConfWerte = Shop::Container()->getDB()->selectAll(

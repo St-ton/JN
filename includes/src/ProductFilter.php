@@ -1591,7 +1591,7 @@ class ProductFilter
             function ($e) {
                 return (int)$e->kArtikel;
             },
-            Shop::Container()->getDB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS)
+            Shop::Container()->getDB()->query($qry, \DB\ReturnType::ARRAY_OF_OBJECTS)
         );
         $order             = $this->getFilterSQL()->getOrder();
         $orderData         = new stdClass();

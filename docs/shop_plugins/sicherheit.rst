@@ -24,7 +24,7 @@ Ein Beispiel für unsicheren Code (BITTE NIEMALS SO ETWAS PROGRAMMIEREN!!!):
         FROM tartikel
         WHERE kArtikel = $productId
     ";
-    $productInfo = $db->executeQuery($query, NiceDB::RET_ARRAY_OF_OBJECTS);
+    $productInfo = $db->executeQuery($query, \DB\ReturnType::ARRAY_OF_OBJECTS);
 
 Das Problem hierbei ist, dass ein Angreifer nun Schadcode über die Variable $productId in den SQL-Query einschleusen
 kann.
@@ -63,7 +63,7 @@ Validierungsfunktionen genutzt werden (ACHTUNG! Auch dieses Beispiel ist nicht e
         FROM tartikel
         WHERE kArtikel = $productId
     ";
-    $productInfo = $db->executeQuery($query, NiceDB::RET_ARRAY_OF_OBJECTS);
+    $productInfo = $db->executeQuery($query, \DB\ReturnType::ARRAY_OF_OBJECTS);
 
 
 Prepared Statements
@@ -96,7 +96,7 @@ Der JTL-Shop stellt eine einfache Möglichkeit bereit, PreparedStatements auszuf
         FROM tartikel
         WHERE kArtikel = :productId
     ";
-    $productInfo = $db->executeQueryPrepared($query, ['productId' => $productId], NiceDB::RET_ARRAY_OF_OBJECTS);
+    $productInfo = $db->executeQueryPrepared($query, ['productId' => $productId], \DB\ReturnType::ARRAY_OF_OBJECTS);
 
 
 Hinweis zu Pluginzertifizierungen

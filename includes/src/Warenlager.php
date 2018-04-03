@@ -516,7 +516,7 @@ class Warenlager extends MainModel
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kWarenlager = {$this->kWarenlager}";
 
-            return Shop::Container()->getDB()->query($cQuery, NiceDB::RET_AFFECTED_ROWS);
+            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -533,7 +533,7 @@ class Warenlager extends MainModel
                     ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
                 WHERE twarenlager.kWarenlager = :lid',
             ['lid' => (int)$this->kWarenlager],
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -570,7 +570,7 @@ class Warenlager extends MainModel
             "SELECT *
                FROM twarenlager
                {$cSql}",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oObj_arr as $oObj) {
             $oWarenlager = new self(null, $oObj);
@@ -604,7 +604,7 @@ class Warenlager extends MainModel
                        {$cSql}
                     WHERE tartikelwarenlager.kArtikel = :articleID",
                 ['articleID' => $kArtikel],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oObj_arr as $oObj) {
                 $oWarenlager               = new self($oObj->kWarenlager, null, $kSprache);

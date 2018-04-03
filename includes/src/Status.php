@@ -378,7 +378,7 @@ class Status
                 JOIN temailvorlage 
                 ON lang.kEmailvorlage = temailvorlage.kEmailvorlage
                 WHERE temailvorlage.cName = 'Passwort vergessen'",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($translations as $t) {
             $old = '{$neues_passwort}';

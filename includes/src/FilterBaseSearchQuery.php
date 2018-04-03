@@ -440,10 +440,13 @@ class FilterBaseSearchQuery extends AbstractFilter
         $oSuchCache = Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT kSuchCache
                 FROM tsuchcache
-                WHERE kSprache =  :lang
+                WHERE kSprache = :lang
                     AND cSuche = :search
                     AND (dGueltigBis > now() OR dGueltigBis IS NULL)',
-            ['lang' => $kSprache, 'search' => Shop::Container()->getDB()->escape($cSuche)],
+            [
+                'lang'   => $kSprache,
+                'search' => $cSuche
+            ],
             NiceDB::RET_SINGLE_OBJECT
         );
 

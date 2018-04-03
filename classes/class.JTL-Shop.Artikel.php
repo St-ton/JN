@@ -2073,8 +2073,38 @@ class Artikel
                             AND teigenschaftwertaufpreis.kKundengruppe = " . $kKundengruppe . "
                         WHERE teigenschaftsichtbarkeit.kEigenschaft IS NULL
                             AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                        GROUP BY teigenschaftkombiwert.kEigenschaftWert
-                        ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
+                            AND teigenschaftkombiwert.kEigenschaftWert NOT IN (
+                                SELECT kEigenschaftWert FROM teigenschaftkombiwert WHERE kEigenschaftKombi = " . $this->kEigenschaftKombi .
+                        ")
+                        GROUP BY tartikel.kArtikel HAVING COUNT(tartikel.kArtikel) = 1 
+                        UNION ALL 
+                        SELECT tartikel.kArtikel AS tartikel_kArtikel, tartikel.fLagerbestand AS tartikel_fLagerbestand,
+                        tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation,
+                        teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi,
+                        teigenschaft.kArtikel, teigenschaftkombiwert.kEigenschaftWert, teigenschaft.cName,
+                        teigenschaft.cWaehlbar, teigenschaft.cTyp, teigenschaft.nSort, " .
+                        $oSQLEigenschaft->cSELECT . " teigenschaftwert.cName AS cName_teigenschaftwert, " .
+                        $oSQLEigenschaftWert->cSELECT . " teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff,
+                        teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort,
+                        teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit, teigenschaftwertpict.cType,
+                        teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad,
+                        teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
+                        
+                        FROM tartikel 
+                            JOIN teigenschaftkombiwert 
+                                ON teigenschaftkombiwert.kEigenschaftKombi = tartikel.kEigenschaftKombi
+                            JOIN teigenschaftwert 
+                                ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
+                            JOIN teigenschaft 
+                                ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
+                            LEFT JOIN teigenschaftwertpict 
+                                ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                            LEFT JOIN teigenschaftwertaufpreis
+                                ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                                AND teigenschaftwertaufpreis.kKundengruppe = " . $kKundengruppe . "
+                            WHERE 
+                                tartikel.kArtikel = " . $this->kArtikel . "
+                        ORDER BY nSort, cName, teigenschaftwert_nSort",
                     2
                 );
 
@@ -2228,6 +2258,7 @@ class Artikel
                     $value->nSort                            = $oVariationTMP->teigenschaftwert_nSort;
                     $value->fLagerbestand                    = $oVariationTMP->fLagerbestand;
                     $value->fPackeinheit                     = $oVariationTMP->fPackeinheit;
+                    $value->inStock                          = true;
                     $this->Variationen[$nZaehler]->Werte[$i] = $value;
 
                     if (isset($oVariationTMP->fVPEWert) && $oVariationTMP->fVPEWert > 0) {
@@ -2250,6 +2281,10 @@ class Artikel
                         $varCombi->cLagerVariation        = isset($oVariationTMP->cLagerVariation)
                             ? $oVariationTMP->cLagerVariation
                             : null;
+                        $value->inStock                   = $this->nIstVater === 1
+                            || $varCombi->cLagerBeachten === 'N'
+                            || $varCombi->tartikel_fLagerbestand > 0
+                            || $varCombi->cLagerKleinerNull === 'Y';
 
                         $this->Variationen[$nZaehler]->Werte[$i]->oVariationsKombi = $varCombi;
                     }

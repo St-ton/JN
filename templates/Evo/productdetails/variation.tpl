@@ -42,7 +42,7 @@
                                             data-original="{$Variationswert->cName}"
                                             data-key="{$Variationswert->kEigenschaft}"
                                             data-value="{$Variationswert->kEigenschaftWert}"
-                                            data-content="{$cVariationsWert|escape:'html'}"
+                                            data-content="{$cVariationsWert|escape:'html'}{if !$Variationswert->inStock}<span class='label label-default label-not-available'>{lang key='ampelRot'}</span>{/if}"
                                             {if !empty($Variationswert->cBildPfadMini)}
                                                 data-list='{prepare_image_details item=$Variationswert json=true}'
                                                 data-title='{$Variationswert->cName}'
@@ -78,7 +78,10 @@
                                        data-value="{$Variationswert->kEigenschaftWert}"
                                        {if !empty($Variationswert->cBildPfadMini)}
                                             data-list='{prepare_image_details item=$Variationswert json=true}'
-                                            data-title='{$Variationswert->cName}'
+                                            data-title='{$Variationswert->cName}{if !$Variationswert->inStock} - {lang key='notAvailableInSelection'}{/if}'
+                                       {/if}
+                                       {if !$Variationswert->inStock}
+                                            data-stock="out-of-stock"
                                        {/if}
                                        {if isset($Variationswert->oVariationsKombi)}
                                             data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
@@ -90,7 +93,7 @@
                                            {if $bSelected}checked="checked"{/if}
                                            {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                            >
-                                    {include file="productdetails/variation_value.tpl"}
+                                    {include file="productdetails/variation_value.tpl"}{if !$Variationswert->inStock}<span class='label label-default label-not-available'>{lang key='ampelRot'}</span>{/if}
                                 </label>
                                 {/block}
                             {/if}
@@ -119,7 +122,12 @@
                                             for="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
                                             {if !empty($Variationswert->cBildPfadMini)}
                                                 data-list='{prepare_image_details item=$Variationswert json=true}'
-                                                data-title='{$Variationswert->cName}'
+                                            {/if}
+                                            {if $Variationswert->inStock}
+                                                data-title="{$Variationswert->cName}"
+                                            {else}
+                                                data-stock="out-of-stock"
+                                                data-title="{$Variationswert->cName} - {lang key='notAvailableInSelection'}"
                                             {/if}
                                             {if isset($Variationswert->oVariationsKombi)}
                                                 data-ref="{$Variationswert->oVariationsKombi->kArtikel}"

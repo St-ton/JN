@@ -6,17 +6,43 @@
                     <span class="sr-only">Toggle navigation</span>
                     <i class="fa fa-bars"></i> {lang key="allCategories" section="global"}
                 </button>
+                <ul class="nav navbar-nav navbar-right force-float action-nav visible-xs visible-sm">
+                    {if isset($smarty.session.Kunde) && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0}
+                        <li>
+                            <a href="{get_static_route id='jtl.php'}?logout=1" title="{lang key='logOut'}">
+                                <span class="fa fa-sign-out"></span>
+                            </a>
+                        </li>
+                    {/if}
+                    <li>
+                        <a href="{get_static_route id='jtl.php'}" title="{lang key='myAccount'}">
+                            <span class="fa fa-user"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{get_static_route id='warenkorb.php'}" title="{lang key='basket'}">
+                            <span class="fa fa-shopping-cart"></span>
+                            {if $WarenkorbArtikelPositionenanzahl >= 1}
+                                <sup class="badge">
+                                    <em>{$WarenkorbArtikelPositionenanzahl}</em>
+                                </sup>
+                            {/if}
+                        </a>
+                    </li>
+                </ul>
             </div>
 
             <div class="megamenu collapse navbar-collapse" id="evo-navbar-collapse">
                 <ul class="nav navbar-nav">
                     {include file='snippets/categories_mega.tpl'}
                 </ul>
-                <ul class="nav navbar-nav navbar-right{if $Einstellungen.template.theme.static_header === 'N'} visible-xs visible-sm{/if}">
-                    <li class="cart-menu dropdown bs-hover-enabled {if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
-                        {include file='basket/cart_dropdown_label.tpl'}
-                    </li>
-                </ul>
+                {if $Einstellungen.template.theme.static_header === 'Y'}
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="cart-menu dropdown bs-hover-enabled {if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
+                            {include file='basket/cart_dropdown_label.tpl'}
+                        </li>
+                    </ul>
+                {/if}
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container(-fluid) -->
     </nav>

@@ -12,13 +12,11 @@
                 <ul class="nav navbar-nav">
                     {include file='snippets/categories_mega.tpl'}
                 </ul>
-                {if $Einstellungen.template.theme.static_header === 'Y'}
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="cart-menu dropdown bs-hover-enabled {if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
-                            {include file='basket/cart_dropdown_label.tpl'}
-                        </li>
-                    </ul>
-                {/if}
+                <ul class="nav navbar-nav navbar-right{if $Einstellungen.template.theme.static_header === 'N'} visible-xs visible-sm{/if}">
+                    <li class="cart-menu dropdown bs-hover-enabled {if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
+                        {include file='basket/cart_dropdown_label.tpl'}
+                    </li>
+                </ul>
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container(-fluid) -->
     </nav>

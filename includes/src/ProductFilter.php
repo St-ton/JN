@@ -1593,9 +1593,6 @@ class ProductFilter
             },
             Shop::Container()->getDB()->query($qry, NiceDB::RET_ARRAY_OF_OBJECTS)
         );
-        if (defined('DEBUG_LEVEL') && DEBUG_LEVEL === 3 && count($productKeys) === 0) {
-            Shop::dbg($qry, true, 'no results for query:');
-        }
         $order             = $this->getFilterSQL()->getOrder();
         $orderData         = new stdClass();
         $orderData->cJoin  = $order->join->getSQL();

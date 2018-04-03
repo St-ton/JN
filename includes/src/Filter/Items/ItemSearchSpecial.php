@@ -6,6 +6,7 @@
 
 namespace Filter\Items;
 
+use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
@@ -78,7 +79,7 @@ class ItemSearchSpecial extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo($languages) : IFilter
+    public function setSeo(array $languages) : IFilter
     {
         $val = $this->getValue();
         if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {
@@ -91,7 +92,7 @@ class ItemSearchSpecial extends AbstractFilter
                     WHERE cKey = 'suchspecial' 
                         AND kKey IN (" . implode(', ', $val) . ")
                     ORDER BY kSprache",
-                \NiceDB::RET_ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -371,8 +372,7 @@ class ItemSearchSpecial extends AbstractFilter
                 $state->conditions,
                 $state->having
             );
-            $qryRes  = \Shop::Container()->getDB()->query($qry, \NiceDB::RET_ARRAY_OF_OBJECTS);
-
+            $qryRes  = \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
             if (($count = count($qryRes)) > 0) {
                 $options[$i] = (new FilterOption())
                     ->setType($this->getType())

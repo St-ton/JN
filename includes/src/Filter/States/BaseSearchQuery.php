@@ -6,6 +6,7 @@
 
 namespace Filter\States;
 
+use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
@@ -321,7 +322,7 @@ class BaseSearchQuery extends AbstractFilter
                     FROM (' . $query . ') AS ssMerkmal
                         GROUP BY ssMerkmal.kSuchanfrage
                         ORDER BY ssMerkmal.cSuche' . $nLimit,
-                \NiceDB::RET_ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             $kSuchanfrage_arr = [];
             if ($this->productFilter->hasSearch()) {
@@ -442,7 +443,7 @@ class BaseSearchQuery extends AbstractFilter
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
                 WHERE tsuchcache.dGueltigBis IS NOT NULL
                     AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()',
-            \NiceDB::RET_AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
 
         // Suchcache checken, ob bereits vorhanden
@@ -456,7 +457,7 @@ class BaseSearchQuery extends AbstractFilter
                 'lang'   => $kSprache,
                 'search' => $cSuche
             ],
-            \NiceDB::RET_SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         if (isset($oSuchCache->kSuchCache) && $oSuchCache->kSuchCache > 0) {
@@ -834,7 +835,7 @@ class BaseSearchQuery extends AbstractFilter
             $cSQL .
                 ' GROUP BY kArtikelTMP
                 LIMIT ' . (int)$this->getConfig()['artikeluebersicht']['suche_max_treffer'],
-            \NiceDB::RET_AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
 
         return $kSuchCache;
@@ -875,15 +876,15 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param stdClass $oSuchCache
-     * @param array $searchColumnn_arr
-     * @param array $cSuch_arr
-     * @param int $nLimit
-     * @param string $cFullText
+     * @param \stdClass $oSuchCache
+     * @param array     $searchColumnn_arr
+     * @param array     $cSuch_arr
+     * @param int       $nLimit
+     * @param string    $cFullText
      * @return int
      * @former bearbeiteSuchCacheFulltext
      */
-    private function editFullTextSearchCache($oSuchCache, $searchColumnn_arr, $cSuch_arr, $nLimit = 0, $cFullText = 'Y')
+    private function editFullTextSearchCache($oSuchCache, $searchColumnn_arr, $cSuch_arr, $nLimit = 0, $cFullText = 'Y') : int
     {
         $nLimit = (int)$nLimit;
 
@@ -936,11 +937,11 @@ class BaseSearchQuery extends AbstractFilter
                     FROM ($cSQL) AS i
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                        AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
+                        AND tartikelsichtbarkeit.kKundengruppe = " . \Session::CustomerGroup()->getID() . "
                     WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
                     GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
 
-            \Shop::Container()->getDB()->query($cISQL, \NiceDB::RET_AFFECTED_ROWS);
+            \Shop::Container()->getDB()->query($cISQL, ReturnType::AFFECTED_ROWS);
         }
 
         return $oSuchCache->kSuchCache;
@@ -1022,12 +1023,12 @@ class BaseSearchQuery extends AbstractFilter
             $active = \Shop::Container()->getDB()->query(
                 "SHOW INDEX FROM tartikel 
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                \NiceDB::RET_SINGLE_OBJECT)
+                ReturnType::SINGLE_OBJECT)
             && \Shop::Container()->getDB()->query(
                 "SHOW INDEX 
                     FROM tartikelsprache 
                     WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                \NiceDB::RET_SINGLE_OBJECT);
+                ReturnType::SINGLE_OBJECT);
         }
 
         return $active;

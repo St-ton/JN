@@ -6,6 +6,7 @@
 
 namespace Filter\States;
 
+use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
@@ -57,7 +58,7 @@ class BaseAttribute extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo($languages) : IFilter
+    public function setSeo(array $languages) : IFilter
     {
         $oSeo_arr = \Shop::Container()->getDB()->selectAll(
             'tseo',
@@ -94,7 +95,7 @@ class BaseAttribute extends AbstractFilter
                 JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 ' . $oSQL->cMMJOIN . '
                 WHERE ' . $oSQL->cMMWhere,
-            \NiceDB::RET_ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         if (count($oMerkmalWert_arr) > 0) {
             $oMerkmalWert = $oMerkmalWert_arr[0];

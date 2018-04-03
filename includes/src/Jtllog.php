@@ -200,7 +200,7 @@ class Jtllog
                 " . $cSQLWhere . "
                 ORDER BY dErstellt DESC, kLog DESC
                 LIMIT :limitfrom, :limitto", $values,
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oLog_arr as $oLog) {
             if (isset($oLog->kLog) && (int)$oLog->kLog > 0) {
@@ -463,7 +463,7 @@ class Jtllog
             "SELECT cWert 
                 FROM teinstellungen 
                 WHERE cName = 'systemlog_flag'",
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return isset($conf->cWert) ? (int)$conf->cWert : 0;

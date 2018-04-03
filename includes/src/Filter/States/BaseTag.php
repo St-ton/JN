@@ -6,6 +6,7 @@
 
 namespace Filter\States;
 
+use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
@@ -182,7 +183,7 @@ class BaseTag extends AbstractFilter
                     GROUP BY ssMerkmal.kTag
                     ORDER BY nAnzahl DESC LIMIT 0, " .
                     (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
-                \NiceDB::RET_ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             $additionalFilter = new ItemTag($this->productFilter);
             // Priorität berechnen

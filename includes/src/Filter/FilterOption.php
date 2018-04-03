@@ -48,7 +48,7 @@ class FilterOption extends AbstractFilter
     private $sort = 0;
 
     /**
-     * if set to true, Navigationsfilter::getURL() will not return a SEO URL
+     * if set to true, ProductFilterURL::getURL() will not return a SEO URL
      *
      * @var bool
      */
@@ -101,7 +101,7 @@ class FilterOption extends AbstractFilter
     }
 
     /**
-     * @param $isActive
+     * @param bool|int $isActive
      * @return $this
      */
     public function setIsActive($isActive)

@@ -6,6 +6,7 @@
 
 namespace Filter\States;
 
+use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
@@ -95,7 +96,7 @@ class BaseCategory extends AbstractFilter
                         AND kKey = :val
                     ORDER BY tseo.kSprache",
                 ['val' => $this->getValue()],
-                \NiceDB::RET_ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';

@@ -6,6 +6,7 @@
 
 namespace Filter\Items;
 
+use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
@@ -134,7 +135,7 @@ class ItemRating extends AbstractFilter
                 FROM (' . $query . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne
                 ORDER BY ssMerkmal.nSterne DESC',
-            \NiceDB::RET_ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $nSummeSterne     = 0;
         $additionalFilter = new self($this->getProductFilter());

@@ -709,15 +709,23 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
 }
 
 /**
- * @param int   $kArtikel
- * @param float $fAnzahl
- * @param array $oEigenschaftwerte_arr
- * @param bool  $cUnique
- * @param int   $kKonfigitem
- * @param int   $nPosTyp
+ * @param int    $kArtikel
+ * @param float  $fAnzahl
+ * @param array  $oEigenschaftwerte_arr
+ * @param bool   $cUnique
+ * @param int    $kKonfigitem
+ * @param int    $nPosTyp
+ * @param string $cResponsibility
  */
-function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique = false, $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
-{
+function fuegeEinInWarenkorbPers(
+    $kArtikel,
+    $fAnzahl,
+    $oEigenschaftwerte_arr,
+    $cUnique = false,
+    $kKonfigitem = 0,
+    $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL,
+    $cResponsibility = 'core'
+) {
     if (!Session::Customer()->isLoggedIn()) {
         return;
     }
@@ -761,7 +769,8 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
                     $fAnzahl,
                     $cUnique,
                     $kKonfigitem,
-                    $nPosTyp
+                    $nPosTyp,
+                    $cResponsibility
                 );
             }
         }
@@ -776,7 +785,8 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
             $fAnzahl,
             $cUnique,
             $kKonfigitem,
-            $nPosTyp
+            $nPosTyp,
+            $cResponsibility
         );
     }
 }
@@ -874,10 +884,20 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
  * @param int           $kKonfigitem
  * @param stdClass|null $oArtikelOptionen
  * @param bool          $setzePositionsPreise
+ * @param string        $cResponsibility
  * @return bool
  */
-function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $nWeiterleitung = 0, $cUnique = false, $kKonfigitem = 0, $oArtikelOptionen = null, $setzePositionsPreise = true)
-{
+function fuegeEinInWarenkorb(
+    $kArtikel,
+    $anzahl,
+    $oEigenschaftwerte_arr = [],
+    $nWeiterleitung = 0,
+    $cUnique = false,
+    $kKonfigitem = 0,
+    $oArtikelOptionen = null,
+    $setzePositionsPreise = true,
+    $cResponsibility = 'core'
+) {
     $kArtikel = (int)$kArtikel;
     if (!($anzahl > 0 && ($kArtikel > 0 || $kArtikel === 0 && !empty($kKonfigitem) && !empty($cUnique)))) {
         return false;
@@ -920,7 +940,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $n
         return false;
     }
     Session::Cart()
-           ->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, $setzePositionsPreise)
+           ->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, $setzePositionsPreise, $cResponsibility)
            ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
            ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
            ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
@@ -2816,7 +2836,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                 'cShippingClass' => $versandklassen,
                 'cGroupID'       => '^([0-9 -]* )?' . $kKundengruppe . ' '
             ],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
         Shop::Cache()->set($cacheID, $oVersandart, [CACHING_GROUP_OPTION]);
     }

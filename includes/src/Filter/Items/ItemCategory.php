@@ -6,6 +6,7 @@
 
 namespace Filter\Items;
 
+use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
@@ -142,7 +143,7 @@ class ItemCategory extends BaseCategory
         if (!\Shop::has('checkCategoryVisibility')) {
             \Shop::set(
                 'checkCategoryVisibility',
-                \Shop::Container()->getDB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', \NiceDB::RET_AFFECTED_ROWS) > 0
+                \Shop::Container()->getDB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', ReturnType::AFFECTED_ROWS) > 0
             );
         }
         if (\Shop::get('checkCategoryVisibility')) {

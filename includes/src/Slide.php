@@ -198,7 +198,7 @@ class Slide
                         WHERE kSlider = :sliderID
                         ORDER BY nSort DESC LIMIT 1',
                     ['sliderID' => $this->kSlider],
-                    NiceDB::RET_SINGLE_OBJECT
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 $oSlide->nSort = (!is_object($oSort) || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
             }

@@ -146,7 +146,7 @@ class AuswahlAssistent
                     ($bOnlyActive ? ' AND nAktiv = 1 ' : ' ') .
                     'ORDER BY nSort',
                 ['groupID' => $this->kAuswahlAssistentGruppe],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             $this->oFrage_arr = [];
@@ -443,7 +443,7 @@ class AuswahlAssistent
                         WHERE tao.cKey = :ckey
                             AND tao.kKey = :kkey',
                 ['lang' => $kSprache, 'ckey' => $cKey, 'kkey' => $kKey],
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (isset($oOrt->kAuswahlAssistentGruppe) && $oOrt->kAuswahlAssistentGruppe > 0) {

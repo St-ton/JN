@@ -230,7 +230,7 @@ class FilterSearch extends AbstractFilter
                 WHERE kSprache = :lang
                 AND cIP = :ip',
             ['lang' => $languageID, 'ip' => gibIP()],
-            \NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
         $ipUsed       = \Shop::Container()->getDB()->select(
             'tsuchanfragencache',
@@ -259,7 +259,7 @@ class FilterSearch extends AbstractFilter
                 'DELETE 
                     FROM tsuchanfragencache 
                     WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)',
-                \NiceDB::RET_AFFECTED_ROWS
+                \DB\ReturnType::AFFECTED_ROWS
             );
             if ($hits > 0) {
                 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
@@ -286,7 +286,7 @@ class FilterSearch extends AbstractFilter
                                 nAnzahlGesuche = nAnzahlGesuche+1, 
                                 dZuletztGesucht = now()
                             WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage,
-                        \NiceDB::RET_AFFECTED_ROWS
+                        \DB\ReturnType::AFFECTED_ROWS
                     );
                 } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
                     \Shop::Container()->getDB()->delete(
@@ -321,7 +321,7 @@ class FilterSearch extends AbstractFilter
                                 dZuletztGesucht = now()
                             WHERE kSuchanfrageErfolglos = ' .
                             (int)$queryMiss_old->kSuchanfrageErfolglos,
-                        \NiceDB::RET_AFFECTED_ROWS
+                        \DB\ReturnType::AFFECTED_ROWS
                     );
                 } else {
                     \Shop::Container()->getDB()->delete(
@@ -450,7 +450,7 @@ class FilterSearch extends AbstractFilter
                 FROM (' . $query . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
                     ORDER BY ssMerkmal.cSuche' . $nLimit;
-            $searchFilters = \Shop::Container()->getDB()->query($query, \NiceDB::RET_ARRAY_OF_OBJECTS);
+            $searchFilters = \Shop::Container()->getDB()->query($query, \DB\ReturnType::ARRAY_OF_OBJECTS);
             $searchQueries = [];
             if ($this->productFilter->hasSearch()) {
                 $searchQueries[] = $this->productFilter->getSearch()->getValue();

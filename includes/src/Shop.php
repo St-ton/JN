@@ -731,7 +731,7 @@ final class Shop
                   FROM tplugin 
                   WHERE nStatus = 2 
                     AND bBootstrap = 1 
-                  ORDER BY nPrio ASC', \DB\NiceDB::RET_ARRAY_OF_OBJECTS) ?: [];
+                  ORDER BY nPrio ASC', \DB\ReturnType::ARRAY_OF_OBJECTS) ?: [];
             self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
 
@@ -1362,7 +1362,7 @@ final class Shop
                         'SELECT kLink 
                             FROM tlink
                             WHERE nLinkart = ' . LINKTYP_STARTSEITE . $cKundengruppenSQL,
-                        \DB\NiceDB::RET_SINGLE_OBJECT
+                        \DB\ReturnType::SINGLE_OBJECT
                     );
                 }
                 self::$kLink = isset($link->kLink)
@@ -1574,7 +1574,7 @@ final class Shop
      */
     public static function getShopVersion() : int
     {
-        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\NiceDB::RET_SINGLE_OBJECT);
+        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
 
         return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
             ? (int)$oVersion->nVersion

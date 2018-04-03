@@ -6,6 +6,7 @@
 
 namespace Filter\Items;
 
+use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
@@ -378,8 +379,8 @@ class ItemPriceRange extends AbstractFilter
                 $state->having
             );
             $qry       = 'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin 
-                                              FROM (' . $baseQuery . ' ) AS ssMerkmal';
-            $minMax    = \Shop::Container()->getDB()->query($qry, \NiceDB::RET_SINGLE_OBJECT);
+                              FROM (' . $baseQuery . ' ) AS ssMerkmal';
+            $minMax    = \Shop::Container()->getDB()->query($qry, ReturnType::SINGLE_OBJECT);
             if (isset($minMax->fMax) && $minMax->fMax > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff und liefert diese Werte in einem Objekt
                 $oPreis = $this->calculateSteps(
@@ -402,7 +403,7 @@ class ItemPriceRange extends AbstractFilter
                     $state->having
                 );
                 $qry              = 'SELECT ' . $cSelectSQL . ' FROM (' . $baseQuery . ' ) AS ssMerkmal';
-                $dbRes            = \Shop::Container()->getDB()->query($qry, \NiceDB::RET_SINGLE_OBJECT);
+                $dbRes            = \Shop::Container()->getDB()->query($qry, ReturnType::SINGLE_OBJECT);
                 $priceRanges      = [];
                 $priceRangeCounts = is_object($dbRes)
                     ? get_object_vars($dbRes)
@@ -453,7 +454,7 @@ class ItemPriceRange extends AbstractFilter
                 }
             }
         } else {
-            $ranges = \Shop::Container()->getDB()->query('SELECT * FROM tpreisspannenfilter', \NiceDB::RET_ARRAY_OF_OBJECTS);
+            $ranges = \Shop::Container()->getDB()->query('SELECT * FROM tpreisspannenfilter', ReturnType::ARRAY_OF_OBJECTS);
             if (count($ranges) > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff
                 $oPreis = $this->calculateSteps(
@@ -484,7 +485,7 @@ class ItemPriceRange extends AbstractFilter
                 $qry   = 'SELECT ' . $cSelectSQL . ' FROM (' . $query . ' ) AS ssMerkmal';
                 $dbRes = \Shop::Container()->getDB()->query(
                     $qry,
-                    \NiceDB::RET_SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
 
                 $additionalFilter = new self($this->productFilter);

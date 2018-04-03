@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterSearch
+ * Class FilterItemSearch
  */
-class FilterSearch extends AbstractFilter
+class FilterItemSearch extends AbstractFilter
 {
     use MagicCompatibilityTrait;
 
@@ -43,7 +43,7 @@ class FilterSearch extends AbstractFilter
     ];
 
     /**
-     * FilterSearch constructor.
+     * FilterItemSearch constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -136,6 +136,8 @@ class FilterSearch extends AbstractFilter
         }
         if (!empty($oSeo_obj->cSuche)) {
             $this->setName($oSeo_obj->cSuche);
+        } elseif (!empty($oSeo_obj->cSeo)) {
+            $this->setName($oSeo_obj->cSeo);
         }
 
         return $this;
@@ -344,7 +346,7 @@ class FilterSearch extends AbstractFilter
         if (is_array($searchFilter)) {
             $count       = count($searchFilter);
             $searchCache = array_map(function ($f) {
-                /** @var FilterSearch $f */
+                /** @var FilterItemSearch $f */
                 return $f->getValue();
             }, $searchFilter);
         } elseif ($searchFilter->getSearchCacheID() > 0) {
@@ -360,7 +362,11 @@ class FilterSearch extends AbstractFilter
             ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
                             MIN(tsuchcachetreffer.nSort) AS nSort
                               FROM tsuchcachetreffer
-                              WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $searchCache) . ') 
+                              JOIN tsuchcache
+                                  ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
+                              JOIN tsuchanfrage
+                                  ON tsuchanfrage.cSuche = tsuchcache.cSuche
+                                  AND tsuchanfrage.kSuchanfrage IN (' . implode(',', $searchCache) . ')
                               GROUP BY tsuchcachetreffer.kArtikel
                               HAVING COUNT(*) = ' . $count . '
                         ) AS jfSuche')
@@ -408,7 +414,7 @@ class FilterSearch extends AbstractFilter
             $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 
             $query         = $this->productFilter->getFilterSQL()->getBaseQuery(
-                ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
+                ['tsuchanfrage.kSuchanfrage', 'tsuchcache.kSuchCache', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
                 $state->having,
@@ -416,11 +422,13 @@ class FilterSearch extends AbstractFilter
                 '',
                 ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
             );
-            $query         = 'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
+            $searchFilters = Shop::Container()->getDB()->query(
+                'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.kSuchCache, ssMerkmal.cSuche, count(*) AS nAnzahl
                 FROM (' . $query . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
-                    ORDER BY ssMerkmal.cSuche' . $nLimit;
-            $searchFilters = Shop::Container()->getDB()->query($query, NiceDB::RET_ARRAY_OF_OBJECTS);
+                    ORDER BY ssMerkmal.cSuche' . $nLimit,
+                NiceDB::RET_ARRAY_OF_OBJECTS
+            );
             $searchQueries = [];
             if ($this->productFilter->hasSearch()) {
                 $searchQueries[] = $this->productFilter->getSearch()->getValue();
@@ -450,13 +458,12 @@ class FilterSearch extends AbstractFilter
                 ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
                 : 0;
             $activeValues     = array_map(function($f) { // @todo: create method for this logic
-                /** @var FilterSearch $f */
+                /** @var FilterItemSearch $f */
                 return $f->getValue();
             }, $this->productFilter->getSearchFilter());
-
             foreach ($searchFilters as $searchFilter) {
                 $class = rand(1, 10);
-                if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
+                if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
                     $class = round(($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
                 }
                 $options[] = (new FilterOption())

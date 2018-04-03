@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter;
+
 /**
  * Class ProductFilterSQL
  */
@@ -30,12 +32,12 @@ class ProductFilterSQL
     }
 
     /**
-     * @return stdClass
+     * @return \stdClass
      */
     public function getOrder()
     {
         $Artikelsortierung = $this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
-        $sort              = new stdClass();
+        $sort              = new \stdClass();
         $sort->join        = (new FilterJoin())->setOrigin(__CLASS__);
         if (isset($_SESSION['Usersortierung'])) {
             $Artikelsortierung          = Metadata::mapUserSorting($_SESSION['Usersortierung']);
@@ -128,7 +130,7 @@ class ProductFilterSQL
      * @param array  $groupBy
      * @param string $type
      * @return string
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function getBaseQuery(
         array $select = ['tartikel.kArtikel'],

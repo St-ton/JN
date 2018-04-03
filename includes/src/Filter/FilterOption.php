@@ -4,8 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter;
+
 /**
  * Class FilterOption
+ *
+ * @package Filter
  *
  * @property $kHersteller
  * @property $nAnzahlTagging
@@ -306,10 +310,9 @@ class FilterOption extends AbstractFilter
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages) : IFilter
     {
         return $this;
     }

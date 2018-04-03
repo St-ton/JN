@@ -4,12 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\States;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\Items\ItemManufacturer;
+use Filter\ProductFilter;
+
 /**
- * Class FilterBaseManufacturer
+ * Class BaseManufacturer
  */
-class FilterBaseManufacturer extends AbstractFilter
+class BaseManufacturer extends AbstractFilter
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -20,7 +29,7 @@ class FilterBaseManufacturer extends AbstractFilter
     ];
 
     /**
-     * FilterBaseManufacturer constructor.
+     * BaseManufacturer constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -36,23 +45,22 @@ class FilterBaseManufacturer extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value)
+    public function setValue($value) : IFilter
     {
         return parent::setValue((int)$value);
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages) : IFilter
     {
         $val = $this->getValue();
         if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {
             if (!is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = Shop::Container()->getDB()->query(
+            $oSeo_arr = \Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                         JOIN thersteller
@@ -60,7 +68,7 @@ class FilterBaseManufacturer extends AbstractFilter
                     WHERE cKey = 'kHersteller' 
                         AND kKey IN (" . implode(', ', $val). ")
                     ORDER BY kSprache",
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -75,8 +83,8 @@ class FilterBaseManufacturer extends AbstractFilter
                 $this->setName($oSeo_arr[0]->cName);
             } else {
                 // invalid manufacturer ID
-                Shop::$kHersteller = 0;
-                Shop::$is404       = true;
+                \Shop::$kHersteller = 0;
+                \Shop::$is404       = true;
             }
         }
 
@@ -157,7 +165,7 @@ class FilterBaseManufacturer extends AbstractFilter
                 $state->conditions,
                 $state->having
             );
-            $manufacturers    = Shop::Container()->getDB()->query(
+            $manufacturers    = \Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
                     FROM (" .
                     $query .
@@ -168,9 +176,9 @@ class FilterBaseManufacturer extends AbstractFilter
                             AND tseo.kSprache = " . $this->getLanguageID() . "
                         GROUP BY ssMerkmal.kHersteller
                         ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \NiceDB::RET_ARRAY_OF_OBJECTS
             );
-            $additionalFilter = new FilterItemManufacturer($this->productFilter);
+            $additionalFilter = new ItemManufacturer($this->productFilter);
             foreach ($manufacturers as $manufacturer) {
                 // attributes for old filter templates
                 $manufacturer->kHersteller = (int)$manufacturer->kHersteller;

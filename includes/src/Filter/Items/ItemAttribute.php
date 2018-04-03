@@ -4,12 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+use Filter\States\BaseAttribute;
+
 /**
- * Class FilterItemAttribute
+ * Class ItemAttribute
+ * @package Filter\Items
  */
-class FilterItemAttribute extends FilterBaseAttribute
+class ItemAttribute extends BaseAttribute
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -37,7 +47,7 @@ class FilterItemAttribute extends FilterBaseAttribute
     ];
 
     /**
-     * FilterItemAttribute constructor.
+     * ItemAttribute constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -60,7 +70,7 @@ class FilterItemAttribute extends FilterBaseAttribute
 
     /**
      * @param bool $isMultiSelect
-     * @return FilterItemAttribute
+     * @return ItemAttribute
      */
     public function setIsMultiSelect($isMultiSelect)
     {
@@ -115,10 +125,9 @@ class FilterItemAttribute extends FilterBaseAttribute
     }
 
     /**
-     * @param int|object $value
-     * @return $this
+     * @inheritdoc
      */
-    public function init($value)
+    public function init($value) : IFilter
     {
         $this->isInitialized = true;
         if (is_object($value)) {
@@ -137,13 +146,12 @@ class FilterItemAttribute extends FilterBaseAttribute
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo($languages) : IFilter
     {
         $value    = $this->getValue();
-        $oSeo_arr = Shop::Container()->getDB()->selectAll(
+        $oSeo_arr = \Shop::Container()->getDB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['kMerkmalWert', $value],
@@ -158,7 +166,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 }
             }
         }
-        $seo_obj = Shop::Container()->getDB()->executeQueryPrepared('
+        $seo_obj = \Shop::Container()->getDB()->executeQueryPrepared('
             SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
@@ -166,10 +174,10 @@ class FilterItemAttribute extends FilterBaseAttribute
                 WHERE tmerkmalwertsprache.kSprache = :lid
                    AND tmerkmalwertsprache.kMerkmalWert = :val',
             [
-                'lid' => Shop::getLanguage(),
+                'lid' => \Shop::getLanguage(),
                 'val' => $value
             ],
-            NiceDB::RET_SINGLE_OBJECT
+            \NiceDB::RET_SINGLE_OBJECT
         );
         if (!empty($seo_obj->kMerkmal)) {
             $this->setAttributeID($seo_obj->kMerkmal)
@@ -198,7 +206,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             ' WHERE ' . $this->getPrimaryKeyRow() . ' IN (' .
             $this->getValue() .
             '))' .
-            ' #condition from FilterItemAttribute::getSQLCondition() ' . $this->getName() . "\n";
+            ' #condition from ItemAttribute::getSQLCondition() ' . $this->getName() . "\n";
     }
 
     /**
@@ -222,7 +230,7 @@ class FilterItemAttribute extends FilterBaseAttribute
     {
         return array_reduce($this->productFilter->getAttributeFilter(),
             function ($a, $b) use ($kMerkmalWert) {
-                /** @var FilterItemAttribute $b */
+                /** @var ItemAttribute $b */
                 return $a || $b->getValue() === $kMerkmalWert;
             },
             false
@@ -269,7 +277,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             );
         }
         $select = 'tmerkmal.cName';
-        $state  = $this->productFilter->getCurrentStateData('FilterItemAttribute');
+        $state  = $this->productFilter->getCurrentStateData('ItemAttribute');
         // @todo?
         if (true || (!$this->productFilter->hasAttributeValue() && !$this->productFilter->hasAttributeFilter())) {
             $state->joins[] = (new FilterJoin())
@@ -402,7 +410,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             '',
             [] // ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
         );
-        $qryRes                = Shop::Container()->getDB()->executeQuery(
+        $qryRes                = \Shop::Container()->getDB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
             ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
@@ -413,7 +421,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 #AND tseo.kSprache = " . $this->getLanguageID() . "
             GROUP BY ssMerkmal.kMerkmalWert
             ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \NiceDB::RET_ARRAY_OF_OBJECTS
         );
         $currentAttributeValue = $this->productFilter->getAttributeValue()->getValue();
         $additionalFilter      = new self($this->productFilter);
@@ -428,7 +436,7 @@ class FilterItemAttribute extends FilterBaseAttribute
             if (!in_array($attributeValue->kMerkmal, $checked, true)
                 && (!$hasCatAttributeFilter || in_array($attributeValue->cName, $catAttributeFilters, true))
             ) {
-                $attribute                                            = new stdClass();
+                $attribute                                            = new \stdClass();
                 $attribute->kMerkmal                                  = $attributeValue->kMerkmal;
                 $attribute->cName                                     = $attributeValue->cName;
                 $attribute->cMMBildPfad                               = $attributeValue->cMMBildPfad;
@@ -450,7 +458,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 $attributeFilterCollection[$attributeValue->kMerkmal]->attributeValues[] = $attributeValue;
             }
         }
-        $imageBaseURL       = Shop::getImageBaseURL();
+        $imageBaseURL       = \Shop::getImageBaseURL();
         $filterURLGenerator = $this->productFilter->getFilterURL();
         foreach ($attributeFilterCollection as $i => $attributeFilter) {
             $baseSrcSmall  = strlen($attributeFilter->cMMBildPfad) > 0

@@ -4,12 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter;
+
 /**
  * Class Metadata
  */
 class Metadata
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var ProductFilter
@@ -42,17 +44,17 @@ class Metadata
     private $metaKeywords = '';
 
     /**
-     * @var Kategorie
+     * @var \Kategorie
      */
     private $category;
 
     /**
-     * @var Hersteller
+     * @var \Hersteller
      */
     private $manufacturer;
 
     /**
-     * @var MerkmalWert
+     * @var \MerkmalWert
      */
     private $attributeValue;
 
@@ -94,7 +96,7 @@ class Metadata
     /**
      * @return string
      */
-    public function getBreadCrumb()
+    public function getBreadCrumb() : string
     {
         return $this->breadCrumb;
     }
@@ -103,7 +105,7 @@ class Metadata
      * @param string $breadCrumb
      * @return $this
      */
-    public function setBreadCrumb($breadCrumb)
+    public function setBreadCrumb(string $breadCrumb)
     {
         $this->breadCrumb = $breadCrumb;
 
@@ -113,7 +115,7 @@ class Metadata
     /**
      * @return string
      */
-    public function getMetaTitle()
+    public function getMetaTitle() : string
     {
         return $this->metaTitle;
     }
@@ -132,7 +134,7 @@ class Metadata
     /**
      * @return string
      */
-    public function getMetaDescription()
+    public function getMetaDescription() : string
     {
         return $this->metaDescription;
     }
@@ -151,7 +153,7 @@ class Metadata
     /**
      * @return string
      */
-    public function getMetaKeywords()
+    public function getMetaKeywords() : string
     {
         return $this->metaKeywords;
     }
@@ -168,7 +170,7 @@ class Metadata
     }
 
     /**
-     * @return Kategorie
+     * @return \Kategorie
      */
     public function getCategory()
     {
@@ -176,10 +178,10 @@ class Metadata
     }
 
     /**
-     * @param Kategorie $category
+     * @param \Kategorie $category
      * @return Metadata
      */
-    public function setCategory($category)
+    public function setCategory(\Kategorie $category)
     {
         $this->category = $category;
 
@@ -187,7 +189,7 @@ class Metadata
     }
 
     /**
-     * @return Hersteller
+     * @return \Hersteller
      */
     public function getManufacturer()
     {
@@ -195,10 +197,10 @@ class Metadata
     }
 
     /**
-     * @param Hersteller $manufacturer
+     * @param \Hersteller $manufacturer
      * @return Metadata
      */
-    public function setManufacturer($manufacturer)
+    public function setManufacturer(\Hersteller $manufacturer)
     {
         $this->manufacturer = $manufacturer;
 
@@ -206,7 +208,7 @@ class Metadata
     }
 
     /**
-     * @return MerkmalWert
+     * @return \MerkmalWert
      */
     public function getAttributeValue()
     {
@@ -214,10 +216,10 @@ class Metadata
     }
 
     /**
-     * @param MerkmalWert $attributeValue
+     * @param \MerkmalWert $attributeValue
      * @return Metadata
      */
-    public function setAttributeValue($attributeValue)
+    public function setAttributeValue(\MerkmalWert $attributeValue)
     {
         $this->attributeValue = $attributeValue;
 
@@ -227,7 +229,7 @@ class Metadata
     /**
      * @return string
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
@@ -236,7 +238,7 @@ class Metadata
      * @param string $name
      * @return Metadata
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -246,7 +248,7 @@ class Metadata
     /**
      * @return string
      */
-    public function getImageURL()
+    public function getImageURL() : string
     {
         return $this->imageURL;
     }
@@ -255,7 +257,7 @@ class Metadata
      * @param string $imageURL
      * @return Metadata
      */
-    public function setImageURL($imageURL)
+    public function setImageURL(string $imageURL)
     {
         $this->imageURL = $imageURL;
 
@@ -265,7 +267,7 @@ class Metadata
     /**
      * @return bool
      */
-    public function hasData()
+    public function hasData() : bool
     {
         return !empty($this->imageURL) || !empty($this->name);
     }
@@ -273,26 +275,29 @@ class Metadata
     /**
      * Holt die Globalen Metaangaben und Return diese als Assoc Array wobei die Keys => kSprache sind
      *
-     * @return array|mixed
+     * @return array
      * @former holeGlobaleMetaAngaben()
      */
-    public static function getGlobalMetaData()
+    public static function getGlobalMetaData() : array
     {
         $cacheID = 'jtl_glob_meta';
-        if (($globalMeta = Shop::Cache()->get($cacheID)) !== false) {
+        if (($globalMeta = \Shop::Container()->getCache()->get($cacheID)) !== false) {
             return $globalMeta;
         }
         $globalMeta = [];
-        $globalTmp  = Shop::Container()->getDB()->query("SELECT cName, kSprache, cWertName FROM tglobalemetaangaben ORDER BY kSprache",
-            2);
+        $globalTmp  = \Shop::Container()->getDB()->query(
+            "SELECT cName, kSprache, cWertName 
+                FROM tglobalemetaangaben ORDER BY kSprache",
+            2
+        );
         foreach ($globalTmp as $data) {
             if (!isset($globalMeta[$data->kSprache])) {
-                $globalMeta[$data->kSprache] = new stdClass();
+                $globalMeta[$data->kSprache] = new \stdClass();
             }
             $cName                               = $data->cName;
             $globalMeta[$data->kSprache]->$cName = $data->cWertName;
         }
-        Shop::Cache()->set($cacheID, $globalMeta, [CACHING_GROUP_CORE]);
+        \Shop::Container()->getCache()->set($cacheID, $globalMeta, [CACHING_GROUP_CORE]);
 
         return $globalMeta;
     }
@@ -304,14 +309,14 @@ class Metadata
     public static function getExcludes()
     {
         $cacheID = 'jtl_glob_excl';
-        if (($exclude = Shop::Cache()->get($cacheID)) === false) {
+        if (($exclude = \Shop::Container()->getCache()->get($cacheID)) === false) {
             $exclude  = [];
-            $keyWords = Shop::Container()->getDB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
+            $keyWords = \Shop::Container()->getDB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
             foreach ($keyWords as $keyWord) {
                 $exclude[$keyWord->cISOSprache] = $keyWord;
             }
             // CACHING_GROUP_OPTION is flushed @ admin/keywording.php
-            Shop::Cache()->set($cacheID, $exclude, [CACHING_GROUP_OPTION]);
+            \Shop::Container()->getCache()->set($cacheID, $exclude, [CACHING_GROUP_OPTION]);
         }
 
         return $exclude;
@@ -381,8 +386,8 @@ class Metadata
     }
 
     /**
-     * @param Kategorie|null      $currentCategory
-     * @param KategorieListe|null $openCategories
+     * @param \Kategorie|null      $currentCategory
+     * @param \KategorieListe|null $openCategories
      * @return $this
      */
     public function getNavigationInfo($currentCategory = null, $openCategories = null)
@@ -400,7 +405,7 @@ class Metadata
             }
             $this->breadCrumb = createNavigation('PRODUKTE', $openCategories);
         } elseif ($this->productFilter->hasManufacturer()) {
-            $this->manufacturer = new Hersteller($this->productFilter->getManufacturer()->getValue());
+            $this->manufacturer = new \Hersteller($this->productFilter->getManufacturer()->getValue());
 
             if ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'Y') {
                 $this->name = $this->manufacturer->getName();
@@ -423,7 +428,7 @@ class Metadata
                 $this->productFilter->getFilterURL()->getURL()
             );
         } elseif ($this->productFilter->hasAttributeValue()) {
-            $this->attributeValue = new MerkmalWert($this->productFilter->getAttributeValue()->getValue());
+            $this->attributeValue = new \MerkmalWert($this->productFilter->getAttributeValue()->getValue());
             if ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
                 $this->setName($this->attributeValue->cWert);
             } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
@@ -464,7 +469,7 @@ class Metadata
      * @param array                      $products
      * @param ProductFilterSearchResults $searchResults
      * @param array                      $globalMeta
-     * @param Kategorie|null             $category
+     * @param \Kategorie|null            $category
      * @return string
      */
     public function generateMetaDescription($products, $searchResults, $globalMeta, $category = null)
@@ -485,7 +490,7 @@ class Metadata
         $cKatDescription = '';
         $languageID      = $this->productFilter->getLanguageID();
         if ($this->productFilter->hasCategory()) {
-            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaDescription)) {
                 // meta description via new method
                 return prepareMeta(
@@ -515,7 +520,7 @@ class Metadata
                 $cKatDescription = strip_tags(str_replace(['<br>', '<br />'], [' ', ' '], $category->cBeschreibung));
             } elseif ($category->bUnterKategorien) {
                 // Hat die aktuelle Kategorie Unterkategorien?
-                $categoryListe = new KategorieListe();
+                $categoryListe = new \KategorieListe();
                 $categoryListe->getAllCategoriesOnLevel($category->kKategorie);
 
                 if (!empty($categoryListe->elemente) && count($categoryListe->elemente) > 0) {
@@ -531,7 +536,7 @@ class Metadata
 
             if (strlen($cKatDescription) > 1) {
                 $cKatDescription  = str_replace('"', '', $cKatDescription);
-                $cKatDescription  = StringHandler::htmlentitydecode($cKatDescription, ENT_NOQUOTES);
+                $cKatDescription  = \StringHandler::htmlentitydecode($cKatDescription, ENT_NOQUOTES);
                 $cMetaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
                     ? trim(
                         strip_tags($globalMeta[$languageID]->Meta_Description_Praefix) .
@@ -544,7 +549,7 @@ class Metadata
                     && $searchResults->getOffsetStart()> 0
                     && $searchResults->getOffsetEnd()> 0
                 ) {
-                    $cMetaDescription .= ', ' . Shop::Lang()->get('products') .
+                    $cMetaDescription .= ', ' . \Shop::Lang()->get('products') .
                         " {$searchResults->getOffsetStart()} - {$searchResults->getOffsetEnd()}";
                 }
 
@@ -563,7 +568,7 @@ class Metadata
                     : $products[$i]->cName;
             }
             $cArtikelName = str_replace('"', '', $cArtikelName);
-            $cArtikelName = StringHandler::htmlentitydecode($cArtikelName, ENT_NOQUOTES);
+            $cArtikelName = \StringHandler::htmlentitydecode($cArtikelName, ENT_NOQUOTES);
 
             $cMetaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
                 ? $this->getMetaStart($searchResults) .
@@ -576,7 +581,7 @@ class Metadata
                 && $searchResults->getOffsetStart() > 0
                 && $searchResults->getOffsetEnd()> 0
             ) {
-                $cMetaDescription .= ', ' . Shop::Lang()->get('products') . ' ' .
+                $cMetaDescription .= ', ' . \Shop::Lang()->get('products') . ' ' .
                     $searchResults->getOffsetStart() . ' - ' . $searchResults->getOffsetEnd();
             }
         }
@@ -585,8 +590,8 @@ class Metadata
     }
 
     /**
-     * @param array          $products
-     * @param Kategorie|null $category
+     * @param array           $products
+     * @param \Kategorie|null $category
      * @return mixed|string
      */
     public function generateMetaKeywords($products, $category = null)
@@ -599,7 +604,7 @@ class Metadata
         // Kategorieattribut?
         $cKatKeywords = '';
         if ($this->productFilter->hasCategory()) {
-            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaKeywords)) {
                 // meta keywords via new method
                 return strip_tags($category->cMetaKeywords);
@@ -665,7 +670,7 @@ class Metadata
         } elseif (!empty($category->kKategorie)) {
             // Hat die aktuelle Kategorie Unterkategorien?
             if ($category->bUnterKategorien) {
-                $categoryListe = new KategorieListe();
+                $categoryListe = new \KategorieListe();
                 $categoryListe->getAllCategoriesOnLevel($category->kKategorie);
                 if (!empty($categoryListe->elemente) && count($categoryListe->elemente) > 0) {
                     foreach ($categoryListe->elemente as $i => $oUnterkat) {
@@ -685,16 +690,16 @@ class Metadata
             return strip_tags($cMetaKeywords);
         }
 
-        return strip_tags(StringHandler::htmlentitydecode(str_replace('"', '', $cMetaKeywords), ENT_NOQUOTES));
+        return strip_tags(\StringHandler::htmlentitydecode(str_replace('"', '', $cMetaKeywords), ENT_NOQUOTES));
     }
 
     /**
      * @param ProductFilterSearchResults $searchResults
      * @param array                      $globalMeta
-     * @param Kategorie|null             $category
+     * @param \Kategorie|null            $category
      * @return string
      */
-    public function generateMetaTitle($searchResults, $globalMeta, $category = null)
+    public function generateMetaTitle($searchResults, $globalMeta, $category = null) : string
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
         $languageID = $this->productFilter->getLanguageID();
@@ -715,30 +720,30 @@ class Metadata
         // Set Default Titles
         $cMetaTitle = $this->getMetaStart($searchResults);
         $cMetaTitle = str_replace('"', "'", $cMetaTitle);
-        $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
+        $cMetaTitle = \StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
         // Kategorieattribute koennen Standard-Titles ueberschreiben
         if ($this->productFilter->hasCategory()) {
-            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cTitleTag)) {
                 // meta title via new method
                 $cMetaTitle = strip_tags($category->cTitleTag);
                 $cMetaTitle = str_replace('"', "'", $cMetaTitle);
-                $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
+                $cMetaTitle = \StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
             } elseif (!empty($category->categoryAttributes['meta_title']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Title gesetzt?
                 $cMetaTitle = strip_tags($category->categoryAttributes['meta_title']->cWert);
                 $cMetaTitle = str_replace('"', "'", $cMetaTitle);
-                $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
+                $cMetaTitle = \StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
             } elseif (!empty($category->KategorieAttribute['meta_title'])) {
                 /** @deprecated since 4.05 - this is for compatibilty only! */
                 $cMetaTitle = strip_tags($category->KategorieAttribute['meta_title']);
                 $cMetaTitle = str_replace('"', "'", $cMetaTitle);
-                $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
+                $cMetaTitle = \StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
             }
         }
         // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
         if ($searchResults->getPages()->AktuelleSeite > 1) {
-            $cMetaTitle .= ', ' . Shop::Lang()->get('page') . ' ' .
+            $cMetaTitle .= ', ' . \Shop::Lang()->get('page') . ' ' .
                 $searchResults->getPages()->AktuelleSeite;
         }
         // Globalen Meta Title ueberall anhaengen
@@ -806,27 +811,27 @@ class Metadata
         if ($this->productFilter->hasSearchSpecialFilter()) {
             switch ($this->productFilter->getSearchSpecialFilter()->getValue()) {
                 case SEARCHSPECIALS_BESTSELLER:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('bestsellers');
+                    $cMetaTitle .= ' ' . \Shop::Lang()->get('bestsellers');
                     break;
 
                 case SEARCHSPECIALS_SPECIALOFFERS:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('specialOffers');
+                    $cMetaTitle .= ' ' . \Shop::Lang()->get('specialOffers');
                     break;
 
                 case SEARCHSPECIALS_NEWPRODUCTS:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('newProducts');
+                    $cMetaTitle .= ' ' . \Shop::Lang()->get('newProducts');
                     break;
 
                 case SEARCHSPECIALS_TOPOFFERS:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('topOffers');
+                    $cMetaTitle .= ' ' . \Shop::Lang()->get('topOffers');
                     break;
 
                 case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('upcomingProducts');
+                    $cMetaTitle .= ' ' . \Shop::Lang()->get('upcomingProducts');
                     break;
 
                 case SEARCHSPECIALS_TOPREVIEWS:
-                    $cMetaTitle .= ' ' . Shop::Lang()->get('topReviews');
+                    $cMetaTitle .= ' ' . \Shop::Lang()->get('topReviews');
                     break;
 
                 default:
@@ -869,17 +874,17 @@ class Metadata
         if ($this->productFilter->hasManufacturer()) {
             $this->breadCrumb = $this->productFilter->getManufacturer()->getName();
 
-            return Shop::Lang()->get('productsFrom') . ' ' . $this->breadCrumb;
+            return \Shop::Lang()->get('productsFrom') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasAttributeValue()) {
             $this->breadCrumb = $this->productFilter->getAttributeValue()->getName();
 
-            return Shop::Lang()->get('productsWith') . ' ' . $this->breadCrumb;
+            return \Shop::Lang()->get('productsWith') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasTag()) {
             $this->breadCrumb = $this->productFilter->getTag()->getName();
 
-            return Shop::Lang()->get('showAllProductsTaggedWith') . ' ' . $this->breadCrumb;
+            return \Shop::Lang()->get('showAllProductsTaggedWith') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasSearchSpecial()) {
             $this->breadCrumb = $this->productFilter->getSearchSpecial()->getName();
@@ -894,7 +899,7 @@ class Metadata
         if (!empty($this->productFilter->getSearch()->getName())
             || !empty($this->productFilter->getSearchQuery()->getName())
         ) {
-            return Shop::Lang()->get('for') . ' ' . $this->breadCrumb;
+            return \Shop::Lang()->get('for') . ' ' . $this->breadCrumb;
         }
 
         return '';
@@ -909,10 +914,10 @@ class Metadata
     }
 
     /**
-     * @param bool     $bSeo
-     * @param stdClass $oSeitenzahlen
-     * @param int      $nMaxAnzeige
-     * @param string   $cFilterShopURL
+     * @param bool      $bSeo
+     * @param \stdClass $oSeitenzahlen
+     * @param int       $nMaxAnzeige
+     * @param string    $cFilterShopURL
      * @return array
      * @former baueSeitenNaviURL
      */
@@ -955,7 +960,7 @@ class Metadata
                 }
                 // Laufe alle Seiten durch und baue URLs + Seitenzahl
                 for ($i = $nVon; $i <= $nBis; ++$i) {
-                    $oSeite         = new stdClass();
+                    $oSeite         = new \stdClass();
                     $oSeite->nSeite = $i;
                     if ($i === $oSeitenzahlen->AktuelleSeite) {
                         $oSeite->cURL = '';
@@ -978,7 +983,7 @@ class Metadata
             } else {
                 // Laufe alle Seiten durch und baue URLs + Seitenzahl
                 for ($i = 0; $i < $oSeitenzahlen->MaxSeiten; ++$i) {
-                    $oSeite         = new stdClass();
+                    $oSeite         = new \stdClass();
                     $oSeite->nSeite = $i + 1;
 
                     if ($i + 1 === $oSeitenzahlen->AktuelleSeite) {
@@ -1001,7 +1006,7 @@ class Metadata
                 }
             }
             // Baue Zurück-URL
-            $oSeite_arr['zurueck']       = new stdClass();
+            $oSeite_arr['zurueck']       = new \stdClass();
             $oSeite_arr['zurueck']->nBTN = 1;
             if ($oSeitenzahlen->AktuelleSeite > 1) {
                 $oSeite_arr['zurueck']->nSeite = (int)$oSeitenzahlen->AktuelleSeite - 1;
@@ -1024,7 +1029,7 @@ class Metadata
                 }
             }
             // Baue Vor-URL
-            $oSeite_arr['vor']       = new stdClass();
+            $oSeite_arr['vor']       = new \stdClass();
             $oSeite_arr['vor']->nBTN = 1;
             if ($oSeitenzahlen->AktuelleSeite < $oSeitenzahlen->maxSeite) {
                 $oSeite_arr['vor']->nSeite = $oSeitenzahlen->AktuelleSeite + 1;
@@ -1046,19 +1051,19 @@ class Metadata
 
     /**
      * @param int $nDarstellung
-     * @return stdClass
+     * @return \stdClass
      * @former gibErweiterteDarstellung
      */
     public function getExtendedView($nDarstellung = 0)
     {
         if (!isset($_SESSION['oErweiterteDarstellung'])) {
             $nStdDarstellung                                    = 0;
-            $_SESSION['oErweiterteDarstellung']                 = new stdClass();
+            $_SESSION['oErweiterteDarstellung']                 = new \stdClass();
             $_SESSION['oErweiterteDarstellung']->cURL_arr       = [];
             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
 
             if ($this->productFilter->hasCategory()) {
-                $category = new Kategorie($this->productFilter->getCategory()->getValue());
+                $category = new \Kategorie($this->productFilter->getCategory()->getValue());
                 if (!empty($category->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
                     $nStdDarstellung = (int)$category->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
                 }
@@ -1195,10 +1200,10 @@ class Metadata
             ];
             static $languages = ['sortNameAsc', 'sortNameDesc', 'sortPriceAsc', 'sortPriceDesc'];
             foreach ($names as $i => $name) {
-                $obj                  = new stdClass();
+                $obj                  = new \stdClass();
                 $obj->name            = $name;
                 $obj->value           = $values[$i];
-                $obj->angezeigterName = Shop::Lang()->get($languages[$i]);
+                $obj->angezeigterName = \Shop::Lang()->get($languages[$i]);
 
                 $sortingOptions[] = $obj;
             }
@@ -1216,7 +1221,7 @@ class Metadata
 
     /**
      * @param array $search
-     * @return null|stdClass
+     * @return null|\stdClass
      * @former gibNextSortPrio
      */
     public function getNextSearchPriority($search)
@@ -1226,116 +1231,116 @@ class Metadata
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_name']
             && !in_array('suche_sortierprio_name', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_name';
             $obj->value           = SEARCH_SORT_NAME_ASC;
-            $obj->angezeigterName = Shop::Lang()->get('sortNameAsc');
+            $obj->angezeigterName = \Shop::Lang()->get('sortNameAsc');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_name'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_name_ab']
             && !in_array('suche_sortierprio_name_ab', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_name_ab';
             $obj->value           = SEARCH_SORT_NAME_DESC;
-            $obj->angezeigterName = Shop::Lang()->get('sortNameDesc');
+            $obj->angezeigterName = \Shop::Lang()->get('sortNameDesc');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_name_ab'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_preis']
             && !in_array('suche_sortierprio_preis', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_preis';
             $obj->value           = SEARCH_SORT_PRICE_ASC;
-            $obj->angezeigterName = Shop::Lang()->get('sortPriceAsc');
+            $obj->angezeigterName = \Shop::Lang()->get('sortPriceAsc');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_preis'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_preis_ab']
             && !in_array('suche_sortierprio_preis_ab', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_preis_ab';
             $obj->value           = SEARCH_SORT_PRICE_DESC;
-            $obj->angezeigterName = Shop::Lang()->get('sortPriceDesc');
+            $obj->angezeigterName = \Shop::Lang()->get('sortPriceDesc');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_preis_ab'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_ean']
             && !in_array('suche_sortierprio_ean', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_ean';
             $obj->value           = SEARCH_SORT_EAN;
-            $obj->angezeigterName = Shop::Lang()->get('sortEan');
+            $obj->angezeigterName = \Shop::Lang()->get('sortEan');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_ean'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_erstelldatum']
             && !in_array('suche_sortierprio_erstelldatum', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_erstelldatum';
             $obj->value           = SEARCH_SORT_NEWEST_FIRST;
-            $obj->angezeigterName = Shop::Lang()->get('sortNewestFirst');
+            $obj->angezeigterName = \Shop::Lang()->get('sortNewestFirst');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_erstelldatum'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_artikelnummer']
             && !in_array('suche_sortierprio_artikelnummer', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_artikelnummer';
             $obj->value           = SEARCH_SORT_PRODUCTNO;
-            $obj->angezeigterName = Shop::Lang()->get('sortProductno');
+            $obj->angezeigterName = \Shop::Lang()->get('sortProductno');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_artikelnummer'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_lagerbestand']
             && !in_array('suche_sortierprio_lagerbestand', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_lagerbestand';
             $obj->value           = SEARCH_SORT_AVAILABILITY;
-            $obj->angezeigterName = Shop::Lang()->get('sortAvailability');
+            $obj->angezeigterName = \Shop::Lang()->get('sortAvailability');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_lagerbestand'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_gewicht']
             && !in_array('suche_sortierprio_gewicht', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_gewicht';
             $obj->value           = SEARCH_SORT_WEIGHT;
-            $obj->angezeigterName = Shop::Lang()->get('sortWeight');
+            $obj->angezeigterName = \Shop::Lang()->get('sortWeight');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_gewicht'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum']
             && !in_array('suche_sortierprio_erscheinungsdatum', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_erscheinungsdatum';
             $obj->value           = SEARCH_SORT_DATEOFISSUE;
-            $obj->angezeigterName = Shop::Lang()->get('sortDateofissue');
+            $obj->angezeigterName = \Shop::Lang()->get('sortDateofissue');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_bestseller']
             && !in_array('suche_sortierprio_bestseller', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_bestseller';
             $obj->value           = SEARCH_SORT_BESTSELLER;
-            $obj->angezeigterName = Shop::Lang()->get('bestseller');
+            $obj->angezeigterName = \Shop::Lang()->get('bestseller');
             $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_bestseller'];
         }
         if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_bewertung']
             && !in_array('suche_sortierprio_bewertung', $search, true)
         ) {
-            $obj                  = new stdClass();
+            $obj                  = new \stdClass();
             $obj->name            = 'suche_sortierprio_bewertung';
             $obj->value           = SEARCH_SORT_RATING;
-            $obj->angezeigterName = Shop::Lang()->get('rating');
+            $obj->angezeigterName = \Shop::Lang()->get('rating');
         }
 
         return $obj;
     }
 
     /**
-     * @param null|Kategorie $currentCategory
+     * @param null|\Kategorie $currentCategory
      */
     public function setUserSort($currentCategory = null)
     {

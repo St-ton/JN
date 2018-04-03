@@ -4,12 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\States;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+use Filter\States\BaseCategory;
+
 /**
- * Class FilterBaseSearchQuery
+ * Class BaseSearchQuery
+ * @package Filter\States
  */
-class FilterBaseSearchQuery extends AbstractFilter
+class BaseSearchQuery extends AbstractFilter
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -39,7 +49,7 @@ class FilterBaseSearchQuery extends AbstractFilter
     public $error;
 
     /**
-     * FilterBaseSearchQuery constructor.
+     * BaseSearchQuery constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -74,7 +84,7 @@ class FilterBaseSearchQuery extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value)
+    public function setValue($value) : IFilter
     {
         $this->value = (int)$value;
 
@@ -95,9 +105,9 @@ class FilterBaseSearchQuery extends AbstractFilter
             preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $minChars . ",}/",
                 str_replace(' ', '', $name), $cTreffer_arr);
             if (count($cTreffer_arr) === 0) {
-                $this->error = Shop::Lang()->get('expressionHasTo') . ' ' .
+                $this->error = \Shop::Lang()->get('expressionHasTo') . ' ' .
                     $minChars . ' ' .
-                    Shop::Lang()->get('lettersDigits');
+                    \Shop::Lang()->get('lettersDigits');
             }
         }
 
@@ -164,12 +174,11 @@ class FilterBaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages) : IFilter
     {
-        $oSeo_obj = Shop::Container()->getDB()->executeQueryPrepared(
+        $oSeo_obj = \Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
@@ -307,12 +316,12 @@ class FilterBaseSearchQuery extends AbstractFilter
                 '',
                 ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
             );
-            $searchFilters    = Shop::Container()->getDB()->query(
+            $searchFilters    = \Shop::Container()->getDB()->query(
                 'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
                     FROM (' . $query . ') AS ssMerkmal
                         GROUP BY ssMerkmal.kSuchanfrage
                         ORDER BY ssMerkmal.cSuche' . $nLimit,
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \NiceDB::RET_ARRAY_OF_OBJECTS
             );
             $kSuchanfrage_arr = [];
             if ($this->productFilter->hasSearch()) {
@@ -384,7 +393,7 @@ class FilterBaseSearchQuery extends AbstractFilter
             ? (int)$kSpracheExt
             : $this->getLanguageID();
         if (strlen($Suchausdruck) > 0) {
-            $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
+            $SuchausdruckmappingTMP = \Shop::Container()->getDB()->select(
                 'tsuchanfragemapping',
                 'kSprache',
                 $kSprache,
@@ -393,7 +402,7 @@ class FilterBaseSearchQuery extends AbstractFilter
             );
             $Suchausdruckmapping    = $SuchausdruckmappingTMP;
             while (!empty($SuchausdruckmappingTMP->cSucheNeu)) {
-                $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
+                $SuchausdruckmappingTMP = \Shop::Container()->getDB()->select(
                     'tsuchanfragemapping',
                     'kSprache',
                     $kSprache,
@@ -426,18 +435,18 @@ class FilterBaseSearchQuery extends AbstractFilter
             ? (int)$kSpracheExt
             : $this->getLanguageID();
         // Suchcache wurde zwar gefunden, ist jedoch nicht mehr gültig
-        Shop::Container()->getDB()->query(
+        \Shop::Container()->getDB()->query(
             'DELETE tsuchcache, tsuchcachetreffer
                 FROM tsuchcache
                 LEFT JOIN tsuchcachetreffer 
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
                 WHERE tsuchcache.dGueltigBis IS NOT NULL
                     AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()',
-            NiceDB::RET_AFFECTED_ROWS
+            \NiceDB::RET_AFFECTED_ROWS
         );
 
         // Suchcache checken, ob bereits vorhanden
-        $oSuchCache = Shop::Container()->getDB()->executeQueryPrepared(
+        $oSuchCache = \Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT kSuchCache
                 FROM tsuchcache
                 WHERE kSprache = :lang
@@ -447,7 +456,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                 'lang'   => $kSprache,
                 'search' => $cSuche
             ],
-            NiceDB::RET_SINGLE_OBJECT
+            \NiceDB::RET_SINGLE_OBJECT
         );
 
         if (isset($oSuchCache->kSuchCache) && $oSuchCache->kSuchCache > 0) {
@@ -473,11 +482,11 @@ class FilterBaseSearchQuery extends AbstractFilter
         // Array mit nach Prio sort. Suchspalten holen
         $searchColumnn_arr     = gibSuchSpalten();
         $searchColumns         = $this->getSearchColumnClasses($searchColumnn_arr);
-        $oSuchCache            = new stdClass();
+        $oSuchCache            = new \stdClass();
         $oSuchCache->kSprache  = $kSprache;
         $oSuchCache->cSuche    = $cSuche;
         $oSuchCache->dErstellt = 'now()';
-        $kSuchCache            = Shop::Container()->getDB()->insert('tsuchcache', $oSuchCache);
+        $kSuchCache            = \Shop::Container()->getDB()->insert('tsuchcache', $oSuchCache);
 
         if ($this->getConfig()['artikeluebersicht']['suche_fulltext'] !== 'N'
             && $this->isFulltextIndexActive()
@@ -820,12 +829,12 @@ class FilterBaseSearchQuery extends AbstractFilter
                 $cSQL .= ')';
             }
         }
-        Shop::Container()->getDB()->query(
+        \Shop::Container()->getDB()->query(
             'INSERT INTO tsuchcachetreffer ' .
             $cSQL .
                 ' GROUP BY kArtikelTMP
                 LIMIT ' . (int)$this->getConfig()['artikeluebersicht']['suche_max_treffer'],
-            NiceDB::RET_AFFECTED_ROWS
+            \NiceDB::RET_AFFECTED_ROWS
         );
 
         return $kSuchCache;
@@ -904,7 +913,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     FROM tartikel
                     WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . " ";
 
-            if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
+            if (\Shop::getLanguage() > 0 && !standardspracheAktiv()) {
                 $score = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ")
                             AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
                 if ($cFullText === 'B') {
@@ -931,7 +940,7 @@ class FilterBaseSearchQuery extends AbstractFilter
                     WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
                     GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
 
-            Shop::Container()->getDB()->query($cISQL, NiceDB::RET_AFFECTED_ROWS);
+            \Shop::Container()->getDB()->query($cISQL, \NiceDB::RET_AFFECTED_ROWS);
         }
 
         return $oSuchCache->kSuchCache;
@@ -1010,15 +1019,15 @@ class FilterBaseSearchQuery extends AbstractFilter
         static $active = null;
 
         if ($active === null) {
-            $active = Shop::Container()->getDB()->query(
+            $active = \Shop::Container()->getDB()->query(
                 "SHOW INDEX FROM tartikel 
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                NiceDB::RET_SINGLE_OBJECT)
-            && Shop::Container()->getDB()->query(
+                \NiceDB::RET_SINGLE_OBJECT)
+            && \Shop::Container()->getDB()->query(
                 "SHOW INDEX 
                     FROM tartikelsprache 
                     WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                NiceDB::RET_SINGLE_OBJECT);
+                \NiceDB::RET_SINGLE_OBJECT);
         }
 
         return $active;

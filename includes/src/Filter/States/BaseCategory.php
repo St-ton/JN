@@ -4,12 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\States;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\Items\ItemCategory;
+use Filter\ProductFilter;
+
 /**
- * Class FilterBaseCategory
+ * Class BaseCategory
+ * @package Filter\States
  */
-class FilterBaseCategory extends AbstractFilter
+class BaseCategory extends AbstractFilter
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -25,7 +35,7 @@ class FilterBaseCategory extends AbstractFilter
     private $includeSubCategories = false;
 
     /**
-     * FilterBaseCategory constructor.
+     * BaseCategory constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -47,7 +57,7 @@ class FilterBaseCategory extends AbstractFilter
 
     /**
      * @param bool $includeSubCategories
-     * @return FilterItemCategory
+     * @return ItemCategory
      */
     public function setIncludeSubCategories($includeSubCategories)
     {
@@ -60,7 +70,7 @@ class FilterBaseCategory extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value)
+    public function setValue($value) : IFilter
     {
         $this->value = (int)$value;
 
@@ -68,13 +78,12 @@ class FilterBaseCategory extends AbstractFilter
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages) : IFilter
     {
         if ($this->getValue() > 0) {
-            $oSeo_arr = Shop::Container()->getDB()->queryPrepared(
+            $oSeo_arr = \Shop::Container()->getDB()->queryPrepared(
                 "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                     FROM tseo
                         LEFT JOIN tkategorie
@@ -86,7 +95,7 @@ class FilterBaseCategory extends AbstractFilter
                         AND kKey = :val
                     ORDER BY tseo.kSprache",
                 ['val' => $this->getValue()],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \NiceDB::RET_ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -97,7 +106,7 @@ class FilterBaseCategory extends AbstractFilter
                 }
             }
             foreach ($oSeo_arr as $item) {
-                if ((int)$item->kSprache === Shop::getLanguage()) {
+                if ((int)$item->kSprache === \Shop::getLanguage()) {
                     if (!empty($item->cName)) {
                         $this->setName($item->cName);
                     } elseif (!empty($item->cKatName)) {

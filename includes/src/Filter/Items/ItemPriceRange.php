@@ -4,12 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+
 /**
- * Class FilterItemPriceRange
+ * Class ItemPriceRange
+ * @package Filter\Items
  */
-class FilterItemPriceRange extends AbstractFilter
+class ItemPriceRange extends AbstractFilter
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var float
@@ -32,7 +41,7 @@ class FilterItemPriceRange extends AbstractFilter
     public $cBisLocalized;
 
     /**
-     * @var stdClass
+     * @var \stdClass
      */
     private $oFilter;
 
@@ -46,7 +55,7 @@ class FilterItemPriceRange extends AbstractFilter
     ];
 
     /**
-     * FilterItemPriceRange constructor.
+     * ItemPriceRange constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -56,23 +65,21 @@ class FilterItemPriceRange extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('pf')
              ->setVisibility($this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'])
-             ->setFrontendName(Shop::Lang()->get('rangeOfPrices'));
+             ->setFrontendName(\Shop::Lang()->get('rangeOfPrices'));
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages) : IFilter
     {
         return $this;
     }
 
     /**
-     * @param int|string|null $id
-     * @return $this
+     * @inheritdoc
      */
-    public function init($id)
+    public function init($id) : IFilter
     {
         if ($id === null) {
             $id = '0_0';
@@ -86,10 +93,10 @@ class FilterItemPriceRange extends AbstractFilter
         $this->cBisLocalized = gibPreisLocalizedOhneFaktor($this->fBis);
         $this->setName($this->cVonLocalized . ' - ' . $this->cBisLocalized);
         $this->isInitialized = true;
-        $conversionFactor    = Session::Currency()->getConversionFactor();
-        $customerGroupID     = Session::CustomerGroup()->getID();
+        $conversionFactor    = \Session::Currency()->getConversionFactor();
+        $customerGroupID     = \Session::CustomerGroup()->getID();
 
-        $oFilter         = new stdClass();
+        $oFilter         = new \stdClass();
         $oFilter->cJoin  = 'JOIN tpreise 
                 ON tartikel.kArtikel = tpreise.kArtikel 
                 AND tpreise.kKundengruppe = ' . $customerGroupID . '
@@ -110,10 +117,10 @@ class FilterItemPriceRange extends AbstractFilter
             : 0.0;
         $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
         // bis
-        if (Session::CustomerGroup()->isMerchant()) {
+        if (\Session::CustomerGroup()->isMerchant()) {
             $oFilter->cWhere .= ' ROUND(LEAST((tpreise.fVKNetto * ' .
                 $conversionFactor . ') * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
-                Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100), ' .
+                \Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100), ' .
                 'IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
                 $conversionFactor . '))), 2)';
         } else {
@@ -122,7 +129,7 @@ class FilterItemPriceRange extends AbstractFilter
                 $oFilter->cWhere .= ' IF(tartikel.kSteuerklasse = ' . $nSteuersatzKeys . ', ROUND(
                     LEAST(tpreise.fVKNetto * 
                     ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
-                    Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100), ' .
+                    \Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100), ' .
                     'IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
                         $conversionFactor . '))) * ((100 + ' . $fSteuersatz . ') / 100), 2),';
             }
@@ -135,17 +142,17 @@ class FilterItemPriceRange extends AbstractFilter
         }
         $oFilter->cWhere .= ' < ' . $this->fBis . ' AND ';
         // von
-        if (Session::CustomerGroup()->isMerchant()) {
+        if (\Session::CustomerGroup()->isMerchant()) {
             $oFilter->cWhere .= ' ROUND(LEAST(tpreise.fVKNetto * 
                 ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
-                Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100), ' .
+                \Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100), ' .
                 'IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' . $conversionFactor . '))), 2)';
         } else {
             foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
                 $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                 $oFilter->cWhere .= ' IF(tartikel.kSteuerklasse = ' . $nSteuersatzKeys . ',
                     ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
-                    Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt .', 0)) / 100), 
+                    \Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt .', 0)) / 100), 
                     IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
                     $conversionFactor . '))) * ((100 + ' . $fSteuersatz . ') / 100), 2),';
             }
@@ -211,8 +218,8 @@ class FilterItemPriceRange extends AbstractFilter
     }
 
     /**
-     * @param stdClass $oPreis
-     * @param Currency $currency
+     * @param \stdClass $oPreis
+     * @param \Currency $currency
      * @param array    $ranges
      * @return string
      */
@@ -228,7 +235,7 @@ class FilterItemPriceRange extends AbstractFilter
             $nStep                   = $oPreis->fStep;
             $ranges = [];
             for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
-                $fakePriceRange              = new stdClass();
+                $fakePriceRange              = new \stdClass();
                 $fakePriceRange->nBis        = $nPreisMin + ($i + 1) * $nStep;
                 $ranges[$i] = $fakePriceRange;
             }
@@ -238,14 +245,14 @@ class FilterItemPriceRange extends AbstractFilter
             $cSQL .= 'COUNT(DISTINCT IF(';
             $nBis = $oPreisspannenfilter->nBis;
             // Finde den höchsten und kleinsten Steuersatz
-            if (is_array($_SESSION['Steuersatz']) && !Session::CustomerGroup()->isMerchant()) {
+            if (is_array($_SESSION['Steuersatz']) && !\Session::CustomerGroup()->isMerchant()) {
                 $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
                 foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
                     $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                     $cSQL .= 'IF(tartikel.kSteuerklasse = ' . $nSteuersatzKeys . ',
                         ROUND(LEAST((tpreise.fVKNetto * ' . $currency->getConversionFactor() .
                         ') * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
-                        Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt .
+                        \Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt .
                         ', 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
                         $currency->getConversionFactor() . '))) * ((100 + ' . $fSteuersatz . ') / 100), 2),';
                 }
@@ -254,10 +261,10 @@ class FilterItemPriceRange extends AbstractFilter
                 for ($x = 0; $x < $count; $x++) {
                     $cSQL .= ')';
                 }
-            } elseif (Session::CustomerGroup()->isMerchant()) {
+            } elseif (\Session::CustomerGroup()->isMerchant()) {
                 $cSQL .= 'ROUND(LEAST((tpreise.fVKNetto * ' . $currency->getConversionFactor() .
                     ') * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
-                    Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt .
+                    \Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt .
                     ', 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
                     $currency->getConversionFactor() . '))), 2)';
             }
@@ -290,7 +297,7 @@ class FilterItemPriceRange extends AbstractFilter
         ) {
             return $options;
         }
-        $currency = Session::Currency();
+        $currency = \Session::Currency();
         $state    = $this->productFilter->getCurrentStateData();
 
         $state->joins[] = (new FilterJoin())
@@ -333,18 +340,18 @@ class FilterItemPriceRange extends AbstractFilter
             $fSteuersatzMax = 0.0;
             $fSteuersatzMin = 0.0;
             // Finde den höchsten und kleinsten Steuersatz
-            if (is_array($_SESSION['Steuersatz']) && !Session::CustomerGroup()->isMerchant()) {
+            if (is_array($_SESSION['Steuersatz']) && !\Session::CustomerGroup()->isMerchant()) {
                 $fSteuersatz_arr = [];
                 foreach ($_SESSION['Steuersatz'] as $fSteuersatz) {
                     $fSteuersatz_arr[] = $fSteuersatz;
                 }
                 $fSteuersatzMax = count($fSteuersatz_arr) ? max($fSteuersatz_arr) : 0;
                 $fSteuersatzMin = count($fSteuersatz_arr) ? min($fSteuersatz_arr) : 0;
-            } elseif (Session::CustomerGroup()->isMerchant()) {
+            } elseif (\Session::CustomerGroup()->isMerchant()) {
                 $fSteuersatzMax = 0.0;
                 $fSteuersatzMin = 0.0;
             }
-            $fKundenrabatt = ($discount = Session::CustomerGroup()->getDiscount()) > 0
+            $fKundenrabatt = ($discount = \Session::CustomerGroup()->getDiscount()) > 0
                 ? $discount
                 : 0.0;
             $state         = $this->productFilter->getCurrentStateData();
@@ -357,12 +364,12 @@ class FilterItemPriceRange extends AbstractFilter
                         LEAST(
                             (tpreise.fVKNetto * ' . $currency->getConversionFactor() . ') *
                             ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
-                    Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100),
+                    \Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100),
                             IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
                     $currency->getConversionFactor() . '))) * ((100 + ' . $fSteuersatzMax . ') / 100), 2) AS fMax,
                  ROUND(LEAST((tpreise.fVKNetto * ' . $currency->getConversionFactor() . ') *
                  ((100 - greatest(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
-                    Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100),
+                    \Session::CustomerGroup()->getDiscount() . ', ' . $fKundenrabatt . ', 0)) / 100),
                  IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
                     $currency->getConversionFactor() . '))) * ((100 + ' . $fSteuersatzMin . ') / 100), 2) AS fMin'
                 ],
@@ -372,7 +379,7 @@ class FilterItemPriceRange extends AbstractFilter
             );
             $qry       = 'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin 
                                               FROM (' . $baseQuery . ' ) AS ssMerkmal';
-            $minMax    = Shop::Container()->getDB()->query($qry, NiceDB::RET_SINGLE_OBJECT);
+            $minMax    = \Shop::Container()->getDB()->query($qry, \NiceDB::RET_SINGLE_OBJECT);
             if (isset($minMax->fMax) && $minMax->fMax > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff und liefert diese Werte in einem Objekt
                 $oPreis = $this->calculateSteps(
@@ -395,7 +402,7 @@ class FilterItemPriceRange extends AbstractFilter
                     $state->having
                 );
                 $qry              = 'SELECT ' . $cSelectSQL . ' FROM (' . $baseQuery . ' ) AS ssMerkmal';
-                $dbRes            = Shop::Container()->getDB()->query($qry, NiceDB::RET_SINGLE_OBJECT);
+                $dbRes            = \Shop::Container()->getDB()->query($qry, \NiceDB::RET_SINGLE_OBJECT);
                 $priceRanges      = [];
                 $priceRangeCounts = is_object($dbRes)
                     ? get_object_vars($dbRes)
@@ -446,7 +453,7 @@ class FilterItemPriceRange extends AbstractFilter
                 }
             }
         } else {
-            $ranges = Shop::Container()->getDB()->query('SELECT * FROM tpreisspannenfilter', NiceDB::RET_ARRAY_OF_OBJECTS);
+            $ranges = \Shop::Container()->getDB()->query('SELECT * FROM tpreisspannenfilter', \NiceDB::RET_ARRAY_OF_OBJECTS);
             if (count($ranges) > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff
                 $oPreis = $this->calculateSteps(
@@ -475,9 +482,9 @@ class FilterItemPriceRange extends AbstractFilter
                     $state->having
                 );
                 $qry   = 'SELECT ' . $cSelectSQL . ' FROM (' . $query . ' ) AS ssMerkmal';
-                $dbRes = Shop::Container()->getDB()->query(
+                $dbRes = \Shop::Container()->getDB()->query(
                     $qry,
-                    NiceDB::RET_SINGLE_OBJECT
+                    \NiceDB::RET_SINGLE_OBJECT
                 );
 
                 $additionalFilter = new self($this->productFilter);
@@ -537,7 +544,7 @@ class FilterItemPriceRange extends AbstractFilter
      *
      * @param float $fMax
      * @param float $fMin
-     * @return stdClass
+     * @return \stdClass
      * @former berechneMaxMinStep
      */
     public function calculateSteps($fMax, $fMin)
@@ -571,7 +578,7 @@ class FilterItemPriceRange extends AbstractFilter
         $fDiffPreis     = $fMaxPreis - $fMinPreis;
         $nAnzahlSpannen = round($fDiffPreis / $fStepWert);
 
-        $oObject                 = new stdClass();
+        $oObject                 = new \stdClass();
         $oObject->fMaxPreis      = $fMaxPreis / 1000;
         $oObject->fMinPreis      = $fMinPreis / 1000;
         $oObject->fStep          = $fStepWert_arr[$nStep];

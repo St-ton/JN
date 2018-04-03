@@ -4,12 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter;
+
+use Tightenco\Collect\Support\Collection;
+
 /**
  * Class ProductFilterSearchResults
  */
 class ProductFilterSearchResults
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var \Tightenco\Collect\Support\Collection()
@@ -41,7 +45,7 @@ class ProductFilterSearchResults
     private $offsetEnd = 0;
 
     /**
-     * @var stdClass
+     * @var \stdClass
      * @former Seitenzahlen
      */
     private $pages;
@@ -178,8 +182,8 @@ class ProductFilterSearchResults
      */
     public function __construct($legacy = null)
     {
-        $this->products             = new \Tightenco\Collect\Support\Collection();
-        $this->pages                = new stdClass();
+        $this->products             = new Collection();
+        $this->pages                = new \stdClass();
         $this->pages->AktuelleSeite = 0;
         $this->pages->MaxSeiten     = 0;
         $this->pages->minSeite      = 0;
@@ -190,7 +194,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param stdClass $legacy
+     * @param \stdClass $legacy
      * @return $this
      */
     public function convert($legacy)
@@ -207,11 +211,11 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return stdClass
+     * @return \stdClass
      */
     public function getProductsCompat()
     {
-        $compat              = new stdClass();
+        $compat              = new \stdClass();
         $compat->elemente    = $this->getProducts();
         $compat->productKeys = $this->getProductKeys();
 
@@ -341,7 +345,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return stdClass
+     * @return \stdClass
      */
     public function getPages()
     {
@@ -349,7 +353,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param stdClass $pages
+     * @param \stdClass $pages
      * @return ProductFilterSearchResults
      */
     public function setPages($pages)
@@ -703,7 +707,7 @@ class ProductFilterSearchResults
 
     /**
      * @param ProductFilter  $productFilter
-     * @param null|Kategorie $currentCategory
+     * @param null|\Kategorie $currentCategory
      * @param bool           $selectionWizard
      * @return mixed
      */
@@ -749,9 +753,9 @@ class ProductFilterSearchResults
                      return $isCustom;
                  }
              ))
-             ->setSearchFilterJSON(Boxen::gibJSONString(array_map(
+             ->setSearchFilterJSON(\Boxen::gibJSONString(array_map(
                  function ($e) {
-                     $e->cURL = StringHandler::htmlentitydecode($e->cURL);
+                     $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
 
                      return $e;
                  },
@@ -759,10 +763,10 @@ class ProductFilterSearchResults
              )));
 
         if ($productFilter->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
-            $this->setTagFilterJSON(Boxen::gibJSONString(array_map(
+            $this->setTagFilterJSON(\Boxen::gibJSONString(array_map(
                 function ($e) {
                     /** @var FilterOption $e */
-                    return $e->setURL(StringHandler::htmlentitydecode($e->getURL()));
+                    return $e->setURL(\StringHandler::htmlentitydecode($e->getURL()));
                 },
                 $tagOptions
             )));

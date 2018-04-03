@@ -4,8 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter;
+
 /**
  * Class FilterQuery
+ * @package Filter
  */
 class FilterQuery
 {

@@ -4,8 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter;
+
 /**
- * Interface IMedia
+ * Interface IFilter
+ * @package Filter
  */
 interface IFilter
 {
@@ -15,14 +18,14 @@ interface IFilter
      * @param int|array $value - the current filter value(s)
      * @return $this
      */
-    public function init($value);
+    public function init($value) : IFilter;
 
     /**
      * check if filter is already initialized
      *
      * @return bool
      */
-    public function isInitialized();
+    public function isInitialized() : bool;
 
     /**
      * get an active filter's current filter value(s)
@@ -37,7 +40,7 @@ interface IFilter
      * @param int|string|array $value
      * @return $this
      */
-    public function setValue($value);
+    public function setValue($value) : IFilter;
 
     /**
      * add filter value to active filter (only for FILTER_TYPE_OR filters)
@@ -45,7 +48,7 @@ interface IFilter
      * @param int|string $value
      * @return $this
      */
-    public function addValue($value);
+    public function addValue($value) : IFilter;
 
     /**
      * get the filter's SEO url for a language
@@ -61,7 +64,7 @@ interface IFilter
      * @param array $languages
      * @return $this
      */
-    public function setSeo($languages);
+    public function setSeo(array $languages) : IFilter;
 
     /**
      * get the filter's type - FILTER_TYPE_OR/FILTER_TYPE_AND
@@ -155,7 +158,7 @@ interface IFilter
      *
      * @return bool
      */
-    public function isCustom();
+    public function isCustom() : bool;
 
     /**
      * set basic information for using this filter
@@ -170,21 +173,21 @@ interface IFilter
      *
      * @return int
      */
-    public function getLanguageID();
+    public function getLanguageID() : int;
 
     /**
      * the customer group ID currently active in the shop
      *
      * @return int
      */
-    public function getCustomerGroupID();
+    public function getCustomerGroupID() : int;
 
     /**
      * get shop settings, derived from Navigationsfilter class
      *
      * @return array
      */
-    public function getConfig();
+    public function getConfig() : array;
 
     /**
      * get the filter's class name
@@ -204,7 +207,7 @@ interface IFilter
     /**
      * @return bool
      */
-    public function getIsChecked();
+    public function getIsChecked() : bool;
 
     /**
      * @param bool $isChecked
@@ -215,13 +218,13 @@ interface IFilter
     /**
      * @return bool
      */
-    public function getDoUnset();
+    public function getDoUnset() : bool;
 
     /**
      * @param bool $doUnset
      * @return $this
      */
-    public function setDoUnset($doUnset);
+    public function setDoUnset(bool $doUnset);
 
     /**
      * @param string|array $url
@@ -280,7 +283,7 @@ interface IFilter
     public function getInputType();
 
     /**
-     * @param string $icon
+     * @param string|null $icon
      * @return $this
      */
     public function setIcon($icon);
@@ -308,5 +311,5 @@ interface IFilter
     /**
      * @return bool
      */
-    public function isHidden();
+    public function isHidden() : bool;
 }

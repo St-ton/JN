@@ -196,14 +196,14 @@ class AuswahlAssistent
         $AktuelleKategorie                    = isset($cParameter_arr['kKategorie'])
             ? new Kategorie($cParameter_arr['kKategorie'])
             : null;
-        $oMerkmalFilter_arr                   = (new ProductFilterSearchResults())->setFilterOptions(
+        $oMerkmalFilter_arr                   = (new \Filter\ProductFilterSearchResults())->setFilterOptions(
             $NaviFilter,
             $AktuelleKategorie,
             true
         )->getAttributeFilterOptions();
 
         foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
-            /** @var FilterItemAttribute $oMerkmalFilter */
+            /** @var \Filter\Items\ItemAttribute $oMerkmalFilter */
             if (array_key_exists($oMerkmalFilter->getValue(), $this->oFrage_assoc)) {
                 $oFrage                    = $this->oFrage_assoc[$oMerkmalFilter->getValue()];
                 $oFrage->oWert_arr         = $oMerkmalFilter->getOptions();

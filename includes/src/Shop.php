@@ -15,6 +15,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use \Services\JTL\Validation\ValidationServiceInterface;
 use \Services\JTL\Validation\ValidationService;
 use Services\JTL\Validation\RuleSet;
+use Filter\ProductFilter;
 
 /**
  * Class Shop

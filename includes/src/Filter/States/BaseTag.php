@@ -4,12 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\States;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\Items\ItemTag;
+use Filter\ProductFilter;
+
 /**
- * Class FilterBaseTag
+ * Class BaseTag
+ * @package Filter\States
  */
-class FilterBaseTag extends AbstractFilter
+class BaseTag extends AbstractFilter
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -20,14 +30,14 @@ class FilterBaseTag extends AbstractFilter
     ];
 
     /**
-     * FilterBaseTag constructor.
+     * BaseTag constructor.
      *
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->setFrontendName(Shop::Lang()->get('tags'))
+        $this->setFrontendName(\Shop::Lang()->get('tags'))
              ->setIsCustom(false)
              ->setUrlParam('t');
     }
@@ -36,18 +46,17 @@ class FilterBaseTag extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value)
+    public function setValue($value) : IFilter
     {
         return parent::setValue((int)$value);
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages) : IFilter
     {
-        $oSeo_obj = Shop::Container()->getDB()->queryPrepared(
+        $oSeo_obj = \Shop::Container()->getDB()->queryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, ttag.cName
                 FROM tseo
                 LEFT JOIN ttag
@@ -163,7 +172,7 @@ class FilterBaseTag extends AbstractFilter
                 '',
                 ['ttag.kTag', 'tartikel.kArtikel']
             );
-            $tags                = Shop::Container()->getDB()->query(
+            $tags                = \Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
                     COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
                         FROM (" . $query . ") AS ssMerkmal
@@ -173,9 +182,9 @@ class FilterBaseTag extends AbstractFilter
                     GROUP BY ssMerkmal.kTag
                     ORDER BY nAnzahl DESC LIMIT 0, " .
                     (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \NiceDB::RET_ARRAY_OF_OBJECTS
             );
-            $additionalFilter = new FilterItemTag($this->productFilter);
+            $additionalFilter = new ItemTag($this->productFilter);
             // Priorität berechnen
             $nPrioStep = 0;
             $nCount    = count($tags);

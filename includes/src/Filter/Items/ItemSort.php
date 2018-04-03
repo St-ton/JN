@@ -4,13 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+
 /**
- * Class FilterItemSort
+ * Class ItemSort
+ * @package Filter\Items
  */
-class FilterItemSort extends AbstractFilter
+class ItemSort extends AbstractFilter
 {
     /**
-     * FilterItemSort constructor.
+     * ItemSort constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -19,14 +28,13 @@ class FilterItemSort extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('Sortierung')
-             ->setFrontendName(Shop::Lang()->get('sorting', 'productOverview'));
+             ->setFrontendName(\Shop::Lang()->get('sorting', 'productOverview'));
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages) : IFilter
     {
         return $this;
     }

@@ -4,12 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+
 /**
- * Class FilterItemRating
+ * Class ItemRating
+ * @package Filter\Items
  */
-class FilterItemRating extends AbstractFilter
+class ItemRating extends AbstractFilter
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -19,7 +28,7 @@ class FilterItemRating extends AbstractFilter
     ];
 
     /**
-     * FilterItemRating constructor.
+     * ItemRating constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -30,27 +39,26 @@ class FilterItemRating extends AbstractFilter
              ->setUrlParam('bf')
              ->setUrlParamSEO(null)
              ->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
-             ->setFrontendName(Shop::Lang()->get('Votes'));
+             ->setFrontendName(\Shop::Lang()->get('Votes'));
     }
 
     /**
      * @param int $value
      * @return $this
      */
-    public function setValue($value)
+    public function setValue($value) : IFilter
     {
         return parent::setValue((int)$value);
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages) : IFilter
     {
-        $this->setName(Shop::Lang()->get('from', 'productDetails') . ' ' .
+        $this->setName(\Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .
-            Shop::Lang()->get($this->getValue() > 0 ? 'starPlural' : 'starSingular')
+            \Shop::Lang()->get($this->getValue() > 0 ? 'starPlural' : 'starSingular')
         );
 
         return $this;
@@ -121,12 +129,12 @@ class FilterItemRating extends AbstractFilter
             $state->conditions,
             $state->having
         );
-        $res              = Shop::Container()->getDB()->query(
+        $res              = \Shop::Container()->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
                 FROM (' . $query . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne
                 ORDER BY ssMerkmal.nSterne DESC',
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \NiceDB::RET_ARRAY_OF_OBJECTS
         );
         $nSummeSterne     = 0;
         $additionalFilter = new self($this->getProductFilter());
@@ -138,9 +146,9 @@ class FilterItemRating extends AbstractFilter
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
                 ->setName(
-                    Shop::Lang()->get('from', 'productDetails') . ' ' .
+                    \Shop::Lang()->get('from', 'productDetails') . ' ' .
                     $row->nSterne . ' ' .
-                    Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
+                    \Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
                 )
                 ->setValue((int)$row->nSterne)
                 ->setCount($nSummeSterne)

@@ -4,13 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+
 /**
- * Class FilterItemLimit
+ * Class ItemLimit
+ * @package Filter\Items
  */
-class FilterItemLimit extends AbstractFilter
+class ItemLimit extends AbstractFilter
 {
     /**
-     * FilterItemLimit constructor.
+     * ItemLimit constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -19,14 +28,13 @@ class FilterItemLimit extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('af')
-             ->setFrontendName(Shop::Lang()->get('productsPerPage', 'productOverview'));
+             ->setFrontendName(\Shop::Lang()->get('productsPerPage', 'productOverview'));
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages) : IFilter
     {
         return $this;
     }
@@ -66,7 +74,7 @@ class FilterItemLimit extends AbstractFilter
         $limitOptions     = explode(',', $this->getConfig()['artikeluebersicht'][$optionIdx]);
         foreach ($limitOptions as $i => $limitOption) {
             $limitOption = (int)trim($limitOption);
-            $name        = $limitOption > 0 ? $limitOption : Shop::Lang()->get('showAll');
+            $name        = $limitOption > 0 ? $limitOption : \Shop::Lang()->get('showAll');
             $options[]   = (new FilterOption())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())

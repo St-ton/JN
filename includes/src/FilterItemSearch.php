@@ -375,6 +375,31 @@ class FilterItemSearch extends AbstractFilter
     }
 
     /**
+     * generate search cache entries for activated search queries
+     *
+     * @return $this
+     */
+    private function generateSearchCaches()
+    {
+        $allQueries = Shop::Container()->getDB()->query(
+            'SELECT tsuchanfrage.cSuche FROM tsuchanfrage 
+                LEFT JOIN tsuchcache
+                    ON tsuchcache.cSuche = tsuchanfrage.cSuche
+                WHERE tsuchanfrage.nAktiv = 1 
+                    AND tsuchcache.kSuchCache IS NULL',
+            NiceDB::RET_ARRAY_OF_OBJECTS
+        );
+        foreach ($allQueries as $nonCachedQuery) {
+            (new FilterBaseSearchQuery($this->productFilter))
+                ->init($nonCachedQuery->cSuche)
+                ->setName($nonCachedQuery->cSuche)
+                ->editSearchCache();
+        }
+
+        return $this;
+    }
+
+    /**
      * @param null $data
      * @return FilterOption[]
      */
@@ -385,6 +410,7 @@ class FilterItemSearch extends AbstractFilter
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
+            $this->generateSearchCaches();
             $nLimit = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl'])
                 && ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
                 ? ' LIMIT ' . $limit

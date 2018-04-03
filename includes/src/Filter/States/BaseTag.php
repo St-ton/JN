@@ -47,7 +47,7 @@ class BaseTag extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value) : IFilter
+    public function setValue($value): IFilter
     {
         return parent::setValue((int)$value);
     }
@@ -55,7 +55,7 @@ class BaseTag extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
         $oSeo_obj = \Shop::Container()->getDB()->queryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, ttag.cName
@@ -81,31 +81,31 @@ class BaseTag extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'kTag';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'ttag';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
         return 'ttag.nAktiv = 1 AND ttagartikel.kTag = ' . $this->getValue();
     }
 
     /**
-     * @return FilterJoin[]
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
@@ -129,7 +129,7 @@ class BaseTag extends AbstractFilter
      * @param null $data
      * @return FilterOption[]
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -153,6 +153,7 @@ class BaseTag extends AbstractFilter
                 ->setOrigin(__CLASS__);
             // remove duplicate joins
             foreach ($state->joins as $i => $stateJoin) {
+                /** @var FilterJoin $stateJoin */
                 if (!in_array($stateJoin->getTable(), $joinedTables, true)) {
                     $joinedTables[] = $stateJoin->getTable();
                 } else {
@@ -162,10 +163,12 @@ class BaseTag extends AbstractFilter
             $state->conditions[] = 'ttag.nAktiv = 1';
             $state->conditions[] = 'ttag.kSprache = ' . $this->getLanguageID();
             $query               = $this->productFilter->getFilterSQL()->getBaseQuery(
-                ['ttag.kTag',
-                'ttag.cName',
-                'ttagartikel.nAnzahlTagging',
-                'tartikel.kArtikel'],
+                [
+                    'ttag.kTag',
+                    'ttag.cName',
+                    'ttagartikel.nAnzahlTagging',
+                    'tartikel.kArtikel'
+                ],
                 $state->joins,
                 $state->conditions,
                 $state->having,
@@ -182,10 +185,10 @@ class BaseTag extends AbstractFilter
                         AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kTag
                     ORDER BY nAnzahl DESC LIMIT 0, " .
-                    (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
+                (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $additionalFilter = new ItemTag($this->productFilter);
+            $additionalFilter    = new ItemTag($this->productFilter);
             // Priorität berechnen
             $nPrioStep = 0;
             $nCount    = count($tags);
@@ -193,25 +196,25 @@ class BaseTag extends AbstractFilter
                 $nPrioStep = ($tags[0]->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) / 9;
             }
             foreach ($tags as $tag) {
-                $fo                 = (new FilterOption())
-                    ->setType($this->getType())
-                    ->setClassName($this->getClassName())
-                    ->setParam($this->getUrlParam())
-                    ->setName($tag->cName)
-                    ->setValue((int)$tag->kTag)
-                    ->setCount($tag->nAnzahl)
-                    ->setURL($this->productFilter->getFilterURL()->getURL(
-                        $additionalFilter->init((int)$tag->kTag)
-                    ));
-                $fo->nAnzahlTagging = (int)$tag->nAnzahlTagging;
-                // generic attributes for new filter templates
-                $class = $nPrioStep < 1
+                $tag->nAnzahlTagging = (int)$tag->nAnzahlTagging;
+                $class               = $nPrioStep < 1
                     ? rand(1, 10)
                     : round(
-                        ($fo->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
+                        ($tag->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
                         $nPrioStep
                     ) + 1;
-                $options[] = $fo->setClass($class);
+                $options[]           = (new FilterOption())
+                    ->setClass($class)
+                    ->setURL($this->productFilter->getFilterURL()->getURL(
+                        $additionalFilter->init((int)$tag->kTag)
+                    ))
+                    ->setParam($this->getUrlParam())
+                    ->setData('nAnzahlTagging', $tag->nAnzahlTagging)
+                    ->setType($this->getType())
+                    ->setClassName($this->getClassName())
+                    ->setName($tag->cName)
+                    ->setValue((int)$tag->kTag)
+                    ->setCount($tag->nAnzahl);
             }
         }
         $this->options = $options;

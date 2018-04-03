@@ -34,10 +34,9 @@ class ItemTag extends BaseTag
     }
 
     /**
-     * @param array|int $value
-     * @return $this
+     * @inheritdoc
      */
-    public function setValue($value) : IFilter
+    public function setValue($value): IFilter
     {
         $this->value = is_array($value) ? $value : (int)$value;
 
@@ -45,15 +44,15 @@ class ItemTag extends BaseTag
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'ttagartikel';
     }
 
     /**
-     * @return FilterJoin[]
+     * @inheritdoc
      */
     public function getSQLJoin()
     {

@@ -44,10 +44,9 @@ class ItemRating extends AbstractFilter
     }
 
     /**
-     * @param int $value
-     * @return $this
+     * @inheritdoc
      */
-    public function setValue($value) : IFilter
+    public function setValue($value): IFilter
     {
         return parent::setValue((int)$value);
     }
@@ -55,7 +54,7 @@ class ItemRating extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
         $this->setName(\Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .
@@ -66,31 +65,31 @@ class ItemRating extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'nSterne';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'ttags';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
         return 'ROUND(tartikelext.fDurchschnittsBewertung, 0) >= ' . $this->getValue();
     }
 
     /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
@@ -103,10 +102,9 @@ class ItemRating extends AbstractFilter
     }
 
     /**
-     * @param null $data
-     * @return FilterOption[]
+     * @inheritdoc
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -143,19 +141,19 @@ class ItemRating extends AbstractFilter
             $nSummeSterne += (int)$row->nAnzahl;
 
             $options[] = (new FilterOption())
+                ->setParam($this->getUrlParam())
+                ->setURL($this->productFilter->getFilterURL()->getURL(
+                    $additionalFilter->init((int)$row->nSterne)
+                ))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
-                ->setParam($this->getUrlParam())
                 ->setName(
                     \Shop::Lang()->get('from', 'productDetails') . ' ' .
                     $row->nSterne . ' ' .
                     \Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
                 )
                 ->setValue((int)$row->nSterne)
-                ->setCount($nSummeSterne)
-                ->setURL($this->productFilter->getFilterURL()->getURL(
-                    $additionalFilter->init((int)$row->nSterne)
-                ));
+                ->setCount($nSummeSterne);
         }
         $this->options = $options;
         if (count($options) === 0) {

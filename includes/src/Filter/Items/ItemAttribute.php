@@ -149,7 +149,7 @@ class ItemAttribute extends BaseAttribute
     /**
      * @inheritdoc
      */
-    public function setSeo($languages) : IFilter
+    public function setSeo(array $languages) : IFilter
     {
         $value    = $this->getValue();
         $oSeo_arr = \Shop::Container()->getDB()->selectAll(
@@ -190,17 +190,17 @@ class ItemAttribute extends BaseAttribute
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'tartikelmerkmal';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
         return "\n" . 'tartikelmerkmal.kArtikel IN (' .
             'SELECT kArtikel FROM ' . $this->getTableName() .
@@ -211,7 +211,7 @@ class ItemAttribute extends BaseAttribute
     }
 
     /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
@@ -227,7 +227,7 @@ class ItemAttribute extends BaseAttribute
      * @param int $kMerkmalWert
      * @return bool
      */
-    public function attributeValueIsActive($kMerkmalWert)
+    public function attributeValueIsActive($kMerkmalWert): bool
     {
         return array_reduce($this->productFilter->getAttributeFilter(),
             function ($a, $b) use ($kMerkmalWert) {
@@ -239,10 +239,9 @@ class ItemAttribute extends BaseAttribute
     }
 
     /**
-     * @param mixed|null $data
-     * @return FilterOption[]
+     * @inheritdoc
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -470,13 +469,6 @@ class ItemAttribute extends BaseAttribute
                 : BILD_KEIN_MERKMALBILD_VORHANDEN;
 
             $attribute = (new FilterOption())
-                ->setType($this->getType())
-                ->setClassName($this->getClassName())
-                ->setParam($this->getUrlParam())
-                ->setName($attributeFilter->cName)
-                ->setFrontendName($attributeFilter->cName)
-                ->setValue($attributeFilter->kMerkmal)
-                ->setCount(0)
                 ->setURL('')
                 ->setData('cTyp', $attributeFilter->cTyp)
                 ->setData('kMerkmal', $attributeFilter->kMerkmal)
@@ -484,21 +476,20 @@ class ItemAttribute extends BaseAttribute
                 ->setData('cBildpfadNormal', $baseSrcNormal)
                 ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
                 ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal)
+                ->setParam($this->getUrlParam())
                 ->setType($attributeFilter->nMehrfachauswahl === 1
                     ? AbstractFilter::FILTER_TYPE_OR
                     : AbstractFilter::FILTER_TYPE_AND
-                );
+                )
+                ->setType($this->getType())
+                ->setClassName($this->getClassName())
+                ->setName($attributeFilter->cName)
+                ->setFrontendName($attributeFilter->cName)
+                ->setValue($attributeFilter->kMerkmal)
+                ->setCount(0);
             foreach ($attributeFilter->attributeValues as $filterValue) {
                 $filterValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
                 $attributeValue            = (new FilterOption())
-                    ->setType($attributeFilter->nMehrfachauswahl === 1
-                        ? AbstractFilter::FILTER_TYPE_OR
-                        : AbstractFilter::FILTER_TYPE_AND)
-                    ->setClassName($this->getClassName())
-                    ->setParam($this->getUrlParam())
-                    ->setName(htmlentities($filterValue->cWert))
-                    ->setValue($filterValue->cWert)
-                    ->setCount($filterValue->nAnzahl)
                     ->setData('kMerkmalWert', $filterValue->kMerkmalWert)
                     ->setData('kMerkmal', (int)$attributeFilter->kMerkmal)
                     ->setData('cWert', $filterValue->cWert)
@@ -509,7 +500,15 @@ class ItemAttribute extends BaseAttribute
                         : BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
                     ->setData('cBildpfadNormal', strlen($filterValue->cMMWBildPfad) > 0
                         ? PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
-                        : BILD_KEIN_MERKMALWERTBILD_VORHANDEN);
+                        : BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
+                    ->setType($attributeFilter->nMehrfachauswahl === 1
+                        ? AbstractFilter::FILTER_TYPE_OR
+                        : AbstractFilter::FILTER_TYPE_AND)
+                    ->setClassName($this->getClassName())
+                    ->setParam($this->getUrlParam())
+                    ->setName(htmlentities($filterValue->cWert))
+                    ->setValue($filterValue->cWert)
+                    ->setCount($filterValue->nAnzahl);
                 if ($attributeValue->isActive()) {
                     $attribute->setIsActive(true);
                 }

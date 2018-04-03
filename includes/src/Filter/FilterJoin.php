@@ -41,7 +41,7 @@ class FilterJoin
      * @param string $origin
      * @return $this
      */
-    public function setOrigin($origin)
+    public function setOrigin($origin): self
     {
         $this->origin = $origin;
 
@@ -60,7 +60,7 @@ class FilterJoin
      * @param string $type
      * @return $this
      */
-    public function setType($type)
+    public function setType($type): self
     {
         $this->type = $type;
 
@@ -88,7 +88,7 @@ class FilterJoin
      * @param string $table
      * @return $this
      */
-    public function setTable($table)
+    public function setTable($table): self
     {
         $this->table = $table;
 
@@ -98,7 +98,7 @@ class FilterJoin
     /**
      * @return string
      */
-    public function getComment()
+    public function getComment(): string
     {
         return empty($this->comment)
             ? ''
@@ -109,7 +109,7 @@ class FilterJoin
      * @param string $comment
      * @return $this
      */
-    public function setComment($comment)
+    public function setComment($comment): self
     {
         $this->comment = $comment;
 
@@ -128,7 +128,7 @@ class FilterJoin
      * @param string $on
      * @return $this
      */
-    public function setOn($on)
+    public function setOn($on): self
     {
         $this->on = $on;
 
@@ -138,7 +138,7 @@ class FilterJoin
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getSql();
     }
@@ -146,7 +146,7 @@ class FilterJoin
     /**
      * @return string
      */
-    public function getSql()
+    public function getSql(): string
     {
         $on = $this->getOn();
         if ($on !== null) {

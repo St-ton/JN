@@ -7,6 +7,7 @@
 namespace Filter;
 
 use DB\ReturnType;
+use Filter\Items\ItemSearch;
 use Filter\Items\ItemAttribute;
 use Filter\Items\ItemCategory;
 use Filter\Items\ItemLimit;
@@ -73,7 +74,7 @@ class ProductFilter
     private $searchQuery;
 
     /**
-     * @var FilterSearch[]
+     * @var ItemSearch[]
      */
     private $searchFilter = [];
 
@@ -113,7 +114,7 @@ class ProductFilter
     private $searchSpecial;
 
     /**
-     * @var FilterSearch
+     * @var ItemSearch
      */
     private $search;
 
@@ -168,7 +169,7 @@ class ProductFilter
     private $baseState;
 
     /**
-     * @var \stdClass
+     * @var NavigationURLs
      */
     private $url;
 
@@ -183,7 +184,7 @@ class ProductFilter
     private $attributeFilterCollection;
 
     /**
-     * @var FilterSearch
+     * @var ItemSearch
      */
     public $searchFilterCompat;
 
@@ -267,19 +268,7 @@ class ProductFilter
      */
     public function __construct($languages = null, $currentLanguageID = null, $config = null)
     {
-        $urls                    = new \stdClass();
-        $urls->cAllePreisspannen = '';
-        $urls->cAlleBewertungen  = '';
-        $urls->cAlleTags         = '';
-        $urls->cAlleSuchspecials = '';
-        $urls->cAlleKategorien   = '';
-        $urls->cAlleHersteller   = '';
-        $urls->cAlleMerkmale     = [];
-        $urls->cAlleMerkmalWerte = [];
-        $urls->cAlleSuchFilter   = [];
-        $urls->cNoFilter         = null;
-
-        $this->url               = $urls;
+        $this->url               = new NavigationURLs();
         $this->languages         = $languages ?? \Sprache::getInstance()->getLangArray();
         $this->conf              = $config ?? \Shopsetting::getInstance()->getAll();
         $this->languageID        = $currentLanguageID === null
@@ -336,7 +325,7 @@ class ProductFilter
     }
 
     /**
-     * @return \stdClass
+     * @return NavigationURLs
      */
     public function getURL()
     {
@@ -344,10 +333,10 @@ class ProductFilter
     }
 
     /**
-     * @param \stdClass $url
+     * @param NavigationURLs $url
      * @return ProductFilter
      */
-    public function setURL($url)
+    public function setURL(NavigationURLs $url)
     {
         $this->url = $url;
 
@@ -478,7 +467,7 @@ class ProductFilter
      * @param IFilter $filter
      * @return $this
      */
-    public function setBaseState($filter)
+    public function setBaseState($filter): ProductFilter
     {
         $this->baseState = $filter;
 
@@ -694,9 +683,9 @@ class ProductFilter
 
         $this->tagFilterCompat           = new ItemTag($this);
         $this->attributeFilterCollection = new ItemAttribute($this);
-        $this->searchFilterCompat        = new FilterSearch($this);
+        $this->searchFilterCompat        = new ItemSearch($this);
 
-        $this->search = new FilterSearch($this);
+        $this->search = new ItemSearch($this);
 
         $this->baseState = new DummyState($this);
 
@@ -764,7 +753,7 @@ class ProductFilter
 
         // @todo - same as suchfilter?
         foreach ($params['SuchFilter_arr'] as $sf) {
-            $this->searchFilter[] = $this->addActiveFilter(new FilterSearch($this), $sf);
+            $this->searchFilter[] = $this->addActiveFilter(new ItemSearch($this), $sf);
         }
         if ($params['nSortierung'] > 0) {
             $this->nSortierung = (int)$params['nSortierung'];
@@ -782,8 +771,8 @@ class ProductFilter
             $searchName = $this->search->getName();
             if (!empty($searchName)) {
                 $this->search->setSearchCacheID($this->searchQuery->editSearchCache());
-                $this->searchQuery->init($oSuchanfrage->kSuchanfrage)
-                                  ->setSearchCacheID($this->search->getSearchCacheID())
+                $this->searchQuery->init($oSuchanfrage->kSuchanfrage);
+                $this->searchQuery->setSearchCacheID($this->search->getSearchCacheID())
                                   ->setName($this->search->getName());
                 if (!$this->baseState->isInitialized()) {
                     $this->baseState = $this->searchQuery;
@@ -1180,10 +1169,10 @@ class ProductFilter
     }
 
     /**
-     * @param array $filter
+     * @param array|\stdClass $filter
      * @return $this
      */
-    public function setAttributeFilter(array $filter)
+    public function setAttributeFilter($filter)
     {
         if (is_a($filter, 'stdClass') && !isset($filter->kMerkmal)) {
             // disallow setting attribute filter to empty stdClass
@@ -1363,7 +1352,7 @@ class ProductFilter
     }
 
     /**
-     * @return FilterSearch
+     * @return ItemSearch
      */
     public function getSearch()
     {
@@ -1407,7 +1396,7 @@ class ProductFilter
 
     /**
      * @param null|int $idx
-     * @return FilterSearch|FilterSearch[]
+     * @return ItemSearch|ItemSearch[]
      */
     public function getSearchFilter($idx = null)
     {
@@ -1940,14 +1929,6 @@ class ProductFilter
         }
 
         return $data;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getUnsetAllFiltersURL()
-    {
-        return $this->url->cNoFilter ?? null;
     }
 
     /**

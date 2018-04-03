@@ -43,7 +43,7 @@ class ProductFilterSQL
             $Artikelsortierung          = Metadata::mapUserSorting($_SESSION['Usersortierung']);
             $_SESSION['Usersortierung'] = $Artikelsortierung;
         }
-        if ($this->productFilter->getSort() > 0 && $_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD) {
+        if ($_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD && $this->productFilter->getSort() > 0) {
             $Artikelsortierung = $this->productFilter->getSort();
         }
         $sort->orderBy = 'tartikel.nSort, tartikel.cName';
@@ -141,7 +141,7 @@ class ProductFilterSQL
         $limit = '',
         array $groupBy = ['tartikel.kArtikel'],
         $type = 'filter'
-    ) {
+    ): string {
         if ($order === null) {
             $orderData = $this->getOrder();
             $joins[]   = $orderData->join;
@@ -249,7 +249,7 @@ class ProductFilterSQL
      * @param bool $withAnd
      * @return string
      */
-    public function getStockFilterSQL($withAnd = true)
+    public function getStockFilterSQL($withAnd = true): string
     {
         $filterSQL  = '';
         $filterType = (int)$this->conf['global']['artikel_artikelanzeigefilter'];

@@ -6,6 +6,8 @@
 
 namespace Filter;
 
+use DB\ReturnType;
+
 /**
  * Class Metadata
  */
@@ -288,7 +290,7 @@ class Metadata
         $globalTmp  = \Shop::Container()->getDB()->query(
             "SELECT cName, kSprache, cWertName 
                 FROM tglobalemetaangaben ORDER BY kSprache",
-            2
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($globalTmp as $data) {
             if (!isset($globalMeta[$data->kSprache])) {
@@ -311,7 +313,12 @@ class Metadata
         $cacheID = 'jtl_glob_excl';
         if (($exclude = \Shop::Container()->getCache()->get($cacheID)) === false) {
             $exclude  = [];
-            $keyWords = \Shop::Container()->getDB()->query("SELECT * FROM texcludekeywords ORDER BY cISOSprache", 2);
+            $keyWords = \Shop::Container()->getDB()->query(
+                'SELECT * 
+                    FROM texcludekeywords 
+                    ORDER BY cISOSprache',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
             foreach ($keyWords as $keyWord) {
                 $exclude[$keyWord->cISOSprache] = $keyWord;
             }

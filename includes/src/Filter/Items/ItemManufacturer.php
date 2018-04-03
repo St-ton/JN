@@ -39,7 +39,7 @@ class ItemManufacturer extends BaseManufacturer
      * @param array|int $value
      * @return $this
      */
-    public function setValue($value) : IFilter
+    public function setValue($value): IFilter
     {
         $this->value = is_array($value) ? $value : (int)$value;
 

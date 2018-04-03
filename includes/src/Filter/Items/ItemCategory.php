@@ -35,9 +35,9 @@ class ItemCategory extends BaseCategory
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
         if ($this->getIncludeSubCategories() === true) {
             return ' tkategorieartikel.kKategorie IN (
@@ -54,7 +54,7 @@ class ItemCategory extends BaseCategory
     }
 
     /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
@@ -80,10 +80,9 @@ class ItemCategory extends BaseCategory
     }
 
     /**
-     * @param null $data
-     * @return FilterOption[]
+     * @inheritdoc
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -203,16 +202,16 @@ class ItemCategory extends BaseCategory
                 $category->cName = $helper->getPath(new \Kategorie($category->kKategorie, $langID, $customerGroupID));
             }
             $options[] = (new FilterOption())
+                ->setParam($this->getUrlParam())
+                ->setURL($this->productFilter->getFilterURL()->getURL(
+                    $additionalFilter->init((int)$category->kKategorie)
+                ))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
-                ->setParam($this->getUrlParam())
                 ->setName($category->cName)
                 ->setValue((int)$category->kKategorie)
                 ->setCount($category->nAnzahl)
-                ->setSort($category->nSort)
-                ->setURL($this->productFilter->getFilterURL()->getURL(
-                    $additionalFilter->init((int)$category->kKategorie)
-                ));
+                ->setSort($category->nSort);
         }
         // neue Sortierung
         if ($categoryFilterType === 'KP') {

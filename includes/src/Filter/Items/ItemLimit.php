@@ -34,32 +34,23 @@ class ItemLimit extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
         return $this;
     }
 
     /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return '';
-    }
-
-    /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
-        return null;
+        return [];
     }
 
     /**
-     * @param null $data
-     * @return FilterOption[]
+     * @inheritdoc
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -76,17 +67,17 @@ class ItemLimit extends AbstractFilter
             $limitOption = (int)trim($limitOption);
             $name        = $limitOption > 0 ? $limitOption : \Shop::Lang()->get('showAll');
             $options[]   = (new FilterOption())
+                ->setIsActive(isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] === $limitOption)
+                ->setURL($this->productFilter->getFilterURL()->getURL(
+                    $additionalFilter->init($limitOption)
+                ))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
                 ->setName($name)
                 ->setValue($limitOption)
                 ->setCount(null)
-                ->setSort($i)
-                ->setIsActive(isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] === $limitOption)
-                ->setURL($this->productFilter->getFilterURL()->getURL(
-                    $additionalFilter->init($limitOption)
-                ));
+                ->setSort($i);
         }
         $this->options = $options;
 

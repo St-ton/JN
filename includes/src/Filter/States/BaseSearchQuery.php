@@ -85,7 +85,7 @@ class BaseSearchQuery extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value) : IFilter
+    public function setValue($value): IFilter
     {
         $this->value = (int)$value;
 
@@ -96,13 +96,13 @@ class BaseSearchQuery extends AbstractFilter
      * @param string $name
      * @return $this
      */
-    public function setName($name)
+    public function setName($name): IFilter
     {
         $this->error = null;
-        $minChars = ((int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen'] > 0)
+        $minChars    = ((int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen'] > 0)
             ? (int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen']
             : 3;
-        if (strlen($name) > 0 || (isset($_GET['qs']) && strlen($_GET['qs']) === 0)) {
+        if (strlen($name) > 0 || (isset($_GET['qs']) && $_GET['qs'] === '')) {
             preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $minChars . ",}/",
                 str_replace(' ', '', $name), $cTreffer_arr);
             if (count($cTreffer_arr) === 0) {
@@ -160,7 +160,8 @@ class BaseSearchQuery extends AbstractFilter
      * @param string $errorMsg
      * @return $this
      */
-    public function setError($errorMsg) {
+    public function setError($errorMsg)
+    {
         $this->error = $errorMsg;
 
         return $this;
@@ -177,7 +178,7 @@ class BaseSearchQuery extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
         $oSeo_obj = \Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
@@ -186,7 +187,7 @@ class BaseSearchQuery extends AbstractFilter
                     ON tsuchanfrage.kSuchanfrage = tseo.kKey
                     AND tsuchanfrage.kSprache = tseo.kSprache
                 WHERE cKey = 'kSuchanfrage' 
-                    AND kKey = :key", 
+                    AND kKey = :key",
             ['key' => $this->getID()],
             1
         );
@@ -204,31 +205,23 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'kSuchanfrage';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'tsuchanfrage';
     }
 
     /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return '';
-    }
-
-    /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
@@ -272,7 +265,7 @@ class BaseSearchQuery extends AbstractFilter
      * @param null $data
      * @return FilterOption[]
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -280,11 +273,11 @@ class BaseSearchQuery extends AbstractFilter
         $options  = [];
         $naviConf = $this->getConfig()['navigationsfilter'];
         if ($naviConf['suchtrefferfilter_nutzen'] !== 'N') {
-            $nLimit     = (isset($naviConf['suchtrefferfilter_anzahl'])
+            $nLimit = (isset($naviConf['suchtrefferfilter_anzahl'])
                 && ($limit = (int)$naviConf['suchtrefferfilter_anzahl']) > 0)
                 ? ' LIMIT ' . $limit
                 : '';
-            $state      = $this->productFilter->getCurrentStateData();
+            $state  = $this->productFilter->getCurrentStateData();
 
             $state->joins[] = (new FilterJoin())
                 ->setComment('JOIN1 from ' . __METHOD__)
@@ -308,7 +301,7 @@ class BaseSearchQuery extends AbstractFilter
 
             $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 
-            $query         = $this->productFilter->getFilterSQL()->getBaseQuery(
+            $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
                 ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
@@ -357,17 +350,17 @@ class BaseSearchQuery extends AbstractFilter
             }
             foreach ($searchFilters as $searchFilter) {
                 $fo = (new FilterOption())
-                    ->setType($this->getType())
-                    ->setClassName($this->getClassName())
-                    ->setParam($this->getUrlParam())
-                    ->setName($searchFilter->cSuche)
-                    ->setValue((int)$searchFilter->kSuchanfrage)
-                    ->setCount($searchFilter->nAnzahl)
                     ->setURL($this->productFilter->getFilterURL()->getURL(
                         $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                     ))
-                    ->setClass(rand(1, 10));
-                if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
+                    ->setClass(rand(1, 10))
+                    ->setParam($this->getUrlParam())
+                    ->setType($this->getType())
+                    ->setClassName($this->getClassName())
+                    ->setName($searchFilter->cSuche)
+                    ->setValue((int)$searchFilter->kSuchanfrage)
+                    ->setCount($searchFilter->nAnzahl);
+                if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
                     $fo->setClass(round(
                             ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                             $nPrioStep
@@ -388,7 +381,7 @@ class BaseSearchQuery extends AbstractFilter
      * @return string
      * @former mappingBeachten
      */
-    private function getQueryMapping($Suchausdruck, $kSpracheExt = 0)
+    private function getQueryMapping($Suchausdruck, $kSpracheExt = 0): string
     {
         $kSprache = $kSpracheExt > 0
             ? (int)$kSpracheExt
@@ -426,7 +419,7 @@ class BaseSearchQuery extends AbstractFilter
      * @param int $kSpracheExt
      * @return int
      */
-    public function editSearchCache($kSpracheExt = 0)
+    public function editSearchCache($kSpracheExt = 0): int
     {
         require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
         // Mapping beachten
@@ -833,7 +826,7 @@ class BaseSearchQuery extends AbstractFilter
         \Shop::Container()->getDB()->query(
             'INSERT INTO tsuchcachetreffer ' .
             $cSQL .
-                ' GROUP BY kArtikelTMP
+            ' GROUP BY kArtikelTMP
                 LIMIT ' . (int)$this->getConfig()['artikeluebersicht']['suche_max_treffer'],
             ReturnType::AFFECTED_ROWS
         );
@@ -845,7 +838,7 @@ class BaseSearchQuery extends AbstractFilter
      * @param string $query
      * @return array
      */
-    public function prepareSearchQuery($query)
+    public function prepareSearchQuery($query): array
     {
         $query          = str_replace(["'", '\\', '*', '%'], '', strip_tags($query));
         $searchArray    = [];
@@ -884,8 +877,13 @@ class BaseSearchQuery extends AbstractFilter
      * @return int
      * @former bearbeiteSuchCacheFulltext
      */
-    private function editFullTextSearchCache($oSuchCache, $searchColumnn_arr, $cSuch_arr, $nLimit = 0, $cFullText = 'Y') : int
-    {
+    private function editFullTextSearchCache(
+        $oSuchCache,
+        $searchColumnn_arr,
+        $cSuch_arr,
+        $nLimit = 0,
+        $cFullText = 'Y'
+    ): int {
         $nLimit = (int)$nLimit;
 
         if ($oSuchCache->kSuchCache > 0) {
@@ -951,7 +949,7 @@ class BaseSearchQuery extends AbstractFilter
      * @param array $searchColumns
      * @return array
      */
-    public function getSearchColumnClasses($searchColumns)
+    public function getSearchColumnClasses($searchColumns): array
     {
         $result = [];
         if (is_array($searchColumns) && count($searchColumns) > 0) {
@@ -990,12 +988,12 @@ class BaseSearchQuery extends AbstractFilter
      * @param array  $nonAllowed
      * @return bool
      */
-    public function checkColumnClasses($searchColumns, $searchColumn, $nonAllowed)
+    public function checkColumnClasses($searchColumns, $searchColumn, $nonAllowed): bool
     {
-        if (is_array($searchColumns) 
-            && is_array($nonAllowed) 
-            && count($searchColumns) > 0 
-            && strlen($searchColumn) > 0 
+        if (is_array($searchColumns)
+            && is_array($nonAllowed)
+            && count($searchColumns) > 0
+            && strlen($searchColumn) > 0
             && count($nonAllowed) > 0
         ) {
             foreach ($nonAllowed as $class) {
@@ -1011,24 +1009,24 @@ class BaseSearchQuery extends AbstractFilter
 
         return true;
     }
-    
+
     /**
      * @return bool
      */
-    private function isFulltextIndexActive()
+    private function isFulltextIndexActive(): bool
     {
         static $active = null;
 
         if ($active === null) {
             $active = \Shop::Container()->getDB()->query(
-                "SHOW INDEX FROM tartikel 
+                    "SHOW INDEX FROM tartikel 
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                ReturnType::SINGLE_OBJECT)
-            && \Shop::Container()->getDB()->query(
-                "SHOW INDEX 
+                    ReturnType::SINGLE_OBJECT)
+                && \Shop::Container()->getDB()->query(
+                    "SHOW INDEX 
                     FROM tartikelsprache 
                     WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                ReturnType::SINGLE_OBJECT);
+                    ReturnType::SINGLE_OBJECT);
         }
 
         return $active;

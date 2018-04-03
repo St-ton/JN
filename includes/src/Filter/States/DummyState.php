@@ -36,7 +36,7 @@ class DummyState extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setValue($value) : IFilter
+    public function setValue($value): IFilter
     {
         $this->dummyValue = (int)$value;
 
@@ -54,7 +54,7 @@ class DummyState extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
         return $this;
     }
@@ -62,17 +62,9 @@ class DummyState extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function init($id) : IFilter
+    public function init($id): IFilter
     {
         return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getSQLCondition()
-    {
-        return '';
     }
 
     /**

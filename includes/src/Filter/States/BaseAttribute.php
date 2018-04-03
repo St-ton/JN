@@ -48,7 +48,7 @@ class BaseAttribute extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value) : IFilter
+    public function setValue($value): IFilter
     {
         $this->value = (int)$value;
 
@@ -58,7 +58,7 @@ class BaseAttribute extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
         $oSeo_arr = \Shop::Container()->getDB()->selectAll(
             'tseo',
@@ -124,42 +124,35 @@ class BaseAttribute extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'kMerkmalWert';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'tmerkmalwert';
     }
 
     /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return '';
-    }
-
-    /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
-        return (new FilterJoin())->setType('JOIN')
-             ->setComment('JOIN from ' . __METHOD__)
-             ->setTable('(SELECT kArtikel
+        return (new FilterJoin())
+            ->setType('JOIN')
+            ->setComment('JOIN from ' . __METHOD__)
+            ->setTable('(SELECT kArtikel
                               FROM tartikelmerkmal
                               WHERE kMerkmalWert = ' . $this->getValue() . '
                               GROUP BY tartikelmerkmal.kArtikel
                               ) AS tmerkmaljoin')
-             ->setOrigin(__CLASS__)
-             ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');
+            ->setOrigin(__CLASS__)
+            ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');
     }
 }

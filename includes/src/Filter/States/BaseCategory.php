@@ -51,7 +51,7 @@ class BaseCategory extends AbstractFilter
     /**
      * @return bool
      */
-    public function getIncludeSubCategories()
+    public function getIncludeSubCategories(): bool
     {
         return $this->includeSubCategories;
     }
@@ -60,7 +60,7 @@ class BaseCategory extends AbstractFilter
      * @param bool $includeSubCategories
      * @return ItemCategory
      */
-    public function setIncludeSubCategories($includeSubCategories)
+    public function setIncludeSubCategories($includeSubCategories): self
     {
         $this->includeSubCategories = (bool)$includeSubCategories;
 
@@ -71,7 +71,7 @@ class BaseCategory extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value) : IFilter
+    public function setValue($value): IFilter
     {
         $this->value = (int)$value;
 
@@ -81,7 +81,7 @@ class BaseCategory extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
         if ($this->getValue() > 0) {
             $oSeo_arr = \Shop::Container()->getDB()->queryPrepared(
@@ -122,25 +122,25 @@ class BaseCategory extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'kKategorie';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'tkategorie';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
         return $this->getIncludeSubCategories() === true
             ? ' tkategorieartikel.kKategorie IN (
@@ -152,7 +152,7 @@ class BaseCategory extends AbstractFilter
     }
 
     /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {

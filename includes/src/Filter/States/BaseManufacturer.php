@@ -46,7 +46,7 @@ class BaseManufacturer extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value) : IFilter
+    public function setValue($value): IFilter
     {
         return parent::setValue((int)$value);
     }
@@ -54,7 +54,7 @@ class BaseManufacturer extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
         $val = $this->getValue();
         if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {
@@ -67,7 +67,7 @@ class BaseManufacturer extends AbstractFilter
                         JOIN thersteller
                             ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
-                        AND kKey IN (" . implode(', ', $val). ")
+                        AND kKey IN (" . implode(', ', $val) . ")
                     ORDER BY kSprache",
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -75,7 +75,7 @@ class BaseManufacturer extends AbstractFilter
                 $this->cSeo[$language->kSprache] = '';
                 foreach ($oSeo_arr as $oSeo) {
                     if ($language->kSprache === (int)$oSeo->kSprache) {
-                        $sep = $this->cSeo[$language->kSprache] === '' ? '' : SEP_HST;
+                        $sep                             = $this->cSeo[$language->kSprache] === '' ? '' : SEP_HST;
                         $this->cSeo[$language->kSprache] .= $sep . $oSeo->cSeo;
                     }
                 }
@@ -93,17 +93,17 @@ class BaseManufacturer extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'kHersteller';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'thersteller';
     }
@@ -111,21 +111,22 @@ class BaseManufacturer extends AbstractFilter
     /**
      * @return string
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
         $val = $this->getValue();
         if (!is_array($val)) {
             $val = [$val];
         }
+
         return $this->getType() === AbstractFilter::FILTER_TYPE_OR
             ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . implode(', ', $val) . ')'
-            : implode(' AND ', array_map(function($e) {
+            : implode(' AND ', array_map(function ($e) {
                 return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
             }, $val));
     }
 
     /**
-     * @return FilterJoin[]
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
@@ -136,7 +137,7 @@ class BaseManufacturer extends AbstractFilter
      * @param null $data
      * @return FilterOption[]
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -155,7 +156,7 @@ class BaseManufacturer extends AbstractFilter
                 ->setOn('tartikel.kHersteller = thersteller.kHersteller')
                 ->setOrigin(__CLASS__);
 
-            $query = $this->productFilter->getFilterSQL()->getBaseQuery(
+            $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
                 [
                     'thersteller.kHersteller',
                     'thersteller.cName',
@@ -169,8 +170,8 @@ class BaseManufacturer extends AbstractFilter
             $manufacturers    = \Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
                     FROM (" .
-                    $query .
-                    ") AS ssMerkmal
+                $query .
+                ") AS ssMerkmal
                         LEFT JOIN tseo 
                             ON tseo.kKey = ssMerkmal.kHersteller
                             AND tseo.cKey = 'kHersteller'
@@ -190,6 +191,11 @@ class BaseManufacturer extends AbstractFilter
                 );
 
                 $options[] = (new FilterOption())
+                    ->setURL($manufacturer->cURL)
+                    ->setIsActive($this->productFilter->filterOptionIsActive(
+                        $this->getClassName(),
+                        $manufacturer->kHersteller)
+                    )
                     ->setType($this->getType())
                     ->setFrontendName($manufacturer->cName)
                     ->setClassName($this->getClassName())
@@ -197,12 +203,8 @@ class BaseManufacturer extends AbstractFilter
                     ->setName($manufacturer->cName)
                     ->setValue($manufacturer->kHersteller)
                     ->setCount($manufacturer->nAnzahl)
-                    ->setSort($manufacturer->nSortNr)
-                    ->setURL($manufacturer->cURL)
-                    ->setIsActive($this->productFilter->filterOptionIsActive(
-                        $this->getClassName(),
-                        $manufacturer->kHersteller)
-                    );
+                    ->setSort($manufacturer->nSortNr);
+
             }
         }
         $this->options = $options;

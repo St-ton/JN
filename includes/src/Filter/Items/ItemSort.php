@@ -34,32 +34,23 @@ class ItemSort extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
         return $this;
     }
 
     /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return '';
-    }
-
-    /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
-        return null;
+        return [];
     }
 
     /**
-     * @param null $data
-     * @return FilterOption[]
+     * @inheritdoc
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -68,17 +59,19 @@ class ItemSort extends AbstractFilter
         $additionalFilter = new self($this->productFilter);
         foreach ($this->productFilter->getMetaData()->getSortingOptions() as $i => $sortingOption) {
             $options[] = (new FilterOption())
+                ->setIsActive(isset($_SESSION['Usersortierung'])
+                    && $_SESSION['Usersortierung'] === (int)$sortingOption->value
+                )
+                ->setURL($this->productFilter->getFilterURL()->getURL(
+                    $additionalFilter->init((int)$sortingOption->value)
+                ))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
                 ->setName($sortingOption->angezeigterName)
                 ->setValue((int)$sortingOption->value)
                 ->setCount(null)
-                ->setSort($i)
-                ->setIsActive(isset($_SESSION['Usersortierung']) && $_SESSION['Usersortierung'] === (int)$sortingOption->value)
-                ->setURL($this->productFilter->getFilterURL()->getURL(
-                    $additionalFilter->init((int)$sortingOption->value)
-                ));
+                ->setSort($i);
         }
         $this->options = $options;
 

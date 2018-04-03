@@ -33,19 +33,9 @@ class FilterOption extends AbstractFilter
     private $param = '';
 
     /**
-     * @var int
-     */
-    private $count;
-
-    /**
      * @var string
      */
     private $url;
-
-    /**
-     * @var int
-     */
-    private $sort = 0;
 
     /**
      * if set to true, ProductFilterURL::getURL() will not return a SEO URL
@@ -104,29 +94,10 @@ class FilterOption extends AbstractFilter
      * @param bool|int $isActive
      * @return $this
      */
-    public function setIsActive($isActive)
+    public function setIsActive($isActive): IFilter
     {
         $this->isActive = (bool)$isActive;
         $this->nAktiv   = (int)$isActive;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getSort()
-    {
-        return $this->sort;
-    }
-
-    /**
-     * @param int $sort
-     * @return $this
-     */
-    public function setSort($sort)
-    {
-        $this->sort = (int)$sort;
 
         return $this;
     }
@@ -170,25 +141,6 @@ class FilterOption extends AbstractFilter
     }
 
     /**
-     * @return int
-     */
-    public function getCount()
-    {
-        return $this->count;
-    }
-
-    /**
-     * @param int $count
-     * @return $this
-     */
-    public function setCount($count)
-    {
-        $this->count = (int)$count;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getURL()
@@ -227,10 +179,9 @@ class FilterOption extends AbstractFilter
     }
 
     /**
-     * @param null $data
-     * @return array
+     * @inheritdoc
      */
-    public function getOptions($data = null)
+    public function getOptions($mixed = null): array
     {
         return $this->options;
     }
@@ -318,18 +269,10 @@ class FilterOption extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
-        return '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return '';
+        return [];
     }
 }

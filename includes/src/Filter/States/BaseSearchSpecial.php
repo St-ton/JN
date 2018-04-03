@@ -45,7 +45,7 @@ class BaseSearchSpecial extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value) : IFilter
+    public function setValue($value): IFilter
     {
         $this->value = (int)$value;
 
@@ -55,7 +55,7 @@ class BaseSearchSpecial extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
         $oSeo_arr = \Shop::Container()->getDB()->selectAll(
             'tseo',
@@ -103,23 +103,24 @@ class BaseSearchSpecial extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'kKey';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
         switch ($this->value) {
             case SEARCHSPECIALS_BESTSELLER:
                 $nAnzahl = (($min = $this->getConfig()['global']['global_bestseller_minanzahl']) > 0)
                     ? (int)$min
                     : 100;
+
                 return "ROUND(tbestseller.fAnzahl) >= " . $nAnzahl;
 
             case SEARCHSPECIALS_SPECIALOFFERS:
@@ -129,10 +130,11 @@ class BaseSearchSpecial extends AbstractFilter
                     $tasp = 'tasp';
                     $tsp  = 'tsp';
                 }
+
                 return $tasp . " .kArtikel = tartikel.kArtikel
                                     AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= now()
                                     AND (" . $tasp . ".dEnde >= curdate() OR " . $tasp . ".dEnde = '0000-00-00')
-                                    AND " . $tsp . " .kKundengruppe = " . Session::CustomerGroup()->getID();
+                                    AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
 
             case SEARCHSPECIALS_NEWPRODUCTS:
                 $alter_tage = (($age = $this->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
@@ -165,7 +167,7 @@ class BaseSearchSpecial extends AbstractFilter
     }
 
     /**
-     * @return array|FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {

@@ -1983,15 +1983,20 @@ final class Shop
 
             return $oAccount->logged();
         };
+        $sessionName = session_name();
+        if ($sessionName !== 'eSIdAdm' && $sessionName !== 'JTLSHOP') {
+            Session::getInstance();
+        }
+
         if (isset($_COOKIE['eSIdAdm'])) {
-            if (session_name() !== 'eSIdAdm') {
+            if ($sessionName !== 'eSIdAdm') {
                 $oldID = session_id();
                 session_write_close();
                 session_id($_COOKIE['eSIdAdm']);
                 $result = $isLogged();
                 session_write_close();
                 session_id($oldID);
-                new Session();
+                Session::getInstance(true, true);
             } else {
                 $result = $isLogged();
             }

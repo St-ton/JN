@@ -152,17 +152,26 @@ class Warenkorb
     /**
      * fuegt eine neue Position hinzu
      *
-     * @param int   $kArtikel ArtikelKey
-     * @param int   $anzahl Anzahl des Artikel fuer die neue Position
-     * @param array $oEigenschaftwerte_arr
-     * @param int   $nPosTyp
-     * @param bool  $cUnique
-     * @param int   $kKonfigitem
-     * @param bool  $setzePositionsPreise
+     * @param int    $kArtikel ArtikelKey
+     * @param int    $anzahl Anzahl des Artikel fuer die neue Position
+     * @param array  $oEigenschaftwerte_arr
+     * @param int    $nPosTyp
+     * @param bool   $cUnique
+     * @param int    $kKonfigitem
+     * @param bool   $setzePositionsPreise
+     * @param string $cResponsibility
      * @return $this
      */
-    public function fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, $nPosTyp = 1, $cUnique = false, $kKonfigitem = 0, $setzePositionsPreise = true)
-    {
+    public function fuegeEin(
+        $kArtikel,
+        $anzahl,
+        $oEigenschaftwerte_arr,
+        $nPosTyp = 1,
+        $cUnique = false,
+        $kKonfigitem = 0,
+        $setzePositionsPreise = true,
+        $cResponsibility = 'core'
+    ) {
         $kArtikel = (int)$kArtikel;
         //toDo schaue, ob diese Pos nicht markiert werden muesste, wenn anzahl>lager gekauft wird
         //schaue, ob es nicht schon Positionen mit diesem Artikel gibt
@@ -229,6 +238,7 @@ class Warenkorb
         $NeuePosition->nPosTyp           = $nPosTyp;
         $NeuePosition->cEinheit          = $NeuePosition->Artikel->cEinheit;
         $NeuePosition->cUnique           = $cUnique;
+        $NeuePosition->cResponsibility   = $cResponsibility;
         $NeuePosition->kKonfigitem       = $kKonfigitem;
 
         $NeuePosition->setzeGesamtpreisLocalized();

@@ -1143,9 +1143,18 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
  * @param bool       $cUnique
  * @param int        $kKonfigitem
  * @param int|string $nPosTyp
+ * @param string     $cResponsibility
+
  */
-function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique = false, $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
-{
+function fuegeEinInWarenkorbPers(
+    $kArtikel,
+    $fAnzahl,
+    $oEigenschaftwerte_arr,
+    $cUnique = false,
+    $kKonfigitem = 0,
+    $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL,
+    $cResponsibility = 'core'
+) {
     // Pruefe ob Kunde eingeloggt
     if (!isset($_SESSION['Kunde']->kKunde)) {
         return;
@@ -1188,7 +1197,8 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
                         $fAnzahl,
                         $cUnique,
                         $kKonfigitem,
-                        $nPosTyp
+                        $nPosTyp,
+                        $cResponsibility
                     );
                 }
             }
@@ -1196,7 +1206,16 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
         } elseif ($kArtikel === 0 && !empty($kKonfigitem)) {
             $konfItem       = new Konfigitemsprache($kKonfigitem, $_SESSION['kSprache']);
             $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
-            $oWarenkorbPers->fuegeEin($kArtikel, $konfItem->getName(), $oEigenschaftwerte_arr, $fAnzahl, $cUnique, $kKonfigitem, $nPosTyp);
+            $oWarenkorbPers->fuegeEin(
+                $kArtikel,
+                $konfItem->getName(),
+                $oEigenschaftwerte_arr,
+                $fAnzahl,
+                $cUnique,
+                $kKonfigitem,
+                $nPosTyp,
+                $cResponsibility
+            );
         }
     }
 }
@@ -1438,10 +1457,20 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
  * @param int           $kKonfigitem
  * @param stdClass|null $oArtikelOptionen
  * @param bool          $setzePositionsPreise
+ * @param string        $cResponsibility
  * @return bool
  */
-function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $nWeiterleitung = 0, $cUnique = false, $kKonfigitem = 0, $oArtikelOptionen = null, $setzePositionsPreise = true)
-{
+function fuegeEinInWarenkorb(
+    $kArtikel,
+    $anzahl,
+    $oEigenschaftwerte_arr = [],
+    $nWeiterleitung = 0,
+    $cUnique = false,
+    $kKonfigitem = 0,
+    $oArtikelOptionen = null,
+    $setzePositionsPreise = true,
+    $cResponsibility = 'core'
+) {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $kArtikel = (int)$kArtikel;
     if ($anzahl > 0 && ($kArtikel > 0 || $kArtikel === 0 && !empty($kKonfigitem) && !empty($cUnique))) {
@@ -1482,7 +1511,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $n
                 return false;
             }
         }
-        $_SESSION['Warenkorb']->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, $setzePositionsPreise)
+        $_SESSION['Warenkorb']->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, $setzePositionsPreise, $cResponsibility)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)

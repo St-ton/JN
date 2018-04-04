@@ -12,6 +12,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 $AktuelleSeite    = 'ARTIKEL';
 $oPreisverlauf    = null;
 $bPreisverlauf    = false;
+$bereitsBewertet  = false;
 $Artikelhinweise  = [];
 $PositiveFeedback = [];
 $nonAllowed       = [];
@@ -178,6 +179,14 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
 } else {
     $oBewertung_arr = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
+if (isset($_SESSION['Kunde']) && !empty($oBewertung_arr)) {
+    foreach ($oBewertung_arr as $Bewertung) {
+        if ((int)$Bewertung->kKunde === Session::Customer()->getID()) {
+            $bereitsBewertet = true;
+            break;
+        }
+    }
+}
 
 $pagination = (new Pagination('ratings'))
     ->setItemArray($oBewertung_arr)
@@ -275,6 +284,7 @@ if (isAjaxRequest()) {
     $smarty->assign('listStyle', isset($_GET['isListStyle']) ? StringHandler::filterXSS($_GET['isListStyle']) : '');
 }
 
+$smarty->assign('bereitsBewertet', $bereitsBewertet);
 $smarty->display('productdetails/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

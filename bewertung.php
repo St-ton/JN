@@ -11,20 +11,12 @@ Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
 $cParameter_arr = Shop::getParameters();
 $Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
+
 // Bewertung in die Datenbank speichern
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
-    if (pruefeKundeArtikelBewertet($cParameter_arr['kArtikel'], $_SESSION['Kunde']->kKunde)) {
-        $artikel = (new Artikel())->fuelleArtikel($cParameter_arr['kArtikel'], Artikel::getDefaultOptions());
-        $url     = empty($artikel->cURLFull)
-            ? (Shop::getURL() . '/?a=' . $cParameter_arr['kArtikel'])
-            : ($artikel->cURLFull . '?');
-        header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f02', true, 301);
-        exit();
-    }
-    // Versuche die Bewertung zu speichern
     speicherBewertung(
         $cParameter_arr['kArtikel'],
-        $_SESSION['Kunde']->kKunde,
+        Session::Customer()->getID(),
         Shop::getLanguage(),
         verifyGPDataString('cTitel'),
         verifyGPDataString('cText'),
@@ -33,7 +25,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) { // Hilfreich abspeichern
     speicherHilfreich(
         $cParameter_arr['kArtikel'],
-        $_SESSION['Kunde']->kKunde,
+        Session::Customer()->getID(),
         Shop::getLanguage(),
         verifyGPCDataInteger('btgseite'),
         verifyGPCDataInteger('btgsterne')
@@ -90,7 +82,11 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
             'bewertung.php?a=' . $AktuellerArtikel->kArtikel . '&bfa=1'))
         ->assign('Artikel', $AktuellerArtikel)
         ->assign('requestURL', $requestURL ?? null)
-        ->assign('sprachURL', $sprachURL ?? null);
+        ->assign('sprachURL', $sprachURL ?? null)
+        ->assign('oBewertung', Shop::Container()->getDB()->select(
+            'tbewertung',
+            ['kArtikel', 'kKunde'],
+            [$AktuellerArtikel->kArtikel, Session::Customer()->getID()]));
 
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     Shop::Smarty()->display('productdetails/review_form.tpl');

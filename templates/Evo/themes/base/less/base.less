@@ -1406,6 +1406,13 @@ table.matrix tbody > tr > td {
     border-color: transparent;
 }
 
+@media (max-width: @grid-float-breakpoint-max) {
+    #evo-navbar-collapse a{
+        font-size: @font-size-base;
+        border-bottom: 0;
+    }
+}
+
 @media (min-width: @screen-sm-min) {
     .navbar-form {
         padding: 0;
@@ -2304,6 +2311,9 @@ fieldset {
         border-top: 3px solid @brand-primary;
         border-left: none;
         border-right: none;
+    }
+    .dropdown .dropdown-menu{
+        border-top: 3px solid @brand-primary;
     }
     .thumbnail {
         text-decoration: none;

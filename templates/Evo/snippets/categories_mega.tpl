@@ -32,8 +32,8 @@
             {if isset($category->bUnterKategorien) && $category->bUnterKategorien}
                 {assign var='isDropdown' value=true}
             {/if}
-            <li class="{if $isDropdown}dropdown megamenu-fw{/if}{if $category->kKategorie == $activeId || (isset($activeParents[0]) && $activeParents[0]->kKategorie == $category->kKategorie)} active{/if}">
-                <a href="{$category->cURLFull}"{if $isDropdown} class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true"{/if}>
+            <li role="presentation" class="nav-item {if $isDropdown}dropdown megamenu-fw{/if}{if $category->kKategorie == $activeId || (isset($activeParents[0]) && $activeParents[0]->kKategorie == $category->kKategorie)} active{/if}">
+                <a href="{$category->cURLFull}"{if $isDropdown} class="dropdown-toggle nav-link" data-target="#" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true"{/if}>
                     {$category->cKurzbezeichnung}
                     {if $isDropdown}<span class="caret"></span>{/if}
                 </a>
@@ -41,7 +41,7 @@
                     <ul class="dropdown-menu">
                         <li>
                             <div class="megamenu-content">
-                                <div class="category-title text-center hidden-xs hidden-sm">
+                                <div class="category-title text-center">
                                     <a href="{$category->cURLFull}">
                                         {$category->cName}
                                     </a>
@@ -79,7 +79,7 @@
                                                 {/if}
                                                 {foreach name=sub_categories from=$sub_categories item='sub'}
                                                     <div class="col-xs-12 col-md-6 col-lg-3">
-                                                        <div class="category-wrapper top15{if $sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie)} active{/if}">
+                                                        <div class="dropdown-item category-wrapper top15{if $sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie)} active{/if}">
                                                             {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                                 <div class="img text-center hidden-xs hidden-sm">
                                                                     <a href="{$sub->cURLFull}">

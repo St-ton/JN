@@ -311,7 +311,7 @@
         },
 
         preventDropdownToggle: function() {
-            $('a.dropdown-toggle').click(function(e){
+            $('.megamenu-content a.dropdown-toggle').click(function(e){
                 var elem = e.target;
                 if (elem.getAttribute('aria-expanded') == 'true' && elem.getAttribute('href') != '#') {
                     window.location.href = elem.getAttribute('href');

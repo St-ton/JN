@@ -4,8 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter;
+
 /**
- * class AbstractFilter
+ * Class AbstractFilter
+ * @package Filter
  */
 abstract class AbstractFilter implements IFilter
 {
@@ -55,7 +58,7 @@ abstract class AbstractFilter implements IFilter
     const INPUT_BUTTON = 3;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $icon;
 
@@ -156,6 +159,16 @@ abstract class AbstractFilter implements IFilter
     private $visibility = self::SHOW_ALWAYS;
 
     /**
+     * @var int
+     */
+    private $count = 0;
+
+    /**
+     * @var int
+     */
+    private $sort = 0;
+
+    /**
      * @var string
      */
     protected $frontendName = '';
@@ -198,10 +211,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param int|array $value
-     * @return $this
+     * @inheritdoc
      */
-    public function init($value)
+    public function init($value): IFilter
     {
         if ($value !== null) {
             $this->isInitialized = true;
@@ -212,18 +224,17 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->isActive;
     }
 
     /**
-     * @param bool $active
-     * @return $this
+     * @inheritdoc
      */
-    public function setIsActive($active)
+    public function setIsActive($active): IFilter
     {
         $this->isActive = $active;
 
@@ -231,10 +242,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param bool $value
-     * @return $this
+     * @inheritdoc
      */
-    public function setIsInitialized($value)
+    public function setIsInitialized($value): IFilter
     {
         $this->isInitialized = $value;
 
@@ -242,9 +252,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return $this
+     * @inheritdoc
      */
-    public function generateActiveFilterData()
+    public function generateActiveFilterData(): IFilter
     {
         $this->activeValues = [];
         $values             = $this->getValue();
@@ -255,16 +265,19 @@ abstract class AbstractFilter implements IFilter
         }
         foreach ($values as $value) {
             if ($split === true) {
-                $class    = $this->getClassName();
-                $instance = (new $class($this->getProductFilter()))->init($value);
+                $class = $this->getClassName();
+                /** @var IFilter $instance */
+                $instance = new $class($this->getProductFilter());
+                $instance->init($value);
             } else {
                 $instance = $this;
             }
-            $this->activeValues[] = (new FilterOption())->setFrontendName($instance->getName())
-                                                        ->setURL($this->getSeo($this->languageID))
-                                                        ->setValue($value)
-                                                        ->setName($instance->getFrontendName())
-                                                        ->setType($this->getType());
+            $this->activeValues[] = (new FilterOption())
+                ->setURL($this->getSeo($this->languageID))
+                ->setFrontendName($instance->getName())
+                ->setValue($value)
+                ->setName($instance->getFrontendName())
+                ->setType($this->getType());
         }
         $this->isActive = true;
 
@@ -272,10 +285,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param array $collection
-     * @return $this
+     * @inheritdoc
      */
-    public function setFilterCollection(array $collection)
+    public function setFilterCollection(array $collection): IFilter
     {
         $this->filterCollection = $collection;
 
@@ -283,10 +295,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param bool $onlyVisible - only show visible filters
-     * @return array
+     * @inheritdoc
      */
-    public function getFilterCollection($onlyVisible = true)
+    public function getFilterCollection($onlyVisible = true): array
     {
         return $onlyVisible === false
             ? $this->filterCollection
@@ -300,10 +311,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param string $name
-     * @return $this
+     * @inheritdoc
      */
-    public function setFrontendName($name)
+    public function setFrontendName(string $name): IFilter
     {
         $this->frontendName = htmlspecialchars($name);
 
@@ -311,7 +321,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getFrontendName()
     {
@@ -319,7 +329,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getVisibility()
     {
@@ -327,10 +337,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param int|string $visibility
-     * @return $this
+     * @inheritdoc
      */
-    public function setVisibility($visibility)
+    public function setVisibility($visibility): IFilter
     {
         $this->visibility = self::SHOW_NEVER;
         if (is_numeric($visibility)) {
@@ -347,10 +356,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param string|array $url
-     * @return $this
+     * @inheritdoc
      */
-    public function setUnsetFilterURL($url)
+    public function setUnsetFilterURL($url): IFilter
     {
         $this->unsetFilterURL = $url;
 
@@ -358,32 +366,31 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param string|array|null $idx
-     * @return string|array
+     * @inheritdoc
      */
     public function getUnsetFilterURL($idx = null)
     {
         if ($idx !== null && is_array($idx) && count($idx) === 1) {
             $idx = $idx[0];
         }
+
         return $idx === null || is_string($this->unsetFilterURL)
             ? $this->unsetFilterURL
             : $this->unsetFilterURL[$idx];
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function getAvailableLanguages()
+    public function getAvailableLanguages(): array
     {
         return $this->availableLanguages;
     }
 
     /**
-     * @param int|string $value
-     * @return $this
+     * @inheritdoc
      */
-    public function addValue($value)
+    public function addValue($value): IFilter
     {
         $this->value[] = (int)$value;
 
@@ -391,16 +398,15 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isInitialized()
+    public function isInitialized(): bool
     {
         return $this->isInitialized;
     }
 
     /**
-     * @param int $idx
-     * @return string|null|array
+     * @inheritdoc
      */
     public function getSeo($idx = null)
     {
@@ -410,7 +416,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getType()
     {
@@ -418,10 +424,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param int $type
-     * @return $this
+     * @inheritdoc
      */
-    public function setType($type)
+    public function setType($type): IFilter
     {
         $this->type = (int)$type;
 
@@ -429,7 +434,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getName()
     {
@@ -437,10 +442,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param string $name
-     * @return $this
+     * @inheritdoc
      */
-    public function setName($name)
+    public function setName($name): IFilter
     {
         $this->name = $name;
 
@@ -448,10 +452,17 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param mixed $data
-     * @return $this
+     * @inheritdoc
      */
-    public function setOptions($data)
+    public function getOptions($data = null): array
+    {
+        return [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setOptions($data): IFilter
     {
         $this->options = $data;
 
@@ -459,19 +470,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param null|mixed $data
-     * @return FilterOption[]
+     * @inheritdoc
      */
-    public function getOptions($data = null)
-    {
-        return [];
-    }
-
-    /**
-     * @param ProductFilter $productFilter
-     * @return $this
-     */
-    public function setProductFilter($productFilter)
+    public function setProductFilter(ProductFilter $productFilter): IFilter
     {
         $this->productFilter = $productFilter;
 
@@ -479,18 +480,17 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return ProductFilter
+     * @inheritdoc
      */
-    public function getProductFilter()
+    public function getProductFilter(): ProductFilter
     {
         return $this->productFilter;
     }
 
     /**
-     * @param ProductFilter $productFilter
-     * @return $this
+     * @inheritdoc
      */
-    public function setBaseData($productFilter)
+    public function setBaseData($productFilter): IFilter
     {
         $this->productFilter      = $productFilter;
         $this->languageID         = $productFilter->getLanguageID();
@@ -501,7 +501,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getUrlParam()
     {
@@ -509,10 +509,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param string $param
-     * @return $this
+     * @inheritdoc
      */
-    public function setUrlParam($param)
+    public function setUrlParam($param): IFilter
     {
         $this->urlParam = $param;
 
@@ -520,7 +519,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getUrlParamSEO()
     {
@@ -528,10 +527,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param string $param
-     * @return $this
+     * @inheritdoc
      */
-    public function setUrlParamSEO($param)
+    public function setUrlParamSEO($param): IFilter
     {
         $this->urlParamSEO = $param;
 
@@ -539,18 +537,17 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isCustom()
+    public function isCustom(): bool
     {
         return $this->isCustom;
     }
 
     /**
-     * @param bool $custom
-     * @return $this
+     * @inheritdoc
      */
-    public function setIsCustom($custom)
+    public function setIsCustom(bool $custom): IFilter
     {
         $this->isCustom = $custom;
 
@@ -558,31 +555,31 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
-    public function getLanguageID()
+    public function getLanguageID(): int
     {
         return $this->languageID;
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
-    public function getCustomerGroupID()
+    public function getCustomerGroupID(): int
     {
         return $this->customerGroupID;
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->productFilter->getConfig();
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getClassName()
     {
@@ -590,10 +587,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param string $className
-     * @return $this
+     * @inheritdoc
      */
-    public function setClassName($className)
+    public function setClassName($className): IFilter
     {
         $this->className = $className;
 
@@ -601,26 +597,17 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return FilterOption
-     */
-    public function getExtraFilter()
-    {
-        return new FilterOption();
-    }
-
-    /**
      * @return bool
      */
-    public function getIsChecked()
+    public function getIsChecked(): bool
     {
         return $this->isChecked;
     }
 
     /**
-     * @param bool $isChecked
-     * @return $this
+     * @inheritdoc
      */
-    public function setIsChecked($isChecked)
+    public function setIsChecked(bool $isChecked): IFilter
     {
         $this->isChecked = $isChecked;
 
@@ -628,18 +615,17 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function getDoUnset()
+    public function getDoUnset(): bool
     {
         return $this->doUnset;
     }
 
     /**
-     * @param bool $doUnset
-     * @return $this
+     * @inheritdoc
      */
-    public function setDoUnset($doUnset)
+    public function setDoUnset(bool $doUnset): IFilter
     {
         $this->doUnset = $doUnset;
 
@@ -647,7 +633,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getInputType()
     {
@@ -655,10 +641,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param int $type
-     * @return $this
+     * @inheritdoc
      */
-    public function setInputType($type)
+    public function setInputType($type): IFilter
     {
         $this->inputType = $type;
 
@@ -666,7 +651,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getIcon()
     {
@@ -674,10 +659,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param string $icon
-     * @return $this
+     * @inheritdoc
      */
-    public function setIcon($icon)
+    public function setIcon($icon): IFilter
     {
         $this->icon = $icon;
 
@@ -685,16 +669,33 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableAlias()
+    public function getTableAlias(): string
     {
         return '';
     }
 
     /**
-     * @param null|int $idx
-     * @return FilterOption|FilterOption[]|IFilter
+     * @inheritdoc
+     */
+    public function getTableName(): string
+    {
+        return $this->tableName;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setTableName($name): IFilter
+    {
+        $this->tableName = $name;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
      */
     public function getActiveValues($idx = null)
     {
@@ -707,9 +708,9 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return $this
+     * @inheritdoc
      */
-    public function hide()
+    public function hide(): IFilter
     {
         $this->visibility = self::SHOW_NEVER;
 
@@ -717,49 +718,31 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isHidden()
+    public function isHidden(): bool
     {
         return $this->visibility === self::SHOW_NEVER;
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getPrimaryKeyRow(): string
     {
-        return $this->tableName;
-    }
-
-    /**
-     * @param string $name
-     * @return $this
-     */
-    public function setTableName($name)
-    {
-        $this->tableName = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPrimaryKeyRow() {
         return '';
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
-        return [];
+        return '';
     }
 
     /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
@@ -767,7 +750,7 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @return array|int|string
+     * @inheritdoc
      */
     public function getValue()
     {
@@ -775,12 +758,47 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * @param array|int|string $value
-     * @return $this
+     * @inheritdoc
      */
-    public function setValue($value)
+    public function setValue($value): IFilter
     {
         $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCount()
+    {
+        return $this->count;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setCount($count)
+    {
+        $this->count = (int)$count;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSort()
+    {
+        return $this->sort;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSort($sort)
+    {
+        $this->sort = (int)$sort;
 
         return $this;
     }

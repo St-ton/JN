@@ -4,12 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\States;
+
+use DB\ReturnType;
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+
 /**
- * Class FilterBaseAttribute
+ * Class BaseAttribute
+ * @package Filter\States
  */
-class FilterBaseAttribute extends AbstractFilter
+class BaseAttribute extends AbstractFilter
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -21,7 +31,7 @@ class FilterBaseAttribute extends AbstractFilter
     ];
 
     /**
-     * FilterBaseAttribute constructor.
+     * BaseAttribute constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -38,7 +48,7 @@ class FilterBaseAttribute extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value)
+    public function setValue($value): IFilter
     {
         $this->value = (int)$value;
 
@@ -46,12 +56,11 @@ class FilterBaseAttribute extends AbstractFilter
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages): IFilter
     {
-        $oSeo_arr = Shop::Container()->getDB()->selectAll(
+        $oSeo_arr = \Shop::Container()->getDB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['kMerkmalWert', $this->getValue()],
@@ -66,27 +75,27 @@ class FilterBaseAttribute extends AbstractFilter
                 }
             }
         }
-        $oSQL            = new stdClass();
+        $oSQL            = new \stdClass();
         $oSQL->cMMSelect = 'tmerkmal.cName';
         $oSQL->cMMJOIN   = '';
         $oSQL->cMMWhere  = '';
-        if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
+        if (\Shop::getLanguage() > 0 && !standardspracheAktiv()) {
             $oSQL->cMMSelect = 'tmerkmalsprache.cName, tmerkmal.cName AS cMMName';
             $oSQL->cMMJOIN   = ' JOIN tmerkmalsprache 
                                      ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                     AND tmerkmalsprache.kSprache = ' . Shop::getLanguage();
+                                     AND tmerkmalsprache.kSprache = ' . \Shop::getLanguage();
         }
         $oSQL->cMMWhere   = 'tmerkmalwert.kMerkmalWert = ' . $this->getValue();
-        $oMerkmalWert_arr = Shop::Container()->getDB()->query(
+        $oMerkmalWert_arr = \Shop::Container()->getDB()->query(
             'SELECT tmerkmalwertsprache.cWert, ' . $oSQL->cMMSelect . '
                 FROM tmerkmalwert
                 JOIN tmerkmalwertsprache 
                     ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    AND kSprache = ' . Shop::getLanguage() . '
+                    AND kSprache = ' . \Shop::getLanguage() . '
                 JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 ' . $oSQL->cMMJOIN . '
                 WHERE ' . $oSQL->cMMWhere,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         if (count($oMerkmalWert_arr) > 0) {
             $oMerkmalWert = $oMerkmalWert_arr[0];
@@ -115,42 +124,35 @@ class FilterBaseAttribute extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'kMerkmalWert';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'tmerkmalwert';
     }
 
     /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return '';
-    }
-
-    /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
-        return (new FilterJoin())->setType('JOIN')
-             ->setComment('JOIN from ' . __METHOD__)
-             ->setTable('(SELECT kArtikel
+        return (new FilterJoin())
+            ->setType('JOIN')
+            ->setComment('JOIN from ' . __METHOD__)
+            ->setTable('(SELECT kArtikel
                               FROM tartikelmerkmal
                               WHERE kMerkmalWert = ' . $this->getValue() . '
                               GROUP BY tartikelmerkmal.kArtikel
                               ) AS tmerkmaljoin')
-             ->setOrigin(__CLASS__)
-             ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');
+            ->setOrigin(__CLASS__)
+            ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');
     }
 }

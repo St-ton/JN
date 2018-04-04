@@ -4,12 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\States;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+use Filter\States\BaseCategory;
+
 /**
- * Class FilterBaseSearchSpecial
+ * Class BaseSearchSpecial
+ * @package Filter\States
  */
-class FilterBaseSearchSpecial extends AbstractFilter
+class BaseSearchSpecial extends AbstractFilter
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -19,7 +29,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
     ];
 
     /**
-     * FilterBaseSearchSpecial constructor.
+     * BaseSearchSpecial constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -35,7 +45,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value)
+    public function setValue($value): IFilter
     {
         $this->value = (int)$value;
 
@@ -43,12 +53,11 @@ class FilterBaseSearchSpecial extends AbstractFilter
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages): IFilter
     {
-        $oSeo_arr = Shop::Container()->getDB()->selectAll(
+        $oSeo_arr = \Shop::Container()->getDB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['suchspecial', $this->getValue()],
@@ -66,27 +75,27 @@ class FilterBaseSearchSpecial extends AbstractFilter
         }
         switch ($this->getValue()) {
             case SEARCHSPECIALS_BESTSELLER:
-                $this->setName(Shop::Lang()->get('bestsellers'));
+                $this->setName(\Shop::Lang()->get('bestsellers'));
                 break;
             case SEARCHSPECIALS_SPECIALOFFERS:
-                $this->setName(Shop::Lang()->get('specialOffers'));
+                $this->setName(\Shop::Lang()->get('specialOffers'));
                 break;
             case SEARCHSPECIALS_NEWPRODUCTS:
-                $this->setName(Shop::Lang()->get('newProducts'));
+                $this->setName(\Shop::Lang()->get('newProducts'));
                 break;
             case SEARCHSPECIALS_TOPOFFERS:
-                $this->setName(Shop::Lang()->get('topOffers'));
+                $this->setName(\Shop::Lang()->get('topOffers'));
                 break;
             case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                $this->setName(Shop::Lang()->get('upcomingProducts'));
+                $this->setName(\Shop::Lang()->get('upcomingProducts'));
                 break;
             case SEARCHSPECIALS_TOPREVIEWS:
-                $this->setName(Shop::Lang()->get('topReviews'));
+                $this->setName(\Shop::Lang()->get('topReviews'));
                 break;
             default:
                 // invalid search special ID
-                Shop::$is404        = true;
-                Shop::$kSuchspecial = 0;
+                \Shop::$is404        = true;
+                \Shop::$kSuchspecial = 0;
                 break;
         }
 
@@ -94,23 +103,24 @@ class FilterBaseSearchSpecial extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'kKey';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
         switch ($this->value) {
             case SEARCHSPECIALS_BESTSELLER:
                 $nAnzahl = (($min = $this->getConfig()['global']['global_bestseller_minanzahl']) > 0)
                     ? (int)$min
                     : 100;
+
                 return "ROUND(tbestseller.fAnzahl) >= " . $nAnzahl;
 
             case SEARCHSPECIALS_SPECIALOFFERS:
@@ -120,10 +130,11 @@ class FilterBaseSearchSpecial extends AbstractFilter
                     $tasp = 'tasp';
                     $tsp  = 'tsp';
                 }
+
                 return $tasp . " .kArtikel = tartikel.kArtikel
                                     AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= now()
                                     AND (" . $tasp . ".dEnde >= curdate() OR " . $tasp . ".dEnde = '0000-00-00')
-                                    AND " . $tsp . " .kKundengruppe = " . Session::CustomerGroup()->getID();
+                                    AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
 
             case SEARCHSPECIALS_NEWPRODUCTS:
                 $alter_tage = (($age = $this->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
@@ -156,7 +167,7 @@ class FilterBaseSearchSpecial extends AbstractFilter
     }
 
     /**
-     * @return array|FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {

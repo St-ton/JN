@@ -136,9 +136,9 @@
                             {/if}
                         {/if}
                     {/foreach}
-                    {if $NaviFilter->getUnsetAllFiltersURL() !== null}
+                    {if $NaviFilter->getURL()->getUnsetAll() !== null}
                         {strip}
-                            <a href="{$NaviFilter->getUnsetAllFiltersURL()}" title="{lang key="removeFilters" section='global'}" class="label label-warning">
+                            <a href="{$NaviFilter->getURL()->getUnsetAll()}" title="{lang key="removeFilters" section='global'}" class="label label-warning">
                                 {lang key='removeFilters'}
                             </a>
                         {/strip}

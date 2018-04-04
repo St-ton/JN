@@ -4,10 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\States;
+
+use Filter\AbstractFilter;
+use Filter\IFilter;
+use Filter\ProductFilter;
+
 /**
- * Class FilterDummyState
+ * Class DummyState
  */
-class FilterDummyState extends AbstractFilter
+class DummyState extends AbstractFilter
 {
     /**
      * @var null
@@ -15,7 +21,7 @@ class FilterDummyState extends AbstractFilter
     public $dummyValue;
 
     /**
-     * FilterDummyState constructor.
+     * DummyState constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -28,10 +34,9 @@ class FilterDummyState extends AbstractFilter
     }
 
     /**
-     * @param int $value
-     * @return $this
+     * @inheritdoc
      */
-    public function setValue($value)
+    public function setValue($value): IFilter
     {
         $this->dummyValue = (int)$value;
 
@@ -47,33 +52,23 @@ class FilterDummyState extends AbstractFilter
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages): IFilter
     {
         return $this;
     }
 
     /**
-     * @param int $id
-     * @return $this
+     * @inheritdoc
      */
-    public function init($id)
+    public function init($id): IFilter
     {
         return $this;
     }
 
     /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return '';
-    }
-
-    /**
-     * @return FilterJoin[]
+     * @inheritdoc
      */
     public function getSQLJoin()
     {

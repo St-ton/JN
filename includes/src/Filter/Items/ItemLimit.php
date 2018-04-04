@@ -4,13 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+
 /**
- * Class FilterItemLimit
+ * Class ItemLimit
+ * @package Filter\Items
  */
-class FilterItemLimit extends AbstractFilter
+class ItemLimit extends AbstractFilter
 {
     /**
-     * FilterItemLimit constructor.
+     * ItemLimit constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -19,39 +28,29 @@ class FilterItemLimit extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('af')
-             ->setFrontendName(Shop::Lang()->get('productsPerPage', 'productOverview'));
+             ->setFrontendName(\Shop::Lang()->get('productsPerPage', 'productOverview'));
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages): IFilter
     {
         return $this;
     }
 
     /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return '';
-    }
-
-    /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
-        return null;
+        return [];
     }
 
     /**
-     * @param null $data
-     * @return FilterOption[]
+     * @inheritdoc
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -66,19 +65,19 @@ class FilterItemLimit extends AbstractFilter
         $limitOptions     = explode(',', $this->getConfig()['artikeluebersicht'][$optionIdx]);
         foreach ($limitOptions as $i => $limitOption) {
             $limitOption = (int)trim($limitOption);
-            $name        = $limitOption > 0 ? $limitOption : Shop::Lang()->get('showAll');
+            $name        = $limitOption > 0 ? $limitOption : \Shop::Lang()->get('showAll');
             $options[]   = (new FilterOption())
+                ->setIsActive(isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] === $limitOption)
+                ->setURL($this->productFilter->getFilterURL()->getURL(
+                    $additionalFilter->init($limitOption)
+                ))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
                 ->setName($name)
                 ->setValue($limitOption)
                 ->setCount(null)
-                ->setSort($i)
-                ->setIsActive(isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] === $limitOption)
-                ->setURL($this->productFilter->getFilterURL()->getURL(
-                    $additionalFilter->init($limitOption)
-                ));
+                ->setSort($i);
         }
         $this->options = $options;
 

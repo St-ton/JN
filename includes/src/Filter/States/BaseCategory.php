@@ -4,12 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\States;
+
+use DB\ReturnType;
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\Items\ItemCategory;
+use Filter\ProductFilter;
+
 /**
- * Class FilterBaseCategory
+ * Class BaseCategory
+ * @package Filter\States
  */
-class FilterBaseCategory extends AbstractFilter
+class BaseCategory extends AbstractFilter
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -25,7 +36,7 @@ class FilterBaseCategory extends AbstractFilter
     private $includeSubCategories = false;
 
     /**
-     * FilterBaseCategory constructor.
+     * BaseCategory constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -40,16 +51,16 @@ class FilterBaseCategory extends AbstractFilter
     /**
      * @return bool
      */
-    public function getIncludeSubCategories()
+    public function getIncludeSubCategories(): bool
     {
         return $this->includeSubCategories;
     }
 
     /**
      * @param bool $includeSubCategories
-     * @return FilterItemCategory
+     * @return ItemCategory
      */
-    public function setIncludeSubCategories($includeSubCategories)
+    public function setIncludeSubCategories($includeSubCategories): self
     {
         $this->includeSubCategories = (bool)$includeSubCategories;
 
@@ -60,7 +71,7 @@ class FilterBaseCategory extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value)
+    public function setValue($value): IFilter
     {
         $this->value = (int)$value;
 
@@ -68,13 +79,12 @@ class FilterBaseCategory extends AbstractFilter
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages): IFilter
     {
         if ($this->getValue() > 0) {
-            $oSeo_arr = Shop::Container()->getDB()->queryPrepared(
+            $oSeo_arr = \Shop::Container()->getDB()->queryPrepared(
                 "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                     FROM tseo
                         LEFT JOIN tkategorie
@@ -86,7 +96,7 @@ class FilterBaseCategory extends AbstractFilter
                         AND kKey = :val
                     ORDER BY tseo.kSprache",
                 ['val' => $this->getValue()],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -97,7 +107,7 @@ class FilterBaseCategory extends AbstractFilter
                 }
             }
             foreach ($oSeo_arr as $item) {
-                if ((int)$item->kSprache === Shop::getLanguage()) {
+                if ((int)$item->kSprache === \Shop::getLanguage()) {
                     if (!empty($item->cName)) {
                         $this->setName($item->cName);
                     } elseif (!empty($item->cKatName)) {
@@ -112,25 +122,25 @@ class FilterBaseCategory extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'kKategorie';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'tkategorie';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
         return $this->getIncludeSubCategories() === true
             ? ' tkategorieartikel.kKategorie IN (
@@ -142,7 +152,7 @@ class FilterBaseCategory extends AbstractFilter
     }
 
     /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {

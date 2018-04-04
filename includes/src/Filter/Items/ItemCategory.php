@@ -4,13 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use DB\ReturnType;
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\ProductFilter;
+use Filter\States\BaseCategory;
+
 /**
- * Class FilterItemCategory
+ * Class ItemCategory
+ * @package Filter\Items
  */
-class FilterItemCategory extends FilterBaseCategory
+class ItemCategory extends BaseCategory
 {
     /**
-     * FilterItemCategory constructor.
+     * ItemCategory constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -21,13 +31,13 @@ class FilterItemCategory extends FilterBaseCategory
              ->setUrlParam('kf')
              ->setUrlParamSEO(SEP_KAT)
              ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'])
-             ->setFrontendName(Shop::Lang()->get('allCategories'));
+             ->setFrontendName(\Shop::Lang()->get('allCategories'));
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
         if ($this->getIncludeSubCategories() === true) {
             return ' tkategorieartikel.kKategorie IN (
@@ -44,7 +54,7 @@ class FilterItemCategory extends FilterBaseCategory
     }
 
     /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
@@ -70,10 +80,9 @@ class FilterItemCategory extends FilterBaseCategory
     }
 
     /**
-     * @param null $data
-     * @return FilterOption[]
+     * @inheritdoc
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -130,13 +139,13 @@ class FilterItemCategory extends FilterBaseCategory
                 ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie')
                 ->setOrigin(__CLASS__);
         }
-        if (!Shop::has('checkCategoryVisibility')) {
-            Shop::set(
+        if (!\Shop::has('checkCategoryVisibility')) {
+            \Shop::set(
                 'checkCategoryVisibility',
-                Shop::Container()->getDB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', \DB\ReturnType::AFFECTED_ROWS) > 0
+                \Shop::Container()->getDB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', ReturnType::AFFECTED_ROWS) > 0
             );
         }
-        if (Shop::get('checkCategoryVisibility')) {
+        if (\Shop::get('checkCategoryVisibility')) {
             $state->joins[] = (new FilterJoin())
                 ->setComment('join5 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
@@ -147,7 +156,7 @@ class FilterItemCategory extends FilterBaseCategory
             $state->conditions[] = 'tkategoriesichtbarkeit.kKategorie IS NULL';
         }
         // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
-        $cSQLKategorieSprache        = new stdClass();
+        $cSQLKategorieSprache        = new \stdClass();
         $cSQLKategorieSprache->cJOIN = '';
         $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
         if (!standardspracheAktiv()) {
@@ -172,7 +181,7 @@ class FilterItemCategory extends FilterBaseCategory
             '',
             ['tkategorie.kKategorie', 'tartikel.kArtikel']
         );
-        $categories       = Shop::Container()->getDB()->executeQuery(
+        $categories       = \Shop::Container()->getDB()->executeQuery(
             "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (" . $query . " ) AS ssMerkmal
@@ -186,23 +195,23 @@ class FilterItemCategory extends FilterBaseCategory
         $langID           = $this->getLanguageID();
         $customerGroupID  = $this->getCustomerGroupID();
         $additionalFilter = new self($this->productFilter);
-        $helper           = KategorieHelper::getInstance($langID, $customerGroupID);
+        $helper           = \KategorieHelper::getInstance($langID, $customerGroupID);
         foreach ($categories as $category) {
             // Anzeigen als Kategoriepfad
             if ($categoryFilterType === 'KP') {
-                $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
+                $category->cName = $helper->getPath(new \Kategorie($category->kKategorie, $langID, $customerGroupID));
             }
             $options[] = (new FilterOption())
+                ->setParam($this->getUrlParam())
+                ->setURL($this->productFilter->getFilterURL()->getURL(
+                    $additionalFilter->init((int)$category->kKategorie)
+                ))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
-                ->setParam($this->getUrlParam())
                 ->setName($category->cName)
                 ->setValue((int)$category->kKategorie)
                 ->setCount($category->nAnzahl)
-                ->setSort($category->nSort)
-                ->setURL($this->productFilter->getFilterURL()->getURL(
-                    $additionalFilter->init((int)$category->kKategorie)
-                ));
+                ->setSort($category->nSort);
         }
         // neue Sortierung
         if ($categoryFilterType === 'KP') {

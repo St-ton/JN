@@ -4,12 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter;
+
+use Tightenco\Collect\Support\Collection;
+
 /**
  * Class ProductFilterSearchResults
+ * @package Filter
  */
 class ProductFilterSearchResults
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var \Tightenco\Collect\Support\Collection()
@@ -41,7 +46,7 @@ class ProductFilterSearchResults
     private $offsetEnd = 0;
 
     /**
-     * @var stdClass
+     * @var \stdClass
      * @former Seitenzahlen
      */
     private $pages;
@@ -178,8 +183,8 @@ class ProductFilterSearchResults
      */
     public function __construct($legacy = null)
     {
-        $this->products             = new \Tightenco\Collect\Support\Collection();
-        $this->pages                = new stdClass();
+        $this->products             = new Collection();
+        $this->pages                = new \stdClass();
         $this->pages->AktuelleSeite = 0;
         $this->pages->MaxSeiten     = 0;
         $this->pages->minSeite      = 0;
@@ -190,10 +195,10 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param stdClass $legacy
+     * @param \stdClass $legacy
      * @return $this
      */
-    public function convert($legacy)
+    public function convert($legacy): self
     {
         if (get_class($legacy) === __CLASS__) {
             return $legacy;
@@ -207,11 +212,11 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return stdClass
+     * @return \stdClass
      */
-    public function getProductsCompat()
+    public function getProductsCompat(): \stdClass
     {
-        $compat              = new stdClass();
+        $compat              = new \stdClass();
         $compat->elemente    = $this->getProducts();
         $compat->productKeys = $this->getProductKeys();
 
@@ -221,7 +226,7 @@ class ProductFilterSearchResults
     /**
      * @return $this
      */
-    public function setProductsCompat()
+    public function setProductsCompat(): self
     {
         return $this;
     }
@@ -229,7 +234,7 @@ class ProductFilterSearchResults
     /**
      * @return int[]
      */
-    public function getProductKeys()
+    public function getProductKeys(): array
     {
         return $this->productKeys;
     }
@@ -255,9 +260,9 @@ class ProductFilterSearchResults
 
     /**
      * @param \Tightenco\Collect\Support\Collection() $products
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setProducts($products)
+    public function setProducts($products): self
     {
         $this->products = $products;
 
@@ -274,9 +279,9 @@ class ProductFilterSearchResults
 
     /**
      * @param int $productCount
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setProductCount($productCount)
+    public function setProductCount($productCount): self
     {
         $this->productCount = $productCount;
 
@@ -293,7 +298,7 @@ class ProductFilterSearchResults
 
     /**
      * @param int $count
-     * @return ProductFilterSearchResults
+     * @return $this
      */
     public function setVisibleProductCount($count)
     {
@@ -312,9 +317,9 @@ class ProductFilterSearchResults
 
     /**
      * @param int $offsetStart
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setOffsetStart($offsetStart)
+    public function setOffsetStart($offsetStart): self
     {
         $this->offsetStart = $offsetStart;
 
@@ -331,9 +336,9 @@ class ProductFilterSearchResults
 
     /**
      * @param int $offsetEnd
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setOffsetEnd($offsetEnd)
+    public function setOffsetEnd($offsetEnd): self
     {
         $this->offsetEnd = $offsetEnd;
 
@@ -341,7 +346,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return stdClass
+     * @return \stdClass
      */
     public function getPages()
     {
@@ -349,10 +354,10 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param stdClass $pages
-     * @return ProductFilterSearchResults
+     * @param \stdClass $pages
+     * @return $this
      */
-    public function setPages($pages)
+    public function setPages($pages): self
     {
         $this->pages = $pages;
 
@@ -369,9 +374,9 @@ class ProductFilterSearchResults
 
     /**
      * @param string $searchTerm
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setSearchTerm($searchTerm)
+    public function setSearchTerm($searchTerm): self
     {
         $this->searchTerm = $searchTerm;
 
@@ -388,9 +393,9 @@ class ProductFilterSearchResults
 
     /**
      * @param string $searchTerm
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setSearchTermWrite($searchTerm)
+    public function setSearchTermWrite($searchTerm): self
     {
         $this->searchTermWrite = $searchTerm;
 
@@ -400,16 +405,16 @@ class ProductFilterSearchResults
     /**
      * @return bool
      */
-    public function isSearchUnsuccessful()
+    public function isSearchUnsuccessful(): bool
     {
         return $this->searchUnsuccessful;
     }
 
     /**
      * @param bool $searchUnsuccessful
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setSearchUnsuccessful($searchUnsuccessful)
+    public function setSearchUnsuccessful($searchUnsuccessful): self
     {
         $this->searchUnsuccessful = $searchUnsuccessful;
 
@@ -419,16 +424,16 @@ class ProductFilterSearchResults
     /**
      * @return FilterOption[]
      */
-    public function getManufacturerFilterOptions()
+    public function getManufacturerFilterOptions(): array
     {
         return $this->manufacturerFilterOptions;
     }
 
     /**
      * @param FilterOption[] $options
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setManufacturerFilterOptions($options)
+    public function setManufacturerFilterOptions($options): self
     {
         $this->manufacturerFilterOptions = $options;
 
@@ -438,16 +443,16 @@ class ProductFilterSearchResults
     /**
      * @return FilterOption[]
      */
-    public function getRatingFilterOptions()
+    public function getRatingFilterOptions(): array
     {
         return $this->ratingFilterOptions;
     }
 
     /**
      * @param FilterOption[] $options
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setRatingFilterOptions($options)
+    public function setRatingFilterOptions($options): self
     {
         $this->ratingFilterOptions = $options;
 
@@ -457,16 +462,16 @@ class ProductFilterSearchResults
     /**
      * @return FilterOption[]
      */
-    public function getTagFilterOptions()
+    public function getTagFilterOptions(): array
     {
         return $this->tagFilterOptions;
     }
 
     /**
      * @param FilterOption[] $options
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setTagFilterOptions($options)
+    public function setTagFilterOptions($options): self
     {
         $this->tagFilterOptions = $options;
 
@@ -476,16 +481,16 @@ class ProductFilterSearchResults
     /**
      * @return FilterOption[]
      */
-    public function getAttributeFilterOptions()
+    public function getAttributeFilterOptions(): array
     {
         return $this->attributeFilterOptions;
     }
 
     /**
      * @param FilterOption[] $options
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setAttributeFilterOptions($options)
+    public function setAttributeFilterOptions($options): self
     {
         $this->attributeFilterOptions = $options;
 
@@ -502,9 +507,9 @@ class ProductFilterSearchResults
 
     /**
      * @param FilterOption[] $options
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setPriceRangeFilterOptions($options)
+    public function setPriceRangeFilterOptions($options): self
     {
         $this->priceRangeFilterOptions = $options;
 
@@ -521,9 +526,9 @@ class ProductFilterSearchResults
 
     /**
      * @param FilterOption[] $options
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setCategoryFilterOptions($options)
+    public function setCategoryFilterOptions($options): self
     {
         $this->categoryFilterOptions = $options;
 
@@ -533,16 +538,16 @@ class ProductFilterSearchResults
     /**
      * @return FilterOption[]
      */
-    public function getSearchFilterOptions()
+    public function getSearchFilterOptions(): array
     {
         return $this->searchFilterOptions;
     }
 
     /**
      * @param FilterOption[] $options
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setSearchFilterOptions($options)
+    public function setSearchFilterOptions($options): self
     {
         $this->searchFilterOptions = $options;
 
@@ -552,16 +557,16 @@ class ProductFilterSearchResults
     /**
      * @return FilterOption[]
      */
-    public function getSearchSpecialFilterOptions()
+    public function getSearchSpecialFilterOptions(): array
     {
         return $this->searchSpecialFilterOptions;
     }
 
     /**
      * @param FilterOption[] $options
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setSearchSpecialFilterOptions($options)
+    public function setSearchSpecialFilterOptions($options): self
     {
         $this->searchSpecialFilterOptions = $options;
 
@@ -571,16 +576,16 @@ class ProductFilterSearchResults
     /**
      * @return FilterOption[]
      */
-    public function getCustomFilterOptions()
+    public function getCustomFilterOptions(): array
     {
         return $this->customFilterOptions;
     }
 
     /**
      * @param FilterOption[] $options
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setCustomFilterOptions($options)
+    public function setCustomFilterOptions($options): self
     {
         $this->customFilterOptions = $options;
 
@@ -597,9 +602,9 @@ class ProductFilterSearchResults
 
     /**
      * @param string $json
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setTagFilterJSON($json)
+    public function setTagFilterJSON($json): self
     {
         $this->tagFilterJSON = $json;
 
@@ -616,9 +621,9 @@ class ProductFilterSearchResults
 
     /**
      * @param string $json
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setSearchFilterJSON($json)
+    public function setSearchFilterJSON($json): self
     {
         $this->searchFilterJSON = $json;
 
@@ -635,9 +640,9 @@ class ProductFilterSearchResults
 
     /**
      * @param string $error
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setError($error)
+    public function setError($error): self
     {
         $this->error = $error;
 
@@ -654,9 +659,9 @@ class ProductFilterSearchResults
 
     /**
      * @param array $options
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setSortingOptions($options)
+    public function setSortingOptions($options): self
     {
         $this->sortingOptions = $options;
 
@@ -666,16 +671,16 @@ class ProductFilterSearchResults
     /**
      * @return array
      */
-    public function getLimitOptions()
+    public function getLimitOptions(): array
     {
         return $this->limitOptions;
     }
 
     /**
      * @param array $options
-     * @return ProductFilterSearchResults
+     * @return $this
      */
-    public function setLimitOptions($options)
+    public function setLimitOptions($options): self
     {
         $this->limitOptions = $options;
 
@@ -685,7 +690,7 @@ class ProductFilterSearchResults
     /**
      * @return array
      */
-    public function getAllFilterOptions()
+    public function getAllFilterOptions(): array
     {
         return [
             'manufacturerFilterOptions'  => $this->getManufacturerFilterOptions(),
@@ -703,7 +708,7 @@ class ProductFilterSearchResults
 
     /**
      * @param ProductFilter  $productFilter
-     * @param null|Kategorie $currentCategory
+     * @param null|\Kategorie $currentCategory
      * @param bool           $selectionWizard
      * @return mixed
      */
@@ -723,8 +728,12 @@ class ProductFilterSearchResults
         ]);
         $searchFilterOptions     = [];
         foreach ($productFilter->getSearchFilter() as $searchFilter) {
-            // @todo: validate
-            $searchFilterOptions[] = $searchFilter->getOptions();
+            $opt = $searchFilter->getOptions();
+            if (is_array($opt)) {
+                foreach ($opt as $_o) {
+                    $searchFilterOptions[] = $_o;
+                }
+            }
         }
 
         $this->setManufacturerFilterOptions($manufacturerOptions)
@@ -749,9 +758,9 @@ class ProductFilterSearchResults
                      return $isCustom;
                  }
              ))
-             ->setSearchFilterJSON(Boxen::gibJSONString(array_map(
+             ->setSearchFilterJSON(\Boxen::gibJSONString(array_map(
                  function ($e) {
-                     $e->cURL = StringHandler::htmlentitydecode($e->cURL);
+                     $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
 
                      return $e;
                  },
@@ -759,10 +768,10 @@ class ProductFilterSearchResults
              )));
 
         if ($productFilter->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
-            $this->setTagFilterJSON(Boxen::gibJSONString(array_map(
+            $this->setTagFilterJSON(\Boxen::gibJSONString(array_map(
                 function ($e) {
                     /** @var FilterOption $e */
-                    return $e->setURL(StringHandler::htmlentitydecode($e->getURL()));
+                    return $e->setURL(\StringHandler::htmlentitydecode($e->getURL()));
                 },
                 $tagOptions
             )));

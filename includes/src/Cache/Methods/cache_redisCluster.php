@@ -55,10 +55,10 @@ class cache_redisCluster implements ICachingMethod
     /**
      * @param string|null $hosts
      * @param bool        $persist
-     * @param int $strategy
+     * @param int         $strategy
      * @return bool
      */
-    private function setRedisCluster($hosts = null, $persist = false, $strategy = 0) : bool
+    private function setRedisCluster($hosts = null, $persist = false, $strategy = 0): bool
     {
         try {
             $redis = new \RedisCluster(null, explode(',', $hosts), 1.5, 1.5, $persist);
@@ -92,12 +92,9 @@ class cache_redisCluster implements ICachingMethod
     }
 
     /**
-     * @param string   $cacheID
-     * @param mixed    $content
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null) : bool
+    public function store($cacheID, $content, $expiration = null): bool
     {
         try {
             $exp = $expiration ?? $this->options['lifetime'];
@@ -111,11 +108,9 @@ class cache_redisCluster implements ICachingMethod
     }
 
     /**
-     * @param array    $idContent
-     * @param int|null $expiration
-     * @return bool|mixed
+     * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null)
+    public function storeMulti($idContent, $expiration = null): bool
     {
         try {
             $res = $this->_redis->mset($idContent);
@@ -134,8 +129,7 @@ class cache_redisCluster implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
-     * @return bool|mixed|string
+     * @inheritdoc
      */
     public function load($cacheID)
     {
@@ -149,10 +143,9 @@ class cache_redisCluster implements ICachingMethod
     }
 
     /**
-     * @param array $cacheIDs
-     * @return array|bool|mixed
+     * @inheritdoc
      */
-    public function loadMulti($cacheIDs)
+    public function loadMulti(array $cacheIDs): array
     {
         $res    = $this->_redis->mget($cacheIDs);
         $i      = 0;
@@ -166,28 +159,25 @@ class cache_redisCluster implements ICachingMethod
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isAvailable() : bool
+    public function isAvailable(): bool
     {
         return class_exists('Redis');
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function flush($cacheID) : bool
+    public function flush($cacheID): bool
     {
         return $this->_redis->del($cacheID) > 0;
     }
 
     /**
-     * @param array|string $tags
-     * @param string       $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function setCacheTag($tags = [], $cacheID) : bool
+    public function setCacheTag($tags = [], $cacheID): bool
     {
         $res = false;
         if (\is_string($tags)) {
@@ -209,26 +199,23 @@ class cache_redisCluster implements ICachingMethod
      * @param string $tagName
      * @return string
      */
-    private static function _keyFromTagName($tagName) : string
+    private static function _keyFromTagName($tagName): string
     {
         return 'tag_' . $tagName;
     }
 
     /**
-     * redis can delete multiple cacheIDs at once
-     *
-     * @param array|string $tags
-     * @return int
+     * @inheritdoc
      */
-    public function flushTags($tags) : int
+    public function flushTags($tags): int
     {
         return $this->flush(array_unique($this->getKeysByTag($tags)));
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function flushAll() : bool
+    public function flushAll(): bool
     {
         foreach ($this->masters as $master) {
             $this->_redis->flushDB($master);
@@ -238,10 +225,9 @@ class cache_redisCluster implements ICachingMethod
     }
 
     /**
-     * @param array|string $tags
-     * @return array
+     * @inheritdoc
      */
-    public function getKeysByTag($tags = []) : array
+    public function getKeysByTag($tags = []): array
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
@@ -265,18 +251,17 @@ class cache_redisCluster implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function keyExists($cacheID) : bool
+    public function keyExists($cacheID): bool
     {
         return $this->_redis->exists($cacheID);
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function getStats() : array
+    public function getStats(): array
     {
         $numEntries  = [];
         $uptimes     = [];

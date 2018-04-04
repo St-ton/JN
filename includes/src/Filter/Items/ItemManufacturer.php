@@ -4,13 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use Filter\AbstractFilter;
+use Filter\IFilter;
+use Filter\ProductFilter;
+use Filter\States\BaseManufacturer;
+
 /**
- * Class FilterItemManufacturer
+ * Class ItemManufacturer
+ * @package Filter\Items
  */
-class FilterItemManufacturer extends FilterBaseManufacturer
+class ItemManufacturer extends BaseManufacturer
 {
     /**
-     * FilterItemManufacturer constructor.
+     * ItemManufacturer constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -21,7 +29,7 @@ class FilterItemManufacturer extends FilterBaseManufacturer
              ->setUrlParam('hf')
              ->setUrlParamSEO(SEP_HST)
              ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'])
-             ->setFrontendName(Shop::Lang()->get('allManufacturers'))
+             ->setFrontendName(\Shop::Lang()->get('allManufacturers'))
              ->setType($this->getConfig()['navigationsfilter']['manufacturer_filter_type'] === 'O'
                  ? AbstractFilter::FILTER_TYPE_OR
                  : AbstractFilter::FILTER_TYPE_AND);
@@ -31,7 +39,7 @@ class FilterItemManufacturer extends FilterBaseManufacturer
      * @param array|int $value
      * @return $this
      */
-    public function setValue($value)
+    public function setValue($value): IFilter
     {
         $this->value = is_array($value) ? $value : (int)$value;
 

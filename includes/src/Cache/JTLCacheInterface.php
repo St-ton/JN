@@ -15,191 +15,246 @@ interface JTLCacheInterface
     /**
      * @return array
      */
-    public function getCachingGroups() : array;
+    public function getCachingGroups(): array;
 
     /**
      * @param array $options
      * @return JTLCacheInterface
      */
-    public function setOptions(array $options = []);
+    public function setOptions(array $options = []): JTLCacheInterface;
 
     /**
+     * set caching method by name
+     *
      * @param string $methodName
      * @return bool
      */
-    public function setCache(string $methodName) : bool;
+    public function setCache(string $methodName): bool;
 
     /**
+     * load shop cache config from db
+     *
      * @return array
      */
-    public function getJtlCacheConfig();
+    public function getJtlCacheConfig(): array;
 
     /**
      * @return JTLCacheInterface
      */
-    public function setJtlCacheConfig();
+    public function setJtlCacheConfig(): JTLCacheInterface;
 
     /**
      * @return JTLCacheInterface
      */
-    public function init();
+    public function init(): JTLCacheInterface;
 
     /**
+     * get current options
+     *
      * @return array
      */
-    public function getOptions() : array;
+    public function getOptions(): array;
 
     /**
+     * set redis authentication parameters
+     *
      * @param string      $host
      * @param int         $port
      * @param null|string $pass
      * @param null|int    $database
      * @return JTLCacheInterface
      */
-    public function setRedisCredentials($host, $port, $pass = null, $database = null);
+    public function setRedisCredentials($host, $port, $pass = null, $database = null): JTLCacheInterface;
 
     /**
+     * set memcache authentication parameters
+     *
      * @param string $host
      * @param int    $port
      * @return JTLCacheInterface
      */
-    public function setMemcacheCredentials($host, $port);
+    public function setMemcacheCredentials($host, $port): JTLCacheInterface;
 
     /**
+     * set memcache authentication parameters
+     *
      * @param string $host
      * @param int    $port
      * @return JTLCacheInterface
      */
-    public function setMemcachedCredentials($host, $port);
+    public function setMemcachedCredentials($host, $port): JTLCacheInterface;
 
     /**
+     * retrieve value from cache
+     *
      * @param string        $cacheID
      * @param null|callable $callback
      * @param null|mixed    $customData
      * @return mixed
      */
-    public function _get($cacheID, $callback = null, $customData = null);
+    public function get($cacheID, $callback = null, $customData = null);
 
     /**
+     * store value to cache
+     *
      * @param string     $cacheID
      * @param mixed      $content
      * @param null|array $tags
      * @param null|int   $expiration
-     * @return mixed
+     * @return bool
      */
-    public function _set($cacheID, $content, $tags = null, $expiration = null);
+    public function set($cacheID, $content, $tags = null, $expiration = null): bool;
 
     /**
+     * store multiple values to multiple cache IDs at once
+     *
      * @param array      $keyValue
      * @param array|null $tags
      * @param array|null $expiration
      * @return bool
      */
-    public function _setMulti($keyValue, $tags = null, $expiration = null);
+    public function setMulti($keyValue, $tags = null, $expiration = null): bool;
 
     /**
+     * get multiple values from cache
+     *
      * @param array $cacheIDs
      * @return array
      */
-    public function _getMulti($cacheIDs);
+    public function getMulti(array $cacheIDs): array;
 
     /**
+     * check if cache for selected group id is active
+     * this allows the disabling of certain cache types
+     *
      * @param string|array $groupID
      * @return bool
      */
-    public function _isCacheGroupActive($groupID) : bool;
+    public function isCacheGroupActive($groupID): bool;
 
     /**
      * @param array|string $tags
      * @return mixed
      */
-    public function getKeysByTag($tags) : array;
+    public function getKeysByTag($tags): array;
 
     /**
+     * add cache tag to cache value by ID
+     *
      * @param array|string $tags
      * @param string       $cacheID
      * @return bool
      */
-    public function _setCacheTag($tags, $cacheID) : bool;
+    public function setCacheTag($tags, $cacheID): bool;
 
     /**
+     * set custom cache lifetime
+     *
      * @param int $lifetime
      * @return JTLCacheInterface
      */
-    public function _setCacheLifetime($lifetime);
+    public function setCacheLifetime($lifetime): JTLCacheInterface;
 
     /**
+     * set custom file cache directory
+     *
      * @param string $dir
      * @return JTLCacheInterface
      */
-    public function _setCacheDir($dir);
+    public function setCacheDir($dir): JTLCacheInterface;
 
     /**
-     * @return JTLCacheInterface
+     * get the currently activated cache method
+     *
+     * @return ICachingMethod
      */
-    public function _getActiveMethod();
+    public function getActiveMethod(): ICachingMethod;
 
     /**
+     * remove single ID from cache or group or remove whole group
+     *
      * @param string|null $cacheID
      * @param array|null  $tags
      * @param array|null  $hookInfo
      * @return bool|int
      */
-    public function _flush($cacheID = null, $tags = null, $hookInfo = null);
+    public function flush($cacheID = null, $tags = null, $hookInfo = null);
 
     /**
+     * delete keys tagged with one or more tags
+     *
      * @param array|string $tags
      * @param null         $hookInfo
      * @return int
      */
-    public function _flushTags($tags, $hookInfo = null) : int;
+    public function flushTags($tags, $hookInfo = null): int;
 
     /**
+     * clear all values from cache
+     *
      * @return bool
      */
-    public function _flushAll() : bool;
+    public function flushAll(): bool;
 
     /**
+     * get result code from last operation
+     *
      * @return int
      */
-    public function _getResultCode() : int;
+    public function getResultCode(): int;
 
     /**
-     * @return array|null
-     */
-    public function getJournal();
-
-    /**
+     * get caching method's journal data
+     *
      * @return array
      */
-    public function getStats() : array;
+    public function getJournal(): array;
 
     /**
-     * @return bool
-     */
-    public function testMethod() : bool;
-
-    /**
-     * @return bool
-     */
-    public function _isAvailable() : bool;
-
-    /**
-     * @return bool
-     */
-    public function _isActive() : bool;
-
-    /**
+     * get statistical data
+     *
      * @return array
      */
-    public function _getAllMethods() : array;
+    public function getStats(): array;
 
     /**
+     * test method's integrity
+     *
+     * @return bool
+     */
+    public function testMethod(): bool;
+
+    /**
+     * check if caching method is available
+     *
+     * @return bool
+     */
+    public function isAvailable(): bool;
+
+    /**
+     * check if caching is enabled
+     *
+     * @return bool
+     */
+    public function isActive(): bool;
+
+    /**
+     * get list of all installed caching methods
+     *
      * @return array
      */
-    public function _checkAvailability() : array;
+    public function getAllMethods(): array;
 
     /**
+     * check which caching methods are available and usable
+     *
+     * @return array
+     */
+    public function checkAvailability(): array;
+
+    /**
+     * generate basic cache id with popular variables
+     *
      * @param bool $hash
      * @param bool $customerID
      * @param bool $customerGroup
@@ -208,16 +263,18 @@ interface JTLCacheInterface
      * @param bool $sslStatus
      * @return string
      */
-    public function _getBaseID(
+    public function getBaseID(
         $hash = false,
         $customerID = false,
         $customerGroup = true,
         $languageID = true,
         $currencyID = true,
         $sslStatus = true
-    ) : string;
+    ): string;
 
     /**
+     * simple benchmark for different caching methods
+     *
      * @param string $methods
      * @param string $testData
      * @param int    $runCount
@@ -233,5 +290,5 @@ interface JTLCacheInterface
         $repeat = 1,
         $echo = true,
         $format = false
-    ) : array;
+    ): array;
 }

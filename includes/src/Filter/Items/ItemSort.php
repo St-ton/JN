@@ -4,13 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+
 /**
- * Class FilterItemSort
+ * Class ItemSort
+ * @package Filter\Items
  */
-class FilterItemSort extends AbstractFilter
+class ItemSort extends AbstractFilter
 {
     /**
-     * FilterItemSort constructor.
+     * ItemSort constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -19,39 +28,29 @@ class FilterItemSort extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('Sortierung')
-             ->setFrontendName(Shop::Lang()->get('sorting', 'productOverview'));
+             ->setFrontendName(\Shop::Lang()->get('sorting', 'productOverview'));
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages): IFilter
     {
         return $this;
     }
 
     /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return '';
-    }
-
-    /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
-        return null;
+        return [];
     }
 
     /**
-     * @param null $data
-     * @return FilterOption[]
+     * @inheritdoc
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -60,17 +59,19 @@ class FilterItemSort extends AbstractFilter
         $additionalFilter = new self($this->productFilter);
         foreach ($this->productFilter->getMetaData()->getSortingOptions() as $i => $sortingOption) {
             $options[] = (new FilterOption())
+                ->setIsActive(isset($_SESSION['Usersortierung'])
+                    && $_SESSION['Usersortierung'] === (int)$sortingOption->value
+                )
+                ->setURL($this->productFilter->getFilterURL()->getURL(
+                    $additionalFilter->init((int)$sortingOption->value)
+                ))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
                 ->setName($sortingOption->angezeigterName)
                 ->setValue((int)$sortingOption->value)
                 ->setCount(null)
-                ->setSort($i)
-                ->setIsActive(isset($_SESSION['Usersortierung']) && $_SESSION['Usersortierung'] === (int)$sortingOption->value)
-                ->setURL($this->productFilter->getFilterURL()->getURL(
-                    $additionalFilter->init((int)$sortingOption->value)
-                ));
+                ->setSort($i);
         }
         $this->options = $options;
 

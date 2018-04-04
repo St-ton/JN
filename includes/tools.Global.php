@@ -5722,7 +5722,7 @@ function sortiereFilter($oFilter_arr, $cKey)
 function holeGlobaleMetaAngaben()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Metadata::getGlobalMetaData();
+    return \Filter\Metadata::getGlobalMetaData();
 }
 
 /**
@@ -5732,7 +5732,7 @@ function holeGlobaleMetaAngaben()
 function holeExcludedKeywords()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Metadata::getExcludes();
+    return \Filter\Metadata::getExcludes();
 }
 
 /**

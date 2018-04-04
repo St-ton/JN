@@ -48,8 +48,8 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
 }
 
 /**
- * @param stdClass|ProductFilter $NaviFilter
- * @return ProductFilter
+ * @param stdClass|\Filter\ProductFilter $NaviFilter
+ * @return \Filter\ProductFilter
  */
 function updateNaviFilter($NaviFilter)
 {
@@ -499,7 +499,7 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
     trigger_error('filter_inc.php: calling erstelleFilterLoesenURLs() is deprecated.', E_USER_DEPRECATED);
     Shop::getProductFilter()->getFilterURL()->createUnsetFilterURLs(
         new stdClass(),
-        new ProductFilterSearchResults($oSuchergebnisse)
+        new \Filter\ProductFilterSearchResults($oSuchergebnisse)
     );
 }
 
@@ -512,7 +512,7 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 function truncateMetaTitle($cTitle)
 {
     trigger_error('filter_inc.php: calling truncateMetaTitle() is deprecated.', E_USER_DEPRECATED);
-    return (new Metadata(Shop::getProductFilter()))->truncateMetaTitle($cTitle);
+    return (new \Filter\Metadata(Shop::getProductFilter()))->truncateMetaTitle($cTitle);
 }
 
 /**
@@ -526,8 +526,8 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $globalMeta)
 {
     trigger_error('filter_inc.php: calling gibNaviMetaTitle() is deprecated.', E_USER_DEPRECATED);
 
-    return (new Metadata(updateNaviFilter($NaviFilter)))->generateMetaTitle(
-        new ProductFilterSearchResults($oSuchergebnisse),
+    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaTitle(
+        new \Filter\ProductFilterSearchResults($oSuchergebnisse),
         $globalMeta
     );
 }
@@ -544,9 +544,9 @@ function gibNaviMetaDescription($articles, $NaviFilter, $oSuchergebnisse, $globa
 {
     trigger_error('filter_inc.php: calling gibNaviMetaDescription() is deprecated.', E_USER_DEPRECATED);
 
-    return (new Metadata(updateNaviFilter($NaviFilter)))->generateMetaDescription(
+    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaDescription(
         $articles,
-        new ProductFilterSearchResults($oSuchergebnisse),
+        new \Filter\ProductFilterSearchResults($oSuchergebnisse),
         $globalMeta
     );
 }
@@ -561,7 +561,7 @@ function gibNaviMetaDescription($articles, $NaviFilter, $oSuchergebnisse, $globa
 function gibNaviMetaKeywords($articles, $NaviFilter, $excludeKeywords = [])
 {
     trigger_error('filter_inc.php: calling gibNaviMetaKeywords() is deprecated.', E_USER_DEPRECATED);
-    return (new Metadata(updateNaviFilter($NaviFilter)))->generateMetaKeywords($articles);
+    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaKeywords($articles);
 }
 
 /**
@@ -575,7 +575,7 @@ function gibNaviMetaKeywords($articles, $NaviFilter, $excludeKeywords = [])
 function gibMetaStart($NaviFilter, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling gibMetaStart() is deprecated.', E_USER_DEPRECATED);
-    return (new Metadata(updateNaviFilter($NaviFilter)))->getMetaStart(new ProductFilterSearchResults($oSuchergebnisse));
+    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->getMetaStart(new \Filter\ProductFilterSearchResults($oSuchergebnisse));
 }
 
 /**
@@ -798,5 +798,5 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
     if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
         $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
     }
-    $oSuchergebnisse = new ProductFilterSearchResults($oSuchergebnisse);
+    $oSuchergebnisse = new \Filter\ProductFilterSearchResults($oSuchergebnisse);
 }

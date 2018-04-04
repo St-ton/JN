@@ -4,8 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter;
+
 /**
  * Class FilterQuery
+ * @package Filter
  */
 class FilterQuery
 {
@@ -47,7 +50,7 @@ class FilterQuery
      * @param string $where
      * @return $this
      */
-    public function setWhere($where)
+    public function setWhere($where): self
     {
         $this->where = $where;
 
@@ -66,7 +69,7 @@ class FilterQuery
      * @param string $origin
      * @return $this
      */
-    public function setOrigin($origin)
+    public function setOrigin($origin): self
     {
         $this->origin = $origin;
 
@@ -85,7 +88,7 @@ class FilterQuery
      * @param string $type
      * @return $this
      */
-    public function setType($type)
+    public function setType($type): self
     {
         $this->type = $type;
 
@@ -113,7 +116,7 @@ class FilterQuery
      * @param string $table
      * @return $this
      */
-    public function setTable($table)
+    public function setTable($table): self
     {
         $this->table = $table;
 
@@ -123,7 +126,7 @@ class FilterQuery
     /**
      * @return string
      */
-    public function getComment()
+    public function getComment(): string
     {
         return empty($this->comment)
             ? ''
@@ -134,7 +137,7 @@ class FilterQuery
      * @param string $comment
      * @return $this
      */
-    public function setComment($comment)
+    public function setComment($comment): self
     {
         $this->comment = $comment;
 
@@ -153,7 +156,7 @@ class FilterQuery
      * @param string $on
      * @return $this
      */
-    public function setOn($on)
+    public function setOn($on): self
     {
         $this->on = $on;
 
@@ -163,7 +166,7 @@ class FilterQuery
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getSql();
     }
@@ -172,7 +175,7 @@ class FilterQuery
      * @param array $params
      * @return $this
      */
-    public function setParams($params)
+    public function setParams($params): self
     {
         $this->params = $params;
 
@@ -192,7 +195,7 @@ class FilterQuery
     /**
      * @return array
      */
-    public function getParams()
+    public function getParams(): array
     {
         return $this->params;
     }
@@ -200,7 +203,7 @@ class FilterQuery
     /**
      * @return string
      */
-    public function getSql()
+    public function getSql(): string
     {
         $where = $this->where;
         if (count($this->params) > 0) {

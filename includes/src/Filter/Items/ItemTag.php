@@ -4,13 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+use Filter\States\BaseTag;
+
 /**
- * Class FilterItemTag
+ * Class ItemTag
+ * @package Filter\Items
  */
-class FilterItemTag extends FilterBaseTag
+class ItemTag extends BaseTag
 {
     /**
-     * FilterItemTag constructor.
+     * ItemTag constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -24,10 +34,9 @@ class FilterItemTag extends FilterBaseTag
     }
 
     /**
-     * @param array|int $value
-     * @return $this
+     * @inheritdoc
      */
-    public function setValue($value)
+    public function setValue($value): IFilter
     {
         $this->value = is_array($value) ? $value : (int)$value;
 
@@ -35,15 +44,15 @@ class FilterItemTag extends FilterBaseTag
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'ttagartikel';
     }
 
     /**
-     * @return FilterJoin[]
+     * @inheritdoc
      */
     public function getSQLJoin()
     {

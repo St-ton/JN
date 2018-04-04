@@ -4,12 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use DB\ReturnType;
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+use Filter\States\BaseSearchQuery;
+
 /**
- * Class FilterSearch
+ * Class ItemSearch
+ * @package Filter
  */
-class FilterSearch extends AbstractFilter
+class ItemSearch extends AbstractFilter
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -43,7 +54,7 @@ class FilterSearch extends AbstractFilter
     ];
 
     /**
-     * FilterSearch constructor.
+     * ItemSearch constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -96,7 +107,7 @@ class FilterSearch extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value)
+    public function setValue($value) : IFilter
     {
         $this->searchID = (int)$value;
 
@@ -112,12 +123,11 @@ class FilterSearch extends AbstractFilter
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages) : IFilter
     {
-        $oSeo_obj = Shop::Container()->getDB()->executeQueryPrepared(
+        $oSeo_obj = \Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
@@ -136,7 +146,10 @@ class FilterSearch extends AbstractFilter
         }
         if (!empty($oSeo_obj->cSuche)) {
             $this->setName($oSeo_obj->cSuche);
+        } elseif (!empty($oSeo_obj->cSeo)) {
+            $this->setName($oSeo_obj->cSeo);
         }
+
 
         return $this;
     }
@@ -150,9 +163,9 @@ class FilterSearch extends AbstractFilter
     {
         $searchQuery = null;
         if ($languageID > 0 && strlen($searchTerm) > 0) {
-            $searchQuery = Shop::Container()->getDB()->select(
+            $searchQuery = \Shop::Container()->getDB()->select(
                 'tsuchanfrage',
-                'cSuche', Shop::Container()->getDB()->escape($searchTerm),
+                'cSuche', \Shop::Container()->getDB()->escape($searchTerm),
                 'kSprache', $languageID
             );
         }
@@ -166,7 +179,7 @@ class FilterSearch extends AbstractFilter
     /**
      * @return string
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'kSuchanfrage';
     }
@@ -174,17 +187,9 @@ class FilterSearch extends AbstractFilter
     /**
      * @return string
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'tsuchanfrage';
-    }
-
-    /**
-     * @return string
-     */
-    public function getSQLCondition()
-    {
-        return '';
     }
 
     /**
@@ -208,27 +213,27 @@ class FilterSearch extends AbstractFilter
         $languageID   = (int)$languageIDExt > 0 ? (int)$languageIDExt : $this->getLanguageID();
         // db füllen für auswertugnen / suggest, dabei Blacklist beachten
         $tempQueries = explode(';', $Suchausdruck);
-        $blacklist   = Shop::Container()->getDB()->select(
+        $blacklist   = \Shop::Container()->getDB()->select(
             'tsuchanfrageblacklist',
             'kSprache',
             $languageID,
             'cSuche',
-            Shop::Container()->getDB()->escape($tempQueries[0])
+            \Shop::Container()->getDB()->escape($tempQueries[0])
         );
         if ($filterSpam && $blacklist !== null && !empty($blacklist->kSuchanfrageBlacklist)) {
             return false;
         }
         // Ist MD5(IP) bereits X mal im Cache
         $max_ip_count = (int)$this->getConfig()['artikeluebersicht']['livesuche_max_ip_count'] * 100;
-        $ip_cache_erg = Shop::Container()->getDB()->executeQueryPrepared(
+        $ip_cache_erg = \Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT count(*) AS anzahl
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
             ['lang' => $languageID, 'ip' => gibIP()],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
-        $ipUsed       = Shop::Container()->getDB()->select(
+        $ipUsed       = \Shop::Container()->getDB()->select(
             'tsuchanfragencache',
             'kSprache',
             $languageID,
@@ -244,22 +249,22 @@ class FilterSearch extends AbstractFilter
                 && ($ipUsed === null || empty($ipUsed->kSuchanfrageCache)))
         ) {
             // Fülle Suchanfragencache
-            $searchQueryCache           = new stdClass();
+            $searchQueryCache           = new \stdClass();
             $searchQueryCache->kSprache = $languageID;
             $searchQueryCache->cIP      = gibIP();
             $searchQueryCache->cSuche   = $Suchausdruck;
             $searchQueryCache->dZeit    = 'now()';
-            Shop::Container()->getDB()->insert('tsuchanfragencache', $searchQueryCache);
+            \Shop::Container()->getDB()->insert('tsuchanfragencache', $searchQueryCache);
             // Cacheeinträge die > 1 Stunde sind, löschen
-            Shop::Container()->getDB()->query(
+            \Shop::Container()->getDB()->query(
                 'DELETE 
                     FROM tsuchanfragencache 
                     WHERE dZeit < DATE_SUB(now(),INTERVAL 1 HOUR)',
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
             if ($hits > 0) {
                 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-                $searchQuery = new stdClass();
+                $searchQuery = new \stdClass();
                 $searchQuery->kSprache        = $languageID;
                 $searchQuery->cSuche          = $Suchausdruck;
                 $searchQuery->nAnzahlTreffer  = $hits;
@@ -267,7 +272,7 @@ class FilterSearch extends AbstractFilter
                 $searchQuery->dZuletztGesucht = 'now()';
                 $searchQuery->cSeo            = getSeo($Suchausdruck);
                 $searchQuery->cSeo            = checkSeo($searchQuery->cSeo);
-                $previuousQuery               = Shop::Container()->getDB()->select(
+                $previuousQuery               = \Shop::Container()->getDB()->select(
                     'tsuchanfrage',
                     'kSprache', (int)$searchQuery->kSprache,
                     'cSuche', $Suchausdruck,
@@ -276,30 +281,30 @@ class FilterSearch extends AbstractFilter
                     'kSuchanfrage'
                 );
                 if ($real && $previuousQuery!== null && $previuousQuery->kSuchanfrage > 0) {
-                    Shop::Container()->getDB()->query(
+                    \Shop::Container()->getDB()->query(
                         'UPDATE tsuchanfrage
                             SET nAnzahlTreffer = ' . (int)$searchQuery->nAnzahlTreffer . ',
                                 nAnzahlGesuche = nAnzahlGesuche+1, 
                                 dZuletztGesucht = now()
                             WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage,
-                        \DB\ReturnType::AFFECTED_ROWS
+                        ReturnType::AFFECTED_ROWS
                     );
                 } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
-                    Shop::Container()->getDB()->delete(
+                    \Shop::Container()->getDB()->delete(
                         'tsuchanfrageerfolglos',
                         ['kSprache', 'cSuche'],
-                        [(int)$searchQuery->kSprache, Shop::Container()->getDB()->realEscape($Suchausdruck)]
+                        [(int)$searchQuery->kSprache, \Shop::Container()->getDB()->realEscape($Suchausdruck)]
                     );
 
-                    return Shop::Container()->getDB()->insert('tsuchanfrage', $searchQuery);
+                    return \Shop::Container()->getDB()->insert('tsuchanfrage', $searchQuery);
                 }
             } else {
-                $queryMiss                  = new stdClass();
+                $queryMiss                  = new \stdClass();
                 $queryMiss->kSprache        = $languageID;
                 $queryMiss->cSuche          = $Suchausdruck;
                 $queryMiss->nAnzahlGesuche  = 1;
                 $queryMiss->dZuletztGesucht = 'now()';
-                $queryMiss_old              = Shop::Container()->getDB()->select(
+                $queryMiss_old              = \Shop::Container()->getDB()->select(
                     'tsuchanfrageerfolglos',
                     'kSprache', (int)$queryMiss->kSprache,
                     'cSuche', $Suchausdruck,
@@ -311,21 +316,21 @@ class FilterSearch extends AbstractFilter
                     && $queryMiss_old->kSuchanfrageErfolglos > 0
                     && $real
                 ) {
-                    Shop::Container()->getDB()->query(
+                    \Shop::Container()->getDB()->query(
                         'UPDATE tsuchanfrageerfolglos
                             SET nAnzahlGesuche = nAnzahlGesuche+1, 
                                 dZuletztGesucht = now()
                             WHERE kSuchanfrageErfolglos = ' .
                             (int)$queryMiss_old->kSuchanfrageErfolglos,
-                        \DB\ReturnType::AFFECTED_ROWS
+                        ReturnType::AFFECTED_ROWS
                     );
                 } else {
-                    Shop::Container()->getDB()->delete(
+                    \Shop::Container()->getDB()->delete(
                         'tsuchanfrage',
                         ['kSprache', 'cSuche'],
-                        [(int)$queryMiss->kSprache, Shop::Container()->getDB()->realEscape($Suchausdruck)]
+                        [(int)$queryMiss->kSprache, $Suchausdruck]
                     );
-                    Shop::Container()->getDB()->insert('tsuchanfrageerfolglos', $queryMiss);
+                    \Shop::Container()->getDB()->insert('tsuchanfrageerfolglos', $queryMiss);
                 }
             }
         }
@@ -334,7 +339,7 @@ class FilterSearch extends AbstractFilter
     }
 
     /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
@@ -344,7 +349,7 @@ class FilterSearch extends AbstractFilter
         if (is_array($searchFilter)) {
             $count       = count($searchFilter);
             $searchCache = array_map(function ($f) {
-                /** @var FilterSearch $f */
+                /** @var ItemSearch $f */
                 return $f->getValue();
             }, $searchFilter);
         } elseif ($searchFilter->getSearchCacheID() > 0) {
@@ -360,7 +365,11 @@ class FilterSearch extends AbstractFilter
             ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
                             MIN(tsuchcachetreffer.nSort) AS nSort
                               FROM tsuchcachetreffer
-                              WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $searchCache) . ') 
+                              JOIN tsuchcache
+                                  ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
+                              JOIN tsuchanfrage
+                                  ON tsuchanfrage.cSuche = tsuchcache.cSuche
+                                  AND tsuchanfrage.kSuchanfrage IN (' . implode(',', $searchCache) . ') 
                               GROUP BY tsuchcachetreffer.kArtikel
                               HAVING COUNT(*) = ' . $count . '
                         ) AS jfSuche')
@@ -369,16 +378,42 @@ class FilterSearch extends AbstractFilter
     }
 
     /**
+     * generate search cache entries for activated search queries
+     *
+     * @return $this
+     */
+    private function generateSearchCaches()
+    {
+        $allQueries = \Shop::Container()->getDB()->query(
+            'SELECT tsuchanfrage.cSuche FROM tsuchanfrage 
+                LEFT JOIN tsuchcache
+                    ON tsuchcache.cSuche = tsuchanfrage.cSuche
+                WHERE tsuchanfrage.nAktiv = 1 
+                    AND tsuchcache.kSuchCache IS NULL',
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($allQueries as $nonCachedQuery) {
+            $bsq = new BaseSearchQuery($this->productFilter);
+            $bsq->init($nonCachedQuery->cSuche)
+                ->setName($nonCachedQuery->cSuche);
+            $bsq->editSearchCache();
+        }
+
+        return $this;
+    }
+
+    /**
      * @param null $data
      * @return FilterOption[]
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
         }
         $options = [];
         if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
+            $this->generateSearchCaches();
             $nLimit = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl'])
                 && ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
                 ? ' LIMIT ' . $limit
@@ -408,7 +443,7 @@ class FilterSearch extends AbstractFilter
             $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 
             $query         = $this->productFilter->getFilterSQL()->getBaseQuery(
-                ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
+                ['tsuchanfrage.kSuchanfrage', 'tsuchcache.kSuchCache', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
                 $state->joins,
                 $state->conditions,
                 $state->having,
@@ -416,11 +451,13 @@ class FilterSearch extends AbstractFilter
                 '',
                 ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
             );
-            $query         = 'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
-                FROM (' . $query . ') AS ssMerkmal
-                    GROUP BY ssMerkmal.kSuchanfrage
-                    ORDER BY ssMerkmal.cSuche' . $nLimit;
-            $searchFilters = Shop::Container()->getDB()->query($query, \DB\ReturnType::ARRAY_OF_OBJECTS);
+            $searchFilters = \Shop::Container()->getDB()->query(
+                'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.kSuchCache, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
+                    FROM (' . $query . ') AS ssMerkmal
+                        GROUP BY ssMerkmal.kSuchanfrage
+                        ORDER BY ssMerkmal.cSuche' . $nLimit,
+                ReturnType::ARRAY_OF_OBJECTS
+            );
             $searchQueries = [];
             if ($this->productFilter->hasSearch()) {
                 $searchQueries[] = $this->productFilter->getSearch()->getValue();
@@ -450,29 +487,29 @@ class FilterSearch extends AbstractFilter
                 ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
                 : 0;
             $activeValues     = array_map(function($f) { // @todo: create method for this logic
-                /** @var FilterSearch $f */
+                /** @var ItemSearch $f */
                 return $f->getValue();
             }, $this->productFilter->getSearchFilter());
 
             foreach ($searchFilters as $searchFilter) {
                 $class = rand(1, 10);
-                if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep >= 0) {
+                if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
                     $class = round(($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
                 }
                 $options[] = (new FilterOption())
+                    ->setURL($this->productFilter->getFilterURL()->getURL(
+                        $additionalFilter->init((int)$searchFilter->kSuchanfrage)
+                    ))
+                    ->setData('cSuche', $searchFilter->cSuche)
+                    ->setData('kSuchanfrage', $searchFilter->kSuchanfrage)
+                    ->setIsActive(in_array((int)$searchFilter->kSuchanfrage, $activeValues, true))
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setClass($class)
                     ->setParam($this->getUrlParam())
                     ->setName($searchFilter->cSuche)
                     ->setValue((int)$searchFilter->kSuchanfrage)
-                    ->setCount($searchFilter->nAnzahl)
-                    ->setURL($this->productFilter->getFilterURL()->getURL(
-                        $additionalFilter->init((int)$searchFilter->kSuchanfrage)
-                    ))
-                    ->setData('cSuche', $searchFilter->cSuche)
-                    ->setData('kSuchanfrage', $searchFilter->kSuchanfrage)
-                    ->setIsActive(in_array((int)$searchFilter->kSuchanfrage, $activeValues, true));
+                    ->setCount($searchFilter->nAnzahl);
             }
         }
         $this->options = $options;

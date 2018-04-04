@@ -6041,7 +6041,7 @@ class Artikel
         $cPreis           = '';
         // append global meta title
         if ($this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y') {
-            $oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
+            $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
             if (!empty($oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()]->Title)) {
                 $cGlobalMetaTitle = ' - ' . $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()]->Title;
             }
@@ -6100,7 +6100,7 @@ class Artikel
             return $cDesc;
         }
 
-        $globalMeta = Metadata::getGlobalMetaData();
+        $globalMeta = \Filter\Metadata::getGlobalMetaData();
         $prefix     = (isset($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix)
             && strlen($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix) > 0)
             ? $globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix . ' '
@@ -6139,7 +6139,7 @@ class Artikel
         if (strlen($cDesc) > 0) {
             return $cDesc;
         }
-        $globalMeta = Metadata::getGlobalMetaData();
+        $globalMeta = \Filter\Metadata::getGlobalMetaData();
         $prefix     = (isset($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix)
             && strlen($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix) > 0)
             ? $globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix . ' '

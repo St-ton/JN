@@ -79,10 +79,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                             $NaviFilter = Shop::buildProductFilter([]);
                         }
                         if ($oSuchergebnisse === null) {
-                            $oSuchergebnisse = new ProductFilterSearchResults();
+                            $oSuchergebnisse = new \Filter\ProductFilterSearchResults();
                             $oSuchergebnisse->setProductCount(0);
                         } elseif (get_class($oSuchergebnisse) === 'stdClass') {
-                            $oSuchergebnisse = new ProductFilterSearchResults($oSuchergebnisse);
+                            $oSuchergebnisse = new \Filter\ProductFilterSearchResults($oSuchergebnisse);
                         }
 
                         $oSuchergebnisse->setFilterOptions($NaviFilter, $AktuelleKategorie, true);
@@ -106,12 +106,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 
     /**
      * @deprecated since 4.05
-     * @param int                                 $kKategorie
-     * @param stdClass|ProductFilter              $NaviFilter
-     * @param stdClass                            $FilterSQL
-     * @param stdClass|ProductFilterSearchResults $oSuchergebnisse
-     * @param int                                 $nArtikelProSeite
-     * @param int                                 $nLimitN
+     * @param int                                         $kKategorie
+     * @param stdClass|\Filter\ProductFilter              $NaviFilter
+     * @param stdClass                                    $FilterSQL
+     * @param stdClass|\Filter\ProductFilterSearchResults $oSuchergebnisse
+     * @param int                                         $nArtikelProSeite
+     * @param int                                         $nLimitN
      */
     function baueFilterSelectionWizard($kKategorie, &$NaviFilter, &$FilterSQL, &$oSuchergebnisse, &$nArtikelProSeite, &$nLimitN)
     {
@@ -133,7 +133,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $NaviFilter = new stdClass();
         }
         if ($oSuchergebnisse === null) {
-            $oSuchergebnisse = new ProductFilterSearchResults();
+            $oSuchergebnisse = new \Filter\ProductFilterSearchResults();
             $oSuchergebnisse->setProductCount(0);
         }
         $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();

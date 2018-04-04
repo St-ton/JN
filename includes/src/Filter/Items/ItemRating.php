@@ -4,12 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Filter\Items;
+
+use DB\ReturnType;
+use Filter\AbstractFilter;
+use Filter\FilterJoin;
+use Filter\FilterOption;
+use Filter\IFilter;
+use Filter\ProductFilter;
+
 /**
- * Class FilterItemRating
+ * Class ItemRating
+ * @package Filter\Items
  */
-class FilterItemRating extends AbstractFilter
+class ItemRating extends AbstractFilter
 {
-    use MagicCompatibilityTrait;
+    use \MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -19,7 +29,7 @@ class FilterItemRating extends AbstractFilter
     ];
 
     /**
-     * FilterItemRating constructor.
+     * ItemRating constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -30,58 +40,56 @@ class FilterItemRating extends AbstractFilter
              ->setUrlParam('bf')
              ->setUrlParamSEO(null)
              ->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
-             ->setFrontendName(Shop::Lang()->get('Votes'));
+             ->setFrontendName(\Shop::Lang()->get('Votes'));
     }
 
     /**
-     * @param int $value
-     * @return $this
+     * @inheritdoc
      */
-    public function setValue($value)
+    public function setValue($value): IFilter
     {
         return parent::setValue((int)$value);
     }
 
     /**
-     * @param array $languages
-     * @return $this
+     * @inheritdoc
      */
-    public function setSeo($languages)
+    public function setSeo(array $languages): IFilter
     {
-        $this->setName(Shop::Lang()->get('from', 'productDetails') . ' ' .
+        $this->setName(\Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .
-            Shop::Lang()->get($this->getValue() > 0 ? 'starPlural' : 'starSingular')
+            \Shop::Lang()->get($this->getValue() > 0 ? 'starPlural' : 'starSingular')
         );
 
         return $this;
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getPrimaryKeyRow()
+    public function getPrimaryKeyRow(): string
     {
         return 'nSterne';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'ttags';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSQLCondition()
+    public function getSQLCondition(): string
     {
         return 'ROUND(tartikelext.fDurchschnittsBewertung, 0) >= ' . $this->getValue();
     }
 
     /**
-     * @return FilterJoin
+     * @inheritdoc
      */
     public function getSQLJoin()
     {
@@ -94,10 +102,9 @@ class FilterItemRating extends AbstractFilter
     }
 
     /**
-     * @param null $data
-     * @return FilterOption[]
+     * @inheritdoc
      */
-    public function getOptions($data = null)
+    public function getOptions($data = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -121,12 +128,12 @@ class FilterItemRating extends AbstractFilter
             $state->conditions,
             $state->having
         );
-        $res              = Shop::Container()->getDB()->query(
+        $res              = \Shop::Container()->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
                 FROM (' . $query . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne
                 ORDER BY ssMerkmal.nSterne DESC',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $nSummeSterne     = 0;
         $additionalFilter = new self($this->getProductFilter());
@@ -134,19 +141,19 @@ class FilterItemRating extends AbstractFilter
             $nSummeSterne += (int)$row->nAnzahl;
 
             $options[] = (new FilterOption())
-                ->setType($this->getType())
-                ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
-                ->setName(
-                    Shop::Lang()->get('from', 'productDetails') . ' ' .
-                    $row->nSterne . ' ' .
-                    Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
-                )
-                ->setValue((int)$row->nSterne)
-                ->setCount($nSummeSterne)
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$row->nSterne)
-                ));
+                ))
+                ->setType($this->getType())
+                ->setClassName($this->getClassName())
+                ->setName(
+                    \Shop::Lang()->get('from', 'productDetails') . ' ' .
+                    $row->nSterne . ' ' .
+                    \Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
+                )
+                ->setValue((int)$row->nSterne)
+                ->setCount($nSummeSterne);
         }
         $this->options = $options;
         if (count($options) === 0) {

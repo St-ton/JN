@@ -25,31 +25,6 @@ class Preise
     public $kKunde;
 
     /**
-     * @var string
-     */
-//    public $cPreis1Localized;
-
-    /**
-     * @var string
-     */
-//    public $cPreis2Localized;
-
-    /**
-     * @var string
-     */
-//    public $cPreis3Localized;
-
-    /**
-     * @var string
-     */
-//    public $cPreis4Localized;
-
-    /**
-     * @var string
-     */
-//    public $cPreis5Localized;
-
-    /**
      * @var array
      */
     public $cVKLocalized;
@@ -128,31 +103,6 @@ class Preise
      * @var array
      */
     public $alterVK;
-
-    /**
-     * @var array
-     */
-//    public $fStaffelpreis1;
-
-    /**
-     * @var array
-     */
-//    public $fStaffelpreis2;
-
-    /**
-     * @var array
-     */
-//    public $fStaffelpreis3;
-
-    /**
-     * @var array
-     */
-//    public $fStaffelpreis4;
-
-    /**
-     * @var array
-     */
-//    public $fStaffelpreis5;
 
     /**
      * @var float
@@ -425,18 +375,6 @@ class Preise
     public function localizePreise()
     {
         $currency = Session::Currency();
-        // SHOP-2185
-//        $this->cPreis1Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis1, $this->fUst), $currency);
-//        $this->cPreis2Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis2, $this->fUst), $currency);
-//        $this->cPreis3Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis3, $this->fUst), $currency);
-//        $this->cPreis4Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis4, $this->fUst), $currency);
-//        $this->cPreis5Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis5, $this->fUst), $currency);
-//
-//        $this->cPreis1Localized[1] = gibPreisStringLocalized($this->fPreis1, $currency);
-//        $this->cPreis2Localized[1] = gibPreisStringLocalized($this->fPreis2, $currency);
-//        $this->cPreis3Localized[1] = gibPreisStringLocalized($this->fPreis3, $currency);
-//        $this->cPreis4Localized[1] = gibPreisStringLocalized($this->fPreis4, $currency);
-//        $this->cPreis5Localized[1] = gibPreisStringLocalized($this->fPreis5, $currency);
 
         $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
@@ -473,18 +411,6 @@ class Preise
 
         $this->alterVK[0] = berechneBrutto($this->alterVKNetto * $factor, $this->fUst);
         $this->alterVK[1] = $this->alterVKNetto * $factor;
-
-        // SHOP-2185
-//        $this->fStaffelpreis1[0] = berechneBrutto($this->fPreis1 * $factor, $this->fUst);
-//        $this->fStaffelpreis1[1] = $this->fPreis1 * $factor;
-//        $this->fStaffelpreis2[0] = berechneBrutto($this->fPreis2 * $factor, $this->fUst);
-//        $this->fStaffelpreis2[1] = $this->fPreis2 * $factor;
-//        $this->fStaffelpreis3[0] = berechneBrutto($this->fPreis3 * $factor, $this->fUst);
-//        $this->fStaffelpreis3[1] = $this->fPreis3 * $factor;
-//        $this->fStaffelpreis4[0] = berechneBrutto($this->fPreis4 * $factor, $this->fUst);
-//        $this->fStaffelpreis4[1] = $this->fPreis4 * $factor;
-//        $this->fStaffelpreis5[0] = berechneBrutto($this->fPreis5 * $factor, $this->fUst);
-//        $this->fStaffelpreis5[1] = $this->fPreis5 * $factor;
 
         $this->fStaffelpreis_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
@@ -574,21 +500,6 @@ class Preise
         $this->fPreis3 = 0;
         $this->fPreis4 = 0;
         $this->fPreis5 = 0;
-        foreach ($this->fStaffelpreis1 as $key => $fSteffelpreis1) {
-            $this->fStaffelpreis1[$key] = 0;
-        }
-        foreach ($this->fStaffelpreis2 as $key => $fSteffelpreis2) {
-            $this->fStaffelpreis2[$key] = 0;
-        }
-        foreach ($this->fStaffelpreis3 as $key => $fSteffelpreis3) {
-            $this->fStaffelpreis3[$key] = 0;
-        }
-        foreach ($this->fStaffelpreis4 as $key => $fSteffelpreis4) {
-            $this->fStaffelpreis4[$key] = 0;
-        }
-        foreach ($this->fStaffelpreis5 as $key => $fSteffelpreis5) {
-            $this->fStaffelpreis5[$key] = 0;
-        }
         foreach ($this->fPreis_arr as $key => $fPreis) {
             $this->fPreis_arr[$key] = 0;
         }

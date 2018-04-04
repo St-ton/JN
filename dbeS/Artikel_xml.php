@@ -985,6 +985,8 @@ function bearbeiteInsert($xml, array $conf)
     if (!empty($artikel_arr[0]->kVaterartikel)) {
         $res[] = (int)$artikel_arr[0]->kVaterartikel;
     }
+    handlePriceRange((int)$Artikel->kArtikel);
+
     //emailbenachrichtigung, wenn verfügbar
     versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
 
@@ -1039,6 +1041,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kArtikel', (int)$kArtikel]);
         Shop::Container()->getDB()->delete('tartikel', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tpreise', 'kArtikel', $kArtikel);
+        Shop::Container()->getDB()->delete('tpreisrange', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelsonderpreis', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelsprache', 'kArtikel', $kArtikel);

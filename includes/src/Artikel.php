@@ -3585,13 +3585,13 @@ class Artikel
         $this->options  = (object)array_merge((array)$this->options, (array)$oArtikelOptionen);
         // Work Around -.- wenn Einstellung global_sichtbarkeit aktiv ist
         if ($noCache === false) {
-            $baseID        = Shop::Cache()->getBaseID(false, false, $kKundengruppe, $kSprache);
+            $baseID        = Shop::Container()->getCache()->getBaseID(false, false, $kKundengruppe, $kSprache);
             $taxClass      = isset($_SESSION['Steuersatz']) ? implode('_', $_SESSION['Steuersatz']) : '';
             $kKunde        = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
             $productHash   = md5($baseID . $this->getOptionsHash($oArtikelOptionen) . $taxClass . $kKunde);
             $cacheID       = 'fa_' . $kArtikel . '_' . $productHash;
             $this->cacheID = $cacheID;
-            if (($artikel = Shop::Cache()->get($cacheID)) !== false) {
+            if (($artikel = Shop::Container()->getCache()->get($cacheID)) !== false) {
                 if ($artikel === null) {
                     return null;
                 }
@@ -3813,7 +3813,7 @@ class Artikel
                 'cached'    => false
             ]);
             if ($noCache === false) {
-                Shop::Cache()->set($cacheID, null, $cacheTags);
+                Shop::Container()->getCache()->set($cacheID, null, $cacheTags);
             }
 
             return null;
@@ -4207,7 +4207,7 @@ class Artikel
             $children                             = $this->oVariationKombiKinderAssoc_arr;
             $this->oVariationKombiKinderAssoc_arr = null;
             $this->Preise                         = $basePrice;
-            Shop::Cache()->set($cacheID, $this, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $this, $cacheTags);
             // restore oVariationKombiKinderAssoc_arr and Preise to class instance
             $this->oVariationKombiKinderAssoc_arr = $children;
             $this->Preise                         = $newPrice;
@@ -5524,7 +5524,8 @@ class Artikel
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
         $oXSeller               = gibArtikelXSelling($kArtikel, $this->nIstVater > 0);
         $kArtikelXSellerKey_arr = [];
-        if (isset($oXSeller->Standard->XSellGruppen)
+        if ($oXSeller !== null
+            && isset($oXSeller->Standard->XSellGruppen)
             && is_array($oXSeller->Standard->XSellGruppen)
             && count($oXSeller->Standard->XSellGruppen) > 0
         ) {
@@ -5908,13 +5909,13 @@ class Artikel
             }
             $cLaender = '';
             $cacheID  = 'jtl_ola_' . md5($cSQL);
-            if (($oLand_arr = Shop::Cache()->get($cacheID)) === false) {
+            if (($oLand_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $oLand_arr = Shop::Container()->getDB()->query(
                     "SELECT cISO, cDeutsch, cEnglisch 
                         FROM tland WHERE " . $cSQL,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                Shop::Cache()->set(
+                Shop::Container()->getCache()->set(
                     $cacheID,
                     $oLand_arr,
                     [CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION]
@@ -6046,7 +6047,7 @@ class Artikel
             return strlen($value) >= $confMinKeyLen;
         });
 
-        if (($excludeWords = Shop::Cache()->get($cacheID)) === false) {
+        if (($excludeWords = Shop::Container()->getCache()->get($cacheID)) === false) {
             $exclude      = Shop::Container()->getDB()->select(
                 'texcludekeywords',
                 'cISOSprache',
@@ -6055,7 +6056,7 @@ class Artikel
             $excludeWords = isset($exclude->cKeywords)
                 ? explode(' ', $exclude->cKeywords)
                 : [];
-            Shop::Cache()->set($cacheID, $excludeWords, [CACHING_GROUP_OPTION]);
+            Shop::Container()->getCache()->set($cacheID, $excludeWords, [CACHING_GROUP_OPTION]);
         }
 
         $keywords = str_replace(

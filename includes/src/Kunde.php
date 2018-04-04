@@ -788,7 +788,7 @@ class Kunde
                 'cKey'     => $key,
                 'dExpires' => $expires->format(DateTime::ISO8601),
             ],
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\ReturnType::AFFECTED_ROWS
         );
 
         require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';

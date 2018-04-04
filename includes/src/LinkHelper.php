@@ -534,7 +534,7 @@ class LinkHelper
                                 AND tseo.kSprache = tsprache.kSprache
                     WHERE cDateiname IS NOT NULL 
                         AND cDateiname != ''",
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $linkGroups->staticRoutes = [];
             foreach ($staticRoutes_arr as $sr) {
@@ -852,7 +852,7 @@ class LinkHelper
                     'linkID'   => $kLink,
                     'cGroupID' => Session::CustomerGroup()->getID()
                 ],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             // collect language URLs
             foreach ($linkData as $item) {
@@ -942,7 +942,7 @@ class LinkHelper
                     'klink' => $kLink,
                     'iso'   => Shop::getLanguageCode()
                 ],
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oLinkSprache->kLink)) {
                 $oLinkSprache->kLink = (int)$oLinkSprache->kLink;
@@ -1012,7 +1012,7 @@ class LinkHelper
                     WHERE tlinksprache.kLink = tlink.kLink
                         AND tlinksprache.cISOSprache = :iso",
                 ['type' => (int)$nLinkArt, 'iso' => $cISOSprache],
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oLink->kLink) && $oLink->kLink > 0) {
                 $oMeta->cTitle    = $oLink->cMetaTitle;

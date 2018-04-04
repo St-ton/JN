@@ -56,10 +56,19 @@ class WarenkorbPers
      * @param string     $cUnique
      * @param int        $kKonfigitem
      * @param int        $nPosTyp
+     * @param string     $cResponsibility
      * @return $this
      */
-    public function fuegeEin($kArtikel, $cArtikelName, $oEigenschaftwerte_arr, $fAnzahl, $cUnique = '', $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
-    {
+    public function fuegeEin(
+        $kArtikel,
+        $cArtikelName,
+        $oEigenschaftwerte_arr,
+        $fAnzahl,
+        $cUnique = '',
+        $kKonfigitem = 0,
+        $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL,
+        $cResponsibility = 'core'
+    ) {
         $bBereitsEnthalten = false;
         $nPosition         = 0;
         $kArtikel          = (int)$kArtikel;
@@ -110,7 +119,8 @@ class WarenkorbPers
                 $this->kWarenkorbPers,
                 $cUnique,
                 $kKonfigitem,
-                $nPosTyp
+                $nPosTyp,
+                $cResponsibility
             );
             $oWarenkorbPersPos->schreibeDB();
             $oWarenkorbPersPos->erstellePosEigenschaften($oEigenschaftwerte_arr);
@@ -275,7 +285,8 @@ class WarenkorbPers
                             $oWarenkorbPersPosTMP->kWarenkorbPers,
                             $oWarenkorbPersPosTMP->cUnique,
                             $oWarenkorbPersPosTMP->kKonfigitem,
-                            $oWarenkorbPersPosTMP->nPosTyp
+                            $oWarenkorbPersPosTMP->nPosTyp,
+                            $oWarenkorbPersPosTMP->cResponsibility
                         );
 
                         $oWarenkorbPersPos->kWarenkorbPersPos = $oWarenkorbPersPosTMP->kWarenkorbPersPos;
@@ -436,7 +447,9 @@ class WarenkorbPers
                 $oEigenschaftwerte_arr,
                 $oPosition->nAnzahl,
                 $oPosition->cUnique,
-                $oPosition->kKonfigitem
+                $oPosition->kKonfigitem,
+                $oPosition->nPosTyp,
+                $oPosition->cResponsibility
             );
         }
 

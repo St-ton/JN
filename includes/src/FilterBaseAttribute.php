@@ -86,7 +86,7 @@ class FilterBaseAttribute extends AbstractFilter
                 JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 ' . $oSQL->cMMJOIN . '
                 WHERE ' . $oSQL->cMMWhere,
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (count($oMerkmalWert_arr) > 0) {
             $oMerkmalWert = $oMerkmalWert_arr[0];

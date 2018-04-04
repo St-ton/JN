@@ -42,7 +42,7 @@ class Migration_20180115150800 extends Migration implements IMigration
 
     public function down()
     {
-        $columns = Shop::Container()->getDB()->query("SHOW COLUMNS FROM tsynclogin LIKE 'kSynclogin'", NiceDB::RET_SINGLE_OBJECT);
+        $columns = Shop::Container()->getDB()->query("SHOW COLUMNS FROM tsynclogin LIKE 'kSynclogin'", \DB\ReturnType::SINGLE_OBJECT);
 
         if ($columns && $columns->Field === 'kSynclogin') {
             $this->execute(

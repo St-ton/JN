@@ -88,7 +88,7 @@ class AuswahlAssistentGruppe
                     WHERE kAuswahlAssistentGruppe = :groupID" .
                     $cAktivSQL,
                 ['groupID' => (int)$kAuswahlAssistentGruppe],
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) {
                 $cMember_arr = array_keys(get_object_vars($oGruppe));
@@ -126,7 +126,7 @@ class AuswahlAssistentGruppe
                         FROM tsprache 
                         WHERE kSprache = :langID',
                     ['langID' => (int)$this->kSprache],
-                    NiceDB::RET_SINGLE_OBJECT
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 $this->cSprache = $oSprache->cNameDeutsch;
             }
@@ -149,7 +149,7 @@ class AuswahlAssistentGruppe
                 FROM tauswahlassistentgruppe
                 WHERE kSprache = :langID' . $cAktivSQL,
             ['langID' => (int)$kSprache],
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oGruppeTMP_arr as $oGruppeTMP) {
             $oGruppe_arr[] = new self($oGruppeTMP->kAuswahlAssistentGruppe, $bAktiv, $bAktivFrage, $bBackend);
@@ -267,7 +267,7 @@ class AuswahlAssistentGruppe
                             ON tao.kAuswahlAssistentGruppe = tag.kAuswahlAssistentGruppe
                         WHERE tag.kAuswahlAssistentGruppe = :groupID', 
                     ['groupID' => (int)$kAuswahlAssistentGruppe],
-                    NiceDB::RET_AFFECTED_ROWS
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
             }
 
@@ -289,7 +289,7 @@ class AuswahlAssistentGruppe
                     FROM tauswahlassistentgruppe
                     WHERE kAuswahlAssistentGruppe = :groupID',
                 ['groupID' => (int)$kAuswahlAssistentGruppe], 
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oGruppe->kSprache) && $oGruppe->kSprache > 0) {
                 return (int)$oGruppe->kSprache;

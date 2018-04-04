@@ -26,7 +26,7 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
             cName = :cName,
             cPass = :cPass",
         ['cName' => $upd->cName, 'cPass' => $upd->cPass],
-        NiceDB::RET_AFFECTED_ROWS
+        \DB\ReturnType::AFFECTED_ROWS
     );
 
     $cHinweis = 'Erfolgreich gespeichert.';

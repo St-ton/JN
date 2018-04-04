@@ -82,13 +82,21 @@ class NiceDB implements DbInterface
      */
     private $transactionCount = 0;
 
+    /** @deprecated  */
     const RET_SINGLE_OBJECT = 1;
+    /** @deprecated  */
     const RET_ARRAY_OF_OBJECTS = 2;
+    /** @deprecated  */
     const RET_AFFECTED_ROWS = 3;
+    /** @deprecated  */
     const RET_LAST_INSERTED_ID = 7;
+    /** @deprecated  */
     const RET_SINGLE_ASSOC_ARRAY = 8;
+    /** @deprecated  */
     const RET_ARRAY_OF_ASSOC_ARRAYS = 9;
+    /** @deprecated  */
     const RET_QUERYSINGLE = 10;
+    /** @deprecated  */
     const RET_ARRAY_OF_BOTH_ARRAYS = 11;
 
     /**

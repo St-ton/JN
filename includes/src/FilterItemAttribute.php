@@ -169,7 +169,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 'lid' => Shop::getLanguage(),
                 'val' => $value
             ],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if (!empty($seo_obj->kMerkmal)) {
             $this->setAttributeID($seo_obj->kMerkmal)
@@ -413,7 +413,7 @@ class FilterItemAttribute extends FilterBaseAttribute
                 #AND tseo.kSprache = " . $this->getLanguageID() . "
             GROUP BY ssMerkmal.kMerkmalWert
             ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $currentAttributeValue = $this->productFilter->getAttributeValue()->getValue();
         $additionalFilter      = new self($this->productFilter);

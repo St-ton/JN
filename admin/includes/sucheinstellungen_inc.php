@@ -53,12 +53,12 @@ function createSearchIndex($index, $create)
         try {
             Shop::Container()->getDB()->executeQuery(
                 "UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)",
-                NiceDB::RET_QUERYSINGLE
+                \DB\ReturnType::QUERYSINGLE
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
-                NiceDB::RET_QUERYSINGLE
+                \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {
             $res = 0;
@@ -96,8 +96,8 @@ function createSearchIndex($index, $create)
  */
 function clearSearchCache()
 {
-    Shop::DB()->executeQuery("DELETE FROM tsuchcachetreffer", NiceDB::RET_AFFECTED_ROWS);
-    Shop::DB()->executeQuery("DELETE FROM tsuchcache", NiceDB::RET_AFFECTED_ROWS);
+    Shop::DB()->executeQuery("DELETE FROM tsuchcachetreffer", \DB\ReturnType::AFFECTED_ROWS);
+    Shop::DB()->executeQuery("DELETE FROM tsuchcache", \DB\ReturnType::AFFECTED_ROWS);
 
     return ['hinweis' => 'Der Such-Cache wurde gelöscht'];
 }

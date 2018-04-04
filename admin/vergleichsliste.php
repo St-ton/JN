@@ -106,7 +106,7 @@ $smarty->assign('oConfig_arr', $oConfig_arr);
 $oVergleichAnzahl = Shop::Container()->getDB()->query(
     'SELECT count(*) AS nAnzahl
         FROM tvergleichsliste',
-    NiceDB::RET_SINGLE_OBJECT
+    \DB\ReturnType::SINGLE_OBJECT
 );
 // Pagination
 $oPagination = (new Pagination())

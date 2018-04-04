@@ -31,12 +31,10 @@
                                     <div class="col-md-{if empty($cBildPfad)}12{else}10{/if} group-items">
                                         <ul class="list-group">
                                             {foreach from=$oGruppe->oItem_arr item=oItem name=konfigitem}
-                                                {if $oItem->getArtikel()->cLagerBeachten === 'Y'
-                                                && $oItem->getArtikel()->cLagerKleinerNull === 'N'
-                                                && floatval($oItem->getArtikel()->fLagerbestand) <= 0}
-                                                    {assign var=bSelectable value=0}
-                                                {else}
+                                                {if $oItem->isInStock()}
                                                     {assign var=bSelectable value=1}
+                                                {else}
+                                                    {assign var=bSelectable value=0}
                                                 {/if}
                                                 <li class="list-group-item {if $oItem->getEmpfohlen()}alert-info{/if}{if empty($bSelectable)} disabled{/if}" data-id="{$oItem->getKonfigitem()}">
                                                     {assign var=kKonfigitem value=$oItem->getKonfigitem()}

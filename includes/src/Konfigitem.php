@@ -812,5 +812,18 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         {
             return $this->kKundengruppe;
         }
+
+        /**
+         * @return bool
+         */
+        public function isInStock()
+        {
+            $tmpPro = $this->getArtikel();
+            
+            return empty($this->kArtikel)
+                || (!($tmpPro->cLagerBeachten === 'Y'
+                && $tmpPro->cLagerKleinerNull === 'N'
+                && floatval($tmpPro->fLagerbestand) <= 0));
+        }
     }
 }

@@ -110,7 +110,9 @@
                                 </td>
                                 <td>
                                     <a href="{$CWunschlistePos->Artikel->cURL}">{$CWunschlistePos->cArtikelName}</a>
-                                    {if $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
+                                    {if $CWunschlistePos->Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
+                                        <p>{lang key="productOutOfStock" section="productDetails"}</p>
+                                    {elseif $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                                         <p>{lang key="priceOnApplication" section="global"}</p>
                                     {else}
                                         {include file="productdetails/price.tpl" Artikel=$CWunschlistePos->Artikel tplscope="wishlist"}

@@ -27,7 +27,7 @@ function create_NewsletterCode($dbfeld, $email)
  */
 function unique_NewsletterCode($dbfeld, $code)
 {
-    $res = Shop::DB()->select('tnewsletterempfaenger', $dbfeld, $code);
+    $res = Shop::Container()->getDB()->select('tnewsletterempfaenger', $dbfeld, $code);
 
     return !(isset($res->kNewsletterEmpfaenger) && $res->kNewsletterEmpfaenger > 0);
 }
@@ -49,9 +49,9 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
     $oPlausi->nPlausi_arr       = [];
     $oNewsletterEmpfaengerKunde = null;
 
-    if (valid_email($oKunde->cEmail) || !$bPruefeDaten) {
+    if (!$bPruefeDaten || valid_email($oKunde->cEmail)) {
         $oPlausi->nPlausi_arr = newsletterAnmeldungPlausi($oKunde);
-        $kKundengruppe        = Kundengruppe::getCurrent();
+        $kKundengruppe        = Session::CustomerGroup()->getID();
         // CheckBox Plausi
         $oCheckBox            = new CheckBox();
         $oPlausi->nPlausi_arr = array_merge(
@@ -66,23 +66,23 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
         $oPlausi->cPost_arr['captcha']   = isset($_POST['captcha'])
             ? StringHandler::htmlentities(StringHandler::filterXSS($_POST['captcha']))
             : null;
-        if (count($oPlausi->nPlausi_arr) === 0 || !$bPruefeDaten) {
+        if (!$bPruefeDaten || count($oPlausi->nPlausi_arr) === 0) {
             // Pruefen ob Email bereits vorhanden
-            $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'cEmail', $oKunde->cEmail);
+            $oNewsletterEmpfaenger = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'cEmail', $oKunde->cEmail);
             if (!empty($oNewsletterEmpfaenger->dEingetragen)) {
                 $oNewsletterEmpfaenger->Datum =
                     (new DateTime($oNewsletterEmpfaenger->dEingetragen))->format('d.m.Y H:i');
             }
             // Pruefen ob Kunde bereits eingetragen
             if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-                $oNewsletterEmpfaengerKunde = Shop::DB()->select(
+                $oNewsletterEmpfaengerKunde = Shop::Container()->getDB()->select(
                     'tnewsletterempfaenger',
                     'kKunde',
                     (int)$_SESSION['Kunde']->kKunde
                 );
             }
-            if ((isset($oNewsletterEmpfaenger->cEmail) && strlen($oNewsletterEmpfaenger->cEmail) > 0) ||
-                (isset($oNewsletterEmpfaengerKunde->kKunde) && $oNewsletterEmpfaengerKunde->kKunde > 0)
+            if ((isset($oNewsletterEmpfaenger->cEmail) && strlen($oNewsletterEmpfaenger->cEmail) > 0)
+                || (isset($oNewsletterEmpfaengerKunde->kKunde) && $oNewsletterEmpfaengerKunde->kKunde > 0)
             ) {
                 $cFehler = Shop::Lang()->get('newsletterExists', 'errorMessages');
             } else {
@@ -100,7 +100,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
 
                 // Neuen Newsletterempfaenger hinzufuegen
                 $oNewsletterEmpfaenger           = new stdClass();
-                $oNewsletterEmpfaenger->kSprache = (int)$_SESSION['kSprache'];
+                $oNewsletterEmpfaenger->kSprache = Shop::getLanguage();
                 $oNewsletterEmpfaenger->kKunde   = isset($_SESSION['Kunde']->kKunde)
                     ? (int)$_SESSION['Kunde']->kKunde
                     : 0;
@@ -128,10 +128,10 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                     'oNewsletterEmpfaenger' => $oNewsletterEmpfaenger
                 ]);
 
-                Shop::DB()->insert('tnewsletterempfaenger', $oNewsletterEmpfaenger);
+                Shop::Container()->getDB()->insert('tnewsletterempfaenger', $oNewsletterEmpfaenger);
                 // Protokollieren (hinzufuegen)
                 $oNewsletterEmpfaengerHistory               = new stdClass();
-                $oNewsletterEmpfaengerHistory->kSprache     = (int)$_SESSION['kSprache'];
+                $oNewsletterEmpfaengerHistory->kSprache     = Shop::getLanguage();
                 $oNewsletterEmpfaengerHistory->kKunde       = isset($_SESSION['Kunde']->kKunde)
                     ? (int)$_SESSION['Kunde']->kKunde
                     : 0;
@@ -147,7 +147,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
                 $oNewsletterEmpfaengerHistory->cRegIp       = $oKunde->cRegIp;
 
-                $kNewsletterEmpfaengerHistory = Shop::DB()->insert(
+                $kNewsletterEmpfaengerHistory = Shop::Container()->getDB()->insert(
                     'tnewsletterempfaengerhistory',
                     $oNewsletterEmpfaengerHistory
                 );
@@ -156,9 +156,9 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                     'oNewsletterEmpfaengerHistory' => $oNewsletterEmpfaengerHistory
                 ]);
 
-                if (($Einstellungen['newsletter']['newsletter_doubleopt'] === 'U' &&
-                        !$_SESSION['Kunde']->kKunde) ||
-                    $Einstellungen['newsletter']['newsletter_doubleopt'] === 'A'
+                if (($Einstellungen['newsletter']['newsletter_doubleopt'] === 'U'
+                        && !$_SESSION['Kunde']->kKunde)
+                    || $Einstellungen['newsletter']['newsletter_doubleopt'] === 'A'
                 ) {
                     $oNewsletterEmpfaenger->cLoeschURL     = Shop::getURL() .
                         '/newsletter.php?lang=' . $_SESSION['cISOSprache'] . '&lc=' .
@@ -166,22 +166,18 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                     $oNewsletterEmpfaenger->cFreischaltURL = Shop::getURL() .
                         '/newsletter.php?lang=' . $_SESSION['cISOSprache'] . '&fc=' .
                         $oNewsletterEmpfaenger->cOptCode;
-                    if (!isset($oObjekt)) {
-                        $oObjekt = new stdClass();
-                    }
-                    $oObjekt->tkunde               = isset($_SESSION['Kunde'])
-                        ? $_SESSION['Kunde']
-                        : null;
+                    $oObjekt = new stdClass();
+                    $oObjekt->tkunde               = $_SESSION['Kunde'] ?? null;
                     $oObjekt->NewsletterEmpfaenger = $oNewsletterEmpfaenger;
 
                     $mail = sendeMail(MAILTEMPLATE_NEWSLETTERANMELDEN, $oObjekt);
                     // UPDATE
                     $_upd                 = new stdClass();
                     $_upd->cEmailBodyHtml = $mail->bodyHtml;
-                    Shop::DB()->update(
+                    Shop::Container()->getDB()->update(
                         'tnewsletterempfaengerhistory',
                         'kNewsletterEmpfaengerHistory',
-                        (int)$kNewsletterEmpfaengerHistory,
+                        $kNewsletterEmpfaengerHistory,
                         $_upd
                     );
 
@@ -222,7 +218,7 @@ function newsletterAnmeldungPlausi($oKunde)
 function pruefeObBereitsAbonnent($kKunde)
 {
     if ($kKunde > 0) {
-        $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'kKunde', (int)$kKunde);
+        $oNewsletterEmpfaenger = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'kKunde', (int)$kKunde);
 
         return (isset($oNewsletterEmpfaenger->kKunde) && $oNewsletterEmpfaenger->kKunde > 0);
     }

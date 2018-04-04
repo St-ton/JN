@@ -49,7 +49,7 @@
                         {lang key="orders" section="account data"}
                     </a>
                     <a href="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}" class="list-group-item{if $step === 'rechnungsdaten'} active{/if}">
-                        {lang key="addresses" section="account data"}
+                        {lang key="address" section="account data"}
                     </a>
                     {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
                         <a href="{get_static_route id='jtl.php' params=['wllist' => 1]}" class="list-group-item{if $step|substr:0:11 === 'wunschliste'} active{/if}">

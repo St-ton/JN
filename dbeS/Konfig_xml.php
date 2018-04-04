@@ -6,62 +6,51 @@
 
 require_once __DIR__ . '/syncinclude.php';
 
-$return = 3;
+$return  = 3;
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
-    $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
+    $zipFile   = checkFile();
+    $return    = 2;
+    $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
+    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Konfig_xml');
         }
-        $entzippfad = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
-        mkdir($entzippfad);
-        $entzippfad .= '/';
-        if ($archive->extract(PCLZIP_OPT_PATH, $entzippfad)) {
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $i => $xmlFile) {
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Zip entpackt in ' . $entzippfad, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
+                Jtllog::writeLog(
+                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Konfig_xml'
+                );
             }
-            $return = 0;
-            foreach ($list as $i => $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
-                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-                }
-                $cData = file_get_contents($entzippfad . $zip['filename']);
-                $oXml  = simplexml_load_string($cData);
+            $cData = file_get_contents($xmlFile);
+            $oXml  = simplexml_load_string($cData);
 
-                switch ($zip['filename']) {
-                    case 'konfig.xml':
-                        bearbeiteInsert($oXml);
-                        break;
+            switch (pathinfo($xmlFile)['basename']) {
+                case 'konfig.xml':
+                    bearbeiteInsert($oXml);
+                    break;
 
-                    case 'del_konfig.xml':
-                        bearbeiteDeletes($oXml);
-                        break;
+                case 'del_konfig.xml':
+                    bearbeiteDeletes($oXml);
+                    break;
 
-                }
-                removeTemporaryFiles($entzippfad . $zip['filename']);
             }
-            removeTemporaryFiles(substr($entzippfad, 0, -1), true);
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Konfig_xml');
+            removeTemporaryFiles($xmlFile);
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Konfig_xml');
+        removeTemporaryFiles(substr($unzipPath, 0, -1), true);
     }
-}
-
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
 }
 
 echo $return;
+
 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
+    Jtllog::writeLog('BEENDE: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
 }
 
 /**
@@ -122,7 +111,6 @@ function loescheKonfiggruppe($kKonfiggruppe)
         Jtllog::writeLog('Loesche Konfiggruppe: ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }
     if ($kKonfiggruppe > 0) {
-        require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.Konfiggruppe.php';
         if (class_exists('Konfiggruppe')) {
             // todo: alle items löschen
             $oKonfig = new Konfiggruppe($kKonfiggruppe);
@@ -144,7 +132,7 @@ function loescheKonfigitem($kKonfiggruppe)
         Jtllog::writeLog('Loesche kKonfigitem (gruppe): ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }
     if ($kKonfiggruppe > 0) {
-        Shop::DB()->delete('tkonfigitem', 'kKonfiggruppe', $kKonfiggruppe);
+        Shop::Container()->getDB()->delete('tkonfigitem', 'kKonfiggruppe', $kKonfiggruppe);
     }
 }
 
@@ -158,7 +146,6 @@ function loescheKonfigitempreis($kKonfigitem)
         Jtllog::writeLog('Loesche Konfigitempreis: ' . $kKonfigitem, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }
     if ($kKonfigitem > 0) {
-        require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.Konfigitempreis.php';
         if (class_exists('Konfigitempreis')) {
             $oKonfig = new Konfigitempreis($kKonfigitem);
             $nRows   = $oKonfig->delete();

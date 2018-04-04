@@ -2,7 +2,7 @@
 <ul class="header-shop-nav nav navbar-nav force-float horizontal pull-right">
     {block name="navbar-productsearch"}
         <li id="search">
-            <form action="navi.php" method="GET">
+            <form action="index.php" method="get">
                 <div class="input-group">
                     <input name="qs" type="text" class="form-control ac_input" placeholder="{lang key='search'}" autocomplete="off" aria-label="{lang key='search'}"/>
                     <span class="input-group-addon">
@@ -82,11 +82,7 @@
     {*  COMPARE LIST *}
 
     {*  WISH LIST *}
-    {if isset($smarty.session.Wunschliste->kWunschliste) && $smarty.session.Wunschliste->CWunschlistePos_arr|count > 0}
-    <li class="hidden-xs wish-list-menu">
-        <a href="{get_static_route id='wunschliste.php'}" title="{lang key="goToWishlist" sektion="global"}" class="link_to_wishlist{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"><span class="fa fa-heart"></span><sup class="badge"><em>{$smarty.session.Wunschliste->CWunschlistePos_arr|count}</em></sup></a>
-    </li>
-    {/if}
+    {include file='layout/header_shop_nav_wish.tpl'}
     {*  WISH LIST *}
 
     {*  CART *}

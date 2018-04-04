@@ -1,8 +1,5 @@
 'use strict';
 
-/**********************************************************************************************************************/
-/**********************************************************************************************************************/
-
 $('body').on('click', '.option li', function (e) {
     var i = $(this).parents('.select').attr('id'),
         v = $(this).children().text(),
@@ -41,11 +38,8 @@ function getCategoryMenu(categoryId, success) {
     io.call('getCategoryMenu', [categoryId], xx, function (error, data) {
         if (error) {
             console.error(data);
-        }
-        else {
-            if (typeof success === 'function') {
-                success(xx.response);
-            }
+        } else if (typeof success === 'function') {
+            success(xx.response);
         }
     });
 
@@ -79,22 +73,19 @@ function categoryMenu(rootcategory) {
 function compatibility() {
     var __enforceFocus = $.fn.modal.Constructor.prototype.enforceFocus;
     $.fn.modal.Constructor.prototype.enforceFocus = function () {
-        if ($('.modal-body .g-recaptcha').length == 0) {
+        if ($('.modal-body .g-recaptcha').length === 0) {
             __enforceFocus.apply(this, arguments);
         }
     };
 }
 
 function regionsToState() {
-    if ($('#state').length == 0)
+    var state = $('#state');
+    if (state.length === 0) {
         return;
-
-    var title = $('#state').attr('title');
-    if($('#state').attr('required') == 'required'){
-        var stateIsRequired = true;
-    } else {
-        var stateIsRequired = false;
     }
+    var title = state.attr('title');
+    var stateIsRequired = state.attr('required') === 'required';
 
     $('#country').change(function() {
         var result = {};
@@ -104,11 +95,10 @@ function regionsToState() {
         io.call('getRegionsByCountry', [val], result, function (error, data) {
             if (error) {
                 console.error(data);
-            }
-            else {
+            } else {
                 var data = result.response;
                 var def = $('#state').val();
-                if (data != null && data.length > 0) {
+                if (data !== null && data.length > 0) {
                     if (stateIsRequired){
                         var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'required form-control', required: 'required'});
                     } else {
@@ -123,8 +113,7 @@ function regionsToState() {
                         );
                     });
                     $('#state').replaceWith(state);
-                }
-                else {
+                } else {
                     if (stateIsRequired) {
                         var state = $('<input />').attr({ type: 'text', id: 'state', name: 'bundesland', class: 'required form-control', placeholder: title, required: 'required' });
                     } else {

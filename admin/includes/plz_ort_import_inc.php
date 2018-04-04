@@ -7,19 +7,20 @@
 defined('PLZIMPORT_HOST') || define('PLZIMPORT_HOST', 'www.fa-technik.adfc.de');
 defined('PLZIMPORT_URL') || define('PLZIMPORT_URL', 'http://' . PLZIMPORT_HOST . '/code/opengeodb/');
 defined('PLZIMPORT_ISO_REGEX') || define('PLZIMPORT_ISO_REGEX', '/([A-Z]{2})\.tab/');
-defined('PLZIMPORT_REGEX') || define('PLZIMPORT_REGEX', '/<td><a href="([A-Z]{2}\.tab)">([A-Z]{2})\.tab<\/a><\/td><td[^>]*>([0-9]{2}\-[A-Za-z]{3}\-[0-9]{4}[0-9: ]+?) *<\/td><td[^>]*> *([0-9MK\.]+)<\/td>/');
+defined('PLZIMPORT_REGEX') || define('PLZIMPORT_REGEX',
+    '/<td><a href="([A-Z]{2}\.tab)">([A-Z]{2})\.tab<\/a><\/td><td[^>]*>([0-9]{2}\-[A-Za-z]{3}\-[0-9]{4}[0-9: ]+?) *<\/td><td[^>]*> *([0-9MK\.]+)<\/td>/');
 
 /**
  * @return array
  */
 function plzimportGetPLZOrt()
 {
-    $plzOrt_arr = Shop::DB()->query(
+    $plzOrt_arr = Shop::Container()->getDB()->query(
         "SELECT tplz.cLandISO, tland.cDeutsch, tland.cKontinent, count(tplz.kPLZ) AS nPLZOrte, backup.nBackup
             FROM tplz
             INNER JOIN tland ON tland.cISO = tplz.cLandISO
             LEFT JOIN (
-	            SELECT tplz_backup.cLandISO, count(tplz_backup.kPLZ) AS nBackup
+                SELECT tplz_backup.cLandISO, count(tplz_backup.kPLZ) AS nBackup
                 FROM tplz_backup
                 GROUP BY tplz_backup.cLandISO
             ) AS backup ON backup.cLandISO = tplz.cLandISO
@@ -40,7 +41,7 @@ function plzimportGetPLZOrt()
 
 /**
  * @param string $target
- * @param array $sessData
+ * @param array  $sessData
  * @param object $result
  * @return void
  */
@@ -76,24 +77,24 @@ function plzimportDoImport($target, array $sessData, $result)
             $read = $sessData['currentPos'];
             fseek($fHandle, $sessData['currentPos']);
         } else {
-            Shop::DB()->delete('tplz', 'cLandISO', 'IMP');
+            Shop::Container()->getDB()->delete('tplz', 'cLandISO', 'IMP');
             // Erste Zeile nur Headerinformationen
             $data = fgetcsv($fHandle, 0, "\t");
         }
 
         while (!feof($fHandle)) {
             $read += strlen(implode(',', $data));
-            $data  = fgetcsv($fHandle, 0, "\t");
+            $data = fgetcsv($fHandle, 0, "\t");
 
             if (isset($data[13]) && in_array($data[13], [6, 8])) {
                 $plz_arr       = explode(',', $data[7]);
-                $oPLZOrt->cOrt = utf8_decode($data[3]);
+                $oPLZOrt->cOrt = $data[3];
 
                 foreach ($plz_arr as $plz) {
                     $oPLZOrt->cPLZ = $plz;
 
                     if (!empty($oPLZOrt->cPLZ) && !empty($oPLZOrt->cOrt)) {
-                        Shop::DB()->insert('tplz', $oPLZOrt);
+                        Shop::Container()->getDB()->insert('tplz', $oPLZOrt);
                     }
                 }
 
@@ -112,11 +113,11 @@ function plzimportDoImport($target, array $sessData, $result)
                         urlencode(
                             json_encode(
                                 [
-                                    'name' => 'plzimportActionDoImport',
+                                    'name'   => 'plzimportActionDoImport',
                                     'params' => [$target, 'import', $sessData['step']]
                                 ]
                             )
-                        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
+                        ) . '&token=' . StringHandler::filterXSS($_SESSION['jtl_token']);
                     header('Location: ' . $cRedirectUrl);
                     exit;
                 }
@@ -127,15 +128,16 @@ function plzimportDoImport($target, array $sessData, $result)
         $sessData['status'] = 'Erstelle Backup von ' . $isoLand . '...';
         plzimportWriteSession('Import', $sessData);
 
-        Shop::DB()->delete('tplz_backup', 'cLandISO', $isoLand);
-        Shop::DB()->query("INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = '" . $isoLand . "'", 3);
-        Shop::DB()->delete('tplz', 'cLandISO', $isoLand);
+        Shop::Container()->getDB()->delete('tplz_backup', 'cLandISO', $isoLand);
+        Shop::Container()->getDB()->queryPrepared("INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode", ['isoCode' => $isoLand],
+            3);
+        Shop::Container()->getDB()->delete('tplz', 'cLandISO', $isoLand);
 
         $sessData['step']   = 95;
         $sessData['status'] = 'Aktualisiere ' . $isoLand . ' in Datenbank...';
         plzimportWriteSession('Import', $sessData);
 
-        Shop::DB()->update('tplz', 'cLandISO', 'IMP', (object)[
+        Shop::Container()->getDB()->update('tplz', 'cLandISO', 'IMP', (object)[
             'cLandISO' => $isoLand,
         ]);
 
@@ -155,7 +157,7 @@ function plzimportDoImport($target, array $sessData, $result)
 
 /**
  * @param string $target
- * @param array $sessData
+ * @param array  $sessData
  * @param object $result
  * @return void
  */
@@ -188,11 +190,11 @@ function plzimportDoDownload($target, array $sessData, $result)
         return;
     }
 
-    fwrite($ioHandle, "GET {$ioFile} HTTP/1.1\r\n".
-        "Host: " . PLZIMPORT_HOST . "\r\n".
-        "User-Agent: Mozilla/5.0\r\n".
-        "Keep-Alive: 115\r\n".
-        "Connection: keep-alive\r\n".
+    fwrite($ioHandle, "GET {$ioFile} HTTP/1.1\r\n" .
+        "Host: " . PLZIMPORT_HOST . "\r\n" .
+        "User-Agent: Mozilla/5.0\r\n" .
+        "Keep-Alive: 115\r\n" .
+        "Connection: keep-alive\r\n" .
         "\r\n");
 
     $line = '';
@@ -207,7 +209,7 @@ function plzimportDoDownload($target, array $sessData, $result)
     $written = 0;
     while (!feof($ioHandle) && $buf !== false) {
         $written += fwrite($fHandle, $buf);
-        $buf      = fread($ioHandle, $partSize);
+        $buf     = fread($ioHandle, $partSize);
 
         if ($buf === false) {
             fclose($fHandle);
@@ -251,18 +253,18 @@ function plzimportDoDownload($target, array $sessData, $result)
         urlencode(
             json_encode(
                 [
-                    'name' => 'plzimportActionDoImport',
+                    'name'   => 'plzimportActionDoImport',
                     'params' => [$target, 'import', $sessData['step']]
                 ]
             )
-        ) . '&token=' . StringHandler::filterXSS($_REQUEST['jtl_token']);
+        ) . '&token=' . StringHandler::filterXSS($_SESSION['jtl_token']);
     header('Location: ' . $cRedirectUrl);
     exit;
 }
 
 /**
  * @param JTLSmarty $smarty
- * @param array $messages
+ * @param array     $messages
  * @return void
  */
 function plzimportActionIndex(JTLSmarty $smarty, array &$messages)
@@ -282,6 +284,7 @@ function plzimportActionIndex(JTLSmarty $smarty, array &$messages)
 function plzimportActionUpdateIndex()
 {
     Shop::Smarty()->assign('oPlzOrt_arr', plzimportGetPLZOrt());
+
     return [
         'listHTML' => Shop::Smarty()->fetch('tpl_inc/plz_ort_import_index_list.tpl')
     ];
@@ -290,7 +293,7 @@ function plzimportActionUpdateIndex()
 /**
  * @param string $target
  * @param string $part
- * @param int $step
+ * @param int    $step
  * @return object
  */
 function plzimportActionDoImport($target = '', $part = '', $step = 0)
@@ -399,10 +402,10 @@ function plzimportActionCheckStatus()
     if (plzimportOpenSession('Import')) {
         plzimportCloseSession('Import');
 
-        $impData = Shop::DB()->query(
+        $impData = Shop::Container()->getDB()->query(
             "SELECT count(*) AS nAnzahl
                 FROM tplz
-                WHERE cLandISO ='IMP'", 1
+                WHERE cLandISO = 'IMP'", 1
         );
 
         $result = (object)[
@@ -427,7 +430,8 @@ function plzimportActionCheckStatus()
  */
 function plzimportActionDelTempImport()
 {
-    Shop::DB()->delete('tplz', 'cLandISO', 'IMP');
+    Shop::Container()->getDB()->delete('tplz', 'cLandISO', 'IMP');
+
     return [
         'type'    => 'success',
         'message' => 'Tempor&auml;rer Import wurde gel&ouml;scht!',
@@ -439,8 +443,7 @@ function plzimportActionDelTempImport()
  */
 function plzimportActionLoadAvailableDownloads()
 {
-    $oLand_arr = isset($_SESSION['plzimport.oLand_arr']) ? $_SESSION['plzimport.oLand_arr'] : Shop::Cache()->get('plzimport.oLand_arr');
-
+    $oLand_arr = $_SESSION['plzimport.oLand_arr'] ?? Shop::Cache()->get('plzimport.oLand_arr');
     if ($oLand_arr === false) {
         $ch = curl_init();
         @curl_setopt($ch, CURLOPT_URL, PLZIMPORT_URL);
@@ -454,10 +457,16 @@ function plzimportActionLoadAvailableDownloads()
         curl_close($ch);
 
         if (preg_match_all(PLZIMPORT_REGEX, $cContent, $hits, PREG_PATTERN_ORDER)) {
-            $oLand_arr = Shop::DB()->query(
+            $quotedHits = array_map(
+                function ($hit) {
+                    return Shop::Container()->getDB()->getPDO()->quote($hit);
+                },
+                $hits[2]
+            );
+            $oLand_arr  = Shop::Container()->getDB()->query(
                 "SELECT cISO, cDeutsch
                     FROM tland
-                    WHERE cISO IN ('" . implode("', '", $hits[2]) . "')
+                    WHERE cISO IN (" . implode(", ", $quotedHits) . ")
                     ORDER BY cISO", 2
             );
 
@@ -478,7 +487,7 @@ function plzimportActionLoadAvailableDownloads()
         }
     }
 
-    Shop::Smarty()->assign('oLand_arr', $oLand_arr);
+    Shop::Smarty()->assign('oLand_arr', countriesPreventXss($oLand_arr));
 
     return [
         'dialogHTML' => Shop::Smarty()->fetch('tpl_inc/plz_ort_import_auswahl.tpl')
@@ -486,16 +495,49 @@ function plzimportActionLoadAvailableDownloads()
 }
 
 /**
+ * @param stdClass $country
+ * @return stdClass
+ */
+function countryPreventXss($country)
+{
+    if (Shop::Smarty()->escape_html) {
+        return $country;
+    }
+
+    return (object)[
+        'cISO'     => htmlspecialchars($country->cISO, ENT_QUOTES, JTL_CHARSET, false),
+        'cDeutsch' => htmlspecialchars($country->cDeutsch, ENT_QUOTES, JTL_CHARSET, false),
+        'cDate'    => htmlspecialchars($country->cDate, ENT_QUOTES, JTL_CHARSET, false),
+        'cSize'    => htmlspecialchars($country->cSize, ENT_QUOTES, JTL_CHARSET, false),
+        'cURL'     => htmlspecialchars($country->cURL, ENT_QUOTES, JTL_CHARSET, false),
+    ];
+}
+
+/**
+ * @param stdClass[] $countries
+ * @return stdClass[]
+ */
+function countriesPreventXss($countries)
+{
+    if (Shop::Smarty()->escape_html) {
+        return $countries;
+    }
+
+    return array_map('countryPreventXss', $countries);
+}
+
+/**
  * @param string $target
+ * @return stdClass
  */
 function plzimportActionRestoreBackup($target = '')
 {
     $target = StringHandler::filterXSS($target);
 
     if (!empty($target)) {
-        Shop::DB()->delete('tplz', 'cLandISO', $target);
-        Shop::DB()->query("INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = '" . $target . "'", 3);
-        Shop::DB()->delete('tplz_backup', 'cLandISO', $target);
+        Shop::Container()->getDB()->delete('tplz', 'cLandISO', $target);
+        Shop::Container()->getDB()->queryPrepared("INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = :target", ['target' => $target], 3);
+        Shop::Container()->getDB()->delete('tplz_backup', 'cLandISO', $target);
 
         $result = (object)[
             'result' => 'success',
@@ -510,9 +552,9 @@ function plzimportActionRestoreBackup($target = '')
 }
 
 /**
- * @param string $step
+ * @param string    $step
  * @param JTLSmarty $smarty
- * @param array $messages
+ * @param array     $messages
  * @return void
  */
 function plzimportFinalize($step, JTLSmarty $smarty, array &$messages)
@@ -526,13 +568,9 @@ function plzimportFinalize($step, JTLSmarty $smarty, array &$messages)
         unset($_SESSION['plzimport.error']);
     }
 
-    /*switch ($step) {
-
-    }*/
-
     $smarty->assign('hinweis', $messages['notice'])
-        ->assign('fehler', $messages['error'])
-        ->display('plz_ort_import.tpl');
+           ->assign('fehler', $messages['error'])
+           ->display('plz_ort_import.tpl');
 }
 
 /**
@@ -541,10 +579,10 @@ function plzimportFinalize($step, JTLSmarty $smarty, array &$messages)
  */
 function plzimportOpenSession($sessID)
 {
-    $dbSess = Shop::DB()->select('tadminsession', 'cSessionId', "plzimport.{$sessID}");
+    $dbSess = Shop::Container()->getDB()->select('tadminsession', 'cSessionId', "plzimport.{$sessID}");
 
     if (!isset($dbSess->nSessionExpires) || $dbSess->nSessionExpires < time()) {
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "INSERT INTO tadminsession (cSessionId, nSessionExpires, cSessionData)
                 VALUES ('plzimport." . $sessID . "', " . (time() + 2 * 60) . ", '')
                 ON DUPLICATE KEY UPDATE
@@ -564,17 +602,17 @@ function plzimportOpenSession($sessID)
  */
 function plzimportCloseSession($sessID)
 {
-    Shop::DB()->delete('tadminsession', 'cSessionId', "plzimport.{$sessID}");
+    Shop::Container()->getDB()->delete('tadminsession', 'cSessionId', "plzimport.{$sessID}");
 }
 
 /**
  * @param string $sessID
- * @param array $data
+ * @param array  $data
  * @return void
  */
 function plzimportWriteSession($sessID, array $data)
 {
-    Shop::DB()->update('tadminsession', 'cSessionId', "plzimport.{$sessID}", (object)[
+    Shop::Container()->getDB()->update('tadminsession', 'cSessionId', "plzimport.{$sessID}", (object)[
         'cSessionData'    => serialize($data),
         'nSessionExpires' => time() + 2 * 60
     ]);
@@ -586,17 +624,15 @@ function plzimportWriteSession($sessID, array $data)
  */
 function plzimportReadSession($sessID)
 {
-    $dbSess = Shop::DB()->select('tadminsession', 'cSessionId', "plzimport.{$sessID}");
+    $dbSess = Shop::Container()->getDB()->select('tadminsession', 'cSessionId', "plzimport.{$sessID}");
 
-    if (!empty($dbSess->cSessionData)) {
-        return unserialize($dbSess->cSessionData);
-    }
-
-    return [];
+    return !empty($dbSess->cSessionData)
+        ? unserialize($dbSess->cSessionData)
+        : [];
 }
 
 /**
- * @param mixed $data
+ * @param mixed       $data
  * @param string|null $error
  * @return void
  */
@@ -616,7 +652,7 @@ function plzimportMakeResponse($data, $error = null)
 
     $result = (object)[
         'error' => $error,
-        'data'  => utf8_convert_recursive($data)
+        'data'  => $data
     ];
 
     $json = json_encode($result);

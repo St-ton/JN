@@ -17,8 +17,8 @@ if ($cDatei === null) {
     exit;
 }
 
-$cIP              = Shop::DB()->escape(getRealIp());
-$nFloodProtection = (int)Shop::DB()->query("
+$cIP              = Shop::Container()->getDB()->escape(getRealIp());
+$nFloodProtection = (int)Shop::Container()->getDB()->query("
     SELECT * 
         FROM `tsitemaptracker` 
         WHERE `cIP` = '{$cIP}' 
@@ -34,7 +34,7 @@ if ($nFloodProtection === 0) {
     $oSitemapTracker->cUserAgent   = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
     $oSitemapTracker->dErstellt    = 'now()';
 
-    Shop::DB()->insert('tsitemaptracker', $oSitemapTracker);
+    Shop::Container()->getDB()->insert('tsitemaptracker', $oSitemapTracker);
 }
 
 // Redirect to real filepath
@@ -47,13 +47,11 @@ function getRequestBot()
 {
     $cSpider_arr       = getSpiderArr();
     $cBotUserAgent_arr = array_keys($cSpider_arr);
-    if (is_array($cBotUserAgent_arr) && count($cBotUserAgent_arr) > 0) {
-        foreach ($cBotUserAgent_arr as $i => $cBotUserAgent) {
-            if (stripos($_SERVER['HTTP_USER_AGENT'], $cBotUserAgent) !== false) {
-                $oBesucherBot = Shop::DB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
+    foreach ($cBotUserAgent_arr as $cBotUserAgent) {
+        if (stripos($_SERVER['HTTP_USER_AGENT'], $cBotUserAgent) !== false) {
+            $oBesucherBot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
 
-                return isset($oBesucherBot->kBesucherBot) ? (int)$oBesucherBot->kBesucherBot : 0;
-            }
+            return isset($oBesucherBot->kBesucherBot) ? (int)$oBesucherBot->kBesucherBot : 0;
         }
     }
 
@@ -78,11 +76,9 @@ function getRequestFile($cDatei)
 
     $cDatei = $cDateiInfo_arr['basename'];
 
-    if (!file_exists(PFAD_ROOT . PFAD_EXPORT . $cDatei)) {
-        return null;
-    }
-
-    return $cDatei;
+    return file_exists(PFAD_ROOT . PFAD_EXPORT . $cDatei)
+        ? $cDatei
+        : null;
 }
 
 /**

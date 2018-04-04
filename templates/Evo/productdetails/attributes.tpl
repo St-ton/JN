@@ -1,33 +1,4 @@
-{assign var="showProductWeight" value=false}
-{if isset($Artikel->cArtikelgewicht) && $Artikel->fArtikelgewicht > 0
-&& ($Einstellungen.artikeldetails.artikeldetails_artikelgewicht_anzeigen === 'Y' && $tplscope === 'details'
-||  $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && $tplscope === 'productlist')}
-    {assign var="showProductWeight" value=true}
-{/if}
-
-{assign var="showShippingWeight" value=false}
-{if isset($Artikel->cGewicht) && $Artikel->fGewicht > 0
-&& ($Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $tplscope === 'details'
-||  $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && $tplscope === 'productlist')}
-    {assign var="showShippingWeight" value=true}
-{/if}
-
-{assign var="dimension" value=$Artikel->getDimension()}
-
-{assign var="showAttributesTable" value=false}
-{if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y' && !empty($Artikel->oMerkmale_arr)
-|| $showProductWeight
-|| $showShippingWeight
-|| $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y' && (!empty($dimension['length']) || !empty($dimension['width']) || !empty($dimension['height']))
-|| isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0  && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
-|| ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y'
-|| (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)) && !empty($Artikel->Attribute)
-}
-    {assign var="showAttributesTable" value=true}
-{/if}
-
 {if $showAttributesTable}
-<hr>
 <div class="product-attributes">
     {block name="productdetails-attributes"}
         <div class="list-group list-group-striped">
@@ -40,14 +11,14 @@
                                 {strip}
                                     {foreach name="attr_characteristics" from=$oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
                                         {if $oMerkmal->cTyp === 'TEXT' || $oMerkmal->cTyp === 'SELECTBOX' || $oMerkmal->cTyp === ''}
-                                            <span class="value"><a href="{$oMerkmalWert->cURL}" class="label label-primary">{$oMerkmalWert->cWert|escape:"html"}</a> </span>
+                                            <span class="value"><a href="{$oMerkmalWert->cURLFull}" class="label label-primary">{$oMerkmalWert->cWert|escape:'html'}</a> </span>
                                         {else}
                                             <span class="value">
-                                            <a href="{$oMerkmalWert->cURL}" data-toggle="tooltip" data-placement="top" title="{$oMerkmalWert->cWert|escape:"html"}">
+                                            <a href="{$oMerkmalWert->cURLFull}" data-toggle="tooltip" data-placement="top" title="{$oMerkmalWert->cWert|escape:'html'}">
                                                 {if $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
-                                                    <img src="{$oMerkmalWert->cBildpfadKlein}" title="{$oMerkmalWert->cWert|escape:"html"}" alt="{$oMerkmalWert->cWert|escape:"html"}" />
+                                                    <img src="{$oMerkmalWert->cBildURLKlein}" title="{$oMerkmalWert->cWert|escape:'html'}" alt="{$oMerkmalWert->cWert|escape:'html'}" />
                                                 {else}
-                                                    <span class="value"><a href="{$oMerkmalWert->cURL}" class="label label-primary">{$oMerkmalWert->cWert|escape:"html"}</a> </span>
+                                                    <span class="value"><a href="{$oMerkmalWert->cURLFull}" class="label label-primary">{$oMerkmalWert->cWert|escape:'html'}</a> </span>
                                                 {/if}
                                             </a>
                                         </span>

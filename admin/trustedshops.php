@@ -10,7 +10,6 @@ define('SHOP_SOFTWARE', 'JTL');
 
 $oAccount->permission('ORDER_TRUSTEDSHOPS_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
 /** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
@@ -29,7 +28,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
             if ($oTrustedShops->loescheTrustedShopsZertifikat($oTrustedShops->oZertifikat->kTrustedShopsZertifikat)) {
                 $cHinweis = 'Ihr Zertifikat wurde erfolgreich f&uuml;r die aktuelle Sprache gel&ouml;scht.';
 
-                Shop::DB()->query(
+                Shop::Container()->getDB()->query(
                     "DELETE FROM teinstellungen
                         WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
                             AND cName = 'trustedshops_nutzen'", 4
@@ -38,7 +37,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
                 $aktWert->cWert                 = 'N';
                 $aktWert->cName                 = 'trustedshops_nutzen';
                 $aktWert->kEinstellungenSektion = CONF_TRUSTEDSHOPS;
-                Shop::DB()->insert('teinstellungen', $aktWert);
+                Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
                 Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
             } else {
                 $cFehler .= 'Fehler: Es wurde kein Zertifikat f&uuml; die aktuelle Sprache gefunden.';
@@ -48,7 +47,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
         }
     } else { // Speicher die Einstellungen
         $cPreStatus  = $Einstellungen['trustedshops']['trustedshops_nutzen'];
-        $oConfig_arr = Shop::DB()->query(
+        $oConfig_arr = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
@@ -79,8 +78,8 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
             }
 
             if ($oConfig_arr[$i]->cInputTyp !== 'listbox') {
-                Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]);
-                Shop::DB()->insert('teinstellungen', $aktWert);
+                Shop::Container()->getDB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]);
+                Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
             }
             $settings = Shopsetting::getInstance();
             $settings->reset();
@@ -100,9 +99,9 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
             //$oTrustedShops = new TrustedShops($oZertifikat->cTSID, $_SESSION['TrustedShops']->oSprache->cISOSprache);
             $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
 
-            $nReturnValue = (strlen($oTrustedShops->kTrustedShopsZertifikat) > 0) ?
-                $oTrustedShops->speicherTrustedShopsZertifikat($oZertifikat, $oTrustedShops->kTrustedShopsZertifikat) :
-                $oTrustedShops->speicherTrustedShopsZertifikat($oZertifikat);
+            $nReturnValue = (strlen($oTrustedShops->kTrustedShopsZertifikat) > 0)
+                ? $oTrustedShops->speicherTrustedShopsZertifikat($oZertifikat, $oTrustedShops->kTrustedShopsZertifikat)
+                : $oTrustedShops->speicherTrustedShopsZertifikat($oZertifikat);
 
             mappeTSFehlerCode($cHinweis, $cFehler, $nReturnValue);
         } elseif ($cPreStatus === 'Y') {
@@ -129,7 +128,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     $cPreStatus    = $Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'];
 
-    $oConfig_arr = Shop::DB()->selectAll(
+    $oConfig_arr = Shop::Container()->getDB()->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf', 'cWertName'],
         [CONF_TRUSTEDSHOPS, 'Y', 'trustedshops_kundenbewertung_anzeigen'],
@@ -159,12 +158,12 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
         }
 
         if ($oConfig_arr[$i]->cInputTyp !== 'listbox') {
-            Shop::DB()->delete(
+            Shop::Container()->getDB()->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]
             );
-            Shop::DB()->insert('teinstellungen', $aktWert);
+            Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
         }
     }
     $settings = Shopsetting::getInstance();
@@ -226,7 +225,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
 // Uebersicht
 if ($step === 'uebersicht') {
     // Config holen
-    $oConfig_arr = Shop::DB()->query(
+    $oConfig_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungenconf
             WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
@@ -235,14 +234,14 @@ if ($step === 'uebersicht') {
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
+            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM teinstellungenconfwerte
                     WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
                     ORDER BY nSort", 2
             );
         } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
+            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 "SELECT kKundengruppe, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC", 2
@@ -250,7 +249,7 @@ if ($step === 'uebersicht') {
         }
 
         if ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oSetValue = Shop::DB()->query(
+            $oSetValue = Shop::Container()->getDB()->query(
                 "SELECT cWert
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
@@ -258,13 +257,13 @@ if ($step === 'uebersicht') {
             );
             $oConfig_arr[$i]->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = Shop::DB()->query(
+            $oSetValue = Shop::Container()->getDB()->query(
                 "SELECT cWert
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
                         AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
             );
-            $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
+            $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
         }
     }
 
@@ -377,40 +376,40 @@ $smarty->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
  */
 function mappeTSFehlerCode(&$cHinweis, &$cFehler, $nReturnValue)
 {
-    if ($nReturnValue == -1) {
+    if ($nReturnValue === -1) {
         $cHinweis .= 'Das Trusted Shops Zertifikat wurde erfolgreich gespeichert.<br />
             Bitte Besuchen Sie unter dem Backend Men&uuml;punkt "Admin" die "Boxenverwaltung" und f&uuml;gen Sie die Trusted Shops Siegelbox hinzu.<br />';
-    } elseif ($nReturnValue == 1) {
+    } elseif ($nReturnValue === 1) {
         // Fehlende Sprache + TSID
         $cFehler .= 'Fehler: Bitte f&uuml;llen Sie alle Felder aus.';
-    } elseif ($nReturnValue == 2) {
+    } elseif ($nReturnValue === 2) {
         // Das Zertifikat existiert nich
         $cFehler .= 'Fehler: Das Zertifikat zu Ihrer Trusted Shops ID existiert nicht.';
-    } elseif ($nReturnValue == 3) {
+    } elseif ($nReturnValue === 3) {
         // Das Zertifikat ist abgelaufen
         $cFehler .= 'Fehler: Das Zertifikat zu Ihrer Trusted Shops ID ist abgelaufen.';
-    } elseif ($nReturnValue == 4) {
+    } elseif ($nReturnValue === 4) {
         // Das Zertifikat ist gesperrt
         $cFehler .= 'Fehler: Das Zertifikat zu Ihrer Trusted Shops ID ist gesperrt.';
-    } elseif ($nReturnValue == 5) {
+    } elseif ($nReturnValue === 5) {
         // Shop befindet sich in der Zertifizierung
         $cFehler .= 'Fehler: Das Zertifikat befindet sich in der Zertifzierung.';
-    } elseif ($nReturnValue == 6) {
+    } elseif ($nReturnValue === 6) {
         // Keine Excellence-Variante mit Kaeuferschutz im Checkout-Prozess
         $cFehler .= 'Fehler: Das Zertifikat hat keine Excellence-Variante mit K&auml;uferschutz im Checkout-Prozess.';
-    } elseif ($nReturnValue == 7) {
+    } elseif ($nReturnValue === 7) {
         // Ungueltige Sprache fuer gewaehlte TS-ID
         $cFehler .= 'Fehler: Ihre gew&auml;hlte Sprache stimmt nicht mit Ihrer Trusted Shops ID &uuml;berein.';
-    } elseif ($nReturnValue == 8) {
+    } elseif ($nReturnValue === 8) {
         // Benutzername & Passwort ungueltig
         $cFehler .= 'Fehler: Ihre WebService User ID (wsUser) und Ihr WebService Passwort (wsPassword) konnten nicht verifiziert werden.';
-    } elseif ($nReturnValue == 9) {
+    } elseif ($nReturnValue === 9) {
         // Zertifikat konnte nicht gespeichert werden
         $cFehler .= 'Fehler: Das Zertifikat konnte nicht gespeichert werden.';
-    } elseif ($nReturnValue == 10) {
+    } elseif ($nReturnValue === 10) {
         // Falsche Kaeuferschutzvariante
         $cFehler .= 'Fehler: Ihre Trusted Shops ID entspricht nicht dem ausgew&auml;hlten K&auml;uferschutz Typ.';
-    } elseif ($nReturnValue == 11) {
+    } elseif ($nReturnValue === 11) {
         // SOAP Fehler
         $cFehler .= 'Fehler: Interner SOAP Fehler. Entweder ist das Netzwerkprotokoll SOAP nicht eingebunden oder der Trusted Shops Service ist momentan nicht erreichbar.';
     }

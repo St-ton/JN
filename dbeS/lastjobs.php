@@ -6,13 +6,10 @@
 
 require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
 if (auth()) {
-    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
     $cError = '';
     // TMP Verzeichnis leeren
     if (!KEEP_SYNC_FILES) {
@@ -71,9 +68,7 @@ if (auth()) {
                         if (isset($conf['global']['garbagecollector_wawiabgleich']) &&
                             $conf['global']['garbagecollector_wawiabgleich'] === 'Y'
                         ) {
-                            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.GarbageCollector.php';
-                            $oGarbageCollector = new GarbageCollector();
-                            $oGarbageCollector->run();
+                            Shop::Container()->getDBServiceGC()->run();
                             updateJob(LASTJOBS_GARBAGECOLLECTOR);
                         }
                         break;

@@ -10,7 +10,7 @@
  */
 function getWidgets($bActive = true)
 {
-    $oWidget_arr = Shop::DB()->selectAll('tadminwidgets', 'bActive', (int)$bActive, '*', 'eContainer ASC, nPos ASC');
+    $oWidget_arr = Shop::Container()->getDB()->selectAll('tadminwidgets', 'bActive', (int)$bActive, '*', 'eContainer ASC, nPos ASC');
     if ($bActive && is_array($oWidget_arr) && count($oWidget_arr) > 0) {
         foreach ($oWidget_arr as $i => $oWidget) {
             $oWidget_arr[$i]->cContent = '';
@@ -18,11 +18,7 @@ function getWidgets($bActive = true)
             $cClassFile                = 'class.' . $cClass . '.php';
             $cClassPath                = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
             $oWidget->cNiceTitle       = str_replace(['--', ' '], '-', $oWidget->cTitle);
-            $oWidget->cNiceTitle       = strtolower(str_replace(
-                ['ä', 'Ä', 'ü', 'Ü', 'ö', 'Ö', 'ß', utf8_decode('ü'), utf8_decode('Ü'), utf8_decode('ä'), utf8_decode('Ä'), utf8_decode('ö'), utf8_decode('Ö'), '(', ')', '/', '\\'],
-                '',
-                $oWidget->cNiceTitle)
-            );
+            $oWidget->cNiceTitle       = strtolower(preg_replace('/[äüöß\(\)\/\\\]/iu', '', $oWidget->cNiceTitle));
             // Plugin?
             $oPlugin = null;
             if (isset($oWidget->kPlugin) && $oWidget->kPlugin > 0) {
@@ -54,7 +50,7 @@ function setWidgetPosition($kWidget, $eContainer, $nPos)
     $upd             = new stdClass();
     $upd->eContainer = $eContainer;
     $upd->nPos       = (int)$nPos;
-    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**
@@ -64,7 +60,7 @@ function closeWidget($kWidget)
 {
     $upd          = new stdClass();
     $upd->bActive = 0;
-    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**
@@ -74,7 +70,7 @@ function addWidget($kWidget)
 {
     $upd          = new stdClass();
     $upd->bActive = 1;
-    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**
@@ -85,7 +81,7 @@ function expandWidget($kWidget, $bExpand)
 {
     $upd            = new stdClass();
     $upd->bExpanded = (int)$bExpand;
-    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**
@@ -95,7 +91,7 @@ function expandWidget($kWidget, $bExpand)
 function getWidgetContent($kWidget)
 {
     $cContent = '';
-    $oWidget  = Shop::DB()->select('tadminwidgets', 'kWidget', (int)$kWidget);
+    $oWidget  = Shop::Container()->getDB()->select('tadminwidgets', 'kWidget', (int)$kWidget);
 
     if (!is_object($oWidget)) {
         return '';
@@ -181,9 +177,10 @@ function getShopInfoIO($cTpl, $cWrapperID)
 {
     $response = new IOResponse();
 
-    $oSubscription = Shop()->RS()->getSubscription();
-    $oLatestVersion = Shop()->RS()->getLatestVersion();
-    $bUpdateAvailable = Shop()->RS()->hasNewerVersion();
+    $api = Shop::Container()->get(\Network\JTLApi::class);
+    $oSubscription = $api->getSubscription();
+    $oLatestVersion = $api->getLatestVersion();
+    $bUpdateAvailable = $api->hasNewerVersion();
 
     $strLatestVersion = $oLatestVersion
         ? sprintf('%.2f', $oLatestVersion->version / 100)
@@ -206,7 +203,6 @@ function getAvailableWidgetsIO()
     $oAvailableWidget_arr = getWidgets(false);
     Shop::Smarty()->assign('oAvailableWidget_arr', $oAvailableWidget_arr);
     $cWrapper = Shop::Smarty()->fetch('tpl_inc/widget_selector.tpl');
-    $cWrapper = utf8_encode($cWrapper);
     $response->assign('settings', 'innerHTML', $cWrapper);
 
     return $response;

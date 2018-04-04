@@ -14,7 +14,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $cHinweis = '';
 $cFehler  = '';
-$tab      = isset($_REQUEST['tab']) ? $_REQUEST['tab'] : 'variables';
+$tab      = $_REQUEST['tab'] ?? 'variables';
 $step     = 'overview';
 setzeSprache();
 $kSprache    = (int)$_SESSION['kSprache'];
@@ -33,7 +33,7 @@ if (validateToken() && verifyGPDataString('importcsv') === 'langvars' && isset($
 }
 
 $oSprachISO            = Shop::Lang()->getLangIDFromIso($cISOSprache);
-$kSprachISO            = isset($oSprachISO->kSprachISO) ? $oSprachISO->kSprachISO : 0;
+$kSprachISO            = $oSprachISO->kSprachISO ?? 0;
 $oSpracheInstalled_arr = Shop::Lang()->getInstalled();
 $oSpracheAvailable_arr = Shop::Lang()->getAvailable();
 $oSektion_arr          = Shop::Lang()->getSections();
@@ -63,14 +63,14 @@ if (isset($_REQUEST['action']) && validateToken()) {
             $step                      = 'newvar';
             $oVariable                 = new stdClass();
             $oVariable->kSprachsektion = isset($_REQUEST['kSprachsektion']) ? (int)$_REQUEST['kSprachsektion'] : 1;
-            $oVariable->cName          = isset($_REQUEST['cName']) ? $_REQUEST['cName'] : '';
+            $oVariable->cName          = $_REQUEST['cName'] ?? '';
             $oVariable->cWert_arr      = [];
             break;
         case 'delvar':
             // Variable loeschen
             Shop::Lang()->loesche($_GET['kSprachsektion'], $_GET['cName']);
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-            Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
             $cHinweis = 'Variable ' . $_GET['cName'] . ' wurde erfolgreich gel&ouml;scht.';
             break;
         case 'savevar':
@@ -80,21 +80,22 @@ if (isset($_REQUEST['action']) && validateToken()) {
             $oVariable->cName          = $_REQUEST['cName'];
             $oVariable->cWert_arr      = $_REQUEST['cWert_arr'];
             $oVariable->cWertAlt_arr   = [];
-            $oVariable->bOverwrite_arr = isset($_REQUEST['bOverwrite_arr']) ? $_REQUEST['bOverwrite_arr'] : [];
+            $oVariable->bOverwrite_arr = $_REQUEST['bOverwrite_arr'] ?? [];
             $cFehler_arr               = [];
-            $oVariable->cSprachsektion = Shop::DB()
+            $oVariable->cSprachsektion = Shop::Container()->getDB()
                 ->select('tsprachsektion', 'kSprachsektion', (int)$oVariable->kSprachsektion)
                 ->cName;
 
-            $oWertDB_arr = Shop::DB()->query(
+            $oWertDB_arr = Shop::Container()->getDB()->queryPrepared(
                 "SELECT s.cNameDeutsch AS cSpracheName, sw.cWert, si.cISO
                     FROM tsprachwerte AS sw
                         JOIN tsprachiso AS si
                             ON si.kSprachISO = sw.kSprachISO
                         JOIN tsprache AS s
                             ON s.cISO = si.cISO 
-                    WHERE sw.cName = '" . $oVariable->cName . "'
-                        AND sw.kSprachsektion = " . $oVariable->kSprachsektion,
+                    WHERE sw.cName = :cName
+                        AND sw.kSprachsektion = :kSprachsektion",
+                ['cName' => $oVariable->cName, 'kSprachsektion' => $oVariable->kSprachsektion],
                 2
             );
 
@@ -131,11 +132,11 @@ if (isset($_REQUEST['action']) && validateToken()) {
                     }
                 }
 
-                Shop::DB()->delete(
+                Shop::Container()->getDB()->delete(
                     'tsprachlog', ['cSektion', 'cName'], [$oVariable->cSprachsektion, $oVariable->cName]
                 );
                 Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-                Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+                Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
             }
 
             break;
@@ -155,13 +156,11 @@ if (isset($_REQUEST['action']) && validateToken()) {
             }
 
             Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
-            Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
 
-            if (count($cChanged_arr) > 0) {
-                $cHinweis = 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr);
-            } else {
-                $cHinweis = 'Keine Variable wurde ge&auml;ndert';
-            }
+            $cHinweis = count($cChanged_arr) > 0
+                ? 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr)
+                : 'Keine Variable wurde ge&auml;ndert';
 
             break;
         case 'clearlog':
@@ -170,7 +169,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
                 ->setzeSprache($cISOSprache)
                 ->clearLog();
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-            Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
             $cHinweis .= 'Liste erfolgreich zur&uuml;ckgesetzt.';
             break;
         default:
@@ -201,7 +200,7 @@ if ($step === 'newvar') {
     $oFilter->assemble();
     $cFilterSQL = $oFilter->getWhereSQL();
 
-    $oWert_arr = Shop::DB()->query(
+    $oWert_arr = Shop::Container()->getDB()->query(
         "SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
             FROM tsprachwerte AS sw
                 JOIN tsprachsektion AS ss
@@ -219,7 +218,7 @@ if ($step === 'newvar') {
         ->setItemArray($oWert_arr)
         ->assemble();
 
-    $oNotFound_arr = Shop::DB()->query(
+    $oNotFound_arr = Shop::Container()->getDB()->query(
         "SELECT sl.*, ss.kSprachsektion
             FROM tsprachlog AS sl
                 LEFT JOIN tsprachsektion AS ss

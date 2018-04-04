@@ -5,7 +5,9 @@
  */
 
 // Charset
-ifndef('JTL_CHARSET', 'iso-8859-1');
+ifndef('JTL_CHARSET', 'utf-8');
+ifndef('DB_CHARSET', 'utf8');
+ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
 date_default_timezone_set('Europe/Berlin');
 // Log-Levels
@@ -14,16 +16,21 @@ ifndef('ADMIN_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SHOP_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SMARTY_LOG_LEVEL', E_ERROR | E_PARSE);
 error_reporting(SHOP_LOG_LEVEL);
-// if this is set to false, Hersteller, Linkgruppen and oKategorie_arr will not be added to $_SESSION
-// this requires changes in templates!
 ifndef('TEMPLATE_COMPATIBILITY', false);
 // Image compatibility level 0 => disabled, 1 => referenced in history table, 2 => automatic detection
 ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+
+/**
+ * WARNING !!! DO NOT USE PROFILE_QUERIES IN PRODUCTION ENVIRONMENT OR PUBLIC AVAILABLE SITES. THE PROFILER CANNOT USE
+ * PREPARED STATEMENTS WHEN QUERIES ARE ANALYZED. THEREFORE A LESS SECURE FALLBACK (ESCAPING) IS USED TO ANALYZE
+ * QUERIES.
+ */
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
+
 ifndef('IO_LOG_CONSOLE', false);
 ifndef('DEFAULT_CURL_OPT_VERIFYPEER', true);
 ifndef('DEFAULT_CURL_OPT_VERIFYHOST', 2);
@@ -41,7 +48,7 @@ ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
 // Pfade
-ifndef('PFAD_CLASSES', 'classes/');
+ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
 ifndef('PFAD_CONFIG', 'config/');
 ifndef('PFAD_INCLUDES', 'includes/');
 ifndef('PFAD_TEMPLATES', 'templates/');
@@ -50,7 +57,7 @@ ifndef('PFAD_EMAILPDFS', 'emailpdfs/');
 ifndef('PFAD_NEWSLETTERBILDER', 'newsletter/');
 ifndef('PFAD_LINKBILDER', 'links/');
 ifndef('PFAD_INCLUDES_LIBS', PFAD_INCLUDES . 'libs/');
-ifndef('PFAD_MINIFY', PFAD_INCLUDES_LIBS . 'minify');
+ifndef('PFAD_MINIFY', PFAD_INCLUDES . 'vendor/mrclay/minify');
 ifndef('PFAD_CKEDITOR', PFAD_INCLUDES_LIBS . 'ckeditor/');
 ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror-5.18.2/');
 ifndef('PFAD_INCLUDES_TOOLS', PFAD_INCLUDES . 'tools/');
@@ -58,20 +65,18 @@ ifndef('PFAD_INCLUDES_EXT', PFAD_INCLUDES . 'ext/');
 ifndef('PFAD_INCLUDES_MODULES', PFAD_INCLUDES . 'modules/');
 ifndef('PFAD_SMARTY', PFAD_INCLUDES . 'vendor/smarty/smarty/libs/');
 ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
+/**
+ * @deprecated since Shop 5
+ */
 ifndef('PFAD_XAJAX', PFAD_INCLUDES_LIBS . 'xajax_0.5_standard/');
 ifndef('PFAD_FLASHCHART', PFAD_INCLUDES_LIBS . 'flashchart/');
-ifndef('PFAD_FLASHCLOUD', PFAD_INCLUDES_LIBS . 'flashcloud/');
 ifndef('PFAD_PHPQUERY', PFAD_INCLUDES_LIBS . 'phpQuery/');
-ifndef('PFAD_PCLZIP', PFAD_INCLUDES_LIBS . 'pclzip-2-8-2/');
+ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/pclzip/pclzip/');
 ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
 ifndef('PFAD_GRAPHCLASS', PFAD_INCLUDES_LIBS . 'graph-2005-08-28/');
-ifndef('PFAD_AJAXCHECKOUT', PFAD_INCLUDES_LIBS . 'ajaxcheckout/');
-ifndef('PFAD_AJAXSUGGEST', PFAD_INCLUDES_LIBS . 'ajaxsuggest/');
-ifndef('PFAD_ART_ABNAHMEINTERVALL', PFAD_INCLUDES_LIBS . 'artikel_abnahmeintervall/');
 ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'xtea/');
-ifndef('PFAD_FLASHPLAYER', PFAD_INCLUDES_LIBS . 'flashplayer/');
-ifndef('PFAD_IMAGESLIDER', PFAD_INCLUDES_LIBS . 'slideitmoo_image_slider/');
-ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');
+ifndef('PFAD_FLASHPLAYER', PFAD_INCLUDES_LIBS . 'flashplayer/'); // DEPRECATED in Shop 5
+ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');  // DEPRECATED
 ifndef('PFAD_OBJECT_CACHING', 'caching/');
 ifndef('PFAD_GFX', 'gfx/');
 ifndef('PFAD_GFX_AMPEL', PFAD_GFX . 'ampel/');
@@ -173,6 +178,49 @@ ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
 ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
+// show child products in product listings? 0 - never, 1 - only when at least 1 filter is active, 2 - always
+ifndef('SHOW_CHILD_PRODUCTS', 0);
+// redis connect timeout in seconds
+ifndef('REDIS_CONNECT_TIMEOUT', 3);
+
+
+// security
+ifndef('NEWSLETTER_USE_SECURITY', true);
+ifndef('MAILTEMPLATE_USE_SECURITY', true);
+ifndef('EXPORTFORMAT_USE_SECURITY', true);
+ifndef('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');
+ifndef('PASSWORD_DEFAULT_LENGTH', 12);
+ifndef('SECURE_PHP_FUNCTIONS', "
+    addcslashes, addslashes, bin2hex, chop, chr, chunk_split, count_chars, crypt, explode, html_entity_decode,
+    htmlentities, htmlspecialchars_decode, htmlspecialchars, implode, join, lcfirst, levenshtein, ltrim, md5, metaphone,
+    money_format, nl2br, number_format, ord, rtrim, sha1, similar_text, soundex, sprintf, str_ireplace, str_pad,
+    str_repeat, str_replace, str_rot13, str_shuffle, str_split, str_word_count, strcasecmp, strchr, strcmp, strcoll,
+    strcspn, strip_tags, stripslashes, stristr, strlen, strnatcasecmp, strnatcmp, strncasecmp, strncmp, strpbrk, strpos,
+    strrchr, strrev, strripos, strrpos, strspn, strstr, strtok, strtolower, strtoupper, strtr, substr_compare,
+    substr_count, substr_replace, substr, trim, ucfirst, ucwords, vsprintf, wordwrap,
+    
+    checkdate, date_add, date_create_from_format, date_create_immutable_from_format, date_create_immutable, date_create,
+    date_date_set, date_diff, date_format, date_get_last_errors, date_interval_create_from_date_string,
+    date_interval_format, date_isodate_set, date_modify, date_offset_get, date_parse_from_format, date_parse, date_sub,
+    date_sun_info, date_sunrise, date_sunset, date_time_set, date_timestamp_get, date_timespamp_set, date_timezone_get,
+    date_timezone_set, date, getdate, gettimeofday, gmdate, gmmktime, gmstrftime, idate, localtime, microtime, mktime,
+    strftime, strptime, strtotime, time, timezone_abbreviations_list, timezone_identifiers_list, timezone_location_get,
+    timezone_name_from_abbr, timezone_name_get, timezone_offset_get, timzone_open, timezone_transitions_get,
+    timezone_version_get,
+    
+    preg_filter, preg_quote, preg_replace, preg_split,
+    
+    bcadd, bccomp, bcdiv, bcmod, bcmul, bcpow, bcpowmod, bcsqrt, bcsub,
+    
+    abs, acos, acosh, asin, asinh, atan2, atan, atanh, base_convert, bindex, ceil, cos, cosh, decbin, dexhex, decoct,
+    deg2rad, exp, expm1, floor, fmod, getrandmax, hexdec, hypot, intdiv, is_finite, is_infinite, is_nan, lcg_value,
+    log10, log1p, log, max, min, mt_getrandmax, mt_rand, mt_srand, octdec, pi, pow, rad2deg, rand, round, sin, sinh,
+    sqrt, srand, tan, tanh,
+    
+    json_decode, json_encode, json_last_error_msg, json_last_error,
+    
+    yaml_emit, yaml_parse,
+");
 
 /**
  * @param string     $constant
@@ -182,56 +230,6 @@ function ifndef($constant, $value)
 {
     defined($constant) || define($constant, $value);
 }
-
-/*$shop_writeable_paths = array(
-    // Directories
-    //PFAD_BILDER_SLIDER,
-    PFAD_GFX_TRUSTEDSHOPS, // ifndef('PFAD_GFX_TRUSTEDSHOPS', PFAD_BILDER_INTERN . 'trustedshops/');
-    PFAD_NEWSBILDER, // ifndef('PFAD_NEWSBILDER', PFAD_BILDER . 'news/');
-    PFAD_SHOPLOGO, // ifndef('PFAD_SHOPLOGO', PFAD_BILDER_INTERN . 'shoplogo/');
-    PFAD_MEDIAFILES . 'Bilder',
-    PFAD_MEDIAFILES . 'Musik',
-    PFAD_MEDIAFILES . 'Sonstiges',
-    PFAD_MEDIAFILES . 'Videos',
-    PFAD_IMAGEMAP,
-    PFAD_PRODUKTBILDER_MINI,
-    PFAD_PRODUKTBILDER_KLEIN,
-    PFAD_PRODUKTBILDER_NORMAL,
-    PFAD_PRODUKTBILDER_GROSS,
-    PFAD_KATEGORIEBILDER,
-    PFAD_VARIATIONSBILDER_MINI,
-    PFAD_VARIATIONSBILDER_NORMAL,
-    PFAD_VARIATIONSBILDER_GROSS,
-    PFAD_HERSTELLERBILDER_NORMAL,
-    PFAD_HERSTELLERBILDER_KLEIN,
-    PFAD_MERKMALBILDER_NORMAL,
-    PFAD_MERKMALBILDER_KLEIN,
-    PFAD_MERKMALWERTBILDER_NORMAL,
-    PFAD_MERKMALWERTBILDER_KLEIN,
-    PFAD_BRANDINGBILDER,
-    PFAD_SUCHSPECIALOVERLAY_KLEIN,
-    PFAD_SUCHSPECIALOVERLAY_NORMAL,
-    PFAD_SUCHSPECIALOVERLAY_GROSS,
-    PFAD_KONFIGURATOR_KLEIN,
-    PFAD_BILDER . PFAD_LINKBILDER,
-    PFAD_BILDER . PFAD_NEWSLETTERBILDER,
-    PFAD_LOGFILES,
-    PFAD_EXPORT,
-    PFAD_EXPORT_BACKUP,
-    PFAD_EXPORT_YATEGO,
-    PFAD_COMPILEDIR,
-    PFAD_DBES_TMP,
-    PFAD_UPLOADS,
-    PFAD_MEDIA_IMAGE,
-    PFAD_MEDIA_IMAGE_STORAGE,
-    PFAD_SYNC_LOGS,
-    PFAD_ADMIN . PFAD_COMPILEDIR,
-    PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS,
-    // Files
-    FILE_RSS_FEED,
-    FILE_SHOP_FEED
-);
-*/
 
 /**
  * @deprecated

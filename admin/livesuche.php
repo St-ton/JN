@@ -25,7 +25,7 @@ $cLivesucheSQL = new stdClass();
 $cLivesucheSQL->cWhere = '';
 $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche DESC ';
 if (strlen(verifyGPDataString('cSuche')) > 0) {
-    $cSuche = Shop::DB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
+    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
 
     if (strlen($cSuche) > 0) {
         $cLivesucheSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $cSuche . "%'";
@@ -37,7 +37,7 @@ if (strlen(verifyGPDataString('cSuche')) > 0) {
 
 // Einstellungen
 if (verifyGPCDataInteger('einstellungen') === 1) {
-    $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
+    $hinweis .= saveAdminSettings($settingsIDs, $_POST);
     $smarty->assign('tab', 'einstellungen');
 }
 
@@ -77,12 +77,12 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                 if (strlen($_POST['nAnzahlGesuche_' . $kSuchanfrage]) > 0 && (int)$_POST['nAnzahlGesuche_' . $kSuchanfrage] > 0) {
                     $_upd                 = new stdClass();
                     $_upd->nAnzahlGesuche = (int)$_POST['nAnzahlGesuche_' . $kSuchanfrage];
-                    Shop::DB()->update('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage, $_upd);
+                    Shop::Container()->getDB()->update('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage, $_upd);
                 }
             }
         }
         // Eintragen in die Mapping Tabelle
-        $Suchanfragen = Shop::DB()->selectAll('tsuchanfrage', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nAnzahlGesuche DESC');
+        $Suchanfragen = Shop::Container()->getDB()->selectAll('tsuchanfrage', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nAnzahlGesuche DESC');
         // Wurde ein Mapping durchgefuehrt
         $nMappingVorhanden = 0;
 
@@ -93,7 +93,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
             foreach ($_POST['kSuchanfrageAll'] as $i => $kSuchanfrage) {
                 $upd         = new stdClass();
                 $upd->nAktiv = 0;
-                Shop::DB()->update('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage, $upd);
+                Shop::Container()->getDB()->update('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage, $upd);
                 // Loeschequery vorbereiten
                 if ($i > 0) {
                     $cSQLDel .= ', ' . (int)$kSuchanfrage;
@@ -104,33 +104,33 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
 
             $cSQLDel .= ')';
             // Deaktivierte Suchanfragen aus tseo loeschen
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "DELETE FROM tseo
                     WHERE cKey = 'kSuchanfrage'
                         AND kKey" . $cSQLDel, 3
             );
             // Deaktivierte Suchanfragen in tsuchanfrage updaten
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "UPDATE tsuchanfrage
                     SET cSeo = ''
                     WHERE kSuchanfrage" . $cSQLDel, 3
             );
             if (isset($_POST['nAktiv']) && is_array($_POST['nAktiv'])) {
                 foreach ($_POST['nAktiv'] as $i => $nAktiv) {
-                    $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$nAktiv);
-                    Shop::DB()->delete('tseo', ['cKey', 'kKey', 'kSprache'], ['kSuchanfrage', (int)$nAktiv, (int)$_SESSION['kSprache']]);
+                    $oSuchanfrage = Shop::Container()->getDB()->select('tsuchanfrage', 'kSuchanfrage', (int)$nAktiv);
+                    Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey', 'kSprache'], ['kSuchanfrage', (int)$nAktiv, (int)$_SESSION['kSprache']]);
                     // Aktivierte Suchanfragen in tseo eintragen
                     $oSeo           = new stdClass();
                     $oSeo->cSeo     = checkSeo(getSeo($oSuchanfrage->cSuche));
                     $oSeo->cKey     = 'kSuchanfrage';
                     $oSeo->kKey     = $nAktiv;
                     $oSeo->kSprache = $_SESSION['kSprache'];
-                    Shop::DB()->insert('tseo', $oSeo);
+                    Shop::Container()->getDB()->insert('tseo', $oSeo);
                     // Aktivierte Suchanfragen in tsuchanfrage updaten
                     $upd         = new stdClass();
                     $upd->nAktiv = 1;
                     $upd->cSeo   = $oSeo->cSeo;
-                    Shop::DB()->update('tsuchanfrage', 'kSuchanfrage', (int)$nAktiv, $upd);
+                    Shop::Container()->getDB()->update('tsuchanfrage', 'kSuchanfrage', (int)$nAktiv, $upd);
                 }
             }
         }
@@ -146,19 +146,19 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                         $suchanfragemapping_obj->cSuche         = $sucheanfrage->cSuche;
                         $suchanfragemapping_obj->cSucheNeu      = $_POST['mapping_' . $sucheanfrage->kSuchanfrage];
                         $suchanfragemapping_obj->nAnzahlGesuche = $sucheanfrage->nAnzahlGesuche;
-                        $Neuesuche = Shop::DB()->select('tsuchanfrage', 'cSuche', $suchanfragemapping_obj->cSucheNeu);
+                        $Neuesuche = Shop::Container()->getDB()->select('tsuchanfrage', 'cSuche', $suchanfragemapping_obj->cSucheNeu);
                         if (isset($Neuesuche->kSuchanfrage) && $Neuesuche->kSuchanfrage > 0) {
-                            Shop::DB()->insert('tsuchanfragemapping', $suchanfragemapping_obj);
-                            Shop::DB()->query(
+                            Shop::Container()->getDB()->insert('tsuchanfragemapping', $suchanfragemapping_obj);
+                            Shop::Container()->getDB()->query(
                                 "UPDATE tsuchanfrage
                                     SET nAnzahlGesuche = nAnzahlGesuche+" . $sucheanfrage->nAnzahlGesuche . "
                                     WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                                        AND cSuche = '" . Shop::DB()->escape($_POST['mapping_' . $sucheanfrage->kSuchanfrage]) . "'", 4
+                                        AND cSuche = '" . Shop::Container()->getDB()->escape($_POST['mapping_' . $sucheanfrage->kSuchanfrage]) . "'", 4
                             );
-                            Shop::DB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$sucheanfrage->kSuchanfrage);
+                            Shop::Container()->getDB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$sucheanfrage->kSuchanfrage);
                             $upd       = new stdClass();
                             $upd->kKey = (int)$Neuesuche->kSuchanfrage;
-                            Shop::DB()->update('tseo', ['cKey', 'kKey'], ['kSuchanfrage', (int)$sucheanfrage->kSuchanfrage], $upd);
+                            Shop::Container()->getDB()->update('tseo', ['cKey', 'kKey'], ['kSuchanfrage', (int)$sucheanfrage->kSuchanfrage], $upd);
 
                             $hinweis .= 'Die Suchanfrage "' . $suchanfragemapping_obj->cSuche .
                                 '" wurde erfolgreich auf "' . $suchanfragemapping_obj->cSucheNeu . '" gemappt.<br />';
@@ -178,11 +178,11 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         if (strlen($cMapping) > 0) {
             if (is_array($_POST['kSuchanfrage']) && count($_POST['kSuchanfrage']) > 0) {
                 foreach ($_POST['kSuchanfrage'] as $kSuchanfrage) {
-                    $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
+                    $oSuchanfrage = Shop::Container()->getDB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
 
                     if ($oSuchanfrage->kSuchanfrage > 0) {
                         if (strtolower($oSuchanfrage->cSuche) !== strtolower($cMapping)) {
-                            $oSuchanfrageNeu = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($cMapping));
+                            $oSuchanfrageNeu = Shop::Container()->getDB()->select('tsuchanfrage', 'cSuche', Shop::Container()->getDB()->escape($cMapping));
                             if (isset($oSuchanfrageNeu->kSuchanfrage) && $oSuchanfrageNeu->kSuchanfrage > 0) {
                                 $oSuchanfrageMapping                 = new stdClass();
                                 $oSuchanfrageMapping->kSprache       = $_SESSION['kSprache'];
@@ -190,17 +190,17 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                 $oSuchanfrageMapping->cSucheNeu      = $cMapping;
                                 $oSuchanfrageMapping->nAnzahlGesuche = $oSuchanfrage->nAnzahlGesuche;
 
-                                $kSuchanfrageMapping = Shop::DB()->insert('tsuchanfragemapping', $oSuchanfrageMapping);
+                                $kSuchanfrageMapping = Shop::Container()->getDB()->insert('tsuchanfragemapping', $oSuchanfrageMapping);
 
                                 if ($kSuchanfrageMapping > 0) {
-                                    Shop::DB()->query(
+                                    Shop::Container()->getDB()->query(
                                         "UPDATE tsuchanfrage
                                             SET nAnzahlGesuche = nAnzahlGesuche+" . $oSuchanfrage->nAnzahlGesuche . "
                                             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
                                                 AND kSuchanfrage = " . $oSuchanfrageNeu->kSuchanfrage, 4
                                     );
-                                    Shop::DB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage);
-                                    Shop::DB()->query(
+                                    Shop::Container()->getDB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage);
+                                    Shop::Container()->getDB()->query(
                                         "UPDATE tseo
                                             SET kKey = " . (int)$oSuchanfrageNeu->kSuchanfrage . "
                                             WHERE cKey = 'kSuchanfrage'
@@ -231,15 +231,15 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     } elseif (isset($_POST['delete'])) { // Auswahl loeschen
         if (is_array($_POST['kSuchanfrage'])) {
             foreach ($_POST['kSuchanfrage'] as $kSuchanfrage) {
-                $kSuchanfrage_obj = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
+                $kSuchanfrage_obj = Shop::Container()->getDB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
                 $obj              = new stdClass();
                 $obj->kSprache    = (int)$kSuchanfrage_obj->kSprache;
                 $obj->cSuche      = $kSuchanfrage_obj->cSuche;
 
-                Shop::DB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
-                Shop::DB()->insert('tsuchanfrageblacklist', $obj);
+                Shop::Container()->getDB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
+                Shop::Container()->getDB()->insert('tsuchanfrageblacklist', $obj);
                 // Aus tseo loeschen
-                Shop::DB()->delete('tseo', ['cKey', 'kKey'], ['kSuchanfrage', (int)$kSuchanfrage]);
+                Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kSuchanfrage', (int)$kSuchanfrage]);
                 $hinweis .= 'Die Suchanfrage "' . $kSuchanfrage_obj->cSuche . '" wurde erfolgreich gel&ouml;scht.<br />';
                 $hinweis .= 'Die Suchanfrage "' . $kSuchanfrage_obj->cSuche . '" wurde auf die Blacklist hinzugef&uuml;gt.<br />';
             }
@@ -251,7 +251,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     if (isset($_POST['erfolglosEdit'])) { // Editieren
         $smarty->assign('nErfolglosEditieren', 1);
     } elseif (isset($_POST['erfolglosUpdate'])) { // Update
-        $Suchanfragenerfolglos = Shop::DB()->selectAll(
+        $Suchanfragenerfolglos = Shop::Container()->getDB()->selectAll(
             'tsuchanfrageerfolglos',
             'kSprache',
             (int)$_SESSION['kSprache'],
@@ -262,7 +262,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
             foreach ($Suchanfragenerfolglos as $Suchanfrageerfolglos) {
                 if (isset($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]) &&
                     strlen($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]) > 0) {
-                    if (strtolower($Suchanfrageerfolglos->cSuche) != strtolower($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos])) {
+                    if (strtolower($Suchanfrageerfolglos->cSuche) !== strtolower($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos])) {
                         if (strlen($_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]) > 0) {
                             $suchanfragemapping_obj                 = new stdClass();
                             $suchanfragemapping_obj->kSprache       = $_SESSION['kSprache'];
@@ -270,10 +270,10 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                             $suchanfragemapping_obj->cSucheNeu      = $_POST['mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos];
                             $suchanfragemapping_obj->nAnzahlGesuche = $Suchanfrageerfolglos->nAnzahlGesuche;
 
-                            $oAlteSuche = Shop::DB()->select('tsuchanfrageerfolglos', 'cSuche', $suchanfragemapping_obj->cSuche);
+                            $oAlteSuche = Shop::Container()->getDB()->select('tsuchanfrageerfolglos', 'cSuche', $suchanfragemapping_obj->cSuche);
                             if (isset($oAlteSuche->kSuchanfrageErfolglos) && $oAlteSuche->kSuchanfrageErfolglos > 0) {
-                                Shop::DB()->insert('tsuchanfragemapping', $suchanfragemapping_obj);
-                                Shop::DB()->delete('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', (int)$oAlteSuche->kSuchanfrageErfolglos);
+                                Shop::Container()->getDB()->insert('tsuchanfragemapping', $suchanfragemapping_obj);
+                                Shop::Container()->getDB()->delete('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', (int)$oAlteSuche->kSuchanfrageErfolglos);
 
                                 $hinweis .= 'Die Suchanfrage "' . $suchanfragemapping_obj->cSuche .
                                     '" wurde erfolgreich auf "' . $suchanfragemapping_obj->cSucheNeu . '" gemappt.<br />';
@@ -287,7 +287,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     $Suchanfrageerfolglos->cSuche = StringHandler::filterXSS($_POST['cSuche_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos]);
                     $upd                          = new stdClass();
                     $upd->cSuche                  = $Suchanfrageerfolglos->cSuche;
-                    Shop::DB()->update('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', (int)$Suchanfrageerfolglos->kSuchanfrageErfolglos, $upd);
+                    Shop::Container()->getDB()->update('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', (int)$Suchanfrageerfolglos->kSuchanfrageErfolglos, $upd);
                 }
             }
         }
@@ -296,7 +296,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         if (is_array($kSuchanfrageErfolglos_arr) && count($kSuchanfrageErfolglos_arr) > 0) {
             foreach ($kSuchanfrageErfolglos_arr as $kSuchanfrageErfolglos) {
                 $kSuchanfrageErfolglos = (int)$kSuchanfrageErfolglos;
-                Shop::DB()->delete('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', (int)$kSuchanfrageErfolglos);
+                Shop::Container()->getDB()->delete('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', $kSuchanfrageErfolglos);
             }
             $hinweis = 'Ihre markierten Suchanfragen wurden erfolgreich gel&ouml;scht.';
         } else {
@@ -309,13 +309,13 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     $suchanfragenblacklist = explode(';', $suchanfragenblacklist);
     $count                 = count($suchanfragenblacklist);
 
-    Shop::DB()->delete('tsuchanfrageblacklist', 'kSprache', (int)$_SESSION['kSprache']);
+    Shop::Container()->getDB()->delete('tsuchanfrageblacklist', 'kSprache', (int)$_SESSION['kSprache']);
     for ($i = 0; $i < $count; $i++) {
         if (!empty($suchanfragenblacklist[$i])) {
             $blacklist_obj           = new stdClass();
             $blacklist_obj->cSuche   = $suchanfragenblacklist[$i];
             $blacklist_obj->kSprache = (int)$_SESSION['kSprache'];
-            Shop::DB()->insert('tsuchanfrageblacklist', $blacklist_obj);
+            Shop::Container()->getDB()->insert('tsuchanfrageblacklist', $blacklist_obj);
         }
     }
     $smarty->assign('tab', 'blacklist');
@@ -324,9 +324,9 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kSuchanfrageMapping'])) {
             foreach ($_POST['kSuchanfrageMapping'] as $kSuchanfrageMapping) {
-                $oSuchanfrageMapping = Shop::DB()->select('tsuchanfragemapping', 'kSuchanfrageMapping', (int)$kSuchanfrageMapping);
+                $oSuchanfrageMapping = Shop::Container()->getDB()->select('tsuchanfragemapping', 'kSuchanfrageMapping', (int)$kSuchanfrageMapping);
                 if (isset($oSuchanfrageMapping->cSuche) && strlen($oSuchanfrageMapping->cSuche) > 0) {
-                    Shop::DB()->delete('tsuchanfragemapping', 'kSuchanfrageMapping', (int)$kSuchanfrageMapping);
+                    Shop::Container()->getDB()->delete('tsuchanfragemapping', 'kSuchanfrageMapping', (int)$kSuchanfrageMapping);
                     $hinweis .= 'Das Mapping "' . $oSuchanfrageMapping->cSuche . '" wurde erfolgreich gel&ouml;scht.<br />';
                 } else {
                     $fehler .= 'Es wurde kein Mapping mit der ID "' . $kSuchanfrageMapping . '" gefunden.<br />';
@@ -341,20 +341,20 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
 
 $Sprachen = gibAlleSprachen();
 // Anzahl Suchanfragen
-$nAnzahlSuchanfragen = Shop::DB()->query(
+$nAnzahlSuchanfragen = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nAnzahl
         FROM tsuchanfrage
         WHERE kSprache = " . (int)$_SESSION['kSprache'] . $cLivesucheSQL->cWhere, 1
 );
 // Anzahl Suchanfrageerfolglos
-$nAnzahlSuchanfrageerfolglos = Shop::DB()->query(
+$nAnzahlSuchanfrageerfolglos = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nAnzahl
         FROM tsuchanfrageerfolglos
         WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
 );
 
 // Anzahl SuchanfragenMapping
-$nAnzahlSuchanfragenMapping = Shop::DB()->query(
+$nAnzahlSuchanfragenMapping = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nAnzahl
         FROM tsuchanfragemapping
         WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
@@ -371,7 +371,7 @@ $oPagiMapping = (new Pagination('mapping'))
     ->setItemCount($nAnzahlSuchanfragenMapping->nAnzahl)
     ->assemble();
 
-$Suchanfragen = Shop::DB()->query(
+$Suchanfragen = Shop::Container()->getDB()->query(
     "SELECT tsuchanfrage.*, tseo.cSeo AS tcSeo
         FROM tsuchanfrage
         LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
@@ -389,20 +389,20 @@ if (isset($Suchanfragen->tcSeo) && strlen($Suchanfragen->tcSeo) > 0) {
 }
 unset($Suchanfragen->tcSeo);
 
-$Suchanfragenerfolglos = Shop::DB()->query("
+$Suchanfragenerfolglos = Shop::Container()->getDB()->query("
     SELECT *
         FROM tsuchanfrageerfolglos
         WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
         ORDER BY nAnzahlGesuche DESC
         LIMIT " . $oPagiErfolglos->getLimitSQL(), 2
 );
-$Suchanfragenblacklist = Shop::DB()->query("
+$Suchanfragenblacklist = Shop::Container()->getDB()->query("
     SELECT *
         FROM tsuchanfrageblacklist
         WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
         ORDER BY kSuchanfrageBlacklist", 2
 );
-$Suchanfragenmapping = Shop::DB()->query("
+$Suchanfragenmapping = Shop::Container()->getDB()->query("
     SELECT *
         FROM tsuchanfragemapping
         WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
@@ -410,7 +410,7 @@ $Suchanfragenmapping = Shop::DB()->query("
 );
 
 // Config holen
-$oConfig_arr = Shop::DB()->query(
+$oConfig_arr = Shop::Container()->getDB()->query(
     "SELECT *
         FROM teinstellungenconf
         WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
@@ -418,20 +418,20 @@ $oConfig_arr = Shop::DB()->query(
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
-    $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
+    $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungenconfwerte
             WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
             ORDER BY nSort", 2
     );
-    $oSetValue = Shop::DB()->query(
+    $oSetValue = Shop::Container()->getDB()->query(
         "SELECT cWert
             FROM teinstellungen
             WHERE kEinstellungenSektion = " . (int)$oConfig_arr[$i]->kEinstellungenSektion . "
                 AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
     );
 
-    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 $smarty->assign('oConfig_arr', $oConfig_arr)
     ->assign('Sprachen', $Sprachen)

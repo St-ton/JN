@@ -2,17 +2,17 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
-wir freuen uns Ihnen mitteilen zu dürfen, dass auf Ihrem Kundenkonto ein Gutschein für Sie hinterlegt wurde. 
+wir freuen uns Ihnen mitteilen zu dÃ¼rfen, dass auf Ihrem Kundenkonto ein Gutschein fÃ¼r Sie hinterlegt wurde. 
 
 Gutscheinwert: {$Gutschein->cLocalizedWert}
 
-Grund für die Ausstellung des Gutscheins: {$Gutschein->cGrund} 
+Grund fÃ¼r die Ausstellung des Gutscheins: {$Gutschein->cGrund} 
 
-Diesen Gutschein können Sie einfach bei Ihrer nächsten Bestellung einlösen. Der Betrag wird dann von Ihrem Einkaufswert abgezogen. 
+Diesen Gutschein kÃ¶nnen Sie einfach bei Ihrer nÃ¤chsten Bestellung einlÃ¶sen. Der Betrag wird dann von Ihrem Einkaufswert abgezogen. 
 
-Viel Spaß bei Ihrem nächsten Einkauf in unserem Shop. 
+Viel SpaÃŸ bei Ihrem nÃ¤chsten Einkauf in unserem Shop. 
 
-Mit freundlichem Gruß,
+Mit freundlichem GruÃŸ,
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

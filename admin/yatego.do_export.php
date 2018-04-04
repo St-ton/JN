@@ -17,7 +17,7 @@ define('CRLF', "\n");
 define('PATH', PFAD_ROOT . PFAD_EXPORT_YATEGO);
 define('DESCRIPTION_TAGS', '<a><b><i><u><p><br><hr><h1><h2><h3><h4><h5><h6><ul><ol><li><span><font><table><colgroup>');
 
-$exportformat = Shop::DB()->query(
+$exportformat = Shop::Container()->getDB()->query(
     "SELECT texportformat.*, tkampagne.cParameter AS tkampagne_cParameter, 
         tkampagne.cWert AS tkampagne_cWert
         FROM texportformat
@@ -27,14 +27,14 @@ $exportformat = Shop::DB()->query(
         WHERE texportformat.nSpecial = 1", 1
 );
 
-$queue = Shop::DB()->select('texportqueue', 'kExportformat', (int)$exportformat->kExportformat);
+$queue = Shop::Container()->getDB()->select('texportqueue', 'kExportformat', (int)$exportformat->kExportformat);
 if (!$queue->kExportformat || !$queue->nLimit_m) {
     die('1');
 }
 
 if (!pruefeYategoExportPfad()) {
-    Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE nSpecial = 1", 4);
-    Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$queue->kExportqueue);
+    Shop::Container()->getDB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE nSpecial = 1", 4);
+    Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$queue->kExportqueue);
 
     die('2');
 }
@@ -61,13 +61,11 @@ $oGlobal_arr['lager'] = [];
 $KategorieListe       = [];
 
 setzeSteuersaetze();
-$_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
-$_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
-$_SESSION['kSprache']                                 = $exportformat->kSprache;
-$_SESSION['kKundengruppe']                            = $exportformat->kKundengruppe;
-$_SESSION['Kundengruppe']->kKundengruppe              = $exportformat->kKundengruppe;
+$_SESSION['Kundengruppe']->setMayViewPrices(1)->setMayViewCategories(1)->setID($exportformat->kKundengruppe);
+$_SESSION['kSprache']      = (int)$exportformat->kSprache;
+$_SESSION['kKundengruppe'] = (int)$exportformat->kKundengruppe;
 // Nur Vaeterartikel holen
-$res = Shop::DB()->query(
+$res = Shop::Container()->getDB()->query(
     "SELECT tartikel.kArtikel
         FROM tartikel
         JOIN tartikelattribut 
@@ -95,20 +93,20 @@ $oGlobal_arr['shopkategorien'] = getCats($KategorieListe);
 
 if ($exportformat->cKodierung === 'UTF-8') {
     $cHeader = "\xEF\xBB\xBF";
-    writeFile(PATH . 'varianten.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['varianten']) .
-            CRLF . makecsv($oGlobal_arr['variantenwerte'])));
-    writeFile(PATH . 'artikel.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['artikel'])));
-    writeFile(PATH . 'shopkategorien.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['shopkategorien'])));
-    writeFile(PATH . 'lager.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['lager'])));
+    writeFile(PATH . 'varianten.csv', $cHeader . makecsv($oGlobal_arr['varianten']) .
+            CRLF . makecsv($oGlobal_arr['variantenwerte']));
+    writeFile(PATH . 'artikel.csv', $cHeader . makecsv($oGlobal_arr['artikel']));
+    writeFile(PATH . 'shopkategorien.csv', $cHeader . makecsv($oGlobal_arr['shopkategorien']));
+    writeFile(PATH . 'lager.csv', $cHeader . makecsv($oGlobal_arr['lager']));
 } else {
-    writeFile(PATH . 'varianten.csv', makecsv($oGlobal_arr['varianten']) .
-        CRLF . makecsv($oGlobal_arr['variantenwerte']));
-    writeFile(PATH . 'artikel.csv', makecsv($oGlobal_arr['artikel']));
-    writeFile(PATH . 'shopkategorien.csv', makecsv($oGlobal_arr['shopkategorien']));
-    writeFile(PATH . 'lager.csv', makecsv($oGlobal_arr['lager']));
+    writeFile(PATH . 'varianten.csv', StringHandler::convertISO(makecsv($oGlobal_arr['varianten']) .
+        CRLF . makecsv($oGlobal_arr['variantenwerte'])));
+    writeFile(PATH . 'artikel.csv', StringHandler::convertISO(makecsv($oGlobal_arr['artikel'])));
+    writeFile(PATH . 'shopkategorien.csv', StringHandler::convertISO(makecsv($oGlobal_arr['shopkategorien'])));
+    writeFile(PATH . 'lager.csv', StringHandler::convertISO(makecsv($oGlobal_arr['lager'])));
 }
 
-$max_artikel = Shop::DB()->query(
+$max_artikel = Shop::Container()->getDB()->query(
     "SELECT count(*) AS cnt
         FROM tartikel
         JOIN tartikelattribut 
@@ -117,7 +115,7 @@ $max_artikel = Shop::DB()->query(
 );
 
 if ($max_artikel->cnt > $queue->nLimit_n + $queue->nLimit_m) {
-    Shop::DB()->query("
+    Shop::Container()->getDB()->query("
         UPDATE texportqueue 
             SET nLimit_n = nLimit_n+" . $queue->nLimit_m . " 
             WHERE kExportqueue = " . (int)$queue->kExportqueue, 4
@@ -126,8 +124,8 @@ if ($max_artikel->cnt > $queue->nLimit_n + $queue->nLimit_m) {
         '?back=admin&token=' . $_SESSION['jtl_token']);
     exit;
 } else {
-    Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE nSpecial = 1", 4);
-    Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$queue->kExportqueue);
+    Shop::Container()->getDB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE nSpecial = 1", 4);
+    Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$queue->kExportqueue);
     if ($_GET['back'] === 'admin') {
         header('Location: yatego.export.php?token=' . $_SESSION['jtl_token'] .
             '&rdy=' . base64_encode((int)$max_artikel->cnt));
@@ -197,7 +195,7 @@ function getCats($catlist)
     if (is_array($catlist) && count($catlist)) {
         // fetch all categories in $cats with index kKategorie
         $cats = [];
-        $res  = Shop::DB()->query("SELECT kKategorie, cName, kOberKategorie, nSort FROM tkategorie", 10);
+        $res  = Shop::Container()->getDB()->query("SELECT kKategorie, cName, kOberKategorie, nSort FROM tkategorie", 10);
         while ($row = $res->fetch(PDO::FETCH_OBJ)) {
             $cats[$row->kKategorie] = $row;
         }

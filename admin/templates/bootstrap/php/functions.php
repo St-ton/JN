@@ -22,13 +22,10 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
  */
 function getRevisions($params, &$smarty)
 {
-    $secondary = isset($params['secondary'])
-        ? $params['secondary']
-        : false;
-    $data      = isset($params['data'])
-        ? $params['data']
-        : null;
+    $secondary = $params['secondary'] ?? false;
+    $data      = $params['data'] ?? null;
     $revision  = new Revision();
+
     return $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
            ->assign('secondary', $secondary)
            ->assign('data', $data)
@@ -43,7 +40,7 @@ function getRevisions($params, &$smarty)
  */
 function getCurrencyConversionSmarty($params, &$smarty)
 {
-    $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] == false);
+    $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
     if (!isset($params['fPreisBrutto'])) {
         $params['fPreisBrutto'] = 0;
     }
@@ -64,9 +61,7 @@ function getCurrencyConversionSmarty($params, &$smarty)
  */
 function getCurrencyConversionTooltipButton($params, &$smarty)
 {
-    $placement = isset($params['placement'])
-        ? $params['placement']
-        : 'left';
+    $placement = $params['placement'] ?? 'left';
 
     if (isset($params['inputId'])) {
         $inputId = $params['inputId'];
@@ -101,27 +96,16 @@ function getCurrentPage($params, &$smarty)
  */
 function getHelpDesc($params, &$smarty)
 {
-    $placement = 'left';
-    if (isset($params['placement'])) {
-        $placement = $params['placement'];
-    }
+    $placement   = $params['placement'] ?? 'left';
+    $cID         = !empty($params['cID']) ? $params['cID'] : null;
+    $description = isset($params['cDesc'])
+        ? str_replace('"', '\'', $params['cDesc'])
+        : null;
 
-    $button = '<button type="button" class="btn-tooltip btn btn-info btn-heading" data-html="true" data-toggle="tooltip" data-placement="' . $placement . '" title="';
-
-    if (isset($params['cDesc'])) {
-        $button .= str_replace('"', '\'', $params['cDesc']);
-        if (isset($params['cID'])) {
-            $button .= '<hr><strong>Einstellungsnr.:</strong> ' . $params['cID'];
-        }
-        $button .= '"><i class="fa fa-question"></i></button>';
-    } else {
-        if (isset($params['cID'])) {
-            $button .= '<p><strong>Einstellungsnr.:</strong> ' . $params['cID'] . '</p>';
-        }
-        $button .= '"><i class="fa fa-question"></i></button>';
-    }
-
-    return $button;
+    return $smarty->assign('placement', $placement)
+                  ->assign('cID', $cID)
+                  ->assign('description', $description)
+                  ->fetch('tpl_inc/help_description.tpl');
 }
 
 /**
@@ -134,12 +118,12 @@ function permission($cRecht)
     global $smarty;
 
     if (isset($_SESSION['AdminAccount'])) {
-        if ($_SESSION['AdminAccount']->oGroup->kAdminlogingruppe == 1) {
+        if ((int)$_SESSION['AdminAccount']->oGroup->kAdminlogingruppe === ADMINGROUP) {
             $bOkay = true;
         } else {
             $orExpressions = explode('|', $cRecht);
             foreach ($orExpressions as $flag) {
-                $bOkay = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr);
+                $bOkay = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
                 if ($bOkay) {
                     break;
                 }
@@ -203,7 +187,7 @@ function getExtensionCategory($params, &$smarty)
         12 => 'Auswertungen'
     ];
 
-    $key = isset($catNames[$params['cat']]) ? $catNames[$params['cat']] : null;
+    $key = $catNames[$params['cat']] ?? null;
     $smarty->assign('catName', $key);
 }
 
@@ -237,7 +221,7 @@ function formatVersion($params, &$smarty)
  */
 function gravatarImage($params, &$smarty)
 {
-    $email = isset($params['email']) ? $params['email'] : null;
+    $email = $params['email'] ?? null;
     if ($email === null) {
         $email = JTLSUPPORT_EMAIL;
     } else {

@@ -21,83 +21,73 @@ function speicherBewertung($kArtikel, $kKunde, $kSprache, $cTitel, $cText, $nSte
     $kKunde   = (int)$kKunde;
     $kSprache = (int)$kSprache;
     $nSterne  = (int)$nSterne;
-    // Prüfe ob Kunde eingeloggt
-    if ($kKunde > 0) {
-        $conf = Shop::getSettings([CONF_BEWERTUNG]);
-        // Sollen Bewertungen überhaupt aktiv sein
-        if ($conf['bewertung']['bewertung_anzeigen'] === 'Y') {
-            $cTitel  = StringHandler::htmlentities(StringHandler::filterXSS($cTitel));
-            $cText   = StringHandler::htmlentities(StringHandler::filterXSS($cText));
-            $article = new Artikel();
-            $article->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
-            $url = (!empty($article->cURLFull)) ?
-                ($article->cURLFull . '?') :
-                (Shop::getURL() . '/?a=' . $kArtikel . '&');
+    $conf     = Shop::getSettings([CONF_BEWERTUNG]);
+    if ($kKunde <= 0 || $conf['bewertung']['bewertung_anzeigen'] !== 'Y') {
+        return false;
+    }
+    $cTitel  = StringHandler::htmlentities(StringHandler::filterXSS($cTitel));
+    $cText   = StringHandler::htmlentities(StringHandler::filterXSS($cText));
+    $article = new Artikel();
+    $article->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
+    $url = !empty($article->cURLFull)
+        ? ($article->cURLFull . '?')
+        : (Shop::getURL() . '/?a=' . $kArtikel . '&');
 
-            if ($kArtikel > 0 && $kSprache > 0 && $cTitel !== '' && $cText !== '' && $nSterne > 0) {
-                unset($oBewertungBereitsVorhanden);
-                // Prüfe ob die Einstellung (Bewertung nur bei bereits gekauftem Artikel) gesetzt ist
-                // und der Kunde den Artikel bereits gekauft hat
-                if (pruefeKundeArtikelGekauft($kArtikel, $_SESSION['Kunde']->kKunde)) {
-                    header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f03');
-                    exit;
-                }
-                $fBelohnung                  = 0.0;
-                $oBewertung                  = new stdClass();
-                $oBewertung->kArtikel        = $kArtikel;
-                $oBewertung->kKunde          = $kKunde;
-                $oBewertung->kSprache        = $kSprache;
-                $oBewertung->cName           = $_SESSION['Kunde']->cVorname . ' ' .
-                    substr($_SESSION['Kunde']->cNachname, 0, 1);
-                $oBewertung->cTitel          = $cTitel;
-                $oBewertung->cText           = strip_tags($cText);
-                $oBewertung->nHilfreich      = 0;
-                $oBewertung->nNichtHilfreich = 0;
-                $oBewertung->nSterne         = $nSterne;
-                $oBewertung->nAktiv          = ($conf['bewertung']['bewertung_freischalten'] === 'N') ? 1 : 0;
-                $oBewertung->dDatum          = date('Y-m-d H:i:s', time());
+    if ($kArtikel > 0 && $kSprache > 0 && $cTitel !== '' && $cText !== '' && $nSterne > 0) {
+        unset($oBewertungBereitsVorhanden);
+        // Prüfe ob die Einstellung (Bewertung nur bei bereits gekauftem Artikel) gesetzt ist
+        // und der Kunde den Artikel bereits gekauft hat
+        if (pruefeKundeArtikelGekauft($kArtikel, $_SESSION['Kunde']->kKunde)) {
+            header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f03');
+            exit;
+        }
+        $fBelohnung                  = 0.0;
+        $oBewertung                  = new stdClass();
+        $oBewertung->kArtikel        = $kArtikel;
+        $oBewertung->kKunde          = $kKunde;
+        $oBewertung->kSprache        = $kSprache;
+        $oBewertung->cName           = $_SESSION['Kunde']->cVorname . ' ' .
+            substr($_SESSION['Kunde']->cNachname, 0, 1);
+        $oBewertung->cTitel          = $cTitel;
+        $oBewertung->cText           = strip_tags($cText);
+        $oBewertung->nHilfreich      = 0;
+        $oBewertung->nNichtHilfreich = 0;
+        $oBewertung->nSterne         = $nSterne;
+        $oBewertung->nAktiv          = ($conf['bewertung']['bewertung_freischalten'] === 'N') ? 1 : 0;
+        $oBewertung->dDatum          = date('Y-m-d H:i:s', time());
 
-                executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG, ['rating' => &$oBewertung]);
-                // Speicher Bewertung
+        executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG, ['rating' => &$oBewertung]);
+        // Speicher Bewertung
 
-                if(is_object(Shop::DB()->select('tbewertung', ['kArtikel', 'kKunde'], [$kArtikel, $kKunde]))) {
-                    Shop::DB()->update('tbewertung',['kArtikel', 'kKunde'], [$kArtikel, $kKunde], $oBewertung);
-                    $kBewertung = Shop::DB()->select('tbewertung', ['kArtikel', 'kKunde'], [$kArtikel, $kKunde])->kBewertung;
-                } else {
-                    $kBewertung = Shop::DB()->insert('tbewertung', $oBewertung);
-                }
+        $kBewertung    = Shop::Container()->getDB()->select('tbewertung', ['kArtikel', 'kKunde'], [$kArtikel, $kKunde]) !== null
+            ? Shop::Container()->getDB()->update('tbewertung',['kArtikel', 'kKunde'], [$kArtikel, $kKunde], $oBewertung)
+            : Shop::Container()->getDB()->insert('tbewertung', $oBewertung);
+        $nFreischalten = 1;
 
-                $nFreischalten = 1;
-                if ($conf['bewertung']['bewertung_freischalten'] === 'N') {
-                    $nFreischalten = 0;
-                    aktualisiereDurchschnitt($kArtikel, $conf['bewertung']['bewertung_freischalten']);
-                    $fBelohnung = checkeBewertungGuthabenBonus($kBewertung, $conf);
-                    // Clear Cache
-                    Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
-                }
-                unset($oBewertungBereitsVorhanden);
-                if ($nFreischalten === 0) {
-                    if ($fBelohnung > 0) {
-                        header('Location: ' . $url . 'bewertung_anzeigen=1&fB=' .
-                            $fBelohnung . '&cHinweis=h04', true, 301);
-                        exit;
-                    } else {
-                        header('Location: ' . $url . 'bewertung_anzeigen=1&cHinweis=h01', true, 303);
-                        exit;
-                    }
-                } else {
-                    header('Location: ' . $url . 'bewertung_anzeigen=1&cHinweis=h05', true, 303);
-                    exit;
-                }
-            } else {
-                header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f01', true, 303);
+        if ($conf['bewertung']['bewertung_freischalten'] === 'N') {
+            $nFreischalten = 0;
+            aktualisiereDurchschnitt($kArtikel, $conf['bewertung']['bewertung_freischalten']);
+            $fBelohnung = checkeBewertungGuthabenBonus($kBewertung, $conf);
+            // Clear Cache
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
+        }
+        unset($oBewertungBereitsVorhanden);
+        if ($nFreischalten === 0) {
+            if ($fBelohnung > 0) {
+                header('Location: ' . $url . 'bewertung_anzeigen=1&fB=' .
+                    $fBelohnung . '&cHinweis=h04', true, 301);
                 exit;
             }
+            header('Location: ' . $url . 'bewertung_anzeigen=1&cHinweis=h01', true, 303);
+            exit;
         }
+        header('Location: ' . $url . 'bewertung_anzeigen=1&cHinweis=h05', true, 303);
+        exit;
     }
-
-    return false;
+    header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f01', true, 303);
+    exit;
 }
+
 
 /**
  * Speichert für eine bestimmte Bewertung und bestimmten Kunden ab, ob sie hilfreich oder nicht hilfreich war.
@@ -114,106 +104,103 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
     $kKunde     = (int)$kKunde;
     $kSprache   = (int)$kSprache;
     $bHilfreich = 0;
+    $conf       = Shop::getSettings([CONF_BEWERTUNG]);
     // Prüfe ob Kunde eingeloggt
-    if ($kKunde > 0) {
-        // Sollen Bewertungen überhaupt aktiv sein
-        // Sollen Bewertungen hilfreich überhaupt aktiv sein
-        $conf = Shop::getSettings([CONF_BEWERTUNG]);
-        if ($kArtikel > 0 &&
-            $kSprache > 0 &&
-            $conf['bewertung']['bewertung_anzeigen'] === 'Y' &&
-            $conf['bewertung']['bewertung_hilfreich_anzeigen'] === 'Y'
-        ) {
-            // Hole alle Bewertungen für den auktuellen Artikel und Sprache
-            $oBewertung_arr = Shop::DB()->selectAll(
-                'tbewertung',
-                ['kArtikel', 'kSprache'],
-                [$kArtikel, $kSprache],
-                'kBewertung'
-            );
-            if (is_array($oBewertung_arr) && count($oBewertung_arr) > 0) {
-                $kBewertung = 0;
-                foreach ($oBewertung_arr as $oBewertung) {
-                    // Prüf ob die Bewertung als Hilfreich gemarkt ist
-                    if (isset($_POST['hilfreich_' . $oBewertung->kBewertung])) {
-                        $kBewertung = (int)$oBewertung->kBewertung;
-                        $bHilfreich = 1;
-                    }
-                    // Prüf ob die Bewertung als nicht Hilfreich gemarkt ist
-                    if (isset($_POST['nichthilfreich_' . $oBewertung->kBewertung])) {
-                        $kBewertung = (int)$oBewertung->kBewertung;
-                        $bHilfreich = 0;
-                    }
+    if ($kKunde > 0
+        && $kArtikel > 0
+        && $kSprache > 0
+        && $conf['bewertung']['bewertung_anzeigen'] === 'Y'
+        && $conf['bewertung']['bewertung_hilfreich_anzeigen'] === 'Y'
+    ) {
+        // Hole alle Bewertungen für den auktuellen Artikel und Sprache
+        $oBewertung_arr = Shop::Container()->getDB()->selectAll(
+            'tbewertung',
+            ['kArtikel', 'kSprache'],
+            [$kArtikel, $kSprache],
+            'kBewertung'
+        );
+        if (is_array($oBewertung_arr) && count($oBewertung_arr) > 0) {
+            $kBewertung = 0;
+            foreach ($oBewertung_arr as $oBewertung) {
+                // Prüf ob die Bewertung als Hilfreich gemarkt ist
+                if (isset($_POST['hilfreich_' . $oBewertung->kBewertung])) {
+                    $kBewertung = (int)$oBewertung->kBewertung;
+                    $bHilfreich = 1;
                 }
-                // Weiterleitungsstring bauen
-                $cWeiterleitung = '&btgseite=' . $bewertung_seite . '&btgsterne=' . $bewertung_sterne;
-                // Hole alle Einträge aus tbewertunghilfreich für eine bestimmte Bewertung und einen bestimmten Kunde
-                $oBewertungHilfreich = Shop::DB()->select(
-                    'tbewertunghilfreich',
-                    ['kBewertung', 'kKunde'],
-                    [$kBewertung,  $kKunde]
-                );
-                // Hat der Kunde für diese Bewertung noch keine hilfreich flag gesetzt?
-                if ((int)$oBewertungHilfreich->kKunde === 0) {
-                    unset($oBewertungHilfreich);
-                    $oBewertung = Shop::DB()->select('tbewertung', 'kBewertung', $kBewertung);
-                    if ($oBewertung->kKunde != $_SESSION['Kunde']->kKunde) {
-                        $oBewertungHilfreich             = new stdClass();
-                        $oBewertungHilfreich->kBewertung = $kBewertung;
-                        $oBewertungHilfreich->kKunde     = $kKunde;
+                // Prüf ob die Bewertung als nicht Hilfreich gemarkt ist
+                if (isset($_POST['nichthilfreich_' . $oBewertung->kBewertung])) {
+                    $kBewertung = (int)$oBewertung->kBewertung;
+                    $bHilfreich = 0;
+                }
+            }
+            // Weiterleitungsstring bauen
+            $cWeiterleitung = '&btgseite=' . $bewertung_seite . '&btgsterne=' . $bewertung_sterne;
+            // Hole alle Einträge aus tbewertunghilfreich für eine bestimmte Bewertung und einen bestimmten Kunde
+            $oBewertungHilfreich = Shop::Container()->getDB()->select(
+                'tbewertunghilfreich',
+                ['kBewertung', 'kKunde'],
+                [$kBewertung,  $kKunde]
+            );
+            // Hat der Kunde für diese Bewertung noch keine hilfreich flag gesetzt?
+            if ((int)$oBewertungHilfreich->kKunde === 0) {
+                unset($oBewertungHilfreich);
+                $oBewertung = Shop::Container()->getDB()->select('tbewertung', 'kBewertung', $kBewertung);
+                if ($oBewertung !== null && (int)$oBewertung->kKunde !== (int)$_SESSION['Kunde']->kKunde) {
+                    $oBewertungHilfreich             = new stdClass();
+                    $oBewertungHilfreich->kBewertung = $kBewertung;
+                    $oBewertungHilfreich->kKunde     = $kKunde;
+                    $oBewertungHilfreich->nBewertung = 0;
+                    // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese positiv ist
+                    if ($bHilfreich === 1) {
+                        $oBewertungHilfreich->nBewertung = 1;
+                        Shop::Container()->getDB()->query(
+                            "UPDATE tbewertung
+                                SET nHilfreich = nHilfreich+1
+                                WHERE kBewertung = " . $kBewertung, 3
+                        );
+                    } else {
+                        // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese negativ ist
                         $oBewertungHilfreich->nBewertung = 0;
-                        // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese positiv ist
-                        if ($bHilfreich === 1) {
-                            $oBewertungHilfreich->nBewertung = 1;
-                            Shop::DB()->query(
-                                "UPDATE tbewertung
-                                    SET nHilfreich = nHilfreich+1
-                                    WHERE kBewertung = " . $kBewertung, 3
-                            );
-                        } else {
-                            // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese negativ ist
-                            $oBewertungHilfreich->nBewertung = 0;
-                            Shop::DB()->query(
-                                "UPDATE tbewertung
-                                    SET nNichtHilfreich = nNichtHilfreich+1
-                                    WHERE kBewertung = " . $kBewertung, 3
-                            );
-                        }
-
-                        executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH, ['rating' => &$oBewertungHilfreich]);
-
-                        Shop::DB()->insert('tbewertunghilfreich', $oBewertungHilfreich);
-                        header('Location: index.php?a=' . $kArtikel .
-                            '&bewertung_anzeigen=1&cHinweis=h02' . $cWeiterleitung, true, 303);
-                        exit;
-                    }
-                } elseif ((int)$oBewertungHilfreich->kKunde > 0) {
-                    // Wenn Hilfreich nicht neu (wechsel) für eine Bewertung eingetragen wird und diese positiv ist
-                    if ($bHilfreich === 1 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
-                        Shop::DB()->query(
+                        Shop::Container()->getDB()->query(
                             "UPDATE tbewertung
-                                SET nHilfreich = nHilfreich+1, nNichtHilfreich = nNichtHilfreich-1
-                                WHERE kBewertung = " . $kBewertung, 3
-                        );
-                    } // Wenn Hilfreich neu für (wechsel) eine Bewertung eingetragen wird und diese negativ ist
-                    elseif ($bHilfreich === 0 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
-                        Shop::DB()->query(
-                            "UPDATE tbewertung
-                                SET nHilfreich = nHilfreich-1, nNichtHilfreich = nNichtHilfreich+1
+                                SET nNichtHilfreich = nNichtHilfreich+1
                                 WHERE kBewertung = " . $kBewertung, 3
                         );
                     }
 
-                    Shop::DB()->query(
-                        "UPDATE tbewertunghilfreich
-                            SET nBewertung = " . $bHilfreich . "
-                            WHERE kBewertung = " . $kBewertung . "
-                                AND kKunde = " . $kKunde, 3
-                    );
-                    header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel .
-                        '&bewertung_anzeigen=1&cHinweis=h03' . $cWeiterleitung, true, 303);
+                    executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH, ['rating' => &$oBewertungHilfreich]);
+
+                    Shop::Container()->getDB()->insert('tbewertunghilfreich', $oBewertungHilfreich);
+                    header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel .
+                        '&bewertung_anzeigen=1&cHinweis=h02' . $cWeiterleitung, true, 303);
                     exit;
                 }
+            } elseif ((int)$oBewertungHilfreich->kKunde > 0) {
+                // Wenn Hilfreich nicht neu (wechsel) für eine Bewertung eingetragen wird und diese positiv ist
+                if ($bHilfreich === 1 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
+                    Shop::Container()->getDB()->query(
+                        "UPDATE tbewertung
+                            SET nHilfreich = nHilfreich+1, nNichtHilfreich = nNichtHilfreich-1
+                            WHERE kBewertung = " . $kBewertung, 3
+                    );
+                } // Wenn Hilfreich neu für (wechsel) eine Bewertung eingetragen wird und diese negativ ist
+                elseif ($bHilfreich === 0 && $oBewertungHilfreich->nBewertung != $bHilfreich) {
+                    Shop::Container()->getDB()->query(
+                        "UPDATE tbewertung
+                            SET nHilfreich = nHilfreich-1, nNichtHilfreich = nNichtHilfreich+1
+                            WHERE kBewertung = " . $kBewertung, 3
+                    );
+                }
+
+                Shop::Container()->getDB()->query(
+                    "UPDATE tbewertunghilfreich
+                        SET nBewertung = " . $bHilfreich . "
+                        WHERE kBewertung = " . $kBewertung . "
+                            AND kKunde = " . $kKunde, 3
+                );
+                header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel .
+                    '&bewertung_anzeigen=1&cHinweis=h03' . $cWeiterleitung, true, 303);
+                exit;
             }
         }
     }
@@ -232,38 +219,60 @@ function aktualisiereDurchschnitt($kArtikel, $cFreischalten)
         $cFreiSQL = ' AND nAktiv = 1';
     }
 
-    $oAnzahlBewertung = Shop::DB()->query(
+    $oAnzahlBewertung = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tbewertung
             WHERE kArtikel = " . $kArtikel . $cFreiSQL, 1
     );
 
-    if (isset($oAnzahlBewertung->nAnzahl) && $oAnzahlBewertung->nAnzahl == 1) {
+    if ((int)$oAnzahlBewertung->nAnzahl === 1) {
         $cFreiSQL = '';
-    } elseif (isset($oAnzahlBewertung->nAnzahl) && $oAnzahlBewertung->nAnzahl == 0) {
-        Shop::DB()->delete('tartikelext', 'kArtikel', $kArtikel);
+    } elseif ((int)$oAnzahlBewertung->nAnzahl === 0) {
+        Shop::Container()->getDB()->delete('tartikelext', 'kArtikel', $kArtikel);
 
         return false;
     }
 
-    $oBewDurchschnitt = Shop::DB()->query(
+    $oBewDurchschnitt = Shop::Container()->getDB()->query(
         "SELECT (sum(nSterne) / count(*)) AS fDurchschnitt
             FROM tbewertung
             WHERE kArtikel = " . $kArtikel . $cFreiSQL, 1
     );
 
     if (isset($oBewDurchschnitt->fDurchschnitt) && $oBewDurchschnitt->fDurchschnitt > 0) {
-        Shop::DB()->delete('tartikelext', 'kArtikel', $kArtikel);
+        Shop::Container()->getDB()->delete('tartikelext', 'kArtikel', $kArtikel);
         $oArtikelExt                          = new stdClass();
         $oArtikelExt->kArtikel                = $kArtikel;
         $oArtikelExt->fDurchschnittsBewertung = (float)$oBewDurchschnitt->fDurchschnitt;
 
-        Shop::DB()->insert('tartikelext', $oArtikelExt);
+        Shop::Container()->getDB()->insert('tartikelext', $oArtikelExt);
     }
 
     return true;
 }
 
+/**
+ * @param int $kArtikel
+ * @param int $kKunde
+ * @return int
+ */
+function pruefeKundeArtikelBewertet($kArtikel, $kKunde)
+{
+    // Pürfen ob der Bewerter schon diesen Artikel bewertet hat
+    if ($kKunde > 0) {
+        $oBewertung = Shop::Container()->getDB()->select(
+            'tbewertung',
+            ['kKunde', 'kArtikel', 'kSprache'],
+            [(int)$kKunde, (int)$kArtikel, Shop::getLanguage()]
+        );
+        // Kunde hat den Artikel schon bewertet
+        if (isset($oBewertung->kKunde) && $oBewertung->kKunde > 0) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
 
 /**
  * @param int $kArtikel
@@ -274,27 +283,25 @@ function pruefeKundeArtikelGekauft($kArtikel, $kKunde)
 {
     $kArtikel = (int)$kArtikel;
     $kKunde   = (int)$kKunde;
+    $conf     = Shop::getSettings([CONF_BEWERTUNG]);
     // Prüfen ob der Bewerter diesen Artikel bereits gekauft hat
-    if ($kKunde > 0 && $kArtikel > 0) {
-        $conf = Shop::getSettings([CONF_BEWERTUNG]);
-        if ($conf['bewertung']['bewertung_artikel_gekauft'] === 'Y') {
-            $oBestellung = Shop::DB()->query(
-                "SELECT tbestellung.kBestellung
-                    FROM tbestellung
-                    LEFT JOIN tartikel 
-                        ON tartikel.kVaterArtikel = {$kArtikel}
-                    JOIN twarenkorb 
-                        ON twarenkorb.kWarenkorb = tbestellung.kWarenkorb
-                    JOIN twarenkorbpos 
-                        ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
-                    WHERE tbestellung.kKunde = {$kKunde}
-                        AND (twarenkorbpos.kArtikel = {$kArtikel} OR twarenkorbpos.kArtikel = tartikel.kArtikel)", 1
-            );
+    if ($kKunde > 0 && $kArtikel > 0 && $conf['bewertung']['bewertung_artikel_gekauft'] === 'Y') {
+        $oBestellung = Shop::Container()->getDB()->query(
+            "SELECT tbestellung.kBestellung
+                FROM tbestellung
+                LEFT JOIN tartikel 
+                    ON tartikel.kVaterArtikel = {$kArtikel}
+                JOIN twarenkorb 
+                    ON twarenkorb.kWarenkorb = tbestellung.kWarenkorb
+                JOIN twarenkorbpos 
+                    ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
+                WHERE tbestellung.kKunde = {$kKunde}
+                    AND (twarenkorbpos.kArtikel = {$kArtikel} OR twarenkorbpos.kArtikel = tartikel.kArtikel)", 1
+        );
 
-            if (!isset($oBestellung->kBestellung) || !$oBestellung->kBestellung) {
-                // Kunde hat diesen Artikel noch nicht gekauft und darf somit laut Einstellung keine Bewertung abgeben
-                return 1;
-            }
+        if (!isset($oBestellung->kBestellung) || !$oBestellung->kBestellung) {
+            // Kunde hat diesen Artikel noch nicht gekauft und darf somit laut Einstellung keine Bewertung abgeben
+            return 1;
         }
     }
 
@@ -313,22 +320,32 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
     // Ist Guthaben freigeschaltet? Wenn ja, schreibe dem Kunden den richtigen Betrag gut
     if ($Einstellungen['bewertung']['bewertung_guthaben_nutzen'] === 'Y') {
         // Hole Kunden und cText der Bewertung
-        $oBewertung = Shop::DB()->query(
-            "SELECT kBewertung, kKunde, cText
+        $oBewertung = Shop::Container()->getDB()->queryPrepared(
+            'SELECT kBewertung, kKunde, cText
                 FROM tbewertung
-                WHERE kBewertung = " . $kBewertung, 1
+                WHERE kBewertung = :rid',
+            ['rid' => $kBewertung],
+            \DB\ReturnType::SINGLE_OBJECT
         );
-        $kKunde                  = (int)$oBewertung->kKunde;
-        $oBewertungGuthabenBonus = Shop::DB()->query(
-            "SELECT sum(fGuthabenBonus) AS fGuthabenProMonat
+        $kKunde = (int)$oBewertung->kKunde;
+        $oBewertungGuthabenBonus = Shop::Container()->getDB()->queryPrepared(
+            'SELECT sum(fGuthabenBonus) AS fGuthabenProMonat
                 FROM tbewertungguthabenbonus
-                WHERE kKunde = " . $kKunde . "
-                    AND kBewertung != " . (int)$kBewertung . "
-                    AND YEAR(dDatum) = " . date('Y') . "
-                    AND MONTH(dDatum) = " . date('m'), 1
+                WHERE kKunde = :ci
+                    AND kBewertung != :rID
+                    AND YEAR(dDatum) = :dYear
+                    AND MONTH(dDatum) = :dMonth',
+            [
+                'cID'    => $kKunde,
+                'rID'    => $kBewertung,
+                'dYear'  => date('Y'),
+                'dMonth' => date('m')
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if ((float)$oBewertungGuthabenBonus->fGuthabenProMonat <=
-            (float)$Einstellungen['bewertung']['bewertung_max_guthaben']) {
+            (float)$Einstellungen['bewertung']['bewertung_max_guthaben']
+        ) {
             // Reichen die Zeichen in der Bewertung, um das Stufe 2 Guthaben zu erhalten?
             if ((int)$Einstellungen['bewertung']['bewertung_stufe2_anzahlzeichen'] <= strlen($oBewertung->cText)) {
                 // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überscchreitet
@@ -344,10 +361,11 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 }
 
                 // tkunde Guthaben updaten
-                Shop::DB()->query("
+                Shop::Container()->getDB()->query("
                     UPDATE tkunde
                         SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
-                            WHERE kKunde = " . $kKunde, 3
+                            WHERE kKunde = " . $kKunde,
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
 
                 // tbewertungguthabenbonus eintragen
@@ -358,19 +376,25 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 $oBewertungGuthabenBonus->fGuthabenBonus = (float)$fBelohnung;
                 $oBewertungGuthabenBonus->dDatum         = 'now()';
 
-                    if(is_object(Shop::DB()->select('tbewertungguthabenbonus', ['kBewertung', 'kKunde'], [$kBewertung, $kKunde]))) {
-                        Shop::DB()->executeQueryPrepared('UPDATE tbewertungguthabenbonus SET fGuthabenBonus = :reward WHERE kBewertung = :feedback',
-                            [
-                                'reward' => $fBelohnung,
-                                'feedback' => $kBewertung
-                            ],
-                            1
-                        );
+                if (Shop::Container()->getDB()->select(
+                    'tbewertungguthabenbonus',
+                    ['kBewertung', 'kKunde'],
+                    [$kBewertung, $kKunde]) !== null
+                ) {
+                    Shop::Container()->getDB()->queryPrepared(
+                        'UPDATE tbewertungguthabenbonus 
+                            SET fGuthabenBonus = :reward 
+                            WHERE kBewertung = :feedback',
+                        [
+                            'reward'   => $fBelohnung,
+                            'feedback' => $kBewertung
+                        ],
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
 
-                    } else {
-                        Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
-                    }
-
+                } else {
+                    Shop::Container()->getDB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
+                }
             } else {
                 // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überschreitet
                 // Falls ja, nur die Differenz von Kundenguthaben zu Max im Monat auszahlen
@@ -384,7 +408,7 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 }
 
                 // tkunde Guthaben updaten
-                Shop::DB()->query("
+                Shop::Container()->getDB()->query("
                     UPDATE tkunde
                         SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
                         WHERE kKunde = " . $kKunde, 3
@@ -396,17 +420,23 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 $oBewertungGuthabenBonus->kKunde         = $kKunde;
                 $oBewertungGuthabenBonus->fGuthabenBonus = (float)$fBelohnung;
                 $oBewertungGuthabenBonus->dDatum         = 'now()';
-
-                if(is_object(Shop::DB()->select('tbewertungguthabenbonus', ['kBewertung', 'kKunde'], [$kBewertung, $kKunde]))) {
-                    Shop::DB()->executeQueryPrepared('UPDATE tbewertungguthabenbonus SET fGuthabenBonus = :reward WHERE kBewertung = :feedback',
+                if (Shop::Container()->getDB()->select(
+                    'tbewertungguthabenbonus',
+                    ['kBewertung', 'kKunde'],
+                    [$kBewertung, $kKunde]) !== null
+                ) {
+                    Shop::Container()->getDB()->queryPrepared(
+                        'UPDATE tbewertungguthabenbonus 
+                            SET fGuthabenBonus = :reward 
+                            WHERE kBewertung = :feedback',
                         [
-                            'reward' => $fBelohnung,
+                            'reward'   => $fBelohnung,
                             'feedback' => $kBewertung
                         ],
-                        1
+                        \DB\ReturnType::SINGLE_OBJECT
                     );
                 } else {
-                    Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
+                    Shop::Container()->getDB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
                 }
             }
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
@@ -428,33 +458,32 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
 function BewertungsGuthabenBonusLoeschen($kBewertung)
 {
     $kBewertung = (int)$kBewertung;
-    if ($kBewertung > 0) {
-        $oBewertung = Shop::DB()->select('tbewertung', 'kBewertung', $kBewertung);
-        if (isset($oBewertung->kBewertung) && $oBewertung->kBewertung > 0) {
-            $oBewertungGuthabenBonus = Shop::DB()->select(
-                'tbewertungguthabenbonus',
-                'kBewertung',
-                (int)$oBewertung->kBewertung,
-                'kKunde',
-                (int)$oBewertung->kKunde
-            );
-            if (isset($oBewertungGuthabenBonus->kBewertungGuthabenBonus) &&
-                $oBewertungGuthabenBonus->kBewertungGuthabenBonus > 0
-            ) {
-                $oKunde = Shop::DB()->select('tkunde', 'kKunde', (int)$oBewertung->kKunde);
-                if (isset($oKunde->kKunde)) {
-                    Shop::DB()->delete(
-                        'tbewertungguthabenbonus',
-                        'kBewertungGuthabenBonus',
-                        $oBewertungGuthabenBonus->kBewertungGuthabenBonus
-                    );
-                    $fGuthaben      = $oKunde->fGuthaben - (float)$oBewertungGuthabenBonus->fGuthabenBonus;
-                    $upd            = new stdClass();
-                    $upd->fGuthaben = (($fGuthaben > 0) ? $fGuthaben : 0);
-                    Shop::DB()->update('tkunde', 'kKunde', (int)$oBewertung->kKunde, $upd);
+    if ($kBewertung <= 0) {
+        return false;
+    }
+    $oBewertung = Shop::Container()->getDB()->select('tbewertung', 'kBewertung', $kBewertung);
+    if ($oBewertung !== null && $oBewertung->kBewertung > 0) {
+        $oBewertungGuthabenBonus = Shop::Container()->getDB()->select(
+            'tbewertungguthabenbonus',
+            'kBewertung',
+            (int)$oBewertung->kBewertung,
+            'kKunde',
+            (int)$oBewertung->kKunde
+        );
+        if ($oBewertungGuthabenBonus !== null && $oBewertungGuthabenBonus->kBewertungGuthabenBonus > 0) {
+            $oKunde = Shop::Container()->getDB()->select('tkunde', 'kKunde', (int)$oBewertung->kKunde);
+            if ($oKunde !== null && $oKunde->kKunde > 0) {
+                Shop::Container()->getDB()->delete(
+                    'tbewertungguthabenbonus',
+                    'kBewertungGuthabenBonus',
+                    $oBewertungGuthabenBonus->kBewertungGuthabenBonus
+                );
+                $fGuthaben      = $oKunde->fGuthaben - (float)$oBewertungGuthabenBonus->fGuthabenBonus;
+                $upd            = new stdClass();
+                $upd->fGuthaben = (($fGuthaben > 0) ? $fGuthaben : 0);
+                Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$oBewertung->kKunde, $upd);
 
-                    return true;
-                }
+                return true;
             }
         }
     }

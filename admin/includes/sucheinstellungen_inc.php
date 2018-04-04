@@ -22,8 +22,8 @@ function createSearchIndex($index, $create)
     }
 
     try {
-        if (Shop::DB()->query("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'", 1)) {
-            Shop::DB()->executeQuery("ALTER IGNORE TABLE $index DROP KEY idx_{$index}_fulltext", 10);
+        if (Shop::Container()->getDB()->query("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'", 1)) {
+            Shop::Container()->getDB()->executeQuery("ALTER TABLE $index DROP KEY idx_{$index}_fulltext", 10);
         }
     } catch (Exception $e) {
         // Fehler beim Index löschen ignorieren
@@ -51,10 +51,14 @@ function createSearchIndex($index, $create)
         }
 
         try {
-            $res = Shop::DB()->executeQuery(
+            Shop::Container()->getDB()->executeQuery(
+                "UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)",
+                \DB\ReturnType::QUERYSINGLE
+            );
+            $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
-                10
+                \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {
             $res = 0;
@@ -65,7 +69,7 @@ function createSearchIndex($index, $create)
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
-            if ($settings['suche_fulltext'] === 'Y') {
+            if ($settings['suche_fulltext'] !== 'N') {
                 $settings['suche_fulltext'] = 'N';
                 saveAdminSectionSettings(CONF_ARTIKELUEBERSICHT, $settings);
 
@@ -85,4 +89,15 @@ function createSearchIndex($index, $create)
     }
 
     return $cFehler !== '' ? new IOError($cFehler) : ['hinweis' => $cHinweis];
+}
+
+/**
+ * @return array|IOError
+ */
+function clearSearchCache()
+{
+    Shop::DB()->executeQuery("DELETE FROM tsuchcachetreffer", \DB\ReturnType::AFFECTED_ROWS);
+    Shop::DB()->executeQuery("DELETE FROM tsuchcache", \DB\ReturnType::AFFECTED_ROWS);
+
+    return ['hinweis' => 'Der Such-Cache wurde gelöscht'];
 }

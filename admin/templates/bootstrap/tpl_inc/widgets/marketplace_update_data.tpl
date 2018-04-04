@@ -4,7 +4,7 @@
 
         {foreach name="marketplace_updates" from=$oMarketplaceUpdates_arr item=oMarketplaceUpdate}
             <li>
-                <p><a href="{$oMarketplaceUpdate->cUrl}" target="_blank">
+                <p><a href="{$oMarketplaceUpdate->cUrl}" target="_blank" rel="noopener">
                     {$oMarketplaceUpdate->cName|truncate:'50':'...'}
                     <span class="date">{$oMarketplaceUpdate->cVersion}</span>
                 </a></p>

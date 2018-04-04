@@ -25,7 +25,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
 } elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && validateToken()) {
     // Suchspecials aus der DB holen und in smarty assignen
-    $oSuchSpecials_arr       = Shop::DB()->selectAll(
+    $oSuchSpecials_arr       = Shop::Container()->getDB()->selectAll(
         'tseo',
         ['cKey', 'kSprache'],
         ['suchspecial',
@@ -35,12 +35,12 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     );
     $oSuchSpecialsTMP_arr    = [];
     $nSuchSpecialsLoesch_arr = [];
-    $cBestSellerSeo          = strip_tags(Shop::DB()->escape($_POST['bestseller']));
-    $cSonderangeboteSeo      = Shop::DB()->escape($_POST['sonderangebote']);
-    $cNeuImSortimentSeo      = strip_tags(Shop::DB()->escape($_POST['neu_im_sortiment']));
-    $cTopAngeboteSeo         = strip_tags(Shop::DB()->escape($_POST['top_angebote']));
-    $cInKuerzeVerfuegbarSeo  = strip_tags(Shop::DB()->escape($_POST['in_kuerze_verfuegbar']));
-    $cTopBewertetSeo         = strip_tags(Shop::DB()->escape($_POST['top_bewertet']));
+    $cBestSellerSeo          = strip_tags(Shop::Container()->getDB()->escape($_POST['bestseller']));
+    $cSonderangeboteSeo      = Shop::Container()->getDB()->escape($_POST['sonderangebote']);
+    $cNeuImSortimentSeo      = strip_tags(Shop::Container()->getDB()->escape($_POST['neu_im_sortiment']));
+    $cTopAngeboteSeo         = strip_tags(Shop::Container()->getDB()->escape($_POST['top_angebote']));
+    $cInKuerzeVerfuegbarSeo  = strip_tags(Shop::Container()->getDB()->escape($_POST['in_kuerze_verfuegbar']));
+    $cTopBewertetSeo         = strip_tags(Shop::Container()->getDB()->escape($_POST['top_bewertet']));
 
     // Pruefe BestSeller
     if (strlen($cBestSellerSeo) > 0 && !pruefeSuchspecialSeo(
@@ -51,7 +51,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
         $cBestSellerSeo = checkSeo(getSeo($cBestSellerSeo));
 
         if ($cBestSellerSeo !== $_POST['bestseller']) {
-            $cHinweis .= 'Das BestSeller Seo "' . strip_tags(Shop::DB()->escape($_POST['bestseller'])) .
+            $cHinweis .= 'Das BestSeller Seo "' . strip_tags(Shop::Container()->getDB()->escape($_POST['bestseller'])) .
                 '" war bereits vorhanden und wurde in "' . $cBestSellerSeo . '" umbenannt.<br />';
         }
 
@@ -75,7 +75,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
         $cSonderangeboteSeo = checkSeo(getSeo($cSonderangeboteSeo));
 
         if ($cSonderangeboteSeo !== $_POST['sonderangebote']) {
-            $cHinweis .= 'Das Sonderangebot Seo "' . strip_tags(Shop::DB()->escape($_POST['sonderangebote'])) .
+            $cHinweis .= 'Das Sonderangebot Seo "' . strip_tags(Shop::Container()->getDB()->escape($_POST['sonderangebote'])) .
                 '" war bereits vorhanden und wurde auf "' . $cSonderangeboteSeo . '" umbenannt.<br />';
         }
 
@@ -98,7 +98,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
         $cNeuImSortimentSeo = checkSeo(getSeo($cNeuImSortimentSeo));
 
         if ($cNeuImSortimentSeo !== $_POST['neu_im_sortiment']) {
-            $cHinweis .= 'Das Neu im Sortiment Seo "' . strip_tags(Shop::DB()->escape($_POST['neu_im_sortiment'])) .
+            $cHinweis .= 'Das Neu im Sortiment Seo "' . strip_tags(Shop::Container()->getDB()->escape($_POST['neu_im_sortiment'])) .
                 '" war bereits vorhanden und wurde auf "' . $cNeuImSortimentSeo . '" umbenannt.<br />';
         }
 
@@ -121,7 +121,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
         $cTopAngeboteSeo = checkSeo(getSeo($cTopAngeboteSeo));
 
         if ($cTopAngeboteSeo !== $_POST['top_angebote']) {
-            $cHinweis .= 'Das Top Angebote Seo "' . strip_tags(Shop::DB()->escape($_POST['top_angebote'])) .
+            $cHinweis .= 'Das Top Angebote Seo "' . strip_tags(Shop::Container()->getDB()->escape($_POST['top_angebote'])) .
                 '" war bereits vorhanden und wurde auf "' . $cTopAngeboteSeo . '" umbenannt.<br />';
         }
 
@@ -144,7 +144,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
         $cInKuerzeVerfuegbarSeo = checkSeo(getSeo($cInKuerzeVerfuegbarSeo));
         if ($cInKuerzeVerfuegbarSeo !== $_POST['in_kuerze_verfuegbar']) {
             $cHinweis .= 'Das In k&uuml;rze Verf&uuml;gbar Seo "' .
-                strip_tags(Shop::DB()->escape($_POST['in_kuerze_verfuegbar'])) .
+                strip_tags(Shop::Container()->getDB()->escape($_POST['in_kuerze_verfuegbar'])) .
                 '" war bereits vorhanden und wurde auf "' . $cInKuerzeVerfuegbarSeo . '" umbenannt.<br />';
         }
         $oInKuerzeVerfuegbar       = new stdClass();
@@ -166,7 +166,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
 
         if ($cTopBewertetSeo !== $_POST['top_bewertet']) {
             $cHinweis .= 'Das In k&uuml;rze Verf&uuml;gbar Seo "' .
-                strip_tags(Shop::DB()->escape($_POST['top_bewertet'])) .
+                strip_tags(Shop::Container()->getDB()->escape($_POST['top_bewertet'])) .
                 '" war bereits vorhanden und wurde auf "' . $cTopBewertetSeo . '" umbenannt.<br />';
         }
         $oTopBewertet       = new stdClass();
@@ -189,7 +189,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
             }
         }
         // Loeschen
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . (int)$_SESSION['kSprache'] . "
@@ -204,7 +204,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
             $oSeo->kKey     = $oSuchSpecialsTMP->kKey;
             $oSeo->kSprache = $_SESSION['kSprache'];
 
-            Shop::DB()->insert('tseo', $oSeo);
+            Shop::Container()->getDB()->insert('tseo', $oSeo);
         }
     }
     // nicht gesetzte seos loeschen
@@ -219,7 +219,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
         }
 
         // Loeschen
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . (int)$_SESSION['kSprache'] . "
@@ -231,7 +231,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
 }
 
 // Suchspecials aus der DB holen und in smarty assignen
-$oSuchSpecials_arrTMP = Shop::DB()->selectAll(
+$oSuchSpecials_arrTMP = Shop::Container()->getDB()->selectAll(
     'tseo',
     ['cKey', 'kSprache'],
     ['suchspecial', (int)$_SESSION['kSprache']],
@@ -246,7 +246,7 @@ if (is_array($oSuchSpecials_arrTMP) && count($oSuchSpecials_arrTMP) > 0) {
 }
 
 // Config holen
-$oConfig_arr = Shop::DB()->selectAll(
+$oConfig_arr = Shop::Container()->getDB()->selectAll(
     'teinstellungenconf',
     'kEinstellungenSektion',
     CONF_SUCHSPECIAL,
@@ -255,23 +255,21 @@ $oConfig_arr = Shop::DB()->selectAll(
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
-    $oConfig_arr[$i]->ConfWerte     = Shop::DB()->selectAll(
+    $oConfig_arr[$i]->ConfWerte     = Shop::Container()->getDB()->selectAll(
         'teinstellungenconfwerte',
         'kEinstellungenConf',
         (int)$oConfig_arr[$i]->kEinstellungenConf,
         '*',
         'nSort'
     );
-    $oSetValue                      = Shop::DB()->select(
+    $oSetValue                      = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         (int)$oConfig_arr[$i]->kEinstellungenSektion,
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-        ? $oSetValue->cWert
-        : null;
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)

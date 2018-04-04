@@ -15,7 +15,7 @@
             </div>
         {/if}
     {/if}
-    <form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" method="post" id="article_availability">
+    <form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" method="post" id="article_availability{$Artikel->kArtikel}">
         {$jtl_token}
         <fieldset>
             <legend>{lang key="contact" section="global"}</legend>
@@ -24,10 +24,10 @@
                     {if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname !== 'N'}
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group float-label-control{if !empty($fehlendeAngaben_benachrichtigung.vorname)} has-error{/if}{if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname === 'Y'} required{/if}">
-                            <label for="firstName" class="control-label">
+                            <label for="article_availability{$Artikel->kArtikel}_firstName" class="control-label">
                                 {lang key="firstName" section="account data"}
                             </label>
-                            <input type="text" class="form-control" name="vorname" value="{if isset($Benachrichtigung->cVorname)}{$Benachrichtigung->cVorname}{/if}" id="firstName"{if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname === 'Y'} required{/if}>
+                            <input type="text" class="form-control" name="vorname" value="{if isset($Benachrichtigung->cVorname)}{$Benachrichtigung->cVorname}{/if}" id="article_availability{$Artikel->kArtikel}_firstName"{if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname === 'Y'} required{/if}>
                             {if !empty($fehlendeAngaben_benachrichtigung.vorname)}
                                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                     {lang key="fillOut" section="global"}
@@ -40,10 +40,10 @@
                     {if $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname !== 'N'}
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group float-label-control{if !empty($fehlendeAngaben_benachrichtigung.nachname)} has-error{/if}{if $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname === 'Y'} required{/if}">
-                            <label for="lastName" class="control-label">
+                            <label for="article_availability{$Artikel->kArtikel}_lastName" class="control-label">
                                 {lang key="lastName" section="account data"}
                             </label>
-                            <input type="text" class="form-control" name="nachname" value="{if isset($Benachrichtigung->cNachname)}{$Benachrichtigung->cNachname}{/if}" id="lastName"{if $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname === 'Y'} required{/if}>
+                            <input type="text" class="form-control" name="nachname" value="{if isset($Benachrichtigung->cNachname)}{$Benachrichtigung->cNachname}{/if}" id="article_availability{$Artikel->kArtikel}_lastName"{if $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname === 'Y'} required{/if}>
                             {if !empty($fehlendeAngaben_benachrichtigung.nachname)}
                                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                     {lang key="fillOut" section="global"}
@@ -58,10 +58,10 @@
             <div class="row">
                 <div class="col-xs-12 col-md-6">
                     <div class="form-group float-label-control{if !empty($fehlendeAngaben_benachrichtigung.email)} has-error{/if} required">
-                        <label for="email" class="control-label">
+                        <label for="article_availability{$Artikel->kArtikel}_email" class="control-label">
                             {lang key="email" section="account data"}
                         </label>
-                        <input type="email" class="form-control" name="email" value="{if isset($Lieferadresse->cMail)}{$Lieferadresse->cMail}{/if}" id="email" required>
+                        <input type="email" class="form-control" name="email" value="{if isset($Lieferadresse->cMail)}{$Lieferadresse->cMail}{/if}" id="article_availability{$Artikel->kArtikel}_email" required>
                         {if !empty($fehlendeAngaben_benachrichtigung.email)}
                             <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                 {if $fehlendeAngaben_benachrichtigung.email == 1}
@@ -80,7 +80,7 @@
             {if isset($fehlendeAngaben_benachrichtigung)}
                 {include file='snippets/checkbox.tpl' nAnzeigeOrt=CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=$fehlendeAngaben_benachrichtigung cPost_arr=null}
             {else}
-                {include file='snippets/checkbox.tpl' nAnzeigeOrt=CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=null cPost_arr=null}
+                {include file='snippets/checkbox.tpl' nAnzeigeOrt=CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=null cPost_arr=null cIDPrefix="article_availability{$Artikel->kArtikel}"}
             {/if}
     
         </fieldset>

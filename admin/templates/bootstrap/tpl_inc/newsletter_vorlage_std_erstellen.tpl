@@ -4,7 +4,7 @@
     var fields = 0;
 
     function neu() {ldelim}
-        if (fields != 10) {ldelim}
+        if (fields !== 10) {ldelim}
             document.getElementById('ArtNr').innerHTML += "<input name='cArtNr[]' type='text' class='field'>";
             fields += 1;
         {rdelim} else {ldelim}

@@ -71,7 +71,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         if ($nSeite === PAGE_ARTIKEL) {
             $cKey      = 'kArtikel';
             $cKeyValue = 'article_key';
-            $cValue    = isset($_POST[$cKeyValue]) ? $_POST[$cKeyValue] : null;
+            $cValue    = $_POST[$cKeyValue] ?? null;
         } elseif ($nSeite === PAGE_ARTIKELLISTE) {
             // data mapping
             $aFilter_arr = [
@@ -82,14 +82,14 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
                 'cSuche'       => 'keycSuche'
             ];
             $cKeyValue = $aFilter_arr[$cKey];
-            $cValue    = isset($_POST[$cKeyValue]) ? $_POST[$cKeyValue] : null;
+            $cValue    = $_POST[$cKeyValue] ?? null;
         } elseif ($nSeite === PAGE_EIGENE) {
             $cKey      = 'kLink';
             $cKeyValue = 'link_key';
-            $cValue    = isset($_POST[$cKeyValue]) ? $_POST[$cKeyValue] : null;
+            $cValue    = $_POST[$cKeyValue] ?? null;
         }
 
-        Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
+        Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
         // save extensionpoint
         $oExtension                = new stdClass();
         $oExtension->kSprache      = $kSprache;
@@ -100,9 +100,9 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $oExtension->cClass        = 'ImageMap';
         $oExtension->kInitial      = $kImageMap;
 
-        $ins = Shop::DB()->insert('textensionpoint', $oExtension);
+        $ins = Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
         // saved?
-        if ($kImageMap && (int)$ins > 0) {
+        if ($kImageMap && $ins > 0) {
             $cAction  = 'view';
             $cHinweis = 'Banner wurde erfolgreich gespeichert.';
         } else {
@@ -111,18 +111,18 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     } else {
         $cFehler = 'Bitte f&uuml;llen Sie alle Pflichtfelder die mit einem * marktiert sind aus';
         $smarty->assign('cPlausi_arr', $cPlausi_arr)
-               ->assign('cName', isset($_POST['cName']) ? $_POST['cName'] : null)
-               ->assign('vDatum', isset($_POST['vDatum']) ? $_POST['vDatum'] : null)
-               ->assign('bDatum', isset($_POST['bDatum']) ? $_POST['bDatum'] : null)
-               ->assign('kSprache', isset($_POST['kSprache']) ? $_POST['kSprache'] : null)
-               ->assign('kKundengruppe', isset($_POST['kKundengruppe']) ? $_POST['kKundengruppe'] : null)
-               ->assign('nSeitenTyp', isset($_POST['nSeitenTyp']) ? $_POST['nSeitenTyp'] : null)
-               ->assign('cKey', isset($_POST['cKey']) ? $_POST['cKey'] : null)
-               ->assign('categories_key', isset($_POST['categories_key']) ? $_POST['categories_key'] : null)
-               ->assign('attribute_key', isset($_POST['attribute_key']) ? $_POST['attribute_key'] : null)
-               ->assign('tag_key', isset($_POST['tag_key']) ? $_POST['tag_key'] : null)
-               ->assign('manufacturer_key', isset($_POST['manufacturer_key']) ? $_POST['manufacturer_key'] : null)
-               ->assign('keycSuche', isset($_POST['keycSuche']) ? $_POST['keycSuche'] : null);
+               ->assign('cName', $_POST['cName'] ?? null)
+               ->assign('vDatum', $_POST['vDatum'] ?? null)
+               ->assign('bDatum', $_POST['bDatum'] ?? null)
+               ->assign('kSprache', $_POST['kSprache'] ?? null)
+               ->assign('kKundengruppe', $_POST['kKundengruppe'] ?? null)
+               ->assign('nSeitenTyp', $_POST['nSeitenTyp'] ?? null)
+               ->assign('cKey', $_POST['cKey'] ?? null)
+               ->assign('categories_key', $_POST['categories_key'] ?? null)
+               ->assign('attribute_key', $_POST['attribute_key'] ?? null)
+               ->assign('tag_key', $_POST['tag_key'] ?? null)
+               ->assign('manufacturer_key', $_POST['manufacturer_key'] ?? null)
+               ->assign('keycSuche', $_POST['keycSuche'] ?? null);
     }
 }
 switch ($cAction) {
@@ -134,13 +134,7 @@ switch ($cAction) {
             $cAction = 'view';
             break;
         }
-        $oBanner->cTitel = utf8_encode($oBanner->cTitel);
-        foreach ($oBanner->oArea_arr as &$oArea) {
-            $oArea->cTitel        = utf8_encode($oArea->cTitel);
-            $oArea->cUrl          = utf8_encode($oArea->cUrl);
-            $oArea->cBeschreibung = utf8_encode($oArea->cBeschreibung);
-            $oArea->cStyle        = utf8_encode($oArea->cStyle);
-        }
+
         $smarty->assign('oBanner', $oBanner)
                ->assign('cBannerLocation', Shop::getURL() . '/' . PFAD_BILDER_BANNER);
         break;
@@ -172,7 +166,7 @@ switch ($cAction) {
         $oSprache      = Sprache::getInstance(false);
         $oSprachen_arr = $oSprache->gibInstallierteSprachen();
         $nMaxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
-        $smarty->assign('oBanner', (isset($oBanner) ? $oBanner : null))
+        $smarty->assign('oBanner', $oBanner ?? null)
                ->assign('oSprachen_arr', $oSprachen_arr)
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('cBannerLocation', PFAD_BILDER_BANNER)

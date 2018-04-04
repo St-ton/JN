@@ -12,7 +12,7 @@
  */
 
 $oAdminExt = $args_arr['AdminAccount'];
-$url= Shop::DB()->select(
+$url= Shop::Container()->getDB()->select(
     'tadminloginattribut',
     'kAdminlogin',
     $oAdminExt->kAdminlogin,

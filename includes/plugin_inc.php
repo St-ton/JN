@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_CLASSES . 'interface.JTL-Shop.PluginLizenz.php';
 
 /**
  * @param int   $nHook
@@ -13,8 +12,7 @@ function executeHook($nHook, $args_arr = [])
 {
     global $smarty;
 
-    $dispatcher = EventDispatcher::getInstance();
-    $dispatcher->fire("shop.hook.{$nHook}", array_merge((array)$nHook, $args_arr));
+    EventDispatcher::getInstance()->fire("shop.hook.{$nHook}", array_merge((array)$nHook, $args_arr));
 
     $hookList = Plugin::getHookList();
     if (!empty($hookList[$nHook]) && is_array($hookList[$nHook])) {
@@ -78,9 +76,9 @@ function executeHook($nHook, $args_arr = [])
  */
 function pluginLizenzpruefung(&$oPlugin, $xParam_arr = [])
 {
-    if (isset($oPlugin->cLizenzKlasse, $oPlugin->cLizenzKlasseName) &&
-        strlen($oPlugin->cLizenzKlasse) > 0 &&
-        strlen($oPlugin->cLizenzKlasseName) > 0
+    if (isset($oPlugin->cLizenzKlasse, $oPlugin->cLizenzKlasseName)
+        && strlen($oPlugin->cLizenzKlasse) > 0
+        && strlen($oPlugin->cLizenzKlasseName) > 0
     ) {
         require_once $oPlugin->cLicencePfad . $oPlugin->cLizenzKlasseName;
         $oPluginLicence = new $oPlugin->cLizenzKlasse();
@@ -91,8 +89,8 @@ function pluginLizenzpruefung(&$oPlugin, $xParam_arr = [])
             $oPlugin->cFehler = 'Lizenzschl&uuml;ssel ist ung&uuml;ltig';
             $oPlugin->updateInDB();
             Jtllog::writeLog(
-                utf8_decode('Plugin Lizenzprüfung: Das Plugin "' . $oPlugin->cName .
-                    '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!'),
+                'Plugin Lizenzprüfung: Das Plugin "' . $oPlugin->cName .
+                    '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!',
                 JTLLOG_LEVEL_ERROR,
                 false,
                 'kPlugin',
@@ -115,14 +113,12 @@ function pluginLizenzpruefung(&$oPlugin, $xParam_arr = [])
  */
 function aenderPluginZahlungsartStatus(&$oPlugin, $nStatus)
 {
-    if (isset($oPlugin->kPlugin, $oPlugin->oPluginZahlungsmethodeAssoc_arr) &&
-        $oPlugin->kPlugin > 0 &&
-        count($oPlugin->oPluginZahlungsmethodeAssoc_arr) > 0
+    if (isset($oPlugin->kPlugin, $oPlugin->oPluginZahlungsmethodeAssoc_arr)
+        && $oPlugin->kPlugin > 0
+        && count($oPlugin->oPluginZahlungsmethodeAssoc_arr) > 0
     ) {
         foreach ($oPlugin->oPluginZahlungsmethodeAssoc_arr as $cModulId => $oPluginZahlungsmethodeAssoc) {
-            $_upd          = new stdClass();
-            $_upd->nActive = (int)$nStatus;
-            Shop::DB()->update('tzahlungsart', 'cModulId', $cModulId, $_upd);
+            Shop::Container()->getDB()->update('tzahlungsart', 'cModulId', $cModulId, (object)['nActive' => (int)$nStatus]);
         }
     }
 }
@@ -135,7 +131,7 @@ function gibPluginEinstellungen($kPlugin)
 {
     $oPluginEinstellungen_arr = [];
     if ($kPlugin > 0) {
-        $oPluginEinstellungenTMP_arr = Shop::DB()->query(
+        $oPluginEinstellungenTMP_arr = Shop::Container()->getDB()->query(
             "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugin
                 JOIN tplugineinstellungen 
@@ -147,7 +143,7 @@ function gibPluginEinstellungen($kPlugin)
         );
         if (is_array($oPluginEinstellungenTMP_arr) && count($oPluginEinstellungenTMP_arr) > 0) {
             foreach ($oPluginEinstellungenTMP_arr as $oPluginEinstellungenTMP) {
-                $oPluginEinstellungen_arr[$oPluginEinstellungenTMP->cName] = ($oPluginEinstellungenTMP->cConf === 'M')
+                $oPluginEinstellungen_arr[$oPluginEinstellungenTMP->cName] = $oPluginEinstellungenTMP->cConf === 'M'
                     ? unserialize($oPluginEinstellungenTMP->cWert)
                     : $oPluginEinstellungenTMP->cWert;
             }
@@ -170,8 +166,8 @@ function gibPluginSprachvariablen($kPlugin, $cISO = '')
     if (strlen($cISO) > 0) {
         $cSQL = " AND tpluginsprachvariablesprache.cISO = '" . strtoupper($cISO) . "'";
     }
-    $oPluginSprachvariablen = Shop::DB()->query("
-        SELECT tpluginsprachvariable.kPluginSprachvariable,
+    $oPluginSprachvariablen = Shop::Container()->getDB()->query(
+        "SELECT tpluginsprachvariable.kPluginSprachvariable,
                 tpluginsprachvariable.kPlugin,
                 tpluginsprachvariable.cName,
                 tpluginsprachvariable.cBeschreibung,
@@ -188,8 +184,8 @@ function gibPluginSprachvariablen($kPlugin, $cISO = '')
                 WHERE tpluginsprachvariable.kPlugin = " . $kPlugin . $cSQL, 9
     );
     if (!is_array($oPluginSprachvariablen) || count($oPluginSprachvariablen) < 1) {
-        $oPluginSprachvariablen = Shop::DB()->query("
-             SELECT tpluginsprachvariable.kPluginSprachvariable,
+        $oPluginSprachvariablen = Shop::Container()->getDB()->query(
+             "SELECT tpluginsprachvariable.kPluginSprachvariable,
                     tpluginsprachvariable.kPlugin,
                     tpluginsprachvariable.cName,
                     tpluginsprachvariable.cBeschreibung,
@@ -218,7 +214,7 @@ function aenderPluginStatus($nStatus, $kPlugin)
     $nStatus = (int)$nStatus;
     $kPlugin = (int)$kPlugin;
     if ($nStatus > 0 && $kPlugin > 0) {
-        return Shop::DB()->query("UPDATE tplugin SET nStatus = " . $nStatus . " WHERE kPlugin = " . $kPlugin, 3) > 0;
+        return Shop::Container()->getDB()->query("UPDATE tplugin SET nStatus = " . $nStatus . " WHERE kPlugin = " . $kPlugin, 3) > 0;
     }
 
     return false;
@@ -245,12 +241,9 @@ function gibPlugincModulId($kPlugin, $cNameZahlungsmethode)
  */
 function gibkPluginAuscModulId($cModulId)
 {
-    $kPlugin = 0;
-    if (preg_match('/^kPlugin_(\d+)_/', $cModulId, $cMatch_arr)) {
-        $kPlugin = (int)$cMatch_arr[1];
-    }
-
-    return $kPlugin;
+    return preg_match('/^kPlugin_(\d+)_/', $cModulId, $cMatch_arr)
+        ? (int)$cMatch_arr[1]
+        : 0;
 }
 
 /**
@@ -259,7 +252,7 @@ function gibkPluginAuscModulId($cModulId)
  */
 function gibkPluginAuscPluginID($cPluginID)
 {
-    $oPlugin = Shop::DB()->select('tplugin', 'cPluginID', $cPluginID);
+    $oPlugin = Shop::Container()->getDB()->select('tplugin', 'cPluginID', $cPluginID);
 
     return isset($oPlugin->kPlugin) ? (int)$oPlugin->kPlugin : 0;
 }
@@ -270,8 +263,8 @@ function gibkPluginAuscPluginID($cPluginID)
 function gibPluginExtendedTemplates()
 {
     $cTemplate_arr = [];
-    $oTemplate_arr = Shop::DB()->query("
-        SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
+    $oTemplate_arr = Shop::Container()->getDB()->query(
+        "SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
             FROM tplugintemplate
             JOIN tplugin ON tplugintemplate.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = 2 ORDER BY tplugin.nPrio DESC", 2
@@ -296,5 +289,6 @@ function gibPluginExtendedTemplates()
  */
 function gibPluginHookListe()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Plugin::getHookList();
 }

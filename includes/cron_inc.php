@@ -22,9 +22,7 @@ if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
     exit;
 }
 
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Cron.php';
-
-$oCron_arr = Shop::DB()->query(
+$oCron_arr = Shop::Container()->getDB()->query(
     "SELECT tcron.*
         FROM tcron
         LEFT JOIN tjobqueue ON tjobqueue.kCron = tcron.kCron

@@ -4,9 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
 /**
@@ -34,7 +32,7 @@ function baueBewertungsErinnerung()
                     }
                 } else {
                     // Hole standard Kundengruppe
-                    $oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+                    $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
                     if ($oKundengruppe->kKundengruppe > 0) {
                         $cSQL = " tkunde.kKundengruppe = " . $oKundengruppe->kKundengruppe;
                     }
@@ -58,7 +56,7 @@ function baueBewertungsErinnerung()
                                         dBewertungErinnerung IS NULL 
                                         OR dBewertungErinnerung = '0000-00-00 00:00:00'
                                     )";
-                    $oBestellungen_arr = Shop::DB()->query($cQuery, 2);
+                    $oBestellungen_arr = Shop::Container()->getDB()->query($cQuery, 2);
                     if (is_array($oBestellungen_arr) && count($oBestellungen_arr) > 0) {
                         foreach ($oBestellungen_arr as $oBestellungen) {
                             $oBestellung = new Bestellung($oBestellungen->kBestellung);
@@ -71,7 +69,7 @@ function baueBewertungsErinnerung()
 
                             foreach ($oBestellung->Positionen as $Pos) {
                                 if ($Pos->kArtikel > 0) {
-                                    $res = Shop::DB()->query(
+                                    $res = Shop::Container()->getDB()->query(
                                         "SELECT kBewertung
                                             FROM tbewertung
                                             WHERE kArtikel = " . (int)$Pos->kArtikel . "
@@ -90,7 +88,7 @@ function baueBewertungsErinnerung()
 
                             $oBestellung->Positionen = $openReviewPos_arr;
 
-                            Shop::DB()->query(
+                            Shop::Container()->getDB()->query(
                                 "UPDATE tbestellung
                                     SET dBewertungErinnerung = now()
                                     WHERE kBestellung = " . (int)$oBestellungen->kBestellung, 3
@@ -112,19 +110,22 @@ function baueBewertungsErinnerung()
                         }
                     } else {
                         Jtllog::writeLog(
-                            "Es wurden keine Bestellungen fuer Bewertungserinnerungen gefunden. SQL:
-                            <code>{$cQuery}</code>", JTLLOG_LEVEL_NOTICE, true, 'Bewertungserinnerung'
+                            'Es wurden keine Bestellungen für Bewertungserinnerungen gefunden. ',
+                            JTLLOG_LEVEL_DEBUG,
+                            false,
+                            'Bewertungserinnerung'
                         );
                     }
                 }
             } else {
-                Jtllog::writeLog('Einstellung bewertungserinnerung_versandtage ist 0 oder nicht gesetzt.',
+                Jtllog::writeLog(
+                    'Einstellung bewertungserinnerung_versandtage ist 0 oder nicht gesetzt.',
                     JTLLOG_LEVEL_ERROR,
                     true
                 );
             }
         } else {
-            Jtllog::writeLog('Bewertungserinnerung ist deaktiviert.', JTLLOG_LEVEL_DEBUG, false);
+            Jtllog::writeLog('Bewertungserinnerung ist deaktiviert.', JTLLOG_LEVEL_DEBUG);
         }
     }
 }

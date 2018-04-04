@@ -135,11 +135,11 @@ function gibMaxPrioSpalteV($cExclude, $config)
  */
 function setzeVergleich($oVergleichsliste)
 {
-    if (isset($oVergleichsliste->oArtikel_arr) &&
-        is_array($oVergleichsliste->oArtikel_arr) &&
-        count($oVergleichsliste->oArtikel_arr) > 0
+    if (isset($oVergleichsliste->oArtikel_arr)
+        && is_array($oVergleichsliste->oArtikel_arr)
+        && count($oVergleichsliste->oArtikel_arr) > 0
     ) {
-        $nVergleiche = Shop::DB()->query(
+        $nVergleiche = Shop::Container()->getDB()->query(
             "SELECT count(kVergleichsliste) AS nVergleiche
                 FROM tvergleichsliste
                 WHERE cIP = '" . gibIP() . "'
@@ -149,16 +149,16 @@ function setzeVergleich($oVergleichsliste)
         if ($nVergleiche->nVergleiche < 3) {
             $oVergleichslisteTable        = new stdClass();
             $oVergleichslisteTable->cIP   = gibIP();
-            $oVergleichslisteTable->dDate = date('Y-m-d H:i:s', time());
+            $oVergleichslisteTable->dDate = date('Y-m-d H:i:s');
 
-            $kVergleichsliste = Shop::DB()->insert('tvergleichsliste', $oVergleichslisteTable);
+            $kVergleichsliste = Shop::Container()->getDB()->insert('tvergleichsliste', $oVergleichslisteTable);
             foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
                 $oVergleichslistePosTable                   = new stdClass();
                 $oVergleichslistePosTable->kVergleichsliste = $kVergleichsliste;
                 $oVergleichslistePosTable->kArtikel         = $oArtikel->kArtikel;
                 $oVergleichslistePosTable->cArtikelName     = $oArtikel->cName;
 
-                Shop::DB()->insert('tvergleichslistepos', $oVergleichslistePosTable);
+                Shop::Container()->getDB()->insert('tvergleichslistepos', $oVergleichslistePosTable);
             }
         }
     }

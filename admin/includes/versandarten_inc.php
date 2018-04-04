@@ -11,11 +11,9 @@
  */
 function berechneVersandpreisBrutto($fPreis, $fSteuersatz)
 {
-    if ($fPreis > 0) {
-        return round((float)($fPreis * ((100 + $fSteuersatz) / 100)), 2);
-    }
-
-    return 0.0;
+    return $fPreis > 0
+        ? round((float)($fPreis * ((100 + $fSteuersatz) / 100)), 2)
+        : 0.0;
 }
 
 /**
@@ -25,11 +23,9 @@ function berechneVersandpreisBrutto($fPreis, $fSteuersatz)
  */
 function berechneVersandpreisNetto($fPreis, $fSteuersatz)
 {
-    if ($fPreis > 0) {
-        return round($fPreis * ((100 / (100 + $fSteuersatz)) * 100) / 100, 2);
-    }
-
-    return 0.0;
+    return $fPreis > 0
+        ? round($fPreis * ((100 / (100 + $fSteuersatz)) * 100) / 100, 2)
+        : 0.0;
 }
 
 /**
@@ -84,8 +80,7 @@ function P($arr)
 function bauePot($arr, $key)
 {
     $cnt = count($arr);
-    for ($i = 0; $i < $cnt; $i++) {
-        unset($obj);
+    for ($i = 0; $i < $cnt; ++$i) {
         $obj                 = new stdClass();
         $obj->kVersandklasse = $arr[$i]->kVersandklasse . '-' . $key->kVersandklasse;
         $obj->cName          = $arr[$i]->cName . ', ' . $key->cName;
@@ -102,17 +97,26 @@ function bauePot($arr, $key)
  */
 function gibGesetzteVersandklassen($cVersandklassen)
 {
-    $gesetzteVK      = [];
-    $cVKarr          = explode(' ', trim($cVersandklassen));
-    $PVersandklassen = P(Shop::DB()->query("SELECT * FROM tversandklasse ORDER BY kVersandklasse", 2));
-    if (is_array($PVersandklassen)) {
-        foreach ($PVersandklassen as $vk) {
-            $vk->kVersandklasse = (int)$vk->kVersandklasse;
-            $gesetzteVK[$vk->kVersandklasse] = in_array($vk->kVersandklasse, $cVKarr, true);
+    if (trim($cVersandklassen) === '-1') {
+        return ['alle' => true];
+    }
+    $gesetzteVK = [];
+    $uniqueIDs  = [];
+    $cVKarr     = explode(' ', trim($cVersandklassen));
+    // $cVersandklassen is a string like "1 3-4 5-6-7 6-8 7-8 3-7 3-8 5-6 5-7"
+    foreach ($cVKarr as $idString) {
+        // we want the single kVersandklasse IDs to reduce the possible amount of combinations
+        foreach (explode('-', $idString) as $kVersandklasse) {
+            $uniqueIDs[] = (int)$kVersandklasse;
         }
     }
-    if ($cVersandklassen == '-1') {
-        $gesetzteVK['alle'] = true;
+    $PVersandklassen = P(Shop::Container()->getDB()->query(
+        "SELECT * 
+            FROM tversandklasse
+            WHERE kVersandklasse IN (" . implode(',', $uniqueIDs) . ")  
+            ORDER BY kVersandklasse", 2));
+    foreach ($PVersandklassen as $vk) {
+        $gesetzteVK[$vk->kVersandklasse] = in_array($vk->kVersandklasse, $cVKarr, true);
     }
 
     return $gesetzteVK;
@@ -124,18 +128,29 @@ function gibGesetzteVersandklassen($cVersandklassen)
  */
 function gibGesetzteVersandklassenUebersicht($cVersandklassen)
 {
-    $gesetzteVK      = [];
-    $cVKarr          = explode(' ', trim($cVersandklassen));
-    $PVersandklassen = P(Shop::DB()->query("SELECT * FROM tversandklasse ORDER BY kVersandklasse", 2));
-    if (is_array($PVersandklassen)) {
-        foreach ($PVersandklassen as $vk) {
-            if (in_array($vk->kVersandklasse, $cVKarr)) {
-                $gesetzteVK[] = $vk->cName;
-            }
+    if (trim($cVersandklassen) === '-1') {
+        return ['Alle'];
+    }
+    $gesetzteVK = [];
+    $uniqueIDs  = [];
+    $cVKarr     = explode(' ', trim($cVersandklassen));
+    // $cVersandklassen is a string like "1 3-4 5-6-7 6-8 7-8 3-7 3-8 5-6 5-7"
+    foreach ($cVKarr as $idString) {
+        // we want the single kVersandklasse IDs to reduce the possible amount of combinations
+        foreach (explode('-', $idString) as $kVersandklasse) {
+            $uniqueIDs[] = (int)$kVersandklasse;
         }
     }
-    if (trim($cVersandklassen) == '-1') {
-        $gesetzteVK[] = 'Alle';
+    $PVersandklassen = P(Shop::Container()->getDB()->query(
+        "SELECT * 
+            FROM tversandklasse 
+            WHERE kVersandklasse IN (" . implode(',', $uniqueIDs) . ")
+            ORDER BY kVersandklasse", 2)
+    );
+    foreach ($PVersandklassen as $vk) {
+        if (in_array($vk->kVersandklasse, $cVKarr, true)) {
+            $gesetzteVK[] = $vk->cName;
+        }
     }
 
     return $gesetzteVK;
@@ -149,18 +164,15 @@ function gibGesetzteKundengruppen($cKundengruppen)
 {
     $bGesetzteKG_arr   = [];
     $cKG_arr           = explode(';', trim($cKundengruppen));
-    $oKundengruppe_arr = Shop::DB()->query(
+    $oKundengruppe_arr = Shop::Container()->getDB()->query(
         "SELECT kKundengruppe
             FROM tkundengruppe
             ORDER BY kKundengruppe", 2
     );
-
-    if (is_array($oKundengruppe_arr)) {
-        foreach ($oKundengruppe_arr as $oKundengruppe) {
-            $bGesetzteKG_arr[$oKundengruppe->kKundengruppe] = in_array($oKundengruppe->kKundengruppe, $cKG_arr);
-        }
+    foreach ($oKundengruppe_arr as $oKundengruppe) {
+        $bGesetzteKG_arr[$oKundengruppe->kKundengruppe] = in_array($oKundengruppe->kKundengruppe, $cKG_arr);
     }
-    if ($cKundengruppen == '-1') {
+    if ($cKundengruppen === '-1') {
         $bGesetzteKG_arr['alle'] = true;
     }
 
@@ -175,17 +187,15 @@ function gibGesetzteKundengruppen($cKundengruppen)
 function getShippingLanguage($kVersandart = 0, $oSprache_arr)
 {
     $oVersandartSpracheAssoc_arr = [];
-    $oVersandartSprache_arr      = Shop::DB()->selectAll('tversandartsprache', 'kVersandart', (int)$kVersandart);
-    if (is_array($oSprache_arr) && count($oSprache_arr) > 0) {
+    $oVersandartSprache_arr      = Shop::Container()->getDB()->selectAll('tversandartsprache', 'kVersandart', (int)$kVersandart);
+    if (is_array($oSprache_arr)) {
         foreach ($oSprache_arr as $oSprache) {
             $oVersandartSpracheAssoc_arr[$oSprache->cISO] = new stdClass();
         }
     }
-    if (is_array($oVersandartSprache_arr) && count($oVersandartSprache_arr) > 0) {
-        foreach ($oVersandartSprache_arr as $oVersandartSprache) {
-            if (isset($oVersandartSprache->kVersandart) && $oVersandartSprache->kVersandart > 0) {
-                $oVersandartSpracheAssoc_arr[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
-            }
+    foreach ($oVersandartSprache_arr as $oVersandartSprache) {
+        if (isset($oVersandartSprache->kVersandart) && $oVersandartSprache->kVersandart > 0) {
+            $oVersandartSpracheAssoc_arr[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
         }
     }
 
@@ -198,17 +208,16 @@ function getShippingLanguage($kVersandart = 0, $oSprache_arr)
  */
 function getZuschlagNames($kVersandzuschlag)
 {
-    $namen = [];
+    $names = [];
     if (!$kVersandzuschlag) {
-        return $namen;
+        return $names;
     }
-    $zuschlagnamen = Shop::DB()->selectAll('tversandzuschlagsprache', 'kVersandzuschlag', (int)$kVersandzuschlag);
-    $zCount        = count($zuschlagnamen);
-    for ($i = 0; $i < $zCount; $i++) {
-        $namen[$zuschlagnamen[$i]->cISOSprache] = $zuschlagnamen[$i]->cName;
+    $zuschlagnamen = Shop::Container()->getDB()->selectAll('tversandzuschlagsprache', 'kVersandzuschlag', (int)$kVersandzuschlag);
+    foreach ($zuschlagnamen as $name) {
+        $names[$name->cISOSprache] = $name->cName;
     }
 
-    return $namen;
+    return $names;
 }
 
 /**
@@ -223,14 +232,14 @@ function getShippingByName($cSearch)
     foreach ($cSearch_arr as $cSearchPos) {
         trim($cSearchPos);
         if (strlen($cSearchPos) > 2) {
-            $shippingByName_arr = Shop::DB()->query(
+            $shippingByName_arr = Shop::Container()->getDB()->query(
                 "SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
                     LEFT JOIN tversandartsprache AS vs 
                         ON vs.kVersandart = va.kVersandart
-                        AND vs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'
-                    WHERE va.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%' 
-                    OR vs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'", 2
+                        AND vs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'
+                    WHERE va.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%' 
+                    OR vs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'", 2
             );
             if (!empty($shippingByName_arr)) {
                 if (count($shippingByName_arr) > 1) {

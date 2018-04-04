@@ -5,10 +5,9 @@
  */
 
 // Version
-define('JTL_VERSION', 406);
+define('JTL_VERSION', 407);
 define('JTL_MIN_WAWI_VERSION', 100000);
 define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
-define('JTL_BUILD_TIMESTAMP', '#JTL_BUILD_TIMESTAMP#');
 // Einstellungssektionen
 define('CONF_GLOBAL', 1);
 define('CONF_STARTSEITE', 2);
@@ -40,31 +39,29 @@ define('CONF_SITEMAP', 114);
 define('CONF_UMFRAGE', 115);
 define('CONF_KUNDENWERBENKUNDEN', 116);
 define('CONF_TRUSTEDSHOPS', 117);
-define('CONF_PREISANZEIGE', 118);
 define('CONF_SUCHSPECIAL', 119);
 define('CONF_CHECKBOX', 120);
 define('CONF_AUSWAHLASSISTENT', 121);
 define('CONF_RMA', 122);
-define('CONF_OBJECTCACHING', 123);
 define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
 define('CONF_PLUGINZAHLUNGSARTEN', 126);
 //
-define('C_WARENKORBPOS_TYP_ARTIKEL', '1');
-define('C_WARENKORBPOS_TYP_VERSANDPOS', '2');
-define('C_WARENKORBPOS_TYP_KUPON', '3');
-define('C_WARENKORBPOS_TYP_GUTSCHEIN', '4');
-define('C_WARENKORBPOS_TYP_ZAHLUNGSART', '5');
-define('C_WARENKORBPOS_TYP_VERSANDZUSCHLAG', '6');
-define('C_WARENKORBPOS_TYP_NEUKUNDENKUPON', '7');
-define('C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR', '8');
-define('C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG', '9');
-define('C_WARENKORBPOS_TYP_VERPACKUNG', '10');
-define('C_WARENKORBPOS_TYP_GRATISGESCHENK', '11');
-define('C_WARENKORBPOS_TYP_TRUSTEDSHOPS', '12');
+define('C_WARENKORBPOS_TYP_ARTIKEL', 1);
+define('C_WARENKORBPOS_TYP_VERSANDPOS', 2);
+define('C_WARENKORBPOS_TYP_KUPON', 3);
+define('C_WARENKORBPOS_TYP_GUTSCHEIN', 4);
+define('C_WARENKORBPOS_TYP_ZAHLUNGSART', 5);
+define('C_WARENKORBPOS_TYP_VERSANDZUSCHLAG', 6);
+define('C_WARENKORBPOS_TYP_NEUKUNDENKUPON', 7);
+define('C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR', 8);
+define('C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG', 9);
+define('C_WARENKORBPOS_TYP_VERPACKUNG', 10);
+define('C_WARENKORBPOS_TYP_GRATISGESCHENK', 11);
+define('C_WARENKORBPOS_TYP_TRUSTEDSHOPS', 12);
 //
-define('C_WARENKORBPOS_TYP_ZINSAUFSCHLAG', '13');
-define('C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR', '14');
+define('C_WARENKORBPOS_TYP_ZINSAUFSCHLAG', 13);
+define('C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR', 14);
 //
 define('KONFIG_ITEM_TYP_ARTIKEL', 0);
 define('KONFIG_ITEM_TYP_SPEZIAL', 1);
@@ -242,9 +239,6 @@ define('FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN', 'stuecklistenkomponenten');
 define('FKT_ATTRIBUT_INHALT', 'inhalt');
 define('FKT_ATTRIBUT_CANONICALURL_VARKOMBI', 'varkombi_canonicalurl');
 define('FKT_ATTRIBUT_KONFIG_MAX_ITEMS', 'konfig_max_items'); // deprecated? not in use anywhere
-define('FKT_ATTRIBUT_ARTIKELDETAILS_TPL', 'tpl_artikeldetails');
-define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL', 'tpl_artikelkonfig');
-define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS', 'tpl_js_artikelkonfig');
 // Special Content
 define('SC_KONTAKTFORMULAR', '1');
 // Suchspecials
@@ -447,13 +441,21 @@ define('CHECKBOX_ORT_KONTAKT', 5);
 define('CHECKBOX_ORT_FRAGE_ZUM_PRODUKT', 6);
 define('CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT', 7);
 // JTLLOG Levels
-define('JTLLOG_LEVEL_ERROR', 1); // 0001
-define('JTLLOG_LEVEL_NOTICE', 2); // 0010
-define('JTLLOG_LEVEL_DEBUG', 4); // 0100
+define('JTLLOG_LEVEL_EMERGENCY', 600);
+define('JTLLOG_LEVEL_ALERT', 550);
+define('JTLLOG_LEVEL_CRITICAL', 500);
+define('JTLLOG_LEVEL_ERROR', 400);
+define('JTLLOG_LEVEL_WARNING', 300);
+define('JTLLOG_LEVEL_NOTICE', 250);
+define('JTLLOG_LEVEL_INFO', 200);
+define('JTLLOG_LEVEL_DEBUG', 100);
 // JTL Trennzeichen
 define('JTLSEPARATER_WEIGHT', 1);
 define('JTLSEPARATER_LENGTH', 2);
 define('JTLSEPARATER_AMOUNT', 3);
+define('JTL_SEPARATOR_WEIGHT', 1);
+define('JTL_SEPARATOR_LENGTH', 2);
+define('JTL_SEPARATOR_AMOUNT', 3);
 // Globale Arten von generierte Nummern (z.b. Bestellnummer)
 define('JTL_GENNUMBER_ORDERNUMBER', 1);
 define('JTL_GENNUMBER_RMANUMBER', 2);
@@ -487,5 +489,5 @@ define('TEMPLATE_XML', 'template.xml');
 define('SHOP_SEO', true);
 // Sessionspeicherung 1 => DB, sonst => Dateien
 define('ES_SESSIONS', 0);
-//Max Anzahl an Variationswerten für Warenkorbmatrix
+// Max Anzahl an Variationswerten für Warenkorbmatrix
 define('ART_MATRIX_MAX', 250);

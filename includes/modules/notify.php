@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/../../includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -13,7 +12,7 @@ define('NO_MODE', 0); // 1 = An / 0 = Aus
 define('NO_PFAD', PFAD_LOGFILES . 'notify.log');
 
 $moduleId            = null;
-$Sprache             = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+$Sprache             = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
 $Einstellungen       = Shop::getSettings([
     CONF_GLOBAL,
     CONF_KUNDEN,
@@ -51,7 +50,7 @@ if (strlen($cSh) > 0) {
     }
     // Load from Session Hash / Session Hash starts with "_"
     $sessionHash    = substr(StringHandler::htmlentities(StringHandler::filterXSS($cSh)), 1);
-    $paymentSession = Shop::DB()->select(
+    $paymentSession = Shop::Container()->getDB()->select(
         'tzahlungsession',
         'cZahlungsID',
         $sessionHash,
@@ -139,7 +138,7 @@ if (strlen($cSh) > 0) {
                     $_upd->nBezahlt     = 1;
                     $_upd->dZeitBezahlt = 'now()';
                     $_upd->kBestellung  = (int)$order->kBestellung;
-                    Shop::DB()->update('tzahlungsession', 'cZahlungsID', $sessionHash, $_upd);
+                    Shop::Container()->getDB()->update('tzahlungsession', 'cZahlungsID', $sessionHash, $_upd);
                     $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
                     if ($paymentMethod->redirectOnPaymentSuccess() === true) {
                         header('Location: ' . $paymentMethod->getReturnURL($order));
@@ -164,14 +163,13 @@ if (strlen($cSh) > 0) {
                     }
                     header($header);
                     exit();
+                }
+                if (strlen($cEditZahlungHinweis) > 0) {
+                    echo $linkHelper->getStaticRoute('bestellvorgang.php') .
+                        '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
                 } else {
-                    if (strlen($cEditZahlungHinweis) > 0) {
-                        echo $linkHelper->getStaticRoute('bestellvorgang.php') .
-                            '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
-                    } else {
-                        echo $linkHelper->getStaticRoute('bestellvorgang.php') .
-                            '?editZahlungsart=1';
-                    }
+                    echo $linkHelper->getStaticRoute('bestellvorgang.php') .
+                        '?editZahlungsart=1';
                 }
             }
         }
@@ -209,7 +207,7 @@ if (strlen($cPh) > 0) {
         writeLog(NO_PFAD, 'Payment Hash ' . $cPh, 1);
     }
     // Payment Hash
-    $paymentId   = Shop::DB()->executeQueryPrepared(
+    $paymentId   = Shop::Container()->getDB()->executeQueryPrepared(
         "SELECT ZID.kBestellung, ZA.cModulId
             FROM tzahlungsid ZID
             LEFT JOIN tzahlungsart ZA
@@ -245,7 +243,7 @@ if ($moduleId !== null) {
         if (NO_MODE === 1) {
             writeLog(NO_PFAD, 'Payment Hash ' . $cPh . ' ergab ' . print_r($paymentMethod, true), 1);
         }
-        $paymentHash = Shop::DB()->escape(StringHandler::htmlentities(StringHandler::filterXSS($cPh)));
+        $paymentHash = Shop::Container()->getDB()->escape(StringHandler::htmlentities(StringHandler::filterXSS($cPh)));
         $paymentMethod->handleNotification($order, $paymentHash, $_REQUEST);
         if ($paymentMethod->redirectOnPaymentSuccess() === true) {
             header('Location: ' . $paymentMethod->getReturnURL($order));

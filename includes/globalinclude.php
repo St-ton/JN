@@ -24,6 +24,8 @@ defined('DB_NAME') || die('Kein MySql Datenbanknamen angegeben. Bitte config.JTL
 defined('DB_USER') || die('Kein MySql-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 defined('DB_PASS') || die('Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 
+Profiler::start();
+
 $shop = Shop::getInstance();
 
 if (!function_exists('Shop')) {
@@ -35,47 +37,33 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-
 // PHP memory_limit work around
-if (!Shop()->PHPSettingsHelper()->hasMinLimit(64)) {
+if (!Shop()->PHPSettingsHelper()->hasMinLimit(64 * 1024 * 1024)) {
     ini_set('memory_limit', '64M');
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.StringHandler.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
-require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Profiler.php';
 
-Profiler::start();
-// datenbankverbindung aufbauen
 try {
-    $GLOBALS['DB'] = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $GLOBALS['DB'] = Shop::Container()->getDB();
 } catch (Exception $exc) {
     die($exc->getMessage());
 }
 $GLOBALS['bSeo'] = true; //seo module is always available, keep global for compatibility reasons
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Shopsetting.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.JTLCache.php';
-$cache = JTLCache::getInstance();
-$cache->setJtlCacheConfig();
-
-$conf = Shop::getSettings([CONF_GLOBAL]);
+$cache = Shop::Container()->getCache()->setJtlCacheConfig();
+$conf  = Shop::getSettings([CONF_GLOBAL]);
 
 if (PHP_SAPI !== 'cli'
     && $conf['global']['kaufabwicklung_ssl_nutzen'] === 'P'
     && (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
 ) {
-    $https = false;
-    if ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de')
+    $https = ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de')
         || (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI']))
         || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
         || (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST']))
-    ) {
-        $https = true;
-    }
+    );
     if (!$https) {
         $lang = '';
         if (!standardspracheAktiv(true)) {
@@ -89,51 +77,28 @@ if (PHP_SAPI !== 'cli'
 }
 
 if (!JTL_INCLUDE_ONLY_DB) {
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
-    //standard includes
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Template.php';
-    require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Session.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Artikel.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Url.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Link.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Versandart.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.MainModel.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Hersteller.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Warenkorb.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ExtensionPoint.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Boxen.php';
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Sprache.php';
-    // globale Werkzeuge
-    require_once PFAD_ROOT . PFAD_XAJAX . 'xajax_core/xajax.inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_ext_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
-    // Liste aller Hooks, die momentan im Shop gebraucht werden könnten
-    // An jedem Hook hängt ein Array mit Plugin die diesen Hook benutzen
     $oPluginHookListe_arr = Plugin::getHookList();
-    $nSystemlogFlag       = getSytemlogFlag();
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
-    // Mobil-Template
-    $template = Template::getInstance();
+    $nSystemlogFlag       = Jtllog::getSytemlogFlag();
+    $template             = Template::getInstance();
     $template->check(true);
-    // Globale Einstellungen
-    $GlobaleEinstellungen = Shop::getSettings([
+    $GlobaleEinstellungen         = Shop::getSettings([
         CONF_GLOBAL,
         CONF_RSS,
         CONF_METAANGABEN,
         CONF_KUNDENWERBENKUNDEN,
         CONF_BILDER
     ]);
-    // Globale Metaangaben
-    $oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben();
+    $oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
-    // Boxen
-    $oBoxen = Boxen::getInstance();
-    // Session
-    $session = (defined('JTLCRON') && JTLCRON === true)
+    $oBoxen              = Boxen::getInstance();
+    $session             = (defined('JTLCRON') && JTLCRON === true)
         ? Session::getInstance(true, true, 'JTLCRON')
         : Session::getInstance();
-    //Wartungsmodus aktiviert?
     $bAdminWartungsmodus = false;
     if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'Y'
         && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php'
@@ -147,6 +112,6 @@ if (!JTL_INCLUDE_ONLY_DB) {
         $bAdminWartungsmodus = true;
     }
     $GLOBALS['oSprache'] = Sprache::getInstance();
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+    Shop::bootstrap();
 }
-
-Shop::bootstrap();

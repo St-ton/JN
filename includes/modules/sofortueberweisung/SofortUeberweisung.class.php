@@ -69,11 +69,6 @@ class SofortUeberweisung extends PaymentMethod
     /**
      * @var string
      */
-    public $name = '';
-
-    /**
-     * @var string
-     */
     public $strAmount = '';
 
     /**
@@ -113,7 +108,7 @@ class SofortUeberweisung extends PaymentMethod
     public function getProjectPassword()
     {
         $cPasswort      = '';
-        $oEinstellungen = Shop::DB()->query(
+        $oEinstellungen = Shop::Container()->getDB()->query(
             "SELECT cWert
                 FROM teinstellungen
                 WHERE cName = 'zahlungsart_sofortueberweisung_project_password'", 1
@@ -135,7 +130,7 @@ class SofortUeberweisung extends PaymentMethod
     public function getNotificationPassword()
     {
         $cPasswort      = '';
-        $oEinstellungen = Shop::DB()->query(
+        $oEinstellungen = Shop::Container()->getDB()->query(
             "SELECT cWert
                 FROM teinstellungen
                 WHERE cName = 'zahlungsart_sofortueberweisung_benachrichtigung_password'", 1
@@ -178,21 +173,24 @@ class SofortUeberweisung extends PaymentMethod
                 echo "currency_id: " . $order->Waehrung->cISO . "<br/>";
             }
 
-            if (!($this->sofortueberweisung_id && $this->sofortueberweisung_project_id &&
-                $this->name && $this->strSenderCountryID && $this->strAmount && $order->Waehrung->cISO)
+            if (!($this->sofortueberweisung_id
+                && $this->sofortueberweisung_project_id
+                && $this->name
+                && $this->strSenderCountryID
+                && $this->strAmount
+                && $order->Waehrung->cISO)
             ) {
                 if ($this->bDebug === false) {
                     return 'Es ist ein Datenbankfehler aufgetreten!';
-                } else {
-                    if (!$this->sofortueberweisung_id) {
-                        echo "\$this->sofortueberweisung_id is null<br/>";
-                    }
-                    if (!$this->sofortueberweisung_project_id) {
-                        echo "\$this->sofortueberweisung_project_id is null<br/>";
-                    }
-                    if (!$this->getProjectPassword()) {
-                        echo "\$this->getProjectPassword() is null<br/>";
-                    }
+                }
+                if (!$this->sofortueberweisung_id) {
+                    echo "\$this->sofortueberweisung_id is null<br/>";
+                }
+                if (!$this->sofortueberweisung_project_id) {
+                    echo "\$this->sofortueberweisung_project_id is null<br/>";
+                }
+                if (!$this->getProjectPassword()) {
+                    echo "\$this->getProjectPassword() is null<br/>";
                 }
             }
 
@@ -306,7 +304,7 @@ class SofortUeberweisung extends PaymentMethod
                 Jtllog::writeLog(': verifyNotification pass. addIncomingPayment', JTLLOG_LEVEL_DEBUG);
             }
 
-            $transaction = Shop::DB()->query(
+            $transaction = Shop::Container()->getDB()->query(
                 "SELECT tzahlungseingang.cZahlungsanbieter, tzahlungseingang.fBetrag, tzahlungsession.nBezahlt
                     FROM tzahlungsession
                     INNER JOIN tzahlungseingang ON tzahlungseingang.kBestellung = " . (int)$order->kBestellung . "

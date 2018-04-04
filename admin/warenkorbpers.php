@@ -7,7 +7,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.WarenkorbPers.php';
 /** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
@@ -22,7 +21,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 }
 // Suche
 if (strlen(verifyGPDataString('cSuche')) > 0) {
-    $cSuche = StringHandler::filterXSS(verifyGPDataString('cSuche'));
+    $cSuche = Shop::DB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
 
     if (strlen($cSuche) > 0) {
         $cSucheSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
@@ -34,7 +33,7 @@ if (strlen(verifyGPDataString('cSuche')) > 0) {
 }
 // Einstellungen
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-    if (isset($_POST['speichern']) || isset($_POST['a']) && $_POST['a'] === 'speichern') {
+    if (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern')) {
         $step = 'uebersicht';
         $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
         $smarty->assign('tab', 'einstellungen');
@@ -53,7 +52,7 @@ if (isset($_GET['l']) && (int)$_GET['l'] > 0 && validateToken()) {
 }
 
 // Anzahl Kunden mit Warenkorb
-$oKundeAnzahl = Shop::DB()->query(
+$oKundeAnzahl = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nAnzahl
         FROM
         (
@@ -74,7 +73,7 @@ $oPagiKunden = (new Pagination('kunden'))
     ->assemble();
 
 // Gespeicherte Warenkoerbe
-$oKunde_arr = Shop::DB()->query(
+$oKunde_arr = Shop::Container()->getDB()->query(
     "SELECT tkunde.kKunde, tkunde.cFirma, tkunde.cVorname, tkunde.cNachname, 
         DATE_FORMAT(twarenkorbpers.dErstellt, '%d.%m.%Y  %H:%i') AS Datum, 
         count(twarenkorbperspos.kWarenkorbPersPos) AS nAnzahl
@@ -106,7 +105,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     $step   = 'anzeigen';
     $kKunde = (int)$_GET['a'];
 
-    $oWarenkorbPers = Shop::DB()->query(
+    $oWarenkorbPers = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
@@ -118,7 +117,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
         ->setItemCount($oWarenkorbPers->nAnzahl)
         ->assemble();
 
-    $oWarenkorbPersPos_arr = Shop::DB()->query(
+    $oWarenkorbPersPos_arr = Shop::Container()->getDB()->query(
         "SELECT tkunde.kKunde AS kKundeTMP, tkunde.cVorname, tkunde.cNachname, twarenkorbperspos.kArtikel, 
             twarenkorbperspos.cArtikelName, twarenkorbpers.kKunde, twarenkorbperspos.fAnzahl, 
             DATE_FORMAT(twarenkorbperspos.dHinzugefuegt, '%d.%m.%Y  %H:%i') AS Datum
@@ -146,7 +145,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
 } else {
     // uebersicht
     // Config holen
-    $oConfig_arr = Shop::DB()->query(
+    $oConfig_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungenconf
             WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
@@ -154,7 +153,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$oConfig_arr[$i]->kEinstellungenConf,
@@ -162,16 +161,14 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
             'nSort'
         );
 
-        $oSetValue = Shop::DB()->select(
+        $oSetValue = Shop::Container()->getDB()->select(
             'teinstellungen',
             'kEinstellungenSektion',
             (int)$oConfig_arr[$i]->kEinstellungenSektion,
             'cName',
             $oConfig_arr[$i]->cWertName
         );
-        $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-            ? $oSetValue->cWert
-            : null;
+        $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
     }
 
     $smarty->assign('oConfig_arr', $oConfig_arr);

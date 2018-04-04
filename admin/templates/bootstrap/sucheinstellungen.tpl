@@ -30,11 +30,31 @@
             if (createCount >= 2) {
                 $('.alert.alert-danger').hide(300);
                 updateNotifyDrop();
+                ioCall('clearSearchCache', [], showCacheNotification, showCacheNotification);
             }
+        }
+
+        function showCacheNotification(pResult) {
+            var isError = pResult && pResult.error;
+            createNotify({
+                title: 'Sucheinstellungen &auml;ndern',
+                message: isError ? pResult.error.message : pResult.hinweis
+            }, {
+                type: isError ? 'danger' : 'info'
+            });
         }
 
         ioCall('createSearchIndex', ['tartikel', createIndex], showIndexNotification, showIndexNotification);
         ioCall('createSearchIndex', ['tartikelsprache', createIndex], showIndexNotification, showIndexNotification);
     </script>
+{/if}
+{if $supportFulltext === false}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#suche_fulltext').val('N')
+            .prop('disabled', 'disabled')
+            .prop('title', 'Die Volltextsuche erfordert MySQL ab Version 5.6!');
+    });
+</script>
 {/if}
 {include file='tpl_inc/footer.tpl'}

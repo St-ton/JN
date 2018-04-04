@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html lang="de">
     <head>
-        <meta charset="windows-1252">
+        <meta charset="utf-8">
         <meta name="robots" content="noindex,nofollow">
         <meta name="author" content="JTL-Software, www.jtl-software.de">
         <link rel="stylesheet" href="{$URL_SHOP}{$PFAD_ADMIN_TEMPLATE}css/bootstrap.min.css" type="text/css">

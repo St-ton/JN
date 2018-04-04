@@ -9,25 +9,20 @@
  */
 function bestellungKomplett()
 {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
-    $kKundengruppe = Kundengruppe::getCurrent();
     // CheckBox Plausi
     $oCheckBox               = new CheckBox();
-    $_SESSION['cPlausi_arr'] = $oCheckBox->validateCheckBox(CHECKBOX_ORT_BESTELLABSCHLUSS, $kKundengruppe, $_POST, true);
+    $_SESSION['cPlausi_arr'] = $oCheckBox->validateCheckBox(CHECKBOX_ORT_BESTELLABSCHLUSS, Session::CustomerGroup()->getID(), $_POST, true);
     $_SESSION['cPost_arr']   = $_POST;
 
-    return (isset($_SESSION['Kunde']) &&
-        isset($_SESSION['Lieferadresse']) &&
-        isset($_SESSION['Versandart']) &&
-        isset($_SESSION['Zahlungsart']) &&
-        $_SESSION['Kunde'] &&
-        $_SESSION['Lieferadresse'] &&
-        $_SESSION['Versandart'] &&
-        $_SESSION['Zahlungsart'] &&
-        (int)$_SESSION['Versandart']->kVersandart > 0 &&
-        (int)$_SESSION['Zahlungsart']->kZahlungsart > 0 &&
-        verifyGPCDataInteger('abschluss') === 1 &&
-        count($_SESSION['cPlausi_arr']) === 0
+    return (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart'])
+        && $_SESSION['Kunde']
+        && $_SESSION['Lieferadresse']
+        && $_SESSION['Versandart']
+        && $_SESSION['Zahlungsart']
+        && (int)$_SESSION['Versandart']->kVersandart > 0
+        && (int)$_SESSION['Zahlungsart']->kZahlungsart > 0
+        && verifyGPCDataInteger('abschluss') === 1
+        && count($_SESSION['cPlausi_arr']) === 0
     ) ? 1 : 0;
 }
 
@@ -75,14 +70,15 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     //erstelle neue Bestellung
     $Bestellung = new Bestellung();
     //setze InetBestellNummer
-    $Bestellung->cBestellNr = empty($cBestellNr) ? baueBestellnummer() : $cBestellNr;
+    $Bestellung->cBestellNr   = empty($cBestellNr) ? baueBestellnummer() : $cBestellNr;
+    $oWarenkorbpositionen_arr = [];
     //füge Kunden ein, falls er nicht schon existiert ( loginkunde)
     if (!$_SESSION['Kunde']->kKunde) {
         // Kundenattribute sichern
         $cKundenattribut_arr = $_SESSION['Kunde']->cKundenattribut_arr;
 
-        $_SESSION['Kunde']->kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
-        $_SESSION['Kunde']->kSprache      = Shop::$kSprache;
+        $_SESSION['Kunde']->kKundengruppe = Session::CustomerGroup()->getID();
+        $_SESSION['Kunde']->kSprache      = Shop::getLanguage();
         $_SESSION['Kunde']->cAbgeholt     = 'N';
         $_SESSION['Kunde']->cAktiv        = 'Y';
         $_SESSION['Kunde']->cSperre       = 'N';
@@ -110,7 +106,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                     $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
                     $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
 
-                    Shop::DB()->insert('tkundenattribut', $oKundenattribut);
+                    Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattribut);
                 }
             }
         }
@@ -127,7 +123,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         }
     } else {
         $_SESSION['Warenkorb']->kKunde = $_SESSION['Kunde']->kKunde;
-        Shop::DB()->update('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde, (object)['cAbgeholt' => 'N']);
+        Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde, (object)['cAbgeholt' => 'N']);
     }
     //Lieferadresse
     $_SESSION['Warenkorb']->kLieferadresse = 0; //=rechnungsadresse
@@ -150,7 +146,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $nArtikelAnzeigefilter = (int)$conf['global']['artikel_artikelanzeigefilter'];
         /** @var WarenkorbPos $Position */
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $Position) {
-            if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+            if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 $Position->fLagerbestandVorAbschluss = isset($Position->Artikel->fLagerbestand)
                     ? (double)$Position->Artikel->fLagerbestand
                     : 0;
@@ -190,7 +186,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                 }
             }
             //bestseller tabelle füllen
-            if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+            if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 //Lagerbestand verringern
                 aktualisiereLagerbestand(
                     $Position->Artikel,
@@ -201,14 +197,14 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                 aktualisiereBestseller($Position->kArtikel, $Position->nAnzahl);
                 //xsellkauf füllen
                 foreach ($_SESSION['Warenkorb']->PositionenArr as $pos) {
-                    if ($pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && $pos->kArtikel != $Position->kArtikel) {
+                    if ($pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $pos->kArtikel != $Position->kArtikel) {
                         aktualisiereXselling($Position->kArtikel, $pos->kArtikel);
                     }
                 }
                 $oWarenkorbpositionen_arr[] = $Position;
                 // Clear Cache
                 Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel]);
-            } elseif ($Position->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+            } elseif ($Position->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 aktualisiereLagerbestand(
                     $Position->Artikel,
                     $Position->nAnzahl,
@@ -225,7 +221,6 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         // Falls die Einstellung global_wunschliste_artikel_loeschen_nach_kauf auf Y (Ja) steht und
         // Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
         if (isset($_SESSION['Wunschliste']->kWunschliste) && $_SESSION['Wunschliste']->kWunschliste > 0) {
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Wunschliste.php';
             Wunschliste::pruefeArtikelnachBestellungLoeschen($_SESSION['Wunschliste']->kWunschliste, $oWarenkorbpositionen_arr);
         }
     }
@@ -269,8 +264,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->kZahlungsart      = $_SESSION['Zahlungsart']->kZahlungsart;
     $Bestellung->kVersandart       = $_SESSION['Versandart']->kVersandart;
     $Bestellung->kSprache          = Shop::getLanguage();
-    $Bestellung->kWaehrung         = $_SESSION['Waehrung']->kWaehrung;
-    $Bestellung->fGesamtsumme      = $_SESSION['Warenkorb']->gibGesamtsummeWaren(1);
+    $Bestellung->kWaehrung         = Session::Currency()->getID();
+    $Bestellung->fGesamtsumme      = Session::Cart()->gibGesamtsummeWaren(1);
     $Bestellung->cVersandartName   = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cZahlungsartName  = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cSession          = session_id();
@@ -281,7 +276,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->berechneEstimatedDelivery();
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {
         $Bestellung->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "UPDATE tkunde
                 SET fGuthaben = fGuthaben - " . (float)$_SESSION['Bestellung']->fGuthabenGenutzt . "
                 WHERE kKunde = " . (int)$Bestellung->kKunde, 4
@@ -294,9 +289,9 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $Bestellung->dBezahltDatum    = 'now()';
         $Bestellung->cZahlungsartName = Shop::Lang()->get('paymentNotNecessary', 'checkout');
     }
-    $Bestellung->cIP = isset($_SESSION['IP']->cIP) ? $_SESSION['IP']->cIP : gibIP(true);
+    $Bestellung->cIP = $_SESSION['IP']->cIP ?? gibIP(true);
     //#8544
-    $Bestellung->fWaehrungsFaktor = $_SESSION['Waehrung']->fFaktor;
+    $Bestellung->fWaehrungsFaktor = Session::Currency()->getConversionFactor();
 
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB, ['oBestellung' => &$Bestellung]);
 
@@ -313,8 +308,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     ) {
         $oTrustedShops                    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
         $oTrustedShops->tsProductId       = $_SESSION['TrustedShops']->cKaeuferschutzProdukt;
-        $oTrustedShops->amount            = $_SESSION['Waehrung']->fFaktor * $_SESSION['Warenkorb']->gibGesamtsummeWaren(true);
-        $oTrustedShops->currency          = $_SESSION['Waehrung']->cISO;
+        $oTrustedShops->amount            = Session::Currency()->getConversionFactor() * Session::Cart()->gibGesamtsummeWaren(true);
+        $oTrustedShops->currency          = Session::Currency()->getCode();
         $oTrustedShops->paymentType       = $_SESSION['Zahlungsart']->cTSCode;
         $oTrustedShops->buyerEmail        = $_SESSION['Kunde']->cMail;
         $oTrustedShops->shopCustomerID    = $_SESSION['Kunde']->kKunde;
@@ -322,29 +317,29 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $oTrustedShops->orderDate         = date('Y-m-d') . 'T' . date('H:i:s');
         $oTrustedShops->shopSystemVersion = 'JTL-Shop ' . JTL_VERSION;
 
-        if (strlen($oTrustedShops->tsProductId) > 0 &&
-            strlen($oTrustedShops->amount) > 0 &&
-            strlen($oTrustedShops->currency) > 0 &&
-            strlen($oTrustedShops->paymentType) > 0 &&
-            strlen($oTrustedShops->buyerEmail) > 0 &&
-            strlen($oTrustedShops->shopCustomerID) > 0 &&
-            strlen($oTrustedShops->shopOrderID) > 0
+        if (strlen($oTrustedShops->tsProductId) > 0
+            && strlen($oTrustedShops->amount) > 0
+            && strlen($oTrustedShops->currency) > 0
+            && strlen($oTrustedShops->paymentType) > 0
+            && strlen($oTrustedShops->buyerEmail) > 0
+            && strlen($oTrustedShops->shopCustomerID) > 0
+            && strlen($oTrustedShops->shopOrderID) > 0
         ) {
             $oTrustedShops->sendeBuchung();
         }
     }
     //BestellID füllen
     $bestellid              = new stdClass();
-    $bestellid->cId         = gibUID(40, $Bestellung->kBestellung . md5(time()));
+    $bestellid->cId         = uniqid('', true);
     $bestellid->kBestellung = $Bestellung->kBestellung;
     $bestellid->dDatum      = 'now()';
-    Shop::DB()->insert('tbestellid', $bestellid);
+    Shop::Container()->getDB()->insert('tbestellid', $bestellid);
     //bestellstatus füllen
     $bestellstatus              = new stdClass();
     $bestellstatus->kBestellung = $Bestellung->kBestellung;
     $bestellstatus->dDatum      = 'now()';
-    $bestellstatus->cUID        = gibUID(40, (time() . $Bestellung->kBestellung) . substr(time(), -8));
-    Shop::DB()->insert('tbestellstatus', $bestellstatus);
+    $bestellstatus->cUID        = uniqid('', true);
+    Shop::Container()->getDB()->insert('tbestellstatus', $bestellstatus);
     //füge ZahlungsInfo ein, falls es die Versandart erfordert
     if (isset($_SESSION['Zahlungsart']->ZahlungsInfo) && $_SESSION['Zahlungsart']->ZahlungsInfo) {
         saveZahlungsInfo($Bestellung->kKunde, $Bestellung->kBestellung);
@@ -382,9 +377,6 @@ function saveZahlungsInfo($kKunde, $kBestellung, $bZahlungAgain = false)
 
     if (!$kKunde || !$kBestellung) {
         return false;
-    }
-    if (!class_exists('ZahlungsInfo')) {
-        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsInfo.php';
     }
     $_SESSION['ZahlungsInfo']               = new ZahlungsInfo();
     $_SESSION['ZahlungsInfo']->kBestellung  = $kBestellung;
@@ -430,7 +422,7 @@ function saveZahlungsInfo($kKunde, $kBestellung, $bZahlungAgain = false)
     if (isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr) ||
         isset($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
     ) {
-        Shop::DB()->delete('tkundenkontodaten', 'kKunde', (int)$kKunde);
+        Shop::Container()->getDB()->delete('tkundenkontodaten', 'kKunde', (int)$kKunde);
         speicherKundenKontodaten($_SESSION['Zahlungsart']->ZahlungsInfo);
     }
 
@@ -451,7 +443,7 @@ function speicherKundenKontodaten($oZahlungsinfo)
     $oKundenKontodaten->cIBAN     = verschluesselXTEA($oZahlungsinfo->cIBAN);
     $oKundenKontodaten->cBIC      = verschluesselXTEA($oZahlungsinfo->cBIC);
 
-    Shop::DB()->insert('tkundenkontodaten', $oKundenKontodaten);
+    Shop::Container()->getDB()->insert('tkundenkontodaten', $oKundenKontodaten);
 }
 
 /**
@@ -464,11 +456,11 @@ function unhtmlSession()
     if ($_SESSION['Kunde']->kKunde > 0) {
         $knd->kKunde = $_SESSION['Kunde']->kKunde;
     }
-    $knd->kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+    $knd->kKundengruppe = Session::CustomerGroup()->getID();
     if ($_SESSION['Kunde']->kKundengruppe > 0) {
         $knd->kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
     }
-    $knd->kSprache = Shop::$kSprache;
+    $knd->kSprache = Shop::getLanguage();
     if ($_SESSION['Kunde']->kSprache > 0) {
         $knd->kSprache = $_SESSION['Kunde']->kSprache;
     }
@@ -561,14 +553,14 @@ function aktualisiereBestseller($kArtikel, $Anzahl)
     if (!$kArtikel || !$Anzahl) {
         return;
     }
-    $best_obj = Shop::DB()->select('tbestseller', 'kArtikel', $kArtikel);
+    $best_obj = Shop::Container()->getDB()->select('tbestseller', 'kArtikel', $kArtikel);
     if (isset($best_obj->kArtikel) && $best_obj->kArtikel > 0) {
-        Shop::DB()->query("UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel, 4);
+        Shop::Container()->getDB()->query("UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel, 4);
     } else {
         $Bestseller           = new stdClass();
         $Bestseller->kArtikel = $kArtikel;
         $Bestseller->fAnzahl  = $Anzahl;
-        Shop::DB()->insert('tbestseller', $Bestseller);
+        Shop::Container()->getDB()->insert('tbestseller', $Bestseller);
     }
     // Ist der Artikel eine Variationskombination?
     if (ArtikelHelper::isVariCombiChild($kArtikel)) {
@@ -578,14 +570,14 @@ function aktualisiereBestseller($kArtikel, $Anzahl)
         if (!$kArtikel || !$Anzahl) {
             return;
         }
-        $best_obj = Shop::DB()->select('tbestseller', 'kArtikel', $kArtikel);
+        $best_obj = Shop::Container()->getDB()->select('tbestseller', 'kArtikel', $kArtikel);
         if (isset($best_obj->kArtikel) && $best_obj->kArtikel > 0) {
-            Shop::DB()->query("UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel, 4);
+            Shop::Container()->getDB()->query("UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel, 4);
         } else {
             $Bestseller           = new stdClass();
             $Bestseller->kArtikel = $kArtikel;
             $Bestseller->fAnzahl  = $Anzahl;
-            Shop::DB()->insert('tbestseller', $Bestseller);
+            Shop::Container()->getDB()->insert('tbestseller', $Bestseller);
         }
     }
 }
@@ -601,12 +593,12 @@ function aktualisiereXselling($kArtikel, $kZielArtikel)
     if (!$kArtikel || !$kZielArtikel) {
         return;
     }
-    $obj = Shop::DB()->select('txsellkauf', 'kArtikel', $kArtikel, 'kXSellArtikel', $kZielArtikel);
+    $obj = Shop::Container()->getDB()->select('txsellkauf', 'kArtikel', $kArtikel, 'kXSellArtikel', $kZielArtikel);
     if (isset($obj->nAnzahl) && $obj->nAnzahl > 0) {
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "UPDATE txsellkauf
-              SET nAnzahl = nAnzahl + 1 
-              WHERE kArtikel = " . $kArtikel . " 
+              SET nAnzahl = nAnzahl + 1
+              WHERE kArtikel = " . $kArtikel . "
                 AND kXSellArtikel = " . $kZielArtikel, 4
         );
     } else {
@@ -614,7 +606,7 @@ function aktualisiereXselling($kArtikel, $kZielArtikel)
         $xs->kArtikel      = $kArtikel;
         $xs->kXSellArtikel = $kZielArtikel;
         $xs->nAnzahl       = 1;
-        Shop::DB()->insert('txsellkauf', $xs);
+        Shop::Container()->getDB()->insert('txsellkauf', $xs);
     }
 }
 
@@ -639,7 +631,7 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
                 if ($EigenschaftWert->fPackeinheit == 0) {
                     $EigenschaftWert->fPackeinheit = 1;
                 }
-                Shop::DB()->query(
+                Shop::Container()->getDB()->query(
                     "UPDATE teigenschaftwert
                         SET fLagerbestand = fLagerbestand - " . ($nAnzahl * $EigenschaftWert->fPackeinheit) . "
                         WHERE kEigenschaftWert = " . (int)$eWert->kEigenschaftWert, 4
@@ -650,19 +642,23 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
             if ($Artikel->kStueckliste > 0) {
                 $artikelBestand = aktualisiereStuecklistenLagerbestand($Artikel, $nAnzahl);
             } else {
-                Shop::DB()->query(
+                Shop::Container()->getDB()->query(
                     "UPDATE tartikel
-                        SET fLagerbestand = IF (fLagerbestand >= " . ($nAnzahl * $Artikel->fPackeinheit) . ", 
+                        SET fLagerbestand = IF (fLagerbestand >= " . ($nAnzahl * $Artikel->fPackeinheit) . ",
                         (fLagerbestand - " . ($nAnzahl * $Artikel->fPackeinheit) . "), fLagerbestand)
                         WHERE kArtikel = " . (int)$Artikel->kArtikel, 4
                 );
-                $tmpArtikel = Shop::DB()->select('tartikel', 'kArtikel', (int)$Artikel->kArtikel, null, null, null, null, false, 'fLagerbestand');
+                $tmpArtikel = Shop::Container()->getDB()->select('tartikel', 'kArtikel', (int)$Artikel->kArtikel, null, null, null, null, false, 'fLagerbestand');
                 if ($tmpArtikel !== null) {
                     $artikelBestand = (float)$tmpArtikel->fLagerbestand;
                 }
                 // Stücklisten Komponente
                 if (ArtikelHelper::isStuecklisteKomponente($Artikel->kArtikel)) {
-                    aktualisiereKomponenteLagerbestand($Artikel->kArtikel, $artikelBestand, isset($Artikel->cLagerKleinerNull) && $Artikel->cLagerKleinerNull === 'Y' ? true : false);
+                    aktualisiereKomponenteLagerbestand(
+                        $Artikel->kArtikel,
+                        $artikelBestand,
+                        isset($Artikel->cLagerKleinerNull) && $Artikel->cLagerKleinerNull === 'Y'
+                    );
                 }
             }
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
@@ -690,7 +686,7 @@ function aktualisiereStuecklistenLagerbestand($oStueckListeArtikel, $nAnzahl)
 
     if ($nAnzahl > 0) {
         // Gibt es lagerrelevante Komponenten in der Stückliste?
-        $oKomponente_arr = Shop::DB()->query(
+        $oKomponente_arr = Shop::Container()->getDB()->query(
             "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
                 FROM tstueckliste
                 JOIN tartikel
@@ -727,14 +723,14 @@ function aktualisiereStuecklistenLagerbestand($oStueckListeArtikel, $nAnzahl)
             if ($bestandUeberverkauf === $bestandNeu) {
                 // Es gibt auch keine Komponenten mit Überverkäufen, die den Bestand verringern, deshalb wird
                 // der Bestand des Stücklistenartikels anhand des Verkaufs verringert
-                $bestandNeu = $bestandNeu - $nAnzahl * $oStueckListeArtikel->fPackeinheit;
+                $bestandNeu -= $nAnzahl * $oStueckListeArtikel->fPackeinheit;
             } else {
                 // Da keine lagerrelevanten Komponenten vorhanden sind, wird der kleinste Bestand der
                 // Komponentent mit Überverkauf verwendet.
                 $bestandNeu = $bestandUeberverkauf;
             }
 
-            Shop::DB()->update('tartikel', 'kArtikel', (int)$oStueckListeArtikel->kArtikel, (object)[
+            Shop::Container()->getDB()->update('tartikel', 'kArtikel', (int)$oStueckListeArtikel->kArtikel, (object)[
                 'fLagerbestand' => $bestandNeu,
             ]);
         }
@@ -756,7 +752,7 @@ function aktualisiereKomponenteLagerbestand($kKomponenteArtikel, $fLagerbestand,
     $kKomponenteArtikel = (int)$kKomponenteArtikel;
     $fLagerbestand      = (float)$fLagerbestand;
 
-    $oStueckliste_arr = Shop::DB()->query(
+    $oStueckliste_arr = Shop::Container()->getDB()->query(
         "SELECT tstueckliste.kStueckliste, tstueckliste.fAnzahl,
                 tartikel.kArtikel, tartikel.fLagerbestand, tartikel.cLagerKleinerNull
             FROM tstueckliste
@@ -773,7 +769,7 @@ function aktualisiereKomponenteLagerbestand($kKomponenteArtikel, $fLagerbestand,
             if ($maxAnzahl < (float)$oStueckliste->fLagerbestand && (!$bLagerKleinerNull || $oStueckliste->cLagerKleinerNull === 'Y')) {
                 // wenn ja, dann den Bestand der Stückliste entsprechend verringern, aber nur wenn die Komponente nicht
                 // überberkaufbar ist oder die gesamte Stückliste Überverkäufe zulässt
-                Shop::DB()->update('tartikel', 'kArtikel', (int)$oStueckliste->kArtikel, (object)[
+                Shop::Container()->getDB()->update('tartikel', 'kArtikel', (int)$oStueckliste->kArtikel, (object)[
                     'fLagerbestand' => $maxAnzahl,
                 ]);
             }
@@ -789,6 +785,7 @@ function aktualisiereKomponenteLagerbestand($kKomponenteArtikel, $fLagerbestand,
  */
 function AktualisiereAndereStuecklisten($kArtikelKomponente, $nAnzahl, $kStueckliste = null)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $kArtikelKomponente = (int)$kArtikelKomponente;
 
     if ($kArtikelKomponente > 0) {
@@ -807,9 +804,10 @@ function AktualisiereAndereStuecklisten($kArtikelKomponente, $nAnzahl, $kStueckl
  */
 function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandSt, $nAnzahl)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $kStueckliste  = (int)$kStueckliste;
     $fLagerbestand = (float)$fLagerbestandSt;
-    Shop::DB()->update('tartikel', 'kStueckliste', $kStueckliste, (object)['fLagerbestand' => $fLagerbestand]);
+    Shop::Container()->getDB()->update('tartikel', 'kStueckliste', $kStueckliste, (object)['fLagerbestand' => $fLagerbestand]);
 }
 
 /**
@@ -820,6 +818,7 @@ function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandS
  */
 function AktualisiereLagerStuecklisten($oArtikel, $nAnzahl = null, $bStueckliste = false)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (is_object($oArtikel) && isset($oArtikel->kArtikel) && $oArtikel->kArtikel > 0) {
         if ($bStueckliste) {
             aktualisiereStuecklistenLagerbestand($oArtikel, $nAnzahl);
@@ -863,26 +862,26 @@ function KuponVerwendungen($oBestellung)
     }
     $kKupon = (int)$kKupon;
     if ($kKupon > 0) {
-        Shop::DB()->query("UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher + 1 WHERE kKupon = " . $kKupon, 4);
+        Shop::Container()->getDB()->query("UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher + 1 WHERE kKupon = " . $kKupon, 4);
         $KuponKunde                = new stdClass();
         $KuponKunde->kKupon        = $kKupon;
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
-        $KuponKunde->cMail         = Shop::DB()->escape(StringHandler::filterXSS($_SESSION['Kunde']->cMail));
+        $KuponKunde->cMail         = Shop::Container()->getDB()->escape(StringHandler::filterXSS($_SESSION['Kunde']->cMail));
         $KuponKunde->dErstellt     = 'now()';
         $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = Shop::DB()->query(
+        $KuponKundeBisher          = Shop::Container()->getDB()->query(
             "SELECT SUM(nVerwendungen) AS nVerwendungen
-                FROM tkuponkunde 
+                FROM tkuponkunde
                 WHERE cMail = '{$KuponKunde->cMail}'", 1
         );
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
             $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
         }
-        Shop::DB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int)$KuponKunde->kKunde, $kKupon]);
-        Shop::DB()->insert('tkuponkunde', $KuponKunde);
+        Shop::Container()->getDB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int)$KuponKunde->kKunde, $kKupon]);
+        Shop::Container()->getDB()->insert('tkuponkunde', $KuponKunde);
 
         if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-            Shop::DB()->delete('tkuponneukunde', ['kKupon', 'cEmail'], [$kKupon, $_SESSION['Kunde']->cMail]);
+            Shop::Container()->getDB()->delete('tkuponneukunde', ['kKupon', 'cEmail'], [$kKupon, $_SESSION['Kunde']->cMail]);
         }
 
         $oKuponBestellung                     = new KuponBestellung();
@@ -1114,7 +1113,7 @@ function fakeBestellung()
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
 
     if (isset($_POST['kommentar'])) {
-        $_SESSION['kommentar'] = substr(strip_tags(Shop::DB()->escape($_POST['kommentar'])), 0, 1000);
+        $_SESSION['kommentar'] = substr(strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])), 0, 1000);
     }
     $bestellung                   = new Bestellung();
     $bestellung->kKunde           = $_SESSION['Warenkorb']->kKunde;
@@ -1123,8 +1122,8 @@ function fakeBestellung()
     $bestellung->kZahlungsart     = $_SESSION['Zahlungsart']->kZahlungsart;
     $bestellung->kVersandart      = $_SESSION['Versandart']->kVersandart;
     $bestellung->kSprache         = Shop::getLanguage();
-    $bestellung->kWaehrung        = $_SESSION['Waehrung']->kWaehrung;
-    $bestellung->fGesamtsumme     = $_SESSION['Warenkorb']->gibGesamtsummeWaren(1);
+    $bestellung->kWaehrung        = Session::Currency()->getID();
+    $bestellung->fGesamtsumme     = Session::Cart()->gibGesamtsummeWaren(1);
     $bestellung->fWarensumme      = $bestellung->fGesamtsumme;
     $bestellung->cVersandartName  = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $bestellung->cZahlungsartName = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
@@ -1135,9 +1134,9 @@ function fakeBestellung()
     $bestellung->dErstellt        = 'now()';
     $bestellung->Zahlungsart      = $_SESSION['Zahlungsart'];
     $bestellung->Positionen       = [];
-    $bestellung->Waehrung         = $_SESSION['Waehrung'];
-    $bestellung->kWaehrung        = $_SESSION['Waehrung']->kWaehrung;
-    $bestellung->fWaehrungsFaktor = $_SESSION['Waehrung']->fFaktor;
+    $bestellung->Waehrung         = $_SESSION['Waehrung']; // @todo - check if this matches the new Currency class
+    $bestellung->kWaehrung        = Session::Currency()->getID();
+    $bestellung->fWaehrungsFaktor = Session::Currency()->getConversionFactor();
     if ($bestellung->oRechnungsadresse === null) {
         $bestellung->oRechnungsadresse = new stdClass();
     }
@@ -1199,9 +1198,7 @@ function gibLieferadresseAusSession()
         $oLieferadresse              = new stdClass();
         $oLieferadresse->cVorname    = $_SESSION['Lieferadresse']->cVorname;
         $oLieferadresse->cNachname   = $_SESSION['Lieferadresse']->cNachname;
-        $oLieferadresse->cFirma      = isset($_SESSION['Lieferadresse']->cFirma)
-            ? $_SESSION['Lieferadresse']->cFirma
-            : null;
+        $oLieferadresse->cFirma      = $_SESSION['Lieferadresse']->cFirma ?? null;
         $oLieferadresse->kKunde      = $_SESSION['Lieferadresse']->kKunde;
         $oLieferadresse->cAnrede     = $_SESSION['Lieferadresse']->cAnrede;
         $oLieferadresse->cTitel      = $_SESSION['Lieferadresse']->cTitel;
@@ -1211,18 +1208,10 @@ function gibLieferadresseAusSession()
         $oLieferadresse->cOrt        = $_SESSION['Lieferadresse']->cOrt;
         $oLieferadresse->cLand       = $_SESSION['Lieferadresse']->cLand;
         $oLieferadresse->cTel        = $_SESSION['Lieferadresse']->cTel;
-        $oLieferadresse->cMobil      = isset($_SESSION['Lieferadresse']->cMobil)
-            ? $_SESSION['Lieferadresse']->cMobil
-            : null;
-        $oLieferadresse->cFax        = isset($_SESSION['Lieferadresse']->cFax)
-            ? $_SESSION['Lieferadresse']->cFax
-            : null;
-        $oLieferadresse->cUSTID      = isset($_SESSION['Lieferadresse']->cUSTID)
-            ? $_SESSION['Lieferadresse']->cUSTID
-            : null;
-        $oLieferadresse->cWWW        = isset($_SESSION['Lieferadresse']->cWWW)
-            ? $_SESSION['Lieferadresse']->cWWW
-            : null;
+        $oLieferadresse->cMobil      = $_SESSION['Lieferadresse']->cMobil ?? null;
+        $oLieferadresse->cFax        = $_SESSION['Lieferadresse']->cFax ?? null;
+        $oLieferadresse->cUSTID      = $_SESSION['Lieferadresse']->cUSTID ?? null;
+        $oLieferadresse->cWWW        = $_SESSION['Lieferadresse']->cWWW ?? null;
         $oLieferadresse->cMail       = $_SESSION['Lieferadresse']->cMail;
         $oLieferadresse->cAnrede     = $_SESSION['Lieferadresse']->cAnrede;
 
@@ -1239,19 +1228,17 @@ function gibLieferadresseAusSession()
  */
 function pruefeVerfuegbarkeit()
 {
-    $xResult_arr   = ['cArtikelName_arr' => []];
-    $Einstellungen = Shop::getSettings([CONF_GLOBAL]);
-    if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
-        foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $oPosition) {
-            if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                // Mit Lager arbeiten und Lagerbestand darf < 0 werden?
-                if (isset($oPosition->Artikel->cLagerBeachten) && $oPosition->Artikel->cLagerBeachten === 'Y' &&
-                    $oPosition->Artikel->cLagerKleinerNull === 'Y' &&
-                    $Einstellungen['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
-                ) {
-                    if ($oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand) {
-                        $xResult_arr['cArtikelName_arr'][] = $oPosition->Artikel->cName;
-                    }
+    $xResult_arr = ['cArtikelName_arr' => []];
+    $conf        = Shop::getSettings([CONF_GLOBAL]);
+    foreach (Session::Cart()->PositionenArr as $i => $oPosition) {
+        if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
+            // Mit Lager arbeiten und Lagerbestand darf < 0 werden?
+            if (isset($oPosition->Artikel->cLagerBeachten) && $oPosition->Artikel->cLagerBeachten === 'Y'
+                && $oPosition->Artikel->cLagerKleinerNull === 'Y'
+                && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
+            ) {
+                if ($oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand) {
+                    $xResult_arr['cArtikelName_arr'][] = $oPosition->Artikel->cName;
                 }
             }
         }
@@ -1292,13 +1279,13 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
             trim($bestellung->oRechnungsadresse->cOrt),
             trim($bestellung->oRechnungsadresse->cLand)
         );
-        Shop::DB()->update('tkuponneukunde', 'cDatenHash', $hash, (object)['cVerwendet' => 'Y']);
+        Shop::Container()->getDB()->update('tkuponneukunde', 'cDatenHash', $hash, (object)['cVerwendet' => 'Y']);
     }
 
     $_upd              = new stdClass();
     $_upd->kKunde      = (int)$_SESSION['Warenkorb']->kKunde;
     $_upd->kBestellung = (int)$bestellung->kBestellung;
-    Shop::DB()->update('tbesucher', 'cIP', gibIP(), $_upd);
+    Shop::Container()->getDB()->update('tbesucher', 'kKunde', $_upd->kKunde, $_upd);
     //mail versenden
     $obj->tkunde      = $_SESSION['Kunde'];
     $obj->tbestellung = $bestellung;
@@ -1319,8 +1306,7 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
         sendeMail(MAILTEMPLATE_BESTELLBESTAETIGUNG, $obj);
     }
     $_SESSION['Kunde'] = $oKunde;
-    $kKundengruppe     = Kundengruppe::getCurrent();
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
+    $kKundengruppe     = Session::CustomerGroup()->getID();
     $oCheckBox = new CheckBox();
     // CheckBox Spezialfunktion ausführen
     $oCheckBox->triggerSpecialFunction(
@@ -1350,7 +1336,7 @@ function pruefeEOSServerCom($cSh)
         $oZahlungbackground->cCustomData = '';
         $oZahlungbackground->dErstellt   = 'now()';
 
-        Shop::DB()->insert('tzahlungbackground', $oZahlungbackground);
+        Shop::Container()->getDB()->insert('tzahlungbackground', $oZahlungbackground);
 
         if (NO_MODE === 1) {
             Jtllog::writeLog(NO_PFAD, 'pruefeEOSServerCom Hash ' .

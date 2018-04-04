@@ -51,7 +51,7 @@ function bearbeiteStatusemail($oJobQueue)
                 $dLetzterVersandCol = 'dLetzterMonatsVersand';
                 break;
             default:
-                continue;
+                break;
         }
 
         if (isIntervalExceeded($dLetzterVersand, $cInterval)) {
@@ -60,10 +60,10 @@ function bearbeiteStatusemail($oJobQueue)
             $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
 
             if ($oMailObjekt) {
-                $oMailObjekt->cIntervall = utf8_decode($cIntervalAdj . ' Status-Email');
+                $oMailObjekt->cIntervall = $cIntervalAdj . ' Status-Email';
                 sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $oMailObjekt->mail);
-                Shop::DB()->query("
-                    UPDATE tstatusemail
+                Shop::Container()->getDB()->query(
+                    "UPDATE tstatusemail
                         SET " . $dLetzterVersandCol . " = now()
                         WHERE nAktiv = " . (int)$oJobQueue->kKey,
                     4);
@@ -79,6 +79,4 @@ function bearbeiteStatusemail($oJobQueue)
     if ($bAusgefuehrt === true) {
         $oJobQueue->deleteJobInDB();
     }
-
-    unset($oJobQueue);
 }

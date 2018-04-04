@@ -20,7 +20,7 @@ if (verifyGPCDataInteger('agbwrb') === 1 && validateToken()) {
     if (verifyGPCDataInteger('agbwrb_edit') === 1) {
         if (verifyGPCDataInteger('kKundengruppe') > 0) {
             $step    = 'agbwrb_editieren';
-            $oAGBWRB = Shop::DB()->select(
+            $oAGBWRB = Shop::Container()->getDB()->select(
                 'ttext',
                 'kSprache', (int)$_SESSION['kSprache'],
                 'kKundengruppe', verifyGPCDataInteger('kKundengruppe')
@@ -45,10 +45,10 @@ if (verifyGPCDataInteger('agbwrb') === 1 && validateToken()) {
 
 if ($step === 'agbwrb_uebersicht') {
     // Kundengruppen holen
-    $oKundengruppe_arr = Shop::DB()->selectAll('tkundengruppe', [], [], 'kKundengruppe, cName', 'cStandard DESC');
+    $oKundengruppe_arr = Shop::Container()->getDB()->selectAll('tkundengruppe', [], [], 'kKundengruppe, cName', 'cStandard DESC');
     // AGB fuer jeweilige Sprache holen
     $oAGBWRB_arr    = [];
-    $oAGBWRBTMP_arr = Shop::DB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);
+    $oAGBWRBTMP_arr = Shop::Container()->getDB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);
     // Assoc Array mit kKundengruppe machen
     if (is_array($oAGBWRBTMP_arr) && count($oAGBWRBTMP_arr) > 0) {
         foreach ($oAGBWRBTMP_arr as $i => $oAGBWRBTMP) {

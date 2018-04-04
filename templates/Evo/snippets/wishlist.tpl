@@ -104,8 +104,8 @@
                         {foreach name=wunschlistepos from=$CWunschliste->CWunschlistePos_arr item=CWunschlistePos}
                             <tr>
                                 <td class="img-col hidden-xs hidden-sm">
-                                    <a href="{$CWunschlistePos->Artikel->cURL}">
-                                        <img alt="{$CWunschlistePos->Artikel->cName}" src="{$CWunschlistePos->Artikel->cVorschaubild}" class="img-responsive">
+                                    <a href="{$CWunschlistePos->Artikel->cURLFull}">
+                                        <img alt="{$CWunschlistePos->Artikel->cName}" src="{$CWunschlistePos->Artikel->cVorschaubildURL}" class="img-responsive">
                                     </a>
                                 </td>
                                 <td>
@@ -113,12 +113,7 @@
                                     {if $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                                         <p>{lang key="priceOnApplication" section="global"}</p>
                                     {else}
-                                        {if isset($CWunschlistePos->Artikel->Preise->strPreisGrafik_Detail)}
-                                            {assign var=priceImage value=$CWunschlistePos->Artikel->Preise->strPreisGrafik_Detail}
-                                        {else}
-                                            {assign var=priceImage value=null}
-                                        {/if}
-                                        {include file="productdetails/price.tpl" Artikel=$CWunschlistePos->Artikel price_image=$priceImage tplscope="wishlist"}
+                                        {include file="productdetails/price.tpl" Artikel=$CWunschlistePos->Artikel tplscope="wishlist"}
                                     {/if}
                                     {foreach name=eigenschaft from=$CWunschlistePos->CWunschlistePosEigenschaft_arr item=CWunschlistePosEigenschaft}
                                         {if $CWunschlistePosEigenschaft->cFreifeldWert}

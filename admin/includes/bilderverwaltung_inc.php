@@ -7,14 +7,15 @@
 /**
  * @param bool $filesize
  * @return array
+ * @throws Exception
  */
 function getItems($filesize = false)
 {
     $smarty = JTLSmarty::getInstance(false, true);
-    $smarty->configLoad("german.conf", 'bilderverwaltung');
+    $smarty->configLoad('german.conf', 'bilderverwaltung');
 
     $item = (object) [
-        'name'  => $smarty->config_vars["typeProduct"],
+        'name'  => $smarty->config_vars['typeProduct'],
         'type'  => Image::TYPE_PRODUCT,
         'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
     ];
@@ -23,23 +24,22 @@ function getItems($filesize = false)
 }
 
 /**
- * @param $type
+ * @param string $type
  * @return IOError
+ * @throws Exception
  */
 function loadStats($type)
 {
     $items = getItems(true);
 
-    if ($type === null || in_array($type, $items, true)) {
-        return new IOError('Invalid argument request', 500);
-    }
-
-    return $items[$type]->stats;
+    return ($type === null || in_array($type, $items, true))
+        ? new IOError('Invalid argument request', 500)
+        : $items[$type]->stats;
 }
 
 /**
- * @param $index
- * @return object
+ * @param int $index
+ * @return stdClass
  */
 function cleanupStorage($index)
 {
@@ -78,7 +78,7 @@ function cleanupStorage($index)
             continue;
         }
         ++$checkedInThisRun;
-        $imageIsUsed = Shop::DB()->select('tartikelpict', 'cPfad', $fileInfo->getFilename()) !== null;
+        $imageIsUsed = Shop::Container()->getDB()->select('tartikelpict', 'cPfad', $fileInfo->getFilename()) !== null;
         // files in the storage folder that have no associated entry in tartikelpict are considered orphaned
         if (!$imageIsUsed) {
             $result->deletes[] = $fileInfo->getFilename();
@@ -89,7 +89,7 @@ function cleanupStorage($index)
     }
     // increment total number of checked files by the amount checked in this run
     $_SESSION['checkedImages'] += $checkedInThisRun;
-    $index                      = ($idx > 0) ? $idx + 1 - $deletedInThisRun : $total;
+    $index                      = $idx > 0 ? $idx + 1 - $deletedInThisRun : $total;
     // avoid endless recursion
     if ($index === $startIndex && $deletedInThisRun === 0) {
         $index = $total;
@@ -109,22 +109,28 @@ function cleanupStorage($index)
 }
 
 /**
- * @param $type
- * @param $isAjax
+ * @param string $type
+ * @param bool   $isAjax
  * @return array
  */
-function clearImageCache($type, $isAjax)
+function clearImageCache($type, $isAjax = false)
 {
     if ($type !== null && preg_match('/[a-z]*/', $type)) {
         MediaImage::clearCache($type);
         unset($_SESSION['image_count'], $_SESSION['renderedImages']);
-        if (isset($isAjax) && $isAjax === true) {
+        if ($isAjax === true) {
             return ['success' => 'Cache wurde erfolgreich zur&uuml;ckgesetzt'];
         }
         Shop::Smarty()->assign('success', 'Cache wurde erfolgreich zur&uuml;ckgesetzt');
     }
 }
 
+/**
+ * @param string $type
+ * @param int    $index
+ * @return IOError|object
+ * @throws Exception
+ */
 function generateImageCache($type, $index)
 {
     $index = (int)$index;
@@ -147,9 +153,10 @@ function generateImageCache($type, $index)
         $_SESSION['renderedImages'] = 0;
     }
 
-    $total  = $_SESSION['image_count'];
-    $images = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
-    while (count($images) === 0 && $index < $total) {
+    $total    = $_SESSION['image_count'];
+    $images   = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
+    $totalAll = count(MediaImage::getImages($type));
+    while (count($images) === 0 && $index < $totalAll) {
         $index += 10;
         $images = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
     }
@@ -174,15 +181,16 @@ function generateImageCache($type, $index)
 }
 
 /**
- * @param $type
- * @param $limit
+ * @param string $type
+ * @param int    $limit
  * @return array
+ * @throws Exception
  */
 function getCorruptedImages($type, $limit)
 {
     static $offset = 0;
     $corruptedImages = [];
-    $totalImages = count(MediaImage::getImages($type));
+    $totalImages     = count(MediaImage::getImages($type));
 
     do {
         $images = MediaImage::getImages($type, false, $offset, $limit);
@@ -194,7 +202,7 @@ function getCorruptedImages($type, $limit)
                     'article' => [],
                     'picture' => ''
                 ];
-                $articleDB           = Shop::DB()->select('tartikel', 'kArtikel', $image->getId());
+                $articleDB           = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $image->getId());
                 $articleDB->cURLFull = baueURL($articleDB, URLART_ARTIKEL, 0, false, true);
                 $article             = (object) [
                     'articleNr'      => $articleDB->cArtNr,

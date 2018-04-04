@@ -112,6 +112,7 @@
                             {render_item title='Profiler aktiv' val=!$status->hasActiveProfiler() more='profiler.php'}
                             {render_item title='Server' val=$status->hasValidEnvironment() more='systemcheck.php'}
                             {render_item title='Verwaiste Kategorien' val=$status->getOrphanedCategories() more='categorycheck.php'}
+                            {render_item title='Neue Plugin-Versionen' val=!$status->hasNewPluginVersions() more='pluginverwaltung.php'}
                         </tbody>
                     </table>
                 </div>
@@ -267,9 +268,9 @@
                                     <td>
                                         <div class="test-name">
                                             {if $test->getDescription()|@count_characters > 0}
-                                                <abbr title="{$test->getDescription()|utf8_decode|escape:'html'}">{$test->getName()|utf8_decode}</abbr>
+                                                <abbr title="{$test->getDescription()|escape:'html'}">{$test->getName()}</abbr>
                                             {else}
-                                                {$test->getName()|utf8_decode}
+                                                {$test->getName()}
                                             {/if}
                                         </div>
                                     </td>

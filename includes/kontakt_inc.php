@@ -107,9 +107,9 @@ function baueKontaktFormularVorgaben()
     }
     if (isset($Nachricht->cAnrede) && strlen($Nachricht->cAnrede) === 1) {
         if ($Nachricht->cAnrede === 'm') {
-            $Nachricht->cAnredeLocalized = Shop::Lang()->get('salutationM', 'global');
+            $Nachricht->cAnredeLocalized = Shop::Lang()->get('salutationM');
         } elseif ($Nachricht->cAnrede === 'w') {
-            $Nachricht->cAnredeLocalized = Shop::Lang()->get('salutationW', 'global');
+            $Nachricht->cAnredeLocalized = Shop::Lang()->get('salutationW');
         }
     }
     if (!isset($Nachricht->cAnrede)) {
@@ -141,26 +141,11 @@ function baueKontaktFormularVorgaben()
 }
 
 /**
- * @param array $fehlendeAngaben
- * @return int
- */
-function eingabenKorrekt($fehlendeAngaben)
-{
-    foreach ($fehlendeAngaben as $angabe) {
-        if ($angabe > 0) {
-            return 0;
-        }
-    }
-
-    return 1;
-}
-
-/**
  * @return bool
  */
 function pruefeBetreffVorhanden()
 {
-    $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+    $kKundengruppe = Session::CustomerGroup()->getID();
     if (!$kKundengruppe) {
         $kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
         if (!$kKundengruppe) {
@@ -168,10 +153,10 @@ function pruefeBetreffVorhanden()
         }
     }
 
-    $oBetreff_arr = Shop::DB()->query(
+    $oBetreff_arr = Shop::Container()->getDB()->query(
         "SELECT kKontaktBetreff
             FROM tkontaktbetreff
-            WHERE FIND_IN_SET('" . (int)$kKundengruppe . "', REPLACE(cKundengruppen, ';', ',')) > 0
+            WHERE FIND_IN_SET('" . $kKundengruppe . "', REPLACE(cKundengruppen, ';', ',')) > 0
                 OR cKundengruppen = '0'", 2
     );
 
@@ -184,10 +169,10 @@ function pruefeBetreffVorhanden()
 function bearbeiteNachricht()
 {
     $betreff = isset($_POST['subject'])
-        ? Shop::DB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_POST['subject'])
+        ? Shop::Container()->getDB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_POST['subject'])
         : null;
     if (!empty($betreff->kKontaktBetreff)) {
-        $betreffSprache               = Shop::DB()->select(
+        $betreffSprache               = Shop::Container()->getDB()->select(
             'tkontaktbetreffsprache',
             'kKontaktBetreff',
             (int)$betreff->kKontaktBetreff,
@@ -200,7 +185,7 @@ function bearbeiteNachricht()
 
         $conf     = Shop::getSettings([CONF_KONTAKTFORMULAR, CONF_GLOBAL]);
         $from     = new stdClass();
-        $from_arr = Shop::DB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
+        $from_arr = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
         $mail     = new stdClass();
         if (is_array($from_arr) && count($from_arr)) {
             foreach ($from_arr as $f) {
@@ -257,37 +242,19 @@ function bearbeiteNachricht()
         $KontaktHistory                  = new stdClass();
         $KontaktHistory->kKontaktBetreff = $betreff->kKontaktBetreff;
         $KontaktHistory->kSprache        = $_SESSION['kSprache'];
-        $KontaktHistory->cAnrede         = isset($Objekt->tnachricht->cAnrede)
-            ? $Objekt->tnachricht->cAnrede
-            : null;
-        $KontaktHistory->cVorname        = isset($Objekt->tnachricht->cVorname)
-            ? $Objekt->tnachricht->cVorname
-            : null;
-        $KontaktHistory->cNachname       = isset($Objekt->tnachricht->cNachname)
-            ? $Objekt->tnachricht->cNachname
-            : null;
-        $KontaktHistory->cFirma          = isset($Objekt->tnachricht->cFirma)
-            ? $Objekt->tnachricht->cFirma
-            : null;
-        $KontaktHistory->cTel            = isset($Objekt->tnachricht->cTel)
-            ? $Objekt->tnachricht->cTel
-            : null;
-        $KontaktHistory->cMobil          = isset($Objekt->tnachricht->cMobil)
-            ? $Objekt->tnachricht->cMobil
-            : null;
-        $KontaktHistory->cFax            = isset($Objekt->tnachricht->cFax)
-            ? $Objekt->tnachricht->cFax
-            : null;
-        $KontaktHistory->cMail           = isset($Objekt->tnachricht->cMail)
-            ? $Objekt->tnachricht->cMail
-            : null;
-        $KontaktHistory->cNachricht      = isset($Objekt->tnachricht->cNachricht)
-            ? $Objekt->tnachricht->cNachricht
-            : null;
+        $KontaktHistory->cAnrede         = $Objekt->tnachricht->cAnrede ?? null;
+        $KontaktHistory->cVorname        = $Objekt->tnachricht->cVorname ?? null;
+        $KontaktHistory->cNachname       = $Objekt->tnachricht->cNachname ?? null;
+        $KontaktHistory->cFirma          = $Objekt->tnachricht->cFirma ?? null;
+        $KontaktHistory->cTel            = $Objekt->tnachricht->cTel ?? null;
+        $KontaktHistory->cMobil          = $Objekt->tnachricht->cMobil ?? null;
+        $KontaktHistory->cFax            = $Objekt->tnachricht->cFax ?? null;
+        $KontaktHistory->cMail           = $Objekt->tnachricht->cMail ?? null;
+        $KontaktHistory->cNachricht      = $Objekt->tnachricht->cNachricht ?? null;
         $KontaktHistory->cIP             = gibIP();
         $KontaktHistory->dErstellt       = 'now()';
 
-        return Shop::DB()->insert('tkontakthistory', $KontaktHistory);
+        return Shop::Container()->getDB()->insert('tkontakthistory', $KontaktHistory);
     }
 
     return false;
@@ -303,12 +270,12 @@ function floodSchutz($min)
         return false;
     }
     $min     = (int)$min;
-    $history = Shop::DB()->executeQueryPrepared(
+    $history = Shop::Container()->getDB()->executeQueryPrepared(
         "SELECT kKontaktHistory 
             FROM tkontakthistory 
             WHERE cIP = :ip 
                 AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt",
-        ['ip' => Shop::DB()->escape(gibIP()), 'min' => $min],
+        ['ip' => Shop::Container()->getDB()->escape(gibIP()), 'min' => $min],
         1
     );
 

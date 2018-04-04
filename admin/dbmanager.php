@@ -20,13 +20,13 @@ $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
 function exec_query($query)
 {
     try {
-        Shop::DB()->beginTransaction();
-        $result = Shop::DB()->executeQuery($query, 9);
-        Shop::DB()->commit();
+        Shop::Container()->getDB()->beginTransaction();
+        $result = Shop::Container()->getDB()->executeQuery($query, 9);
+        Shop::Container()->getDB()->commit();
 
         return $result;
     } catch (PDOException $e) {
-        Shop::DB()->rollback();
+        Shop::Container()->getDB()->rollback();
         throw $e;
     }
 }
@@ -34,7 +34,7 @@ function exec_query($query)
 $jsTypo = (object)['tables' => []];
 foreach ($tables as $table => $info) {
     $columns                = DBManager::getColumns($table);
-    $columns                = array_map(create_function('$n', 'return null;'), $columns);
+    $columns                = array_map(function($n) { return null; }, $columns);
     $jsTypo->tables[$table] = $columns;
 }
 $smarty->assign('jsTypo', $jsTypo);
@@ -71,7 +71,7 @@ switch (true) {
             'where'  => []
         ];
 
-        $filter = isset($_GET['filter']) ? $_GET['filter'] : [];
+        $filter = $_GET['filter'] ?? [];
         $filter = array_merge($defaultFilter, $filter);
 
         // validate filter
@@ -118,7 +118,7 @@ switch (true) {
 
         // count without limit
         $query = implode(' ', $queryParts);
-        $count = Shop::DB()->executeQueryPrepared($query, $queryParams, 3);
+        $count = Shop::Container()->getDB()->executeQueryPrepared($query, $queryParams, 3);
         $pages = (int)ceil($count / $filter['limit']);
 
         // limit
@@ -128,7 +128,7 @@ switch (true) {
 
         $query = implode(' ', $queryParts);
         $info  = null;
-        $data  = Shop::DB()->executeQueryPrepared($query, $queryParams, 9, false, false, function ($o) use (&$info) {
+        $data  = Shop::Container()->getDB()->executeQueryPrepared($query, $queryParams, 9, false, false, function ($o) use (&$info) {
             $info = $o;
         });
 

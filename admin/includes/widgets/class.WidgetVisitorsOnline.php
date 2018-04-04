@@ -23,16 +23,38 @@ class WidgetVisitorsOnline extends WidgetBase
      */
     public function getVisitors()
     {
-        $oVisitors_arr = Shop::DB()->query(
-            "SELECT tbesucher.*, tbestellung.fGesamtsumme, tkunde.cVorname, 
-                tkunde.cNachname, tkunde.dErstellt, tkunde.cNewsletter
-                FROM tbesucher
-                LEFT JOIN tbestellung 
-                    ON tbesucher.kBestellung = tbestellung.kBestellung
-                LEFT JOIN tkunde 
-                    ON tbesucher.kKunde = tkunde.kKunde
-                WHERE tbesucher.kBesucherBot = 0", 2
-        );
+        // clause 'ANY_VALUE' is needed by servers, who has the 'sql_mode'-setting 'only_full_group_by' enabled.
+        // this is the default since mysql version >= 5.7.x
+        $oVisitors_arr = Shop::Container()->getDB()->query(
+            "SELECT
+                `otab`.*,
+                `tbestellung`.`fGesamtsumme` AS fGesamtsumme, `tbestellung`.`dErstellt` as dErstellt,
+                `tkunde`.`cVorname` as cVorname, `tkunde`.`cNachname` AS cNachname,
+                `tkunde`.`cNewsletter` AS cNewsletter
+            FROM `tbesucher` AS `otab`
+                INNER JOIN `tkunde` ON `otab`.`kKunde` = `tkunde`.`kKunde`
+                LEFT JOIN `tbestellung` ON `otab`.`kBestellung` = `tbestellung`.`kBestellung`
+            WHERE `otab`.`kKunde` != 0
+                AND `otab`.`kBesucherBot` = 0
+                AND `otab`.`dLetzteAktivitaet` = (
+                    SELECT MAX(`tbesucher`.`dLetzteAktivitaet`)
+                    FROM `tbesucher`
+                    WHERE `tbesucher`.`kKunde` = `otab`.`kKunde`
+                )
+            UNION
+            SELECT
+                `tbesucher`.*,
+                `tbestellung`.`fGesamtsumme` as fGesamtsumme, `tbestellung`.`dErstellt` as dErstellt,
+                `tkunde`.`cVorname` as cVorname, `tkunde`.`cNachname` as cNachname,
+                `tkunde`.`cNewsletter` as cNewsletter
+            FROM
+                `tbesucher`
+                    LEFT JOIN `tbestellung` ON `tbesucher`.`kBestellung` = `tbestellung`.`kBestellung`
+                    LEFT JOIN `tkunde` ON `tbesucher`.`kKunde` = `tkunde`.`kKunde`
+            WHERE
+                `tbesucher`.`kBesucherBot` = 0
+                AND `tbesucher`.`kKunde` = 0   -- only guests are of interest here
+        ", 2);
         if (is_array($oVisitors_arr)) {
             foreach ($oVisitors_arr as $i => $oVisitor) {
                 $oVisitors_arr[$i]->cNachname = trim(entschluesselXTEA($oVisitor->cNachname));

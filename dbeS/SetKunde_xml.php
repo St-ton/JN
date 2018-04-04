@@ -9,52 +9,42 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
-$return = 3;
-$kKunde = 0;
-$res    = '';
+$return  = 3;
+$kKunde  = 0;
+$res     = '';
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
+    $zipFile = checkFile();
     $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
 
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'SetKunde_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'SetKunde_xml');
+    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
         }
-        if ($archive->extract(PCLZIP_OPT_PATH, PFAD_SYNC_TMP)) {
-            $return = 0;
-
-            if (count($list) === 1) {
-                $zip = array_shift($list);
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
-                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'SetKunde_xml');
-                }
-                $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
-                $xml = XML_unserialize($d);
-                $res = bearbeite($xml);
-            } else {
-                $errMsg = 'Error : Es kann nur ein Kunde pro Aufruf verarbeitet werden!';
-                Jtllog::writeLog($errMsg, JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
-                syncException($errMsg);
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        if (count($syncFiles) === 1) {
+            $xmlFile = array_shift($syncFiles);
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog(
+                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'SetKunde_xml'
+                );
             }
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
+            $d   = file_get_contents($xmlFile);
+            $res = bearbeite(XML_unserialize($d));
+        } else {
+            $errMsg = 'Error : Es kann nur ein Kunde pro Aufruf verarbeitet werden!';
+            Jtllog::writeLog($errMsg, JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
+            syncException($errMsg);
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
     }
 }
-
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
-}
-
 if (is_array($res)) {
-    echo $return . ";\n" . XML_serialize($res);
+    echo $return . ";\n" . StringHandler::convertISO(XML_serialize($res));
 } else {
     echo $return . ';' . $res;
 }
@@ -103,9 +93,9 @@ function bearbeite($xml)
         //Mappe Anrede
         $Kunde->cAnrede = mappeWawiAnrede2ShopAnrede($Kunde->cAnrede);
 
-        $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$Kunde->kSprache);
+        $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$Kunde->kSprache);
         if (empty($oSprache->kSprache)) {
-            $oSprache        = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+            $oSprache        = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
             $Kunde->kSprache = $oSprache->kSprache;
         }
 
@@ -128,7 +118,7 @@ function bearbeite($xml)
                 // E-Mail Adresse geändert - Verwendung prüfen!
                 if (!valid_email($Kunde->cMail) ||
                     pruefeEmailblacklist($Kunde->cMail) ||
-                    Shop::DB()->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null
+                    Shop::Container()->getDB()->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null
                 ) {
                     // E-Mail ist invalid, blacklisted bzw. wird bereits im Shop verwendet - die Änderung wird zurückgewiesen.
                     $res_obj['keys']['tkunde attr']['kKunde'] = 0;
@@ -161,7 +151,6 @@ function bearbeite($xml)
 
             $Kunde->updateInDB();
             // Kundendatenhistory
-            require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kundendatenhistory.php';
             Kundendatenhistory::saveHistory($oKundeAlt, $Kunde, Kundendatenhistory::QUELLE_DBES);
 
             if (count($oKundenattribut_arr) > 0) {
@@ -183,17 +172,17 @@ function bearbeite($xml)
                 return $res_obj;
             }
             //Kunde existiert nicht im Shop - check, ob email schon belegt
-            $oKundeAlt = Shop::DB()->select(
+            $oKundeAlt = Shop::Container()->getDB()->select(
                 'tkunde',
                 'nRegistriert', 1,
-                'cMail', Shop::DB()->escape($Kunde->cMail),
+                'cMail', Shop::Container()->getDB()->escape($Kunde->cMail),
                 null, null,
                 false,
                 'kKunde'
             );
             if (isset($oKundeAlt->kKunde) && $oKundeAlt->kKunde > 0) {
                 //EMAIL SCHON BELEGT -> Kunde wird nicht neu angelegt, sondern der Kunde wird an Wawi zurückgegeben
-                $xml_obj['kunden']['tkunde']      = Shop::DB()->query(
+                $xml_obj['kunden']['tkunde']      = Shop::Container()->getDB()->query(
                     "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
                         cNachname, cFirma, cZusatz, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, 
                         cLand, cTel, cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
@@ -217,7 +206,7 @@ function bearbeite($xml)
 
                 unset($xml_obj['kunden']['tkunde'][0]['cPasswort']);
                 $xml_obj['kunden']['tkunde']['0 attr']             = buildAttributes($xml_obj['kunden']['tkunde'][0]);
-                $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = Shop::DB()->query(
+                $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = Shop::Container()->getDB()->query(
                     "SELECT *
                         FROM tkundenattribut
                          WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'], 9
@@ -234,9 +223,10 @@ function bearbeite($xml)
                 return $xml_obj;
             }
             //Email noch nicht belegt, der Kunde muss neu erstellt werden -> KUNDE WIRD NEU ERSTELLT
+            $passwordService          = Shop::Container()->getPasswordService();
             $Kunde->dErstellt         = 'now()';
-            $Kunde->cPasswortKlartext = $Kunde->generatePassword(12);
-            $Kunde->cPasswort         = $Kunde->generatePasswordHash($Kunde->cPasswortKlartext);
+            $Kunde->cPasswortKlartext = $passwordService->generate(12);
+            $Kunde->cPasswort         = $passwordService->hash($Kunde->cPasswortKlartext);
             $Kunde->nRegistriert      = 1;
             $Kunde->cAbgeholt         = 'Y';
             $Kunde->cAktiv            = 'Y';
@@ -375,7 +365,7 @@ function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
     $kSprache = (int)$kSprache;
     if ($kKunde > 0 && $kSprache > 0 && is_array($oKundenattribut_arr) && count($oKundenattribut_arr) > 0) {
         foreach ($oKundenattribut_arr as $oKundenattribut) {
-            $oKundenfeld = Shop::DB()->query(
+            $oKundenfeld = Shop::Container()->getDB()->query(
                 "SELECT tkundenfeld.kKundenfeld, tkundenfeldwert.cWert
                      FROM tkundenfeld
                      LEFT JOIN tkundenfeldwert
@@ -388,7 +378,7 @@ function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
                     continue;
                 }
                 if (!$bNeu) {
-                    Shop::DB()->delete(
+                    Shop::Container()->getDB()->delete(
                         'tkundenattribut',
                         ['kKunde', 'kKundenfeld'],
                         [$kKunde, (int)$oKundenfeld->kKundenfeld]
@@ -400,7 +390,7 @@ function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
                 $oKundenattributTMP->cName       = $oKundenattribut->cName;
                 $oKundenattributTMP->cWert       = $oKundenattribut->cWert;
 
-                Shop::DB()->insert('tkundenattribut', $oKundenattributTMP);
+                Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattributTMP);
             }
         }
     }

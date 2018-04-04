@@ -23,7 +23,7 @@
                 <div class="alert alert-info">{lang key="shareYourRatingGuidelines" section="product rating"}.</div>
                 <div class="vmiddle">
                     {if !empty($Artikel->Bilder[0]->cPfadMini)}
-                        <img src="{$Artikel->Bilder[0]->cPfadMini}" class="image vmiddle" />
+                        <img src="{$Artikel->Bilder[0]->cURLMini}" class="image vmiddle" />
                     {/if}
                     <span class="vmiddle">{$Artikel->cName}</span>
                 </div>

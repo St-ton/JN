@@ -36,7 +36,7 @@ switch ($cAction) {
             $oSlide->cText        = htmlspecialchars($aSlide['cText'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oSlide->cLink        = $aSlide['cLink'];
             $oSlide->nSort        = $aSlide['nSort'];
-            if ($aSlide['delete'] == 1) {
+            if ((int)$aSlide['delete'] === 1) {
                 $oSlide->delete();
             } else {
                 $oSlide->save();
@@ -85,7 +85,7 @@ switch ($cAction) {
                 $oSlider->cEffects = 'random';
             }
             if ($oSlider->save() === true) {
-                Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $oSlider->kSlider]);
+                Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $oSlider->kSlider]);
                 // save extensionpoint
                 $oExtension                = new stdClass();
                 $oExtension->kSprache      = $kSprache;
@@ -95,7 +95,7 @@ switch ($cAction) {
                 $oExtension->cValue        = $cValue;
                 $oExtension->cClass        = 'Slider';
                 $oExtension->kInitial      = $oSlider->kSlider;
-                Shop::DB()->insert('textensionpoint', $oExtension);
+                Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
 
                 header('Location: ' . $cRedirectUrl);
                 exit;
@@ -188,6 +188,5 @@ $smarty->assign('PFAD_KCFINDER', PFAD_KCFINDER)
        ->assign('cHinweis', $cHinweis)
        ->assign('cAction', $cAction)
        ->assign('kSlider', $kSlider)
-       ->assign('oSlider_arr', Shop::DB()->query("SELECT * FROM tslider", 2))
-       ->assign('xajax_javascript', $xajax->getJavascript(Shop::getURL() . '/' . PFAD_XAJAX))
+       ->assign('oSlider_arr', Shop::Container()->getDB()->query("SELECT * FROM tslider", 2))
        ->display('slider.tpl');

@@ -4,17 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/../../../includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-$einstellungApiKey       = Shop::DB()->query("
-    SELECT cWert 
+$einstellungApiKey       = Shop::Container()->getDB()->query(
+    "SELECT cWert 
         FROM teinstellungen 
         WHERE cName = 'zahlungsart_safetypay_apikey'", 1
 );
-$einstellungSignatureKey = Shop::DB()->query("
-    SELECT cWert 
+$einstellungSignatureKey = Shop::Container()->getDB()->query(
+    "SELECT cWert 
         FROM teinstellungen 
         WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1
 );
@@ -53,20 +52,20 @@ if ($Result['ErrorManager']['ErrorNumber'] == '0') {
             // $MerchantOrderNo = 'YOUR ORDER NUMBER';
             // else $MerchantOrderNo = $value['MerchantReferenceNo'];
 
-            $zahlungsid = Shop::DB()->select('tbestellung', 'cBestellNr', $MerchantOrderNo);
-            $b          = Shop::DB()->query("
+            $zahlungsid = Shop::Container()->getDB()->select('tbestellung', 'cBestellNr', $MerchantOrderNo);
+            $b          = Shop::Container()->getDB()->query("
                 SELECT kKunde 
                     FROM tbestellung 
                     WHERE kBestellung = " . (int)$zahlungsid->kBestellung, 1
             );
-            $kunde      = Shop::DB()->select('tkunde', 'kKunde', (int)$b->kKunde);
-            $Sprache    = Shop::DB()->query("
+            $kunde      = Shop::Container()->getDB()->select('tkunde', 'kKunde', (int)$b->kKunde);
+            $Sprache    = Shop::Container()->getDB()->query("
                 SELECT cISO 
                     FROM tsprache 
                     WHERE kSprache = " . (int)$kunde->kSprache, 1
             );
             if (!$Sprache) {
-                $Sprache = Shop::DB()->query("SELECT cISO FROM tsprache WHERE cStandard = 'Y'", 1);
+                $Sprache = Shop::Container()->getDB()->query("SELECT cISO FROM tsprache WHERE cStandard = 'Y'", 1);
             }
 
             $bestellung = new Bestellung($zahlungsid->kBestellung);
@@ -76,7 +75,7 @@ if ($Result['ErrorManager']['ErrorNumber'] == '0') {
             $_upd                = new stdClass();
             $_upd->cStatus       = BESTELLUNG_STATUS_BEZAHLT;
             $_upd->dBezahltDatum = 'now()';
-            Shop::DB()->update('tbestellung', 'kBestellung', (int)$bestellung->kBestellung, $_upd);
+            Shop::Container()->getDB()->update('tbestellung', 'kBestellung', (int)$bestellung->kBestellung, $_upd);
 
             $bestellung = new Bestellung($zahlungsid->kBestellung);
             $bestellung->fuelleBestellung(0);
@@ -91,7 +90,7 @@ if ($Result['ErrorManager']['ErrorNumber'] == '0') {
             $zahlungseingang->cZahler           = $kunde->cMail;
             $zahlungseingang->cAbgeholt         = 'N';
             $zahlungseingang->dZeit             = strftime('%Y-%m-%d %H:%M:%S', $paymentDateTmp);
-            Shop::DB()->insert('tzahlungseingang', $zahlungseingang);
+            Shop::Container()->getDB()->insert('tzahlungseingang', $zahlungseingang);
 
             $obj->tkunde->cMail = $kunde->cMail;
             //mail

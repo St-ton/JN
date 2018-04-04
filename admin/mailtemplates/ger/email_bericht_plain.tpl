@@ -76,7 +76,7 @@ Versendete Wunschlisten: {$oMailObjekt->nAnzahlVersendeterWunschlisten}
 {/if}
 
 {if $oMailObjekt->nAnzahlDurchgefuehrteUmfragen != -1}
-Durchgeführte Umfragen: {$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
+DurchgefÃ¼hrte Umfragen: {$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
 {/if}
 
 {if $oMailObjekt->nAnzahlNewskommentare != -1}
@@ -92,7 +92,7 @@ Neue Produktanfragen: {$oMailObjekt->nAnzahlProduktanfrageArtikel}
 {/if}
 
 {if $oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit != -1}
-Neue Verfügbarkeitsanfragen: {$oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit}
+Neue VerfÃ¼gbarkeitsanfragen: {$oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit}
 {/if}
 
 {if $oMailObjekt->nAnzahlVergleiche != -1}

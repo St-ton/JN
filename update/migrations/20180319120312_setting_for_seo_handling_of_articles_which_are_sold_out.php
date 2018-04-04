@@ -33,7 +33,7 @@ class Migration_20180319120312 extends Migration implements IMigration
     {
         $this->setConfig(
             'artikel_artikelanzeigefilter_seo',
-            'seo',
+            '301',
             CONF_GLOBAL,
             'Direktaufruf ausverkaufter Artikel',
             'selectbox',

@@ -57,7 +57,7 @@
                         </a>
                     {/if}
                     <a href="{get_static_route id='jtl.php' params=['bewertungen' => 1]}" class="list-group-item{if $step === 'bewertungen'} active{/if}">
-                        {lang key="feedback" section="account data"}
+                        {lang key='allRatings'}
                     </a>
                 </div>
             </div>

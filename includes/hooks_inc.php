@@ -1695,7 +1695,7 @@ define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
 /**
  * on removing a cart position that has been deactivated / deleted in the meantime
  *
- * @since 4.07
+ * @since 5.0
  * @file classes/class.JTL-Shop.Warenkorb.php
  * @param WarenkorbPos - oPosition
  * @param bool         - &delete
@@ -1705,7 +1705,7 @@ define('HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS', 230);
 /**
  * in ProductFilter::initBaseStates() after initializing the base filters
  *
- * @since 4.07
+ * @since 5.0
  * @file class.JTL-Shop.ProductFilter.php
  * @param ProductFilter productFilter
  */
@@ -1714,7 +1714,7 @@ define('HOOK_PRODUCTFILTER_INIT', 250);
 /**
  * in ProductFilter::initStates() after initializing the active filters
  *
- * @since 4.07
+ * @since 5.0
  * @file class.JTL-Shop.ProductFilter.php
  * @param ProductFilter productFilter
  * @param array params
@@ -1724,7 +1724,7 @@ define('HOOK_PRODUCTFILTER_INIT_STATES', 251);
 /**
  * in ProductFilter::construct() when creating the instance
  *
- * @since 4.07
+ * @since 5.0
  * @file class.JTL-Shop.ProductFilter.php
  * @param ProductFilter productFilter
  */
@@ -1733,7 +1733,7 @@ define('HOOK_PRODUCTFILTER_CREATE', 252);
 /**
  * in ProductFilter::construct() when creating the instance
  *
- * @since 4.07
+ * @since 5.0
  * @file class.JTL-Shop.ProductFilter.php
  * @param array select
  * @param array joins
@@ -1749,7 +1749,7 @@ define('HOOK_PRODUCTFILTER_GET_BASE_QUERY', 253);
 /**
  * in Preise::__construct()
  *
- * @since 4.07
+ * @since 5.0
  * @file class.JTL-Shop.Preise.php
  * @param int customerGroupID
  * @param int customerID
@@ -1762,7 +1762,7 @@ define('HOOK_PRICES_CONSTRUCT', 260);
 /**
  * in WarenkorbHelper::addToCartCheck()
  *
- * @since 4.07
+ * @since 5.0
  * @file class.helper.Warenkorb.php
  * @param Artikel product
  * @param int     quantity

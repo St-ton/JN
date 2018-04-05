@@ -65,7 +65,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         private function loadFromDB($kRMA, $kArtikel, $bProductName, $bProductObject, $kSprache, $kKundengruppe)
         {
-            $oObj = Shop::DB()->select('trmaartikel', 'kRMA', (int)$kRMA, 'kArtikel', (int)$kArtikel);
+            $oObj = Shop::Container()->getDB()->select('trmaartikel', 'kRMA', (int)$kRMA, 'kArtikel', (int)$kArtikel);
             if (isset($oObj->kRMA) && $oObj->kRMA > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
@@ -76,27 +76,27 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             if ($bProductName) {
                 $oSprache = gibStandardsprache();
                 if (($kSprache > 0 && $kSprache == $oSprache->kSprache) || !$kSprache) {
-                    $oObj = Shop::DB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . (int)$kArtikel, 1);
+                    $oObj = Shop::Container()->getDB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . (int)$kArtikel, 1);
                     if (isset($oObj->cName) && strlen($oObj->cName) > 0) {
                         $this->cArtikelName = $oObj->cName;
                     }
                 } else {
-                    $oObj = Shop::DB()->query("SELECT cName FROM tartikelsprache WHERE kArtikel = " . (int)$kArtikel . " AND kSprache = " . (int)$kSprache, 1);
+                    $oObj = Shop::Container()->getDB()->query("SELECT cName FROM tartikelsprache WHERE kArtikel = " . (int)$kArtikel . " AND kSprache = " . (int)$kSprache, 1);
                     if (isset($oObj->cName) && strlen($oObj->cName) > 0) {
                         $this->cArtikelName = $oObj->cName;
                     } else {
-                        $oObj = Shop::DB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . (int)$kArtikel, 1);
+                        $oObj = Shop::Container()->getDB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . (int)$kArtikel, 1);
                         if (isset($oObj->cName) && strlen($oObj->cName) > 0) {
                             $this->cArtikelName = $oObj->cName;
                         }
                     }
                 }
 
-                $oTMP = Shop::DB()->query("SELECT cSeo FROM tseo WHERE cKey = 'kArtikel' AND kKey = " . (int)$kArtikel, 1);
+                $oTMP = Shop::Container()->getDB()->query("SELECT cSeo FROM tseo WHERE cKey = 'kArtikel' AND kKey = " . (int)$kArtikel, 1);
                 if (isset($oTMP->cSeo) && strlen($oTMP->cSeo) > 0) {
                     $this->cArtikelURL = Shop::getURL() . '/' . $oTMP->cSeo;
                 } else {
-                    $this->cArtikelURL = Shop::getURL() . '/index.php?a=' . (int)$kArtikel;
+                    $this->cArtikelURL = Shop::getURL() . '/?a=' . (int)$kArtikel;
                 }
             }
 
@@ -124,7 +124,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             }
             unset($oObj->cArtikelName, $oObj->cArtikelURL, $oObj->oArtikel);
 
-            $kPrim = Shop::DB()->insert('trmaartikel', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('trmaartikel', $oObj);
 
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
@@ -140,7 +140,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function update()
         {
-            return Shop::DB()->query(
+            return Shop::Container()->getDB()->query(
                 "UPDATE trmaartikel
                    SET kRMA = " . $this->kRMA . ",
                        kBestellung = " . $this->kBestellung . ",
@@ -159,7 +159,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('trmaartikel', 'kRMA', $this->getRMA());
+            return Shop::Container()->getDB()->delete('trmaartikel', 'kRMA', $this->getRMA());
         }
 
         /**
@@ -212,7 +212,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setGrund($cGrund)
         {
-            $this->cGrund = Shop::DB()->escape($cGrund);
+            $this->cGrund = Shop::Container()->getDB()->escape($cGrund);
 
             return $this;
         }
@@ -223,7 +223,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setKommentar($cKommentar)
         {
-            $this->cKommentar = Shop::DB()->escape($cKommentar);
+            $this->cKommentar = Shop::Container()->getDB()->escape($cKommentar);
 
             return $this;
         }
@@ -323,7 +323,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $kArtikel_arr = [];
 
             if ($kBestellung > 0) {
-                $oObj_arr = Shop::DB()->query(
+                $oObj_arr = Shop::Container()->getDB()->query(
                     "SELECT kArtikel
                         FROM trmaartikel
                         WHERE kBestellung = " . $kBestellung, 2
@@ -363,7 +363,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $kBestellung = (int)$kBestellung;
             $kArtikel    = (int)$kArtikel;
             if ($kBestellung > 0 && $kArtikel > 0) {
-                $oObj = Shop::DB()->query("
+                $oObj = Shop::Container()->getDB()->query("
                     SELECT SUM(fAnzahl) AS fAnzahlSum
                         FROM trmaartikel
                         WHERE kArtikel = " . $kArtikel . "

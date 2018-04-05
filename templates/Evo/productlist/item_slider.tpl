@@ -9,7 +9,7 @@
         {/if}
 
         {*include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cURLKlein alt=$alt*}
-        <img src="{$Artikel->Bilder[0]->cURLKlein}" alt="{$alt}" />
+        <img data-lazy="{$Artikel->Bilder[0]->cURLKlein}" src="{$imageBaseURL}gfx/trans.png" alt="{$alt}" />
         <meta itemprop="image" content="{$ShopURL}/{$Artikel->Bilder[0]->cURLKlein}">
         {if isset($Artikel->oSuchspecialBild) && !isset($hideOverlays)}
             <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cURLKlein}"

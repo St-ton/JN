@@ -30,7 +30,7 @@ class Synclogin
      */
     public function __construct()
     {
-        $obj = Shop::DB()->select('tsynclogin', 'kSynclogin', 1);
+        $obj = Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);
         if ($obj !== null) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
@@ -45,12 +45,14 @@ class Synclogin
      * @param string $user
      * @param string $pass
      * @return bool
+     * @throws Exception
      */
     public function checkLogin($user, $pass)
     {
+        $passwordService = Shop::Container()->getPasswordService();
         return $this->cName !== null
             && $this->cPass !== null
             && $this->cName === $user
-            && password_verify($pass, $this->cPass) === true;
+            && $passwordService->verify($pass, $this->cPass) === true;
     }
 }

@@ -73,7 +73,7 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
         $limit,
         $minsells
     );
-    $products = $oSuchergebnisse->getProducts()->getItems();
+    $products = $oSuchergebnisse->getProducts()->all();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
 if (verifyGPCDataInteger('zahl') > 0) {
@@ -116,7 +116,7 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
             $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
             $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
                 $KategorieInhalt->Unterkategorien,
-                isset($KategorieInhalt->TopArtikel) ? $KategorieInhalt->TopArtikel : 0
+                $KategorieInhalt->TopArtikel ?? 0
             );
         }
         $smarty->assign('KategorieInhalt', $KategorieInhalt);
@@ -156,8 +156,8 @@ $smarty->assign('NaviFilter', $NaviFilter)
        ->assign('Navigation', $oNavigationsinfo->getBreadCrumb())
        ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())
        ->assign('Suchergebnisse', $oSuchergebnisse)
-       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
-       ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null)
+       ->assign('requestURL', $requestURL ?? null)
+       ->assign('sprachURL', $sprachURL ?? null)
        ->assign('oNavigationsinfo', $oNavigationsinfo)
        ->assign('SEO', true)
        ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->getProductCount() >=
@@ -166,7 +166,7 @@ $smarty->assign('NaviFilter', $NaviFilter)
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
+$oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
 $smarty->assign(
     'meta_title',
     $oNavigationsinfo->generateMetaTitle(
@@ -177,7 +177,7 @@ $smarty->assign(
 )->assign(
     'meta_description',
     $oNavigationsinfo->generateMetaDescription(
-        $oSuchergebnisse->getProducts()->getItems(),
+        $oSuchergebnisse->getProducts()->all(),
         $oSuchergebnisse,
         $oGlobaleMetaAngabenAssoc_arr,
         $AktuelleKategorie
@@ -185,7 +185,7 @@ $smarty->assign(
 )->assign(
     'meta_keywords',
     $oNavigationsinfo->generateMetaKeywords(
-        $oSuchergebnisse->getProducts()->getItems(),
+        $oSuchergebnisse->getProducts()->all(),
         $AktuelleKategorie
     )
 );

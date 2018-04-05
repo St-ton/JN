@@ -39,7 +39,7 @@ class Nice
      */
     public static function getInstance()
     {
-        return self::$instance !== null ? self::$instance : new self();
+        return self::$instance ?? new self();
     }
 
     /**
@@ -50,7 +50,7 @@ class Nice
     {
         if (($this->cBrocken = Shop::Cache()->get('cbrocken')) === false) {
             // Hole Brocken
-            $oBrocken = Shop::DB()->query("SELECT cBrocken FROM tbrocken LIMIT 1", 1);
+            $oBrocken = Shop::Container()->getDB()->query("SELECT cBrocken FROM tbrocken LIMIT 1", 1);
 
             if (!empty($oBrocken->cBrocken)) {
                 // Brocken encrypten

@@ -29,7 +29,7 @@ function bearbeiteNewsletterversand($oJobQueue)
     if (count($kKundengruppe_arr) === 0) {
         $oJobQueue->deleteJobInDB();
         // NewsletterQueue löschen
-        Shop::DB()->delete('tnewsletterqueue', 'kNewsletter', $oJobQueue->kKey);
+        Shop::Container()->getDB()->delete('tnewsletterqueue', 'kNewsletter', $oJobQueue->kKey);
 
         return false;
     }
@@ -70,7 +70,7 @@ function bearbeiteNewsletterversand($oJobQueue)
     $cSQL .= ")";
 
     $oHersteller_arr           = gibHerstellerObjekte($kHersteller_arr, $oKampagne, $oNewsletter->kSprache);
-    $oNewsletterEmpfaenger_arr = Shop::DB()->query(
+    $oNewsletterEmpfaenger_arr = Shop::Container()->getDB()->query(
         "SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger, 
             tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname, 
             tnewsletterempfaenger.cEmail, tnewsletterempfaenger.cLoeschCode
@@ -109,10 +109,10 @@ function bearbeiteNewsletterversand($oJobQueue)
                 $oHersteller_arr,
                 $oKategorie_arr[$kKundengruppeTMP],
                 $oKampagne,
-                (isset($oKunde) ? $oKunde : null)
+                $oKunde ?? null
             );
             // Newsletterempfaenger updaten
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "UPDATE tnewsletterempfaenger
                     SET dLetzterNewsletter = '" . date('Y-m-d H:m:s') . "'
                     WHERE kNewsletterEmpfaenger = " . (int)$oNewsletterEmpfaenger->kNewsletterEmpfaenger, 3
@@ -125,7 +125,7 @@ function bearbeiteNewsletterversand($oJobQueue)
     } else {
         $oJobQueue->deleteJobInDB();
         // NewsletterQueue löschen
-        Shop::DB()->delete('tnewsletterqueue', 'kNewsletter', (int)$oJobQueue->kKey);
+        Shop::Container()->getDB()->delete('tnewsletterqueue', 'kNewsletter', (int)$oJobQueue->kKey);
     }
 
     return true;

@@ -50,6 +50,11 @@ class WarenkorbPersPos
     public $cUnique;
 
     /**
+     * @var string
+     */
+    public $cResponsibility;
+
+    /**
      * @var int
      */
     public $kKonfigitem;
@@ -82,17 +87,27 @@ class WarenkorbPersPos
      * @param string     $cUnique
      * @param int        $kKonfigitem
      * @param int|string $nPosTyp
+     * @param string     $cResponsibility
      */
-    public function __construct($kArtikel, $cArtikelName, $fAnzahl, $kWarenkorbPers, $cUnique = '', $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
-    {
-        $this->kArtikel       = (int)$kArtikel;
-        $this->cArtikelName   = $cArtikelName;
-        $this->fAnzahl        = $fAnzahl;
-        $this->dHinzugefuegt  = 'now()';
-        $this->kWarenkorbPers = (int)$kWarenkorbPers;
-        $this->cUnique        = $cUnique;
-        $this->kKonfigitem    = (int)$kKonfigitem;
-        $this->nPosTyp        = (int)$nPosTyp;
+    public function __construct(
+        $kArtikel,
+        $cArtikelName,
+        $fAnzahl,
+        $kWarenkorbPers,
+        $cUnique = '',
+        $kKonfigitem = 0,
+        $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL,
+        $cResponsibility = 'core'
+    ) {
+        $this->kArtikel        = (int)$kArtikel;
+        $this->cArtikelName    = $cArtikelName;
+        $this->fAnzahl         = $fAnzahl;
+        $this->dHinzugefuegt   = 'now()';
+        $this->kWarenkorbPers  = (int)$kWarenkorbPers;
+        $this->cUnique         = $cUnique;
+        $this->cResponsibility = !empty($cResponsibility) ? $cResponsibility : 'core';
+        $this->kKonfigitem     = (int)$kKonfigitem;
+        $this->nPosTyp         = (int)$nPosTyp;
     }
 
     /**
@@ -105,10 +120,10 @@ class WarenkorbPersPos
             if (isset($oEigenschaftwerte->kEigenschaft)) {
                 $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
                     $oEigenschaftwerte->kEigenschaft,
-                    (isset($oEigenschaftwerte->kEigenschaftWert) ? $oEigenschaftwerte->kEigenschaftWert : null),
-                    (isset($oEigenschaftwerte->cFreifeldWert) ? $oEigenschaftwerte->cFreifeldWert : null),
-                    (isset($oEigenschaftwerte->cEigenschaftName) ? $oEigenschaftwerte->cEigenschaftName : null),
-                    (isset($oEigenschaftwerte->cEigenschaftWertName) ? $oEigenschaftwerte->cEigenschaftWertName : null),
+                    $oEigenschaftwerte->kEigenschaftWert ?? null,
+                    $oEigenschaftwerte->cFreifeldWert ?? null,
+                    $oEigenschaftwerte->cEigenschaftName ?? null,
+                    $oEigenschaftwerte->cEigenschaftWertName ?? null,
                     $this->kWarenkorbPersPos
                 );
                 $oWarenkorbPersPosEigenschaft->schreibeDB();
@@ -131,9 +146,10 @@ class WarenkorbPersPos
         $oTemp->fAnzahl          = $this->fAnzahl;
         $oTemp->dHinzugefuegt    = $this->dHinzugefuegt;
         $oTemp->cUnique          = $this->cUnique;
+        $oTemp->cResponsibility  = !empty($this->cResponsibility) ? $this->cResponsibility : 'core';
         $oTemp->kKonfigitem      = $this->kKonfigitem;
         $oTemp->nPosTyp          = $this->nPosTyp;
-        $this->kWarenkorbPersPos = Shop::DB()->insert('twarenkorbperspos', $oTemp);
+        $this->kWarenkorbPersPos = Shop::Container()->getDB()->insert('twarenkorbperspos', $oTemp);
 
         return $this;
     }
@@ -151,10 +167,11 @@ class WarenkorbPersPos
         $oTemp->fAnzahl           = $this->fAnzahl;
         $oTemp->dHinzugefuegt     = $this->dHinzugefuegt;
         $oTemp->cUnique           = $this->cUnique;
+        $oTemp->cResponsibility   = !empty($this->cResponsibility) ? $this->cResponsibility : 'core';
         $oTemp->kKonfigitem       = $this->kKonfigitem;
         $oTemp->nPosTyp           = $this->nPosTyp;
 
-        return Shop::DB()->update('twarenkorbperspos', 'kWarenkorbPersPos', $this->kWarenkorbPersPos, $oTemp);
+        return Shop::Container()->getDB()->update('twarenkorbperspos', 'kWarenkorbPersPos', $this->kWarenkorbPersPos, $oTemp);
     }
 
     /**

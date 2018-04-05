@@ -56,7 +56,7 @@ class Eigenschaft
      */
     public function loadFromDB($kEigenschaft)
     {
-        $obj = Shop::DB()->select('teigenschaft', 'kEigenschaft', (int)$kEigenschaft);
+        $obj = Shop::Container()->getDB()->select('teigenschaft', 'kEigenschaft', (int)$kEigenschaft);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -75,7 +75,7 @@ class Eigenschaft
         $obj = kopiereMembers($this);
         unset($obj->EigenschaftsWert);
 
-        return Shop::DB()->insert('teigenschaft', $obj);
+        return Shop::Container()->getDB()->insert('teigenschaft', $obj);
     }
 
     /**
@@ -87,7 +87,7 @@ class Eigenschaft
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->update('teigenschaft', 'kEigenschaft', $obj->kEigenschaft, $obj);
+        return Shop::Container()->getDB()->update('teigenschaft', 'kEigenschaft', $obj->kEigenschaft, $obj);
     }
 
     /**

@@ -43,7 +43,6 @@ define('CONF_SUCHSPECIAL', 119);
 define('CONF_CHECKBOX', 120);
 define('CONF_AUSWAHLASSISTENT', 121);
 define('CONF_RMA', 122);
-define('CONF_OBJECTCACHING', 123);
 define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
 define('CONF_PLUGINZAHLUNGSARTEN', 126);
@@ -128,7 +127,6 @@ define('MAILTEMPLATE_RMA_ABGESENDET', 'core_jtl_rma_submitted');
 define('MAILTEMPLATE_BEWERTUNG_GUTHABEN', 'core_jtl_bewertung_guthaben');
 define('MAILTEMPLATE_BESTELLUNG_TEILVERSANDT', 'core_jtl_bestellung_teilversandt');
 define('MAILTEMPLATE_ANBIETERKENNZEICHNUNG', 'core_jtl_anbieterkennzeichnung');
-
 // Suche
 define('SEARCH_SORT_STANDARD', 100);
 define('SEARCH_SORT_NAME_ASC', 1);
@@ -241,9 +239,6 @@ define('FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN', 'stuecklistenkomponenten');
 define('FKT_ATTRIBUT_INHALT', 'inhalt');
 define('FKT_ATTRIBUT_CANONICALURL_VARKOMBI', 'varkombi_canonicalurl');
 define('FKT_ATTRIBUT_KONFIG_MAX_ITEMS', 'konfig_max_items'); // deprecated? not in use anywhere
-define('FKT_ATTRIBUT_ARTIKELDETAILS_TPL', 'tpl_artikeldetails');
-define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL', 'tpl_artikelkonfig');
-define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS', 'tpl_js_artikelkonfig');
 // Special Content
 define('SC_KONTAKTFORMULAR', '1');
 // Suchspecials
@@ -446,9 +441,14 @@ define('CHECKBOX_ORT_KONTAKT', 5);
 define('CHECKBOX_ORT_FRAGE_ZUM_PRODUKT', 6);
 define('CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT', 7);
 // JTLLOG Levels
-define('JTLLOG_LEVEL_ERROR', 1); // 0001
-define('JTLLOG_LEVEL_NOTICE', 2); // 0010
-define('JTLLOG_LEVEL_DEBUG', 4); // 0100
+define('JTLLOG_LEVEL_EMERGENCY', 600);
+define('JTLLOG_LEVEL_ALERT', 550);
+define('JTLLOG_LEVEL_CRITICAL', 500);
+define('JTLLOG_LEVEL_ERROR', 400);
+define('JTLLOG_LEVEL_WARNING', 300);
+define('JTLLOG_LEVEL_NOTICE', 250);
+define('JTLLOG_LEVEL_INFO', 200);
+define('JTLLOG_LEVEL_DEBUG', 100);
 // JTL Trennzeichen
 define('JTLSEPARATER_WEIGHT', 1);
 define('JTLSEPARATER_LENGTH', 2);
@@ -489,12 +489,5 @@ define('TEMPLATE_XML', 'template.xml');
 define('SHOP_SEO', true);
 // Sessionspeicherung 1 => DB, sonst => Dateien
 define('ES_SESSIONS', 0);
-//Max Anzahl an Variationswerten für Warenkorbmatrix
+// Max Anzahl an Variationswerten für Warenkorbmatrix
 define('ART_MATRIX_MAX', 250);
-
-
-// security
-defined('NEWSLETTER_USE_SECURITY') || define('NEWSLETTER_USE_SECURITY', true);
-defined('MAILTEMPLATE_USE_SECURITY') || define('MAILTEMPLATE_USE_SECURITY', true);
-defined('EXPORTFORMAT_USE_SECURITY') || define('EXPORTFORMAT_USE_SECURITY', true);
-defined('EXPORTFORMAT_ALLOWED_FORMATS') || define('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');

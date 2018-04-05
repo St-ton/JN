@@ -164,9 +164,7 @@ class MediaImageRequest
     {
         if (empty($this->ext)) {
             $info      = pathinfo($this->getPath());
-            $this->ext = isset($info['extension'])
-                ? $info['extension']
-                : null;
+            $this->ext = $info['extension'] ?? null;
         }
 
         return $this->ext;
@@ -195,9 +193,7 @@ class MediaImageRequest
      */
     public function getThumb($size = null, $absolute = false)
     {
-        $size = $size !== null
-            ? $size
-            : $this->getSize();
+        $size   = $size ?? $this->getSize();
         $number = $this->getNumber() > 1
             ? '~' . $this->getNumber()
             : '';
@@ -218,9 +214,7 @@ class MediaImageRequest
      */
     public function getFallbackThumb($size = null)
     {
-        $size = $size !== null
-            ? $size
-            : $this->getSize();
+        $size = $size ?? $this->getSize();
 
         return sprintf('%s/%s/%s', rtrim(PFAD_PRODUKTBILDER, '/'), Image::mapSize($size, true), $this->getPath());
     }
@@ -232,7 +226,7 @@ class MediaImageRequest
      */
     public function getThumbUrl($size = null)
     {
-        return Shop::getURL() . '/' . $this->getThumb($size);
+        return Shop::getImageBaseURL() . $this->getThumb($size);
     }
 
     /**
@@ -248,15 +242,13 @@ class MediaImageRequest
             return $path;
         }
 
-        $item = Shop::DB()->query("
+        $item = Shop::Container()->getDB()->query("
           SELECT kArtikel AS id, nNr AS number, cPfad AS path
             FROM tartikelpict
             WHERE kArtikel = {$id} AND nNr = {$number} ORDER BY nNr LIMIT 1", 1
         );
 
-        $path = isset($item->path)
-            ? $item->path
-            : null;
+        $path = $item->path ?? null;
 
         $this->cachedPath($path);
 
@@ -271,9 +263,7 @@ class MediaImageRequest
     {
         $hash = sprintf('%s-%s-%s', $this->getId(), $this->getNumber(), $this->getType());
         if ($path === null) {
-            return array_key_exists($hash, static::$cache)
-                ? static::$cache[$hash]
-                : null;
+            return static::$cache[$hash] ?? null;
         }
 
         static::$cache[$hash] = $path;

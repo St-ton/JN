@@ -37,7 +37,7 @@ function suggestions($keyword)
         ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
         : 10;
     if (strlen($keyword) >= 2) {
-        $results = Shop::DB()->executeQueryPrepared("
+        $results = Shop::Container()->getDB()->executeQueryPrepared("
             SELECT cSuche AS keyword, nAnzahlTreffer AS quantity
               FROM tsuchanfrage
               WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX(:keyword)), '%')
@@ -78,7 +78,7 @@ function getCitiesByZip($cityQuery, $country, $zip)
         $cityQuery = "%" . StringHandler::filterXSS($cityQuery) . "%";
         $country   = StringHandler::filterXSS($country);
         $zip       = StringHandler::filterXSS($zip);
-        $cities = Shop::DB()->queryPrepared(
+        $cities = Shop::Container()->getDB()->queryPrepared(
             "SELECT cOrt
             FROM tplz
             WHERE cLandISO = :country
@@ -175,7 +175,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         fuegeEinInWarenkorbPers($kArtikel, $anzahl, $oEigenschaftwerte_arr);
     }
     $boxes         = Boxen::getInstance();
-    $pageType      = (Shop::getPageType() !== null) ? Shop::getPageType() : PAGE_UNBEKANNT;
+    $pageType      = Shop::getPageType();
     $boxesToShow   = $boxes->build($pageType, true)->render();
     $warensumme[0] = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
     $warensumme[1] = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
@@ -411,7 +411,7 @@ function pushToWishlist($kArtikel, $qty)
         return $objResponse;
     }
 
-    $vals = Shop::DB()->query('SELECT * FROM teigenschaft WHERE kArtikel = '. $kArtikel, 2);
+    $vals = Shop::Container()->getDB()->query('SELECT * FROM teigenschaft WHERE kArtikel = '. $kArtikel, 2);
     if (!ArtikelHelper::isParent($kArtikel) && !empty($vals)) {
         // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
         // muss zum Artikel weitergeleitet werden um Variationen zu wählen
@@ -580,7 +580,7 @@ function getBasketItems($nTyp)
         case 0:
             $kKundengruppe = Session::CustomerGroup()->getID();
             $nAnzahl       = $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
-            $cLand         = isset($_SESSION['cLieferlandISO']) ? $_SESSION['cLieferlandISO'] : '';
+            $cLand         = $_SESSION['cLieferlandISO'] ?? '';
             $cPLZ          = '*';
 
             if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
@@ -633,9 +633,9 @@ function buildConfiguration($aValues)
     $oResponse       = new IOResponse();
     $Artikel         = new Artikel();
     $articleId       = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : (int)$aValues['a'];
-    $items           = isset($aValues['item']) ? $aValues['item'] : [];
-    $quantities      = isset($aValues['quantity']) ? $aValues['quantity'] : [];
-    $variationValues = isset($aValues['eigenschaftwert']) ? $aValues['eigenschaftwert'] : [];
+    $items           = $aValues['item'] ?? [];
+    $quantities      = $aValues['quantity'] ?? [];
+    $variationValues = $aValues['eigenschaftwert'] ?? [];
     $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, []);
     $net             = Session::CustomerGroup()->getIsMerchant();
     $Artikel->fuelleArtikel($articleId, null);
@@ -1029,7 +1029,7 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
         }
     }
 
-    return  Shop::DB()->query(
+    return  Shop::Container()->getDB()->query(
         "SELECT a.kArtikel, tseo.kKey AS kSeoKey, IF (tseo.cSeo IS NULL, a.cSeo, tseo.cSeo) AS cSeo, 
             a.fLagerbestand, a.cLagerBeachten, a.cLagerKleinerNull
             FROM teigenschaftkombiwert

@@ -56,7 +56,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         private function loadFromDB($kKonfigitem = 0, $kKundengruppe = 0)
         {
-            $oObj = Shop::DB()->select(
+            $oObj = Shop::Container()->getDB()->select(
                 'tkonfigitempreis',
                 'kKonfigitem',
                 (int)$kKonfigitem,
@@ -96,7 +96,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             }
             unset($oObj->kKonfigitem, $oObj->kKundengruppe);
 
-            $kPrim = Shop::DB()->insert('tkonfigitempreis', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('tkonfigitempreis', $oObj);
 
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
@@ -117,7 +117,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $_upd->fPreis        = $this->fPreis;
             $_upd->nTyp          = $this->getTyp();
 
-            return Shop::DB()->update(
+            return Shop::Container()->getDB()->update(
                 'tkonfigitempreis',
                 ['kKonfigitem', 'kKundengruppe'],
                 [$this->getKonfigitem(), $this->getKundengruppe()],
@@ -132,7 +132,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete(
+            return Shop::Container()->getDB()->delete(
                 'tkonfigitempreis',
                 ['kKonfigitem', 'kKundengruppe'],
                 [(int)$this->kKonfigitem, (int)$this->kKundengruppe]

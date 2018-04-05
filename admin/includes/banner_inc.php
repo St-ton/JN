@@ -32,7 +32,7 @@ function holeBanner($kImageMap, $fill = true)
  */
 function holeExtension($kImageMap)
 {
-    return Shop::DB()->select('textensionpoint', 'cClass', 'ImageMap', 'kInitial', (int)$kImageMap);
+    return Shop::Container()->getDB()->select('textensionpoint', 'cClass', 'ImageMap', 'kInitial', (int)$kImageMap);
 }
 
 /**
@@ -43,7 +43,7 @@ function entferneBanner($kImageMap)
 {
     $kImageMap = (int)$kImageMap;
     $oBanner   = new ImageMap();
-    Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
+    Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
 
     return $oBanner->delete($kImageMap);
 }

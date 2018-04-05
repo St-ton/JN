@@ -32,7 +32,7 @@ class WidgetBase
     public function __construct($oSmarty = null, $oDB = null, &$oPlugin)
     {
         $this->oSmarty = Shop::Smarty();
-        $this->oDB     = Shop::DB();
+        $this->oDB     = Shop::Container()->getDB();
         $this->oPlugin = $oPlugin;
         $this->init();
     }

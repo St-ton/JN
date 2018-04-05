@@ -24,7 +24,7 @@ class LastJob
      */
     public function getRepeatedJobs($hours)
     {
-        $result = Shop::DB()->query(
+        $result = Shop::Container()->getDB()->query(
             "SELECT kJob, nJob, dErstellt
                 FROM tlastjob
                 WHERE cType = 'RPT'
@@ -40,7 +40,7 @@ class LastJob
      */
     public function getStdJobs()
     {
-        $result = Shop::DB()->selectAll(
+        $result = Shop::Container()->getDB()->selectAll(
             'tlastjob',
             ['cType', 'nFinished'],
             ['STD', 1],
@@ -57,7 +57,7 @@ class LastJob
      */
     public function getJob($nJob)
     {
-        return Shop::DB()->select('tlastjob', 'nJob', (int)$nJob);
+        return Shop::Container()->getDB()->select('tlastjob', 'nJob', (int)$nJob);
     }
 
     /**
@@ -78,12 +78,12 @@ class LastJob
                 'nFinished' => 0,
             ];
 
-            $job->kJob = Shop::DB()->insert('tlastjob', $job);
+            $job->kJob = Shop::Container()->getDB()->insert('tlastjob', $job);
         } else {
             $job->nCounter++;
             $job->dErstellt = date('Y-m-d H:i:s');
 
-            Shop::DB()->update('tlastjob', 'kJob', $job->kJob, $job);
+            Shop::Container()->getDB()->update('tlastjob', 'kJob', $job->kJob, $job);
         }
 
         return $job;
@@ -101,7 +101,7 @@ class LastJob
             'nFinished' => 0,
         ];
 
-        return Shop::DB()->update('tlastjob', 'nJob', (int)$nJob, $job);
+        return Shop::Container()->getDB()->update('tlastjob', 'nJob', (int)$nJob, $job);
     }
 
     /**
@@ -118,7 +118,7 @@ class LastJob
             $keyVals[] = $nJob;
         }
 
-        Shop::DB()->update('tlastjob', $keys, $keyVals, (object)['nFinished' => 1]);
+        Shop::Container()->getDB()->update('tlastjob', $keys, $keyVals, (object)['nFinished' => 1]);
 
         $keyVals[1] = 1;
         $jobs       = $this->getStdJobs();
@@ -138,6 +138,6 @@ class LastJob
             }
         }
 
-        Shop::DB()->delete('tlastjob', $keys, $keyVals);
+        Shop::Container()->getDB()->delete('tlastjob', $keys, $keyVals);
     }
 }

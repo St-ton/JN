@@ -70,7 +70,7 @@ class HerstellerHelper
         if (($manufacturers = Shop::Cache()->get($this->cacheID)) === false) {
             $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             // fixes for admin backend
-            $manufacturers   = Shop::DB()->query(
+            $manufacturers   = Shop::Container()->getDB()->query(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                         thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                         therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
@@ -95,7 +95,8 @@ class HerstellerHelper
                         )
                     ORDER BY thersteller.nSortNr, thersteller.cName", 2
             );
-            $shopURL = Shop::getURL() . '/';
+            $shopURL      = Shop::getURL() . '/';
+            $imageBaseURL = Shop::getImageBaseURL();
             foreach ($manufacturers as $manufacturer) {
                 if (!empty($manufacturer->cBildpfad)) {
                     $manufacturer->cBildpfadKlein  = PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildpfad;
@@ -104,9 +105,9 @@ class HerstellerHelper
                     $manufacturer->cBildpfadKlein  = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
                     $manufacturer->cBildpfadNormal = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
                 }
-                $manufacturer->cBildURLKlein  = $shopURL . $manufacturer->cBildpfadKlein;
-                $manufacturer->cBildURLNormal = $shopURL . $manufacturer->cBildpfadKlein;
-                $manufacturer->cURLFull        = $shopURL . $manufacturer->cSeo;
+                $manufacturer->cBildURLKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;
+                $manufacturer->cBildURLNormal = $imageBaseURL . $manufacturer->cBildpfadKlein;
+                $manufacturer->cURLFull       = $shopURL . $manufacturer->cSeo;
             }
             $cacheTags = [CACHING_GROUP_MANUFACTURER, CACHING_GROUP_CORE];
             executeHook(HOOK_GET_MANUFACTURERS, [
@@ -136,7 +137,7 @@ class HerstellerHelper
      */
     public static function getDataByAttribute($attribute, $value, callable $callback = null)
     {
-        $res = Shop::DB()->select('thersteller', $attribute, $value);
+        $res = Shop::Container()->getDB()->select('thersteller', $attribute, $value);
 
         return is_callable($callback)
             ? $callback($res)

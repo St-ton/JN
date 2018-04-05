@@ -50,7 +50,7 @@ class Lieferadresse extends Adresse
     public function loadFromDB($kLieferadresse)
     {
         $kLieferadresse = (int)$kLieferadresse;
-        $obj            = Shop::DB()->select('tlieferadresse', 'kLieferadresse', $kLieferadresse);
+        $obj            = Shop::Container()->getDB()->select('tlieferadresse', 'kLieferadresse', $kLieferadresse);
 
         if ($obj === null) {
             return 0;
@@ -83,7 +83,7 @@ class Lieferadresse extends Adresse
 
         unset($obj->kLieferadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
 
-        $this->kLieferadresse = Shop::DB()->insert('tlieferadresse', $obj);
+        $this->kLieferadresse = Shop::Container()->getDB()->insert('tlieferadresse', $obj);
         $this->decrypt();
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
@@ -105,7 +105,7 @@ class Lieferadresse extends Adresse
 
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
 
-        $cReturn = Shop::DB()->update('tlieferadresse', 'kLieferadresse', $obj->kLieferadresse, $obj);
+        $cReturn = Shop::Container()->getDB()->update('tlieferadresse', 'kLieferadresse', $obj->kLieferadresse, $obj);
         $this->decrypt();
 
         // Anrede mappen

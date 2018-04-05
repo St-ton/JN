@@ -27,23 +27,23 @@ $cart          = Session::Cart();
 $smarty        = Shop::Smarty();
 if (isset($_GET['i'])) {
     $bestellung = null;
-    $bestellid  = Shop::DB()->select('tbestellid', 'cId', Shop::DB()->escape($_GET['i']));
+    $bestellid  = Shop::Container()->getDB()->select('tbestellid', 'cId', Shop::Container()->getDB()->escape($_GET['i']));
     if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
         $bestellung = new Bestellung($bestellid->kBestellung);
         $bestellung->fuelleBestellung(0);
         speicherUploads($bestellung);
-        Shop::DB()->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
+        Shop::Container()->getDB()->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
         // Zahlungsanbieter
         if (isset($_GET['za']) && $_GET['za'] === 'eos') {
             include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/eos.php';
             eosZahlungsNachricht($bestellung);
         }
     }
-    Shop::DB()->query("DELETE FROM tbestellid WHERE dDatum < date_sub(now(),INTERVAL 30 DAY)", 4);
+    Shop::Container()->getDB()->query("DELETE FROM tbestellid WHERE dDatum < date_sub(now(),INTERVAL 30 DAY)", 4);
     $smarty->assign('abschlussseite', 1);
 } else {
     if (isset($_POST['kommentar'])) {
-        $_SESSION['kommentar'] = substr(strip_tags(Shop::DB()->escape($_POST['kommentar'])), 0, 1000);
+        $_SESSION['kommentar'] = substr(strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])), 0, 1000);
     } elseif (!isset($_SESSION['kommentar'])) {
         $_SESSION['kommentar'] = '';
     }
@@ -81,7 +81,7 @@ if (isset($_GET['i'])) {
         }
         $bestellung = finalisiereBestellung();
         $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0)
-            ? Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
+            ? Shop::Container()->getDB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
             : false;
         if ($bestellung->Lieferadresse === null
             && isset($_SESSION['Lieferadresse'])
@@ -114,10 +114,10 @@ if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellung
 }
 
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('Firma', Shop::DB()->query("SELECT * FROM tfirma", 1))
+       ->assign('Firma', Shop::Container()->getDB()->query("SELECT * FROM tfirma", 1))
        ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Bestellung', $bestellung)
-       ->assign('Kunde', isset($_SESSION['Kunde']) ? $_SESSION['Kunde'] : null)
+       ->assign('Kunde', $_SESSION['Kunde'] ?? null)
        ->assign('bOrderConf', true)
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);

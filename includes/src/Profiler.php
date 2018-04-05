@@ -128,7 +128,7 @@ class Profiler
      */
     public static function getInstance($flags = -1, $options = [], $dir = '/tmp')
     {
-        return (self::$_instance === null) ? new self($flags, $options, $dir) : self::$_instance;
+        return self::$_instance ?? new self($flags, $options, $dir);
     }
 
     /**
@@ -239,7 +239,7 @@ class Profiler
         if (PROFILE_QUERIES_ECHO !== true && count(self::$sqlProfile) > 0) {
             //create run object
             $run        = new stdClass();
-            $run->url   = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+            $run->url   = $_SERVER['REQUEST_URI'] ?? '';
             $run->ptype = 'sql';
             //build stats for this run
             $run->total_count = 0; //total number of queries
@@ -265,13 +265,13 @@ class Profiler
                 ++$run->total_count;
             }
             //insert profiler run into DB - return a new primary key
-            $runID = Shop::DB()->insert('tprofiler', $run);
+            $runID = Shop::Container()->getDB()->insert('tprofiler', $run);
             if (is_numeric($runID)) {
                 //set runID for all filtered queries and save to DB
                 $runID = (int)$runID;
                 foreach ($filtered as $_queryRun) {
                     $_queryRun->runID = $runID;
-                    Shop::DB()->insert('tprofiler_runs', $_queryRun);
+                    Shop::Container()->getDB()->insert('tprofiler_runs', $_queryRun);
                 }
                 foreach (self::$sqlErrors as $_error) {
                     $_queryRun            = new stdClass();
@@ -280,7 +280,7 @@ class Profiler
                     $_queryRun->runtime   = 0;
                     $_queryRun->statement = trim($_error->statement);
                     $_queryRun->data      = serialize(['message' => $_error->message, 'backtrace' => $_error->backtrace]);
-                    Shop::DB()->insert('tprofiler_runs', $_queryRun);
+                    Shop::Container()->getDB()->insert('tprofiler_runs', $_queryRun);
                 }
 
                 return true;
@@ -300,7 +300,7 @@ class Profiler
         self::$stopProfiling = true;
         if (defined('PROFILE_PLUGINS') && PROFILE_PLUGINS === true && count(self::$pluginProfile) > 0) {
             $run              = new stdClass();
-            $run->url         = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+            $run->url         = $_SERVER['REQUEST_URI'] ?? '';
             $run->ptype       = 'plugin';
             $run->total_count = 0;
             $run->total_time  = 0.0;
@@ -338,17 +338,17 @@ class Profiler
                     self::$pluginProfile[] = $_file;
                 }
             }
-            $runID = Shop::DB()->insert('tprofiler', $run);
+            $runID = Shop::Container()->getDB()->insert('tprofiler', $run);
             if (is_numeric($runID)) {
                 $runID = (int)$runID;
                 foreach (self::$pluginProfile as $_fileRun) {
                     $obj           = new stdClass();
                     $obj->runID    = $runID;
-                    $obj->hookID   = isset($_fileRun['hookID']) ? $_fileRun['hookID'] : 0;
+                    $obj->hookID   = $_fileRun['hookID'] ?? 0;
                     $obj->filename = $_fileRun['file'];
                     $obj->runtime  = $_fileRun['runtime'];
                     $obj->runcount = $_fileRun['runcount'];
-                    Shop::DB()->insert('tprofiler_runs', $obj);
+                    Shop::Container()->getDB()->insert('tprofiler_runs', $obj);
                 }
 
                 return true;
@@ -421,7 +421,7 @@ class Profiler
     private static function getProfile($type = 'plugin', $combined = false)
     {
         if ($combined === true) {
-            return Shop::DB()->queryPrepared(
+            return Shop::Container()->getDB()->queryPrepared(
                 "SELECT *
                     FROM tprofiler
                     JOIN tprofiler_runs 
@@ -432,11 +432,11 @@ class Profiler
                 2
             );
         }
-        $profiles = Shop::DB()->selectAll('tprofiler', 'ptype', $type, '*', 'runID DESC');
+        $profiles = Shop::Container()->getDB()->selectAll('tprofiler', 'ptype', $type, '*', 'runID DESC');
         $data     = [];
         if (is_array($profiles)) {
             foreach ($profiles as $_profile) {
-                $_profile->data = Shop::DB()->selectAll(
+                $_profile->data = Shop::Container()->getDB()->selectAll(
                     'tprofiler_runs',
                     'runID',
                     (int)$_profile->runID,

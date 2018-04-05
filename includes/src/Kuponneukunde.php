@@ -82,12 +82,12 @@ class Kuponneukunde
     public function Save()
     {
         if ($this->kKuponNeukunde > 0) {
-            Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
+            Shop::Container()->getDB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
         }
         $obj = kopiereMembers($this);
         unset($obj->kKuponNeukunde);
 
-        return Shop::DB()->insert('tkuponneukunde', $obj) > 0;
+        return Shop::Container()->getDB()->insert('tkuponneukunde', $obj) > 0;
     }
 
     /**
@@ -95,7 +95,7 @@ class Kuponneukunde
      */
     public function Delete()
     {
-        return Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde) === 1;
+        return Shop::Container()->getDB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde) === 1;
     }
 
     /**
@@ -214,7 +214,7 @@ class Kuponneukunde
     public static function Load($email, $hash)
     {
         if (strlen($email) > 0 && strlen($hash) > 0) {
-            $Obj = Shop::DB()->executeQueryPrepared("
+            $Obj = Shop::Container()->getDB()->executeQueryPrepared("
                 SELECT *
                     FROM tkuponneukunde
                     WHERE cEmail = :email

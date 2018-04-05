@@ -21,7 +21,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
     if ($config['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
         $xSelling->Standard = new stdClass();
         $cSQLLager          = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-        $xsell              = Shop::DB()->query(
+        $xsell              = Shop::Container()->getDB()->query(
             "SELECT txsell.* FROM txsell, tartikel
                 WHERE txsell.kXSellArtikel = tartikel.kArtikel {$cSQLLager}
                     AND txsell.kArtikel = {$kArtikel}
@@ -45,7 +45,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                 $group->Beschreibung = '';
                 if (Shop::getLanguage() > 0) {
                     // lokalisieren
-                    $objSprache = Shop::DB()->select(
+                    $objSprache = Shop::Container()->getDB()->select(
                         'txsellgruppe',
                         'kXSellGruppe',
                         $groupID,
@@ -85,7 +85,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                 $selectorXSellArtikel     = 'txsellkauf.kXSellArtikel';
                 $filterXSellParentArtikel = 'tartikel.kVaterArtikel';
             }
-            $xsell = Shop::DB()->query(
+            $xsell = Shop::Container()->getDB()->query(
                 "SELECT {$kArtikel} AS kArtikel,
                         {$selectorXSellArtikel} AS kXSellArtikel,
                         SUM(txsellkauf.nAnzahl) nAnzahl
@@ -102,7 +102,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                     LIMIT {$anzahl}", 2
             );
         } elseif (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
-            $xsell = Shop::DB()->query(
+            $xsell = Shop::Container()->getDB()->query(
                 "SELECT txsellkauf.kArtikel,
                     IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
                     SUM(txsellkauf.nAnzahl) nAnzahl
@@ -120,7 +120,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                     LIMIT {$anzahl}", 2
             );
         } else {
-            $xsell = Shop::DB()->selectAll(
+            $xsell = Shop::Container()->getDB()->selectAll(
                 'txsellkauf',
                 'kArtikel',
                 $kArtikel,
@@ -344,7 +344,7 @@ function sendeProduktanfrage()
     $ProduktanfrageHistory->cIP        = gibIP();
     $ProduktanfrageHistory->dErstellt  = 'now()';
 
-    $kProduktanfrageHistory        = Shop::DB()->insert('tproduktanfragehistory', $ProduktanfrageHistory);
+    $kProduktanfrageHistory        = Shop::Container()->getDB()->insert('tproduktanfragehistory', $ProduktanfrageHistory);
     $GLOBALS['PositiveFeedback'][] = Shop::Lang()->get('thankYouForQuestion', 'messages');
     // campaign
     if (isset($_SESSION['Kampagnenbesucher'])) {
@@ -370,7 +370,7 @@ function floodSchutzProduktanfrage($min = 0)
     if ($min <= 0) {
         return false;
     }
-    $history = Shop::DB()->executeQueryPrepared(
+    $history = Shop::Container()->getDB()->executeQueryPrepared(
         "SELECT kProduktanfrageHistory
             FROM tproduktanfragehistory
             WHERE cIP = :ip
@@ -436,7 +436,7 @@ function bearbeiteBenachrichtigung()
                     ['oKunde' => $Benachrichtigung, 'oNachricht' => $Benachrichtigung]
                 )->checkLogging(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true);
 
-                $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->queryPrepared('
+                $kVerfuegbarkeitsbenachrichtigung = Shop::Container()->getDB()->queryPrepared('
                     INSERT INTO tverfuegbarkeitsbenachrichtigung 
                         (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus) 
                         VALUES 
@@ -530,7 +530,7 @@ function floodSchutzBenachrichtigung($min)
     if (!$min) {
         return false;
     }
-    $history = Shop::DB()->executeQueryPrepared(
+    $history = Shop::Container()->getDB()->executeQueryPrepared(
         'SELECT kVerfuegbarkeitsbenachrichtigung
             FROM tverfuegbarkeitsbenachrichtigung
             WHERE cIP = :ip
@@ -571,9 +571,7 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
         }
         if ($nArrayPos === 0) {
             // Artikel ist an der ersten Position => es gibt nur einen nächsten Artikel (oder keinen :))
-            $kArtikelNaechster = isset($_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1])
-                ? $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]
-                : null;
+            $kArtikelNaechster = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1] ?? null;
         } elseif ($nArrayPos === (count($_SESSION['oArtikelUebersichtKey_arr']) - 1)) {
             // Artikel ist an der letzten Position => es gibt nur einen voherigen Artikel
             $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1];
@@ -599,7 +597,7 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
     }
     // Ist der Besucher nicht von der Artikelübersicht gekommen?
     if ($kKategorie > 0 && (!isset($navi->vorherigerArtikel) && !isset($navi->naechsterArtikel))) {
-        $objArr_pre = Shop::DB()->query(
+        $objArr_pre = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel
                 FROM tkategorieartikel, tpreise, tartikel
                 LEFT JOIN tartikelsichtbarkeit 
@@ -615,7 +613,7 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
                 ORDER BY tartikel.kArtikel DESC
                 LIMIT 1", 1
         );
-        $objArr_next = Shop::DB()->query(
+        $objArr_next = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel
                 FROM tkategorieartikel, tpreise, tartikel
                 LEFT JOIN tartikelsichtbarkeit 
@@ -651,13 +649,13 @@ function gibNichtErlaubteEigenschaftswerte($nEigenschaftWert)
 {
     $nEigenschaftWert = (int)$nEigenschaftWert;
     if ($nEigenschaftWert) {
-        $arNichtErlaubteEigenschaftswerte  = Shop::DB()->selectAll(
+        $arNichtErlaubteEigenschaftswerte  = Shop::Container()->getDB()->selectAll(
             'teigenschaftwertabhaengigkeit',
             'kEigenschaftWert',
             $nEigenschaftWert,
             'kEigenschaftWertZiel AS EigenschaftWert'
         );
-        $arNichtErlaubteEigenschaftswerte2 = Shop::DB()->selectAll(
+        $arNichtErlaubteEigenschaftswerte2 = Shop::Container()->getDB()->selectAll(
             'teigenschaftwertabhaengigkeit',
             'kEigenschaftWertZiel',
             $nEigenschaftWert,
@@ -776,7 +774,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                 exit();
             }
             // Posts die älter als 24 Stunden sind löschen
-            Shop::DB()->query("DELETE FROM ttagkunde WHERE dZeit < DATE_SUB(now(),INTERVAL 1 MONTH)", 4);
+            Shop::Container()->getDB()->query("DELETE FROM ttagkunde WHERE dZeit < DATE_SUB(now(),INTERVAL 1 MONTH)", 4);
             // Admin Einstellungen prüfen
             if (($conf['artikeldetails']['tagging_freischaltung'] === 'Y' &&
                     isset($_SESSION['Kunde']->kKunde) &&
@@ -786,7 +784,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                 $ip = gibIP();
                 // Ist eine Kunde eingeloggt?
                 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-                    $count_tag_postings = Shop::DB()->executeQueryPrepared(
+                    $count_tag_postings = Shop::Container()->getDB()->executeQueryPrepared(
                         "SELECT count(kTagKunde) AS Anzahl
                             FROM ttagkunde
                             WHERE dZeit > DATE_SUB(now(),INTERVAL 1 DAY)
@@ -796,7 +794,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     );
                     $kKunde = (int)$_SESSION['Kunde']->kKunde;
                 } else { // Wenn nicht, dann hat ein anonymer Besucher ein Tag gepostet
-                    $count_tag_postings = Shop::DB()->executeQueryPrepared(
+                    $count_tag_postings = Shop::Container()->getDB()->executeQueryPrepared(
                         "SELECT count(kTagKunde) AS Anzahl FROM ttagkunde
                             WHERE dZeit > DATE_SUB(now(), INTERVAL 1 DAY)
                                 AND cIP = :ip
@@ -812,12 +810,12 @@ function bearbeiteProdukttags($AktuellerArtikel)
                         return Shop::Lang()->get('pleaseLoginToAddTags', 'messages');
                     }
                     // Prüfe, ob der Tag bereits gemappt wurde
-                    $tagmapping_objTMP = Shop::DB()->select(
+                    $tagmapping_objTMP = Shop::Container()->getDB()->select(
                         'ttagmapping',
                         'kSprache',
                         Shop::getLanguage(),
                         'cName',
-                        Shop::DB()->escape($tag)
+                        Shop::Container()->getDB()->escape($tag)
                     );
                     $tagmapping_obj    = $tagmapping_objTMP;
                     if (isset($tagmapping_obj->cNameNeu) && strlen($tagmapping_obj->cNameNeu) > 0) {
@@ -888,7 +886,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     $neuerTagKunde->kKunde = $kKunde;
                     $neuerTagKunde->cIP    = $ip;
                     $neuerTagKunde->dZeit  = 'now()';
-                    Shop::DB()->insert('ttagkunde', $neuerTagKunde);
+                    Shop::Container()->getDB()->insert('ttagkunde', $neuerTagKunde);
 
                     if (isset($tag_obj->nAktiv) && (int)$tag_obj->nAktiv === 0) {
                         return Shop::Lang()->get('tagAcceptedWaitCheck', 'messages');
@@ -1061,20 +1059,12 @@ function fasseVariVaterUndKindZusammen($oVaterArtikel, $oKindArtikel)
     $oArtikel->kEigenschaftKombi                = $oVaterArtikel->kEigenschaftKombi;
     $oArtikel->kEigenschaftKombi_arr            = $oVaterArtikel->kEigenschaftKombi_arr;
     $oArtikel->fDurchschnittsBewertung          = $oVaterArtikel->fDurchschnittsBewertung;
-    $oArtikel->Bewertungen                      = isset($oVaterArtikel->Bewertungen)
-        ? $oVaterArtikel->Bewertungen
-        : null;
-    $oArtikel->HilfreichsteBewertung            = isset($oVaterArtikel->HilfreichsteBewertung)
-        ? $oVaterArtikel->HilfreichsteBewertung
-        : null;
-    $oArtikel->oVariationKombiVorschau_arr      = isset($oVaterArtikel->oVariationKombiVorschau_arr)
-        ? $oVaterArtikel->oVariationKombiVorschau_arr
-        : [];
+    $oArtikel->Bewertungen                      = $oVaterArtikel->Bewertungen ?? null;
+    $oArtikel->HilfreichsteBewertung            = $oVaterArtikel->HilfreichsteBewertung ?? null;
+    $oArtikel->oVariationKombiVorschau_arr      = $oVaterArtikel->oVariationKombiVorschau_arr ?? [];
     $oArtikel->oVariationDetailPreis_arr        = $oVaterArtikel->oVariationDetailPreis_arr;
     $oArtikel->nVariationKombiNichtMoeglich_arr = $oVaterArtikel->nVariationKombiNichtMoeglich_arr;
-    $oArtikel->oVariationKombiVorschauText      = isset($oVaterArtikel->oVariationKombiVorschauText)
-        ? $oVaterArtikel->oVariationKombiVorschauText
-        : null;
+    $oArtikel->oVariationKombiVorschauText      = $oVaterArtikel->oVariationKombiVorschauText ?? null;
     $oArtikel->cVaterURL                        = $oVaterArtikel->cURL;
     $oArtikel->VaterFunktionsAttribute          = $oVaterArtikel->FunktionsAttribute;
 
@@ -1139,7 +1129,7 @@ function holeAehnlicheArtikel($kArtikel)
         }
         $lagerFilter         = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $customerGroupID     = Session::CustomerGroup()->getID();
-        $oArtikelMerkmal_arr = Shop::DB()->query(
+        $oArtikelMerkmal_arr = Shop::Container()->getDB()->query(
             "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
                 FROM (
                     SELECT DISTINCT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel, 
@@ -1178,7 +1168,7 @@ function holeAehnlicheArtikel($kArtikel)
                 }
             }
         } else { // Falls es keine Merkmale gibt, in tsuchcachetreffer und ttagartikel suchen
-            $oArtikelSuchcacheTreffer_arr = Shop::DB()->query(
+            $oArtikelSuchcacheTreffer_arr = Shop::Container()->getDB()->query(
                 "SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
                     FROM
                     (
@@ -1217,7 +1207,7 @@ function holeAehnlicheArtikel($kArtikel)
                     }
                 }
             } else {
-                $oArtikelTags_arr = Shop::DB()->query(
+                $oArtikelTags_arr = Shop::Container()->getDB()->query(
                     "SELECT ttagartikel.kArtikel, tartikel.kVaterArtikel
                         FROM
                         (
@@ -1362,14 +1352,12 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     foreach ($oKonfig->oKonfig_arr as $i => &$oKonfiggruppe) {
         $oKonfiggruppe->bAktiv = false;
         $kKonfiggruppe         = $oKonfiggruppe->getKonfiggruppe();
-        $nKonfigitem_arr       = isset($nKonfiggruppe_arr[$kKonfiggruppe]) ? $nKonfiggruppe_arr[$kKonfiggruppe] : [];
+        $nKonfigitem_arr       = $nKonfiggruppe_arr[$kKonfiggruppe] ?? [];
         foreach ($oKonfiggruppe->oItem_arr as $j => &$oKonfigitem) {
             /** @var Konfigitem $oKonfigitem */
             $kKonfigitem          = $oKonfigitem->getKonfigitem();
             $oKonfigitem->fAnzahl = (float)(
-            isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()])
-                ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
-                : $oKonfigitem->getInitial()
+                $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] ?? $oKonfigitem->getInitial()
             );
             if ($oKonfigitem->fAnzahl > $oKonfigitem->getMax() || $oKonfigitem->fAnzahl < $oKonfigitem->getMin()) {
                 $oKonfigitem->fAnzahl = $oKonfigitem->getInitial();

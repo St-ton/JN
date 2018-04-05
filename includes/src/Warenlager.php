@@ -453,7 +453,7 @@ class Warenlager extends MainModel
                                     AND twarenlagersprache.kSprache = {$xOption}";
                 }
 
-                $oObj = Shop::DB()->query(
+                $oObj = Shop::Container()->getDB()->query(
                     "SELECT twarenlager.* {$cSqlSelect}
                          FROM twarenlager
                          {$cSqlJoin}
@@ -478,7 +478,7 @@ class Warenlager extends MainModel
             $oObj->$cMember = $this->$cMember;
         }
         if ($this->getWarenlager() === null) {
-            $kPrim = Shop::DB()->insert('twarenlager', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('twarenlager', $oObj);
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
             }
@@ -508,7 +508,7 @@ class Warenlager extends MainModel
                     $val        = $this->$cMethod();
                     $mValue     = $val === null
                         ? 'NULL'
-                        : ("'" . Shop::DB()->escape($val) . "'");
+                        : ("'" . Shop::Container()->getDB()->escape($val) . "'");
                     $cSet_arr[] = "{$cMember} = {$mValue}";
                 }
             }
@@ -516,7 +516,7 @@ class Warenlager extends MainModel
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kWarenlager = {$this->kWarenlager}";
 
-            return Shop::DB()->query($cQuery, 3);
+            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -526,12 +526,14 @@ class Warenlager extends MainModel
      */
     public function delete()
     {
-        return Shop::DB()->query(
-            "DELETE twarenlager, twarenlagersprache
+        return Shop::Container()->getDB()->queryPrepared(
+            'DELETE twarenlager, twarenlagersprache
                 FROM twarenlager
                 LEFT JOIN twarenlagersprache 
                     ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
-                WHERE twarenlager.kWarenlager = " . (int)$this->kWarenlager, 3
+                WHERE twarenlager.kWarenlager = :lid',
+            ['lid' => (int)$this->kWarenlager],
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -541,7 +543,7 @@ class Warenlager extends MainModel
     public function loadLanguages()
     {
         if ($this->getWarenlager() > 0) {
-            $oObj_arr = Shop::DB()->selectAll('twarenlagersprache', 'kWarenlager', $this->getWarenlager());
+            $oObj_arr = Shop::Container()->getDB()->selectAll('twarenlagersprache', 'kWarenlager', $this->getWarenlager());
             if (count($oObj_arr) > 0) {
                 $this->cSpracheAssoc_arr = [];
                 foreach ($oObj_arr as $oObj) {
@@ -564,10 +566,11 @@ class Warenlager extends MainModel
     {
         $oWarenlager_arr = [];
         $cSql            = $bActive ? " WHERE nAktiv = 1" : '';
-        $oObj_arr = Shop::DB()->query(
+        $oObj_arr = Shop::Container()->getDB()->query(
             "SELECT *
                FROM twarenlager
-               {$cSql}", 2
+               {$cSql}",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oObj_arr as $oObj) {
             $oWarenlager = new self(null, $oObj);
@@ -593,13 +596,15 @@ class Warenlager extends MainModel
         $kArtikel        = (int)$kArtikel;
         if ($kArtikel > 0) {
             $cSql     = $bActive ? " AND twarenlager.nAktiv = 1" : '';
-            $oObj_arr = Shop::DB()->query(
+            $oObj_arr = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tartikelwarenlager.*
                     FROM tartikelwarenlager
                     JOIN twarenlager 
                         ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager
                        {$cSql}
-                    WHERE tartikelwarenlager.kArtikel = {$kArtikel}", 2
+                    WHERE tartikelwarenlager.kArtikel = :articleID",
+                ['articleID' => $kArtikel],
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oObj_arr as $oObj) {
                 $oWarenlager               = new self($oObj->kWarenlager, null, $kSprache);

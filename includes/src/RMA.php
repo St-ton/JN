@@ -64,7 +64,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         private function loadFromDB($kRMA, $bCustomer, $bRMAArtikel, $kSprache)
         {
-            $oObj = Shop::DB()->select('trma', 'kRMA', (int)$kRMA);
+            $oObj = Shop::Container()->getDB()->select('trma', 'kRMA', (int)$kRMA);
             if (isset($oObj->kRMA) && $oObj->kRMA > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
@@ -79,7 +79,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
                 if ($bRMAArtikel) {
                     $this->oRMAArtikel_arr = [];
-                    $oObj_arr              = Shop::DB()->query("
+                    $oObj_arr              = Shop::Container()->getDB()->query("
                         SELECT kRMA, kArtikel
                             FROM trmaartikel
                             WHERE kRMA = " . (int)$kRMA, 2
@@ -124,7 +124,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 $oObj->oRMAStatus
             );
 
-            $kPrim = Shop::DB()->insert('trma', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('trma', $oObj);
 
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
@@ -140,7 +140,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function update()
         {
-            return Shop::DB()->query(
+            return Shop::Container()->getDB()->query(
                 "UPDATE trma
                    SET kRMA = " . $this->kRMA . ",
                        kKunde = " . $this->kKunde . ",
@@ -158,7 +158,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('trma', 'kRMA', $this->getRMA());
+            return Shop::Container()->getDB()->delete('trma', 'kRMA', $this->getRMA());
         }
 
         /**
@@ -200,7 +200,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setRMANumber($cRMANumber)
         {
-            $this->cRMANumber = Shop::DB()->escape($cRMANumber);
+            $this->cRMANumber = Shop::Container()->getDB()->escape($cRMANumber);
 
             return $this;
         }
@@ -214,7 +214,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             if ($dErstellt === 'now()') {
                 $this->dErstellt = date('Y-m-d H:i:s');
             } else {
-                $this->dErstellt = Shop::DB()->escape($dErstellt);
+                $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
             }
 
             return $this;
@@ -308,7 +308,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     $cSQL = " AND dErstellt >= '" . $_SESSION['RMA_TimePeriod']->cDateFrom . "' AND dErstellt <= '" . $_SESSION['RMA_TimePeriod']->cDateTo . "'";
                 }
 
-                $oBestellungTMP_arr = Shop::DB()->query(
+                $oBestellungTMP_arr = Shop::Container()->getDB()->query(
                     "SELECT kBestellung, date_format(dErstellt,'%d.%m.%Y') AS dBestelldatum
                         FROM tbestellung
                         WHERE kKunde = " . $kKunde . "
@@ -524,7 +524,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         private static function genStdRMANumber()
         {
-            $oRMA = Shop::DB()->query(
+            $oRMA = Shop::Container()->getDB()->query(
                 "SELECT kRMA
                     FROM trma
                     ORDER BY kRMA DESC
@@ -576,7 +576,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 $cSQL = " WHERE kKunde = " . $_SESSION['Kunde']->kKunde;
             }
-            $oObj = Shop::DB()->query(
+            $oObj = Shop::Container()->getDB()->query(
                 "SELECT kBestellung, dErstellt
                     FROM tbestellung
                     " . $cSQL . "
@@ -666,7 +666,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $kKunde   = (int)$kKunde;
             $oRMA_arr = [];
             if ($kKunde > 0) {
-                $oObj_arr = Shop::DB()->query(
+                $oObj_arr = Shop::Container()->getDB()->query(
                     "SELECT kRMA
                         FROM trma
                         WHERE kKunde = " . $kKunde . "
@@ -694,7 +694,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         public static function getAllRMA($bCustomer = false, $bRMAArtikel = true, $kSprache = 0)
         {
             $oRMA_arr = [];
-            $oObj_arr = Shop::DB()->query(
+            $oObj_arr = Shop::Container()->getDB()->query(
                 "SELECT kRMA
                     FROM trma
                     ORDER BY dErstellt DESC", 2

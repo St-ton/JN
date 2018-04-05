@@ -94,7 +94,7 @@ function bearbeiteInsert($xml)
         foreach ($oArtikel_arr as $oArtikel) {
             //any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
             if (isset($oArtikel->fLagerbestand) && $oArtikel->fLagerbestand > 0) {
-                $delta = Shop::DB()->query(
+                $delta = Shop::Container()->getDB()->query(
                     "SELECT SUM(pos.nAnzahl) AS totalquantity
                         FROM tbestellung b
                         JOIN twarenkorbpos pos
@@ -120,10 +120,10 @@ function bearbeiteInsert($xml)
             $upd->fLagerbestand         = $oArtikel->fLagerbestand;
             $upd->fStandardpreisNetto   = $oArtikel->fStandardpreisNetto;
             $upd->dLetzteAktualisierung = 'now()';
-            Shop::DB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
+            Shop::Container()->getDB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
             executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);
             // clear object cache for this article and its parent if there is any
-            $parentArticle = Shop::DB()->select(
+            $parentArticle = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel', $oArtikel->kArtikel,
                 null, null,

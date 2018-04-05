@@ -17,7 +17,7 @@ class ArtikelHelper
     {
         $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
-            $oArtikel = Shop::DB()->select(
+            $oArtikel = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel',
                 $kArtikel,
@@ -43,7 +43,7 @@ class ArtikelHelper
     {
         $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
-            $oArtikel = Shop::DB()->select(
+            $oArtikel = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel',
                 $kArtikel,
@@ -107,7 +107,7 @@ class ArtikelHelper
                     }
                     $j++;
                 }
-                $oArtikelTMP = Shop::DB()->query(
+                $oArtikelTMP = Shop::Container()->getDB()->query(
                     "SELECT tartikel.kArtikel
                         FROM teigenschaftkombiwert
                         JOIN tartikel
@@ -186,7 +186,7 @@ class ArtikelHelper
 
             return $e;
         },
-            Shop::DB()->query(
+            Shop::Container()->getDB()->query(
                 "SELECT teigenschaftkombiwert.*
                 FROM teigenschaftkombiwert
                 JOIN tartikel
@@ -219,7 +219,7 @@ class ArtikelHelper
         $nVorhanden     = 1;
         $kArtikel       = (int)$kArtikel;
         // Hole EigenschaftWerte zur gewaehlten VariationKombi
-        $oVariationKombiKind_arr = Shop::DB()->query(
+        $oVariationKombiKind_arr = Shop::Container()->getDB()->query(
             "SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
                 FROM teigenschaftkombiwert
                 JOIN tartikel
@@ -275,7 +275,7 @@ class ArtikelHelper
                                             AND teigenschaftwertsprache.kSprache = " . $kSprache;
         }
 
-        $oEigenschaft_arr = Shop::DB()->query(
+        $oEigenschaft_arr = Shop::Container()->getDB()->query(
             "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, " . $attrVal->cSELECT . "
                 teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, " .
             $attr->cSELECT . " teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
@@ -294,7 +294,7 @@ class ArtikelHelper
                     AND teigenschaftwert.kEigenschaftWert IN (" . $cSQL2 . ")", 2
         );
 
-        $oEigenschaftTMP_arr = Shop::DB()->query(
+        $oEigenschaftTMP_arr = Shop::Container()->getDB()->query(
             "SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit
@@ -316,7 +316,7 @@ class ArtikelHelper
                 if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
                     // Ist kEigenschaft zu eigenschaftwert vorhanden
                     if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
-                        $oEigenschaftWertVorhanden = Shop::DB()->query(
+                        $oEigenschaftWertVorhanden = Shop::Container()->getDB()->query(
                             "SELECT teigenschaftwert.kEigenschaftWert
                                 FROM teigenschaftwert
                                 LEFT JOIN teigenschaftwertsichtbarkeit
@@ -425,7 +425,7 @@ class ArtikelHelper
         $kKundengruppe = Session::CustomerGroup()->getID();
         $kArtikel      = (int)$kArtikel;
         // Pruefe welche kEigenschaft gesetzt ist
-        $oEigenschaft_arr = Shop::DB()->query(
+        $oEigenschaft_arr = Shop::Container()->getDB()->query(
             "SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit 
@@ -444,7 +444,7 @@ class ArtikelHelper
             if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
                 // Ist kEigenschaft zu eigenschaftwert vorhanden
                 if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
-                    $oEigenschaftWertVorhanden = Shop::DB()->query(
+                    $oEigenschaftWertVorhanden = Shop::Container()->getDB()->query(
                         "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, 
                             teigenschaftwertsichtbarkeit.kKundengruppe
                             FROM teigenschaftwert
@@ -492,7 +492,7 @@ class ArtikelHelper
                     exit();
                 }
                 $val                = new stdClass();
-                $val->cFreifeldWert = Shop::DB()->escape(
+                $val->cFreifeldWert = Shop::Container()->getDB()->escape(
                     StringHandler::filterXSS(self::getSelectedVariationValue($oEigenschaft->kEigenschaft))
                 );
                 $val->kEigenschaft  = $oEigenschaft->kEigenschaft;
@@ -523,7 +523,7 @@ class ArtikelHelper
     public static function getChildren($kVaterArtikel)
     {
         return $kVaterArtikel > 0
-            ? Shop::DB()->selectAll(
+            ? Shop::Container()->getDB()->selectAll(
                 'tartikel',
                 'kVaterArtikel',
                 (int)$kVaterArtikel,
@@ -539,7 +539,7 @@ class ArtikelHelper
      */
     public static function isParent($kArtikel)
     {
-        $oArtikelTMP = Shop::DB()->select(
+        $oArtikelTMP = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',
             (int)$kArtikel,
@@ -563,7 +563,7 @@ class ArtikelHelper
     {
         $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
-            $oObj = Shop::DB()->select('tstueckliste', 'kArtikel', $kArtikel);
+            $oObj = Shop::Container()->getDB()->select('tstueckliste', 'kArtikel', $kArtikel);
             if (isset($oObj->kStueckliste) && $oObj->kStueckliste > 0) {
                 return $bInfo ? $oObj : true;
             }
@@ -588,9 +588,7 @@ class ArtikelHelper
             return $_POST[$idx];
         }
 
-        return isset($_POST['eigenschaftwert'][$groupId])
-            ? $_POST['eigenschaftwert'][$groupId]
-            : false;
+        return $_POST['eigenschaftwert'][$groupId] ?? false;
     }
 
     /**
@@ -624,7 +622,7 @@ class ArtikelHelper
                 $artikel->Bilder[$key]->nNr = $nNr++;
             }
 
-            $artikel->cVorschaubild = $artikel->Bilder[0]->cPfadKlein;
+            $artikel->cVorschaubild = $artikel->Bilder[0]->cURLKlein;
         }
     }
 
@@ -684,7 +682,7 @@ class ArtikelHelper
      */
     public static function getDataByAttribute($attribute, $value, callable $callback = null)
     {
-        $res = Shop::DB()->select('tartikel', $attribute, $value);
+        $res = Shop::Container()->getDB()->select('tartikel', $attribute, $value);
 
         return is_callable($callback)
             ? $callback($res)

@@ -64,7 +64,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         private function loadFromDB($kKonfiggruppe = 0, $kSprache = 0)
         {
-            $oObj = Shop::DB()->select(
+            $oObj = Shop::Container()->getDB()->select(
                 'tkonfiggruppesprache',
                 'kKonfiggruppe',
                 (int)$kKonfiggruppe,
@@ -101,7 +101,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             }
             unset($oObj->kKonfiggruppe, $oObj->kSprache);
 
-            $kPrim = Shop::DB()->insert('tkonfiggruppesprache', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppesprache', $oObj);
 
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
@@ -122,7 +122,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $_upd->cName         = $this->getName();
             $_upd->cBeschreibung = $this->getBeschreibung();
 
-            return Shop::DB()->update(
+            return Shop::Container()->getDB()->update(
                 'tkonfiggruppesprache',
                 ['kKonfiggruppe', 'kSprache'],
                 [$this->getKonfiggruppe(), $this->getSprache()],
@@ -137,7 +137,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete(
+            return Shop::Container()->getDB()->delete(
                 'tkonfiggruppesprache',
                 ['kKonfiggruppe', 'kSprache'],
                 [(int)$this->kKonfiggruppe, (int)$this->kSprache]
@@ -172,7 +172,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function setName($cName)
         {
-            $this->cName = Shop::DB()->escape($cName);
+            $this->cName = Shop::Container()->getDB()->escape($cName);
 
             return $this;
         }
@@ -183,7 +183,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function setBeschreibung($cBeschreibung)
         {
-            $this->cBeschreibung = Shop::DB()->escape($cBeschreibung);
+            $this->cBeschreibung = Shop::Container()->getDB()->escape($cBeschreibung);
 
             return $this;
         }

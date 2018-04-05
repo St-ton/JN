@@ -45,7 +45,7 @@ $cNewsletterempfaengerSQL->cOrder = ' tnewsletterempfaenger.dEingetragen DESC';
 $cTab                             = verifyGPDataString('tab');
 
 if (verifyGPCDataInteger('Suche') === 1) {
-    $cSuche = Shop::DB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
+    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
 
     if (strlen($cSuche) > 0) {
         switch (verifyGPDataString('cSuchTyp')) {

@@ -62,7 +62,6 @@ final class Shopsetting implements ArrayAccess
         CONF_CHECKBOX            => 'checkbox',
         CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
         CONF_RMA                 => 'rma',
-        CONF_OBJECTCACHING       => 'objectcaching',
         CONF_CACHING             => 'caching'
     ];
 
@@ -86,7 +85,7 @@ final class Shopsetting implements ArrayAccess
      */
     public static function getInstance()
     {
-        return self::$_instance === null ? new self() : self::$_instance;
+        return self::$_instance ?? new self();
     }
 
     /**
@@ -176,33 +175,46 @@ final class Shopsetting implements ArrayAccess
                     Jtllog::writeLog('Setting Caching Exception: ' . $exc->getMessage());
                 }
                 if ($section === CONF_PLUGINZAHLUNGSARTEN) {
-                    $settings = Shop::DB()->query("
-                         SELECT cName, cWert
+                    $settings = Shop::Container()->getDB()->query(
+                        "SELECT cName, cWert
                              FROM tplugineinstellungen
                              WHERE cName LIKE '%_min%' 
-                              OR cName LIKE '%_max'", 2
+                              OR cName LIKE '%_max'",
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                      );
                 } else {
-                    $settings = Shop::DB()->selectAll(
-                        'teinstellungen',
-                        'kEinstellungenSektion',
-                        $section,
-                        'kEinstellungenSektion, cName, cWert'
+                    $settings = Shop::Container()->getDB()->queryPrepared(
+                        'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
+                            teinstellungenconf.cInputTyp AS type
+                            FROM teinstellungen
+                            LEFT JOIN teinstellungenconf
+                                ON teinstellungenconf.cWertName = teinstellungen.cName
+                                AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
+                            WHERE teinstellungen.kEinstellungenSektion = :section',
+                        ['section' => $section],
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                 }
                 if (is_array($settings) && count($settings) > 0) {
                     $this->_container[$offset] = [];
-
                     foreach ($settings as $setting) {
-                        $this->_container[$offset][$setting->cName] = $setting->cWert;
+                        if ($setting->type === 'listbox') {
+                            if (!isset($this->_container[$offset][$setting->cName])) {
+                                $this->_container[$offset][$setting->cName] = [];
+                            }
+                            $this->_container[$offset][$setting->cName][] = $setting->cWert;
+                        } elseif ($setting->type === 'number') {
+                            $this->_container[$offset][$setting->cName] = (int)$setting->cWert;
+                        } else {
+                            $this->_container[$offset][$setting->cName] = $setting->cWert;
+                        }
                     }
-
                     Shop::Cache()->set($cacheID, $settings, [CACHING_GROUP_OPTION]);
                 }
             }
         }
 
-        return isset($this->_container[$offset]) ? $this->_container[$offset] : null;
+        return $this->_container[$offset] ?? null;
     }
 
     /**
@@ -226,18 +238,16 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param string $section
+     * @param int    $section
      * @param string $option
-     * @return string|array|int
+     * @return string|array|int|null
      */
-    public function getValue($section, $option)
+    public function getValue(int $section, $option)
     {
         $settings    = $this->getSettings([$section]);
         $sectionName = self::mapSettingName($section);
 
-        return isset($settings[$sectionName][$option])
-            ? $settings[$sectionName][$option]
-            : null;
+        return $settings[$sectionName][$option] ?? null;
     }
 
     /**
@@ -268,10 +278,15 @@ final class Shopsetting implements ArrayAccess
         if ($this->allSettings !== null) {
             return $this->allSettings;
         }
-        $settings = Shop::DB()->query(
-                "SELECT kEinstellungenSektion, cName, cWert
-                    FROM teinstellungen
-                    ORDER BY kEinstellungenSektion", 9
+        $settings = Shop::Container()->getDB()->query(
+            "SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
+                teinstellungenconf.cInputTyp AS type
+                FROM teinstellungen
+                LEFT JOIN teinstellungenconf
+                    ON teinstellungenconf.cWertName = teinstellungen.cName
+                    AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
+                ORDER BY kEinstellungenSektion",
+            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         $result = [];
         foreach (self::$mapping as $mappingID => $sectionName) {
@@ -281,7 +296,16 @@ final class Shopsetting implements ArrayAccess
                     if (!isset($result[$sectionName])) {
                         $result[$sectionName] = [];
                     }
-                    $result[$sectionName][$setting['cName']] = $setting['cWert'];
+                    if ($setting['type'] === 'listbox') {
+                        if (!isset($result[$sectionName][$setting['cName']])) {
+                            $result[$sectionName][$setting['cName']] = [];
+                        }
+                        $result[$sectionName][$setting['cName']][] = $setting['cWert'];
+                    } elseif ($setting['type'] === 'number') {
+                        $result[$sectionName][$setting['cName']] = (int)$setting['cWert'];
+                    } else {
+                        $result[$sectionName][$setting['cName']] = $setting['cWert'];
+                    }
                 }
             }
         }

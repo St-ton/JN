@@ -166,6 +166,13 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
+        if ($status->needPasswordRehash2FA()) {
+            $this->add(NotificationEntry::TYPE_DANGER, 'Benutzerverwaltung',
+                'Der Algorithmus zur Passwortspeicherung hat sich ge&auml;ndert.<br/>Bitte erzeugen Sie neue Notfall-Codes f&uuml;r die Zwei-Faktor-Authentifizierung.',
+                'benutzerverwaltung.php');
+        }
+
+
         return $this;
     }
 }

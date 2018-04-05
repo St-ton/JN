@@ -18,7 +18,7 @@ if (isset($_POST['speichern']) && validateToken()) {
     if (isset($_POST['nVon']) && is_array($_POST['nVon']) && count($_POST['nVon']) > 0 &&
         is_array($_POST['nBis']) && count($_POST['nBis']) > 0) {
         // Tabelle leeren
-        Shop::DB()->query("TRUNCATE TABLE tpreisspannenfilter", 3);
+        Shop::Container()->getDB()->query("TRUNCATE TABLE tpreisspannenfilter", 3);
         for ($i = 0; $i < 10; $i++) {
             // Neue Werte in die DB einfuegen
             if ((int)$_POST['nVon'][$i] >= 0 && (int)$_POST['nBis'][$i] > 0) {
@@ -26,13 +26,13 @@ if (isset($_POST['speichern']) && validateToken()) {
                 $oPreisspannenfilter->nVon = (int)$_POST['nVon'][$i];
                 $oPreisspannenfilter->nBis = (int)$_POST['nBis'][$i];
 
-                Shop::DB()->insert('tpreisspannenfilter', $oPreisspannenfilter);
+                Shop::Container()->getDB()->insert('tpreisspannenfilter', $oPreisspannenfilter);
             }
         }
     }
 }
 
-$oConfig_arr = Shop::DB()->selectAll(
+$oConfig_arr = Shop::Container()->getDB()->selectAll(
     'teinstellungenconf',
     'kEinstellungenSektion',
     CONF_SITEMAP,
@@ -42,7 +42,7 @@ $oConfig_arr = Shop::DB()->selectAll(
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$oConfig_arr[$i]->kEinstellungenConf,
@@ -50,16 +50,14 @@ for ($i = 0; $i < $configCount; $i++) {
             'nSort'
         );
     }
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         CONF_SITEMAP,
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-        ? $oSetValue->cWert
-        : null;
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)

@@ -53,9 +53,9 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
 }
 
 $smarty->assign('sprachen', gibAlleSprachen())
-       ->assign('kundengruppen', Shop::DB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
-       ->assign('step', (isset($step) ? $step : null))
-       ->assign('hinweis', (isset($hinweis) ? $hinweis : null))
+       ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
+       ->assign('step', $step ?? null)
+       ->assign('hinweis', $hinweis ?? null)
        ->display('kundenimport.tpl');
 
 
@@ -140,7 +140,7 @@ function processImport($fmt, $data)
         return 'kein Nachname! &Uuml;bergehe diesen Datensatz.';
     }
 
-    $old_mail = Shop::DB()->select('tkunde', 'cMail', $kunde->cMail);
+    $old_mail = Shop::Container()->getDB()->select('tkunde', 'cMail', $kunde->cMail);
     if (isset($old_mail->kKunde) && $old_mail->kKunde > 0) {
         return "Kunde mit dieser Emailadresse bereits vorhanden: ($kunde->cMail)! &Uuml;bergehe Datensatz.";
     }
@@ -161,7 +161,7 @@ function processImport($fmt, $data)
         if (isset($_SESSION['kundenimport']['cLand']) && strlen($_SESSION['kundenimport']['cLand']) > 0) {
             $kunde->cLand = $_SESSION['kundenimport']['cLand'];
         } else {
-            $oRes = Shop::DB()->query("
+            $oRes = Shop::Container()->getDB()->query("
                 SELECT cWert AS cLand 
                     FROM teinstellungen 
                     WHERE cName = 'kundenregistrierung_standardland'", 1
@@ -174,7 +174,7 @@ function processImport($fmt, $data)
     }
     $cPasswortKlartext = '';
     if ((int)$_POST['PasswortGenerieren'] === 1) {
-        $cPasswortKlartext = $kunde->generatePassword(12);
+        $cPasswortKlartext = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
         $kunde->cPasswort  = $kunde->generatePasswordHash($cPasswortKlartext);
     }
     $oTMP              = new stdClass();

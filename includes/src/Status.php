@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use function Functional\some;
+
 /**
  * Class Status
  */
@@ -35,7 +37,7 @@ class Status
      */
     protected function getObjectCache()
     {
-        return JTLCache::getInstance()->setJtlCacheConfig();
+        return Shop::Container()->getCache()->setJtlCacheConfig();
     }
 
     /**
@@ -52,12 +54,12 @@ class Status
      */
     protected function getSystemLogInfo()
     {
-        $flags = Jtllog::getSytemlogFlag(false);
+        $conf = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 
         return (object)[
-            'error'  => Jtllog::isBitFlagSet(JTLLOG_LEVEL_ERROR, $flags) > 0,
-            'notice' => Jtllog::isBitFlagSet(JTLLOG_LEVEL_NOTICE, $flags) > 0,
-            'debug'  => Jtllog::isBitFlagSet(JTLLOG_LEVEL_DEBUG, $flags) > 0
+            'error'  => $conf >= JTLLOG_LEVEL_ERROR,
+            'notice' => $conf >= JTLLOG_LEVEL_NOTICE,
+            'debug'  => $conf >= JTLLOG_LEVEL_NOTICE
         ];
     }
 
@@ -110,7 +112,7 @@ class Status
     protected function getPluginSharedHooks()
     {
         $sharedPlugins = [];
-        $sharedHookIds = Shop::DB()->executeQuery(
+        $sharedHookIds = Shop::Container()->getDB()->executeQuery(
             "SELECT nHook
                 FROM tpluginhook
                 GROUP BY nHook
@@ -119,7 +121,7 @@ class Status
         foreach ($sharedHookIds as $hookData) {
             $hookId                 = (int)$hookData->nHook;
             $sharedPlugins[$hookId] = [];
-            $plugins                = Shop::DB()->query(
+            $plugins                = Shop::Container()->getDB()->query(
                 "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
                     FROM tpluginhook
                     INNER JOIN tplugin
@@ -172,11 +174,11 @@ class Status
      */
     protected function hasMobileTemplateIssue()
     {
-        $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
+        $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         if ($oTemplate !== null && isset($oTemplate->cTemplate)) {
             $oTplData = TemplateHelper::getInstance()->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
-                $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
+                $oMobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($oMobileTpl !== null) {
                     $cXMLFile = PFAD_ROOT . PFAD_TEMPLATES . $oMobileTpl->cTemplate .
                         DIRECTORY_SEPARATOR . TEMPLATE_XML;
@@ -185,7 +187,7 @@ class Status
                     }
                     // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
                     // ist der DB-Eintrag falsch und wird gelöscht
-                    Shop::DB()->delete('ttemplate', 'eTyp', 'mobil');
+                    Shop::Container()->getDB()->delete('ttemplate', 'eTyp', 'mobil');
                 }
             }
         }
@@ -198,7 +200,7 @@ class Status
      */
     protected function hasStandardTemplateIssue()
     {
-        return Shop::DB()->select('ttemplate', 'eTyp', 'standard') === null;
+        return Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard') === null;
     }
 
     /**
@@ -233,8 +235,8 @@ class Status
      */
     protected function getMySQLStats()
     {
-        $stats = Shop::DB()->stats();
-        $info  = Shop::DB()->info();
+        $stats = Shop::Container()->getDB()->stats();
+        $info  = Shop::Container()->getDB()->info();
         $lines = explode('  ', $stats);
 
         $lines = array_map(function ($v) {
@@ -252,7 +254,7 @@ class Status
     protected function getPaymentMethodsWithError()
     {
         $incorrectPaymentMethods = [];
-        $paymentMethods          = Shop::DB()->selectAll(
+        $paymentMethods          = Shop::Container()->getDB()->selectAll(
             'tzahlungsart',
             'nActive',
             1,
@@ -274,11 +276,11 @@ class Status
      */
     protected function hasInvalidPollCoupons()
     {
-        $aPollCoupons        = Shop::DB()->selectAll('tumfrage', 'nAktiv', 1);
+        $aPollCoupons        = Shop::Container()->getDB()->selectAll('tumfrage', 'nAktiv', 1);
         $invalidCouponsFound = false;
         foreach ($aPollCoupons as $Kupon) {
             if ($Kupon->kKupon > 0) {
-                $kKupon = Shop::DB()->select(
+                $kKupon = Shop::Container()->getDB()->select(
                     'tkupon',
                     'kKupon',
                     $Kupon->kKupon,
@@ -303,7 +305,7 @@ class Status
      */
     protected function getOrphanedCategories($has = true)
     {
-        $categories = Shop::DB()->query(
+        $categories = Shop::Container()->getDB()->query(
             "SELECT kKategorie, cName
                 FROM tkategorie
                 WHERE kOberkategorie > 0
@@ -323,9 +325,9 @@ class Status
         $conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
 
         return isset($conf['artikeluebersicht']['suche_fulltext'])
-            && $conf['artikeluebersicht']['suche_fulltext'] === 'Y'
-            && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
-                || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1));
+            && $conf['artikeluebersicht']['suche_fulltext'] !== 'N'
+            && (!Shop::Container()->getDB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
+                || !Shop::Container()->getDB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1));
     }
 
     /**
@@ -335,9 +337,8 @@ class Status
     {
         $fNewVersions = false;
         // get installed plugins from DB
-        $oPluginsDB = Shop::DB()->query('SELECT `cVerzeichnis`, `nVersion` FROM `tplugin`', 2);
+        $oPluginsDB = Shop::Container()->getDB()->query('SELECT `cVerzeichnis`, `nVersion` FROM `tplugin`', 2);
         if (!is_array($oPluginsDB) || 1 > count($oPluginsDB)) {
-
             return false; // there are no plugins installed
         }
         $vPluginsDB = [];
@@ -371,13 +372,13 @@ class Status
      */
     public function hasInvalidPasswordResetMailTemplate()
     {
-        $translations = Shop::DB()->query(
+        $translations = Shop::Container()->getDB()->query(
             "SELECT lang.cContentText, lang.cContentHtml
                 FROM temailvorlagesprache lang
                 JOIN temailvorlage 
                 ON lang.kEmailvorlage = temailvorlage.kEmailvorlage
                 WHERE temailvorlage.cName = 'Passwort vergessen'",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($translations as $t) {
             $old = '{$neues_passwort}';
@@ -400,4 +401,23 @@ class Status
         $emailConf = Shop::getConfig([CONF_EMAILS])['emails'];
         return $emailConf['email_methode'] === 'smtp' && empty(trim($emailConf['email_smtp_verschluesselung']));
     }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    protected function needPasswordRehash2FA()
+    {
+        $passwordService = Shop::Container()->getPasswordService();
+        $hashes          = Shop::Container()->getDB()->query("
+            SELECT *
+            FROM tadmin2facodes
+            GROUP BY kAdminlogin", 2
+        );
+
+        return some($hashes, function ($hash) use ($passwordService) {
+            return $passwordService->needsRehash($hash->cEmergencyCode);
+        });
+    }
+
 }

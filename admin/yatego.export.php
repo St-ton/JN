@@ -13,7 +13,7 @@ $cFehler  = '';
 $step     = 'yategoexport_uebersicht';
 
 // Pruefe EUR als Waehrung
-$oWaehrung       = Shop::DB()->query("SELECT kWaehrung FROM twaehrung WHERE cISO = 'EUR'", 1);
+$oWaehrung       = Shop::Container()->getDB()->query("SELECT kWaehrung FROM twaehrung WHERE cISO = 'EUR'", 1);
 $bWaehrungsCheck = false;
 if (isset($oWaehrung->kWaehrung) && $oWaehrung->kWaehrung > 0) {
     $bWaehrungsCheck = true;
@@ -44,12 +44,12 @@ if ($bWaehrungsCheck) {
     }
 
     if ($step === 'yategoexport_uebersicht') {
-        $exportformat = Shop::DB()->select('texportformat', 'nSpecial', 1);
+        $exportformat = Shop::Container()->getDB()->select('texportformat', 'nSpecial', 1);
 
         $exportformat->cKopfzeile = str_replace("\t", "<tab>", $exportformat->cKopfzeile);
         $exportformat->cContent   = str_replace("\t", "<tab>", $exportformat->cContent);
 
-        $Conf = Shop::DB()->selectAll(
+        $Conf = Shop::Container()->getDB()->selectAll(
             'teinstellungenconf',
             'kEinstellungenSektion',
             CONF_EXPORTFORMATE,
@@ -59,7 +59,7 @@ if ($bWaehrungsCheck) {
         $confCount = count($Conf);
         for ($i = 0; $i < $confCount; $i++) {
             if ($Conf[$i]->cInputTyp === 'selectbox') {
-                $Conf[$i]->ConfWerte = Shop::DB()->selectAll(
+                $Conf[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
                     'teinstellungenconfwerte',
                     'kEinstellungenConf',
                     (int)$Conf[$i]->kEinstellungenConf,
@@ -68,24 +68,22 @@ if ($bWaehrungsCheck) {
                 );
             }
             if ($exportformat->kExportformat) {
-                $setValue = Shop::DB()->select(
+                $setValue = Shop::Container()->getDB()->select(
                     'texportformateinstellungen',
                     'kExportformat',
                     (int)$exportformat->kExportformat,
                     'cName',
                     $Conf[$i]->cWertName
                 );
-                $Conf[$i]->gesetzterWert = isset($setValue->cWert)
-                    ? $setValue->cWert
-                    : null;
+                $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
             }
         }
 
         $smarty->assign('Exportformat', $exportformat)
                ->assign('oConfig_arr', $Conf)
                ->assign('oSprachen', gibAlleSprachen())
-               ->assign('kundengruppen', Shop::DB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
-               ->assign('waehrungen', Shop::DB()->query("SELECT * FROM twaehrung ORDER BY cStandard DESC", 2))
+               ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
+               ->assign('waehrungen', Shop::Container()->getDB()->query("SELECT * FROM twaehrung ORDER BY cStandard DESC", 2))
                ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
     }
 }
@@ -111,9 +109,7 @@ function setzeEinstellung($cPost_arr, $kWaehrung)
         $exportformat->cContent        = isset($cPost_arr['cContent'])
             ? str_replace("<tab>", "\t", $cPost_arr['cContent'])
             : null;
-        $exportformat->cDateiname      = isset($cPost_arr['cDateiname'])
-            ? $cPost_arr['cDateiname']
-            : null;
+        $exportformat->cDateiname      = $cPost_arr['cDateiname'] ?? null;
         $exportformat->cKopfzeile      = isset($cPost_arr['cKopfzeile'])
             ? str_replace("<tab>", "\t", $cPost_arr['cKopfzeile'])
             : null;
@@ -124,15 +120,15 @@ function setzeEinstellung($cPost_arr, $kWaehrung)
         $exportformat->kWaehrung       = (int)$kWaehrung;
         $exportformat->kKampagne       = (int)$cPost_arr['kKampagne'];
         $exportformat->kKundengruppe   = (int)$cPost_arr['kKundengruppe'];
-        $exportformat->cKodierung      = Shop::DB()->escape($cPost_arr['cKodierung']);
+        $exportformat->cKodierung      = Shop::Container()->getDB()->escape($cPost_arr['cKodierung']);
         $exportformat->nVarKombiOption = isset($cPost_arr['nVarKombiOption'])
             ? (int)$cPost_arr['nVarKombiOption']
             : 0;
         //update
         $kExportformat = (int)$cPost_arr['kExportformat'];
-        Shop::DB()->update('texportformat', 'kExportformat', $kExportformat, $exportformat);
-        Shop::DB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
-        $Conf      = Shop::DB()->selectAll(
+        Shop::Container()->getDB()->update('texportformat', 'kExportformat', $kExportformat, $exportformat);
+        Shop::Container()->getDB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
+        $Conf      = Shop::Container()->getDB()->selectAll(
             'teinstellungenconf',
             'kEinstellungenSektion',
             CONF_EXPORTFORMATE,
@@ -158,7 +154,7 @@ function setzeEinstellung($cPost_arr, $kWaehrung)
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
                     break;
             }
-            Shop::DB()->insert('texportformateinstellungen', $aktWert);
+            Shop::Container()->getDB()->insert('texportformateinstellungen', $aktWert);
         }
 
         return true;
@@ -180,7 +176,7 @@ function exportiereYatego($cPost_arr)
         $queue->nLimit_m      = 2000;
         $queue->dErstellt     = 'now()';
         $queue->dZuBearbeiten = 'now()';
-        Shop::DB()->insert('texportqueue', $queue);
+        Shop::Container()->getDB()->insert('texportqueue', $queue);
         header('Location: yatego.do_export.php?back=admin&token=' . $_SESSION['jtl_token']);
         exit;
     }

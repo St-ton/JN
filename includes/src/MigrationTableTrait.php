@@ -248,7 +248,7 @@ trait MigrationTableTrait
         $einstellungen->cName                 = $configName;
         $einstellungen->cWert                 = $configValue;
         $einstellungen->cModulId              = $cModulId;
-        Shop::DB()->insertRow('teinstellungen', $einstellungen, true);
+        Shop::Container()->getDB()->insertRow('teinstellungen', $einstellungen, true);
         unset($einstellungen);
 
         $einstellungenConf                        = new stdClass();
@@ -263,7 +263,7 @@ trait MigrationTableTrait
         $einstellungenConf->nStandardAnzeigen     = $nStandardAnzeigen;
         $einstellungenConf->nModul                = $nModul;
         $einstellungenConf->cConf                 = $cConf;
-        Shop::DB()->insertRow('teinstellungenconf', $einstellungenConf, true);
+        Shop::Container()->getDB()->insertRow('teinstellungenconf', $einstellungenConf, true);
         unset($einstellungenConf);
 
         if (is_object($additionalProperties) &&
@@ -277,7 +277,7 @@ trait MigrationTableTrait
                 $einstellungenConfWerte->cName              = $optionValue;
                 $einstellungenConfWerte->cWert              = $optionKey;
                 $einstellungenConfWerte->nSort              = $sortIndex;
-                Shop::DB()->insertRow('teinstellungenconfwerte', $einstellungenConfWerte, true);
+                Shop::Container()->getDB()->insertRow('teinstellungenconfwerte', $einstellungenConfWerte, true);
                 $sortIndex++;
             }
             unset($einstellungenConfWerte);

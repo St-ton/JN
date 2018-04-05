@@ -90,6 +90,11 @@ class WarenkorbPos
     public $cUnique = '';
 
     /**
+     * @var string
+     */
+    public $cResponsibility = '';
+
+    /**
      * @var int
      */
     public $kKonfigitem;
@@ -200,10 +205,10 @@ class WarenkorbPos
         $NeueWarenkorbPosEigenschaft->kEigenschaftWert   = $kEigenschaftWert;
         $NeueWarenkorbPosEigenschaft->fGewichtsdifferenz = $EigenschaftWert->fGewichtDiff;
         $NeueWarenkorbPosEigenschaft->fAufpreis          = $EigenschaftWert->fAufpreisNetto;
-        $Aufpreis_obj                                    = Shop::DB()->select(
+        $Aufpreis_obj                                    = Shop::Container()->getDB()->select(
             'teigenschaftwertaufpreis',
-            'kEigenschaftWert',  (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
-            'kKundengruppe',  Session::CustomerGroup()->getID()
+            'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
+            'kKundengruppe', Session::CustomerGroup()->getID()
         );
         if (!empty($Aufpreis_obj->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
@@ -224,7 +229,7 @@ class WarenkorbPos
             $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $EigenschaftWert->cName;
 
             if ($Sprache->cStandard !== 'Y') {
-                $eigenschaft_spr = Shop::DB()->select(
+                $eigenschaft_spr = Shop::Container()->getDB()->select(
                     'teigenschaftsprache',
                     'kEigenschaft', (int)$NeueWarenkorbPosEigenschaft->kEigenschaft,
                     'kSprache', (int)$Sprache->kSprache
@@ -232,7 +237,7 @@ class WarenkorbPos
                 if (!empty($eigenschaft_spr->cName)) {
                     $NeueWarenkorbPosEigenschaft->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
                 }
-                $eigenschaftwert_spr = Shop::DB()->select(
+                $eigenschaftwert_spr = Shop::Container()->getDB()->select(
                     'teigenschaftwertsprache',
                     'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
                     'kSprache', (int)$Sprache->kSprache
@@ -243,7 +248,7 @@ class WarenkorbPos
             }
 
             if ($freifeld || strlen(trim($freifeld)) > 0) {
-                $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = Shop::DB()->escape($freifeld);
+                $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = Shop::Container()->getDB()->escape($freifeld);
             }
         }
         $this->WarenkorbPosEigenschaftArr[] = $NeueWarenkorbPosEigenschaft;
@@ -356,7 +361,7 @@ class WarenkorbPos
                 /** @var WarenkorbPos $oPosition */
                 foreach (Session::Cart()->PositionenArr as $nPos => $oPosition) {
                     if ($this->cUnique === $oPosition->cUnique) {
-                        $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
+                        $fPreisNetto  += $oPosition->fPreis * $oPosition->nAnzahl;
                         $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, gibUst($oPosition->kSteuerklasse), 4);
 
                         if ($oPosition->istKonfigVater()) {
@@ -392,7 +397,7 @@ class WarenkorbPos
      */
     public function loadFromDB($kWarenkorbPos)
     {
-        $obj     = Shop::DB()->select('twarenkorbpos', 'kWarenkorbPos', $kWarenkorbPos);
+        $obj     = Shop::Container()->getDB()->select('twarenkorbpos', 'kWarenkorbPos', $kWarenkorbPos);
         $members = array_keys(get_object_vars($obj));
         foreach ($members as $member) {
             $this->$member = $obj->$member;
@@ -421,7 +426,7 @@ class WarenkorbPos
         $obj->cName                     = $this->cName;
         $obj->cLieferstatus             = $this->cLieferstatus;
         $obj->cArtNr                    = $this->cArtNr;
-        $obj->cEinheit                  = ($this->cEinheit === null) ? '' : $this->cEinheit;
+        $obj->cEinheit                  = $this->cEinheit ?? '';
         $obj->fPreisEinzelNetto         = $this->fPreisEinzelNetto;
         $obj->fPreis                    = $this->fPreis;
         $obj->fMwSt                     = $this->fMwSt;
@@ -429,6 +434,7 @@ class WarenkorbPos
         $obj->nPosTyp                   = $this->nPosTyp;
         $obj->cHinweis                  = $this->cHinweis;
         $obj->cUnique                   = $this->cUnique;
+        $obj->cResponsibility           = !empty($this->cResponsibility) ? $this->cResponsibility : 'core';
         $obj->kKonfigitem               = $this->kKonfigitem;
         $obj->kBestellpos               = $this->kBestellpos;
         $obj->fLagerbestandVorAbschluss = $this->fLagerbestandVorAbschluss;
@@ -439,7 +445,7 @@ class WarenkorbPos
             $obj->nLongestMaxDelivery = $this->oEstimatedDelivery->longestMax;
         }
 
-        $this->kWarenkorbPos = Shop::DB()->insert('twarenkorbpos', $obj);
+        $this->kWarenkorbPos = Shop::Container()->getDB()->insert('twarenkorbpos', $obj);
 
         return $this->kWarenkorbPos;
     }
@@ -449,7 +455,7 @@ class WarenkorbPos
      */
     public function istKonfigVater()
     {
-        return (is_string($this->cUnique) && strlen($this->cUnique) === 10 && (int)$this->kKonfigitem === 0);
+        return (is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem === 0);
     }
 
     /**
@@ -457,7 +463,7 @@ class WarenkorbPos
      */
     public function istKonfigKind()
     {
-        return (is_string($this->cUnique) && strlen($this->cUnique) === 10 && (int)$this->kKonfigitem > 0);
+        return (is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem > 0);
     }
 
     /**

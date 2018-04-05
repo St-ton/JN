@@ -47,6 +47,11 @@ class MerkmalWert
     /**
      * @var string
      */
+    public $cMetaTitle;
+
+    /**
+     * @var string
+     */
     public $cBeschreibung;
 
     /**
@@ -152,7 +157,7 @@ class MerkmalWert
             $cJoin   = "INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                             AND tmerkmalwertsprache.kSprache = " . $kSprache;
         }
-        $oMerkmalWert = Shop::DB()->query(
+        $oMerkmalWert = Shop::Container()->getDB()->query(
             "SELECT tmerkmalwert.*, {$cSelect}
                 FROM tmerkmalwert
                 {$cJoin}
@@ -167,7 +172,7 @@ class MerkmalWert
             $this->cURLFull = baueURL($this, URLART_MERKMAL, 0, false, true);
             executeHook(HOOK_MERKMALWERT_CLASS_LOADFROMDB, ['oMerkmalWert' => &$this]);
         }
-        $shopURL = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
 
         $this->cBildpfadKlein       = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
         $this->nBildKleinVorhanden  = 0;
@@ -187,8 +192,8 @@ class MerkmalWert
                 $this->nBildNormalVorhanden = 1;
             }
         }
-        $this->cBildURLKlein  = $shopURL . $this->cBildpfadKlein;
-        $this->cBildURLNormal = $shopURL . $this->cBildpfadNormal;
+        $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
+        $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
         Shop::set($id, $this);
 
         return $this;
@@ -233,27 +238,27 @@ class MerkmalWert
             $cJoin   = "INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                             AND tmerkmalwertsprache.kSprache = " . $kSprache;
         }
-        $oMerkmalWert_arr = Shop::DB()->query(
+        $oMerkmalWert_arr = Shop::Container()->getDB()->query(
             "SELECT tmerkmalwert.*, {$cSelect}
                 FROM tmerkmalwert
                 {$cJoin}
                 WHERE tmerkmalwert.kMerkmal = " . (int)$kMerkmal . "
                 ORDER BY tmerkmalwert.nSort", 2
         );
-        $shopURL = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
         foreach ($oMerkmalWert_arr as $i => $oMerkmalWert) {
-            $oMerkmalWert_arr[$i]->cURL     = baueURL($oMerkmalWert, URLART_MERKMAL);
-            $oMerkmalWert_arr[$i]->cURLFull = baueURL($oMerkmalWert, URLART_MERKMAL, 0, false, true);
+            $oMerkmalWert->cURL     = baueURL($oMerkmalWert, URLART_MERKMAL);
+            $oMerkmalWert->cURLFull = baueURL($oMerkmalWert, URLART_MERKMAL, 0, false, true);
 
             if (isset($oMerkmalWert->cBildpfad) && strlen($oMerkmalWert->cBildpfad) > 0) {
-                $oMerkmalWert_arr[$i]->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalWert->cBildpfad;
-                $oMerkmalWert_arr[$i]->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalWert->cBildpfad;
+                $oMerkmalWert->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalWert->cBildpfad;
+                $oMerkmalWert->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalWert->cBildpfad;
             } else {
-                $oMerkmalWert_arr[$i]->cBildpfadKlein  = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                $oMerkmalWert_arr[$i]->cBildpfadNormal = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+                $oMerkmalWert->cBildpfadKlein  = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+                $oMerkmalWert->cBildpfadNormal = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
             }
-            $oMerkmalWert_arr[$i]->cBildURLKlein   = $shopURL . $oMerkmalWert_arr[$i]->cBildpfadKlein;
-            $oMerkmalWert_arr[$i]->cBildpURLNormal = $shopURL . $oMerkmalWert_arr[$i]->cBildpfadNormal;
+            $oMerkmalWert->cBildURLKlein   = $imageBaseURL . $oMerkmalWert->cBildpfadKlein;
+            $oMerkmalWert->cBildpURLNormal = $imageBaseURL . $oMerkmalWert->cBildpfadNormal;
         }
 
         return $oMerkmalWert_arr;

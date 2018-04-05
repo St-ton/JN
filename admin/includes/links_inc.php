@@ -154,7 +154,7 @@ function getLinkVar($kLink, $var)
     $kLink = (int)$kLink;
     // tseo work around
     if ($var === 'cSeo') {
-        $linknamen = Shop::DB()->query(
+        $linknamen = Shop::Container()->getDB()->query(
             "SELECT tlinksprache.cISOSprache, tseo.cSeo
                 FROM tlinksprache
                 JOIN tsprache 
@@ -166,7 +166,7 @@ function getLinkVar($kLink, $var)
                 WHERE tlinksprache.kLink = " . $kLink, 2
         );
     } else {
-        $linknamen = Shop::DB()->selectAll('tlinksprache', 'kLink', $kLink);
+        $linknamen = Shop::Container()->getDB()->selectAll('tlinksprache', 'kLink', $kLink);
     }
     $linkCount = count($linknamen);
     for ($i = 0; $i < $linkCount; $i++) {
@@ -208,7 +208,7 @@ function getLinkgruppeNames($kLinkgruppe)
     if (!$kLinkgruppe) {
         return $namen;
     }
-    $linknamen = Shop::DB()->selectAll('tlinkgruppesprache', 'kLinkgruppe', (int)$kLinkgruppe);
+    $linknamen = Shop::Container()->getDB()->selectAll('tlinkgruppesprache', 'kLinkgruppe', (int)$kLinkgruppe);
     $linkCount = count($linknamen);
     for ($i = 0; $i < $linkCount; $i++) {
         $namen[$linknamen[$i]->cISOSprache] = $linknamen[$i]->cName;
@@ -223,7 +223,7 @@ function getLinkgruppeNames($kLinkgruppe)
  */
 function holeLinkgruppe($kLinkgruppe)
 {
-    return Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$kLinkgruppe);
+    return Shop::Container()->getDB()->select('tlinkgruppe', 'kLinkgruppe', (int)$kLinkgruppe);
 }
 
 /**
@@ -231,7 +231,7 @@ function holeLinkgruppe($kLinkgruppe)
  */
 function holeSpezialseiten()
 {
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT *
             FROM tspezialseite
             ORDER BY nSort", 2
@@ -247,7 +247,7 @@ function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe, $kLinkgruppeAlt)
 {
     if (is_array($oSub_arr) && count($oSub_arr) > 0) {
         foreach ($oSub_arr as $oSub) {
-            $exists = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oSub->kLink,  (int)$kLinkgruppe]);
+            $exists = Shop::Container()->getDB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oSub->kLink,  (int)$kLinkgruppe]);
             if (empty($exists)) {
                 $oSub->setLinkgruppe($kLinkgruppe)
                     ->save();

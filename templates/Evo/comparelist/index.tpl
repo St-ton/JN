@@ -26,8 +26,10 @@
                             <p>
                                 <a href="{$oArtikel->cURLFull}">{$oArtikel->cName}</a>
                             </p>
-    
-                            {if $oArtikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
+
+                            {if $oArtikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
+                                <p>{lang key="productOutOfStock" section="productDetails"}</p>
+                            {elseif $oArtikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                                 <p>{lang key="priceOnApplication" section="global"}</p>
                             {else}
                                 <p>

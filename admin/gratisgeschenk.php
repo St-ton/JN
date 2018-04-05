@@ -22,7 +22,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 // Config holen
-$oConfig_arr = Shop::DB()->query(
+$oConfig_arr = Shop::Container()->getDB()->query(
     "SELECT *
         FROM teinstellungenconf
         WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
@@ -30,23 +30,21 @@ $oConfig_arr = Shop::DB()->query(
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
-    $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+    $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
         'teinstellungenconfwerte',
         'kEinstellungenConf',
         (int)$oConfig_arr[$i]->kEinstellungenConf,
         '*',
         'nSort'
     );
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         (int)$oConfig_arr[$i]->kEinstellungenSektion,
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-        ? $oSetValue->cWert
-        : null;
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
 $oPagiAktiv     = (new Pagination('aktiv'))

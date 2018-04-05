@@ -25,31 +25,6 @@ class Preise
     public $kKunde;
 
     /**
-     * @var string
-     */
-//    public $cPreis1Localized;
-
-    /**
-     * @var string
-     */
-//    public $cPreis2Localized;
-
-    /**
-     * @var string
-     */
-//    public $cPreis3Localized;
-
-    /**
-     * @var string
-     */
-//    public $cPreis4Localized;
-
-    /**
-     * @var string
-     */
-//    public $cPreis5Localized;
-
-    /**
      * @var array
      */
     public $cVKLocalized;
@@ -130,31 +105,6 @@ class Preise
     public $alterVK;
 
     /**
-     * @var array
-     */
-//    public $fStaffelpreis1;
-
-    /**
-     * @var array
-     */
-//    public $fStaffelpreis2;
-
-    /**
-     * @var array
-     */
-//    public $fStaffelpreis3;
-
-    /**
-     * @var array
-     */
-//    public $fStaffelpreis4;
-
-    /**
-     * @var array
-     */
-//    public $fStaffelpreis5;
-
-    /**
      * @var float
      */
     public $rabatt;
@@ -223,7 +173,7 @@ class Preise
                                 AND (p1.kKunde = {$kKunde} OR p1.kKunde IS NULL))";
         }
 
-        $prices = Shop::DB()->query("
+        $prices = Shop::Container()->getDB()->query("
             SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
@@ -234,7 +184,7 @@ class Preise
         if (count($prices) > 0) {
             if ($kSteuerklasse === 0) {
                 $tax           =
-                    Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kSteuerklasse');
+                    Shop::Container()->getDB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kSteuerklasse');
                 $kSteuerklasse = (int)$tax->kSteuerklasse;
             }
             $this->fUst          = gibUst($kSteuerklasse);
@@ -250,7 +200,7 @@ class Preise
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
                     $this->fVKNetto = (float)$price->fVKNetto;
-                    $specialPrice   = Shop::DB()->query("
+                    $specialPrice   = Shop::Container()->getDB()->query("
                         SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
                             FROM tsonderpreise
@@ -280,9 +230,7 @@ class Preise
                         $priceGetter = "fPreis{$i}";
 
                         $this->{$scaleGetter} = (int)$price->nAnzahlAb;
-                        $this->{$priceGetter} = ($specialPriceValue !== null)
-                            ? $specialPriceValue
-                            : (double)$price->fVKNetto;
+                        $this->{$priceGetter} = $specialPriceValue ?? (double)$price->fVKNetto;
                     }
 
                     $this->nAnzahl_arr[] = (int)$price->nAnzahlAb;
@@ -313,7 +261,7 @@ class Preise
         if ($kKunde > 0) {
             $cacheID = 'custprice_' . $kKunde;
             if (($oCustomPrice = Shop::Cache()->get($cacheID)) === false) {
-                $oCustomPrice = Shop::DB()->query(
+                $oCustomPrice = Shop::Container()->getDB()->query(
                     "SELECT count(kPreis) AS nAnzahl 
                         FROM tpreis
                         WHERE kKunde = {$kKunde}",
@@ -343,16 +291,16 @@ class Preise
     {
         $kKundengruppe = (int)$kKundengruppe;
         $kArtikel      = (int)$kArtikel;
-        $obj           = Shop::DB()->select('tpreise', 'kArtikel', $kArtikel, 'kKundengruppe', $kKundengruppe);
+        $obj           = Shop::Container()->getDB()->select('tpreise', 'kArtikel', $kArtikel, 'kKundengruppe', $kKundengruppe);
         if (!empty($obj->kArtikel)) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
                 $this->$member = $obj->$member;
             }
-            $ust_obj    = Shop::DB()->query("SELECT kSteuerklasse FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
+            $ust_obj    = Shop::Container()->getDB()->query("SELECT kSteuerklasse FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
             $this->fUst = gibUst($ust_obj->kSteuerklasse);
             //hat dieser Artikel fuer diese Kundengruppe einen Sonderpreis?
-            $sonderpreis = Shop::DB()->query(
+            $sonderpreis = Shop::Container()->getDB()->query(
                 "SELECT tsonderpreise.fNettoPreis
                     FROM tsonderpreise
                     JOIN tartikel 
@@ -427,18 +375,6 @@ class Preise
     public function localizePreise()
     {
         $currency = Session::Currency();
-        // SHOP-2185
-//        $this->cPreis1Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis1, $this->fUst), $currency);
-//        $this->cPreis2Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis2, $this->fUst), $currency);
-//        $this->cPreis3Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis3, $this->fUst), $currency);
-//        $this->cPreis4Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis4, $this->fUst), $currency);
-//        $this->cPreis5Localized[0] = gibPreisStringLocalized(berechneBrutto($this->fPreis5, $this->fUst), $currency);
-//
-//        $this->cPreis1Localized[1] = gibPreisStringLocalized($this->fPreis1, $currency);
-//        $this->cPreis2Localized[1] = gibPreisStringLocalized($this->fPreis2, $currency);
-//        $this->cPreis3Localized[1] = gibPreisStringLocalized($this->fPreis3, $currency);
-//        $this->cPreis4Localized[1] = gibPreisStringLocalized($this->fPreis4, $currency);
-//        $this->cPreis5Localized[1] = gibPreisStringLocalized($this->fPreis5, $currency);
 
         $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
@@ -476,18 +412,6 @@ class Preise
         $this->alterVK[0] = berechneBrutto($this->alterVKNetto * $factor, $this->fUst);
         $this->alterVK[1] = $this->alterVKNetto * $factor;
 
-        // SHOP-2185
-//        $this->fStaffelpreis1[0] = berechneBrutto($this->fPreis1 * $factor, $this->fUst);
-//        $this->fStaffelpreis1[1] = $this->fPreis1 * $factor;
-//        $this->fStaffelpreis2[0] = berechneBrutto($this->fPreis2 * $factor, $this->fUst);
-//        $this->fStaffelpreis2[1] = $this->fPreis2 * $factor;
-//        $this->fStaffelpreis3[0] = berechneBrutto($this->fPreis3 * $factor, $this->fUst);
-//        $this->fStaffelpreis3[1] = $this->fPreis3 * $factor;
-//        $this->fStaffelpreis4[0] = berechneBrutto($this->fPreis4 * $factor, $this->fUst);
-//        $this->fStaffelpreis4[1] = $this->fPreis4 * $factor;
-//        $this->fStaffelpreis5[0] = berechneBrutto($this->fPreis5 * $factor, $this->fUst);
-//        $this->fStaffelpreis5[1] = $this->fPreis5 * $factor;
-
         $this->fStaffelpreis_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->fStaffelpreis_arr[] = [
@@ -521,7 +445,7 @@ class Preise
         $obj->fPreis4       = $this->fPreis4;
         $obj->fPreis5       = $this->fPreis5;
 
-        return Shop::DB()->insert('tpreise', $obj);
+        return Shop::Container()->getDB()->insert('tpreise', $obj);
     }
 
     /**
@@ -532,10 +456,10 @@ class Preise
     public function setzePostDaten()
     {
         /* @TODO
-        $this->kPreisverlauf = Shop::DB()->escape($_POST['PStaffelKey']);
-        $this->kArtikel = Shop::DB()->escape($_POST['KeyArtikel']);
-        $this->fPreisPrivat = Shop::DB()->escape($_POST['ArtikelVKBrutto']);
-        $this->fPreisHaendler = Shop::DB()->escape($_POST['ArtikelVKHaendlerBrutto']);
+        $this->kPreisverlauf = Shop::Container()->getDB()->escape($_POST['PStaffelKey']);
+        $this->kArtikel = Shop::Container()->getDB()->escape($_POST['KeyArtikel']);
+        $this->fPreisPrivat = Shop::Container()->getDB()->escape($_POST['ArtikelVKBrutto']);
+        $this->fPreisHaendler = Shop::Container()->getDB()->escape($_POST['ArtikelVKHaendlerBrutto']);
         $this->dDate = 'now()';
          */
         return $this->kArtikel > 0;
@@ -576,21 +500,6 @@ class Preise
         $this->fPreis3 = 0;
         $this->fPreis4 = 0;
         $this->fPreis5 = 0;
-        foreach ($this->fStaffelpreis1 as $key => $fSteffelpreis1) {
-            $this->fStaffelpreis1[$key] = 0;
-        }
-        foreach ($this->fStaffelpreis2 as $key => $fSteffelpreis2) {
-            $this->fStaffelpreis2[$key] = 0;
-        }
-        foreach ($this->fStaffelpreis3 as $key => $fSteffelpreis3) {
-            $this->fStaffelpreis3[$key] = 0;
-        }
-        foreach ($this->fStaffelpreis4 as $key => $fSteffelpreis4) {
-            $this->fStaffelpreis4[$key] = 0;
-        }
-        foreach ($this->fStaffelpreis5 as $key => $fSteffelpreis5) {
-            $this->fStaffelpreis5[$key] = 0;
-        }
         foreach ($this->fPreis_arr as $key => $fPreis) {
             $this->fPreis_arr[$key] = 0;
         }

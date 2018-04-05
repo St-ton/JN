@@ -51,7 +51,7 @@ function bildartikellink_xml(SimpleXMLElement $xml)
     $cacheArticleIDs = [];
     foreach ($items as $item) {
         //delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
-        Shop::DB()->delete('tartikelpict', ['kArtikel', 'nNr'], [(int)$item->kArtikel, (int)$item->nNr]);
+        Shop::Container()->getDB()->delete('tartikelpict', ['kArtikel', 'nNr'], [(int)$item->kArtikel, (int)$item->nNr]);
         $articleIDs[] = (int)$item->kArtikel;
         DBUpdateInsert('tartikelpict', [$item], 'kArtikelPict');
     }
@@ -85,19 +85,19 @@ function del_bildartikellink_xml(SimpleXMLElement $xml)
  * @param stdClass $item
  */
 function del_img_item($item) {
-    $image = Shop::DB()->select('tartikelpict', 'kArtikel', $item->kArtikel, 'nNr', $item->nNr);
+    $image = Shop::Container()->getDB()->select('tartikelpict', 'kArtikel', $item->kArtikel, 'nNr', $item->nNr);
     if (is_object($image)) {
         // is last reference
-        $res = Shop::DB()->query("SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = " . (int)$image->kBild, 1);
+        $res = Shop::Container()->getDB()->query("SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = " . (int)$image->kBild, 1);
         if ($res->cnt == 1) {
-            Shop::DB()->delete('tbild', 'kBild', (int)$image->kBild);
+            Shop::Container()->getDB()->delete('tbild', 'kBild', (int)$image->kBild);
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->cPfad;
             if (file_exists($storage)) {
                 @unlink($storage);
             }
             Jtllog::writeLog('Removed last image link: ' . (int)$image->kBild, JTLLOG_LEVEL_NOTICE, false, 'img_link_xml');
         }
-        Shop::DB()->delete('tartikelpict', ['kArtikel', 'nNr'], [(int)$item->kArtikel, (int)$item->nNr]);
+        Shop::Container()->getDB()->delete('tartikelpict', ['kArtikel', 'nNr'], [(int)$item->kArtikel, (int)$item->nNr]);
     }
 }
 
@@ -136,7 +136,7 @@ function get_array(SimpleXMLElement $xml)
             'kArtikelPict' => (int)$child->attributes()->kArtikelPict
         ];
         $imageId = (int)$child->attributes()->kBild;
-        $image   = Shop::DB()->select('tbild', 'kBild', $imageId);
+        $image   = Shop::Container()->getDB()->select('tbild', 'kBild', $imageId);
         if (is_object($image)) {
             $item->cPfad = $image->cPfad;
             $items[]     = $item;

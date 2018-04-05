@@ -242,7 +242,7 @@ class VCard
         $txtArr = array_map('trim', explode(';', $rawValue));
 
         foreach (self::$elementsStructured[$key] as $index => $structurePart) {
-            $result[$structurePart] = isset($txtArr[$index]) ? $txtArr[$index] : null;
+            $result[$structurePart] = $txtArr[$index] ?? null;
         }
 
         return $result;
@@ -357,7 +357,7 @@ class VCard
             $this->data[$key] = [];
         }
 
-        $this->data[$key][] = isset($value) ? $value : $rawValue;
+        $this->data[$key][] = $value ?? $rawValue;
     }
 
     /**
@@ -614,8 +614,8 @@ class VCard
                 }
             }
 
-            $Kunde->cVorname  = isset($this->N->FirstName) ? $this->N->FirstName : '';
-            $Kunde->cNachname = isset($this->N->LastName) ? $this->N->LastName : '';
+            $Kunde->cVorname  = $this->N->FirstName ?? '';
+            $Kunde->cNachname = $this->N->LastName ?? '';
         }
         if (empty($Kunde->cVorname) && isset($this->FN)) {
             $Kunde->cVorname = $this->FN;
@@ -623,11 +623,11 @@ class VCard
         if (isset($this->ADR)) {
             $adr = self::getValue($this->ADR, ['home', 'work', '*']);
 
-            $Kunde->cStrasse      = isset($adr->StreetAddress) ? $adr->StreetAddress : '';
-            $Kunde->cAdressZusatz = isset($adr->ExtendedAddress) ? $adr->ExtendedAddress : '';
-            $Kunde->cPLZ          = isset($adr->PostalCode) ? $adr->PostalCode : '';
-            $Kunde->cOrt          = isset($adr->Locality) ? $adr->Locality : '';
-            $Kunde->cBundesland   = isset($adr->Region) ? $adr->Region : '';
+            $Kunde->cStrasse      = $adr->StreetAddress ?? '';
+            $Kunde->cAdressZusatz = $adr->ExtendedAddress ?? '';
+            $Kunde->cPLZ          = $adr->PostalCode ?? '';
+            $Kunde->cOrt          = $adr->Locality ?? '';
+            $Kunde->cBundesland   = $adr->Region ?? '';
             $Kunde->cLand         = isset($adr->Country) ? landISO($adr->Country) : '';
             if (empty($adr->Country) && !empty($adr->Region)) {
                 $Kunde->cLand = landISO($adr->Region);

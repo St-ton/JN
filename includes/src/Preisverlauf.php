@@ -60,7 +60,7 @@ class Preisverlauf
         $nMonat        = (int)$nMonat;
         $cacheID       = 'gpv_' . $kArtikel . '_' . $kKundengruppe . '_' . $nMonat;
         if (($obj_arr = Shop::Cache()->get($cacheID)) === false) {
-            $obj_arr = Shop::DB()->query(
+            $obj_arr = Shop::Container()->getDB()->query(
                 "SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
                     FROM tpreisverlauf 
                     LEFT JOIN tartikel
@@ -99,7 +99,7 @@ class Preisverlauf
      */
     public function loadFromDB($kPreisverlauf)
     {
-        $obj = Shop::DB()->select('tpreisverlauf', 'kPreisverlauf', (int)$kPreisverlauf);
+        $obj = Shop::Container()->getDB()->select('tpreisverlauf', 'kPreisverlauf', (int)$kPreisverlauf);
         if ($obj !== null) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
@@ -119,7 +119,7 @@ class Preisverlauf
     {
         $obj = kopiereMembers($this);
         unset($obj->kPreisverlauf);
-        $this->kPreisverlauf = Shop::DB()->insert('tpreisverlauf', $obj);
+        $this->kPreisverlauf = Shop::Container()->getDB()->insert('tpreisverlauf', $obj);
 
         return $this->kPreisverlauf;
     }
@@ -133,7 +133,7 @@ class Preisverlauf
     {
         $obj = kopiereMembers($this);
 
-        return Shop::DB()->update('tpreisverlauf', 'kPreisverlauf', $obj->kPreisverlauf, $obj);
+        return Shop::Container()->getDB()->update('tpreisverlauf', 'kPreisverlauf', $obj->kPreisverlauf, $obj);
     }
 
     /**

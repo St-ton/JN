@@ -77,7 +77,7 @@ class EigenschaftWert
     {
         $kEigenschaftWert = (int)$kEigenschaftWert;
         if ($kEigenschaftWert > 0) {
-            $obj = Shop::DB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
+            $obj = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
             if (isset($obj->kEigenschaftWert) && $obj->kEigenschaftWert > 0) {
                 foreach (get_object_vars($obj) as $k => $v) {
                     $this->$k = $v;
@@ -105,7 +105,7 @@ class EigenschaftWert
         $obj = kopiereMembers($this);
         unset($obj->fAufpreis);
 
-        return Shop::DB()->insert('teigenschaftwert', $obj);
+        return Shop::Container()->getDB()->insert('teigenschaftwert', $obj);
     }
 
     /**
@@ -118,7 +118,7 @@ class EigenschaftWert
         $obj = kopiereMembers($this);
         unset($obj->fAufpreis);
 
-        return Shop::DB()->update('teigenschaftwert', 'kEigenschaftWert', $obj->kEigenschaftWert, $obj);
+        return Shop::Container()->getDB()->update('teigenschaftwert', 'kEigenschaftWert', $obj->kEigenschaftWert, $obj);
     }
 
     /**

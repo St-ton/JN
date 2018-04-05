@@ -16,16 +16,21 @@ ifndef('ADMIN_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SHOP_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SMARTY_LOG_LEVEL', E_ERROR | E_PARSE);
 error_reporting(SHOP_LOG_LEVEL);
-// if this is set to false, Hersteller, Linkgruppen and oKategorie_arr will not be added to $_SESSION
-// this requires changes in templates!
 ifndef('TEMPLATE_COMPATIBILITY', false);
 // Image compatibility level 0 => disabled, 1 => referenced in history table, 2 => automatic detection
 ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+
+/**
+ * WARNING !!! DO NOT USE PROFILE_QUERIES IN PRODUCTION ENVIRONMENT OR PUBLIC AVAILABLE SITES. THE PROFILER CANNOT USE
+ * PREPARED STATEMENTS WHEN QUERIES ARE ANALYZED. THEREFORE A LESS SECURE FALLBACK (ESCAPING) IS USED TO ANALYZE
+ * QUERIES.
+ */
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
+
 ifndef('IO_LOG_CONSOLE', false);
 ifndef('DEFAULT_CURL_OPT_VERIFYPEER', true);
 ifndef('DEFAULT_CURL_OPT_VERIFYHOST', 2);
@@ -52,7 +57,7 @@ ifndef('PFAD_EMAILPDFS', 'emailpdfs/');
 ifndef('PFAD_NEWSLETTERBILDER', 'newsletter/');
 ifndef('PFAD_LINKBILDER', 'links/');
 ifndef('PFAD_INCLUDES_LIBS', PFAD_INCLUDES . 'libs/');
-ifndef('PFAD_MINIFY', PFAD_INCLUDES_LIBS . 'minify');
+ifndef('PFAD_MINIFY', PFAD_INCLUDES . 'vendor/mrclay/minify');
 ifndef('PFAD_CKEDITOR', PFAD_INCLUDES_LIBS . 'ckeditor/');
 ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror-5.18.2/');
 ifndef('PFAD_INCLUDES_TOOLS', PFAD_INCLUDES . 'tools/');
@@ -178,7 +183,14 @@ ifndef('SHOW_CHILD_PRODUCTS', 0);
 // redis connect timeout in seconds
 ifndef('REDIS_CONNECT_TIMEOUT', 3);
 
-defined('SECURE_PHP_FUNCTIONS') || define('SECURE_PHP_FUNCTIONS', "
+
+// security
+ifndef('NEWSLETTER_USE_SECURITY', true);
+ifndef('MAILTEMPLATE_USE_SECURITY', true);
+ifndef('EXPORTFORMAT_USE_SECURITY', true);
+ifndef('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');
+ifndef('PASSWORD_DEFAULT_LENGTH', 12);
+ifndef('SECURE_PHP_FUNCTIONS', "
     addcslashes, addslashes, bin2hex, chop, chr, chunk_split, count_chars, crypt, explode, html_entity_decode,
     htmlentities, htmlspecialchars_decode, htmlspecialchars, implode, join, lcfirst, levenshtein, ltrim, md5, metaphone,
     money_format, nl2br, number_format, ord, rtrim, sha1, similar_text, soundex, sprintf, str_ireplace, str_pad,

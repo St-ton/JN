@@ -113,7 +113,7 @@ function gibNews($conf)
         if ((int)$conf['news']['news_anzahl_content'] > 0) {
             $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
         }
-        $oNews_arr = Shop::DB()->query("
+        $oNews_arr = Shop::Container()->getDB()->query("
             SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
                 tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, 
                 tnews.nAktiv, tnews.dErstellt, tnews.cPreviewImage, tseo.cSeo,
@@ -144,11 +144,12 @@ function gibNews($conf)
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
         );
         // URLs bauen
-        $shopURL = Shop::getURL() . '/';
+        $shopURL      = Shop::getURL() . '/';
+        $imageBaseURL = Shop::getImageBaseURL();
         foreach ($oNews_arr as $oNews) {
             $oNews->cPreviewImageFull = empty($oNews->cPreviewImage)
                 ? ''
-                : $shopURL . $oNews->cPreviewImage;
+                : $imageBaseURL . $oNews->cPreviewImage;
             $oNews->cText             = parseNewsText($oNews->cText);
             $oNews->cURL              = baueURL($oNews, URLART_NEWS);
             $oNews->cURLFull          = $shopURL . $oNews->cURL;
@@ -237,7 +238,7 @@ function gibLivesucheTop($conf)
         && (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count'] > 0)
         ? (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count']
         : 100;
-    $suchwolke_objs = Shop::DB()->query("
+    $suchwolke_objs = Shop::Container()->getDB()->query("
         SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
             tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
             DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de
@@ -297,7 +298,7 @@ function gibLivesucheLast($conf)
         && (int)$conf['sonstiges']['sonstiges_livesuche_all_last_count'] > 0)
         ? (int)$conf['sonstiges']['sonstiges_livesuche_all_last_count']
         : 100;
-    $suchwolke_objs = Shop::DB()->query(
+    $suchwolke_objs = Shop::Container()->getDB()->query(
         "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
             tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
             DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de
@@ -341,7 +342,7 @@ function gibTagging($conf)
         && (int)$conf['sonstiges']['sonstiges_tagging_all_count'] > 0)
         ? (int)$conf['sonstiges']['sonstiges_tagging_all_count']
         : 100;
-    $tagwolke_objs = Shop::DB()->query(
+    $tagwolke_objs = Shop::Container()->getDB()->query(
         "SELECT ttag.kTag, ttag.cName, tseo.cSeo, sum(ttagartikel.nAnzahlTagging) AS Anzahl
             FROM ttag
             JOIN ttagartikel 
@@ -385,7 +386,7 @@ function gibTagging($conf)
  */
 function gibNewsletterHistory()
 {
-    $oNewsletterHistory_arr = Shop::DB()->selectAll(
+    $oNewsletterHistory_arr = Shop::Container()->getDB()->selectAll(
         'tnewsletterhistory',
         'kSprache',
         Shop::getLanguage(),
@@ -422,7 +423,6 @@ function gibSitemapGlobaleMerkmale()
     $cacheID           = 'gsgm_' . (($isDefaultLanguage === true) ? 'd_' : '') . Shop::getLanguage();
     if (($oMerkmal_arr = Shop::Cache()->get($cacheID)) === false) {
         $oMerkmal_arr    = [];
-        $cDatei          = 'index.php';
         $cMerkmalTabelle = 'tmerkmal';
         $cSQL            = " JOIN tmerkmalwert ON tmerkmalwert.kMerkmal = tmerkmal.kMerkmal";
         $cSQL .= " JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert";
@@ -434,7 +434,7 @@ function gibSitemapGlobaleMerkmale()
             $cSQL .= " JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert";
             $cMerkmalWhere = " AND tmerkmalsprache.kSprache = " . Shop::getLanguage();
         }
-        $oMerkmalTMP_arr = Shop::DB()->query(
+        $oMerkmalTMP_arr = Shop::Container()->getDB()->query(
             "SELECT {$cMerkmalTabelle}.*, tmerkmalwertsprache.cWert, tseo.cSeo, tmerkmalwertsprache.kMerkmalWert, 
                 tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cTyp, tmerkmalwert.cBildPfad AS cBildPfadMW, 
                 tmerkmal.cBildpfad
@@ -469,7 +469,7 @@ function gibSitemapGlobaleMerkmale()
                     // cURL bauen
                     $oMerkmalWert->cURL = strlen($oMerkmalWert->cSeo) > 0
                         ? $shopURL . $oMerkmalWert->cSeo
-                        : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                        : $shopURL . '?m=' . $oMerkmalWert->kMerkmalWert;
 
                     $oMerkmal_arr[$nPos]->oMerkmalWert_arr[] = $oMerkmalWert;
                 } else {
@@ -490,7 +490,7 @@ function gibSitemapGlobaleMerkmale()
                     // cURL bauen
                     $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
                         ? $shopURL . $oMerkmalWert->cSeo
-                        : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                        : $shopURL . '?m=' . $oMerkmalWert->kMerkmalWert;
 
                     $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
                     $oMerkmal_arr[]               = $oMerkmal;
@@ -498,12 +498,12 @@ function gibSitemapGlobaleMerkmale()
                     ++$nPos;
                 }
             } else { // Erster Durchlauf
-                $oMerkmal->kMerkmal         = isset($oMerkmalTMP->kMerkmal) ? $oMerkmalTMP->kMerkmal : null;
-                $oMerkmal->cName            = isset($oMerkmalTMP->cName) ? $oMerkmalTMP->cName : null;
-                $oMerkmal->nSort            = isset($oMerkmalTMP->nSort) ? $oMerkmalTMP->nSort : null;
-                $oMerkmal->nGlobal          = isset($oMerkmalTMP->nGlobal) ? $oMerkmalTMP->nGlobal : null;
-                $oMerkmal->cBildpfad        = isset($oMerkmalTMP->cBildpfad) ? $oMerkmalTMP->cBildpfad : null;
-                $oMerkmal->cTyp             = isset($oMerkmalTMP->cTyp) ? $oMerkmalTMP->cTyp : null;
+                $oMerkmal->kMerkmal         = $oMerkmalTMP->kMerkmal ?? null;
+                $oMerkmal->cName            = $oMerkmalTMP->cName ?? null;
+                $oMerkmal->nSort            = $oMerkmalTMP->nSort ?? null;
+                $oMerkmal->nGlobal          = $oMerkmalTMP->nGlobal ?? null;
+                $oMerkmal->cBildpfad        = $oMerkmalTMP->cBildpfad ?? null;
+                $oMerkmal->cTyp             = $oMerkmalTMP->cTyp ?? null;
                 $oMerkmal->oMerkmalWert_arr = [];
 
                 verarbeiteMerkmalBild($oMerkmal);
@@ -516,7 +516,7 @@ function gibSitemapGlobaleMerkmale()
                 // cURL bauen
                 $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
                     ? $shopURL . $oMerkmalWert->cSeo
-                    : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                    : $shopURL . '?m=' . $oMerkmalWert->kMerkmalWert;
                 $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
                 $oMerkmal_arr[]               = $oMerkmal;
             }
@@ -533,7 +533,7 @@ function gibSitemapGlobaleMerkmale()
  */
 function verarbeiteMerkmalBild(&$oMerkmal)
 {
-    $shopURL = Shop::getURL() . '/';
+    $imageBaseURL = Shop::getImageBaseURL();
 
     $oMerkmal->cBildpfadKlein       = BILD_KEIN_MERKMALBILD_VORHANDEN;
     $oMerkmal->nBildKleinVorhanden  = 0;
@@ -549,8 +549,8 @@ function verarbeiteMerkmalBild(&$oMerkmal)
             $oMerkmal->nBildGrossVorhanden = 1;
         }
     }
-    $oMerkmal->cBildURLKlein  = $shopURL . $oMerkmal->cBildpfadKlein;
-    $oMerkmal->cBildURLNormal = $shopURL . $oMerkmal->cBildpfadNormal;
+    $oMerkmal->cBildURLKlein  = $imageBaseURL . $oMerkmal->cBildpfadKlein;
+    $oMerkmal->cBildURLNormal = $imageBaseURL . $oMerkmal->cBildpfadNormal;
 }
 
 /**
@@ -558,7 +558,7 @@ function verarbeiteMerkmalBild(&$oMerkmal)
  */
 function verarbeiteMerkmalWertBild(&$oMerkmalWert)
 {
-    $shopURL = Shop::getURL() . '/';
+    $imageBaseURL = Shop::getImageBaseURL();
 
     $oMerkmalWert->cBildpfadKlein       = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
     $oMerkmalWert->nBildKleinVorhanden  = 0;
@@ -574,8 +574,8 @@ function verarbeiteMerkmalWertBild(&$oMerkmalWert)
             $oMerkmalWert->nBildNormalVorhanden = 1;
         }
     }
-    $oMerkmalWert->cBildURLKlein  = $shopURL . $oMerkmalWert->cBildpfadKlein;
-    $oMerkmalWert->cBildURLNormal = $shopURL . $oMerkmalWert->cBildpfadNormal;
+    $oMerkmalWert->cBildURLKlein  = $imageBaseURL . $oMerkmalWert->cBildpfadKlein;
+    $oMerkmalWert->cBildURLNormal = $imageBaseURL . $oMerkmalWert->cBildpfadNormal;
 }
 
 /**
@@ -588,7 +588,7 @@ function gibBoxNews($conf)
         ? (int)$conf['news']['news_anzahl_box']
         : 3;
 
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT DATE_FORMAT(dErstellt, '%M, %Y') AS Datum, count(*) AS nAnzahl, 
             DATE_FORMAT(dErstellt, '%m') AS nMonat
             FROM tnews
@@ -612,7 +612,7 @@ function gibSitemapNews()
 {
     $cacheID = 'sitemap_news';
     if (($overview = Shop::Cache()->get($cacheID)) === false) {
-        $overview = Shop::DB()->query(
+        $overview = Shop::Container()->getDB()->query(
             "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
                 month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr, count(*) AS nAnzahl
                 FROM tnews
@@ -629,7 +629,7 @@ function gibSitemapNews()
                 ORDER BY tnews.dGueltigVon DESC", 2
         );
         foreach ($overview as $news) {
-            $entries = Shop::DB()->query(
+            $entries = Shop::Container()->getDB()->query(
                 "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
                     tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords,
                     tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
@@ -677,7 +677,7 @@ function gibNewsKategorie()
 {
     $cacheID = 'news_category_' . Shop::getLanguage() . '_' . Session::CustomerGroup()->getID();
     if (($newsCategories = Shop::Cache()->get($cacheID)) === false) {
-        $newsCategories = Shop::DB()->query(
+        $newsCategories = Shop::Container()->getDB()->query(
             "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
                 tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
                 tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
@@ -708,7 +708,7 @@ function gibNewsKategorie()
             $newsCategory->cURL      = baueURL($newsCategory, URLART_NEWSKATEGORIE);
             $newsCategory->cURLFull  = baueURL($newsCategory, URLART_NEWSKATEGORIE, 0, false, true);
 
-            $entries = Shop::DB()->query(
+            $entries = Shop::Container()->getDB()->query(
                 "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
                     tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, 
                     tseo.cSeo, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
@@ -759,7 +759,7 @@ function gibGratisGeschenkArtikel($conf)
     $cSQLLimit = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
         ? " LIMIT " . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
         : '';
-    $oArtikelGeschenkTMP_arr = Shop::DB()->query(
+    $oArtikelGeschenkTMP_arr = Shop::Container()->getDB()->query(
         "SELECT tartikel.kArtikel, tartikelattribut.cWert
             FROM tartikel
             JOIN tartikelattribut 
@@ -802,7 +802,7 @@ function pruefeSpezialseite($nLinkart)
     if ((int)$nLinkart > 0) {
         $cacheID = 'special_page_n_' . $nLinkart;
         if (($oSeite = Shop::Cache()->get($cacheID)) === false) {
-            $oSeite = Shop::DB()->select('tspezialseite', 'nLinkart', (int)$nLinkart);
+            $oSeite = Shop::Container()->getDB()->select('tspezialseite', 'nLinkart', (int)$nLinkart);
             Shop::Cache()->set($cacheID, $oSeite, [CACHING_GROUP_CORE]);
         }
         if (isset($oSeite->cDateiname) && strlen($oSeite->cDateiname) > 0) {
@@ -893,7 +893,7 @@ function holeSeitenLinkSprache($kLink)
 function gibNewsArchiv()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::DB()->query(
+    return Shop::Container()->getDB()->query(
         "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
             tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
             count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 

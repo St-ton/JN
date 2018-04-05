@@ -6,8 +6,12 @@
 
 namespace Services;
 
-
-use Services\JTL\ExampleService;
+use Cache\JTLCacheInterface;
+use DB\DbInterface;
+use DB\Services\GcServiceInterface;
+use Services\JTL\CryptoServiceInterface;
+use Services\JTL\PasswordServiceInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class ServiceLocator
@@ -19,8 +23,51 @@ use Services\JTL\ExampleService;
  */
 class Container extends ContainerBase implements DefaultServicesInterface
 {
-    public function getExampleService()
+    /**
+     * @inheritdoc
+     */
+    public function getDB()
     {
-        return new ExampleService();
+        return $this->get(DbInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPasswordService()
+    {
+        return $this->get(PasswordServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCryptoService()
+    {
+        return $this->get(CryptoServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getBackendLogService() : LoggerInterface
+    {
+        return $this->get('BackendAuthLogger');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDBServiceGC()
+    {
+        return $this->get(GcServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCache()
+    {
+        return $this->get(JTLCacheInterface::class);
     }
 }

@@ -12,7 +12,7 @@
 function holeTagDetailAnzahl($kTag, $kSprache)
 {
     if ((int)$kTag > 0 && (int)$kSprache > 0) {
-        $oTagArtikel = Shop::DB()->query(
+        $oTagArtikel = Shop::Container()->getDB()->query(
             "SELECT count(*) AS nAnzahl
                 FROM ttagartikel
                 JOIN ttag 
@@ -43,7 +43,7 @@ function holeTagDetail($kTag, $kSprache, $cLimit)
     $kSprache = (int)$kSprache;
     $kTag     = (int)$kTag;
     if ($kTag > 0 && $kSprache > 0) {
-        $oTagArtikel_arr = Shop::DB()->query(
+        $oTagArtikel_arr = Shop::Container()->getDB()->query(
             "SELECT ttagartikel.kTag, ttag.cName, tartikel.cName AS acName, 
                 tartikel.kArtikel AS kArtikel, tseo.cSeo
                 FROM ttagartikel
@@ -86,11 +86,11 @@ function loescheTagsVomArtikel($kArtikel_arr, $kTag)
     if ($kTag > 0 && is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
         foreach ($kArtikel_arr as $kArtikel) {
             $kArtikel = (int)$kArtikel;
-            Shop::DB()->delete('ttagartikel', ['kArtikel', 'kTag'], [$kArtikel, $kTag]);
-            $oTagArtikel_arr = Shop::DB()->selectAll('ttagartikel', 'kTag', $kTag);
+            Shop::Container()->getDB()->delete('ttagartikel', ['kArtikel', 'kTag'], [$kArtikel, $kTag]);
+            $oTagArtikel_arr = Shop::Container()->getDB()->selectAll('ttagartikel', 'kTag', $kTag);
             // Es gibt keine Artikel mehr zu dem Tag => Tag aus ttag / tseo löschen
             if (count($oTagArtikel_arr) === 0) {
-                Shop::DB()->query(
+                Shop::Container()->getDB()->query(
                     "DELETE ttag, tseo
                         FROM ttag
                         LEFT JOIN tseo 
@@ -115,7 +115,7 @@ function loescheTagsVomArtikel($kArtikel_arr, $kTag)
 function flushAffectedArticleCache(array $tagIDs)
 {
     //get tagged article IDs to invalidate their cache
-    $_affectedArticles = Shop::DB()->query("
+    $_affectedArticles = Shop::Container()->getDB()->query("
         SELECT DISTINCT kArtikel
             FROM ttagartikel
             WHERE kTag IN (" . implode(', ', $tagIDs) . ")", 2

@@ -9,7 +9,7 @@
  */
 class WarenkorbHelper
 {
-    const NET = 0;
+    const NET   = 0;
     const GROSS = 1;
 
     /**
@@ -242,17 +242,17 @@ class WarenkorbHelper
         if ($wkPos->variationPicturesArr === null) {
             $wkPos->variationPicturesArr = [];
         }
-        $shopURL  = Shop::getURL() . '/';
-        $oPicture = (object)[
+        $imageBaseURL          = Shop::getImageBaseURL();
+        $oPicture              = (object)[
             'isVariation'  => true,
             'cPfadMini'    => $variation->cPfadMini,
             'cPfadKlein'   => $variation->cPfadKlein,
             'cPfadNormal'  => $variation->cPfadNormal,
             'cPfadGross'   => $variation->cPfadGross,
-            'cURLMini'     => $shopURL . $variation->cPfadMini,
-            'cURLKlein'    => $shopURL . $variation->cPfadKlein,
-            'cURLNormal'   => $shopURL . $variation->cPfadNormal,
-            'cURLGross'    => $shopURL . $variation->cPfadGross,
+            'cURLMini'     => $imageBaseURL . $variation->cPfadMini,
+            'cURLKlein'    => $imageBaseURL . $variation->cPfadKlein,
+            'cURLNormal'   => $imageBaseURL . $variation->cPfadNormal,
+            'cURLGross'    => $imageBaseURL . $variation->cPfadGross,
             'nNr'          => count($wkPos->variationPicturesArr) + 1,
             'cAltAttribut' => str_replace(['"', "'"], '', $wkPos->Artikel->cName . ' - ' . $variation->cName),
         ];
@@ -295,7 +295,6 @@ class WarenkorbHelper
                 ->assign('hinweis', $_SESSION['hinweis'])
                 ->assign('Xselling', isset($_POST['a']) ? gibArtikelXSelling($_POST['a']) : null);
             unset($_SESSION['hinweis'], $_SESSION['bWarenkorbAnzahl'], $_SESSION['bWarenkorbHinzugefuegt']);
-
         }
         $fAnzahl = 0;
         if (isset($_POST['anzahl'])) {
@@ -362,7 +361,7 @@ class WarenkorbHelper
             return true;
         }
         if (ArtikelHelper::isParent($articleID)) { // Varikombi
-            $articleID   = ArtikelHelper::getArticleForParent($articleID);
+            $articleID  = ArtikelHelper::getArticleForParent($articleID);
             $attributes = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($articleID);
         } else {
             $attributes = ArtikelHelper::getSelectedPropertiesForArticle($articleID);
@@ -417,11 +416,8 @@ class WarenkorbHelper
                     continue;
                 }
                 $oKonfigitem          = new Konfigitem($kKonfigitem);
-                $oKonfigitem->fAnzahl = (float)(
-                isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()])
-                    ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
-                    : $oKonfigitem->getInitial()
-                );
+                $oKonfigitem->fAnzahl = (float)($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
+                    ?? $oKonfigitem->getInitial());
                 if ($nKonfigitemAnzahl_arr && isset($nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()])) {
                     $oKonfigitem->fAnzahl = (float)$nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()];
                 }
@@ -429,7 +425,7 @@ class WarenkorbHelper
                 if ($oKonfigitem->fAnzahl < 1) {
                     $oKonfigitem->fAnzahl = 1;
                 }
-                $count = max($count, 1);
+                $count                  = max($count, 1);
                 $oKonfigitem->fAnzahlWK = $oKonfigitem->fAnzahl;
                 if (!$oKonfigitem->ignoreMultiplier()) {
                     $oKonfigitem->fAnzahlWK *= $count;
@@ -482,7 +478,7 @@ class WarenkorbHelper
         // Alle Konfigurationsartikel können in den WK gelegt werden
         if ($bValid) {
             // Eindeutige ID
-            $cUnique = gibUID(10);
+            $cUnique = uniqid('', true);
             // Hauptartikel in den WK legen
             fuegeEinInWarenkorb($articleID, $count, $attributes, 0, $cUnique);
             // Konfigartikel in den WK legen
@@ -520,7 +516,7 @@ class WarenkorbHelper
                 fuegeEinInWarenkorbPers(
                     $oKonfigitem->getArtikelKey(),
                     $oKonfigitem->fAnzahlWK,
-                    isset($oKonfigitem->oEigenschaftwerte_arr) ? $oKonfigitem->oEigenschaftwerte_arr : [],
+                    $oKonfigitem->oEigenschaftwerte_arr ?? [],
                     $cUnique,
                     $oKonfigitem->getKonfigitem()
                 );
@@ -558,9 +554,9 @@ class WarenkorbHelper
             || $qty > count($_SESSION['Vergleichsliste']->oArtikel_arr)
         ) {
             // Prüfe auf kArtikel
-            $productExists = Shop::DB()->select(
-                'tartikel', '
-                kArtikel', $kArtikel,
+            $productExists = Shop::Container()->getDB()->select(
+                'tartikel',
+                'kArtikel', $kArtikel,
                 null, null,
                 null, null,
                 false,
@@ -569,7 +565,7 @@ class WarenkorbHelper
             // Falls Artikel vorhanden
             if ($productExists !== null && $productExists->kArtikel > 0) {
                 // Sichtbarkeit Prüfen
-                $vis = Shop::DB()->select(
+                $vis = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $kArtikel,
                     'kKundengruppe', Session::CustomerGroup()->getID(),
@@ -608,11 +604,15 @@ class WarenkorbHelper
                                     $oVergleichsliste->oArtikel_arr[] = $oArtikel;
                                 }
                                 $_SESSION['Vergleichsliste'] = $oVergleichsliste;
-                                Shop::Smarty()->assign('hinweis',
-                                    Shop::Lang()->get('comparelistProductadded', 'messages'));
+                                Shop::Smarty()->assign(
+                                    'hinweis',
+                                    Shop::Lang()->get('comparelistProductadded', 'messages')
+                                );
                             } else {
-                                Shop::Smarty()->assign('fehler',
-                                    Shop::Lang()->get('comparelistProductexists', 'messages'));
+                                Shop::Smarty()->assign(
+                                    'fehler',
+                                    Shop::Lang()->get('comparelistProductexists', 'messages')
+                                );
                             }
                         }
                     } else {
@@ -655,7 +655,7 @@ class WarenkorbHelper
 
         if ($articleID > 0 && Session::Customer()->getID() > 0) {
             // Prüfe auf kArtikel
-            $productExists = Shop::DB()->select(
+            $productExists = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel', $articleID,
                 null, null,
@@ -667,7 +667,7 @@ class WarenkorbHelper
             if ($productExists !== null && $productExists->kArtikel > 0) {
                 $attributes = [];
                 // Sichtbarkeit Prüfen
-                $vis = Shop::DB()->select(
+                $vis = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel', $articleID,
                     'kKundengruppe', Session::CustomerGroup()->getID(),
@@ -687,7 +687,7 @@ class WarenkorbHelper
                             exit;
                         }
 
-                        $articleID   = ArtikelHelper::getArticleForParent($articleID);
+                        $articleID  = ArtikelHelper::getArticleForParent($articleID);
                         $attributes = $articleID > 0
                             ? ArtikelHelper::getSelectedPropertiesForVarCombiArticle($articleID)
                             : [];
@@ -700,7 +700,7 @@ class WarenkorbHelper
                             $_SESSION['Wunschliste'] = new Wunschliste();
                             $_SESSION['Wunschliste']->schreibeDB();
                         }
-                        $qty         = max(1, $qty);
+                        $qty             = max(1, $qty);
                         $kWunschlistePos = $_SESSION['Wunschliste']->fuegeEin(
                             $articleID,
                             $productExists->cName,

@@ -4,10 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Services\Container;
+use DB\Services as DbService;
+
+use JTL\ProcessingHandler\NiceDBHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Logger;
+use Monolog\Processor\PsrLogMessageProcessor;
+use \Services\JTL\Validation\ValidationServiceInterface;
+use \Services\JTL\Validation\ValidationService;
+use Services\JTL\Validation\RuleSet;
+use Filter\ProductFilter;
+
 /**
  * Class Shop
- * @method static NiceDB DB()
- * @method static JTLCache Cache()
+ * @method static \Cache\JTLCacheInterface Cache()
  * @method static Sprache Lang()
  * @method static JTLSmarty Smarty(bool $fast_init = false, bool $isAdmin = false)
  * @method static Media Media()
@@ -327,21 +339,26 @@ final class Shop
     /**
      * @var \Services\DefaultServicesInterface
      */
-    public static $container;
+    private static $container;
+
+    /**
+     * @var string
+     */
+    private static $imageBaseURL;
 
     /**
      * @var array
      */
     private static $mapping = [
-        'DB'       => '_DB',
-        'Cache'    => '_Cache',
-        'Lang'     => '_Language',
-        'Smarty'   => '_Smarty',
-        'Media'    => '_Media',
-        'Event'    => '_Event',
-        'has'      => '_has',
-        'set'      => '_set',
-        'get'      => '_get'
+        'DB'     => '_DB',
+        'Cache'  => '_Cache',
+        'Lang'   => '_Language',
+        'Smarty' => '_Smarty',
+        'Media'  => '_Media',
+        'Event'  => '_Event',
+        'has'    => '_has',
+        'set'    => '_set',
+        'get'    => '_get'
     ];
 
     /**
@@ -356,16 +373,16 @@ final class Shop
     /**
      * @return Shop
      */
-    public static function getInstance()
+    public static function getInstance() : self
     {
-        return self::$_instance === null ? new self() : self::$_instance;
+        return self::$_instance ?? new self();
     }
 
     /**
      * object wrapper - this allows to call NiceDB->query() etc.
      *
      * @param string $method
-     * @param mixed $arguments
+     * @param mixed  $arguments
      * @return mixed
      */
     public function __call($method, $arguments)
@@ -376,10 +393,10 @@ final class Shop
     }
 
     /**
-     * static wrapper - this allows to call Shop::DB()->query() etc.
+     * static wrapper - this allows to call Shop::Container()->getDB()->query() etc.
      *
      * @param string $method
-     * @param mixed $arguments
+     * @param mixed  $arguments
      * @return mixed
      */
     public static function __callStatic($method, $arguments)
@@ -390,22 +407,20 @@ final class Shop
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @return null|mixed
      */
     public function _get($key)
     {
-        return isset($this->registry[$key])
-            ? $this->registry[$key]
-            : null;
+        return $this->registry[$key] ?? null;
     }
 
     /**
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      * @return $this
      */
-    public function _set($key, $value)
+    public function _set($key, $value) : self
     {
         $this->registry[$key] = $value;
 
@@ -416,7 +431,7 @@ final class Shop
      * @param string $key
      * @return bool
      */
-    public function _has($key)
+    public function _has($key) : bool
     {
         return isset($this->registry[$key]);
     }
@@ -429,19 +444,38 @@ final class Shop
      */
     private static function map($method)
     {
-        return isset(self::$mapping[$method])
-            ? self::$mapping[$method]
-            : null;
+        return self::$mapping[$method] ?? null;
+    }
+
+    /**
+     * @param string $url
+     */
+    public static function setImageBaseURL(string $url)
+    {
+        self::$imageBaseURL = rtrim($url, '/') . '/';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getImageBaseURL() : string
+    {
+        if (self::$imageBaseURL === null) {
+            self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL  : self::getURL());
+        }
+        return self::$imageBaseURL;
     }
 
     /**
      * get remote service instance
      *
-     * @return RemoteService
+     * @return \Network\JTLApi
+     * @deprecated since Shop 5.0 use Shop::Container()->get(JTLApi::class) instead
+     * @throws
      */
-    public function RS()
+    public function RS() : \Network\JTLApi
     {
-        return RemoteService::getInstance();
+        return self::Container()->get(\Network\JTLApi::class);
     }
 
     /**
@@ -449,7 +483,7 @@ final class Shop
      *
      * @return Session
      */
-    public function Session()
+    public function Session() : Session
     {
         return Session::getInstance();
     }
@@ -457,11 +491,21 @@ final class Shop
     /**
      * get db adapter instance
      *
-     * @return NiceDB
+     * @return \DB\DbInterface
+     * @deprecated since Shop 5 use Shop::Container()->getDB() instead
      */
-    public function _DB()
+    public function _DB() : \DB\DbInterface
     {
-        return NiceDB::getInstance();
+        return self::Container()->getDB();
+    }
+
+    /**
+     * @return \DB\DbInterface
+     * @deprecated since Shop 5 use Shop::Container()->getDB() instead
+     */
+    public static function DB() : \DB\DbInterface
+    {
+        return self::Container()->getDB();
     }
 
     /**
@@ -469,7 +513,7 @@ final class Shop
      *
      * @return Sprache
      */
-    public function _Language()
+    public function _Language() : Sprache
     {
         return Sprache::getInstance();
     }
@@ -479,7 +523,7 @@ final class Shop
      *
      * @return Shopsetting
      */
-    public function Config()
+    public function Config() : Shopsetting
     {
         return self::$_settings;
     }
@@ -487,11 +531,12 @@ final class Shop
     /**
      * get garbage collector
      *
-     * @return GarbageCollector
+     * @return DbService\GcServiceInterface
+     * @deprecated since 5.0 -> use Shop::Container()->getGc() instead
      */
-    public function Gc()
+    public function Gc() : DbService\GcServiceInterface
     {
-        return new GarbageCollector();
+        return static::Container()->getDBServiceGC();
     }
 
     /**
@@ -499,15 +544,15 @@ final class Shop
      *
      * @return Jtllog
      */
-    public function Logger()
+    public function Logger() : Jtllog
     {
         return new Jtllog();
     }
-    
+
     /**
      * @return PHPSettingsHelper
      */
-    public function PHPSettingsHelper()
+    public function PHPSettingsHelper() : PHPSettingsHelper
     {
         return PHPSettingsHelper::getInstance();
     }
@@ -515,11 +560,12 @@ final class Shop
     /**
      * get cache instance
      *
-     * @return JTLCache
+     * @return \Cache\JTLCacheInterface
+     * @deprecated since shop 5.0
      */
-    public function _Cache()
+    public function _Cache() : \Cache\JTLCacheInterface
     {
-        return JTLCache::getInstance();
+        return self::Container()->getCache();
     }
 
     /**
@@ -529,7 +575,7 @@ final class Shop
      * @param bool $isAdmin
      * @return JTLSmarty
      */
-    public function _Smarty($fast_init = false, $isAdmin = false)
+    public function _Smarty($fast_init = false, $isAdmin = false) : JTLSmarty
     {
         return JTLSmarty::getInstance($fast_init, $isAdmin);
     }
@@ -539,7 +585,7 @@ final class Shop
      *
      * @return Media
      */
-    public function _Media()
+    public function _Media() : Media
     {
         return Media::getInstance();
     }
@@ -549,7 +595,7 @@ final class Shop
      *
      * @return EventDispatcher
      */
-    public function _Event()
+    public function _Event() : EventDispatcher
     {
         return EventDispatcher::getInstance();
     }
@@ -605,7 +651,7 @@ final class Shop
      * @var bool $iso
      * @return int
      */
-    public static function getLanguageID()
+    public static function getLanguageID() : int
     {
         return (int)self::$kSprache;
     }
@@ -624,7 +670,7 @@ final class Shop
     /**
      * set language/language ISO
      *
-     * @param int $languageID
+     * @param int    $languageID
      * @param string $cISO
      */
     public static function setLanguage($languageID, $cISO = null)
@@ -650,27 +696,27 @@ final class Shop
      */
     public static function getSettings($config)
     {
-        return self::$_settings->getSettings($config);
+        return (self::$_settings ?? Shopsetting::getInstance())->getSettings($config);
     }
 
     /**
-     * @param string $section
+     * @param int    $section
      * @param string $option
-     * @return string|array|int
+     * @return string|array|int|null
      */
-    public static function getSettingValue($section, $option)
+    public static function getSettingValue(int $section, $option)
     {
         return self::getConfigValue($section, $option);
     }
 
     /**
-     * @param string $section
+     * @param int    $section
      * @param string $option
-     * @return string|array|int
+     * @return string|array|int|null
      */
-    public static function getConfigValue($section, $option)
+    public static function getConfigValue(int $section, $option)
     {
-        return self::$_settings->getValue($section, $option);
+        return (self::$_settings ?? Shopsetting::getInstance())->getValue($section, $option);
     }
 
     /**
@@ -680,12 +726,12 @@ final class Shop
     {
         $cacheID = 'plgnbtsrp';
         if (($plugins = self::Cache()->get($cacheID)) === false) {
-            $plugins = self::DB()->query(
+            $plugins = self::Container()->getDB()->query(
                 'SELECT kPlugin 
                   FROM tplugin 
                   WHERE nStatus = 2 
                     AND bBootstrap = 1 
-                  ORDER BY nPrio ASC', NiceDB::RET_ARRAY_OF_OBJECTS) ?: [];
+                  ORDER BY nPrio ASC', \DB\ReturnType::ARRAY_OF_OBJECTS) ?: [];
             self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
 
@@ -697,9 +743,9 @@ final class Shop
     }
 
     /**
-     *
+     * @return ProductFilter
      */
-    public static function run()
+    public static function run() : ProductFilter
     {
         self::$kKonfigPos             = verifyGPCDataInteger('ek');
         self::$kKategorie             = verifyGPCDataInteger('k');
@@ -762,12 +808,12 @@ final class Shop
         }
 
         self::$isInitialized = true;
-        $redirect = verifyGPDataString('r');
+        $redirect            = verifyGPDataString('r');
         if (self::$kArtikel > 0) {
             if (!empty($redirect)
                 && (self::$kNews > 0 // get param "n" was used a article amount
                     || (isset($_GET['n']) && (float)$_GET['n'] > 0)) // article amount was a float >0 and <1
-            ){
+            ) {
                 // GET param "n" is often misused as "amount of article"
                 self::$kNews = 0;
                 if ((int)$redirect === R_LOGIN_WUNSCHLISTE) {
@@ -802,8 +848,8 @@ final class Shop
             exit;
         }
         self::$productFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
-
         self::seoCheck();
+        self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL  : self::getURL());
         self::Event()->fire('shop.run');
 
         self::$productFilter->initStates(self::getParameters());
@@ -816,7 +862,7 @@ final class Shop
      *
      * @return array
      */
-    public static function getParameters()
+    public static function getParameters() : array
     {
         if (self::$kKategorie > 0 && !Kategorie::isVisible(self::$kKategorie, Session::CustomerGroup()->getID())) {
             self::$kKategorie = 0;
@@ -851,8 +897,8 @@ final class Shop
             'nSortierung'            => self::$nSortierung,
             'nSort'                  => self::$nSort,
             'MerkmalFilter_arr'      => self::$MerkmalFilter,
-            'TagFilter_arr'          => self::$TagFilter !== null ? self::$TagFilter : [],
-            'SuchFilter_arr'         => self::$SuchFilter !== null ? self::$SuchFilter : [],
+            'TagFilter_arr'          => self::$TagFilter ?? [],
+            'SuchFilter_arr'         => self::$SuchFilter ?? [],
             'nArtikelProSeite'       => self::$nArtikelProSeite,
             'cSuche'                 => self::$cSuche,
             'seite'                  => self::$seite,
@@ -880,9 +926,7 @@ final class Shop
      */
     public static function seoCheck()
     {
-        $uri                             = isset($_SERVER['HTTP_X_REWRITE$'])
-            ? $_SERVER['HTTP_X_REWRITE_URL']
-            : $_SERVER['REQUEST_URI'];
+        $uri                             = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         self::$uri                       = $uri;
         self::$bSEOMerkmalNotFound       = false;
         self::$bKatFilterNotFound        = false;
@@ -1000,22 +1044,22 @@ final class Shop
                     if (($idx = strpos($hstseo, SEP_KAT)) !== false && $idx !== strpos($hstseo, SEP_HST)) {
                         $oHersteller_arr[] = explode(SEP_KAT, $hstseo);
                         $manufSeo[$i]      = $oHersteller_arr[0];
-                        $seo             .= SEP_KAT . $oHersteller_arr[1];
+                        $seo               .= SEP_KAT . $oHersteller_arr[1];
                     }
                     if (strpos($hstseo, SEP_MERKMAL) !== false) {
-                        $arr    = explode(SEP_MERKMAL, $hstseo);
+                        $arr          = explode(SEP_MERKMAL, $hstseo);
                         $manufSeo[$i] = $arr[0];
-                        $seo    .= SEP_MERKMAL . $arr[1];
+                        $seo          .= SEP_MERKMAL . $arr[1];
                     }
                     if (strpos($hstseo, SEP_MM_MMW) !== false) {
-                        $arr    = explode(SEP_MM_MMW, $hstseo);
+                        $arr          = explode(SEP_MM_MMW, $hstseo);
                         $manufSeo[$i] = $arr[0];
-                        $seo    .= SEP_MM_MMW . $arr[1];
+                        $seo          .= SEP_MM_MMW . $arr[1];
                     }
                     if (strpos($hstseo, SEP_SEITE) !== false) {
-                        $arr    = explode(SEP_SEITE, $hstseo);
+                        $arr          = explode(SEP_SEITE, $hstseo);
                         $manufSeo[$i] = $arr[0];
-                        $seo    .= SEP_SEITE . $arr[1];
+                        $seo          .= SEP_SEITE . $arr[1];
                     }
                 }
             } else {
@@ -1059,7 +1103,7 @@ final class Shop
             }
             // custom filter
             foreach ($customSeo as $className => $data) {
-                $oSeo = self::DB()->select($data['table'], 'cSeo', $data['cSeo']);
+                $oSeo = self::Container()->getDB()->select($data['table'], 'cSeo', $data['cSeo']);
                 if (isset($oSeo->filterval)) {
                     self::$customFilters[$className] = (int)$oSeo->filterval;
                 } else {
@@ -1071,7 +1115,7 @@ final class Shop
             }
             // category filter
             if (strlen($katseo) > 0) {
-                $oSeo = self::DB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
+                $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
                 if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $katseo) === 0) {
                     self::$kKategorieFilter = (int)$oSeo->kKey;
                 } else {
@@ -1081,14 +1125,14 @@ final class Shop
             // manufacturer filter
             if (($seoCount = count($manufSeo)) > 0) {
                 if ($seoCount === 1) {
-                    $oSeo = self::DB()->selectAll('tseo', ['cKey', 'cSeo'], ['kHersteller', $manufSeo[0]], 'kKey');
+                    $oSeo = self::Container()->getDB()->selectAll('tseo', ['cKey', 'cSeo'], ['kHersteller', $manufSeo[0]], 'kKey');
                 } else {
                     $bindValues = [];
                     // PDO::bindValue() is 1-based
                     foreach ($manufSeo as $i => $t) {
                         $bindValues[$i + 1] = $t;
                     }
-                    $oSeo = self::DB()->queryPrepared(
+                    $oSeo = self::Container()->getDB()->queryPrepared(
                         "SELECT kKey 
                             FROM tseo 
                             WHERE cKey = 'kHersteller' 
@@ -1117,7 +1161,7 @@ final class Shop
                 self::$bSEOMerkmalNotFound = false;
                 foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
                     if ($i > 0 && strlen($cSEOMerkmal) > 0) {
-                        $oSeo = self::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
+                        $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
                         if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
                             //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
                             $_GET['mf'][] = (int)$oSeo->kKey;
@@ -1127,7 +1171,7 @@ final class Shop
                     }
                 }
             }
-            $oSeo = self::DB()->select('tseo', 'cSeo', $seo);
+            $oSeo = self::Container()->getDB()->select('tseo', 'cSeo', $seo);
             // EXPERIMENTAL_MULTILANG_SHOP
             if (isset($oSeo->kSprache) && self::$kSprache !== $oSeo->kSprache &&
                 defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
@@ -1136,7 +1180,7 @@ final class Shop
             // EXPERIMENTAL_MULTILANG_SHOP END
             // Link active?
             if (isset($oSeo->cKey) && $oSeo->cKey === 'kLink') {
-                $bIsActive = self::DB()->select('tlink', 'kLink', (int)$oSeo->kKey);
+                $bIsActive = self::Container()->getDB()->select('tlink', 'kLink', (int)$oSeo->kKey);
                 if ($bIsActive !== null && (int)$bIsActive->bIsActive === 0) {
                     $oSeo = false;
                 }
@@ -1218,7 +1262,7 @@ final class Shop
             self::$productFilter->setLanguageID($languageID);
         }
         $spr   = self::Lang()->getIsoFromLangID($languageID);
-        $cLang = isset($spr->cISO) ? $spr->cISO : null;
+        $cLang = $spr->cISO ?? null;
         if ($cLang !== $_SESSION['cISOSprache']) {
             checkeSpracheWaehrung($cLang);
             setzeSteuersaetze();
@@ -1248,7 +1292,7 @@ final class Shop
                     $cRP = '&cRP=' . base64_encode($cRP);
                 }
                 http_response_code(301);
-                header('Location: ' . self::getURL() . '/index.php?a=' . $kArtikel . $cRP);
+                header('Location: ' . self::getURL() . '/?a=' . $kArtikel . $cRP);
                 exit();
             }
 
@@ -1257,16 +1301,16 @@ final class Shop
         } elseif ((self::$bSEOMerkmalNotFound === null || self::$bSEOMerkmalNotFound === false)
             && (self::$bKatFilterNotFound === null || self::$bKatFilterNotFound === false)
             && (self::$bHerstellerFilterNotFound === null || self::$bHerstellerFilterNotFound === false)
-            && ((self::$kHersteller > 0 
-                || self::$kSuchanfrage > 0 
-                || self::$kMerkmalWert > 0 
-                || self::$kTag > 0 
-                || self::$kKategorie > 0 
-                || self::$nBewertungSterneFilter > 0
-                || self::$kHerstellerFilter > 0
-                || self::$kKategorieFilter > 0
-                || self::$kSuchspecial > 0
-                || self::$kSuchFilter > 0)
+            && ((self::$kHersteller > 0
+                    || self::$kSuchanfrage > 0
+                    || self::$kMerkmalWert > 0
+                    || self::$kTag > 0
+                    || self::$kKategorie > 0
+                    || self::$nBewertungSterneFilter > 0
+                    || self::$kHerstellerFilter > 0
+                    || self::$kKategorieFilter > 0
+                    || self::$kSuchspecial > 0
+                    || self::$kSuchFilter > 0)
                 || (self::$cPreisspannenFilter !== null && self::$cPreisspannenFilter > 0))
             && (self::$productFilter->getFilterCount() === 0 || !self::$bSeo)
         ) {
@@ -1304,20 +1348,21 @@ final class Shop
             }
             if ($cRequestFile === '/') {
                 // special case: home page is accessible without seo url
-                $link        = null;
-                $linkHelper  = LinkHelper::getInstance();
+                $link       = null;
+                $linkHelper = LinkHelper::getInstance();
                 self::setPageType(PAGE_STARTSEITE);
+                self::$fileName = 'seite.php';
                 if (Session::CustomerGroup()->getID() > 0) {
                     $cKundengruppenSQL = " AND (FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(cKundengruppen, ';', ',')) > 0
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
                         OR tlink.cKundengruppen = '')";
-                    $link              = self::DB()->query(
+                    $link              = self::Container()->getDB()->query(
                         'SELECT kLink 
                             FROM tlink
                             WHERE nLinkart = ' . LINKTYP_STARTSEITE . $cKundengruppenSQL,
-                        NiceDB::RET_SINGLE_OBJECT
+                        \DB\ReturnType::SINGLE_OBJECT
                     );
                 }
                 self::$kLink = isset($link->kLink)
@@ -1341,8 +1386,9 @@ final class Shop
                         header('Location: ' . $link->cURL, true, 303);
                         exit;
                     }
+                    self::$fileName = 'seite.php';
                     self::setPageType(PAGE_EIGENE);
-                    $oSeite = self::DB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
+                    $oSeite = self::Container()->getDB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
                     if ($link->nLinkart === LINKTYP_STARTSEITE) {
                         self::setPageType(PAGE_STARTSEITE);
                     } elseif ($link->nLinkart === LINKTYP_DATENSCHUTZ) {
@@ -1420,20 +1466,31 @@ final class Shop
                 self::setPageType(PAGE_EIGENE);
             }
         }
-        if (self::$is404 === true) {
-            executeHook(HOOK_INDEX_SEO_404, ['seo' => self::getRequestUri()]);
-            if (!self::$kLink) {
-                $hookInfos     = urlNotFoundRedirect([
-                    'key'   => 'kLink',
-                    'value' => self::$kLink
-                ]);
-                $kLink         = $hookInfos['value'];
-                $bFileNotFound = $hookInfos['isFileNotFound'];
-                if (!$kLink) {
-                    self::$kLink = LinkHelper::getInstance()->getSpecialPageLinkKey(LINKTYP_404);
-                }
+        self::check404();
+    }
+
+    /**
+     * @return bool
+     */
+    public static function check404() : bool
+    {
+        if (self::$is404 !== true) {
+            return false;
+        }
+        executeHook(HOOK_INDEX_SEO_404, ['seo' => self::getRequestUri()]);
+        if (!self::$kLink) {
+            $hookInfos     = urlNotFoundRedirect([
+                'key'   => 'kLink',
+                'value' => self::$kLink
+            ]);
+            $kLink         = $hookInfos['value'];
+            $bFileNotFound = $hookInfos['isFileNotFound'];
+            if (!$kLink) {
+                self::$kLink = LinkHelper::getInstance()->getSpecialPageLinkKey(LINKTYP_404);
             }
         }
+
+        return true;
     }
 
     /**
@@ -1444,9 +1501,11 @@ final class Shop
      * @return ProductFilter
      * @deprecated since 4.07
      */
-    public static function buildNaviFilter($cParameter_arr, $productFilter = null)
+    public static function buildNaviFilter($cParameter_arr, $productFilter = null) : ProductFilter
     {
-        trigger_error(__METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead', E_USER_DEPRECATED);
+        trigger_error(__METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead',
+            E_USER_DEPRECATED);
+
         return self::buildProductFilter($cParameter_arr, $productFilter);
     }
 
@@ -1457,7 +1516,7 @@ final class Shop
      * @param stdClass|null|ProductFilter $productFilter
      * @return ProductFilter
      */
-    public static function buildProductFilter($cParameter_arr, $productFilter = null)
+    public static function buildProductFilter($cParameter_arr, $productFilter = null) : ProductFilter
     {
         $pf = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
         if ($productFilter !== null) {
@@ -1473,16 +1532,18 @@ final class Shop
      * @return ProductFilter
      * @deprecated since 4.07
      */
-    public static function getNaviFilter()
+    public static function getNaviFilter() : ProductFilter
     {
-        trigger_error(__METHOD__ . 'is deprecated. Use ' . __CLASS__ . '::getProductFilter() instead', E_USER_DEPRECATED);
+        trigger_error(__METHOD__ . 'is deprecated. Use ' . __CLASS__ . '::getProductFilter() instead',
+            E_USER_DEPRECATED);
+
         return self::getProductFilter();
     }
 
     /**
      * @return ProductFilter
      */
-    public static function getProductFilter()
+    public static function getProductFilter() : ProductFilter
     {
         if (self::$productFilter === null) {
             self::$productFilter = self::buildProductFilter([]);
@@ -1511,9 +1572,9 @@ final class Shop
     /**
      * @return int
      */
-    public static function getShopVersion()
+    public static function getShopVersion() : int
     {
-        $oVersion = self::DB()->query('SELECT nVersion FROM tversion', NiceDB::RET_SINGLE_OBJECT);
+        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
 
         return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
             ? (int)$oVersion->nVersion
@@ -1525,7 +1586,15 @@ final class Shop
      *
      * @return int
      */
-    public static function getVersion()
+    public static function getVersion() : int
+    {
+        return JTL_VERSION;
+    }
+
+    /**
+     * @return int
+     */
+    public function _getVersion() : int
     {
         return JTL_VERSION;
     }
@@ -1540,7 +1609,7 @@ final class Shop
     {
         $ret  = null;
         $conf = self::getSettings([CONF_LOGO]);
-        $file = isset($conf['logo']['shop_logo']) ? $conf['logo']['shop_logo'] : null;
+        $file = $conf['logo']['shop_logo'] ?? null;
         if ($file !== null && $file !== '') {
             $ret = PFAD_SHOPLOGO . $file;
         } elseif (is_dir(PFAD_ROOT . PFAD_SHOPLOGO)) {
@@ -1559,7 +1628,7 @@ final class Shop
         return $ret === null
             ? null
             : ($fullUrl === true
-                ? self::getURL() . '/'
+                ? self::getImageBaseURL()
                 : '') . $ret;
     }
 
@@ -1568,14 +1637,14 @@ final class Shop
      * @param bool $bMultilang
      * @return string - the shop URL without trailing slash
      */
-    public static function getURL($bForceSSL = false, $bMultilang = true)
+    public static function getURL($bForceSSL = false, $bMultilang = true) : string
     {
         $idx = (int)$bForceSSL;
         if (isset(self::$url[self::$kSprache][$idx])) {
             return self::$url[self::$kSprache][$idx];
         }
         // EXPERIMENTAL_MULTILANG_SHOP
-        $cShopURL = ($bMultilang === true && isset($_SESSION['cISOSprache'])
+        $cShopURL  = ($bMultilang === true && isset($_SESSION['cISOSprache'])
             && defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache'])))
             ? constant('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))
             : URL_SHOP;
@@ -1586,7 +1655,7 @@ final class Shop
             $cShopURL = str_replace('http://', 'https://', $cShopURL);
         }
 
-        $url = rtrim($cShopURL, '/');
+        $url                              = rtrim($cShopURL, '/');
         self::$url[self::$kSprache][$idx] = $url;
 
         return $url;
@@ -1596,7 +1665,7 @@ final class Shop
      * @param bool $bForceSSL
      * @return string - the shop Admin URL without trailing slash
      */
-    public static function getAdminURL($bForceSSL = false)
+    public static function getAdminURL($bForceSSL = false) : string
     {
         return rtrim(static::getURL($bForceSSL, false) . '/' . PFAD_ADMIN, '/');
     }
@@ -1616,17 +1685,15 @@ final class Shop
      */
     public static function getPageType()
     {
-        return self::$pageType !== null ? self::$pageType : PAGE_UNBEKANNT;
+        return self::$pageType ?? PAGE_UNBEKANNT;
     }
 
     /**
      * @return string
      */
-    public static function getRequestUri()
+    public static function getRequestUri() : string
     {
-        $uri          = isset($_SERVER['HTTP_X_REWRITE_URL'])
-            ? $_SERVER['HTTP_X_REWRITE_URL']
-            : $_SERVER['REQUEST_URI'];
+        $uri          = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         $xShopurl_arr = parse_url(self::getURL());
         $xBaseurl_arr = parse_url($uri);
 
@@ -1642,7 +1709,7 @@ final class Shop
     /**
      * @return bool
      */
-    public static function isAdmin()
+    public static function isAdmin() : bool
     {
         if (is_bool(self::$_logged)) {
             return self::$_logged;
@@ -1672,7 +1739,7 @@ final class Shop
     /**
      * @return bool
      */
-    public static function isBrandfree()
+    public static function isBrandfree() : bool
     {
         return Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_BRANDFREE);
     }
@@ -1682,9 +1749,8 @@ final class Shop
      *
      * @return \Services\DefaultServicesInterface
      */
-    public function getContainer()
+    public static function Container()
     {
-
         if (!static::$container) {
             static::createContainer();
         }
@@ -1693,16 +1759,73 @@ final class Shop
     }
 
     /**
-     * Create the default container of the jtl shop
+     * Get the default container of the jtl shop
      *
-     * @return null
+     * @return \Services\DefaultServicesInterface
      */
-    private function createContainer()
+    public function _Container()
     {
-        $l                 = new \Services\Container();
-        static::$container = $l;
-        $l->setSingleton(Services\JTL\ExampleServiceInterface::class, function ($locator) {
-            return new Services\JTL\ExampleService();
+        return self::Container();
+    }
+
+    /**
+     * Create the default container of the jtl shop
+     */
+    private static function createContainer()
+    {
+        $container         = new \Services\Container();
+        static::$container = $container;
+
+        // BASE
+        $container->setSingleton(\DB\DbInterface::class, function () {
+            return new DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        });
+
+        $container->setSingleton(\Cache\JTLCacheInterface::class, function () {
+            return new \Cache\JTLCache();
+        });
+
+        // SECURITY
+        $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function () {
+            return new \Services\JTL\CryptoService();
+        });
+
+        $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function (Container $container) {
+            return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
+        });
+
+        $container->setSingleton('BackendAuthLogger', function (Container $container) {
+            $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
+            $handlers    = [];
+            foreach ($loggingConf as $value) {
+                if ($value === AdminLoginConfig::CONFIG_DB) {
+                    $handlers[] = (new NiceDBHandler(\Shop::DB(), Logger::INFO))
+                        ->setFormatter(new LineFormatter('%message%', null, false, true));
+                } elseif ($value === AdminLoginConfig::CONFIG_FILE) {
+                    $handlers[] = (new StreamHandler(PFAD_LOGFILES . 'auth.log', Logger::INFO))
+                        ->setFormatter(new LineFormatter(null, null, false, true));
+                }
+            }
+
+            return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
+        });
+
+        $container->setSingleton(ValidationServiceInterface::class, function() {
+            $vs = new ValidationService($_GET, $_POST, $_COOKIE);
+            $vs->setRuleSet('identity', (new RuleSet())->integer()->gt(0));
+
+            return $vs;
+        });
+            
+        // NETWORK & API
+        $container->setFactory(\Network\JTLApi::class, function () {
+            return new \Network\JTLApi($_SESSION, Nice::getInstance(), self::getInstance());
+        });
+
+
+        // DB SERVICES
+        $container->setSingleton(DbService\GcServiceInterface::class, function (Container $container) {
+            return new DbService\GcService($container->getDB());
         });
     }
 }

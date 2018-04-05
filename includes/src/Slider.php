@@ -147,7 +147,7 @@ class Slider implements IExtensionPoint
             }
             $kSlider     = (int)$kSlider;
             $limit       = (int)$limit;
-            $cSlider_arr = Shop::DB()->query(
+            $cSlider_arr = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM tslider
                     WHERE kSlider = " . $kSlider . " " . $filter . "
@@ -156,15 +156,16 @@ class Slider implements IExtensionPoint
             if ($cSlider_arr === null) {
                 return false;
             }
-            $slides = Shop::DB()->query(
-                "SELECT kslide
+            $slides = Shop::Container()->getDB()->queryPrepared(
+                'SELECT kSlide
                     FROM tslide
-                    WHERE kSlider = " . $kSlider . "
-                    ORDER BY nSort ASC",
-                2
+                    WHERE kSlider = :sliderID
+                    ORDER BY nSort ASC',
+                ['sliderID' => $kSlider],
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($slides as $slide) {
-                $this->oSlide_arr[] = new Slide($cSlider_arr['kSlider'], $slide->kslide);
+                $this->oSlide_arr[] = new Slide($cSlider_arr['kSlider'], $slide->kSlide);
             }
 
             if (is_array($cSlider_arr)) {
@@ -195,7 +196,7 @@ class Slider implements IExtensionPoint
         $oSlider = clone $this;
         unset($oSlider->oSlide_arr, $oSlider->kSlider);
 
-        $kSlider = Shop::DB()->insert('tslider', $oSlider);
+        $kSlider = Shop::Container()->getDB()->insert('tslider', $oSlider);
 
         if ($kSlider > 0) {
             $this->kSlider = $kSlider;
@@ -215,7 +216,7 @@ class Slider implements IExtensionPoint
 
         unset($oSlider->oSlide_arr, $oSlider->kSlider);
 
-        return Shop::DB()->update('tslider', 'kSlider', $this->kSlider, $oSlider) >= 0;
+        return Shop::Container()->getDB()->update('tslider', 'kSlider', $this->kSlider, $oSlider) >= 0;
     }
 
     /**
@@ -229,8 +230,8 @@ class Slider implements IExtensionPoint
         }
         $kSlider = (int)$kSlider;
         if ($kSlider !== 0) {
-            $affected = Shop::DB()->delete('tslider', 'kSlider', $kSlider);
-            Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $kSlider]);
+            $affected = Shop::Container()->getDB()->delete('tslider', 'kSlider', $kSlider);
+            Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $kSlider]);
 
             if ($affected > 0) {
                 if (!empty($this->oSlide_arr)) {

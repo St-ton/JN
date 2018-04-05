@@ -3,36 +3,23 @@
 {/if}
 
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
-    {if $filter->isInitialized() && $filter->getType() !== $filter::FILTER_TYPE_OR}
-        <li>
-            <a href="{$filter->getUnsetFilterURL()}" rel="nofollow" class="active {$itemClass}">
+    {foreach $filter->getOptions() as $filterOption}
+        {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
+        <li class="filter-item{if $filterIsActive === true} active{/if}">
+            <a rel="nofollow" href="{$filterOption->getURL()}" class="{$itemClass}{if $filterOption->isActive()} active{/if}">
+                <span class="badge pull-right">{$filterOption->getCount()}</span>
                 <span class="value">
-                    <i class="fa fa-check-square-o text-muted"></i>
-                    {if $filter->getClassName() === 'FilterItemRating'}
-                        {include file='productdetails/rating.tpl' stars=$filter->getValue()}
+                    {if $filter->getIcon() !== null}
+                        <i class="fa {$filter->getIcon()}"></i>
+                    {else}
+                        <i class="fa {if $filterIsActive === true}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
                     {/if}
-                    {$filter->getName()}
+                    {if $filter->getClassName() === 'ItemRating'}
+                        {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
+                    {/if}
+                    <span class="word-break">{$filterOption->getName()}</span>
                 </span>
             </a>
         </li>
-    {else}
-        {foreach $filter->getOptions() as $filterOption}
-            <li class="filter-item{if $filterOption->isActive()} active{/if}">
-                <a rel="nofollow" href="{$filterOption->getURL()}" class="{$itemClass}{if $filterOption->isActive()} active{/if}">
-                    <span class="badge pull-right">{$filterOption->getCount()}</span>
-                    <span class="value">
-                        {if $filter->getIcon() !== null}
-                            <i class="fa {$filter->getIcon()}"></i>
-                        {else}
-                            <i class="fa {if $filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
-                        {/if}
-                        {if $filter->getClassName() === 'FilterItemRating'}
-                            {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
-                        {/if}
-                        <span class="word-break">{$filterOption->getName()}</span>
-                    </span>
-                </a>
-            </li>
-        {/foreach}
-    {/if}
+    {/foreach}
 </ul>

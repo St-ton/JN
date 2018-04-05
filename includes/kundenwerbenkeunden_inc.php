@@ -29,7 +29,7 @@ function setzeKwKinDB($cPost_arr, $Einstellungen)
         $cNachname = StringHandler::filterXSS($cPost_arr['cNachname']);
         $cEmail    = StringHandler::filterXSS($cPost_arr['cEmail']);
         // Prüfe ob Email nicht schon bei einem Kunden vorhanden ist
-        $oKunde = Shop::DB()->select('tkunde', 'cMail', $cEmail);
+        $oKunde = Shop::Container()->getDB()->select('tkunde', 'cMail', $cEmail);
 
         if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
             return false;
@@ -64,7 +64,7 @@ function gibBestandskundeGutbaben($kKunde, $fGuthaben)
 {
     $kKunde = (int)$kKunde;
     if ($kKunde > 0) {
-        Shop::DB()->query("
+        Shop::Container()->getDB()->query("
             UPDATE tkunde 
                 SET fGuthaben = fGuthaben + " . (float)$fGuthaben . " 
                 WHERE kKunde = " . $kKunde, 3

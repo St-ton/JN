@@ -6,7 +6,7 @@
 global $kLink, $smarty;
 
 if ($kLink !== null && $kLink > 0) {
-    $oPluginLinkDatei = Shop::DB()->select('tpluginlinkdatei', 'kLink', (int)$kLink);
+    $oPluginLinkDatei = Shop::Container()->getDB()->select('tpluginlinkdatei', 'kLink', (int)$kLink);
     if (isset($oPluginLinkDatei->cDatei) && strlen($oPluginLinkDatei->cDatei) > 0) {
         Shop::setPageType(PAGE_PLUGIN);
         $oPlugin = new Plugin($oPluginLinkDatei->kPlugin);

@@ -10,11 +10,13 @@ $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 $kSektion         = CONF_ARTIKELUEBERSICHT;
 $Einstellungen    = Shop::getSettings([$kSektion]);
-$standardwaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+$standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
+$mysqlVersion     = Shop::Container()->getDB()->query("SHOW VARIABLES LIKE 'innodb_version'", \DB\ReturnType::SINGLE_OBJECT)->Value;
 $step             = 'einstellungen bearbeiten';
 $cHinweis         = '';
 $cFehler          = '';
 $Conf             = [];
+$createIndex      = false;
 
 if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
@@ -32,8 +34,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     }
 
     try {
-        if (Shop::DB()->query("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'", 1)) {
-            Shop::DB()->executeQuery("ALTER TABLE $index DROP KEY idx_{$index}_fulltext", 10);
+        if (Shop::Container()->getDB()->query("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'", 1)) {
+            Shop::Container()->getDB()->executeQuery("ALTER TABLE $index DROP KEY idx_{$index}_fulltext", 10);
         }
     } catch (Exception $e) {
         // Fehler beim Index löschen ignorieren
@@ -63,10 +65,14 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         }
 
         try {
-            $res = Shop::DB()->executeQuery(
+            Shop::Container()->getDB()->executeQuery(
+                "UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)",
+                \DB\ReturnType::QUERYSINGLE
+            );
+            $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
-                10
+                \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {
             $res = 0;
@@ -77,7 +83,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
-            if ($settings['suche_fulltext'] === 'Y') {
+            if ($settings['suche_fulltext'] !== 'N') {
                 $settings['suche_fulltext'] = 'N';
                 saveAdminSectionSettings($kSektion, $settings);
 
@@ -102,10 +108,18 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 }
 
 if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
-    if ($_POST['suche_fulltext'] === 'Y') {
-        // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
-        $oValue = Shop::DB()->query('select @@ft_min_word_len AS ft_min_word_len', 1);
-        $_POST['suche_min_zeichen'] = $oValue ? $oValue->ft_min_word_len : $_POST['suche_min_zeichen'];
+    $sucheFulltext = isset($_POST['suche_fulltext']) ? in_array($_POST['suche_fulltext'], ['Y', 'B'], true) : false;
+
+    if ($sucheFulltext) {
+        if (version_compare($mysqlVersion, '5.6', '<')) {
+            //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
+            $_POST['suche_fulltext'] = 'N';
+            $cFehler                 = 'Die Volltextsuche erfordert MySQL ab Version 5.6!';
+        } else {
+            // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
+            $oValue                     = Shop::Container()->getDB()->query('SELECT @@ft_min_word_len AS ft_min_word_len', 1);
+            $_POST['suche_min_zeichen'] = $oValue ? $oValue->ft_min_word_len : $_POST['suche_min_zeichen'];
+        }
     }
 
     $shopSettings = Shopsetting::getInstance();
@@ -127,30 +141,26 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
             'suche_prio_han',
             'suche_prio_anmerkung'
         ] as $sucheParam) {
-        if ($_POST[$sucheParam] != $Einstellungen['artikeluebersicht'][$sucheParam]) {
+        if (isset($_POST[$sucheParam]) && ($_POST[$sucheParam] != $Einstellungen['artikeluebersicht'][$sucheParam])) {
             $fulltextChanged = true;
             break;
         }
     }
     if ($fulltextChanged) {
-        $smarty->assign('createIndex', $_POST['suche_fulltext']);
-    } else {
-        $smarty->assign('createIndex', false);
+        $createIndex = $sucheFulltext ? 'Y' : 'N';
     }
 
-    if ($_POST['suche_fulltext'] === 'Y' && $fulltextChanged) {
+    if ($sucheFulltext && $fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde aktiviert.';
     } elseif ($fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde deaktiviert.';
     }
 
     $Einstellungen = Shop::getSettings([$kSektion]);
-} else {
-    $smarty->assign('createIndex', false);
 }
 
-$section = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
-$Conf    = Shop::DB()->query(
+$section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+$Conf    = Shop::Container()->getDB()->query(
     "SELECT *
         FROM teinstellungenconf
         WHERE nModul = 0 
@@ -161,7 +171,7 @@ $Conf    = Shop::DB()->query(
 $configCount = count($Conf);
 for ($i = 0; $i < $configCount; $i++) {
     if (in_array($Conf[$i]->cInputTyp, ['selectbox', 'listbox'], true)) {
-        $Conf[$i]->ConfWerte = Shop::DB()->selectAll(
+        $Conf[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$Conf[$i]->kEinstellungenConf,
@@ -175,9 +185,9 @@ for ($i = 0; $i < $configCount; $i++) {
     }
 }
 
-if ($Einstellungen['artikeluebersicht']['suche_fulltext'] === 'Y'
-    && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
-        || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
+if ($Einstellungen['artikeluebersicht']['suche_fulltext'] !== 'N'
+    && (!Shop::Container()->getDB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
+        || !Shop::Container()->getDB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
     $cFehler = 'Der Volltextindex ist nicht vorhanden! ' .
         'Die Erstellung des Index kann jedoch einige Zeit in Anspruch nehmen. ' .
         '<a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>';
@@ -192,6 +202,8 @@ $smarty->configLoad('german.conf', 'einstellungen')
     ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
     ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
     ->assign('step', $step)
+    ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))
+    ->assign('createIndex', $createIndex)
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
     ->assign('waehrung', $standardwaehrung->cName)

@@ -25,6 +25,7 @@
             $('.evo-box-slider:not(.slick-initialized)').slick({
                 //dots: true,
                 arrows: true,
+                lazyLoad: 'ondemand',
                 slidesToShow: 1
             });
 
@@ -34,6 +35,7 @@
             $('.evo-slider:not(.slick-initialized)').slick({
                 //dots: true,
                 arrows: true,
+                lazyLoad: 'ondemand',
                 slidesToShow: 3,
                 responsive: [
                     {
@@ -118,7 +120,7 @@
             $('.row-eq-height').each(function(i, e) {
                 $(e).children('[class*="col-"]').children().responsiveEqualHeightGrid();
             });
-            $('.row-eq-height.gallery > [class*="col-"]').each(function(i, e) {
+            $('.row-eq-height.gallery > [class*="col-"], #product-list .product-wrapper').each(function(i, e) {
                 $(e).height($('div', $(e)).outerHeight());
             });
         },
@@ -138,8 +140,7 @@
                     src = img.data('src');
 
                 img.css('max-height', square);
-                box.css('max-height', square)
-                    .addClass('loading');
+                box.css('max-height', square);
 
                 if (src && src.length > 0) {
                     //if (src === 'gfx/keinBild.gif') {

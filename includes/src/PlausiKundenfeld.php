@@ -1,0 +1,72 @@
+<?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
+
+/**
+ * Class PlausiKundenfeld
+ */
+class PlausiKundenfeld extends Plausi
+{
+    /**
+     * @param null|string $cTyp
+     * @param bool        $bUpdate
+     * @return bool
+     */
+    public function doPlausi($cTyp = null, $bUpdate = false)
+    {
+        if (count($this->xPostVar_arr) > 0) {
+            // cName
+            if (!isset($this->xPostVar_arr['cName']) || strlen($this->xPostVar_arr['cName']) === 0) {
+                $this->xPlausiVar_arr['cName'] = 1;
+            }
+            // cWawi
+            if (!isset($this->xPostVar_arr['cWawi']) || strlen($this->xPostVar_arr['cWawi']) === 0) {
+                $this->xPlausiVar_arr['cWawi'] = 1;
+            }
+            // cTyp
+            if (!isset($this->xPostVar_arr['cTyp']) || strlen($this->xPostVar_arr['cTyp']) === 0) {
+                $this->xPlausiVar_arr['cTyp'] = 1;
+            }
+            // nSort
+            if (!isset($this->xPostVar_arr['nSort'])) {
+                $this->xPlausiVar_arr['nSort'] = 1;
+            }
+            // nPflicht
+            if (!isset($this->xPostVar_arr['nPflicht'])) {
+                $this->xPlausiVar_arr['nPflicht'] = 1;
+            }
+            // nEdit
+            if (!isset($this->xPostVar_arr['nEdit'])) {
+                $this->xPlausiVar_arr['nEdit'] = 1;
+            }
+            if ($cTyp === 'auswahl') {
+                if (is_array($this->xPostVar_arr['cfValues'])) {
+                    foreach ($this->xPostVar_arr['cfValues'] as $szFieldValue) {
+                        // empty value are not allowed
+                        if (empty($szFieldValue['cWert'])) {
+                            $this->xPlausiVar_arr['cWert'] = 1;
+                        }
+                    }
+                } else {
+                    // empty arrays should not be savable
+                    $this->xPlausiVar_arr['cWert'] = 1;
+                }
+            } elseif (!$bUpdate) {
+                $oKundenfeld = Shop::Container()->getDB()->select(
+                    'tkundenfeld',
+                    'kSprache', (int)$_SESSION['kSprache'],
+                    'cName', Shop::Container()->getDB()->escape($this->xPostVar_arr['cName'])
+                );
+                if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {
+                    $this->xPlausiVar_arr['cName'] = 2;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+}

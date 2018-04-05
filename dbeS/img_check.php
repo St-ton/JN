@@ -7,42 +7,26 @@
 ob_start();
 require_once __DIR__ . '/syncinclude.php';
 
-$return = 3;
+$return  = 3;
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
-    $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Image Check: Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Image Check: Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
+    $zipFile   = checkFile();
+    $unzipPath = PFAD_SYNC_TMP . uniqid('check_') . '/';
+    $return    = 2;
+    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');
         }
-
-        $newTmpDir = PFAD_SYNC_TMP . uniqid('check_') . '/';
-        mkdir($newTmpDir, 0777, true);
-
-        if ($extracedList = $archive->extract(PCLZIP_OPT_PATH, $newTmpDir)) {
-            $return = 0;
-            foreach ($list as $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Image Check: bearbeite: ' . $newTmpDir . $zip['filename'] .
-                        ' size: ' . filesize($newTmpDir . $zip['filename']),
-                        JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
-                }
-                if ($zip['filename'] === 'bildercheck.xml') {
-                    $xml = simplexml_load_file($newTmpDir . $zip['filename']);
-                    bildercheck_xml($xml);
-                }
-                removeTemporaryFiles($newTmpDir . $zip['filename']);
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $xmlFile) {
+            if (strpos($xmlFile, 'bildercheck.xml') !== false) {
+                bildercheck_xml(simplexml_load_file($xmlFile));
             }
-            removeTemporaryFiles($newTmpDir);
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Image Check Error: ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'img_check_xml');
+            removeTemporaryFiles($xmlFile);
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Image Check Error: ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'img_check_xml');
+        removeTemporaryFiles($unzipPath);
     }
 }
 echo $return;
@@ -56,12 +40,12 @@ function bildercheck_xml(SimpleXMLElement $xml)
     $sqls   = [];
     $object = get_object($xml);
     foreach ($object->items as $item) {
-        $hash   = Shop::DB()->escape($item->hash);
+        $hash   = Shop::Container()->getDB()->escape($item->hash);
         $sqls[] = "(kBild={$item->id} && cPfad='{$hash}')";
     }
     $sqlOr  = implode(' || ', $sqls);
     $sql    = "SELECT kBild AS id, cPfad AS hash FROM tbild WHERE {$sqlOr}";
-    $images = Shop::DB()->query($sql, 2);
+    $images = Shop::Container()->getDB()->query($sql, 2);
     if ($images !== false) {
         foreach ($images as $image) {
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->hash;
@@ -70,8 +54,8 @@ function bildercheck_xml(SimpleXMLElement $xml)
                     Jtllog::writeLog("Dropping orphan {$image->id} -> {$image->hash}: no such file",
                         JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
                 }
-                Shop::DB()->delete('tbild', 'kBild', $image->id);
-                Shop::DB()->delete('tartikelpict', 'kBild', $image->id);
+                Shop::Container()->getDB()->delete('tbild', 'kBild', $image->id);
+                Shop::Container()->getDB()->delete('tartikelpict', 'kBild', $image->id);
             }
             $found[] = $image->id;
         }

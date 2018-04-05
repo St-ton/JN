@@ -10,7 +10,7 @@
  */
 function holeBewertung($kBewertung)
 {
-    return Shop::DB()->select('tbewertung', 'kBewertung', (int)$kBewertung);
+    return Shop::Container()->getDB()->select('tbewertung', 'kBewertung', (int)$kBewertung);
 }
 
 /**
@@ -43,7 +43,7 @@ function editiereBewertung($cPost_arr)
                 $upd->dAntwortDatum = !empty($cPost_arr['cAntwort']) ? date('Y-m-d') : null;
             }
 
-            Shop::DB()->update('tbewertung', 'kBewertung', $kBewertung, $upd);
+            Shop::Container()->getDB()->update('tbewertung', 'kBewertung', $kBewertung, $upd);
             // Durchschnitt neu berechnen
             aktualisiereDurchschnitt($oBewertung->kArtikel, $conf['bewertung']['bewertung_freischalten']);
 
@@ -66,5 +66,5 @@ function removeReply($kBewertung)
         'dAntwortDatum' => null
     ];
 
-    Shop::DB()->update('tbewertung', 'kBewertung', $kBewertung, $update);
+    Shop::Container()->getDB()->update('tbewertung', 'kBewertung', $kBewertung, $update);
 }

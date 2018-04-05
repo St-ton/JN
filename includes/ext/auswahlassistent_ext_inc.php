@@ -70,7 +70,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                         $bMerkmalFilterVorhanden = null;
                     }
                     if ($cKey === AUSWAHLASSISTENT_ORT_KATEGORIE && (int)$kKey > 0) {
-                        filterSelectionWizard($GLOBALS['oSuchergebnisse']->MerkmalFilter, $bMerkmalFilterVorhanden);
+                        filterSelectionWizard($GLOBALS['oSuchergebnisse']->getAttributeFilterOptions(), $bMerkmalFilterVorhanden);
                     } else {
                         require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
                         global $AktuelleKategorie, $NaviFilter, $oSuchergebnisse;
@@ -79,12 +79,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                             $NaviFilter = Shop::buildProductFilter([]);
                         }
                         if ($oSuchergebnisse === null) {
-                            $oSuchergebnisse                      = new stdClass();
-                            $oSuchergebnisse->GesamtanzahlArtikel = 0;
+                            $oSuchergebnisse = new \Filter\ProductFilterSearchResults();
+                            $oSuchergebnisse->setProductCount(0);
+                        } elseif (get_class($oSuchergebnisse) === 'stdClass') {
+                            $oSuchergebnisse = new \Filter\ProductFilterSearchResults($oSuchergebnisse);
                         }
 
-                        $oSuchergebnisse = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie, true);
-                        filterSelectionWizard($oSuchergebnisse->MerkmalFilter, $bMerkmalFilterVorhanden);
+                        $oSuchergebnisse->setFilterOptions($NaviFilter, $AktuelleKategorie, true);
+                        filterSelectionWizard($oSuchergebnisse->getAttributeFilterOptions(), $bMerkmalFilterVorhanden);
                     }
                 }
             }
@@ -104,12 +106,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 
     /**
      * @deprecated since 4.05
-     * @param int                    $kKategorie
-     * @param stdClass|ProductFilter $NaviFilter
-     * @param stdClass               $FilterSQL
-     * @param stdClass               $oSuchergebnisse
-     * @param int                    $nArtikelProSeite
-     * @param int                    $nLimitN
+     * @param int                                         $kKategorie
+     * @param stdClass|\Filter\ProductFilter              $NaviFilter
+     * @param stdClass                                    $FilterSQL
+     * @param stdClass|\Filter\ProductFilterSearchResults $oSuchergebnisse
+     * @param int                                         $nArtikelProSeite
+     * @param int                                         $nLimitN
      */
     function baueFilterSelectionWizard($kKategorie, &$NaviFilter, &$FilterSQL, &$oSuchergebnisse, &$nArtikelProSeite, &$nLimitN)
     {
@@ -125,22 +127,26 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         if ($kKategorie > 0) {
             $cParameter_arr['kKategorie'] = $kKategorie;
         } else {
-            $cParameter_arr['kMerkmalWert'] = isset($_SESSION['AuswahlAssistent']->oAuswahl_arr[0]->kMerkmalWert) ?
-                $_SESSION['AuswahlAssistent']->oAuswahl_arr[0]->kMerkmalWert
-                : null;
+            $cParameter_arr['kMerkmalWert'] = $_SESSION['AuswahlAssistent']->oAuswahl_arr[0]->kMerkmalWert ?? null;
         }
         if ($NaviFilter === null) {
             $NaviFilter = new stdClass();
         }
         if ($oSuchergebnisse === null) {
-            $oSuchergebnisse = new stdClass();
-            $oSuchergebnisse->GesamtanzahlArtikel = 0;
+            $oSuchergebnisse = new \Filter\ProductFilterSearchResults();
+            $oSuchergebnisse->setProductCount(0);
         }
         $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
         $NaviFilter                          = Shop::buildProductFilter($cParameter_arr);
         $AktuelleKategorie                   = new Kategorie($kKategorie);
 
-        $oSuchergebnisse->MerkmalFilter = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie, true)->MerkmalFilter;
+        $oSuchergebnisse->setAttributeFilterOptions(
+            $oSuchergebnisse->setFilterOptions(
+                $NaviFilter,
+                $AktuelleKategorie,
+                true
+            )->MerkmalFilter
+        );
 
         $nLimitN = ($NaviFilter->getPage() - 1) * $nArtikelProSeite;
     }

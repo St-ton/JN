@@ -15,15 +15,16 @@ class WidgetServerSettings extends WidgetBase
      */
     public function init()
     {
-        $this->oSmarty->assign('maxExecutionTime', ini_get('max_execution_time'));
-        $this->oSmarty->assign('bMaxExecutionTime', $this->checkMaxExecutionTime());
-        $this->oSmarty->assign('maxFilesize', ini_get('upload_max_filesize'));
-        $this->oSmarty->assign('bMaxFilesize', $this->checkMaxFilesize());
-        $this->oSmarty->assign('memoryLimit', ini_get('memory_limit'));
-        $this->oSmarty->assign('bMemoryLimit', $this->checkMemoryLimit());
-        $this->oSmarty->assign('postMaxSize', ini_get('post_max_size'));
-        $this->oSmarty->assign('bPostMaxSize', $this->checkPostMaxSize());
-        $this->oSmarty->assign('bAllowUrlFopen', $this->checkAllowUrlFopen());
+        $this->oSmarty->assign('maxExecutionTime', ini_get('max_execution_time'))
+                      ->assign('bMaxExecutionTime', $this->checkMaxExecutionTime())
+                      ->assign('maxFilesize', ini_get('upload_max_filesize'))
+                      ->assign('bMaxFilesize', $this->checkMaxFilesize())
+                      ->assign('memoryLimit', ini_get('memory_limit'))
+                      ->assign('bMemoryLimit', $this->checkMemoryLimit())
+                      ->assign('postMaxSize', ini_get('post_max_size'))
+                      ->assign('bPostMaxSize', $this->checkPostMaxSize())
+                      ->assign('bAllowUrlFopen', $this->checkAllowUrlFopen())
+                      ->assign('SOAPCheck', $this->SOAPcheck());
     }
 
     /**
@@ -46,6 +47,29 @@ class WidgetServerSettings extends WidgetBase
     /**
      * @return bool
      */
+    public function SOAPcheck()
+    {
+        if (class_exists('Systemcheck_Environment')) {
+            $oSystemCheck  = new Systemcheck_Environment();
+            $vCheckResults = $oSystemCheck->executeTestGroup('Shop4');
+            if (in_array('recommendations', array_keys($vCheckResults, true))) {
+                foreach ($vCheckResults['recommendations'] as $object) {
+                    if ($object instanceof Systemcheck_Tests_Shop4_PhpSoapExtension) {
+                        // SOAP is OFF
+
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // (we suppress errors here, if the Systemcheck is not present on this system)
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
     public function checkMaxExecutionTime()
     {
         return Shop()->PHPSettingsHelper()->hasMinExecutionTime(60);
@@ -56,7 +80,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkMaxFilesize()
     {
-        return Shop()->PHPSettingsHelper()->hasMinUploadSize(5);
+        return Shop()->PHPSettingsHelper()->hasMinUploadSize(5 * 1024 * 1024);
     }
 
     /**
@@ -64,7 +88,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkMemoryLimit()
     {
-        return Shop()->PHPSettingsHelper()->hasMinLimit(64);
+        return Shop()->PHPSettingsHelper()->hasMinLimit(64 * 1024 * 1024);
     }
 
     /**
@@ -72,7 +96,7 @@ class WidgetServerSettings extends WidgetBase
      */
     public function checkPostMaxSize()
     {
-        return Shop()->PHPSettingsHelper()->hasMinPostSize(8);
+        return Shop()->PHPSettingsHelper()->hasMinPostSize(8 * 1024 * 1024);
     }
 
     /**

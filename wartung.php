@@ -14,9 +14,7 @@ if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
 Shop::setPageType(PAGE_WARTUNG);
 if (isset($Link)) {
     $requestURL = baueURL($Link, URLART_SEITE);
-    $sprachURL  = isset($Link->languageURLs)
-        ? $Link->languageURLs
-        : baueSprachURLS($Link, URLART_SEITE);
+    $sprachURL  = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
 }
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));

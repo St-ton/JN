@@ -21,12 +21,23 @@ if (auth()) {
     fwrite($xmlfile, $cXML);
     fclose($xmlfile);
     if (file_exists(PFAD_SYNC_TMP . FILENAME_XML)) {
-        $archive = new PclZip(PFAD_SYNC_TMP . $zip);
-        if ($archive->create(PFAD_SYNC_TMP . FILENAME_XML, PCLZIP_OPT_REMOVE_ALL_PATH)) {
-            removeTemporaryFiles(PFAD_SYNC_TMP . FILENAME_XML);
-            readfile(PFAD_SYNC_TMP . $zip);
-            exit;
+        if (class_exists('ZipArchive')) {
+            $archive = new ZipArchive();
+            if ($archive->open(PFAD_SYNC_TMP . $zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== false
+                && $archive->addFile(PFAD_SYNC_TMP . FILENAME_XML) !== false
+            ) {
+                $archive->close();
+                readfile(PFAD_SYNC_TMP . $zip);
+                exit;
+            }
+            $archive->close();
+            syncException($archive->getStatusString());
         } else {
+            $archive = new PclZip(PFAD_SYNC_TMP . $zip);
+            if ($archive->create(PFAD_SYNC_TMP . FILENAME_XML, PCLZIP_OPT_REMOVE_ALL_PATH)) {
+                readfile(PFAD_SYNC_TMP . $zip);
+                exit;
+            }
             syncException($archive->errorInfo(true));
         }
     }
@@ -40,8 +51,8 @@ if (auth()) {
 function gibDirInhaltXML($dir, $nNurFiles)
 {
     $cXML = '';
-    if ($handle = opendir($dir)) {
-        while (false !== ($file = readdir($handle))) {
+    if (($handle = opendir($dir)) !== false) {
+        while (($file = readdir($handle)) !== false) {
             if ($file !== '.' && $file !== '..') {
                 if (is_dir($dir . '/' . $file) && !$nNurFiles) {
                     $cXML .= '<dir cName="' . $file . '">' . "\n";

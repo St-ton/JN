@@ -11,7 +11,7 @@
     {/foreach}
 </ul>
 
-{*FilterExtra variant:*}
+{*FilterOption variant:*}
 
 
 {*<ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">*}

@@ -45,7 +45,7 @@
                 <td></td>
                 {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && !empty($oPosition->Artikel->cVorschaubild)}
                     <td class="img-col hidden-xs text-center vcenter">
-                        <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans}">
+                        <a href="{$oPosition->Artikel->cURLFull}" title="{$oPosition->cName|trans}">
                             <img src="{$oPosition->Artikel->cVorschaubild}" alt="{$oPosition->cName|trans}" class="img-responsive-width" />
                         </a>
                     </td>
@@ -54,7 +54,7 @@
                 {/if}
                 <td>
                     {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                        <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans}">{$oPosition->cName|trans}</a>
+                        <a href="{$oPosition->Artikel->cURLFull}" title="{$oPosition->cName|trans}">{$oPosition->cName|trans}</a>
                         <ul class="list-unstyled text-muted small">
                             <li class="sku"><strong>{lang key="productNo" section="global"}:</strong> {$oPosition->Artikel->cArtNr}</li>
                             {if isset($oPosition->Artikel->dMHD) && isset($oPosition->Artikel->dMHD_de) && $oPosition->Artikel->dMHD_de !== null}

@@ -7,55 +7,47 @@
 ob_start();
 require_once __DIR__ . '/syncinclude.php';
 
-$return = 3;
+$return  = 3;
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
-    $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
-    }
-    if ($list = $archive->listContent()) {
-        $count = count($list);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . $count, JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
+    $zipFile   = checkFile();
+    $return    = 2;
+    $newTmpDir = PFAD_SYNC_TMP . uniqid('images_') . '/';
+    if (($syncFiles = unzipSyncFiles($zipFile, $newTmpDir, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');
         }
-
-        $newTmpDir = PFAD_SYNC_TMP . uniqid('images_') . '/';
-        mkdir($newTmpDir, 0777, true);
-
-        if ($archive->extract(PCLZIP_OPT_PATH, $newTmpDir)) {
-            $return = 0;
-            $found  = false;
-            foreach ($list as $elem) {
-                if ($elem['filename'] === 'images.xml') {
-                    $found = true;
-                } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Received image: ' . $newTmpDir . $elem['filename'] . ' size: ' .
-                        filesize($newTmpDir . $elem['filename']), JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
-                }
-            }
-            
-            if ($found) {
-                $xml = simplexml_load_file($newTmpDir . 'images.xml');
-                images_xml($newTmpDir, $xml);
-
-                if ($count <= 1) {
-                    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('Zip-File contains zero images', JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
-                    }
-                }
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        $found  = false;
+        $count  = count($syncFiles);
+        foreach ($syncFiles as $xmlFile) {
+            if (strpos($xmlFile, 'images.xml') !== false) {
+                $found = true;
             } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Missing images.xml', JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
+                Jtllog::writeLog(
+                    'Received image: ' . $xmlFile . ' size: ' . filesize($xmlFile),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'img_upload_xml'
+                );
             }
-            removeTemporaryFiles($newTmpDir);
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error: ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error: ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');
+
+        if ($found) {
+            images_xml($newTmpDir, simplexml_load_file($newTmpDir . 'images.xml'));
+
+            if ($count <= 1 && Jtllog::doLog()) {
+                Jtllog::writeLog('Zip-File contains no images', JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
+            }
+        } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog('Missing images.xml', JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
+        }
+        removeTemporaryFiles($newTmpDir);
     }
 }
+
 echo $return;
 
 /**
@@ -70,7 +62,7 @@ function images_xml($tmpDir, SimpleXMLElement $xml)
         if (file_exists($tmpfile)) {
             if (copy($tmpfile, PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad)) {
                 DBUpdateInsert('tbild', [$item], 'kBild');
-                Shop::DB()->update('tartikelpict', 'kBild', (int)$item->kBild, (object)['cPfad' => $item->cPfad]);
+                Shop::Container()->getDB()->update('tartikelpict', 'kBild', (int)$item->kBild, (object)['cPfad' => $item->cPfad]);
             } else {
                 Jtllog::writeLog(sprintf(
                     'Copy "%s" to "%s"',

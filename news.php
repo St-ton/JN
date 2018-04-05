@@ -82,35 +82,27 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 Shop::Smarty()->assign('oNewsArchiv', $oNewsArchiv);
             }
             // Metas
-            $cMetaTitle         = isset($oNewsArchiv->cMetaTitle)
-                ? $oNewsArchiv->cMetaTitle
-                : '';
-            $cMetaDescription   = isset($oNewsArchiv->cMetaDescription)
-                ? $oNewsArchiv->cMetaDescription
-                : '';
-            $cMetaKeywords      = isset($oNewsArchiv->cMetaKeywords)
-                ? $oNewsArchiv->cMetaKeywords
-                : '';
+            $cMetaTitle         = $oNewsArchiv->cMetaTitle ?? '';
+            $cMetaDescription   = $oNewsArchiv->cMetaDescription ?? '';
+            $cMetaKeywords      = $oNewsArchiv->cMetaKeywords ?? '';
             $oNewsKategorie_arr = getNewsCategory($kNews);
-
-            if (is_array($oNewsKategorie_arr) && count($oNewsKategorie_arr) > 0) {
-                foreach ($oNewsKategorie_arr as $j => $oNewsKategorie) {
-                    $oNewsKategorie_arr[$j]->cURL = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
-                }
+            foreach ($oNewsKategorie_arr as $j => $oNewsKategorie) {
+                $oNewsKategorie_arr[$j]->cURL     = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
+                $oNewsKategorie_arr[$j]->cURLFull = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false, true);
             }
             Shop::Smarty()->assign('R_LOGIN_NEWSCOMMENT', R_LOGIN_NEWSCOMMENT)
                 ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
 
             // Kommentar hinzufügen
-            if (isset($_POST['kommentar_einfuegen'], $Einstellungen['news']['news_kommentare_nutzen']) &&
-                (int)$_POST['kommentar_einfuegen'] > 0 &&
-                $Einstellungen['news']['news_kommentare_nutzen'] === 'Y'
+            if (isset($_POST['kommentar_einfuegen'], $Einstellungen['news']['news_kommentare_nutzen'])
+                && (int)$_POST['kommentar_einfuegen'] > 0
+                && $Einstellungen['news']['news_kommentare_nutzen'] === 'Y'
             ) {
                 // Plausi
                 $nPlausiValue_arr = pruefeKundenKommentar(
-                    isset($_POST['cKommentar']) ? $_POST['cKommentar'] : '',
-                    isset($_POST['cName']) ? $_POST['cName'] : null,
-                    isset($_POST['cEmail']) ? $_POST['cEmail'] : null,
+                    $_POST['cKommentar'] ?? '',
+                    $_POST['cName'] ?? null,
+                    $_POST['cEmail'] ?? null,
                     $kNews,
                     $Einstellungen
                 );
@@ -135,7 +127,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
                         executeHook(HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$oNewsKommentar]);
 
-                        Shop::DB()->insert('tnewskommentar', $oNewsKommentar);
+                        Shop::Container()->getDB()->insert('tnewskommentar', $oNewsKommentar);
 
                         if ($Einstellungen['news']['news_kommentare_freischalten'] === 'Y') {
                             $cHinweis .= Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br>';
@@ -149,16 +141,14 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                     }
                 } elseif ($Einstellungen['news']['news_kommentare_eingeloggt'] === 'N') {
                     if (is_array($nPlausiValue_arr) && count($nPlausiValue_arr) === 0) {
-                        $cEmail = isset($_POST['cEmail']) ? $_POST['cEmail'] : null;
+                        $cEmail = $_POST['cEmail'] ?? null;
                         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                             $cEmail = $_SESSION['Kunde']->cMail;
                         }
                         $oNewsKommentar         = new stdClass();
                         $oNewsKommentar->kNews  = (int)$_POST['kNews'];
-                        $oNewsKommentar->kKunde = isset($_SESSION['Kunde']->kKunde)
-                            ? $_SESSION['Kunde']->kKunde
-                            : 0;
-                        $oNewsKommentar->nAktiv = ($Einstellungen['news']['news_kommentare_freischalten'] === 'Y')
+                        $oNewsKommentar->kKunde = $_SESSION['Kunde']->kKunde ?? 0;
+                        $oNewsKommentar->nAktiv = $Einstellungen['news']['news_kommentare_freischalten'] === 'Y'
                             ? 0
                             : 1;
 
@@ -180,7 +170,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
                         executeHook(HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$oNewsKommentar]);
 
-                        Shop::DB()->insert('tnewskommentar', $oNewsKommentar);
+                        Shop::Container()->getDB()->insert('tnewskommentar', $oNewsKommentar);
 
                         if ($Einstellungen['news']['news_kommentare_freischalten'] === 'Y') {
                             $cHinweis .= Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br />';
@@ -221,7 +211,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 Shop::$AktuelleSeite,
                 0,
                 0,
-                (isset($oNewsArchiv->cBetreff) ? $oNewsArchiv->cBetreff : Shop::Lang()->get('news', 'breadcrumb')),
+                $oNewsArchiv->cBetreff ?? Shop::Lang()->get('news', 'breadcrumb'),
                 baueURL($oNewsArchiv, URLART_NEWS))
             );
 
@@ -387,10 +377,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     Shop::Smarty()->assign('hinweis', $cHinweis)
         ->assign('fehler', $cFehler)
         ->assign('step', $step)
-        ->assign('code_news', generiereCaptchaCode(isset($Einstellungen['news']['news_sicherheitscode'])
-                ? $Einstellungen['news']['news_sicherheitscode']
-                : 'N')
-        );
+        ->assign('code_news', generiereCaptchaCode($Einstellungen['news']['news_sicherheitscode'] ?? 'N'));
 
     require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     Shop::Smarty()->assign('meta_title', $cMetaTitle)
@@ -399,7 +386,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         ->display('blog/index.tpl');
     require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';
 } else {
-    $oLink                   = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
+    $oLink                   = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_404);
     $bFileNotFound           = true;
     Shop::$kLink             = (int)$oLink->kLink;
     Shop::$bFileNotFound     = true;

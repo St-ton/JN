@@ -22,7 +22,7 @@ class WidgetSalesVolume extends WidgetBase
      */
     public function init()
     {
-        $this->oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+        $this->oWaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
     }
 
     /**

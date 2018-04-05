@@ -27,8 +27,8 @@
                                             {else}
                                                 {$oItem->name}
                                             {/if}
-                                        {elseif isset($Suchergebnisse->SuchausdruckWrite)}
-                                            {$Suchergebnisse->SuchausdruckWrite}
+                                        {elseif !empty($Suchergebnisse->getSearchTermWrite())}
+                                            {$Suchergebnisse->getSearchTermWrite()}
                                         {/if}
                                     </span>
                                     <meta itemprop="position" content="{$smarty.foreach.navi.iteration}" />

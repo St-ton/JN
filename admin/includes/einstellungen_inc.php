@@ -81,13 +81,13 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
 
                     if ($cSuche === $cSucheEnt) {
                         $oSQL->cWHERE .= " AND (cName LIKE '%" . 
-                            Shop::DB()->escape($cSuche) .
+                            Shop::Container()->getDB()->escape($cSuche) .
                             "%' AND cConf = 'Y')";
                     } else {
                         $oSQL->cWHERE .= " AND (((cName LIKE '%" . 
-                            Shop::DB()->escape($cSuche) . 
+                            Shop::Container()->getDB()->escape($cSuche) . 
                             "%' OR cName LIKE '%" . 
-                            Shop::DB()->escape($cSucheEnt) . "%')) AND cConf = 'Y')";
+                            Shop::Container()->getDB()->escape($cSucheEnt) . "%')) AND cConf = 'Y')";
                     }
                 }
             }
@@ -107,7 +107,7 @@ function holeEinstellungen($oSQL, $bSpeichern)
     if (strlen($oSQL->cWHERE) <= 0) {
         return $oSQL;
     }
-    $oSQL->oEinstellung_arr = Shop::DB()->query(
+    $oSQL->oEinstellung_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungenconf
             WHERE (cModulId IS NULL OR cModulId = '') " . $oSQL->cWHERE . "
@@ -172,7 +172,7 @@ function holeEinstellungen($oSQL, $bSpeichern)
 function holeEinstellungAbteil($oSQL, $nSort, $kEinstellungenSektion)
 {
     if ((int)$nSort > 0 && (int)$kEinstellungenSektion > 0) {
-        $oEinstellungTMP_arr = Shop::DB()->query(
+        $oEinstellungTMP_arr = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM teinstellungenconf
                 WHERE nSort > " . (int)$nSort . "
@@ -205,7 +205,7 @@ function holeEinstellungHeadline($nSort, $sectionID)
     $sectionID   = (int)$sectionID;
     $nSort       = (int)$nSort;
     if ($nSort > 0 && $sectionID > 0) {
-        $oEinstellungTMP_arr = Shop::DB()->query(
+        $oEinstellungTMP_arr = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM teinstellungenconf
                 WHERE nSort < " . $nSort . "
@@ -273,8 +273,6 @@ function gibEinstellungsSektionsPfad($kEinstellungenSektion)
                 return 'System-&gt;Benutzer- &amp; Kundenverwaltung-&gt;Kunden werben Kunden';
             case CONF_TRUSTEDSHOPS:
                 return 'Storefront-&gt;Kaufabwicklung-&gt;Trusted Shops';
-            case CONF_PREISANZEIGE:
-                return 'Storefront-&gt;Artikel-&gt;Preisanzeige';
             case CONF_SUCHSPECIAL:
                 return 'Storefront-&gt;Artikel-&gt;Besondere Produkte';
             default:
@@ -282,7 +280,7 @@ function gibEinstellungsSektionsPfad($kEinstellungenSektion)
         }
     } else {
         // Einstellungssektion in der Datenbank nachschauen
-        $section = Shop::DB()->select(
+        $section = Shop::Container()->getDB()->select(
             'teinstellungensektion',
             'kEinstellungenSektion',
             $kEinstellungenSektion

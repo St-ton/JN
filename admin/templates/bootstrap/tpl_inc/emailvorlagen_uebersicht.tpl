@@ -35,9 +35,9 @@
                                 <span class="label label-success success">aktiv</span>
                             {else}
                                 {if $emailvorlage->nFehlerhaft == 1}
-                                    <span class="label label-danger error">fehlerhaft</span>
+                                    <span class="label label-danger">fehlerhaft</span>
                                 {else}
-                                    <span class="label label-info error">inaktiv</span>
+                                    <span class="label label-info">inaktiv</span>
                                 {/if}
                             {/if}
                             </h4>

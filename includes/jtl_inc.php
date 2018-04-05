@@ -57,7 +57,7 @@ function gibRedirect($cRedirect)
             $oTMP->Wert                  = verifyGPCDataInteger('a');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_TAG;
-            $oRedirect->cURL             = 'index.php?a=' . verifyGPCDataInteger('a');
+            $oRedirect->cURL             = '?a=' . verifyGPCDataInteger('a');
             $oRedirect->cName            = Shop::Lang()->get('tag', 'redirect');
             break;
         case R_LOGIN_NEWSCOMMENT:
@@ -71,7 +71,7 @@ function gibRedirect($cRedirect)
             $oTMP->Wert                  = verifyGPCDataInteger('n');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_NEWSCOMMENT;
-            $oRedirect->cURL             = 'index.php?s=' . verifyGPCDataInteger('s') . '&n=' . verifyGPCDataInteger('n');
+            $oRedirect->cURL             = '?s=' . verifyGPCDataInteger('s') . '&n=' . verifyGPCDataInteger('n');
             $oRedirect->cName            = Shop::Lang()->get('news', 'redirect');
             break;
         case R_LOGIN_UMFRAGE:
@@ -81,7 +81,7 @@ function gibRedirect($cRedirect)
             $oTMP->Wert                  = verifyGPCDataInteger('u');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_UMFRAGE;
-            $oRedirect->cURL             = 'index.php?u=' . verifyGPCDataInteger('u');
+            $oRedirect->cURL             = '?u=' . verifyGPCDataInteger('u');
             $oRedirect->cName            = Shop::Lang()->get('poll', 'redirect');
             break;
         case R_LOGIN_RMA:
@@ -91,7 +91,7 @@ function gibRedirect($cRedirect)
             $oTMP->Wert                  = verifyGPCDataInteger('s');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_RMA;
-            $oRedirect->cURL             = 'index.php?s=' . verifyGPCDataInteger('s');
+            $oRedirect->cURL             = '?s=' . verifyGPCDataInteger('s');
             $oRedirect->cName            = Shop::Lang()->get('rma', 'redirect');
             break;
         default:
@@ -124,7 +124,7 @@ function pruefeKategorieSichtbarkeit($kKundengruppe)
         $categoryList = $_SESSION;
     }
 
-    $oKatSichtbarkeit_arr = Shop::DB()->selectAll(
+    $oKatSichtbarkeit_arr = Shop::Container()->getDB()->selectAll(
         'tkategoriesichtbarkeit',
         'kKundengruppe',
         $kKundengruppe,
@@ -181,7 +181,7 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
         if ($oWarenkorbPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             $kArtikelGeschenk = (int)$oWarenkorbPos->kArtikel;
             // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-            $oArtikelGeschenk = Shop::DB()->query(
+            $oArtikelGeschenk = Shop::Container()->getDB()->query(
                 "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                     FROM tartikelattribut
@@ -208,7 +208,9 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                 $oWarenkorbPos->nAnzahl,
                 $oWarenkorbPos->WarenkorbPosEigenschaftArr,
                 $oWarenkorbPos->cUnique,
-                $oWarenkorbPos->kKonfigitem
+                $oWarenkorbPos->kKonfigitem,
+                $oWarenkorbPos->nPosTyp,
+                $oWarenkorbPos->cResponsibility
             );
         }
     }
@@ -219,7 +221,7 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
         if ($oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
             // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-            $oArtikelGeschenk = Shop::DB()->query(
+            $oArtikelGeschenk = Shop::Container()->getDB()->query(
                 "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                     FROM tartikelattribut
@@ -248,7 +250,10 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                 $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
                 1,
                 $oWarenkorbPersPos->cUnique,
-                $oWarenkorbPersPos->kKonfigitem
+                $oWarenkorbPersPos->kKonfigitem,
+                null,
+                true,
+                $oWarenkorbPersPos->cResponsibility
             );
         }
     }
@@ -271,10 +276,10 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
     ) {
         foreach ($cart->PositionenArr as $i => $oPosition) {
             // Wenn die Position ein Artikel ist
-            $bKonfig = (isset($oPosition->cUnique) && strlen($oPosition->cUnique) === 10);
+            $bKonfig = !empty($oPosition->cUnique);
             if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && !$bKonfig) {
                 // Artikelsichtbarkeit prüfen
-                $oArtikelSichtbarkeit = Shop::DB()->query(
+                $oArtikelSichtbarkeit = Shop::Container()->getDB()->query(
                     "SELECT kArtikel
                         FROM tartikelsichtbarkeit
                         WHERE kArtikel = " . (int)$oPosition->kArtikel . "
@@ -288,7 +293,7 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
                     unset($cart->PositionenArr[$i]);
                 }
                 // Auf vorhandenen Preis prüfen
-                $oArtikelPreis = Shop::DB()->query(
+                $oArtikelPreis = Shop::Container()->getDB()->query(
                     "SELECT fVKNetto
                        FROM tpreise
                        WHERE kArtikel = " . (int)$oPosition->kArtikel . "
@@ -336,7 +341,7 @@ function fuehreLoginAus($userLogin, $passLogin)
             session_regenerate_id(false);
             //in tbesucher kKunde setzen
             if (isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0) {
-                Shop::DB()->update(
+                Shop::Container()->getDB()->update(
                     'tbesucher',
                     'kBesucher',
                     (int)$_SESSION['oBesucher']->kBesucher,
@@ -379,7 +384,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                                 // Gratisgeschenk in Warenkorb legen
                                 if ((int)$oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                                     $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
-                                    $oArtikelGeschenk = Shop::DB()->query(
+                                    $oArtikelGeschenk = Shop::Container()->getDB()->query(
                                         "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
                                             tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                                             FROM tartikelattribut
@@ -425,7 +430,8 @@ function fuehreLoginAus($userLogin, $passLogin)
                                         $oWarenkorbPersPos->cUnique,
                                         $oWarenkorbPersPos->kKonfigitem,
                                         null,
-                                        false
+                                        false,
+                                        $oWarenkorbPersPos->cResponsibility
                                     );
                                 }
                             }

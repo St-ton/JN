@@ -20,9 +20,9 @@
     }
 
     function emptyToZero() {
-        var vSortValues = $('[name^=nWertSort]')
+        var vSortValues = $('.kundenfeld_wert .field[name*="[nSort]"]')
             .map(function(key, oWertSortField) {
-                if (0 == oWertSortField.value.length) {
+                if (0 === oWertSortField.value.length) {
                     oWertSortField.value = 0;
                 }
             })
@@ -34,7 +34,7 @@
         var nWertStepLen = 1;
 
         emptyToZero();
-        var vSortValues = $('[name^=nWertSort]')
+        var vSortValues = $('.kundenfeld_wert .field[name*="[nSort]"]')
             .map(function() {
                 return this.value;
             })
@@ -43,7 +43,7 @@
         if (0 < vSortValues.length) {
             vSortValues
                 .sort(function(val1, val2) {
-                    if(Number(val1) == Number(val2)) return 0;
+                    if(Number(val1) === Number(val2)) return 0;
                     else return Number(val1) < Number(val2) ? 1 : -1;
                 })
             ;
@@ -59,14 +59,19 @@
     }
 
     function addKundenfeldWert() {
+        var key = 0;
+        while ($('.kundenfeld_wert .field[name*="cfValues[' + key + '][cWert]"]').length > 0) {
+            key++;
+        }
+
         $('#formtable tbody').append($('<tr class="kundenfeld_wert"></tr>').append(
                 '<td class="kundenfeld_wert_label">Wert ' + (countKundenfeldwert() + 1) + ':</td>',
                 $('<td class="row"></td>').append(
                     $('<div class="col-lg-3 jtl-list-group"></div>').append(
-                        '<input name="cWert[]" type="text" class="field form-control" value="" />'),
+                        '<input name="cfValues[' + key + '][cWert]" type="text" class="field form-control" value="" />'),
                     $('<div class="col-lg-2 jtl-list-group"></div>').append($('<div class="input-group" title="' + kundenfeldSortDesc + '"></div>').append(
                         '<span class="input-group-addon">Sort.</span>'
-                        +'<input name="nWertSort[]" type="text" class="field form-control" value="' + recommendSort() + '" />')),
+                        +'<input name="cfValues[' + key + '][nSort]" type="text" class="field form-control" value="' + recommendSort() + '" />')),
                     $('<div class="btn-group"></div>').append(
                         $('<button name="delete" type="button" class="btn btn-danger" value="Entfernen"></button>')
                             .click(function() {
@@ -140,9 +145,13 @@
                 <input type="hidden" name="kundenfelder" value="1">
                 <input name="tab" type="hidden" value="uebersicht">
                 {if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}
+                    {assign var="cfEdit" value=true}
                     <input type="hidden" name="kKundenfeld" value="{$oKundenfeld->kKundenfeld}">
                 {elseif isset($kKundenfeld) && $kKundenfeld > 0}
+                    {assign var="cfEdit" value=true}
                     <input type="hidden" name="kKundenfeld" value="{$kKundenfeld}">
+                {else}
+                    {assign var="cfEdit" value=false}
                 {/if}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -159,7 +168,7 @@
                             <tr>
                                 <td><label for="cWawi">{#kundenfeldWawi#}</label></td>
                                 <td>
-                                    <input id="cWawi" name="cWawi" type="text" class="{if isset($xPlausiVar_arr.cWawi)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.cWawi)}{$xPostVar_arr.cWawi}{elseif isset($oKundenfeld->cWawi)}{$oKundenfeld->cWawi}{/if}" />
+                                    <input id="cWawi" name="cWawi" type="text" class="{if isset($xPlausiVar_arr.cWawi)}fieldfillout{/if} form-control"{if $cfEdit} readonly="readonly"{/if} value="{if isset($xPostVar_arr.cWawi)}{$xPostVar_arr.cWawi}{elseif isset($oKundenfeld->cWawi)}{$oKundenfeld->cWawi}{/if}" />
                                 </td>
                             </tr>
                             <tr>
@@ -231,12 +240,12 @@
                                         <td class="kundenfeld_wert_label">Wert {$i}:</td>
                                         <td class="row">
                                             <div class="col-lg-3 jtl-list-group">
-                                                <input name="cWert[]" type="text" class="field form-control" value="{$oKundenfeldWert->cWert}" />
+                                                <input name="cfValues[{$key}][cWert]" type="text" class="field form-control" value="{$oKundenfeldWert->cWert}" />
                                             </div>
                                             <div class="col-lg-2 jtl-list-group">
                                                 <div class="input-group">
                                                     <span class="input-group-addon">Sort.</span>
-                                                    <input name="nWertSort[]" type="text" class="field form-control" value="{$oKundenfeldWert->nSort}" />
+                                                    <input name="cfValues[{$key}][nSort]" type="text" class="field form-control" value="{$oKundenfeldWert->nSort}" />
                                                 </div>
                                             </div>
                                             <div class="btn-group">
@@ -245,20 +254,20 @@
                                         </td>
                                     </tr>
                                 {/foreach}
-                            {elseif isset($xPostVar_arr.cWert) && $xPostVar_arr.cWert|@count > 0}
-                                {foreach name=kundenfeldwerte from=$xPostVar_arr.cWert key=key item=cKundenfeldWert}
+                            {elseif isset($xPostVar_arr.cfValues) && $xPostVar_arr.cfValues|@count > 0}
+                                {foreach name=kundenfeldwerte from=$xPostVar_arr.cfValues key=key item=cKundenfeldWert}
                                     {assign var=i value=$key+1}
                                     {assign var=j value=$key+6}
                                     <tr class="kundenfeld_wert">
                                         <td class="kundenfeld_wert_label">Wert {$i}:</td>
                                         <td class="row">
                                             <div class="col-lg-3 jtl-list-group">
-                                                <input name="cWert[]" type="text" class="field form-control" value="{$cKundenfeldWert}" />
+                                                <input name="cfValues[{$key}][cWert]" type="text" class="field form-control" value="{$cKundenfeldWert.cWert}" />
                                             </div>
                                             <div class="col-lg-2 jtl-list-group">
                                                 <div class="input-group">
                                                     <span class="input-group-addon">Sort.</span>
-                                                    <input name="nWertSort[]" type="text" class="field form-control" value="{$xPostVar_arr.nWertSort.$key}" />
+                                                    <input name="cfValues[{$key}][nSort]" type="text" class="field form-control" value="{$cKundenfeldWert.nSort}" />
                                                 </div>
                                             </div>
                                             <div class="btn-group">
@@ -271,7 +280,7 @@
                         </table>
                     </div>
                     <div class="panel-footer">
-                        <button name="speichern" type="button" class="btn btn-primary" value="{#kundenfeldSave#}" onclick="document.kundenfeld.submit();"><i class="fa fa-save"></i> {#kundenfeldSave#}</button>
+                        <button name="speichern" type="submit" class="btn btn-primary" value="{#kundenfeldSave#}"><i class="fa fa-save"></i> {#kundenfeldSave#}</button>
                     </div>
                 </div>
 
@@ -356,5 +365,34 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    $('button[name="loeschen"]').on('click', function (e) {
+        var checkedCount = $('input[name="kKundenfeld[]"]').filter(':checked').length;
+        if (checkedCount === 0) {
+            alert('Bitte wählen Sie zuerst ein Feld aus!');
+            e.preventDefault();
 
+            return false;
+        }
+
+        if (!confirm('Wollen Sie wirklich die ausgewählten Felder löschen? Alle zugeordneten Kundenwerte gehen dabei verloren!')) {
+            e.preventDefault();
+
+            return false;
+        }
+    });
+    {if isset($oKundenfeld->cTyp)}
+    $('form[name="kundenfeld"').on('submit', function (e) {
+        if ('{$oKundenfeld->cTyp}' !== $('#cTyp').val()) {
+            if (!confirm('Wenn Sie den Feldtyp ändern, werden alle Kundenwerte - soweit möglich - automatisch an den neuen Typ angepasst!')) {
+                e.preventDefault();
+
+                return false;
+            }
+        }
+
+        return true;
+    });
+    {/if}
+</script>
 {include file='tpl_inc/footer.tpl'}

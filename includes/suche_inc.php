@@ -133,7 +133,7 @@ function mappingBeachten($Suchausdruck, $kSpracheExt = 0)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $kSprache = ((int)$kSpracheExt > 0) ? (int)$kSpracheExt : getDefaultLanguageID();
     if (strlen($Suchausdruck) > 0) {
-        $SuchausdruckmappingTMP = Shop::DB()->select(
+        $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
             'tsuchanfragemapping',
             'kSprache',
             $kSprache,
@@ -149,7 +149,7 @@ function mappingBeachten($Suchausdruck, $kSpracheExt = 0)
             isset($SuchausdruckmappingTMP->cSucheNeu) &&
             strlen($SuchausdruckmappingTMP->cSucheNeu) > 0
         ) {
-            $SuchausdruckmappingTMP = Shop::DB()->select(
+            $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
                 'tsuchanfragemapping',
                 'kSprache',
                 $kSprache,

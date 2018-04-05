@@ -86,7 +86,7 @@ class PaymentMethod
     {
         $this->name = '';
         // Fetch Caption/Name and Image from DB
-        $result               = Shop::DB()->select('tzahlungsart', 'cModulId', $this->moduleID);
+        $result               = Shop::Container()->getDB()->select('tzahlungsart', 'cModulId', $this->moduleID);
         $this->caption        = isset($result->cName)
             ? $result->cName
             : null;
@@ -108,7 +108,7 @@ class PaymentMethod
     public function getOrderHash($order)
     {
         $orderId = isset($order->kBestellung)
-            ? Shop::DB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung, 1)
+            ? Shop::Container()->getDB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung, 1)
             : null;
 
         return isset($orderId->cId) ? $orderId->cId : null;
@@ -126,7 +126,7 @@ class PaymentMethod
             global $Einstellungen;
             if ($Einstellungen['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
                 // Abschlussseite
-                $oZahlungsID = Shop::DB()->query("
+                $oZahlungsID = Shop::Container()->getDB()->query("
                     SELECT cId 
                         FROM tbestellid 
                         WHERE kBestellung = " . (int)$order->kBestellung, 1
@@ -163,9 +163,9 @@ class PaymentMethod
         $kBestellung = (int)$kBestellung;
         if ($kBestellung > 0) {
             $_upd            = new stdClass();
-            $_upd->cNotifyID = Shop::DB()->escape($cNotifyID);
+            $_upd->cNotifyID = Shop::Container()->getDB()->escape($cNotifyID);
             $_upd->dNotify   = 'now()';
-            Shop::DB()->update('tzahlungsession', 'kBestellung', $kBestellung, $_upd);
+            Shop::Container()->getDB()->update('tzahlungsession', 'kBestellung', $kBestellung, $_upd);
         }
 
         return $this;
@@ -250,7 +250,7 @@ class PaymentMethod
         }
 
         if ($order->kBestellung !== null) {
-            $oBestellID                = Shop::DB()->select('tbestellid', 'kBestellung', (int)$order->kBestellung);
+            $oBestellID                = Shop::Container()->getDB()->select('tbestellid', 'kBestellung', (int)$order->kBestellung);
             $hash                      = $oBestellID->cId;
             $oZahlungsID               = new stdClass();
             $oZahlungsID->kBestellung  = $order->kBestellung;
@@ -258,16 +258,16 @@ class PaymentMethod
             $oZahlungsID->cId          = $hash;
             $oZahlungsID->txn_id       = '';
             $oZahlungsID->dDatum       = 'now()';
-            Shop::DB()->insert('tzahlungsid', $oZahlungsID);
+            Shop::Container()->getDB()->insert('tzahlungsid', $oZahlungsID);
         } else {
-            Shop::DB()->delete('tzahlungsession', ['cSID', 'kBestellung'], [session_id(), 0]);
+            Shop::Container()->getDB()->delete('tzahlungsession', ['cSID', 'kBestellung'], [session_id(), 0]);
             $oZahlungSession               = new stdClass();
             $oZahlungSession->cSID         = session_id();
             $oZahlungSession->cNotifyID    = '';
             $oZahlungSession->dZeitBezahlt = '0000-00-00 00:00:00';
-            $oZahlungSession->cZahlungsID  = gibUID($length, md5($oZahlungSession->cSID . mt_rand()) . time());
+            $oZahlungSession->cZahlungsID  = uniqid('', true);
             $oZahlungSession->dZeit        = 'now()';
-            Shop::DB()->insert('tzahlungsession', $oZahlungSession);
+            Shop::Container()->getDB()->insert('tzahlungsession', $oZahlungSession);
             $hash = '_' . $oZahlungSession->cZahlungsID;
         }
 
@@ -280,7 +280,7 @@ class PaymentMethod
      */
     public function deletePaymentHash($paymentHash)
     {
-        Shop::DB()->delete('tzahlungsid', 'cId', $paymentHash);
+        Shop::Container()->getDB()->delete('tzahlungsid', 'cId', $paymentHash);
 
         return $this;
     }
@@ -304,7 +304,7 @@ class PaymentMethod
             'cHinweis'          => '',
             'cAbgeholt'         => 'N'
         ], (array)$payment);
-        Shop::DB()->insert('tzahlungseingang', $model);
+        Shop::Container()->getDB()->insert('tzahlungseingang', $model);
 
         return $this;
     }
@@ -318,7 +318,7 @@ class PaymentMethod
         $_upd                = new stdClass();
         $_upd->cStatus       = BESTELLUNG_STATUS_BEZAHLT;
         $_upd->dBezahltDatum = 'now()';
-        Shop::DB()->update('tbestellung', 'kBestellung', (int)$order->kBestellung, $_upd);
+        Shop::Container()->getDB()->update('tbestellung', 'kBestellung', (int)$order->kBestellung, $_upd);
 
         return $this;
     }
@@ -396,7 +396,7 @@ class PaymentMethod
     public function getCustomerOrderCount($kKunde)
     {
         if ((int)$kKunde > 0) {
-            $oBestellung = Shop::DB()->query(
+            $oBestellung = Shop::Container()->getDB()->query(
                 "SELECT count(*) AS nAnzahl
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
@@ -455,7 +455,7 @@ class PaymentMethod
     {
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
-                $res = Shop::DB()->query("
+                $res = Shop::Container()->getDB()->query("
                   SELECT count(*) AS cnt 
                       FROM tbestellung 
                       WHERE kKunde = " . (int) $customer->kKunde . " 
@@ -619,7 +619,7 @@ class PaymentMethod
         $_upd                = new stdClass();
         $_upd->cStatus       = BESTELLUNG_STATUS_IN_BEARBEITUNG;
         $_upd->dBezahltDatum = 'now()';
-        Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, $_upd);
+        Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $kBestellung, $_upd);
 
         return $this;
     }
@@ -637,7 +637,7 @@ class PaymentMethod
             $_upd                = new stdClass();
             $_upd->cStatus       = BESTELLUNG_STATUS_STORNO;
             $_upd->dBezahltDatum = 'now()';
-            Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, $_upd);
+            Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $kBestellung, $_upd);
         }
 
         return $this;

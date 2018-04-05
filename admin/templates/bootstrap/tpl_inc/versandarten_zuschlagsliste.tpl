@@ -100,7 +100,7 @@
                         <span class="input-group-addon">
                             <label for="cName">{#isleList#}</label>
                         </span>
-                        <input class="form-control" type="text" id="cName" name="cName" value="{if isset($oVersandzuschlag->cName)}{$oVersandzuschlag->cName}{/if}" tabindex="1" />
+                        <input class="form-control" type="text" id="cName" name="cName" value="{if isset($oVersandzuschlag->cName)}{$oVersandzuschlag->cName}{/if}" tabindex="1" required/>
                     </div>
                     {assign var="idx" value="1"}
                     {foreach name=sprachen from=$sprachen item=sprache}
@@ -117,7 +117,7 @@
                         <span class="input-group-addon">
                             <label for="fZuschlag">{#additionalFee#} ({#amount#})</label>
                         </span>
-                        <input type="text" id="fZuschlag" name="fZuschlag" value="{if isset($oVersandzuschlag->fZuschlag)}{$oVersandzuschlag->fZuschlag}{/if}" class="form-control price_large" tabindex="{$idx+1}">{* onKeyUp="setzePreisAjax(false, 'ajaxzuschlag', this)" /> <span id="ajaxzuschlag"></span>*}
+                        <input type="text" id="fZuschlag" name="fZuschlag" value="{if isset($oVersandzuschlag->fZuschlag)}{$oVersandzuschlag->fZuschlag}{/if}" class="form-control price_large" tabindex="{$idx+1}" required>{* onKeyUp="setzePreisAjax(false, 'ajaxzuschlag', this)"/> <span id="ajaxzuschlag"></span>*}
                     </div>
                 </div>
                 <div class="panel-footer">

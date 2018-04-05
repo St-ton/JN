@@ -18,11 +18,11 @@ if (isset($_POST['speichern'])) {
     $shopSettings->reset();
 }
 
-$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_BILDER, '*', 'nSort');
+$oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_BILDER, '*', 'nSort');
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$oConfig_arr[$i]->kEinstellungenConf,
@@ -30,8 +30,8 @@ for ($i = 0; $i < $configCount; $i++) {
             'nSort'
         );
     }
-    $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_BILDER, $oConfig_arr[$i]->cWertName]);
-    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert) ? $oSetValue->cWert : null;
+    $oSetValue = Shop::Container()->getDB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_BILDER, $oConfig_arr[$i]->cWertName]);
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 $Einstellungen = Shop::getSettings([CONF_BILDER]);
 

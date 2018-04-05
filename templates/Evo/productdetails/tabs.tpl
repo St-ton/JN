@@ -1,10 +1,29 @@
 {$tabanzeige = $Einstellungen.artikeldetails.artikeldetails_tabs_nutzen !== 'N'}
-{$useDescription = ($Artikel->cBeschreibung|strlen > 0 || $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'
-    && $Artikel->oMerkmale_arr|count > 1)}
-{$useDownloads = (isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0)}
-{$useMediaFiles = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
+{$showProductWeight = false}
+{$showShippingWeight = false}
+{if isset($Artikel->cArtikelgewicht) && $Artikel->fArtikelgewicht > 0
+    && $Einstellungen.artikeldetails.artikeldetails_artikelgewicht_anzeigen === 'Y'}
+    {$showProductWeight = true}
+{/if}
+{if isset($Artikel->cGewicht) && $Artikel->fGewicht > 0
+    && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y'}
+    {$showShippingWeight = true}
+{/if}
+{$dimension = $Artikel->getDimension()}
+{$showAttributesTable = ($Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'
+    && !empty($Artikel->oMerkmale_arr) || $showProductWeight || $showShippingWeight
+    || $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'
+    && (!empty($dimension['length']) || !empty($dimension['width']) || !empty($dimension['height']))
+    || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0
+    && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
+    || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y'
+    || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN])
+    && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)) && !empty($Artikel->Attribute))}
+{$useDescriptionWithMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
     && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung')
     && !empty($Artikel->cMedienTyp_arr))}
+{$useDescription = (($Artikel->cBeschreibung|strlen > 0) || $useDescriptionWithMediaGroup || $showAttributesTable)}
+{$useDownloads = (isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0)}
 {$useVotes = $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
 {$useQuestionOnItem = $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}
 {$usePriceFlow = ($Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && $bPreisverlauf)}
@@ -14,7 +33,7 @@
     && !empty($Artikel->cMedienTyp_arr))}
 {$useTags = ($Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0
     || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'))}
-{$setActive = isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0
+{$hasVotesHash = isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0
     || isset($smarty.get.bewertung_anzeigen) && count($smarty.get.bewertung_anzeigen) > 0
     || isset($smarty.get.ratings_nItemsPerPage) && count($smarty.get.ratings_nItemsPerPage) > 0
     || isset($smarty.get.ratings_nSortByDir) && count($smarty.get.ratings_nSortByDir) > 0
@@ -32,20 +51,35 @@
         ]}
     {/if}
 {/section}
+{$setActiveClass = [
+    'description'    => (!$hasVotesHash),
+    'downloads'      => (!$hasVotesHash && !$useDescription),
+    'separatedTabs'  => (!$hasVotesHash && !$useDescription && !$useDownloads),
+    'votes'          => ($hasVotesHash || !$useDescription && !$useDownloads && empty($separatedTabs)),
+    'questionOnItem' => (!$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs) && !$useVotes),
+    'priceFlow'      => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
+        && !$useQuestionOnItem),
+    'availabilityNotification' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads
+        && empty($separatedTabs) && !$useQuestionOnItem && !$usePriceFlow),
+    'mediaGroup' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
+        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification),
+    'tags' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
+        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification && !$useMediaGroup)
+]}
 
-{if useDescription || $useDownloads || $useMediaFiles || $useVotes || $useQuestionOnItem || $usePriceFlow
+{if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
     || $useAvailabilityNotification || $useMediaGroup || $useTags || !empty($separatedTabs)}
     {if $tabanzeige}
         <ul class="nav nav-tabs bottom15" role="tablist">
             {if $useDescription}
-                <li role="presentation" {if !$setActive} class="active"{/if}>
+                <li role="presentation" {if $setActiveClass.description} class="active"{/if}>
                     <a href="#tab-description" aria-controls="tab-description" role="tab" data-toggle="tab">
                         {block name='tab-description-title'}{lang key='description' section='productDetails'}{/block}
                     </a>
                 </li>
             {/if}
             {if $useDownloads}
-                <li role="presentation" {if !$setActive && !$useDescription} class="active"{/if}>
+                <li role="presentation" {if $setActiveClass.downloads} class="active"{/if}>
                     <a href="#tab-downloads" aria-controls="tab-downloads" role="tab" data-toggle="tab">
                         {lang section="productDownloads" key="downloadSection"}
                     </a>
@@ -54,8 +88,7 @@
             {if !empty($separatedTabs)}
                 {foreach from=$separatedTabs item=separatedTab name="separatedTabsHeader"}
                     <li role="presentation"
-                        {if !$setActive && !$useDescription && !$useDownloads
-                            && $smarty.foreach.separatedTabsHeader.first}
+                        {if $setActiveClass.separatedTabs && $smarty.foreach.separatedTabsHeader.first}
                             class="active"
                         {/if}>
                         <a href="#tab-{$separatedTab.id}" aria-controls="tab-{$separatedTab.id}" role="tab" data-toggle="tab">
@@ -65,28 +98,21 @@
                 {/foreach}
             {/if}
             {if $useVotes}
-                <li role="presentation"
-                    {if $setActive}
-                        class="active"
-                    {/if}>
+                <li role="presentation" {if $setActiveClass.votes} class="active"{/if}>
                     <a href="#tab-votes" aria-controls="tab-votes" role="tab" data-toggle="tab">
                         {lang key="Votes" section="global"}
                     </a>
                 </li>
             {/if}
             {if $useQuestionOnItem}
-                <li role="presentation"
-                    {if !$setActive && !$useDescription && !$useDownloads && !empty($separatedTabs)
-                        && !$useVotes} class="active"{/if}>
+                <li role="presentation" {if $setActiveClass.questionOnItem} class="active" {/if}>
                     <a href="#tab-questionOnItem" aria-controls="tab-questionOnItem" role="tab" data-toggle="tab">
                         {lang key="productQuestion" section="productDetails"}
                     </a>
                 </li>
             {/if}
             {if $usePriceFlow}
-                <li role="presentation"
-                    {if !$useVotes && !$setActive && !$useDescription && !$useDownloads && empty($separatedTabs)
-                        && !$useQuestionOnItem} class="active"{/if}>
+                <li role="presentation" {if $setActiveClass.priceFlow} class="active"{/if}>
                     <a href="#tab-priceFlow" aria-controls="tab-priceFlow" role="tab" data-toggle="tab">
                         {lang key="priceFlow" section="productDetails"}
                     </a>
@@ -94,8 +120,7 @@
             {/if}
             {if $useAvailabilityNotification}
                 <li role="presentation"
-                    {if !$useVotes && !$setActive && !$useDescription && !$useDownloads && empty($separatedTabs)
-                        && !$useQuestionOnItem && !$usePriceFlow} class="active"{/if}>
+                    {if $setActiveClass.availabilityNotification} class="active"{/if}>
                     <a href="#tab-availabilityNotification" aria-controls="tab-availabilityNotification" role="tab" data-toggle="tab">
                         {lang key="notifyMeWhenProductAvailableAgain" section="global"}
                     </a>
@@ -105,9 +130,7 @@
                 {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
                     {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
                     <li role="presentation"
-                        {if !$useVotes && !$setActive && !$useDescription && !$useDownloads && empty($separatedTabs)
-                            && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification
-                            && $smarty.foreach.mediendateigruppen.first} class="active"{/if}>
+                        {if $setActiveClass.mediaGroup && $smarty.foreach.mediendateigruppen.first} class="active"{/if}>
                         <a href="#tab-{$cMedienTypId}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
                             {$cMedienTyp}
                         </a>
@@ -115,10 +138,7 @@
                 {/foreach}
             {/if}
             {if $useTags}
-                <li role="presentation"
-                    {if !$useVotes && !$setActive && !$useDescription && !$useDownloads && empty($separatedTabs)
-                        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification && !$useMediaGroup}
-                    class="active"{/if}>
+                <li role="presentation" {if $setActiveClass.tags} class="active"{/if}>
                     <a href="#tab-tags" aria-controls="tab-tags" role="tab" data-toggle="tab">
                         {lang key="productTags" section="productDetails"}
                     </a>
@@ -129,7 +149,7 @@
     <div class="tab-content" id="article-tabs">
         {if $useDescription}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade {if !$setActive} in active{/if}" id="tab-description">
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.description} in active{/if}" id="tab-description">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -140,20 +160,30 @@
                     <div class="panel-body" id="tab-description">
             {/if}
             <div class="tab-content-wrapper">
-                {block name="tab-description-content"}
-                    <div class="desc">
-                        {$Artikel->cBeschreibung}
-                        {if $useMediaFiles && !empty($Artikel->cMedienTyp_arr)}
-                            {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
-                                <div class="media">
-                                    {include file='productdetails/mediafile.tpl'}
-                                </div>
-                            {/foreach}
+                {block name="tab-description"}
+                    {block name="tab-description-content"}
+                        <div class="desc">
+                            {$Artikel->cBeschreibung}
+                            {if $useDescriptionWithMediaGroup}
+                                {if $Artikel->cBeschreibung|strlen > 0}
+                                    <hr>
+                                {/if}
+                                {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
+                                    <div class="media">
+                                        {include file='productdetails/mediafile.tpl'}
+                                    </div>
+                                {/foreach}
+                            {/if}
+                        </div>
+                    {/block}
+                    {block name="tab-description-attributes"}
+                        {if (!empty($Artikel->cBeschreibung) || $useDescriptionWithMediaGroup) && $showAttributesTable}
+                            <hr>
                         {/if}
-                    </div>
-                {/block}
-                {block name="tab-description-attributes"}
-                    {include file="productdetails/attributes.tpl" tplscope="details"}
+                        {include file="productdetails/attributes.tpl" tplscope="details"
+                            showProductWeight=$showProductWeight showShippingWeight=$showShippingWeight
+                            dimension=$dimension showAttributesTable=$showAttributesTable}
+                    {/block}
                 {/block}
             </div>
             {if $tabanzeige}
@@ -165,7 +195,7 @@
         {/if}
         {if $useDownloads}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade {if !$setActive && !$useDescription} in active{/if}"
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.downloads} in active{/if}"
                     id="tab-downloads">
             {else}
                 <div class="panel panel-default">
@@ -183,11 +213,10 @@
             {/if}
         {/if}
         {if !empty($separatedTabs)}
-            {foreach from=$separatedTabs item=separatedTab name=separatedTabsHeader}
+            {foreach from=$separatedTabs item=separatedTab name=separatedTabsBody}
                 {if $tabanzeige}
                     <div role="tabpanel" class="tab-pane fade
-                        {if !$setActive && !$useDescription && !$useDownloads
-                            && $smarty.foreach.separatedTabsHeader.first} in active{/if}"
+                        {if $setActiveClass.separatedTabs && $smarty.foreach.separatedTabsBody.first} in active{/if}"
                         id="tab-{$separatedTab.id}">
                 {else}
                     <div class="panel panel-default">
@@ -207,7 +236,7 @@
         {/if}
         {if $useVotes}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade {if $setActive} in active{/if}" id="tab-votes">
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.votes} in active{/if}" id="tab-votes">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -225,8 +254,7 @@
         {/if}
         {if $useQuestionOnItem}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade
-                    {if !$useVotes && !$setActive && !$useDescription && !$useDownloads && empty($separatedTabs)} in active{/if}"
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.questionOnItem} in active{/if}"
                     id="tab-questionOnItem">
             {else}
                 <div class="panel panel-default">
@@ -245,9 +273,8 @@
         {/if}
         {if $usePriceFlow}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade
-                    {if !$useVotes && !$setActive && !$useDescription && !$useDownloads && empty($separatedTabs)
-                        && !$useQuestionOnItem} in active{/if}" id="tab-priceFlow">
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.priceFlow} in active{/if}"
+                    id="tab-priceFlow">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -265,9 +292,8 @@
         {/if}
         {if $useAvailabilityNotification}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade
-                    {if !$useVotes && !$setActive && !$useDescription && !$useDownloads && empty($separatedTabs)
-                        && !$useQuestionOnItem && !$usePriceFlow} in active{/if}" id="tab-availabilityNotification">
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.availabilityNotification} in active{/if}"
+                    id="tab-availabilityNotification">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -288,9 +314,8 @@
                 {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
                 {if $tabanzeige}
                     <div role="tabpanel" class="tab-pane fade
-                        {if !$useVotes && !$setActive && !$useDescription && !$useDownloads && empty($separatedTabs)
-                            && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification
-                            && $smarty.foreach.mediendateigruppen.first} in active{/if}" id="tab-{$cMedienTypId}">
+                        {if $setActiveClass.mediaGroup && $smarty.foreach.mediendateigruppen.first} in active{/if}"
+                        id="tab-{$cMedienTypId}">
                 {else}
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -309,10 +334,7 @@
         {/if}
         {if $useTags}
             {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade
-                    {if !$useVotes && !$setActive && !$useDescription && !$useDownloads && empty($separatedTabs)
-                        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification
-                        && !$useMediaGroup} in active{/if}" id="tab-tags">
+                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.tags} in active{/if}" id="tab-tags">
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">

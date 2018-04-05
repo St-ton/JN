@@ -13,19 +13,17 @@
     <div class="panel-wrap">
         <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes">
             {$jtl_token}
-            {if isset($BereitsBewertet) && $BereitsBewertet == 1}
-                <div class="alert alert-danger">{lang key="allreadyWroteReview" section="product rating"}</div>
-            {elseif isset($nArtikelNichtGekauft) && $nArtikelNichtGekauft == 1}
+            {if isset($nArtikelNichtGekauft) && $nArtikelNichtGekauft == 1}
                 <div class="alert alert-danger">{lang key="productNotBuyed" section="product rating"}</div>
             {/if}
     
             {if empty($smarty.session.Kunde->kKunde)}
                 <div class="alert alert-danger">{lang key="loginFirst" section="product rating"}</div>
-            {elseif $BereitsBewertet == 0 && $smarty.session.Kunde->kKunde > 0 && empty($nArtikelNichtGekauft)}
+            {elseif $smarty.session.Kunde->kKunde > 0 && empty($nArtikelNichtGekauft)}
                 <div class="alert alert-info">{lang key="shareYourRatingGuidelines" section="product rating"}.</div>
                 <div class="vmiddle">
                     {if !empty($Artikel->Bilder[0]->cPfadMini)}
-                        <img src="{$Artikel->Bilder[0]->cPfadMini}" class="image vmiddle" />
+                        <img src="{$Artikel->Bilder[0]->cURLMini}" class="image vmiddle" />
                     {/if}
                     <span class="vmiddle">{$Artikel->cName}</span>
                 </div>
@@ -42,11 +40,14 @@
                 </div>
                 <div class="form-group float-label-control required">
                     <label for="headline">{lang key="headline" section="product rating"}</label>
-                    <input type="text" name="cTitel" value="" id="headline" class="form-control" required>
+                    <input type="text" name="cTitel"
+                           value="{$oBewertung->cTitel|default:""}"
+                           id="headline" class="form-control" required>
                 </div>
                 <div class="form-group float-label-control required">
                     <label for="comment">{lang key="comment" section="product rating"}</label>
-                    <textarea name="cText" cols="80" rows="8" id="comment" class="form-control" required></textarea>
+                    <textarea name="cText" cols="80" rows="8" id="comment" class="form-control"
+                              required>{$oBewertung->cText|default:""}</textarea>
                 </div>
                 <input name="bfh" type="hidden" value="1">
                 <input name="a" type="hidden" value="{$Artikel->kArtikel}">

@@ -80,7 +80,7 @@ function kundeSpeichern($cPost_arr)
                     $cSQL .= ')';
                 }
 
-                Shop::DB()->query("DELETE FROM tkundenattribut WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . $cSQL, 3);
+                Shop::Container()->getDB()->query("DELETE FROM tkundenattribut WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . $cSQL, 3);
                 $nKundenattributKey_arr = array_keys($cKundenattribut_arr);
                 foreach ($nKundenattributKey_arr as $kKundenfeld) {
                     $oKundenattribut              = new stdClass();
@@ -89,7 +89,7 @@ function kundeSpeichern($cPost_arr)
                     $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
                     $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
 
-                    Shop::DB()->insert('tkundenattribut', $oKundenattribut);
+                    Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattribut);
                 }
             }
 
@@ -97,7 +97,7 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde     = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
+            $oNeukunde     = Shop::Container()->getDB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
             $kKundengruppe = Session::CustomerGroup()->getID();
             if (isset($oNeukunde->kKundenWerbenKunden, $Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'])
                 && $oNeukunde->kKundenWerbenKunden > 0
@@ -147,7 +147,7 @@ function kundeSpeichern($cPost_arr)
                     $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
                     $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
 
-                    Shop::DB()->insert('tkundenattribut', $oKundenattribut);
+                    Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattribut);
                 }
             }
             if ($Einstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
@@ -158,19 +158,33 @@ function kundeSpeichern($cPost_arr)
             }
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
             if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0) {
-                Shop::DB()->query(
+                Shop::Container()->getDB()->query(
                     "UPDATE tkunde
                         SET fGuthaben = fGuthaben + " . (float)$Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben'] . "
                         WHERE kKunde = " . (int)$knd->kKunde, 3
                 );
                 $_upd               = new stdClass();
                 $_upd->nRegistriert = 1;
-                Shop::DB()->update('tkundenwerbenkunden', 'cEmail', $knd->cMail, $_upd);
+                Shop::Container()->getDB()->update('tkundenwerbenkunden', 'cEmail', $knd->cMail, $_upd);
             }
         }
         if (isset($cart->kWarenkorb) && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
             setzeSteuersaetze();
             $cart->gibGesamtsummeWarenLocalized();
+        }
+        if (isset($cPost_arr['shipping_address'])) {
+            if ((int)$cPost_arr['shipping_address'] === 0) {
+                $cPost_arr['kLieferadresse'] = 0;
+                $cPost_arr['lieferdaten']    = 1;
+                pruefeLieferdaten($cPost_arr);
+            } elseif (isset($cPost_arr['kLieferadresse']) && (int)$cPost_arr['kLieferadresse'] > 0) {
+                pruefeLieferdaten($cPost_arr);
+            } elseif (isset($cPost_arr['register']['shipping_address'])) {
+                pruefeLieferdaten($cPost_arr['register']['shipping_address'], $fehlendeAngaben);
+            }
+        } elseif (isset($cPost_arr['lieferdaten']) && (int)$cPost_arr['lieferdaten'] === 1) {
+            // compatibility with older template
+            pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
         }
         if ((int)$cPost_arr['checkout'] === 1) {
             //weiterleitung zum chekout
@@ -214,17 +228,15 @@ function gibFormularDaten($nCheckout = 0)
 {
     global $smarty, $cKundenattribut_arr, $Kunde, $Einstellungen;
 
-    if (count($cKundenattribut_arr) === 0) {
-        $cKundenattribut_arr = isset($_SESSION['Kunde']->cKundenattribut_arr)
-            ? $_SESSION['Kunde']->cKundenattribut_arr
-            : [];
+    if ($cKundenattribut_arr === null || count($cKundenattribut_arr) === 0) {
+        $cKundenattribut_arr = $_SESSION['Kunde']->cKundenattribut_arr ?? [];
     }
 
     if (isset($Kunde->dGeburtstag) && preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
         list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
         $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
     }
-    $herkunfte = Shop::DB()->query("SELECT * FROM tkundenherkunft ORDER BY nSort", 2);
+    $herkunfte = Shop::Container()->getDB()->query("SELECT * FROM tkundenherkunft ORDER BY nSort", 2);
 
     $smarty->assign('herkunfte', $herkunfte)
            ->assign('Kunde', $Kunde)

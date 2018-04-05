@@ -51,8 +51,8 @@
                     <div class="manufacturer-row text-right small" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">
                         <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'Y' && (!empty($Artikel->cBildpfad_thersteller) || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B') && isset($Artikel->cHerstellerBildKlein)}
-                                <img src="{$Artikel->cHerstellerBildKlein}" alt="{$Artikel->cHersteller}" class="img-sm">
-                                <meta itemprop="image" content="{$ShopURL}/{$Artikel->cHerstellerBildKlein}">
+                                <img src="{$Artikel->cHerstellerBildURLKlein}" alt="{$Artikel->cHersteller}" class="img-sm">
+                                <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                 <meta itemprop="url" content="{$ShopURL}/{$Artikel->cHerstellerSeo}">
                             {/if}
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
@@ -63,7 +63,7 @@
                     {/block}
                 {/if}
                 {/block}
-    
+
                 <div class="product-headline hidden-xs">
                     {block name="productdetails-info-product-title"}
                     <h1 class="fn product-title" itemprop="name">{$Artikel->cName}</h1>
@@ -76,10 +76,33 @@
                         {block name="productdetails-info-essential"}
                         {if isset($Artikel->cArtNr) || isset($Artikel->dMHD)}
                             <div class="col-xs-8">
-                                <p class="text-muted product-sku">{lang key="sortProductno" section="global"}: <span itemprop="sku">{$Artikel->cArtNr}</span></p>
+                                <p class="text-muted product-sku">{lang key="sortProductno"}: <span itemprop="sku">{$Artikel->cArtNr}</span></p>
                                 {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
-                                    <p title="{lang key='productMHDTool' section='global'}" class="best-before text-muted">{lang key="productMHD" section="global"}: <span itemprop="best-before">{$Artikel->dMHD_de}</span></p>
+                                    <p title="{lang key='productMHDTool'}" class="best-before text-muted">{lang key="productMHD"}: <span itemprop="best-before">{$Artikel->dMHD_de}</span></p>
                                 {/if}
+                            </div>
+                        {/if}
+                        {if !empty($Artikel->cISBN)
+                            && ($Einstellungen.artikeldetails.isbn_display === 'D'
+                                || $Einstellungen.artikeldetails.isbn_display === 'DL')}
+                            <div class="col-xs-8">
+                                <p class="text-muted">{lang key="isbn"}: <span>{$Artikel->cISBN}</span></p>
+                            </div>
+                        {/if}
+                        {if !empty($Artikel->cUNNummer) && !empty($Artikel->cGefahrnr)
+                            && ($Einstellungen.artikeldetails.adr_hazard_display === 'D'
+                                || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
+                            <div class="col-xs-8">
+                                <div class="title text-muted">{lang key="adrHazardSign"}:
+                                    <table class="adr-table">
+                                        <tr>
+                                            <td>{$Artikel->cGefahrnr}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{$Artikel->cUNNummer}</td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
                         {/if}
                         {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
@@ -117,14 +140,14 @@
                 {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
                     {block name="productdetails-info-category"}
                     <p class="product-category word-break">
-                        <span class="text-muted">{lang key="category" section="global"}: </span>
+                        <span class="text-muted">{lang key="category"}: </span>
                         {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
                         <a href="{$Brotnavi[$i_kat]->url}" itemprop="category">{$Brotnavi[$i_kat]->name}</a>
                     </p>
                     {/block}
                 {/if}
                 {/block}
-                
+
                 <div class="product-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                     <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                     {block name="productdetails-info-hidden"}
@@ -155,12 +178,7 @@
                     <div class="row">
                         {block name="productdetails-info-price"}
                         <div class="col-xs-7">
-                            {if isset($Artikel->Preise->strPreisGrafik_Detail)}
-                                {assign var=priceImage value=$Artikel->Preise->strPreisGrafik_Detail}
-                            {else}
-                                {assign var=priceImage value=null}
-                            {/if}
-                            {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$priceImage tplscope="detail"}
+                            {include file="productdetails/price.tpl" Artikel=$Artikel tplscope="detail"}
                         </div>
                         {/block}
                         {block name="productdetails-info-stock"}
@@ -173,7 +191,7 @@
                     {include file="productdetails/basket.tpl"}
                     <hr>
                 </div>
-    
+
                 {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
                     {include file="productdetails/actions.tpl"}
                 {/if}
@@ -185,11 +203,7 @@
             <div id="product-configurator" class="col-sm-12">
                 <div class="product-config top10">
                     {*KONFIGURATOR*}
-                    {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]) && file_exists("tpl_inc/{$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}")}
-                        {include file='tpl_inc/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}
-                    {else}
-                        {include file="productdetails/config.tpl"}
-                    {/if}
+                    {include file="productdetails/config.tpl"}
                 </div>
             </div>
             {/block}

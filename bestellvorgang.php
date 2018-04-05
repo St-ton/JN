@@ -22,9 +22,9 @@ $Einstellungen = Shop::getSettings([
     CONF_TRUSTEDSHOPS,
     CONF_ARTIKELDETAILS
 ]);
-$step          = 'accountwahl';
-$cHinweis      = '';
-$cart          = Session::Cart();
+$step     = 'accountwahl';
+$cHinweis = '';
+$cart     = Session::Cart();
 // Kill Ajaxcheckout falls vorhanden
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
@@ -87,37 +87,10 @@ if (isset($_GET['editLieferadresse'])) {
     // Shipping address and customer address are now on same site
     $_GET['editRechnungsadresse'] = $_GET['editLieferadresse'];
 }
-if (isset($_POST['shipping_address'])) {
-    if ((int)$_POST['shipping_address'] === 0) {
-        $_POST['kLieferadresse'] = 0;
-        $_POST['lieferdaten']    = 1;
-        pruefeLieferdaten($_POST);
-    } elseif (isset($_POST['kLieferadresse']) && (int)$_POST['kLieferadresse'] > 0) {
-        pruefeLieferdaten($_POST);
-    } elseif (isset($_POST['register']['shipping_address'])) {
-        pruefeLieferdaten($_POST['register']['shipping_address'], $fehlendeAngaben);
-    }
-} elseif (isset($_POST['lieferdaten']) && (int)$_POST['lieferdaten'] === 1) {
-    // compatibility with older template
-    pruefeLieferdaten($_POST, $fehlendeAngaben);
-}
 if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
     $_POST['checkout'] = 1;
     $_POST['form']     = 1;
-
-    // persistent delivery address during custom register
-    $_SESSION['tmpShipping'] = [
-        'Lieferadresse'   => $_SESSION['Lieferadresse'],
-        'fehlendeAngaben' => $fehlendeAngaben,
-    ];
     include PFAD_ROOT . 'registrieren.php';
-} elseif (isset($_SESSION['tmpShipping'])) {
-    // restore delivery address after registering customer
-    $_SESSION['Lieferadresse'] = $_SESSION['tmpShipping']['Lieferadresse'];
-    if (is_array($_SESSION['tmpShipping']['fehlendeAngaben'])) {
-        setzeFehlendeAngaben($_SESSION['tmpShipping']['fehlendeAngaben'], 'shipping_address');
-    }
-    unset($_SESSION['tmpShipping']);
 }
 if ((isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) || isset($_GET['kVersandart'])) {
     unset($_SESSION['Zahlungsart']);
@@ -146,41 +119,22 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     }
 
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
-        $land          = isset($_SESSION['Lieferadresse']->cLand)
-            ? $_SESSION['Lieferadresse']->cLand
-            : $_SESSION['Kunde']->cLand;
-        $plz           = isset($_SESSION['Lieferadresse']->cPLZ)
-            ? $_SESSION['Lieferadresse']->cPLZ
-            : $_SESSION['Kunde']->cPLZ;
+        $land          = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
+        $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
         $kKundengruppe = Session::CustomerGroup()->getID();
 
-        $oGuenstigsteVersandart = null;
-        $oVersandart_arr        = VersandartHelper::getPossibleShippingMethods(
+        $oVersandart_arr  = VersandartHelper::getPossibleShippingMethods(
             $land,
             $plz,
             VersandartHelper::getShippingClasses($cart),
             $kKundengruppe
         );
-        $activeVersandart       = gibAktiveVersandart($oVersandart_arr);
+        $activeVersandart = gibAktiveVersandart($oVersandart_arr);
 
-        if (empty($activeVersandart)) {
-            foreach ($oVersandart_arr as $oVersandart) {
-                if ($oGuenstigsteVersandart === null || $oVersandart->fEndpreis < $oGuenstigsteVersandart->fEndpreis) {
-                    $oGuenstigsteVersandart = $oVersandart;
-                }
-            }
-            if ($oGuenstigsteVersandart !== null) {
-                pruefeVersandartWahl(
-                    $oGuenstigsteVersandart->kVersandart,
-                    ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
-                );
-            }
-        } else {
-            pruefeVersandartWahl(
-                $activeVersandart,
-                ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
-            );
-        }
+        pruefeVersandartWahl(
+            $activeVersandart,
+            ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
+        );
     }
 }
 // Download-Artikel vorhanden?
@@ -243,6 +197,8 @@ if ($step === 'Bestaetigung') {
     Shop::Smarty()->assign('cKuponfehler_arr', plausiKupon($_POST));
     //evtl genutztes guthaben anpassen
     pruefeGuthabenNutzen();
+    // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
+    getPaymentSurchageDiscount($_SESSION['Zahlungsart']);
     gibStepBestaetigung($_GET);
     $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
     Warenkorb::refreshChecksum($cart);
@@ -285,7 +241,7 @@ Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('bestellschritt', gibBestellschritt($step))
-    ->assign('requestURL', (isset($requestURL) ? $requestURL : null))
+    ->assign('requestURL', $requestURL ?? null)
     ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
     ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 

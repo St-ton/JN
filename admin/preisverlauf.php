@@ -14,15 +14,15 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_PREISVERLAUF, $_POST);
 }
 
-$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_PREISVERLAUF, '*', 'nSort');
+$oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_PREISVERLAUF, '*', 'nSort');
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', $oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', $oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
     }
 
-    $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_PREISVERLAUF, $oConfig_arr[$i]->cWertName]);
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert) ? $oSetValue->cWert : null);
+    $oSetValue = Shop::Container()->getDB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_PREISVERLAUF, $oConfig_arr[$i]->cWertName]);
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)

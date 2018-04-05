@@ -18,7 +18,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 // Anzahl Wunschzettel, gewünschte Artikel, versendete Wunschzettel
-$oWunschlistePos = Shop::DB()->query(
+$oWunschlistePos = Shop::Container()->getDB()->query(
     "SELECT count(tWunsch.kWunschliste) AS nAnzahl
         FROM
         (
@@ -29,11 +29,11 @@ $oWunschlistePos = Shop::DB()->query(
             GROUP BY twunschliste.kWunschliste
         ) AS tWunsch", 1
 );
-$oWunschlisteArtikel = Shop::DB()->query(
+$oWunschlisteArtikel = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nAnzahl
         FROM twunschlistepos", 1
 );
-$oWunschlisteFreunde = Shop::DB()->query(
+$oWunschlisteFreunde = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nAnzahl
         FROM twunschliste
         JOIN twunschlisteversand 
@@ -50,7 +50,7 @@ $oPagiFreunde = (new Pagination('freunde'))
     ->setItemCount($oWunschlisteFreunde->nAnzahl)
     ->assemble();
 // An Freunde versendete Wunschzettel
-$CWunschlisteVersand_arr = Shop::DB()->query(
+$CWunschlisteVersand_arr = Shop::Container()->getDB()->query(
     "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschlisteversand.nAnzahlArtikel, 
         twunschliste.kWunschliste, twunschliste.cName, twunschliste.cURLID, 
         twunschlisteversand.nAnzahlEmpfaenger, DATE_FORMAT(twunschlisteversand.dZeit, '%d.%m.%Y  %H:%i') AS Datum
@@ -71,7 +71,7 @@ if (is_array($CWunschlisteVersand_arr) && count($CWunschlisteVersand_arr) > 0) {
     }
 }
 // Letzten 100 Wunschzettel mit mindestens einer Position:
-$CWunschliste_arr = Shop::DB()->query(
+$CWunschliste_arr = Shop::Container()->getDB()->query(
     "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschliste.kWunschliste, twunschliste.cName,
         twunschliste.cURLID, DATE_FORMAT(twunschliste.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
         twunschliste.nOeffentlich, count(twunschlistepos.kWunschliste) AS Anzahl
@@ -92,7 +92,7 @@ if (is_array($CWunschliste_arr) && count($CWunschliste_arr) > 0) {
     }
 }
 // Top 100 Artikel auf Wunschzettel
-$CWunschlistePos_arr = Shop::DB()->query(
+$CWunschlistePos_arr = Shop::Container()->getDB()->query(
     "SELECT kArtikel, cArtikelName, count(kArtikel) AS Anzahl,
         DATE_FORMAT(dHinzugefuegt, '%d.%m.%Y %H:%i') AS Datum
         FROM twunschlistepos
@@ -101,7 +101,7 @@ $CWunschlistePos_arr = Shop::DB()->query(
         LIMIT " . $oPagiArtikel->getLimitSQL(),
     2);
 // Config holen
-$oConfig_arr = Shop::DB()->query(
+$oConfig_arr = Shop::Container()->getDB()->query(
     "SELECT *
         FROM teinstellungenconf
         WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
@@ -109,23 +109,21 @@ $oConfig_arr = Shop::DB()->query(
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
-    $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+    $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
         'teinstellungenconfwerte',
         'kEinstellungenConf',
         (int)$oConfig_arr[$i]->kEinstellungenConf,
         '*',
         'nSort'
     );
-    $oSetValue = Shop::DB()->select(
+    $oSetValue = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         (int)$oConfig_arr[$i]->kEinstellungenSektion,
         'cName',
         $oConfig_arr[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = isset($oSetValue->cWert)
-        ? $oSetValue->cWert
-        : null;
+    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)

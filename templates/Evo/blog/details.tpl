@@ -15,21 +15,22 @@
             {$oNewsArchiv->cBetreff}
         </h1>
         {if isset({$oNewsArchiv->cPreviewImage})}
-            <meta itemprop="image" content="{$ShopURL}/{$oNewsArchiv->cPreviewImage}">
+            <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->cPreviewImage}">
         {/if}
-        <p class="text-muted">
+        <div class="author-meta text-muted bottom10">
             {if empty($oNewsArchiv->dGueltigVon)}{assign var=dDate value=$oNewsArchiv->dErstellt}{else}{assign var=dDate value=$oNewsArchiv->dGueltigVon}{/if}
             {if !empty($oNewsArchiv->oAuthor)}
-                {include file="snippets/author.tpl" oAuthor=$oNewsArchiv->oAuthor dDate=$dDate cDate=$oNewsArchiv->dGueltigVon_de}
+                {include file='snippets/author.tpl' oAuthor=$oNewsArchiv->oAuthor dDate=$dDate cDate=$oNewsArchiv->dGueltigVon_de}
             {else}
                 <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
                     <span itemprop="name">{$meta_publisher}</span>
-                    <meta itemprop="logo" content="{$ShopUrl}/{$ShopLogoURL}" />
+                    <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}" />
                 </div>
+                <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="creation-date">{$oNewsArchiv->dGueltigVon_de}</span>
             {/if}
+            <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time>
             {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
-            <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="v-box">{$oNewsArchiv->dGueltigVon_de}</span>
-        </p>
+        </div>
 
         <div itemprop="articleBody" class="row">
             <div class="col-xs-12">
@@ -40,7 +41,7 @@
         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
             <div class="top10 news-categorylist">
                 {foreach name=newskategorie from=$oNewsKategorie_arr item=oNewsKategorie}
-                    <a itemprop="articleSection" href="{$oNewsKategorie->cURL}" title="{$oNewsKategorie->cBeschreibung|strip_tags|escape:"html"|truncate:60}" class="badge">{$oNewsKategorie->cName}</a>
+                    <a itemprop="articleSection" href="{$oNewsKategorie->cURLFull}" title="{$oNewsKategorie->cBeschreibung|strip_tags|escape:'html'|truncate:60}" class="badge">{$oNewsKategorie->cName}</a>
                 {/foreach}
             </div>
         {/if}

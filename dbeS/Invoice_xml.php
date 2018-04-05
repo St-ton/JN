@@ -9,7 +9,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 if (auth()) {
-    checkFile();
+    $zipFile = checkFile();
     if (isset($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache'])) {
         handleData($_POST['kBestellung'], $_POST['dRechnungErstellt'], $_POST['kSprache']);
     } else {
@@ -30,7 +30,7 @@ function handleData($kBestellung, $dRechnungErstellt, $kSprache)
     $kBestellung = (int)$kBestellung;
     $kSprache    = (int)$kSprache;
     if ($kBestellung > 0 && $kSprache > 0) {
-        $oBestellung = Shop::DB()->query(
+        $oBestellung = Shop::Container()->getDB()->query(
             "SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
                 FROM tbestellung
                 LEFT JOIN tzahlungsart

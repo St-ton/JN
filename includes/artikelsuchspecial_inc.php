@@ -28,7 +28,7 @@ function gibTopAngebote($nLimit, $kKundengruppe = 0)
     if (!$kKundengruppe) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $topArticles = Shop::DB()->query(
+    $topArticles = Shop::Container()->getDB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel
             LEFT JOIN tartikelsichtbarkeit 
@@ -79,7 +79,7 @@ function gibBestseller($nLimit, $kKundengruppe = 0)
     $nSchwelleBestseller     = isset($oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl'])
         ? (float)$oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl']
         : 10;
-    $bestsellers = Shop::DB()->query(
+    $bestsellers = Shop::Container()->getDB()->query(
         "SELECT tartikel.kArtikel, tbestseller.fAnzahl
             FROM tbestseller, tartikel
             LEFT JOIN tartikelsichtbarkeit 
@@ -112,7 +112,7 @@ function gibSonderangebote($nLimit, $kKundengruppe = 0)
     if (!$kKundengruppe) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $specialOffers = Shop::DB()->query(
+    $specialOffers = Shop::Container()->getDB()->query(
         "SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
             FROM tartikel
             JOIN tartikelsonderpreis 
@@ -155,7 +155,7 @@ function gibNeuImSortiment($nLimit, $kKundengruppe = 0)
     $nAlterTage = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)
         ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
         : 30;
-    $new = Shop::DB()->query(
+    $new = Shop::Container()->getDB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel
             LEFT JOIN tartikelsichtbarkeit 

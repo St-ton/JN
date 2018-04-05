@@ -17,6 +17,7 @@ Shop::Smarty()->setCaching(false)
     ->assign('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN)
     ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
     ->assign('nSeitenTyp', PAGE_IO)
+    ->assign('imageBaseURL', Shop::getImageBaseURL())
     ->assign('ShopURL', Shop::getURL());
 Shop::setPageType(PAGE_IO);
 

@@ -54,7 +54,7 @@ if (pruefeBetreffVorhanden()) {
         }
     }
     $lang     = $_SESSION['cISOSprache'];
-    $Contents = Shop::DB()->selectAll(
+    $Contents = Shop::Container()->getDB()->selectAll(
         'tspezialcontentsprache',
         ['nSpezialContent', 'cISOSprache'],
         [(int)SC_KONTAKTFORMULAR, $lang]
@@ -63,7 +63,7 @@ if (pruefeBetreffVorhanden()) {
     foreach ($Contents as $Content) {
         $SpezialContent->{$Content->cTyp} = $Content->cContent;
     }
-    $subjects = Shop::DB()->query(
+    $subjects = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0 
@@ -73,7 +73,7 @@ if (pruefeBetreffVorhanden()) {
     );
     foreach ($subjects as $subject) {
         if ($subject->kKontaktBetreff > 0) {
-            $localization = Shop::DB()->select(
+            $localization = Shop::Container()->getDB()->select(
                 'tkontaktbetreffsprache',
                 'kKontaktBetreff',
                 (int)$subject->kKontaktBetreff,
@@ -94,7 +94,7 @@ if (pruefeBetreffVorhanden()) {
     Shop::Smarty()->assign('step', $step)
         ->assign('code', generiereCaptchaCode($Einstellungen['kontakt']['kontakt_abfragen_captcha']))
         ->assign('betreffs', $subjects)
-        ->assign('hinweis', isset($hinweis) ? $hinweis : null)
+        ->assign('hinweis', $hinweis ?? null)
         ->assign('Vorgaben', $Vorgaben)
         ->assign('fehlendeAngaben', $fehlendeAngaben)
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
@@ -107,7 +107,7 @@ if (pruefeBetreffVorhanden()) {
 
 Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
     ->assign('Spezialcontent', $SpezialContent)
-    ->assign('requestURL', isset($requestURL) ? $requestURL : null);
+    ->assign('requestURL', $requestURL ?? null);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);

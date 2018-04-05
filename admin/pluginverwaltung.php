@@ -21,54 +21,7 @@ if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = StringHandler::filterXSS(base64_decode(verifyGPDataString('h')));
 }
 if (!empty($_FILES['file_data'])) {
-    /**
-     * sanitize names from plugins downloaded via gitlab
-     *
-     * @param array $p_event
-     * @param array $p_header
-     * @return int
-     */
-    function pluginPreExtractCallBack($p_event, &$p_header)
-    {
-        //plugins downloaded from gitlab have -[BRANCHNAME]-[COMMIT_ID] in their name.
-        //COMMIT_ID should be 40 characters
-        preg_match('/(.*)-master-([a-zA-Z0-9]{40})\/(.*)/', $p_header['filename'], $hits);
-        if (count($hits) >= 3) {
-            $p_header['filename'] = str_replace('-master-' . $hits[2], '', $p_header['filename']);
-        }
-
-        return 1;
-    }
-    $response                 = new stdClass();
-    $response->status         = 'OK';
-    $response->error          = null;
-    $response->files_unpacked = [];
-    $response->file_failed    = [];
-    $response->messages       = [];
-
-    $zip     = new PclZip($_FILES['file_data']['tmp_name']);
-    $content = $zip->listContent();
-    if (!is_array($content) || !isset($content[0]['filename']) || strpos($content[0]['filename'], '.') !== false) {
-        $response->status     = 'FAILED';
-        $response->messages[] = 'Invalid archive';
-    } else {
-        $unzipPath = PFAD_ROOT . PFAD_PLUGIN;
-        $res       = $zip->extract(PCLZIP_OPT_PATH, $unzipPath, PCLZIP_CB_PRE_EXTRACT, 'pluginPreExtractCallBack');
-        $success   = [];
-        $fail      = [];
-        if ($res !== 0) {
-            foreach ($res as $_file) {
-                if ($_file['status'] === 'ok' || $_file['status'] === 'already_a_directory') {
-                    $response->files_unpacked[] = $_file;
-                } else {
-                    $response->file_failed[] = $_file;
-                }
-            }
-        } else {
-            $response->status   = 'FAILED';
-            $response->errors[] = 'Got unzip error code: ' . $zip->errorCode();
-        }
-    }
+    $response                      = extractPlugin($_FILES['file_data']['tmp_name']);
     $PluginInstalliertByStatus_arr = [
         'status_1' => [],
         'status_2' => [],
@@ -77,8 +30,8 @@ if (!empty($_FILES['file_data'])) {
         'status_5' => [],
         'status_6' => []
     ];
-    $PluginInstalliert_arr = gibInstalliertePlugins();
-    $allPlugins            = gibAllePlugins($PluginInstalliert_arr);
+    $PluginInstalliert_arr         = gibInstalliertePlugins();
+    $allPlugins                    = gibAllePlugins($PluginInstalliert_arr);
     foreach ($PluginInstalliert_arr as $_plugin) {
         $PluginInstalliertByStatus_arr['status_' . $_plugin->nStatus][] = $_plugin;
     }
@@ -130,13 +83,12 @@ if (!empty($_FILES['file_data'])) {
 
 if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()) {
     // Eine Aktion wurde von der Uebersicht aus gestartet
-    $kPlugin_arr = isset($_POST['kPlugin']) ? $_POST['kPlugin'] : [];
-
+    $kPlugin_arr = $_POST['kPlugin'] ?? [];
     // Lizenzkey eingeben
     if (isset($_POST['lizenzkey']) && (int)$_POST['lizenzkey'] > 0) {
         $kPlugin = (int)$_POST['lizenzkey'];
         $step    = 'pluginverwaltung_lizenzkey';
-        $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
+        $oPlugin = Shop::Container()->getDB()->select('tplugin', 'kPlugin', $kPlugin);
         $smarty->assign('oPlugin', $oPlugin)
                ->assign('kPlugin', $kPlugin);
         Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
@@ -147,7 +99,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
     ) { // Lizenzkey eingeben
         $step    = 'pluginverwaltung_lizenzkey';
         $kPlugin = (int)$_POST['kPlugin'];
-        $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
+        $oPlugin = Shop::Container()->getDB()->select('tplugin', 'kPlugin', $kPlugin);
         if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
             $oPlugin = new Plugin($kPlugin, true);
             require_once $oPlugin->cLicencePfad . $oPlugin->cLizenzKlasseName;
@@ -215,7 +167,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                         break;
                 }
             } elseif (isset($_POST['deinstallieren'])) { // Deinstallieren
-                $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
+                $oPlugin = Shop::Container()->getDB()->select('tplugin', 'kPlugin', $kPlugin);
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
                     $nReturnValue = deinstallierePlugin($kPlugin, $oPlugin->nXMLVersion);
 
@@ -240,7 +192,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                     $cFehler = 'Fehler: Ein oder mehrere Plugins wurden nicht in der Datenbank gefunden.';
                 }
             } elseif (isset($_POST['reload'])) { // Reload
-                $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
+                $oPlugin = Shop::Container()->getDB()->select('tplugin', 'kPlugin', $kPlugin);
 
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
                     $nReturnValue = reloadPlugin($oPlugin, true);
@@ -293,7 +245,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
         $kPlugin = verifyGPCDataInteger('kPlugin');
         // Zuruecksetzen
         if (verifyGPCDataInteger('kPluginSprachvariable') > 0) {
-            $oPluginSprachvariable = Shop::DB()->select(
+            $oPluginSprachvariable = Shop::Container()->getDB()->select(
                 'tpluginsprachvariable',
                 'kPlugin',
                 $kPlugin,
@@ -301,7 +253,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                 verifyGPCDataInteger('kPluginSprachvariable')
             );
             if (isset($oPluginSprachvariable->kPluginSprachvariable) && $oPluginSprachvariable->kPluginSprachvariable > 0) {
-                $nRow = Shop::DB()->delete(
+                $nRow = Shop::Container()->getDB()->delete(
                     'tpluginsprachvariablecustomsprache',
                     ['kPlugin', 'cSprachvariable'],
                     [$kPlugin, $oPluginSprachvariable->cName]
@@ -315,7 +267,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                 $cFehler = 'Fehler: Die Sprachvariable konnte nicht gefunden werden.';
             }
         } else { // Editieren
-            $oSprache_arr              = Shop::DB()->query("SELECT * FROM tsprache", 2);
+            $oSprache_arr              = Shop::Container()->getDB()->query("SELECT * FROM tsprache", 2);
             $oPluginSprachvariable_arr = gibSprachVariablen($kPlugin);
             foreach ($oSprache_arr as $oSprache) {
                 foreach ($oPluginSprachvariable_arr as $oPluginSprachvariable) {
@@ -325,7 +277,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                     if (!isset($_POST[$kPluginSprachvariable . '_' . $cISO])) {
                         continue;
                     }
-                    Shop::DB()->delete(
+                    Shop::Container()->getDB()->delete(
                         'tpluginsprachvariablecustomsprache',
                         ['kPlugin', 'cSprachvariable', 'cISO'],
                         [$kPlugin, $cSprachvariable, $cISO]
@@ -337,7 +289,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                     $oPluginSprachvariableCustomSprache->kPluginSprachvariable = $kPluginSprachvariable;
                     $oPluginSprachvariableCustomSprache->cName                 = $_POST[$kPluginSprachvariable . '_' . $cISO];
 
-                    Shop::DB()->insert('tpluginsprachvariablecustomsprache', $oPluginSprachvariableCustomSprache);
+                    Shop::Container()->getDB()->insert('tpluginsprachvariablecustomsprache', $oPluginSprachvariableCustomSprache);
                 }
             }
             $cHinweis = 'Ihre &Auml;nderungen wurden erfolgreich &uuml;bernommen.';
@@ -421,7 +373,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
            ->assign('PluginIndex_arr', $allPlugins->index);
 } elseif ($step === 'pluginverwaltung_sprachvariablen') { // Sprachvariablen
     $kPlugin      = verifyGPCDataInteger('kPlugin');
-    $oSprache_arr = Shop::DB()->query("SELECT * FROM tsprache", 2);
+    $oSprache_arr = Shop::Container()->getDB()->query("SELECT * FROM tsprache", 2);
 
     $smarty->assign('oSprache_arr', $oSprache_arr)
            ->assign('kPlugin', $kPlugin)

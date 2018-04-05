@@ -6,56 +6,44 @@
 
 require_once __DIR__ . '/syncinclude.php';
 
-$return = 3;
+$return  = 3;
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
-    $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Lieferschein_xml');
-    }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Lieferschein_xml');
+    $zipFile   = checkFile();
+    $return    = 2;
+    $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
+    if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Lieferschein_xml');
         }
-        $entzippfad = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
-        mkdir($entzippfad);
-        $entzippfad .= '/';
-        if ($archive->extract(PCLZIP_OPT_PATH, $entzippfad)) {
+        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $i => $xmlFile) {
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Zip entpackt in ' . $entzippfad, JTLLOG_LEVEL_DEBUG, false, 'Lieferschein_xml');
+                Jtllog::writeLog(
+                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Lieferschein_xml'
+                );
             }
-            $return = 0;
-            foreach ($list as $i => $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
-                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Lieferschein_xml');
-                }
-                $cData = file_get_contents($entzippfad . $zip['filename']);
-                $oXml  = simplexml_load_string($cData);
-                switch ($zip['filename']) {
-                    case 'lief.xml':
-                        bearbeiteInsert($oXml);
-                        break;
+            $cData = file_get_contents($xmlFile);
+            $oXml  = simplexml_load_string($cData);
+            switch (pathinfo($xmlFile)['basename']) {
+                case 'lief.xml':
+                    bearbeiteInsert($oXml);
+                    break;
 
-                    case 'del_lief.xml':
-                        bearbeiteDelete($oXml);
-                        break;
+                case 'del_lief.xml':
+                    bearbeiteDelete($oXml);
+                    break;
 
-                }
-                removeTemporaryFiles($entzippfad . $zip['filename']);
             }
-            removeTemporaryFiles(substr($entzippfad, 0, -1), true);
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Lieferschein_xml');
+            removeTemporaryFiles($xmlFile);
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Lieferschein_xml');
+        removeTemporaryFiles(substr($unzipPath, 0, -1), true);
     }
-}
-
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
 }
 
 echo $return;
@@ -107,14 +95,14 @@ function bearbeiteDelete($oXml)
     }
     foreach ($kLieferschein_arr as $kLieferschein) {
         $kLieferschein = (int)$kLieferschein;
-        Shop::DB()->delete('tversand', 'kLieferschein', $kLieferschein);
-        Shop::DB()->delete('tlieferschein', 'kLieferschein', $kLieferschein);
+        Shop::Container()->getDB()->delete('tversand', 'kLieferschein', $kLieferschein);
+        Shop::Container()->getDB()->delete('tlieferschein', 'kLieferschein', $kLieferschein);
 
-        $oLieferscheinPos_arr = Shop::DB()->selectAll('tlieferscheinpos', 'kLieferschein', $kLieferschein, 'kLieferscheinPos');
+        $oLieferscheinPos_arr = Shop::Container()->getDB()->selectAll('tlieferscheinpos', 'kLieferschein', $kLieferschein, 'kLieferscheinPos');
         if (is_array($oLieferscheinPos_arr)) {
             foreach ($oLieferscheinPos_arr as $oLieferscheinPos) {
-                Shop::DB()->delete('tlieferscheinpos', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
-                Shop::DB()->delete('tlieferscheinposinfo', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
+                Shop::Container()->getDB()->delete('tlieferscheinpos', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
+                Shop::Container()->getDB()->delete('tlieferscheinposinfo', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
             }
         }
     }

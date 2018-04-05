@@ -1,12 +1,12 @@
 {if isset($oBox->oUmfrage_arr) && $oBox->oUmfrage_arr|@count > 0}
     <section class="panel panel-default box box-poll" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
-            <h5 class="panel-title">{lang key="BoxPoll" section="global"}</h5>
+            <h5 class="panel-title">{lang key='BoxPoll'}</h5>
         </div>
         <div class="box-body">
             <ul class="nav nav-list tree">
                 {foreach name=umfragen from=$oBox->oUmfrage_arr item=oUmfrageItem}
-                    <li><a href="{$oUmfrageItem->cURL}">{$oUmfrageItem->cName}</a></li>
+                    <li><a href="{$oUmfrageItem->cURLFull}">{$oUmfrageItem->cName}</a></li>
                 {/foreach}
             </ul>
         </div>
@@ -14,13 +14,13 @@
 {elseif isset($Boxen.Umfrage->oUmfrage_arr) && $Boxen.Umfrage->oUmfrage_arr|@count > 0}
     <section class="panel panel-default box box-poll" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
-            <h5 class="panel-title">{lang key="BoxPoll" section="global"}</h5>
+            <h5 class="panel-title">{lang key='BoxPol'}</h5>
         </div>
         <div class="box-body">
             <ul class="nav nav-list tree">
                 {foreach name=umfragen from=$Boxen.Umfrage->oUmfrage_arr item=oUmfrageItem}
                     <li>
-                        <a href="{$oUmfrageItem->cURL}">{$oUmfrageItem->cName}</a>
+                        <a href="{$oUmfrageItem->cURLFull}">{$oUmfrageItem->cName}</a>
                     </li>
                 {/foreach}
             </ul>

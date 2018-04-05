@@ -17,6 +17,7 @@ if (!isset($bExtern) || !$bExtern) {
     defined('DB_PASS') || die('Kein MySQL-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 }
 
+require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
@@ -38,7 +39,7 @@ if (!function_exists('Shop')) {
 
 // Datenbankverbindung aufbauen - ohne Debug Modus
 $DB      = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
-$cache   = JTLCache::getInstance()->setJtlCacheConfig();
+$cache   = Shop::Container()->getCache()->setJtlCacheConfig();
 $session = AdminSession::getInstance();
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';

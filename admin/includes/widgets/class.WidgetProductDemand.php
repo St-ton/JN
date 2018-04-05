@@ -30,7 +30,7 @@ class WidgetProductDemand extends WidgetBase
      */
     public function getBotsOfMonth($nYear, $nMonth, $nLimit = 10)
     {
-        return Shop::DB()->query(
+        return Shop::Container()->getDB()->query(
             "SELECT *, COUNT(tbesucherbot.kBesucherBot) AS nAnzahl
                 FROM tbesucherarchiv
                 LEFT JOIN tbesucherbot

@@ -10,7 +10,7 @@
  */
 function getSeo($cSeo)
 {
-    return iso2ascii($cSeo);
+    return iso2ascii(StringHandler::convertISO($cSeo));
 }
 
 /**
@@ -23,8 +23,8 @@ function checkSeo($cSeo)
         return '';
     }
 
-    Shop::DB()->query("SET @IKEY := 0", 10);
-    $obj = Shop::DB()->query(
+    Shop::Container()->getDB()->query("SET @IKEY := 0", 10);
+    $obj = Shop::Container()->getDB()->query(
         "SELECT oseo.newSeo
             FROM (
 	            SELECT CONCAT('{$cSeo}', '_', @IKEY:=@IKEY+1) newSeo, @IKEY nOrder
@@ -42,7 +42,7 @@ function checkSeo($cSeo)
             LIMIT 1", 1
     );
 
-    return isset($obj->newSeo) ? $obj->newSeo : $cSeo;
+    return $obj->newSeo ?? $cSeo;
 }
 
 /**

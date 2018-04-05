@@ -53,27 +53,27 @@ function get_product_list($params, &$smarty)
         ? setzeTagFilter(explode(';', $params['cTagFilter']))
         : null;
     $cParameter_arr     = [
-        'kKategorie'             => isset($params['kKategorie']) ? $params['kKategorie'] : null,
-        'kHersteller'            => isset($params['kHersteller']) ? $params['kHersteller'] : null,
-        'kArtikel'               => isset($params['kArtikel']) ? $params['kArtikel'] : null,
-        'kVariKindArtikel'       => isset($params['kVariKindArtikel']) ? $params['kVariKindArtikel'] : null,
-        'kSeite'                 => isset($params['kSeite']) ? $params['kSeite'] : null,
-        'kSuchanfrage'           => isset($params['kSuchanfrage']) ? $params['kSuchanfrage'] : null,
-        'kMerkmalWert'           => isset($params['kMerkmalWert']) ? $params['kMerkmalWert'] : null,
-        'kTag'                   => isset($params['kTag']) ? $params['kTag'] : null,
-        'kSuchspecial'           => isset($params['kSuchspecial']) ? $params['kSuchspecial'] : null,
-        'kKategorieFilter'       => isset($params['kKategorieFilter']) ? $params['kKategorieFilter'] : null,
-        'kHerstellerFilter'      => isset($params['kHerstellerFilter']) ? $params['kHerstellerFilter'] : null,
-        'nBewertungSterneFilter' => isset($params['nBewertungSterneFilter']) ? $params['nBewertungSterneFilter'] : null,
-        'cPreisspannenFilter'    => isset($params['cPreisspannenFilter']) ? $params['cPreisspannenFilter'] : null,
-        'kSuchspecialFilter'     => isset($params['kSuchspecialFilter']) ? $params['kSuchspecialFilter'] : null,
+        'kKategorie'             => $params['kKategorie'] ?? null,
+        'kHersteller'            => $params['kHersteller'] ?? null,
+        'kArtikel'               => $params['kArtikel'] ?? null,
+        'kVariKindArtikel'       => $params['kVariKindArtikel'] ?? null,
+        'kSeite'                 => $params['kSeite'] ?? null,
+        'kSuchanfrage'           => $params['kSuchanfrage'] ?? null,
+        'kMerkmalWert'           => $params['kMerkmalWert'] ?? null,
+        'kTag'                   => $params['kTag'] ?? null,
+        'kSuchspecial'           => $params['kSuchspecial'] ?? null,
+        'kKategorieFilter'       => $params['kKategorieFilter'] ?? null,
+        'kHerstellerFilter'      => $params['kHerstellerFilter'] ?? null,
+        'nBewertungSterneFilter' => $params['nBewertungSterneFilter'] ?? null,
+        'cPreisspannenFilter'    => $params['cPreisspannenFilter'] ?? null,
+        'kSuchspecialFilter'     => $params['kSuchspecialFilter'] ?? null,
         'nSortierung'            => $nSortierung,
         'MerkmalFilter_arr'      => $cMerkmalFilter_arr,
         'TagFilter_arr'          => $cTagFilter_arr,
         'SuchFilter_arr'         => $cSuchFilter_arr,
-        'nArtikelProSeite'       => isset($params['nArtikelProSeite']) ? $params['nArtikelProSeite'] : null,
-        'cSuche'                 => isset($params['cSuche']) ? $params['cSuche'] : null,
-        'seite'                  => isset($params['seite']) ? $params['seite'] : null
+        'nArtikelProSeite'       => $params['nArtikelProSeite'] ?? null,
+        'cSuche'                 => $params['cSuche'] ?? null,
+        'seite'                  => $params['seite'] ?? null
     ];
     if ($cParameter_arr['kArtikel'] !== null) {
         $oArtikel_arr = [];
@@ -147,7 +147,7 @@ function load_boxes_raw($params, &$smarty)
 {
     if (isset($params['array'], $params['assign']) && $params['array'] === true) {
         $rawData = Boxen::getInstance()->getRawData();
-        $smarty->assign($params['assign'], (isset($rawData[$params['type']]) ? $rawData[$params['type']] : null));
+        $smarty->assign($params['assign'], $rawData[$params['type']] ?? null);
     }
 }
 
@@ -170,8 +170,8 @@ function get_category_array($params, &$smarty)
     if (isset($params['categoryBoxNumber']) && (int)$params['categoryBoxNumber'] > 0) {
         $list2 = [];
         foreach ($list as $key => $oList) {
-            if (isset($oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX]) &&
-                $oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']
+            if (isset($oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX])
+                && $oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']
             ) {
                 $list2[$key] = $oList;
             }
@@ -226,6 +226,9 @@ function get_img_tag($params, &$smarty)
     $imageALT      = isset($params['alt']) ? ' alt="' . truncate($params['alt'], 75) . '"' : '';
     $imageTITLE    = isset($params['title']) ? ' title="' . truncate($params['title'], 75) . '"' : '';
     $imageCLASS    = isset($params['class']) ? ' class="' . truncate($params['class'], 75) . '"' : '';
+    if (strpos($imageURL, 'http') !== 0) {
+        $imageURL = Shop::getImageBaseURL() . ltrim($imageURL, '/');
+    }
     if ($oImgSize !== null && $oImgSize->size->width > 0 && $oImgSize->size->height > 0) {
         return '<img src="' . $imageURL . '" width="' . $oImgSize->size->width . '" height="' .
             $oImgSize->size->height . '"' . $imageID . $imageALT . $imageTITLE . $imageCLASS . ' />';
@@ -430,7 +433,8 @@ function hasCheckBoxForLocation($params, &$smarty)
  */
 function getCheckBoxForLocation($params, &$smarty)
 {
-    $cid           = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . (int)$_SESSION['kSprache'];
+    $langID        = Shop::getLanguageID();
+    $cid           = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . $langID;
     $oCheckBox_arr = Shop::has($cid)
         ? Shop::get($cid)
         : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
@@ -453,11 +457,11 @@ function getCheckBoxForLocation($params, &$smarty)
             $bError                   = isset($params['cPlausi_arr'][$oCheckBox->cID]);
             $cPost_arr                = $params['cPost_arr'];
             $oCheckBox->isActive      = isset($cPost_arr[$oCheckBox->cID]);
-            $oCheckBox->cName         = $oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cText;
+            $oCheckBox->cName         = $oCheckBox->oCheckBoxSprache_arr[$langID]->cText;
             $oCheckBox->cLinkURL      = strlen($cLinkURL) > 0 ? $cLinkURL : '';
             $oCheckBox->cLinkURLFull  = $cLinkURLFull;
-            $oCheckBox->cBeschreibung = !empty($oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung)
-                ? $oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung
+            $oCheckBox->cBeschreibung = !empty($oCheckBox->oCheckBoxSprache_arr[$langID]->cBeschreibung)
+                ? $oCheckBox->oCheckBoxSprache_arr[$langID]->cBeschreibung
                 : '';
             $oCheckBox->cErrormsg     = $bError
                 ? Shop::Lang()->get('pleasyAccept', 'account data')
@@ -517,10 +521,9 @@ function get_navigation($params, &$smarty)
     $linkgroupIdentifier = $params['linkgroupIdentifier'];
     $oLinkGruppe         = null;
     if (strlen($linkgroupIdentifier) > 0) {
-        $linkGroups  = LinkHelper::getInstance()->getLinkGroups();
-        $oLinkGruppe = isset($linkGroups->{$linkgroupIdentifier})
-            ? $linkGroups->{$linkgroupIdentifier}
-            : null;
+        $linkGroups  = $smarty->getTemplateVars('linkgroups') ?? LinkHelper::getInstance()->getLinkGroups();
+
+        $oLinkGruppe = $linkGroups->{$linkgroupIdentifier} ?? null;
     }
 
     if (is_object($oLinkGruppe) && isset($params['assign'])) {
@@ -540,15 +543,14 @@ function build_navigation_subs($oLink_arr, $kVaterLink = 0)
     if ($oLink_arr->cName === 'hidden') {
         return $oNew_arr;
     }
-    $cISO = $_SESSION['cISOSprache'];
+    $cISO = Shop::getLanguageCode();
     foreach ($oLink_arr->Links as &$oLink) {
-        $oLink->kVaterLink = (int)$oLink->kVaterLink;
         if ($oLink->kVaterLink !== $kVaterLink) {
             continue;
         }
         $oLink->oSub_arr = build_navigation_subs($oLink_arr, $oLink->kLink);
         //append bIsActive property
-        $oLink->bIsActive = Shop::$kLink > 0 && Shop::$kLink === (int)$oLink->kLink;
+        $oLink->bIsActive = $oLink->aktiv === 1 || (Shop::$kLink > 0 && Shop::$kLink === $oLink->kLink);
         //append cTitle property
         $oLink->cTitle = (isset($oLink->cLocalizedTitle[$cISO])
             && $oLink->cLocalizedTitle[$cISO] !== $oLink->cLocalizedName[$cISO])
@@ -566,7 +568,7 @@ function build_navigation_subs($oLink_arr, $kVaterLink = 0)
  */
 function get_trustedshops_data($params, &$smarty)
 {
-    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
     $smarty->assign($params['assign'], [
         'tsId'   => $oTrustedShops->tsId,
         'nAktiv' => $oTrustedShops->nAktiv
@@ -597,7 +599,12 @@ function prepare_image_details($params, &$smarty)
             $result = $result[$type];
         }
     }
-
+    $imageBaseURL = Shop::getImageBaseURL();
+    foreach ($result as $size => $data) {
+        if (isset($data->src) && strpos($data->src, 'http') !== 0) {
+            $data->src = $imageBaseURL . $data->src;
+        }
+    }
     $result = (object)$result;
 
     return (isset($params['json']) && $params['json'])

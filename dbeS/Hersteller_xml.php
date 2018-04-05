@@ -6,44 +6,41 @@
 
 require_once __DIR__ . '/syncinclude.php';
 
-$return = 3;
+$return  = 3;
+$zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
-    checkFile();
+    $zipFile = checkFile();
     $return  = 2;
-    $archive = new PclZip($_FILES['data']['tmp_name']);
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Hersteller_xml');
+        Jtllog::writeLog('Hersteller - Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Hersteller_xml');
     }
-    if ($list = $archive->listContent()) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Hersteller_xml');
+    if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
+        if (Jtllog::doLog()) {
+            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Hersteller_xml');
         }
-        if ($archive->extract(PCLZIP_OPT_PATH, PFAD_SYNC_TMP)) {
-            $return = 0;
-            foreach ($list as $zip) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
-                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Hersteller_xml');
-                }
-                $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
-                $xml = XML_unserialize($d);
-
-                if ($zip['filename'] === 'del_hersteller.xml') {
-                    bearbeiteHerstellerDeletes($xml);
-                } elseif ($zip['filename'] === 'hersteller.xml') {
-                    bearbeiteHersteller($xml);
-                }
+        // @todo cleanup?? master didn't do it..
+//        removeTemporaryFiles($zipFile);
+    } else {
+        $return = 0;
+        foreach ($syncFiles as $xmlFile) {
+            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                Jtllog::writeLog(
+                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Hersteller_xml'
+                );
             }
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Hersteller_xml');
-        }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Hersteller_xml');
-    }
-}
+            $d   = file_get_contents($xmlFile);
+            $xml = XML_unserialize($d);
 
-if ($return === 2) {
-    syncException('Error : ' . $archive->errorInfo(true));
+            if (strpos($xmlFile, 'del_hersteller.xml') !== false) {
+                bearbeiteHerstellerDeletes($xml);
+            } elseif (strpos($xmlFile, 'hersteller.xml') !== false) {
+                bearbeiteHersteller($xml);
+            }
+        }
+    }
 }
 
 echo $return;
@@ -61,10 +58,10 @@ function bearbeiteHerstellerDeletes($xml)
         foreach ($xml['del_hersteller']['kHersteller'] as $kHersteller) {
             $kHersteller = (int)$kHersteller;
             if ($kHersteller > 0) {
-                $affectedArticles = Shop::DB()->selectAll('tartikel', 'kHersteller', $kHersteller, 'kArtikel');
-                Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$kHersteller, 'kHersteller']);
-                Shop::DB()->delete('thersteller', 'kHersteller', $kHersteller);
-                Shop::DB()->delete('therstellersprache', 'kHersteller', $kHersteller);
+                $affectedArticles = Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', $kHersteller, 'kArtikel');
+                Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$kHersteller, 'kHersteller']);
+                Shop::Container()->getDB()->delete('thersteller', 'kHersteller', $kHersteller);
+                Shop::Container()->getDB()->delete('therstellersprache', 'kHersteller', $kHersteller);
 
                 executeHook(HOOK_HERSTELLER_XML_BEARBEITEDELETES, ['kHersteller' => $kHersteller]);
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $kHersteller;
@@ -93,23 +90,20 @@ function bearbeiteHersteller($xml)
             $mfCount      = count($hersteller_arr);
             $cacheTags    = [];
             for ($i = 0; $i < $mfCount; $i++) {
-                $affectedArticles = Shop::DB()->selectAll('tartikel', 'kHersteller', (int)$hersteller_arr[$i]->kHersteller, 'kArtikel');
-                Shop::DB()->delete('tseo', ['kKey', 'cKey'], [(int)$hersteller_arr[$i]->kHersteller,'kHersteller']);
+                $affectedArticles = Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', (int)$hersteller_arr[$i]->kHersteller, 'kArtikel');
+                Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [(int)$hersteller_arr[$i]->kHersteller,'kHersteller']);
                 if (!trim($hersteller_arr[$i]->cSeo)) {
                     $hersteller_arr[$i]->cSeo = getFlatSeoPath($hersteller_arr[$i]->cName);
                 }
                 //alten Bildpfad merken
-                $oHerstellerBild               = Shop::DB()->query("
-                    SELECT cBildPfad 
+                $oHerstellerBild               = Shop::Container()->getDB()->query(
+                    "SELECT cBildPfad 
                         FROM thersteller 
                         WHERE kHersteller = " . (int)$hersteller_arr[$i]->kHersteller, 1
                 );
-                $hersteller_arr[$i]->cBildPfad = isset($oHerstellerBild->cBildPfad)
-                    ? $oHerstellerBild->cBildPfad
-                    : '';
-                //seo checken
-                $hersteller_arr[$i]->cSeo = getSeo($hersteller_arr[$i]->cSeo);
-                $hersteller_arr[$i]->cSeo = checkSeo($hersteller_arr[$i]->cSeo);
+                $hersteller_arr[$i]->cBildPfad = $oHerstellerBild->cBildPfad ?? '';
+                $hersteller_arr[$i]->cSeo      = getSeo($hersteller_arr[$i]->cSeo);
+                $hersteller_arr[$i]->cSeo      = checkSeo($hersteller_arr[$i]->cSeo);
                 DBUpdateInsert('thersteller', [$hersteller_arr[$i]], 'kHersteller');
 
                 $cXMLSprache = '';
@@ -133,11 +127,11 @@ function bearbeiteHersteller($xml)
                         $oSeo->cKey     = 'kHersteller';
                         $oSeo->kKey     = (int)$hersteller_arr[$i]->kHersteller;
                         $oSeo->kSprache = (int)$oSprache->kSprache;
-                        Shop::DB()->insert('tseo', $oSeo);
+                        Shop::Container()->getDB()->insert('tseo', $oSeo);
                     }
                 }
                 //therstellersprache
-                Shop::DB()->delete('therstellersprache', 'kHersteller', (int)$hersteller_arr[$i]->kHersteller);
+                Shop::Container()->getDB()->delete('therstellersprache', 'kHersteller', (int)$hersteller_arr[$i]->kHersteller);
 
                 updateXMLinDB($cXMLSprache, 'therstellersprache', $GLOBALS['mHerstellerSprache'], 'kHersteller', 'kSprache');
 

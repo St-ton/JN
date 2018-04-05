@@ -15,12 +15,13 @@ $Einstellungen = Shop::getSettings([CONF_BEWERTUNG]);
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'bewertung_uebersicht';
+$cTab          = 'freischalten';
 $cacheTags     = [];
 
 setzeSprache();
 
 if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+    $cTab = verifyGPDataString('tab');
 }
 // Bewertung editieren
 if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
@@ -36,8 +37,16 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
         $cFehler .= 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben. ';
     }
 } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-    Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE]);
-    $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
+
+    // Validierung
+    if (verifyGPDataString('bewertung_guthaben_nutzen') === 'Y' &&
+        verifyGPDataString('bewertung_freischalten') !== 'Y'
+    ) {
+        $cFehler = 'Guthabenbonus kann nur mit "Bewertung freischalten" verwendet werden.';
+    } else {
+        Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE]);
+        $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
+    }
 } elseif (isset($_POST['bewertung_nicht_aktiv']) && (int)$_POST['bewertung_nicht_aktiv'] === 1) {
     // Bewertungen aktivieren
     if (isset($_POST['aktivieren'])  && validateToken()) {
@@ -214,4 +223,5 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
+       ->assign('cTab', $cTab)
        ->display('bewertung.tpl');

@@ -4368,7 +4368,7 @@ class Artikel
                 $bSuchspecial_arr[SEARCHSPECIALS_PREORDER] = true;
             }
             $this->bSuchspecial_arr = $bSuchspecial_arr;
-            // SuchspecialBild anhand der hächsten Prio und des gesetzten Suchspecials festlegen
+            // SuchspecialBild anhand der höchsten Prio und des gesetzten Suchspecials festlegen
             $imageBaseURL = Shop::getImageBaseURL();
             foreach ($searchSpecial_arr as $oSuchspecialoverlay) {
                 if (!isset($oSuchspecialoverlay->kSuchspecialOverlay)

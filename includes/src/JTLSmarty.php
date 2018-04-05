@@ -130,9 +130,6 @@ class JTLSmarty extends SmartyBC
                 $this->setCachingParams($this->config);
             }
             $_tplDir = $this->getTemplateDir($this->context);
-            if ($context === 'frontend' || $context === 'backend') {
-                self::$_instance = $this;
-            }
             global $smarty;
             $smarty = $this;
             if (file_exists($_tplDir . 'php/functions_custom.php')) {

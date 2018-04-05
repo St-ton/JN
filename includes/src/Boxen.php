@@ -134,7 +134,6 @@ class Boxen
      */
     public function holeBoxen($nSeite = 0, $bAktiv = true, $bVisible = false, $force = false)
     {
-        return [];
         $nSeite  = (int)$nSeite;
         $cacheID = 'box_' . $nSeite . '_' . (($bAktiv === true) ? '1' : '0') .
             '_' . (($bVisible === true) ? '1' : '0') . '_' . Shop::getLanguage();

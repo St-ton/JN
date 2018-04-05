@@ -1071,6 +1071,7 @@ function handlePriceRange($kArtikel)
             FROM (
                 SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
                     tartikel.kArtikel kKindArtikel,
+                    tartikel.nIstVater,
                     tpreis.kKundengruppe,
                     tpreis.kKunde,
                     IF (tpreis.kKundengruppe > 0, 9, 1) nRangeType,
@@ -1085,28 +1086,40 @@ function handlePriceRange($kArtikel)
 
                 SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
                     tartikel.kArtikel kKindArtikel,
+                    tartikel.nIstVater,
                     tsonderpreise.kKundengruppe,
                     null kKunde,
                     IF(tartikelsonderpreis.nIstAnzahl = 0 AND tartikelsonderpreis.nIstDatum = 0, 5, 3) nRangeType,
                     IF(tartikelsonderpreis.nIstAnzahl = 0, null, tartikelsonderpreis.nAnzahl) nLagerAnzahlMax,
-                    tsonderpreise.fNettoPreis fVKNetto,
-                    IF(tartikelsonderpreis.nIstDatum = 0, null, tartikelsonderpreis.dStart) dStart,
+                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto, tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto,
+                    tartikelsonderpreis.dStart dStart,
                     IF(tartikelsonderpreis.nIstDatum = 0, null, tartikelsonderpreis.dEnde) dEnde
                 FROM tartikel
+                INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+	            INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                 INNER JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tsonderpreise ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+                WHERE tartikelsonderpreis.cAktiv = 'Y'
             ) baseprice
             LEFT JOIN (
-                SELECT teigenschaft.kArtikel, tkundengruppe.kKundengruppe,
-		            MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
-		            MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
-	            FROM teigenschaft
-	            INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
-	            JOIN tkundengruppe
-	            LEFT JOIN teigenschaftwertaufpreis ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-		            AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
-                GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe
-            ) varaufpreis ON varaufpreis.kArtikel = baseprice.kKindArtikel
+                SELECT variations.kArtikel, variations.kKundengruppe,
+                    SUM(variations.fMinAufpreisNetto) fMinAufpreisNetto,
+                    SUM(variations.fMaxAufpreisNetto) fMaxAufpreisNetto
+                FROM (
+                    SELECT teigenschaft.kArtikel,
+                        tkundengruppe.kKundengruppe,
+                        teigenschaft.kEigenschaft,
+                        MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
+                        MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
+                    FROM teigenschaft
+                    INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                    JOIN tkundengruppe
+                    LEFT JOIN teigenschaftwertaufpreis ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                        AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
+                    GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
+                ) variations
+                GROUP BY variations.kArtikel, variations.kKundengruppe
+            ) varaufpreis ON varaufpreis.kArtikel = baseprice.kKindArtikel AND baseprice.nIstVater = 0
             WHERE baseprice.kArtikel = :kArtikel
             GROUP BY baseprice.kArtikel,
                 baseprice.kKundengruppe,

@@ -150,6 +150,11 @@ class Preise
     public $Kundenpreis_aktiv = false;
 
     /**
+     * @var PriceRange
+     */
+    public $oPriceRange;
+
+    /**
      * Konstruktor
      *
      * @param int $kKundengruppe
@@ -242,6 +247,7 @@ class Preise
             }
         }
         $this->berechneVKs();
+        $this->oPriceRange = new PriceRange($kArtikel, $kKundengruppe, $kKunde);
         executeHook('HOOK_PRICES_CONSTRUCT', [
             'customerGroupID' => $kKundengruppe,
             'customerID'      => $kKunde,
@@ -364,6 +370,7 @@ class Preise
                 $this->fPreis_arr[$i] = ($fPreis - $fPreis * $Rabatt / 100.0) + $offset;
             }
             $this->berechneVKs();
+            $this->oPriceRange->setDiscount($Rabatt);
         }
 
         return $this;

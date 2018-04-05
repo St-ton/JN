@@ -13,7 +13,7 @@
     {elseif $Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
         <span class="price_label price_on_application">{lang key="priceOnApplication" section="global"}</span>
     {else}
-        {if ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}
+        {if $tplscope === 'detail' && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}
             <span class="price_label pricestarting">{lang key="priceStarting" section="global"} </span>
         {elseif $Artikel->Preise->rabatt>0}
             <span class="price_label nowonly">{lang key="nowOnly" section="global"} </span>
@@ -21,7 +21,14 @@
             {*<span class="price_label only">{lang key="only" section="global"} </span>*}
         {/if}
         <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
-            <span>{$Artikel->Preise->cVKLocalized[$NettoPreise]}</span>{if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
+            {if $tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange()}
+                {$Artikel->Preise->oPriceRange->getLocalized($NettoPreise)}
+            {elseif $Artikel->Preise->oPriceRange->isRange() && $Artikel->nVariationsAufpreisVorhanden == 1 && $Artikel->kVaterArtikel == 0}
+                <span>{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}</span>
+            {else}
+                <span>{$Artikel->Preise->cVKLocalized[$NettoPreise]}</span>
+            {/if}
+            {if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
         </strong>
         {if $tplscope === 'detail'}
             {block name="price-snippets"}

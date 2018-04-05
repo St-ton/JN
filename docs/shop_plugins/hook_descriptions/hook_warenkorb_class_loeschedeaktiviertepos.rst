@@ -1,4 +1,4 @@
-HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS (ab Version 4.07)
+HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS (ab Version 5.0)
 =============================================================
 
 Der Hook wird für jede Position des Warenkorbs getriggert, um zwischenzeitlich deaktivierte, gelöschte oder anderweitig ungültige Artikel aus dem Warenkorb zu entfernen.

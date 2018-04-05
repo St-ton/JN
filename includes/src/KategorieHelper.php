@@ -626,7 +626,7 @@ class KategorieHelper
      * @param string        $value
      * @param callable|null $callback
      * @return mixed
-     * @since 4.07
+     * @since 5.0
      */
     public static function getDataByAttribute($attribute, $value, callable $callback = null)
     {
@@ -704,7 +704,7 @@ class KategorieHelper
      * @param KategorieListe $expanded
      * @param Kategorie      $currentCategory
      * @former baueKategorieListenHTML()
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public static function buildCategoryListHTML($startCat, $expanded, $currentCategory)
     {

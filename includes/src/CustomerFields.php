@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  * @package jtl-shop
- * @since 4.07
+ * @since 5.0
  */
 
 /**
@@ -178,7 +178,7 @@ class CustomerFields
                                 AND tkundenfeldwert.cWert = tkundenattribut.cWert
                         )",
             ['kKundenfeld' => $kCustomerField],
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -224,7 +224,7 @@ class CustomerFields
 	                            cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
                             ['kKundenfeld' => $key],
-                            NiceDB::RET_AFFECTED_ROWS
+                            \DB\ReturnType::AFFECTED_ROWS
                         );
                         break;
                     case 'datum':
@@ -234,7 +234,7 @@ class CustomerFields
 	                            cWert =	DATE_FORMAT(STR_TO_DATE(cWert, '%d.%m.%Y'), '%d.%m.%Y')
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
                             ['kKundenfeld' => $key],
-                            NiceDB::RET_AFFECTED_ROWS
+                            \DB\ReturnType::AFFECTED_ROWS
                         );
                         break;
                     case 'text':

@@ -27,14 +27,14 @@ class DBMigrationHelper
                 "SELECT `SUPPORT`
                     FROM information_schema.ENGINES
                     WHERE `ENGINE` = 'InnoDB'",
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             $utf8Support   = Shop::Container()->getDB()->query(
                 "SELECT `IS_COMPILED` FROM information_schema.COLLATIONS
                     WHERE `COLLATION_NAME` = 'utf8_unicode_ci'",
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
-            $innodbPath    = Shop::Container()->getDB()->query('SELECT @@innodb_data_file_path AS path', NiceDB::RET_SINGLE_OBJECT);
+            $innodbPath    = Shop::Container()->getDB()->query('SELECT @@innodb_data_file_path AS path', \DB\ReturnType::SINGLE_OBJECT);
             $innodbSize    = 'auto';
 
             if ($innodbPath && stripos($innodbPath->path, 'autoextend') === false) {
@@ -67,7 +67,7 @@ class DBMigrationHelper
 
             $versionInfo->innodb->support = $innodbSupport && in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
             $versionInfo->innodb->version = Shop::Container()->getDB()->query(
-                "SHOW VARIABLES LIKE 'innodb_version'", NiceDB::RET_SINGLE_OBJECT
+                "SHOW VARIABLES LIKE 'innodb_version'", \DB\ReturnType::SINGLE_OBJECT
             )->Value;
             $versionInfo->innodb->size    = $innodbSize;
             $versionInfo->collation_utf8  = $utf8Support && strtolower($utf8Support->IS_COMPILED) === 'yes';

@@ -146,7 +146,7 @@ class AdminSession
                 'sid' => $sessID,
                 'time' => time()
             ],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return $res->cSessionData ?? '';
@@ -202,7 +202,7 @@ class AdminSession
             'DELETE FROM tadminsession
                 WHERE nSessionExpires < :time',
             ['time' => time()],
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
 }

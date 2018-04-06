@@ -93,7 +93,7 @@ if (!JTL_INCLUDE_ONLY_DB) {
         CONF_KUNDENWERBENKUNDEN,
         CONF_BILDER
     ]);
-    $oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
+    $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $oBoxen              = Boxen::getInstance();
     $session             = (defined('JTLCRON') && JTLCRON === true)

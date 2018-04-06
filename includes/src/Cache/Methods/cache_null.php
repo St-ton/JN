@@ -12,11 +12,12 @@ use Cache\JTLCacheTrait;
 /**
  * Class cache_null
  * emergency fallback caching method
+ * @package Cache\Methods
  */
 class cache_null implements ICachingMethod
 {
     use JTLCacheTrait;
-    
+
     /**
      * @var cache_null|null
      */
@@ -34,29 +35,23 @@ class cache_null implements ICachingMethod
     }
 
     /**
-     * @param string   $cacheID
-     * @param mixed    $content
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null) : bool
+    public function store($cacheID, $content, $expiration = null): bool
     {
         return false;
     }
 
     /**
-     * @param array    $keyValue
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null)
+    public function storeMulti($keyValue, $expiration = null): bool
     {
         return false;
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
     public function load($cacheID)
     {
@@ -64,43 +59,41 @@ class cache_null implements ICachingMethod
     }
 
     /**
-     * @param array $cacheIDs
-     * @return bool
+     * @inheritdoc
      */
-    public function loadMulti($cacheIDs)
+    public function loadMulti(array $cacheIDs): array
     {
-        return false;
+        return [];
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isAvailable() : bool
+    public function isAvailable(): bool
     {
         return true;
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function flush($cacheID) : bool
+    public function flush($cacheID): bool
     {
         return false;
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function flushAll() : bool
+    public function flushAll(): bool
     {
         return false;
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function getStats() : array
+    public function getStats(): array
     {
         return [];
     }

@@ -165,7 +165,7 @@ $smarty->assign('linkgroups', $linkHelper->activate($pagetType))
        ->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE)
        ->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE)
        ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK)
-       ->assign('Suchergebnisse', $oSuchergebnisse ?? new ProductFilterSearchResults());
+       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\ProductFilterSearchResults());
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
@@ -189,7 +189,7 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', NiceDB::RET_SINGLE_OBJECT)->nZaehler
+    ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', \DB\ReturnType::SINGLE_OBJECT)->nZaehler
     : 0;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('nIsSSL', pruefeSSL())

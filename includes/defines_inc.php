@@ -5,7 +5,7 @@
  */
 
 // Version
-define('JTL_VERSION', 407);
+define('JTL_VERSION', 500);
 define('JTL_MIN_WAWI_VERSION', 100000);
 define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
 // Einstellungssektionen

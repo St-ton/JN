@@ -381,7 +381,7 @@ class AdminAccount
                     'kAdminmenueGruppe' => $nAdminMenuGroup,
                     'kAdminlogingruppe' => $nAdminLoginGroup
                 ],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
 
@@ -516,7 +516,7 @@ class AdminAccount
                     SET nLoginVersuch = nLoginVersuch+1
                     WHERE cLogin = :login",
                 ['login' => $cLogin],
-                NiceDB::RET_AFFECTED_ROWS
+                \DB\ReturnType::AFFECTED_ROWS
             );
         }
 
@@ -554,7 +554,7 @@ class AdminAccount
     /**
      * @param string $password
      * @return false|string
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      * @throws Exception
      */
     public static function generatePasswordHash($password)

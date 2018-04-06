@@ -12,11 +12,12 @@ use Cache\JTLCacheTrait;
 /**
  * Class cache_memcache
  * Implements the Memcache memory object caching system - no "d" at the end
+ * @package Cache\Methods
  */
 class cache_memcache implements ICachingMethod
 {
     use JTLCacheTrait;
-    
+
     /**
      * @var cache_memcache
      */
@@ -48,7 +49,7 @@ class cache_memcache implements ICachingMethod
      * @param int    $port
      * @return $this
      */
-    private function setMemcache($host, $port)
+    private function setMemcache($host, $port): ICachingMethod
     {
         if ($this->_memcache !== null) {
             $this->_memcache->close();
@@ -60,12 +61,9 @@ class cache_memcache implements ICachingMethod
     }
 
     /**
-     * @param string   $cacheID
-     * @param mixed    $content
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null) : bool
+    public function store($cacheID, $content, $expiration = null): bool
     {
         return $this->_memcache->set(
             $this->options['prefix'] . $cacheID,
@@ -76,18 +74,15 @@ class cache_memcache implements ICachingMethod
     }
 
     /**
-     * @param array    $keyValue
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null)
+    public function storeMulti($keyValue, $expiration = null): bool
     {
         return $this->_memcache->set($this->prefixArray($keyValue), $expiration ?? $this->options['lifetime']);
     }
 
     /**
-     * @param string $cacheID
-     * @return mixed
+     * @inheritdoc
      */
     public function load($cacheID)
     {
@@ -95,52 +90,51 @@ class cache_memcache implements ICachingMethod
     }
 
     /**
-     * @param array $cacheIDs
-     * @return bool|mixed
+     * @inheritdoc
      */
-    public function loadMulti($cacheIDs)
+    public function loadMulti(array $cacheIDs): array
     {
         if (!\is_array($cacheIDs)) {
-            return false;
+            return [];
         }
         $prefixedKeys = [];
         foreach ($cacheIDs as $_cid) {
             $prefixedKeys[] = $this->options['prefix'] . $_cid;
         }
         $res = $this->dePrefixArray($this->_memcache->get($prefixedKeys));
+
         // fill up result
         return array_merge(array_fill_keys($cacheIDs, false), $res);
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isAvailable() : bool
+    public function isAvailable(): bool
     {
         return class_exists('Memcache');
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function flush($cacheID) : bool
+    public function flush($cacheID): bool
     {
         return $this->_memcache->delete($this->options['prefix'] . $cacheID);
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function flushAll() : bool
+    public function flushAll(): bool
     {
         return $this->_memcache->flush();
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function getStats() : array
+    public function getStats(): array
     {
         $stats = $this->_memcache->getStats();
 

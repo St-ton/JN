@@ -3,7 +3,7 @@
         {if $NaviFilter->hasRatingFilter() && $NaviFilter->getRatingFilter()->getValue() == $oBewertung->nStern}
             <li>
                 {* @todo: use getter *}
-                <a rel="nofollow" href="{$NaviFilter->URL->cAlleBewertungen}" class="active">
+                <a rel="nofollow" href="{$NaviFilter->URL->getRatings()}" class="active">
                     <i class="fa fa-check-square-o text-muted"></i>
                     <span class="badge pull-right">{$oBewertung->nAnzahl}</span>
                     <span class="value">

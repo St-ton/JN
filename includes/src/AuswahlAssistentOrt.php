@@ -325,7 +325,7 @@ class AuswahlAssistentOrt
                 'catID'  => (int)$kKategorie,
                 'langID' => (int)$kSprache,
             ],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0;
@@ -358,7 +358,7 @@ class AuswahlAssistentOrt
                 'keyID'  => AUSWAHLASSISTENT_ORT_LINK,
                 'linkID' => (int)$kLink
             ],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0;
@@ -386,7 +386,7 @@ class AuswahlAssistentOrt
                 WHERE tauswahlassistentort.cKey = :keyID" . $cOrtSQL . "
                     AND tauswahlassistentort.kKey = 1",
             ['langID' => (int)$kSprache, 'keyID'  => AUSWAHLASSISTENT_ORT_STARTSEITE],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0;
@@ -415,7 +415,7 @@ class AuswahlAssistentOrt
                     'keyID'  => $cKey,
                     'kkey'   => (int)$kKey
                 ],
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0) {

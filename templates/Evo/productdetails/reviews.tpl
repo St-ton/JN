@@ -50,7 +50,7 @@
                                     {if isset($bewertungSterneSelected) && $bewertungSterneSelected > 0}
                                         <p>
                                             <a href="{$Artikel->cURLFull}#tab-votes" class="btn btn-default">
-                                                {lang key="allReviews" section="product rating"}
+                                                {lang key='allRatings'}
                                             </a>
                                         </p>
                                     {/if}
@@ -64,7 +64,11 @@
                                 {/if}
                                 <input name="bfa" type="hidden" value="1" />
                                 <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
-                                <input name="bewerten" type="submit" value="{lang key="productAssess" section="product rating"}" class="submit btn btn-primary" />
+
+                                <input name="bewerten" type="submit"
+                                       value="{if $bereitsBewertet === false}{lang key='productAssess' section='product rating'}
+                                              {else}{lang key='edit' section='product rating'}{/if}"
+                                       class="submit btn btn-primary" />
                             </div>
                         </div>
                     </form>

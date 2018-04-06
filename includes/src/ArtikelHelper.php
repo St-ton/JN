@@ -678,7 +678,7 @@ class ArtikelHelper
      * @param string        $value
      * @param callable|null $callback
      * @return mixed
-     * @since 4.07
+     * @since 5.0
      */
     public static function getDataByAttribute($attribute, $value, callable $callback = null)
     {

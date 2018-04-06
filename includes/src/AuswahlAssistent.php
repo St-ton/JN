@@ -146,7 +146,7 @@ class AuswahlAssistent
                     ($bOnlyActive ? ' AND nAktiv = 1 ' : ' ') .
                     'ORDER BY nSort',
                 ['groupID' => $this->kAuswahlAssistentGruppe],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             $this->oFrage_arr = [];
@@ -196,14 +196,14 @@ class AuswahlAssistent
         $AktuelleKategorie                    = isset($cParameter_arr['kKategorie'])
             ? new Kategorie($cParameter_arr['kKategorie'])
             : null;
-        $oMerkmalFilter_arr                   = (new ProductFilterSearchResults())->setFilterOptions(
+        $oMerkmalFilter_arr                   = (new \Filter\ProductFilterSearchResults())->setFilterOptions(
             $NaviFilter,
             $AktuelleKategorie,
             true
         )->getAttributeFilterOptions();
 
         foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
-            /** @var FilterItemAttribute $oMerkmalFilter */
+            /** @var \Filter\Items\ItemAttribute $oMerkmalFilter */
             if (array_key_exists($oMerkmalFilter->getValue(), $this->oFrage_assoc)) {
                 $oFrage                    = $this->oFrage_assoc[$oMerkmalFilter->getValue()];
                 $oFrage->oWert_arr         = $oMerkmalFilter->getOptions();
@@ -443,7 +443,7 @@ class AuswahlAssistent
                         WHERE tao.cKey = :ckey
                             AND tao.kKey = :kkey',
                 ['lang' => $kSprache, 'ckey' => $cKey, 'kkey' => $kKey],
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (isset($oOrt->kAuswahlAssistentGruppe) && $oOrt->kAuswahlAssistentGruppe > 0) {

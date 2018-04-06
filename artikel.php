@@ -12,6 +12,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 $AktuelleSeite    = 'ARTIKEL';
 $oPreisverlauf    = null;
 $bPreisverlauf    = false;
+$bereitsBewertet  = false;
 $Artikelhinweise  = [];
 $PositiveFeedback = [];
 $nonAllowed       = [];
@@ -30,7 +31,7 @@ $Einstellungen                = Shop::getSettings([
     CONF_KONTAKTFORMULAR,
     CONF_CACHING
 ]);
-$oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
+$oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
 // Bewertungsguthaben
 $fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
 // Hinweise und Fehler sammeln - Nur wenn bisher kein Fehler gesetzt wurde!
@@ -81,17 +82,18 @@ if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'])
 // 404
 if (empty($AktuellerArtikel->kArtikel)) {
     // #6317 - send 301 redirect when filtered
-    if (((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
-        || ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL)
+    if ((((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
+        || ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL))
+        && $Einstellungen['global']['artikel_artikelanzeigefilter_seo'] === '301'
     ) {
         http_response_code(301);
         header('Location: ' . $shopURL);
         exit;
     }
     // 404 otherwise
-    Shop::$is404             = true;
-    Shop::$kLink             = 0;
-    Shop::$kArtikel          = 0;
+    Shop::$is404    = true;
+    Shop::$kLink    = 0;
+    Shop::$kArtikel = 0;
 
     return;
 }
@@ -176,6 +178,14 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
     );
 } else {
     $oBewertung_arr = $AktuellerArtikel->Bewertungen->oBewertung_arr;
+}
+if (isset($_SESSION['Kunde']) && !empty($oBewertung_arr)) {
+    foreach ($oBewertung_arr as $Bewertung) {
+        if ((int)$Bewertung->kKunde === Session::Customer()->getID()) {
+            $bereitsBewertet = true;
+            break;
+        }
+    }
 }
 
 $pagination = (new Pagination('ratings'))
@@ -274,6 +284,7 @@ if (isAjaxRequest()) {
     $smarty->assign('listStyle', isset($_GET['isListStyle']) ? StringHandler::filterXSS($_GET['isListStyle']) : '');
 }
 
+$smarty->assign('bereitsBewertet', $bereitsBewertet);
 $smarty->display('productdetails/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

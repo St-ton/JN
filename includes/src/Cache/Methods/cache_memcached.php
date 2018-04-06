@@ -14,11 +14,12 @@ use Cache\JTLCacheTrait;
  * Implements the Memcached memory object caching system - notice the "d" at the end
  *
  * @warning Untested
+ * @package Cache\Methods
  */
 class cache_memcached implements ICachingMethod
 {
     use JTLCacheTrait;
-    
+
     /**
      * @var cache_memcached
      */
@@ -50,7 +51,7 @@ class cache_memcached implements ICachingMethod
      * @param int    $port
      * @return $this
      */
-    private function setMemcached($host, $port)
+    private function setMemcached($host, $port): ICachingMethod
     {
         if ($this->_memcached !== null) {
             $this->_memcached->quit();
@@ -62,12 +63,9 @@ class cache_memcached implements ICachingMethod
     }
 
     /**
-     * @param string   $cacheID
-     * @param mixed    $content
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null) : bool
+    public function store($cacheID, $content, $expiration = null): bool
     {
         return $this->_memcached->set(
             $this->options['prefix'] . $cacheID,
@@ -77,18 +75,15 @@ class cache_memcached implements ICachingMethod
     }
 
     /**
-     * @param array    $keyValue
-     * @param int|null $expiration
-     * @return array|bool
+     * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null)
+    public function storeMulti($keyValue, $expiration = null): bool
     {
         return $this->_memcached->setMulti($this->prefixArray($keyValue), $expiration ?? $this->options['lifetime']);
     }
 
     /**
-     * @param string $cacheID
-     * @return bool|mixed
+     * @inheritdoc
      */
     public function load($cacheID)
     {
@@ -96,53 +91,51 @@ class cache_memcached implements ICachingMethod
     }
 
     /**
-     * @param array $cacheIDs
-     * @return bool|array
+     * @inheritdoc
      */
-    public function loadMulti($cacheIDs)
+    public function loadMulti(array $cacheIDs): array
     {
         if (!\is_array($cacheIDs)) {
-            return false;
+            return [];
         }
         $prefixedKeys = [];
         foreach ($cacheIDs as $_cid) {
             $prefixedKeys[] = $this->options['prefix'] . $_cid;
         }
         $res = $this->dePrefixArray($this->_memcached->getMulti($prefixedKeys));
+
         // fill up result
         return array_merge(array_fill_keys($cacheIDs, false), $res);
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isAvailable() : bool
+    public function isAvailable(): bool
     {
         return class_exists('Memcached');
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function flush($cacheID) : bool
+    public function flush($cacheID): bool
     {
         return $this->_memcached->delete($this->options['prefix'] . $cacheID);
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function flushAll() : bool
+    public function flushAll(): bool
     {
         return $this->_memcached->flush();
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function keyExists($cacheID) : bool
+    public function keyExists($cacheID): bool
     {
         $res = $this->_memcached->get($this->options['prefix'] . $cacheID);
 
@@ -151,9 +144,9 @@ class cache_memcached implements ICachingMethod
 
     /**
      * @todo: get the right array index, not just the first one
-     * @return array
+     * @inheritdoc
      */
-    public function getStats() : array
+    public function getStats(): array
     {
         if (method_exists($this->_memcached, 'getStats')) {
             $stats = $this->_memcached->getStats();

@@ -154,7 +154,7 @@ class Session
                     FROM tglobals 
                     WHERE dLetzteAenderung > :ts',
                 ['ts' => $_SESSION['Globals_TS']],
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($ts->dLetzteAenderung)) {
                 $_SESSION['Globals_TS'] = $ts->dLetzteAenderung;
@@ -164,7 +164,7 @@ class Session
             $ts                     = Shop::Container()->getDB()->query(
                 'SELECT dLetzteAenderung 
                     FROM tglobals',
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             $_SESSION['Globals_TS'] = $ts->dLetzteAenderung;
         }
@@ -320,7 +320,7 @@ class Session
                     FROM tkunde
                     WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                         AND date_sub(now(), INTERVAL 3 HOUR) < dVeraendert",
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($Kunde->kKunde) && $Kunde->kKunde > 0) {
                 $oKunde = new Kunde($_SESSION['Kunde']->kKunde);

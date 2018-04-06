@@ -150,7 +150,7 @@ class Wunschliste
                     ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
                 WHERE twunschlistepos.kWunschlistePos = :wlID',
             ['wlID' => $kWunschlistePos],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WunschlistenPos ist
@@ -187,7 +187,7 @@ class Wunschliste
                     ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
                 WHERE twunschlistepos.kWunschliste = :wlID',
             ['wlID' => (int)$this->kWunschliste],
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -283,7 +283,7 @@ class Wunschliste
                 'search' => '%' . $cSuche . '%',
                 'wlID'   => (int)$this->kWunschliste
             ],
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oSuchergebnis_arr as $i => $oSuchergebnis) {
             $oWunschlistePosSuche_arr[$i] = new WunschlistePos(
@@ -306,7 +306,7 @@ class Wunschliste
                     WHERE twunschlisteposeigenschaft.kWunschlistePos = :wlID
                     GROUP BY twunschlisteposeigenschaft.kWunschlistePosEigenschaft',
                 ['wlID' => (int)$oSuchergebnis->kWunschlistePos],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($WunschlistePosEigenschaft_arr as $WunschlistePosEigenschaft) {
                 if (strlen($WunschlistePosEigenschaft->cFreifeldWert) > 0) {
@@ -376,7 +376,7 @@ class Wunschliste
                 FROM twunschliste
                 WHERE kWunschliste = :wlID",
             ['wlID' => (int)$this->kWunschliste],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
         $this->kWunschliste = (int)$oWunschliste->kWunschliste;
         $this->kKunde       = (int)$oWunschliste->kKunde;
@@ -432,7 +432,7 @@ class Wunschliste
                     'langID' => $langID,
                     'wlID'   => (int)$WunschlistePos->kWunschlistePos
                 ],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($WunschlistePosEigenschaft_arr as $WunschlistePosEigenschaft) {
                 if (strlen($WunschlistePosEigenschaft->cFreifeldWert) > 0) {
@@ -448,7 +448,7 @@ class Wunschliste
                                 'langID' => $langID,
                                 'attrID' => (int)$WunschlistePosEigenschaft->kEigenschaft
                             ],
-                            NiceDB::RET_SINGLE_OBJECT
+                            \DB\ReturnType::SINGLE_OBJECT
                         );
                         $WunschlistePosEigenschaft->cName = $_cName->cName;
                     }

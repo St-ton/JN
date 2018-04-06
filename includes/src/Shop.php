@@ -15,6 +15,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use \Services\JTL\Validation\ValidationServiceInterface;
 use \Services\JTL\Validation\ValidationService;
 use Services\JTL\Validation\RuleSet;
+use Filter\ProductFilter;
 
 /**
  * Class Shop
@@ -226,7 +227,7 @@ final class Shop
 
     /**
      * @var bool
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public static $isSeoMainword = false;
 
@@ -730,7 +731,7 @@ final class Shop
                   FROM tplugin 
                   WHERE nStatus = 2 
                     AND bBootstrap = 1 
-                  ORDER BY nPrio ASC', \DB\NiceDB::RET_ARRAY_OF_OBJECTS) ?: [];
+                  ORDER BY nPrio ASC', \DB\ReturnType::ARRAY_OF_OBJECTS) ?: [];
             self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
 
@@ -1361,7 +1362,7 @@ final class Shop
                         'SELECT kLink 
                             FROM tlink
                             WHERE nLinkart = ' . LINKTYP_STARTSEITE . $cKundengruppenSQL,
-                        \DB\NiceDB::RET_SINGLE_OBJECT
+                        \DB\ReturnType::SINGLE_OBJECT
                     );
                 }
                 self::$kLink = isset($link->kLink)
@@ -1498,7 +1499,7 @@ final class Shop
      * @param array                     $cParameter_arr
      * @param object|null|ProductFilter $productFilter
      * @return ProductFilter
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public static function buildNaviFilter($cParameter_arr, $productFilter = null) : ProductFilter
     {
@@ -1529,7 +1530,7 @@ final class Shop
 
     /**
      * @return ProductFilter
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public static function getNaviFilter() : ProductFilter
     {
@@ -1561,7 +1562,7 @@ final class Shop
 
     /**
      * @param null|ProductFilter $productFilter
-     * @deprecated since 4.07 - this is done in ProductFilter:validate()
+     * @deprecated since 5.0 - this is done in ProductFilter:validate()
      */
     public static function checkNaviFilter($productFilter = null)
     {
@@ -1573,7 +1574,7 @@ final class Shop
      */
     public static function getShopVersion() : int
     {
-        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\NiceDB::RET_SINGLE_OBJECT);
+        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
 
         return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
             ? (int)$oVersion->nVersion

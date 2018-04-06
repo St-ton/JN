@@ -527,7 +527,7 @@ class Zahlungsart extends MainModel
                     'iso'  => $iso,
                     'pmID' => $kKey
                 ],
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             $this->loadObject($oObj);
@@ -563,7 +563,7 @@ class Zahlungsart extends MainModel
                     AND s.cISOSprache = :iso
                 {$where}",
             ['iso' => $iso],
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         foreach ($objs as $obj) {

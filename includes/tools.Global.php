@@ -709,15 +709,23 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
 }
 
 /**
- * @param int   $kArtikel
- * @param float $fAnzahl
- * @param array $oEigenschaftwerte_arr
- * @param bool  $cUnique
- * @param int   $kKonfigitem
- * @param int   $nPosTyp
+ * @param int    $kArtikel
+ * @param float  $fAnzahl
+ * @param array  $oEigenschaftwerte_arr
+ * @param bool   $cUnique
+ * @param int    $kKonfigitem
+ * @param int    $nPosTyp
+ * @param string $cResponsibility
  */
-function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique = false, $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
-{
+function fuegeEinInWarenkorbPers(
+    $kArtikel,
+    $fAnzahl,
+    $oEigenschaftwerte_arr,
+    $cUnique = false,
+    $kKonfigitem = 0,
+    $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL,
+    $cResponsibility = 'core'
+) {
     if (!Session::Customer()->isLoggedIn()) {
         return;
     }
@@ -761,7 +769,8 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
                     $fAnzahl,
                     $cUnique,
                     $kKonfigitem,
-                    $nPosTyp
+                    $nPosTyp,
+                    $cResponsibility
                 );
             }
         }
@@ -776,7 +785,8 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
             $fAnzahl,
             $cUnique,
             $kKonfigitem,
-            $nPosTyp
+            $nPosTyp,
+            $cResponsibility
         );
     }
 }
@@ -874,10 +884,20 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
  * @param int           $kKonfigitem
  * @param stdClass|null $oArtikelOptionen
  * @param bool          $setzePositionsPreise
+ * @param string        $cResponsibility
  * @return bool
  */
-function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $nWeiterleitung = 0, $cUnique = false, $kKonfigitem = 0, $oArtikelOptionen = null, $setzePositionsPreise = true)
-{
+function fuegeEinInWarenkorb(
+    $kArtikel,
+    $anzahl,
+    $oEigenschaftwerte_arr = [],
+    $nWeiterleitung = 0,
+    $cUnique = false,
+    $kKonfigitem = 0,
+    $oArtikelOptionen = null,
+    $setzePositionsPreise = true,
+    $cResponsibility = 'core'
+) {
     $kArtikel = (int)$kArtikel;
     if (!($anzahl > 0 && ($kArtikel > 0 || $kArtikel === 0 && !empty($kKonfigitem) && !empty($cUnique)))) {
         return false;
@@ -920,7 +940,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = [], $n
         return false;
     }
     Session::Cart()
-           ->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, $setzePositionsPreise)
+           ->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr, 1, $cUnique, $kKonfigitem, $setzePositionsPreise, $cResponsibility)
            ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
            ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
            ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
@@ -2816,7 +2836,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                 'cShippingClass' => $versandklassen,
                 'cGroupID'       => '^([0-9 -]* )?' . $kKundengruppe . ' '
             ],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
         Shop::Cache()->set($cacheID, $oVersandart, [CACHING_GROUP_OPTION]);
     }
@@ -3427,7 +3447,7 @@ function baueSuchSpecialURL($kKey)
  * @param string      $cPasswort
  * @param null{string $cHashPasswort
  * @return bool|string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function cryptPasswort($cPasswort, $cHashPasswort = null)
 {
@@ -3721,7 +3741,7 @@ function pruefeSSL()
  * @param int    $nAnzahlStellen
  * @param string $cString
  * @return bool|string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibUID($nAnzahlStellen = 40, $cString = '')
 {
@@ -5572,7 +5592,7 @@ function loeseHttps()
 
 /**
  * @return array
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function holePreisanzeigeEinstellungen()
 {
@@ -5581,7 +5601,7 @@ function holePreisanzeigeEinstellungen()
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function checkeWarenkorbEingang()
 {
@@ -5595,7 +5615,7 @@ function checkeWarenkorbEingang()
  * @param array          $oEigenschaftwerte_arr
  * @param int            $precision
  * @return array
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $precision = 2)
 {
@@ -5610,7 +5630,7 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $p
  * @param Artikel|object $oArtikel
  * @param bool           $checkProductDepedency
  * @return mixed
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency = true)
 {
@@ -5624,7 +5644,7 @@ function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, 
  * @param int          $kArtikel
  * @param null|Artikel $oArtikel
  * @return array
- * @deprecated since 4.07 - not used in core
+ * @deprecated since 5.0 - not used in core
  */
 function pruefeVariationAusverkauft($kArtikel = 0, $oArtikel = null)
 {
@@ -5664,7 +5684,7 @@ function pruefeVariationAusverkauft($kArtikel = 0, $oArtikel = null)
  * @param array $oFilter_arr
  * @param string $cKey
  * @return array
- * @deprecated since 4.07 - not used in core
+ * @deprecated since 5.0 - not used in core
  */
 function sortiereFilter($oFilter_arr, $cKey)
 {
@@ -5697,22 +5717,22 @@ function sortiereFilter($oFilter_arr, $cKey)
  * Holt die Globalen Metaangaben und Return diese als Assoc Array wobei die Keys => kSprache sind
  *
  * @return array|mixed
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function holeGlobaleMetaAngaben()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Metadata::getGlobalMetaData();
+    return \Filter\Metadata::getGlobalMetaData();
 }
 
 /**
  * @return array
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function holeExcludedKeywords()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Metadata::getExcludes();
+    return \Filter\Metadata::getExcludes();
 }
 
 /**
@@ -5721,7 +5741,7 @@ function holeExcludedKeywords()
  * @param string $cString
  * @param array  $oExcludesKeywords_arr
  * @return string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibExcludesKeywordsReplace($cString, $oExcludesKeywords_arr)
 {
@@ -5741,7 +5761,7 @@ function gibExcludesKeywordsReplace($cString, $oExcludesKeywords_arr)
 /**
  * @param float $fSumme
  * @return string
- * @deprecated since 4.07 - not used in core
+ * @deprecated since 5.0 - not used in core
  */
 function formatCurrency($fSumme)
 {
@@ -5772,7 +5792,7 @@ function formatCurrency($fSumme)
  *
  * @param array $oSuchspecialEinstellung_arr
  * @return array
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibSuchspecialEinstellungMapping(array $oSuchspecialEinstellung_arr)
 {
@@ -5807,7 +5827,7 @@ function gibSuchspecialEinstellungMapping(array $oSuchspecialEinstellung_arr)
 /**
  * @param int $nSeitentyp
  * @return string
- * @deprecated since 4.07 - not used in core
+ * @deprecated since 5.0 - not used in core
  */
 function mappeSeitentyp($nSeitentyp)
 {
@@ -5912,7 +5932,7 @@ function mappeSeitentyp($nSeitentyp)
 /**
  * @param bool $cache
  * @return int
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function getSytemlogFlag($cache = true)
 {
@@ -5924,7 +5944,7 @@ function getSytemlogFlag($cache = true)
  * @param object $startKat
  * @param object $AufgeklappteKategorien
  * @param object $AktuelleKategorie
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie)
 {
@@ -5934,7 +5954,7 @@ function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKa
 
 /**
  * @param Kategorie $AktuelleKategorie
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function baueUnterkategorieListeHTML($AktuelleKategorie)
 {
@@ -5948,7 +5968,7 @@ function baueUnterkategorieListeHTML($AktuelleKategorie)
  * @param int       $kSprache
  * @param bool      $bString
  * @return array|string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true)
 {
@@ -5960,7 +5980,7 @@ function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true
 
 /**
  * @return string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibLagerfilter()
 {
@@ -5970,7 +5990,7 @@ function gibLagerfilter()
 /**
  * @param array $variBoxAnzahl_arr
  * @return bool
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
 {
@@ -5980,7 +6000,7 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
 /**
  * @param string $cPfad
  * @return string
- * @deprecated since 4.07 - not used in core anymore
+ * @deprecated since 5.0 - not used in core anymore
  */
 function gibArtikelBildPfad($cPfad)
 {
@@ -5992,7 +6012,7 @@ function gibArtikelBildPfad($cPfad)
 /**
  * @param int $nKategorieBox
  * @return array
- * @deprecated since 4.07 - not used in core anymore
+ * @deprecated since 5.0 - not used in core anymore
  */
 function gibAlleKategorienNoHTML($nKategorieBox = 0)
 {

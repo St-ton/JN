@@ -10,9 +10,9 @@
             <div class="switcher-content">
                 <form id="opc-menu" action="admin/onpage-composer.php" class="form-group">
                     <input type="hidden" name="token" value="{$smarty.session.jtl_token}">
-                    <input type="hidden" name="pageUrl" value="{$smarty.server.REQUEST_URI}">
+                    <input type="hidden" name="pageUrl" value="{$opcPage->getUrl()}">
                     <input type="hidden" name="pageId" value="{$opcPage->getId()}">
-                    {if $opcPage->existsInDB()}
+                    {if $opc->curPageExists()}
                         <p>
                             <button name="action" class="btn btn-primary"
                                     value="{if $opcPage->isReplace()}replace{else}extend{/if}">

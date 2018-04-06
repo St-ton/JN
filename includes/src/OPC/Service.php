@@ -14,43 +14,63 @@ class Service
     protected $adminName = '';
 
     /**
+     * @var null|DB
+     */
+    protected $db = null;
+
+    /**
+     * @var null|Locker
+     */
+    protected $locker = null;
+
+    /**
+     * @var null|Page
+     */
+    protected $curPage = null;
+
+    /**
+     * Service constructor.
+     * @param DB $db
+     * @param Locker $locker
+     */
+    public function __construct(DB $db, Locker $locker)
+    {
+        $this->db     = $db;
+        $this->locker = $locker;
+    }
+
+    /**
      * @return array list of the OPC service methods to be exposed for AJAX requests
      */
     public function getIOFunctionNames()
     {
         return [
             'getIOFunctionNames',
-            'getPage',
-            'getPageById',
+            'getBlueprints',
+            'getBlueprint',
+            'getBlueprintInstance',
+            'getBlueprintPreview',
+            'saveBlueprint',
             'getPageRevisions',
-            'savePage',
             'lockPage',
             'unlockPage',
+            'savePage',
+            'loadPagePreview',
+            'createPagePreview',
             'getPortletInstance',
-            'getBlueprint',
-            'getBlueprintList',
-            'saveBlueprint',
-            'deleteBlueprint',
+            'getPortletPreviewHtml',
+            'getConfigPanelHtml',
         ];
-    }
-
-    /**
-     * @param $name
-     * @return $this
-     */
-    public function setAdminName($name)
-    {
-        $this->adminName = $name;
-
-        return $this;
     }
 
     /**
      * @param \AdminIO $io
      * @throws \Exception
      */
-    public function registerIOFunctions($io)
+    public function registerAdminIOFunctions($io)
     {
+        $this->adminName = $io->getAccount()->account()->cLogin;
+
         foreach ($this->getIOFunctionNames() as $functionName) {
             $publicFunctionName = 'opc' . ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
@@ -58,62 +78,46 @@ class Service
     }
 
     /**
-     * @param array $data
-     * @return Page
-     * @throws \Exception
-     */
-    public function getPage($data)
-    {
-        return new Page($data);
-    }
-
-    /**
      * @param string $id
+     * @param int $revId
      * @return Page
      * @throws \Exception
      */
-    public function getPageById($id)
+    public function getPage($id, $revId = 0)
     {
-        return $this->getPage(['id' => $id]);
+        $page = (new Page())
+            ->setId($id)
+            ->setRevId($revId);
+
+        if ($this->db->pageExists($page)) {
+            $this->db->loadPage($page);
+        }
+
+        return $page;
     }
 
     /**
      * @return Page
-     * @throws \Exception
      */
-    public function getCurrentPage()
+    public function getCurPage()
     {
-        return $this->getPageById($this->getCurrentPageId());
+        if ($this->curPage === null) {
+            $curPageUrl                    = \Shop::getRequestUri();
+            $curPageParameters             = \Shop::getParameters();
+            $curPageParameters['kSprache'] = \Shop::getLanguage();
+            $curPageId                     = md5(serialize($curPageParameters));
+            $this->curPage                 = $this->getPage($curPageId)->setUrl($curPageUrl);
+        }
+
+        return $this->curPage;
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getCurrentPageId()
+    public function curPageExists()
     {
-        $curPageParameters             = \Shop::getParameters();
-        $curPageParameters['kSprache'] = \Shop::getLanguage();
-
-        return md5(serialize($curPageParameters));
-    }
-
-    /**
-     * @param string $id
-     * @return array
-     * @throws \Exception
-     */
-    public function getPageRevisions($id)
-    {
-        return $this->getPageById($id)->getRevisions();
-    }
-
-    /**
-     * @param array $data
-     * @throws \Exception
-     */
-    public function savePage($data)
-    {
-        $this->getPage($data)->save();
+        return $this->db->pageExists($this->getCurPage());
     }
 
     /**
@@ -123,7 +127,10 @@ class Service
      */
     public function lockPage($id)
     {
-        return $this->getPageById($id)->lock($this->adminName);
+        $page = (new Page())
+            ->setId($id);
+
+        return $this->locker->lock($this->adminName, $page);
     }
 
     /**
@@ -132,26 +139,143 @@ class Service
      */
     public function unlockPage($id)
     {
-        $this->getPageById($id)->unlock();
+        $page = (new Page())
+            ->setId($id);
+
+        $this->locker->unlock($page);
     }
 
     /**
      * @param array $data
-     * @return Area
+     * @throws \Exception
      */
-    public function getArea($data)
+    public function savePage($data)
     {
-        return new Area($data);
+        $page = (new Page())
+            ->deserialize($data);
+
+        $this->db->savePage($page);
+    }
+
+    /**
+     * @param string $id
+     * @return array
+     */
+    public function getPageRevisions($id)
+    {
+        $page = $this->getPage($id);
+
+        return $this->db->getPageRevisions($page);
     }
 
     /**
      * @param int $id
-     * @return Portlet
+     * @param int $revId
+     * @return string[]
      * @throws \Exception
      */
-    public function getPortlet($id)
+    public function loadPagePreview($id, $revId = 0)
     {
-        return Portlet::fromId($id);
+        return $this->getPage($id, $revId)->getAreaList()->getPreviewHtml();
+    }
+
+    /**
+     * @param array $data
+     * @return string[]
+     */
+    public function createPagePreview($data)
+    {
+        $page = new Page();
+        $page->deserialize($data);
+
+        return $page->getAreaList()->getPreviewHtml();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEditMode()
+    {
+        return verifyGPDataString('opcEditMode') === 'yes';
+    }
+
+    /**
+     * @return PortletGroup[]
+     * @throws \Exception
+     */
+    public function getPortletGroups()
+    {
+        return $this->db->getPortletGroups();
+    }
+
+    /**
+     * @return Blueprint[]
+     * @throws \Exception
+     */
+    public function getBlueprints()
+    {
+        $blueprints = [];
+
+        foreach ($this->db->getAllBlueprintIds() as $blueprintId) {
+            $blueprints[] = $this->getBlueprint($blueprintId);
+        }
+
+        return $blueprints;
+    }
+
+    /**
+     * @param int $id
+     * @return Blueprint
+     * @throws \Exception
+     */
+    public function getBlueprint($id)
+    {
+        $blueprint = (new Blueprint())
+            ->setId($id);
+
+        $this->db->loadBlueprint($blueprint);
+
+        return $blueprint;
+    }
+
+    /**
+     * @param int $id
+     * @return PortletInstance
+     */
+    public function getBlueprintInstance($id)
+    {
+        return $this->getBlueprint($id)->getInstance();
+    }
+
+    /**
+     * @param int $id
+     * @return string
+     */
+    public function getBlueprintPreview($id)
+    {
+        return $this->getBlueprintInstance($id)->getPreviewHtml();
+    }
+
+    /**
+     * @param string $name
+     * @param array $data
+     * @throws \Exception
+     */
+    public function saveBlueprint($name, $data)
+    {
+        $blueprint = (new Blueprint())
+            ->deserialize(['name' => $name, 'content' => $data]);
+
+        $this->db->saveBlueprint($blueprint);
+    }
+
+    /**
+     * @param int $id
+     * @return PortletInstance
+     */
+    public function createPortletInstance($id)
+    {
+        return new PortletInstance($this->db->getPortlet($id));
     }
 
     /**
@@ -161,85 +285,28 @@ class Service
      */
     public function getPortletInstance($data)
     {
-        return new PortletInstance($data);
+        return $this->createPortletInstance($data['id'])
+            ->deserialize($data);
     }
 
     /**
-     * @param int $id
-     * @return PortletInstance
-     * @throws \Exception
-     */
-    public function getBlueprint($id)
-    {
-        return (new Blueprint($id))
-            ->getInstance()
-            ->setPreviewHtmlEnabled(true);
-    }
-
-    /**
-     * @return array
-     */
-    public function getBlueprintList()
-    {
-        return \Shop::DB()->selectAll('topcblueprint', [], []);
-    }
-
-    /**
-     * @param string $name
      * @param array $data
-     * @return Blueprint
+     * @return string
      * @throws \Exception
      */
-    public function saveBlueprint($name, $data)
+    public function getPortletPreviewHtml($data)
     {
-        return (new Blueprint())
-            ->setName($name)
-            ->setData($data)
-            ->save();
+        return $this->getPortletInstance($data)->getPreviewHtml();
     }
 
     /**
-     * @param int $id
+     * @param int $portletId
+     * @param array $props
+     * @return string
      * @throws \Exception
      */
-    public function deleteBlueprint($id)
+    public function getConfigPanelHtml($portletId, $props)
     {
-        (new Blueprint($id))
-            ->delete();
-    }
-
-    /**
-     * @param string $groupName
-     * @return PortletGroup
-     * @throws \Exception
-     */
-    public function getPortletGroup($groupName = '')
-    {
-        return new PortletGroup($groupName);
-    }
-
-    /**
-     * @return PortletGroup[]
-     * @throws \Exception
-     */
-    public function getPortletGroups()
-    {
-        $groupNames = \Shop::DB()->query("SELECT DISTINCT(cGroup) FROM topcportlet ORDER BY cGroup ASC", 2);
-        $groups     = [];
-
-        foreach ($groupNames as $groupName) {
-            $cName          = $groupName->cGroup;
-            $groups[$cName] = new PortletGroup($cName);
-        }
-
-        return $groups;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEditMode()
-    {
-        return verifyGPDataString('opcEditMode') === 'yes';
+        return $this->getPortletInstance(['id' => $portletId, 'properties' => $props])->getConfigPanelHtml();
     }
 }

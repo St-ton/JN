@@ -9,17 +9,40 @@ namespace OPC;
 abstract class Portlet implements \JsonSerializable
 {
     /**
-     * @var PortletModel
+     * @var int
      */
-    protected $model;
+    protected $id = 0;
+
+    /**
+     * @var int
+     */
+    protected $pluginId = 0;
+
+    /**
+     * @var string
+     */
+    protected $title = '';
+
+    /**
+     * @var string
+     */
+    protected $class = '';
+
+    /**
+     * @var string
+     */
+    protected $group = '';
+
+    /**
+     * @var bool
+     */
+    protected $active = false;
 
     /**
      * Portlet constructor.
-     * @param PortletModel $model
      */
-    final public function __construct($model)
+    final public function __construct()
     {
-        $this->model = $model;
     }
 
     /**
@@ -32,7 +55,7 @@ abstract class Portlet implements \JsonSerializable
         return (new \JTLSmarty(true))
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->fetch('portlets/' . $this->model->getClass() . '/preview.tpl');
+            ->fetch('portlets/' . $this->getClass() . '/preview.tpl');
     }
 
     /**
@@ -45,7 +68,7 @@ abstract class Portlet implements \JsonSerializable
         return \Shop::Smarty()
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->fetch('portlets/' . $this->model->getClass() . '/final.tpl');
+            ->fetch('portlets/' . $this->getClass() . '/final.tpl');
     }
 
     /**
@@ -58,7 +81,7 @@ abstract class Portlet implements \JsonSerializable
         return (new \JTLSmarty(true))
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->fetch('portlets/' . $this->model->getClass() . '/configpanel.tpl');
+            ->fetch('portlets/' . $this->getClass() . '/configpanel.tpl');
     }
 
     /**
@@ -78,7 +101,8 @@ abstract class Portlet implements \JsonSerializable
                 $title = ucfirst($name);
                 $res  .= "<div class=\"form-group\">
                     <label for=\"config-$name\">$title</label>
-                    <input type=\"text\" class=\"form-control\" name=\"$name\" value=\"$prop\" id=\"config-$name\">
+                    <input type=\"text\" class=\"form-control\" name=\"$name\" value=\"$prop\"
+                        id=\"config-$name\">
                     </div>";
             }
         }
@@ -112,7 +136,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getButtonHtml()
     {
-        return $this->model->getTitle();
+        return $this->getTitle();
     }
 
     /**
@@ -128,7 +152,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getId()
     {
-        return $this->model->getId();
+        return $this->id;
     }
 
     /**
@@ -136,7 +160,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getPluginId()
     {
-        return $this->model->getPluginId();
+        return $this->pluginId;
     }
 
     /**
@@ -144,7 +168,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getTitle()
     {
-        return $this->model->getTitle();
+        return $this->title;
     }
 
     /**
@@ -152,7 +176,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getClass()
     {
-        return $this->model->getClass();
+        return $this->class;
     }
 
     /**
@@ -160,7 +184,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getGroup()
     {
-        return $this->model->getGroup();
+        return $this->group;
     }
 
     /**
@@ -168,7 +192,73 @@ abstract class Portlet implements \JsonSerializable
      */
     public function isActive()
     {
-        return $this->model->isActive();
+        return $this->active;
+    }
+
+    /**
+     * @param int $id
+     * @return Portlet
+     */
+    public function setId(int $id) : Portlet
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @param int $pluginId
+     * @return Portlet
+     */
+    public function setPluginId(int $pluginId) : Portlet
+    {
+        $this->pluginId = $pluginId;
+
+        return $this;
+    }
+
+    /**
+     * @param string $title
+     * @return Portlet
+     */
+    public function setTitle(string $title) : Portlet
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @param string $class
+     * @return Portlet
+     */
+    public function setClass(string $class) : Portlet
+    {
+        $this->class = $class;
+
+        return $this;
+    }
+
+    /**
+     * @param string $group
+     * @return Portlet
+     */
+    public function setGroup(string $group) : Portlet
+    {
+        $this->group = $group;
+
+        return $this;
+    }
+
+    /**
+     * @param bool $active
+     * @return Portlet
+     */
+    public function setActive(bool $active) : Portlet
+    {
+        $this->active = $active;
+
+        return $this;
     }
 
     /**
@@ -176,23 +266,14 @@ abstract class Portlet implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        $result                 = $this->model->jsonSerialize();
-        $result['defaultProps'] = $this->getDefaultProps();
-        $result['buttonHtml']   = $this->getButtonHtml();
-
-        return $result;
-    }
-
-    /**
-     * @param string $id
-     * @return Portlet
-     * @throws \Exception
-     */
-    public static function fromId($id)
-    {
-        $model = new PortletModel($id);
-        $class = '\\OPC\\Portlets\\' . $model->getClass();
-
-        return new $class($model);
+        return [
+            'id'           => $this->getId(),
+            'pluginId'     => $this->getPluginId(),
+            'title'        => $this->getTitle(),
+            'class'        => $this->getClass(),
+            'group'        => $this->getGroup(),
+            'active'       => $this->isActive(),
+            'defaultProps' => $this->getDefaultProps(),
+        ];
     }
 }

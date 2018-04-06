@@ -56,4 +56,19 @@ interface DefaultServicesInterface extends ContainerInterface
      * @throws CircularReferenceException
      */
     public function getBackendLogService() : LoggerInterface;
+
+    /**
+     * @return \OPC\Service
+     */
+    public function getOPC();
+
+    /**
+     * @return \OPC\DB
+     */
+    public function getOPCDB();
+
+    /**
+     * @return \OPC\Locker
+     */
+    public function getOPCLocker();
 }

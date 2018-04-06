@@ -50,8 +50,6 @@ Page.prototype = {
 
         this.lock();
         this.load(loadCB);
-
-        setInterval(this.onTimeToLockAgain, 1000 * 60);
     },
 
     load: function(loadCB)
@@ -61,12 +59,15 @@ Page.prototype = {
 
     loadRev: function(revId, loadCB)
     {
-        this.getPage({id: this.id, revisionId: revId || 0, previewHtmlEnabled: true}, loadCB);
+        this.io.loadPagePreview(this.id, revId || 0, this.onLoad.bind(this, loadCB || noop));
     },
 
     loadFromData: function(data, loadCB)
     {
-        this.getPage({id: data.id, url: data.url, areas: data.areas, previewHtmlEnabled: true}, loadCB);
+        this.io.createPagePreview(
+            {id: data.id, url: data.url, areas: data.areas},
+            this.onLoad.bind(this, loadCB || noop)
+        );
     },
 
     loadFromJSON: function(json, loadCB)
@@ -90,19 +91,14 @@ Page.prototype = {
         this.loadFromJSON(this.importReader.result, loadCB);
     },
 
-    getPage: function(data, loadCB)
-    {
-        this.io.getPage(data, this.onLoad.bind(this, loadCB || noop));
-    },
-
-    onLoad: function(loadCB, page)
+    onLoad: function(loadCB, preview)
     {
         var areas = this.rootAreas;
 
         for (var i=0; i<areas.length; i++) {
             var area = this.jq(areas[i]);
             var id   = area.data('area-id');
-            var html = page.previewHtml[id];
+            var html = preview[id];
 
             area.html(html);
         }

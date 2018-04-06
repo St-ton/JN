@@ -42,6 +42,7 @@
     <script>
         var opc = new OPC({
             jtlToken:    '{$smarty.session.jtl_token}',
+            shopUrl:     '{$shopUrl}',
             templateUrl: '{$templateUrl}',
             kcfinderUrl: '{$PFAD_KCFINDER}',
             pageUrl:     '{$pageUrl}',
@@ -105,7 +106,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{$pageUrl}" id="btnClose" data-toggle="tooltip"
+                            <a href="{$shopUrl}{$pageUrl}" id="btnClose" data-toggle="tooltip"
                                data-placement="bottom" title="Editor schließen">
                                 <i class="fa fa-close"></i>
                             </a>
@@ -125,11 +126,11 @@
             <div class="tab-content">
 
                 <div class="tab-pane active" id="portlets">
-                    {foreach $opc->getPortletGroups() as $groupName => $group}
-                        <a href="#collapse-{$groupName}" data-toggle="collapse" class="collapseGroup">
-                            <i class="fa fa-plus-circle"></i> {$groupName}
+                    {foreach $opc->getPortletGroups() as $group}
+                        <a href="#collapse-{$group->getName()}" data-toggle="collapse" class="collapseGroup">
+                            <i class="fa fa-plus-circle"></i> {$group->getName()}
                         </a>
-                        <div class="collapse" id="collapse-{$groupName}">
+                        <div class="collapse" id="collapse-{$group->getName()}">
                             <div class="row">
                                 {foreach $group->getPortlets() as $portlet}
                                     <div class="col-xs-4">

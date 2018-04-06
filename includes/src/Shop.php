@@ -1826,5 +1826,20 @@ final class Shop
         $container->setSingleton(DbService\GcServiceInterface::class, function (Container $container) {
             return new DbService\GcService($container->getDB());
         });
+
+        // ONPAGE COMPOSER
+        $container->setSingleton(OPC\Service::class, function (Container $container) {
+            return new OPC\Service($container->getOPCDB(), $container->getOPCLocker());
+        });
+
+        // ONPAGE COMPOSER DATABASE
+        $container->setSingleton(OPC\DB::class, function (Container $container) {
+            return new OPC\DB($container->getDB());
+        });
+
+        // ONPAGE COMPOSER LOCKER
+        $container->setSingleton(OPC\Locker::class, function (Container $container) {
+            return new OPC\Locker($container->getOPCDB());
+        });
     }
 }

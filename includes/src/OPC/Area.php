@@ -23,21 +23,6 @@ class Area implements \JsonSerializable
     protected $content = [];
 
     /**
-     * Area constructor.
-     * @param array $data
-     */
-    public function __construct($data)
-    {
-        $this->id = $data['id'];
-
-        if (isset($data['content']) && is_array($data['content'])) {
-            foreach ($data['content'] as $portletData) {
-                $this->addPortlet(new PortletInstance($portletData));
-            }
-        }
-    }
-
-    /**
      * @return string
      */
     public function getId()
@@ -95,6 +80,26 @@ class Area implements \JsonSerializable
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $data
+     * @return $this
+     */
+    public function deserialize($data)
+    {
+        $this->id = $data['id'];
+
+        if (isset($data['content']) && is_array($data['content'])) {
+            $this->clear();
+
+            foreach ($data['content'] as $portletData) {
+                $instance = \Shop::Container()->getOPC()->getPortletInstance($portletData);
+                $this->addPortlet($instance);
+            }
+        }
+
+        return $this;
     }
 
     /**

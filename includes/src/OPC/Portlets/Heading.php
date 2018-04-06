@@ -39,7 +39,26 @@ class Heading extends \OPC\Portlet
     {
         return [
             'level' => 1,
-            'text'  => 'Heading',
+            'text' => 'Heading',
+        ];
+    }
+
+    public function getConfigDescription()
+    {
+        return [
+            'level' => [
+                'label' => [
+                    'de' => 'Ebene',
+                    'en' => 'Level',
+                ],
+                'type' => 'select',
+                'options' => [1, 2, 3, 4, 5, 6],
+                'default' => 1,
+            ],
+            'text'  => [
+                'type' => 'text',
+                'default' => 'Heading',
+            ],
         ];
     }
 }

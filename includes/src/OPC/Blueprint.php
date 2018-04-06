@@ -11,55 +11,33 @@ class Blueprint implements \JsonSerializable
     /**
      * @var int
      */
-    protected $kBlueprint = 0;
+    protected $id = 0;
 
     /**
      * @var string
      */
-    protected $cName = 'New Blueprint';
+    protected $name = '';
 
     /**
-     * @var string
-     */
-    protected $cJson = '{}';
-
-    /**
-     * @var PortletInstance
+     * @var null|PortletInstance
      */
     protected $instance = null;
-
-    /**
-     * Blueprint constructor.
-     * @param int $id
-     * @throws \Exception
-     */
-    public function __construct($id = 0)
-    {
-        if ($id > 0) {
-            $blueprintDB = \Shop::DB()->select('topcblueprint', 'kBlueprint', $id);
-
-            $this
-                ->setId($blueprintDB->kBlueprint)
-                ->setName($blueprintDB->cName)
-                ->setJson($blueprintDB->cJson);
-        }
-    }
 
     /**
      * @return int
      */
     public function getId()
     {
-        return $this->kBlueprint;
+        return $this->id;
     }
 
     /**
-     * @param int $kBlueprint
-     * @return $this;
+     * @param int $id
+     * @return $this
      */
-    public function setId($kBlueprint)
+    public function setId($id)
     {
-        $this->kBlueprint = $kBlueprint;
+        $this->id = $id;
 
         return $this;
     }
@@ -69,57 +47,16 @@ class Blueprint implements \JsonSerializable
      */
     public function getName()
     {
-        return $this->cName;
+        return $this->name;
     }
 
     /**
-     * @param string $cName
-     * @return $this;
-     */
-    public function setName($cName)
-    {
-        $this->cName = $cName;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getJson()
-    {
-        if ($this->getInstance() !== null) {
-            $this->cJson = json_encode($this->getInstance());
-        }
-
-        return $this->cJson;
-    }
-
-    /**
-     * @param string $cJson
-     * @return $this;
-     * @throws \Exception
-     */
-    public function setJson($cJson)
-    {
-        $this->cJson  = $cJson;
-        $instanceData = json_decode($cJson, true);
-        $instance     = new PortletInstance($instanceData);
-        $this->setInstance($instance);
-
-        return $this;
-    }
-
-    /**
-     * @param array $instanceData
+     * @param string $name
      * @return $this
-     * @throws \Exception
      */
-    public function setData($instanceData)
+    public function setName($name)
     {
-        $instance    = new PortletInstance($instanceData);
-        $this->cJson = json_encode($instance);
-        $this->setInstance($instance);
+        $this->name = $name;
 
         return $this;
     }
@@ -144,48 +81,14 @@ class Blueprint implements \JsonSerializable
     }
 
     /**
-     * @return bool
-     */
-    public function existsInDB()
-    {
-        return is_object(\Shop::DB()->select('topcblueprint', 'kBlueprint', $this->getId()));
-    }
-
-    /**
-     * @return $this
-     * @throws \Exception
-     */
-    public function save()
-    {
-        if ($this->cName === '') {
-            throw new \Exception('The OPC blueprint data to be saved is incomplete or invalid.');
-        }
-
-        $blueprintDB = (object)$this->jsonSerialize();
-
-        if ($this->existsInDB()) {
-            if (\Shop::DB()->update('topcblueprint', 'kBlueprint', $this->getId(), $blueprintDB) === -1) {
-                throw new \Exception('The OPC blueprint could not be updated in the DB.');
-            }
-        } else {
-            $key = \Shop::DB()->insert('topcblueprint', $blueprintDB);
-
-            if ($key === 0) {
-                throw new \Exception('The OPC blueprint could not be inserted into the DB.');
-            }
-
-            $this->setId($key);
-        }
-
-        return $this;
-    }
-
-    /**
+     * @param array $data
      * @return $this
      */
-    public function delete()
+    public function deserialize($data)
     {
-        \Shop::DB()->delete('topcblueprint', 'kBlueprint', $this->getId());
+        $this->setName($data['name']);
+        $instance = \Shop::Container()->getOPC()->getPortletInstance($data['content']);
+        $this->setInstance($instance);
 
         return $this;
     }
@@ -196,9 +99,9 @@ class Blueprint implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'kBlueprint' => $this->getId(),
-            'cName'      => $this->getName(),
-            'cJson'      => $this->getJson(),
+            'id'       => $this->getId(),
+            'name'     => $this->getName(),
+            'instance' => $this->instance->jsonSerialize(),
         ];
     }
 }

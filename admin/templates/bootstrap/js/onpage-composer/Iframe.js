@@ -3,13 +3,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-function Iframe(io, gui, page, templateUrl)
+function Iframe(io, gui, page, shopUrl, templateUrl)
 {
     bindProtoOnHandlers(this);
 
     this.io          = io;
     this.gui         = gui;
     this.page        = page;
+    this.shopUrl     = shopUrl;
     this.templateUrl = templateUrl;
 
     this.draggedElm         = null;
@@ -48,7 +49,7 @@ Iframe.prototype = {
     {
         var pageUrlLink = document.createElement('a');
 
-        pageUrlLink.href = this.page.url;
+        pageUrlLink.href = this.shopUrl + this.page.url;
 
         if(pageUrlLink.search !== '') {
             pageUrlLink.search += '&opcEditMode=yes&action=' + this.page.action;
@@ -251,7 +252,7 @@ Iframe.prototype = {
             } else if(this.dragNewBlueprintId > 0) {
                 this.newPortletDropTarget= this.draggedElm;
                 this.setSelected();
-                this.io.getBlueprint(this.dragNewBlueprintId, this.onNewPortletCreated);
+                this.io.getBlueprintPreview(this.dragNewBlueprintId, this.onNewPortletCreated);
             }
         }
     },
@@ -267,14 +268,9 @@ Iframe.prototype = {
         // this.host.setUnsaved(true);
     },
 
-    createPortletElm: function(data)
+    createPortletElm: function(previewHtml)
     {
-        var portletElm = this.jq(data.previewHtml);
-
-        delete data.previewHtml;
-        portletElm.attr('data-portlet', JSON.stringify(data));
-
-        return portletElm;
+        return this.jq(previewHtml);
     },
 
     setDragged: function(elm)

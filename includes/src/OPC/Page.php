@@ -13,122 +13,189 @@ namespace OPC;
 class Page implements \JsonSerializable
 {
     /**
-     * @var PageModel
+     * @var int
      */
-    protected $model;
+    protected $key = 0;
 
     /**
-     * @var PageLocker
+     * @var string
      */
-    protected $locker;
+    protected $id = '';
 
     /**
-     * @var Area[]
+     * @var int
      */
-    protected $areas = [];
+    protected $revId = 0;
+
+    /**
+     * @var string
+     */
+    protected $url = '';
+
+    /**
+     * @var string
+     */
+    protected $lastModified = '0000-00-00 00:00:00';
+
+    /**
+     * @var string
+     */
+    protected $lockedBy = '';
+
+    /**
+     * @var string
+     */
+    protected $lockedAt = '0000-00-00 00:00:00';
 
     /**
      * @var bool
      */
-    protected $previewHtmlEnabled = false;
+    protected $replace = false;
 
     /**
-     * @var bool
+     * @var null|AreaList
      */
-    protected $finalHtmlEnabled = false;
+    protected $areaList = null;
 
     /**
      * Page constructor.
-     * @param array $data
-     * @throws \Exception
      */
-    public function __construct($data)
+    public function __construct()
     {
-        $this->model = new PageModel();
-        $this->model->setId($data['id']);
-
-        if ($this->model->existsInDB()) {
-            $revisionId = isset($data['revisionId']) ? (int)$data['revisionId'] : 0;
-            $this->model->load($revisionId);
-
-            foreach ($this->model->getAreasData() as $areaData) {
-                $this->putArea(new Area($areaData));
-            }
-        }
-
-        $this->locker = new PageLocker($this->model);
-        $this->setPreviewHtmlEnabled(isset($data['previewHtmlEnabled']) ? $data['previewHtmlEnabled'] : false);
-        $this->setFinalHtmlEnabled(isset($data['finalHtmlEnabled']) ? $data['finalHtmlEnabled'] : false);
-
-        if (isset($data['url']) && is_string($data['url'])) {
-            $this->setPageUrl($data['url']);
-        }
-
-        if (isset($data['areas']) && is_array($data['areas'])) {
-            foreach ($data['areas'] as $areaData) {
-                $this->putArea(new Area($areaData));
-            }
-        }
+        $this->areaList = new AreaList();
     }
 
     /**
-     * Lock this page to only be manipulated by this one user
-     * @param $userName
-     * @return bool
-     * @throws \Exception
+     * @return int
      */
-    public function lock($userName)
+    public function getKey() : int
     {
-        return $this->locker->lock($userName);
+        return $this->key;
     }
 
     /**
-     * Release this page if it was locked
-     * @throws \Exception
+     * @param int $key
+     * @return $this
      */
-    public function unlock()
+    public function setKey(int $key)
     {
-        $this->locker->unlock();
+        $this->key = $key;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getId()
+    public function getId() : string
     {
-        return $this->model->getId();
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     * @return $this
+     */
+    public function setId(string $id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRevId() : int
+    {
+        return $this->revId;
+    }
+
+    /**
+     * @param int $revId
+     * @return Page
+     */
+    public function setRevId(int $revId) : Page
+    {
+        $this->revId = $revId;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getUrl()
+    public function getUrl() : string
     {
-        return $this->model->getUrl();
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     * @return $this
+     */
+    public function setUrl(string $url)
+    {
+        $this->url = $url;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getLastModified()
+    public function getLastModified() : string
     {
-        return $this->model->getLastModified();
+        return $this->lastModified;
+    }
+
+    /**
+     * @param string $lastModified
+     * @return $this
+     */
+    public function setLastModified(string $lastModified)
+    {
+        $this->lastModified = $lastModified;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getLockedBy()
+    public function getLockedBy() : string
     {
-        return $this->model->getLockedBy();
+        return $this->lockedBy;
+    }
+
+    /**
+     * @param string $lockedBy
+     * @return $this
+     */
+    public function setLockedBy(string $lockedBy)
+    {
+        $this->lockedBy = $lockedBy;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getLockedAt()
+    public function getLockedAt() : string
     {
-        return $this->model->getLockedAt();
+        return $this->lockedAt;
+    }
+
+    /**
+     * @param string $lockedAt
+     * @return $this
+     */
+    public function setLockedAt(string $lockedAt)
+    {
+        $this->lockedAt = $lockedAt;
+
+        return $this;
     }
 
     /**
@@ -136,133 +203,54 @@ class Page implements \JsonSerializable
      */
     public function isReplace()
     {
-        return $this->model->isReplace();
+        return $this->replace;
     }
 
     /**
-     * @param Area $area
-     * @return Page
-     */
-    public function putArea($area)
-    {
-        $this->areas[$area->getId()] = $area;
-
-        return $this;
-    }
-
-    /**
-     * @param string $id
-     * @return bool
-     */
-    public function hasArea($id)
-    {
-        return array_key_exists($id, $this->areas);
-    }
-
-    /**
-     * @param string $id
-     * @return Area
-     */
-    public function getArea($id)
-    {
-        return $this->areas[$id];
-    }
-
-    /**
-     * @return bool
-     */
-    public function existsInDB()
-    {
-        return $this->model->existsInDB();
-    }
-
-    /**
-     * @param string $url
+     * @param $replace
      * @return $this
      */
-    public function setPageUrl($url)
+    public function setReplace($replace)
     {
-        $this->model->setUrl($url);
+        $this->replace = $replace;
 
         return $this;
     }
 
     /**
+     * @return AreaList
+     */
+    public function getAreaList()
+    {
+        return $this->areaList;
+    }
+
+    /**
+     * @param string $json
      * @return $this
-     * @throws \Exception
      */
-    public function save()
+    public function fromJson($json)
     {
-        $areasData = [];
-
-        foreach ($this->areas as $id => $area) {
-            $areasData[$id] = $area->jsonSerialize();
-        }
-
-        $this->model->setAreasData($areasData);
-        $this->model->save();
+        $this->deserialize(json_decode($json, true));
 
         return $this;
     }
 
     /**
-     * @param bool $previewHtmlEnabled
-     * @return Page
+     * @param array $data
+     * @return $this
      */
-    public function setPreviewHtmlEnabled($previewHtmlEnabled)
+    public function deserialize($data)
     {
-        $this->previewHtmlEnabled = $previewHtmlEnabled;
+        $this->setId($data['id'] ?? 0);
+        $this->setUrl($data['url'] ?? '');
+        $this->setRevId($data['revId'] ?? 0);
 
-        return $this;
-    }
-
-    /**
-     * @param bool $finalHtmlEnabled
-     * @return Page
-     */
-    public function setFinalHtmlEnabled($finalHtmlEnabled)
-    {
-        $this->finalHtmlEnabled = $finalHtmlEnabled;
-
-        return $this;
-    }
-
-    /**
-     * @return string[] the rendered HTML content of this page
-     */
-    public function getPreviewHtml()
-    {
-        $result = [];
-
-        foreach ($this->areas as $id => $area) {
-            $result[$id] = $area->getPreviewHtml();
+        if (isset($data['areas']) && is_array($data['areas'])) {
+            $this->getAreaList()->deserialize($data['areas']);
         }
 
-        return $result;
-    }
-
-    /**
-     * @return string[] the rendered HTML content of this page
-     */
-    public function getFinalHtml()
-    {
-        $result = [];
-
-        foreach ($this->areas as $id => $area) {
-            $result[$id] = $area->getFinalHtml();
-        }
-
-        return $result;
-    }
-
-    /**
-     * @return array
-     */
-    public function getRevisions()
-    {
-        $revision = new \Revision();
-
-        return $revision->getRevisions('opcpage', $this->model->getKey());
+        return $this;
     }
 
     /**
@@ -271,22 +259,16 @@ class Page implements \JsonSerializable
     public function jsonSerialize()
     {
         $result = [
-            'id'           => $this->model->getId(),
-            'url'          => $this->model->getUrl(),
-            'areasJson'    => $this->model->getAreasJson(),
-            'lastModified' => $this->model->getLastModified(),
-            'lockedBy'     => $this->model->getLockedBy(),
-            'lockedAt'     => $this->model->getLockedAt(),
-            'replace'      => $this->model->isReplace(),
+            'key'          => $this->getKey(),
+            'id'           => $this->getId(),
+            'revId'        => $this->getRevId(),
+            'url'          => $this->getUrl(),
+            'lastModified' => $this->getLastModified(),
+            'lockedBy'     => $this->getLockedBy(),
+            'lockedAt'     => $this->getLockedAt(),
+            'replace'      => $this->isReplace(),
+            'areaList'     => $this->getAreaList()->jsonSerialize(),
         ];
-
-        if ($this->previewHtmlEnabled) {
-            $result['previewHtml'] = $this->getPreviewHtml();
-        }
-
-        if ($this->finalHtmlEnabled) {
-            $result['finalHtml'] = $this->getFinalHtml();
-        }
 
         return $result;
     }

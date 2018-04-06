@@ -15,10 +15,12 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 $pageId      = verifyGPDataString('pageId');
 $pageUrl     = verifyGPDataString('pageUrl');
 $action      = verifyGPDataString('action');
-$templateUrl = \Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir;
-$opc         = new \OPC\Service();
+$shopUrl     = \Shop::getURL();
+$templateUrl = $shopUrl . '/' . PFAD_ADMIN . $currentTemplateDir;
+$opc         = \Shop::Container()->getOPC();
 
 $smarty
+    ->assign('shopUrl', $shopUrl)
     ->assign('pageUrl', $pageUrl)
     ->assign('pageId', $pageId)
     ->assign('action', $action)

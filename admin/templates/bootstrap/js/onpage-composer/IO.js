@@ -56,32 +56,7 @@ IO.prototype = {
 
     createPortlet: function(portletId, success, error)
     {
-        this.getPortletInstance({id: portletId, previewHtmlEnabled: true}, success, error);
-    },
-
-    getConfigPanelHtml: function(portletId, properties, success, error)
-    {
-        this.getPortletInstance(
-            {id: portletId, properties: properties, configPanelHtmlEnabled: true},
-            this.onGetConfigPanelHtml.bind(this, success),
-            error);
-    },
-
-    onGetConfigPanelHtml: function(success, page)
-    {
-        success(page.configPanelHtml);
-    },
-
-    getPortletPreviewHtml: function(portletData, success, error)
-    {
-        portletData.previewHtmlEnabled = true;
-
-        this.getPortletInstance(portletData, this.onGetPortletPreviewHtml.bind(this, success), error);
-    },
-
-    onGetPortletPreviewHtml: function (success, data)
-    {
-        success(data.previewHtml);
+        this.getPortletPreviewHtml({id: portletId}, success, error);
     },
 
 };

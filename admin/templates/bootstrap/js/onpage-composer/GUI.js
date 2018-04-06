@@ -62,7 +62,7 @@ GUI.prototype = {
 
     updateBlueprintList: function()
     {
-        this.io.getBlueprintList(this.onGetBlueprintList);
+        this.io.getBlueprints(this.onGetBlueprintList);
     },
 
     onGetBlueprintList: function(blueprints)
@@ -74,9 +74,9 @@ GUI.prototype = {
                 .attr('id', '').css('display', '')
                 .appendTo(this.blueprintList);
 
-            newBtn.find('.blueprintButton').attr('data-blueprint-id', blueprint.kBlueprint);
-            newBtn.find('.blueprintDelete').attr('data-blueprint-id', blueprint.kBlueprint);
-            newBtn.find('span').html(blueprint.cName);
+            newBtn.find('.blueprintButton').attr('data-blueprint-id', blueprint.id);
+            newBtn.find('.blueprintDelete').attr('data-blueprint-id', blueprint.id);
+            newBtn.find('span').html(blueprint.name);
         }, this);
 
         this.updateDynamicGui();
@@ -144,9 +144,10 @@ GUI.prototype = {
         this.setUnsaved(false);
     },
 
-    onSavePageError: function()
+    onSavePageError: function(error)
     {
-        window.location.reload();
+        // window.location.reload();
+        log(error);
     },
 
     setUnsaved: function(enable)
@@ -242,6 +243,8 @@ GUI.prototype = {
 
     onBlueprintForm: function(e)
     {
+        e.preventDefault();
+
         if(this.selectedElm !== null) {
             var blueprintName = this.blueprintName.val();
             var blueprintData = this.page.portletToJSON(this.iframe.selectedElm);
@@ -249,8 +252,6 @@ GUI.prototype = {
             this.io.saveBlueprint(blueprintName, blueprintData, this.onBlueprintSaved);
             this.blueprintModal.modal('hide');
         }
-
-        e.preventDefault();
     },
 
     onBlueprintSaved: function()

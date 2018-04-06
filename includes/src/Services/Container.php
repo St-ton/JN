@@ -70,4 +70,28 @@ class Container extends ContainerBase implements DefaultServicesInterface
     {
         return $this->get(JTLCacheInterface::class);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPC()
+    {
+        return $this->get(\OPC\Service::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPCDB()
+    {
+        return $this->get(\OPC\DB::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPCLocker()
+    {
+        return $this->get(\OPC\Locker::class);
+    }
 }

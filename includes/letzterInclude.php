@@ -170,11 +170,9 @@ $smarty->assign('linkgroups', $linkHelper->activate($pagetType))
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 
-$opc = new \OPC\Service();
-
 $smarty
-    ->assign('opc', $opc)
-    ->assign('opcPage', $opc->getCurrentPage());
+    ->assign('opc', Shop::Container()->getOPC())
+    ->assign('opcPage', Shop::Container()->getOPC()->getCurPage());
 
 // Kampagnen
 pruefeKampagnenParameter();

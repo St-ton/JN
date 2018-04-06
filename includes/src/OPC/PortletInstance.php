@@ -19,53 +19,19 @@ class PortletInstance implements \JsonSerializable
     protected $properties = [];
 
     /**
-     * @var Area[] mapping area ids to subareas
+     * @var null|AreaList mapping area ids to subareas
      */
-    protected $subareas = [];
-
-    /**
-     * @var bool
-     */
-    protected $previewHtmlEnabled = false;
-
-    /**
-     * @var bool
-     */
-    protected $finalHtmlEnabled = false;
-
-    /**
-     * @var bool
-     */
-    protected $configPanelHtmlEnabled = false;
+    protected $subareaList = null;
 
     /**
      * PortletInstance constructor.
-     * @param array $data
-     * @throws \Exception
+     * @param Portlet $portlet
      */
-    public function __construct($data)
+    public function __construct(Portlet $portlet)
     {
-        $portlet = Portlet::fromId($data['id']);
-
-        $this->portlet    = $portlet;
-        $this->properties = $portlet->getDefaultProps();
-
-        $this
-            ->setPreviewHtmlEnabled(isset($data['previewHtmlEnabled']) ? $data['previewHtmlEnabled'] : false)
-            ->setFinalHtmlEnabled(isset($data['finalHtmlEnabled']) ? $data['finalHtmlEnabled'] : false)
-            ->setConfigPanelHtmlEnabled(isset($data['configPanelHtmlEnabled']) ? $data['configPanelHtmlEnabled'] : false);
-
-        if (isset($data['properties']) && is_array($data['properties'])) {
-            foreach ($data['properties'] as $name => $value) {
-                $this->setProperty($name, $value);
-            }
-        }
-
-        if (isset($data['subareas']) && is_array($data['subareas'])) {
-            foreach ($data['subareas'] as $areaData) {
-                $this->putSubarea(new Area($areaData));
-            }
-        }
+        $this->portlet     = $portlet;
+        $this->properties  = $portlet->getDefaultProps();
+        $this->subareaList = new AreaList();
     }
 
     /**
@@ -106,7 +72,9 @@ class PortletInstance implements \JsonSerializable
      */
     public function getSubareaPreviewHtml($id)
     {
-        return $this->hasSubarea($id) ? $this->getSubarea($id)->getPreviewHtml() : '';
+        return $this->hasSubarea($id)
+            ? $this->getSubarea($id)->getPreviewHtml()
+            : '';
     }
 
     /**
@@ -115,7 +83,9 @@ class PortletInstance implements \JsonSerializable
      */
     public function getSubareaFinalHtml($id)
     {
-        return $this->hasSubarea($id) ? $this->getSubarea($id)->getFinalHtml() : '';
+        return $this->hasSubarea($id)
+            ? $this->getSubarea($id)->getFinalHtml()
+            : '';
     }
 
     /**
@@ -149,12 +119,20 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @return null|AreaList
+     */
+    public function getSubareaList()
+    {
+        return $this->subareaList;
+    }
+
+    /**
      * @param string $id
      * @return Area
      */
     public function getSubarea($id)
     {
-        return $this->subareas[$id];
+        return $this->subareaList->getArea($id);
     }
 
     /**
@@ -163,7 +141,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function hasSubarea($id)
     {
-        return array_key_exists($id, $this->subareas);
+        return $this->subareaList->hasArea($id);
     }
 
     /**
@@ -172,40 +150,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function putSubarea($area)
     {
-        $this->subareas[$area->getId()] = $area;
-
-        return $this;
-    }
-
-    /**
-     * @param bool $previewHtmlEnabled
-     * @return PortletInstance
-     */
-    public function setPreviewHtmlEnabled($previewHtmlEnabled)
-    {
-        $this->previewHtmlEnabled = $previewHtmlEnabled;
-
-        return $this;
-    }
-
-    /**
-     * @param bool $finalHtmlEnabled
-     * @return PortletInstance
-     */
-    public function setFinalHtmlEnabled($finalHtmlEnabled)
-    {
-        $this->finalHtmlEnabled = $finalHtmlEnabled;
-
-        return $this;
-    }
-
-    /**
-     * @param bool $enabled
-     * @return PortletInstance
-     */
-    public function setConfigPanelHtmlEnabled($enabled)
-    {
-        $this->configPanelHtmlEnabled = $enabled;
+        $this->subareaList->putArea($area);
 
         return $this;
     }
@@ -220,9 +165,7 @@ class PortletInstance implements \JsonSerializable
             $this->properties['attributes'] = [];
         }
 
-        return isset($this->properties['attributes'][$name])
-            ? $this->properties['attributes'][$name]
-            : '';
+        return $this->properties['attributes'][$name] ?? '';
     }
 
     /**
@@ -327,18 +270,38 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @param array $data
+     * @return $this
+     */
+    public function deserialize($data)
+    {
+        if (isset($data['properties']) && is_array($data['properties'])) {
+            foreach ($data['properties'] as $name => $value) {
+                $this->setProperty($name, $value);
+            }
+        }
+
+        if (isset($data['subareas']) && is_array($data['subareas'])) {
+            foreach ($data['subareas'] as $areaData) {
+                $area = new Area();
+                $area->deserialize($areaData);
+                $this->putSubarea($area);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function jsonSerializeShort()
     {
         $result = [
-            'id'    => $this->portlet->getId(),
-            'title' => $this->portlet->getTitle(),
+            'id'         => $this->portlet->getId(),
+            'title'      => $this->portlet->getTitle(),
+            'properties' => $this->properties,
         ];
-
-        if (count($this->properties) > 0) {
-            $result['properties'] = $this->properties;
-        }
 
         return $result;
     }
@@ -348,27 +311,8 @@ class PortletInstance implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        $result = $this->jsonSerializeShort();
-
-        if (count($this->subareas) > 0) {
-            $result['subareas'] = [];
-
-            foreach ($this->subareas as $id => $subarea) {
-                $result['subareas'][$id] = $subarea->jsonSerialize();
-            }
-        }
-
-        if ($this->previewHtmlEnabled) {
-            $result['previewHtml'] = $this->getPreviewHtml();
-        }
-
-        if ($this->finalHtmlEnabled) {
-            $result['finalHtml'] = $this->getFinalHtml();
-        }
-
-        if ($this->configPanelHtmlEnabled) {
-            $result['configPanelHtml'] = $this->getConfigPanelHtml();
-        }
+        $result             = $this->jsonSerializeShort();
+        $result['subareas'] = $this->subareaList->jsonSerialize();
 
         return $result;
     }

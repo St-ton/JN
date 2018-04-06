@@ -9,26 +9,23 @@ namespace OPC;
 class PortletGroup
 {
     /**
+     * @var string
+     */
+    protected $name = '';
+
+    /**
      * @var Portlet[]
      */
     protected $portlets = [];
 
     /**
      * PortletGroup constructor.
-     * @param string $groupName
+     * @param string $name
      * @throws \Exception
      */
-    public function __construct($groupName = '')
+    public function __construct($name)
     {
-        if ($groupName !== '') {
-            $portletsDB = \Shop::DB()->selectAll('topcportlet', 'cGroup', $groupName, 'kPortlet', 'kPortlet');
-        } else {
-            $portletsDB = \Shop::DB()->selectAll('topcportlet', [], [], 'kPortlet', 'kPortlet');
-        }
-
-        foreach ($portletsDB as $portletDB) {
-            $this->portlets[] = Portlet::fromId($portletDB->kPortlet);
-        }
+        $this->name = $name;
     }
 
     /**
@@ -37,5 +34,24 @@ class PortletGroup
     public function getPortlets()
     {
         return $this->portlets;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param Portlet $portlet
+     * @return $this
+     */
+    public function addPortlet(Portlet $portlet)
+    {
+        $this->portlets[] = $portlet;
+
+        return $this;
     }
 }

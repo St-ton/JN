@@ -15,11 +15,8 @@ if (!$oAccount->getIsAuthenticated()) {
 
 $jsonApi = JSONAPI::getInstance();
 $io      = AdminIO::getInstance()->setAccount($oAccount);
-$opc     = new \OPC\Service();
 
-$opc
-    ->setAdminName($oAccount->account()->cLogin)
-    ->registerIOFunctions($io);
+Shop::Container()->getOPC()->registerAdminIOFunctions($io);
 
 $dashboardInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 $accountInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';

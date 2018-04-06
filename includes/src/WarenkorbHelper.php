@@ -263,7 +263,7 @@ class WarenkorbHelper
 
     /**
      * @param Warenkorb $warenkorb
-     * @return int - since 4.07
+     * @return int - since 5.0
      */
     public static function addVariationPictures(Warenkorb $warenkorb)
     {

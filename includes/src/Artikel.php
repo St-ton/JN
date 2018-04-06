@@ -4919,7 +4919,7 @@ class Artikel
      *
      * @param object $obj
      * @return $this
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public function mapData($obj)
     {
@@ -4935,7 +4935,7 @@ class Artikel
 
     /**
      * @return int
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public function insertInDB()
     {
@@ -5002,7 +5002,7 @@ class Artikel
 
     /**
      * @return $this
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public function updateInDB()
     {
@@ -5114,7 +5114,7 @@ class Artikel
      * setzt Daten aus Sync POST request.
      *
      * @return bool - true, wenn alle notwendigen Daten vorhanden, sonst false
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public function setzePostDaten()
     {

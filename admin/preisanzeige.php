@@ -1,1 +1,1 @@
-<?php // removed in 4.07
+<?php // removed in 5.0

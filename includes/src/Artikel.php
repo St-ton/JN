@@ -1203,7 +1203,7 @@ class Artikel
                 'kEigenschaftWert', $kEigenschaftWert,
                 'kKundengruppe', $kKundengruppe
             );
-            if (!is_object($EW_aufpreis)) {
+            if (!is_object($EW_aufpreis) && $this->Preise->isDiscountable()) {
                 $EW_aufpreis = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
             }
             if ($EW_aufpreis !== null) {
@@ -2213,7 +2213,7 @@ class Artikel
         $kLetzteVariation = 0;
         $nZaehler         = -1;
         $nFreifelder      = 0;
-        $rabattTemp       = $this->getDiscount($kKundengruppe, $this->kArtikel);
+        $rabattTemp       = $this->Preise->isDiscountable() ? $this->getDiscount($kKundengruppe, $this->kArtikel) : 0;
         $outOfStock       = '(' . Shop::Lang()->get('outofstock', 'productDetails') . ')';
         $nGenauigkeit     = isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
         && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
@@ -3313,7 +3313,7 @@ class Artikel
             if (!$kKundengruppe) {
                 $kKundengruppe = Session::CustomerGroup()->getID();
             }
-            $discount = $this->getDiscount($kKundengruppe, $this->kArtikel);
+            $discount = $this->Preise->isDiscountable() ? $this->getDiscount($kKundengruppe, $this->kArtikel) : 0;
 
             if ($oArtikelTMP->Preise->fVK[0] > $this->Preise->fVK[0]
                 || $oArtikelTMP->Preise->fVK[0] < $this->Preise->fVK[0]

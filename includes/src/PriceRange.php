@@ -97,11 +97,14 @@ class PriceRange
             'SELECT fVKNettoMin, fVKNettoMax 
                 FROM tpreisrange
                 WHERE kArtikel = :articleID
-                    AND kKundengruppe = :customerGroup
                     AND (
-                        :customerID IS NULL OR kKunde = :customerID
-                        OR nLagerAnzahlMax IS NULL OR (nLagerAnzahlMax <= :stock AND dStart <= CURDATE())
-                        OR dEnde IS NULL OR (CURDATE() BETWEEN dStart AND dEnde)
+                        (kKundengruppe = 0 AND kKunde = :customerID)
+                        OR
+                        (kKundengruppe = :customerGroup AND (
+                            nLagerAnzahlMax IS NULL OR (nLagerAnzahlMax <= :stock AND dStart <= NOW())
+                            OR
+                            dEnde IS NULL OR (NOW() BETWEEN dStart AND dEnde)
+                        ))
                     )
                 ORDER BY nRangeType ASC LIMIT 1',
             [

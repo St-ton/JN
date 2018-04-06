@@ -263,7 +263,7 @@ class Preise
      */
     protected function hasCustomPrice($kKunde)
     {
-        $kKunde   = (int)$kKunde;
+        $kKunde = (int)$kKunde;
         if ($kKunde > 0) {
             $cacheID = 'custprice_' . $kKunde;
             if (($oCustomPrice = Shop::Cache()->get($cacheID)) === false) {
@@ -284,6 +284,14 @@ class Preise
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDiscountable()
+    {
+        return !($this->Kundenpreis_aktiv || $this->Sonderpreis_aktiv);
     }
 
     /**
@@ -355,7 +363,7 @@ class Preise
      */
     public function rabbatierePreise($Rabatt, $offset = 0.0)
     {
-        if ($Rabatt != 0 && !$this->Sonderpreis_aktiv && !$this->Kundenpreis_aktiv) {
+        if ($Rabatt != 0 && $this->isDiscountable()) {
             $this->rabatt       = $Rabatt;
             $this->alterVKNetto = $this->fVKNetto;
 
@@ -409,7 +417,7 @@ class Preise
      */
     public function berechneVKs()
     {
-        $factor = Session::Currency()->getConversionFactor(); 
+        $factor = Session::Currency()->getConversionFactor();
 
         $this->fVKBrutto = berechneBrutto($this->fVKNetto, $this->fUst);
 

@@ -529,7 +529,7 @@ function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
                     LIMIT 1",
                 [
                     'kArtikel'      => $oArtikel->kArtikel,
-                    'kKundengruppe' => $oArtikel->kKundengruppe,
+                    'kKundengruppe' => $oKundengruppe->kKundengruppe,
                 ],
                 \DB\ReturnType::SINGLE_OBJECT
             );

@@ -7,7 +7,7 @@
                     {assign var="slideTitle" value="#slide_caption_{$oSlide->kSlide}"}
                 {/if}
                 {if !empty($oSlide->cLink)}
-                    <a href="{$oSlide->cLink}"{if !empty($oSlide->cText)} title="{$oSlide->cText}"{/if} class="slide">
+                    <a href="{$oSlide->cLink}"{if !empty($oSlide->cText)} title="{$oSlide->cText|strip_tags}"{/if} class="slide">
                 {else}
                     <div class="slide">
                 {/if}

@@ -41,7 +41,7 @@ class Migration_20180404100149 extends Migration implements IMigration
                 `dEnde`           DATE                    NULL,
                 PRIMARY KEY (`kPreisRange`),
                 UNIQUE INDEX `tpreisrange_uq` (`kArtikel` ASC, `kKundengruppe` ASC, `kKunde` ASC, `nRangeType` ASC)
-            ) ENGINE = InnoDB"
+            ) ENGINE = InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'"
         );
     }
 

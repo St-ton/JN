@@ -88,7 +88,7 @@ class Revision
      * @param int         $key
      * @param bool        $secondary
      * @param null|string $author
-     * @param bool        $utf8 - @deprecated since 4.07
+     * @param bool        $utf8 - @deprecated since 5.0
      * @return bool
      * @throws InvalidArgumentException
      */
@@ -179,7 +179,7 @@ class Revision
      * @param string $type
      * @param int    $id
      * @param bool   $secondary
-     * @param bool   $utf8 - @deprecated since 4.07
+     * @param bool   $utf8 - @deprecated since 5.0
      * @return bool
      */
     public function restoreRevision($type, $id, $secondary = false, $utf8 = true)

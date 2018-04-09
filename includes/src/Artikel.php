@@ -4607,18 +4607,45 @@ class Artikel
         $currency      = Session::Currency();
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
 
-        $this->cLocalizedVPE[0] = gibPreisStringLocalized(
-            berechneBrutto($fPreis / $this->fVPEWert, gibUst($this->kSteuerklasse), $nGenauigkeit),
-            $currency,
-            1,
-            $nGenauigkeit
-        ) . $per;
-        $this->cLocalizedVPE[1] = gibPreisStringLocalized(
-            $fPreis / $this->fVPEWert,
-            $currency,
-            1,
-            $nGenauigkeit
-        ) . $per;
+        if ($this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()) {
+            $this->cLocalizedVPE[0] = gibPreisStringLocalized(
+                $this->Preise->oPriceRange->minBruttoPrice / $this->fVPEWert,
+                $currency,
+                1,
+                $nGenauigkeit
+            ) . ' - '
+                . gibPreisStringLocalized(
+                    $this->Preise->oPriceRange->maxBruttoPrice / $this->fVPEWert,
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
+            $this->cLocalizedVPE[1] = gibPreisStringLocalized(
+                $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
+                $currency,
+                1,
+                $nGenauigkeit
+            ) . ' - '
+                . gibPreisStringLocalized(
+                    $this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert,
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
+        } else {
+            $this->cLocalizedVPE[0] = gibPreisStringLocalized(
+                berechneBrutto($fPreis / $this->fVPEWert, gibUst($this->kSteuerklasse), $nGenauigkeit),
+                $currency,
+                1,
+                $nGenauigkeit
+            ) . $per;
+            $this->cLocalizedVPE[1] = gibPreisStringLocalized(
+                $fPreis / $this->fVPEWert,
+                $currency,
+                1,
+                $nGenauigkeit
+            ) . $per;
+        }
 
         return $this;
     }
@@ -4919,7 +4946,7 @@ class Artikel
      *
      * @param object $obj
      * @return $this
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public function mapData($obj)
     {
@@ -4935,7 +4962,7 @@ class Artikel
 
     /**
      * @return int
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public function insertInDB()
     {
@@ -5002,7 +5029,7 @@ class Artikel
 
     /**
      * @return $this
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public function updateInDB()
     {
@@ -5114,7 +5141,7 @@ class Artikel
      * setzt Daten aus Sync POST request.
      *
      * @return bool - true, wenn alle notwendigen Daten vorhanden, sonst false
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public function setzePostDaten()
     {

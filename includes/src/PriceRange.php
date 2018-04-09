@@ -103,7 +103,9 @@ class PriceRange
                         (kKundengruppe = :customerGroup AND (
                             nLagerAnzahlMax IS NULL OR (nLagerAnzahlMax <= :stock AND dStart <= NOW())
                             OR
-                            dEnde IS NULL OR (NOW() BETWEEN dStart AND dEnde)
+                            (dStart IS NULL AND dEnde IS NULL)
+                            OR
+                            (NOW() BETWEEN dStart AND dEnde)
                         ))
                     )
                 ORDER BY nRangeType ASC LIMIT 1',
@@ -189,7 +191,7 @@ class PriceRange
                 $configGroups[$configItemID]->prices->max[] = (float)$configItem->fMax * berechneBrutto((float)$configItem->fMaxPreis, $ust, 4);
             } else {
                 $priceRange = new PriceRange((int)$configItem->kKindArtikel, $this->customerGroupID, $this->customerID);
-
+                // Es wird immer maxNettoPrice verwendet, da im Konfigurator keine Staffelpreise berücksichtigt werden
                 $configGroups[$configItemID]->prices->min[] = (float)$configItem->fMin * berechneBrutto($priceRange->maxNettoPrice, $ust, 4);
                 $configGroups[$configItemID]->prices->max[] = (float)$configItem->fMax * berechneBrutto($priceRange->maxNettoPrice, $ust, 4);
             }
@@ -204,18 +206,22 @@ class PriceRange
             $minPrice = 0;
             $maxPrice = 0;
 
+            // Für den kleinsten Preis werden zuerst alle kleinsten Preise bis zur Mindestanzahl addiert...
             foreach (array_slice($configGroup->prices->min, 0, $configGroup->nMin) as $price) {
                 $minPrice += $price;
             }
+            // ...und zusätzlich - bis zur Maximalanzahl - alle Preise < 0, also alle Abschläge
             foreach (array_slice($configGroup->prices->min, $configGroup->nMin, $configGroup->nMax - $configGroup->nMin) as $price) {
                 if ($price < 0) {
                     $minPrice += $price;
                 }
             }
 
+            // Für den größten Preis werden zuerst alle größten Preise bis zur Mindestanzahl addiert...
             foreach (array_slice($configGroup->prices->max, 0, $configGroup->nMin) as $price) {
                 $maxPrice += $price;
             }
+            // ...und danach - bis zur Maximalanzahl - nur noch Preise > 0, also keine Abschläge
             foreach (array_slice($configGroup->prices->max, $configGroup->nMin, $configGroup->nMax - $configGroup->nMin) as $price) {
                 if ($price > 0) {
                     $maxPrice += $price;
@@ -226,11 +232,9 @@ class PriceRange
             $maxPrices[] = $maxPrice;
         }
 
-        #sort($minPrices);
-        #rsort($maxPrices);
-
         $ust = gibUst($this->articleData->kSteuerklasse);
 
+        // Die jeweiligen Min- und Maxpreise sind die Summen aus allen Konfig-Gruppen
         $this->minNettoPrice += berechneNetto(array_sum($minPrices), $ust, 4);
         $this->maxNettoPrice += berechneNetto(array_sum($maxPrices), $ust, 4);
     }

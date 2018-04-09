@@ -66,7 +66,7 @@ class PriceRange
         }
 
         if ($customerID === 0) {
-            $customerID = Session::Customer()->kKunde;
+            $customerID = Session::Customer()->kKunde ?? 0;
         }
 
         $this->customerGroupID = $customerGroupID;
@@ -124,14 +124,120 @@ class PriceRange
             $this->maxNettoPrice = $this->articleData->fNettoPreis;
         }
 
+        if (class_exists('Konfigurator') && Konfigurator::hasKonfig($this->articleData->kArtikel)) {
+            $this->loadConfiguratorRange();
+        }
+
         $ust = gibUst($this->articleData->kSteuerklasse);
 
         $this->minBruttoPrice = berechneBrutto($this->minNettoPrice, $ust);
         $this->maxBruttoPrice = berechneBrutto($this->maxNettoPrice, $ust);
     }
 
+    public function loadConfiguratorRange()
+    {
+        $configItems = Shop::Container()->getDB()->queryPrepared(
+            "SELECT tartikel.kArtikel,
+	                tkonfiggruppe.kKonfiggruppe,
+                    MIN(tkonfiggruppe.nMin) nMin,
+                    MAX(tkonfiggruppe.nMax) nMax,
+                    tkonfigitem.kArtikel kKindArtikel,
+                    tkonfigitem.bPreis,
+                    MIN(tkonfigitem.fMin) fMin,
+                    MAX(tkonfigitem.fMax) fMax,
+                    IF(tkonfigitem.bPreis = 0, tkonfigitempreis.kSteuerklasse, tartikel.kSteuerklasse) kSteuerklasse,
+                    MIN(tkonfigitempreis.fPreis) fMinPreis,
+                    Max(tkonfigitempreis.fPreis) fMaxPreis
+                FROM tartikel
+                INNER JOIN tartikelkonfiggruppe ON tartikelkonfiggruppe.kArtikel = tartikel.kArtikel
+                INNER JOIN tkonfiggruppe ON tkonfiggruppe.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
+                INNER JOIN tkonfigitem ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
+                INNER JOIN tartikel tkonfigartikel ON tkonfigartikel.kArtikel = tkonfigitem.kArtikel
+                LEFT JOIN tkonfigitempreis ON tkonfigitempreis.kKonfigitem = tkonfigitem.kKonfigitem
+                WHERE tartikel.kArtikel = :articleID
+                    AND tkonfigitempreis.kKundengruppe = :customerGroup
+                GROUP BY tartikel.kArtikel,
+	                tkonfiggruppe.kKonfiggruppe,
+	                tkonfigitem.kArtikel,
+	                tkonfigitem.bPreis,
+                    IF(tkonfigitem.bPreis = 0, tkonfigitempreis.kSteuerklasse, tartikel.kSteuerklasse)",
+            [
+                'articleID'     => $this->articleData->kArtikel,
+                'customerGroup' => $this->customerGroupID,
+            ],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+
+        $configGroups = [];
+        foreach ($configItems as $configItem) {
+            $configItemID = (int)$configItem->kKonfiggruppe;
+            if (!isset($configGroups[$configItemID])) {
+                $configGroups[$configItemID] = (object)[
+                    'nMin'   => (int)$configItem->nMin,
+                    'nMax'   => (int)$configItem->nMax,
+                    'prices' => (object)[
+                        'min' => [],
+                        'max' => [],
+                    ],
+                ];
+            }
+
+            $ust = gibUst($configItem->kSteuerklasse);
+
+            if ((int)$configItem->bPreis === 0) {
+                $configGroups[$configItemID]->prices->min[] = (float)$configItem->fMin * berechneBrutto((float)$configItem->fMinPreis, $ust, 4);
+                $configGroups[$configItemID]->prices->max[] = (float)$configItem->fMax * berechneBrutto((float)$configItem->fMaxPreis, $ust, 4);
+            } else {
+                $priceRange = new PriceRange((int)$configItem->kKindArtikel, $this->customerGroupID, $this->customerID);
+
+                $configGroups[$configItemID]->prices->min[] = (float)$configItem->fMin * berechneBrutto($priceRange->maxNettoPrice, $ust, 4);
+                $configGroups[$configItemID]->prices->max[] = (float)$configItem->fMax * berechneBrutto($priceRange->maxNettoPrice, $ust, 4);
+            }
+        }
+
+        $minPrices = [];
+        $maxPrices = [];
+
+        foreach ($configGroups as $configGroup) {
+            sort($configGroup->prices->min);
+            rsort($configGroup->prices->max);
+            $minPrice = 0;
+            $maxPrice = 0;
+
+            foreach (array_slice($configGroup->prices->min, 0, $configGroup->nMin) as $price) {
+                $minPrice += $price;
+            }
+            foreach (array_slice($configGroup->prices->min, $configGroup->nMin, $configGroup->nMax - $configGroup->nMin) as $price) {
+                if ($price < 0) {
+                    $minPrice += $price;
+                }
+            }
+
+            foreach (array_slice($configGroup->prices->max, 0, $configGroup->nMin) as $price) {
+                $maxPrice += $price;
+            }
+            foreach (array_slice($configGroup->prices->max, $configGroup->nMin, $configGroup->nMax - $configGroup->nMin) as $price) {
+                if ($price > 0) {
+                    $maxPrice += $price;
+                }
+            }
+
+            $minPrices[] = $minPrice;
+            $maxPrices[] = $maxPrice;
+        }
+
+        #sort($minPrices);
+        #rsort($maxPrices);
+
+        $ust = gibUst($this->articleData->kSteuerklasse);
+
+        $this->minNettoPrice += berechneNetto(array_sum($minPrices), $ust, 4);
+        $this->maxNettoPrice += berechneNetto(array_sum($maxPrices), $ust, 4);
+    }
+
     /**
      * @param float $discount
+     * @return void
      */
     public function setDiscount(float $discount)
     {
@@ -164,44 +270,37 @@ class PriceRange
     }
 
     /**
-     * get array (brutto, netto) of localized strings
+     * get localized min - max strings
      * @param int|null $netto
      * @return string|string[]
      */
     public function getLocalized(int $netto = null)
     {
-        $currency = Session::Currency();
-
         if ($netto !== null) {
-            switch ($netto) {
-                case 0:
-                    return gibPreisStringLocalized($this->minBruttoPrice, $currency)
-                        . ' - '
-                        . gibPreisStringLocalized($this->maxBruttoPrice, $currency);
-                case 1:
-                    return gibPreisStringLocalized($this->minNettoPrice, $currency)
-                        . ' - '
-                        . gibPreisStringLocalized($this->maxNettoPrice, $currency);
-            }
+            return $netto === 0
+                ? $this->getMinLocalized(0) . ' - ' . $this->getMaxLocalized(0)
+                : $this->getMinLocalized(1) . ' - ' . $this->getMaxLocalized(1);
         }
 
         return [
-            gibPreisStringLocalized($this->minBruttoPrice, $currency) . ' - ' . gibPreisStringLocalized($this->maxBruttoPrice, $currency),
-            gibPreisStringLocalized($this->minNettoPrice, $currency) . ' - ' . gibPreisStringLocalized($this->maxNettoPrice, $currency),
+            $this->getMinLocalized(0) . ' - ' . $this->getMaxLocalized(0),
+            $this->getMinLocalized(1) . ' - ' . $this->getMaxLocalized(1)
         ];
     }
 
+    /**
+     * get localized min strings
+     * @param int|null $netto
+     * @return string|string[]
+     */
     public function getMinLocalized(int $netto = null)
     {
         $currency = Session::Currency();
 
         if ($netto !== null) {
-            switch ($netto) {
-                case 0:
-                    return gibPreisStringLocalized($this->minBruttoPrice, $currency);
-                case 1:
-                    return gibPreisStringLocalized($this->minNettoPrice, $currency);
-            }
+            return $netto === 0
+                ? gibPreisStringLocalized($this->minBruttoPrice, $currency)
+                : gibPreisStringLocalized($this->minNettoPrice, $currency);
         }
 
         return [
@@ -210,17 +309,19 @@ class PriceRange
         ];
     }
 
+    /**
+     * get localized max strings
+     * @param int|null $netto
+     * @return string|string[]
+     */
     public function getMaxLocalized(int $netto = null)
     {
         $currency = Session::Currency();
 
         if ($netto !== null) {
-            switch ($netto) {
-                case 0:
-                    return gibPreisStringLocalized($this->maxBruttoPrice, $currency);
-                case 1:
-                    return gibPreisStringLocalized($this->maxNettoPrice, $currency);
-            }
+            return $netto === 0
+                ? gibPreisStringLocalized($this->maxBruttoPrice, $currency)
+                : gibPreisStringLocalized($this->maxNettoPrice, $currency);
         }
 
         return [

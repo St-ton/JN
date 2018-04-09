@@ -21,13 +21,15 @@
             {*<span class="price_label only">{lang key="only" section="global"} </span>*}
         {/if}
         <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
-            {if $tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange()}
-                {$Artikel->Preise->oPriceRange->getLocalized($NettoPreise)}
-            {elseif $Artikel->Preise->oPriceRange->isRange() && $Artikel->nVariationsAufpreisVorhanden == 1 && $Artikel->kVaterArtikel == 0}
-                <span>{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}</span>
-            {else}
-                <span>{$Artikel->Preise->cVKLocalized[$NettoPreise]}</span>
-            {/if}
+            <span>
+                {if $tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange()}
+                    {$Artikel->Preise->oPriceRange->getLocalized($NettoPreise)}
+                {elseif $Artikel->Preise->oPriceRange->isRange() && $Artikel->nVariationsAufpreisVorhanden == 1 && $Artikel->kVaterArtikel == 0}
+                    {$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}
+                {else}
+                    {$Artikel->Preise->cVKLocalized[$NettoPreise]}
+                {/if}
+            </span>
             {if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
         </strong>
         {if $tplscope === 'detail'}

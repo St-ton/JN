@@ -1,11 +1,10 @@
-function Page(io, id, url, action)
+function Page(io, id, url)
 {
     bindProtoOnHandlers(this);
 
-    this.io     = io;
-    this.id     = id;
-    this.url    = url;
-    this.action = action;
+    this.io      = io;
+    this.id      = id;
+    this.url     = url;
 
     this.importReader = new FileReader();
 }

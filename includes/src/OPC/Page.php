@@ -212,7 +212,7 @@ class Page implements \JsonSerializable
      */
     public function setReplace($replace)
     {
-        $this->replace = $replace;
+        $this->replace = (bool)$replace;
 
         return $this;
     }
@@ -242,9 +242,10 @@ class Page implements \JsonSerializable
      */
     public function deserialize($data)
     {
-        $this->setId($data['id'] ?? 0);
-        $this->setUrl($data['url'] ?? '');
-        $this->setRevId($data['revId'] ?? 0);
+        $this->setId($data['id'] ?? $this->getId());
+        $this->setUrl($data['url'] ?? $this->getUrl());
+        $this->setRevId($data['revId'] ?? $this->getRevId());
+        //$this->setReplace($data['replace'] ?? $this->)
 
         if (isset($data['areas']) && is_array($data['areas'])) {
             $this->getAreaList()->deserialize($data['areas']);

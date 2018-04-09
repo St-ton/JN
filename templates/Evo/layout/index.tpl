@@ -10,7 +10,7 @@
     {/block}
     
     {block name="content"}
-        {if $opcPage->isReplace()}
+        {if $opc->isReplacePage()}
             {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
         {else}
             {if !empty($Link->Sprache->cTitle)}

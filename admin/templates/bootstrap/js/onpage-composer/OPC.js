@@ -7,7 +7,7 @@ function OPC(env)
     this.kcfinderUrl = env.kcfinderUrl;
 
     this.io       = new IO(this.onIOReady);
-    this.page     = new Page(this.io, env.pageId, env.pageUrl, env.action);
+    this.page     = new Page(this.io, env.pageId, env.pageUrl);
     this.gui      = new GUI(this.io, this.page);
     this.iframe   = new Iframe(this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
     this.tutorial = new Tutorial(this.gui, this.iframe);

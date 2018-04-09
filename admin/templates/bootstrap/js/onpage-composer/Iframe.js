@@ -52,9 +52,9 @@ Iframe.prototype = {
         pageUrlLink.href = this.shopUrl + this.page.url;
 
         if(pageUrlLink.search !== '') {
-            pageUrlLink.search += '&opcEditMode=yes&action=' + this.page.action;
+            pageUrlLink.search += '&opcEditMode=yes'; //&opcReplace=' + this.page.replace;
         } else {
-            pageUrlLink.search = '?opcEditMode=yes&action=' + this.page.action;
+            pageUrlLink.search = '?opcEditMode=yes'; //&opcReplace=' + this.page.replace;
         }
 
         return pageUrlLink.href.toString();

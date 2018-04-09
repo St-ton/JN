@@ -16,14 +16,32 @@ $pageId      = verifyGPDataString('pageId');
 $pageUrl     = verifyGPDataString('pageUrl');
 $action      = verifyGPDataString('action');
 $shopUrl     = \Shop::getURL();
-$templateUrl = $shopUrl . '/' . PFAD_ADMIN . $currentTemplateDir;
 $opc         = \Shop::Container()->getOPC();
+$opcDB       = \Shop::Container()->getOPCDB();
+$templateUrl = $shopUrl . '/' . PFAD_ADMIN . $currentTemplateDir;
+
+if ($action === 'restore') {
+    $opc->deletePage($pageId);
+    header('Location: ' . $shopUrl . $pageUrl);
+    exit();
+}
+
+$page = $opc->getPage($pageId)->setUrl($pageUrl);
+
+if ($action === 'edit') {
+    $replace = $page->isReplace();
+} elseif ($action === 'replace') {
+    $page->setReplace(true);
+    $opcDB->savePage($page);
+} else {
+    $page->setReplace(false);
+    $opcDB->savePage($page);
+}
 
 $smarty
     ->assign('shopUrl', $shopUrl)
     ->assign('pageUrl', $pageUrl)
     ->assign('pageId', $pageId)
-    ->assign('action', $action)
     ->assign('templateUrl', $templateUrl)
     ->assign('opc', $opc)
     ->display('onpage-composer.tpl');

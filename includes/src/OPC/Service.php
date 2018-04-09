@@ -51,6 +51,7 @@ class Service
             'getBlueprintInstance',
             'getBlueprintPreview',
             'saveBlueprint',
+            'deleteBlueprint',
             'getPageRevisions',
             'lockPage',
             'unlockPage',
@@ -151,10 +152,21 @@ class Service
      */
     public function savePage($data)
     {
-        $page = (new Page())
+        $page = $this->getPage($data['id'])
             ->deserialize($data);
 
         $this->db->savePage($page);
+    }
+
+    /**
+     * @param string $id
+     */
+    public function deletePage($id)
+    {
+        $page = (new Page())
+            ->setId($id);
+
+        $this->db->deletePage($page);
     }
 
     /**
@@ -189,14 +201,6 @@ class Service
         $page->deserialize($data);
 
         return $page->getAreaList()->getPreviewHtml();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEditMode()
-    {
-        return verifyGPDataString('opcEditMode') === 'yes';
     }
 
     /**
@@ -271,6 +275,17 @@ class Service
 
     /**
      * @param int $id
+     */
+    public function deleteBlueprint($id)
+    {
+        $blueprint = (new Blueprint())
+            ->setId($id);
+
+        $this->db->deleteBlueprint($blueprint);
+    }
+
+    /**
+     * @param int $id
      * @return PortletInstance
      */
     public function createPortletInstance($id)
@@ -308,5 +323,21 @@ class Service
     public function getConfigPanelHtml($portletId, $props)
     {
         return $this->getPortletInstance(['id' => $portletId, 'properties' => $props])->getConfigPanelHtml();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEditMode()
+    {
+        return verifyGPDataString('opcEditMode') === 'yes';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReplacePage()
+    {
+        return $this->getCurPage()->isReplace();
     }
 }

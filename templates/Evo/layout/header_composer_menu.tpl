@@ -14,24 +14,23 @@
                     <input type="hidden" name="pageId" value="{$opcPage->getId()}">
                     {if $opc->curPageExists()}
                         <p>
-                            <button name="action" class="btn btn-primary"
-                                    value="{if $opcPage->isReplace()}replace{else}extend{/if}">
+                            <button name="action" value="edit" class="btn btn-primary">
                                 Inhalt bearbeiten
                             </button>
                         </p>
                         <p>
-                            <button name="action" class="btn" value="restore">
+                            <button name="action" value="restore" class="btn">
                                 Seite zurücksetzen
                             </button>
                         </p>
                     {else}
                         <p>
-                            <button name="action" class="btn btn-primary" value="extend">
+                            <button name="action" value="extend" class="btn btn-primary">
                                 Seite erweitern
                             </button>
                         </p>
                         <p>
-                            <button name="action" class="btn btn-primary" value="replace">
+                            <button name="action" value="replace" class="btn btn-primary">
                                 Seite ersetzen
                             </button>
                         </p>

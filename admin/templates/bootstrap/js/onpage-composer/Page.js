@@ -79,6 +79,21 @@ Page.prototype = {
         this.fileInput.change(this.onImportChosen.bind(this, loadCB)).click();
     },
 
+    loadPageFromWebStorage: function()
+    {
+        var pageJson = window.localStorage.getItem(this.getStorageId());
+
+        if(pageJson !== null) {
+            this.clear();
+            this.loadFromJSON(pageJson);
+        }
+    },
+
+    getStorageId: function()
+    {
+        return 'opcpage.' + this.id;
+    },
+
     onImportChosen: function(loadCB, e)
     {
         this.importReader.onload = this.onReaderLoad.bind(this, loadCB);
@@ -108,6 +123,21 @@ Page.prototype = {
     save: function(saveCB, errorCB)
     {
         this.io.savePage(this.toJSON(), saveCB, errorCB);
+    },
+
+    savePageToWebStorage: function()
+    {
+        window.localStorage.setItem(
+            this.getStorageId(),
+            JSON.stringify(this.pageToJson())
+        );
+
+        window.localStorage.setItem(
+            this.getStorageId() + '.lastmodified',
+            moment().format("YYYY-MM-DD HH:mm:ss")
+        );
+
+        // this.gui.setUnsaved(true);
     },
 
     exportAsDownload: function()

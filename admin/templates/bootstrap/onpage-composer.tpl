@@ -227,8 +227,10 @@
                 <form id="configForm">
                     <div class="modal-body" id="configModalBody"></div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                        <button class="btn btn-primary">Speichern</button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                            <button class="btn btn-primary">Speichern</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -347,23 +349,23 @@
         </div>
     </div>
 
-    <div id="portletToolbar" class="btn-group opc-portlet-toolbar" style="display:none">
-        <button class="btn btn-default btn-sm opc-label" id="portletLabel">
+    <div id="portletToolbar" class="opc-portlet-toolbar btn-group" style="display:none">
+        <button type="button" class="btn btn-default btn-sm opc-label" id="portletLabel">
             Portlet-Label
         </button>
-        <button class="btn btn-default btn-sm" id="btnConfig" title="Einstellungen bearbeiten">
+        <button type="button" class="btn btn-default btn-sm" id="btnConfig" title="Einstellungen bearbeiten">
             <i class="fa fa-pencil"></i>
         </button>
-        <button class="btn btn-default btn-sm" id="btnClone" title="Auswahl kopieren">
+        <button type="button" class="btn btn-default btn-sm" id="btnClone" title="Auswahl kopieren">
             <i class="fa fa-clone"></i>
         </button>
-        <button class="btn btn-default btn-sm" id="btnBlueprint" title="Auswahl als Vorlage speichern">
+        <button type="button" class="btn btn-default btn-sm" id="btnBlueprint" title="Auswahl als Vorlage speichern">
             <i class="fa fa-star"></i>
         </button>
-        <button class="btn btn-default btn-sm" id="btnParent" title="Gehe eine Ebene höher">
+        <button type="button" class="btn btn-default btn-sm" id="btnParent" title="Gehe eine Ebene höher">
             <i class="fa fa-level-up"></i>
         </button>
-        <button class="btn btn-default btn-sm" id="btnTrash" title="Auswahl löschen">
+        <button type="button" class="btn btn-default btn-sm" id="btnTrash" title="Auswahl löschen">
             <i class="fa fa-trash"></i>
         </button>
     </div>

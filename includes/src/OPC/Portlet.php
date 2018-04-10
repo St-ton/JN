@@ -92,22 +92,51 @@ abstract class Portlet implements \JsonSerializable
     {
         $res = '';
 
-        foreach ($this->getDefaultProps() as $name => $prop) {
-            if ($instance->hasProperty($name)) {
-                $prop = $instance->getProperty($name);
+        foreach ($this->getPropertyDesc() as $propname => $propDesc) {
+            $label = $propDesc['label'] ?? $propname;
+            $type  = $propDesc['type'] ?? 'text';
+
+            $prop = $instance->hasProperty($propname)
+                ? $instance->getProperty($propname)
+                : $propDesc['default'];
+
+            $res .= "<div class='form-group'><label for='config-$propname'>$label</label>";
+
+            if ($type === 'text') {
+                $res .= "<input type='text' class='form-control' name='$propname' value='$prop'
+                    id='config-$propname'>";
+            } elseif ($type === 'select') {
+                $res .= "<select class='form-control' name='$propname'>";
+
+                foreach ($propDesc['options'] as $option) {
+                    if ($prop === $option) {
+                        $res .= "<option value='$option' selected>$option</option>";
+                    } else {
+                        $res .= "<option value='$option'>$option</option>";
+                    }
+                }
+
+                $res .= '</select>';
             }
 
-            if (!is_array($prop)) {
-                $title = ucfirst($name);
-                $res  .= "<div class=\"form-group\">
-                    <label for=\"config-$name\">$title</label>
-                    <input type=\"text\" class=\"form-control\" name=\"$name\" value=\"$prop\"
-                        id=\"config-$name\">
-                    </div>";
-            }
+            $res .= "</div>";
         }
 
         return $res;
+    }
+
+    /**
+     * @return array
+     */
+    final public function getDefaultProps()
+    {
+        $defProps = [];
+
+        foreach ($this->getPropertyDesc() as $name => $propDesc) {
+            $defProps[$name] = $propDesc['default'];
+        }
+
+        return $defProps;
     }
 
     /**
@@ -142,7 +171,7 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @return array
      */
-    public function getDefaultProps()
+    public function getPropertyDesc()
     {
         return [];
     }

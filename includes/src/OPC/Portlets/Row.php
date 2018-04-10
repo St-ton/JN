@@ -30,13 +30,29 @@ class Row extends \OPC\Portlet
         return $this->getAutoConfigPanelHtml($instance);
     }
 
-    public function getDefaultProps()
+    public function getPropertyDesc()
     {
         return [
-            'layout-xs' => '6+6',
-            'layout-sm' => '6+6',
-            'layout-md' => '6+6',
-            'layout-lg' => '6+6',
+            'layout-xs' => [
+                'label'   => 'Layout XS',
+                'type'    => 'text',
+                'default' => '6+6',
+            ],
+            'layout-sm' => [
+                'label'   => 'Layout SM',
+                'type'    => 'text',
+                'default' => '6+6',
+            ],
+            'layout-md' => [
+                'label'   => 'Layout MD',
+                'type'    => 'text',
+                'default' => '6+6',
+            ],
+            'layout-lg' => [
+                'label'   => 'Layout LG',
+                'type'    => 'text',
+                'default' => '6+6',
+            ],
         ];
     }
 

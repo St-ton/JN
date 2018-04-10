@@ -35,28 +35,18 @@ class Heading extends \OPC\Portlet
         return $this->getAutoConfigPanelHtml($instance);
     }
 
-    public function getDefaultProps()
-    {
-        return [
-            'level' => 1,
-            'text' => 'Heading',
-        ];
-    }
-
-    public function getConfigDescription()
+    public function getPropertyDesc()
     {
         return [
             'level' => [
-                'label' => [
-                    'de' => 'Ebene',
-                    'en' => 'Level',
-                ],
-                'type' => 'select',
-                'options' => [1, 2, 3, 4, 5, 6],
-                'default' => 1,
+                'label'   => 'Level',
+                'type'    => 'select',
+                'options' => ['1', '2', '3', '4', '5', '6'],
+                'default' => '1',
             ],
             'text'  => [
-                'type' => 'text',
+                'label'   => 'Text',
+                'type'    => 'text',
                 'default' => 'Heading',
             ],
         ];

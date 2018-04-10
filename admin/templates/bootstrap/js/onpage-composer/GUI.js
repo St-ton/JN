@@ -1,9 +1,10 @@
-function GUI(io, page)
+function GUI(io, page, kcfinderUrl)
 {
     bindProtoOnHandlers(this);
 
-    this.io   = io;
-    this.page = page;
+    this.io          = io;
+    this.page        = page;
+    this.kcfinderUrl = kcfinderUrl;
 }
 
 GUI.prototype = {
@@ -20,6 +21,8 @@ GUI.prototype = {
             'topNav',
             'iframePanel',
             'loaderModal',
+            'errorModal',
+            'errorAlert',
             'configModal',
             'configModalTitle',
             'configModalBody',
@@ -58,6 +61,14 @@ GUI.prototype = {
     hideLoader: function()
     {
         this.loaderModal.modal('hide');
+    },
+
+    showError: function(msg)
+    {
+        this.loaderModal.modal('hide');
+        this.errorAlert.html(msg);
+        this.errorModal.modal('show');
+        throw msg;
     },
 
     updateBlueprintList: function()
@@ -146,8 +157,7 @@ GUI.prototype = {
 
     onSavePageError: function(error)
     {
-        // window.location.reload();
-        log(error);
+        this.showError('Page could not be saved: ' + error);
     },
 
     setUnsaved: function(enable)
@@ -280,6 +290,22 @@ GUI.prototype = {
     onBlueprintDeleted: function()
     {
         this.updateBlueprintList();
+    },
+
+    onOpenKCFinder: function (callback)
+    {
+        KCFinder = {
+            callBack: function(url) {
+                callback(url);
+                kcFinder.close();
+            }
+        };
+
+        var kcFinder = open(
+            this.kcfinderUrl + 'browse.php?type=Bilder&lang=de', 'kcfinder_textbox',
+            'status=0, toolbar=0, location=0, menubar=0, directories=0, resizable=1, scrollbars=0,' +
+            'width=800, height=600'
+        );
     },
 
 };

@@ -52,9 +52,9 @@ Iframe.prototype = {
         pageUrlLink.href = this.shopUrl + this.page.url;
 
         if(pageUrlLink.search !== '') {
-            pageUrlLink.search += '&opcEditMode=yes'; //&opcReplace=' + this.page.replace;
+            pageUrlLink.search += '&opcEditMode=yes';
         } else {
-            pageUrlLink.search = '?opcEditMode=yes'; //&opcReplace=' + this.page.replace;
+            pageUrlLink.search = '?opcEditMode=yes';
         }
 
         return pageUrlLink.href.toString();
@@ -242,8 +242,7 @@ Iframe.prototype = {
             this.dropTarget.replaceWith(this.draggedElm);
             this.updateDropTargets();
             this.setSelected(this.draggedElm);
-            // TODO
-            // this.host.setUnsaved(true);
+            this.gui.setUnsaved(true);
 
             if(this.dragNewPortletId > 0) {
                 this.newPortletDropTarget = this.draggedElm;
@@ -264,8 +263,7 @@ Iframe.prototype = {
         this.newPortletDropTarget.replaceWith(newElement);
         this.setSelected(newElement);
         this.updateDropTargets();
-        // TODO
-        // this.host.setUnsaved(true);
+        this.gui.setUnsaved(true);
     },
 
     createPortletElm: function(previewHtml)
@@ -301,7 +299,7 @@ Iframe.prototype = {
         if(elm !== null) {
             elm.addClass('opc-hovered');
             elm.attr('draggable', 'true');
-            this.portletPreviewLabel.text(elm.data('portlettitle')).show();
+            this.portletPreviewLabel.text(elm.data('portlet').title).show();
             this.previewLabelPopper.reference = elm[0];
             this.previewLabelPopper.update();
         }
@@ -321,7 +319,7 @@ Iframe.prototype = {
 
             if(elm !== null) {
                 elm.addClass('opc-selected');
-                this.portletLabel.text(elm.data('portlettitle'));
+                this.portletLabel.text(elm.data('portlet').title);
                 this.portletToolbar.show();
                 this.toolbarPopper.reference = elm[0];
                 this.toolbarPopper.update();
@@ -388,8 +386,7 @@ Iframe.prototype = {
         this.selectedElm.replaceWith(newPortlet);
         this.setSelected(newPortlet);
         this.updateDropTargets();
-        // TODO
-        // this.host.setUnsaved(true);
+        this.gui.setUnsaved(true);
     },
 
     onBtnClone: function()
@@ -401,8 +398,7 @@ Iframe.prototype = {
             copiedElm.removeClass('opc-hovered');
             this.setSelected(this.selectedElm);
             this.updateDropTargets();
-            // TODO
-            // this.host.setUnsaved(true);
+            this.gui.setUnsaved(true);
         }
     },
 
@@ -430,8 +426,7 @@ Iframe.prototype = {
             this.selectedElm.remove();
             this.setSelected();
             this.updateDropTargets();
-            // TODO
-            // this.host.setUnsaved(true);
+            this.gui.setUnsaved(true);
         }
     },
 

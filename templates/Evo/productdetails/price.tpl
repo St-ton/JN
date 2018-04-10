@@ -34,8 +34,17 @@
         </strong>
         {if $tplscope === 'detail'}
             {block name="price-snippets"}
+                {$Artikel->dSonderpreisEnde_en}
                 <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">
                 <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                {if $Artikel->Preise->oPriceRange->isRange()}
+                    <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->minBruttoPrice}">
+                    <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->maxBruttoPrice}">
+                {/if}
+                {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== '0000-00-00' && $Artikel->dSonderpreisEnde_en !== '0000-00-00'}
+                    <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
+                    <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
+                {/if}
             {/block}
             <div class="price-note">
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}

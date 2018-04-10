@@ -4609,13 +4609,13 @@ class Artikel
 
         if ($this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()) {
             $this->cLocalizedVPE[0] = gibPreisStringLocalized(
-                $this->Preise->oPriceRange->minBruttoPrice / $this->fVPEWert,
+                berechneBrutto($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, gibUst($this->kSteuerklasse), $nGenauigkeit),
                 $currency,
                 1,
                 $nGenauigkeit
             ) . ' - '
                 . gibPreisStringLocalized(
-                    $this->Preise->oPriceRange->maxBruttoPrice / $this->fVPEWert,
+                    berechneBrutto($this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert, gibUst($this->kSteuerklasse), $nGenauigkeit),
                     $currency,
                     1,
                     $nGenauigkeit

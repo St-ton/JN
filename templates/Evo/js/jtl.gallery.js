@@ -322,7 +322,7 @@
                 imagesPerView, //amount of images visible at each gallery "page"
                 ulw;
             if (imgCount > 0) {
-                primary_h   = $('.product-primary').height();
+                primary_h   = ($('.product-info').height() > $('.image-container').height()) ? $('.product-info').height() : $('.image-container').height();
                 listElem    = $(this.element).find('.image-thumbs li');
                 main_img_w  = $(this.element).find('.thumbs').width();
                 main_img_h  = $('.product-gallery').height();

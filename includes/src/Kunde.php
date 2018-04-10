@@ -743,7 +743,7 @@ class Kunde
     /**
      * @param int $length
      * @return bool|string
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      * @throws Exception
      */
     public function generatePassword($length = 12)
@@ -754,7 +754,7 @@ class Kunde
     /**
      * @param string $password
      * @return false|string
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      * @throws Exception
      */
     public function generatePasswordHash($password)

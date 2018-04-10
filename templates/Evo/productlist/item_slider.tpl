@@ -8,13 +8,12 @@
             {assign var="alt" value=$Artikel->cName}
         {/if}
 
-        {*include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cURLKlein alt=$alt*}
         <img data-lazy="{$Artikel->Bilder[0]->cURLKlein}" src="{$imageBaseURL}gfx/trans.png" alt="{$alt}" />
-        <meta itemprop="image" content="{$ShopURL}/{$Artikel->Bilder[0]->cURLKlein}">
-        {if isset($Artikel->oSuchspecialBild) && !isset($hideOverlays)}
-            <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cURLKlein}"
-                 alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
-        {/if}
+        {block name="searchspecial-overlay"}
+            {if isset($Artikel->oSuchspecialBild)}
+                {include file="snippets/searchspecials.tpl" src=$Artikel->oSuchspecialBild->cURLKlein alt=$alt}
+            {/if}
+        {/block}
     </a>
     <div class="caption">
         <h4 class="title word-break">

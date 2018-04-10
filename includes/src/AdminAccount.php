@@ -554,7 +554,7 @@ class AdminAccount
     /**
      * @param string $password
      * @return false|string
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      * @throws Exception
      */
     public static function generatePasswordHash($password)

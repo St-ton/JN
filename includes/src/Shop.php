@@ -227,7 +227,7 @@ final class Shop
 
     /**
      * @var bool
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public static $isSeoMainword = false;
 
@@ -1499,7 +1499,7 @@ final class Shop
      * @param array                     $cParameter_arr
      * @param object|null|ProductFilter $productFilter
      * @return ProductFilter
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public static function buildNaviFilter($cParameter_arr, $productFilter = null) : ProductFilter
     {
@@ -1530,7 +1530,7 @@ final class Shop
 
     /**
      * @return ProductFilter
-     * @deprecated since 4.07
+     * @deprecated since 5.0
      */
     public static function getNaviFilter() : ProductFilter
     {
@@ -1562,7 +1562,7 @@ final class Shop
 
     /**
      * @param null|ProductFilter $productFilter
-     * @deprecated since 4.07 - this is done in ProductFilter:validate()
+     * @deprecated since 5.0 - this is done in ProductFilter:validate()
      */
     public static function checkNaviFilter($productFilter = null)
     {

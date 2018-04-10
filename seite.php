@@ -152,7 +152,8 @@ if (empty($cMetaTitle) || empty($cMetaDescription) || empty($cMetaKeywords)) {
     }
 }
 
-$cMetaTitle = prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
+$cMetaTitle       = prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
+$cMetaDescription = prepareMeta($cMetaDescription, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_description']);
 
 $smarty->assign('meta_title', $cMetaTitle)
        ->assign('meta_description', $cMetaDescription)

@@ -34,7 +34,10 @@
         {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
             {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>
         {/if}
-        {include file="productdetails/price.tpl" Artikel=$Artikel tplscope=$tplscope}
+        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+            <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
+            {include file="productdetails/price.tpl" Artikel=$Artikel tplscope=$tplscope}
+        </div>
     </div>{* /caption *}
     {/block}
     <form id="buy_form_{$Artikel->kArtikel}" action="index.php" method="post" class="form form-basket" data-toggle="basket-add">

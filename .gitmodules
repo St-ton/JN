@@ -1,33 +1,27 @@
-[submodule "templates/Evo-Child-Example"]
-	path = templates/Evo-Child-Example
-	url = git@gitlab.jtl-software.de:jtlshop/EvoChild.git
 [submodule "includes/plugins/jtl_debug"]
 	path = includes/plugins/jtl_debug
-	url = git@gitlab.jtl-software.de:jtlshop/jtldebug.git
-[submodule "includes/plugins/jtl_example_plugin"]
-	path = includes/plugins/jtl_example_plugin
-	url = git@gitlab.jtl-software.de:jtlshop/exampleplugin.git
+	url = https://gitlab.jtl-software.de/jtlshop/jtldebug.git
 [submodule "includes/plugins/jtl_widgets"]
 	path = includes/plugins/jtl_widgets
-	url = git@gitlab.jtl-software.de:jtlshop/JTLWidgets.git
+	url = https://gitlab.jtl-software.de/jtlshop/JTLWidgets.git
 [submodule "includes/plugins/jtl_haendlerbund"]
 	path = includes/plugins/jtl_haendlerbund
-	url = git@gitlab.jtl-software.de:jtlshop/Haendlerbund.git
+	url = https://gitlab.jtl-software.de/jtlshop/Haendlerbund.git
 [submodule "includes/plugins/jtl_search"]
 	path = includes/plugins/jtl_search
-	url = git@gitlab.jtl-software.de:jtlshop/JTLSearch.git
+	url = https://gitlab.jtl-software.de/jtlshop/JTLSearch.git
 [submodule "includes/plugins/jtl_google_shopping"]
 	path = includes/plugins/jtl_google_shopping
-	url = git@gitlab.jtl-software.de:jtlshop/GoogleShopping.git
+	url = https://gitlab.jtl-software.de/jtlshop/GoogleShopping.git
 [submodule "includes/plugins/evo_editor"]
 	path = includes/plugins/evo_editor
-	url = git@gitlab.jtl-software.de:jtlshop/evo-editor.git
+	url = https://gitlab.jtl-software.de/jtlshop/evo-editor.git
 [submodule "includes/plugins/s360_amazon_lpa_shop4"]
 	path = includes/plugins/s360_amazon_lpa_shop4
-	url = git@gitlab.jtl-software.de:Pluginzertifizierungen/pluginzertifizierung-amazon-payments.git
+	url = https://gitlab.jtl-software.de/jtlshop/s360-amazon-payments.git
 [submodule "includes/plugins/agws_ts_features"]
 	path = includes/plugins/agws_ts_features
 	url = https://gitlab.ag-websolutions.de/ag-websolutions.de/plugins_public/agws_ts_features.git
 [submodule "includes/plugins/jtl_themebar"]
 	path = includes/plugins/jtl_themebar
-	url = git@gitlab.jtl-software.de:jtlshop/jtl_themebar.git
+	url = https://gitlab.jtl-software.de/jtlshop/jtl_themebar.git

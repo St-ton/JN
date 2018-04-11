@@ -8,3 +8,5 @@ archive:
     - master
     - /^release\/.*$/
     - tags
+  tags:
+    - build

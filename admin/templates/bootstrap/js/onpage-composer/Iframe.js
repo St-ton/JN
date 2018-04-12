@@ -41,8 +41,8 @@ Iframe.prototype = {
         ]);
 
         this.iframe
-            .on('load', this.onIframeLoad.bind(this, loadCB || noop))
-            .attr('src', this.getIframePageUrl());
+            .attr('src', this.getIframePageUrl())
+            .on('load', this.onIframeLoad.bind(this, loadCB || noop));
     },
 
     getIframePageUrl: function()

@@ -1657,9 +1657,7 @@ class phpQueryPlugins
                 $realClass = "phpQueryPlugin_$class";
                 $return    = call_user_func_array([$realClass, $method], $args);
 
-                return isset($return)
-                    ? $return
-                    : $this;
+                return $return ?? $this;
             }
             throw new Exception("Method '{$method}' doesnt exist");
         }

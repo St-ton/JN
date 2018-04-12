@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
 /**
@@ -31,7 +32,7 @@ function baueBewertungsErinnerung()
                     }
                 } else {
                     // Hole standard Kundengruppe
-                    $oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+                    $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
                     if ($oKundengruppe->kKundengruppe > 0) {
                         $cSQL = " tkunde.kKundengruppe = " . $oKundengruppe->kKundengruppe;
                     }
@@ -55,7 +56,7 @@ function baueBewertungsErinnerung()
                                         dBewertungErinnerung IS NULL 
                                         OR dBewertungErinnerung = '0000-00-00 00:00:00'
                                     )";
-                    $oBestellungen_arr = Shop::DB()->query($cQuery, 2);
+                    $oBestellungen_arr = Shop::Container()->getDB()->query($cQuery, 2);
                     if (is_array($oBestellungen_arr) && count($oBestellungen_arr) > 0) {
                         foreach ($oBestellungen_arr as $oBestellungen) {
                             $oBestellung = new Bestellung($oBestellungen->kBestellung);
@@ -68,7 +69,7 @@ function baueBewertungsErinnerung()
 
                             foreach ($oBestellung->Positionen as $Pos) {
                                 if ($Pos->kArtikel > 0) {
-                                    $res = Shop::DB()->query(
+                                    $res = Shop::Container()->getDB()->query(
                                         "SELECT kBewertung
                                             FROM tbewertung
                                             WHERE kArtikel = " . (int)$Pos->kArtikel . "
@@ -87,7 +88,7 @@ function baueBewertungsErinnerung()
 
                             $oBestellung->Positionen = $openReviewPos_arr;
 
-                            Shop::DB()->query(
+                            Shop::Container()->getDB()->query(
                                 "UPDATE tbestellung
                                     SET dBewertungErinnerung = now()
                                     WHERE kBestellung = " . (int)$oBestellungen->kBestellung, 3

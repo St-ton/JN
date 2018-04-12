@@ -27,7 +27,7 @@ if ($step === 'plugin_uebersicht') {
                 $bError                     = false;
                 $oPluginEinstellungConf_arr = [];
                 if (isset($_POST['kPluginAdminMenu'])) {
-                    $oPluginEinstellungConf_arr = Shop::DB()->query(
+                    $oPluginEinstellungConf_arr = Shop::Container()->getDB()->query(
                         "SELECT *
                             FROM tplugineinstellungenconf
                             WHERE kPluginAdminMenu != 0
@@ -38,7 +38,7 @@ if ($step === 'plugin_uebersicht') {
                 }
                 if (count($oPluginEinstellungConf_arr) > 0) {
                     foreach ($oPluginEinstellungConf_arr as $oPluginEinstellungConf) {
-                        Shop::DB()->delete(
+                        Shop::Container()->getDB()->delete(
                             'tplugineinstellungen',
                             ['kPlugin', 'cName'],
                             [$kPlugin, $oPluginEinstellungConf->cWertName]
@@ -63,7 +63,7 @@ if ($step === 'plugin_uebersicht') {
                             //checkboxes that are not checked
                             $oPluginEinstellung->cWert = null;
                         }
-                        $kKey = Shop::DB()->insert('tplugineinstellungen', $oPluginEinstellung);
+                        $kKey = Shop::Container()->getDB()->insert('tplugineinstellungen', $oPluginEinstellung);
 
                         if (!$kKey) {
                             $bError = true;

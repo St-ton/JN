@@ -132,9 +132,9 @@ if (empty($GLOBALS['DB'])) {
     $einstellungSignatureKey = $DB->executeQuery("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1);
     $einstellungUmgebung     = $DB->executeQuery("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_testumgebung'", 1);
 } else {
-    $einstellungApiKey       = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_apikey'", 1);
-    $einstellungSignatureKey = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1);
-    $einstellungUmgebung     = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_testumgebung'", 1);
+    $einstellungApiKey       = Shop::Container()->getDB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_apikey'", 1);
+    $einstellungSignatureKey = Shop::Container()->getDB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1);
+    $einstellungUmgebung     = Shop::Container()->getDB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_testumgebung'", 1);
 }
 
 if (!empty($einstellungApiKey) && !empty($einstellungApiKey->cWert) && !empty($einstellungSignatureKey) && !empty($einstellungSignatureKey->cWert)) {

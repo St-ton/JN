@@ -21,7 +21,7 @@
  *      2 = insert only non-existing
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  */
-function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
+function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
 {
     if (validateToken() && verifyGPDataString('importcsv') === $importerId) {
         if (isset($_FILES['csvfile']['type']) &&
@@ -50,19 +50,19 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
             }
 
             if ($importType === 0 && is_string($target)) {
-                Shop::DB()->delete($target, [], []);
+                Shop::Container()->getDB()->query("TRUNCATE $target", \DB\ReturnType::AFFECTED_ROWS);
             }
 
             while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {
                 $obj = new stdClass();
 
                 foreach ($fields as $i => $field) {
-                    $row[$i]     = Shop::DB()->escape($row[$i]);
+                    $row[$i]     = Shop::Container()->getDB()->escape($row[$i]);
                     $obj->$field = $row[$i];
                 }
 
                 if (is_callable($target)) {
-                    $res = $target($obj);
+                    $res = $target($obj, $importType);
 
                     if ($res === false) {
                         ++$nErrors;
@@ -71,14 +71,14 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
                     $cTable = $target;
 
                     if ($importType === 0 || $importerId === 2) {
-                        $res = Shop::DB()->insert($cTable, $obj);
+                        $res = Shop::Container()->getDB()->insert($cTable, $obj);
 
                         if ($res === 0) {
                             ++$nErrors;
                         }
                     } elseif ($importType === 1) {
-                        Shop::DB()->delete($target, $fields, $row);
-                        $res = Shop::DB()->insert($cTable, $obj);
+                        Shop::Container()->getDB()->delete($target, $fields, $row);
+                        $res = Shop::Container()->getDB()->insert($cTable, $obj);
 
                         if ($res === 0) {
                             ++$nErrors;

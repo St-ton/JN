@@ -6,7 +6,9 @@
     <div class="price_wrapper">
     {block name="price-wrapper"}
     {* --- Preis auf Anfrage? --- *}
-    {if $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
+    {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
+        <span class="price_label price_out_of_stock">{lang key="productOutOfStock" section="productDetails"}</span>
+    {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
         <span class="price_label price_as_configured">{lang key="priceAsConfigured" section="productDetails"}</span>
     {elseif $Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
         <span class="price_label price_on_application">{lang key="priceOnApplication" section="global"}</span>
@@ -18,13 +20,9 @@
         {else}
             {*<span class="price_label only">{lang key="only" section="global"} </span>*}
         {/if}
-        {if !empty($price_image)}
-            <span class="price_img">{$price_image}</span>
-        {else}
-            <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
-                <span>{$Artikel->Preise->cVKLocalized[$NettoPreise]}</span>{if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
-            </strong>
-        {/if}
+        <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
+            <span>{$Artikel->Preise->cVKLocalized[$NettoPreise]}</span>{if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
+        </strong>
         {if $tplscope === 'detail'}
             {block name="price-snippets"}
                 <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">

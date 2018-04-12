@@ -10,10 +10,8 @@
     {/block}
     
     {block name="content"}
-        {if !empty($oCMSPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.editpage)}
-            {$oCMSPage->cFinalHtml_arr['editor_replace_all']}
-        {elseif !empty($smarty.get.editpage) && !empty($smarty.get.cAction) && $smarty.get.cAction === 'replace'}
-            {include file='snippets/live_content_area.tpl' id='editor_replace_all'}
+        {if $opc->isReplacePage()}
+            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
         {else}
             {if !empty($Link->Sprache->cTitle)}
                 <h1>{$Link->Sprache->cTitle}</h1>
@@ -23,11 +21,11 @@
 
             {include file="snippets/extension.tpl"}
 
-            {include file='snippets/live_content_area.tpl' id='editor_link_content_prepend'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_link_content_prepend'}
 
             {$Link->Sprache->cContent}
 
-            {include file='snippets/live_content_area.tpl' id='editor_link_content_append'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_link_content_append'}
         {/if}
 
         {if $Link->nLinkart == $smarty.const.LINKTYP_AGB}

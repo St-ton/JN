@@ -253,7 +253,7 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
                 $x_labels_arr[] = (string) $oStat->$cSpalteX;
             }
 
-            $oWaehrung = Shop::DB()->query(
+            $oWaehrung = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM twaehrung
                     WHERE cStandard = 'Y'", 1
@@ -348,7 +348,7 @@ function setPie($data_arr, $x_labels_arr)
             unset($data_arr[$i]);
         }
     }
-    $nValueSonstiges = isset($data_arr[5]) ? $data_arr[5] : null;
+    $nValueSonstiges = $data_arr[5] ?? null;
     $nPosSonstiges   = 0;
     usort($data_arr, 'cmpStat');
 

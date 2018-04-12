@@ -35,7 +35,7 @@ function bearbeiteExportformate($oJobQueue)
     if ((int)$oExportformat->nSpecial === SPECIAL_EXPORTFORMAT_YATEGO) {
         // Kampagne
         if (isset($oExportformat->kKampagne) && $oExportformat->kKampagne > 0) {
-            $oKampagne = Shop::DB()->select('tkampagne', ['kKampagne', 'nAktiv'], [(int)$oExportformat->kKampagne, 1]);
+            $oKampagne = Shop::Container()->getDB()->select('tkampagne', ['kKampagne', 'nAktiv'], [(int)$oExportformat->kKampagne, 1]);
             if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
                 $oExportformat->tkampagne_cParameter = $oKampagne->cParameter;
                 $oExportformat->tkampagne_cWert      = $oKampagne->cWert;
@@ -56,7 +56,7 @@ function bearbeiteExportformate($oJobQueue)
 function updateExportformatQueueBearbeitet($oJobQueue)
 {
     if ($oJobQueue->kJobQueue > 0) {
-        Shop::DB()->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$oJobQueue->kJobQueue);
+        Shop::Container()->getDB()->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$oJobQueue->kJobQueue);
 
         $oExportformatQueueBearbeitet                   = new stdClass();
         $oExportformatQueueBearbeitet->kJobQueue        = $oJobQueue->kJobQueue;
@@ -67,7 +67,7 @@ function updateExportformatQueueBearbeitet($oJobQueue)
         $oExportformatQueueBearbeitet->dStartZeit       = $oJobQueue->dStartZeit;
         $oExportformatQueueBearbeitet->dZuletztGelaufen = $oJobQueue->dZuletztGelaufen;
 
-        Shop::DB()->insert('texportformatqueuebearbeitet', $oExportformatQueueBearbeitet);
+        Shop::Container()->getDB()->insert('texportformatqueuebearbeitet', $oExportformatQueueBearbeitet);
 
         return true;
     }
@@ -138,7 +138,7 @@ function makecsv($cGlobalAssoc_arr, $nLimitN = 0)
  */
 function db_get_template($tpl_name, &$tpl_source, $smarty)
 {
-    $exportformat = Shop::DB()->select('texportformat', 'kExportformat', $tpl_name);
+    $exportformat = Shop::Container()->getDB()->select('texportformat', 'kExportformat', $tpl_name);
 
     if ($exportformat === null || empty($exportformat->kExportformat)) {
         return false;
@@ -187,7 +187,7 @@ function getCats($catlist)
 {
     $cats     = [];
     $shopcats = [];
-    $res      = Shop::DB()->query(
+    $res      = Shop::Container()->getDB()->query(
         "SELECT kKategorie, cName, kOberKategorie, nSort 
           FROM tkategorie", 10
     );
@@ -244,7 +244,7 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
     define('DESCRIPTION_TAGS', '<a><b><i><u><p><br><hr><h1><h2><h3><h4><h5><h6><ul><ol><li><span><font><table><colgroup>');
 
     if (!pruefeYategoExportPfad()) {
-        Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
+        Shop::Container()->getDB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
         $oJobQueue->deleteJobInDB();
 
         return false;
@@ -275,7 +275,7 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
     $_SESSION['Kundengruppe']->kKundengruppe              = (int)$exportformat->kKundengruppe;
 
     $KategorieListe = [];
-    $oArtikel_arr   = Shop::DB()->query(
+    $oArtikel_arr   = Shop::Container()->getDB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel
             JOIN tartikelattribut 
@@ -327,7 +327,7 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
         $oJobQueue->updateJobInDB();
         updateExportformatQueueBearbeitet($oJobQueue);
     } else {
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "UPDATE texportformat 
                 SET dZuletztErstellt = now() 
                 WHERE kExportformat = " . (int)$oJobQueue->kKey, 4

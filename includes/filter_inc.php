@@ -9,7 +9,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return stdClass
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function buildSearchResults($FilterSQL, $NaviFilter)
 {
@@ -25,7 +25,7 @@ function buildSearchResults($FilterSQL, $NaviFilter)
  * @param int    $nPage
  * @param int    $nProductsPerPage
  * @param int    $nSettingMaxPageCount
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage, $nProductsPerPage = 25, $nSettingMaxPageCount = 25)
 {
@@ -39,7 +39,7 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
  * @param bool     $bExtern
  * @param stdClass $oSuchergebnisse
  * @return stdClass
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)
 {
@@ -48,8 +48,8 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
 }
 
 /**
- * @param stdClass|ProductFilter $NaviFilter
- * @return ProductFilter
+ * @param stdClass|\Filter\ProductFilter $NaviFilter
+ * @return \Filter\ProductFilter
  */
 function updateNaviFilter($NaviFilter)
 {
@@ -131,7 +131,7 @@ function extractParameters($NaviFilter)
 /**
  * @param object $NaviFilter
  * @return int
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibAnzahlFilter($NaviFilter)
 {
@@ -143,7 +143,7 @@ function gibAnzahlFilter($NaviFilter)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
 {
@@ -155,7 +155,7 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
 {
@@ -167,7 +167,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
 {
@@ -179,7 +179,7 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
 {
@@ -192,7 +192,7 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
  * @param object $NaviFilter
  * @param object $oSuchergebnisse
  * @return array|mixed
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse)
 {
@@ -204,7 +204,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibTagFilterOptionen($FilterSQL, $NaviFilter)
 {
@@ -216,7 +216,7 @@ function gibTagFilterOptionen($FilterSQL, $NaviFilter)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
@@ -233,7 +233,7 @@ function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
@@ -252,7 +252,7 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
  * @param Kategorie|null $oAktuelleKategorie
  * @param bool           $bForce
  * @return array|mixed
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie = null, $bForce = false)
 {
@@ -261,7 +261,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $a
  * @param object $b
  * @return int
@@ -276,7 +276,7 @@ function sortierMerkmalWerteNumerisch($a, $b)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
@@ -288,7 +288,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  * @param int    $kSpracheExt
  * @return int
@@ -300,7 +300,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  */
 function gibSuchFilterSQL($NaviFilter)
@@ -310,7 +310,7 @@ function gibSuchFilterSQL($NaviFilter)
 
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  */
 function gibHerstellerFilterSQL($NaviFilter)
@@ -319,7 +319,7 @@ function gibHerstellerFilterSQL($NaviFilter)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  */
 function gibKategorieFilterSQL($NaviFilter)
@@ -328,7 +328,7 @@ function gibKategorieFilterSQL($NaviFilter)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  */
 function gibBewertungSterneFilterSQL($NaviFilter)
@@ -337,7 +337,7 @@ function gibBewertungSterneFilterSQL($NaviFilter)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  */
 function gibPreisspannenFilterSQL($NaviFilter)
@@ -346,7 +346,7 @@ function gibPreisspannenFilterSQL($NaviFilter)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  */
 function gibTagFilterSQL($NaviFilter)
@@ -355,7 +355,7 @@ function gibTagFilterSQL($NaviFilter)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  */
 function gibMerkmalFilterSQL($NaviFilter)
@@ -364,7 +364,7 @@ function gibMerkmalFilterSQL($NaviFilter)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  */
 function gibSuchspecialFilterSQL($NaviFilter)
@@ -373,7 +373,7 @@ function gibSuchspecialFilterSQL($NaviFilter)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  */
 function gibArtikelAttributFilterSQL($NaviFilter)
@@ -385,7 +385,7 @@ function gibArtikelAttributFilterSQL($NaviFilter)
  * @param array $oMerkmalauswahl_arr
  * @param int   $kMerkmal
  * @return int
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibMerkmalPosition($oMerkmalauswahl_arr, $kMerkmal)
 {
@@ -397,7 +397,7 @@ function gibMerkmalPosition($oMerkmalauswahl_arr, $kMerkmal)
  * @param array $oMerkmalauswahl_arr
  * @param int   $kMerkmalWert
  * @return bool
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function checkMerkmalWertVorhanden($oMerkmalauswahl_arr, $kMerkmalWert)
 {
@@ -408,7 +408,7 @@ function checkMerkmalWertVorhanden($oMerkmalauswahl_arr, $kMerkmalWert)
 /**
  * @param object $NaviFilter
  * @return string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibArtikelsortierung($NaviFilter)
 {
@@ -419,7 +419,7 @@ function gibArtikelsortierung($NaviFilter)
 /**
  * @param string|int $nUsersortierung
  * @return int
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function mappeUsersortierung($nUsersortierung)
 {
@@ -445,7 +445,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
  * @param object       $oPreis
  * @param object|array $oPreisspannenfilter_arr
  * @return string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
 {
@@ -468,7 +468,7 @@ function berechneMaxMinStep($fMax, $fMin)
 
 /**
  * @return null|string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibBrotNaviName()
 {
@@ -481,7 +481,7 @@ function gibBrotNaviName()
 
 /**
  * @return string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibHeaderAnzeige()
 {
@@ -490,7 +490,7 @@ function gibHeaderAnzeige()
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param bool   $bSeo
  * @param object $oSuchergebnisse
  */
@@ -499,20 +499,20 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
     trigger_error('filter_inc.php: calling erstelleFilterLoesenURLs() is deprecated.', E_USER_DEPRECATED);
     Shop::getProductFilter()->getFilterURL()->createUnsetFilterURLs(
         new stdClass(),
-        new ProductFilterSearchResults($oSuchergebnisse)
+        new \Filter\ProductFilterSearchResults($oSuchergebnisse)
     );
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param string $cTitle
  * @return string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function truncateMetaTitle($cTitle)
 {
     trigger_error('filter_inc.php: calling truncateMetaTitle() is deprecated.', E_USER_DEPRECATED);
-    return (new Metadata(Shop::getProductFilter()))->truncateMetaTitle($cTitle);
+    return (new \Filter\Metadata(Shop::getProductFilter()))->truncateMetaTitle($cTitle);
 }
 
 /**
@@ -520,14 +520,14 @@ function truncateMetaTitle($cTitle)
  * @param object $oSuchergebnisse
  * @param array  $globalMeta
  * @return string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $globalMeta)
 {
     trigger_error('filter_inc.php: calling gibNaviMetaTitle() is deprecated.', E_USER_DEPRECATED);
 
-    return (new Metadata(updateNaviFilter($NaviFilter)))->generateMetaTitle(
-        new ProductFilterSearchResults($oSuchergebnisse),
+    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaTitle(
+        new \Filter\ProductFilterSearchResults($oSuchergebnisse),
         $globalMeta
     );
 }
@@ -538,15 +538,15 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $globalMeta)
  * @param object $oSuchergebnisse
  * @param array  $globalMeta
  * @return string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibNaviMetaDescription($articles, $NaviFilter, $oSuchergebnisse, $globalMeta)
 {
     trigger_error('filter_inc.php: calling gibNaviMetaDescription() is deprecated.', E_USER_DEPRECATED);
 
-    return (new Metadata(updateNaviFilter($NaviFilter)))->generateMetaDescription(
+    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaDescription(
         $articles,
-        new ProductFilterSearchResults($oSuchergebnisse),
+        new \Filter\ProductFilterSearchResults($oSuchergebnisse),
         $globalMeta
     );
 }
@@ -556,12 +556,12 @@ function gibNaviMetaDescription($articles, $NaviFilter, $oSuchergebnisse, $globa
  * @param object $NaviFilter
  * @param array  $excludeKeywords
  * @return mixed|string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibNaviMetaKeywords($articles, $NaviFilter, $excludeKeywords = [])
 {
     trigger_error('filter_inc.php: calling gibNaviMetaKeywords() is deprecated.', E_USER_DEPRECATED);
-    return (new Metadata(updateNaviFilter($NaviFilter)))->generateMetaKeywords($articles);
+    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaKeywords($articles);
 }
 
 /**
@@ -570,16 +570,16 @@ function gibNaviMetaKeywords($articles, $NaviFilter, $excludeKeywords = [])
  * @param object $NaviFilter
  * @param object $oSuchergebnisse
  * @return string
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibMetaStart($NaviFilter, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling gibMetaStart() is deprecated.', E_USER_DEPRECATED);
-    return (new Metadata(updateNaviFilter($NaviFilter)))->getMetaStart(new ProductFilterSearchResults($oSuchergebnisse));
+    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->getMetaStart(new \Filter\ProductFilterSearchResults($oSuchergebnisse));
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param string $cSuche
  * @param int    $kSprache
  * @return int
@@ -591,7 +591,7 @@ function gibSuchanfrageKey($cSuche, $kSprache)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  */
 function setzeUsersortierung($NaviFilter)
@@ -602,7 +602,7 @@ function setzeUsersortierung($NaviFilter)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param array  $Einstellungen
  * @param object $NaviFilter
  * @param int    $nDarstellung
@@ -618,7 +618,7 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $NaviFilter
  * @param bool   $bSeo
  * @param object $oSeitenzahlen
@@ -638,7 +638,7 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
  * @param array    $cSuch_arr
  * @param int      $nLimit
  * @throws Exception
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, $nLimit = 0)
 {
@@ -647,7 +647,7 @@ function bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, 
 
 /**
  * @throws Exception
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function isFulltextIndexActive()
 {
@@ -655,7 +655,7 @@ function isFulltextIndexActive()
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $a
  * @param object $b
  * @return int
@@ -670,7 +670,7 @@ function sortierKategoriepfade($a, $b)
  * @param null|array $Einstellungen
  * @param bool $bExtendedJTLSearch
  * @return array
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function gibSortierliste($Einstellungen = null, $bExtendedJTLSearch = false)
 {
@@ -679,7 +679,7 @@ function gibSortierliste($Einstellungen = null, $bExtendedJTLSearch = false)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param array $search
  * @param null|array $Einstellungen
  * @return null|stdClass
@@ -693,7 +693,7 @@ function gibNextSortPrio($search, $Einstellungen = null)
 /**
  * @param object $NaviFilter
  * @return mixed|stdClass
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function bauFilterSQL($NaviFilter)
 {
@@ -713,7 +713,7 @@ function bauFilterSQL($NaviFilter)
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0
  * @param object $oExtendedJTLSearchResponse
  * @return array
  * @throws Exception
@@ -729,39 +729,39 @@ function gibArtikelKeysExtendedJTLSearch($oExtendedJTLSearchResponse)
  * @param object $oSuchergebnisse
  * @param int    $nArtikelProSeite
  * @param int    $nLimitN
- * @deprecated since 4.07
+ * @deprecated since 5.0
  */
 function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20, $nLimitN = 20)
 {
     trigger_error('filter_inc.php: calling baueArtikelAnzahl() is deprecated and will have no effect', E_USER_DEPRECATED);
-    $oAnzahl = Shop::DB()->query(
+    $oAnzahl = Shop::Container()->getDB()->query(
         'SELECT count(*) AS nGesamtAnzahl
             FROM(
                 SELECT tartikel.kArtikel
                 FROM tartikel ' . 
-                (isset($FilterSQL->oSuchspecialFilterSQL->cJoin) ? $FilterSQL->oSuchspecialFilterSQL->cJoin : '') . ' ' . 
-                (isset($FilterSQL->oKategorieFilterSQL->cJoin) ? $FilterSQL->oKategorieFilterSQL->cJoin : '') . ' ' . 
-                (isset($FilterSQL->oSuchFilterSQL->cJoin) ? $FilterSQL->oSuchFilterSQL->cJoin : '') . ' ' . 
-                (isset($FilterSQL->oMerkmalFilterSQL->cJoin) ? $FilterSQL->oMerkmalFilterSQL->cJoin : '') . ' ' .
-                (isset($FilterSQL->oTagFilterSQL->cJoin) ? $FilterSQL->oTagFilterSQL->cJoin : '') . ' ' . 
-                (isset($FilterSQL->oBewertungSterneFilterSQL->cJoin) ? $FilterSQL->oBewertungSterneFilterSQL->cJoin : '') . ' ' . 
-                (isset($FilterSQL->oPreisspannenFilterSQL->cJoin) ? $FilterSQL->oPreisspannenFilterSQL->cJoin : '') .
+                ($FilterSQL->oSuchspecialFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oKategorieFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oSuchFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oMerkmalFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oTagFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oBewertungSterneFilterSQL->cJoin ?? '') . ' ' .
+                ($FilterSQL->oPreisspannenFilterSQL->cJoin ?? '') .
             ' LEFT JOIN tartikelsichtbarkeit 
                 ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = ' . Session::CustomerGroup()->getID() . '
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0 ' . 
                 gibLagerfilter() . ' ' . 
-                (isset($FilterSQL->oSuchspecialFilterSQL->cWhere) ? $FilterSQL->oSuchspecialFilterSQL->cWhere : '') . ' ' .
-                (isset($FilterSQL->oSuchFilterSQL->cWhere) ? $FilterSQL->oSuchFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oHerstellerFilterSQL->cWhere) ? $FilterSQL->oHerstellerFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oKategorieFilterSQL->cWhere) ? $FilterSQL->oKategorieFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oMerkmalFilterSQL->cWhere) ? $FilterSQL->oMerkmalFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oTagFilterSQL->cWhere) ? $FilterSQL->oTagFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oBewertungSterneFilterSQL->cWhere) ? $FilterSQL->oBewertungSterneFilterSQL->cWhere : '') . ' ' . 
-                (isset($FilterSQL->oPreisspannenFilterSQL->cWhere) ? $FilterSQL->oPreisspannenFilterSQL->cWhere : '') . 
+                ($FilterSQL->oSuchspecialFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oSuchFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oHerstellerFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oKategorieFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oMerkmalFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oTagFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oBewertungSterneFilterSQL->cWhere ?? '') . ' ' .
+                ($FilterSQL->oPreisspannenFilterSQL->cWhere ?? '') .
                 ' GROUP BY tartikel.kArtikel ' . 
-                (isset($FilterSQL->oMerkmalFilterSQL->cHaving) ? $FilterSQL->oMerkmalFilterSQL->cHaving : '') . 
+                ($FilterSQL->oMerkmalFilterSQL->cHaving ?? '') .
                 ') AS tAnzahl',
         1
     );
@@ -775,7 +775,7 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
         ]
     );
     $conf                 = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
-    $nPage                = isset($GLOBALS['NaviFilter']->nSeite) ? $GLOBALS['NaviFilter']->nSeite : 1;
+    $nPage                = $GLOBALS['NaviFilter']->nSeite ?? 1;
     $nSettingMaxPageCount = (int)$conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
 
     $oSuchergebnisse->GesamtanzahlArtikel = $oAnzahl->nGesamtAnzahl;
@@ -798,5 +798,5 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
     if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
         $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
     }
-    $oSuchergebnisse = new ProductFilterSearchResults($oSuchergebnisse);
+    $oSuchergebnisse = new \Filter\ProductFilterSearchResults($oSuchergebnisse);
 }

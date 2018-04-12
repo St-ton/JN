@@ -41,7 +41,7 @@ function saveShopLogo($cFiles_arr)
             $option->kEinstellungenSektion = CONF_LOGO;
             $option->cName                 = 'shop_logo';
             $option->cWert                 = $cFiles_arr['shopLogo']['name'];
-            Shop::DB()->update('teinstellungen', 'cName', 'shop_logo', $option);
+            Shop::Container()->getDB()->update('teinstellungen', 'cName', 'shop_logo', $option);
             Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 
             return 1; // Alles O.K.

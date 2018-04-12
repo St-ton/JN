@@ -13,9 +13,11 @@ if (!$oAccount->getIsAuthenticated()) {
     AdminIO::getInstance()->respondAndExit(new IOError('CSRF validation failed.', 403));
 }
 
-$jsonApi             = JSONAPI::getInstance();
-$io                  = AdminIO::getInstance()->setAccount($oAccount);
-$cms                 = CMS::getInstance()->setAdminAccount($oAccount);
+$jsonApi = JSONAPI::getInstance();
+$io      = AdminIO::getInstance()->setAccount($oAccount);
+
+Shop::Container()->getOPC()->registerAdminIOFunctions($io);
+
 $dashboardInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 $accountInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 $bannerInc           = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
@@ -26,7 +28,6 @@ $plzimportInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plz_ort_import_
 $redirectInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'redirect_inc.php';
 $dbupdaterInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
 $dbcheckInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
-$sslcheckInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sslcheck_inc.php';
 
 $io
     ->register('getPages', [$jsonApi, 'getPages'])
@@ -72,26 +73,41 @@ $io
     ->register('migrateToInnoDB_utf8', 'doMigrateToInnoDB_utf8', $dbcheckInc, 'DBCHECK_VIEW')
     ->register('redirectCheckAvailability', ['Redirect', 'checkAvailability'])
     ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
-    // CMS Live Editor
-    ->register('getPortletPreviewHtml', [$cms, 'getPortletPreviewHtml'], null, 'CONTENT_PAGE_VIEW')
-    ->register('getPortletConfigPanelHtml', [$cms, 'getPortletConfigPanelHtml'], null, 'CONTENT_PAGE_VIEW')
-    ->register('getPortletFullPreviewHtml', [$cms, 'getPortletFullPreviewHtml'], null, 'CONTENT_PAGE_VIEW')
-    ->register('getPortletDefaultProps', [$cms, 'getPortletDefaultProps'], null, 'CONTENT_PAGE_VIEW')
-    ->register('saveCmsPage', [$cms, 'savePage'], null, 'CONTENT_PAGE_VIEW')
-    ->register('getCmsPage', [$cms, 'getPage'], null, 'CONTENT_PAGE_VIEW')
-    ->register('getCmsPageRevision', [$cms, 'getPageRevision'], null, 'CONTENT_PAGE_VIEW')
-    ->register('getCmsPageRevisions', [$cms, 'getPageRevisions'], null, 'CONTENT_PAGE_VIEW')
-    ->register('lockCmsPage', [$cms, 'lockPage'], null, 'CONTENT_PAGE_VIEW')
-    ->register('unlockCmsPage', [$cms, 'unlockPage'], null, 'CONTENT_PAGE_VIEW')
-    ->register('getCmsTemplates', [$cms, 'getTemplates'], null, 'CONTENT_PAGE_VIEW')
-    ->register('storeCmsTemplate', [$cms, 'storeTemplate'], null, 'CONTENT_PAGE_VIEW')
-    ->register('deleteCmsTemplate', [$cms, 'deleteTemplate'], null, 'CONTENT_PAGE_VIEW')
-    ->register('getProductFilterOptions', [$cms, 'getFilterOptions'], null, 'CONTENT_PAGE_VIEW')
+
+    /*
+    // OnPage Composer
+    ->register('opcGetPage', [$opc, 'getPage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('opcGetPageRevisions', [$opc, 'getPageRevisions'], null, 'CONTENT_PAGE_VIEW')
+    ->register('opcSavePage', [$opc, 'savePage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('opcLockPage', [$opc, 'lockPage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('opcUnlockPage', [$opc, 'unlockPage'], null, 'CONTENT_PAGE_VIEW')
+    ->register('opcGetPortletInstance', [$opc, 'getPortletInstance'], null, 'CONTENT_PAGE_VIEW')
+    ->register('opcGetBlueprint', [$opc, 'getBlueprint'], null, 'CONTENT_PAGE_VIEW')
+    ->register('opcGetBlueprintList', [$opc, 'getBlueprintList'], null, 'CONTENT_PAGE_VIEW')
+    ->register('opcSaveBlueprint', [$opc, 'saveBlueprint'], null, 'CONTENT_PAGE_VIEW')
+    ->register('opcDeleteBlueprint', [$opc, 'deleteBlueprint'], null, 'CONTENT_PAGE_VIEW')
+
+//    ->register('getPortletPreviewHtml', [$cms, 'getPortletPreviewHtml'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('getPortletConfigPanelHtml', [$cms, 'getPortletConfigPanelHtml'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('getPortletFullPreviewHtml', [$cms, 'getPortletFullPreviewHtml'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('getPortletDefaultProps', [$cms, 'getPortletDefaultProps'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('saveCmsPage', [$cms, 'savePage'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('getCmsPage', [$cms, 'getPage'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('getCmsPageRevision', [$cms, 'getPageRevision'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('getCmsPageRevisions', [$cms, 'getPageRevisions'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('lockCmsPage', [$cms, 'lockPage'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('unlockCmsPage', [$cms, 'unlockPage'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('getCmsTemplates', [$cms, 'getTemplates'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('storeCmsTemplate', [$cms, 'storeTemplate'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('deleteCmsTemplate', [$cms, 'deleteTemplate'], null, 'CONTENT_PAGE_VIEW')
+//    ->register('getProductFilterOptions', [$cms, 'getFilterOptions'], null, 'CONTENT_PAGE_VIEW')
+*/
+
     // Other
     ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
     ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')
     ->register('createSearchIndex', 'createSearchIndex', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
-    ->register('getSSLCheck', null, $sslcheckInc, 'SHOP_UPDATE_VIEW')
+    ->register('clearSearchCache', 'clearSearchCache', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
     ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW')
 ;
 

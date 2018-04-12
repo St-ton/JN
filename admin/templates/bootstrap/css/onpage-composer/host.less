@@ -1,0 +1,245 @@
+@import "variables.less";
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.nav.nav-tabs {
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px 0 rgba(189, 189, 189, 0.8);
+
+    > li {
+        margin-bottom: 0;
+
+        > a {
+            position: relative;
+            display: block;
+            color: @navtab-text;
+            border: 2px solid transparent;
+
+            &:hover, &:focus {
+                color: @jtl-shop-darker;
+                text-decoration: none;
+                border: 2px solid transparent;
+            }
+        }
+
+        &.active {
+            > a, > a:hover, > a:focus {
+                color: #555;
+                border-bottom: 2px solid @jtl-shop-darker;
+                cursor: default;
+            }
+        }
+    }
+}
+
+#sidebarPanel {
+    width: @sidebar-width;
+    height: 100%;
+    float: left;
+    position: relative;
+
+    #topNav {
+        background-color: @jtl-shop;
+        background-image: none;
+        margin-bottom: 0;
+
+        a {
+            color: @brand-text;
+
+            &:hover {
+                color: @jtl-shop-darker;
+            }
+        }
+
+        .dropdown-menu {
+            a {
+                color: @jtl-shop-darker;
+                padding: 8px;
+
+                i.fa {
+                    color: @jtl-shop;
+                }
+            }
+
+            .divider {
+                margin: 0;
+            }
+        }
+    }
+
+    #portlets {
+        .collapseGroup {
+            display: block;
+            color: @jtl-shop-darker;
+            text-transform: uppercase;
+            padding: 8px 25px;
+            margin: 0 -15px 5px -15px;
+            text-decoration: none;
+        }
+
+        .portletButton {
+            color: @portlet-btn-text;
+            background-color: @portlet-btn-bg;
+            height: 90px;
+            display: block;
+            width: 100%;
+            border-radius: 5px;
+
+            .fa {
+                color: @jtl-shop;
+                font-size: 30px;
+                height: 30px;
+                max-width: 100%;
+            }
+        }
+    }
+
+    #blueprints {
+        .list-group-item .btn {
+            padding: 0;
+        }
+
+        .btn-group {
+            margin-right: 15px;
+
+            .blueprintButton {
+                text-align: left;
+            }
+
+            .blueprintDelete {
+                vertical-align: bottom;
+                border-left: 1px solid #eee;
+            }
+        }
+    }
+
+    #revisions,
+    #blueprints {
+        .list-group-item {
+            border: 0;
+            margin: 10px 0;
+            padding: 5px 10px;
+            background: #f7f7f7;
+            border-radius: 5px;
+            color: #23527c;
+        }
+    }
+
+    #revisions {
+        .list-group {
+            box-shadow: none;
+        }
+    }
+
+    #displayPreviews {
+        width: 100%;
+        text-align: center;
+        position: absolute;
+        bottom: 0;
+        background-color: @display-prevs-bg;
+
+        ul {
+            padding: 0;
+        }
+
+        li {
+            display: inline-block;
+            padding: 15px 10px 5px 10px;
+        }
+
+        a {
+            color: #d1d1d1;
+            &:hover,
+            &:active,
+            &:focus,
+            &.active {
+                color: @jtl-shop-darker;
+            }
+        }
+    }
+}
+
+#iframePanel {
+    height: 100%;
+    text-align: center;
+    background: @iframe-panel-bg;
+    margin-left: @sidebar-width;
+
+    iframe {
+        border: 0;
+        width: 100%;
+        height: 100%;
+        transition: all .2s ease-in-out;
+    }
+}
+
+.modal {
+    .modal-header {
+        background-color: @jtl-shop;
+        color: #fff;
+
+        button {
+            color: #fff;
+            opacity: 1;
+        }
+    }
+
+    .modal-body {
+        overflow: hidden;
+        .nav.nav-tabs {
+            margin: -15px -15px 15px -15px;
+        }
+    }
+
+    .modal-content {
+        .btn {
+            background-image: none;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 1.1em;
+        }
+        .btn-danger {
+            background-color: #bbb;
+        }
+        .btn-primary {
+            background-color: @jtl-shop;
+        }
+    }
+}
+
+#tourForm {
+    .tour-label {
+        padding-left: 0;
+        width: 100%;
+    }
+
+    input:checked + .panel-default > .panel-heading {
+        border-color: @tour-panel-color;
+        background-color: @tour-panel-color;
+        background-image: linear-gradient(to bottom, @tour-panel-color 0, @tour-panel-color2 100%);
+        background-repeat: repeat-x;
+        color: #fff;
+    }
+}
+
+// -- OLD --
+
+.cle-image-btn {
+    min-width: 64px;
+    min-height: 64px;
+
+    img {
+        min-width: 64px;
+        min-height: 64px;
+        max-width: 100%;
+        max-height: 100%;
+    }
+}

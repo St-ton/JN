@@ -8,9 +8,9 @@ if (!defined('PFAD_ROOT')) {
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
-$smarty = Shop::Smarty();
-$AktuelleSeite = 'SEITE';
-$Einstellungen = Shop::getSettings([
+$smarty                 = Shop::Smarty();
+$AktuelleSeite          = 'SEITE';
+$Einstellungen          = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -22,7 +22,6 @@ $Einstellungen = Shop::getSettings([
     CONF_CACHING,
     CONF_METAANGABEN
 ]);
-// hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
@@ -38,14 +37,13 @@ if (!isset($link->bHideContent) || !$link->bHideContent) {
     $link->Sprache = $linkHelper->getPageLinkLanguage($link->kLink);
 }
 $requestURL = baueURL($link, URLART_SEITE);
-$smarty->assign('cmsurl', $requestURL);
 if ($link->nLinkart === LINKTYP_STARTSEITE) {
     // Work Around für die Startseite
     $cCanonicalURL = Shop::getURL() . '/';
 } elseif (strpos($requestURL, '.php') === false) {
     $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
 }
-$sprachURL = isset($link->languageURLs) ? $link->languageURLs : baueSprachURLS($link, URLART_SEITE);
+$sprachURL = $link->languageURLs ?? baueSprachURLS($link, URLART_SEITE);
 //hole aktuelle Kategorie, falls eine gesetzt
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
@@ -87,8 +85,11 @@ if ($link->nLinkart === LINKTYP_STARTSEITE) {
     $smarty->assign('oHersteller_arr', Hersteller::getAll());
 } elseif ($link->nLinkart === LINKTYP_NEWSLETTERARCHIV) {
     $smarty->assign('oNewsletterHistory_arr', gibNewsletterHistory());
-} elseif ($link->nLinkart === LINKTYP_SITEMAP || $link->nLinkart === LINKTYP_404) {
+} elseif ($link->nLinkart === LINKTYP_SITEMAP) {
     gibSeiteSitemap($Einstellungen, $smarty);
+} elseif ($link->nLinkart === LINKTYP_404) {
+    gibSeiteSitemap($Einstellungen, $smarty);
+    Shop::setPageType(PAGE_404);
 } elseif ($link->nLinkart === LINKTYP_GRATISGESCHENK) {
     if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
         $oArtikelGeschenk_arr = gibGratisGeschenkArtikel($Einstellungen);
@@ -105,10 +106,7 @@ if ($link->nLinkart === LINKTYP_STARTSEITE) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
 // MetaTitle bei bFileNotFound redirect
-if (!isset($bFileNotFound)) {
-    $bFileNotFound = false;
-}
-if ($bFileNotFound) {
+if (Shop::getPageType() === PAGE_404) {
     $Navigation = createNavigation(
         $AktuelleSeite,
         0,
@@ -121,7 +119,7 @@ if ($bFileNotFound) {
         $AktuelleSeite,
         0,
         0,
-        (isset($link->Sprache->cName) ? $link->Sprache->cName : ''),
+        $link->Sprache->cName ?? '',
         $requestURL,
         Shop::$kLink
     );
@@ -130,18 +128,16 @@ $smarty->assign('Navigation', $Navigation)
        ->assign('Link', $link)
        ->assign('requestURL', $requestURL)
        ->assign('sprachURL', $sprachURL)
-       ->assign('bSeiteNichtGefunden', $bFileNotFound)
+       ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
        ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
-       ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+       ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
 
-$cMetaTitle       = isset($link->Sprache->cMetaTitle) ? $link->Sprache->cMetaTitle : null;
-$cMetaDescription = isset($link->Sprache->cMetaDescription) ? $link->Sprache->cMetaDescription : null;
-$cMetaKeywords    = isset($link->Sprache->cMetaKeywords) ? $link->Sprache->cMetaKeywords : null;
+$cMetaTitle       = $link->Sprache->cMetaTitle ?? null;
+$cMetaDescription = $link->Sprache->cMetaDescription ?? null;
+$cMetaKeywords    = $link->Sprache->cMetaKeywords ?? null;
 if (empty($cMetaTitle) || empty($cMetaDescription) || empty($cMetaKeywords)) {
     $kSprache            = Shop::getLanguage();
-    $oGlobaleMetaAngaben = isset($oGlobaleMetaAngabenAssoc_arr[$kSprache])
-        ? $oGlobaleMetaAngabenAssoc_arr[$kSprache]
-        : null;
+    $oGlobaleMetaAngaben = $oGlobaleMetaAngabenAssoc_arr[$kSprache] ?? null;
 
     if (is_object($oGlobaleMetaAngaben)) {
         if (empty($cMetaTitle)) {

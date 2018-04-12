@@ -3,8 +3,8 @@
     <Name>Evo</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <Version>4.06</Version>
-    <ShopVersion>406</ShopVersion>
+    <Version>5.0.0</Version>
+    <ShopVersion>500</ShopVersion>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Settings>
@@ -86,7 +86,7 @@
                 <Option Value="N">Nein</Option>
                 <Option Value="Y">Ja</Option>
             </Setting>
-            <Setting Description="Hintergrundfarbe" Key="backgroundcolor" Type="text" Value="#eee"/>
+            <Setting Description="Hintergrundfarbe" Key="backgroundcolor" Type="colorpicker" Value="#eee"/>
             <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico">
             </Setting>
             <Setting Description="Warenkorb-Mengen-Optionen in Dropdown anzeigen?" Key="qty_modify_dropdown" Type="select" Value="Y">

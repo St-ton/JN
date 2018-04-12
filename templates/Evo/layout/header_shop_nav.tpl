@@ -20,7 +20,7 @@
     <li class="dropdown hidden-xs">
         {if empty($smarty.session.Kunde->kKunde)}
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='login'}">
-                <i class="fa fa-user"></i> <span class="hidden-xs hidden-sm"> {lang key='login'} </span> <i class="caret"></i>
+                <i class="fa fa-user"></i> <span class="hidden-xs hidden-sm">{lang key='login'} </span> <i class="caret"></i>
             </a>
             <ul id="login-dropdown" class="dropdown-menu dropdown-menu-right">
                 <li>
@@ -82,11 +82,7 @@
     {*  COMPARE LIST *}
 
     {*  WISH LIST *}
-    {if isset($smarty.session.Wunschliste->kWunschliste) && $smarty.session.Wunschliste->CWunschlistePos_arr|count > 0}
-    <li class="hidden-xs wish-list-menu">
-        <a href="{get_static_route id='wunschliste.php'}" title="{lang key='goToWishlist'}" class="link_to_wishlist{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"><span class="fa fa-heart"></span><sup class="badge"><em>{$smarty.session.Wunschliste->CWunschlistePos_arr|count}</em></sup></a>
-    </li>
-    {/if}
+    {include file='layout/header_shop_nav_wish.tpl'}
     {*  WISH LIST *}
 
     {*  CART *}

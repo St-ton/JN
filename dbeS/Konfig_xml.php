@@ -111,7 +111,6 @@ function loescheKonfiggruppe($kKonfiggruppe)
         Jtllog::writeLog('Loesche Konfiggruppe: ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }
     if ($kKonfiggruppe > 0) {
-        require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.Konfiggruppe.php';
         if (class_exists('Konfiggruppe')) {
             // todo: alle items löschen
             $oKonfig = new Konfiggruppe($kKonfiggruppe);
@@ -133,7 +132,7 @@ function loescheKonfigitem($kKonfiggruppe)
         Jtllog::writeLog('Loesche kKonfigitem (gruppe): ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }
     if ($kKonfiggruppe > 0) {
-        Shop::DB()->delete('tkonfigitem', 'kKonfiggruppe', $kKonfiggruppe);
+        Shop::Container()->getDB()->delete('tkonfigitem', 'kKonfiggruppe', $kKonfiggruppe);
     }
 }
 
@@ -147,7 +146,6 @@ function loescheKonfigitempreis($kKonfigitem)
         Jtllog::writeLog('Loesche Konfigitempreis: ' . $kKonfigitem, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }
     if ($kKonfigitem > 0) {
-        require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.Konfigitempreis.php';
         if (class_exists('Konfigitempreis')) {
             $oKonfig = new Konfigitempreis($kKonfigitem);
             $nRows   = $oKonfig->delete();

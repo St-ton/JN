@@ -9,14 +9,14 @@
 {if !empty($cNewsErr)}
     <div class="alert alert-danger">{lang key='newsRestricted' section='news'}</div>
 {else}
-    {include file='snippets/live_content_area.tpl' id='editor_news_article_prepend'}
+    {include file='snippets/opc_mount_point.tpl' id='opc_news_article_prepend'}
     <article itemprop="mainEntity" itemscope itemtype="https://schema.org/BlogPosting">
         <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$oNewsArchiv->cSeo}">
         <h1 itemprop="headline">
             {$oNewsArchiv->cBetreff}
         </h1>
         {if isset({$oNewsArchiv->cPreviewImage})}
-            <meta itemprop="image" content="{$ShopURL}/{$oNewsArchiv->cPreviewImage}">
+            <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->cPreviewImage}">
         {/if}
         <div class="author-meta text-muted bottom10">
             {if empty($oNewsArchiv->dGueltigVon)}{assign var=dDate value=$oNewsArchiv->dErstellt}{else}{assign var=dDate value=$oNewsArchiv->dGueltigVon}{/if}
@@ -25,7 +25,7 @@
             {else}
                 <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
                     <span itemprop="name">{$meta_publisher}</span>
-                    <meta itemprop="logo" content="{$ShopURL}/{$ShopLogoURL}" />
+                    <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}" />
                 </div>
                 <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="creation-date">{$oNewsArchiv->dGueltigVon_de}</span>
             {/if}
@@ -33,13 +33,13 @@
             {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
         </div>
 
-        {include file='snippets/live_content_area.tpl' id='editor_news_content_prepend'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_news_content_prepend'}
         <div itemprop="articleBody" class="row">
             <div class="col-xs-12">
                 {$oNewsArchiv->cText}
             </div>
         </div>
-        {include file='snippets/live_content_area.tpl' id='editor_news_content_append'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_news_content_append'}
 
         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
             <div class="top10 news-categorylist">
@@ -175,6 +175,6 @@
                 <div class="alert alert-danger">{lang key="newsLogin" section="news"}</div>
             {/if}
         {/if}
-        {include file='snippets/live_content_area.tpl' id='editor_news_comments_append'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_news_comments_append'}
     </article>
 {/if}

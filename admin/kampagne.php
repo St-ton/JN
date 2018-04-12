@@ -175,7 +175,7 @@ if ($step === 'kampagne_uebersicht') {
         $cSQLWHERE    = '';
         baueDefDetailSELECTWHERE($cSQLSELECT, $cSQLWHERE, $cStamp);
 
-        $oStats_arr = Shop::DB()->query(
+        $oStats_arr = Shop::Container()->getDB()->query(
             "SELECT kKampagne, kKampagneDef, kKey " . $cSQLSELECT . "
                 FROM tkampagnevorgang
                 " . $cSQLWHERE . "

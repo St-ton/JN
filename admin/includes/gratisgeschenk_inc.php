@@ -12,7 +12,7 @@ function holeAktiveGeschenke($cSQL)
 {
     $oAktiveGeschenk_arr = [];
     if (strlen($cSQL) > 0) {
-        $oAktiveGeschenkTMP_arr = Shop::DB()->query(
+        $oAktiveGeschenkTMP_arr = Shop::Container()->getDB()->query(
             "SELECT kArtikel
                 FROM tartikelattribut
                 WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'
@@ -43,7 +43,7 @@ function holeHaeufigeGeschenke($cSQL)
     $oHaeufigGeschenk_arr = [];
 
     if (strlen($cSQL) > 0) {
-        $oHaeufigGeschenkTMP_arr = Shop::DB()->query(
+        $oHaeufigGeschenkTMP_arr = Shop::Container()->getDB()->query(
             "SELECT kArtikel, count(*) AS nAnzahl
                 FROM twarenkorbpos
                 WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
@@ -77,7 +77,7 @@ function holeLetzten100Geschenke($cSQL)
     $oLetzten100Geschenk_arr = [];
 
     if (strlen($cSQL) > 0) {
-        $oLetzten100GeschenkTMP_arr = Shop::DB()->query(
+        $oLetzten100GeschenkTMP_arr = Shop::Container()->getDB()->query(
             "SELECT sub1.kArtikel, count(*) AS nAnzahl
                 FROM
                     (
@@ -114,7 +114,7 @@ function holeLetzten100Geschenke($cSQL)
  */
 function gibAnzahlAktiverGeschenke()
 {
-    $nAnzahlGeschenke = Shop::DB()->query(
+    $nAnzahlGeschenke = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tartikelattribut
             WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'", 1
@@ -132,7 +132,7 @@ function gibAnzahlAktiverGeschenke()
  */
 function gibAnzahlHaeufigGekaufteGeschenke()
 {
-    $nAnzahlGeschenke = Shop::DB()->query(
+    $nAnzahlGeschenke = Shop::Container()->getDB()->query(
         "SELECT count(DISTINCT(kArtikel)) AS nAnzahl
             FROM twarenkorbpos
             WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK, 1
@@ -150,7 +150,7 @@ function gibAnzahlHaeufigGekaufteGeschenke()
  */
 function gibAnzahlLetzten100Geschenke()
 {
-    $nAnzahlGeschenke = Shop::DB()->query(
+    $nAnzahlGeschenke = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM
                 (

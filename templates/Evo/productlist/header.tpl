@@ -34,7 +34,7 @@
     <div class="desc clearfix">
         {if $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif' && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
           <div class="img pull-left">
-            <img class="img-responsive" src="{$ShopURL}/{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
+            <img class="img-responsive" src="{$imageBaseURL}/{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
           </div>
         {/if}
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
@@ -60,13 +60,13 @@
 {/block}
 
 {block name="productlist-subcategories"}
-{include file='snippets/live_content_area.tpl' id='editor_productlist_subcats_prepend'}
+{include file='snippets/opc_mount_point.tpl' id='opc_productlist_subcats_prepend'}
 {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
     <div class="row row-eq-height content-cats-small clearfix">
         {foreach name=unterkats from=$oUnterKategorien_arr item=Unterkat}
             <div class="col-xs-6 col-md-4 col-lg-3">
                 <div class="thumbnail">
-                    <a href="{$Unterkat->cURL}">
+                    <a href="{$Unterkat->cURLFull}">
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                             <img src="{$Unterkat->cBildURLFull}" alt="{$Unterkat->cName}"/>
                         {/if}
@@ -98,7 +98,7 @@
         {/foreach}
     </div>
 {/if}
-{include file='snippets/live_content_area.tpl' id='editor_productlist_subcats_append'}
+{include file='snippets/opc_mount_point.tpl' id='opc_productlist_subcats_append'}
 {/block}
 
 {include file='productwizard/index.tpl'}

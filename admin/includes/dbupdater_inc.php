@@ -11,7 +11,7 @@
  */
 function resetteUpdateDB()
 {
-    $oColumns_arr = Shop::DB()->query("SHOW COLUMNS FROM tversion", 2);
+    $oColumns_arr = Shop::Container()->getDB()->query("SHOW COLUMNS FROM tversion", 2);
     if (is_array($oColumns_arr) && count($oColumns_arr) > 0) {
         $cColumns_arr = [];
         foreach ($oColumns_arr as $oColumns) {
@@ -19,25 +19,25 @@ function resetteUpdateDB()
         }
         if (count($cColumns_arr) > 0) {
             if (!in_array('nZeileVon', $cColumns_arr, true)) {
-                Shop::DB()->query("ALTER TABLE tversion ADD nZeileVon INT UNSIGNED NOT NULL AFTER nVersion", 4);
+                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD nZeileVon INT UNSIGNED NOT NULL AFTER nVersion", 4);
             }
             if (!in_array('nZeileBis', $cColumns_arr, true)) {
-                Shop::DB()->query("ALTER TABLE tversion ADD nZeileBis INT UNSIGNED NOT NULL AFTER nZeileVon", 4);
+                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD nZeileBis INT UNSIGNED NOT NULL AFTER nZeileVon", 4);
             }
             if (!in_array('nInArbeit', $cColumns_arr, true)) {
-                Shop::DB()->query("ALTER TABLE tversion ADD nInArbeit TINYINT NOT NULL AFTER nZeileBis", 4);
+                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD nInArbeit TINYINT NOT NULL AFTER nZeileBis", 4);
             }
             if (!in_array('nFehler', $cColumns_arr, true)) {
-                Shop::DB()->query("ALTER TABLE tversion ADD nFehler TINYINT UNSIGNED NOT NULL AFTER nInArbeit", 4);
+                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD nFehler TINYINT UNSIGNED NOT NULL AFTER nInArbeit", 4);
             }
             if (!in_array('nTyp', $cColumns_arr, true)) {
-                Shop::DB()->query("ALTER TABLE tversion ADD nTyp TINYINT UNSIGNED NOT NULL AFTER nFehler", 4);
+                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD nTyp TINYINT UNSIGNED NOT NULL AFTER nFehler", 4);
             }
             if (!in_array('cFehlerSQL', $cColumns_arr, true)) {
-                Shop::DB()->query("ALTER TABLE tversion ADD cFehlerSQL VARCHAR(255) NOT NULL AFTER nTyp", 4);
+                Shop::Container()->getDB()->query("ALTER TABLE tversion ADD cFehlerSQL VARCHAR(255) NOT NULL AFTER nTyp", 4);
             }
         }
-        Shop::DB()->query(
+        Shop::Container()->getDB()->query(
             "UPDATE tversion
                 SET nZeileVon = 1,
                 nZeileBis = 0,
@@ -50,7 +50,7 @@ function resetteUpdateDB()
     // Template Cache leeren
     loescheTPLCacheUpdater();
 
-    if (!Shop::DB()->getErrorCode()) {
+    if (!Shop::Container()->getDB()->getErrorCode()) {
         return true;
     }
 
@@ -125,9 +125,9 @@ function updateZeilenBis($cDatei)
         while ($cData = fgets($dir_handle)) {
             $nRow++;
         }
-        Shop::DB()->query("UPDATE tversion SET nZeileBis = " . (int)$nRow, 4);
+        Shop::Container()->getDB()->query("UPDATE tversion SET nZeileBis = " . (int)$nRow, 4);
 
-        if (!Shop::DB()->getErrorCode()) {
+        if (!Shop::Container()->getDB()->getErrorCode()) {
             return true;
         }
     }
@@ -140,7 +140,7 @@ function updateZeilenBis($cDatei)
  */
 function gibShopVersion()
 {
-    return Shop::DB()->query("SELECT * FROM tversion", 1);
+    return Shop::Container()->getDB()->query("SELECT * FROM tversion", 1);
 }
 
 /**
@@ -196,7 +196,7 @@ function mappeFehlerCode($nFehlerCode)
  */
 function updateFertig($nVersion)
 {
-    Shop::DB()->query(
+    Shop::Container()->getDB()->query(
         "UPDATE tversion
             SET nVersion = " . (int)$nVersion . ",
             nZeileVon = 1,
@@ -218,7 +218,7 @@ function updateFertig($nVersion)
  */
 function naechsterUpdateStep($nTyp, $nZeileBis = 1)
 {
-    Shop::DB()->query(
+    Shop::Container()->getDB()->query(
         "UPDATE tversion
             SET nZeileVon = 1,
             nZeileBis = " . (int)$nZeileBis . ",
@@ -228,7 +228,7 @@ function naechsterUpdateStep($nTyp, $nZeileBis = 1)
             cFehlerSQL = ''", 4
     );
 
-    Shop::DB()->query("UPDATE tversion SET nInArbeit = 0", 4);
+    Shop::Container()->getDB()->query("UPDATE tversion SET nInArbeit = 0", 4);
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'dbupdater.php?nErrorCode=-1');
     exit();
 }

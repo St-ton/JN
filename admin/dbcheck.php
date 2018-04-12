@@ -21,8 +21,8 @@ $fulltextIndizes   = null;
 
 if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 'script' && validateToken()) {
     $scriptName = 'innodb_and_utf8_update_'
-        . str_replace('.', '_', Shop::DB()->getConfig()['host']) . '_'
-        . Shop::DB()->getConfig()['database'] . '_'
+        . str_replace('.', '_', Shop::Container()->getDB()->getConfig()['host']) . '_'
+        . Shop::Container()->getDB()->getConfig()['database'] . '_'
         . date('YmdHis') . '.sql';
 
     header('Content-Type: text/plain');

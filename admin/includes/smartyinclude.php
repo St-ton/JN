@@ -12,14 +12,11 @@ $currentTemplateDir        = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDi
 $resourcePaths             = $template->getResources(isset($Einstellungen['template']['general']['use_minify'])
     && $Einstellungen['template']['general']['use_minify'] === 'Y');
 $oAccount                  = new AdminAccount();
-// Account
-if (!isset($oAccount) || get_class_methods($oAccount) === null) {
-    require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
-    $oAccount = new AdminAccount();
-}
-$adminLoginGruppe          = !empty($oAccount->account()->oGroup->kAdminlogingruppe) ? (int)$oAccount->account()->oGroup->kAdminlogingruppe : -1;
+$adminLoginGruppe          = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
+    ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
+    : -1;
 // Einstellungen
-$configSections = Shop::DB()->query(
+$configSections = Shop::Container()->getDB()->query(
     "SELECT teinstellungensektion.*, COUNT(teinstellungenconf.kEinstellungenSektion) AS anz
         FROM teinstellungensektion 
         LEFT JOIN teinstellungenconf
@@ -36,11 +33,11 @@ foreach ($configSections as $configSection) {
     $configSection->cLinkname             = $configSection->cName;
     $configSection->cURL                  = 'einstellungen.php?kSektion=' . $configSection->kEinstellungenSektion;
 }
-$oLinkOberGruppe_arr = Shop::DB()->selectAll('tadminmenugruppe', 'kAdminmenueOberGruppe', 0, '*', 'nSort');
+$oLinkOberGruppe_arr = Shop::Container()->getDB()->selectAll('tadminmenugruppe', 'kAdminmenueOberGruppe', 0, '*', 'nSort');
 
 if (count($oLinkOberGruppe_arr) > 0) {
     // JTL Search Plugin aktiv?
-    $oPluginSearch = Shop::DB()->query(
+    $oPluginSearch = Shop::Container()->getDB()->query(
         "SELECT kPlugin, cName
             FROM tplugin
             WHERE cPluginID = 'jtl_search'", 1
@@ -49,7 +46,7 @@ if (count($oLinkOberGruppe_arr) > 0) {
         $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr = [];
         $oLinkOberGruppe_arr[$i]->oLink_arr       = [];
 
-        $oLinkGruppe_arr = Shop::DB()->selectAll(
+        $oLinkGruppe_arr = Shop::Container()->getDB()->selectAll(
             'tadminmenugruppe',
             'kAdminmenueOberGruppe',
             (int)$oLinkOberGruppe->kAdminmenueGruppe,
@@ -77,7 +74,7 @@ if (count($oLinkOberGruppe_arr) > 0) {
         }
         // Plugin Work Around
         if ($oLinkOberGruppe->kAdminmenueGruppe == LINKTYP_BACKEND_PLUGINS && $oAccount->permission('PLUGIN_ADMIN_VIEW')) {
-            $oPlugin_arr = Shop::DB()->query(
+            $oPlugin_arr = Shop::Container()->getDB()->query(
                 "SELECT DISTINCT tplugin.kPlugin, tplugin.cName, tplugin.cPluginID, tplugin.nPrio
                     FROM tplugin INNER JOIN tpluginadminmenu
                         ON tplugin.kPlugin = tpluginadminmenu.kPlugin
@@ -96,7 +93,7 @@ if (count($oLinkOberGruppe_arr) > 0) {
             $pluginManager                              = new stdClass();
             $pluginManager->cName                       = '&Uuml;bersicht';
             $pluginManager->break                       = false;
-            $pluginManager->oLink_arr                   = Shop::DB()->selectAll(
+            $pluginManager->oLink_arr                   = Shop::Container()->getDB()->selectAll(
                 'tadminmenu',
                 'kAdminmenueGruppe',
                 (int)$oLinkOberGruppe->kAdminmenueGruppe,
@@ -146,10 +143,10 @@ if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];
 }
 
-$smarty->assign('SID', SID)
-       ->assign('URL_SHOP', $shopURL)
+$smarty->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', getTokenInput())
        ->assign('shopURL', $shopURL)
+       ->assign('shopVersion', Shop::getVersion())
        ->assign('PFAD_ADMIN', PFAD_ADMIN)
        ->assign('JTL_CHARSET', JTL_CHARSET)
        ->assign('session_name', session_name())

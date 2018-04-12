@@ -1,0 +1,57 @@
+<?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
+
+namespace OPC;
+
+class PortletGroup
+{
+    /**
+     * @var string
+     */
+    protected $name = '';
+
+    /**
+     * @var Portlet[]
+     */
+    protected $portlets = [];
+
+    /**
+     * PortletGroup constructor.
+     * @param string $name
+     * @throws \Exception
+     */
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return Portlet[]
+     */
+    public function getPortlets()
+    {
+        return $this->portlets;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param Portlet $portlet
+     * @return $this
+     */
+    public function addPortlet(Portlet $portlet)
+    {
+        $this->portlets[] = $portlet;
+
+        return $this;
+    }
+}

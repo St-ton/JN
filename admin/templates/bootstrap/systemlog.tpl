@@ -42,11 +42,13 @@
                                     <div class="col-md-3 col-xs-12">
                                         <label>
                                             <input type="checkbox" name="selected[]" value="{$oLog->kLog}">
-                                            {if $oLog->nLevel == 1}
+                                            {if $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_ERROR}
                                                 <span class="label label-danger">{#systemlogError#}</span>
-                                            {elseif $oLog->nLevel == 2}
+                                            {elseif $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_WARNING}
+                                                <span class="label label-warning">{#systemlogWarning#}</span>
+                                            {elseif $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_INFO}
                                                 <span class="label label-success">{#systemlogNotice#}</span>
-                                            {elseif $oLog->nLevel == 4}
+                                            {else}
                                                 <span class="label label-info info">{#systemlogDebug#}</span>
                                             {/if}
                                             {$oLog->dErstellt|date_format:"d.m.Y - H:i:s"}
@@ -54,9 +56,9 @@
                                     </div>
                                     <div class="col-md-9 col-xs-12">
                                         <pre class="logtext
-                                            {if $oLog->nLevel == 1}bg-danger
-                                            {elseif $oLog->nLevel == 2}bg-success
-                                            {elseif $oLog->nLevel == 4}bg-info{/if}">{$oLog->cLog}</pre>
+                                            {if $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_WARNING}bg-danger
+                                            {elseif $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_INFO}bg-success
+                                            {else}bg-info{/if}">{$oLog->cLog}</pre>
                                     </div>
                                 </div>
                             </div>
@@ -72,10 +74,9 @@
                 {/if}
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <a href="systemlog.php?action=clearsyslog&token={$smarty.session.jtl_token}"
-                           class="btn btn-danger">
+                        <button name="action" value="clearsyslog" class="btn btn-danger">
                             <i class="fa fa-trash"></i> {#systemlogReset#}
-                        </a>
+                        </button>
                         <button name="action" value="delselected" class="btn btn-warning">
                             <i class="fa fa-trash"></i> {#deleteSelected#}
                         </button>
@@ -93,29 +94,19 @@
             <div class="panel-body">
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="JTLLOG_LEVEL_ERROR">{#systemlogError#}</label>
+                        <label for="minLogLevel">Min. Loglevel</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="checkbox" name="nLevelFlags[]" value="{$JTLLOG_LEVEL_ERROR}"
-                               id="JTLLOG_LEVEL_ERROR" {if $nLevelFlag_arr[$JTLLOG_LEVEL_ERROR] != 0}checked{/if}>
-                    </span>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="JTLLOG_LEVEL_NOTICE">{#systemlogNotice#}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <input type="checkbox" name="nLevelFlags[]" value="{$JTLLOG_LEVEL_NOTICE}"
-                               id="JTLLOG_LEVEL_NOTICE" {if $nLevelFlag_arr[$JTLLOG_LEVEL_NOTICE] != 0}checked{/if}>
-                    </span>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="JTLLOG_LEVEL_DEBUG">{#systemlogDebug#}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <input type="checkbox" name="nLevelFlags[]" value="{$JTLLOG_LEVEL_DEBUG}"
-                               id="JTLLOG_LEVEL_DEBUG" {if $nLevelFlag_arr[$JTLLOG_LEVEL_DEBUG] != 0}checked{/if}>
+                        <select name="minLogLevel" id="minLogLevel" class="form-control combo">
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_EMERGENCY} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_EMERGENCY}">Emergency</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_ALERT} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_ALERT}">Alert</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_CRITICAL} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_CRITICAL}">Critical</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_ERROR} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_ERROR}">Error</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_WARNING} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_WARNING}">Warning</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_NOTICE} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_NOTICE}">Notice</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_INFO} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_INFO}">Info</option>
+                            <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_DEBUG} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_DEBUG}">Debug</option>
+                        </select>
                     </span>
                 </div>
             </div>

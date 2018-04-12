@@ -120,7 +120,6 @@ function loescheDownload($kDownload)
         Jtllog::writeLog('Loesche Download: ' . $kDownload, JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
     }
     if ($kDownload > 0) {
-        require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.Download.php';
         if (class_exists('Download')) {
             $oDownload = new Download($kDownload);
             $nRows     = $oDownload->delete();

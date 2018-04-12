@@ -5,7 +5,6 @@
  */
 
 require_once __DIR__ . '/NetSync_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.Upload.php';
 
 /**
  * Class Uploader

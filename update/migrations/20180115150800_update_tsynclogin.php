@@ -16,7 +16,7 @@ class Migration_20180115150800 extends Migration implements IMigration
 
     public function up()
     {
-        $values = Shop::DB()->select('tsynclogin', [], []);
+        $values = Shop::Container()->getDB()->select('tsynclogin', [], []);
 
         $this->execute("DELETE FROM `tsynclogin`");
         $this->execute(
@@ -37,12 +37,12 @@ class Migration_20180115150800 extends Migration implements IMigration
             $values->cPass = password_hash($values->cPass, PASSWORD_DEFAULT);
         }
 
-        Shop::DB()->insert('tsynclogin', $values);
+        Shop::Container()->getDB()->insert('tsynclogin', $values);
     }
 
     public function down()
     {
-        $columns = Shop::DB()->query("SHOW COLUMNS FROM tsynclogin LIKE 'kSynclogin'", NiceDB::RET_SINGLE_OBJECT);
+        $columns = Shop::Container()->getDB()->query("SHOW COLUMNS FROM tsynclogin LIKE 'kSynclogin'", \DB\ReturnType::SINGLE_OBJECT);
 
         if ($columns && $columns->Field === 'kSynclogin') {
             $this->execute(

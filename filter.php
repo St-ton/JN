@@ -12,7 +12,6 @@ Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
 /** @global ProductFilter $NaviFilter*/
 $Einstellungen      = Shopsetting::getInstance()->getAll();
-$productsPerPage    = [5, 10, 25, 50, 100];
 $bestsellers        = [];
 $suchanfrage        = '';
 $doSearch           = true;
@@ -46,7 +45,7 @@ $NaviFilter->getMetaData()->setUserSort($AktuelleKategorie);
 $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
 $pages           = $oSuchergebnisse->getPages();
 if ($pages->AktuelleSeite > 0 && $pages->MaxSeiten > 0
-    && ($oSuchergebnisse->getProductCount() === 0 || ($pages->AktuelleSeite > $pages->MaxSeiten))
+    && ($oSuchergebnisse->getVisibleProductCount() === 0 || ($pages->AktuelleSeite > $pages->MaxSeiten))
 ) {
     // diese Seite hat keine Artikel -> 301 redirect auf 1. Seite
     http_response_code(301);
@@ -54,7 +53,7 @@ if ($pages->AktuelleSeite > 0 && $pages->MaxSeiten > 0
     exit;
 }
 // Umleiten falls SEO keine Artikel ergibt
-doMainwordRedirect($NaviFilter, $oSuchergebnisse->getProductCount(), true);
+doMainwordRedirect($NaviFilter, $oSuchergebnisse->getVisibleProductCount(), true);
 // Bestsellers
 if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
     $productsIDs = $oSuchergebnisse->getProducts()->map(function ($article) {
@@ -74,11 +73,9 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
         $limit,
         $minsells
     );
-    $products = $oSuchergebnisse->getProducts()->getItems();
+    $products = $oSuchergebnisse->getProducts()->all();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
-$smarty->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']))
-       ->assign('oBestseller_arr', $bestsellers);
 if (verifyGPCDataInteger('zahl') > 0) {
     $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
     setFsession(0, 0, $_SESSION['ArtikelProSeite']);
@@ -119,7 +116,7 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
             $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
             $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
                 $KategorieInhalt->Unterkategorien,
-                isset($KategorieInhalt->TopArtikel) ? $KategorieInhalt->TopArtikel : 0
+                $KategorieInhalt->TopArtikel ?? 0
             );
         }
         $smarty->assign('KategorieInhalt', $KategorieInhalt);
@@ -146,19 +143,21 @@ AuswahlAssistent::startIfRequired(
     [],
     $NaviFilter
 );
-$smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
+$smarty->assign('NaviFilter', $NaviFilter)
+       ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']))
+       ->assign('oBestseller_arr', $bestsellers)
+       ->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
        ->assign('code_benachrichtigung_verfuegbarkeit',
            generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
        ->assign('oNaviSeite_arr', $oNavigationsinfo->buildPageNavigation(
            true,
            $pages,
            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
-       ->assign('ArtikelProSeite', $productsPerPage)
        ->assign('Navigation', $oNavigationsinfo->getBreadCrumb())
        ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())
        ->assign('Suchergebnisse', $oSuchergebnisse)
-       ->assign('requestURL', isset($requestURL) ? $requestURL : null)
-       ->assign('sprachURL', isset($sprachURL) ? $sprachURL : null)
+       ->assign('requestURL', $requestURL ?? null)
+       ->assign('sprachURL', $sprachURL ?? null)
        ->assign('oNavigationsinfo', $oNavigationsinfo)
        ->assign('SEO', true)
        ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->getProductCount() >=
@@ -167,7 +166,7 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
+$oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
 $smarty->assign(
     'meta_title',
     $oNavigationsinfo->generateMetaTitle(
@@ -178,7 +177,7 @@ $smarty->assign(
 )->assign(
     'meta_description',
     $oNavigationsinfo->generateMetaDescription(
-        $oSuchergebnisse->getProducts()->getItems(),
+        $oSuchergebnisse->getProducts()->all(),
         $oSuchergebnisse,
         $oGlobaleMetaAngabenAssoc_arr,
         $AktuelleKategorie
@@ -186,7 +185,7 @@ $smarty->assign(
 )->assign(
     'meta_keywords',
     $oNavigationsinfo->generateMetaKeywords(
-        $oSuchergebnisse->getProducts()->getItems(),
+        $oSuchergebnisse->getProducts()->all(),
         $AktuelleKategorie
     )
 );

@@ -39,7 +39,7 @@ if (auth()) {
     }
 }
 
-Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
 echo $return;
 
 /**
@@ -93,7 +93,7 @@ function bearbeiteUpdates($xml)
         if (isset($xml['globals']['tsteuerzone']) && is_array($xml['globals']['tsteuerzone'])) {
             $steuerzonen_arr = mapArray($xml['globals'], 'tsteuerzone', $GLOBALS['mSteuerzone']);
             DBDelInsert('tsteuerzone', $steuerzonen_arr, 1);
-            Shop::DB()->query("DELETE FROM tsteuerzoneland", 4);
+            Shop::Container()->getDB()->query("DELETE FROM tsteuerzoneland", 4);
             $taxCount = count($steuerzonen_arr);
             for ($i = 0; $i < $taxCount; $i++) {
                 if (count($steuerzonen_arr) < 2) {
@@ -106,8 +106,8 @@ function bearbeiteUpdates($xml)
         if (isset($xml['globals']['tkundengruppe']) && is_array($xml['globals']['tkundengruppe'])) {
             $kundengruppen_arr = mapArray($xml['globals'], 'tkundengruppe', $GLOBALS['mKundengruppe']);
             DBDelInsert('tkundengruppe', $kundengruppen_arr, 1);
-            Shop::DB()->query("TRUNCATE TABLE tkundengruppensprache", 4);
-            Shop::DB()->query("TRUNCATE TABLE tkundengruppenattribut", 4);
+            Shop::Container()->getDB()->query("TRUNCATE TABLE tkundengruppensprache", 4);
+            Shop::Container()->getDB()->query("TRUNCATE TABLE tkundengruppenattribut", 4);
             $cgCount = count($kundengruppen_arr);
             for ($i = 0; $i < $cgCount; $i++) {
                 if (count($kundengruppen_arr) < 2) {
@@ -127,15 +127,15 @@ function bearbeiteUpdates($xml)
                 Jtllog::writeLog('oWarenlager_arr: ' . print_r($oWarenlager_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
             }
             //Lagersichtbarkeit für Shop zwischenspeichern
-            $lagersichtbarkeit_arr = Shop::DB()->query("SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1", 2);
+            $lagersichtbarkeit_arr = Shop::Container()->getDB()->query("SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1", 2);
             //Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
-            Shop::DB()->query("DELETE FROM twarenlager WHERE 1", 4);
+            Shop::Container()->getDB()->query("DELETE FROM twarenlager WHERE 1", 4);
             
             DBUpdateInsert('twarenlager', $oWarenlager_arr, 'kWarenlager');
             //Lagersichtbarkeit übertragen
             if (!empty($lagersichtbarkeit_arr)) {
                 foreach ($lagersichtbarkeit_arr as $lager) {
-                    Shop::DB()->update('twarenlager', 'kWarenlager', $lager->kWarenlager, $lager);
+                    Shop::Container()->getDB()->update('twarenlager', 'kWarenlager', $lager->kWarenlager, $lager);
                 }
             }
         }
@@ -147,7 +147,7 @@ function bearbeiteUpdates($xml)
                 unset($_me->kBezugsMassEinheit);
             }
             DBDelInsert('tmasseinheit', $oMasseinheit_arr, 1);
-            Shop::DB()->query("TRUNCATE TABLE tmasseinheitsprache", 4);
+            Shop::Container()->getDB()->query("TRUNCATE TABLE tmasseinheitsprache", 4);
             $meCount = count($oMasseinheit_arr);
             for ($i = 0; $i < $meCount; $i++) {
                 if (count($oMasseinheit_arr) < 2) {
@@ -174,7 +174,7 @@ function bearbeiteUpdates($xml)
 function loescheWarengruppe($kWarengruppe)
 {
     $kWarengruppe = (int)$kWarengruppe;
-    Shop::DB()->delete('twarengruppe', 'kWarengruppe', $kWarengruppe);
+    Shop::Container()->getDB()->delete('twarengruppe', 'kWarengruppe', $kWarengruppe);
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Warengruppe geloescht: ' . $kWarengruppe, JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
     }

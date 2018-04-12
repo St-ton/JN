@@ -7,11 +7,12 @@ if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();
 }
-require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 /** @global JTLSmarty $smarty */
 $AktuelleSeite    = 'ARTIKEL';
 $oPreisverlauf    = null;
 $bPreisverlauf    = false;
+$bereitsBewertet  = false;
 $Artikelhinweise  = [];
 $PositiveFeedback = [];
 $nonAllowed       = [];
@@ -30,7 +31,7 @@ $Einstellungen                = Shop::getSettings([
     CONF_KONTAKTFORMULAR,
     CONF_CACHING
 ]);
-$oGlobaleMetaAngabenAssoc_arr = Metadata::getGlobalMetaData();
+$oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
 // Bewertungsguthaben
 $fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
 // Hinweise und Fehler sammeln - Nur wenn bisher kein Fehler gesetzt wurde!
@@ -81,17 +82,18 @@ if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'])
 // 404
 if (empty($AktuellerArtikel->kArtikel)) {
     // #6317 - send 301 redirect when filtered
-    if (((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
-        || ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL)
+    if ((((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
+        || ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL))
+        && $Einstellungen['global']['artikel_artikelanzeigefilter_seo'] === '301'
     ) {
         http_response_code(301);
         header('Location: ' . $shopURL);
         exit;
     }
     // 404 otherwise
-    Shop::$is404             = true;
-    Shop::$kLink             = 0;
-    Shop::$kArtikel          = 0;
+    Shop::$is404    = true;
+    Shop::$kLink    = 0;
+    Shop::$kArtikel = 0;
 
     return;
 }
@@ -177,6 +179,14 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
 } else {
     $oBewertung_arr = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
+if (isset($_SESSION['Kunde']) && !empty($oBewertung_arr)) {
+    foreach ($oBewertung_arr as $Bewertung) {
+        if ((int)$Bewertung->kKunde === Session::Customer()->getID()) {
+            $bereitsBewertet = true;
+            break;
+        }
+    }
+}
 
 $pagination = (new Pagination('ratings'))
     ->setItemArray($oBewertung_arr)
@@ -245,15 +255,11 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
-       ->assign('PFAD_FLASHPLAYER', $shopURL . PFAD_FLASHPLAYER)
        ->assign('PFAD_BILDER', PFAD_BILDER)
        ->assign('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', FKT_ATTRIBUT_ATTRIBUTEANHAENGEN)
        ->assign('FKT_ATTRIBUT_WARENKORBMATRIX', FKT_ATTRIBUT_WARENKORBMATRIX)
        ->assign('FKT_ATTRIBUT_INHALT', FKT_ATTRIBUT_INHALT)
        ->assign('FKT_ATTRIBUT_MAXBESTELLMENGE', FKT_ATTRIBUT_MAXBESTELLMENGE)
-       ->assign('FKT_ATTRIBUT_ARTIKELDETAILS_TPL', FKT_ATTRIBUT_ARTIKELDETAILS_TPL)
-       ->assign('FKT_ATTRIBUT_ARTIKELKONFIG_TPL', FKT_ATTRIBUT_ARTIKELKONFIG_TPL)
-       ->assign('FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS', FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS)
        ->assign('KONFIG_ITEM_TYP_ARTIKEL', KONFIG_ITEM_TYP_ARTIKEL)
        ->assign('KONFIG_ITEM_TYP_SPEZIAL', KONFIG_ITEM_TYP_SPEZIAL)
        ->assign('KONFIG_ANZEIGE_TYP_CHECKBOX', KONFIG_ANZEIGE_TYP_CHECKBOX)
@@ -262,7 +268,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI', KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI)
        ->assign('ratingPagination', $pagination)
        ->assign('bewertungSterneSelected', $bewertung_sterne)
-       ->assign('bPreisverlauf', count($oPreisverlauf) > 1)
+       ->assign('bPreisverlauf', is_array($oPreisverlauf) && count($oPreisverlauf) > 1)
        ->assign('preisverlaufData', $oPreisverlauf)
        ->assign('NavigationBlaettern', $nav);
 
@@ -278,6 +284,7 @@ if (isAjaxRequest()) {
     $smarty->assign('listStyle', isset($_GET['isListStyle']) ? StringHandler::filterXSS($_GET['isListStyle']) : '');
 }
 
+$smarty->assign('bereitsBewertet', $bereitsBewertet);
 $smarty->display('productdetails/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

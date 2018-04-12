@@ -13,6 +13,7 @@
                 {/if}
                 <div class="col-sm-5{if !$showXSellingCart} col-sm-offset-4{/if} text-center">
                     <h4 class="success-title">{$hinweis}</h4>
+                    {block name="pushed-success-product-cell"}
                     <div class="product-cell text-center{if isset($class)} {$class}{/if}">
                         <div class="row">
                             <div class="col-xs-4 col-xs-offset-4">
@@ -29,6 +30,7 @@
                             </div>{* /caption *}
                         </div>
                     </div>{* /product-cell *}
+                    {/block}
                     <hr>
                     <p class="btn-group btn-group-justified btn-group-full" role="group">
                         <a href="{get_static_route id='warenkorb.php'}" class="btn btn-default btn-basket"><i class="fa fa-shopping-cart"></i> {lang key='gotoBasket'}</a>
@@ -40,12 +42,14 @@
                     </p>
 *}
                 </div>
+                {block name="pushed-success-x-sell"}
                 {if $showXSellingCart}
                     <div class="col-xs-7 recommendations hidden-xs">
                         <h4 class="text-center">{lang key='customerWhoBoughtXBoughtAlsoY' section='productDetails'}</h4>
-                        {include file='snippets/product_slider.tpl' id='slider-xsell' productlist=$Xselling->Kauf->Artikel title='' showPanel=false}
+                        {include file='snippets/product_slider.tpl' id='' productlist=$Xselling->Kauf->Artikel title='' showPanel=false}
                     </div>
                 {/if}
+                {/block}
             </div>
         </div>
     </div>

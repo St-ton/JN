@@ -5,7 +5,7 @@
     
     {block name="aside"}
     {has_boxes position='left' assign='hasLeftBox'}
-    {if !$bExclusive && $hasLeftBox && !empty($boxes.left)}
+    {if !$bExclusive && $hasLeftBox && !empty($boxes.left|strip_tags|trim)}
         {block name="footer-sidepanel-left"}
         <aside id="sidepanel_left"
                class="hidden-print col-xs-12 {if $nSeitenTyp === 2} col-md-4 col-md-pull-8 {/if} col-lg-3 col-lg-pull-9">
@@ -46,14 +46,12 @@
             {if isset($arrBoxBottom) && count($arrBoxBottom) > 0}
                 <div class="row" id="footer-boxes">
                     {foreach name=bottomBoxes from=$arrBoxBottom item=box}
-                        {if ($box.obj->kBoxvorlage != 0 && $box.obj->anzeigen === 'Y' ) ||
-                        ($box.obj->kBoxvorlage == 0 && !empty($box.obj->oContainer_arr))}
+                        {if ($box.obj->kBoxvorlage != 0 && $box.obj->anzeigen === 'Y' )
+                        || ($box.obj->kBoxvorlage == 0 && !empty($box.obj->oContainer_arr))}
                             <div class="{block name="footer-boxes-class"}col-xs-6 col-md-3{/block}">
                                 {if isset($box.obj) && isset($box.tpl)}
-                                    {if $smarty.foreach.bottomBoxes.iteration < 10}
-                                        {assign var=oBox value=$box.obj}
-                                        {include file=$box.tpl}
-                                    {/if}
+                                    {assign var=oBox value=$box.obj}
+                                    {include file=$box.tpl}
                                 {/if}
                             </div>
                         {/if}
@@ -213,6 +211,7 @@
         <div id="copyright" {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'boxed'} class="container-block"{/if}>
             {block name="footer-copyright"}
                 <div class="container{if $Einstellungen.template.theme.pagelayout === 'full-width'}-fluid{/if}">
+                    {assign var=isBrandFree value=Shop::isBrandfree()}
                     {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                         <div class="container-block clearfix">
                     {/if}
@@ -221,16 +220,16 @@
                             {if !empty($meta_copyright)}<span itemprop="copyrightHolder">&copy; {$meta_copyright}</span>{/if}
                             {if $Einstellungen.global.global_zaehler_anzeigen === 'Y'}{lang key="counter" section="global"}: {$Besucherzaehler}{/if}
                         </li>
-                        <li class="col-xs-12 col-md-6 text-center">
-                            {if !empty($Einstellungen.global.global_fusszeilehinweis)}
-                                {$Einstellungen.global.global_fusszeilehinweis}
-                            {/if}
+                        {if !empty($Einstellungen.global.global_fusszeilehinweis)}
+                        <li class="col-xs-12 {if $isBrandFree}col-md-9{else}col-md-6{/if} text-center">
+                            {$Einstellungen.global.global_fusszeilehinweis}
                         </li>
-                        <li class="col-xs-12 col-md-3 text-right" id="system-credits">
-                            {if !Shop::isBrandfree()}
-                            Powered by <a href="http://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="noopener nofollow">JTL-Shop</a>
-                            {/if}
-                        </li>
+                        {/if}
+                        {if !$isBrandFree}
+                            <li class="col-xs-12 col-md-3 text-right" id="system-credits">
+                                Powered by <a href="https://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="noopener nofollow">JTL-Shop</a>
+                            </li>
+                        {/if}
                     </ul>
                      {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                         </div>
@@ -274,8 +273,8 @@
               window[disableStr] = true;
             }
 
-            var gaProperty = '{$Einstellungen.global.global_google_analytics_id}';
-            var disableStr = 'ga-disable-' + gaProperty;
+            var gaProperty = '{$Einstellungen.global.global_google_analytics_id}',
+                disableStr = 'ga-disable-' + gaProperty;
             if (document.cookie.indexOf(disableStr + '=true') > -1) {
               window[disableStr] = true;
             } else {

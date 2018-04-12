@@ -1,10 +1,16 @@
 # JTL-Shop Changelog
 
+## [4.06.4]
+
+Dieses Update enthält Bugfixes und Sicherheitsupdates.
+
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl4064
+
 ## [4.06.3]
 
 Dieses Update enthält Bugfixes und Sicherheitsupdates.
 
-Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: http://jtl-url.de/cl4063
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl4063
 
 ## [4.06.2]
 

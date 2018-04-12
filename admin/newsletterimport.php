@@ -44,7 +44,7 @@ if ((int)$_POST['newsletterimport'] === 1 &&
 }
 
 $smarty->assign('sprachen', gibAlleSprachen())
-       ->assign('kundengruppen', Shop::DB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
+       ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
        ->assign('hinweis', $hinweis)
        ->assign('fehler', $fehler)
        ->display('newsletterimport.tpl');
@@ -91,7 +91,7 @@ function generatePW($length = 8, $myseed = 1)
  */
 function pruefeNLEBlacklist($cMail)
 {
-    $oNEB = Shop::DB()->select(
+    $oNEB = Shop::Container()->getDB()->select(
         'tnewsletterempfaengerblacklist',
         'cMail',
         StringHandler::filterXSS(strip_tags($cMail))
@@ -146,7 +146,7 @@ function create_NewsletterCode($dbfeld, $email)
  */
 function unique_NewsletterCode($dbfeld, $code)
 {
-    $res = Shop::DB()->select('tnewsletterempfaenger', $dbfeld, $code);
+    $res = Shop::Container()->getDB()->select('tnewsletterempfaenger', $dbfeld, $code);
 
     return !(isset($res->kNewsletterEmpfaenger) && $res->kNewsletterEmpfaenger > 0);
 }
@@ -184,7 +184,7 @@ function processImport($fmt, $data)
         return 'kein Nachname! &Uuml;bergehe diesen Datensatz.';
     }
 
-    $old_mail = Shop::DB()->select('tnewsletterempfaenger', 'cEmail', $newsletterempfaenger->cEmail);
+    $old_mail = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'cEmail', $newsletterempfaenger->cEmail);
     if (isset($old_mail->kNewsletterEmpfaenger) && $old_mail->kNewsletterEmpfaenger > 0) {
         return "Newsletterempf&auml;nger mit dieser Emailadresse bereits vorhanden: (" .
             $newsletterempfaenger->cEmail . ")! &Uuml;bergehe Datensatz.";
@@ -203,7 +203,7 @@ function processImport($fmt, $data)
     $newsletterempfaenger->kSprache     = $_POST['kSprache'];
     // Ist der Newsletterempfaenger registrierter Kunde?
     $newsletterempfaenger->kKunde = 0;
-    $KundenDaten                  = Shop::DB()->select('tkunde', 'cMail', $newsletterempfaenger->cEmail);
+    $KundenDaten                  = Shop::Container()->getDB()->select('tkunde', 'cMail', $newsletterempfaenger->cEmail);
     if ($KundenDaten->kKunde > 0) {
         $newsletterempfaenger->kKunde   = $KundenDaten->kKunde;
         $newsletterempfaenger->kSprache = $KundenDaten->kSprache;
@@ -220,7 +220,7 @@ function processImport($fmt, $data)
     $oTMP->cLoeschCode  = $newsletterempfaenger->cLoeschCode;
     $oTMP->nAktiv       = $newsletterempfaenger->nAktiv;
     // In DB schreiben
-    if (Shop::DB()->insert('tnewsletterempfaenger', $oTMP)) {
+    if (Shop::Container()->getDB()->insert('tnewsletterempfaenger', $oTMP)) {
         // NewsletterEmpfaengerHistory fuettern
         $oTMP               = new stdClass();
         $oTMP->cAnrede      = $newsletterempfaenger->cAnrede;
@@ -233,7 +233,7 @@ function processImport($fmt, $data)
         $oTMP->cOptCode     = $newsletterempfaenger->cOptCode;
         $oTMP->cLoeschCode  = $newsletterempfaenger->cLoeschCode;
         $oTMP->cAktion      = 'Daten-Import';
-        $res                = Shop::DB()->insert('tnewsletterempfaengerhistory', $oTMP);
+        $res                = Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $oTMP);
         if ($res) {
             return 'Datensatz OK. Importiere: ' .
                 $newsletterempfaenger->cVorname . ' ' .

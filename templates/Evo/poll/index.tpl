@@ -6,10 +6,8 @@
     {if $step === 'umfrage_uebersicht'}
         {include file='poll/overview.tpl'}
     {elseif $step === 'umfrage_durchfuehren'}
-        {if (!empty($oCMSPage->cFinalHtml_arr['editor_replace_all']) && empty($smarty.get.editpage))}
-            {$oCMSPage->cFinalHtml_arr['editor_replace_all']}
-        {elseif (!empty($smarty.get.editpage) && !empty($smarty.get.cAction) && $smarty.get.cAction === 'replace')}
-            {include file='snippets/live_content_area.tpl' id='editor_replace_all'}
+        {if $opcPage->isReplace()}
+            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
         {else}
             {include file='poll/progress.tpl'}
         {/if}

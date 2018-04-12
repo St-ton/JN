@@ -96,7 +96,7 @@ class AdminSession
             $_SESSION['jtl_token'] = generateCSRFToken();
         }
         if (!isset($_SESSION['kSprache'])) {
-            $lang                 = Shop::DB()->select('tsprache', 'cISO', 'ger');
+            $lang                 = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
             $_SESSION['kSprache'] = isset($lang->kSprache) ? (int)$lang->kSprache : 1;
         }
     }

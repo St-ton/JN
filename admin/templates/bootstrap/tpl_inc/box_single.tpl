@@ -36,7 +36,7 @@
         </div>
         <div class="col-sm-2 col-xs-6 {if $oBox->kContainer > 0}boxSubName{/if}">
 
-            <input class="left{if ($nPage!=0 && !empty($oBox->cFilter)) || ($nPage==0 && !empty($oBox->nVisibility) && $oBox->nVisibility === 2)} tristate{/if}" style="margin-right: 5px;" type="checkbox" name="aktiv[]"
+            <input class="left{if $oBox->bAktiv == 1 && ($nPage!=0 && !empty($oBox->cFilter)) || ($nPage==0 && !empty($oBox->nVisibility) && $oBox->nVisibility === 2)} tristate{/if}" style="margin-right: 5px;" type="checkbox" name="aktiv[]"
                    {if $oBox->bAktiv == 1}checked="checked"{/if} value="{$oBox->kBox}">
             <input type="hidden" name="box[]" value="{$oBox->kBox}">
             <input class="form-control text-right" type="number" size="3" name="sort[]" value="{$oBox->nSort}"

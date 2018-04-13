@@ -22,14 +22,16 @@
             {else}
                 {if $oBox->kContainer == 0 && !empty($oBox->cFilter)}
                     {#visibleOnPages#}
-                    <ul class="box-active-filters" id="box-active-filters-{$oBox->kBox}">
+                {/if}
+                <ul class="box-active-filters" id="box-active-filters-{$oBox->kBox}">
+                    {if $oBox->kContainer == 0 && !empty($oBox->cFilter)}
                         {foreach name="filters" from=$oBox->cFilter item=filter}
                             {if $filter !== ''}
                                 <li class="selected-item"><i class="fa fa-filter"></i> {$filter.name}</li>
                             {/if}
                         {/foreach}
-                    </ul>
-                {/if}
+                    {/if}
+                </ul>
             {/if}
         </div>
         <div class="col-sm-2 col-xs-6 {if $oBox->kContainer > 0}boxSubName{/if}">

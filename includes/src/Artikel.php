@@ -4608,35 +4608,51 @@ class Artikel
         $fPreis        = ($fPreisStaffel > 0) ? $fPreisStaffel : $this->Preise->fVKNetto;
         $currency      = Session::Currency();
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
+        $ust           = gibUst($this->kSteuerklasse);
 
-        if ($this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()) {
-            $this->cLocalizedVPE[0] = gibPreisStringLocalized(
-                berechneBrutto($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, gibUst($this->kSteuerklasse), $nGenauigkeit),
-                $currency,
-                1,
-                $nGenauigkeit
-            ) . ' - '
+        if ((int)Shop::getPageType() !== PAGE_ARTIKEL && $this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()) {
+            if ($this->Preise->oPriceRange->rangeWidth() <= $this->conf['artikeluebersicht']['artikeluebersicht_pricerange_width']) {
+                $this->cLocalizedVPE[0] = gibPreisStringLocalized(
+                    berechneBrutto($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . ' - '
                 . gibPreisStringLocalized(
-                    berechneBrutto($this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert, gibUst($this->kSteuerklasse), $nGenauigkeit),
+                    berechneBrutto($this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
                     $currency,
                     1,
                     $nGenauigkeit
                 ) . $per;
-            $this->cLocalizedVPE[1] = gibPreisStringLocalized(
-                $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
-                $currency,
-                1,
-                $nGenauigkeit
-            ) . ' - '
+                $this->cLocalizedVPE[1] = gibPreisStringLocalized(
+                    $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . ' - '
                 . gibPreisStringLocalized(
                     $this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert,
                     $currency,
                     1,
                     $nGenauigkeit
                 ) . $per;
+            } else {
+                $this->cLocalizedVPE[0] = Shop::Lang()->get('priceStarting') . ' ' . gibPreisStringLocalized(
+                    berechneBrutto($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
+                $this->cLocalizedVPE[1] = Shop::Lang()->get('priceStarting') . ' ' . gibPreisStringLocalized(
+                    $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
+            }
         } else {
             $this->cLocalizedVPE[0] = gibPreisStringLocalized(
-                berechneBrutto($fPreis / $this->fVPEWert, gibUst($this->kSteuerklasse), $nGenauigkeit),
+                berechneBrutto($fPreis / $this->fVPEWert, $ust, $nGenauigkeit),
                 $currency,
                 1,
                 $nGenauigkeit

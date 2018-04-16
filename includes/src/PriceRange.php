@@ -270,7 +270,16 @@ class PriceRange
      */
     public function isRange()
     {
-        return $this->minNettoPrice < $this->maxNettoPrice;
+        return round($this->minNettoPrice, 2) < round($this->maxNettoPrice, 2);
+    }
+
+    /**
+     * get range width in percent
+     * @return float|int
+     */
+    public function rangeWidth()
+    {
+        return 100 / $this->minNettoPrice * $this->maxNettoPrice - 100;
     }
 
     /**

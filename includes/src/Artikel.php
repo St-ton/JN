@@ -4610,7 +4610,7 @@ class Artikel
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
         $ust           = gibUst($this->kSteuerklasse);
 
-        if ((int)Shop::getPageType() !== PAGE_ARTIKEL && $this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()) {
+        if ((int)Shop::getPageType() === PAGE_ARTIKELLISTE && $this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()) {
             if ($this->Preise->oPriceRange->rangeWidth() <= $this->conf['artikeluebersicht']['artikeluebersicht_pricerange_width']) {
                 $this->cLocalizedVPE[0] = gibPreisStringLocalized(
                     berechneBrutto($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
@@ -4824,7 +4824,7 @@ class Artikel
         foreach ($this->Preise->fPreis_arr as $key => $fPreis) {
             $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $fPreis, $this->Preise->nAnzahl_arr[$key]);
 
-            $this->fStaffelpreisVPE_arr[] = [
+            $this->cStaffelpreisLocalizedVPE_arr[] = [
                 gibPreisStringLocalized(
                     berechneBrutto(
                         $basePriceUnit->fBasePreis,
@@ -4843,7 +4843,7 @@ class Artikel
                 )  . $per . $basePriceUnit->cVPEEinheit
             ];
 
-            $this->cStaffelpreisLocalizedVPE_arr[] = [
+            $this->fStaffelpreisVPE_arr[] = [
                 berechneBrutto(
                     $basePriceUnit->fBasePreis,
                     gibUst($this->kSteuerklasse),
@@ -4852,7 +4852,7 @@ class Artikel
                 $basePriceUnit->fBasePreis,
             ];
 
-            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = $this->fStaffelpreisVPE_arr[$key] ?? null;
+            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = $this->cStaffelpreisLocalizedVPE_arr[$key] ?? null;
         }
 
         return $this;

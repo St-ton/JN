@@ -32,7 +32,7 @@
                         <span>{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}</span>
                     {/if}
                 {else}
-                    <span>{if $Artikel->Preise->oPriceRange->isRange()}{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}{else}{$Artikel->Preise->cVKLocalized[$NettoPreise]}{/if}</span>
+                    <span>{if $Artikel->Preise->oPriceRange->isRange() && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}{else}{$Artikel->Preise->cVKLocalized[$NettoPreise]}{/if}</span>
                 {/if}{if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
             {/block}
             {block name="price-snippets"}

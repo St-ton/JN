@@ -1334,15 +1334,15 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         }
     }
 
-    // Plausi EditorPortlets (falls vorhanden)
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'])
+    // Plausi OPC Portlets (falls vorhanden)
+    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets']) &&
+        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'])
     ) {
-        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) &&
-            is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) &&
-            count($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) > 0
+        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) &&
+            is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) &&
+            count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) > 0
         ) {
-            foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet'] as $u => $Portlet_arr) {
+            foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'] as $u => $Portlet_arr) {
                 preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
                 preg_match("/[0-9]+/", $u, $cTreffer2_arr);
                 if (strlen($cTreffer2_arr[0]) === strlen($u)) {
@@ -1360,9 +1360,8 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                     if (strlen($cTreffer1_arr[0]) === strlen($Portlet_arr['Class'])) {
                         if (!file_exists(
                             $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                            PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_PORTLET .
-                            'class.Portlet' . $Portlet_arr['Class'] . '_' .
-                            $XML_arr['jtlshop3plugin'][0]['PluginID'] . '.php'
+                            PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_PORTLETS . $Portlet_arr['Class'] . '/' .
+                            $Portlet_arr['Class'] . '.php'
                         )
                         ) {
                             return 135;// Die Datei für die Klasse des Portlets existiert nicht
@@ -1854,7 +1853,7 @@ function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
 // 16 = Ein Exportformat konnte nicht in die Datenbank gespeichert werden
 // 17 = Ein Template konnte nicht in die Datenbank gespeichert werden
 // 18 = Eine Uninstall Datei konnte nicht in die Datenbank gespeichert werden
-// 19 = Ein EditorPortlet konnte nicht in die Datenbank gespeichert werden
+// 19 = Ein OPC Portlet konnte nicht in die Datenbank gespeichert werden
 
 // ### logikSQLDatei
 // 22 = Plugindaten fehlen
@@ -3024,25 +3023,25 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             return 15;// Ein AdminWidget konnte nicht in die Datenbank gespeichert werden
         }
     }
-    // OPC-Portlets topcportlet fuellen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) &&
-        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet']) > 0
+    // OPC-Portlets in topcportlet fuellen
+    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) &&
+        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets']) &&
+        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) &&
+        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) > 0
     ) {
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['EditorPortlet'][0]['Portlet'] as $u => $Portlet_arr) {
+        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'] as $u => $Portlet_arr) {
             preg_match("/[0-9]+/", $u, $cTreffer2_arr);
             if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                $oEditorPortlet          = new stdClass();
-                $oEditorPortlet->kPlugin = (int)$kPlugin;
-                $oEditorPortlet->cTitle  = $Portlet_arr['Title'];
-                $oEditorPortlet->cClass  = $Portlet_arr['Class'] . '_' . $oPlugin->cPluginID;
-                $oEditorPortlet->cGroup  = $Portlet_arr['Group'];
-                $oEditorPortlet->bActive = (int)$Portlet_arr['Active'];
-                $kPortlet                = Shop::DB()->insert('topcportlet', $oEditorPortlet);
+                $oPortlet          = new stdClass();
+                $oPortlet->kPlugin = (int)$kPlugin;
+                $oPortlet->cTitle  = $Portlet_arr['Title'];
+                $oPortlet->cClass  = $Portlet_arr['Class'];
+                $oPortlet->cGroup  = $Portlet_arr['Group'];
+                $oPortlet->bActive = (int)$Portlet_arr['Active'];
+                $kPortlet          = Shop::Container()->getDB()->insert('topcportlet', $oPortlet);
 
                 if (!$kPortlet) {
-                    return 19;// Ein EditorPortlet konnte nicht in die Datenbank gespeichert werden
+                    return 19;// Ein OPC Portlet konnte nicht in die Datenbank gespeichert werden
                 }
             }
         }

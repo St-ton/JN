@@ -318,8 +318,9 @@ Iframe.prototype = {
             }
 
             if(elm !== null) {
+                var portletData = elm.data('portlet');
                 elm.addClass('opc-selected');
-                this.portletLabel.text(elm.data('portlet').title);
+                this.portletLabel.text(portletData ? portletData.title : '');
                 this.portletToolbar.show();
                 this.toolbarPopper.reference = elm[0];
                 this.toolbarPopper.update();

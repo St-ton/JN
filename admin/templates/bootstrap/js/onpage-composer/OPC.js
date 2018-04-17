@@ -34,4 +34,14 @@ OPC.prototype = {
         this.gui.hideLoader();
     },
 
+    selectImageProp: function(propName)
+    {
+        this.gui.selectImageProp(propName);
+    },
+
+    setConfigSaveCallback: function(callback)
+    {
+        this.gui.setConfigSaveCallback(callback);
+    },
+
 };

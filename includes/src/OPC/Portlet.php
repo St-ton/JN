@@ -14,9 +14,9 @@ abstract class Portlet implements \JsonSerializable
     protected $id = 0;
 
     /**
-     * @var int
+     * @var null|\Plugin
      */
-    protected $pluginId = 0;
+    protected $plugin = null;
 
     /**
      * @var string
@@ -103,20 +103,41 @@ abstract class Portlet implements \JsonSerializable
             $res .= "<div class='form-group'><label for='config-$propname'>$label</label>";
 
             if ($type === 'text') {
+                // type: text
+
                 $res .= "<input type='text' class='form-control' name='$propname' value='$prop'
                     id='config-$propname'>";
             } elseif ($type === 'select') {
+                // type: select
+
                 $res .= "<select class='form-control' name='$propname'>";
 
                 foreach ($propDesc['options'] as $option) {
-                    if ($prop === $option) {
-                        $res .= "<option value='$option' selected>$option</option>";
-                    } else {
-                        $res .= "<option value='$option'>$option</option>";
-                    }
+                    $res .= "<option value='$option' " . ($prop === $option ? " selected" : "") . ">"
+                        . "$option</option>";
                 }
 
                 $res .= '</select>';
+            } elseif ($type === 'image') {
+                // type: image
+
+                $previewImgUrl = empty($prop) ? \Shop::getURL() . '/gfx/keinBild.gif' : $prop;
+
+                $res .= "<input type='hidden' name='$propname' value='$prop'>"
+                    . "<button type='button' class='btn btn-default image-btn' "
+                    . "onclick='opc.selectImageProp(\"$propname\")'>"
+                    . "<img src='$previewImgUrl' alt='Chosen image' id='preview-img-$propname'>"
+                    . "</button>";
+            } elseif ($type === 'richtext') {
+                // type: richtext
+
+                $res .= "<textarea name='text' id='textarea-$propname' class='form-control'>"
+                    . htmlspecialchars($prop)
+                    . "</textarea>"
+                    . "<script>CKEDITOR.replace('textarea-$propname', {baseFloatZIndex: 9000});</script>"
+                    . "<script>opc.setConfigSaveCallback(function() {"
+                    . "$('#textarea-$propname').val(CKEDITOR.instances['textarea-$propname'].getData());"
+                    . "})</script>";
             }
 
             $res .= "</div>";
@@ -157,7 +178,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getConfigPanelHtml($instance)
     {
-        return '';
+        return $this->getAutoConfigPanelHtml($instance);
     }
 
     /**
@@ -177,6 +198,14 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getPropertyTabs()
+    {
+        return [];
+    }
+
+    /**
      * @return int
      */
     public function getId()
@@ -189,7 +218,11 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getPluginId()
     {
-        return $this->pluginId;
+        if ($this->plugin !== null) {
+            return 0;
+        }
+
+        return $this->plugin->kPlugin;
     }
 
     /**
@@ -241,7 +274,11 @@ abstract class Portlet implements \JsonSerializable
      */
     public function setPluginId(int $pluginId) : Portlet
     {
-        $this->pluginId = $pluginId;
+        if ($pluginId > 0) {
+            $this->plugin = new \Plugin($pluginId);
+        } else {
+            $this->plugin = null;
+        }
 
         return $this;
     }
@@ -277,6 +314,14 @@ abstract class Portlet implements \JsonSerializable
         $this->group = $group;
 
         return $this;
+    }
+
+    /**
+     * @return null|\Plugin
+     */
+    public function getPlugin()
+    {
+        return $this->plugin;
     }
 
     /**

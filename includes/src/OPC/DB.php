@@ -177,6 +177,14 @@ class DB
             throw new \Exception("The OPC portlet with the id '$id' could not be found.");
         }
 
+        if ($portletDB->kPlugin > 0) {
+            $plugin  = new \Plugin($portletDB->kPlugin);
+            $include = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
+                . $plugin->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_PORTLETS
+                . $portletDB->cClass . '/' . $portletDB->cClass . '.php';
+            require_once $include;
+        }
+
         /** @var Portlet $portlet */
         $class   = '\\OPC\\Portlets\\' . $portletDB->cClass;
         $portlet = new $class();

@@ -9,6 +9,17 @@ namespace OPC;
 class PortletInstance implements \JsonSerializable
 {
     /**
+     * @var array
+     */
+    protected static $dirSizes = [
+        '.xs/' => WIDTH_CMS_IMAGE_XS,
+        '.sm/' => WIDTH_CMS_IMAGE_SM,
+        '.md/' => WIDTH_CMS_IMAGE_MD,
+        '.lg/' => WIDTH_CMS_IMAGE_LG,
+        '.xl/' => WIDTH_CMS_IMAGE_XL,
+    ];
+
+    /**
      * @var Portlet
      */
     protected $portlet;
@@ -17,6 +28,16 @@ class PortletInstance implements \JsonSerializable
      * @var array
      */
     protected $properties = [];
+
+    /**
+     * @var array
+     */
+    protected $widthHeuristics = [
+        'lg' => 1,
+        'md' => 1,
+        'sm' => 1,
+        'xs' => 1,
+    ];
 
     /**
      * @var null|AreaList mapping area ids to subareas
@@ -270,6 +291,87 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @param string $src
+     * @param string $alt
+     * @return $this
+     */
+    public function setImageAttributes($src, $alt)
+    {
+        $this->setAttribute('alt', $alt);
+
+        if (empty($src)) {
+            $this->setAttribute('src', \Shop::getURL() . '/gfx/keinBild.gif');
+            return $this;
+        }
+
+        $widthHeuristics = $this->widthHeuristics;
+        $settings        = \Shop::getSettings([CONF_BILDER]);
+        $name            = explode('/', $src);
+        $name            = end($name);
+        $srcset          = '';
+        $srcsizes        = '';
+
+        foreach (static::$dirSizes as $size => $width) {
+            $sizedImgPath = PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
+
+            if (!file_exists($sizedImgPath) === true) {
+                $image     = new \Imanee\Imanee(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $name);
+                $imageSize = $image->getSize();
+                $factor    = $width / $imageSize['width'];
+
+                $image
+                    ->resize((int)$width, (int)($imageSize['height'] * $factor))
+                    ->write(
+                        PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
+                        $settings['bilder']['bilder_jpg_quali']
+                    );
+            }
+
+            $srcset .= PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
+        }
+
+        $srcset = substr($srcset, 0, -1); // remove trailing comma
+
+        if (is_array($widthHeuristics)) {
+            ksort($widthHeuristics);
+
+            foreach ($widthHeuristics as $breakpoint => $col) {
+                if (!empty($col)) {
+                    switch ($breakpoint) {
+                        case 'xs':
+                            $breakpoint = 767;
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col * 100) . 'vw, ';
+                            break;
+                        case 'sm':
+                            $breakpoint = 768;
+                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint) . 'px, ';
+                            break;
+                        case 'md':
+                            $breakpoint = 992;
+                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint) . 'px, ';
+                            break;
+                        case 'lg':
+                            $breakpoint = 1200;
+                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint) . 'px, ';
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        $srcsizes .= '100vw';
+        $src       = PFAD_MEDIAFILES . 'Bilder/.md/' . $name;
+
+        $this->setAttribute('srcset', $srcset);
+        $this->setAttribute('sizes', $srcsizes);
+        $this->setAttribute('src', $src);
+
+        return $this;
+    }
+
+    /**
      * @param array $data
      * @return $this
      */
@@ -287,6 +389,10 @@ class PortletInstance implements \JsonSerializable
                 $area->deserialize($areaData);
                 $this->putSubarea($area);
             }
+        }
+
+        if (isset($data['widthHeuristics']) && is_array($data['widthHeuristics'])) {
+            $this->widthHeuristics = $data['widthHeuristics'];
         }
 
         return $this;

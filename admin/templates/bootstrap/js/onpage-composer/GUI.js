@@ -2,9 +2,10 @@ function GUI(io, page, kcfinderUrl)
 {
     bindProtoOnHandlers(this);
 
-    this.io          = io;
-    this.page        = page;
-    this.kcfinderUrl = kcfinderUrl;
+    this.io           = io;
+    this.page         = page;
+    this.kcfinderUrl  = kcfinderUrl;
+    this.configSaveCb = noop;
 }
 
 GUI.prototype = {
@@ -221,6 +222,7 @@ GUI.prototype = {
     {
         var portletData = portlet.data('portlet');
 
+        this.setConfigSaveCallback(noop);
         this.io.getConfigPanelHtml(portletData.id, portletData.properties, this.onGetConfigPanelHtml);
         this.curPortlet = portlet;
     },
@@ -236,6 +238,8 @@ GUI.prototype = {
 
     onConfigForm: function(e)
     {
+        this.configSaveCb();
+
         var portletData = this.page.portletToJSON(this.curPortlet);
 
         portletData.properties = this.configForm.serializeControls();
@@ -292,8 +296,18 @@ GUI.prototype = {
         this.updateBlueprintList();
     },
 
+    selectImageProp: function(propName)
+    {
+        this.onOpenKCFinder(function(url) {
+            this.configForm.find('[name="' + propName + '"]').val(url);
+            this.configForm.find('#preview-img-' + propName).attr('src', url);
+        }.bind(this));
+    },
+
     onOpenKCFinder: function (callback)
     {
+        callback = callback || noop;
+
         KCFinder = {
             callBack: function(url) {
                 callback(url);
@@ -306,6 +320,11 @@ GUI.prototype = {
             'status=0, toolbar=0, location=0, menubar=0, directories=0, resizable=1, scrollbars=0,' +
             'width=800, height=600'
         );
+    },
+
+    setConfigSaveCallback: function(callback)
+    {
+        this.configSaveCb = callback;
     },
 
 };

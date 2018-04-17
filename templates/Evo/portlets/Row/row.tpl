@@ -1,5 +1,4 @@
-<div {$instance->addClass('row')->getAttributeString()}
-     {if $isPreview}{$instance->getDataAttributeString()}{/if}>
+<div {$instance->addClass('row')->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if}>
 
     {foreach $portlet->getLayouts($instance) as $i => $colLayout}
         {assign var="areaId" value="col-"|cat:$i}

@@ -407,7 +407,7 @@
                     class="form-control"
                     placeholder="{lang key="tel" section="account data"}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel === 'Y'} required{/if}
-                    autocomplete="billing tel home"
+                    autocomplete="billing home tel"
                     />
                     {if isset($fehlendeAngaben.tel)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -434,7 +434,7 @@
                     class="form-control"
                     placeholder="{lang key="fax" section="account data"}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_fax === 'Y'} required{/if}
-                    autocomplete="billing tel fax"
+                    autocomplete="billing fax tel"
                     />
                     {if isset($fehlendeAngaben.fax)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -465,7 +465,7 @@
                         class="form-control"
                         placeholder="{lang key="mobile" section="account data"}"
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil === 'Y'} required{/if}
-                        autocomplete="billing tel mobile"
+                        autocomplete="billing mobile tel"
                         />
                         {if isset($fehlendeAngaben.mobil)}
                             <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>

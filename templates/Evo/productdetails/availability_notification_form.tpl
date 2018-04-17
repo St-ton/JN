@@ -27,7 +27,12 @@
                             <label for="article_availability{$Artikel->kArtikel}_firstName" class="control-label">
                                 {lang key="firstName" section="account data"}
                             </label>
-                            <input type="text" class="form-control" name="vorname" value="{if isset($Benachrichtigung->cVorname)}{$Benachrichtigung->cVorname}{/if}" id="article_availability{$Artikel->kArtikel}_firstName"{if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname === 'Y'} required{/if}>
+                            <input type="text" class="form-control" name="vorname"
+                                   value="{if isset($Benachrichtigung->cVorname)}{$Benachrichtigung->cVorname}{/if}"
+                                   id="article_availability{$Artikel->kArtikel}_firstName"
+                                   {if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname === 'Y'} required{/if}
+                                   autocomplete="given-name"
+                            >
                             {if !empty($fehlendeAngaben_benachrichtigung.vorname)}
                                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                     {lang key="fillOut" section="global"}
@@ -43,7 +48,12 @@
                             <label for="article_availability{$Artikel->kArtikel}_lastName" class="control-label">
                                 {lang key="lastName" section="account data"}
                             </label>
-                            <input type="text" class="form-control" name="nachname" value="{if isset($Benachrichtigung->cNachname)}{$Benachrichtigung->cNachname}{/if}" id="article_availability{$Artikel->kArtikel}_lastName"{if $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname === 'Y'} required{/if}>
+                            <input type="text" class="form-control" name="nachname"
+                                   value="{if isset($Benachrichtigung->cNachname)}{$Benachrichtigung->cNachname}{/if}"
+                                   id="article_availability{$Artikel->kArtikel}_lastName"
+                                   {if $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname === 'Y'} required{/if}
+                                   autocomplete="family-name"
+                            >
                             {if !empty($fehlendeAngaben_benachrichtigung.nachname)}
                                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                     {lang key="fillOut" section="global"}
@@ -61,7 +71,12 @@
                         <label for="article_availability{$Artikel->kArtikel}_email" class="control-label">
                             {lang key="email" section="account data"}
                         </label>
-                        <input type="email" class="form-control" name="email" value="{if isset($Lieferadresse->cMail)}{$Lieferadresse->cMail}{/if}" id="article_availability{$Artikel->kArtikel}_email" required>
+                        <input type="email" class="form-control" name="email"
+                               value="{if isset($Lieferadresse->cMail)}{$Lieferadresse->cMail}{/if}"
+                               id="article_availability{$Artikel->kArtikel}_email"
+                               required
+                               autocomplete="email"
+                        >
                         {if !empty($fehlendeAngaben_benachrichtigung.email)}
                             <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                 {if $fehlendeAngaben_benachrichtigung.email == 1}

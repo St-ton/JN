@@ -4029,7 +4029,7 @@ class Artikel
             $kArtikel             = ($this->kVaterArtikel > 0) ? $this->kVaterArtikel : $this->kArtikel;
             $this->oKategorie_arr = $this->getCategories($kArtikel, $kKundengruppe);
         }
-        $workaround = (array)$oArtikelOptionen === (array)self::getExportOptions();
+        $workaround = $noCache === true || (array)$oArtikelOptionen === (array)self::getExportOptions();
         if (!isset($oArtikelOptionen->nVariationKombi)) {
             $oArtikelOptionen->nVariationKombi = 0;
         }

@@ -285,7 +285,7 @@ class ItemAttribute extends BaseAttribute
             );
         }
         $select = 'tmerkmal.cName';
-        $state  = $this->productFilter->getCurrentStateData('ItemAttribute');
+        $state  = $this->productFilter->getCurrentStateData(self::class);
         // @todo?
         if (true || (!$this->productFilter->hasAttributeValue() && !$this->productFilter->hasAttributeFilter())) {
             $state->joins[] = (new FilterJoin())
@@ -414,9 +414,9 @@ class ItemAttribute extends BaseAttribute
             $state->joins,
             $state->conditions,
             $state->having,
-            '', // $order->orderBy,
             '',
-            [] // ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']
+            '',
+            []
         );
         $qryRes                = \Shop::Container()->getDB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
@@ -427,12 +427,6 @@ class ItemAttribute extends BaseAttribute
             ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert",
             ReturnType::ARRAY_OF_OBJECTS
         );
-        \Shop::dbg( "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
-            ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
-            ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
-            FROM (" . $baseQry . ") AS ssMerkmal
-            GROUP BY ssMerkmal.kMerkmalWert
-            ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert");
         $currentAttributeValue = $this->productFilter->getAttributeValue()->getValue();
         $additionalFilter      = new self($this->productFilter);
         // get unique attributes from query result

@@ -199,7 +199,7 @@ class FilterOption extends AbstractFilter
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      * @return $this
      */
     public function setData($name, $value): IFilter
@@ -263,7 +263,7 @@ class FilterOption extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
         return $this;
     }

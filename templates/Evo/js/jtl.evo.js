@@ -311,9 +311,11 @@
         },
 
         preventDropdownToggle: function() {
-            $('.megamenu-content a.dropdown-toggle').click(function(e){
+            $('a.dropdown-toggle').click(function(e){
                 var elem = e.target;
-                if (elem.getAttribute('aria-expanded') == 'true' && elem.getAttribute('href') != '#') {
+                var viewport = $('body').data('viewport');
+
+                if (viewport!=='xs' && viewport!=='sm' && elem.getAttribute('aria-expanded') == 'true' && elem.getAttribute('href') != '#') {
                     window.location.href = elem.getAttribute('href');
                     e.preventDefault();
                 }

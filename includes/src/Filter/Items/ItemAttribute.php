@@ -13,6 +13,7 @@ use Filter\FilterOption;
 use Filter\IFilter;
 use Filter\ProductFilter;
 use Filter\States\BaseAttribute;
+use function Functional\every;
 
 /**
  * Class ItemAttribute
@@ -36,6 +37,11 @@ class ItemAttribute extends BaseAttribute
      * @var bool
      */
     private $isMultiSelect;
+
+    /**
+     * @var array
+     */
+    private $batchAttributeData;
 
     /**
      * @var array
@@ -128,7 +134,7 @@ class ItemAttribute extends BaseAttribute
     /**
      * @inheritdoc
      */
-    public function init($value) : IFilter
+    public function init($value): IFilter
     {
         $this->isInitialized = true;
         if (is_object($value)) {
@@ -149,44 +155,46 @@ class ItemAttribute extends BaseAttribute
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages): IFilter
     {
-        $value    = $this->getValue();
-        $oSeo_arr = \Shop::Container()->getDB()->selectAll(
-            'tseo',
-            ['cKey', 'kKey'],
-            ['kMerkmalWert', $value],
-            'cSeo, kSprache',
-            'kSprache'
-        );
+        $value         = $this->getValue();
+        $oSeo_arr      = $this->batchAttributeData[$value]
+            ?? \Shop::Container()->getDB()->queryPrepared(
+                'SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal, 
+                    tmerkmalwertsprache.cSeo, tmerkmalwertsprache.kSprache
+                    FROM tmerkmalwertsprache
+                    JOIN tmerkmalwert 
+                        ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
+                    WHERE tmerkmalwertsprache.kMerkmalWert = :val',
+                ['val' => $value],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+        $currentLangID = \Shop::getLanguageID();
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
             foreach ($oSeo_arr as $oSeo) {
-                if ($language->kSprache === (int)$oSeo->kSprache) {
+                $oSeo->kSprache = (int)$oSeo->kSprache;
+                if ($language->kSprache === $oSeo->kSprache) {
                     $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+                    if ($language->kSprache === $currentLangID) {
+                        $this->setAttributeID($oSeo->kMerkmal)
+                             ->setName($oSeo->cWert)
+                             ->setFrontendName($oSeo->cWert);
+                    }
+                    break;
                 }
             }
         }
-        $seo_obj = \Shop::Container()->getDB()->executeQueryPrepared('
-            SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
-                FROM tmerkmalwertsprache
-                JOIN tmerkmalwert 
-                    ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                WHERE tmerkmalwertsprache.kSprache = :lid
-                   AND tmerkmalwertsprache.kMerkmalWert = :val',
-            [
-                'lid' => \Shop::getLanguage(),
-                'val' => $value
-            ],
-            ReturnType::SINGLE_OBJECT
-        );
-        if (!empty($seo_obj->kMerkmal)) {
-            $this->setAttributeID($seo_obj->kMerkmal)
-                 ->setName($seo_obj->cWert)
-                 ->setFrontendName($seo_obj->cWert);
-        }
 
         return $this;
+    }
+
+    /**
+     * @param array $data
+     */
+    private function setBatchAttributeData(array $data)
+    {
+        $this->batchAttributeData = $data;
     }
 
     /**
@@ -415,14 +423,16 @@ class ItemAttribute extends BaseAttribute
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
             ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
             FROM (" . $baseQry . ") AS ssMerkmal
-            #LEFT JOIN tseo 
-                #ON tseo.kKey = ssMerkmal.kMerkmalWert
-                #AND tseo.cKey = 'kMerkmalWert'
-                #AND tseo.kSprache = " . $this->getLanguageID() . "
             GROUP BY ssMerkmal.kMerkmalWert
             ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert",
             ReturnType::ARRAY_OF_OBJECTS
         );
+        \Shop::dbg( "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
+            ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
+            ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
+            FROM (" . $baseQry . ") AS ssMerkmal
+            GROUP BY ssMerkmal.kMerkmalWert
+            ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert");
         $currentAttributeValue = $this->productFilter->getAttributeValue()->getValue();
         $additionalFilter      = new self($this->productFilter);
         // get unique attributes from query result
@@ -468,60 +478,61 @@ class ItemAttribute extends BaseAttribute
                 ? PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
                 : BILD_KEIN_MERKMALBILD_VORHANDEN;
 
-            $attribute = (new FilterOption())
-                ->setURL('')
-                ->setData('cTyp', $attributeFilter->cTyp)
-                ->setData('kMerkmal', $attributeFilter->kMerkmal)
-                ->setData('cBildpfadKlein', $baseSrcSmall)
-                ->setData('cBildpfadNormal', $baseSrcNormal)
-                ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
-                ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal)
-                ->setParam($this->getUrlParam())
-                ->setType($attributeFilter->nMehrfachauswahl === 1
-                    ? AbstractFilter::FILTER_TYPE_OR
-                    : AbstractFilter::FILTER_TYPE_AND
-                )
-                ->setType($this->getType())
-                ->setClassName($this->getClassName())
-                ->setName($attributeFilter->cName)
-                ->setFrontendName($attributeFilter->cName)
-                ->setValue($attributeFilter->kMerkmal)
-                ->setCount(0);
+            $option = new FilterOption();
+            $option->setURL('');
+            $option->setData('cTyp', $attributeFilter->cTyp)
+                   ->setData('kMerkmal', $attributeFilter->kMerkmal)
+                   ->setData('cBildpfadKlein', $baseSrcSmall)
+                   ->setData('cBildpfadNormal', $baseSrcNormal)
+                   ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
+                   ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
+            $option->setParam($this->getUrlParam());
+            $option->setType($attributeFilter->nMehrfachauswahl === 1
+                ? AbstractFilter::FILTER_TYPE_OR
+                : AbstractFilter::FILTER_TYPE_AND
+            );
+            $option->setType($this->getType());
+            $option->setClassName($this->getClassName());
+            $option->setName($attributeFilter->cName);
+            $option->setFrontendName($attributeFilter->cName);
+            $option->setValue($attributeFilter->kMerkmal);
+            $option->setCount(0);
+            $additionalFilter->setBatchAttributeData(
+                $this->batchGetDataForAttributeValue($attributeFilter->attributeValues)
+            );
             foreach ($attributeFilter->attributeValues as $filterValue) {
                 $filterValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
-                $attributeValue            = (new FilterOption())
-                    ->setData('kMerkmalWert', $filterValue->kMerkmalWert)
-                    ->setData('kMerkmal', (int)$attributeFilter->kMerkmal)
-                    ->setData('cWert', $filterValue->cWert)
-                    ->setIsActive($currentAttributeValue === $filterValue->kMerkmalWert
-                        || $this->attributeValueIsActive($filterValue->kMerkmalWert))
-                    ->setData('cBildpfadKlein', strlen($filterValue->cMMWBildPfad) > 0
-                        ? PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
-                        : BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
-                    ->setData('cBildpfadNormal', strlen($filterValue->cMMWBildPfad) > 0
-                        ? PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
-                        : BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
-                    ->setType($attributeFilter->nMehrfachauswahl === 1
-                        ? AbstractFilter::FILTER_TYPE_OR
-                        : AbstractFilter::FILTER_TYPE_AND)
-                    ->setClassName($this->getClassName())
-                    ->setParam($this->getUrlParam())
-                    ->setName(htmlentities($filterValue->cWert))
-                    ->setValue($filterValue->cWert)
-                    ->setCount($filterValue->nAnzahl);
+                $attributeValue            = new FilterOption();
+                $attributeValue->setData('kMerkmalWert', $filterValue->kMerkmalWert)
+                               ->setData('kMerkmal', (int)$attributeFilter->kMerkmal)
+                               ->setData('cWert', $filterValue->cWert);
+                $attributeValue->setIsActive($currentAttributeValue === $filterValue->kMerkmalWert
+                    || $this->attributeValueIsActive($filterValue->kMerkmalWert));
+                $attributeValue->setData('cBildpfadKlein', strlen($filterValue->cMMWBildPfad) > 0
+                    ? PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
+                    : BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
+                               ->setData('cBildpfadNormal', strlen($filterValue->cMMWBildPfad) > 0
+                                   ? PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
+                                   : BILD_KEIN_MERKMALWERTBILD_VORHANDEN);
+                $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1
+                    ? AbstractFilter::FILTER_TYPE_OR
+                    : AbstractFilter::FILTER_TYPE_AND);
+                $attributeValue->setClassName($this->getClassName());
+                $attributeValue->setParam($this->getUrlParam());
+                $attributeValue->setName(htmlentities($filterValue->cWert));
+                $attributeValue->setValue($filterValue->cWert);
+                $attributeValue->setCount($filterValue->nAnzahl);
                 if ($attributeValue->isActive()) {
-                    $attribute->setIsActive(true);
+                    $option->setIsActive(true);
                 }
-                $attributeValueURL = $filterURLGenerator->getURL(
-                    $additionalFilter->init($filterValue->kMerkmalWert)
-                );
-                $attribute->addOption($attributeValue->setURL($attributeValueURL));
+                $attributeValueURL = $filterURLGenerator->getURL($additionalFilter->init($filterValue->kMerkmalWert));
+                $option->addOption($attributeValue->setURL($attributeValueURL));
             }
             // backwards compatibility
-            $attributeOptions = $attribute->getOptions() ?? [];
-            $attribute->setData('oMerkmalWerte_arr', $attributeOptions);
+            $attributeOptions = $option->getOptions() ?? [];
+            $option->setData('oMerkmalWerte_arr', $attributeOptions);
             if (($optionsCount = count($attributeOptions)) > 0) {
-                $attributeFilters[] = $attribute->setCount($optionsCount);
+                $attributeFilters[] = $option->setCount($optionsCount);
             }
         }
         foreach ($attributeFilters as &$af) {
@@ -531,49 +542,96 @@ class ItemAttribute extends BaseAttribute
             if (!is_array($options)) {
                 continue;
             }
-            $numeric = array_reduce(
-                $options,
-                function($carry, $option) {
-                    /** @var FilterOption $option */
-                    return $carry && is_numeric($option->getValue());
-                },
-                true
-            );
-            if ($numeric) {
-                usort($options, function ($a, $b) {
-                    /** @var FilterOption $a */
-                    /** @var FilterOption $b */
-                    return $a === $b
-                        ? 0
-                        : (($a->getValue() < $b->getValue())
-                            ? -1
-                            : 1
-                        );
-                });
-                $af->setOptions($options);
+            if ($this->isNumeric($af)) {
+                $this->sortNumeric($af);
             }
-            if ($attributeValueLimit > 0 && $attributeValueLimit < count($options)) {
-                // Merkmalwerte entfernen, deren Trefferanzahl am geringsten ist
-                while (count($options) > $attributeValueLimit) {
-                    $nMinAnzahl = 999999;
-                    $nIndex     = -1;
-                    foreach ($options as $l => $attributeValues) {
-                        /** @var FilterOption $attributeValues */
-                        if ($attributeValues->nAnzahl < $nMinAnzahl) {
-                            $nMinAnzahl = $attributeValues->getCount();
-                            $nIndex     = $l;
-                        }
-                    }
-                    if ($nIndex >= 0) {
-                        unset($options[$nIndex]);
-                    }
-                }
-                $af->setOptions(array_merge($options));
-            }
+            $this->applyOptionLimit($af, $attributeValueLimit);
         }
-        unset($af);
         $this->options = $attributeFilters;
 
         return $attributeFilters;
+    }
+
+    /**
+     * @param FilterOption $option
+     * @return bool
+     */
+    protected function isNumeric(FilterOption $option): bool
+    {
+        return every($option->getOptions(), function (FilterOption $item) {
+            return is_numeric($item->getValue());
+        });
+    }
+
+    /**
+     * @param FilterOption $option
+     */
+    protected function sortNumeric(FilterOption $option)
+    {
+        $options = $option->getOptions();
+        usort($options, function (FilterOption $a, FilterOption $b) {
+            return $a->getValue() <=> $b->getValue();
+        });
+        $option->setOptions($options);
+    }
+
+    /**
+     * @param FilterOption $option
+     */
+    protected function sortByCountDesc(FilterOption $option)
+    {
+        $options = $option->getOptions();
+        usort($options, function (FilterOption $a, FilterOption $b) {
+            return -($a->getCount() <=> $b->getCount());
+        });
+        $option->setOptions($options);
+    }
+
+    /**
+     * @param FilterOption $option
+     * @param int          $attributeValueLimit
+     */
+    protected function applyOptionLimit(FilterOption $option, int $attributeValueLimit)
+    {
+        if ($attributeValueLimit <= 0 || $attributeValueLimit >= count($option->getOptions())) {
+            return;
+        }
+        $this->sortByCountDesc($option);
+        $option->setOptions(array_slice($option->getOptions(), 0, $attributeValueLimit));
+    }
+
+    /**
+     * @param array $attributeValues
+     * @return array
+     */
+    protected function batchGetDataForAttributeValue(array $attributeValues): array
+    {
+        if (count($attributeValues) === 0) {
+            return [];
+        }
+        $attributeValueIDs = implode(',', array_map(function ($row) {
+            return (int)$row->kMerkmalWert;
+        }, $attributeValues));
+        $queryResult       = \Shop::Container()->getDB()->query(
+            "SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, 
+            tmerkmalwertsprache.cSeo, tmerkmalwert.kMerkmal, tmerkmalwertsprache.kSprache
+                FROM tmerkmalwertsprache
+                JOIN tmerkmalwert 
+                    ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
+                WHERE tmerkmalwertsprache.kMerkmalWert IN (" . $attributeValueIDs . ")",
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $result            = [];
+        foreach ($queryResult as $row) {
+            $row->kMerkmalWert = (int)$row->kMerkmalWert;
+            $row->kMerkmal     = (int)$row->kMerkmal;
+            $row->kSprache     = (int)$row->kSprache;
+            if (!isset($result[$row->kMerkmalWert])) {
+                $result[$row->kMerkmalWert] = [];
+            }
+            $result[$row->kMerkmalWert][$row->kSprache] = $row;
+        }
+
+        return $result;
     }
 }

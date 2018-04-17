@@ -91,7 +91,7 @@ abstract class Portlet implements \JsonSerializable
     final protected function getAutoConfigPanelHtml($instance)
     {
         $res = '';
-
+        $res .= "<div class='row'>";
         foreach ($this->getPropertyDesc() as $propname => $propDesc) {
             $label = $propDesc['label'] ?? $propname;
             $type  = $propDesc['type'] ?? 'text';
@@ -100,7 +100,19 @@ abstract class Portlet implements \JsonSerializable
                 ? $instance->getProperty($propname)
                 : $propDesc['default'];
 
+
+            $displ = 12;
+            if (!empty($propDesc['dspl_width'])) {
+                $displ = round(12*($propDesc['dspl_width']*0.01));
+            }
+            $res .= "<div class='col-xs-$displ'>";
             $res .= "<div class='form-group'><label for='config-$propname'>$label</label>";
+
+
+            // TODO Editor: switch - case
+            // TODO Editor: expandable settings
+            // TODO Editor: tabs
+            // TODO Editor: style, animation
 
             if ($type === 'text') {
                 // type: text
@@ -140,8 +152,9 @@ abstract class Portlet implements \JsonSerializable
                     . "})</script>";
             }
 
-            $res .= "</div>";
+            $res .= "</div></div>";
         }
+        $res .= "</div>";
 
         return $res;
     }

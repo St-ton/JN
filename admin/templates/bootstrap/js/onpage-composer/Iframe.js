@@ -49,7 +49,7 @@ Iframe.prototype = {
     {
         var pageUrlLink = document.createElement('a');
 
-        pageUrlLink.href = this.shopUrl + this.page.url;
+        pageUrlLink.href = this.shopUrl + '/' + this.page.url;
 
         if(pageUrlLink.search !== '') {
             pageUrlLink.search += '&opcEditMode=yes';

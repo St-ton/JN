@@ -34,24 +34,28 @@ class Row extends \OPC\Portlet
     {
         return [
             'layout-xs' => [
-                'label'   => 'Layout XS',
-                'type'    => 'text',
-                'default' => '6+6',
+                'label'      => 'Layout XS',
+                'type'       => 'text',
+                'default'    => '6+6',
+                'dspl_width' => 33,
             ],
             'layout-sm' => [
-                'label'   => 'Layout SM',
-                'type'    => 'text',
-                'default' => '6+6',
+                'label'      => 'Layout SM',
+                'type'       => 'text',
+                'default'    => '6+6',
+                'dspl_width' => 33,
             ],
             'layout-md' => [
-                'label'   => 'Layout MD',
-                'type'    => 'text',
-                'default' => '6+6',
+                'label'      => 'Layout MD',
+                'type'       => 'text',
+                'default'    => '6+6',
+                'dspl_width' => 33,
             ],
             'layout-lg' => [
-                'label'   => 'Layout LG',
-                'type'    => 'text',
-                'default' => '6+6',
+                'label'      => 'Layout LG',
+                'type'       => 'text',
+                'default'    => '6+6',
+                'dspl_width' => 50,
             ],
         ];
     }

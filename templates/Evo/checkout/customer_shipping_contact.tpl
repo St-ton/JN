@@ -20,6 +20,7 @@
                         class="form-control"
                         placeholder="{lang key="email" section="account data"}"
                         {if $Einstellungen.kunden.lieferadresse_abfragen_email === 'Y'}required{/if}
+                        autocomplete="shipping email"
                 >
                 {if isset($fehlendeAngaben.email)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -51,6 +52,7 @@
                             class="form-control"
                             placeholder="{lang key="mobile" section="account data"}"
                             {if $Einstellungen.kunden.lieferadresse_abfragen_mobil === 'Y'} required{/if}
+                            autocomplete="shipping tel mobile"
                     />
                     {if isset($fehlendeAngaben.mobil)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -80,6 +82,7 @@
                             class="form-control"
                             placeholder="{lang key="tel" section="account data"}"
                             {if $Einstellungen.kunden.lieferadresse_abfragen_tel === 'Y'} required{/if}
+                            autocomplete="shipping tel home"
                     />
                     {if isset($fehlendeAngaben.tel)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -105,6 +108,7 @@
                             class="form-control"
                             placeholder="{lang key="fax" section="account data"}"
                             {if $Einstellungen.kunden.lieferadresse_abfragen_fax === 'Y'} required{/if}
+                            autocomplete="shipping tel fax"
                     />
                     {if isset($fehlendeAngaben.fax)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>

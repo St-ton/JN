@@ -1087,16 +1087,10 @@ class Exportformat
         if ((int)$this->queue->nLimitN === 0) {
             $this->writeHeader($datei);
         }
-        $content                                     = $this->getContent();
-        $categoryFallback                            = (strpos($content, '->oKategorie_arr') !== false);
-        $articles                                    = Shop::DB()->query($this->getExportSQL(), 2);
-        $oArtikelOptionen                            = new stdClass();
-        $oArtikelOptionen->nMerkmale                 = 1;
-        $oArtikelOptionen->nAttribute                = 1;
-        $oArtikelOptionen->nArtikelAttribute         = 1;
-        $oArtikelOptionen->nKategorie                = 1;
-        $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-        $oArtikelOptionen->nMedienDatei              = 1;
+        $content          = $this->getContent();
+        $categoryFallback = (strpos($content, '->oKategorie_arr') !== false);
+        $articles         = Shop::DB()->query($this->getExportSQL(), 2);
+        $oArtikelOptionen = Artikel::getExportOptions();
 
         $shopURL    = Shop::getURL();
         $find       = ['<br />', '<br>', '</'];

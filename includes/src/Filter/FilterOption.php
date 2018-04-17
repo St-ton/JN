@@ -114,7 +114,7 @@ class FilterOption extends AbstractFilter
      * @param string $class
      * @return $this
      */
-    public function setClass($class)
+    public function setClass($class): IFilter
     {
         $this->class = $class;
 
@@ -133,7 +133,7 @@ class FilterOption extends AbstractFilter
      * @param string $param
      * @return $this
      */
-    public function setParam($param)
+    public function setParam($param): IFilter
     {
         $this->param = $param;
 
@@ -152,7 +152,7 @@ class FilterOption extends AbstractFilter
      * @param string $url
      * @return $this
      */
-    public function setURL($url)
+    public function setURL($url): IFilter
     {
         $this->url = $url;
 
@@ -171,7 +171,7 @@ class FilterOption extends AbstractFilter
      * @param bool $disableSeoURLs
      * @return $this
      */
-    public function setDisableSeoURLs($disableSeoURLs)
+    public function setDisableSeoURLs($disableSeoURLs): IFilter
     {
         $this->disableSeoURLs = $disableSeoURLs;
 
@@ -190,7 +190,7 @@ class FilterOption extends AbstractFilter
      * @param FilterOption $option
      * @return $this
      */
-    public function addOption($option)
+    public function addOption($option): IFilter
     {
         $this->options[] = $option;
 
@@ -202,7 +202,7 @@ class FilterOption extends AbstractFilter
      * @param mixed $value
      * @return $this
      */
-    public function setData($name, $value)
+    public function setData($name, $value): IFilter
     {
         $this->data[$name] = $value;
 

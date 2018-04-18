@@ -33,7 +33,7 @@ switch ($cAction) {
             $oSlide->kSlider      = $kSlider;
             $oSlide->cTitel       = htmlspecialchars($aSlide['cTitel'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oSlide->cBild        = $aSlide['cBild'];
-            $oSlide->cText        = htmlspecialchars($aSlide['cText'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $oSlide->cText        = $aSlide['cText'];
             $oSlide->cLink        = $aSlide['cLink'];
             $oSlide->nSort        = $aSlide['nSort'];
             if ((int)$aSlide['delete'] === 1) {

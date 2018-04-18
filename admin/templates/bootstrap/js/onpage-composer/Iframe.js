@@ -41,15 +41,15 @@ Iframe.prototype = {
         ]);
 
         this.iframe
-            .on('load', this.onIframeLoad.bind(this, loadCB || noop))
-            .attr('src', this.getIframePageUrl());
+            .attr('src', this.getIframePageUrl())
+            .on('load', this.onIframeLoad.bind(this, loadCB || noop));
     },
 
     getIframePageUrl: function()
     {
         var pageUrlLink = document.createElement('a');
 
-        pageUrlLink.href = this.shopUrl + this.page.url;
+        pageUrlLink.href = this.shopUrl + '/' + this.page.url;
 
         if(pageUrlLink.search !== '') {
             pageUrlLink.search += '&opcEditMode=yes';

@@ -22,7 +22,7 @@ $templateUrl = $shopUrl . '/' . PFAD_ADMIN . $currentTemplateDir;
 
 if ($action === 'restore') {
     $opc->deletePage($pageId);
-    header('Location: ' . $shopUrl . $pageUrl);
+    header('Location: ' . $shopUrl . "/" . $pageUrl);
     exit();
 }
 

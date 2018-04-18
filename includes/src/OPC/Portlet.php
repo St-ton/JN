@@ -110,8 +110,7 @@ abstract class Portlet implements \JsonSerializable
             $tabs = ['Allgemein' => $desc] + $tabs;
         }
 
-        $res = '';
-
+        $res  = '';
         $res .= "<ul class='nav nav-tabs'>";
         $i    = 0;
 
@@ -131,33 +130,29 @@ abstract class Portlet implements \JsonSerializable
             $tabid  = preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
             $active = $i === 0 ? " active" : "";
             $res   .= "<div class='tab-pane$active' id='$tabid'>";
+            $res   .= "<div class='row'>";
 
             foreach ($props as $propname => $propDesc) {
-                $res .= $this->getAutoConfigProp($instance, $propname, $propDesc);
+                $containerId = !empty($propDesc['collapse']) ? $propname : null;
+                $res        .= $this->getAutoConfigProp($instance, $propname, $propDesc, $containerId);
 
                 if (!empty($propDesc['collapse'])) {
-                    $res .= "<a class='btn btn-primary btn-xs' data-toggle='collapse'"
-                        . " href='#collapse-$propname'>D</a>"
-                        . "<div class='collapse' id='collapse-$propname'>";
-
+                    $res .= "<div class='collapse' id='collapseContainer$containerId'><div class='row'> ";
                     foreach ($propDesc['collapse'] as $colapsePropname => $collapsePropdesc) {
                         $res .= $this->getAutoConfigProp($instance, $colapsePropname, $collapsePropdesc);
                     }
-
-                    $res .= "</div>";
+                    $res .= "</div></div></div>"; // row, collapse, col-xs-*
                 }
             }
-
-            $res .= "</div>";
-            $i ++;
+            $i++;
+            $res .= "</div></div>"; // row, tab-pane
         }
-
         $res .= "</div>";
 
         return $res;
     }
 
-    protected function getAutoConfigProp(PortletInstance $instance, $propname, $propDesc)
+    protected function getAutoConfigProp(PortletInstance $instance, $propname, $propDesc, $containerId = null)
     {
         $res   = '';
         $label = $propDesc['label'] ?? $propname;
@@ -167,7 +162,20 @@ abstract class Portlet implements \JsonSerializable
             ? $instance->getProperty($propname)
             : $propDesc['default'];
 
+
+        $displ = 12;
+        if (!empty($propDesc['dspl_width'])) {
+            $displ = round(12 * ($propDesc['dspl_width'] * 0.01));
+        }
+        $res .= "<div class='col-xs-$displ'>";
         $res .= "<div class='form-group'><label for='config-$propname'>$label</label>";
+
+        if (!empty($propDesc['collapse'])) {
+            $res .= '<a title="more" class="pull-right" role="button" data-toggle="collapse"
+                       href="#collapseContainer' . $containerId . '" aria-expanded="false" aria-controls="collapseContainer' . $containerId . '">
+                        <i class="fa fa-gears"></i>
+                    </a>';
+        }
 
         switch ($type) {
             case 'text':
@@ -208,7 +216,7 @@ abstract class Portlet implements \JsonSerializable
                 break;
         }
 
-        $res .= "</div>";
+        $res .= !empty($containerId) ? "</div>" : "</div></div>";
 
         return $res;
     }
@@ -270,12 +278,12 @@ abstract class Portlet implements \JsonSerializable
             'font-size' => [
                 'label'   => 'Schriftgröße',
                 'type'    => 'text',
-                'default' => '1em',
+                'default' => '',
             ],
             'color' => [
                 'label'   => 'Schriftfarbe',
                 'type'    => 'color',
-                'default' => '#000000',
+                'default' => '',
             ],
         ];
     }

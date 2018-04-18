@@ -35,7 +35,7 @@ class OPCTemplate
     public function __construct($kTemplate = 0)
     {
         if ($kTemplate > 0) {
-            $oCMSTemplateDB = Shop::DB()->select('tcmstemplate', 'kTemplate', $kTemplate);
+            $oCMSTemplateDB = Shop::DB()->select('topctemplate', 'kTemplate', $kTemplate);
 
             if ($oCMSTemplateDB !== null) {
                 $this->kTemplate = $oCMSTemplateDB->kTemplate;
@@ -72,7 +72,7 @@ class OPCTemplate
     public function save()
     {
         $oCmsTemplateDB = Shop::DB()->select(
-            'tcmstemplate',
+            'topctemplate',
             'cName',
             $this->cName
         );
@@ -82,10 +82,10 @@ class OPCTemplate
                 'cName' => $this->cName,
                 'cJson' => json_encode($this->data)
             ];
-            $this->kTemplate = Shop::DB()->insert('tcmstemplate', $oCmsTemplateDB);
+            $this->kTemplate = Shop::DB()->insert('topctemplate', $oCmsTemplateDB);
         } else {
             $oCmsTemplateDB->cJson = json_encode($this->data);
-            Shop::DB()->update('tcmstemplate', 'cName', $this->cName, $oCmsTemplateDB);
+            Shop::DB()->update('topctemplate', 'cName', $this->cName, $oCmsTemplateDB);
         }
     }
 
@@ -94,6 +94,6 @@ class OPCTemplate
      */
     public function remove()
     {
-        Shop::DB()->delete('tcmstemplate', 'cName', $this->cName);
+        Shop::DB()->delete('topctemplate', 'cName', $this->cName);
     }
 }

@@ -167,7 +167,7 @@ class OPC
      */
     public function createPortlet($kPortlet)
     {
-        $oDbPortlet = Shop::DB()->select('tcmsportlet', 'kPortlet', $kPortlet);
+        $oDbPortlet = Shop::DB()->select('topcportlet', 'kPortlet', $kPortlet);
 
         if (!is_object($oDbPortlet)) {
             throw new Exception("Portlet ID $kPortlet could not be found in the database.", 404);
@@ -190,7 +190,7 @@ class OPC
      */
     public function getPortlets()
     {
-        $oDbPortlet_arr = Shop::DB()->selectAll('tcmsportlet', [], []);
+        $oDbPortlet_arr = Shop::DB()->selectAll('topcportlet', [], []);
         $oPortlet_arr   = [];
 
         foreach ($oDbPortlet_arr as $i => $oDbPortlet) {
@@ -207,7 +207,7 @@ class OPC
      */
     public function createTemplate($cName)
     {
-        $oDbTemplate = Shop::DB()->select('tcmstemplate', 'cName', $cName);
+        $oDbTemplate = Shop::DB()->select('topctemplate', 'cName', $cName);
 
         if (!is_object($oDbTemplate)) {
             throw new Exception("Template name '$cName' could not be found in the database.", 404);
@@ -221,7 +221,7 @@ class OPC
      */
     public function getTemplates()
     {
-        $oDbTemplate_arr = Shop::DB()->selectAll('tcmstemplate', [], []);
+        $oDbTemplate_arr = Shop::DB()->selectAll('topctemplate', [], []);
         $oTemplate_arr   = [];
 
         foreach ($oDbTemplate_arr as $i => $oDbTemplate) {

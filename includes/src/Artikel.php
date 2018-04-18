@@ -4368,7 +4368,7 @@ class Artikel
                 $bSuchspecial_arr[SEARCHSPECIALS_PREORDER] = true;
             }
             $this->bSuchspecial_arr = $bSuchspecial_arr;
-            // SuchspecialBild anhand der hächsten Prio und des gesetzten Suchspecials festlegen
+            // SuchspecialBild anhand der höchsten Prio und des gesetzten Suchspecials festlegen
             $imageBaseURL = Shop::getImageBaseURL();
             foreach ($searchSpecial_arr as $oSuchspecialoverlay) {
                 if (!isset($oSuchspecialoverlay->kSuchspecialOverlay)
@@ -4377,6 +4377,7 @@ class Artikel
                     continue;
                 }
                 $this->oSuchspecialBild = new stdClass();
+                $this->oSuchspecialBild->cPfadRetina  = PFAD_SUCHSPECIALOVERLAY_RETINA . $oSuchspecialoverlay->cBildPfad;
                 $this->oSuchspecialBild->cPfadGross   = PFAD_SUCHSPECIALOVERLAY_GROSS . $oSuchspecialoverlay->cBildPfad;
                 $this->oSuchspecialBild->cPfadNormal  = PFAD_SUCHSPECIALOVERLAY_NORMAL . $oSuchspecialoverlay->cBildPfad;
                 $this->oSuchspecialBild->cPfadKlein   = PFAD_SUCHSPECIALOVERLAY_KLEIN . $oSuchspecialoverlay->cBildPfad;
@@ -4385,6 +4386,7 @@ class Artikel
                 $this->oSuchspecialBild->nTransparenz = $oSuchspecialoverlay->nTransparenz;
                 $this->oSuchspecialBild->nGroesse     = $oSuchspecialoverlay->nGroesse;
                 $this->oSuchspecialBild->nPosition    = $oSuchspecialoverlay->nPosition;
+                $this->oSuchspecialBild->cURLRetina   = $imageBaseURL . $this->oSuchspecialBild->cPfadRetina;
                 $this->oSuchspecialBild->cURLGross    = $imageBaseURL . $this->oSuchspecialBild->cPfadGross;
                 $this->oSuchspecialBild->cURLNormal   = $imageBaseURL . $this->oSuchspecialBild->cPfadNormal;
                 $this->oSuchspecialBild->cURLKlein    = $imageBaseURL . $this->oSuchspecialBild->cPfadKlein;

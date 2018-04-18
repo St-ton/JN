@@ -37,6 +37,7 @@ class Row extends \OPC\Portlet
                 'label'   => 'Layout XS',
                 'type'    => 'text',
                 'default' => '6+6',
+                'dspl_width' => 50,
                 'collapse' => [
                     'layout-sm' => [
                         'label'   => 'Layout SM',
@@ -54,6 +55,12 @@ class Row extends \OPC\Portlet
                         'default' => '6+6',
                     ],
                 ]
+            ],
+            'border-color' => [
+                'label'   => 'noob color',
+               'type'    => 'color',
+               'default' => 'blue',
+               'dspl_width' => 50,
             ],
         ];
     }

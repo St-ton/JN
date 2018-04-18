@@ -105,7 +105,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{$shopUrl}{$pageUrl}" id="btnClose" data-toggle="tooltip"
+                            <a href="{$shopUrl}/{$pageUrl}" id="btnClose" data-toggle="tooltip"
                                data-placement="bottom" title="Editor schließen">
                                 <i class="fa fa-close"></i>
                             </a>

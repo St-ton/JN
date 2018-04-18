@@ -63,7 +63,7 @@ abstract class OPCPortlet
             throw new Exception('Portlet ID is invalid.');
         }
 
-        $oDbPortlet = Shop::DB()->select('tcmsportlet', 'kPortlet', $kPortlet);
+        $oDbPortlet = Shop::DB()->select('topcportlet', 'kPortlet', $kPortlet);
 
         if (!is_object($oDbPortlet)) {
             throw new Exception('Portlet ID could not be found in the database.');

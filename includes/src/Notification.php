@@ -162,7 +162,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 'Unsichere SMTP-Verbindung',
                 'Sie haben SMTP als Mail-Methode gewählt, allerdings keine Verschlüsselungsmethode ausgewählt. Wir empfehlen Ihnen dringen, Ihre Mail-Einstellungen anzupassen. Sie finden die Optionen unter "System > E-Mails > Emaileinstellungen > SMTP Security".',
-                URL_SHOP . '/admin/einstellungen.php?kSektion=3'
+                Shop::getURL() . '/' . PFAD_ADMIN . 'einstellungen.php?kSektion=3'
             );
         }
 

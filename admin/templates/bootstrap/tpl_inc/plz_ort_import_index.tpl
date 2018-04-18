@@ -23,7 +23,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>{#plz_ort_import_load#} <img src="/admin/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h4>
+                <h4>{#plz_ort_import_load#} <img src="{$shopURL}/{$smarty.const.PFAD_ADMIN}/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h4>
             </div>
         </div>
     </div>

@@ -4823,7 +4823,7 @@ class Artikel
 
         foreach ($this->Preise->fPreis_arr as $key => $fPreis) {
             $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $fPreis, $this->Preise->nAnzahl_arr[$key]);
-            $this->fStaffelpreisVPE_arr[] = [
+            $this->cStaffelpreisLocalizedVPE_arr[] = [
                 gibPreisStringLocalized(
                     berechneBrutto(
                         $basePriceUnit->fBasePreis,
@@ -4841,7 +4841,7 @@ class Artikel
                     $nGenauigkeit
                 ) . ' ' . $per . ' ' . $basePriceUnit->cVPEEinheit
             ];
-            $this->cStaffelpreisLocalizedVPE_arr[] = [
+            $this->fStaffelpreisVPE_arr[] = [
                 berechneBrutto(
                     $basePriceUnit->fBasePreis,
                     gibUst($this->kSteuerklasse),
@@ -4849,8 +4849,8 @@ class Artikel
                 ),
                 $basePriceUnit->fBasePreis,
             ];
-            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = isset($this->fStaffelpreisVPE_arr[$key])
-                ? $this->fStaffelpreisVPE_arr[$key]
+            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = isset($this->cStaffelpreisLocalizedVPE_arr[$key])
+                ? $this->cStaffelpreisLocalizedVPE_arr[$key]
                 : null;
         }
 

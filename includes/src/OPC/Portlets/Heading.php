@@ -50,6 +50,35 @@ class Heading extends \OPC\Portlet
                 'type'    => 'text',
                 'default' => 'Heading',
             ],
+            'number'  => [
+                'label'   => 'Numebr',
+                'type'    => 'number',
+                'default' => 5,
+            ],
+            'date'  => [
+                'label'   => 'Datum',
+                'type'    => 'date',
+                'default' => '',
+            ],
+            'pass'  => [
+                'label'   => 'Passwort',
+                'type'    => 'password',
+                'default' => '',
+            ],
+            'checkbox' => [
+                'label' => 'Checkbox',
+                'type'  => 'checkbox',
+                'options' => ['option 1', 'option 2', 'option 3'],
+                'dspl_width' => 50,
+                'default' => 'option 2',
+            ],
+            'radio' => [
+                'label' => 'radio',
+                'type'  => 'radio',
+                'options' => ['female', 'male', 'other'],
+                'dspl_width' => 50,
+                'default' => 'female',
+            ]
         ];
     }
 

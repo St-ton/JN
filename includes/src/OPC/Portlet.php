@@ -182,6 +182,30 @@ abstract class Portlet implements \JsonSerializable
                 $res .= "<input type='text' class='form-control' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
                 break;
+            case 'number':
+                $res .= "<input type='number' class='form-control' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
+                break;
+            case 'date':
+                $res .= "<input type='date' class='form-control' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
+                break;
+            case 'password':
+                $res .= "<input type='password' class='form-control' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
+                break;
+            case 'checkbox':
+                foreach ($propDesc['options'] as $option) {
+                    $selected = in_array($prop,$option) ? " checked" : "";
+                    $res     .= "<div class='checkbox'><label><input type='checkbox' name='".$propname."[]' value='$option' $selected>$option</label></div>";
+                }
+                break;
+            case 'radio':
+                foreach ($propDesc['options'] as $option) {
+                    $selected = $prop === $option ? " checked" : "";
+                    $res     .= "<div class='radio'><label><input type='radio' name='$propname' value='$option' $selected>$option</label></div>";
+                }
+                break;
             case 'select':
                 $res .= "<select class='form-control' name='$propname'>";
 

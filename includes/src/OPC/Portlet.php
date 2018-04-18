@@ -136,7 +136,9 @@ abstract class Portlet implements \JsonSerializable
                 $res .= $this->getAutoConfigProp($instance, $propname, $propDesc);
 
                 if (!empty($propDesc['collapse'])) {
-                    $res .= "<div class='collapse'>";
+                    $res .= "<a class='btn btn-primary btn-xs' data-toggle='collapse'"
+                        . " href='#collapse-$propname'>D</a>"
+                        . "<div class='collapse' id='collapse-$propname'>";
 
                     foreach ($propDesc['collapse'] as $colapsePropname => $collapsePropdesc) {
                         $res .= $this->getAutoConfigProp($instance, $colapsePropname, $collapsePropdesc);

@@ -374,20 +374,19 @@ class ProductFilterURL
         ) {
             /** @var IFilter $filter */
             $className   = $filter->getClassName();
-            $idx         = 'cAlle' . $className;
             $extraFilter = clone $filter;
-            $url->$idx   = [];
+            $urls        = [];
             $extraFilter->setDoUnset(true);
             if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
                 foreach ($filter->getValue() as $filterValue) {
                     $extraFilter->setValue($filterValue);
-                    $url->$idx[$filterValue] = $this->getURL($extraFilter);
+                    $urls[$filterValue] = $this->getURL($extraFilter);
                 }
             } else {
                 $extraFilter->setValue($filter->getValue());
-                $url->$idx = $this->getURL($extraFilter);
+                $urls = $this->getURL($extraFilter);
             }
-            $filter->setUnsetFilterURL($url->$idx);
+            $filter->setUnsetFilterURL($urls);
         }
         // Filter reset
         $pages  = $searchResults->getPages();

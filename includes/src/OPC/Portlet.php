@@ -144,8 +144,8 @@ abstract class Portlet implements \JsonSerializable
 
                 switch ($type) {
                     case 'text':
-                        $res .= "<input type='text' class='form-control' name='$propname' value='$prop'";
-                        $res .= " id='config-$propname'>";
+                        $res .= "<input type='text' class='form-control' name='$propname' value='$prop'"
+                            . " id='config-$propname'>";
                         break;
                     case 'select':
                         $res .= "<select class='form-control' name='$propname'>";
@@ -174,6 +174,10 @@ abstract class Portlet implements \JsonSerializable
                             . "opc.setConfigSaveCallback(function() {"
                             . "$('#textarea-$propname').val(CKEDITOR.instances['textarea-$propname'].getData());"
                             . "})</script>";
+                        break;
+                    case 'color':
+                        $res .= "<input type='text' class='form-control' name='color' id='color' value='#000'>"
+                            . "<script>$('#color').colorpicker();</script>";
                         break;
                 }
 
@@ -250,7 +254,7 @@ abstract class Portlet implements \JsonSerializable
             ],
             'color' => [
                 'label'   => 'Schriftfarbe',
-                'type'    => 'text',
+                'type'    => 'color',
                 'default' => '#000000',
             ],
         ];

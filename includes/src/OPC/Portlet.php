@@ -248,6 +248,11 @@ abstract class Portlet implements \JsonSerializable
                 'type'    => 'text',
                 'default' => '1em',
             ],
+            'color' => [
+                'label'   => 'Schriftfarbe',
+                'type'    => 'text',
+                'default' => '#000000',
+            ],
         ];
     }
 

@@ -32,6 +32,16 @@ class PortletInstance implements \JsonSerializable
     /**
      * @var array
      */
+    protected $attributes = [];
+
+    /**
+     * @var array
+     */
+    protected $styles = [];
+
+    /**
+     * @var array
+     */
     protected $widthHeuristics = [
         'lg' => 1,
         'md' => 1,
@@ -182,11 +192,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function getAttribute($name)
     {
-        if (!isset($this->properties['attributes'])) {
-            $this->properties['attributes'] = [];
-        }
-
-        return $this->properties['attributes'][$name] ?? '';
+        return $this->attributes[$name] ?? '';
     }
 
     /**
@@ -196,11 +202,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function setAttribute($name, $value)
     {
-        if (!isset($this->properties['attributes'])) {
-            $this->properties['attributes'] = [];
-        }
-
-        $this->properties['attributes'][$name] = $value;
+        $this->attributes[$name] = $value;
 
         return $this;
     }
@@ -227,7 +229,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function getStyles()
     {
-        return $this->hasProperty('styles') ? $this->getProperty('styles') : [];
+        return $this->styles;
     }
 
     /**
@@ -237,9 +239,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function setStyle($name, $value)
     {
-        $styles        = $this->getStyles();
-        $styles[$name] = $value;
-        $this->setProperty('styles', $styles);
+        $this->styles[$name] = $value;
         $this->updateAttributes();
 
         return $this;
@@ -269,10 +269,8 @@ class PortletInstance implements \JsonSerializable
     {
         $result = '';
 
-        if (isset($this->properties['attributes']) && is_array($this->properties['attributes'])) {
-            foreach ($this->properties['attributes'] as $name => $value) {
-                $result .= "$name=\"$value\"";
-            }
+        foreach ($this->attributes as $name => $value) {
+            $result .= "$name='$value'";
         }
 
         return $result;
@@ -400,9 +398,10 @@ class PortletInstance implements \JsonSerializable
     public function jsonSerializeShort()
     {
         $result = [
-            'id'         => $this->portlet->getId(),
-            'title'      => $this->portlet->getTitle(),
-            'properties' => $this->properties,
+            'id'              => $this->portlet->getId(),
+            'title'           => $this->portlet->getTitle(),
+            'properties'      => $this->properties,
+            'widthHeuristics' => $this->widthHeuristics,
         ];
 
         return $result;

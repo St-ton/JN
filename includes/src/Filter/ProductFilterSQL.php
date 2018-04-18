@@ -36,18 +36,18 @@ class ProductFilterSQL
      */
     public function getOrder()
     {
-        $Artikelsortierung = $this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
+        $Artikelsortierung = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         $sort              = new \stdClass();
         $sort->join        = (new FilterJoin())->setOrigin(__CLASS__);
         if (isset($_SESSION['Usersortierung'])) {
-            $Artikelsortierung          = Metadata::mapUserSorting($_SESSION['Usersortierung']);
-            $_SESSION['Usersortierung'] = $Artikelsortierung;
+            $Artikelsortierung = Metadata::mapUserSorting($_SESSION['Usersortierung']);
         }
+        $_SESSION['Usersortierung'] = $Artikelsortierung;
         if ($_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD && $this->productFilter->getSort() > 0) {
             $Artikelsortierung = $this->productFilter->getSort();
         }
         $sort->orderBy = 'tartikel.nSort, tartikel.cName';
-        switch ((int)$Artikelsortierung) {
+        switch ($Artikelsortierung) {
             case SEARCH_SORT_STANDARD:
                 $sort->orderBy = 'tartikel.nSort, tartikel.cName';
                 if ($this->productFilter->getCategory()->getValue() > 0) {

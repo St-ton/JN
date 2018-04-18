@@ -55,7 +55,9 @@ class Heading extends \OPC\Portlet
     public function getPropertyTabs()
     {
         return [
-            'Tab Eins' => ['level'],
+//            'Tab Eins' => ['level'],
+//            'Tab Zwei' => ['text'],
+            'Styles'   => 'styles',
         ];
     }
 }

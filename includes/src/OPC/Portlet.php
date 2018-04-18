@@ -90,58 +90,101 @@ abstract class Portlet implements \JsonSerializable
      */
     final protected function getAutoConfigPanelHtml($instance)
     {
+        $desc = $this->getPropertyDesc();
+        $tabs = $this->getPropertyTabs();
+
+        foreach ($tabs as $tabname => $propnames) {
+            if (is_string($propnames)) {
+                if ($propnames === 'styles') {
+                    $tabs[$tabname] = $this->getStylesPropertyDesc();
+                }
+            } else {
+                foreach ($propnames as $i => $propname) {
+                    $tabs[$tabname][$i] = $desc[$propname];
+                    unset($desc[$propname]);
+                }
+            }
+        }
+
+        if (count($desc) > 0) {
+            $tabs = ['Allgemein' => $desc] + $tabs;
+        }
+
         $res = '';
 
-        foreach ($this->getPropertyDesc() as $propname => $propDesc) {
-            $label = $propDesc['label'] ?? $propname;
-            $type  = $propDesc['type'] ?? 'text';
+        $res .= "<ul class='nav nav-tabs'>";
+        $i    = 0;
 
-            $prop = $instance->hasProperty($propname)
-                ? $instance->getProperty($propname)
-                : $propDesc['default'];
+        foreach ($tabs as $tabname => $props) {
+            $tabid  = preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
+            $active = $i === 0 ? " class='active'" : "";
+            $res   .= "<li$active>";
+            $res   .= "<a href='#$tabid' data-toggle='tab'>$tabname</a></li>";
+            $i ++;
+        }
 
-            $res .= "<div class='form-group'><label for='config-$propname'>$label</label>";
+        $res .= "</ul>";
+        $res .= "<div class='tab-content'>";
+        $i    = 0;
 
-            if ($type === 'text') {
-                // type: text
+        foreach ($tabs as $tabname => $props) {
+            $tabid  = preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
+            $active = $i === 0 ? " active" : "";
+            $res   .= "<div class='tab-pane$active' id='$tabid'>";
 
-                $res .= "<input type='text' class='form-control' name='$propname' value='$prop'
-                    id='config-$propname'>";
-            } elseif ($type === 'select') {
-                // type: select
+            foreach ($props as $propname => $propDesc) {
+                $label = $propDesc['label'] ?? $propname;
+                $type  = $propDesc['type'] ?? 'text';
 
-                $res .= "<select class='form-control' name='$propname'>";
+                $prop = $instance->hasProperty($propname)
+                    ? $instance->getProperty($propname)
+                    : $propDesc['default'];
 
-                foreach ($propDesc['options'] as $option) {
-                    $res .= "<option value='$option' " . ($prop === $option ? " selected" : "") . ">"
-                        . "$option</option>";
+                $res .= "<div class='form-group'><label for='config-$propname'>$label</label>";
+
+                switch ($type) {
+                    case 'text':
+                        $res .= "<input type='text' class='form-control' name='$propname' value='$prop'";
+                        $res .= " id='config-$propname'>";
+                        break;
+                    case 'select':
+                        $res .= "<select class='form-control' name='$propname'>";
+
+                        foreach ($propDesc['options'] as $option) {
+                            $selected = $prop === $option ? " selected" : "";
+                            $res     .= "<option value='$option' $selected>$option</option>";
+                        }
+
+                        $res .= '</select>';
+                        break;
+                    case 'image':
+                        $previewImgUrl = empty($prop) ? \Shop::getURL() . '/gfx/keinBild.gif' : $prop;
+
+                        $res .= "<input type='hidden' name='$propname' value='$prop'>"
+                            . "<button type='button' class='btn btn-default image-btn' "
+                            . "onclick='opc.selectImageProp(\"$propname\")'>"
+                            . "<img src='$previewImgUrl' alt='Chosen image' id='preview-img-$propname'>"
+                            . "</button>";
+                        break;
+                    case 'richtext':
+                        $res .= "<textarea name='text' id='textarea-$propname' class='form-control'>"
+                            . htmlspecialchars($prop)
+                            . "</textarea>"
+                            . "<script>CKEDITOR.replace('textarea-$propname', {baseFloatZIndex: 9000});"
+                            . "opc.setConfigSaveCallback(function() {"
+                            . "$('#textarea-$propname').val(CKEDITOR.instances['textarea-$propname'].getData());"
+                            . "})</script>";
+                        break;
                 }
 
-                $res .= '</select>';
-            } elseif ($type === 'image') {
-                // type: image
-
-                $previewImgUrl = empty($prop) ? \Shop::getURL() . '/gfx/keinBild.gif' : $prop;
-
-                $res .= "<input type='hidden' name='$propname' value='$prop'>"
-                    . "<button type='button' class='btn btn-default image-btn' "
-                    . "onclick='opc.selectImageProp(\"$propname\")'>"
-                    . "<img src='$previewImgUrl' alt='Chosen image' id='preview-img-$propname'>"
-                    . "</button>";
-            } elseif ($type === 'richtext') {
-                // type: richtext
-
-                $res .= "<textarea name='text' id='textarea-$propname' class='form-control'>"
-                    . htmlspecialchars($prop)
-                    . "</textarea>"
-                    . "<script>CKEDITOR.replace('textarea-$propname', {baseFloatZIndex: 9000});</script>"
-                    . "<script>opc.setConfigSaveCallback(function() {"
-                    . "$('#textarea-$propname').val(CKEDITOR.instances['textarea-$propname'].getData());"
-                    . "})</script>";
+                $res .= "</div>";
             }
 
             $res .= "</div>";
+            $i ++;
         }
+
+        $res .= "</div>";
 
         return $res;
     }
@@ -195,6 +238,17 @@ abstract class Portlet implements \JsonSerializable
     public function getPropertyDesc()
     {
         return [];
+    }
+
+    public function getStylesPropertyDesc()
+    {
+        return [
+            'font-size' => [
+                'label'   => 'Schriftgröße',
+                'type'    => 'text',
+                'default' => '1em',
+            ],
+        ];
     }
 
     /**

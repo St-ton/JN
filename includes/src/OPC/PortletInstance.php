@@ -283,11 +283,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function getDataAttributeString()
     {
-        $instanceData = $this->jsonSerializeShort();
-
-        unset($instanceData['subareas']);
-
-        return 'data-portlet="' . htmlspecialchars(json_encode($instanceData), ENT_QUOTES) . '"';
+        return 'data-portlet="' . htmlspecialchars(json_encode($this->jsonSerializeShort()), ENT_QUOTES) . '"';
     }
 
     /**

@@ -12,9 +12,10 @@ class Heading extends \OPC\Portlet
     {
         $level         = $instance->getProperty('level');
         $text          = $instance->getProperty('text');
+        $attributes    = $instance->getAttributeString();
         $dataAttribute = $instance->getDataAttributeString();
 
-        return "<h$level $dataAttribute>$text</h$level>";
+        return "<h$level $attributes $dataAttribute>$text</h$level>";
     }
 
     public function getFinalHtml($instance)

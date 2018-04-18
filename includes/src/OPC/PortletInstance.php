@@ -229,7 +229,12 @@ class PortletInstance implements \JsonSerializable
      */
     public function getStyles()
     {
-        if ($this->hasProperty('font-size'))
+        foreach ($this->portlet->getStylesPropertyDesc() as $propname => $propdesc) {
+            if ($this->hasProperty($propname)) {
+                $this->setStyle($propname, $this->getProperty($propname));
+            }
+        }
+
         return $this->styles;
     }
 
@@ -241,7 +246,6 @@ class PortletInstance implements \JsonSerializable
     public function setStyle($name, $value)
     {
         $this->styles[$name] = $value;
-        $this->updateAttributes();
 
         return $this;
     }
@@ -263,6 +267,13 @@ class PortletInstance implements \JsonSerializable
         return $this;
     }
 
+    public function getAttributes()
+    {
+        $this->updateAttributes();
+
+        return $this->attributes;
+    }
+
     /**
      * @return string
      */
@@ -270,7 +281,7 @@ class PortletInstance implements \JsonSerializable
     {
         $result = '';
 
-        foreach ($this->attributes as $name => $value) {
+        foreach ($this->getAttributes() as $name => $value) {
             $result .= "$name='$value'";
         }
 

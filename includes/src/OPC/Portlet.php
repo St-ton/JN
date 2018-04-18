@@ -133,59 +133,77 @@ abstract class Portlet implements \JsonSerializable
             $res   .= "<div class='tab-pane$active' id='$tabid'>";
 
             foreach ($props as $propname => $propDesc) {
-                $label = $propDesc['label'] ?? $propname;
-                $type  = $propDesc['type'] ?? 'text';
+                $res .= $this->getAutoConfigProp($instance, $propname, $propDesc);
 
-                $prop = $instance->hasProperty($propname)
-                    ? $instance->getProperty($propname)
-                    : $propDesc['default'];
+                if (!empty($propDesc['collapse'])) {
+                    $res .= "<div class='collapse'>";
 
-                $res .= "<div class='form-group'><label for='config-$propname'>$label</label>";
+                    foreach ($propDesc['collapse'] as $colapsePropname => $collapsePropdesc) {
+                        $res .= $this->getAutoConfigProp($instance, $colapsePropname, $collapsePropdesc);
+                    }
 
-                switch ($type) {
-                    case 'text':
-                        $res .= "<input type='text' class='form-control' name='$propname' value='$prop'"
-                            . " id='config-$propname'>";
-                        break;
-                    case 'select':
-                        $res .= "<select class='form-control' name='$propname'>";
-
-                        foreach ($propDesc['options'] as $option) {
-                            $selected = $prop === $option ? " selected" : "";
-                            $res     .= "<option value='$option' $selected>$option</option>";
-                        }
-
-                        $res .= '</select>';
-                        break;
-                    case 'image':
-                        $previewImgUrl = empty($prop) ? \Shop::getURL() . '/gfx/keinBild.gif' : $prop;
-
-                        $res .= "<input type='hidden' name='$propname' value='$prop'>"
-                            . "<button type='button' class='btn btn-default image-btn' "
-                            . "onclick='opc.selectImageProp(\"$propname\")'>"
-                            . "<img src='$previewImgUrl' alt='Chosen image' id='preview-img-$propname'>"
-                            . "</button>";
-                        break;
-                    case 'richtext':
-                        $res .= "<textarea name='text' id='textarea-$propname' class='form-control'>"
-                            . htmlspecialchars($prop)
-                            . "</textarea>"
-                            . "<script>CKEDITOR.replace('textarea-$propname', {baseFloatZIndex: 9000});"
-                            . "opc.setConfigSaveCallback(function() {"
-                            . "$('#textarea-$propname').val(CKEDITOR.instances['textarea-$propname'].getData());"
-                            . "})</script>";
-                        break;
-                    case 'color':
-                        $res .= "<input type='text' class='form-control' name='color' id='color' value='#000'>"
-                            . "<script>$('#color').colorpicker();</script>";
-                        break;
+                    $res .= "</div>";
                 }
-
-                $res .= "</div>";
             }
 
             $res .= "</div>";
             $i ++;
+        }
+
+        $res .= "</div>";
+
+        return $res;
+    }
+
+    protected function getAutoConfigProp(PortletInstance $instance, $propname, $propDesc)
+    {
+        $res   = '';
+        $label = $propDesc['label'] ?? $propname;
+        $type  = $propDesc['type'] ?? 'text';
+
+        $prop = $instance->hasProperty($propname)
+            ? $instance->getProperty($propname)
+            : $propDesc['default'];
+
+        $res .= "<div class='form-group'><label for='config-$propname'>$label</label>";
+
+        switch ($type) {
+            case 'text':
+                $res .= "<input type='text' class='form-control' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
+                break;
+            case 'select':
+                $res .= "<select class='form-control' name='$propname'>";
+
+                foreach ($propDesc['options'] as $option) {
+                    $selected = $prop === $option ? " selected" : "";
+                    $res     .= "<option value='$option' $selected>$option</option>";
+                }
+
+                $res .= '</select>';
+                break;
+            case 'image':
+                $previewImgUrl = empty($prop) ? \Shop::getURL() . '/gfx/keinBild.gif' : $prop;
+
+                $res .= "<input type='hidden' name='$propname' value='$prop'>"
+                    . "<button type='button' class='btn btn-default image-btn' "
+                    . "onclick='opc.selectImageProp(\"$propname\")'>"
+                    . "<img src='$previewImgUrl' alt='Chosen image' id='preview-img-$propname'>"
+                    . "</button>";
+                break;
+            case 'richtext':
+                $res .= "<textarea name='text' id='textarea-$propname' class='form-control'>"
+                    . htmlspecialchars($prop)
+                    . "</textarea>"
+                    . "<script>CKEDITOR.replace('textarea-$propname', {baseFloatZIndex: 9000});"
+                    . "opc.setConfigSaveCallback(function() {"
+                    . "$('#textarea-$propname').val(CKEDITOR.instances['textarea-$propname'].getData());"
+                    . "})</script>";
+                break;
+            case 'color':
+                $res .= "<input type='text' class='form-control' name='color' id='color' value='#000'>"
+                    . "<script>$('#color').colorpicker();</script>";
+                break;
         }
 
         $res .= "</div>";

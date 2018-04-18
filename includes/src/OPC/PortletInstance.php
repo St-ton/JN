@@ -125,7 +125,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function getProperty($name)
     {
-        return $this->properties[$name];
+        return $this->properties[$name] ?? '';
     }
 
     /**
@@ -229,6 +229,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function getStyles()
     {
+        if ($this->hasProperty('font-size'))
         return $this->styles;
     }
 

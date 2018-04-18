@@ -529,9 +529,8 @@ class ItemAttribute extends BaseAttribute
                 $attributeFilters[] = $option->setCount($optionsCount);
             }
         }
-        foreach ($attributeFilters as &$af) {
+        foreach ($attributeFilters as $af) {
             /** @var FilterOption $af */
-            // Merkmalwerte numerisch sortieren, wenn alle Merkmalwerte eines Merkmals numerisch sind
             $options = $af->getOptions();
             if (!is_array($options)) {
                 continue;

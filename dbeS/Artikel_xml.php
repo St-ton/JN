@@ -616,13 +616,6 @@ function bearbeiteInsert($xml, array $conf)
             DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
         }
         // Sonderpreise
-        Shop::DB()->query(
-            "DELETE asp, sp
-                FROM tartikelsonderpreis asp 
-                LEFT JOIN tsonderpreise sp 
-                ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-                WHERE asp.kArtikel = " . (int)$artikel_arr[0]->kArtikel, 4
-        );
         if (isset($xml['tartikel']['tartikelsonderpreis'])) {
             updateXMLinDB(
                 $xml['tartikel']['tartikelsonderpreis'],
@@ -1043,7 +1036,6 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         Shop::DB()->delete('tseo', ['cKey', 'kKey'], ['kArtikel', (int)$kArtikel]);
         Shop::DB()->delete('tartikel', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tpreise', 'kArtikel', $kArtikel);
-        Shop::DB()->delete('tartikelsonderpreis', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tartikelsprache', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tartikelattribut', 'kArtikel', $kArtikel);
@@ -1051,6 +1043,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         loescheArtikelAttribute($kArtikel);
         loescheArtikelEigenschaftWert($kArtikel);
         loescheArtikelEigenschaft($kArtikel);
+        loescheSonderpreise($kArtikel);
         Shop::DB()->delete('txsell', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tartikelmerkmal', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tartikelsichtbarkeit', 'kArtikel', $kArtikel);
@@ -1291,6 +1284,25 @@ function loescheStueckliste($kStueckliste)
     if ($kStueckliste > 0) {
         Shop::DB()->delete('tstueckliste', 'kStueckliste', $kStueckliste);
     }
+}
+
+/**
+ * @param int $kArtikel
+ * @return int
+ */
+function loescheSonderpreise($kArtikel)
+{
+    return Shop::DB()->queryPrepared(
+        "DELETE asp, sp
+            FROM tartikelsonderpreis asp
+            LEFT JOIN tsonderpreise sp
+            ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
+            WHERE asp.kArtikel = :articleID",
+        [
+            'articleID' => (int)$kArtikel,
+        ],
+        3
+    );
 }
 
 /**

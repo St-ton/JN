@@ -169,7 +169,7 @@
             {/if}
             
             {block name="header-category-nav"}
-            <div class="category-nav navbar-wrapper hidden-xs">
+            <div class="category-nav navbar-wrapper">
                 {include file="layout/header_category_nav.tpl"}
             </div>{* /category-nav *}
             {/block}
@@ -178,7 +178,6 @@
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 </div>{* /container-block *}
             {/if}
-            {include file="layout/header_xs_nav.tpl"}
         </header>
     {/block}
 {/if}

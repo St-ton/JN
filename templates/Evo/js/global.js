@@ -229,6 +229,25 @@ function isTouchCapable() {
     return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
 }
 
+function lazyLoadMenu(viewport){
+    if (viewport !== 'xs' && viewport != 'sm'){
+        $('#evo-main-nav-wrapper .dropdown').hover(function(e) {
+            $(this).find('img.lazy').each(function(i, item) {
+                var img = $(item);
+                $(img).lazy(0, function() {
+                    $(this).load(function() {
+                        img.removeClass('loading')
+                            .addClass('loaded');
+                    }).error(function() {
+                        img.removeClass('loading')
+                            .addClass('error');
+                    });
+                });
+            });
+        });
+    }
+}
+
 $(window).load(function(){
     navigation();
 });
@@ -452,12 +471,14 @@ $(document).ready(function () {
         $(window).resize(
             viewport.changed(function() {
                 $body.attr('data-viewport', viewport.current());
+                lazyLoadMenu(viewport);
             })
         );
         $body.attr('data-viewport', viewport.current());
         $body.attr('data-touchcapable', isTouchCapable() ? 'true' : 'false');
     })(jQuery, document, window, ResponsiveBootstrapToolkit);
 
+    lazyLoadMenu($('body').attr('data-viewport'));
     categoryMenu();
     regionsToState();
     compatibility();

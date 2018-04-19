@@ -172,12 +172,6 @@ header {
     }
 }
 
-@media (min-width: @screen-md-min) {
-    .megamenu .navbar-nav {
-        float: inherit;
-    }
-}
-
 a[data-toggle="tooltip"] {
     display: inline-block;
 }
@@ -1405,18 +1399,18 @@ table.matrix tbody > tr > td {
     padding: 0 6px;
 }
 
-/* navbar-left fix */
-
-.navbar-left {
-    margin-left: -15px;
-    float: left;
-}
-
 /* Navbar form fix */
 
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
     border: none;
     border-color: transparent;
+}
+
+@media (max-width: @grid-float-breakpoint-max) {
+    #evo-navbar-collapse a{
+        font-size: @font-size-base;
+        border-bottom: 0;
+    }
 }
 
 @media (min-width: @screen-sm-min) {
@@ -2280,8 +2274,13 @@ fieldset {
     .dropdown-menu {
         opacity: 0;
         visibility: hidden;
-        display: block;
         left: inherit;
+        img.loading {
+            min-height: 64px;
+            min-width: 64px;
+            opacity: 0.25;
+            background: transparent url("../images/loader.gif") no-repeat center center;
+        }
     }
 
     .dropdown.open .dropdown-menu {
@@ -2302,6 +2301,9 @@ fieldset {
         .category-title {
             font-size: 2em;
         }
+        @media (max-width: @screen-sm-max) {
+            padding: 10px 15px;
+        }
     }
 
     .dropdown.megamenu-fw .dropdown-menu {
@@ -2311,6 +2313,9 @@ fieldset {
         border-top: 3px solid @brand-primary;
         border-left: none;
         border-right: none;
+    }
+    .dropdown .dropdown-menu{
+        border-top: 3px solid @brand-primary;
     }
     .thumbnail {
         text-decoration: none;
@@ -2326,6 +2331,9 @@ fieldset {
     .mega-categories {
         &.hasInfoColumn {
             border-left: 1px solid @hr-border;
+            @media (max-width: @screen-sm-max) {
+                border-left: 0;
+            }
         }
     }
     .mega-categories .category-wrapper {
@@ -2333,8 +2341,16 @@ fieldset {
         border-radius: @border-radius-base;
         padding: @padding-base-vertical @padding-base-horizontal;
         &:hover, &.active {
-            border: 1px solid @panel-default-border;
-            .box-shadow(0 1px 2px @panel-default-border);
+            @media (max-width: @screen-sm-max) {
+                a{
+                    color: @navbar-default-link-hover-color;
+                }
+            }
+
+            @media (min-width: @screen-md-min) {
+                border: 1px solid @panel-default-border;
+                .box-shadow(0 1px 2px @panel-default-border);
+            }
         }
         &.active .caption > h5,
         ul.subsub li.active {
@@ -2344,6 +2360,27 @@ fieldset {
             max-width: 100%;
             height: auto;
         }
+        @media (max-width: @screen-sm-max) {
+            padding: 0px;
+            text-align: left !important;
+            .subsub{
+                margin: 15px 0 0 15px;
+            }
+            .text-center{
+                text-align: left;
+            }
+        }
+    }
+    @media (max-width: @screen-sm-max) {
+        a{
+            color: @navbar-default-link-color;
+        }
+    }
+}
+
+@media (max-width: @screen-sm-max) {
+    #evo-navbar-collapse{
+        max-height: 450px;
     }
 }
 
@@ -2379,6 +2416,9 @@ fieldset {
     .navbar-default {
         border-top: 0;
         border-bottom: 0;
+        .navbar-header{
+            color: @btn-default-color;
+        }
     }
 }
 

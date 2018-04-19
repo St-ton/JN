@@ -107,7 +107,7 @@
                                     <span class="input-group-btn">
                                         <button type="submit" class="btn btn-primary" id="submit{$Artikel->kArtikel}"
                                                 title="{lang key="addToCart" section="global"}">
-                                            <span><i class="fa fa-shopping-cart"></i> {lang key="addToCart" section="global"}</span>
+                                            <i class="fa fa-shopping-cart"></i><span class="hidden-xs"> {lang key="addToCart" section="global"}</span>
                                         </button>
                                     </span>
                                 </div>

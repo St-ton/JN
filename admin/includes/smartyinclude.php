@@ -148,7 +148,6 @@ if (isset($nUnsetPlugin) && $nUnsetPlugin > 0) {
 if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];
 }
-
 $smarty->assign('SID', (defined('SID') ? SID : null))
        ->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', getTokenInput())
@@ -170,5 +169,5 @@ $smarty->assign('SID', (defined('SID') ? SID : null))
        ->assign('oLinkOberGruppe_arr', $oLinkOberGruppe_arr)
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('kAdminmenuEinstellungen', KADMINMENU_EINSTELLUNGEN)
-       ->assign('notifications', $notify)
+       ->assign('notifications', Notification::getInstance())
        ->assign('favorites', $oAccount->favorites());

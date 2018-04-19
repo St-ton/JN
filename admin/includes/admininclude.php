@@ -46,17 +46,12 @@ $cache->setJtlCacheConfig();
 
 $session = AdminSession::getInstance();
 
-/** @var Notification $notify */
-$notify = Notification::getInstance();
-
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
 Shop::bootstrap();
 
 if ($oAccount->logged()) {
-    /** @var Notification $notify */
-    $notify->buildDefault();
-    Shop::fire('backend.notification', [&$notify]);
+    Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
 }
 
 if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id'])

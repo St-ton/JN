@@ -1282,7 +1282,7 @@ function loescheStueckliste($kStueckliste)
 }
 
 /**
- * @param $kArtikel
+ * @param int $kArtikel
  * @return int
  */
 function loescheSonderpreise($kArtikel)

@@ -172,7 +172,7 @@ abstract class Portlet implements \JsonSerializable
 
         if (!empty($propDesc['collapse'])) {
             $res .= '<a title="more" class="pull-right" role="button" data-toggle="collapse"
-                       href="#collapseContainer' . $containerId . '" aria-expanded="false" aria-controls="collapseContainer' . $containerId . '">
+                       href="#collapseContainer' . $containerId . '"">
                         <i class="fa fa-gears"></i>
                     </a>';
         }

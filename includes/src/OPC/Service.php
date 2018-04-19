@@ -128,10 +128,7 @@ class Service
      */
     public function lockPage($id)
     {
-        $page = (new Page())
-            ->setId($id);
-
-        return $this->locker->lock($this->adminName, $page);
+        return $this->locker->lock($this->adminName, $this->getPage($id));
     }
 
     /**

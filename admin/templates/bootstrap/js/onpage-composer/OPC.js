@@ -24,9 +24,13 @@ OPC.prototype = {
         this.page.init(this.onPageLocked);
     },
 
-    onPageLocked: function()
+    onPageLocked: function(state)
     {
-        this.iframe.init(this.onPageLoad);
+        if (state === false) {
+            this.gui.showError('Die Seite wird derzeit bearbeitet und kann von Ihnen nicht bearbeitet werden.');
+        } else {
+            this.iframe.init(this.onPageLoad);
+        }
     },
 
     onPageLoad: function()

@@ -84,7 +84,7 @@ function get_product_list($params, &$smarty)
             $oArtikel_arr[] = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         }
     } else {
-        $oArtikel_arr = (new ProductFilter())->initStates($params)->getProducts(false, null, true, $nLimit);
+        $oArtikel_arr = (new \Filter\ProductFilter())->initStates($params)->getProducts(false, null, true, $nLimit);
     }
 
     $smarty->assign($cAssign, $oArtikel_arr);
@@ -351,8 +351,8 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
         $fVPEWert               = (float)$params['fVPEWert'];
         $cVPEEinheit            = $params['cVPEEinheit'];
         $FunktionsAttribute_arr = $params['FunktionsAttribute'];
-        $nGenauigkeit = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) &&
-            (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
+        $nGenauigkeit = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
+            && (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
             ? (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
             : 2;
 

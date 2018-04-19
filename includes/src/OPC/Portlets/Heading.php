@@ -44,33 +44,43 @@ class Heading extends \OPC\Portlet
                 'type'    => 'select',
                 'options' => ['1', '2', '3', '4', '5', '6'],
                 'default' => '1',
+                'dspl_width' => 50,
             ],
             'text'  => [
                 'label'   => 'Text',
                 'type'    => 'text',
                 'default' => 'Heading',
+                'dspl_width' => 50,
             ],
             'number'  => [
                 'label'   => 'Numebr',
                 'type'    => 'number',
                 'default' => 5,
+                'dspl_width' => 50,
+            ],
+            'mail'  => [
+                'label'   => 'Email',
+                'type'    => 'email',
+                'default' => '',
+                'dspl_width' => 50,
             ],
             'date'  => [
                 'label'   => 'Datum',
                 'type'    => 'date',
                 'default' => '',
+                'dspl_width' => 50,
             ],
             'pass'  => [
                 'label'   => 'Passwort',
                 'type'    => 'password',
                 'default' => '',
+                'dspl_width' => 50,
             ],
             'checkbox' => [
                 'label' => 'Checkbox',
                 'type'  => 'checkbox',
-                'options' => ['option 1', 'option 2', 'option 3'],
                 'dspl_width' => 50,
-                'default' => 'option 2',
+                'default' => 'this is optional',
             ],
             'radio' => [
                 'label' => 'radio',
@@ -78,6 +88,12 @@ class Heading extends \OPC\Portlet
                 'options' => ['female', 'male', 'other'],
                 'dspl_width' => 50,
                 'default' => 'female',
+            ],
+             'color' => [
+                'label' => 'Farbe',
+                'type'  => 'color',
+                'dspl_width' => 50,
+                'default' => '#ff0000',
             ]
         ];
     }

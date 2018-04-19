@@ -186,6 +186,10 @@ abstract class Portlet implements \JsonSerializable
                 $res .= "<input type='number' class='form-control' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
                 break;
+            case 'email':
+                $res .= "<input type='email' class='form-control' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
+                break;
             case 'date':
                 $res .= "<input type='date' class='form-control' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
@@ -195,10 +199,9 @@ abstract class Portlet implements \JsonSerializable
                     . " id='config-$propname'>";
                 break;
             case 'checkbox':
-                foreach ($propDesc['options'] as $option) {
-                    $selected = in_array($prop,$option) ? " checked" : "";
-                    $res     .= "<div class='checkbox'><label><input type='checkbox' name='".$propname."[]' value='$option' $selected>$option</label></div>";
-                }
+                $res .= "<div class='checkbox'><label><input type='checkbox' name='" . $propname . "' value='1'";
+                $res .= $prop === "1" ? " checked" : "";
+                $res .= ">$propname</label></div>";
                 break;
             case 'radio':
                 foreach ($propDesc['options'] as $option) {
@@ -235,7 +238,7 @@ abstract class Portlet implements \JsonSerializable
                     . "})</script>";
                 break;
             case 'color':
-                $res .= "<input type='text' class='form-control' name='color' id='color' value='#000'>"
+                $res .= "  <div class='input-group border-color-picker colorpicker-element'><input type='text' class='form-control' name='$propname' id='$propname' value='$prop'><span class='input-group-addon'><i style='margin-right: 0px;'></i></span></div>"
                     . "<script>$('#color').colorpicker();</script>";
                 break;
         }

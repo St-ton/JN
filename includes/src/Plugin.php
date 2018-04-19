@@ -577,7 +577,7 @@ class Plugin
         if (is_array($this->oPluginEditorPortlet_arr) && count($this->oPluginEditorPortlet_arr) > 0) {
             foreach ($this->oPluginEditorPortlet_arr as $i => $oPluginEditorPortlet) {
                 $this->oPluginEditorPortlet_arr[$i]->cClassAbs                     =
-                    $this->cAdminmenuPfad . PFAD_PLUGIN_PORTLET . 'class.Portlet' . $oPluginEditorPortlet->cClass . '.php';
+                    $this->cAdminmenuPfad . PFAD_PLUGIN_PORTLETS . 'class.Portlet' . $oPluginEditorPortlet->cClass . '.php';
                 $this->oPluginEditorPortletAssoc_arr[$oPluginEditorPortlet->kPortlet] =
                     $this->oPluginEditorPortlet_arr[$i];
             }

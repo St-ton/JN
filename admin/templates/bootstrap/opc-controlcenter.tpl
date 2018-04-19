@@ -4,21 +4,128 @@
 
 <ul class="nav nav-tabs">
     <li class="active">
+        <a data-toggle="tab" href="#pages">{#opcPages#}</a>
+    </li>
+    <li>
         <a data-toggle="tab" href="#portlets">{#opcPortlets#}</a>
+    </li>
+    <li>
+        <a data-toggle="tab" href="#blueprints">{#opcBlueprints#}</a>
     </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="portlets">
+    <div class="tab-pane fade active in" id="pages">
         <div class="panel panel-default">
-            {foreach $portlets as $portlet}
-                <div>
-                    {$portlet->getModel()->getTitle()}
-                </div>
-            {/foreach}
+            <div class="table-responsive">
+                <table class="list table">
+                    <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Ersetzt/Erweitert</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $opc->getPages() as $page}
+                            <tr>
+                                <td>{$page->getUrl()}</td>
+                                <td>{if $page->isReplace()}Ersetzt{else}Erweitert{/if}</td>
+                                <td>
+                                    <button class="btn btn-default"
+                                            data-src="{$URL_SHOP}{$page->getUrl()}" data-toggle="modal"
+                                            data-target="#previewModal">Vorschau
+                                    </button>
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="portlets">
+        <div class="panel panel-default">
+            <div class="table-responsive">
+                <table class="list table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Gruppe</th>
+                        <th>Plugin</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $opc->getPortletGroups() as $group}
+                        {foreach $group->getPortlets() as $portlet}
+                        <tr>
+                            <td>{$portlet->getButtonHtml()}</td>
+                            <td>{$portlet->getGroup()}</td>
+                            <td>
+                                {if $portlet->getPluginId() > 0}
+                                    {$portlet->getPlugin()->cName}
+                                {/if}
+                            </td>
+                        </tr>
+                        {/foreach}
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="blueprints">
+        <div class="panel panel-default">
+            <div class="table-responsive">
+                <table class="list table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Portlet</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $opc->getBlueprints() as $blueprint}
+                        <tr>
+                            <td>{$blueprint->getName()}</td>
+                            <td>{$blueprint->getInstance()->getPortlet()->getTitle()}</td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+<div id="previewModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Preview</h3>
+            </div>
+            <div class="modal-body">
+                <iframe id="previewFrame" src="" style="zoom:0.60" width="99.6%" height="850" frameborder="0"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#previewModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var frameSrc = button.data('src');
+
+        var modal = $(this);
+        modal.find('#previewFrame').attr('src', frameSrc);
+    });
+</script>
+
+{*
 
 {*
 {if $links|@count > 0 && $links}

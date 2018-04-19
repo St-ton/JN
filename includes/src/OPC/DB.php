@@ -199,6 +199,21 @@ class DB
     }
 
     /**
+     * @return string[]
+     */
+    public function getAllPageIds()
+    {
+        $pageIds = [];
+        $pagesDB = $this->shopDB->selectAll('topcpage', [], [], 'cPageId', 'cPageUrl');
+
+        foreach ($pagesDB as $pageDB) {
+            $pageIds[] = $pageDB->cPageId;
+        }
+
+        return $pageIds;
+    }
+
+    /**
      * @param Page $page
      * @return bool
      */

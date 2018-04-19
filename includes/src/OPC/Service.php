@@ -79,6 +79,21 @@ class Service
     }
 
     /**
+     * @return Page[]
+     */
+    public function getPages()
+    {
+        $pageIds = $this->db->getAllPageIds();
+        $pages   = [];
+
+        foreach ($pageIds as $pageId) {
+            $pages[] = $this->getPage($pageId);
+        }
+
+        return $pages;
+    }
+
+    /**
      * @param string $id
      * @param int $revId
      * @return Page

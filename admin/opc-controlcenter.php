@@ -10,11 +10,12 @@
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
-
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-$opc      = new \OPC\Service();
-$portlets = $opc->getAllPortlets();
+$smarty
+    ->assign('opc', \Shop::Container()->getOPC())
+    ->display('opc-controlcenter.tpl');
+
 
 /*
 $hinweis       = '';
@@ -55,7 +56,3 @@ $smarty->assign('step', $step)
     ->assign('oPagiCmsLinks', $oPagiCmsLinks)
     ->display('opc-controlcenter.tpl');
 */
-
-$smarty
-    ->assign('portlets', $portlets)
-    ->display('opc-controlcenter.tpl');

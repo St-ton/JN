@@ -309,11 +309,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getPluginId()
     {
-        if ($this->plugin !== null) {
-            return 0;
-        }
-
-        return $this->plugin->kPlugin;
+        return $this->plugin === null ? 0 : $this->plugin->kPlugin;
     }
 
     /**

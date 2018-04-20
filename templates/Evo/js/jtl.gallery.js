@@ -58,6 +58,7 @@
                     items.push(image);
                 });
             }
+            $(document).trigger('evo:galleryClass.init', this);
 
             this.setItems(items);
             this.render();
@@ -131,10 +132,12 @@
                         .attr('height', item.xs.size.height)
                 );
                 thumb = thumb.append($('<meta>').attr('itemprop', 'image').attr('content', item.lg.src));
+                $(document).trigger('evo:galleryClass.renderThumb', thumb);
                 $(template).find('.image-thumbs')
                     .append(thumb);
             }
 
+            $(document).trigger('evo:galleryClass.render', template);
             $(this.element).append($(template));
 
             if (ResponsiveBootstrapToolkit.current() === 'xs') {
@@ -201,6 +204,7 @@
 
                     gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, pswpItems, options);
                     gallery.init();
+                    $(document).trigger('evo:photoSwipe.init', gallery);
                     if (pswpItems.length > 1) {
                         indicator = $(self.options.template.indicator);
                         $(gallery.container).parent().addClass('theme-default');

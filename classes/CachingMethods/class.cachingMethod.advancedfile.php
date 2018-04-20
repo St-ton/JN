@@ -221,6 +221,7 @@ class cache_advancedfile implements ICachingMethod
             $tags = [$tags];
         }
         if (count($tags) > 0) {
+            $res = true;
             foreach ($tags as $tag) {
                 //create subdirs for every underscore
                 $dirs = explode('_', $tag);
@@ -229,15 +230,16 @@ class cache_advancedfile implements ICachingMethod
                     if (strlen($dir) > 0) {
                         $path .= $dir . '/';
                         if (!file_exists($path) && !mkdir($path) && !is_dir($path)) {
-                            return false;
+                            $res = false;
+                            continue;
                         }
                     }
                 }
                 if (file_exists($path . $cacheID) || !file_exists($fileName) || !symlink($fileName, $path . $cacheID)) {
-                    return false;
+                    $res = false;
+                    continue;
                 }
             }
-            $res = true;
         }
 
         return $res;

@@ -80,6 +80,7 @@ class Notification implements IteratorAggregate, Countable
     /**
      * Build default system notifications.
      * @todo Remove translated messages
+     * @return $this
      */
     public function buildDefault()
     {
@@ -157,5 +158,6 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
+        return $this;
     }
 }

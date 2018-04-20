@@ -531,13 +531,12 @@ final class Shop
     }
 
     /**
-     * @param string $eventName
-     * @param array  $arguments
-     * @return array|null
+     * @param string       $eventName
+     * @param array|object $arguments
      */
-    public static function fire($eventName, array $arguments = [])
+    public static function fire($eventName, $arguments = [])
     {
-        return self::Event()->fire($eventName, $arguments);
+        self::Event()->fire($eventName, $arguments);
     }
 
     /**

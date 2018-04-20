@@ -49,7 +49,11 @@ Iframe.prototype = {
     {
         var pageUrlLink = document.createElement('a');
 
-        pageUrlLink.href = this.shopUrl + '/' + this.page.url;
+        if (this.shopUrl.indexOf('/', this.shopUrl.length - 1) >= 0) {
+            pageUrlLink.href = this.shopUrl + '/' + this.page.url;
+        } else {
+            pageUrlLink.href = this.shopUrl + this.page.url;
+        }
 
         if(pageUrlLink.search !== '') {
             pageUrlLink.search += '&opcEditMode=yes';

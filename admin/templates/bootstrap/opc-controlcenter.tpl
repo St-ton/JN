@@ -17,25 +17,42 @@
 <div class="tab-content">
     <div class="tab-pane fade active in" id="pages">
         <div class="panel panel-default">
+            {include file='tpl_inc/pagination.tpl' oPagination=$pagesPagi cParam_arr=['tab'=>'pages']}
             <div class="table-responsive">
                 <table class="list table">
                     <thead>
                     <tr>
                         <th>URL</th>
                         <th>Ersetzt/Erweitert</th>
+                        <th>Letzte Änderung</th>
+                        <th>Gerade bearbeitet</th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
-                        {foreach $opc->getPages() as $page}
+                        {foreach array_slice($opc->getPages(), $pagesPagi->getFirstPageItem(), $pagesPagi->getPageItemCount()) as $page}
                             <tr>
-                                <td>{$page->getUrl()}</td>
-                                <td>{if $page->isReplace()}Ersetzt{else}Erweitert{/if}</td>
                                 <td>
-                                    <button class="btn btn-default"
-                                            data-src="{$URL_SHOP}{$page->getUrl()}" data-toggle="modal"
-                                            data-target="#previewModal">Vorschau
-                                    </button>
+                                    <a href="{$URL_SHOP}{$page->getUrl()}" target="_blank">{$page->getUrl()}</a>
+                                </td>
+                                <td>{if $page->isReplace()}Ersetzt{else}Erweitert{/if}</td>
+                                <td>{$page->getLastModified()|date_format:'%c'}</td>
+                                <td>{if empty($page->getLockedBy())}{else}{$page->getLockedBy()}{/if}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-default" title="Vorschau"
+                                                data-src="{$URL_SHOP}{$page->getUrl()}" data-toggle="modal"
+                                                data-target="#previewModal"><i class="fa fa-eye"></i>
+                                        </button>
+                                        <a class="btn btn-danger" title="Seite zurücksetzen"
+                                           href="?token={$smarty.session.jtl_token}&action=restore&pageId={$page->getId()}">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                        <a class="btn btn-primary" title="Bearbeiten" target="_blank"
+                                           href="onpage-composer.php?token={$smarty.session.jtl_token}&pageUrl={$page->getUrl()}&pageId={$page->getId()}&action=edit">
+                                            <i class="fa fa-pencil"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         {/foreach}

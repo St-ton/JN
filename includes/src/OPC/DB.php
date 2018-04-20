@@ -161,6 +161,14 @@ class DB
     }
 
     /**
+     * @return int
+     */
+    public function getPortletCount()
+    {
+        return (int)$this->shopDB->query("SELECT count(kPortlet) AS count FROM topcportlet", 1)->count;
+    }
+
+    /**
      * @param int $id
      * @return Portlet
      * @throws \Exception
@@ -211,6 +219,14 @@ class DB
         }
 
         return $pageIds;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPageCount()
+    {
+        return (int)$this->shopDB->query("SELECT count(kPage) AS count FROM topcpage", 1)->count;
     }
 
     /**
@@ -286,6 +302,8 @@ class DB
         ) {
             throw new \Exception('The OPC page data to be saved is incomplete or invalid.');
         }
+
+        $page->setLastModified(date('Y-m-d H:i:s'));
 
         $pageDB = (object)[
             'cPageId'       => $page->getId(),

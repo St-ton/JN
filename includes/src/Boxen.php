@@ -174,6 +174,57 @@ class Boxen
                 $oBox->kSeite      = (int)$oBox->kSeite;
                 $oBox->nSort       = (int)$oBox->nSort;
                 $oBox->bAktiv      = (int)$oBox->bAktiv;
+                if (!empty($oBox->cFilter)) {
+                    $_tmp          = explode(',', $oBox->cFilter);
+                    $filterOptions = [];
+                    foreach ($_tmp as $_filterValue) {
+                        $filterEntry       = [];
+                        $filterEntry['id'] = $_filterValue;
+                        $name              = null;
+                        if ($nSeite === PAGE_ARTIKELLISTE) { //map category name
+                            $name = Shop::Container()->getDB()->select(
+                                'tkategorie',
+                                'kKategorie', (int)$_filterValue,
+                                null, null,
+                                null, null,
+                                false,
+                                'cName'
+                            );
+                        } elseif ($nSeite === PAGE_ARTIKEL) { //map article name
+                            $name = Shop::Container()->getDB()->select(
+                                'tartikel',
+                                'kArtikel', (int)$_filterValue,
+                                null, null,
+                                null, null,
+                                false,
+                                'cName'
+                            );
+                        } elseif ($nSeite === PAGE_HERSTELLER) { //map manufacturer name
+                            $name = Shop::Container()->getDB()->select(
+                                'thersteller',
+                                'kHersteller', (int)$_filterValue,
+                                null, null,
+                                null, null,
+                                false,
+                                'cName'
+                            );
+                        } elseif ($nSeite === PAGE_EIGENE) { //map page name
+                            $name = Shop::Container()->getDB()->select(
+                                'tlink',
+                                'kLink', (int)$_filterValue,
+                                null, null,
+                                null, null,
+                                false,
+                                'cName'
+                            );
+                        }
+                        $filterEntry['name'] = !empty($name->cName) ? $name->cName : '???';
+                        $filterOptions[]     = $filterEntry;
+                    }
+                    $oBox->cFilter = $filterOptions;
+                } else {
+                    $oBox->cFilter = [];
+                }
                 unset($oBox->pluginStatus);
                 if ($oBox->eTyp === 'plugin') {
                     $cacheTags[] = CACHING_GROUP_PLUGIN . '_' . $oBox->kCustomID;
@@ -208,6 +259,17 @@ class Boxen
                                 $childBox->kSeite      = (int)$childBox->kSeite;
                                 $childBox->nSort       = (int)$childBox->nSort;
                                 $childBox->bAktiv      = (int)$childBox->bAktiv;
+                                $oVisible_arr     = Shop::Container()->getDB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$childBox->kBox, 1]);
+                                if (count($oVisible_arr) >= count($validPageTypes)) {
+                                    $childBox->cVisibleOn = "sichtbar auf allen Seiten";
+                                    $childBox->nVisibility = 1;
+                                } elseif (count($oVisible_arr) === 0) {
+                                    $childBox->cVisibleOn = "auf keiner Seite sichtbar";
+                                    $childBox->nVisibility = 0;
+                                } else {
+                                    $childBox->cVisibleOn = "sichtbar auf manchen Seiten";
+                                    $childBox->nVisibility = 2;
+                                }
                             }
                             $oBox->oContainer_arr = $oContainerBoxen_arr;
                             $oBox->nContainer     = count($oContainerBoxen_arr);
@@ -248,72 +310,14 @@ class Boxen
                         $oBox->cVisibleOn = '';
                         $oVisible_arr     = Shop::Container()->getDB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$oBox->kBox, 1]);
                         if (count($oVisible_arr) >= count($validPageTypes)) {
-                            $oBox->cVisibleOn = "\n- Auf allen Seiten";
+                            $oBox->cVisibleOn = "sichtbar auf allen Seiten";
+                            $oBox->nVisibility = 1;
                         } elseif (count($oVisible_arr) === 0) {
-                            $oBox->cVisibleOn = "\n- Auf allen Seiten deaktiviert";
+                            $oBox->cVisibleOn = "auf keiner Seite sichtbar";
+                            $oBox->nVisibility = 0;
                         } else {
-                            foreach ($oVisible_arr as $oVisible) {
-                                if ($oVisible->kSeite > 0 && (int)$oVisible->kSeite !== PAGE_NEWSARCHIV) {
-                                    $oBox->cVisibleOn .= "\n- " . $this->mappekSeite((int)$oVisible->kSeite);
-                                }
-                            }
-                        }
-                        //add the filter for admin backend
-                        foreach ($oVisible_arr as $oVisible) {
-                            if ((int)$nSeite === (int)$oVisible->kSeite) {
-                                if (!empty($oVisible->cFilter)) {
-                                    $_tmp          = explode(',', $oVisible->cFilter);
-                                    $filterOptions = [];
-                                    foreach ($_tmp as $_filterValue) {
-                                        $filterEntry       = [];
-                                        $filterEntry['id'] = $_filterValue;
-                                        $name              = null;
-                                        if ($nSeite === PAGE_ARTIKELLISTE) { //map category name
-                                            $name = Shop::Container()->getDB()->select(
-                                                'tkategorie',
-                                                'kKategorie', (int)$_filterValue,
-                                                null, null,
-                                                null, null,
-                                                false,
-                                                'cName'
-                                            );
-                                        } elseif ($nSeite === PAGE_ARTIKEL) { //map article name
-                                            $name = Shop::Container()->getDB()->select(
-                                                'tartikel',
-                                                'kArtikel', (int)$_filterValue,
-                                                null, null,
-                                                null, null,
-                                                false,
-                                                'cName'
-                                            );
-                                        } elseif ($nSeite === PAGE_HERSTELLER) { //map manufacturer name
-                                            $name = Shop::Container()->getDB()->select(
-                                                'thersteller',
-                                                'kHersteller', (int)$_filterValue,
-                                                null, null,
-                                                null, null,
-                                                false,
-                                                'cName'
-                                            );
-                                        } elseif ($nSeite === PAGE_EIGENE) { //map page name
-                                            $name = Shop::Container()->getDB()->select(
-                                                'tlink',
-                                                'kLink', (int)$_filterValue,
-                                                null, null,
-                                                null, null,
-                                                false,
-                                                'cName'
-                                            );
-                                        }
-                                        $filterEntry['name'] = !empty($name->cName) ? $name->cName : '???';
-                                        $filterOptions[]     = $filterEntry;
-                                    }
-                                    $oBox->cFilter = $filterOptions;
-                                } else {
-                                    $oBox->cFilter = [];
-                                }
-                                break;
-                            }
+                            $oBox->cVisibleOn = "sichtbar auf manchen Seiten";
+                            $oBox->nVisibility = 2;
                         }
                     }
                     $oBox_arr[$oBox->ePosition][] = $oBox;
@@ -1387,6 +1391,7 @@ class Boxen
     }
 
     /**
+     * @deprecated since 5.0.0
      * @param int $kSeite
      * @return string
      */

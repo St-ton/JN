@@ -11,7 +11,7 @@
             <div class="panel-heading">
                 <h5 class="panel-title"><i class="fa fa-tasks"></i> {lang key="compare" section="global"}</h5>
             </div>{* /panel-heading *}
-            <div class="panel-body">
+            <div class="box-body panel-body">
                 <ul class="list-unstyled">
                     {foreach name=vergleich from=$from item=oArtikel}
                         {if $smarty.foreach.vergleich.iteration <= $nAnzahl}

@@ -2,7 +2,7 @@
     <div class="panel-heading">
         <h5 class="panel-title">{$oBox->cTitel}</h5>
     </div>
-    <div class="panel-body panel-strap">
+    <div class="box-body panel-body panel-strap">
         {eval var=$oBox->cInhalt}
     </div>
 </section>

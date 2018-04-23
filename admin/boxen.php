@@ -131,6 +131,14 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             $sort_arr  = $_REQUEST['sort'] ?? null;
             $aktiv_arr = $_REQUEST['aktiv'] ?? [];
             $boxCount  = count($box_arr);
+            $bValue    = $_REQUEST['box'] ?? false;
+            $bOk       = $oBoxen->setzeBoxAnzeige($nPage, $ePosition, $bValue);
+            if ($bOk) {
+                $cHinweis = 'Box wurde erfolgreich bearbeitet.';
+            } else {
+                $cFehler = 'Box konnte nicht bearbeitet werden.';
+            }
+
             foreach ($box_arr as $i => $kBox) {
                 $idx = 'box-filter-' . $kBox;
                 $oBoxen->sortBox($kBox, $nPage, $sort_arr[$i], in_array($kBox, $aktiv_arr));

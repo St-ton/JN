@@ -23,7 +23,7 @@
         <div class="panel-heading">
             <h5 class="panel-title">{lang key="newsBoxMonthOverview" section="global"}</h5>
         </div>
-        <div class="panel-body">
+        <div class="box-body panel-body">
             <ul>
                 {foreach name=news from=$Boxen.News->oNewsMonatsUebersicht_arr item=oNewsMonatsUebersicht}
                     <li>

@@ -3,7 +3,7 @@
         <div class="panel-heading">
             <h5 class="panel-title">{lang key="searchcloud" section="global"}</h5>
         </div>
-        <div class="panel-body">
+        <div class="box-body panel-body">
             <div class="tagbox">
                 {if isset($oBox->Suchbegriffe)}{*4.00*}
                     {assign var=from value=$oBox->Suchbegriffe}

@@ -41,4 +41,7 @@ function Kategorien_xml_Finish()
     Jtllog::writeLog('Finish Kategorien_xml: updateKategorieLevel, rebuildCategoryTree', JTLLOG_LEVEL_DEBUG);
     rebuildCategoryTree(0, 1);
     Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY]);
+    if (TV_MODE === true) {
+        Shop::Smarty()->clearCache(null, CACHING_GROUP_CATEGORY);
+    }
 }

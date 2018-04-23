@@ -1467,6 +1467,9 @@ final class Shop
             }
         }
         self::check404();
+        if (TV_MODE === true) {
+            self::Smarty()->displayCached();
+        }
     }
 
     /**

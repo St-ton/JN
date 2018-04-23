@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_PHPQUERY . 'phpquery.class.php';
 class JTLSmarty extends SmartyBC
 {
     /**
-     * @var JTLCache
+     * @var \Cache\JTLCache
      */
     public $jtlCache;
 
@@ -71,7 +71,7 @@ class JTLSmarty extends SmartyBC
              ->setForceCompile(SMARTY_FORCE_COMPILE ? true : false)
              ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false);
 
-        $this->config = Shop::getSettings([CONF_TEMPLATE, CONF_CACHING, CONF_GLOBAL]);
+        $this->config = Shopsetting::getInstance()->getAll();
         $template     = $isAdmin ? AdminTemplate::getInstance() : Template::getInstance();
         $cTemplate    = $template->getDir();
         $parent       = null;
@@ -161,7 +161,7 @@ class JTLSmarty extends SmartyBC
             $config = Shop::getSettings([CONF_CACHING]);
         }
 
-        return $this->setCaching(self::CACHING_OFF)
+        return $this->setCaching(TV_MODE === true ? self::CACHING_LIFETIME_SAVED : self::CACHING_OFF)
                     ->setCompileCheck(!(isset($config['caching']['compile_check'])
                         && $config['caching']['compile_check'] === 'N'));
     }
@@ -209,18 +209,6 @@ class JTLSmarty extends SmartyBC
                 && $this->config['template']['general']['minify_html_js'] === 'Y'
             )
             : $tplOutput;
-    }
-
-    /**
-     * @param null|string $template
-     * @param null|string $cache_id
-     * @param null|string $compile_id
-     * @param null $parent
-     * @return bool
-     */
-    public function isCached($template = null, $cache_id = null, $compile_id = null, $parent = null)
-    {
-        return false;
     }
 
     /**
@@ -467,22 +455,177 @@ class JTLSmarty extends SmartyBC
     {
         if ($this->context === 'frontend') {
             $this->registerFilter('output', [$this, 'outputFilter']);
+            if ($cache_id === null) {
+                $cache_id = $this->getCacheID($template);
+            }
         }
 
         return parent::display($this->getResourceName($template), $cache_id, $compile_id, $parent);
     }
 
     /**
+     * @param null|string $template
+     * @param null|string $cache_id
+     * @param null|string $compile_id
+     * @param null        $parent
+     * @return bool
+     */
+    public function displayCached($template = null, $cache_id = null, $compile_id = null, $parent = null)
+    {
+        $params = Shop::getParameters();
+        switch (Shop::getPageType()) {
+            case PAGE_404:
+            case PAGE_DATENSCHUTZ:
+            case PAGE_STARTSEITE:
+            case PAGE_AGB:
+            case PAGE_WRB:
+            case PAGE_EIGENE:
+            case PAGE_HERSTELLER:
+            case PAGE_SITEMAP:
+                $template = 'layout/index.tpl';
+                break;
+            case PAGE_NEWSLETTER:
+                $template = 'newsletter/index.tpl';
+                break;
+            case PAGE_ARTIKEL:
+                $template = 'productdetails/index.tpl';
+                break;
+            case PAGE_KONTAKT:
+                $template = 'contact/index.tpl';
+                break;
+            case PAGE_ARTIKELLISTE:
+                $template = 'productlist/index.tpl';
+                break;
+            default:
+                $template = null;
+                break;
+        }
+        if ($template === null) {
+
+            return false;
+        }
+        if ($cache_id === null) {
+            $cache_id = $this->getCacheID($template);
+        }
+        header('CACHE-ID: ' . $cache_id);
+        if (!$this->isCached($template, $cache_id)) {
+            header('CACHED: false');
+
+            return false;
+        }
+        header('CACHED: true ');
+        $shopURL               = Shop::getURL();
+        $cart                  = Session::Cart();
+        $warensumme[0]         = gibPreisStringLocalized(
+            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL],
+            true)
+        );
+        $warensumme[1]         = gibPreisStringLocalized(
+            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false)
+        );
+        $gesamtsumme[0]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(true, true));
+        $gesamtsumme[1]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(false, true));
+        $oTemplate             = Template::getInstance();
+        $bMobilAktiv           = $oTemplate->isMobileTemplateActive();
+        $currentTemplateFolder = $oTemplate->getDir();
+        $currentTemplateDir    = PFAD_TEMPLATES . $currentTemplateFolder . '/';
+        $themeDir              = empty($this->config['template']['theme']['theme_default'])
+            ? 'evo'
+            : $this->config['template']['theme']['theme_default'];
+
+        $this
+            ->assign('nTemplateVersion', $oTemplate->getVersion())
+            ->assign('currentTemplateDir', $currentTemplateDir)
+            ->assign('currentTemplateDirFull', $shopURL . '/' . $currentTemplateDir)
+            ->assign('currentTemplateDirFullPath', PFAD_ROOT . $currentTemplateDir)
+            ->assign('currentThemeDir', $currentTemplateDir . 'themes/' . $themeDir . '/')
+            ->assign('currentThemeDirFull', $shopURL . '/' . $currentTemplateDir . 'themes/' . $themeDir . '/')
+            ->assign('lang', Shop::getLanguageCode())
+            ->assign('ShopURL', $shopURL)
+            ->assign('oSpezialseiten_arr', LinkHelper::getInstance()->getSpecialPages())
+            ->assign('ShopURLSSL', Shop::getURL(true))
+            ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
+            ->assign('PFAD_GFX_BEWERTUNG_STERNE', PFAD_GFX_BEWERTUNG_STERNE)
+            ->assign('PFAD_BILDER_BANNER', PFAD_BILDER_BANNER)
+            ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
+            ->assign('WarenkorbArtikelPositionenanzahl', $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]))
+            ->assign('WarenkorbWarensumme', $warensumme)
+            ->assign('WarenkorbGesamtsumme', $gesamtsumme)
+            ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
+            ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
+            ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
+            ->assign('meta_publisher', $this->config['metaangaben']['global_meta_publisher'])
+            ->assign('meta_copyright', $this->config['metaangaben']['global_meta_copyright'])
+            ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']))
+            ->assign('bAjaxRequest', isAjaxRequest())
+            ->assign('jtl_token', getTokenInput())
+            ->assign('JTL_CHARSET', JTL_CHARSET)
+            ->assign('PFAD_INCLUDES_LIBS', PFAD_INCLUDES_LIBS)
+            ->assign('PFAD_FLASHCHART', PFAD_FLASHCHART)
+            ->assign('PFAD_MINIFY', PFAD_MINIFY)
+            ->assign('PFAD_UPLOADIFY', PFAD_UPLOADIFY)
+            ->assign('PFAD_UPLOAD_CALLBACK', PFAD_UPLOAD_CALLBACK)
+            ->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
+            ->assign('TS_BUYERPROT_EXCELLENCE', TS_BUYERPROT_EXCELLENCE)
+            ->assign('CHECKBOX_ORT_REGISTRIERUNG', CHECKBOX_ORT_REGISTRIERUNG)
+            ->assign('CHECKBOX_ORT_BESTELLABSCHLUSS', CHECKBOX_ORT_BESTELLABSCHLUSS)
+            ->assign('CHECKBOX_ORT_NEWSLETTERANMELDUNG', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
+            ->assign('CHECKBOX_ORT_KUNDENDATENEDITIEREN', CHECKBOX_ORT_KUNDENDATENEDITIEREN)
+            ->assign('CHECKBOX_ORT_KONTAKT', CHECKBOX_ORT_KONTAKT)
+            ->assign('nSeitenTyp', Shop::getPageType())
+            ->assign('bExclusive', isset($_GET['exclusive_content']))
+            ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
+            ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
+            ->assign('Einstellungen', $this->config)
+            ->assign('deletedPositions', Warenkorb::$deletedPositions)
+            ->assign('updatedPositions', Warenkorb::$updatedPositions)
+            ->assign('BILD_KEIN_KATEGORIEBILD_VORHANDEN', BILD_KEIN_KATEGORIEBILD_VORHANDEN)
+            ->assign('BILD_KEIN_ARTIKELBILD_VORHANDEN', BILD_KEIN_ARTIKELBILD_VORHANDEN)
+            ->assign('BILD_KEIN_HERSTELLERBILD_VORHANDEN', BILD_KEIN_HERSTELLERBILD_VORHANDEN)
+            ->assign('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN)
+            ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
+            ->assign('showLoginCaptcha', $_SESSION['showLoginCaptcha'] ?? false)
+            ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
+            ->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE)
+            ->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE)
+            ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK);
+
+        parent::display($this->getResourceName($template), $cache_id, $compile_id, $parent);
+        require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';
+        exit();
+    }
+
+    /**
      * generates a unique cache id for every given resource
      *
-     * @param string      $resource_name
-     * @param array       $conditions
-     * @param string|null $cache_id
+     * @param string $resource_name
      * @return null|string
      */
-    public function getCacheID($resource_name, $conditions, $cache_id = null)
+    public function getCacheID($resource_name)
     {
-        return null;
+        $params   = Shop::getParameters();
+        $cache_id = 'msc|';
+        if ($params['kArtikel']) {
+            $cache_id = CACHING_GROUP_ARTICLE . '|id' . $params['kArtikel'];
+        } elseif ($params['kLink'] > 0) {
+            $cache_id = 'pg|id' . $params['kLink'];
+        } elseif ($params['kKategorie'] > 0) {
+            $cache_id = CACHING_GROUP_CATEGORY . '|id' . $params['kKategorie'];
+        } elseif ($params['kHersteller'] > 0) {
+            $cache_id = CACHING_GROUP_MANUFACTURER . '|id' . $params['kHersteller'];
+        } elseif ($params['kMerkmalWert'] > 0) {
+            $cache_id = 'av|id' . $params['kMerkmalWert'];
+        } elseif ($params['kSuchspecial'] > 0) {
+            $cache_id = 'ss|id' . $params['kSuchspecial'];
+        }
+
+        return $cache_id .
+            '|pt' . Shop::getPageType() .
+            '|lid' . Shop::getLanguageID() .
+            '|cgid' . Session::CustomerGroup()->getID() .
+            '|cid' . Session::Currency()->getID() .
+            '|tpl' . md5($resource_name) .
+            '|' . md5(json_encode($params));
     }
 
     /**

@@ -183,7 +183,7 @@ ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
 ifndef('SHOW_CHILD_PRODUCTS', 0);
 // redis connect timeout in seconds
 ifndef('REDIS_CONNECT_TIMEOUT', 3);
-
+ifndef('TV_MODE', false);
 
 // security
 ifndef('NEWSLETTER_USE_SECURITY', true);

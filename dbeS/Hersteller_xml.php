@@ -89,6 +89,7 @@ function bearbeiteHersteller($xml)
             $oSprache_arr = gibAlleSprachen();
             $mfCount      = count($hersteller_arr);
             $cacheTags    = [];
+            $smarty       = TV_MODE === true ? Shop::Smarty() : null;
             for ($i = 0; $i < $mfCount; $i++) {
                 $affectedArticles = Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', (int)$hersteller_arr[$i]->kHersteller, 'kArtikel');
                 Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [(int)$hersteller_arr[$i]->kHersteller,'kHersteller']);
@@ -137,10 +138,17 @@ function bearbeiteHersteller($xml)
 
                 executeHook(HOOK_HERSTELLER_XML_BEARBEITEINSERT, ['oHersteller' => $hersteller_arr[$i]]);
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . (int)$hersteller_arr[$i]->kHersteller;
+                if ($smarty !== null) {
+                    $smarty->clearCache(null, CACHING_GROUP_MANUFACTURER . '|id' . $hersteller_arr[$i]->kHersteller);
+                }
+
                 if (is_array($affectedArticles)) {
                     $articleCacheTags = [];
                     foreach ($affectedArticles as $article) {
                         $articleCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
+                        if ($smarty !== null) {
+                            $smarty->clearCache(null, CACHING_GROUP_ARTICLE . '|id' . $article->kArtikel);
+                        }
                     }
                     Shop::Cache()->flushTags($articleCacheTags);
                 }

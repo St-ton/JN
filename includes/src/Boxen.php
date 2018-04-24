@@ -1238,6 +1238,8 @@ class Boxen
         $smarty          = Shop::Smarty();
         $originalArticle = $smarty->getTemplateVars('Artikel');
         $productFilter   = Shop::getProductFilter();
+        $cachingMode     = $smarty->caching;
+        $smarty->setCaching(JTLSmarty::CACHING_OFF);
         $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
         // check whether filters should be displayed after a box
         $filterAfter = !empty($this->boxConfig)
@@ -1345,6 +1347,7 @@ class Boxen
             //avoid modification of article object on render loop
             $smarty->assign('Artikel', $originalArticle);
         }
+        $smarty->setCaching($cachingMode);
 
         return $htmlArray;
     }

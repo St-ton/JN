@@ -193,12 +193,31 @@ class JTLSmarty extends SmartyBC
                 || count(EventDispatcher::getInstance()->getListeners('shop.hook.' . HOOK_SMARTY_OUTPUTFILTER)) > 0
             )
         ) {
-            $this->unregisterFilter('output', [$this, 'outputFilter']);
             $doc = phpQuery::newDocumentHTML($tplOutput, JTL_CHARSET);
             executeHook($isMobile ? HOOK_SMARTY_OUTPUTFILTER_MOBILE : HOOK_SMARTY_OUTPUTFILTER);
             $tplOutput = $doc->htmlOuter();
         }
 
+        return isset($this->config['template']['general']['minify_html'])
+        && $this->config['template']['general']['minify_html'] === 'Y'
+            ? $this->minify_html(
+                $tplOutput,
+                isset($this->config['template']['general']['minify_html_css'])
+                && $this->config['template']['general']['minify_html_css'] === 'Y',
+                isset($this->config['template']['general']['minify_html_js'])
+                && $this->config['template']['general']['minify_html_js'] === 'Y'
+            )
+            : $tplOutput;
+    }
+
+    /**
+     * phpquery output filter
+     *
+     * @param string $tplOutput
+     * @return string
+     */
+    public function outputFilterCached($tplOutput)
+    {
         return isset($this->config['template']['general']['minify_html'])
         && $this->config['template']['general']['minify_html'] === 'Y'
             ? $this->minify_html(
@@ -472,6 +491,7 @@ class JTLSmarty extends SmartyBC
      */
     public function displayCached($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
+        $this->registerFilter('output', [$this, 'outputFilterCached']);
         $params = Shop::getParameters();
         switch (Shop::getPageType()) {
             case PAGE_404:

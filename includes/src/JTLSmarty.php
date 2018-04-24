@@ -501,7 +501,7 @@ class JTLSmarty extends SmartyBC
                 break;
         }
         if ($template === null) {
-
+            $this->setCaching(self::CACHING_OFF);
             return false;
         }
         if ($cache_id === null) {

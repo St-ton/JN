@@ -542,6 +542,7 @@ class JTLSmarty extends SmartyBC
             ->assign('currentThemeDirFull', $shopURL . '/' . $currentTemplateDir . 'themes/' . $themeDir . '/')
             ->assign('lang', Shop::getLanguageCode())
             ->assign('ShopURL', $shopURL)
+            ->assign('imageBaseURL', Shop::getImageBaseURL())
             ->assign('oSpezialseiten_arr', LinkHelper::getInstance()->getSpecialPages())
             ->assign('ShopURLSSL', Shop::getURL(true))
             ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
@@ -588,7 +589,9 @@ class JTLSmarty extends SmartyBC
             ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
             ->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE)
             ->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE)
-            ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK);
+            ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK)
+            ->assign('Anrede_m', Shop::Lang()->get('salutationM'))
+            ->assign('Anrede_w', Shop::Lang()->get('salutationW'));
 
         parent::display($this->getResourceName($template), $cache_id, $compile_id, $parent);
         require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

@@ -43,8 +43,8 @@
                         <div class="col-xs-8">
                             <select class="form-control" name="cAnrede" id="salutation" {if $cData_arr.billpay_b2b == 1}disabled{/if}>
                                 <option value="" selected="selected">{lang key="pleaseChoose" section="global"}</option>
-                                <option value="m" {if $cData_arr.cAnrede === 'm'}selected="selected"{/if}>{$Anrede_m}</option>
-                                <option value="w" {if $cData_arr.cAnrede === 'w'}selected="selected"{/if}>{$Anrede_w}</option>
+                                <option value="m" {if $cData_arr.cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
+                                <option value="w" {if $cData_arr.cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                             </select>
                             {if $cMissing_arr.cAnrede>0}
                                 <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
@@ -111,8 +111,8 @@
                <label class="control-label col-xs-4" for="salutation">{lang key="salutation" section="account data"}</label>
                   <select class="form-control" name="cAnrede" id="salutation" {if $cData_arr.billpay_b2b == 0}disabled{/if}>
                      <option value="" selected="selected">{lang key="pleaseChoose" section="global"}</option>
-                     <option value="m" {if $cData_arr.cAnrede === 'm'}selected="selected"{/if}>{$Anrede_m}</option>
-                     <option value="w" {if $cData_arr.cAnrede === 'w'}selected="selected"{/if}>{$Anrede_w}</option>
+                     <option value="m" {if $cData_arr.cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
+                     <option value="w" {if $cData_arr.cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                   </select>
                   {if $cMissing_arr.cAnrede>0}<div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
             </div>

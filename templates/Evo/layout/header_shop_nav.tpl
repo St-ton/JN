@@ -15,7 +15,7 @@
         </li>
     {/block}{* /navbar-productsearch *}
 
-    {block name="navbar-top-user"}
+    {block name="navbar-top-user" nocache}
     {*  ACCOUNT *}
     <li class="dropdown hidden-xs">
         {if empty($smarty.session.Kunde->kKunde)}
@@ -62,7 +62,7 @@
         {else}
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='hello'}">
                 <span class="fa fa-user"></span>
-                <span class="hidden-xs hidden-sm hidden-md"> {lang key='hello'} {if $smarty.session.Kunde->cAnrede === 'w'}{$Anrede_w}{elseif $smarty.session.Kunde->cAnrede === 'm'}{$Anrede_m}{/if} {$smarty.session.Kunde->cNachname}</span>
+                <span class="hidden-xs hidden-sm hidden-md"> {lang key='hello'} {if $smarty.session.Kunde->cAnrede === 'w'}{lang key='salutationW'}{elseif $smarty.session.Kunde->cAnrede === 'm'}{lang key='salutationM'}{/if} {$smarty.session.Kunde->cNachname}</span>
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
@@ -78,16 +78,16 @@
     {*  ACCOUNT END *}
 
     {*  COMPARE LIST *}
-    {include file='layout/header_shop_nav_compare.tpl'}
+    {include file='layout/header_shop_nav_compare.tpl' nocache}
     {*  COMPARE LIST *}
 
     {*  WISH LIST *}
-    {include file='layout/header_shop_nav_wish.tpl'}
+    {include file='layout/header_shop_nav_wish.tpl' nocache}
     {*  WISH LIST *}
 
     {*  CART *}
     <li class="hidden-xs cart-menu dropdown{if $WarenkorbArtikelanzahl >= 1} items{/if}{if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
-        {include file='basket/cart_dropdown_label.tpl'}
+        {include file='basket/cart_dropdown_label.tpl' nocache}
     </li>
     {*  CART END *}
     {/block}{* /navbar-top-user *}

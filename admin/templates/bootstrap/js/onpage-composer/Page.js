@@ -182,7 +182,7 @@ Page.prototype = {
     portletToJSON: function(portlet)
     {
         var data     = portlet.data('portlet');
-        var result   = {id: data.id, title: data.title, properties: data.properties, subareas: {}};
+        var result   = {"class": data.class, title: data.title, properties: data.properties, subareas: {}};
         var subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
 
         for(var i=0; i<subareas.length; i++) {

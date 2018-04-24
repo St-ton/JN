@@ -131,10 +131,11 @@
                         </a>
                         <div class="collapse" id="collapse-{$group->getName()}">
                             <div class="row">
-                                {foreach $group->getPortlets() as $portlet}
+                                {foreach $group->getPortlets() as $i => $portlet}
+                                    {if $i > 0 && $i % 3 === 0}</div><div class="row">{/if}
                                     <div class="col-xs-4">
                                         <a href="#" class="btn portletButton" draggable="true"
-                                           data-portlet-id="{$portlet->getId()}">
+                                           data-portlet-class="{$portlet->getClass()}">
                                             {$portlet->getButtonHtml()}
                                         </a>
                                     </div>

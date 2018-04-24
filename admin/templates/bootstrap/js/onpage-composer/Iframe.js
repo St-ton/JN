@@ -18,7 +18,7 @@ function Iframe(io, gui, page, shopUrl, templateUrl)
     this.selectedElm        = null;
     this.dropTarget         = null;
     this.previewMode        = false;
-    this.dragNewPortletId   = 0;
+    this.dragNewPortletCls  = null;
     this.dragNewBlueprintId = 0;
 }
 
@@ -248,10 +248,10 @@ Iframe.prototype = {
             this.setSelected(this.draggedElm);
             this.gui.setUnsaved(true);
 
-            if(this.dragNewPortletId > 0) {
+            if(this.dragNewPortletCls) {
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
-                this.io.createPortlet(this.dragNewPortletId, this.onNewPortletCreated);
+                this.io.createPortlet(this.dragNewPortletCls, this.onNewPortletCreated);
             } else if(this.dragNewBlueprintId > 0) {
                 this.newPortletDropTarget= this.draggedElm;
                 this.setSelected();
@@ -349,9 +349,9 @@ Iframe.prototype = {
         this.dropTarget = elm;
     },
 
-    dragNewPortlet: function(id)
+    dragNewPortlet: function(cls)
     {
-        this.dragNewPortletId = id || 0;
+        this.dragNewPortletCls = cls || null;
         this.setDragged(this.jq('<i class="fa fa-spinner fa-pulse"></i>'));
     },
 

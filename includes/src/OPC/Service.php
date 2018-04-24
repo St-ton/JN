@@ -297,12 +297,13 @@ class Service
     }
 
     /**
-     * @param int $id
+     * @param string $class
      * @return PortletInstance
+     * @throws \Exception
      */
-    public function createPortletInstance($id)
+    public function createPortletInstance($class)
     {
-        return new PortletInstance($this->db->getPortlet($id));
+        return new PortletInstance($this->db->getPortlet($class));
     }
 
     /**
@@ -312,7 +313,7 @@ class Service
      */
     public function getPortletInstance($data)
     {
-        return $this->createPortletInstance($data['id'])
+        return $this->createPortletInstance($data['class'])
             ->deserialize($data);
     }
 
@@ -327,14 +328,14 @@ class Service
     }
 
     /**
-     * @param int $portletId
+     * @param string $portletClass
      * @param array $props
      * @return string
      * @throws \Exception
      */
-    public function getConfigPanelHtml($portletId, $props)
+    public function getConfigPanelHtml($portletClass, $props)
     {
-        return $this->getPortletInstance(['id' => $portletId, 'properties' => $props])->getConfigPanelHtml();
+        return $this->getPortletInstance(['class' => $portletClass, 'properties' => $props])->getConfigPanelHtml();
     }
 
     /**

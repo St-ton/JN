@@ -131,14 +131,15 @@ class DB
     /**
      * @param string $groupName
      * @return PortletGroup
+     * @throws \Exception
      */
     public function getPortletGroup($groupName)
     {
-        $portletsDB   = $this->shopDB->selectAll('topcportlet', 'cGroup', $groupName, 'kPortlet', 'kPortlet');
+        $portletsDB   = $this->shopDB->selectAll('topcportlet', 'cGroup', $groupName, 'cClass', 'cTitle');
         $portletGroup = new PortletGroup($groupName);
 
         foreach ($portletsDB as $portletDB) {
-            $portlet = $this->getPortlet($portletDB->kPortlet);
+            $portlet = $this->getPortlet($portletDB->cClass);
             $portletGroup->addPortlet($portlet);
         }
 
@@ -147,14 +148,15 @@ class DB
 
     /**
      * @return Portlet[]
+     * @throws \Exception
      */
     public function getAllPortlets()
     {
         $portlets   = [];
-        $portletsDB = $this->shopDB->selectAll('topcportlet', [], [], 'kPortlet', 'kPortlet');
+        $portletsDB = $this->shopDB->selectAll('topcportlet', [], [], 'cClass', 'cTitle');
 
         foreach ($portletsDB as $portletDB) {
-            $portlets[] = $this->getPortlet($portletDB->kPortlet);
+            $portlets[] = $this->getPortlet($portletDB->cClass);
         }
 
         return $portlets;
@@ -169,20 +171,20 @@ class DB
     }
 
     /**
-     * @param int $id
+     * @param string $class
      * @return Portlet
      * @throws \Exception
      */
-    public function getPortlet($id)
+    public function getPortlet($class)
     {
-        if ($id <= 0) {
-            throw new \Exception("The OPC portlet id '$id' is invalid.");
+        if ($class === '') {
+            throw new \Exception("The OPC portlet class name '$class' is invalid.");
         }
 
-        $portletDB = $this->shopDB->select('topcportlet', 'kPortlet', $id);
+        $portletDB = $this->shopDB->select('topcportlet', 'cClass', $class);
 
         if (!is_object($portletDB)) {
-            throw new \Exception("The OPC portlet with the id '$id' could not be found.");
+            throw new \Exception("The OPC portlet with class name '$class' could not be found.");
         }
 
         if ($portletDB->kPlugin > 0) {
@@ -194,8 +196,8 @@ class DB
         }
 
         /** @var Portlet $portlet */
-        $class   = '\\OPC\\Portlets\\' . $portletDB->cClass;
-        $portlet = new $class();
+        $fullClass = "\\OPC\\Portlets\\$class";
+        $portlet   = new $fullClass();
 
         return $portlet
             ->setId($portletDB->kPortlet)

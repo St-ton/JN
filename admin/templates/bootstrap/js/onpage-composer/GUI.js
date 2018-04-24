@@ -184,7 +184,7 @@ GUI.prototype = {
 
         var portletBtn = $(e.target).closest('.portletButton');
 
-        this.iframe.dragNewPortlet(portletBtn.data('portlet-id'));
+        this.iframe.dragNewPortlet(portletBtn.data('portlet-class'));
     },
 
     onPortletButtonDragEnd: function(e)
@@ -223,7 +223,7 @@ GUI.prototype = {
         var portletData = portlet.data('portlet');
 
         this.setConfigSaveCallback(noop);
-        this.io.getConfigPanelHtml(portletData.id, portletData.properties, this.onGetConfigPanelHtml);
+        this.io.getConfigPanelHtml(portletData.class, portletData.properties, this.onGetConfigPanelHtml);
         this.curPortlet = portlet;
     },
 

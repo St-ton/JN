@@ -40,8 +40,8 @@
                                 <div class="form-group float-label-control">
                                     <label for="newslettertitle" class="control-label">{lang key="newslettertitle" section="newsletter"}</label>
                                     <select id="newslettertitle" name="cAnrede" class="form-control">
-                                        <option value="w"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'w')} selected="selected"{/if}>{$Anrede_w}</option>
-                                        <option value="m"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'm')} selected="selected"{/if}>{$Anrede_m}</option>
+                                        <option value="w"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'w')} selected="selected"{/if}>{lang key='salutationW'}</option>
+                                        <option value="m"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'm')} selected="selected"{/if}>{lang key='salutationM'}</option>
                                     </select>
                                 </div>
                                 <div class="form-group float-label-control">

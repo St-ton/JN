@@ -12,8 +12,8 @@
                 <label for="{$prefix}-{$name}-salutation" class="control-label">{lang key="salutation" section="account data"}</label>
                 <select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" class="form-control" required>
                     <option value="" selected="selected" disabled>{lang key="salutation" section="account data"}</option>
-                    <option value="w"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'w'} selected="selected"{/if}>{$Anrede_w}</option>
-                    <option value="m"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'm'} selected="selected"{/if}>{$Anrede_m}</option>
+                    <option value="w"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'w'} selected="selected"{/if}>{lang key='salutationW'}</option>
+                    <option value="m"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
                 </select>
                 {if !empty($fehlendeAngaben.anrede)}
                     <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>

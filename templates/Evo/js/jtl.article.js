@@ -92,7 +92,7 @@
             var $wrapper = this.getWrapper(wrapper);
 
             if (this.isSingleArticle()) {
-                this.registerGallery();
+                //this.registerGallery();
                 this.registerConfig();
             }
 

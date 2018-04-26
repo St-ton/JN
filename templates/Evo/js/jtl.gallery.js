@@ -183,7 +183,7 @@
                     });
                     */
 
-                    pswpElement = document.querySelectorAll('.pswp')[0];
+                    /*pswpElement = document.querySelectorAll('.pswp')[0];
                     items = jQuery.extend(true, [], self.getStack());
                     pswpItems = [];
 
@@ -197,11 +197,11 @@
                         mouseUsed: true,
                         closeOnScroll: false,
                         history: false
-                    };
+                    };*/
 
-                    gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, pswpItems, options);
-                    gallery.init();
-                    if (pswpItems.length > 1) {
+                    /*gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, pswpItems, options);
+                    gallery.init();*/
+                    /*if (pswpItems.length > 1) {
                         indicator = $(self.options.template.indicator);
                         $(gallery.container).parent().addClass('theme-default');
                         $(gallery.container).parent().append(indicator);
@@ -220,7 +220,7 @@
                             $(this.container).parent().find('a.nivo-control').removeClass('active');
                             $(this.container).parent().find('a.nivo-control[rel="' + this.getCurrentIndex() + '"]').addClass('active');
                         });
-                    }
+                    }*/
 
                     return false;
                 });

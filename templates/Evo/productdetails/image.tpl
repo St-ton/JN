@@ -1,3 +1,55 @@
+<div id="image_wrapper">
+    <div class="row">
+        <div class="col-xs-12">
+            <button id="image_fullscreen_close" type="button" class="btn btn-primary pull-right"><span
+                        aria-hidden="true">&times;</span></button>
+        </div>
+    </div>
+    <div id="gallery_wrapper" class="clearfix">
+        <div id="gallery">
+            {block name="product-image"}
+                {foreach $Artikel->Bilder as $image}
+                    {strip}
+                        <div>
+                            {*<a href="{$image->cURLGross}" title="{$image->cAltAttribut|escape:"html"}">*}
+                            <img src="{$imageBaseURL}gfx/trans.png" data-lazy="{$image->cURLNormal}"
+                                 data-srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                     {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                     {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                     {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                 sizes="(max-width: 320px) 280px,
+                                        (max-width: 480px) 440px,
+                                        800px"
+                                 alt="{$image->cAltAttribut|escape:"html"}"
+                                 data-list='{$image->galleryJSON|replace:"'":"&apos;"}'
+                                 data-largeimage="{$image->cURLGross}"/>
+                            {*</a>*}
+                        </div>
+                    {/strip}
+                {/foreach}
+            {/block}
+        </div>
+    </div>
+    <div id="gallery__preview_wrapper">
+        <div id="gallery_preview">
+            {block name="product-image"}
+                {foreach $Artikel->Bilder as $image}
+                    {strip}
+                        <div>
+                            <img src="{$imageBaseURL}gfx/trans.png" data-lazy="{$image->cURLMini}"
+                                 alt="{$image->cAltAttribut|escape:"html"}"
+                                 data-list='{$image->galleryJSON|replace:"'":"&apos;"}'/>
+                        </div>
+                    {/strip}
+                {/foreach}
+            {/block}
+        </div>
+    </div>
+</div>
+
+
+
+{*
 <div id="gallery" class="hidden">
     {block name="product-image"}
     {foreach $Artikel->Bilder as $image}
@@ -62,3 +114,4 @@
         </div>
     </div>
 </div>
+*}

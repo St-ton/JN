@@ -140,7 +140,7 @@ function loadContent(url)
         }
 
         $('html,body').animate({
-            scrollTop: $('.list-pageinfo').offset().top - $('#evo-main-nav-wrapper').outerHeight() - 10 
+            scrollTop: $('.list-pageinfo').offset().top - $('#evo-main-nav-wrapper').outerHeight() - 10
         }, 100);
     });
 }
@@ -248,6 +248,12 @@ function lazyLoadMenu(viewport){
     }
 }
 
+function removeFromSessionStorage(entryKey) {
+    if (0 < sessionStorage.length && sessionStorage.getItem(entryKey)) {
+        sessionStorage.removeItem(entryKey);
+    }
+}
+
 $(window).load(function(){
     navigation();
 });
@@ -284,12 +290,32 @@ $(document).ready(function () {
         .find('fieldset, .form-control')
         .attr('disabled', true);
 
+    // temporarily save order-comment
+    $('#comment').blur(function(ev) {
+        ev.preventDefault();
+        sessionStorage.setItem($("[name$=jtl_token]").val()+'_comment', $('#comment').val());
+    });
+    // restore order-comment
+    if ($('#comment') && '' == $('#comment').val()) {
+        var storageComment;
+        if (storageComment = sessionStorage.getItem($("[name$=jtl_token]").val() + '_comment')) {
+            $('#comment').val(storageComment);
+        }
+    }
+    // clear the sessionStorage at logout
+    $("a[href*='logout']").click(function(ev) {
+        sessionStorage.clear();
+        return true;
+    });
+
     $('#complete-order-button').click(function () {
         var commentField = $('#comment'),
             commentFieldHidden = $('#comment-hidden');
         if (commentField && commentFieldHidden) {
             commentFieldHidden.val(commentField.val());
         }
+        // remove order-comment from sessionStorage at order-finish
+        removeFromSessionStorage($("[name$=jtl_token]").val() + '_comment');
     });
 
     $(document).on('click', '.footnote-vat a, .versand, .popup', function(e) {
@@ -312,7 +338,7 @@ $(document).ready(function () {
         loadContent(url);
         return e.preventDefault();
     });
-    
+
     if ($('.pagination-ajax').length > 0) {
         window.addEventListener('popstate', function(e) {
             loadContent(document.location.href);
@@ -389,10 +415,10 @@ $(document).ready(function () {
             $(this).trigger('click');
         });
     }
-    
+
     /*
      * activate category parents of active child
-     
+
     var child = $('section.box-categories .nav-panel li.active');
     if (child.length > 0) {
         //$(child).parents('.nav-panel li').addClass('active');
@@ -465,7 +491,7 @@ $(document).ready(function () {
     /*
      * set bootstrap viewport
      */
-    (function($, document, window, viewport){ 
+    (function($, document, window, viewport){
         var $body = $('body');
 
         $(window).resize(

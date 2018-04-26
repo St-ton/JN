@@ -1261,8 +1261,11 @@ class Boxen
             if (is_array($_boxes)) {
                 foreach ($_boxes as $_box) {
                     if (!empty($_box->cFilter)) {
+                        $allowedIDs = [];
+                        foreach ($_box->cFilter as $_filter) {
+                            $allowedIDs[] = (int)$_filter['id'];
+                        }
                         $pageType   = (int)$_box->kSeite;
-                        $allowedIDs = array_map('intval', explode(',', $_box->cFilter));
                         if ($pageType === PAGE_ARTIKELLISTE) {
                             if (!in_array((int)Shop::$kKategorie, $allowedIDs, true)) {
                                 continue;

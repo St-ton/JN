@@ -11,7 +11,7 @@
     {$Lieferadresse->cZusatz}
     <br />
 {/if}
-{if $Lieferadresse->cAnrede === 'w'}{$Anrede_w}{elseif $Lieferadresse->cAnrede === 'm'}{$Anrede_m}{/if} {$Lieferadresse->cTitel} {$Lieferadresse->cVorname} {$Lieferadresse->cNachname}
+{if $Lieferadresse->cAnrede === 'w'}{lang key='salutationW'}{elseif $Lieferadresse->cAnrede === 'm'}{lang key='salutationM'}{/if} {$Lieferadresse->cTitel} {$Lieferadresse->cVorname} {$Lieferadresse->cNachname}
 <br />{$Lieferadresse->cStrasse} {$Lieferadresse->cHausnummer}
 <br />{if $Lieferadresse->cAdressZusatz}{$Lieferadresse->cAdressZusatz}<br />{/if}
 {$Lieferadresse->cPLZ} {$Lieferadresse->cOrt}<br />{if $Lieferadresse->cBundesland}{$Lieferadresse->cBundesland}

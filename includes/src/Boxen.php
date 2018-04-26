@@ -1612,9 +1612,9 @@ class Boxen
                 WHERE kBox = " . $kBox, 1
         );
 
-        if ($oBox && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox')) {
-            $oBox->oSprache_arr = $this->gibBoxInhalt($kBox);
-        }
+        $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox'))
+            ? $this->gibBoxInhalt($kBox)
+            : [];
         $oBox->kBox              = (int)$oBox->kBox;
         $oBox->kBoxvorlage       = (int)$oBox->kBoxvorlage;
         $oBox->supportsRevisions = $oBox->kBoxvorlage === 30 || $oBox->kBoxvorlage === 31; // only "Eigene Box"

@@ -9,7 +9,7 @@
         <span class="selection-wizard-answer">
             {assign var="oWert" value=$AWA->getSelectedValue($nQuestion)}
             {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildpfadKlein !== ''}
-                <img src="{$oWert->cBildpfadKlein}" alt="{$oWert->getValue()}" title="{$oWert->getValue()}">
+                <img src="{$imageBaseURL}{$oWert->cBildpfadKlein}" alt="{$oWert->getValue()}" title="{$oWert->getValue()}">
             {/if}
             {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT', 'S']:true}
                 {$oWert->getValue()}
@@ -36,7 +36,7 @@
                 {if isset($oWert->nAnzahl)}
                     <a class="selection-wizard-answer" href="#" onclick="return setSelectionWizardAnswerJS({$oWert->kMerkmalWert});">
                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildpfadKlein !== ''}
-                            <img src="{$oWert->cBildpfadKlein}" alt="{$oWert->getValue()}" title="{$oWert->getValue()}">
+                            <img src="{$imageBaseURL}{$oWert->cBildpfadKlein}" alt="{$oWert->getValue()}" title="{$oWert->getValue()}">
                         {/if}
                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
                             {$oWert->getValue()}
@@ -61,7 +61,7 @@
                 {if $oWert->getCount() > 0}
                     <span class="selection-wizard-answer">
                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildpfadKlein !== ''}
-                            <img src="{$oWert->cBildpfadKlein}" alt="{$oWert->getValue()}" title="{$oWert->getValue()}">
+                            <img src="{$imageBaseURL}{$oWert->cBildpfadKlein}" alt="{$oWert->getValue()}" title="{$oWert->getValue()}">
                         {/if}
                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
                             {$oWert->getValue()}

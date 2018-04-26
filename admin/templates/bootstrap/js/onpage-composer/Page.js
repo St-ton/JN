@@ -2,11 +2,9 @@ function Page(io, id, url)
 {
     bindProtoOnHandlers(this);
 
-    this.io      = io;
-    this.id      = id;
-    this.url     = url;
-
-    this.importReader = new FileReader();
+    this.io  = io;
+    this.id  = id;
+    this.url = url;
 }
 
 Page.prototype = {
@@ -76,7 +74,7 @@ Page.prototype = {
 
     loadFromImport: function(loadCB)
     {
-        this.fileInput.change(this.onImportChosen.bind(this, loadCB)).click();
+        this.fileInput.off('change').change(this.onImportChosen.bind(this, loadCB)).click();
     },
 
     loadPageFromWebStorage: function()
@@ -96,6 +94,7 @@ Page.prototype = {
 
     onImportChosen: function(loadCB, e)
     {
+        this.importReader = new FileReader();
         this.importReader.onload = this.onReaderLoad.bind(this, loadCB);
         this.importReader.readAsText(e.target.files[0]);
     },

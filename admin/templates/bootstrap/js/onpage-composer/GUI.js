@@ -14,8 +14,8 @@ GUI.prototype = {
 
     init: function(iframe, tutorial)
     {
-        this.iframe   = iframe;
-        this.tutorial = tutorial;
+        this.iframe    = iframe;
+        this.tutorial  = tutorial;
 
         installGuiElements(this, [
             'sidebarPanel',
@@ -40,6 +40,7 @@ GUI.prototype = {
             'btnPreview',
             'btnSave',
             'btnClose',
+            'btnImportBlueprint',
             'revisionList',
             'revisionBtnBlueprint',
             'blueprintList',
@@ -87,6 +88,7 @@ GUI.prototype = {
                 .appendTo(this.blueprintList);
 
             newBtn.find('.blueprintButton').attr('data-blueprint-id', blueprint.id);
+            newBtn.find('.blueprintExport').attr('data-blueprint-id', blueprint.id);
             newBtn.find('.blueprintDelete').attr('data-blueprint-id', blueprint.id);
             newBtn.find('span').html(blueprint.name);
         }, this);
@@ -118,6 +120,7 @@ GUI.prototype = {
     {
         installGuiElements(this, [
             'blueprintButton',
+            'blueprintExport',
             'blueprintDelete',
             'revisionBtn',
         ]);
@@ -279,6 +282,40 @@ GUI.prototype = {
 
         this.blueprintDeleteId.val(elm.data('blueprint-id'));
         this.blueprintDeleteModal.modal('show');
+    },
+
+    onBlueprintExport: function(e)
+    {
+        var elm         = $(e.target).closest('.blueprintExport');
+        var blueprintId = elm.data('blueprint-id');
+
+        this.io.getBlueprint(blueprintId, this.onGetExportBlueprint);
+    },
+
+    onGetExportBlueprint: function(blueprint)
+    {
+        download(JSON.stringify(blueprint), blueprint.name + '.json', 'application/json');
+    },
+
+    onBtnImportBlueprint: function()
+    {
+        $('<input type="file" accept=".json">').change(this.onBlueprintImportChosen.bind(this)).click();
+    },
+
+    onBlueprintImportChosen: function(e)
+    {
+        this.importReader = new FileReader();
+        this.importReader.onload = this.onBlueprintReaderLoad.bind(this);
+        this.importReader.readAsText(e.target.files[0]);
+    },
+
+    onBlueprintReaderLoad: function()
+    {
+        var blueprint = JSON.parse(this.importReader.result);
+
+        console.log(blueprint);
+
+        this.io.saveBlueprint(blueprint.name, blueprint.instance, this.onBlueprintSaved);
     },
 
     onBlueprintDeleteForm: function (e)

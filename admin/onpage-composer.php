@@ -19,6 +19,7 @@ $shopUrl     = \Shop::getURL();
 $opc         = \Shop::Container()->getOPC();
 $opcDB       = \Shop::Container()->getOPCDB();
 $templateUrl = $shopUrl . '/' . PFAD_ADMIN . $currentTemplateDir;
+$fullPageUrl = StringHandler::endsWith($shopUrl, '/') ? "$shopUrl/$pageUrl" : "$shopUrl$pageUrl";
 
 if ($action === 'restore') {
     $opc->deletePage($pageId);
@@ -43,5 +44,6 @@ $smarty
     ->assign('pageUrl', $pageUrl)
     ->assign('pageId', $pageId)
     ->assign('templateUrl', $templateUrl)
+    ->assign('fullPageUrl', $fullPageUrl)
     ->assign('opc', $opc)
     ->display('onpage-composer.tpl');

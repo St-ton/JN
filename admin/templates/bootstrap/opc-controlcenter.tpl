@@ -30,7 +30,9 @@
                     </tr>
                     </thead>
                     <tbody>
-                        {foreach array_slice($opc->getPages(), $pagesPagi->getFirstPageItem(), $pagesPagi->getPageItemCount()) as $page}
+                        {foreach array_slice(
+                            $opc->getPages(), $pagesPagi->getFirstPageItem(), $pagesPagi->getPageItemCount()
+                        ) as $page}
                             <tr>
                                 <td>
                                     <a href="{$URL_SHOP}{$page->getUrl()}" target="_blank">{$page->getUrl()}</a>
@@ -49,7 +51,7 @@
                                             <i class="fa fa-trash"></i>
                                         </a>
                                         <a class="btn btn-primary" title="Bearbeiten" target="_blank"
-                                           href="onpage-composer.php?token={$smarty.session.jtl_token}&pageUrl={$page->getUrl()}&pageId={$page->getId()}&action=edit">
+                                           href="?token={$smarty.session.jtl_token}&pageUrl={$page->getUrl()}&pageId={$page->getId()}&action=edit">
                                             <i class="fa fa-pencil"></i>
                                         </a>
                                     </div>

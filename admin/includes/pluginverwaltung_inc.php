@@ -2146,6 +2146,14 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']
         : [];
+    $portletsNode   = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']
+        : [];
+    $blueprintsNode = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']
+        : [];
     $exportNode     = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']
@@ -3077,25 +3085,22 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         }
     }
     // OPC-Portlets in topcportlet fuellen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) &&
-        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) > 0
-    ) {
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'] as $u => $Portlet_arr) {
-            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                $oPortlet          = new stdClass();
-                $oPortlet->kPlugin = (int)$kPlugin;
-                $oPortlet->cTitle  = $Portlet_arr['Title'];
-                $oPortlet->cClass  = $Portlet_arr['Class'];
-                $oPortlet->cGroup  = $Portlet_arr['Group'];
-                $oPortlet->bActive = (int)$Portlet_arr['Active'];
-                $kPortlet          = Shop::Container()->getDB()->insert('topcportlet', $oPortlet);
+    foreach ($portletsNode as $u => $Portlet_arr) {
+        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
 
-                if (!$kPortlet) {
-                    return 19;// Ein OPC Portlet konnte nicht in die Datenbank gespeichert werden
-                }
+        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+            $oPortlet = (object)[
+                'kPlugin' => (int)$kPlugin,
+                'cTitle'  => $Portlet_arr['Title'],
+                'cClass'  => $Portlet_arr['Class'],
+                'cGroup'  => $Portlet_arr['Group'],
+                'bActive' => (int)$Portlet_arr['Active'],
+            ];
+
+            $kPortlet = Shop::Container()->getDB()->insert('topcportlet', $oPortlet);
+
+            if (!$kPortlet) {
+                return 19;// Ein OPC Portlet konnte nicht in die Datenbank gespeichert werden
             }
         }
     }

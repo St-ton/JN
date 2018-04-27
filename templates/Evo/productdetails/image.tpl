@@ -12,13 +12,15 @@
                     {strip}
                         <div>
                             {*<a href="{$image->cURLGross}" title="{$image->cAltAttribut|escape:"html"}">*}
+                            {*sizes based on Evo template*}
                             <img src="{$imageBaseURL}gfx/trans.png" data-lazy="{$image->cURLNormal}"
                                  data-srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                      {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                      {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
                                      {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                 sizes="(max-width: 320px) 280px,
-                                        (max-width: 480px) 440px,
+                                 sizes="(max-width: 768px) 750px,
+                                        (max-width: 991px) 300px,
+                                        (max-width: 1199px) 350px,
                                         800px"
                                  alt="{$image->cAltAttribut|escape:"html"}"
                                  data-list='{$image->galleryJSON|replace:"'":"&apos;"}'

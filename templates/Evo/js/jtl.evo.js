@@ -65,13 +65,9 @@
              */
             function slickinit(fullscreen, current) {
                 var main_img_w  = $('#gallery_wrapper').width();
-                var main_img_h  = $('#gallery_wrapper').height();
-                console.log(main_img_w);
-                console.log(main_img_h);
-                var w = Math.min(Math.max(document.documentElement.clientWidth, window.innerWidth || 0),  main_img_w);
-                var h = Math.min(Math.max(document.documentElement.clientHeight, main_img_h, window.innerHeight || 0), main_img_h);
-                console.log('fixedWidth: '+ w);
-                console.log('fixedHeight: '+ h);
+                var maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+                var maxHeight= Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+                var w = Math.min(maxWidth,  main_img_w);
 
                 var options = {
                     lazyLoad: 'ondemand',
@@ -96,6 +92,9 @@
                     options_preview['initialSlide'] = current;
                 }
 
+                $('#gallery img').css('width', w).css('max-width', '100%');
+                $('#gallery img').css('height', 'auto').css('max-height', '100%');
+
                 if (fullscreen) {
                     options['adaptiveHeight'] = true;
                     options_preview['slidesToShow'] = 7;
@@ -113,10 +112,18 @@
                             }
                         }
                     ];
-                }
 
-                $('#gallery img').css('width', w).css('max-width', '100%');
-                $('#gallery img').css('height', 'auto').css('max-height', '100%');
+                    var fullscreenHeight = $('#gallery img').height();
+                    var otherElemHeight = parseInt($('#image_wrapper').css('paddingTop')) +
+                                parseInt($('#image_wrapper').css('paddingBottom')) +
+                                parseInt($('#gallery').css('marginBottom')) +
+                                $('#image_fullscreen_close').outerHeight() +
+                                $('#gallery_preview img').height();
+                    if (fullscreenHeight > maxHeight) {
+                        var newWidth = parseInt(maxHeight-otherElemHeight);
+                        $('#gallery img').css('width', newWidth);
+                    }
+                }
 
                 $('#gallery').slick(options);
                 $('#gallery_preview').slick(options_preview);

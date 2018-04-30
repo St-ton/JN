@@ -1,10 +1,11 @@
-function Page(io, id, url)
+function Page(io, id, url, fullUrl)
 {
     bindProtoOnHandlers(this);
 
     this.io  = io;
     this.id  = id;
     this.url = url;
+    this.fullUrl = fullUrl;
 }
 
 Page.prototype = {

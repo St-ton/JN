@@ -417,7 +417,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function setActive(bool $active) : Portlet
     {
-        $this->active = $active;
+        $this->active = (bool)$active;
 
         return $this;
     }

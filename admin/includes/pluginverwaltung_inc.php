@@ -3105,33 +3105,28 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         }
     }
     // OPC-Blueprints in topcblueprints fuellen
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']) &&
-        count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']) > 0
-    ) {
-        foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'] as $u => $blueprint) {
-            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
-            if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                $blueprintJson = file_get_contents(
-                    PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
-                    . $nVersion . '/' . PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_BLUEPRINTS . $blueprint['JSONFile']
-                );
+    foreach ($blueprintsNode as $u => $blueprint) {
+        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+            $blueprintJson = file_get_contents(
+                PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
+                . $nVersion . '/' . PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_BLUEPRINTS . $blueprint['JSONFile']
+            );
 
-                $blueprintData = json_decode($blueprintJson, true);
-                $instanceJson  = json_encode($blueprintData['instance']);
+            $blueprintData = json_decode($blueprintJson, true);
+            $instanceJson  = json_encode($blueprintData['instance']);
 
-                $blueprintObj = (object)[
-                    'cName' => $blueprint['Name'],
-                    'cJson' => $instanceJson,
-                ];
+            $blueprintObj = (object)[
+                'kPlugin' => (int)$kPlugin,
+                'cName'   => $blueprint['Name'],
+                'cJson'   => $instanceJson,
+            ];
 
-                $kBlueprint = Shop::Container()->getDB()->insert('topcblueprint', $blueprintObj);
+            $kBlueprint = Shop::Container()->getDB()->insert('topcblueprint', $blueprintObj);
 
-                if (!$kBlueprint) {
-                    // Ein OPC Blueprint konnte nicht in die Datenbank gespeichert werden
-                    return 20;
-                }
+            if (!$kBlueprint) {
+                // Ein OPC Blueprint konnte nicht in die Datenbank gespeichert werden
+                return 20;
             }
         }
     }
@@ -3321,6 +3316,7 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
         Shop::Container()->getDB()->update('tpluginemailvorlage', 'kPlugin', $kPlugin, $upd);
         Shop::Container()->getDB()->update('texportformat', 'kPlugin', $kPlugin, $upd);
         Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, $upd);
+        Shop::Container()->getDB()->update('topcblueprint', 'kPlugin', $kPlugin, $upd);
         // tplugineinstellungen
         $oPluginEinstellung_arr = Shop::Container()->getDB()->query(
             "SELECT *
@@ -3694,6 +3690,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
     Shop::Container()->getDB()->delete('tcheckboxfunktion', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->delete('tadminwidgets', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->delete('topcportlet', 'kPlugin', $kPlugin);
+    Shop::Container()->getDB()->delete('topcblueprint', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->query(
         "DELETE texportformateinstellungen, texportformatqueuebearbeitet, texportformat
             FROM texportformat
@@ -3732,7 +3729,8 @@ function aktivierePlugin($kPlugin)
         $nRow              = Shop::Container()->getDB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => 2]);
         Shop::Container()->getDB()->update('tadminwidgets', 'kPlugin', $kPlugin, (object)['bActive' => 1]);
         Shop::Container()->getDB()->update('tlink', 'kPlugin', $kPlugin, (object)['bIsActive' => 1]);
-        Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, (object)['bIsActive' => 1]);
+        Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, (object)['bActive' => 1]);
+        Shop::Container()->getDB()->update('topcblueprint', 'kPlugin', $kPlugin, (object)['bActive' => 1]);
 
         if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
             $p->enabled();
@@ -3764,7 +3762,8 @@ function deaktivierePlugin($kPlugin)
     Shop::Container()->getDB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => 1]);
     Shop::Container()->getDB()->update('tadminwidgets', 'kPlugin', $kPlugin, (object)['bActive' => 0]);
     Shop::Container()->getDB()->update('tlink', 'kPlugin', $kPlugin, (object)['bIsActive' => 0]);
-    Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, (object)['bIsActive' => 0]);
+    Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, (object)['bActive' => 0]);
+    Shop::Container()->getDB()->update('topcblueprint', 'kPlugin', $kPlugin, (object)['bActive' => 0]);
 
     Shop::Cache()->flushTags([CACHING_GROUP_PLUGIN . '_' . $kPlugin]);
 

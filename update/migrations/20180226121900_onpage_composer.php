@@ -23,8 +23,10 @@ class Migration_20180226121900 extends Migration implements IMigration
 
         $this->execute("CREATE TABLE topcblueprint (
             kBlueprint INT AUTO_INCREMENT PRIMARY KEY,
+            kPlugin INT NOT NULL,
             cName VARCHAR(255) NOT NULL,
-            cJson LONGTEXT
+            cJson LONGTEXT,
+            bActive TINYINT NOT NULL DEFAULT 1
         )");
 
         $this->execute("CREATE TABLE topcpage (

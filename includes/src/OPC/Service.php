@@ -118,7 +118,7 @@ class Service
     public function getCurPage()
     {
         if ($this->curPage === null) {
-            $curPageUrl                    = \Shop::getRequestUri();
+            $curPageUrl                    = '/' . ltrim(\Shop::getRequestUri(), '/');
             $curPageParameters             = \Shop::getParameters();
             $curPageParameters['kSprache'] = \Shop::getLanguage();
             $curPageId                     = md5(serialize($curPageParameters));
@@ -219,20 +219,20 @@ class Service
      * @return PortletGroup[]
      * @throws \Exception
      */
-    public function getPortletGroups()
+    public function getPortletGroups($withInactive = false)
     {
-        return $this->db->getPortletGroups();
+        return $this->db->getPortletGroups($withInactive);
     }
 
     /**
      * @return Blueprint[]
      * @throws \Exception
      */
-    public function getBlueprints()
+    public function getBlueprints($withInactive = false)
     {
         $blueprints = [];
 
-        foreach ($this->db->getAllBlueprintIds() as $blueprintId) {
+        foreach ($this->db->getAllBlueprintIds($withInactive) as $blueprintId) {
             $blueprints[] = $this->getBlueprint($blueprintId);
         }
 

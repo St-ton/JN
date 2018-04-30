@@ -25,9 +25,19 @@ class DB
         $this->shopDB = $shopDB;
     }
 
-    public function getAllBlueprintIds()
+    /**
+     * @param bool $withInactive
+     * @return int[]
+     */
+    public function getAllBlueprintIds($withInactive = false)
     {
-        $blueprintsDB = $this->shopDB->selectAll('topcblueprint', [], [], 'kBlueprint');
+        $blueprintsDB = $this->shopDB->selectAll(
+            'topcblueprint',
+            $withInactive ? [] : 'bActive',
+            $withInactive ? [] : 1,
+            'kBlueprint'
+        );
+
         $blueprintIds = [];
 
         foreach ($blueprintsDB as $blueprintDB) {
@@ -116,13 +126,13 @@ class DB
      * @return PortletGroup[]
      * @throws \Exception
      */
-    public function getPortletGroups()
+    public function getPortletGroups($withInactive = false)
     {
         $groupNames = $this->shopDB->query("SELECT DISTINCT(cGroup) FROM topcportlet ORDER BY cGroup ASC", 2);
         $groups     = [];
 
         foreach ($groupNames as $groupName) {
-            $groups[] = $this->getPortletGroup($groupName->cGroup);
+            $groups[] = $this->getPortletGroup($groupName->cGroup, $withInactive);
         }
 
         return $groups;
@@ -133,9 +143,16 @@ class DB
      * @return PortletGroup
      * @throws \Exception
      */
-    public function getPortletGroup($groupName)
+    public function getPortletGroup($groupName, $withInactive = false)
     {
-        $portletsDB   = $this->shopDB->selectAll('topcportlet', 'cGroup', $groupName, 'cClass', 'cTitle');
+        $portletsDB = $this->shopDB->selectAll(
+            'topcportlet',
+            $withInactive ? 'cGroup' : ['cGroup', 'bActive'],
+            $withInactive ? $groupName : [$groupName, 1],
+            'cClass',
+            'cTitle'
+        );
+
         $portletGroup = new PortletGroup($groupName);
 
         foreach ($portletsDB as $portletDB) {
@@ -187,6 +204,10 @@ class DB
             throw new \Exception("The OPC portlet with class name '$class' could not be found.");
         }
 
+        if ((int)$portletDB->bActive !== 1) {
+            throw new \Exception("The OPC portlet with class name '$class' is inactive.");
+        }
+
         if ($portletDB->kPlugin > 0) {
             $plugin  = new \Plugin($portletDB->kPlugin);
             $include = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
@@ -205,7 +226,7 @@ class DB
             ->setTitle($portletDB->cTitle)
             ->setClass($portletDB->cClass)
             ->setGroup($portletDB->cGroup)
-            ->setActive($portletDB->bActive);
+            ->setActive((int)$portletDB->bActive === 1);
     }
 
     /**

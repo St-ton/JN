@@ -19,7 +19,7 @@ $shopUrl     = \Shop::getURL();
 $opc         = \Shop::Container()->getOPC();
 $opcDB       = \Shop::Container()->getOPCDB();
 $templateUrl = $shopUrl . '/' . PFAD_ADMIN . $currentTemplateDir;
-$fullPageUrl = StringHandler::endsWith($shopUrl, '/') ? "$shopUrl/$pageUrl" : "$shopUrl$pageUrl";
+$fullPageUrl = rtrim($shopUrl, '/') . $pageUrl;
 
 if ($action === 'restore') {
     $opc->deletePage($pageId);

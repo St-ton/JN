@@ -47,6 +47,7 @@
             kcfinderUrl: '{$PFAD_KCFINDER}',
             pageUrl:     '{$pageUrl}',
             pageId:      '{$pageId}',
+            fullPageUrl: '{$fullPageUrl}'
         });
     </script>
 </head>

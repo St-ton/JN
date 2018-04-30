@@ -187,8 +187,9 @@
                     {/foreach}
                 </div>
             </div>
-        <p class="submit">
+        <p class="submit btn-group">
             <button type="submit" value="{#save#}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+            <a href="zahlungsarten.php" value="{#cancel#}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {#cancel#}</a>
         </p>
     </form>
 </div>

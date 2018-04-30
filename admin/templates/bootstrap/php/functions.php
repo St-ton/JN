@@ -20,25 +20,25 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
  * @param JTLSmarty $smarty
  * @return mixed
  */
-function getRevisions($params, &$smarty)
+function getRevisions($params, $smarty)
 {
     $secondary = $params['secondary'] ?? false;
     $data      = $params['data'] ?? null;
     $revision  = new Revision();
 
     return $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
-           ->assign('secondary', $secondary)
-           ->assign('data', $data)
-           ->assign('show', $params['show'])
-           ->fetch('tpl_inc/revisions.tpl');
+                  ->assign('secondary', $secondary)
+                  ->assign('data', $data)
+                  ->assign('show', $params['show'])
+                  ->fetch('tpl_inc/revisions.tpl');
 }
 
 /**
- * @param array $params
+ * @param array     $params
  * @param JTLSmarty $smarty
  * @return string
  */
-function getCurrencyConversionSmarty($params, &$smarty)
+function getCurrencyConversionSmarty($params, $smarty)
 {
     $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
     if (!isset($params['fPreisBrutto'])) {
@@ -55,19 +55,19 @@ function getCurrencyConversionSmarty($params, &$smarty)
 }
 
 /**
- * @param array $params
+ * @param array     $params
  * @param JTLSmarty $smarty
  * @return string
  */
-function getCurrencyConversionTooltipButton($params, &$smarty)
+function getCurrencyConversionTooltipButton($params, $smarty)
 {
     $placement = $params['placement'] ?? 'left';
 
     if (isset($params['inputId'])) {
         $inputId = $params['inputId'];
-        $button = '<button type="button" class="btn btn-tooltip btn-info" id="' . $inputId . 'Tooltip" data-html="true"';
-        $button .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
-        $button .= '<i class="fa fa-eur"></i></button>';
+        $button  = '<button type="button" class="btn btn-tooltip btn-info" id="' . $inputId . 'Tooltip" data-html="true"';
+        $button  .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
+        $button  .= '<i class="fa fa-eur"></i></button>';
 
         return $button;
     }
@@ -76,10 +76,10 @@ function getCurrencyConversionTooltipButton($params, &$smarty)
 }
 
 /**
- * @param array $params
+ * @param array     $params
  * @param JTLSmarty $smarty
  */
-function getCurrentPage($params, &$smarty)
+function getCurrentPage($params, $smarty)
 {
     $path = $_SERVER['SCRIPT_NAME'];
     $page = basename($path, '.php');
@@ -90,11 +90,11 @@ function getCurrentPage($params, &$smarty)
 }
 
 /**
- * @param array $params
+ * @param array     $params
  * @param JTLSmarty $smarty
  * @return string
  */
-function getHelpDesc($params, &$smarty)
+function getHelpDesc($params, $smarty)
 {
     $placement   = $params['placement'] ?? 'left';
     $cID         = !empty($params['cID']) ? $params['cID'] : null;
@@ -139,11 +139,11 @@ function permission($cRecht)
 }
 
 /**
- * @param array $params
+ * @param array     $params
  * @param JTLSmarty $smarty
  * @return string
  */
-function SmartyConvertDate($params, &$smarty)
+function SmartyConvertDate($params, $smarty)
 {
     if (isset($params['date']) && strlen($params['date']) > 0) {
         $oDateTime = new DateTime($params['date']);
@@ -165,11 +165,11 @@ function SmartyConvertDate($params, &$smarty)
 
 /**
  * Map marketplace categoryId to localized category name
- * 
- * @param array $params
+ *
+ * @param array     $params
  * @param JTLSmarty $smarty
  */
-function getExtensionCategory($params, &$smarty)
+function getExtensionCategory($params, $smarty)
 {
     if (!isset($params['cat'])) {
         return;
@@ -196,7 +196,7 @@ function getExtensionCategory($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return string|null
  */
-function formatVersion($params, &$smarty)
+function formatVersion($params, $smarty)
 {
     if (!isset($params['value'])) {
         return null;
@@ -219,7 +219,7 @@ function formatVersion($params, &$smarty)
  * @source https://gravatar.com/site/implement/images/php/
  * @return string
  */
-function gravatarImage($params, &$smarty)
+function gravatarImage($params, $smarty)
 {
     $email = $params['email'] ?? null;
     if ($email === null) {
@@ -230,12 +230,12 @@ function gravatarImage($params, &$smarty)
 
     $params = array_merge(['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'], $params);
 
-    $url  = 'https://www.gravatar.com/avatar/';
+    $url = 'https://www.gravatar.com/avatar/';
     $url .= md5(strtolower(trim($email)));
     $url .= '?' . http_build_query($params, '', '&');
 
     executeHook(HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
-        'url' => &$url,
+        'url'          => &$url,
         'AdminAccount' => &$_SESSION['AdminAccount']
     ]);
 

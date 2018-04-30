@@ -9,7 +9,7 @@
         <div class="panel-heading">
             <h5 class="panel-title"><i class="fa fa-heart"></i> {lang key="wishlist" section="global"}</h5>
         </div>
-        <div class="panel-body">
+        <div class="box-body panel-body">
             <ul class="list-unstyled">
                 {if isset($Boxen.Wunschliste->nAnzeigen)}
                     {assign var=maxItems value=$Boxen.Wunschliste->nAnzeigen}

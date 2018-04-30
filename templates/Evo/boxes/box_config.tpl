@@ -2,7 +2,7 @@
     <div class="panel-heading">
         <h5 class="panel-title">{lang key="yourConfiguration"}</h5>
     </div>
-    <div class="panel-body">
+    <div class="box-body panel-body">
         <div id="box_config_list">
             <!-- ul itemlist -->
         </div>

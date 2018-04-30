@@ -22,7 +22,7 @@
        <div class="panel-heading">
            <h5 class="panel-title">{lang key='newsBoxCatOverview'}</h5>
        </div>{* /panel-heading *}
-       <div class="panel-body">
+       <div class="box-body panel-body">
           <ul>
           {foreach name=newskategorie from=$Boxen.NewsKategorie->oNewsKategorie_arr item=oNewsKategorie}
              <li>

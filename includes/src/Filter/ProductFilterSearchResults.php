@@ -405,7 +405,7 @@ class ProductFilterSearchResults
     /**
      * @return bool
      */
-    public function isSearchUnsuccessful(): bool
+    public function getSearchUnsuccessful(): bool
     {
         return $this->searchUnsuccessful;
     }

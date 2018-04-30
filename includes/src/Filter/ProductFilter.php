@@ -907,7 +907,7 @@ class ProductFilter
      * @return IFilter
      * @throws \InvalidArgumentException
      */
-    public function registerFilterByClassName($filterName)
+    public function registerFilterByClassName($filterName): IFilter
     {
         $filter = null;
         if (class_exists($filterName)) {

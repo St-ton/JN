@@ -2,7 +2,7 @@
     <div class="panel-heading">
         <h5 class="panel-title">{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</h5>
     </div>
-    <div class="panel-body">
+    <div class="box-body panel-body">
         {if empty($smarty.session.Kunde->kKunde)}
             <form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login">
                 <input type="hidden" name="login" value="1" />

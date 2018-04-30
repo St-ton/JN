@@ -585,7 +585,6 @@ function bearbeiteInsert($xml, array $conf)
         DBUpdateInsert('tartikelabnahme', $oArtikelAbnahmeIntervalle_arr, 'kArtikel', 'kKundengruppe');
     }
     // Konfig
-    loescheKonfig($Artikel->kArtikel);
     if (isset($xml['tartikel']['tartikelkonfiggruppe']) && is_array($xml['tartikel']['tartikelkonfiggruppe'])) {
         $oArtikelKonfig_arr = mapArray($xml['tartikel'], 'tartikelkonfiggruppe', $GLOBALS['mArtikelkonfiggruppe']);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
@@ -599,14 +598,6 @@ function bearbeiteInsert($xml, array $conf)
         DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
     }
     // Sonderpreise
-    Shop::Container()->getDB()->query(
-        "DELETE asp, sp
-            FROM tartikelsonderpreis asp 
-            LEFT JOIN tsonderpreise sp 
-            ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-            WHERE asp.kArtikel = " . (int)$artikel_arr[0]->kArtikel,
-        \DB\ReturnType::AFFECTED_ROWS
-    );
     if (isset($xml['tartikel']['tartikelsonderpreis'])) {
         updateXMLinDB(
             $xml['tartikel']['tartikelsonderpreis'],
@@ -1039,7 +1030,6 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kArtikel', (int)$kArtikel]);
         Shop::Container()->getDB()->delete('tartikel', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tpreise', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelsonderpreis', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelsprache', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelattribut', 'kArtikel', $kArtikel);
@@ -1047,6 +1037,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         loescheArtikelAttribute($kArtikel);
         loescheArtikelEigenschaftWert($kArtikel);
         loescheArtikelEigenschaft($kArtikel);
+        loescheSonderpreise($kArtikel);
         Shop::Container()->getDB()->delete('txsell', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelmerkmal', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelsichtbarkeit', 'kArtikel', $kArtikel);
@@ -1288,6 +1279,25 @@ function loescheStueckliste($kStueckliste)
     if ($kStueckliste > 0) {
         Shop::Container()->getDB()->delete('tstueckliste', 'kStueckliste', $kStueckliste);
     }
+}
+
+/**
+ * @param int $kArtikel
+ * @return int
+ */
+function loescheSonderpreise($kArtikel)
+{
+    return Shop::Container()->getDB()->queryPrepared(
+        "DELETE asp, sp
+            FROM tartikelsonderpreis asp
+            LEFT JOIN tsonderpreise sp
+            ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
+            WHERE asp.kArtikel = :articleID",
+        [
+            'articleID' => (int)$kArtikel,
+        ],
+        \DB\ReturnType::AFFECTED_ROWS
+    );
 }
 
 /**

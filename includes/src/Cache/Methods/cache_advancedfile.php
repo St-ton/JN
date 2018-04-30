@@ -217,24 +217,27 @@ class cache_advancedfile implements ICachingMethod
             $tags = [$tags];
         }
         if (\count($tags) > 0) {
+            $res = true;
             foreach ($tags as $tag) {
                 //create subdirs for every underscore
                 $dirs = explode('_', $tag);
                 $path = $this->options['cache_dir'];
                 foreach ($dirs as $dir) {
                     if ($dir === '') {
-                        return false;
+                        $res = false;
+                        continue;
                     }
                     $path .= $dir . '/';
                     if (!file_exists($path) && !mkdir($path) && !is_dir($path)) {
-                        return false;
+                        $res = false;
+                        continue;
                     }
                 }
                 if (file_exists($path . $cacheID) || !file_exists($fileName) || !symlink($fileName, $path . $cacheID)) {
-                    return false;
+                    $res = false;
+                    continue;
                 }
             }
-            $res = true;
         }
 
         return $res;

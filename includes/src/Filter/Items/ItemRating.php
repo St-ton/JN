@@ -111,6 +111,7 @@ class ItemRating extends AbstractFilter
         }
         if ($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'] === 'N') {
             $this->hide();
+            $this->options = [];
 
             return $this->options;
         }

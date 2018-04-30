@@ -9,7 +9,7 @@
     <div class="alert alert-danger">{$fehler}</div>
 {/if}
 
-{if $Suchergebnisse->isSearchUnsuccessful() == true}
+{if $Suchergebnisse->getSearchUnsuccessful() == true}
     <div class="alert alert-info">{lang key='noResults' section='productOverview'}</div>
     <form id="suche2" action="{$ShopURL}" method="get" class="form">
         <fieldset>

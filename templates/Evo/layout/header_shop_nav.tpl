@@ -62,7 +62,7 @@
         {else}
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='hello'}">
                 <span class="fa fa-user"></span>
-                <span class="hidden-xs hidden-sm hidden-md"> {lang key='hello'} {if $smarty.session.Kunde->cAnrede === 'w'}{$Anrede_w}{elseif $smarty.session.Kunde->cAnrede === 'm'}{$Anrede_m}{/if} {$smarty.session.Kunde->cNachname}</span>
+                <span class="hidden-xs hidden-sm hidden-md"> {lang key='hello'} {if $smarty.session.Kunde->cAnrede === 'w'}{lang key='salutationW'}{elseif $smarty.session.Kunde->cAnrede === 'm'}{lang key='salutationM'}{/if} {$smarty.session.Kunde->cNachname}</span>
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">

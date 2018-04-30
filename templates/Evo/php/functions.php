@@ -32,7 +32,7 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
  * @param JTLSmarty $smarty
  * @return array
  */
-function get_product_list($params, &$smarty)
+function get_product_list($params, $smarty)
 {
     $nLimit             = isset($params['nLimit'])
         ? (int)$params['nLimit']
@@ -84,7 +84,7 @@ function get_product_list($params, &$smarty)
             $oArtikel_arr[] = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         }
     } else {
-        $oArtikel_arr = (new ProductFilter())->initStates($params)->getProducts(false, null, true, $nLimit);
+        $oArtikel_arr = (new \Filter\ProductFilter())->initStates($params)->getProducts(false, null, true, $nLimit);
     }
 
     $smarty->assign($cAssign, $oArtikel_arr);
@@ -99,7 +99,7 @@ function get_product_list($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return bool|string
  */
-function get_static_route($params, &$smarty)
+function get_static_route($params, $smarty)
 {
     if (isset($params['id'])) {
         $full   = !isset($params['full']) || $params['full'] === true;
@@ -127,7 +127,7 @@ function get_static_route($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return array
  */
-function get_manufacturers($params, &$smarty)
+function get_manufacturers($params, $smarty)
 {
     $manufacturers = HerstellerHelper::getInstance()->getManufacturers();
     if (isset($params['assign'])) {
@@ -143,7 +143,7 @@ function get_manufacturers($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return string
  */
-function load_boxes_raw($params, &$smarty)
+function load_boxes_raw($params, $smarty)
 {
     if (isset($params['array'], $params['assign']) && $params['array'] === true) {
         $rawData = Boxen::getInstance()->getRawData();
@@ -156,7 +156,7 @@ function load_boxes_raw($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return array|void
  */
-function get_category_array($params, &$smarty)
+function get_category_array($params, $smarty)
 {
     $id = isset($params['categoryId']) ? (int)$params['categoryId'] : 0;
     if ($id === 0) {
@@ -192,7 +192,7 @@ function get_category_array($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return array|void
  */
-function get_category_parents($params, &$smarty)
+function get_category_parents($params, $smarty)
 {
     $id         = isset($params['categoryId']) ? (int)$params['categoryId'] : 0;
     $categories = new KategorieListe();
@@ -214,7 +214,7 @@ function get_category_parents($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return string
  */
-function get_img_tag($params, &$smarty)
+function get_img_tag($params, $smarty)
 {
     if (empty($params['src'])) {
         return '';
@@ -242,7 +242,7 @@ function get_img_tag($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return string
  */
-function load_boxes($params, &$smarty)
+function load_boxes($params, $smarty)
 {
     $cTplData     = '';
     $cOldTplDir   = '';
@@ -311,7 +311,7 @@ function load_boxes($params, &$smarty)
  * @param array     $params
  * @param JTLSmarty $smarty
  */
-function has_boxes($params, &$smarty)
+function has_boxes($params, $smarty)
 {
     $boxes = Boxen::getInstance();
     $smarty->assign($params['assign'], isset($boxes->boxes[$params['position']]));
@@ -338,7 +338,7 @@ function truncate($text, $numb)
  * @param JTLSmarty $smarty
  * @return mixed|string
  */
-function gibPreisStringLocalizedSmarty($params, &$smarty)
+function gibPreisStringLocalizedSmarty($params, $smarty)
 {
     $oAufpreis = new stdClass();
     $oAufpreis->cAufpreisLocalized = '';
@@ -351,8 +351,8 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
         $fVPEWert               = (float)$params['fVPEWert'];
         $cVPEEinheit            = $params['cVPEEinheit'];
         $FunktionsAttribute_arr = $params['FunktionsAttribute'];
-        $nGenauigkeit = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) &&
-            (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
+        $nGenauigkeit = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
+            && (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
             ? (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
             : 2;
 
@@ -418,7 +418,7 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
  * @param array     $params
  * @param JTLSmarty $smarty
  */
-function hasCheckBoxForLocation($params, &$smarty)
+function hasCheckBoxForLocation($params, $smarty)
 {
     $smarty->assign(
         $params['bReturn'],
@@ -431,7 +431,7 @@ function hasCheckBoxForLocation($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return string
  */
-function getCheckBoxForLocation($params, &$smarty)
+function getCheckBoxForLocation($params, $smarty)
 {
     $langID        = Shop::getLanguageID();
     $cid           = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . $langID;
@@ -479,7 +479,7 @@ function getCheckBoxForLocation($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return string
  */
-function aaURLEncode($params, &$smarty)
+function aaURLEncode($params, $smarty)
 {
     $bReset         = (isset($params['nReset']) && (int)$params['nReset'] === 1);
     $cURL           = $_SERVER['REQUEST_URI'];
@@ -516,7 +516,7 @@ function aaURLEncode($params, &$smarty)
  * @param array $params - ['type'] Templatename of link, ['assign'] array name to assign
  * @param JTLSmarty $smarty
  */
-function get_navigation($params, &$smarty)
+function get_navigation($params, $smarty)
 {
     $linkgroupIdentifier = $params['linkgroupIdentifier'];
     $oLinkGruppe         = null;
@@ -566,7 +566,7 @@ function build_navigation_subs($oLink_arr, $kVaterLink = 0)
  * @param array     $params
  * @param JTLSmarty $smarty
  */
-function get_trustedshops_data($params, &$smarty)
+function get_trustedshops_data($params, $smarty)
 {
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
     $smarty->assign($params['assign'], [
@@ -580,7 +580,7 @@ function get_trustedshops_data($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return string|object|null
  */
-function prepare_image_details($params, &$smarty)
+function prepare_image_details($params, $smarty)
 {
     if (!isset($params['item'])) {
         return null;
@@ -664,7 +664,7 @@ function get_image_size($image)
  * @param JTLSmarty $smarty
  * @return mixed
  */
-function get_cms_content($params, &$smarty)
+function get_cms_content($params, $smarty)
 {
     if (isset($params['kLink']) && (int)$params['kLink'] > 0) {
         $kLink          = (int)$params['kLink'];
@@ -686,7 +686,7 @@ function get_cms_content($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return int - 0: no listable variations, 1: normal listable variations, 2: only child listable variations
  */
-function hasOnlyListableVariations($params, &$smarty)
+function hasOnlyListableVariations($params, $smarty)
 {
     if (!isset($params['artikel']->Variationen)) {
         if (isset($params['assign'])) {

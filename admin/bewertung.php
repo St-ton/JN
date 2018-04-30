@@ -39,8 +39,8 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
 } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
 
     // Validierung
-    if (verifyGPDataString('bewertung_guthaben_nutzen') === 'Y' &&
-        verifyGPDataString('bewertung_freischalten') !== 'Y'
+    if (verifyGPDataString('bewertung_guthaben_nutzen') === 'Y'
+        && verifyGPDataString('bewertung_freischalten') !== 'Y'
     ) {
         $cFehler = 'Guthabenbonus kann nur mit "Bewertung freischalten" verwendet werden.';
     } else {

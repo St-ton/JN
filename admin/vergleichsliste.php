@@ -69,6 +69,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
 
     unset($oConfig_arr);
     $cHinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.';
+    Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 }
 
 $oConfig_arr = Shop::DB()->query(

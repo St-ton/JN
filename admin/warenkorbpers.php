@@ -21,7 +21,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 }
 // Suche
 if (strlen(verifyGPDataString('cSuche')) > 0) {
-    $cSuche = Shop::DB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
+    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
 
     if (strlen($cSuche) > 0) {
         $cSucheSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
@@ -32,12 +32,14 @@ if (strlen(verifyGPDataString('cSuche')) > 0) {
     $smarty->assign('cSuche', $cSuche);
 }
 // Einstellungen
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-    if (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern')) {
-        $step = 'uebersicht';
-        $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
-        $smarty->assign('tab', 'einstellungen');
-    }
+if (isset($_POST['einstellungen'])
+    && (int)$_POST['einstellungen'] === 1
+    && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
+    && validateToken()
+) {
+    $step = 'uebersicht';
+    $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
+    $smarty->assign('tab', 'einstellungen');
 }
 
 if (isset($_GET['l']) && (int)$_GET['l'] > 0 && validateToken()) {
@@ -64,7 +66,8 @@ $oKundeAnzahl = Shop::Container()->getDB()->query(
                 ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
             " . $cSucheSQL->cWHERE . "
             GROUP BY tkunde.kKunde
-        ) AS tAnzahl", 1
+        ) AS tAnzahl",
+    \DB\ReturnType::SINGLE_OBJECT
 );
 
 // Pagination
@@ -86,19 +89,18 @@ $oKunde_arr = Shop::Container()->getDB()->query(
         GROUP BY tkunde.kKunde
         ORDER BY twarenkorbpers.dErstellt DESC
         LIMIT " . $oPagiKunden->getLimitSQL(),
-    2);
+    \DB\ReturnType::ARRAY_OF_OBJECTS
+);
 
-if (is_array($oKunde_arr) && count($oKunde_arr) > 0) {
-    foreach ($oKunde_arr as $i => $oKunde) {
-        $oKundeTMP = new Kunde($oKunde->kKunde);
+foreach ($oKunde_arr as $i => $oKunde) {
+    $oKundeTMP = new Kunde($oKunde->kKunde);
 
-        $oKunde_arr[$i]->cNachname = $oKundeTMP->cNachname;
-        $oKunde_arr[$i]->cFirma    = $oKundeTMP->cFirma;
-    }
+    $oKunde_arr[$i]->cNachname = $oKundeTMP->cNachname;
+    $oKunde_arr[$i]->cFirma    = $oKundeTMP->cFirma;
 }
 
 $smarty->assign('oKunde_arr', $oKunde_arr)
-    ->assign('oPagiKunden', $oPagiKunden);
+       ->assign('oPagiKunden', $oPagiKunden);
 
 // Anzeigen
 if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
@@ -110,7 +112,8 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-            WHERE twarenkorbpers.kKunde = " . $kKunde, 1
+            WHERE twarenkorbpers.kKunde = " . $kKunde,
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
     $oPagiWarenkorb = (new Pagination('warenkorb'))
@@ -128,20 +131,18 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = " . $kKunde . "
             LIMIT " . $oPagiWarenkorb->getLimitSQL(),
-        2);
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    foreach ($oWarenkorbPersPos_arr as $i => $oWarenkorbPersPos) {
+        $oKundeTMP = new Kunde($oWarenkorbPersPos->kKundeTMP);
 
-    if (is_array($oWarenkorbPersPos_arr) && count($oWarenkorbPersPos_arr) > 0) {
-        foreach ($oWarenkorbPersPos_arr as $i => $oWarenkorbPersPos) {
-            $oKundeTMP = new Kunde($oWarenkorbPersPos->kKundeTMP);
-
-            $oWarenkorbPersPos_arr[$i]->cNachname = $oKundeTMP->cNachname;
-            $oWarenkorbPersPos_arr[$i]->cFirma    = $oKundeTMP->cFirma;
-        }
+        $oWarenkorbPersPos_arr[$i]->cNachname = $oKundeTMP->cNachname;
+        $oWarenkorbPersPos_arr[$i]->cFirma    = $oKundeTMP->cFirma;
     }
 
     $smarty->assign('oWarenkorbPersPos_arr', $oWarenkorbPersPos_arr)
-        ->assign('kKunde', $kKunde)
-        ->assign('oPagiWarenkorb', $oPagiWarenkorb);
+           ->assign('kKunde', $kKunde)
+           ->assign('oPagiWarenkorb', $oPagiWarenkorb);
 } else {
     // uebersicht
     // Config holen
@@ -149,7 +150,8 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
         "SELECT *
             FROM teinstellungenconf
             WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
-            ORDER BY nSort", 2
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {

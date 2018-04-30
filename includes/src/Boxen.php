@@ -1259,11 +1259,11 @@ class Boxen
             if (is_array($_boxes)) {
                 foreach ($_boxes as $_box) {
                     if (!empty($_box->cFilter)) {
-                        $pageType   = (int)$_box->kSeite;
                         $allowedIDs = [];
-                        foreach ($_box->cFilter as $filterItem) {
-                            $allowedIDs[] = $filterItem['id'];
+                        foreach ($_box->cFilter as $_filter) {
+                            $allowedIDs[] = (int)$_filter['id'];
                         }
+                        $pageType   = (int)$_box->kSeite;
                         if ($pageType === PAGE_ARTIKELLISTE) {
                             if (!in_array((int)Shop::$kKategorie, $allowedIDs, true)) {
                                 continue;

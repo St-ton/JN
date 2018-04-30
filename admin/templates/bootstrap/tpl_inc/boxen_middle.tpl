@@ -8,7 +8,7 @@
                     <hr>
                 </div><!-- .panel-heading -->
                 <div class="panel-heading">
-                    <input type="checkbox" name="box_show" id="box_{$direction}_show"
+                    <input type="checkbox" name="box_show" id="box_{$direction}_show" value="1"
                            {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}checked{/if}>
                     <label for="box_{$direction}_show">Container anzeigen</label>
 

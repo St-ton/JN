@@ -131,7 +131,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             $sort_arr  = $_REQUEST['sort'] ?? null;
             $aktiv_arr = $_REQUEST['aktiv'] ?? [];
             $boxCount  = count($box_arr);
-            $bValue    = $_REQUEST['box'] ?? false;
+            $bValue    = $_REQUEST['box_show'] ?? false;
             $bOk       = $oBoxen->setzeBoxAnzeige($nPage, $ePosition, $bValue);
             if ($bOk) {
                 $cHinweis = 'Box wurde erfolgreich bearbeitet.';

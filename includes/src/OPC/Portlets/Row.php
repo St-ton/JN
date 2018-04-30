@@ -65,6 +65,13 @@ class Row extends \OPC\Portlet
         ];
     }
 
+    public function getPropertyTabs()
+    {
+        return [
+            'Styles' => 'styles',
+        ];
+    }
+
     /**
      * @param PortletInstance $instance
      * @return array

@@ -93,7 +93,7 @@ Iframe.prototype = {
         return new this.ctx.Popper(
             document.body,
             elm[0],
-            { placement: 'top-start', modifiers: { computeStyle: { gpuAcceleration: false }}}
+            {placement: 'top-start', modifiers: {computeStyle: {gpuAcceleration: false }}}
         );
     },
 

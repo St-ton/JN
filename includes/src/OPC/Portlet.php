@@ -285,6 +285,26 @@ abstract class Portlet implements \JsonSerializable
                 'type'    => 'color',
                 'default' => '',
             ],
+            'margin-left' => [
+                'label'   => 'Abstand links',
+                'type'    => 'text',
+                'default' => '',
+            ],
+            'margin-right' => [
+                'label'   => 'Abstand rechts',
+                'type'    => 'text',
+                'default' => '',
+            ],
+            'margin-top' => [
+                'label'   => 'Abstand oben',
+                'type'    => 'text',
+                'default' => '',
+            ],
+            'margin-bottom' => [
+                'label'   => 'Abstand unten',
+                'type'    => 'text',
+                'default' => '',
+            ],
         ];
     }
 

@@ -56,4 +56,11 @@ class Image extends \OPC\Portlet
             ],
         ];
     }
+
+    public function getPropertyTabs()
+    {
+        return [
+            'Styles' => 'styles',
+        ];
+    }
 }

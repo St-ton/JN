@@ -42,7 +42,6 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
-        unset($aktWert);
         $aktWert                        = new stdClass();
         $aktWert->cWert                 = $_POST[$oConfig_arr[$i]->cWertName];
         $aktWert->cName                 = $oConfig_arr[$i]->cWertName;
@@ -67,8 +66,8 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
         Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
     }
 
-    unset($oConfig_arr);
     $cHinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.';
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 }
 
 $oConfig_arr = Shop::Container()->getDB()->query(
@@ -78,7 +77,8 @@ $oConfig_arr = Shop::Container()->getDB()->query(
                 kEinstellungenConf IN " . $cSetting . " 
                 OR kEinstellungenSektion = " . CONF_VERGLEICHSLISTE . "
                )
-        ORDER BY nSort", 2
+        ORDER BY nSort",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
@@ -117,7 +117,8 @@ $oLetzten20Vergleichsliste_arr = Shop::Container()->getDB()->query(
     "SELECT kVergleichsliste, DATE_FORMAT(dDate, '%d.%m.%Y  %H:%i') AS Datum
         FROM tvergleichsliste
         ORDER BY dDate DESC
-        LIMIT " . $oPagination->getLimitSQL(), 2
+        LIMIT " . $oPagination->getLimitSQL(),
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
 if (is_array($oLetzten20Vergleichsliste_arr) && count($oLetzten20Vergleichsliste_arr) > 0) {
@@ -142,7 +143,8 @@ $oTopVergleichsliste_arr = Shop::Container()->getDB()->query(
         WHERE DATE_SUB(now(), INTERVAL " . (int)$_SESSION['Vergleichsliste']->nZeitFilter . " DAY) < tvergleichsliste.dDate
         GROUP BY tvergleichslistepos.kArtikel
         ORDER BY nAnzahl DESC
-        LIMIT " . (int)$_SESSION['Vergleichsliste']->nAnzahl, 2
+        LIMIT " . (int)$_SESSION['Vergleichsliste']->nAnzahl,
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 // Top Vergleiche Graph
 if (is_array($oTopVergleichsliste_arr) && count($oTopVergleichsliste_arr) > 0) {

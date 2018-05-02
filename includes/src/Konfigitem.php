@@ -127,7 +127,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKonfigitem - primary key
          * @param int $kSprache
          * @param int $kKundengruppe
-         * @access public
          */
         public function __construct($kKonfigitem = 0, $kSprache = 0, $kKundengruppe = 0)
         {
@@ -233,15 +232,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return bool
          */
-        public function isValid()
+        public function isValid(): bool
         {
-            if ($this->kArtikel > 0) {
-                if (!$this->oArtikel->kArtikel) {
-                    return false;
-                }
-            }
-
-            return true;
+            return !($this->kArtikel > 0 && empty($this->oArtikel->kArtikel));
         }
 
         /**
@@ -249,7 +242,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @param bool $bPrim - Controls the return of the method
          * @return bool|int
-         * @access public
          */
         public function save($bPrim = true)
         {
@@ -278,7 +270,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
         public function update()
         {
@@ -302,7 +294,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
         public function delete()
         {
@@ -311,9 +303,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
         /**
          * @param int $kKonfiggruppe
-         * @return array|bool
+         * @return array
          */
-        public static function fetchAll($kKonfiggruppe)
+        public static function fetchAll($kKonfiggruppe): array
         {
             $oItem_arr = Shop::Container()->getDB()->query("
                 SELECT kKonfigitem 
@@ -362,7 +354,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param Artikel $oArtikel
          * @return $this
          */
-        public function setArtikel($oArtikel)
+        public function setArtikel(Artikel $oArtikel)
         {
             $this->oArtikel = $oArtikel;
 
@@ -381,9 +373,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the kKonfigitem
-         *
-         * @access public
          * @return int
          */
         public function getKonfigitem()
@@ -400,9 +389,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the oArtikel
-         *
-         * @access public
          * @return int
          */
         public function getArtikelKey()
@@ -411,9 +397,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the oArtikel
-         *
-         * @access public
          * @return object
          */
         public function getArtikel()
@@ -422,9 +405,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the nPosTyp
-         *
-         * @access public
          * @return int
          */
         public function getPosTyp()
@@ -449,9 +429,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the oSprache
-         *
-         * @access public
          * @return Konfigitemsprache
          */
         public function getSprache()
@@ -512,10 +489,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function getBildPfad()
         {
-            if ($this->oArtikel) {
-                if ($this->oArtikel->Bilder[0]->cPfadKlein !== BILD_KEIN_ARTIKELBILD_VORHANDEN) {
-                    return $this->oArtikel->Bilder[0];
-                }
+            if ($this->oArtikel && $this->oArtikel->Bilder[0]->cPfadKlein !== BILD_KEIN_ARTIKELBILD_VORHANDEN) {
+                return $this->oArtikel->Bilder[0];
             }
 
             return null;
@@ -610,7 +585,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return bool
          */
-        public function hasPreis()
+        public function hasPreis(): bool
         {
             return $this->getPreis(true) != 0;
         }
@@ -618,7 +593,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return bool
          */
-        public function hasRabatt()
+        public function hasRabatt(): bool
         {
             return $this->getRabatt() > 0;
         }
@@ -645,7 +620,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return bool
          */
-        public function hasZuschlag()
+        public function hasZuschlag(): bool
         {
             return $this->getZuschlag() > 0;
         }
@@ -819,11 +794,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function isInStock()
         {
             $tmpPro = $this->getArtikel();
-            
+
             return empty($this->kArtikel)
                 || (!($tmpPro->cLagerBeachten === 'Y'
-                && $tmpPro->cLagerKleinerNull === 'N'
-                && floatval($tmpPro->fLagerbestand) <= 0));
+                    && $tmpPro->cLagerKleinerNull === 'N'
+                    && (float)$tmpPro->fLagerbestand <= 0));
         }
     }
 }

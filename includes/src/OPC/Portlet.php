@@ -85,33 +85,6 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @return string
-     */
-    final public function getStyleString()
-    {
-        $styleString = '';
-
-        if (!empty($this->properties['style']) && is_array($this->properties['style'])) {
-            foreach ($this->properties['style'] as $name => $value) {
-                Shop::dbg($name, true);
-                if (trim($value) !== '') {
-                    if (stripos($name, 'margin-') !== false ||
-                        stripos($name, 'padding-') !== false ||
-                        stripos($name, '-width') !== false ||
-                        stripos($name, '-height') !== false
-                    ) {
-                        $styleString .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . 'px;';
-                    } else {
-                        $styleString .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . ';';
-                    }
-                }
-            }
-        }
-
-        return $styleString !== '' ? 'style="' . $styleString . '"' : '';
-    }
-
-    /**
      * @param PortletInstance $instance
      * @return string
      */

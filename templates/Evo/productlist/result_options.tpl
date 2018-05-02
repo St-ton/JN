@@ -67,10 +67,10 @@
                         <div class="fs-0">
                             {foreach $contentFilters as $filter}
                                 {if count($filter->getFilterCollection()) > 0}
-                                    {block name='productlist-result-options-'|cat:$filter->getClassName()}
+                                    {block name='productlist-result-options-'|cat:$filter->getNiceName()}
                                         {foreach $filter->getOptions() as $subFilter}
                                             {if $subFilter->getVisibility() !== $subFilter::SHOW_NEVER}
-                                                <div class="form-group dropdown filter-type-{$filter->getClassName()}">
+                                                <div class="form-group dropdown filter-type-{$filter->getNiceName()}">
                                                     <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                                         {$subFilter->getFrontendName()} <span class="caret"></span>
                                                     </a>
@@ -80,17 +80,17 @@
                                         {/foreach}
                                     {/block}
                                 {else}
-                                    {block name='productlist-result-options-'|cat:$filter->getClassName()}
+                                    {block name='productlist-result-options-'|cat:$filter->getNiceName()}
                                         {if $filter->getInputType() === $filter::INPUT_SELECT}
-                                            {assign var=outerClass value='form-group dropdown filter-type-'|cat:$filter->getClassName()}
+                                            {assign var=outerClass value='form-group dropdown filter-type-'|cat:$filter->getNiceName()}
                                             {assign var=innerClass value='dropdown-menu'}
                                             {assign var=itemClass value=''}
                                         {elseif $filter->getInputType() === $filter::INPUT_BUTTON}
-                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getClassName()}
+                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getNiceName()}
                                             {assign var=innerClass value='no-dropdown'}
                                             {assign var=itemClass value='btn btn-default'}
                                         {else}
-                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getClassName()}
+                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getNiceName()}
                                             {assign var=innerClass value='no-dropdown'}
                                             {assign var=itemClass value=''}
                                         {/if}
@@ -122,15 +122,15 @@
                             {if $activeValues|is_array}
                                 {foreach $activeValues as $filterOption}
                                     {strip}
-                                        <a href="{$activeFilter->getUnsetFilterURL($filterOption->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
-                                            {$filterOption->getFrontendName()|html_entity_decode} &nbsp;<span class="fa fa-trash-o"></span>
+                                        <a href="{$activeFilter->getUnsetFilterURL($filterOption->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getNiceName()}">
+                                            {$filterOption->getFrontendName()}&nbsp;<span class="fa fa-trash-o"></span>
                                         </a>
                                     {/strip}
                                 {/foreach}
                             {else}
                                 {strip}
-                                    <a href="{$activeFilter->getUnsetFilterURL($activeFilter->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
-                                        {$activeValues->getFrontendName()|html_entity_decode}&nbsp;<span class="fa fa-trash-o"></span>
+                                    <a href="{$activeFilter->getUnsetFilterURL($activeFilter->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getNiceName()}">
+                                        {$activeValues->getFrontendName()}&nbsp;<span class="fa fa-trash-o"></span>
                                     </a>
                                 {/strip}
                             {/if}

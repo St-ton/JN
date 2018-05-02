@@ -529,4 +529,16 @@ class StringHandler
             (isset($parts['query']) ? '?' . $parts['query'] : '') .
             (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
     }
+
+    /**
+     * @param string $haystack
+     * @param string $needle
+     * @return bool
+     */
+    public static function endsWith($haystack, $needle)
+    {
+        $length = strlen($needle);
+
+        return $length === 0 || substr($haystack, -$length) === $needle;
+    }
 }

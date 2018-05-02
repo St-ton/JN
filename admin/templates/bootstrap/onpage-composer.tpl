@@ -47,6 +47,7 @@
             kcfinderUrl: '{$PFAD_KCFINDER}',
             pageUrl:     '{$pageUrl}',
             pageId:      '{$pageId}',
+            fullPageUrl: '{$fullPageUrl}'
         });
     </script>
 </head>
@@ -105,7 +106,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{$shopUrl}/{$pageUrl}" id="btnClose" data-toggle="tooltip"
+                            <a href="{$fullPageUrl}" id="btnClose" data-toggle="tooltip"
                                data-placement="bottom" title="Editor schließen">
                                 <i class="fa fa-close"></i>
                             </a>
@@ -131,10 +132,11 @@
                         </a>
                         <div class="collapse" id="collapse-{$group->getName()}">
                             <div class="row">
-                                {foreach $group->getPortlets() as $portlet}
+                                {foreach $group->getPortlets() as $i => $portlet}
+                                    {if $i > 0 && $i % 3 === 0}</div><div class="row">{/if}
                                     <div class="col-xs-4">
                                         <a href="#" class="btn portletButton" draggable="true"
-                                           data-portlet-id="{$portlet->getId()}">
+                                           data-portlet-class="{$portlet->getClass()}">
                                             {$portlet->getButtonHtml()}
                                         </a>
                                     </div>
@@ -145,7 +147,14 @@
                 </div>
 
                 <div class="tab-pane" id="blueprints">
-                    <div class="list-group" id="blueprintList"></div>
+                    <div class="list-group">
+                        <div id="blueprintList"></div>
+                        <div class="list-group-item">
+                            <a href="#" class="blueprintButton btn" id="btnImportBlueprint">
+                                <i class="fa fa-upload"></i> <span>Importiere Vorlage</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="tab-pane" id="revisions">
@@ -376,9 +385,12 @@
 
     {*blueprint for blueprint entry*}
     <div class="list-group-item" style="display:none" id="blueprintBtnBlueprint">
-        <div class="btn-group btn-group-justified">
-            <a href="#" class="blueprintButton btn" draggable="true" data-blueprint-id="42">
-                <i class="fa fa-puzzle-piece"></i> <span>Vorlagen-Titel</span>
+        <a href="#" class="blueprintButton btn" draggable="true" data-blueprint-id="42">
+            <i class="fa fa-puzzle-piece"></i> <span>Vorlagen-Titel</span>
+        </a>
+        <div class="btn-group pull-right">
+            <a href="#" class="blueprintExport btn" data-blueprint-id="999">
+                <i class="fa fa-download"></i>
             </a>
             <a href="#" class="blueprintDelete btn" data-blueprint-id="999">
                 <i class="fa fa-times"></i>

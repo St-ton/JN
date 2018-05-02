@@ -411,6 +411,7 @@ class PortletInstance implements \JsonSerializable
     {
         $result = [
             'id'              => $this->portlet->getId(),
+            'class'           => $this->portlet->getClass(),
             'title'           => $this->portlet->getTitle(),
             'properties'      => $this->properties,
             'widthHeuristics' => $this->widthHeuristics,

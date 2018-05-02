@@ -1,12 +1,11 @@
-function Page(io, id, url)
+function Page(io, id, url, fullUrl)
 {
     bindProtoOnHandlers(this);
 
-    this.io      = io;
-    this.id      = id;
-    this.url     = url;
-
-    this.importReader = new FileReader();
+    this.io  = io;
+    this.id  = id;
+    this.url = url;
+    this.fullUrl = fullUrl;
 }
 
 Page.prototype = {
@@ -76,7 +75,7 @@ Page.prototype = {
 
     loadFromImport: function(loadCB)
     {
-        this.fileInput.change(this.onImportChosen.bind(this, loadCB)).click();
+        this.fileInput.off('change').change(this.onImportChosen.bind(this, loadCB)).click();
     },
 
     loadPageFromWebStorage: function()
@@ -96,6 +95,7 @@ Page.prototype = {
 
     onImportChosen: function(loadCB, e)
     {
+        this.importReader = new FileReader();
         this.importReader.onload = this.onReaderLoad.bind(this, loadCB);
         this.importReader.readAsText(e.target.files[0]);
     },
@@ -182,7 +182,7 @@ Page.prototype = {
     portletToJSON: function(portlet)
     {
         var data     = portlet.data('portlet');
-        var result   = {id: data.id, title: data.title, properties: data.properties, subareas: {}};
+        var result   = {"class": data.class, title: data.title, properties: data.properties, subareas: {}};
         var subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
 
         for(var i=0; i<subareas.length; i++) {

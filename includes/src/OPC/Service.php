@@ -79,6 +79,21 @@ class Service
     }
 
     /**
+     * @return Page[]
+     */
+    public function getPages()
+    {
+        $pageIds = $this->db->getAllPageIds();
+        $pages   = [];
+
+        foreach ($pageIds as $pageId) {
+            $pages[] = $this->getPage($pageId);
+        }
+
+        return $pages;
+    }
+
+    /**
      * @param string $id
      * @param int $revId
      * @return Page
@@ -103,7 +118,7 @@ class Service
     public function getCurPage()
     {
         if ($this->curPage === null) {
-            $curPageUrl                    = \Shop::getRequestUri();
+            $curPageUrl                    = '/' . ltrim(\Shop::getRequestUri(), '/');
             $curPageParameters             = \Shop::getParameters();
             $curPageParameters['kSprache'] = \Shop::getLanguage();
             $curPageId                     = md5(serialize($curPageParameters));
@@ -128,10 +143,7 @@ class Service
      */
     public function lockPage($id)
     {
-        $page = (new Page())
-            ->setId($id);
-
-        return $this->locker->lock($this->adminName, $page);
+        return $this->locker->lock($this->adminName, $this->getPage($id));
     }
 
     /**
@@ -207,20 +219,20 @@ class Service
      * @return PortletGroup[]
      * @throws \Exception
      */
-    public function getPortletGroups()
+    public function getPortletGroups($withInactive = false)
     {
-        return $this->db->getPortletGroups();
+        return $this->db->getPortletGroups($withInactive);
     }
 
     /**
      * @return Blueprint[]
      * @throws \Exception
      */
-    public function getBlueprints()
+    public function getBlueprints($withInactive = false)
     {
         $blueprints = [];
 
-        foreach ($this->db->getAllBlueprintIds() as $blueprintId) {
+        foreach ($this->db->getAllBlueprintIds($withInactive) as $blueprintId) {
             $blueprints[] = $this->getBlueprint($blueprintId);
         }
 
@@ -285,12 +297,13 @@ class Service
     }
 
     /**
-     * @param int $id
+     * @param string $class
      * @return PortletInstance
+     * @throws \Exception
      */
-    public function createPortletInstance($id)
+    public function createPortletInstance($class)
     {
-        return new PortletInstance($this->db->getPortlet($id));
+        return new PortletInstance($this->db->getPortlet($class));
     }
 
     /**
@@ -300,7 +313,7 @@ class Service
      */
     public function getPortletInstance($data)
     {
-        return $this->createPortletInstance($data['id'])
+        return $this->createPortletInstance($data['class'])
             ->deserialize($data);
     }
 
@@ -315,14 +328,14 @@ class Service
     }
 
     /**
-     * @param int $portletId
+     * @param string $portletClass
      * @param array $props
      * @return string
      * @throws \Exception
      */
-    public function getConfigPanelHtml($portletId, $props)
+    public function getConfigPanelHtml($portletClass, $props)
     {
-        return $this->getPortletInstance(['id' => $portletId, 'properties' => $props])->getConfigPanelHtml();
+        return $this->getPortletInstance(['class' => $portletClass, 'properties' => $props])->getConfigPanelHtml();
     }
 
     /**

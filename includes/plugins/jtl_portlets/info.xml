@@ -19,5 +19,11 @@
                 <Active>1</Active>
             </Portlet>
         </Portlets>
+        <Blueprints>
+            <Blueprint>
+                <Name>Zwei Tiere</Name>
+                <JSONFile>zwei_tiere.json</JSONFile>
+            </Blueprint>
+        </Blueprints>
     </Install>
 </jtlshop3plugin>

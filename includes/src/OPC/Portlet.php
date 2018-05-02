@@ -172,7 +172,7 @@ abstract class Portlet implements \JsonSerializable
 
         if (!empty($propDesc['collapse'])) {
             $res .= '<a title="more" class="pull-right" role="button" data-toggle="collapse"
-                       href="#collapseContainer' . $containerId . '" aria-expanded="false" aria-controls="collapseContainer' . $containerId . '">
+                       href="#collapseContainer' . $containerId . '"">
                         <i class="fa fa-gears"></i>
                     </a>';
         }
@@ -336,11 +336,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getPluginId()
     {
-        if ($this->plugin !== null) {
-            return 0;
-        }
-
-        return $this->plugin->kPlugin;
+        return $this->plugin === null ? 0 : $this->plugin->kPlugin;
     }
 
     /**
@@ -448,7 +444,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function setActive(bool $active) : Portlet
     {
-        $this->active = $active;
+        $this->active = (bool)$active;
 
         return $this;
     }

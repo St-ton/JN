@@ -265,6 +265,7 @@ define('PFAD_PLUGIN_TEMPLATE', 'template/');
 define('PFAD_PLUGIN_BOXEN', 'boxen/');
 define('PFAD_PLUGIN_WIDGET', 'widget/');
 define('PFAD_PLUGIN_PORTLETS', 'portlets/');
+define('PFAD_PLUGIN_BLUEPRINTS', 'blueprints/');
 define('PFAD_PLUGIN_EXPORTFORMAT', 'exportformat/');
 define('PFAD_PLUGIN_UNINSTALL', 'uninstall/');
 define('PLUGIN_INFO_FILE', 'info.xml');

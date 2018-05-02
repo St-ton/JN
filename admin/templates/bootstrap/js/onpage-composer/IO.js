@@ -54,9 +54,9 @@ IO.prototype = {
         };
     },
 
-    createPortlet: function(portletId, success, error)
+    createPortlet: function(portletClass, success, error)
     {
-        this.getPortletPreviewHtml({id: portletId}, success, error);
+        this.getPortletPreviewHtml({"class": portletClass}, success, error);
     },
 
 };

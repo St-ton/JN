@@ -25,9 +25,19 @@ class DB
         $this->shopDB = $shopDB;
     }
 
-    public function getAllBlueprintIds()
+    /**
+     * @param bool $withInactive
+     * @return int[]
+     */
+    public function getAllBlueprintIds($withInactive = false)
     {
-        $blueprintsDB = $this->shopDB->selectAll('topcblueprint', [], [], 'kBlueprint');
+        $blueprintsDB = $this->shopDB->selectAll(
+            'topcblueprint',
+            $withInactive ? [] : 'bActive',
+            $withInactive ? [] : 1,
+            'kBlueprint'
+        );
+
         $blueprintIds = [];
 
         foreach ($blueprintsDB as $blueprintDB) {
@@ -116,13 +126,13 @@ class DB
      * @return PortletGroup[]
      * @throws \Exception
      */
-    public function getPortletGroups()
+    public function getPortletGroups($withInactive = false)
     {
         $groupNames = $this->shopDB->query("SELECT DISTINCT(cGroup) FROM topcportlet ORDER BY cGroup ASC", 2);
         $groups     = [];
 
         foreach ($groupNames as $groupName) {
-            $groups[] = $this->getPortletGroup($groupName->cGroup);
+            $groups[] = $this->getPortletGroup($groupName->cGroup, $withInactive);
         }
 
         return $groups;
@@ -131,14 +141,22 @@ class DB
     /**
      * @param string $groupName
      * @return PortletGroup
+     * @throws \Exception
      */
-    public function getPortletGroup($groupName)
+    public function getPortletGroup($groupName, $withInactive = false)
     {
-        $portletsDB   = $this->shopDB->selectAll('topcportlet', 'cGroup', $groupName, 'kPortlet', 'kPortlet');
+        $portletsDB = $this->shopDB->selectAll(
+            'topcportlet',
+            $withInactive ? 'cGroup' : ['cGroup', 'bActive'],
+            $withInactive ? $groupName : [$groupName, 1],
+            'cClass',
+            'cTitle'
+        );
+
         $portletGroup = new PortletGroup($groupName);
 
         foreach ($portletsDB as $portletDB) {
-            $portlet = $this->getPortlet($portletDB->kPortlet);
+            $portlet = $this->getPortlet($portletDB->cClass);
             $portletGroup->addPortlet($portlet);
         }
 
@@ -147,34 +165,47 @@ class DB
 
     /**
      * @return Portlet[]
+     * @throws \Exception
      */
     public function getAllPortlets()
     {
         $portlets   = [];
-        $portletsDB = $this->shopDB->selectAll('topcportlet', [], [], 'kPortlet', 'kPortlet');
+        $portletsDB = $this->shopDB->selectAll('topcportlet', [], [], 'cClass', 'cTitle');
 
         foreach ($portletsDB as $portletDB) {
-            $portlets[] = $this->getPortlet($portletDB->kPortlet);
+            $portlets[] = $this->getPortlet($portletDB->cClass);
         }
 
         return $portlets;
     }
 
     /**
-     * @param int $id
+     * @return int
+     */
+    public function getPortletCount()
+    {
+        return (int)$this->shopDB->query("SELECT count(kPortlet) AS count FROM topcportlet", 1)->count;
+    }
+
+    /**
+     * @param string $class
      * @return Portlet
      * @throws \Exception
      */
-    public function getPortlet($id)
+    public function getPortlet($class)
     {
-        if ($id <= 0) {
-            throw new \Exception("The OPC portlet id '$id' is invalid.");
+        if ($class === '') {
+            throw new \Exception("The OPC portlet class name '$class' is invalid.");
         }
 
-        $portletDB = $this->shopDB->select('topcportlet', 'kPortlet', $id);
+        $portletDB = $this->shopDB->select('topcportlet', 'cClass', $class);
 
         if (!is_object($portletDB)) {
-            throw new \Exception("The OPC portlet with the id '$id' could not be found.");
+            throw new \Exception("The OPC portlet with class name '$class' could not be found.");
+        }
+
+        if ((int)$portletDB->bActive !== 1) {
+            throw new \Exception("The OPC portlet with class name '$class' is inactive.");
         }
 
         if ($portletDB->kPlugin > 0) {
@@ -186,8 +217,8 @@ class DB
         }
 
         /** @var Portlet $portlet */
-        $class   = '\\OPC\\Portlets\\' . $portletDB->cClass;
-        $portlet = new $class();
+        $fullClass = "\\OPC\\Portlets\\$class";
+        $portlet   = new $fullClass();
 
         return $portlet
             ->setId($portletDB->kPortlet)
@@ -195,7 +226,30 @@ class DB
             ->setTitle($portletDB->cTitle)
             ->setClass($portletDB->cClass)
             ->setGroup($portletDB->cGroup)
-            ->setActive($portletDB->bActive);
+            ->setActive((int)$portletDB->bActive === 1);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllPageIds()
+    {
+        $pageIds = [];
+        $pagesDB = $this->shopDB->selectAll('topcpage', [], [], 'cPageId', 'cPageUrl');
+
+        foreach ($pagesDB as $pageDB) {
+            $pageIds[] = $pageDB->cPageId;
+        }
+
+        return $pageIds;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPageCount()
+    {
+        return (int)$this->shopDB->query("SELECT count(kPage) AS count FROM topcpage", 1)->count;
     }
 
     /**
@@ -271,6 +325,8 @@ class DB
         ) {
             throw new \Exception('The OPC page data to be saved is incomplete or invalid.');
         }
+
+        $page->setLastModified(date('Y-m-d H:i:s'));
 
         $pageDB = (object)[
             'cPageId'       => $page->getId(),

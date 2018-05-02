@@ -2040,74 +2040,74 @@ class Artikel
                     $oVariationTMP_arr = array_merge($oVariationTMP_arr, $oVariationVaterTMP_arr);
                 }
             } elseif ($this->kVaterArtikel > 0) { //child?
+                $scoreJoin = $exportWorkaround
+                    ? ""
+                    : "LEFT JOIN (
+	                        SELECT kEigenschaftKombi, COALESCE(COUNT(teigenschaftkombiwert.kEigenschaftWert), 0) AS score
+                            FROM teigenschaftkombiwert
+                            WHERE kEigenschaftWert IN (
+                                SELECT kEigenschaftWert FROM teigenschaftkombiwert WHERE kEigenschaftKombi = {$this->kEigenschaftKombi}
+                           )
+                            GROUP BY teigenschaftkombiwert.kEigenschaftKombi
+                        ) ek ON ek.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi";
+
                 $baseQuery = "SELECT tartikel.kArtikel AS tartikel_kArtikel, tartikel.fLagerbestand AS tartikel_fLagerbestand,
                         tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation,
                         teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi,
                         teigenschaft.kArtikel, teigenschaftkombiwert.kEigenschaftWert, teigenschaft.cName,
                         teigenschaft.cWaehlbar, teigenschaft.cTyp, teigenschaft.nSort, " .
-                    $oSQLEigenschaft->cSELECT . " teigenschaftwert.cName AS cName_teigenschaftwert, " .
-                    $oSQLEigenschaftWert->cSELECT . " teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff,
+                        $oSQLEigenschaft->cSELECT . " teigenschaftwert.cName AS cName_teigenschaftwert, " .
+                        $oSQLEigenschaftWert->cSELECT . " teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff,
                         teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort,
                         teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit, teigenschaftwertpict.cType,
                         teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad,
                         teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
-                        FROM teigenschaftkombiwert
-                        JOIN tartikel
-                            ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                            AND tartikel.kVaterArtikel = " . (int)$this->kVaterArtikel . "
-                        LEFT JOIN teigenschaft
-                            ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
-                        LEFT JOIN teigenschaftwert
-                            ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-                        " . $oSQLEigenschaft->cJOIN . "
-                        " . $oSQLEigenschaftWert->cJOIN . "
-                        LEFT JOIN teigenschaftsichtbarkeit
-                            ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                            AND teigenschaftsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                        LEFT JOIN teigenschaftwertsichtbarkeit
-                            ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                            AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                        LEFT JOIN teigenschaftwertpict
-                            ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        LEFT JOIN teigenschaftwertaufpreis
-                            ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                            AND teigenschaftwertaufpreis.kKundengruppe = " . $kKundengruppe . "
-                        WHERE teigenschaftsichtbarkeit.kEigenschaft IS NULL
-                            AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL";
+                    FROM tartikel
+                    JOIN teigenschaftkombiwert
+	                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                    LEFT JOIN teigenschaft
+                        ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
+                    LEFT JOIN teigenschaftwert
+                        ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
+                    " . $oSQLEigenschaft->cJOIN . "
+                    " . $oSQLEigenschaftWert->cJOIN . "
+                    " . $scoreJoin . "
+                    LEFT JOIN teigenschaftsichtbarkeit
+                        ON teigenschaftsichtbarkeit.kEigenschaft = teigenschaftkombiwert.kEigenschaft
+	                    AND teigenschaftsichtbarkeit.kKundengruppe = {$kKundengruppe}
+                    LEFT JOIN teigenschaftwertsichtbarkeit
+                        ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
+	                    AND teigenschaftwertsichtbarkeit.kKundengruppe = {$kKundengruppe}
+                    LEFT JOIN teigenschaftwertpict
+                        ON teigenschaftwertpict.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
+                    LEFT JOIN teigenschaftwertaufpreis
+                        ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
+	                    AND teigenschaftwertaufpreis.kKundengruppe = {$kKundengruppe}
+                    WHERE tartikel.kVaterArtikel = " . (int)$this->kVaterArtikel . "
+	                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
+	                    AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL";
                 if ($exportWorkaround === false) {
                     $oVariationTMP_arr = Shop::DB()->query($baseQuery .
-                        " AND teigenschaftkombiwert.kEigenschaftWert NOT IN (
-                                    SELECT kEigenschaftWert FROM teigenschaftkombiwert WHERE kEigenschaftKombi = " . $this->kEigenschaftKombi .
-                        ")
-                            GROUP BY tartikel.kArtikel HAVING COUNT(tartikel.kArtikel) = 1 
-                            UNION ALL 
-                            SELECT tartikel.kArtikel AS tartikel_kArtikel, tartikel.fLagerbestand AS tartikel_fLagerbestand,
-                            tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation,
-                            teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi,
-                            teigenschaft.kArtikel, teigenschaftkombiwert.kEigenschaftWert, teigenschaft.cName,
-                            teigenschaft.cWaehlbar, teigenschaft.cTyp, teigenschaft.nSort, " .
-                        $oSQLEigenschaft->cSELECT . " teigenschaftwert.cName AS cName_teigenschaftwert, " .
-                        $oSQLEigenschaftWert->cSELECT . " teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff,
-                            teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort,
-                            teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit, teigenschaftwertpict.cType,
-                            teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad,
-                            teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
-                            
-                            FROM tartikel 
-                                JOIN teigenschaftkombiwert 
-                                    ON teigenschaftkombiwert.kEigenschaftKombi = tartikel.kEigenschaftKombi
-                                JOIN teigenschaftwert 
-                                    ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-                                JOIN teigenschaft 
-                                    ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
-                                LEFT JOIN teigenschaftwertpict 
-                                    ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                LEFT JOIN teigenschaftwertaufpreis
-                                    ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                    AND teigenschaftwertaufpreis.kKundengruppe = " . $kKundengruppe . "
-                                WHERE 
-                                    tartikel.kArtikel = " . $this->kArtikel . "
-                            ORDER BY nSort, cName, teigenschaftwert_nSort",
+                        " AND (teigenschaftkombiwert.kEigenschaftWert, ek.score) IN (
+                            SELECT pref.kEigenschaftWert, MAX(pref.score) score
+                            FROM (
+                                SELECT teigenschaftkombiwert.kEigenschaftKombi,
+                                    teigenschaftkombiwert.kEigenschaftWert
+                                    , COALESCE(COUNT(ek.kEigenschaftWert), 0) score
+                                FROM tartikel
+                                JOIN teigenschaftkombiwert
+                                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                                LEFT JOIN teigenschaftkombiwert ek ON ek.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                                    AND ek.kEigenschaftWert IN (
+                                        SELECT kEigenschaftWert FROM teigenschaftkombiwert WHERE kEigenschaftKombi = {$this->kEigenschaftKombi}
+                                    )
+                                WHERE tartikel.kVaterArtikel = " . (int)$this->kVaterArtikel . "
+                                GROUP BY teigenschaftkombiwert.kEigenschaftKombi, teigenschaftkombiwert.kEigenschaftWert
+                            ) pref
+                            GROUP BY pref.kEigenschaftWert
+                        )
+                        GROUP BY teigenschaftkombiwert.kEigenschaftWert
+                        ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort",
                         2
                     );
                 } else {

@@ -229,13 +229,19 @@
 
                     if (data != undefined){
                         var slick = $('#gallery').slick('getSlick'),
-                            index = slick.slideCount;
+                            index = slick.slideCount,
+                            exists = $('#gallery img[src="'+data.md.src+'"]').length !== 0;
 
-                        $('#gallery').slick('slickAdd', '<div><img src="'+data.md.src+'">');
-                        $('#gallery_preview').slick('slickAdd', '<div><img src="'+data.xs.src+'">');
+                        if (!exists) {
+                            $('#gallery').slick('slickAdd', '<div><img src="'+data.md.src+'">');
+                            $('#gallery_preview').slick('slickAdd', '<div><img src="'+data.xs.src+'">');
+                            //$('#gallery').slick('init');
+                        } else {
+                            index = $('#gallery div.slick-slide').not('.slick-cloned').find('img[src="'+data.md.src+'"]').parent().data('slick-index');
+                        }
+
                         $('#gallery').slick('slickGoTo', index);
                         $('#gallery_preview').slick('slickGoTo', index);
-                        $('#gallery').slick('init');
                     }
                 }
 

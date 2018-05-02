@@ -85,6 +85,33 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    final public function getStyleString()
+    {
+        $styleString = '';
+
+        if (!empty($this->properties['style']) && is_array($this->properties['style'])) {
+            foreach ($this->properties['style'] as $name => $value) {
+                Shop::dbg($name, true);
+                if (trim($value) !== '') {
+                    if (stripos($name, 'margin-') !== false ||
+                        stripos($name, 'padding-') !== false ||
+                        stripos($name, '-width') !== false ||
+                        stripos($name, '-height') !== false
+                    ) {
+                        $styleString .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . 'px;';
+                    } else {
+                        $styleString .= $name . ':' . htmlspecialchars($value, ENT_QUOTES) . ';';
+                    }
+                }
+            }
+        }
+
+        return $styleString !== '' ? 'style="' . $styleString . '"' : '';
+    }
+
+    /**
      * @param PortletInstance $instance
      * @return string
      */
@@ -157,6 +184,7 @@ abstract class Portlet implements \JsonSerializable
         $res   = '';
         $label = $propDesc['label'] ?? $propname;
         $type  = $propDesc['type'] ?? 'text';
+        $class = !empty($propDesc['class']) ? ' '.$propDesc['class'] : '';
 
         $prop = $instance->hasProperty($propname)
             ? $instance->getProperty($propname)
@@ -164,6 +192,7 @@ abstract class Portlet implements \JsonSerializable
 
 
         $displ = 12;
+        //$res .= !empty($propDesc['dspl_row_open']) ? "<div class='col-xs-6'><div class='row'>" : "";
         if (!empty($propDesc['dspl_width'])) {
             $displ = round(12 * ($propDesc['dspl_width'] * 0.01));
         }
@@ -178,39 +207,35 @@ abstract class Portlet implements \JsonSerializable
         }
 
         switch ($type) {
-            case 'text':
-                $res .= "<input type='text' class='form-control' name='$propname' value='$prop'"
-                    . " id='config-$propname'>";
-                break;
             case 'number':
-                $res .= "<input type='number' class='form-control' name='$propname' value='$prop'"
+                $res .= "<input type='number' class='form-control$class' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
                 break;
             case 'email':
-                $res .= "<input type='email' class='form-control' name='$propname' value='$prop'"
+                $res .= "<input type='email' class='form-control$class' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
                 break;
             case 'date':
-                $res .= "<input type='date' class='form-control' name='$propname' value='$prop'"
+                $res .= "<input type='date' class='form-control$class' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
                 break;
             case 'password':
-                $res .= "<input type='password' class='form-control' name='$propname' value='$prop'"
+                $res .= "<input type='password' class='form-control$class' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
                 break;
             case 'checkbox':
-                $res .= "<div class='checkbox'><label><input type='checkbox' name='" . $propname . "' value='1'";
+                $res .= "<div class='checkbox$class'><label><input type='checkbox' name='" . $propname . "' value='1'";
                 $res .= $prop === "1" ? " checked" : "";
                 $res .= ">$propname</label></div>";
                 break;
             case 'radio':
                 foreach ($propDesc['options'] as $option) {
                     $selected = $prop === $option ? " checked" : "";
-                    $res     .= "<div class='radio'><label><input type='radio' name='$propname' value='$option' $selected>$option</label></div>";
+                    $res     .= "<div class='radio$class'><label><input type='radio' name='$propname' value='$option' $selected>$option</label></div>";
                 }
                 break;
             case 'select':
-                $res .= "<select class='form-control' name='$propname'>";
+                $res .= "<select class='form-control$class' name='$propname'>";
 
                 foreach ($propDesc['options'] as $option) {
                     $selected = $prop === $option ? " selected" : "";
@@ -229,7 +254,7 @@ abstract class Portlet implements \JsonSerializable
                     . "</button>";
                 break;
             case 'richtext':
-                $res .= "<textarea name='text' id='textarea-$propname' class='form-control'>"
+                $res .= "<textarea name='text' id='textarea-$propname' class='form-control$class'>"
                     . htmlspecialchars($prop)
                     . "</textarea>"
                     . "<script>CKEDITOR.replace('textarea-$propname', {baseFloatZIndex: 9000});"
@@ -238,14 +263,20 @@ abstract class Portlet implements \JsonSerializable
                     . "})</script>";
                 break;
             case 'color':
-                $res .= "  <div id='$propname' class='input-group colorpicker-component'>
+                $res .= "  <div id='$propname' class='input-group colorpicker-component$class'>
                                 <input class='form-control' name='$propname' value='$prop'>
                                 <span class='input-group-addon'><i></i></span></div>"
                     . "<script>$('#$propname').colorpicker({format: 'rgba'});</script>";
                 break;
+            case 'text':
+            default:
+                $res .= "<input type='text' class='form-control$class' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
+                break;
         }
 
         $res .= !empty($containerId) ? "</div>" : "</div></div>";
+        //$res .= !empty($propDesc['dspl_row_close']) ? "</div></div>" : "";
 
         return $res;
     }
@@ -304,16 +335,130 @@ abstract class Portlet implements \JsonSerializable
     public function getStylesPropertyDesc()
     {
         return [
-            'font-size' => [
-                'label'   => 'Schriftgröße',
-                'type'    => 'text',
-                'default' => '',
-            ],
             'color' => [
                 'label'   => 'Schriftfarbe',
                 'type'    => 'color',
                 'default' => '',
             ],
+            'background-color' => [
+                'label'   => 'Hintergrundfarbe',
+                'type'    => 'color',
+                'default' => '',
+            ],
+            'font-size' => [
+                'label'   => 'Schriftgröße',
+                'default' => '',
+            ],
+            'margin-top' => [
+                'label' => 'margin-top',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_width' => 25
+            ],
+            'margin-right' => [
+                'label' => 'margin-right',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_width' => 25
+            ],
+            'margin-bottom' => [
+                'label' => 'margin-bottom',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_width' => 25
+            ],
+            'margin-left' => [
+                'label' => 'margin-left',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_width' => 25
+            ],
+            'border-top' => [
+                'label' => 'border-top',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_width' => 25
+            ],
+            'border-right' => [
+                'label' => 'border-right',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_width' => 25
+            ],
+            'border-bottom' => [
+                'label' => 'border-bottom',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_row_close'=> true,
+                'dspl_width' => 25
+            ],
+            'border-left' => [
+                'label' => 'border-left',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_width' => 25
+            ],
+            'padding-top' => [
+                'label' => 'padding-top',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_width' => 25
+            ],
+            'padding-right' => [
+                'label' => 'padding-right',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_width' => 25
+            ],
+            'padding-bottom' => [
+                'label' => 'padding-bottom',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_row_close'=> true,
+                'dspl_width' => 25
+            ],
+            'padding-left' => [
+                'label' => 'padding-left',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_width' => 25
+            ],
+            'border-style' => [
+                'label' => 'border-style',
+                'type' => 'select',
+                'options' => [
+                    'none',
+                    'hidden',
+                    'dotted',
+                    'dashed',
+                    'solid',
+                    'double',
+                    'groove',
+                    'ridge',
+                    'inset',
+                    'outset',
+                    'initial',
+                    'inherit'
+                ],
+                'dspl_width' => 50
+            ],
+            'border-color' => [
+                'label' => 'border-color',
+                'type'=> 'color',
+                'dspl_width' => 50
+            ]
         ];
     }
 

@@ -15,7 +15,7 @@ class Heading extends \OPC\Portlet
         $attributes    = $instance->getAttributeString();
         $dataAttribute = $instance->getDataAttributeString();
 
-        return "<h$level $attributes $dataAttribute>$text</h$level>";
+        return "<h$level $attributes $dataAttribute >$text</h$level>";
     }
 
     public function getFinalHtml($instance)

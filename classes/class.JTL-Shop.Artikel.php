@@ -2043,7 +2043,7 @@ class Artikel
                 $scoreJoin = $exportWorkaround
                     ? ""
                     : "LEFT JOIN (
-	                        SELECT kEigenschaftKombi, COALESCE(COUNT(teigenschaftkombiwert.kEigenschaftWert), 0) AS score
+	                        SELECT kEigenschaftKombi, COUNT(teigenschaftkombiwert.kEigenschaftWert) AS score
                             FROM teigenschaftkombiwert
                             WHERE kEigenschaftWert IN (
                                 SELECT kEigenschaftWert FROM teigenschaftkombiwert WHERE kEigenschaftKombi = {$this->kEigenschaftKombi}
@@ -2061,7 +2061,8 @@ class Artikel
                         teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort,
                         teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit, teigenschaftwertpict.cType,
                         teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad,
-                        teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
+                        teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis,
+                        IF(COALESCE(ek.score, 0) < COUNT(teigenschaftkombiwert.kEigenschaft), 1, 0) notExists
                     FROM tartikel
                     JOIN teigenschaftkombiwert
 	                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
@@ -2088,12 +2089,12 @@ class Artikel
 	                    AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL";
                 if ($exportWorkaround === false) {
                     $oVariationTMP_arr = Shop::DB()->query($baseQuery .
-                        " AND (teigenschaftkombiwert.kEigenschaftWert, ek.score) IN (
+                        " AND (teigenschaftkombiwert.kEigenschaftWert, COALESCE(ek.score, 0)) IN (
                             SELECT pref.kEigenschaftWert, MAX(pref.score) score
                             FROM (
                                 SELECT teigenschaftkombiwert.kEigenschaftKombi,
                                     teigenschaftkombiwert.kEigenschaftWert
-                                    , COALESCE(COUNT(ek.kEigenschaftWert), 0) score
+                                    , COUNT(ek.kEigenschaftWert) score
                                 FROM tartikel
                                 JOIN teigenschaftkombiwert
                                     ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
@@ -2269,6 +2270,7 @@ class Artikel
                     $value->fLagerbestand                    = $oVariationTMP->fLagerbestand;
                     $value->fPackeinheit                     = $oVariationTMP->fPackeinheit;
                     $value->inStock                          = true;
+                    $value->notExists                        = isset($oVariationTMP->notExists) && (int)$oVariationTMP->notExists > 0;
                     $this->Variationen[$nZaehler]->Werte[$i] = $value;
 
                     if (isset($oVariationTMP->fVPEWert) && $oVariationTMP->fVPEWert > 0) {

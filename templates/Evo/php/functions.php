@@ -24,7 +24,8 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
        ->registerPlugin('function', 'hasOnlyListableVariations', 'hasOnlyListableVariations')
        ->registerPlugin('modifier', 'has_trans', 'has_translation')
        ->registerPlugin('modifier', 'trans', 'get_translation')
-       ->registerPlugin('function', 'get_product_list', 'get_product_list');
+       ->registerPlugin('function', 'get_product_list', 'get_product_list')
+       ->registerPlugin('function', 'getUnavailableVarkombiDependencies', 'getUnavailableVarkombiDependencies') ;
 
 
 /**
@@ -107,6 +108,32 @@ function get_product_list($params, &$smarty)
     if (isset($params['bReturn'])) {
         return $oArtikel_arr;
     }
+}
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return array
+ */
+function getUnavailableVarkombiDependencies($params, &$smarty)
+{
+    /** @var Artikel $oArticle */
+    $oArticle = isset($params['article']) ? $params['article'] : null;
+
+    if ($oArticle !== null && isset($oArticle->oVariationKombi_arr)) {
+        $varCombinations = [];
+        foreach ($oArticle->oVariationKombi_arr as $variationCombi) {
+            $varCombinations[$variationCombi->kEigenschaft] = $variationCombi->kEigenschaftWert;
+        }
+        $result = $oArticle->getVariationsBySelection($varCombinations, true);
+        if (isset($params['assign'])) {
+            $smarty->assign($params['assign'], $result);
+        }
+
+        return $result;
+    }
+
+    return [];
 }
 
 /**

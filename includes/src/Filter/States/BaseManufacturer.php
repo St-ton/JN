@@ -151,12 +151,12 @@ class BaseManufacturer extends AbstractFilter
             : null
         );
 
-        $state->joins[] = (new FilterJoin())
+        $state->addJoin((new FilterJoin())
             ->setComment('JOIN from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('thersteller')
             ->setOn('tartikel.kHersteller = thersteller.kHersteller')
-            ->setOrigin(__CLASS__);
+            ->setOrigin(__CLASS__));
 
         $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
             [
@@ -165,9 +165,9 @@ class BaseManufacturer extends AbstractFilter
                 'thersteller.nSortNr',
                 'tartikel.kArtikel'
             ],
-            $state->joins,
-            $state->conditions,
-            $state->having
+            $state->getJoins(),
+            $state->getConditions(),
+            $state->getHaving()
         );
         $manufacturers    = \Shop::Container()->getDB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl

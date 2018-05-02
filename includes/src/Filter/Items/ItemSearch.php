@@ -422,33 +422,33 @@ class ItemSearch extends AbstractFilter
             : '';
         $state  = $this->productFilter->getCurrentStateData();
 
-        $state->joins[] = (new FilterJoin())
+        $state->addJoin((new FilterJoin())
             ->setComment('JOIN1 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcachetreffer')
             ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
-            ->setOrigin(__CLASS__);
-        $state->joins[] = (new FilterJoin())
+            ->setOrigin(__CLASS__));
+        $state->addJoin((new FilterJoin())
             ->setComment('JOIN2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcache')
             ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
-            ->setOrigin(__CLASS__);
-        $state->joins[] = (new FilterJoin())
+            ->setOrigin(__CLASS__));
+        $state->addJoin((new FilterJoin())
             ->setComment('JOIN3 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchanfrage')
             ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
                         AND tsuchanfrage.kSprache = ' . $this->getLanguageID())
-            ->setOrigin(__CLASS__);
+            ->setOrigin(__CLASS__));
 
-        $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
+        $state->addCondition('tsuchanfrage.nAktiv = 1');
 
         $query         = $this->productFilter->getFilterSQL()->getBaseQuery(
             ['tsuchanfrage.kSuchanfrage', 'tsuchcache.kSuchCache', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
-            $state->joins,
-            $state->conditions,
-            $state->having,
+            $state->getJoins(),
+            $state->getConditions(),
+            $state->getHaving(),
             null,
             '',
             ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']

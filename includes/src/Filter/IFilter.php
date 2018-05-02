@@ -273,10 +273,25 @@ interface IFilter
     /**
      * set the filter's class name
      *
-     * @param string $className
+     * @param string $name
      * @return $this
      */
-    public function setClassName($className): IFilter;
+    public function setClassName($name): IFilter;
+
+    /**
+     * get the filter's nice name without namespace
+     *
+     * @return string
+     */
+    public function getNiceName();
+
+    /**
+     * set the filter's class name
+     *
+     * @param string $name
+     * @return $this
+     */
+    public function setNiceName($name): IFilter;
 
     /**
      * @return int

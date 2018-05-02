@@ -6,6 +6,7 @@
 
 namespace Filter;
 
+use function Functional\every;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -243,7 +244,7 @@ class ProductFilterSearchResults
      * @param int[] $keys
      * @return $this
      */
-    public function setProductKeys($keys)
+    public function setProductKeys(array $keys)
     {
         $this->productKeys = $keys;
 
@@ -272,7 +273,7 @@ class ProductFilterSearchResults
     /**
      * @return int
      */
-    public function getProductCount()
+    public function getProductCount(): int
     {
         return $this->productCount;
     }
@@ -291,7 +292,7 @@ class ProductFilterSearchResults
     /**
      * @return int
      */
-    public function getVisibleProductCount()
+    public function getVisibleProductCount(): int
     {
         return $this->visibileProductCount;
     }
@@ -300,7 +301,7 @@ class ProductFilterSearchResults
      * @param int $count
      * @return $this
      */
-    public function setVisibleProductCount($count)
+    public function setVisibleProductCount(int $count): self
     {
         $this->visibileProductCount = $count;
 
@@ -310,7 +311,7 @@ class ProductFilterSearchResults
     /**
      * @return int
      */
-    public function getOffsetStart()
+    public function getOffsetStart(): int
     {
         return $this->offsetStart;
     }
@@ -329,7 +330,7 @@ class ProductFilterSearchResults
     /**
      * @return int
      */
-    public function getOffsetEnd()
+    public function getOffsetEnd(): int
     {
         return $this->offsetEnd;
     }
@@ -348,7 +349,7 @@ class ProductFilterSearchResults
     /**
      * @return \stdClass
      */
-    public function getPages()
+    public function getPages(): \stdClass
     {
         return $this->pages;
     }
@@ -519,7 +520,7 @@ class ProductFilterSearchResults
     /**
      * @return FilterOption[]
      */
-    public function getCategoryFilterOptions()
+    public function getCategoryFilterOptions(): array
     {
         return $this->categoryFilterOptions;
     }
@@ -652,7 +653,7 @@ class ProductFilterSearchResults
     /**
      * @return array
      */
-    public function getSortingOptions()
+    public function getSortingOptions(): array
     {
         return $this->sortingOptions;
     }
@@ -710,9 +711,9 @@ class ProductFilterSearchResults
      * @param ProductFilter  $productFilter
      * @param null|\Kategorie $currentCategory
      * @param bool           $selectionWizard
-     * @return mixed
+     * @return $this
      */
-    public function setFilterOptions($productFilter, $currentCategory = null, $selectionWizard = false)
+    public function setFilterOptions($productFilter, $currentCategory = null, $selectionWizard = false): self
     {
         // @todo: make option
         $hideActiveOnly          = true;
@@ -829,6 +830,13 @@ class ProductFilterSearchResults
                     $af->hide();
                 }
             }
+            if (every($attribtuteFilterOptions, function (FilterOption $item) {
+                return $item->getVisibility() === AbstractFilter::SHOW_NEVER;
+            })) {
+                // hide the whole attribute filter collection if every filter consists of only active options
+                $productFilter->getAttributeFilterCollection()->hide();
+            }
+
         }
         $productFilter->getAttributeFilterCollection()
                       ->setFilterCollection($attribtuteFilterOptions);

@@ -117,17 +117,16 @@ class ItemRating extends AbstractFilter
         }
         $options = [];
         $state   = $this->productFilter->getCurrentStateData();
-
-        $state->joins[] = $this->getSQLJoin();
+        $state->addJoin($this->getSQLJoin());
 
         $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
             [
                 'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
                 'tartikel.kArtikel'
             ],
-            $state->joins,
-            $state->conditions,
-            $state->having
+            $state->getJoins(),
+            $state->getConditions(),
+            $state->getHaving()
         );
         $res              = \Shop::Container()->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl

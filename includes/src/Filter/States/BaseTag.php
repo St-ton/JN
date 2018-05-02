@@ -143,30 +143,31 @@ class BaseTag extends AbstractFilter
             ? $this->getClassName()
             : null
         );
-
-        $state->joins[] = (new FilterJoin())
+        $state->addJoin((new FilterJoin())
             ->setComment('join1 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('ttagartikel')
             ->setOn('ttagartikel.kArtikel = tartikel.kArtikel')
-            ->setOrigin(__CLASS__);
-        $state->joins[] = (new FilterJoin())
+            ->setOrigin(__CLASS__));
+        $state->addJoin((new FilterJoin())
             ->setComment('join2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('ttag')
             ->setOn('ttagartikel.kTag = ttag.kTag')
-            ->setOrigin(__CLASS__);
+            ->setOrigin(__CLASS__));
         // remove duplicate joins
-        foreach ($state->joins as $i => $stateJoin) {
+        $joins = $state->getJoins();
+        foreach ($joins as $i => $stateJoin) {
             /** @var FilterJoin $stateJoin */
             if (!in_array($stateJoin->getTable(), $joinedTables, true)) {
                 $joinedTables[] = $stateJoin->getTable();
             } else {
-                unset($state->joins[$i]);
+                unset($joins[$i]);
             }
         }
-        $state->conditions[] = 'ttag.nAktiv = 1';
-        $state->conditions[] = 'ttag.kSprache = ' . $this->getLanguageID();
+        $state->setJoins($joins);
+        $state->addCondition('ttag.nAktiv = 1');
+        $state->addCondition('ttag.kSprache = ' . $this->getLanguageID());
         $query               = $this->productFilter->getFilterSQL()->getBaseQuery(
             [
                 'ttag.kTag',
@@ -174,9 +175,9 @@ class BaseTag extends AbstractFilter
                 'ttagartikel.nAnzahlTagging',
                 'tartikel.kArtikel'
             ],
-            $state->joins,
-            $state->conditions,
-            $state->having,
+            $state->getJoins(),
+            $state->getConditions(),
+            $state->getHaving(),
             null,
             '',
             ['ttag.kTag', 'tartikel.kArtikel']

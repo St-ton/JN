@@ -123,6 +123,11 @@ abstract class AbstractFilter implements IFilter
     protected $className = '';
 
     /**
+     * @var string
+     */
+    protected $niceName = '';
+
+    /**
      * @var int
      */
     protected $inputType = self::INPUT_SELECT;
@@ -592,6 +597,25 @@ abstract class AbstractFilter implements IFilter
     public function setClassName($className): IFilter
     {
         $this->className = $className;
+        $this->setNiceName(basename(str_replace('\\', '/', $className)));
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getNiceName()
+    {
+        return $this->niceName;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNiceName($name): IFilter
+    {
+        $this->niceName = $name;
 
         return $this;
     }

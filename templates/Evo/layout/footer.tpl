@@ -48,7 +48,7 @@
                     {foreach name=bottomBoxes from=$arrBoxBottom item=box}
                         {if ($box.obj->kBoxvorlage != 0 && $box.obj->anzeigen === 'Y' )
                         || ($box.obj->kBoxvorlage == 0 && !empty($box.obj->oContainer_arr))}
-                            <div class="{block name="footer-boxes-class"}col-xs-6 col-md-3{/block}">
+                            <div class="{block name="footer-boxes-class"}col-xs-12 col-sm-6 col-md-3{/block}">
                                 {if isset($box.obj) && isset($box.tpl)}
                                     {assign var=oBox value=$box.obj}
                                     {include file=$box.tpl}

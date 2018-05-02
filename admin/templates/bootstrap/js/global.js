@@ -393,6 +393,15 @@ function switchCouponTooltipVisibility() {
     });
 }
 
+function tristateInit() {
+    $("input[type=checkbox].tristate").click(tristate(this));
+}
+
+function tristate(cb) {
+    if (cb.readOnly) cb.checked=cb.readOnly=false;
+    else if (!cb.checked) cb.readOnly=cb.indeterminate=true;
+}
+
 /**
  * document ready
  */
@@ -509,6 +518,12 @@ $(document).ready(function () {
     // Massenerstellung von Kupons de-/aktivieren
     $("#couponCreation").change(function () {
         massCreationCoupons();
+    });
+
+
+    $("input[type=checkbox].tristate").prop("indeterminate", true).prop("readonly", true);
+    $("input[type=checkbox].tristate").change(function(e){
+        tristate(e.target);
     });
 });
 

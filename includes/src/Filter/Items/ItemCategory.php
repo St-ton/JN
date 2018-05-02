@@ -93,7 +93,11 @@ class ItemCategory extends BaseCategory
             return $this->options;
         }
         $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
-        $state              = $this->productFilter->getCurrentStateData();
+        $state              = $this->productFilter->getCurrentStateData(
+            $this->getType() === AbstractFilter::FILTER_TYPE_OR
+                ? $this->getClassName()
+                : null
+        );
         $options            = [];
         // Kategoriefilter anzeige
         if ($categoryFilterType === 'HF' && (!$this->productFilter->hasCategory())) {

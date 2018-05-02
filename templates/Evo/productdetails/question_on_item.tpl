@@ -22,8 +22,8 @@
                             <label for="salutation" class="control-label">{lang key="salutation" section="account data"}</label>
                             <select name="anrede" id="salutation" class="form-control">
                                 <option value="" disabled selected>{lang key="salutation" section="account data"}</option>
-                                <option value="w" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'w'}selected="selected"{/if}>{$Anrede_w}</option>
-                                <option value="m" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'm'}selected="selected"{/if}>{$Anrede_m}</option>
+                                <option value="w" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
+                                <option value="m" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                             </select>
                         </div>
                     </div>

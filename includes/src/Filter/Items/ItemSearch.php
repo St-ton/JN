@@ -412,105 +412,106 @@ class ItemSearch extends AbstractFilter
             return $this->options;
         }
         $options = [];
-        if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
-            $this->generateSearchCaches();
-            $nLimit = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl'])
-                && ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
-                ? ' LIMIT ' . $limit
-                : '';
-            $state  = $this->productFilter->getCurrentStateData();
+        if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] === 'N') {
+            return $options;
+        }
+        $this->generateSearchCaches();
+        $nLimit = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl'])
+            && ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
+            ? ' LIMIT ' . $limit
+            : '';
+        $state  = $this->productFilter->getCurrentStateData();
 
-            $state->joins[] = (new FilterJoin())
-                ->setComment('JOIN1 from ' . __METHOD__)
-                ->setType('JOIN')
-                ->setTable('tsuchcachetreffer')
-                ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
-                ->setOrigin(__CLASS__);
-            $state->joins[] = (new FilterJoin())
-                ->setComment('JOIN2 from ' . __METHOD__)
-                ->setType('JOIN')
-                ->setTable('tsuchcache')
-                ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
-                ->setOrigin(__CLASS__);
-            $state->joins[] = (new FilterJoin())
-                ->setComment('JOIN3 from ' . __METHOD__)
-                ->setType('JOIN')
-                ->setTable('tsuchanfrage')
-                ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
-                            AND tsuchanfrage.kSprache = ' . $this->getLanguageID())
-                ->setOrigin(__CLASS__);
+        $state->joins[] = (new FilterJoin())
+            ->setComment('JOIN1 from ' . __METHOD__)
+            ->setType('JOIN')
+            ->setTable('tsuchcachetreffer')
+            ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
+            ->setOrigin(__CLASS__);
+        $state->joins[] = (new FilterJoin())
+            ->setComment('JOIN2 from ' . __METHOD__)
+            ->setType('JOIN')
+            ->setTable('tsuchcache')
+            ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
+            ->setOrigin(__CLASS__);
+        $state->joins[] = (new FilterJoin())
+            ->setComment('JOIN3 from ' . __METHOD__)
+            ->setType('JOIN')
+            ->setTable('tsuchanfrage')
+            ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
+                        AND tsuchanfrage.kSprache = ' . $this->getLanguageID())
+            ->setOrigin(__CLASS__);
 
-            $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
+        $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
 
-            $query         = $this->productFilter->getFilterSQL()->getBaseQuery(
-                ['tsuchanfrage.kSuchanfrage', 'tsuchcache.kSuchCache', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
-                $state->joins,
-                $state->conditions,
-                $state->having,
-                null,
-                '',
-                ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
-            );
-            $searchFilters = \Shop::Container()->getDB()->query(
-                'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.kSuchCache, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
-                    FROM (' . $query . ') AS ssMerkmal
-                        GROUP BY ssMerkmal.kSuchanfrage
-                        ORDER BY ssMerkmal.cSuche' . $nLimit,
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            $searchQueries = [];
-            if ($this->productFilter->hasSearch()) {
-                $searchQueries[] = $this->productFilter->getSearch()->getValue();
-            }
-            if ($this->productFilter->hasSearchFilter()) {
-                foreach ($this->productFilter->getSearchFilter() as $oSuchFilter) {
-                    if ($oSuchFilter->getValue() > 0) {
-                        $searchQueries[] = (int)$oSuchFilter->getValue();
-                    }
+        $query         = $this->productFilter->getFilterSQL()->getBaseQuery(
+            ['tsuchanfrage.kSuchanfrage', 'tsuchcache.kSuchCache', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
+            $state->joins,
+            $state->conditions,
+            $state->having,
+            null,
+            '',
+            ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
+        );
+        $searchFilters = \Shop::Container()->getDB()->query(
+            'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.kSuchCache, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
+                FROM (' . $query . ') AS ssMerkmal
+                    GROUP BY ssMerkmal.kSuchanfrage
+                    ORDER BY ssMerkmal.cSuche' . $nLimit,
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $searchQueries = [];
+        if ($this->productFilter->hasSearch()) {
+            $searchQueries[] = $this->productFilter->getSearch()->getValue();
+        }
+        if ($this->productFilter->hasSearchFilter()) {
+            foreach ($this->productFilter->getSearchFilter() as $oSuchFilter) {
+                if ($oSuchFilter->getValue() > 0) {
+                    $searchQueries[] = (int)$oSuchFilter->getValue();
                 }
             }
-            // entferne bereits gesetzte Filter aus dem Ergebnis-Array
-            foreach ($searchFilters as $j => $searchFilter) {
-                foreach ($searchQueries as $searchQuery) {
-                    if ($searchFilter->kSuchanfrage === $searchQuery) {
-                        unset($searchFilters[$j]);
-                        break;
-                    }
+        }
+        // entferne bereits gesetzte Filter aus dem Ergebnis-Array
+        foreach ($searchFilters as $j => $searchFilter) {
+            foreach ($searchQueries as $searchQuery) {
+                if ($searchFilter->kSuchanfrage === $searchQuery) {
+                    unset($searchFilters[$j]);
+                    break;
                 }
             }
-            if (is_array($searchFilters)) {
-                $searchFilters = array_merge($searchFilters);
-            }
-            $additionalFilter = new self($this->productFilter);
-            $nCount           = count($searchFilters);
-            $nPrioStep        = $nCount > 0
-                ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
-                : 0;
-            $activeValues     = array_map(function($f) { // @todo: create method for this logic
-                /** @var ItemSearch $f */
-                return $f->getValue();
-            }, $this->productFilter->getSearchFilter());
+        }
+        if (is_array($searchFilters)) {
+            $searchFilters = array_merge($searchFilters);
+        }
+        $additionalFilter = new self($this->productFilter);
+        $nCount           = count($searchFilters);
+        $nPrioStep        = $nCount > 0
+            ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
+            : 0;
+        $activeValues     = array_map(function($f) { // @todo: create method for this logic
+            /** @var ItemSearch $f */
+            return $f->getValue();
+        }, $this->productFilter->getSearchFilter());
 
-            foreach ($searchFilters as $searchFilter) {
-                $class = rand(1, 10);
-                if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
-                    $class = round(($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
-                }
-                $options[] = (new FilterOption())
-                    ->setURL($this->productFilter->getFilterURL()->getURL(
-                        $additionalFilter->init((int)$searchFilter->kSuchanfrage)
-                    ))
-                    ->setData('cSuche', $searchFilter->cSuche)
-                    ->setData('kSuchanfrage', $searchFilter->kSuchanfrage)
-                    ->setIsActive(in_array((int)$searchFilter->kSuchanfrage, $activeValues, true))
-                    ->setType($this->getType())
-                    ->setClassName($this->getClassName())
-                    ->setClass($class)
-                    ->setParam($this->getUrlParam())
-                    ->setName($searchFilter->cSuche)
-                    ->setValue((int)$searchFilter->kSuchanfrage)
-                    ->setCount($searchFilter->nAnzahl);
+        foreach ($searchFilters as $searchFilter) {
+            $class = rand(1, 10);
+            if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
+                $class = round(($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
             }
+            $options[] = (new FilterOption())
+                ->setURL($this->productFilter->getFilterURL()->getURL(
+                    $additionalFilter->init((int)$searchFilter->kSuchanfrage)
+                ))
+                ->setData('cSuche', $searchFilter->cSuche)
+                ->setData('kSuchanfrage', $searchFilter->kSuchanfrage)
+                ->setIsActive(in_array((int)$searchFilter->kSuchanfrage, $activeValues, true))
+                ->setType($this->getType())
+                ->setClassName($this->getClassName())
+                ->setClass($class)
+                ->setParam($this->getUrlParam())
+                ->setName($searchFilter->cSuche)
+                ->setValue((int)$searchFilter->kSuchanfrage)
+                ->setCount($searchFilter->nAnzahl);
         }
         $this->options = $options;
 

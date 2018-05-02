@@ -143,69 +143,69 @@ class BaseManufacturer extends AbstractFilter
             return $this->options;
         }
         $options = [];
-        if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
-            $state = $this->productFilter->getCurrentStateData($this->getType() === AbstractFilter::FILTER_TYPE_OR
-                ? $this->getClassName()
-                : null
+        if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] === 'N') {
+            return $options;
+        }
+        $state = $this->productFilter->getCurrentStateData($this->getType() === AbstractFilter::FILTER_TYPE_OR
+            ? $this->getClassName()
+            : null
+        );
+
+        $state->joins[] = (new FilterJoin())
+            ->setComment('JOIN from ' . __METHOD__)
+            ->setType('JOIN')
+            ->setTable('thersteller')
+            ->setOn('tartikel.kHersteller = thersteller.kHersteller')
+            ->setOrigin(__CLASS__);
+
+        $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
+            [
+                'thersteller.kHersteller',
+                'thersteller.cName',
+                'thersteller.nSortNr',
+                'tartikel.kArtikel'
+            ],
+            $state->joins,
+            $state->conditions,
+            $state->having
+        );
+        $manufacturers    = \Shop::Container()->getDB()->query(
+            "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
+                FROM (" .
+            $query .
+            ") AS ssMerkmal
+                    LEFT JOIN tseo 
+                        ON tseo.kKey = ssMerkmal.kHersteller
+                        AND tseo.cKey = 'kHersteller'
+                        AND tseo.kSprache = " . $this->getLanguageID() . "
+                    GROUP BY ssMerkmal.kHersteller
+                    ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $additionalFilter = new ItemManufacturer($this->productFilter);
+        foreach ($manufacturers as $manufacturer) {
+            // attributes for old filter templates
+            $manufacturer->kHersteller = (int)$manufacturer->kHersteller;
+            $manufacturer->nAnzahl     = (int)$manufacturer->nAnzahl;
+            $manufacturer->nSortNr     = (int)$manufacturer->nSortNr;
+            $manufacturer->cURL        = $this->productFilter->getFilterURL()->getURL(
+                $additionalFilter->init($manufacturer->kHersteller)
             );
 
-            $state->joins[] = (new FilterJoin())
-                ->setComment('JOIN from ' . __METHOD__)
-                ->setType('JOIN')
-                ->setTable('thersteller')
-                ->setOn('tartikel.kHersteller = thersteller.kHersteller')
-                ->setOrigin(__CLASS__);
-
-            $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
-                [
-                    'thersteller.kHersteller',
-                    'thersteller.cName',
-                    'thersteller.nSortNr',
-                    'tartikel.kArtikel'
-                ],
-                $state->joins,
-                $state->conditions,
-                $state->having
-            );
-            $manufacturers    = \Shop::Container()->getDB()->query(
-                "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
-                    FROM (" .
-                $query .
-                ") AS ssMerkmal
-                        LEFT JOIN tseo 
-                            ON tseo.kKey = ssMerkmal.kHersteller
-                            AND tseo.cKey = 'kHersteller'
-                            AND tseo.kSprache = " . $this->getLanguageID() . "
-                        GROUP BY ssMerkmal.kHersteller
-                        ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            $additionalFilter = new ItemManufacturer($this->productFilter);
-            foreach ($manufacturers as $manufacturer) {
-                // attributes for old filter templates
-                $manufacturer->kHersteller = (int)$manufacturer->kHersteller;
-                $manufacturer->nAnzahl     = (int)$manufacturer->nAnzahl;
-                $manufacturer->nSortNr     = (int)$manufacturer->nSortNr;
-                $manufacturer->cURL        = $this->productFilter->getFilterURL()->getURL(
-                    $additionalFilter->init($manufacturer->kHersteller)
-                );
-
-                $options[] = (new FilterOption())
-                    ->setURL($manufacturer->cURL)
-                    ->setIsActive($this->productFilter->filterOptionIsActive(
-                        $this->getClassName(),
-                        $manufacturer->kHersteller)
-                    )
-                    ->setType($this->getType())
-                    ->setFrontendName($manufacturer->cName)
-                    ->setClassName($this->getClassName())
-                    ->setParam($this->getUrlParam())
-                    ->setName($manufacturer->cName)
-                    ->setValue($manufacturer->kHersteller)
-                    ->setCount($manufacturer->nAnzahl)
-                    ->setSort($manufacturer->nSortNr);
-
-            }
+            $options[] = (new FilterOption())
+                ->setURL($manufacturer->cURL)
+                ->setIsActive($this->productFilter->filterOptionIsActive(
+                    $this->getClassName(),
+                    $manufacturer->kHersteller)
+                )
+                ->setType($this->getType())
+                ->setFrontendName($manufacturer->cName)
+                ->setClassName($this->getClassName())
+                ->setParam($this->getUrlParam())
+                ->setName($manufacturer->cName)
+                ->setValue($manufacturer->kHersteller)
+                ->setCount($manufacturer->nAnzahl)
+                ->setSort($manufacturer->nSortNr);
         }
         $this->options = $options;
 

@@ -5,7 +5,7 @@
                 <h5 class="panel-title">{lang key="safety" section="global"}</h5>
             </div>
         {/if}
-        <div class="panel-body text-center">
+        <div class="box-body panel-body text-center">
             <p><a href="{$oBox->cLogoURL}"><img src="{$oBox->cBild}" alt="{lang key="ts_signtitle" section="global"}" /></a></p>
             <small class="description">
                 <a title="{lang key='ts_info_classic_title' section='global'} {$cShopName}" href="{$oBox->cLogoSiegelBoxURL}">{$cShopName} {lang key="ts_classic_text" section="global"}</a>
@@ -19,7 +19,7 @@
                 <h5 class="panel-title">{lang key="safety" section="global"}</h5>
             </div>
         {/if}
-        <div class="panel-body text-center">
+        <div class="box-body panel-body text-center">
             <p><a href="{$oBox->cLogoURL}"><img src="{$oBox->cBild}" alt="{lang key="ts_signtitle" section="global"}" /></a></p>
             <small class="description">
                 <a title="{lang key='ts_info_classic_title' section='global'} {$cShopName}" href="{$oBox->cLogoSiegelBoxURL}">{$cShopName} {lang key="ts_classic_text" section="global"}</a>

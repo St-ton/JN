@@ -220,6 +220,53 @@
                 imgSwitch,
                 gallery  = this.gallery;
 
+                imgSwitch = function (context) {
+                    var $context = $(context),
+                        id       = $context.attr('data-key'),
+                        value    = $context.attr('data-value'),
+                        data     = $context.data('list'),
+                        title    = $context.attr('data-title');
+
+                    if (data != undefined){
+                        var slick = $('#gallery').slick('getSlick'),
+                            index = slick.slideCount;
+
+                        $('#gallery').slick('slickAdd', '<div><img src="'+data.md.src+'">');
+                        $('#gallery_preview').slick('slickAdd', '<div><img src="'+data.xs.src+'">');
+                        $('#gallery').slick('slickGoTo', index);
+                        $('#gallery_preview').slick('slickGoTo', index);
+                        $('#gallery').slick('init');
+                    }
+                }
+
+
+           /* $('.variations.simple-variations .variation', $wrapper)
+                .click(function () {
+                    imgSwitch(this, false);
+                });*/
+
+            if (!isTouchCapable() || ResponsiveBootstrapToolkit.current() !== 'xs') {
+                $('.variations .variation', $wrapper)
+                    .hover(function () {
+                        imgSwitch(this);
+                    }, function () {
+                        /*var slick = $('#gallery').slick('getSlick'),
+                            index = slick.slideCount,
+                            data = $(this).data('list');
+
+                        if (data != undefined) {
+                            $('#gallery').slick('slickGoTo', 0);
+                            $('#gallery_preview').slick('slickGoTo', 0);
+                            $('#gallery').slick('slickRemove', index - 1);
+                            $('#gallery_preview').slick('slickRemove', index - 1);
+                        }*/
+                    });
+            }
+
+            /*var that     = this,
+                imgSwitch,
+                gallery  = this.gallery;
+
             if (gallery !== null) {
                 imgSwitch = function (context, temporary, force) {
                     var $context = $(context),
@@ -343,7 +390,7 @@
                             }
                         }
                     });
-            }
+            }*/
         },
 
         registerFinish: function($wrapper) {

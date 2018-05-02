@@ -13,18 +13,15 @@
                         <div>
                             {*<a href="{$image->cURLGross}" title="{$image->cAltAttribut|escape:"html"}">*}
                             {*sizes based on Evo template*}
-                            <img src="{$imageBaseURL}gfx/trans.png" data-lazy="{$image->cURLNormal}"
+                            <img src="{$image->cURLMini}" data-lazy="{$image->cURLMini}"
                                  data-srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                      {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                      {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
                                      {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                 sizes="(max-width: 768px) 750px,
-                                        (max-width: 991px) 300px,
-                                        (max-width: 1199px) 350px,
-                                        800px"
+                                 sizes="(min-width: 1200px) 1080px,
+                                        95vw"
                                  alt="{$image->cAltAttribut|escape:"html"}"
-                                 data-list='{$image->galleryJSON|replace:"'":"&apos;"}'
-                                 data-largeimage="{$image->cURLGross}"/>
+                                 data-list='{$image->galleryJSON|replace:"'":"&apos;"}'/>
                             {*</a>*}
                         </div>
                     {/strip}
@@ -35,15 +32,16 @@
     <div id="gallery__preview_wrapper">
         <div id="gallery_preview">
             {block name="product-image"}
+                {if $Artikel->Bilder|@count > 1}
                 {foreach $Artikel->Bilder as $image}
                     {strip}
                         <div>
                             <img src="{$imageBaseURL}gfx/trans.png" data-lazy="{$image->cURLMini}"
-                                 alt="{$image->cAltAttribut|escape:"html"}"
-                                 data-list='{$image->galleryJSON|replace:"'":"&apos;"}'/>
+                                 alt="{$image->cAltAttribut|escape:"html"}"/>
                         </div>
                     {/strip}
                 {/foreach}
+                {/if}
             {/block}
         </div>
     </div>

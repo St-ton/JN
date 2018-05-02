@@ -238,8 +238,10 @@ abstract class Portlet implements \JsonSerializable
                     . "})</script>";
                 break;
             case 'color':
-                $res .= "  <div class='input-group border-color-picker colorpicker-element'><input type='text' class='form-control' name='$propname' id='$propname' value='$prop'><span class='input-group-addon'><i style='margin-right: 0px;'></i></span></div>"
-                    . "<script>$('#color').colorpicker();</script>";
+                $res .= "  <div id='$propname' class='input-group colorpicker-component'>
+                                <input class='form-control' name='$propname' value='$prop'>
+                                <span class='input-group-addon'><i></i></span></div>"
+                    . "<script>$('#$propname').colorpicker({format: 'rgba'});</script>";
                 break;
         }
 

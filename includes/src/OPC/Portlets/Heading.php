@@ -89,7 +89,7 @@ class Heading extends \OPC\Portlet
                 'dspl_width' => 50,
                 'default' => 'female',
             ],
-             'color' => [
+             'myColor' => [
                 'label' => 'Farbe',
                 'type'  => 'color',
                 'dspl_width' => 50,

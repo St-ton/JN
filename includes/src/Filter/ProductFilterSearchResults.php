@@ -124,7 +124,7 @@ class ProductFilterSearchResults
     private $customFilterOptions = [];
 
     /**
-     * @var int[]
+     * @var Collection
      */
     private $productKeys = [];
 
@@ -233,18 +233,18 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return int[]
+     * @return Collection
      */
-    public function getProductKeys(): array
+    public function getProductKeys(): Collection
     {
         return $this->productKeys;
     }
 
     /**
-     * @param int[] $keys
+     * @param Collection $keys
      * @return $this
      */
-    public function setProductKeys(array $keys)
+    public function setProductKeys(Collection $keys)
     {
         $this->productKeys = $keys;
 

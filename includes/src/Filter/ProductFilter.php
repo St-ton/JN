@@ -24,6 +24,10 @@ use Filter\States\BaseManufacturer;
 use Filter\States\BaseSearchQuery;
 use Filter\States\BaseSearchSpecial;
 use Filter\States\BaseTag;
+use function Functional\first;
+use function Functional\group;
+use function Functional\map;
+use function Functional\select;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -1111,7 +1115,7 @@ class ProductFilter
      */
     public function setManufacturerFilter($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kHersteller)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kHersteller)) {
             // disallow setting manufacturer filter to empty stdClass
             return $this;
         }
@@ -1142,7 +1146,7 @@ class ProductFilter
      */
     public function setManufacturer($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kHersteller)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kHersteller)) {
             // disallow setting manufacturer base to empty stdClass
             return $this;
         }
@@ -1186,7 +1190,7 @@ class ProductFilter
      */
     public function setAttributeFilter($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kMerkmal)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kMerkmal)) {
             // disallow setting attribute filter to empty stdClass
             return $this;
         }
@@ -1228,7 +1232,7 @@ class ProductFilter
      */
     public function setAttributeValue($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kMerkmalWert)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kMerkmalWert)) {
             // disallow setting attribute value to empty stdClass
             return $this;
         }
@@ -1284,7 +1288,7 @@ class ProductFilter
      */
     public function setTag($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kTag)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kTag)) {
             // disallow setting tag filter to empty stdClass
             return $this;
         }
@@ -1315,7 +1319,7 @@ class ProductFilter
      */
     public function setCategory($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kKategorie)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kKategorie)) {
             // disallow setting category base to empty stdClass
             return $this;
         }
@@ -1346,7 +1350,7 @@ class ProductFilter
      */
     public function setCategoryFilter($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kKategorie)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kKategorie)) {
             // disallow setting category filter to empty stdClass
             return $this;
         }
@@ -1594,9 +1598,9 @@ class ProductFilter
     /**
      * get list of product IDs matching the current filter
      *
-     * @return int[]
+     * @return Collection
      */
-    public function getProductKeys(): array
+    public function getProductKeys(): Collection
     {
         $state = $this->getCurrentStateData();
         $qry   = $this->getFilterSQL()->getBaseQuery(
@@ -1610,12 +1614,12 @@ class ProductFilter
             'listing'
         );
 
-        $productKeys       = array_map(
+        $productKeys       = collect(array_map(
             function ($e) {
                 return (int)$e->kArtikel;
             },
             \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS)
-        );
+        ));
         $order             = $this->getFilterSQL()->getOrder();
         $orderData         = new \stdClass();
         $orderData->cJoin  = $order->join->getSQL();
@@ -1740,7 +1744,7 @@ class ProductFilter
             if ($limitPerPage < 0) {
                 $limitPerPage = null;
             }
-            foreach (array_slice($productKeys, $nLimitN, $limitPerPage) as $id) {
+            foreach ($productKeys->forPage($this->nSeite, $limitPerPage) as $id) {
                 $productList->push((new \Artikel())->fuelleArtikel($id, $opt));
             }
             $this->searchResults->setVisibleProductCount($productList->count());
@@ -1751,7 +1755,7 @@ class ProductFilter
         $this->searchResults->setProducts($productList);
 
         if ($forProductListing === true) {
-            //Weiterleitung, falls nur 1 Artikel rausgeholt
+            // Weiterleitung, falls nur 1 Artikel rausgeholt
             $hasSubCategories = ($categoryID = $this->getCategory()->getValue()) > 0
                 ? (new \Kategorie($categoryID, $this->languageID, $this->customerGroupID))
                     ->existierenUnterkategorien()
@@ -1783,50 +1787,32 @@ class ProductFilter
      */
     public function getActiveFilters($byType = false): array
     {
-        $result = $byType === false
-            ? []
-            : [
-                'kf'     => [],
-                'hf'     => [],
-                'mm'     => [],
-                'ssf'    => [],
-                'tf'     => [],
-                'sf'     => [],
-                'bf'     => [],
-                'custom' => [],
-                'misc'   => []
-            ];
-        foreach ($this->activeFilters as $activeFilter) {
-            // get custom filters
-            if ($activeFilter->isCustom()) {
-                if ($byType) {
-                    $result['custom'][] = $activeFilter;
-                } else {
-                    $result[] = $activeFilter;
-                }
-            } else {
-                // get built-in filters
-                $found = false;
-                if ($activeFilter->isInitialized() && ($urlPram = $activeFilter->getUrlParam()) !== '') {
-                    if ($byType) {
-                        $result[$urlPram][] = $activeFilter;
-                    } else {
-                        $result[] = $activeFilter;
-                    }
-                    continue;
-                }
-                // get built-in filters that were manually set
-                if ($found === false) {
-                    if ($byType) {
-                        $result['misc'][] = $activeFilter;
-                    } else {
-                        $result[] = $activeFilter;
-                    }
-                }
-            }
+        if ($byType === false) {
+            return $this->activeFilters;
         }
+        $grouped = group($this->activeFilters, function (IFilter $f) {
+            if ($f->isCustom()) {
+                return 'custom';
+            }
 
-        return $result;
+            return $f->isInitialized() && ($param = $f->getUrlParam()) !== ''
+                ? $param
+                : 'misc';
+        });
+
+        return array_merge([
+            'kf'     => [],
+            'hf'     => [],
+            'mm'     => [],
+            'ssf'    => [],
+            'tf'     => [],
+            'sf'     => [],
+            'bf'     => [],
+            'custom' => [],
+            'misc'   => []
+        ], map($grouped, function ($e) {
+            return array_values($e);
+        }));
     }
 
     /**
@@ -1852,23 +1838,14 @@ class ProductFilter
             $count = count($active);
             if ($count > 1 && $type !== 'misc' && $type !== 'custom') {
                 $singleConditions = [];
-                $active           = array_filter(
-                    $active,
-                    function ($f) use ($ignore) {
-                        /** @var IFilter $f */
-                        return $ignore === null
-                            || (is_string($ignore) && $f->getClassName() !== $ignore)
-                            || (is_object($ignore) && $f !== $ignore);
-                    }
-                );
-                $orFilters        = array_filter(
-                    $active,
-                    function ($f) {
-                        /** @var IFilter $f */
-                        return $f->getType() === AbstractFilter::FILTER_TYPE_OR;
-                    }
-                );
-
+                $active           = select($active, function (IFilter $f) use ($ignore) {
+                    return $ignore === null
+                        || (is_string($ignore) && $f->getClassName() !== $ignore)
+                        || (is_object($ignore) && $f !== $ignore);
+                });
+                $orFilters        = select($active, function (IFilter $f) {
+                    return $f->getType() === AbstractFilter::FILTER_TYPE_OR;
+                });
                 /** @var AbstractFilter $filter */
                 foreach ($active as $filter) {
                     // the built-in filter behave quite strangely and have to be combined this way
@@ -1880,14 +1857,9 @@ class ProductFilter
                 }
                 if (count($orFilters) > 0) {
                     // group OR filters by their primary key row
-                    $groupedOrFilters = [];
-                    foreach ($orFilters as $filter) {
-                        $primaryKeyRow = $filter->getPrimaryKeyRow();
-                        if (!isset($groupedOrFilters[$primaryKeyRow])) {
-                            $groupedOrFilters[$primaryKeyRow] = [];
-                        }
-                        $groupedOrFilters[$primaryKeyRow][] = $filter;
-                    }
+                    $groupedOrFilters = group($orFilters, function (IFilter $f) {
+                        return $f->getPrimaryKeyRow();
+                    });
                     foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
                         /** @var IFilter[] $orFilters */
                         $values = implode(
@@ -1899,13 +1871,13 @@ class ProductFilter
                                 return is_array($val) ? implode(',', $val) : $val;
                             }, $orFilters)
                         );
-                        $table  = $orFilters[0]->getTableAlias();
+                        $table  = first($orFilters)->getTableAlias();
                         if (empty($table)) {
-                            $table = $orFilters[0]->getTableName();
+                            $table = first($orFilters)->getTableName();
                         }
                         $conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
                             $table . '.kArtikel IN ' .
-                            '(SELECT kArtikel FROM ' . $orFilters[0]->getTableName() . ' WHERE ' .
+                            '(SELECT kArtikel FROM ' . first($orFilters)->getTableName() . ' WHERE ' .
                             $primaryKeyRow . ' IN (' . $values . '))';
                     }
                 }
@@ -1914,12 +1886,13 @@ class ProductFilter
                 }
             } elseif ($count === 1) {
                 /** @var IFilter[] $active */
+                $first = first($active);
                 if ($ignore === null
-                    || (is_object($ignore) && $active[0] !== $ignore)
-                    || (is_string($ignore) && $active[0]->getClassName() !== $ignore)
+                    || (is_object($ignore) && $first !== $ignore)
+                    || (is_string($ignore) && $first->getClassName() !== $ignore)
                 ) {
-                    $itemJoin   = $active[0]->getSQLJoin();
-                    $_condition = $active[0]->getSQLCondition();
+                    $itemJoin   = $first->getSQLJoin();
+                    $_condition = $first->getSQLCondition();
                     $joins      = array_merge($joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
                     if (!empty($_condition)) {
                         $conditions[] = "\n#condition from filter " . $type . "\n" . $_condition;
@@ -1960,7 +1933,7 @@ class ProductFilter
         }
         $method = 'get' . $mapped;
         $result = $this->$method();
-        if (is_a($result, 'IFilter')) {
+        if (is_a($result, IFilter::class)) {
             /** @var IFilter $result */
             return $result->isInitialized();
         }

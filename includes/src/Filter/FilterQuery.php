@@ -39,7 +39,7 @@ class FilterQuery
     /**
      * @var string
      */
-    private $where;
+    private $where = '';
 
     /**
      * @var array
@@ -50,7 +50,7 @@ class FilterQuery
      * @param string $where
      * @return $this
      */
-    public function setWhere($where): self
+    public function setWhere(string $where): self
     {
         $this->where = $where;
 
@@ -60,7 +60,7 @@ class FilterQuery
     /**
      * @return string
      */
-    public function getWhere()
+    public function getWhere(): string
     {
         return $this->where;
     }

@@ -126,7 +126,7 @@ class ProductFilterSearchResults
     /**
      * @var Collection
      */
-    private $productKeys = [];
+    private $productKeys;
 
     /**
      * @var string
@@ -185,6 +185,7 @@ class ProductFilterSearchResults
     public function __construct($legacy = null)
     {
         $this->products             = new Collection();
+        $this->productKeys          = new Collection();
         $this->pages                = new \stdClass();
         $this->pages->AktuelleSeite = 0;
         $this->pages->MaxSeiten     = 0;

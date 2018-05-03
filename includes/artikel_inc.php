@@ -25,7 +25,8 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
             "SELECT txsell.* FROM txsell, tartikel
                 WHERE txsell.kXSellArtikel = tartikel.kArtikel {$cSQLLager}
                     AND txsell.kArtikel = {$kArtikel}
-                ORDER BY tartikel.cName", 2
+                ORDER BY tartikel.cName",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (count($xsell) > 0) {
             $xsellgruppen = array_unique(array_map(
@@ -72,13 +73,17 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
         }
     }
 
-    if (isset($config['artikeldetails_xselling_kauf_anzeigen']) && $config['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
+    if (isset($config['artikeldetails_xselling_kauf_anzeigen'])
+        && $config['artikeldetails_xselling_kauf_anzeigen'] === 'Y'
+    ) {
         $anzahl = (int)$config['artikeldetails_xselling_kauf_anzahl'];
         if ($isParent === null) {
             $isParent = ArtikelHelper::isParent($kArtikel);
         }
         if ($isParent === true) {
-            if (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+            if (isset($config['artikeldetails_xselling_kauf_parent'])
+                && $config['artikeldetails_xselling_kauf_parent'] === 'Y'
+            ) {
                 $selectorXSellArtikel     = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                 $filterXSellParentArtikel = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
             } else {
@@ -99,9 +104,12 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                         AND {$filterXSellParentArtikel} != {$kArtikel}
                     GROUP BY 1, 2
                     ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                    LIMIT {$anzahl}", 2
+                    LIMIT {$anzahl}",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-        } elseif (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+        } elseif (isset($config['artikeldetails_xselling_kauf_parent'])
+            && $config['artikeldetails_xselling_kauf_parent'] === 'Y'
+        ) {
             $xsell = Shop::Container()->getDB()->query(
                 "SELECT txsellkauf.kArtikel,
                     IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
@@ -117,7 +125,8 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                         ) OR tartikel.kVaterArtikel = 0)
                     GROUP BY 1, 2
                     ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                    LIMIT {$anzahl}", 2
+                    LIMIT {$anzahl}",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } else {
             $xsell = Shop::Container()->getDB()->selectAll(
@@ -329,22 +338,22 @@ function sendeProduktanfrage()
         $Objekt->mail       = $mail;
         sendeMail(MAILTEMPLATE_PRODUKTANFRAGE, $Objekt);
     }
-    $ProduktanfrageHistory             = new stdClass();
-    $ProduktanfrageHistory->kSprache   = Shop::getLanguage();
-    $ProduktanfrageHistory->kArtikel   = Shop::$kArtikel;
-    $ProduktanfrageHistory->cAnrede    = $Objekt->tnachricht->cAnrede;
-    $ProduktanfrageHistory->cVorname   = $Objekt->tnachricht->cVorname;
-    $ProduktanfrageHistory->cNachname  = $Objekt->tnachricht->cNachname;
-    $ProduktanfrageHistory->cFirma     = $Objekt->tnachricht->cFirma;
-    $ProduktanfrageHistory->cTel       = $Objekt->tnachricht->cTel;
-    $ProduktanfrageHistory->cMobil     = $Objekt->tnachricht->cMobil;
-    $ProduktanfrageHistory->cFax       = $Objekt->tnachricht->cFax;
-    $ProduktanfrageHistory->cMail      = $Objekt->tnachricht->cMail;
-    $ProduktanfrageHistory->cNachricht = $Objekt->tnachricht->cNachricht;
-    $ProduktanfrageHistory->cIP        = gibIP();
-    $ProduktanfrageHistory->dErstellt  = 'now()';
+    $history             = new stdClass();
+    $history->kSprache   = Shop::getLanguage();
+    $history->kArtikel   = Shop::$kArtikel;
+    $history->cAnrede    = $Objekt->tnachricht->cAnrede;
+    $history->cVorname   = $Objekt->tnachricht->cVorname;
+    $history->cNachname  = $Objekt->tnachricht->cNachname;
+    $history->cFirma     = $Objekt->tnachricht->cFirma;
+    $history->cTel       = $Objekt->tnachricht->cTel;
+    $history->cMobil     = $Objekt->tnachricht->cMobil;
+    $history->cFax       = $Objekt->tnachricht->cFax;
+    $history->cMail      = $Objekt->tnachricht->cMail;
+    $history->cNachricht = $Objekt->tnachricht->cNachricht;
+    $history->cIP        = gibIP();
+    $history->dErstellt  = 'now()';
 
-    $kProduktanfrageHistory        = Shop::Container()->getDB()->insert('tproduktanfragehistory', $ProduktanfrageHistory);
+    $kProduktanfrageHistory        = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
     $GLOBALS['PositiveFeedback'][] = Shop::Lang()->get('thankYouForQuestion', 'messages');
     // campaign
     if (isset($_SESSION['Kampagnenbesucher'])) {
@@ -376,7 +385,7 @@ function floodSchutzProduktanfrage($min = 0)
             WHERE cIP = :ip
                 AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt",
         ['ip'  => gibIP(), 'min' => $min],
-        1
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
     return isset($history->kProduktanfrageHistory) && $history->kProduktanfrageHistory > 0;
@@ -443,7 +452,8 @@ function bearbeiteBenachrichtigung()
                         (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, now(), :nStatus)
                         ON DUPLICATE KEY UPDATE 
                             cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache, 
-                            cIP = :cIP, dErstellt = now(), nStatus = :nStatus', get_object_vars($Benachrichtigung), 7
+                            cIP = :cIP, dErstellt = now(), nStatus = :nStatus', get_object_vars($Benachrichtigung),
+                    \DB\ReturnType::LAST_INSERTED_ID
                 );
                 // Kampagne
                 if (isset($_SESSION['Kampagnenbesucher'])) {
@@ -536,7 +546,7 @@ function floodSchutzBenachrichtigung($min)
             WHERE cIP = :ip
             AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt',
         ['ip' => gibIP(), 'min' => $min],
-        1
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
     return isset($history->kVerfuegbarkeitsbenachrichtigung) && $history->kVerfuegbarkeitsbenachrichtigung > 0;
@@ -554,42 +564,38 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
     $navi            = new stdClass();
     $customerGroupID = Session::CustomerGroup()->getID();
     // Wurde der Artikel von der Artikelübersicht aus angeklickt?
-    if ($kArtikel > 0 &&
-        isset($_SESSION['oArtikelUebersichtKey_arr']) &&
-        is_array($_SESSION['oArtikelUebersichtKey_arr']) &&
-        count($_SESSION['oArtikelUebersichtKey_arr']) > 0
+    if ($kArtikel > 0
+        && isset($_SESSION['oArtikelUebersichtKey_arr'])
+        && count($_SESSION['oArtikelUebersichtKey_arr']) > 0
     ) {
+        $collection = $_SESSION['oArtikelUebersichtKey_arr'];
+        if (!($collection instanceof \Tightenco\Collect\Support\Collection)) {
+            collect($collection);
+        }
         // Such die Position des aktuellen Artikels im Array der Artikelübersicht
-        $nArrayPos          = -1;
         $kArtikelVorheriger = 0;
         $kArtikelNaechster  = 0;
-        foreach ($_SESSION['oArtikelUebersichtKey_arr'] as $i => $articleID) {
-            if ($articleID === $kArtikel) {
-                $nArrayPos = $i;
-                break;
-            }
-        }
+        $nArrayPos          = $collection->search($kArtikel, true);
         if ($nArrayPos === 0) {
             // Artikel ist an der ersten Position => es gibt nur einen nächsten Artikel (oder keinen :))
-            $kArtikelNaechster = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1] ?? null;
-        } elseif ($nArrayPos === (count($_SESSION['oArtikelUebersichtKey_arr']) - 1)) {
+            $kArtikelNaechster = $collection[$nArrayPos + 1] ?? null;
+        } elseif ($nArrayPos === ($collection->count() - 1)) {
             // Artikel ist an der letzten Position => es gibt nur einen voherigen Artikel
-            $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1];
-        } elseif ($nArrayPos !== -1) {
-            $kArtikelNaechster  = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1];
-            $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1];
+            $kArtikelVorheriger = $collection[$nArrayPos - 1];
+        } elseif ($nArrayPos !== false) {
+            $kArtikelNaechster  = $collection[$nArrayPos + 1];
+            $kArtikelVorheriger = $collection[$nArrayPos - 1];
         }
-        // Nächster Artikel
         if ($kArtikelNaechster > 0) {
-            $navi->naechsterArtikel = (new Artikel())->fuelleArtikel($kArtikelNaechster, Artikel::getDefaultOptions());
-
+            $navi->naechsterArtikel = (new Artikel())
+                ->fuelleArtikel($kArtikelNaechster, Artikel::getDefaultOptions());
             if ($navi->naechsterArtikel === null) {
                 unset($navi->naechsterArtikel);
             }
         }
-        // Vorheriger Artikel
         if ($kArtikelVorheriger > 0) {
-            $navi->vorherigerArtikel = (new Artikel())->fuelleArtikel($kArtikelVorheriger, Artikel::getDefaultOptions());
+            $navi->vorherigerArtikel = (new Artikel())
+                ->fuelleArtikel($kArtikelVorheriger, Artikel::getDefaultOptions());
             if ($navi->vorherigerArtikel->kArtikel === null) {
                 unset($navi->vorherigerArtikel);
             }
@@ -597,7 +603,8 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
     }
     // Ist der Besucher nicht von der Artikelübersicht gekommen?
     if ($kKategorie > 0 && (!isset($navi->vorherigerArtikel) && !isset($navi->naechsterArtikel))) {
-        $objArr_pre = Shop::Container()->getDB()->query(
+        $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+        $objArr_pre  = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel
                 FROM tkategorieartikel, tpreise, tartikel
                 LEFT JOIN tartikelsichtbarkeit 
@@ -609,9 +616,10 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
                     AND tpreise.kArtikel = tartikel.kArtikel
                     AND tartikel.kArtikel < $kArtikel
                     AND tpreise.kKundengruppe = " . $customerGroupID . "
-                    " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
+                    " . $stockFilter . "
                 ORDER BY tartikel.kArtikel DESC
-                LIMIT 1", 1
+                LIMIT 1",
+            \DB\ReturnType::SINGLE_OBJECT
         );
         $objArr_next = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel
@@ -625,16 +633,19 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
                     AND tpreise.kArtikel = tartikel.kArtikel
                     AND tartikel.kArtikel > $kArtikel
                     AND tpreise.kKundengruppe = " . $customerGroupID . "
-                    " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
+                    " . $stockFilter . "
                 ORDER BY tartikel.kArtikel
-                LIMIT 1", 1
+                LIMIT 1",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (!empty($objArr_pre->kArtikel)) {
-            $navi->vorherigerArtikel = (new Artikel())->fuelleArtikel($objArr_pre->kArtikel, Artikel::getDefaultOptions());
+            $navi->vorherigerArtikel = (new Artikel())
+                ->fuelleArtikel($objArr_pre->kArtikel, Artikel::getDefaultOptions());
         }
         if (!empty($objArr_next->kArtikel)) {
-            $navi->naechsterArtikel = (new Artikel())->fuelleArtikel($objArr_next->kArtikel, Artikel::getDefaultOptions());
+            $navi->naechsterArtikel = (new Artikel())
+                ->fuelleArtikel($objArr_next->kArtikel, Artikel::getDefaultOptions());
         }
     }
 
@@ -774,12 +785,16 @@ function bearbeiteProdukttags($AktuellerArtikel)
                 exit();
             }
             // Posts die älter als 24 Stunden sind löschen
-            Shop::Container()->getDB()->query("DELETE FROM ttagkunde WHERE dZeit < DATE_SUB(now(),INTERVAL 1 MONTH)", 4);
+            Shop::Container()->getDB()->query(
+                "DELETE FROM ttagkunde 
+                    WHERE dZeit < DATE_SUB(now(),INTERVAL 1 MONTH)",
+                \DB\ReturnType::DEFAULT
+            );
             // Admin Einstellungen prüfen
-            if (($conf['artikeldetails']['tagging_freischaltung'] === 'Y' &&
-                    isset($_SESSION['Kunde']->kKunde) &&
-                    $_SESSION['Kunde']->kKunde > 0) ||
-                $conf['artikeldetails']['tagging_freischaltung'] === 'O'
+            if (($conf['artikeldetails']['tagging_freischaltung'] === 'Y'
+                    && isset($_SESSION['Kunde']->kKunde)
+                    && $_SESSION['Kunde']->kKunde > 0)
+                || $conf['artikeldetails']['tagging_freischaltung'] === 'O'
             ) {
                 $ip = gibIP();
                 // Ist eine Kunde eingeloggt?
@@ -790,7 +805,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                             WHERE dZeit > DATE_SUB(now(),INTERVAL 1 DAY)
                                 AND kKunde = :kKunde",
                         ['kKunde' => (int)$_SESSION['Kunde']->kKunde],
-                        1
+                        \DB\ReturnType::SINGLE_OBJECT
                     );
                     $kKunde = (int)$_SESSION['Kunde']->kKunde;
                 } else { // Wenn nicht, dann hat ein anonymer Besucher ein Tag gepostet
@@ -800,7 +815,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                                 AND cIP = :ip
                                 AND kKunde = 0",
                         ['ip' => $ip],
-                        1
+                        \DB\ReturnType::SINGLE_OBJECT
                     );
                     $kKunde = 0;
                 }
@@ -824,7 +839,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     // Prüfe ob der Tag bereits vorhanden ist
                     $tag_obj = new Tag();
                     $tag_obj->getByName($tag);
-                    $kTag    = isset($tag_obj->kTag) ? (int)$tag_obj->kTag : null;
+                    $kTag = isset($tag_obj->kTag) ? (int)$tag_obj->kTag : null;
                     if (!empty($kTag)) {
                         // Tag existiert bereits, TagArtikel updaten/anlegen
                         $tagArticle = new TagArticle($kTag,(int)$AktuellerArtikel->kArtikel);
@@ -864,7 +879,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                         $neuerTag->cSeo     = checkSeo($neuerTag->cSeo);
                         $neuerTag->nAktiv   = 0;
                         $kTag               = (int)$neuerTag->insertInDB();
-                        $newTag = new Tag($kTag);
+                        $newTag             = new Tag($kTag);
                         if ($kTag > 0) {
                             $tagArticle           = new TagArticle();
                             $tagArticle->kTag     = $kTag;
@@ -888,7 +903,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     $neuerTagKunde->dZeit  = 'now()';
                     Shop::Container()->getDB()->insert('ttagkunde', $neuerTagKunde);
 
-                    if (isset($tag_obj->nAktiv) && (int)$tag_obj->nAktiv === 0) {
+                    if ($tag_obj->nAktiv !== null && (int)$tag_obj->nAktiv === 0) {
                         return Shop::Lang()->get('tagAcceptedWaitCheck', 'messages');
                     }
 
@@ -1079,17 +1094,15 @@ function fasseVariVaterUndKindZusammen($oVaterArtikel, $oKindArtikel)
  */
 function holeAehnlicheArtikel($kArtikel)
 {
-    // Aktueller Artikel
-    $kArtikel     = (int)$kArtikel;
-    $oArtikel_arr = [];
-    $cLimit       = ' LIMIT 3';
-    $conf         = Shop::getSettings([CONF_ARTIKELDETAILS]);
-    // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
+    $kArtikel               = (int)$kArtikel;
+    $oArtikel_arr           = [];
+    $cLimit                 = ' LIMIT 3';
+    $conf                   = Shop::getSettings([CONF_ARTIKELDETAILS]);
     $oXSeller               = gibArtikelXSelling($kArtikel);
     $kArtikelXSellerKey_arr = [];
-    if (isset($oXSeller->Standard->XSellGruppen) &&
-        is_array($oXSeller->Standard->XSellGruppen) &&
-        count($oXSeller->Standard->XSellGruppen) > 0
+    if (isset($oXSeller->Standard->XSellGruppen)
+        && is_array($oXSeller->Standard->XSellGruppen)
+        && count($oXSeller->Standard->XSellGruppen) > 0
     ) {
         foreach ($oXSeller->Standard->XSellGruppen as $oXSeller) {
             if (is_array($oXSeller->Artikel) && count($oXSeller->Artikel) > 0) {
@@ -1102,9 +1115,9 @@ function holeAehnlicheArtikel($kArtikel)
             }
         }
     }
-    if (isset($oXSeller->Kauf->XSellGruppen) &&
-        is_array($oXSeller->Kauf->XSellGruppen) &&
-        count($oXSeller->Kauf->XSellGruppen) > 0
+    if (isset($oXSeller->Kauf->XSellGruppen)
+        && is_array($oXSeller->Kauf->XSellGruppen)
+        && count($oXSeller->Kauf->XSellGruppen) > 0
     ) {
         foreach ($oXSeller->Kauf->XSellGruppen as $oXSeller) {
             if (is_array($oXSeller->Artikel) && count($oXSeller->Artikel) > 0) {
@@ -1153,7 +1166,8 @@ function holeAehnlicheArtikel($kArtikel)
                     AND similarMerkmal.kMerkmalWert = merkmalartikel.kMerkmalWert
                 GROUP BY merkmalartikel.kArtikel
                 ORDER BY COUNT(similarMerkmal.kMerkmal) DESC
-                " . $cLimit, 2
+                " . $cLimit,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (is_array($oArtikelMerkmal_arr) && count($oArtikelMerkmal_arr) > 0) {
             $defaultOptions = Artikel::getDefaultOptions();
@@ -1191,10 +1205,11 @@ function holeAehnlicheArtikel($kArtikel)
                         {$cSQLXSeller}
                     GROUP BY tsuchcachetreffer.kArtikel
                     ORDER BY COUNT(*) DESC
-                    " . $cLimit, 2
+                    " . $cLimit,
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
-            if (is_array($oArtikelSuchcacheTreffer_arr) && count($oArtikelSuchcacheTreffer_arr) > 0) {
+            if (count($oArtikelSuchcacheTreffer_arr) > 0) {
                 $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($oArtikelSuchcacheTreffer_arr as $oArtikelSuchcacheTreffer) {
                     $oArtikel = new Artikel();
@@ -1229,36 +1244,31 @@ function holeAehnlicheArtikel($kArtikel)
                             {$cSQLXSeller}
                         GROUP BY ttagartikel.kArtikel
                         ORDER BY COUNT(*) DESC
-                        " . $cLimit, 2
+                        " . $cLimit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (is_array($oArtikelTags_arr) && count($oArtikelTags_arr) > 0) {
-                    $defaultOptions = Artikel::getDefaultOptions();
-                    foreach ($oArtikelTags_arr as $oArtikelTags) {
-                        $oArtikel = new Artikel();
-                        $id       = ($oArtikelTags->kVaterArtikel > 0)
-                            ? $oArtikelTags->kVaterArtikel
-                            : $oArtikelTags->kArtikel;
-                        $oArtikel->fuelleArtikel($id, $defaultOptions);
-                        if ($oArtikel->kArtikel > 0) {
-                            $oArtikel_arr[] = $oArtikel;
-                        }
+                $defaultOptions = Artikel::getDefaultOptions();
+                foreach ($oArtikelTags_arr as $oArtikelTags) {
+                    $oArtikel = new Artikel();
+                    $id       = ($oArtikelTags->kVaterArtikel > 0)
+                        ? $oArtikelTags->kVaterArtikel
+                        : $oArtikelTags->kArtikel;
+                    $oArtikel->fuelleArtikel($id, $defaultOptions);
+                    if ($oArtikel->kArtikel > 0) {
+                        $oArtikel_arr[] = $oArtikel;
                     }
                 }
             }
         }
     }
-    executeHook(HOOK_ARTIKEL_INC_AEHNLICHEARTIKEL, ['oArtikel_arr' => &$oArtikel_arr]);
+    executeHook(HOOK_ARTIKEL_INC_AEHNLICHEARTIKEL, [
+        'oArtikel_arr' => &$oArtikel_arr
+    ]);
 
-    if (is_array($oArtikel_arr) &&
-        is_array($kArtikelXSellerKey_arr) &&
-        count($oArtikel_arr) > 0 &&
-        count($kArtikelXSellerKey_arr) > 0
-    ) {
-        foreach ($oArtikel_arr as $i => $oArtikel) {
-            foreach ($kArtikelXSellerKey_arr as $kArtikelXSellerKey) {
-                if ($oArtikel->kArtikel === $kArtikelXSellerKey) {
-                    unset($oArtikel_arr[$i]);
-                }
+    foreach ($oArtikel_arr as $i => $oArtikel) {
+        foreach ($kArtikelXSellerKey_arr as $kArtikelXSellerKey) {
+            if ($oArtikel->kArtikel === $kArtikelXSellerKey) {
+                unset($oArtikel_arr[$i]);
             }
         }
     }

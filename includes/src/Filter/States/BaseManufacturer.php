@@ -10,7 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\Items\ItemManufacturer;
 use Filter\ProductFilter;
 
@@ -46,7 +46,7 @@ class BaseManufacturer extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         return parent::setValue((int)$value);
     }
@@ -54,7 +54,7 @@ class BaseManufacturer extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         $val = $this->getValue();
         if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {

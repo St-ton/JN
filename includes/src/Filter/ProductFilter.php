@@ -158,17 +158,17 @@ class ProductFilter
     private $params = [];
 
     /**
-     * @var IFilter[]
+     * @var FilterInterface[]
      */
     private $filters = [];
 
     /**
-     * @var IFilter[]
+     * @var FilterInterface[]
      */
     private $activeFilters = [];
 
     /**
-     * @var IFilter
+     * @var FilterInterface
      */
     private $baseState;
 
@@ -460,7 +460,7 @@ class ProductFilter
     }
 
     /**
-     * @return IFilter
+     * @return FilterInterface
      */
     public function getBaseState()
     {
@@ -468,7 +468,7 @@ class ProductFilter
     }
 
     /**
-     * @param IFilter $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setBaseState($filter): self
@@ -908,10 +908,10 @@ class ProductFilter
     }
 
     /**
-     * @param IFilter $filter
+     * @param FilterInterface $filter
      * @return $this
      */
-    public function registerFilter(IFilter $filter): self
+    public function registerFilter(FilterInterface $filter): self
     {
         $this->filters[] = $filter->setBaseData($this);
 
@@ -920,14 +920,14 @@ class ProductFilter
 
     /**
      * @param string $filterName
-     * @return IFilter
+     * @return FilterInterface
      * @throws \InvalidArgumentException
      */
-    public function registerFilterByClassName($filterName): IFilter
+    public function registerFilterByClassName($filterName): FilterInterface
     {
         $filter = null;
         if (class_exists($filterName)) {
-            /** @var IFilter $filter */
+            /** @var FilterInterface $filter */
             $filter          = new $filterName($this);
             $this->filters[] = $filter->setClassName($filterName);
         } else {
@@ -938,11 +938,11 @@ class ProductFilter
     }
 
     /**
-     * @param IFilter $filter
-     * @param mixed   $filterValue - shortcut to set active value (same as calling init($filterValue)
-     * @return IFilter
+     * @param FilterInterface $filter
+     * @param mixed           $filterValue - shortcut to set active value (same as calling init($filterValue)
+     * @return FilterInterface
      */
-    public function addActiveFilter(IFilter $filter, $filterValue): IFilter
+    public function addActiveFilter(FilterInterface $filter, $filterValue): FilterInterface
     {
         $this->activeFilters[] = $filter->setBaseData($this)->init($filterValue)->generateActiveFilterData();
 
@@ -950,10 +950,10 @@ class ProductFilter
     }
 
     /**
-     * @param IFilter $filter
+     * @param FilterInterface $filter
      * @return $this
      */
-    public function enableFilter(IFilter $filter): self
+    public function enableFilter(FilterInterface $filter): self
     {
         foreach ($this->filters as $idx => $registeredFilter) {
             if ($filter->getName() === $registeredFilter->getName()) {
@@ -974,7 +974,7 @@ class ProductFilter
         return array_reduce(
             $this->activeFilters,
             function ($carry, $item) use ($filterClassName) {
-                /** @var IFilter $item */
+                /** @var FilterInterface $item */
                 return $carry ?? ($item->getClassName() === $filterClassName
                         ? $item->getValue()
                         : null);
@@ -993,14 +993,14 @@ class ProductFilter
 
     /**
      * @param string $filterClassName
-     * @return IFilter|null
+     * @return FilterInterface|null
      */
     public function getFilterByClassName($filterClassName)
     {
         $filter = array_filter(
             $this->filters,
             function ($f) use ($filterClassName) {
-                /** @var IFilter $f */
+                /** @var FilterInterface $f */
                 return $f->getClassName() === $filterClassName;
             }
         );
@@ -1010,14 +1010,14 @@ class ProductFilter
 
     /**
      * @param string $filterClassName
-     * @return IFilter|null
+     * @return FilterInterface|null
      */
     public function getActiveFilterByClassName($filterClassName)
     {
         $filter = array_filter(
             $this->activeFilters,
             function ($f) use ($filterClassName) {
-                /** @var IFilter $f */
+                /** @var FilterInterface $f */
                 return $f->getClassName() === $filterClassName;
             }
         );
@@ -1026,21 +1026,21 @@ class ProductFilter
     }
 
     /**
-     * @return IFilter[]
+     * @return FilterInterface[]
      */
     public function getCustomFilters(): array
     {
         return array_filter(
             $this->filters,
             function ($e) {
-                /** @var IFilter $e */
+                /** @var FilterInterface $e */
                 return $e->isCustom();
             }
         );
     }
 
     /**
-     * @return IFilter[]
+     * @return FilterInterface[]
      */
     public function getAvailableFilters(): array
     {
@@ -1048,7 +1048,7 @@ class ProductFilter
     }
 
     /**
-     * @param IFilter[] $filters
+     * @param FilterInterface[] $filters
      * @return $this
      */
     public function setAvailableFilters($filters): self
@@ -1061,14 +1061,14 @@ class ProductFilter
     /**
      * get filters that can be displayed at content level
      *
-     * @return array|IFilter[]
+     * @return array|FilterInterface[]
      */
     public function getAvailableContentFilters(): array
     {
         return array_filter(
             $this->filters,
             function ($f) {
-                /** @var IFilter $f */
+                /** @var FilterInterface $f */
                 return ($f->getVisibility() === AbstractFilter::SHOW_ALWAYS
                     || $f->getVisibility() === AbstractFilter::SHOW_CONTENT);
             }
@@ -1084,11 +1084,11 @@ class ProductFilter
     }
 
     /**
-     * @param string  $className
-     * @param IFilter $filter
+     * @param string          $className
+     * @param FilterInterface $filter
      * @return bool
      */
-    public function override($className, IFilter $filter): bool
+    public function override($className, FilterInterface $filter): bool
     {
         foreach ($this->filters as $i => $registerdFilter) {
             if ($registerdFilter->getClassName() === $className) {
@@ -1104,7 +1104,7 @@ class ProductFilter
     /**
      * @return ItemManufacturer
      */
-    public function getManufacturerFilter(): IFilter
+    public function getManufacturerFilter(): FilterInterface
     {
         return $this->manufacturerFilter;
     }
@@ -1135,7 +1135,7 @@ class ProductFilter
     /**
      * @return BaseManufacturer
      */
-    public function getManufacturer(): IFilter
+    public function getManufacturer(): FilterInterface
     {
         return $this->manufacturer;
     }
@@ -1200,10 +1200,10 @@ class ProductFilter
     }
 
     /**
-     * @param IFilter $filter
+     * @param FilterInterface $filter
      * @return $this
      */
-    public function addAttributeFilter(IFilter $filter): self
+    public function addAttributeFilter(FilterInterface $filter): self
     {
         $this->attributeFilter[] = $filter;
 
@@ -1221,7 +1221,7 @@ class ProductFilter
     /**
      * @return BaseAttribute
      */
-    public function getAttributeValue(): IFilter
+    public function getAttributeValue(): FilterInterface
     {
         return $this->attributeValue;
     }
@@ -1252,7 +1252,7 @@ class ProductFilter
     /**
      * @return ItemAttribute
      */
-    public function getAttributeFilterCollection(): IFilter
+    public function getAttributeFilterCollection(): FilterInterface
     {
         return $this->attributeFilterCollection;
     }
@@ -1277,7 +1277,7 @@ class ProductFilter
     /**
      * @return BaseTag
      */
-    public function getTag(): IFilter
+    public function getTag(): FilterInterface
     {
         return $this->tag;
     }
@@ -1308,7 +1308,7 @@ class ProductFilter
     /**
      * @return BaseCategory
      */
-    public function getCategory(): IFilter
+    public function getCategory(): FilterInterface
     {
         return $this->category;
     }
@@ -1339,7 +1339,7 @@ class ProductFilter
     /**
      * @return ItemCategory
      */
-    public function getCategoryFilter(): IFilter
+    public function getCategoryFilter(): FilterInterface
     {
         return $this->categoryFilter;
     }
@@ -1370,7 +1370,7 @@ class ProductFilter
     /**
      * @return ItemSearch
      */
-    public function getSearch(): IFilter
+    public function getSearch(): FilterInterface
     {
         return $this->search;
     }
@@ -1386,7 +1386,7 @@ class ProductFilter
     /**
      * @return BaseSearchQuery
      */
-    public function getSearchQuery(): IFilter
+    public function getSearchQuery(): FilterInterface
     {
         return $this->searchQuery;
     }
@@ -1430,7 +1430,7 @@ class ProductFilter
     /**
      * @return BaseSearchSpecial
      */
-    public function getSearchSpecial(): IFilter
+    public function getSearchSpecial(): FilterInterface
     {
         return $this->searchSpecial;
     }
@@ -1439,7 +1439,7 @@ class ProductFilter
      * @param BaseSearchSpecial $filter
      * @return $this
      */
-    public function setSearchSpecial(IFilter $filter): self
+    public function setSearchSpecial(FilterInterface $filter): self
     {
         $this->searchSpecial = $filter;
 
@@ -1457,7 +1457,7 @@ class ProductFilter
     /**
      * @return ItemSearchSpecial
      */
-    public function getSearchSpecialFilter(): IFilter
+    public function getSearchSpecialFilter(): FilterInterface
     {
         return $this->searchSpecialFilter;
     }
@@ -1466,7 +1466,7 @@ class ProductFilter
      * @param ItemSearchSpecial $filter
      * @return $this
      */
-    public function setSearchSpecialFilter(IFilter $filter): self
+    public function setSearchSpecialFilter(FilterInterface $filter): self
     {
         $this->searchSpecialFilter = $filter;
 
@@ -1494,7 +1494,7 @@ class ProductFilter
     /**
      * @return ItemRating
      */
-    public function getRatingFilter(): IFilter
+    public function getRatingFilter(): FilterInterface
     {
         return $this->ratingFilter;
     }
@@ -1503,7 +1503,7 @@ class ProductFilter
      * @param ItemRating $filter
      * @return $this
      */
-    public function setRatingFilter(IFilter $filter): self
+    public function setRatingFilter(FilterInterface $filter): self
     {
         $this->ratingFilter = $filter;
 
@@ -1521,7 +1521,7 @@ class ProductFilter
     /**
      * @return ItemPriceRange
      */
-    public function getPriceRangeFilter(): IFilter
+    public function getPriceRangeFilter(): FilterInterface
     {
         return $this->priceRangeFilter;
     }
@@ -1530,7 +1530,7 @@ class ProductFilter
      * @param ItemPriceRange $filter
      * @return $this
      */
-    public function setPriceRangeFilter(IFilter $filter): self
+    public function setPriceRangeFilter(FilterInterface $filter): self
     {
         $this->priceRangeFilter = $filter;
 
@@ -1783,14 +1783,14 @@ class ProductFilter
 
     /**
      * @param bool $byType
-     * @return array|IFilter[]
+     * @return array|FilterInterface[]
      */
     public function getActiveFilters($byType = false): array
     {
         if ($byType === false) {
             return $this->activeFilters;
         }
-        $grouped = group($this->activeFilters, function (IFilter $f) {
+        $grouped = group($this->activeFilters, function (FilterInterface $f) {
             if ($f->isCustom()) {
                 return 'custom';
             }
@@ -1833,17 +1833,17 @@ class ProductFilter
         if (!empty($stateCondition)) {
             $conditions[] = $stateCondition;
         }
-        /** @var IFilter $filter */
+        /** @var FilterInterface $filter */
         foreach ($this->getActiveFilters(true) as $type => $active) {
             $count = count($active);
             if ($count > 1 && $type !== 'misc' && $type !== 'custom') {
                 $singleConditions = [];
-                $active           = select($active, function (IFilter $f) use ($ignore) {
+                $active           = select($active, function (FilterInterface $f) use ($ignore) {
                     return $ignore === null
                         || (is_string($ignore) && $f->getClassName() !== $ignore)
                         || (is_object($ignore) && $f !== $ignore);
                 });
-                $orFilters        = select($active, function (IFilter $f) {
+                $orFilters        = select($active, function (FilterInterface $f) {
                     return $f->getType() === AbstractFilter::FILTER_TYPE_OR;
                 });
                 /** @var AbstractFilter $filter */
@@ -1857,15 +1857,15 @@ class ProductFilter
                 }
                 if (count($orFilters) > 0) {
                     // group OR filters by their primary key row
-                    $groupedOrFilters = group($orFilters, function (IFilter $f) {
+                    $groupedOrFilters = group($orFilters, function (FilterInterface $f) {
                         return $f->getPrimaryKeyRow();
                     });
                     foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
-                        /** @var IFilter[] $orFilters */
+                        /** @var FilterInterface[] $orFilters */
                         $values = implode(
                             ',',
                             array_map(function ($f) {
-                                /** @var IFilter $f */
+                                /** @var FilterInterface $f */
                                 $val = $f->getValue();
 
                                 return is_array($val) ? implode(',', $val) : $val;
@@ -1885,7 +1885,7 @@ class ProductFilter
                     $conditions[] = $singleCondition;
                 }
             } elseif ($count === 1) {
-                /** @var IFilter[] $active */
+                /** @var FilterInterface[] $active */
                 $first = first($active);
                 if ($ignore === null
                     || (is_object($ignore) && $first !== $ignore)
@@ -1933,8 +1933,8 @@ class ProductFilter
         }
         $method = 'get' . $mapped;
         $result = $this->$method();
-        if (is_a($result, IFilter::class)) {
-            /** @var IFilter $result */
+        if (is_a($result, FilterInterface::class)) {
+            /** @var FilterInterface $result */
             return $result->isInitialized();
         }
 

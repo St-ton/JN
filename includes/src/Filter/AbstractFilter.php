@@ -10,7 +10,7 @@ namespace Filter;
  * Class AbstractFilter
  * @package Filter
  */
-abstract class AbstractFilter implements IFilter
+abstract class AbstractFilter implements FilterInterface
 {
     /**
      * filter can increase product amount
@@ -218,7 +218,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function init($value): IFilter
+    public function init($value): FilterInterface
     {
         if ($value !== null) {
             $this->isInitialized = true;
@@ -239,7 +239,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setIsActive($active): IFilter
+    public function setIsActive($active): FilterInterface
     {
         $this->isActive = $active;
 
@@ -249,7 +249,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setIsInitialized($value): IFilter
+    public function setIsInitialized($value): FilterInterface
     {
         $this->isInitialized = $value;
 
@@ -259,7 +259,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function generateActiveFilterData(): IFilter
+    public function generateActiveFilterData(): FilterInterface
     {
         $this->activeValues = [];
         $values             = $this->getValue();
@@ -271,7 +271,7 @@ abstract class AbstractFilter implements IFilter
         foreach ($values as $value) {
             if ($split === true) {
                 $class = $this->getClassName();
-                /** @var IFilter $instance */
+                /** @var FilterInterface $instance */
                 $instance = new $class($this->getProductFilter());
                 $instance->init($value);
             } else {
@@ -292,7 +292,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setFilterCollection(array $collection): IFilter
+    public function setFilterCollection(array $collection): FilterInterface
     {
         $this->filterCollection = $collection;
 
@@ -308,7 +308,7 @@ abstract class AbstractFilter implements IFilter
             ? $this->filterCollection
             : array_filter(
                 $this->filterCollection,
-                function (IFilter $f) {
+                function (FilterInterface $f) {
                     return $f->getVisibility() !== self::SHOW_NEVER;
                 }
             );
@@ -317,7 +317,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setFrontendName(string $name): IFilter
+    public function setFrontendName(string $name): FilterInterface
     {
         $this->frontendName = htmlspecialchars($name);
 
@@ -343,7 +343,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setVisibility($visibility): IFilter
+    public function setVisibility($visibility): FilterInterface
     {
         $this->visibility = self::SHOW_NEVER;
         if (is_numeric($visibility)) {
@@ -362,7 +362,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setUnsetFilterURL($url): IFilter
+    public function setUnsetFilterURL($url): FilterInterface
     {
         $this->unsetFilterURL = $url;
 
@@ -394,7 +394,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function addValue($value): IFilter
+    public function addValue($value): FilterInterface
     {
         $this->value[] = (int)$value;
 
@@ -430,7 +430,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setType(int $type): IFilter
+    public function setType(int $type): FilterInterface
     {
         $this->type = $type;
 
@@ -448,7 +448,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setName($name): IFilter
+    public function setName($name): FilterInterface
     {
         $this->name = $name;
 
@@ -466,7 +466,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setOptions($data): IFilter
+    public function setOptions($data): FilterInterface
     {
         $this->options = $data;
 
@@ -476,7 +476,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setProductFilter(ProductFilter $productFilter): IFilter
+    public function setProductFilter(ProductFilter $productFilter): FilterInterface
     {
         $this->productFilter = $productFilter;
 
@@ -494,7 +494,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setBaseData($productFilter): IFilter
+    public function setBaseData($productFilter): FilterInterface
     {
         $this->productFilter      = $productFilter;
         $this->languageID         = $productFilter->getLanguageID();
@@ -515,7 +515,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setUrlParam($param): IFilter
+    public function setUrlParam($param): FilterInterface
     {
         $this->urlParam = $param;
 
@@ -533,7 +533,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setUrlParamSEO($param): IFilter
+    public function setUrlParamSEO($param): FilterInterface
     {
         $this->urlParamSEO = $param;
 
@@ -551,7 +551,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setIsCustom(bool $custom): IFilter
+    public function setIsCustom(bool $custom): FilterInterface
     {
         $this->isCustom = $custom;
 
@@ -593,7 +593,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setClassName($className): IFilter
+    public function setClassName($className): FilterInterface
     {
         $this->className = $className;
         $this->setNiceName(basename(str_replace('\\', '/', $className)));
@@ -612,7 +612,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setNiceName($name): IFilter
+    public function setNiceName($name): FilterInterface
     {
         $this->niceName = $name;
 
@@ -630,7 +630,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setIsChecked(bool $isChecked): IFilter
+    public function setIsChecked(bool $isChecked): FilterInterface
     {
         $this->isChecked = $isChecked;
 
@@ -648,7 +648,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setDoUnset(bool $doUnset): IFilter
+    public function setDoUnset(bool $doUnset): FilterInterface
     {
         $this->doUnset = $doUnset;
 
@@ -666,7 +666,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setInputType($type): IFilter
+    public function setInputType($type): FilterInterface
     {
         $this->inputType = $type;
 
@@ -684,7 +684,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setIcon($icon): IFilter
+    public function setIcon($icon): FilterInterface
     {
         $this->icon = $icon;
 
@@ -710,7 +710,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setTableName($name): IFilter
+    public function setTableName($name): FilterInterface
     {
         $this->tableName = $name;
 
@@ -733,7 +733,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function hide(): IFilter
+    public function hide(): FilterInterface
     {
         $this->visibility = self::SHOW_NEVER;
 
@@ -783,7 +783,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         $this->value = $value;
 

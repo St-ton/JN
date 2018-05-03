@@ -10,7 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\ProductFilter;
 use Filter\States\BaseSearchQuery;
 
@@ -107,7 +107,7 @@ class ItemSearch extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value) : IFilter
+    public function setValue($value) : FilterInterface
     {
         $this->searchID = (int)$value;
 
@@ -125,7 +125,7 @@ class ItemSearch extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : IFilter
+    public function setSeo(array $languages) : FilterInterface
     {
         $oSeo_obj = \Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche

@@ -798,7 +798,7 @@ class Metadata
         }
         // Suchbegrifffilter
         $parts = $parts->merge(collect($this->productFilter->getSearchFilter())
-            ->map(function (IFilter $filter, $key) {
+            ->map(function (FilterInterface $filter, $key) {
                 return $filter->getName();
             })
             ->reject(function ($name) {
@@ -838,7 +838,7 @@ class Metadata
         }
         // MerkmalWertfilter
         $parts = $parts->merge(collect($this->productFilter->getAttributeFilter())
-            ->map(function (IFilter $filter, $key) {
+            ->map(function (FilterInterface $filter, $key) {
                 return $filter->getName();
             })
             ->reject(function ($name) {

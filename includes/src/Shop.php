@@ -332,7 +332,7 @@ final class Shop
     private static $_settings;
 
     /**
-     * @var IFilter[]
+     * @var \Filter\FilterInterface[]
      */
     public static $customFilters = [];
 

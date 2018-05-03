@@ -7,7 +7,7 @@
 namespace Filter\Items;
 
 use Filter\AbstractFilter;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\ProductFilter;
 use Filter\States\BaseManufacturer;
 
@@ -39,7 +39,7 @@ class ItemManufacturer extends BaseManufacturer
      * @param array|int $value
      * @return $this
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         $this->value = is_array($value) ? $value : (int)$value;
 

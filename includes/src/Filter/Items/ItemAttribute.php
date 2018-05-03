@@ -11,7 +11,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterStateSQL;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\ProductFilter;
 use Filter\States\BaseAttribute;
 use function Functional\every;
@@ -80,7 +80,7 @@ class ItemAttribute extends BaseAttribute
      * @param bool $isMultiSelect
      * @return ItemAttribute
      */
-    public function setIsMultiSelect(bool $isMultiSelect): IFilter
+    public function setIsMultiSelect(bool $isMultiSelect): FilterInterface
     {
         $this->isMultiSelect = $isMultiSelect;
 
@@ -91,7 +91,7 @@ class ItemAttribute extends BaseAttribute
      * @param int $value
      * @return $this
      */
-    public function setAttributeIDCompat($value): IFilter
+    public function setAttributeIDCompat($value): FilterInterface
     {
         $this->attributeID = (int)$value;
         if ($this->value > 0) {
@@ -115,7 +115,7 @@ class ItemAttribute extends BaseAttribute
      * @param int $value
      * @return $this
      */
-    public function setAttributeID($value): IFilter
+    public function setAttributeID($value): FilterInterface
     {
         $this->attributeID = (int)$value;
 
@@ -135,7 +135,7 @@ class ItemAttribute extends BaseAttribute
     /**
      * @inheritdoc
      */
-    public function init($value): IFilter
+    public function init($value): FilterInterface
     {
         $this->isInitialized = true;
         if (is_object($value)) {
@@ -156,7 +156,7 @@ class ItemAttribute extends BaseAttribute
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         $value         = $this->getValue();
         $oSeo_arr      = $this->batchAttributeData[$value]

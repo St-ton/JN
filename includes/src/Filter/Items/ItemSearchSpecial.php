@@ -10,7 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\ProductFilter;
 
 /**
@@ -49,7 +49,7 @@ class ItemSearchSpecial extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         $this->value = is_array($value) ? $value : [(int)$value];
 
@@ -79,7 +79,7 @@ class ItemSearchSpecial extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         $val = $this->getValue();
         if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {

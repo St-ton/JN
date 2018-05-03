@@ -10,7 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\ProductFilter;
 use Filter\States\BaseCategory;
 
@@ -85,7 +85,7 @@ class BaseSearchQuery extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         $this->value = (int)$value;
 
@@ -96,7 +96,7 @@ class BaseSearchQuery extends AbstractFilter
      * @param string $name
      * @return $this
      */
-    public function setName($name): IFilter
+    public function setName($name): FilterInterface
     {
         $this->error = null;
         $minChars    = ((int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen'] > 0)
@@ -178,7 +178,7 @@ class BaseSearchQuery extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         $oSeo_obj = \Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche

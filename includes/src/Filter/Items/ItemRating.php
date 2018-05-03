@@ -10,7 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\ProductFilter;
 
 /**
@@ -46,7 +46,7 @@ class ItemRating extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         return parent::setValue((int)$value);
     }
@@ -54,7 +54,7 @@ class ItemRating extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         $this->setName(\Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .

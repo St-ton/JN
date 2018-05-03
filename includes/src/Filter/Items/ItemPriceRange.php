@@ -10,7 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\ProductFilter;
 
 /**
@@ -153,7 +153,7 @@ class ItemPriceRange extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         return $this;
     }
@@ -161,7 +161,7 @@ class ItemPriceRange extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function init($id): IFilter
+    public function init($id): FilterInterface
     {
         if ($id === null) {
             $id = '0_0';

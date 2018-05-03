@@ -36,9 +36,9 @@ class ProductFilterURL
     }
 
     /**
-     * @param IFilter $extraFilter
-     * @param bool    $bCanonical
-     * @param bool    $debug
+     * @param FilterInterface $extraFilter
+     * @param bool            $bCanonical
+     * @param bool            $debug
      * @return string
      */
     public function getURL($extraFilter = null, $bCanonical = false, $debug = false): string
@@ -93,14 +93,14 @@ class ProductFilterURL
         }
         // split arrays of filters into single instances
         foreach ($active as $i => $filter) {
-            /** @var IFilter $filter */
+            /** @var FilterInterface $filter */
             $filterValue = $filter->getValue();
             if (is_array($filterValue)) {
                 unset($active[$i]);
                 foreach ($filterValue as $singleValue) {
                     $class    = $filter->getClassName();
                     $instance = new $class($this->productFilter);
-                    /** @var IFilter $instance */
+                    /** @var FilterInterface $instance */
                     $instance->init($singleValue);
                     $active[] = $instance;
                 }
@@ -108,7 +108,7 @@ class ProductFilterURL
         }
         // add all filter urls to an array indexed by the filter's url param
         foreach ($active as $filter) {
-            /** @var IFilter $filter */
+            /** @var FilterInterface $filter */
             $urlParam    = $filter->getUrlParam();
             $filterValue = $filter->getValue();
             if ($ignore !== null && $urlParam === $ignore) {
@@ -367,12 +367,12 @@ class ProductFilterURL
         foreach (array_filter(
                      $this->productFilter->getAvailableFilters(),
                      function ($f) {
-                         /** @var IFilter $f */
+                         /** @var FilterInterface $f */
                          return $f->isInitialized() && $f->isCustom();
                      }
                  ) as $filter
         ) {
-            /** @var IFilter $filter */
+            /** @var FilterInterface $filter */
             $className   = $filter->getClassName();
             $extraFilter = clone $filter;
             $urls        = [];
@@ -402,8 +402,8 @@ class ProductFilterURL
     /**
      * converts legacy stdClass filters to real filter instances
      *
-     * @param \stdClass|IFilter $extraFilter
-     * @return IFilter|null
+     * @param \stdClass|FilterInterface $extraFilter
+     * @return FilterInterface|null
      * @throws \InvalidArgumentException
      */
     private function convertExtraFilter($extraFilter = null)

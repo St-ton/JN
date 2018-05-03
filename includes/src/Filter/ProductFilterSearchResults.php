@@ -750,7 +750,7 @@ class ProductFilterSearchResults
              ->setCustomFilterOptions(array_filter(
                  $productFilter->getAvailableFilters(),
                  function ($e) {
-                     /** @var IFilter $e */
+                     /** @var FilterInterface $e */
                      $isCustom = $e->isCustom();
                      if ($isCustom && count($e->getOptions()) === 0) {
                          $e->hide();

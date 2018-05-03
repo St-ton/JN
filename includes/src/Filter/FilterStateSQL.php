@@ -6,6 +6,8 @@
 
 namespace Filter;
 
+use function Functional\reduce_left;
+
 /**
  * Class FilterStateSQL
  * @package Filter
@@ -94,11 +96,29 @@ class FilterStateSQL
     }
 
     /**
-     * @return array
+     * @return FilterJoin[]
      */
     public function getJoins(): array
     {
         return $this->joins;
+    }
+
+    /**
+     * @return FilterJoin[]
+     */
+    public function getDeduplicatedJoins(): array
+    {
+        $checked = [];
+
+        return reduce_left($this->joins, function(FilterJoin $value, $d, $c, $reduction) use (&$checked) {
+            $key = $value->getTable();
+            if (!in_array($key, $checked, true)) {
+                $checked[]   = $key;
+                $reduction[] = $value;
+            }
+
+            return $reduction;
+        }, []);
     }
 
     /**

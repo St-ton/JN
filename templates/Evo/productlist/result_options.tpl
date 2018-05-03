@@ -69,7 +69,7 @@
                                 {if count($filter->getFilterCollection()) > 0}
                                     {block name='productlist-result-options-'|cat:$filter->getNiceName()}
                                         {foreach $filter->getOptions() as $subFilter}
-                                            {if !$subFilter->getVisibility()->equals(\Filter\FilterVisibility::SHOW_NEVER())}
+                                            {if !$subFilter->getVisibility()->equals(\Filter\Visibility::SHOW_NEVER())}
                                                 <div class="form-group dropdown filter-type-{$filter->getNiceName()}">
                                                     <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                                         {$subFilter->getFrontendName()} <span class="caret"></span>
@@ -81,11 +81,11 @@
                                     {/block}
                                 {else}
                                     {block name='productlist-result-options-'|cat:$filter->getNiceName()}
-                                        {if $filter->getInputType() === $filter::INPUT_SELECT}
+                                        {if $filter->getInputType()->equals(\Filter\InputType::SELECT())}
                                             {assign var=outerClass value='form-group dropdown filter-type-'|cat:$filter->getNiceName()}
                                             {assign var=innerClass value='dropdown-menu'}
                                             {assign var=itemClass value=''}
-                                        {elseif $filter->getInputType() === $filter::INPUT_BUTTON}
+                                        {elseif $filter->getInputType()->equals(\Filter\InputType::BUTTON())}
                                             {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getNiceName()}
                                             {assign var=innerClass value='no-dropdown'}
                                             {assign var=itemClass value='btn btn-default'}
@@ -95,7 +95,7 @@
                                             {assign var=itemClass value=''}
                                         {/if}
                                         <div class="{$outerClass}">
-                                            {if $filter->getInputType() === $filter::INPUT_SELECT}
+                                            {if $filter->getInputType()->equals(\Filter\InputType::SELECT())}
                                                 <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                                     {$filter->getFrontendName()} <span class="caret"></span>
                                                 </a>

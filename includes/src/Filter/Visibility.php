@@ -12,12 +12,12 @@ use MyCLabs\Enum\Enum;
  * Class ComponentPropertyType
  *
  * @package bs4
- * @method FilterVisibility SHOW_NEVER()
- * @method FilterVisibility SHOW_BOX()
- * @method FilterVisibility SHOW_CONTENT()
- * @method FilterVisibility SHOW_ALWAYS()
+ * @method Visibility SHOW_NEVER()
+ * @method Visibility SHOW_BOX()
+ * @method Visibility SHOW_CONTENT()
+ * @method Visibility SHOW_ALWAYS()
  */
-class FilterVisibility extends Enum
+class Visibility extends Enum
 {
     /**
      * never show filter

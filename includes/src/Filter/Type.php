@@ -12,10 +12,10 @@ use MyCLabs\Enum\Enum;
  * Class ComponentPropertyType
  *
  * @package bs4
- * @method FilterType OR()
- * @method FilterType AND()
+ * @method Type OR()
+ * @method Type AND()
  */
-class FilterType extends Enum
+class Type extends Enum
 {
     /**
      * filter can increase product amount

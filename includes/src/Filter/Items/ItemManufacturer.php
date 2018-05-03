@@ -8,7 +8,7 @@ namespace Filter\Items;
 
 use Filter\AbstractFilter;
 use Filter\FilterInterface;
-use Filter\FilterType;
+use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseManufacturer;
 
@@ -32,8 +32,8 @@ class ItemManufacturer extends BaseManufacturer
              ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('allManufacturers'))
              ->setType($this->getConfig()['navigationsfilter']['manufacturer_filter_type'] === 'O'
-                 ? FilterType::OR()
-                 : FilterType::AND());
+                 ? Type::OR()
+                 : Type::AND());
     }
 
     /**

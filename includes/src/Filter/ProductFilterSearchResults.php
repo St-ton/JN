@@ -817,7 +817,7 @@ class ProductFilterSearchResults
                 /** @var FilterOption $af */
                 $options = $af->getOptions();
                 if (is_array($options)
-                    && !$af->getVisibility()->equals(FilterVisibility::SHOW_NEVER())
+                    && !$af->getVisibility()->equals(Visibility::SHOW_NEVER())
                     && array_reduce(
                         $options,
                         function ($carry, $option) {
@@ -831,7 +831,7 @@ class ProductFilterSearchResults
                 }
             }
             if (every($attribtuteFilterOptions, function (FilterOption $item) {
-                return $item->getVisibility()->equals(FilterVisibility::SHOW_NEVER());
+                return $item->getVisibility()->equals(Visibility::SHOW_NEVER());
             })) {
                 // hide the whole attribute filter collection if every filter consists of only active options
                 $productFilter->getAttributeFilterCollection()->hide();

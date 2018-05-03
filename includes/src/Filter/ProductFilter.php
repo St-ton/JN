@@ -849,12 +849,12 @@ class ProductFilter
             $filterClass = $filter->getClassName();
             if (isset($_GET[$filterParam])) {
                 // OR filters should always get an array as input - even if there is just one value active
-                if (!is_array($_GET[$filterParam]) && $filter->getType()->equals(FilterType::OR())) {
+                if (!is_array($_GET[$filterParam]) && $filter->getType()->equals(Type::OR())) {
                     $_GET[$filterParam] = [$_GET[$filterParam]];
                 }
                 // escape all input values
-                if (($filter->getType()->equals(FilterType::OR()) && is_array($_GET[$filterParam]))
-                    || ($filter->getType()->equals(FilterType::AND())
+                if (($filter->getType()->equals(Type::OR()) && is_array($_GET[$filterParam]))
+                    || ($filter->getType()->equals(Type::AND())
                         && (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = is_array($_GET[$filterParam])
@@ -1069,8 +1069,8 @@ class ProductFilter
             $this->filters,
             function ($f) {
                 /** @var FilterInterface $f */
-                return $f->getVisibility()->equals(FilterVisibility::SHOW_ALWAYS())
-                    || $f->getVisibility()->equals(FilterVisibility::SHOW_CONTENT());
+                return $f->getVisibility()->equals(Visibility::SHOW_ALWAYS())
+                    || $f->getVisibility()->equals(Visibility::SHOW_CONTENT());
             }
         );
     }
@@ -1844,7 +1844,7 @@ class ProductFilter
                         || (is_object($ignore) && $f !== $ignore);
                 });
                 $orFilters        = select($active, function (FilterInterface $f) {
-                    return $f->getType()->equals(FilterType::OR());
+                    return $f->getType()->equals(Type::OR());
                 });
                 /** @var AbstractFilter $filter */
                 foreach ($active as $filter) {

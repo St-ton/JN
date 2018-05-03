@@ -10,7 +10,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\FilterType;
+use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseTag;
 
@@ -30,8 +30,8 @@ class ItemTag extends BaseTag
         parent::__construct($productFilter);
         $this->setUrlParam('tf')
              ->setType($this->getConfig()['navigationsfilter']['tag_filter_type'] === 'O'
-                 ? FilterType::OR()
-                 : FilterType::AND());
+                 ? Type::OR()
+                 : Type::AND());
     }
 
     /**

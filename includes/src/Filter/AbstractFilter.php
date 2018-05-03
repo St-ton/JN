@@ -13,21 +13,6 @@ namespace Filter;
 abstract class AbstractFilter implements FilterInterface
 {
     /**
-     * filter type selectbox
-     */
-    const INPUT_SELECT = 1;
-
-    /**
-     * filter type checkbox
-     */
-    const INPUT_CHECKBOX = 2;
-
-    /**
-     * filter type button
-     */
-    const INPUT_BUTTON = 3;
-
-    /**
      * @var string|null
      */
     protected $icon;
@@ -48,7 +33,7 @@ abstract class AbstractFilter implements FilterInterface
     public $cSeo = [];
 
     /**
-     * @var FilterType
+     * @var Type
      */
     protected $type;
 
@@ -98,9 +83,9 @@ abstract class AbstractFilter implements FilterInterface
     protected $niceName = '';
 
     /**
-     * @var int
+     * @var InputType
      */
-    protected $inputType = self::INPUT_SELECT;
+    protected $inputType;
 
     /**
      * @var FilterOption[]
@@ -129,7 +114,7 @@ abstract class AbstractFilter implements FilterInterface
     private $unsetFilterURL = '';
 
     /**
-     * @var FilterVisibility
+     * @var Visibility
      */
     private $visibility;
 
@@ -181,8 +166,9 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function __construct($productFilter = null)
     {
-        $this->type       = FilterType::AND();
-        $this->visibility = FilterVisibility::SHOW_ALWAYS();
+        $this->type       = Type::AND();
+        $this->visibility = Visibility::SHOW_ALWAYS();
+        $this->inputType  = InputType::SELECT();
         if ($productFilter !== null) {
             $this->setBaseData($productFilter)->setClassName(get_class($this));
         }
@@ -282,7 +268,7 @@ abstract class AbstractFilter implements FilterInterface
             : array_filter(
                 $this->filterCollection,
                 function (FilterInterface $f) {
-                    return $f->getVisibility()->getValue() !== FilterVisibility::SHOW_NEVER;
+                    return $f->getVisibility()->getValue() !== Visibility::SHOW_NEVER;
                 }
             );
     }
@@ -308,7 +294,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getVisibility(): FilterVisibility
+    public function getVisibility(): Visibility
     {
         return $this->visibility;
     }
@@ -318,15 +304,15 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function setVisibility($visibility): FilterInterface
     {
-        $this->visibility = FilterVisibility::SHOW_NEVER();
-        if ($visibility instanceof FilterVisibility) {
+        $this->visibility = Visibility::SHOW_NEVER();
+        if ($visibility instanceof Visibility) {
             $this->visibility = $visibility;
         } elseif ($visibility === 'content') {
-            $this->visibility = FilterVisibility::SHOW_CONTENT();
+            $this->visibility = Visibility::SHOW_CONTENT();
         } elseif ($visibility === 'box') {
-            $this->visibility = FilterVisibility::SHOW_BOX();
+            $this->visibility = Visibility::SHOW_BOX();
         } elseif ($visibility === 'Y') {
-            $this->visibility = FilterVisibility::SHOW_ALWAYS();
+            $this->visibility = Visibility::SHOW_ALWAYS();
         }
 
         return $this;
@@ -395,7 +381,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getType(): FilterType
+    public function getType(): Type
     {
         return $this->type;
     }
@@ -403,7 +389,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setType(FilterType $type): FilterInterface
+    public function setType(Type $type): FilterInterface
     {
         $this->type = $type;
 
@@ -631,7 +617,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getInputType()
+    public function getInputType(): InputType
     {
         return $this->inputType;
     }
@@ -639,7 +625,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setInputType($type): FilterInterface
+    public function setInputType(InputType $type): FilterInterface
     {
         $this->inputType = $type;
 
@@ -708,7 +694,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function hide(): FilterInterface
     {
-        $this->visibility = FilterVisibility::SHOW_NEVER();
+        $this->visibility = Visibility::SHOW_NEVER();
 
         return $this;
     }
@@ -718,7 +704,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function isHidden(): bool
     {
-        return $this->visibility === FilterVisibility::SHOW_NEVER();
+        return $this->visibility === Visibility::SHOW_NEVER();
     }
 
     /**

@@ -12,7 +12,7 @@ use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterStateSQL;
 use Filter\FilterInterface;
-use Filter\FilterType;
+use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseAttribute;
 use function Functional\every;
@@ -145,8 +145,8 @@ class ItemAttribute extends BaseAttribute
                  ->setIsMultiSelect($value->nMehrfachauswahl === 1);
 
             return $this->setType($this->isMultiSelect()
-                ? FilterType::OR()
-                : FilterType::AND())
+                ? Type::OR()
+                : Type::AND())
                         ->setSeo($this->getAvailableLanguages());
 
         }
@@ -325,7 +325,7 @@ class ItemAttribute extends BaseAttribute
                 } else {
                     $activeValues[] = $values;
                 }
-                if ($filter->getType()->equals(FilterType::OR())) {
+                if ($filter->getType()->equals(Type::OR())) {
                     if (is_array($values)) {
                         $activeOrFilterIDs = $values;
                     } else {
@@ -495,8 +495,8 @@ class ItemAttribute extends BaseAttribute
                    ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
             $option->setParam($this->getUrlParam());
             $option->setType($attributeFilter->nMehrfachauswahl === 1
-                ? FilterType::OR()
-                : FilterType::AND()
+                ? Type::OR()
+                : Type::AND()
             );
             $option->setType($this->getType());
             $option->setClassName($this->getClassName());
@@ -522,8 +522,8 @@ class ItemAttribute extends BaseAttribute
                                    ? PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
                                    : BILD_KEIN_MERKMALWERTBILD_VORHANDEN);
                 $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1
-                    ? FilterType::OR()
-                    : FilterType::AND());
+                    ? Type::OR()
+                    : Type::AND());
                 $attributeValue->setClassName($this->getClassName());
                 $attributeValue->setParam($this->getUrlParam());
                 $attributeValue->setName(htmlentities($filterValue->cWert));

@@ -121,7 +121,7 @@ interface IFilter
      *
      * @return int
      */
-    public function getType();
+    public function getType(): int;
 
     /**
      * set a filter's type - FILTER_TYPE_OR/FILTER_TYPE_AND
@@ -129,7 +129,7 @@ interface IFilter
      * @param int $type
      * @return $this
      */
-    public function setType($type): IFilter;
+    public function setType(int $type): IFilter;
 
     /**
      * the filter's base MySQL table name
@@ -357,7 +357,7 @@ interface IFilter
     /**
      * @return int
      */
-    public function getVisibility();
+    public function getVisibility(): int;
 
     /**
      * @param int|string $visibility

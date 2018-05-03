@@ -308,8 +308,7 @@ abstract class AbstractFilter implements IFilter
             ? $this->filterCollection
             : array_filter(
                 $this->filterCollection,
-                function ($f) {
-                    /** @var $f IFilter */
+                function (IFilter $f) {
                     return $f->getVisibility() !== self::SHOW_NEVER;
                 }
             );
@@ -336,7 +335,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function getVisibility()
+    public function getVisibility(): int
     {
         return $this->visibility;
     }
@@ -423,7 +422,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
@@ -431,9 +430,9 @@ abstract class AbstractFilter implements IFilter
     /**
      * @inheritdoc
      */
-    public function setType($type): IFilter
+    public function setType(int $type): IFilter
     {
-        $this->type = (int)$type;
+        $this->type = $type;
 
         return $this;
     }

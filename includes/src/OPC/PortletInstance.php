@@ -301,8 +301,11 @@ class PortletInstance implements \JsonSerializable
      * @param string $alt
      * @return $this
      */
-    public function setImageAttributes($src, $alt)
+    public function setImageAttributes($src = null, $alt = null)
     {
+        $src = $src ?? $this->getProperty('src');
+        $alt = $alt ?? $this->getProperty('alt');
+
         $this->setAttribute('alt', $alt);
 
         if (empty($src)) {

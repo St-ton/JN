@@ -10,6 +10,7 @@ class Heading extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->setStyle('background', $instance->getProperty('bgcolor'));
         $level         = $instance->getProperty('level');
         $text          = $instance->getProperty('text');
         $attributes    = $instance->getAttributeString();
@@ -50,6 +51,9 @@ class Heading extends \OPC\Portlet
                 'type'    => 'text',
                 'default' => 'Heading',
             ],
+            'bgcolor' => [
+                'type' => 'color',
+            ]
         ];
     }
 
@@ -57,6 +61,7 @@ class Heading extends \OPC\Portlet
     {
         return [
             'Styles' => 'styles',
+            'Styles2' => ['bgcolor']
         ];
     }
 }

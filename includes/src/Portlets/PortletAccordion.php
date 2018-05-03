@@ -18,7 +18,7 @@ class PortletAccordion extends \OPCPortlet
     {
         return '<img class="fa" src="' . \Shop::getURL() .'/'
             . PFAD_TEMPLATES
-            . 'Evo/themes/base/images/cms_live_editor/Icon-Accordion.svg"></i>
+            . 'Evo/themes/base/images/opc/Icon-Accordion.svg"></i>
             <br/> Akkordeon';
     }
 

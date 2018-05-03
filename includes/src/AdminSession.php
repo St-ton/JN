@@ -105,6 +105,9 @@ class AdminSession
         if (isset($_SESSION['Waehrung']) && get_class($_SESSION['Waehrung']) === 'stdClass') {
             $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
         }
+        if (empty($_SESSION['Sprachen'])) {
+            $_SESSION['Sprachen'] = Sprache::getInstance(false)->gibInstallierteSprachen();
+        }
     }
 
     /**

@@ -53,6 +53,9 @@ class Migration_20180226121900 extends Migration implements IMigration
             VALUES (0, 'Text', 'Text', 'content')");
 
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
+            VALUES (0, 'Product Stream', 'ProductStream', 'content')");
+
+        $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Row', 'Row', 'layout')");
 
         /*

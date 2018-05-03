@@ -61,6 +61,8 @@ class Service
             'getPortletInstance',
             'getPortletPreviewHtml',
             'getConfigPanelHtml',
+            'getFilteredProductIds',
+            'getFilterOptions',
         ];
     }
 
@@ -352,5 +354,67 @@ class Service
     public function isReplacePage()
     {
         return $this->getCurPage()->isReplace();
+    }
+
+    /**
+     * If this portlet has a property 'filters' set as an array of filters then return the filtered set of product keys
+     *
+     * @return int[] - filtered product keys
+     */
+    public function getFilteredProductIds($filters = [])
+    {
+        \Shop::setLanguage(1);
+        $productFilter = new \Filter\ProductFilter();
+
+        foreach ($filters as $filter) {
+            $productFilter->addActiveFilter(new $filter['class']($productFilter), $filter['value']);
+        }
+
+        return $productFilter->getProductKeys();
+    }
+
+    /**
+     * @param array $filtersEnabled
+     * @return array
+     */
+    public function getFilterOptions($filtersEnabled = [])
+    {
+        $productFilter     = new \Filter\ProductFilter();
+        $filtersEnabledMap = [];
+
+        foreach ($filtersEnabled as $filterEnabled) {
+            $filtersEnabledMap[$filterEnabled['class'] . ':' . $filterEnabled['value']] = true;
+            $productFilter->addActiveFilter(new $filterEnabled['class']($productFilter), $filterEnabled['value']);
+        }
+
+        $productFilter->getProducts();
+        $searchResults    = $productFilter->getSearchResults(false);
+        $availableFilters = $productFilter->getAvailableFilters();
+
+        $res = [];
+
+        foreach (['Category', 'Manufacturer', 'Rating', 'SearchSpecial', 'Tag', 'Attribute', 'PriceRange'] as $term) {
+            /** @var \Filter\FilterOption[] $filterOptions */
+            $filterOptions = $searchResults->{"get{$term}FilterOptions"}();
+
+            $res[$term] = [];
+
+            foreach ($filterOptions as $filterOption) {
+                if (!array_key_exists(
+                    $filterOption->getClassName() . ':' . $filterOption->getValue(),
+                    $filtersEnabledMap
+                )) {
+                    $res[$term][] = [
+                        'name'  => $filterOption->getName(),
+                        'term'  => $term,
+                        'class' => $filterOption->getClassName(),
+                        'value' => $filterOption->getValue(),
+                        'count' => $filterOption->getCount(),
+                    ];
+                }
+            }
+        }
+
+        return $res;
     }
 }

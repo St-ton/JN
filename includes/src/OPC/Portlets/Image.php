@@ -12,7 +12,7 @@ class Image extends \OPC\Portlet
 {
     public function getHtml(PortletInstance $instance, $preview = false)
     {
-        $instance->setImageAttributes($instance->getProperty('src'), $instance->getProperty('alt'));
+        $instance->setImageAttributes();
         $instance->addClass('img-responsive');
 
         return '<img '

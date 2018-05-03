@@ -11,6 +11,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
+use Filter\FilterType;
 use Filter\Items\ItemManufacturer;
 use Filter\ProductFilter;
 
@@ -117,7 +118,7 @@ class BaseManufacturer extends AbstractFilter
             $val = [$val];
         }
 
-        return $this->getType() === AbstractFilter::FILTER_TYPE_OR
+        return $this->getType()->equals(FilterType::OR())
             ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . implode(', ', $val) . ')'
             : implode(' AND ', array_map(function ($e) {
                 return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
@@ -145,7 +146,7 @@ class BaseManufacturer extends AbstractFilter
         if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] === 'N') {
             return $options;
         }
-        $state = $this->productFilter->getCurrentStateData($this->getType() === AbstractFilter::FILTER_TYPE_OR
+        $state = $this->productFilter->getCurrentStateData($this->getType()->equals(FilterType::OR())
             ? $this->getClassName()
             : null
         );

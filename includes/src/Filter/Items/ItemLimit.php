@@ -10,6 +10,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
+use Filter\FilterType;
 use Filter\ProductFilter;
 
 /**

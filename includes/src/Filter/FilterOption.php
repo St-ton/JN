@@ -78,6 +78,7 @@ class FilterOption extends AbstractFilter
      */
     public function __construct($productFilter = null)
     {
+        parent::__construct($productFilter);
         $this->isInitialized = true;
         $this->options       = [];
     }

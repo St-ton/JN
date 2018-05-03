@@ -87,7 +87,7 @@ interface FilterInterface
     public function setValue($value): FilterInterface;
 
     /**
-     * add filter value to active filter (only for FILTER_TYPE_OR filters)
+     * add filter value to active filter (only for FilterType::OR filters)
      *
      * @param int|string $value
      * @return $this
@@ -117,19 +117,19 @@ interface FilterInterface
     public function setName($name): FilterInterface;
 
     /**
-     * get the filter's type - FILTER_TYPE_OR/FILTER_TYPE_AND
+     * get the filter's type - FilterType::AND/FilterType::OR
      *
-     * @return int
+     * @return FilterType
      */
-    public function getType(): int;
+    public function getType(): FilterType;
 
     /**
-     * set a filter's type - FILTER_TYPE_OR/FILTER_TYPE_AND
+     * set a filter's type - FilterType::AND/FilterType::OR
      *
-     * @param int $type
+     * @param FilterType $type
      * @return $this
      */
-    public function setType(int $type): FilterInterface;
+    public function setType(FilterType $type): FilterInterface;
 
     /**
      * the filter's base MySQL table name
@@ -355,9 +355,9 @@ interface FilterInterface
     public function getAvailableLanguages(): array;
 
     /**
-     * @return int
+     * @return FilterVisibility
      */
-    public function getVisibility(): int;
+    public function getVisibility(): FilterVisibility;
 
     /**
      * @param int|string $visibility

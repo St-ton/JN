@@ -849,12 +849,12 @@ class ProductFilter
             $filterClass = $filter->getClassName();
             if (isset($_GET[$filterParam])) {
                 // OR filters should always get an array as input - even if there is just one value active
-                if (!is_array($_GET[$filterParam]) && $filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
+                if (!is_array($_GET[$filterParam]) && $filter->getType()->equals(FilterType::OR())) {
                     $_GET[$filterParam] = [$_GET[$filterParam]];
                 }
                 // escape all input values
-                if (($filter->getType() === AbstractFilter::FILTER_TYPE_OR && is_array($_GET[$filterParam]))
-                    || ($filter->getType() === AbstractFilter::FILTER_TYPE_AND
+                if (($filter->getType()->equals(FilterType::OR()) && is_array($_GET[$filterParam]))
+                    || ($filter->getType()->equals(FilterType::AND())
                         && (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = is_array($_GET[$filterParam])
@@ -1069,8 +1069,8 @@ class ProductFilter
             $this->filters,
             function ($f) {
                 /** @var FilterInterface $f */
-                return ($f->getVisibility() === AbstractFilter::SHOW_ALWAYS
-                    || $f->getVisibility() === AbstractFilter::SHOW_CONTENT);
+                return $f->getVisibility()->equals(FilterVisibility::SHOW_ALWAYS())
+                    || $f->getVisibility()->equals(FilterVisibility::SHOW_CONTENT());
             }
         );
     }
@@ -1844,7 +1844,7 @@ class ProductFilter
                         || (is_object($ignore) && $f !== $ignore);
                 });
                 $orFilters        = select($active, function (FilterInterface $f) {
-                    return $f->getType() === AbstractFilter::FILTER_TYPE_OR;
+                    return $f->getType()->equals(FilterType::OR());
                 });
                 /** @var AbstractFilter $filter */
                 foreach ($active as $filter) {

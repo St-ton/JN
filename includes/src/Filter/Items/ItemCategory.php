@@ -10,6 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
+use Filter\FilterType;
 use Filter\ProductFilter;
 use Filter\States\BaseCategory;
 
@@ -94,7 +95,7 @@ class ItemCategory extends BaseCategory
         }
         $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
         $state              = $this->productFilter->getCurrentStateData(
-            $this->getType() === AbstractFilter::FILTER_TYPE_OR
+            $this->getType()->equals(FilterType::OR())
                 ? $this->getClassName()
                 : null
         );

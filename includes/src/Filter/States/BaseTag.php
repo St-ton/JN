@@ -11,6 +11,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
+use Filter\FilterType;
 use Filter\Items\ItemTag;
 use Filter\ProductFilter;
 
@@ -139,7 +140,7 @@ class BaseTag extends AbstractFilter
             return $options;
         }
         $joinedTables = [];
-        $state        = $this->productFilter->getCurrentStateData($this->getType() === AbstractFilter::FILTER_TYPE_OR
+        $state        = $this->productFilter->getCurrentStateData($this->getType()->equals(FilterType::OR())
             ? $this->getClassName()
             : null
         );

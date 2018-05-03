@@ -34,7 +34,7 @@
                     <hr>
                     <p class="btn-group btn-group-justified btn-group-full" role="group">
                         <a href="{get_static_route id='warenkorb.php'}" class="btn btn-default btn-basket"><i class="fa fa-shopping-cart"></i> {lang key='gotoBasket'}</a>
-                        <a href="{$pushedArtikel->cURL}" class="btn btn-primary btn-checkout" data-dismiss="{if isset($type)}{$type}{else}modal{/if}" aria-label="Close"><i class="fa fa-arrow-circle-right"></i> {lang key="continueShopping" section="checkout"}</a>
+                        <a href="{$pushedArtikel->cURLFull}" class="btn btn-primary btn-checkout" data-dismiss="{if isset($type)}{$type}{else}modal{/if}" aria-label="Close"><i class="fa fa-arrow-circle-right"></i> {lang key="continueShopping" section="checkout"}</a>
                     </p>
 {*
                     <p class="continue-shopping">

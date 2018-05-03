@@ -98,6 +98,9 @@ abstract class Portlet implements \JsonSerializable
                 if ($propnames === 'styles') {
                     $tabs[$tabname] = $this->getStylesPropertyDesc();
                 }
+                if ($propnames === 'animations') {
+                    $tabs[$tabname] = $this->getAnimationsPropertyDesc();
+                }
             } else {
                 foreach ($propnames as $i => $propname) {
                     $tabs[$tabname][$i] = $desc[$propname];
@@ -157,12 +160,14 @@ abstract class Portlet implements \JsonSerializable
         $res   = '';
         $label = $propDesc['label'] ?? $propname;
         $type  = $propDesc['type'] ?? 'text';
-        $class = !empty($propDesc['class']) ? ' '.$propDesc['class'] : '';
+        $class = !empty($propDesc['class']) ? ' ' . $propDesc['class'] : '';
 
         $prop = $instance->hasProperty($propname)
             ? $instance->getProperty($propname)
             : $propDesc['default'];
 
+        $placeholder = !empty($propDesc['placeholder']) ? " placeholder='" . $propDesc['placeholder'] . "'" : "";
+        $help        = !empty($propDesc['help']) ? "<span class='help-block'>" . $propDesc['help'] . "</span>" : '';
 
         $displ = 12;
         //$res .= !empty($propDesc['dspl_row_open']) ? "<div class='col-xs-6'><div class='row'>" : "";
@@ -182,11 +187,11 @@ abstract class Portlet implements \JsonSerializable
         switch ($type) {
             case 'number':
                 $res .= "<input type='number' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'>";
+                    . " id='config-$propname'$placeholder>";
                 break;
             case 'email':
                 $res .= "<input type='email' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'>";
+                    . " id='config-$propname'$placeholder>";
                 break;
             case 'date':
                 $res .= "<input type='date' class='form-control$class' name='$propname' value='$prop'"
@@ -209,10 +214,18 @@ abstract class Portlet implements \JsonSerializable
                 break;
             case 'select':
                 $res .= "<select class='form-control$class' name='$propname'>";
-
-                foreach ($propDesc['options'] as $option) {
-                    $selected = $prop === $option ? " selected" : "";
-                    $res     .= "<option value='$option' $selected>$option</option>";
+                foreach ($propDesc['options'] as $name => $option) {
+                    if (stripos($name,'optgroup') !== false) {
+                        $res .= "<optgroup label='" . $option['label'] . "'>";
+                        foreach ($option['options'] as $gr_option) {
+                            $selected = ($prop === $gr_option) ? " selected" : "";
+                            $res     .= "<option value='$gr_option' $selected>$gr_option</option>";
+                        }
+                        $res .= "</optgroup>";
+                    } else {
+                        $selected = ($prop === $option) ? " selected" : "";
+                        $res     .= "<option value='$option' $selected>$option</option>";
+                    }
                 }
 
                 $res .= '</select>';
@@ -239,15 +252,25 @@ abstract class Portlet implements \JsonSerializable
                 $res .= "  <div id='$propname' class='input-group colorpicker-component$class'>
                                 <input class='form-control' name='$propname' value='$prop'>
                                 <span class='input-group-addon'><i></i></span></div>"
-                    . "<script>$('#$propname').colorpicker({format: 'rgba'});</script>";
+                    . "<script>$('#$propname').colorpicker({format: 'rgba',colorSelectors: {
+                    '#ffffff': '#ffffff',
+                    '#777777': '#777777',
+                    '#337ab7': '#337ab7',
+                    '#5cb85c': '#5cb85c',
+                    '#5bc0de': '#5bc0de',
+                    '#f0ad4e': '#f0ad4e',
+                    '#d9534f': '#d9534f',
+                    '#000000': '#000000'
+                }});</script>";
                 break;
             case 'text':
             default:
                 $res .= "<input type='text' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'>";
+                    . " id='config-$propname'$placeholder>";
                 break;
         }
 
+        $res .= $help;
         $res .= !empty($containerId) ? "</div>" : "</div></div>";
         //$res .= !empty($propDesc['dspl_row_close']) ? "</div></div>" : "";
 
@@ -350,35 +373,6 @@ abstract class Portlet implements \JsonSerializable
                 'class'=> 'css-input-grid',
                 'dspl_width' => 25
             ],
-            'border-top' => [
-                'label' => 'border-top',
-                'type' => 'number',
-                'default'=> '',
-                'class'=> 'css-input-grid',
-                'dspl_width' => 25
-            ],
-            'border-right' => [
-                'label' => 'border-right',
-                'type' => 'number',
-                'default'=> '',
-                'class'=> 'css-input-grid',
-                'dspl_width' => 25
-            ],
-            'border-bottom' => [
-                'label' => 'border-bottom',
-                'type' => 'number',
-                'default'=> '',
-                'class'=> 'css-input-grid',
-                'dspl_row_close'=> true,
-                'dspl_width' => 25
-            ],
-            'border-left' => [
-                'label' => 'border-left',
-                'type' => 'number',
-                'default'=> '',
-                'class'=> 'css-input-grid',
-                'dspl_width' => 25
-            ],
             'padding-top' => [
                 'label' => 'padding-top',
                 'type' => 'number',
@@ -398,7 +392,6 @@ abstract class Portlet implements \JsonSerializable
                 'type' => 'number',
                 'default'=> '',
                 'class'=> 'css-input-grid',
-                'dspl_row_close'=> true,
                 'dspl_width' => 25
             ],
             'padding-left' => [
@@ -407,6 +400,13 @@ abstract class Portlet implements \JsonSerializable
                 'default'=> '',
                 'class'=> 'css-input-grid',
                 'dspl_width' => 25
+            ],
+            'border-width' => [
+                'label' => 'border-width',
+                'type' => 'number',
+                'default'=> '',
+                'class'=> 'css-input-grid',
+                'dspl_width' => 50
             ],
             'border-style' => [
                 'label' => 'border-style',
@@ -430,7 +430,129 @@ abstract class Portlet implements \JsonSerializable
             'border-color' => [
                 'label' => 'border-color',
                 'type'=> 'color',
-                'dspl_width' => 50
+                'dspl_width' => 100
+            ]
+        ];
+    }
+
+    public function getAnimationsPropertyDesc()
+    {
+        return [
+            'animation-style'    => [
+                'label'      => 'animation-style',
+                'type'       => 'select',
+                'options'    => [
+                    'optgroup1' => [
+                        'label'   => 'Attention Seekers',
+                        'options' => [
+                            'none',
+                            'bounce',
+                            'flash',
+                            'pulse',
+                            'rubberBand',
+                            'shake',
+                            'swing',
+                            'tada',
+                            'wobble',
+                            'jello',
+                        ],
+                    ],
+                    'optgroup2' => [
+                        'label'   => 'Bouncing Entrances',
+                        'options' => [
+                            'bounceIn',
+                            'bounceInDown',
+                            'bounceInLeft',
+                            'bounceInRight',
+                            'bounceInUp',
+                        ],
+                    ],
+                    'optgroup3' => [
+                        'label'   => 'Fading Entrances',
+                        'options' => [
+                            'fadeIn',
+                            'fadeInDown',
+                            'fadeInDownBig',
+                            'fadeInLeft',
+                            'fadeInLeftBig',
+                        ],
+                    ],
+                    'optgroup4' => [
+                        'label'   => 'Flippers',
+                        'options' => [
+                            'flip',
+                            'flipInX',
+                            'flipInY',
+                        ],
+                    ],
+                    'optgroup5' => [
+                        'label'   => 'lightspeed',
+                        'options' => [
+                            'lightSpeedIn',
+                        ],
+                    ],
+                    'optgroup6' => [
+                        'label'   => 'Rotating Entrances',
+                        'options' => [
+                            'rotateIn',
+                            'rotateInDownLeft',
+                            'rotateInDownRight',
+                            'rotateInUpLeft',
+                            'rotateInUpRight',
+                        ],
+                    ],
+                    'optgroup7' => [
+                        'label'   => 'Sliding Entrances',
+                        'options' => [
+                            'slideInUp',
+                            'slideInDown',
+                            'slideInLeft',
+                            'slideInRight',
+                        ],
+                    ],
+                    'optgroup8' => [
+                        'label'   => 'Zoom Entrances',
+                        'options' => [
+                            'zoomIn',
+                            'zoomInDown',
+                            'zoomInLeft',
+                            'zoomInRight',
+                            'zoomInUp',
+                        ],
+                    ],
+                    'optgroup9' => [
+                        'label'   => 'Specials',
+                        'options' => [
+                            'hinge',
+                            'rollIn',
+                        ],
+                    ],
+                ],
+                'dspl_width' => 50,
+            ],
+            'data-wow-duration'  => [
+                'label'       => 'duration',
+                'help'        => 'Change the animation duration.',
+                'placeholder' => '1s',
+                'dspl_width'  => 50,
+            ],
+            'data-wow-delay'     => [
+                'label'      => 'Delay',
+                'help'       => 'Delay before the animation starts.',
+                'dspl_width' => 50,
+            ],
+            'data-wow-offset'    => [
+                'label'       => 'Offset',
+                'type'        => 'number',
+                'placeholder' => 200,
+                'help'        => 'Distance to start the animation.',
+                'dspl_width'  => 50,
+            ],
+            'data-wow-Iteration' => [
+                'label'      => 'iteration',
+                'type'       => 'number',
+                'help'       => 'The animation number times is repeated.',
+                'dspl_width' => 50,
             ]
         ];
     }

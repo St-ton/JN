@@ -5,6 +5,9 @@ stages:
 archive:
   stage: build
   script:
+    - cd includes
+    - php7.0 /usr/bin/composer install
+    - cd ../
     - shopcli build:archive "$CI_PROJECT_DIR" -n -v -o "$HOME/archives/shop-$CI_COMMIT_REF_SLUG.zip"
   only:
     - master

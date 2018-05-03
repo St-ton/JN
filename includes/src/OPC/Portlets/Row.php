@@ -42,17 +42,14 @@ class Row extends \OPC\Portlet
                     'layout-sm' => [
                         'label'   => 'Layout SM',
                         'type'    => 'text',
-                        'default' => '6+6',
                     ],
                     'layout-md' => [
                         'label'   => 'Layout MD',
                         'type'    => 'text',
-                        'default' => '6+6',
                     ],
                     'layout-lg' => [
                         'label'   => 'Layout LG',
                         'type'    => 'text',
-                        'default' => '6+6',
                     ],
                 ]
             ],

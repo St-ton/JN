@@ -89,9 +89,10 @@ class Migration_20180226121900 extends Migration implements IMigration
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Panel', 'Panel', 'layout')");
 
+        */
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Accordion', 'Accordion', 'layout')");
-
+/*
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Divider', 'Divider', 'layout')");
 

@@ -59,7 +59,7 @@ abstract class Portlet implements \JsonSerializable
         $defProps = [];
 
         foreach ($this->getPropertyDesc() as $name => $propDesc) {
-            $defProps[$name] = $propDesc['default'];
+            $defProps[$name] = $propDesc['default'] ?? '';
         }
 
         return $defProps;

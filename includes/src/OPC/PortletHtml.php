@@ -191,7 +191,8 @@ trait PortletHtml
             $displ = round(12 * ($propDesc['dspl_width'] * 0.01));
         }
         $res .= "<div class='col-xs-$displ'>";
-        $res .= "<div class='form-group'><label for='config-$propname'>$label</label>";
+        $res .= "<div class='form-group'>";
+        $res .= $type!=='hidden' ? "<label for='config-$propname'>$label</label>" : "";
 
         if (!empty($propDesc['collapse'])) {
             $res .= '<a title="more" class="pull-right" role="button" data-toggle="collapse"
@@ -284,6 +285,10 @@ trait PortletHtml
                 break;
             case 'filter':
                 $res .= $this->getConfigPanelSnippet($instance, 'filter');
+                break;
+            case 'hidden':
+                $res .= "<input type='hidden' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
                 break;
             case 'text':
             default:

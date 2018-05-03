@@ -11,7 +11,7 @@ use MyCLabs\Enum\Enum;
 /**
  * Class ComponentPropertyType
  *
- * @package bs4
+ * @package Filter
  * @method InputType SELECT()
  * @method InputType CHECKBOX()
  * @method InputType BUTTON()

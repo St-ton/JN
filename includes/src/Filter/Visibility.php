@@ -11,7 +11,7 @@ use MyCLabs\Enum\Enum;
 /**
  * Class ComponentPropertyType
  *
- * @package bs4
+ * @package Filter
  * @method Visibility SHOW_NEVER()
  * @method Visibility SHOW_BOX()
  * @method Visibility SHOW_CONTENT()

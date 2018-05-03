@@ -11,7 +11,7 @@ use MyCLabs\Enum\Enum;
 /**
  * Class ComponentPropertyType
  *
- * @package bs4
+ * @package Filter
  * @method Type OR()
  * @method Type AND()
  */

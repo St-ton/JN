@@ -65,7 +65,7 @@ class BaseTag extends AbstractFilter
                 WHERE tseo.cKey = 'kTag' 
                     AND tseo.kKey = :val",
             ['val' => $this->getValue()],
-            1
+            ReturnType::SINGLE_OBJECT
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -155,17 +155,6 @@ class BaseTag extends AbstractFilter
             ->setTable('ttag')
             ->setOn('ttagartikel.kTag = ttag.kTag')
             ->setOrigin(__CLASS__));
-        // remove duplicate joins
-        $joins = $state->getJoins();
-        foreach ($joins as $i => $stateJoin) {
-            /** @var FilterJoin $stateJoin */
-            if (!in_array($stateJoin->getTable(), $joinedTables, true)) {
-                $joinedTables[] = $stateJoin->getTable();
-            } else {
-                unset($joins[$i]);
-            }
-        }
-        $state->setJoins($joins);
         $state->addCondition('ttag.nAktiv = 1');
         $state->addCondition('ttag.kSprache = ' . $this->getLanguageID());
         $query               = $this->productFilter->getFilterSQL()->getBaseQuery(
@@ -175,7 +164,7 @@ class BaseTag extends AbstractFilter
                 'ttagartikel.nAnzahlTagging',
                 'tartikel.kArtikel'
             ],
-            $state->getJoins(),
+            $state->getDeduplicatedJoins(),
             $state->getConditions(),
             $state->getHaving(),
             null,

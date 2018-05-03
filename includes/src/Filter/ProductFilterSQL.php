@@ -6,6 +6,8 @@
 
 namespace Filter;
 
+use function Functional\reduce_left;
+
 /**
  * Class ProductFilterSQL
  */
@@ -34,7 +36,7 @@ class ProductFilterSQL
     /**
      * @return \stdClass
      */
-    public function getOrder()
+    public function getOrder(): \stdClass
     {
         $Artikelsortierung = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         $sort              = new \stdClass();
@@ -156,22 +158,15 @@ class ProductFilterSQL
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $this->productFilter->getCustomerGroupID());
         // remove duplicate joins
         $checked = [];
-        $joins   = array_filter(
-            $joins,
-            function ($j) use (&$checked) {
-                if (is_string($j)) {
-                    throw new \InvalidArgumentException('getBaseQuery() got join as string: ' . $j);
-                }
-                /** @var FilterJoin $j */
-                if (!in_array($j->getTable(), $checked, true)) {
-                    $checked[] = $j->getTable();
-
-                    return true;
-                }
-
-                return false;
+        $joins   = reduce_left($joins, function(FilterJoin $value, $i, $c, $reduction) use (&$checked) {
+            $key = $value->getTable();
+            if (!in_array($key, $checked, true)) {
+                $checked[]   = $key;
+                $reduction[] = $value;
             }
-        );
+
+            return $reduction;
+        }, []);
         // default base conditions
         $conditions[] = 'tartikelsichtbarkeit.kArtikel IS NULL';
 
@@ -202,7 +197,7 @@ class ProductFilterSQL
         // merge FilterQuery-Conditions
         $filterQueryIndices = [];
         $filterQueries      = array_filter($conditions, function ($f) {
-            return is_object($f) && get_class($f) === 'FilterQuery';
+            return is_object($f) && get_class($f) === FilterQuery::class;
         });
         foreach ($filterQueries as $idx => $condition) {
             /** @var FilterQuery $condition */
@@ -228,7 +223,7 @@ class ProductFilterSQL
         }
         // build sql string
         $cond = implode(' AND ', array_map(function ($a) {
-            if (is_string($a) || (is_object($a) && get_class($a) === 'FilterQuery')) {
+            if (is_string($a) || (is_object($a) && get_class($a) === FilterQuery::class)) {
                 return $a;
             }
 

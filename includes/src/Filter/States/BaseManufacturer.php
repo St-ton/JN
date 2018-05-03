@@ -64,11 +64,10 @@ class BaseManufacturer extends AbstractFilter
             $oSeo_arr = \Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
-                        JOIN thersteller
-                            ON thersteller.kHersteller = tseo.kKey
+                    JOIN thersteller
+                        ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
-                        AND kKey IN (" . implode(', ', $val) . ")
-                    ORDER BY kSprache",
+                        AND kKey IN (" . implode(', ', $val) . ")",
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {

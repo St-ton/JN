@@ -16,15 +16,16 @@ class Heading extends \OPC\Portlet
         $attributes    = $instance->getAttributeString();
         $dataAttribute = $instance->getDataAttributeString();
 
-        return "<h$level $attributes $dataAttribute>$text</h$level>";
+        return "<h$level $attributes $dataAttribute >$text</h$level>";
     }
 
     public function getFinalHtml($instance)
     {
-        $level = $instance->getProperty('level');
-        $text  = $instance->getProperty('text');
+        $level         = $instance->getProperty('level');
+        $text          = $instance->getProperty('text');
+        $attributes    = $instance->getAttributeString();
 
-        return "<h$level>$text</h$level>";
+        return "<h$level $attributes>$text</h$level>";
     }
 
     public function getButtonHtml()
@@ -45,11 +46,13 @@ class Heading extends \OPC\Portlet
                 'type'    => 'select',
                 'options' => ['1', '2', '3', '4', '5', '6'],
                 'default' => '1',
+                'dspl_width' => 50,
             ],
             'text'  => [
                 'label'   => 'Text',
                 'type'    => 'text',
                 'default' => 'Heading',
+                'dspl_width' => 50,
             ],
             'bgcolor' => [
                 'type' => 'color',
@@ -61,7 +64,7 @@ class Heading extends \OPC\Portlet
     {
         return [
             'Styles' => 'styles',
-            'Styles2' => ['bgcolor']
+            'Animation' => 'animations',
         ];
     }
 }

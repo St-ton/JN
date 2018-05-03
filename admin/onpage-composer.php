@@ -23,7 +23,7 @@ $fullPageUrl = rtrim($shopUrl, '/') . $pageUrl;
 
 if ($action === 'restore') {
     $opc->deletePage($pageId);
-    header('Location: ' . $shopUrl . "/" . $pageUrl);
+    header('Location: ' . $fullPageUrl);
     exit();
 }
 

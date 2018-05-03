@@ -42,6 +42,11 @@ class PortletInstance implements \JsonSerializable
     /**
      * @var array
      */
+    protected $animations = [];
+
+    /**
+     * @var array
+     */
     protected $widthHeuristics = [
         'lg' => 1,
         'md' => 1,
@@ -239,6 +244,20 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getAnimations()
+    {
+        foreach ($this->portlet->getAnimationsPropertyDesc() as $propname => $propdesc) {
+            if ($this->hasProperty($propname)) {
+                $this->setAnimation($propname, $this->getProperty($propname));
+            }
+        }
+
+        return $this->animations;
+    }
+
+    /**
      * @param string $name
      * @param string $value
      * @return $this
@@ -251,18 +270,50 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @param string $name
+     * @param string $value
+     * @return $this
+     */
+    public function setAnimation($name, $value)
+    {
+        $this->animations[$name] = $value;
+
+        return $this;
+    }
+
+    /**
      * @return $this
      */
     public function updateAttributes()
     {
         $styles      = $this->getStyles();
         $styleString = '';
+        $animations  = $this->getAnimations();
 
         foreach ($styles as $styleName => $styleValue) {
-            $styleString .= "$styleName: $styleValue; ";
+            if (stripos($styleName, 'margin-') !== false ||
+                stripos($styleName, 'padding-') !== false ||
+                stripos($styleName, 'border-width') !== false ||
+                stripos($styleName, '-width') !== false ||
+                stripos($styleName, '-height') !== false
+            ) {
+                $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "px; ";
+            } else {
+                $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "; ";
+            }
         }
 
         $this->setAttribute('style', $styleString);
+
+        foreach ($animations as $aniName => $aniValue) {
+            if ($aniName === 'animation-style') {
+                $this->addClass("wow " . $aniValue);
+            } else {
+                if (!empty($aniValue)) {
+                    $this->setAttribute($aniName, $aniValue);
+                }
+            }
+        }
 
         return $this;
     }

@@ -108,6 +108,9 @@ trait PortletHtml
                 if ($propnames === 'styles') {
                     $tabs[$tabname] = $this->getStylesPropertyDesc();
                 }
+                elseif ($propnames === 'animations') {
+                    $tabs[$tabname] = $this->getAnimationsPropertyDesc();
+                }
             } else {
                 foreach ($propnames as $i => $propname) {
                     $tabs[$tabname][$i] = $desc[$propname];
@@ -174,10 +177,14 @@ trait PortletHtml
         $res   = '';
         $label = $propDesc['label'] ?? $propname;
         $type  = $propDesc['type'] ?? 'text';
+        $class = !empty($propDesc['class']) ? ' ' . $propDesc['class'] : '';
 
         $prop = $instance->hasProperty($propname)
             ? $instance->getProperty($propname)
             : $propDesc['default'];
+
+        $placeholder = !empty($propDesc['placeholder']) ? " placeholder='" . $propDesc['placeholder'] . "'" : "";
+        $help        = !empty($propDesc['help']) ? "<span class='help-block'>" . $propDesc['help'] . "</span>" : '';
 
         $displ = 12;
         if (!empty($propDesc['dspl_width'])) {
@@ -194,16 +201,50 @@ trait PortletHtml
         }
 
         switch ($type) {
-            case 'text':
-                $res .= "<input type='text' class='form-control' name='$propname' value='$prop'"
+            case 'number':
+                $res .= "<input type='number' class='form-control$class' name='$propname' value='$prop'"
+                    . " id='config-$propname'$placeholder>";
+                break;
+            case 'email':
+                $res .= "<input type='email' class='form-control$class' name='$propname' value='$prop'"
+                    . " id='config-$propname'$placeholder>";
+                break;
+            case 'date':
+                $res .= "<input type='date' class='form-control$class' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
                 break;
-            case 'select':
-                $res .= "<select class='form-control' name='$propname'>";
-
+            case 'password':
+                $res .= "<input type='password' class='form-control$class' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
+                break;
+            case 'checkbox':
+                $res .= "<div class='checkbox$class'><label><input type='checkbox' name='" . $propname . "' value='1'";
+                $res .= $prop === "1" ? " checked" : "";
+                $res .= ">$propname</label></div>";
+                break;
+            case 'radio':
                 foreach ($propDesc['options'] as $option) {
-                    $selected = $prop === $option ? " selected" : "";
-                    $res     .= "<option value='$option' $selected>$option</option>";
+                    $selected = $prop === $option ? " checked" : "";
+                    $res     .= "<div class='radio$class'><label><input type='radio' name='$propname' value='$option' $selected>$option</label></div>";
+                }
+                break;
+            case 'select':
+                $res .= "<select class='form-control$class' name='$propname'>";
+
+                foreach ($propDesc['options'] as $name => $option) {
+                    if (stripos($name, 'optgroup') !== false) {
+                        $res .= "<optgroup label='" . $option['label'] . "'>";
+
+                        foreach ($option['options'] as $gr_option) {
+                            $selected = ($prop === $gr_option) ? " selected" : "";
+                            $res     .= "<option value='$gr_option' $selected>$gr_option</option>";
+                        }
+
+                        $res .= "</optgroup>";
+                    } else {
+                        $selected = ($prop === $option) ? " selected" : "";
+                        $res     .= "<option value='$option' $selected>$option</option>";
+                    }
                 }
 
                 $res .= '</select>';
@@ -227,14 +268,31 @@ trait PortletHtml
                     . "})</script>";
                 break;
             case 'color':
-                $res .= "<input type='text' class='form-control' name='color' id='color' value='#000'>"
-                    . "<script>$('#color').colorpicker();</script>";
+                $res .= "<div id='$propname' class='input-group colorpicker-component$class'>
+                                <input class='form-control' name='$propname' value='$prop'>
+                                <span class='input-group-addon'><i></i></span></div>"
+                    . "<script>$('#$propname').colorpicker({format: 'rgba',colorSelectors: {
+                    '#ffffff': '#ffffff',
+                    '#777777': '#777777',
+                    '#337ab7': '#337ab7',
+                    '#5cb85c': '#5cb85c',
+                    '#5bc0de': '#5bc0de',
+                    '#f0ad4e': '#f0ad4e',
+                    '#d9534f': '#d9534f',
+                    '#000000': '#000000'
+                }});</script>";
                 break;
             case 'filter':
                 $res .= $this->getConfigPanelSnippet($instance, 'filter');
                 break;
+            case 'text':
+            default:
+                $res .= "<input type='text' class='form-control' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
+                break;
         }
 
+        $res .= $help;
         $res .= $containerId !== null ? "</div>" : "</div></div>";
 
         return $res;

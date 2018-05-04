@@ -1940,6 +1940,7 @@ class Artikel
         $waehrung          = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
         $conf              = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELDETAILS]);
         $shopURL           = Shop::getURL() . '/';
+        $cntVariationen    = 0;
         if (!isset($waehrung->kWaehrung) || !$waehrung->kWaehrung) {
             $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
@@ -2040,6 +2041,12 @@ class Artikel
                     $oVariationTMP_arr = array_merge($oVariationTMP_arr, $oVariationVaterTMP_arr);
                 }
             } elseif ($this->kVaterArtikel > 0) { //child?
+                $cntVariationen = Shop::DB()->query(
+                    "SELECT COUNT(kEigenschaft) AS nCount
+                        FROM teigenschaft
+                        WHERE kArtikel = " . (int)$this->kVaterArtikel,
+                    1
+                );
                 $scoreJoin = $exportWorkaround
                     ? ""
                     : "LEFT JOIN (
@@ -2062,7 +2069,7 @@ class Artikel
                         teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit, teigenschaftwertpict.cType,
                         teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad,
                         teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis,
-                        IF(COALESCE(ek.score, 0) < COUNT(teigenschaftkombiwert.kEigenschaft), 1, 0) notExists
+                        COALESCE(ek.score, 0) nMatched
                     FROM tartikel
                     JOIN teigenschaftkombiwert
 	                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
@@ -2270,7 +2277,7 @@ class Artikel
                     $value->fLagerbestand                    = $oVariationTMP->fLagerbestand;
                     $value->fPackeinheit                     = $oVariationTMP->fPackeinheit;
                     $value->inStock                          = true;
-                    $value->notExists                        = isset($oVariationTMP->notExists) && (int)$oVariationTMP->notExists > 0;
+                    $value->notExists                        = isset($oVariationTMP->nMatched) && (int)$oVariationTMP->nMatched < (int)$cntVariationen->nCount - 1;
                     $this->Variationen[$nZaehler]->Werte[$i] = $value;
 
                     if (isset($oVariationTMP->fVPEWert) && $oVariationTMP->fVPEWert > 0) {

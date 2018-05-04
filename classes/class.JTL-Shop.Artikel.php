@@ -2041,15 +2041,9 @@ class Artikel
                     $oVariationTMP_arr = array_merge($oVariationTMP_arr, $oVariationVaterTMP_arr);
                 }
             } elseif ($this->kVaterArtikel > 0) { //child?
-                $cntVariationen = Shop::DB()->query(
-                    "SELECT COUNT(kEigenschaft) AS nCount
-                        FROM teigenschaft
-                        WHERE kArtikel = " . (int)$this->kVaterArtikel,
-                    1
-                );
-                $scoreJoin = $exportWorkaround
-                    ? ""
-                    : "LEFT JOIN (
+                $scoreJoin = '';
+                if (!$exportWorkaround) {
+                    $scoreJoin      = "LEFT JOIN (
 	                        SELECT kEigenschaftKombi, COUNT(teigenschaftkombiwert.kEigenschaftWert) AS score
                             FROM teigenschaftkombiwert
                             WHERE kEigenschaftWert IN (
@@ -2057,7 +2051,13 @@ class Artikel
                            )
                             GROUP BY teigenschaftkombiwert.kEigenschaftKombi
                         ) ek ON ek.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi";
-
+                    $cntVariationen = Shop::DB()->query(
+                        "SELECT COUNT(kEigenschaft) AS nCount
+                        FROM teigenschaft
+                        WHERE kArtikel = " . (int)$this->kVaterArtikel,
+                        1
+                    );
+                }
                 $baseQuery = "SELECT tartikel.kArtikel AS tartikel_kArtikel, tartikel.fLagerbestand AS tartikel_fLagerbestand,
                         tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation,
                         teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi,

@@ -21,9 +21,9 @@ class Heading extends \OPC\Portlet
 
     public function getFinalHtml($instance)
     {
-        $level         = $instance->getProperty('level');
-        $text          = $instance->getProperty('text');
-        $attributes    = $instance->getAttributeString();
+        $level      = $instance->getProperty('level');
+        $text       = $instance->getProperty('text');
+        $attributes = $instance->getAttributeString();
 
         return "<h$level $attributes>$text</h$level>";
     }
@@ -56,6 +56,7 @@ class Heading extends \OPC\Portlet
             ],
             'bgcolor' => [
                 'type' => 'color',
+                'default' => '#fff',
             ]
         ];
     }

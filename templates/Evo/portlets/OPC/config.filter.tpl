@@ -10,7 +10,7 @@
     var $filtersAvailable = $('#filters-available');
     var $filtersEnabled   = $('#filters-enabled');
 
-    enableFilters({$instance->getProperty('filter')|json_encode});
+    enableFilters($(''));
     //opc.setPropertiesCallback(saveFilterProperties);
     updateFiltersAvailable();
 

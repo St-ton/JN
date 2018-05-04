@@ -83,14 +83,16 @@ trait PortletHtml
     /**
      * @param PortletInstance $instance
      * @param string $id
+     * @param array $extraAssigns
      * @return string
      * @throws \Exception
      */
-    final protected function getConfigPanelSnippet($instance, $id)
+    final protected function getConfigPanelSnippet($instance, $id, $extraAssigns = [])
     {
         return (new \JTLSmarty(true))
             ->assign('portlet', $this)
             ->assign('instance', $instance)
+            ->assign($extraAssigns)
             ->fetch("portlets/OPC/config.$id.tpl");
     }
 
@@ -107,8 +109,7 @@ trait PortletHtml
             if (is_string($propnames)) {
                 if ($propnames === 'styles') {
                     $tabs[$tabname] = $this->getStylesPropertyDesc();
-                }
-                elseif ($propnames === 'animations') {
+                } elseif ($propnames === 'animations') {
                     $tabs[$tabname] = $this->getAnimationsPropertyDesc();
                 }
             } else {
@@ -225,7 +226,8 @@ trait PortletHtml
             case 'radio':
                 foreach ($propDesc['options'] as $option) {
                     $selected = $prop === $option ? " checked" : "";
-                    $res     .= "<div class='radio$class'><label><input type='radio' name='$propname' value='$option' $selected>$option</label></div>";
+                    $res     .= "<div class='radio$class'><label><input type='radio' name='$propname' value='$option'"
+                        . "$selected>$option</label></div>";
                 }
                 break;
             case 'select':
@@ -283,7 +285,7 @@ trait PortletHtml
                 }});</script>";
                 break;
             case 'filter':
-                $res .= $this->getConfigPanelSnippet($instance, 'filter');
+                $res .= $this->getConfigPanelSnippet($instance, 'filter', ['propname' => $propname, 'prop' => $prop]);
                 break;
             case 'text':
             default:

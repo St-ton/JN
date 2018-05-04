@@ -6,6 +6,8 @@
 
 namespace OPC;
 
+use Filter\IFilter;
+
 class Service
 {
     /**
@@ -374,10 +376,63 @@ class Service
     }
 
     /**
+     * @param array $enabledFilters
+     * @return array
+     */
+    public function getFilterOptions($enabledFilters = [])
+    {
+        $productFilter    = new \Filter\ProductFilter();
+        $availableFilters = $productFilter->getAvailableFilters();
+        $results          = [];
+
+        foreach ($enabledFilters as $enabledFilter) {
+            $productFilter->addActiveFilter(new $enabledFilter['class']($productFilter), $enabledFilter['value']);
+        }
+
+        foreach ($availableFilters as $availableFilter) {
+            $class   = $availableFilter->getClassName();
+            $name    = $availableFilter->getFrontendName();
+            $options = [];
+
+            if (\StringHandler::endsWith($class, 'ItemAttribute')) {
+                $name = 'Merkmalwerte';
+
+                foreach ($availableFilter->getOptions() as $option) {
+                    foreach ($option->getOptions() as $suboption) {
+                        /** @var \Filter\FilterOption $suboption */
+                        $options[] = [
+                            'name'  => $suboption->getName(),
+                            'value' => $suboption->kMerkmalWert,
+                            'count' => $suboption->getCount(),
+                            'class' => $class,
+                        ];
+                    }
+                }
+            } else {
+                foreach ($availableFilter->getOptions() as $option) {
+                    $options[] = [
+                        'name'  => $option->getName(),
+                        'value' => $option->getValue(),
+                        'count' => $option->getCount(),
+                    ];
+                }
+            }
+
+            $results[] = [
+                'name'    => $name,
+                'class'   => $class,
+                'options' => $options,
+            ];
+        }
+
+        return $results;
+    }
+
+    /**
      * @param array $filtersEnabled
      * @return array
      */
-    public function getFilterOptions($filtersEnabled = [])
+    public function getFilterOptions2($filtersEnabled = [])
     {
         $productFilter     = new \Filter\ProductFilter();
         $filtersEnabledMap = [];
@@ -393,28 +448,40 @@ class Service
 
         $res = [];
 
-        foreach (['Category', 'Manufacturer', 'Rating', 'SearchSpecial', 'Tag', 'Attribute', 'PriceRange'] as $term) {
-            /** @var \Filter\FilterOption[] $filterOptions */
-            $filterOptions = $searchResults->{"get{$term}FilterOptions"}();
-
-            $res[$term] = [];
+        foreach ($availableFilters as $availableFilter) {
+            $frontendName       = $availableFilter->getFrontendName();
+            $filterOptions      = $availableFilter->getOptions();
+            $res[$frontendName] = [];
 
             foreach ($filterOptions as $filterOption) {
-                if (!array_key_exists(
-                    $filterOption->getClassName() . ':' . $filterOption->getValue(),
-                    $filtersEnabledMap
-                )) {
-                    $res[$term][] = [
-                        'name'  => $filterOption->getName(),
-                        'term'  => $term,
-                        'class' => $filterOption->getClassName(),
-                        'value' => $filterOption->getValue(),
-                        'count' => $filterOption->getCount(),
-                    ];
-                }
+                $res[$frontendName][] = $filterOption->getOptions();
             }
         }
 
         return $res;
+
+//        foreach (['Category', 'Manufacturer', 'Rating', 'SearchSpecial', 'Tag', 'Attribute', 'PriceRange'] as $term) {
+//            /** @var \Filter\FilterOption[] $filterOptions */
+//            $filterOptions = $searchResults->{"get{$term}FilterOptions"}();
+//
+//            $res[$term] = [];
+//
+//            foreach ($filterOptions as $filterOption) {
+//                if (!array_key_exists(
+//                    $filterOption->getClassName() . ':' . $filterOption->getValue(),
+//                    $filtersEnabledMap
+//                )) {
+//                    $res[$term][] = [
+//                        'name'  => $filterOption->getName(),
+//                        'term'  => $term,
+//                        'class' => $filterOption->getClassName(),
+//                        'value' => $filterOption->getValue(),
+//                        'count' => $filterOption->getCount(),
+//                    ];
+//                }
+//            }
+//        }
+
+//        return $res;
     }
 }

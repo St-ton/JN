@@ -245,7 +245,7 @@ class ProductFilterSearchResults
      * @param Collection $keys
      * @return $this
      */
-    public function setProductKeys(Collection $keys)
+    public function setProductKeys(Collection $keys): self
     {
         $this->productKeys = $keys;
 
@@ -255,7 +255,7 @@ class ProductFilterSearchResults
     /**
      * @return \Tightenco\Collect\Support\Collection()
      */
-    public function getProducts()
+    public function getProducts(): Collection
     {
         return $this->products;
     }
@@ -367,7 +367,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSearchTerm()
     {
@@ -502,7 +502,7 @@ class ProductFilterSearchResults
     /**
      * @return FilterOption[]
      */
-    public function getPriceRangeFilterOptions()
+    public function getPriceRangeFilterOptions(): array
     {
         return $this->priceRangeFilterOptions;
     }
@@ -595,7 +595,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getTagFilterJSON()
     {
@@ -614,7 +614,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSearchFilterJSON()
     {
@@ -633,7 +633,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getError()
     {

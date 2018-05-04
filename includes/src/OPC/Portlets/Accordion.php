@@ -36,40 +36,40 @@ class Accordion extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'uid' => [
-                'type'=>'hidden',
-                'default'=> uniqid('cllps_'),
+            'uid'                 => [
+                'type'    => 'hidden',
+                'default' => uniqid('cllps_'),
             ],
             'cllps-initial-state' => [
-                'label' => 'initial als ausgeklappt anzeigen',
-                'type' => 'checkbox',
-                'help' => 'In der Vorschau und beim Bearbeiten ist wird der Bereich immer angezeigt.',
+                'label'      => 'initial als ausgeklappt anzeigen',
+                'type'       => 'checkbox',
+                'help'       => 'In der Vorschau und beim Bearbeiten ist wird der Bereich immer angezeigt.',
                 'dspl_width' => 50,
             ],
-            'layout' => [
-                'label' => 'layout',
-                'type' => 'radio',
-                'options' => [
+            'layout'              => [
+                'label'      => 'layout',
+                'type'       => 'radio',
+                'options'    => [
                     'button',
                     'panel'
                 ],
-                'default' => 'button',
+                'default'    => 'button',
                 'dspl_width' => 100,
 
             ],
-            'cllps-button-text' => [
-                'label' => 'Button text',
-                'type'=>'Text',
-                'default' => 'Button',
-                'dspl_width' => 50,
+            'cllps-button-text'   => [
+                'label'                => 'Button text',
+                'type'                 => 'Text',
+                'default'              => 'Button',
+                'dspl_width'           => 50,
                 'collapseControlStart' => true,
-                'showOnProp' => 'layout',
-                'showOnPropValue' => 'button',
+                'showOnProp'           => 'layout',
+                'showOnPropValue'      => 'button',
             ],
-            'cllps-button-type' => [
-                'label' => 'Type',
-                'type' => 'select',
-                'options' => [
+            'cllps-button-type'   => [
+                'label'      => 'Type',
+                'type'       => 'select',
+                'options'    => [
                     'default',
                     'primary',
                     'success',
@@ -77,29 +77,29 @@ class Accordion extends \OPC\Portlet
                     'warning',
                     'danger',
                 ],
-                'default' => 'default',
+                'default'    => 'default',
                 'dspl_width' => 50,
             ],
-            'cllps-button-size' => [
-                'label' => 'Size',
-                'type' => 'select',
-                'options' => [
+            'cllps-button-size'   => [
+                'label'              => 'Size',
+                'type'               => 'select',
+                'options'            => [
                     'xs',
                     'sm',
                     'md',
                     'lg',
                 ],
-                'default' => 'md',
-                'dspl_width' => 50,
+                'default'            => 'md',
+                'dspl_width'         => 50,
                 'collapseControlEnd' => true,
             ],
-            'only-on-panel' => [
-                'label' => 'only-on-panel',
-                'dspl_width' => 50,
+            'only-on-panel'       => [
+                'label'                => 'only-on-panel',
+                'dspl_width'           => 50,
                 'collapseControlStart' => true,
-                'showOnProp' => 'layout',
-                'showOnPropValue' => 'panel',
-                'collapseControlEnd' => true,
+                'showOnProp'           => 'layout',
+                'showOnPropValue'      => 'panel',
+                'collapseControlEnd'   => true,
             ],
         ];
     }

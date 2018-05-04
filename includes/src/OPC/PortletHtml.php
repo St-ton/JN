@@ -151,14 +151,18 @@ trait PortletHtml
                 if (!empty($propDesc['collapseControlStart'])) {
                     $res .= "<script>
                                 $(function(){
-                                    $('input[name=\"".$propDesc['showOnProp']."\"]').click(function(){
-                                        if ($(this).val() == '".$propDesc['showOnPropValue']."'){
+                                    $('input[name=\"" . $propDesc['showOnProp'] . "\"]').click(function(){
+                                        if (this.type == 'checkbox' && this.checked === true 
+                                        || this.type != 'checkbox' 
+                                            && $(this).val() == " . $propDesc['showOnPropValue'] . "){
                                             $('#collapseContainer$cllpsID').show();
                                         }else{
                                             $('#collapseContainer$cllpsID').hide();
                                         }
                                     });
-                                    if ($('input[name=\"".$propDesc['showOnProp']."\"]').val() == '".$propDesc['showOnPropValue']."'){
+                                    if (this.type == 'checkbox' && this.checked === true 
+                                    || this.type != 'checkbox' 
+                                        && $(this).val() == " . $propDesc['showOnPropValue'] . "){
                                         $('#collapseContainer$cllpsID').show();
                                     }
                                 });
@@ -309,6 +313,9 @@ trait PortletHtml
                 break;
             case 'filter':
                 $res .= $this->getConfigPanelSnippet($instance, 'filter');
+                break;
+            case 'icon':
+                $res .= $this->getConfigPanelSnippet($instance, 'icon');
                 break;
             case 'hidden':
                 $res .= "<input type='hidden' name='$propname' value='$prop'"

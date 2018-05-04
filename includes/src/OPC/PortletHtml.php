@@ -114,7 +114,8 @@ trait PortletHtml
                 }
             } else {
                 foreach ($propnames as $i => $propname) {
-                    $tabs[$tabname][$i] = $desc[$propname];
+                    $tabs[$tabname][$propname] = $desc[$propname];
+                    unset($tabs[$tabname][$i]);
                     unset($desc[$propname]);
                 }
             }
@@ -317,7 +318,11 @@ trait PortletHtml
                 $res .= $this->getConfigPanelSnippet($instance, 'filter', ['propname' => $propname, 'prop' => $prop]);
                 break;
             case 'icon':
-                $res .= $this->getConfigPanelSnippet($instance, 'icon');
+                $res .= $this->getConfigPanelSnippet($instance, 'icon', [
+                    'propname'   => $propname,
+                    'prop'       => $prop,
+                    'uid'        => uniqid()
+                ]);
                 break;
             case 'hidden':
                 $res .= "<input type='hidden' name='$propname' value='$prop'"

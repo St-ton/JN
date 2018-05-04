@@ -12,7 +12,7 @@ use function Functional\reduce_left;
  * Class FilterStateSQL
  * @package Filter
  */
-class FilterStateSQL
+class FilterStateSQL implements FilterStateSQLInterface
 {
     /**
      * @var array
@@ -42,7 +42,7 @@ class FilterStateSQL
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getHaving(): array
     {
@@ -50,7 +50,7 @@ class FilterStateSQL
     }
 
     /**
-     * @param array $having
+     * @inheritdoc
      */
     public function setHaving(array $having)
     {
@@ -58,8 +58,7 @@ class FilterStateSQL
     }
 
     /**
-     * @param string $having
-     * @return array
+     * @inheritdoc
      */
     public function addHaving(string $having): array
     {
@@ -69,7 +68,7 @@ class FilterStateSQL
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getConditions(): array
     {
@@ -77,7 +76,7 @@ class FilterStateSQL
     }
 
     /**
-     * @param array $conditions
+     * @inheritdoc
      */
     public function setConditions(array $conditions)
     {
@@ -85,8 +84,7 @@ class FilterStateSQL
     }
 
     /**
-     * @param string $condition
-     * @return array
+     * @inheritdoc
      */
     public function addCondition(string $condition): array
     {
@@ -96,7 +94,7 @@ class FilterStateSQL
     }
 
     /**
-     * @return FilterJoin[]
+     * @inheritdoc
      */
     public function getJoins(): array
     {
@@ -104,13 +102,13 @@ class FilterStateSQL
     }
 
     /**
-     * @return FilterJoin[]
+     * @inheritdoc
      */
     public function getDeduplicatedJoins(): array
     {
         $checked = [];
 
-        return reduce_left($this->joins, function(FilterJoin $value, $d, $c, $reduction) use (&$checked) {
+        return reduce_left($this->joins, function(FilterJoinInterface $value, $d, $c, $reduction) use (&$checked) {
             $key = $value->getTable();
             if (!in_array($key, $checked, true)) {
                 $checked[]   = $key;
@@ -122,7 +120,7 @@ class FilterStateSQL
     }
 
     /**
-     * @param FilterJoin[] $joins
+     * @inheritdoc
      */
     public function setJoins(array $joins)
     {
@@ -130,10 +128,9 @@ class FilterStateSQL
     }
 
     /**
-     * @param FilterJoin $join
-     * @return array
+     * @inheritdoc
      */
-    public function addJoin(FilterJoin $join): array
+    public function addJoin(FilterJoinInterface $join): array
     {
         $this->joins[] = $join;
 
@@ -141,7 +138,7 @@ class FilterStateSQL
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getSelect(): string
     {
@@ -149,7 +146,7 @@ class FilterStateSQL
     }
 
     /**
-     * @param string $select
+     * @inheritdoc
      */
     public function setSelect(string $select)
     {
@@ -157,8 +154,7 @@ class FilterStateSQL
     }
 
     /**
-     * @param string $select
-     * @return string
+     * @inheritdoc
      */
     public function addSelect(string $select): string
     {

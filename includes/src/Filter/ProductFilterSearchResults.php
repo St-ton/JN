@@ -13,7 +13,7 @@ use Tightenco\Collect\Support\Collection;
  * Class ProductFilterSearchResults
  * @package Filter
  */
-class ProductFilterSearchResults
+class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
 {
     use \MagicCompatibilityTrait;
 
@@ -197,10 +197,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param \stdClass $legacy
-     * @return $this
+     * @inheritdoc
      */
-    public function convert($legacy): self
+    public function convert($legacy): ProductFilterSearchResultsInterface
     {
         if (get_class($legacy) === __CLASS__) {
             return $legacy;
@@ -214,7 +213,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return \stdClass
+     * @inheritdoc
      */
     public function getProductsCompat(): \stdClass
     {
@@ -226,15 +225,15 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return $this
+     * @inheritdoc
      */
-    public function setProductsCompat(): self
+    public function setProductsCompat(): ProductFilterSearchResultsInterface
     {
         return $this;
     }
 
     /**
-     * @return Collection
+     * @inheritdoc
      */
     public function getProductKeys(): Collection
     {
@@ -242,10 +241,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param Collection $keys
-     * @return $this
+     * @inheritdoc
      */
-    public function setProductKeys(Collection $keys): self
+    public function setProductKeys(Collection $keys): ProductFilterSearchResultsInterface
     {
         $this->productKeys = $keys;
 
@@ -253,7 +251,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return \Tightenco\Collect\Support\Collection()
+     * @inheritdoc
      */
     public function getProducts(): Collection
     {
@@ -261,10 +259,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param \Tightenco\Collect\Support\Collection() $products
-     * @return $this
+     * @inheritdoc
      */
-    public function setProducts($products): self
+    public function setProducts($products): ProductFilterSearchResultsInterface
     {
         $this->products = $products;
 
@@ -272,7 +269,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getProductCount(): int
     {
@@ -280,10 +277,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param int $productCount
-     * @return $this
+     * @inheritdoc
      */
-    public function setProductCount($productCount): self
+    public function setProductCount($productCount): ProductFilterSearchResultsInterface
     {
         $this->productCount = $productCount;
 
@@ -291,7 +287,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getVisibleProductCount(): int
     {
@@ -299,10 +295,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param int $count
-     * @return $this
+     * @inheritdoc
      */
-    public function setVisibleProductCount(int $count): self
+    public function setVisibleProductCount(int $count): ProductFilterSearchResultsInterface
     {
         $this->visibileProductCount = $count;
 
@@ -310,7 +305,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getOffsetStart(): int
     {
@@ -318,10 +313,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param int $offsetStart
-     * @return $this
+     * @inheritdoc
      */
-    public function setOffsetStart($offsetStart): self
+    public function setOffsetStart($offsetStart): ProductFilterSearchResultsInterface
     {
         $this->offsetStart = $offsetStart;
 
@@ -329,7 +323,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getOffsetEnd(): int
     {
@@ -337,10 +331,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param int $offsetEnd
-     * @return $this
+     * @inheritdoc
      */
-    public function setOffsetEnd($offsetEnd): self
+    public function setOffsetEnd($offsetEnd): ProductFilterSearchResultsInterface
     {
         $this->offsetEnd = $offsetEnd;
 
@@ -348,7 +341,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return \stdClass
+     * @inheritdoc
      */
     public function getPages(): \stdClass
     {
@@ -356,10 +349,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param \stdClass $pages
-     * @return $this
+     * @inheritdoc
      */
-    public function setPages($pages): self
+    public function setPages($pages): ProductFilterSearchResultsInterface
     {
         $this->pages = $pages;
 
@@ -367,7 +359,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return string|null
+     * @inheritdoc
      */
     public function getSearchTerm()
     {
@@ -375,18 +367,18 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param string $searchTerm
-     * @return $this
+     * @inheritdoc
      */
-    public function setSearchTerm($searchTerm): self
+    public function setSearchTerm($searchTerm): ProductFilterSearchResultsInterface
     {
         $this->searchTerm = $searchTerm;
 
         return $this;
     }
 
+
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getSearchTermWrite()
     {
@@ -394,10 +386,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param string $searchTerm
-     * @return $this
+     * @inheritdoc
      */
-    public function setSearchTermWrite($searchTerm): self
+    public function setSearchTermWrite($searchTerm): ProductFilterSearchResultsInterface
     {
         $this->searchTermWrite = $searchTerm;
 
@@ -405,7 +396,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function getSearchUnsuccessful(): bool
     {
@@ -413,10 +404,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param bool $searchUnsuccessful
-     * @return $this
+     * @inheritdoc
      */
-    public function setSearchUnsuccessful($searchUnsuccessful): self
+    public function setSearchUnsuccessful($searchUnsuccessful): ProductFilterSearchResultsInterface
     {
         $this->searchUnsuccessful = $searchUnsuccessful;
 
@@ -424,7 +414,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return FilterOption[]
+     * @inheritdoc
      */
     public function getManufacturerFilterOptions(): array
     {
@@ -432,10 +422,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param FilterOption[] $options
-     * @return $this
+     * @inheritdoc
      */
-    public function setManufacturerFilterOptions($options): self
+    public function setManufacturerFilterOptions($options): ProductFilterSearchResultsInterface
     {
         $this->manufacturerFilterOptions = $options;
 
@@ -443,7 +432,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return FilterOption[]
+     * @inheritdoc
      */
     public function getRatingFilterOptions(): array
     {
@@ -451,10 +440,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param FilterOption[] $options
-     * @return $this
+     * @inheritdoc
      */
-    public function setRatingFilterOptions($options): self
+    public function setRatingFilterOptions($options): ProductFilterSearchResultsInterface
     {
         $this->ratingFilterOptions = $options;
 
@@ -462,7 +450,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return FilterOption[]
+     * @inheritdoc
      */
     public function getTagFilterOptions(): array
     {
@@ -470,10 +458,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param FilterOption[] $options
-     * @return $this
+     * @inheritdoc
      */
-    public function setTagFilterOptions($options): self
+    public function setTagFilterOptions($options): ProductFilterSearchResultsInterface
     {
         $this->tagFilterOptions = $options;
 
@@ -481,7 +468,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return FilterOption[]
+     * @inheritdoc
      */
     public function getAttributeFilterOptions(): array
     {
@@ -489,10 +476,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param FilterOption[] $options
-     * @return $this
+     * @inheritdoc
      */
-    public function setAttributeFilterOptions($options): self
+    public function setAttributeFilterOptions($options): ProductFilterSearchResultsInterface
     {
         $this->attributeFilterOptions = $options;
 
@@ -500,7 +486,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return FilterOption[]
+     * @inheritdoc
      */
     public function getPriceRangeFilterOptions(): array
     {
@@ -508,10 +494,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param FilterOption[] $options
-     * @return $this
+     * @inheritdoc
      */
-    public function setPriceRangeFilterOptions($options): self
+    public function setPriceRangeFilterOptions($options): ProductFilterSearchResultsInterface
     {
         $this->priceRangeFilterOptions = $options;
 
@@ -519,7 +504,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return FilterOption[]
+     * @inheritdoc
      */
     public function getCategoryFilterOptions(): array
     {
@@ -527,10 +512,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param FilterOption[] $options
-     * @return $this
+     * @inheritdoc
      */
-    public function setCategoryFilterOptions($options): self
+    public function setCategoryFilterOptions($options): ProductFilterSearchResultsInterface
     {
         $this->categoryFilterOptions = $options;
 
@@ -538,7 +522,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return FilterOption[]
+     * @inheritdoc
      */
     public function getSearchFilterOptions(): array
     {
@@ -546,10 +530,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param FilterOption[] $options
-     * @return $this
+     * @inheritdoc
      */
-    public function setSearchFilterOptions($options): self
+    public function setSearchFilterOptions($options): ProductFilterSearchResultsInterface
     {
         $this->searchFilterOptions = $options;
 
@@ -557,7 +540,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return FilterOption[]
+     * @inheritdoc
      */
     public function getSearchSpecialFilterOptions(): array
     {
@@ -565,10 +548,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param FilterOption[] $options
-     * @return $this
+     * @inheritdoc
      */
-    public function setSearchSpecialFilterOptions($options): self
+    public function setSearchSpecialFilterOptions($options): ProductFilterSearchResultsInterface
     {
         $this->searchSpecialFilterOptions = $options;
 
@@ -576,7 +558,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return FilterOption[]
+     * @inheritdoc
      */
     public function getCustomFilterOptions(): array
     {
@@ -584,10 +566,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param FilterOption[] $options
-     * @return $this
+     * @inheritdoc
      */
-    public function setCustomFilterOptions($options): self
+    public function setCustomFilterOptions($options): ProductFilterSearchResultsInterface
     {
         $this->customFilterOptions = $options;
 
@@ -595,7 +576,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return string|null
+     * @inheritdoc
      */
     public function getTagFilterJSON()
     {
@@ -603,10 +584,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param string $json
-     * @return $this
+     * @inheritdoc
      */
-    public function setTagFilterJSON($json): self
+    public function setTagFilterJSON($json): ProductFilterSearchResultsInterface
     {
         $this->tagFilterJSON = $json;
 
@@ -614,7 +594,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return string|null
+     * @inheritdoc
      */
     public function getSearchFilterJSON()
     {
@@ -622,10 +602,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param string $json
-     * @return $this
+     * @inheritdoc
      */
-    public function setSearchFilterJSON($json): self
+    public function setSearchFilterJSON($json): ProductFilterSearchResultsInterface
     {
         $this->searchFilterJSON = $json;
 
@@ -633,7 +612,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return string|null
+     * @inheritdoc
      */
     public function getError()
     {
@@ -641,10 +620,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param string $error
-     * @return $this
+     * @inheritdoc
      */
-    public function setError($error): self
+    public function setError($error): ProductFilterSearchResultsInterface
     {
         $this->error = $error;
 
@@ -652,7 +630,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getSortingOptions(): array
     {
@@ -660,10 +638,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param array $options
-     * @return $this
+     * @inheritdoc
      */
-    public function setSortingOptions($options): self
+    public function setSortingOptions($options): ProductFilterSearchResultsInterface
     {
         $this->sortingOptions = $options;
 
@@ -671,7 +648,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getLimitOptions(): array
     {
@@ -679,10 +656,9 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @param array $options
-     * @return $this
+     * @inheritdoc
      */
-    public function setLimitOptions($options): self
+    public function setLimitOptions($options): ProductFilterSearchResultsInterface
     {
         $this->limitOptions = $options;
 
@@ -690,7 +666,7 @@ class ProductFilterSearchResults
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getAllFilterOptions(): array
     {
@@ -707,15 +683,14 @@ class ProductFilterSearchResults
         ];
     }
 
-
     /**
-     * @param ProductFilter  $productFilter
-     * @param null|\Kategorie $currentCategory
-     * @param bool           $selectionWizard
-     * @return $this
+     * @inheritdoc
      */
-    public function setFilterOptions($productFilter, $currentCategory = null, $selectionWizard = false): self
-    {
+    public function setFilterOptions(
+        $productFilter,
+        $currentCategory = null,
+        $selectionWizard = false
+    ): ProductFilterSearchResultsInterface {
         // @todo: make option
         $hideActiveOnly          = true;
         $manufacturerOptions     = $productFilter->getManufacturerFilter()->getOptions();

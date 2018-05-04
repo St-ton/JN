@@ -173,7 +173,7 @@ class ProductFilter
     private $baseState;
 
     /**
-     * @var NavigationURLs
+     * @var NavigationURLsInterface
      */
     private $url;
 
@@ -198,17 +198,17 @@ class ProductFilter
     private $baseURL;
 
     /**
-     * @var ProductFilterSearchResults
+     * @var ProductFilterSearchResultsInterface
      */
     private $searchResults;
 
     /**
-     * @var Metadata
+     * @var MetadataInterface
      */
     private $metaData;
 
     /**
-     * @var ProductFilterSQL
+     * @var ProductFilterSQLInterface
      */
     private $filterSQL;
 
@@ -329,18 +329,18 @@ class ProductFilter
     }
 
     /**
-     * @return NavigationURLs
+     * @return NavigationURLsInterface
      */
-    public function getURL(): NavigationURLs
+    public function getURL(): NavigationURLsInterface
     {
         return $this->url;
     }
 
     /**
-     * @param NavigationURLs $url
+     * @param NavigationURLsInterface $url
      * @return ProductFilter
      */
-    public function setURL(NavigationURLs $url)
+    public function setURL(NavigationURLsInterface $url)
     {
         $this->url = $url;
 
@@ -371,18 +371,18 @@ class ProductFilter
     }
 
     /**
-     * @return ProductFilterSQL
+     * @return ProductFilterSQLInterface
      */
-    public function getFilterSQL(): ProductFilterSQL
+    public function getFilterSQL(): ProductFilterSQLInterface
     {
         return $this->filterSQL;
     }
 
     /**
-     * @param ProductFilterSQL $filterSQL
+     * @param ProductFilterSQLInterface $filterSQL
      * @return ProductFilter
      */
-    public function setFilterSQL(ProductFilterSQL $filterSQL): self
+    public function setFilterSQL(ProductFilterSQLInterface $filterSQL): self
     {
         $this->filterSQL = $filterSQL;
 
@@ -410,7 +410,7 @@ class ProductFilter
 
     /**
      * @param bool $products
-     * @return ProductFilterSearchResults|Collection
+     * @return ProductFilterSearchResultsInterface|Collection
      */
     public function getSearchResults($products = true)
     {
@@ -425,10 +425,10 @@ class ProductFilter
     }
 
     /**
-     * @param ProductFilterSearchResults $results
+     * @param ProductFilterSearchResultsInterface $results
      * @return $this
      */
-    public function setSearchResults(ProductFilterSearchResults $results): self
+    public function setSearchResults(ProductFilterSearchResultsInterface $results): self
     {
         $this->searchResults = $results;
 
@@ -436,9 +436,9 @@ class ProductFilter
     }
 
     /**
-     * @return Metadata
+     * @return MetadataInterface
      */
-    public function getMetaData(): Metadata
+    public function getMetaData(): MetadataInterface
     {
         return $this->metaData;
     }
@@ -1669,7 +1669,7 @@ class ProductFilter
      * @param \Kategorie|null $currentCategory
      * @param bool            $fillProducts - if true, return Artikel class instances, otherwise keys only
      * @param int             $limit
-     * @return ProductFilterSearchResults|\Tightenco\Collect\Support\Collection
+     * @return ProductFilterSearchResultsInterface|\Tightenco\Collect\Support\Collection
      */
     public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = null)
     {
@@ -1817,9 +1817,9 @@ class ProductFilter
 
     /**
      * @param null|string $ignore - filter class to ignore
-     * @return FilterStateSQL
+     * @return FilterStateSQLInterface
      */
-    public function getCurrentStateData($ignore = null): FilterStateSQL
+    public function getCurrentStateData($ignore = null): FilterStateSQLInterface
     {
         $state          = $this->getBaseState();
         $stateCondition = $state->getSQLCondition();

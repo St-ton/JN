@@ -16,7 +16,7 @@ use Tightenco\Collect\Support\Collection;
 /**
  * Class Metadata
  */
-class Metadata
+class Metadata implements MetadataInterface
 {
     use \MagicCompatibilityTrait;
 
@@ -101,7 +101,7 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getBreadCrumb(): string
     {
@@ -109,10 +109,9 @@ class Metadata
     }
 
     /**
-     * @param string $breadCrumb
-     * @return $this
+     * @inheritdoc
      */
-    public function setBreadCrumb(string $breadCrumb)
+    public function setBreadCrumb(string $breadCrumb): MetadataInterface
     {
         $this->breadCrumb = $breadCrumb;
 
@@ -120,7 +119,7 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getMetaTitle(): string
     {
@@ -128,10 +127,9 @@ class Metadata
     }
 
     /**
-     * @param string $metaTitle
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setMetaTitle($metaTitle)
+    public function setMetaTitle($metaTitle): MetadataInterface
     {
         $this->metaTitle = $metaTitle;
 
@@ -139,7 +137,7 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getMetaDescription(): string
     {
@@ -147,10 +145,9 @@ class Metadata
     }
 
     /**
-     * @param string $metaDescription
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setMetaDescription($metaDescription)
+    public function setMetaDescription($metaDescription): MetadataInterface
     {
         $this->metaDescription = $metaDescription;
 
@@ -158,7 +155,7 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getMetaKeywords(): string
     {
@@ -166,10 +163,9 @@ class Metadata
     }
 
     /**
-     * @param string $metaKeywords
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setMetaKeywords($metaKeywords)
+    public function setMetaKeywords($metaKeywords): MetadataInterface
     {
         $this->metaKeywords = $metaKeywords;
 
@@ -177,7 +173,7 @@ class Metadata
     }
 
     /**
-     * @return \Kategorie
+     * @inheritdoc
      */
     public function getCategory()
     {
@@ -185,10 +181,9 @@ class Metadata
     }
 
     /**
-     * @param \Kategorie $category
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setCategory(\Kategorie $category)
+    public function setCategory(\Kategorie $category): MetadataInterface
     {
         $this->category = $category;
 
@@ -196,7 +191,7 @@ class Metadata
     }
 
     /**
-     * @return \Hersteller
+     * @inheritdoc
      */
     public function getManufacturer()
     {
@@ -204,10 +199,9 @@ class Metadata
     }
 
     /**
-     * @param \Hersteller $manufacturer
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setManufacturer(\Hersteller $manufacturer)
+    public function setManufacturer(\Hersteller $manufacturer): MetadataInterface
     {
         $this->manufacturer = $manufacturer;
 
@@ -215,7 +209,7 @@ class Metadata
     }
 
     /**
-     * @return \MerkmalWert
+     * @inheritdoc
      */
     public function getAttributeValue()
     {
@@ -223,10 +217,9 @@ class Metadata
     }
 
     /**
-     * @param \MerkmalWert $attributeValue
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setAttributeValue(\MerkmalWert $attributeValue)
+    public function setAttributeValue(\MerkmalWert $attributeValue): MetadataInterface
     {
         $this->attributeValue = $attributeValue;
 
@@ -234,7 +227,7 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getName(): string
     {
@@ -242,10 +235,9 @@ class Metadata
     }
 
     /**
-     * @param string $name
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setName(string $name)
+    public function setName(string $name): MetadataInterface
     {
         $this->name = $name;
 
@@ -253,7 +245,7 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getImageURL(): string
     {
@@ -261,10 +253,9 @@ class Metadata
     }
 
     /**
-     * @param string $imageURL
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setImageURL(string $imageURL)
+    public function setImageURL(string $imageURL): MetadataInterface
     {
         $this->imageURL = $imageURL;
 
@@ -272,7 +263,7 @@ class Metadata
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function hasData(): bool
     {
@@ -280,10 +271,7 @@ class Metadata
     }
 
     /**
-     * Holt die Globalen Metaangaben und Return diese als Assoc Array wobei die Keys => kSprache sind
-     *
-     * @return array
-     * @former holeGlobaleMetaAngaben()
+     * @inheritdoc
      */
     public static function getGlobalMetaData(): array
     {
@@ -309,8 +297,7 @@ class Metadata
     }
 
     /**
-     * @return array
-     * @former holeExcludedKeywords()
+     * @inheritdoc
      */
     public static function getExcludes(): array
     {
@@ -321,22 +308,17 @@ class Metadata
                     ORDER BY cISOSprache',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $content = reindex($keyWords, function ($e) {
+            $content  = reindex($keyWords, function ($e) {
                 return $e->cISOSprache;
             });
-            $tags   = [CACHING_GROUP_OPTION];
+            $tags     = [CACHING_GROUP_OPTION];
 
             return true;
         });
     }
 
     /**
-     * Erhält einen String aus dem alle nicht erlaubten Wörter rausgefiltert werden
-     *
-     * @param string $cString
-     * @param array  $oExcludesKeywords_arr
-     * @return string
-     * @former gibExcludesKeywordsReplace()
+     * @inheritdoc
      */
     public static function getFilteredString($cString, array $oExcludesKeywords_arr): string
     {
@@ -349,12 +331,7 @@ class Metadata
     }
 
     /**
-     * Mapped die Suchspecial Einstellungen und liefert die Einstellungswerte als Assoc Array zurück.
-     * Das Array kann via kKey Assoc angesprochen werden.
-     *
-     * @param array $config
-     * @return array
-     * @former gibSuchspecialEinstellungMapping()
+     * @inheritdoc
      */
     public static function getSearchSpecialConfigMapping(array $config): array
     {
@@ -388,11 +365,9 @@ class Metadata
     }
 
     /**
-     * @param \Kategorie|null      $currentCategory
-     * @param \KategorieListe|null $openCategories
-     * @return $this
+     * @inheritdoc
      */
-    public function getNavigationInfo($currentCategory = null, $openCategories = null)
+    public function getNavigationInfo($currentCategory = null, $openCategories = null): MetadataInterface
     {
         if ($currentCategory !== null && $this->productFilter->hasCategory()) {
             $this->category = $currentCategory;
@@ -468,14 +443,14 @@ class Metadata
     }
 
     /**
-     * @param array                      $products
-     * @param ProductFilterSearchResults $searchResults
-     * @param array                      $globalMeta
-     * @param \Kategorie|null            $category
-     * @return string
+     * @inheritdoc
      */
-    public function generateMetaDescription(array $products, ProductFilterSearchResults $searchResults, array $globalMeta, $category = null): string
-    {
+    public function generateMetaDescription(
+        array $products,
+        ProductFilterSearchResultsInterface $searchResults,
+        array $globalMeta,
+        $category = null
+    ): string {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
         $maxLength = !empty($this->conf['metaangaben']['global_meta_maxlaenge_description'])
             ? (int)$this->conf['metaangaben']['global_meta_maxlaenge_description']
@@ -592,9 +567,7 @@ class Metadata
     }
 
     /**
-     * @param array           $products
-     * @param \Kategorie|null $category
-     * @return string
+     * @inheritdoc
      */
     public function generateMetaKeywords($products, $category = null): string
     {
@@ -696,10 +669,7 @@ class Metadata
     }
 
     /**
-     * @param ProductFilterSearchResults $searchResults
-     * @param array                      $globalMeta
-     * @param \Kategorie|null            $category
-     * @return string
+     * @inheritdoc
      */
     public function generateMetaTitle($searchResults, $globalMeta, $category = null): string
     {
@@ -757,10 +727,11 @@ class Metadata
 
         return $this->truncateMetaTitle($cMetaTitle);
     }
+
     /**
      * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.
      *
-     * @param ProductFilterSearchResults $searchResults
+     * @param ProductFilterSearchResultsInterface $searchResults
      * @return string
      */
     public function getMetaStart($searchResults): string
@@ -849,10 +820,8 @@ class Metadata
         return $parts->implode(' ');
     }
 
-
     /**
-     * @param string $cTitle
-     * @return string
+     * @inheritdoc
      */
     public function truncateMetaTitle($cTitle): string
     {
@@ -862,7 +831,7 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getHeader(): string
     {
@@ -906,7 +875,7 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getBreadCrumbName()
     {
@@ -914,12 +883,7 @@ class Metadata
     }
 
     /**
-     * @param bool      $bSeo
-     * @param \stdClass $oSeitenzahlen
-     * @param int       $nMaxAnzeige
-     * @param string    $cFilterShopURL
-     * @return array
-     * @former baueSeitenNaviURL
+     * @inheritdoc
      */
     public function buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = ''): array
     {
@@ -1050,9 +1014,7 @@ class Metadata
     }
 
     /**
-     * @param int $nDarstellung
-     * @return \stdClass
-     * @former gibErweiterteDarstellung
+     * @inheritdoc
      */
     public function getExtendedView($nDarstellung = 0): \stdClass
     {
@@ -1177,9 +1139,7 @@ class Metadata
     }
 
     /**
-     * @param bool $bExtendedJTLSearch
-     * @return array
-     * @former gibSortierliste
+     * @inheritdoc
      */
     public function getSortingOptions($bExtendedJTLSearch = false): array
     {
@@ -1220,11 +1180,9 @@ class Metadata
     }
 
     /**
-     * @param array $search
-     * @return null|\stdClass
-     * @former gibNextSortPrio
+     * @inheritdoc
      */
-    public function getNextSearchPriority($search)
+    public function getNextSearchPriority(array $search)
     {
         $max = 0;
         $obj = null;
@@ -1340,10 +1298,9 @@ class Metadata
     }
 
     /**
-     * @param null|\Kategorie $currentCategory
-     * @return $this
+     * @inheritdoc
      */
-    public function setUserSort($currentCategory = null)
+    public function setUserSort($currentCategory = null): MetadataInterface
     {
         $gpcSort = verifyGPCDataInteger('Sortierung');
         // Der User möchte die Standardsortierung wiederherstellen
@@ -1397,8 +1354,7 @@ class Metadata
     }
 
     /**
-     * @param int|string $sort
-     * @return int
+     * @inheritdoc
      */
     public static function mapUserSorting($sort): int
     {
@@ -1453,7 +1409,7 @@ class Metadata
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getProductsPerPageLimit(): int
     {
@@ -1475,11 +1431,7 @@ class Metadata
     }
 
     /**
-     * implemented for compatibility reasons
-     * should catch checks like isset($oNavigationsinfo->oHersteller)
-     *
-     * @param string $name
-     * @return bool
+     * @inheritdoc
      */
     public function __isset($name)
     {

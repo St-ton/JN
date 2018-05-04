@@ -244,11 +244,11 @@ class ProductFilterURL
     /**
      * URLs generieren, die Filter lösen
      *
-     * @param NavigationURLs             $url
-     * @param ProductFilterSearchResults $searchResults
-     * @return NavigationURLs
+     * @param NavigationURLsInterface             $url
+     * @param ProductFilterSearchResultsInterface $searchResults
+     * @return NavigationURLsInterface
      */
-    public function createUnsetFilterURLs($url, $searchResults = null): NavigationURLs
+    public function createUnsetFilterURLs($url, $searchResults = null): NavigationURLsInterface
     {
         if ($searchResults === null) {
             $searchResults = $this->productFilter->getSearchResults(false);

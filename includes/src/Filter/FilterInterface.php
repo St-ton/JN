@@ -168,7 +168,7 @@ interface FilterInterface
     /**
      * list of necessary joins
      *
-     * @return FilterJoin|FilterJoin[]
+     * @return FilterJoinInterface|FilterJoinInterface[]
      */
     public function getSQLJoin();
 

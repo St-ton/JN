@@ -12,6 +12,7 @@ use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterStateSQL;
 use Filter\FilterInterface;
+use Filter\FilterStateSQLInterface;
 use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseAttribute;
@@ -249,9 +250,9 @@ class ItemAttribute extends BaseAttribute
     }
 
     /**
-     * @return \Filter\FilterStateSQL
+     * @return FilterStateSQLInterface
      */
-    protected function getState(): FilterStateSQL
+    protected function getState(): FilterStateSQLInterface
     {
         $state  = $this->productFilter->getCurrentStateData(self::class);
         $state->setSelect('tmerkmal.cName');

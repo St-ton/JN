@@ -726,7 +726,6 @@ class LinkHelper
                 continue;
             }
             $linkgruppe->kVaterLinkAktiv = 0;
-
             $cnt = count($linkgruppe->Links);
             foreach ($linkgruppe->Links as $link) {
                 $link->aktiv = 0;
@@ -743,7 +742,7 @@ class LinkHelper
                     case PAGE_EIGENE:
                         // Hoechste Ebene
                         $kVaterLink = $link->kVaterLink;
-                        if ($kVaterLink === 0 && $this->isChildActive($kVaterLink, Shop::$kLink)) {
+                        if ($kVaterLink === 0 && $this->isChildActive($link->kLink, Shop::$kLink)) {
                             $link->aktiv = 1;
                         }
                         if ($link->kLink === Shop::$kLink) {

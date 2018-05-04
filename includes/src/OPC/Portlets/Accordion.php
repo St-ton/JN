@@ -40,6 +40,12 @@ class Accordion extends \OPC\Portlet
                 'type'=>'hidden',
                 'default'=> uniqid('cllps_'),
             ],
+            'cllps-initial-state' => [
+                'label' => 'initial als ausgeklappt anzeigen',
+                'type' => 'checkbox',
+                'help' => 'In der Vorschau und beim Bearbeiten ist wird der Bereich immer angezeigt.',
+                'dspl_width' => 50,
+            ],
             'layout' => [
                 'label' => 'layout',
                 'type' => 'radio',
@@ -48,20 +54,17 @@ class Accordion extends \OPC\Portlet
                     'panel'
                 ],
                 'default' => 'button',
-                'dspl_width' => 50,
-            ],
-            'cllps-initial-state' => [
-                'label' => 'initial als ausgeklappt anzeigen',
-                'type' => 'checkbox',
-                'help' => 'In der Vorschau und beim Bearbeiten ist wird der Bereich immer angezeigt.',
-                'dspl_width' => 50,
-            ],
+                'dspl_width' => 100,
 
+            ],
             'cllps-button-text' => [
                 'label' => 'Button text',
                 'type'=>'Text',
                 'default' => 'Button',
                 'dspl_width' => 50,
+                'collapseControlStart' => true,
+                'showOnProp' => 'layout',
+                'showOnPropValue' => 'button',
             ],
             'cllps-button-type' => [
                 'label' => 'Type',
@@ -88,6 +91,15 @@ class Accordion extends \OPC\Portlet
                 ],
                 'default' => 'md',
                 'dspl_width' => 50,
+                'collapseControlEnd' => true,
+            ],
+            'only-on-panel' => [
+                'label' => 'only-on-panel',
+                'dspl_width' => 50,
+                'collapseControlStart' => true,
+                'showOnProp' => 'layout',
+                'showOnPropValue' => 'panel',
+                'collapseControlEnd' => true,
             ],
         ];
     }

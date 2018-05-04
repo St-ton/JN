@@ -146,15 +146,39 @@ trait PortletHtml
             $res   .= "<div class='row'>";
 
             foreach ($props as $propname => $propDesc) {
-                $containerId = !empty($propDesc['collapse']) ? $propname : null;
+                $containerId = !empty($propDesc['layoutCollapse']) ? $propname : null;
+                $cllpsID = uniqid();
+                if (!empty($propDesc['collapseControlStart'])) {
+                    $res .= "<script>
+                                $(function(){
+                                    $('input[name=\"".$propDesc['showOnProp']."\"]').click(function(){
+                                        if ($(this).val() == '".$propDesc['showOnPropValue']."'){
+                                            $('#collapseContainer$cllpsID').show();
+                                        }else{
+                                            $('#collapseContainer$cllpsID').hide();
+                                        }
+                                    });
+                                    if ($('input[name=\"".$propDesc['showOnProp']."\"]').val() == '".$propDesc['showOnPropValue']."'){
+                                        $('#collapseContainer$cllpsID').show();
+                                    }
+                                });
+                            </script>";
+                    ;
+                    $res .= "<div class='collapse' id='collapseContainer$cllpsID'>";
+                }
+
                 $res        .= $this->getAutoConfigProp($instance, $propname, $propDesc, $containerId);
 
-                if (!empty($propDesc['collapse'])) {
+                if (!empty($propDesc['layoutCollapse'])) {
                     $res .= "<div class='collapse' id='collapseContainer$containerId'><div class='row'> ";
-                    foreach ($propDesc['collapse'] as $colapsePropname => $collapsePropdesc) {
+                    foreach ($propDesc['layoutCollapse'] as $colapsePropname => $collapsePropdesc) {
                         $res .= $this->getAutoConfigProp($instance, $colapsePropname, $collapsePropdesc);
                     }
                     $res .= "</div></div></div>"; // row, collapse, col-xs-*
+                }
+
+                if (!empty($propDesc['collapseControlEnd'])) {
+                    $res .= "</div>"; // collapse
                 }
             }
             $i++;
@@ -194,7 +218,7 @@ trait PortletHtml
         $res .= "<div class='form-group'>";
         $res .= $type!=='hidden' ? "<label for='config-$propname'>$label</label>" : "";
 
-        if (!empty($propDesc['collapse'])) {
+        if (!empty($propDesc['layoutCollapse'])) {
             $res .= '<a title="more" class="pull-right" role="button" data-toggle="collapse"
                        href="#collapseContainer' . $containerId . '"">
                         <i class="fa fa-gears"></i>

@@ -1,6 +1,6 @@
 {assign var="areaId" value=$instance->getProperty('uid')}
-{if ($instance->getAttributeString('layout') === 'button')}
-    <div {$instance->addClass('row')->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if}>
+{if ($instance->getProperty('layout') === 'button')}
+    <div {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if}>
         <button
                 class="btn btn-{$instance->getProperty('cllps-button-type')} btn-{$instance->getProperty('cllps-button-size')}"
                 type="button" data-toggle="collapse"
@@ -10,13 +10,13 @@
             {$instance->getProperty('cllps-button-text')}
         </button>
         <div class="collapse{if $isPreview || $instance->getProperty('cllps-initial-state') === '1'} in{/if}" id="div_{$areaId}">
-            <div class="opc-area" {if $isPreview}data-area-id="{$areaId}"{/if}>
-                {if $isPreview}
+            {if $isPreview}
+                <div class="opc-area" data-area-id="{$areaId}">
                     {$instance->getSubareaPreviewHtml($areaId)}
-                {else}
-                    {$instance->getSubareaFinalHtml($areaId)}
-                {/if}
-            </div>
+                </div>
+            {else}
+                {$instance->getSubareaFinalHtml($areaId)}
+            {/if}
         </div>
     </div>
 {else}

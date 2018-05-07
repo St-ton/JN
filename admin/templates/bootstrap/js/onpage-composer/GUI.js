@@ -2,10 +2,11 @@ function GUI(io, page, kcfinderUrl)
 {
     bindProtoOnHandlers(this);
 
-    this.io           = io;
-    this.page         = page;
-    this.kcfinderUrl  = kcfinderUrl;
-    this.configSaveCb = noop;
+    this.io            = io;
+    this.page          = page;
+    this.kcfinderUrl   = kcfinderUrl;
+    this.configSaveCb  = noop;
+    this.imageSelectCB = noop;
 }
 
 GUI.prototype = {
@@ -226,6 +227,7 @@ GUI.prototype = {
         var portletData = portlet.data('portlet');
 
         this.setConfigSaveCallback(noop);
+        this.setImageSelectCallback(noop);
         this.io.getConfigPanelHtml(portletData.class, portletData.properties, this.onGetConfigPanelHtml);
         this.curPortlet = portlet;
     },
@@ -336,6 +338,7 @@ GUI.prototype = {
     selectImageProp: function(propName)
     {
         this.onOpenKCFinder(function(url) {
+            this.imageSelectCB(url, propName);
             this.configForm.find('[name="' + propName + '"]').val(url);
             this.configForm.find('#preview-img-' + propName).attr('src', url);
         }.bind(this));
@@ -363,5 +366,10 @@ GUI.prototype = {
     {
         this.configSaveCb = callback;
     },
+
+    setImageSelectCallback: function(callback)
+    {
+        this.imageSelectCB = callback;
+    }
 
 };

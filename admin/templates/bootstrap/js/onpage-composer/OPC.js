@@ -48,4 +48,9 @@ OPC.prototype = {
         this.gui.setConfigSaveCallback(callback);
     },
 
+    setImageSelectCallback: function(callback)
+    {
+        this.gui.setImageSelectCallback(callback);
+    },
+
 };

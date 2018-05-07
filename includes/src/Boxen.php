@@ -359,22 +359,14 @@ class Boxen
      */
     private function getLinkGroupByID($id)
     {
-        $lgl = new \Link\LinkGroupList(Shop::Container()->getDB());
-        $lgl->loadAll();
-
         $linkHelper = LinkHelper::getInstance();
         $linkGroups = $linkHelper->getLinkGroups();
         foreach ($linkGroups as $_tpl => $_lnkgrp) {
             if (isset($_lnkgrp->kLinkgruppe) && $_lnkgrp->kLinkgruppe === $id) {
-                return [
-                    'tpl' => $_tpl,
-                    'grp' => $_lnkgrp,
-                    'new' => $lgl->getLinkgroupByID($id)
-                ];
+                return ['tpl' => $_tpl, 'grp' => $_lnkgrp];
             }
         }
 
-        die('nulllllllll!!!');
         return null;
     }
 
@@ -1322,7 +1314,6 @@ class Boxen
                                 if ($linkGroup !== null) {
                                     $_cbox->oLinkGruppe         = $linkGroup['grp'];
                                     $_cbox->oLinkGruppeTemplate = $linkGroup['tpl'];
-                                    $_cbox->new = $linkGroup['new']; //@test
                                     $smarty->assign('oBox', $_cbox);
                                 } else {
                                     continue;
@@ -1344,7 +1335,6 @@ class Boxen
                         if ($linkGroup !== null) {
                             $_box->oLinkGruppe         = $linkGroup['grp'];
                             $_box->oLinkGruppeTemplate = $linkGroup['tpl'];
-                            $_box->new = $linkGroup['new']; //@test
                             $smarty->assign('oBox', $_box);
                         } else {
                             continue;

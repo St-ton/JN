@@ -8,9 +8,7 @@ $smarty        = Shop::Smarty();
 $oBrowser      = getBrowser();
 $linkHelper    = LinkHelper::getInstance();
 $oTemplate     = Template::getInstance();
-$bMobilAktiv   = $oTemplate->isMobileTemplateActive();
 $tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
-$bMobile       = false;
 $shopLogo      = Shop::getLogo();
 $shopURL       = Shop::getURL();
 $cart          = $_SESSION['Warenkorb'] ?? new Warenkorb();
@@ -21,23 +19,17 @@ $themeDir      = empty($Einstellungen['template']['theme']['theme_default'])
 $cShopName     = empty($Einstellungen['global']['global_shopname'])
     ? 'JTL-Shop'
     : $Einstellungen['global']['global_shopname'];
-if (!$bMobilAktiv && $oBrowser->bMobile && !isset($_SESSION['bAskMobil']) && $oTemplate->hasMobileTemplate()) {
-    $_SESSION['bAskMobil'] = true;
-    $bMobile               = true;
-}
 $cMinify_arr = $oTemplate->getMinifyArray();
 $cCSS_arr    = $cMinify_arr["{$themeDir}.css"] ?? [];
 $cJS_arr     = $cMinify_arr['jtl3.js'] ?? [];
-if (!$bMobilAktiv) {
-    executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
-        'cCSS_arr'                  => &$cCSS_arr,
-        'cJS_arr'                   => &$cJS_arr,
-        'cPluginCss_arr'            => &$cMinify_arr['plugin_css'],
-        'cPluginCssConditional_arr' => &$cMinify_arr['plugin_css_conditional'],
-        'cPluginJsHead_arr'         => &$cMinify_arr['plugin_js_head'],
-        'cPluginJsBody_arr'         => &$cMinify_arr['plugin_js_body']
-    ]);
-}
+executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
+    'cCSS_arr'                  => &$cCSS_arr,
+    'cJS_arr'                   => &$cJS_arr,
+    'cPluginCss_arr'            => &$cMinify_arr['plugin_css'],
+    'cPluginCssConditional_arr' => &$cMinify_arr['plugin_css_conditional'],
+    'cPluginJsHead_arr'         => &$cMinify_arr['plugin_js_head'],
+    'cPluginJsBody_arr'         => &$cMinify_arr['plugin_js_body']
+]);
 $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
     ? $_SESSION['Kunde']->kKundengruppe
     : Session::CustomerGroup()->getID();
@@ -75,7 +67,6 @@ $smarty->assign('linkgroups', $linkHelper->activate($pagetType))
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie, false))
-       ->assign('bMobilMoeglich', $bMobile)
        ->assign('cPluginCssConditional_arr', $cMinify_arr['plugin_css_conditional'])
        ->assign('cPluginJsHead_arr', $cMinify_arr['plugin_js_head'])
        ->assign('cPluginJsBody_arr', $cMinify_arr['plugin_js_body'])

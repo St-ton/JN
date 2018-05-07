@@ -29,15 +29,15 @@ $io->register('suggestions')
  */
 function suggestions($keyword)
 {
-    global $Einstellungen, $smarty;
-
-    $results    = [];
-    $language   = Shop::getLanguage();
-    $maxResults = ((int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl'] > 0)
-        ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
-        : 10;
     if (strlen($keyword) >= 2) {
-        $results = Shop::Container()->getDB()->executeQueryPrepared("
+        $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+        $smarty        = Shop::Smarty();
+        $results       = [];
+        $language      = Shop::getLanguage();
+        $maxResults    = ((int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl'] > 0)
+            ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
+            : 10;
+        $results       = Shop::Container()->getDB()->executeQueryPrepared("
             SELECT cSuche AS keyword, nAnzahlTreffer AS quantity
               FROM tsuchanfrage
               WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX(:keyword)), '%')
@@ -55,7 +55,7 @@ function suggestions($keyword)
                 'maxres'  => $maxResults,
                 'lang'    => $language
             ],
-            2
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($results as &$result) {
             $result->suggestion = $smarty->assign('result', $result)->fetch('snippets/suggestion.tpl');
@@ -73,19 +73,20 @@ function suggestions($keyword)
  */
 function getCitiesByZip($cityQuery, $country, $zip)
 {
-    $results    = [];
+    $results = [];
     if (!empty($country) && !empty($zip)) {
         $cityQuery = "%" . StringHandler::filterXSS($cityQuery) . "%";
         $country   = StringHandler::filterXSS($country);
         $zip       = StringHandler::filterXSS($zip);
-        $cities = Shop::Container()->getDB()->queryPrepared(
+        $cities    = Shop::Container()->getDB()->queryPrepared(
             "SELECT cOrt
             FROM tplz
             WHERE cLandISO = :country
                 AND cPLZ = :zip
                 AND cOrt LIKE :cityQuery",
             ['country' => $country, 'zip' => $zip, 'cityQuery' => $cityQuery],
-            2);
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
         foreach ($cities as $result) {
             $results[] = $result->cOrt;
         }
@@ -102,11 +103,11 @@ function getCitiesByZip($cityQuery, $country, $zip)
  */
 function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 {
-    global $Einstellungen, $smarty;
+    global $Einstellungen;
 
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'boxen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
+    $smarty      = Shop::Smarty();
     $oResponse   = new stdClass();
     $objResponse = new IOResponse();
 
@@ -231,18 +232,10 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
  */
 function pushToComparelist($kArtikel)
 {
-    global $Einstellungen;
-    $kArtikel = (int)$kArtikel;
-    if (!isset($Einstellungen['vergleichsliste'])) {
-        if (isset($Einstellungen)) {
-            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_VERGLEICHSLISTE]));
-        } else {
-            $Einstellungen = Shop::getSettings([CONF_VERGLEICHSLISTE]);
-        }
-    }
-
-    $oResponse   = new stdClass();
-    $objResponse = new IOResponse();
+    $Einstellungen = Shop::getSettings([CONF_VERGLEICHSLISTE]);
+    $kArtikel      = (int)$kArtikel;
+    $oResponse     = new stdClass();
+    $objResponse   = new IOResponse();
 
     $_POST['Vergleichsliste'] = 1;
     $_POST['a']               = $kArtikel;
@@ -281,29 +274,30 @@ function pushToComparelist($kArtikel)
             ->assign('Einstellungen', $Einstellungen)
             ->fetch('layout/header_shop_nav_compare.tpl');
 
-    $boxes = Boxen::getInstance();
+    $boxes    = Boxen::getInstance();
     $allBoxes = $boxes->build();
     foreach ($allBoxes->boxes as $_position => $_boxes) {
-        if (is_array($_boxes)) {
-            foreach ($_boxes as $_box) {
-                if (isset($_box->bContainer) && $_box->bContainer === true) {
-                    foreach ($_box->oContainer_arr as $_cbox) {
-                        if ($_cbox->kBoxvorlage === BOX_VERGLEICHSLISTE) {
-                            $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_cbox->kBox));
-                            $oResponse->cBoxContainer[$_cbox->kBox] = Shop::Smarty()
-                                ->assign('Einstellungen', $Einstellungen)
-                                ->assign('oBox', $oBox)
-                                ->fetch('boxes/box_comparelist.tpl');
-                        }
+        if (!is_array($_boxes)) {
+            continue;
+        }
+        foreach ($_boxes as $_box) {
+            if (isset($_box->bContainer) && $_box->bContainer === true) {
+                foreach ($_box->oContainer_arr as $_cbox) {
+                    if ($_cbox->kBoxvorlage === BOX_VERGLEICHSLISTE) {
+                        $oBox = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_cbox->kBox));
+                        $oResponse->cBoxContainer[$_cbox->kBox] = Shop::Smarty()
+                            ->assign('Einstellungen', $Einstellungen)
+                            ->assign('oBox', $oBox)
+                            ->fetch('boxes/box_comparelist.tpl');
                     }
                 }
-                if ($_box->kBoxvorlage === BOX_VERGLEICHSLISTE) {
-                    $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_box->kBox));
-                    $oResponse->cBoxContainer[$_box->kBox] = Shop::Smarty()
-                        ->assign('Einstellungen', $Einstellungen)
-                        ->assign('oBox', $oBox)
-                        ->fetch('boxes/box_comparelist.tpl');
-                }
+            }
+            if ($_box->kBoxvorlage === BOX_VERGLEICHSLISTE) {
+                $oBox = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_box->kBox));
+                $oResponse->cBoxContainer[$_box->kBox] = Shop::Smarty()
+                    ->assign('Einstellungen', $Einstellungen)
+                    ->assign('oBox', $oBox)
+                    ->fetch('boxes/box_comparelist.tpl');
             }
         }
     }
@@ -319,19 +313,11 @@ function pushToComparelist($kArtikel)
  */
 function removeFromComparelist($kArtikel)
 {
-    global $Einstellungen;
-
-    $kArtikel = (int)$kArtikel;
-    if (!isset($Einstellungen['vergleichsliste'])) {
-        if (isset($Einstellungen)) {
-            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_VERGLEICHSLISTE]));
-        } else {
-            $Einstellungen = Shop::getSettings([CONF_VERGLEICHSLISTE]);
-        }
-    }
-
-    $oResponse   = new stdClass();
-    $objResponse = new IOResponse();
+    $kArtikel      = (int)$kArtikel;
+    $Einstellungen = Shop::getSettings([CONF_VERGLEICHSLISTE]);
+    $oResponse     = new stdClass();
+    $objResponse   = new IOResponse();
+    $smarty        = Shop::Smarty();
 
     $_GET['Vergleichsliste'] = 1;
     $_GET['vlplo']           = $kArtikel;
@@ -340,35 +326,32 @@ function removeFromComparelist($kArtikel)
     $oResponse->nType     = 2;
     $oResponse->nCount    = count($_SESSION['Vergleichsliste']->oArtikel_arr);
     $oResponse->cTitle    = Shop::Lang()->get('compare');
+    $oResponse->cNavBadge = $smarty->assign('Einstellungen', $Einstellungen)
+                                   ->fetch('layout/header_shop_nav_compare.tpl');
 
-    $oResponse->cNavBadge = Shop::Smarty()
-            ->assign('Einstellungen', $Einstellungen)
-            ->fetch('layout/header_shop_nav_compare.tpl');
-
-
-    $boxes = Boxen::getInstance();
+    $boxes    = Boxen::getInstance();
     $allBoxes = $boxes->build();
     foreach ($allBoxes->boxes as $_position => $_boxes) {
-        if (is_array($_boxes)) {
-            foreach ($_boxes as $_box) {
-                if (isset($_box->bContainer) && $_box->bContainer === true) {
-                    foreach ($_box->oContainer_arr as $_cbox) {
-                        if ($_cbox->kBoxvorlage === BOX_VERGLEICHSLISTE) {
-                            $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_cbox->kBox));
-                            $oResponse->cBoxContainer[$_cbox->kBox] = Shop::Smarty()
-                                ->assign('Einstellungen', $Einstellungen)
-                                ->assign('oBox', $oBox)
-                                ->fetch('boxes/box_comparelist.tpl');
-                        }
+        if (!is_array($_boxes)) {
+            continue;
+        }
+        foreach ($_boxes as $_box) {
+            if (isset($_box->bContainer) && $_box->bContainer === true) {
+                foreach ($_box->oContainer_arr as $_cbox) {
+                    if ($_cbox->kBoxvorlage === BOX_VERGLEICHSLISTE) {
+                        $oBox = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_cbox->kBox));
+                        $smarty->assign('Einstellungen', $Einstellungen)
+                               ->assign('oBox', $oBox);
+
+                        $oResponse->cBoxContainer[$_cbox->kBox] = $smarty->fetch('boxes/box_comparelist.tpl');
                     }
                 }
-                if ($_box->kBoxvorlage === BOX_VERGLEICHSLISTE) {
-                    $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_box->kBox));
-                    $oResponse->cBoxContainer[$_box->kBox] = Shop::Smarty()
-                        ->assign('Einstellungen', $Einstellungen)
-                        ->assign('oBox', $oBox)
-                        ->fetch('boxes/box_comparelist.tpl');
-                }
+            }
+            if ($_box->kBoxvorlage === BOX_VERGLEICHSLISTE) {
+                $oBox = $boxes->prepareBox(BOX_VERGLEICHSLISTE, $boxes->holeBox($_box->kBox));
+                $smarty->assign('Einstellungen', $Einstellungen)
+                       ->assign('oBox', $oBox);
+                $oResponse->cBoxContainer[$_box->kBox] = $smarty->fetch('boxes/box_comparelist.tpl');
             }
         }
     }
@@ -385,20 +368,12 @@ function removeFromComparelist($kArtikel)
  */
 function pushToWishlist($kArtikel, $qty)
 {
-    global $Einstellungen;
-    $kArtikel = (int)$kArtikel;
-
-    if (!isset($Einstellungen['global']['global_wunschliste_anzeigen']) || !isset($Einstellungen['vergleichsliste'])) {
-        if (isset($Einstellungen)) {
-            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_VERGLEICHSLISTE]));
-        } else {
-            $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_VERGLEICHSLISTE]);
-        }
-    }
-    $oResponse   = new stdClass();
-    $objResponse = new IOResponse();
-
-    $qty = (int)$qty === 0 ? 1 : (int)$qty;
+    $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_VERGLEICHSLISTE]);
+    $kArtikel      = (int)$kArtikel;
+    $oResponse     = new stdClass();
+    $objResponse   = new IOResponse();
+    $qty           = (int)$qty === 0 ? 1 : (int)$qty;
+    $smarty        = Shop::Smarty();
     if (empty($customerID = Session::Customer()->getID())) {
         $linkHelper           = LinkHelper::getInstance();
         $oResponse->nType     = 1;
@@ -410,8 +385,7 @@ function pushToWishlist($kArtikel, $qty)
 
         return $objResponse;
     }
-
-    $vals = Shop::Container()->getDB()->query('SELECT * FROM teigenschaft WHERE kArtikel = '. $kArtikel, 2);
+    $vals = Shop::Container()->getDB()->selectAll('teigenschaft', 'kArtikel', $kArtikel);
     if (!ArtikelHelper::isParent($kArtikel) && !empty($vals)) {
         // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
         // muss zum Artikel weitergeleitet werden um Variationen zu wählen
@@ -429,8 +403,8 @@ function pushToWishlist($kArtikel, $qty)
     $_POST['n']           = (int)$qty;
 
     WarenkorbHelper::checkAdditions();
-    $error             = Shop::Smarty()->getTemplateVars('fehler');
-    $notice            = Shop::Smarty()->getTemplateVars('hinweis');
+    $error             = $smarty->getTemplateVars('fehler');
+    $notice            = $smarty->getTemplateVars('hinweis');
     $oResponse->nType  = 2;
     $oResponse->nCount = count($_SESSION['Wunschliste']->CWunschlistePos_arr);
     $oResponse->cTitle = Shop::Lang()->get('goToWishlist');
@@ -451,40 +425,36 @@ function pushToWishlist($kArtikel, $qty)
             'title' => Shop::Lang()->get('goToWishlist')
         ]);
     }
+    $smarty->assign('type', empty($error) ? 'info' : 'danger')
+           ->assign('body', empty($error) ? $notice : $error)
+           ->assign('buttons', $buttons)
+           ->assign('Einstellungen', $Einstellungen);
 
-    $oResponse->cNotification = Shop::Smarty()
-        ->assign('type', empty($error) ? 'info' : 'danger')
-        ->assign('body', empty($error) ? $notice : $error)
-        ->assign('buttons', $buttons)
-        ->fetch('snippets/notification.tpl');
+    $oResponse->cNotification = $smarty->fetch('snippets/notification.tpl');
+    $oResponse->cNavBadge     = $smarty->fetch('layout/header_shop_nav_wish.tpl');
 
-    $oResponse->cNavBadge = Shop::Smarty()
-        ->assign('Einstellungen', $Einstellungen)
-        ->fetch('layout/header_shop_nav_wish.tpl');
-
-    $boxes = Boxen::getInstance();
+    $boxes    = Boxen::getInstance();
     $allBoxes = $boxes->build();
     foreach ($allBoxes->boxes as $_position => $_boxes) {
-        if (is_array($_boxes)) {
-            foreach ($_boxes as $_box) {
-                if (isset($_box->bContainer) && $_box->bContainer === true) {
-                    foreach ($_box->oContainer_arr as $_cbox) {
-                        if ($_cbox->kBoxvorlage === BOX_WUNSCHLISTE) {
-                            $oBox  = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_cbox->kBox));
-                            $oResponse->cBoxContainer[$_cbox->kBox] = Shop::Smarty()
-                                ->assign('Einstellungen', $Einstellungen)
-                                ->assign('oBox', $oBox)
-                                ->fetch('boxes/box_wishlist.tpl');
-                        }
+        if (!is_array($_boxes)) {
+            continue;
+        }
+        foreach ($_boxes as $_box) {
+            if (isset($_box->bContainer) && $_box->bContainer === true) {
+                foreach ($_box->oContainer_arr as $_cbox) {
+                    if ($_cbox->kBoxvorlage === BOX_WUNSCHLISTE) {
+                        $oBox = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_cbox->kBox));
+                        $smarty->assign('oBox', $oBox);
+
+                        $oResponse->cBoxContainer[$_cbox->kBox] = $smarty->fetch('boxes/box_wishlist.tpl');
                     }
                 }
-                if ($_box->kBoxvorlage === BOX_WUNSCHLISTE) {
-                    $oBox  = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_box->kBox));
-                    $oResponse->cBoxContainer[$_box->kBox] = Shop::Smarty()
-                        ->assign('Einstellungen', $Einstellungen)
-                        ->assign('oBox', $oBox)
-                        ->fetch('boxes/box_wishlist.tpl');
-                }
+            }
+            if ($_box->kBoxvorlage === BOX_WUNSCHLISTE) {
+                $oBox = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_box->kBox));
+                $smarty->assign('oBox', $oBox);
+
+                $oResponse->cBoxContainer[$_box->kBox] = $smarty->fetch('boxes/box_wishlist.tpl');
             }
         }
     }
@@ -500,19 +470,11 @@ function pushToWishlist($kArtikel, $qty)
  */
 function removeFromWishlist($kArtikel)
 {
-    global $Einstellungen;
-
-    $kArtikel = (int)$kArtikel;
-    if (!isset($Einstellungen['global']['global_wunschliste_anzeigen']) || !isset($Einstellungen['vergleichsliste'])) {
-        if (isset($Einstellungen)) {
-            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_VERGLEICHSLISTE]));
-        } else {
-            $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_VERGLEICHSLISTE]);
-        }
-    }
-
-    $oResponse   = new stdClass();
-    $objResponse = new IOResponse();
+    $kArtikel      = (int)$kArtikel;
+    $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_VERGLEICHSLISTE]);
+    $oResponse     = new stdClass();
+    $objResponse   = new IOResponse();
+    $smarty        = Shop::Smarty();
 
     $_GET['Wunschliste'] = 1;
     $_GET['wlplo']       = $kArtikel;
@@ -522,33 +484,31 @@ function removeFromWishlist($kArtikel)
     $oResponse->nCount    = count($_SESSION['Wunschliste']->CWunschlistePos_arr);
     $oResponse->cTitle    = Shop::Lang()->get('goToWishlist');
 
-    $oResponse->cNavBadge = Shop::Smarty()
-        ->assign('Einstellungen', $Einstellungen)
-        ->fetch('layout/header_shop_nav_wish.tpl');
+    $oResponse->cNavBadge = $smarty->assign('Einstellungen', $Einstellungen)
+                                   ->fetch('layout/header_shop_nav_wish.tpl');
 
-    $boxes = Boxen::getInstance();
+    $boxes    = Boxen::getInstance();
     $allBoxes = $boxes->build();
     foreach ($allBoxes->boxes as $_position => $_boxes) {
-        if (is_array($_boxes)) {
-            foreach ($_boxes as $_box) {
-                if (isset($_box->bContainer) && $_box->bContainer === true) {
-                    foreach ($_box->oContainer_arr as $_cbox) {
-                        if ($_cbox->kBoxvorlage === BOX_WUNSCHLISTE) {
-                            $oBox  = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_cbox->kBox));
-                            $oResponse->cBoxContainer[$_cbox->kBox] = Shop::Smarty()
-                                ->assign('Einstellungen', $Einstellungen)
-                                ->assign('oBox', $oBox)
-                                ->fetch('boxes/box_wishlist.tpl');
-                        }
+        if (!is_array($_boxes)) {
+            continue;
+        }
+        foreach ($_boxes as $_box) {
+            if (isset($_box->bContainer) && $_box->bContainer === true) {
+                foreach ($_box->oContainer_arr as $_cbox) {
+                    if ($_cbox->kBoxvorlage === BOX_WUNSCHLISTE) {
+                        $oBox = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_cbox->kBox));
+                        $smarty->assign('Einstellungen', $Einstellungen)
+                               ->assign('oBox', $oBox);
+                        $oResponse->cBoxContainer[$_cbox->kBox] = $smarty->fetch('boxes/box_wishlist.tpl');
                     }
                 }
-                if ($_box->kBoxvorlage === BOX_WUNSCHLISTE) {
-                    $oBox  = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_box->kBox));
-                    $oResponse->cBoxContainer[$_box->kBox] = Shop::Smarty()
-                        ->assign('Einstellungen', $Einstellungen)
-                        ->assign('oBox', $oBox)
-                        ->fetch('boxes/box_wishlist.tpl');
-                }
+            }
+            if ($_box->kBoxvorlage === BOX_WUNSCHLISTE) {
+                $oBox = $boxes->prepareBox(BOX_WUNSCHLISTE, $boxes->holeBox($_box->kBox));
+                $smarty->assign('Einstellungen', $Einstellungen)
+                       ->assign('oBox', $oBox);
+                $oResponse->cBoxContainer[$_box->kBox] = $smarty->fetch('boxes/box_wishlist.tpl');
             }
         }
     }
@@ -563,11 +523,9 @@ function removeFromWishlist($kArtikel)
  */
 function getBasketItems($nTyp)
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    global $Einstellungen, $smarty;
-
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
+    $smarty      = Shop::Smarty();
     $cart        = Session::Cart();
     $oResponse   = new stdClass();
     $objResponse = new IOResponse();
@@ -628,11 +586,10 @@ function getBasketItems($nTyp)
  */
 function buildConfiguration($aValues)
 {
-    global $smarty;
-
+    $smarty          = Shop::Smarty();
     $oResponse       = new IOResponse();
     $Artikel         = new Artikel();
-    $articleId       = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : (int)$aValues['a'];
+    $articleId       = intval($aValues['VariKindArtikel'] ?? $aValues['a']);
     $items           = $aValues['item'] ?? [];
     $quantities      = $aValues['quantity'] ?? [];
     $variationValues = $aValues['eigenschaftwert'] ?? [];
@@ -721,8 +678,16 @@ function checkDependencies($aValues)
                 ? $currentValue->cArtNr
                 : $oArtikel->cArtNr;
         }
-        $weightTotal        = Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, Shop::getLanguage(), $oArtikel->fGewicht + $weightDiff);
-        $weightArticleTotal = Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, Shop::getLanguage(), $oArtikel->fArtikelgewicht + $weightDiff);
+        $weightTotal        = Trennzeichen::getUnit(
+            JTL_SEPARATOR_WEIGHT,
+            Shop::getLanguage(),
+            $oArtikel->fGewicht + $weightDiff
+        );
+        $weightArticleTotal = Trennzeichen::getUnit(
+            JTL_SEPARATOR_WEIGHT,
+            Shop::getLanguage(),
+            $oArtikel->fArtikelgewicht + $weightDiff
+        );
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
 
         // Alle Variationen ohne Freifeld
@@ -1047,7 +1012,8 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
             AND tartikelsichtbarkeit.kArtikel IS NULL
             AND a.kVaterArtikel = " . $kArtikel . "
         GROUP BY a.kArtikel
-        HAVING count(*) = " . count($kVariationKombi_arr), 1
+        HAVING count(*) = " . count($kVariationKombi_arr),
+        \DB\ReturnType::SINGLE_OBJECT
     );
 }
 
@@ -1072,8 +1038,7 @@ function generateToken()
  */
 function getCategoryMenu($categoryId)
 {
-    global $smarty;
-
+    $smarty     = Shop::Smarty();
     $categoryId = (int)$categoryId;
     $auto       = $categoryId === 0;
 
@@ -1128,8 +1093,7 @@ function getRegionsByCountry($country)
  */
 function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $kSelection_arr)
 {
-    global $smarty;
-
+    $smarty   = Shop::Smarty();
     $response = new IOResponse();
     $AWA      = AuswahlAssistent::startIfRequired($cKey, $kKey, $kSprache, $smarty, $kSelection_arr);
 

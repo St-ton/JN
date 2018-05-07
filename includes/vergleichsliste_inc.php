@@ -71,7 +71,7 @@ function istMerkmalEnthalten($oMerkmale_arr, $kMerkmal)
 function istVariationEnthalten($oVariationen_arr, $cName)
 {
     return \Functional\some($oVariationen_arr, function ($e) use ($cName) {
-        return $e->cNme === $cName;
+        return $e->cName === $cName;
     });
 }
 

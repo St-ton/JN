@@ -337,6 +337,10 @@ class Kategorie
                 $this->bUnterKategorien = 1;
             }
         }
+        $this->kKategorie     = (int)$this->kKategorie;
+        $this->kOberKategorie = (int)$this->kOberKategorie;
+        $this->nSort          = (int)$this->nSort;
+        $this->nBildVorhanden = (int)$this->nBildVorhanden;
         //interne Verlinkung $#k:X:Y#$
         $this->cBeschreibung         = parseNewsText($this->cBeschreibung);
         // Kurzbezeichnung

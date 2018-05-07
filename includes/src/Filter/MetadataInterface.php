@@ -217,4 +217,9 @@ interface MetadataInterface
      * @return int
      */
     public function getProductsPerPageLimit(): int;
+
+    /**
+     * @return bool
+     */
+    public function checkNoIndex(): bool;
 }

@@ -1433,6 +1433,39 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
+    public function checkNoIndex(): bool
+    {
+        $bNoIndex = false;
+        switch (basename($_SERVER['SCRIPT_NAME'])) {
+            case 'wartung.php':
+            case 'navi.php':
+            case 'bestellabschluss.php':
+            case 'bestellvorgang.php':
+            case 'jtl.php':
+            case 'pass.php':
+            case 'registrieren.php':
+            case 'warenkorb.php':
+            case 'wunschliste.php':
+                $bNoIndex = true;
+                break;
+            default:
+                break;
+        }
+        if ($this->productFilter->hasSearch()) {
+            $bNoIndex = true;
+        }
+        if (!$bNoIndex) {
+            $bNoIndex = $this->productFilter->hasAttributeValue()
+                && $this->productFilter->getAttributeValue()->getValue() > 0
+                && $this->conf['global']['global_merkmalwert_url_indexierung'] === 'N';
+        }
+
+        return $bNoIndex;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function __isset($name)
     {
         if (property_exists($this, $name)) {

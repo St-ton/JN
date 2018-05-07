@@ -66,6 +66,9 @@ class Migration_20180507101900 extends Migration implements IMigration
 
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Banner', 'Banner', 'content')");
+
+        $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
+            VALUES (0, 'Container', 'Container', 'layout')");
         /*
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Heading', 'Heading', 'content')");
@@ -103,8 +106,6 @@ class Migration_20180507101900 extends Migration implements IMigration
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Gallery', 'Gallery', 'content')");
 
-        $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Container', 'Container', 'layout')");
         */
     }
 

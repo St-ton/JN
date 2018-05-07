@@ -1,1 +1,0 @@
-<img {$instance->getAttributeString()} {$instance->getDataAttributeString()}>

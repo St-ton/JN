@@ -97,28 +97,28 @@ class Banner extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'src' => [
+            'src'       => [
                 'label'      => 'Bild',
                 'default'    => \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png',
-                'type'=> 'image',
+                'type'       => 'image',
                 'dspl_width' => 50,
             ],
-            'kImageMap'  => [
-                'type' => 'hidden',
-                'default' =>uniqid(),
+            'kImageMap' => [
+                'type'    => 'hidden',
+                'default' => uniqid(),
             ],
-            'zones' => [
-                'type' => 'banner-zones',
+            'zones'     => [
+                'type'    => 'banner-zones',
                 'default' => [],
             ],
-            'class'      => [
-                'label'=> 'CSS Class',
+            'class'     => [
+                'label' => 'CSS Class',
             ],
-            'alt'        => [
-                'label'=> 'alt text',
+            'alt'       => [
+                'label' => 'alt text',
             ],
-            'title'      => [
-                'label'=> 'title'
+            'title'     => [
+                'label' => 'title'
             ],
         ];
 
@@ -127,7 +127,7 @@ class Banner extends \OPC\Portlet
     public function getPropertyTabs()
     {
         return [
-            'Styles' => 'styles',
+            'Styles'    => 'styles',
             'Animation' => 'animations',
         ];
     }

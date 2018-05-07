@@ -79,7 +79,6 @@ class Button extends \OPC\Portlet
                  ->addClass(!empty($fullWidthflag) ? 'btn-block' : '');
 
         $attributes    = $instance->getAttributeString();
-        $dataAttribute = $instance->getDataAttributeString();
 
         $previewButton = "<a ";
 
@@ -125,12 +124,12 @@ class Button extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'btn-text'            => [
+            'btn-text'              => [
                 'label'      => 'Text',
                 'default'    => 'Hey there',
                 'dspl_width' => 50,
             ],
-            'btn-type'            => [
+            'btn-type'              => [
                 'label'      => 'Type',
                 'type'       => 'select',
                 'options'    => [
@@ -144,7 +143,7 @@ class Button extends \OPC\Portlet
                 'default'    => 'default',
                 'dspl_width' => 50,
             ],
-            'btn-size'            => [
+            'btn-size'              => [
                 'label'      => 'Size',
                 'type'       => 'select',
                 'options'    => [
@@ -156,7 +155,7 @@ class Button extends \OPC\Portlet
                 'default'    => 'md',
                 'dspl_width' => 50,
             ],
-            'btn-alignment'       => [
+            'btn-alignment'         => [
                 'label'      => 'alignment',
                 'type'       => 'select',
                 'options'    => [
@@ -168,52 +167,52 @@ class Button extends \OPC\Portlet
                 'default'    => 'inline',
                 'dspl_width' => 50,
             ],
-            'btn-full-width-flag' => [
+            'btn-full-width-flag'   => [
                 'label' => 'Full width?',
                 'type'  => 'checkbox',
             ],
-            'btn-icon-flag'       => [
+            'btn-icon-flag'         => [
                 'label' => 'Icon?',
                 'type'  => 'checkbox',
             ],
-            'btn-icon-alignment' => [
-                'label' => 'icon alignment',
-                'type' => 'select',
-                'options' => [
+            'btn-icon-alignment'    => [
+                'label'                => 'icon alignment',
+                'type'                 => 'select',
+                'options'              => [
                     'left',
                     'right'
                 ],
                 'collapseControlStart' => true,
                 'showOnProp'           => 'btn-icon-flag',
                 'showOnPropValue'      => 1,
-                'dspl_width' => 50,
+                'dspl_width'           => 50,
             ],
-            'btn-icon'            => [
-                'label'                => 'Icon',
-                'type'                 => 'icon',
-                'collapseControlEnd'   => true,
+            'btn-icon'              => [
+                'label'              => 'Icon',
+                'type'               => 'icon',
+                'collapseControlEnd' => true,
+                'dspl_width'         => 100,
+            ],
+            'btn-link-flag'         => [
+                'label'      => 'link?',
+                'type'       => 'checkbox',
                 'dspl_width' => 100,
             ],
-            'btn-link-flag' => [
-                'label' => 'link?',
-                'type' => 'checkbox',
-                'dspl_width' => 100,
-            ],
-            'btn-link-url' => [
-                'label' => 'url',
+            'btn-link-url'          => [
+                'label'                => 'url',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'btn-link-flag',
                 'showOnPropValue'      => 1,
-                'dspl_width' => 50,
+                'dspl_width'           => 50,
             ],
-            'btn-link-title' => [
-                'label' => 'link title',
+            'btn-link-title'        => [
+                'label'      => 'link title',
                 'dspl_width' => 50,
             ],
             'btn-link-new-tab-flag' => [
-                'label' => 'open in new tab?',
-                'type' => 'checkbox',
-                'dspl_width' => 50,
+                'label'              => 'open in new tab?',
+                'type'               => 'checkbox',
+                'dspl_width'         => 50,
                 'collapseControlEnd' => true,
             ]
 
@@ -223,18 +222,18 @@ class Button extends \OPC\Portlet
     public function getPropertyTabs()
     {
         return [
-            'Icon' => [
+            'Icon'      => [
                 'btn-icon-flag',
                 'btn-icon-alignment',
                 'btn-icon',
-                ],
-            'Url' => [
+            ],
+            'Url'       => [
                 'btn-link-flag',
                 'btn-link-url',
                 'btn-link-title',
                 'btn-link-new-tab-flag'
             ],
-            'Styles' => 'styles',
+            'Styles'    => 'styles',
             'Animation' => 'animations',
         ];
     }

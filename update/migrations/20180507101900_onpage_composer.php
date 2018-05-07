@@ -5,7 +5,7 @@
  * @author Marco Stickel
  */
 
-class Migration_20180226121900 extends Migration implements IMigration
+class Migration_20180507101900 extends Migration implements IMigration
 {
     protected $author      = 'Marco Stickel';
     protected $description = 'Add OnPage Composer tables';
@@ -64,6 +64,8 @@ class Migration_20180226121900 extends Migration implements IMigration
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Accordion', 'Accordion', 'layout')");
 
+        $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
+            VALUES (0, 'Banner', 'Banner', 'content')");
         /*
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Heading', 'Heading', 'content')");
@@ -79,9 +81,6 @@ class Migration_20180226121900 extends Migration implements IMigration
 
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Product-Stream', 'ProductStream', 'content')");
-
-        $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Banner', 'Banner', 'content')");
 
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Text', 'Text', 'content')");

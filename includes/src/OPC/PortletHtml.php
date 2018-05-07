@@ -328,6 +328,9 @@ trait PortletHtml
                 $res .= "<input type='hidden' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
                 break;
+            case 'banner-zones':
+                $res .= $this->getConfigPanelSnippet($instance, 'banner-zones', ['propname' => $propname, 'prop' => $prop]);
+                break;
             case 'text':
             default:
                 $res .= "<input type='text' class='form-control' name='$propname' value='$prop'"

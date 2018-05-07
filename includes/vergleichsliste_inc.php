@@ -58,13 +58,9 @@ function baueMerkmalundVariation($oVergleichsliste)
  */
 function istMerkmalEnthalten($oMerkmale_arr, $kMerkmal)
 {
-    foreach ($oMerkmale_arr as $oMerkmale) {
-        if ($oMerkmale->kMerkmal == $kMerkmal) {
-            return true;
-        }
-    }
-
-    return false;
+    return \Functional\some($oMerkmale_arr, function ($e) use ($kMerkmal) {
+        return (int)$e->kMerkmal === $kMerkmal;
+    });
 }
 
 /**
@@ -74,13 +70,9 @@ function istMerkmalEnthalten($oMerkmale_arr, $kMerkmal)
  */
 function istVariationEnthalten($oVariationen_arr, $cName)
 {
-    foreach ($oVariationen_arr as $oVariationen) {
-        if ($oVariationen->cName == $cName) {
-            return true;
-        }
-    }
-
-    return false;
+    return \Functional\some($oVariationen_arr, function ($e) use ($cName) {
+        return $e->cNme === $cName;
+    });
 }
 
 /**
@@ -143,7 +135,8 @@ function setzeVergleich($oVergleichsliste)
             "SELECT count(kVergleichsliste) AS nVergleiche
                 FROM tvergleichsliste
                 WHERE cIP = '" . gibIP() . "'
-                    AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)", 1
+                    AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if ($nVergleiche->nVergleiche < 3) {

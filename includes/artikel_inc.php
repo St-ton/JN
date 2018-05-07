@@ -16,59 +16,42 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
         return null;
     }
     $xSelling = new stdClass();
-    $config   = Shop::getSettings([CONF_ARTIKELDETAILS]);
-    $config   = $config['artikeldetails'];
+    $config   = Shop::getSettings([CONF_ARTIKELDETAILS])['artikeldetails'];
     if ($config['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
         $xSelling->Standard = new stdClass();
         $cSQLLager          = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-        $xsell              = Shop::Container()->getDB()->query(
-            "SELECT txsell.* FROM txsell, tartikel
-                WHERE txsell.kXSellArtikel = tartikel.kArtikel {$cSQLLager}
-                    AND txsell.kArtikel = {$kArtikel}
+        $xsell              = Shop::Container()->getDB()->queryPrepared(
+            "SELECT txsell.*, txsellgruppe.cName, txsellgruppe.cBeschreibung
+                FROM txsell
+                JOIN tartikel
+                    ON txsell.kXSellArtikel = tartikel.kArtikel 
+                LEFT JOIN txsellgruppe
+                    ON txsellgruppe.kXSellGruppe = txsell.kXSellGruppe
+				    AND txsellgruppe.kSprache = :lid
+                WHERE txsell.kArtikel = :aid
+                    {$cSQLLager}
                 ORDER BY tartikel.cName",
+            ['lid' => Shop::getLanguageID(), 'aid' => $kArtikel],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (count($xsell) > 0) {
-            $xsellgruppen = array_unique(array_map(
-                function($e) {
-                    return (int)$e->kXSellGruppe;
-                },
-                $xsell
-            ));
+            $xsellgruppen = \Functional\group($xsell, function ($e) {
+                return $e->kXSellGruppe;
+            });
             $xSelling->Standard->XSellGruppen = [];
-            $xsCount                          = count($xsellgruppen);
             $defaultOptions                   = Artikel::getDefaultOptions();
-            $i = 0;
-            foreach ($xsellgruppen as $groupID) {
+            foreach ($xsellgruppen as $groupID => $articles) {
                 $group               = new stdClass();
                 $group->Artikel      = [];
-                $group->Name         = '';
-                $group->Beschreibung = '';
-                if (Shop::getLanguage() > 0) {
-                    // lokalisieren
-                    $objSprache = Shop::Container()->getDB()->select(
-                        'txsellgruppe',
-                        'kXSellGruppe',
-                        $groupID,
-                        'kSprache',
-                        Shop::getLanguage()
-                    );
-                    if (!isset($objSprache->cName)) {
-                        continue;
-                    }
-                    $group->Name         = $objSprache->cName;
-                    $group->Beschreibung = $objSprache->cBeschreibung;
-                }
-                foreach ($xsell as $xs) {
-                    if ((int)$xs->kXSellGruppe === $groupID) {
-                        $artikel = (new Artikel())->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
-                        if ($artikel->kArtikel > 0 && $artikel->aufLagerSichtbarkeit()) {
-                            $group->Artikel[] = $artikel;
-                        }
+                foreach ($articles as $xs) {
+                    $group->Name         = $xs->cName;
+                    $group->Beschreibung = $xs->cBeschreibung;
+                    $artikel = (new Artikel())->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
+                    if ($artikel->kArtikel > 0 && $artikel->aufLagerSichtbarkeit()) {
+                        $group->Artikel[] = $artikel;
                     }
                 }
-                $xSelling->Standard->XSellGruppen[$i] = $group;
-                ++$i;
+                $xSelling->Standard->XSellGruppen[] = $group;
             }
         }
     }

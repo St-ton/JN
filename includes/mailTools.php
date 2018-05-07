@@ -90,7 +90,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     if (!isset($Object->tkunde->kKundengruppe) || !$Object->tkunde->kKundengruppe) {
         $Object->tkunde->kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $Object->tfirma        = Shop::Container()->getDB()->query("SELECT * FROM tfirma", 1);
+    $Object->tfirma        = Shop::Container()->getDB()->query("SELECT * FROM tfirma", \DB\ReturnType::SINGLE_OBJECT);
     $Object->tkundengruppe = Shop::Container()->getDB()->select(
         'tkundengruppe',
         'kKundengruppe',
@@ -465,7 +465,8 @@ function sendeMail($ModulId, $Object, $mail = null)
             $mailSmarty->assign('oRMA', $Object->oRMA);
             break;
         case MAILTEMPLATE_BEWERTUNG_GUTHABEN:
-            $waehrung                                                 = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
+            $waehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
+
             $Object->oBewertungGuthabenBonus->fGuthabenBonusLocalized = gibPreisStringLocalized(
                 $Object->oBewertungGuthabenBonus->fGuthabenBonus,
                 $waehrung,
@@ -665,10 +666,8 @@ function verschickeMail($mail)
 
     // EmailBlacklist beachten
     $Emailconfig = Shop::getSettings([CONF_EMAILBLACKLIST]);
-    if ($Emailconfig['emailblacklist']['blacklist_benutzen'] === 'Y') {
-        if (pruefeGlobaleEmailBlacklist($mail->toEmail)) {
-            return;
-        }
+    if ($Emailconfig['emailblacklist']['blacklist_benutzen'] === 'Y' && pruefeGlobaleEmailBlacklist($mail->toEmail)) {
+        return;
     }
     // BodyText encoden
     $mail->bodyText  = StringHandler::htmlentitydecode(str_replace('&euro;', 'EUR', $mail->bodyText), ENT_NOQUOTES);
@@ -918,11 +917,9 @@ function bauePDFArrayZumVeschicken($cPDF)
     $cPDFTMP_arr        = explode(';', $cPDF);
     $cPDF_arr           = [];
     $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    if (count($cPDFTMP_arr) > 0) {
-        foreach ($cPDFTMP_arr as $cPDFTMP) {
-            if (strlen($cPDFTMP) > 0 && file_exists($cUploadVerzeichnis . $cPDFTMP)) {
-                $cPDF_arr[] = $cPDFTMP;
-            }
+    foreach ($cPDFTMP_arr as $cPDFTMP) {
+        if (strlen($cPDFTMP) > 0 && file_exists($cUploadVerzeichnis . $cPDFTMP)) {
+            $cPDF_arr[] = $cPDFTMP;
         }
     }
 

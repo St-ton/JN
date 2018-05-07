@@ -62,7 +62,13 @@ if (!isset($AktuelleKategorie)) {
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
+$lgl           = new \Link\LinkGroupList(Shop::Container()->getDB());
+$lgl           = $lgl->loadAll();
+$newHelper     = \Link\LinkHelper::getInstance();
+$lgl->activate($pagetType);
+
 $smarty->assign('linkgroups', $linkHelper->activate($pagetType))
+       ->assign('newLinkGroups', $lgl)
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])

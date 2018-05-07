@@ -1975,7 +1975,11 @@ class Artikel
                         teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort, 
                         teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit,
                         teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad, teigenschaftwertpict.cType,
-                        teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
+                        teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis,
+                        IF(MIN(tartikel.cLagerBeachten) = MAX(tartikel.cLagerBeachten), MIN(tartikel.cLagerBeachten), 'N') AS cMergedLagerBeachten,
+                        IF(MIN(tartikel.cLagerKleinerNull) = MAX(tartikel.cLagerKleinerNull), MIN(tartikel.cLagerKleinerNull), 'N') AS cMergedLagerKleinerNull,
+                        IF(MIN(tartikel.cLagerVariation) = MAX(tartikel.cLagerVariation), MIN(tartikel.cLagerVariation), 'N') AS cMergedLagerVariation,
+                        SUM(tartikel.fLagerbestand) AS fMergedLagerbestand
                         FROM teigenschaftkombiwert
                         JOIN tartikel 
                             ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
@@ -2284,26 +2288,44 @@ class Artikel
                         $this->Variationen[$nZaehler]->Werte[$i]->fVPEWert = $oVariationTMP->fVPEWert;
                     }
                     if ($this->kVaterArtikel > 0 || $this->nIstVater === 1) {
-                        $varCombi                         = new stdClass();
-                        $varCombi->kArtikel               = isset($oVariationTMP->tartikel_kArtikel)
+                        $varCombi           = new stdClass();
+                        $varCombi->kArtikel = isset($oVariationTMP->tartikel_kArtikel)
                             ? $oVariationTMP->tartikel_kArtikel
                             : null;
-                        $varCombi->tartikel_fLagerbestand = isset($oVariationTMP->tartikel_fLagerbestand)
-                            ? $oVariationTMP->tartikel_fLagerbestand
-                            : null;
-                        $varCombi->cLagerBeachten         = isset($oVariationTMP->cLagerBeachten)
-                            ? $oVariationTMP->cLagerBeachten
-                            : null;
-                        $varCombi->cLagerKleinerNull      = isset($oVariationTMP->cLagerKleinerNull)
-                            ? $oVariationTMP->cLagerKleinerNull
-                            : null;
-                        $varCombi->cLagerVariation        = isset($oVariationTMP->cLagerVariation)
-                            ? $oVariationTMP->cLagerVariation
-                            : null;
-                        $value->inStock                   = $this->nIstVater === 1
-                            || $varCombi->cLagerBeachten === 'N'
-                            || $varCombi->tartikel_fLagerbestand > 0
-                            || $varCombi->cLagerKleinerNull === 'Y';
+                        if ($this->nIstVater === 1 && isset($oVariationTMP->cMergedLagerBeachten)) {
+                            $varCombi->tartikel_fLagerbestand = isset($oVariationTMP->fMergedLagerbestand)
+                                ? $oVariationTMP->fMergedLagerbestand
+                                : null;
+                            $varCombi->cLagerBeachten         = isset($oVariationTMP->cMergedLagerBeachten)
+                                ? $oVariationTMP->cMergedLagerBeachten
+                                : null;
+                            $varCombi->cLagerKleinerNull      = isset($oVariationTMP->cMergedLagerKleinerNull)
+                                ? $oVariationTMP->cMergedLagerKleinerNull
+                                : null;
+                            $varCombi->cLagerVariation        = isset($oVariationTMP->cMergedLagerVariation)
+                                ? $oVariationTMP->cMergedLagerVariation
+                                : null;
+                            $value->inStock                   = $varCombi->cLagerBeachten === 'N'
+                                || $varCombi->tartikel_fLagerbestand > 0
+                                || $varCombi->cLagerKleinerNull === 'Y';
+                        } else {
+                            $varCombi->tartikel_fLagerbestand = isset($oVariationTMP->tartikel_fLagerbestand)
+                                ? $oVariationTMP->tartikel_fLagerbestand
+                                : null;
+                            $varCombi->cLagerBeachten         = isset($oVariationTMP->cLagerBeachten)
+                                ? $oVariationTMP->cLagerBeachten
+                                : null;
+                            $varCombi->cLagerKleinerNull      = isset($oVariationTMP->cLagerKleinerNull)
+                                ? $oVariationTMP->cLagerKleinerNull
+                                : null;
+                            $varCombi->cLagerVariation        = isset($oVariationTMP->cLagerVariation)
+                                ? $oVariationTMP->cLagerVariation
+                                : null;
+                            $value->inStock                   = $this->nIstVater === 1
+                                || $varCombi->cLagerBeachten === 'N'
+                                || $varCombi->tartikel_fLagerbestand > 0
+                                || $varCombi->cLagerKleinerNull === 'Y';
+                        }
 
                         $this->Variationen[$nZaehler]->Werte[$i]->oVariationsKombi = $varCombi;
                     }

@@ -420,7 +420,8 @@ class Plugin
                 LEFT JOIN tplugineinstellungenconf
                     ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
-                WHERE tplugineinstellungen.kPlugin = " . $kPlugin, 2
+                WHERE tplugineinstellungen.kPlugin = " . $kPlugin,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (is_array($this->oPluginEinstellung_arr)) {
             foreach ($this->oPluginEinstellung_arr as $conf) {
@@ -485,7 +486,8 @@ class Plugin
         $methods      = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM tzahlungsart
-                WHERE cModulId LIKE 'kPlugin\_" . (int)$this->kPlugin . "%'", 2
+                WHERE cModulId LIKE 'kPlugin\_" . (int)$this->kPlugin . "%'",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         // Zahlungsmethode Sprache holen
         foreach ($methods as $i => $oZahlungsmethode) {
@@ -510,7 +512,8 @@ class Plugin
                     FROM tplugineinstellungenconf
                     WHERE cWertName LIKE '" . $cModulId . "_%'
                         AND cConf = 'Y'
-                    ORDER BY nSort", 2
+                    ORDER BY nSort",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $methodsAssoc[$oZahlungsmethode->cModulId]    = $methods[$i];
         }
@@ -667,7 +670,11 @@ class Plugin
         if (strlen($cPluginID) > 0) {
             $cacheID = 'plugin_id_list';
             if (($plugins = Shop::Cache()->get($cacheID)) === false) {
-                $plugins = Shop::Container()->getDB()->query("SELECT kPlugin, cPluginID FROM tplugin", 2);
+                $plugins = Shop::Container()->getDB()->query(
+                    "SELECT kPlugin, cPluginID 
+                        FROM tplugin",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                );
                 Shop::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
             }
             foreach ($plugins as $plugin) {
@@ -757,7 +764,8 @@ class Plugin
                 JOIN tpluginhook
                     ON tpluginhook.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = 2
-                ORDER BY tpluginhook.nPriority, tplugin.kPlugin", 2
+                ORDER BY tpluginhook.nPriority, tplugin.kPlugin",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oPluginHook_arr as $oPluginHook) {
             $oPlugin             = new stdClass();
@@ -882,7 +890,13 @@ class Plugin
         }
 
         $templatePaths = [];
-        $plugins       = Shop::Container()->getDB()->selectAll('tplugin', 'nStatus', 2, 'cPluginID,cVerzeichnis,nVersion', 'nPrio');
+        $plugins       = Shop::Container()->getDB()->selectAll(
+            'tplugin',
+            'nStatus',
+            2,
+            'cPluginID,cVerzeichnis,nVersion',
+            'nPrio'
+        );
 
         foreach ($plugins as $plugin) {
             $path = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' .

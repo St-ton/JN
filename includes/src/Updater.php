@@ -120,7 +120,7 @@ class Updater
      */
     public function getVersion()
     {
-        $v = Shop::Container()->getDB()->query("SELECT * FROM tversion", 1);
+        $v = Shop::Container()->getDB()->query("SELECT * FROM tversion", \DB\ReturnType::SINGLE_OBJECT);
         if ($v === null) {
             throw new \Exception('Unable to identify application version');
         }

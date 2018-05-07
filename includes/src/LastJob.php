@@ -20,35 +20,32 @@ class LastJob
 
     /**
      * @param int $hours
-     * @return false|stdClass[]
+     * @return stdClass[]
      */
     public function getRepeatedJobs($hours)
     {
-        $result = Shop::Container()->getDB()->query(
+        return Shop::Container()->getDB()->query(
             "SELECT kJob, nJob, dErstellt
                 FROM tlastjob
                 WHERE cType = 'RPT'
                     AND (dErstellt = '0000-00-00 00:00:00'
-                        OR DATE_ADD(dErstellt, INTERVAL " . (int)$hours . " HOUR) < NOW())", 2
+                        OR DATE_ADD(dErstellt, INTERVAL " . (int)$hours . " HOUR) < NOW())",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-
-        return $result === 0 ? false : $result;
     }
 
     /**
-     * @return false|stdClass[]
+     * @return stdClass[]
      */
     public function getStdJobs()
     {
-        $result = Shop::Container()->getDB()->selectAll(
+        return Shop::Container()->getDB()->selectAll(
             'tlastjob',
             ['cType', 'nFinished'],
             ['STD', 1],
             'kJob, nJob, cJobName, dErstellt',
             'dErstellt'
         );
-
-        return $result === 0 ? false : $result;
     }
 
     /**

@@ -35,7 +35,8 @@ class ContentAuthor
                 "INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
                     VALUES('" . $realm . "', " . $authorID . ", " . $contentID . ")
                     ON DUPLICATE KEY UPDATE
-                        kAdminlogin = " . $authorID, 4
+                        kAdminlogin = " . $authorID,
+                \DB\ReturnType::DEFAULT
             );
         }
 
@@ -71,7 +72,8 @@ class ContentAuthor
                     ON tadminlogin.kAdminlogin = tcontentauthor.kAdminlogin
                 WHERE tcontentauthor.cRealm = '" . $realm . "'
                     AND tcontentauthor.kContentId = " . (int)$contentID . "
-                    $filter", 1
+                    $filter",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (is_object($author) && (int)$author->kAdminlogin > 0) {
@@ -79,7 +81,8 @@ class ContentAuthor
                 "SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, 
                     tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
                     FROM tadminloginattribut
-                    WHERE tadminloginattribut.kAdminlogin = " . (int)$author->kAdminlogin, 2
+                    WHERE tadminloginattribut.kAdminlogin = " . (int)$author->kAdminlogin,
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $author->extAttribs = [];
             foreach ($attribs as $attrib) {
@@ -113,7 +116,8 @@ class ContentAuthor
                 WHERE tadminlogin.bAktiv = 1
                     AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()
                     AND tadminlogin.kAdminlogin > 1
-                    $filter", 2
+                    $filter",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 }

@@ -165,7 +165,9 @@ class Exportformat
                LEFT JOIN tkampagne 
                   ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
-               WHERE texportformat.kExportformat = " . $kExportformat, 1);
+               WHERE texportformat.kExportformat = " . $kExportformat,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
         if (isset($oObj->kExportformat) && $oObj->kExportformat > 0) {
             foreach (get_object_vars($oObj) as $k => $v) {
                 $this->$k = $v;
@@ -705,7 +707,11 @@ class Exportformat
             ->setIsMerchant($net !== null ? $net->nNettoPreise : 0);
         $_SESSION['kKundengruppe'] = $this->getKundengruppe();
         $_SESSION['kSprache']      = $this->getSprache();
-        $_SESSION['Sprachen']      = Shop::Container()->getDB()->query("SELECT * FROM tsprache", 2);
+        $_SESSION['Sprachen']      = Shop::Container()->getDB()->query(
+            "SELECT * 
+                FROM tsprache",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
         $_SESSION['Waehrung']      = $this->currency;
 
         return $this;
@@ -1053,7 +1059,7 @@ class Exportformat
         }
         $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
-            $maxObj = Shop::Container()->getDB()->executeQuery($this->getExportSQL(true), 1);
+            $maxObj = Shop::Container()->getDB()->executeQuery($this->getExportSQL(true), \DB\ReturnType::SINGLE_OBJECT);
             $max    = (int)$maxObj->nAnzahl;
         } else {
             $max = (int)$max;
@@ -1436,7 +1442,9 @@ class Exportformat
                 SELECT * 
                     FROM tartikel 
                     WHERE kVaterArtikel = 0 
-                    AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1", 1);
+                    AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             if (!empty($articleObject->kArtikel)) {
                 $oArtikelOptionen                            = new stdClass();
                 $oArtikelOptionen->nMerkmale                 = 1;

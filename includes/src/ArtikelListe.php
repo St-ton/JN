@@ -61,7 +61,8 @@ class ArtikelListe
                         AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND $qry
-                    ORDER BY rand() LIMIT " . $anzahl, 2
+                    ORDER BY rand() LIMIT " . $anzahl,
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             Shop::Cache()->set($cacheID, $objArr, [CACHING_GROUP_CATEGORY]);
         }

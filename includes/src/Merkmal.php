@@ -146,7 +146,8 @@ class Merkmal
                 FROM tmerkmal
                 {$cJoin}
                 WHERE tmerkmal.kMerkmal =  {$kMerkmal}
-                ORDER BY tmerkmal.nSort", 1
+                ORDER BY tmerkmal.nSort",
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oMerkmal->kMerkmal) && $oMerkmal->kMerkmal > 0) {
             $cMember_arr = array_keys(get_object_vars($oMerkmal));
@@ -259,7 +260,8 @@ class Merkmal
                     FROM tmerkmal
                     {$cJoin}
                     WHERE tmerkmal.kMerkmal {$cSQL}
-                    ORDER BY tmerkmal.nSort", 2
+                    ORDER BY tmerkmal.nSort",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             if ($bMMW && is_array($oMerkmal_arr) && count($oMerkmal_arr) > 0) {

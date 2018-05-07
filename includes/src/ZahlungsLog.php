@@ -52,7 +52,8 @@ class ZahlungsLog
             "SELECT * FROM tzahlungslog
                 WHERE cModulId = '" . $this->cModulId . "' " . $cSQLLevel . "
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT " . (int)$nStart . ", " . (int)$nLimit, 2
+                LIMIT " . (int)$nStart . ", " . (int)$nLimit,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -137,7 +138,8 @@ class ZahlungsLog
             "SELECT * FROM tzahlungslog
                 WHERE cModulId IN(" . $cSQLModulId . ") " . $cSQLLevel . "
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT " . (int)$nStart . ", " . (int)$nLimit, 2
+                LIMIT " . (int)$nStart . ", " . (int)$nLimit,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 

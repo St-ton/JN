@@ -161,7 +161,8 @@ class MerkmalWert
             "SELECT tmerkmalwert.*, {$cSelect}
                 FROM tmerkmalwert
                 {$cJoin}
-                WHERE tmerkmalwert.kMerkmalWert = {$kMerkmalWert}", 1
+                WHERE tmerkmalwert.kMerkmalWert = {$kMerkmalWert}",
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
             $cMember_arr = array_keys(get_object_vars($oMerkmalWert));
@@ -243,7 +244,8 @@ class MerkmalWert
                 FROM tmerkmalwert
                 {$cJoin}
                 WHERE tmerkmalwert.kMerkmal = " . (int)$kMerkmal . "
-                ORDER BY tmerkmalwert.nSort", 2
+                ORDER BY tmerkmalwert.nSort",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $imageBaseURL = Shop::getImageBaseURL();
         foreach ($oMerkmalWert_arr as $i => $oMerkmalWert) {

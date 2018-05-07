@@ -754,7 +754,7 @@ class Kupon
         $upperString   = $upper ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;
         $numbersString = $numbers ? '0123456789' : null;
         $cCode         = '';
-        $allCoupons    = Shop::Container()->getDB()->query("SELECT * FROM tkupon", 2);
+        $allCoupons    = Shop::Container()->getDB()->query("SELECT * FROM tkupon", \DB\ReturnType::ARRAY_OF_OBJECTS);
         while (empty($cCode) || ((count($allCoupons) === 0)
                 ? empty($cCode) 
                 : Shop::Container()->getDB()->select('tkupon', 'cCode', $cCode))) {

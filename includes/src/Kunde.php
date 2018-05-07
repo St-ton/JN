@@ -662,7 +662,7 @@ class Kunde
      */
     public function verschluesselAlleKunden()
     {
-        foreach (Shop::Container()->getDB()->query("SELECT * FROM tkunde", 2) as $oKunden) {
+        foreach (Shop::Container()->getDB()->query("SELECT * FROM tkunde", \DB\ReturnType::ARRAY_OF_OBJECTS) as $oKunden) {
             if ($oKunden->kKunde > 0) {
                 unset($oKundeTMP);
                 $oKundeTMP = new self($oKunden->kKunde);

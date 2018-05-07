@@ -93,7 +93,8 @@ class HerstellerHelper
                                     AND tartikelsichtbarkeit.kKundengruppe = " . Kundengruppe::getDefaultGroupID() . "
                                 )
                         )
-                    ORDER BY thersteller.nSortNr, thersteller.cName", 2
+                    ORDER BY thersteller.nSortNr, thersteller.cName",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $shopURL      = Shop::getURL() . '/';
             $imageBaseURL = Shop::getImageBaseURL();

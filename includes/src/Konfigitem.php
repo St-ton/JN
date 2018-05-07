@@ -307,16 +307,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public static function fetchAll($kKonfiggruppe): array
         {
-            $oItem_arr = Shop::Container()->getDB()->query("
+            $oItemEx_arr = [];
+            $oItem_arr   = Shop::Container()->getDB()->query("
                 SELECT kKonfigitem 
                     FROM tkonfigitem 
                     WHERE kKonfiggruppe = " . (int)$kKonfiggruppe . " 
-                    ORDER BY nSort ASC", 2
+                    ORDER BY nSort ASC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            if (!is_array($oItem_arr)) {
-                return [];
-            }
-            $oItemEx_arr = [];
             foreach ($oItem_arr as &$oItem) {
                 $kKonfigitem = $oItem->kKonfigitem;
                 $oItem       = new self($kKonfigitem);

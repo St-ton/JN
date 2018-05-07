@@ -14,6 +14,7 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
        ->registerPlugin('function', 'hasCheckBoxForLocation', 'hasCheckBoxForLocation')
        ->registerPlugin('function', 'aaURLEncode', 'aaURLEncode')
        ->registerPlugin('function', 'get_navigation', 'get_navigation')
+       ->registerPlugin('function', 'get_navigation2', 'get_navigation2')
        ->registerPlugin('function', 'ts_data', 'get_trustedshops_data')
        ->registerPlugin('function', 'get_category_array', 'get_category_array')
        ->registerPlugin('function', 'get_category_parents', 'get_category_parents')
@@ -532,6 +533,24 @@ function get_navigation($params, $smarty)
 }
 
 /**
+ * @param array $params - ['type'] Templatename of link, ['assign'] array name to assign
+ * @param JTLSmarty $smarty
+ */
+function get_navigation2($params, $smarty)
+{
+    $linkgroupIdentifier = $params['linkgroupIdentifier'];
+    $oLinkGruppe         = null;
+    if (strlen($linkgroupIdentifier) > 0) {
+        $linkGroups  = $smarty->getTemplateVars('newLinkGroups')
+            ?? (new \Link\LinkGroupList(Shop::Container()->getDB()))->loadAll();
+        $oLinkGruppe = $linkGroups->getLinkgroupByTemplate($linkgroupIdentifier);
+    }
+    if (is_object($oLinkGruppe) && isset($params['assign'])) {
+        $smarty->assign($params['assign'], build_navigation_subs2($oLinkGruppe));
+    }
+}
+
+/**
  * @param object $oLink_arr
  * @param int   $kVaterLink
  * @return array
@@ -558,6 +577,37 @@ function build_navigation_subs($oLink_arr, $kVaterLink = 0)
             : '';
         $oNew_arr[]    = $oLink;
     }
+
+    return $oNew_arr;
+}
+
+/**
+ * @param \Link\LinkGroupInterface $linkGroup
+ * @param int   $kVaterLink
+ * @return \Tightenco\Collect\Support\Collection
+ */
+function build_navigation_subs2($linkGroup, $kVaterLink = 0)
+{
+    $kVaterLink = (int)$kVaterLink;
+    $oNew_arr   = new \Tightenco\Collect\Support\Collection();
+    if ($linkGroup->getTemplate() === 'hidden' || $linkGroup->getName() === 'hidden') {
+        return $oNew_arr;
+    }
+    foreach ($linkGroup->getLinks() as $link) {
+        /** @var \Link\Link $link */
+        if ($link->getParent() !== $kVaterLink) {
+            continue;
+        }
+        $link->setChildLinks(build_navigation_subs2($linkGroup, $link->getID()));
+        $link->setIsActive($link->getIsActive() || (Shop::$kLink > 0 && Shop::$kLink === $link->getID()));
+        //append cTitle property
+//        $oLink->cTitle = (isset($oLink->cLocalizedTitle[$cISO])
+//            && $oLink->cLocalizedTitle[$cISO] !== $oLink->cLocalizedName[$cISO])
+//            ? StringHandler::htmlentities($oLink->cLocalizedTitle[$cISO], ENT_QUOTES)
+//            : '';
+        $oNew_arr->push($link);
+    }
+//    Shop::dbg($oNew_arr, false, '$oNew_arr:');
 
     return $oNew_arr;
 }

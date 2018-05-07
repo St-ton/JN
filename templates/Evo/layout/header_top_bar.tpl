@@ -56,7 +56,7 @@
 {if isset($linkgroups->Kopf) && $linkgroups->Kopf}
 <ul class="cms-pages list-inline pull-right">
     {block name="top-bar-cms-pages"}
-        {foreach name=headlinks from=$linkgroups->Kopf->Links item=Link}
+        {foreach $linkgroups->Kopf->Links as $Link}
             {if $Link->cLocalizedName|has_trans}
                 <li class="{if isset($Link->aktiv) && $Link->aktiv == 1}active{/if}">
                     <a href="{if !empty($Link->cURLFull)}{$Link->cURLFull}{else}{$Link->URL}{/if}"{if $Link->cNoFollow == 'Y'} rel="nofollow"{/if} title="{$Link->cLocalizedName|trans}">{$Link->cLocalizedName|trans}</a>
@@ -65,5 +65,14 @@
         {/foreach}
     {/block}
 </ul>
+    <ul class="cms-pages list-inline pull-right" style="margin-right: 30px;">
+        {block name="top-bar-cms-pages"}
+            {foreach $newLinkGroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
+                <li class="{if $Link->getIsActive()}active{/if}">
+                    <a href="{$Link->getURL()}"{if $Link->getNoFollow()} rel="nofollow"{/if} title="{$Link->getTitle()}">{$Link->getName()}</a>
+                </li>
+            {/foreach}
+        {/block}
+    </ul>
 {/if}
 {/strip}

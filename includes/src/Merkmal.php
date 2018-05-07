@@ -201,9 +201,15 @@ class Merkmal
                 $this->nBildGrossVorhanden = 1;
             }
         }
-        $this->cBildURLGross  = $imageBaseURL . $this->cBildpfadGross;
-        $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
-        $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
+        $this->cBildURLGross       = $imageBaseURL . $this->cBildpfadGross;
+        $this->cBildURLNormal      = $imageBaseURL . $this->cBildpfadNormal;
+        $this->cBildURLKlein       = $imageBaseURL . $this->cBildpfadKlein;
+        $this->kMerkmal            = (int)$this->kMerkmal;
+        $this->nSort               = (int)$this->nSort;
+        $this->nBildKleinVorhanden = (int)$this->nBildKleinVorhanden;
+        $this->nBildGrossVorhanden = (int)$this->nBildGrossVorhanden;
+        $this->kSprache            = (int)$this->kSprache;
+        $this->nGlobal             = (int)$this->nGlobal;
 
         executeHook(HOOK_MERKMAL_CLASS_LOADFROMDB);
         Shop::set($id, $this);

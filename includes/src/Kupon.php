@@ -757,7 +757,7 @@ class Kupon
         $count         = (int)Shop::Container()->getDB()->query(
             "COUNT(*) AS cnt 
                 FROM tkupon",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::SINGLE_OBJECT
         )->cnt;
         while (empty($cCode) || ($count === 0
                 ? empty($cCode) 

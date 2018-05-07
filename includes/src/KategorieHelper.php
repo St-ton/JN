@@ -638,6 +638,24 @@ class KategorieHelper
     }
 
     /**
+     * @param string        $attribute
+     * @param string        $value
+     * @param callable|null $callback
+     * @return mixed
+     * @since 5.0
+     */
+    public static function getCategoryByAttribute($attribute, $value, callable $callback = null)
+    {
+        $cat = ($res = self::getDataByAttribute($attribute, $value)) !== null
+            ? new Kategorie($res->kKategorie)
+            : null;
+
+        return is_callable($callback)
+            ? $callback($cat)
+            : $cat;
+    }
+
+    /**
      * @param Kategorie $Kategorie
      * @param bool      $bString
      * @return array|string

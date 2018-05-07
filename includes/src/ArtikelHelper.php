@@ -688,4 +688,22 @@ class ArtikelHelper
             ? $callback($res)
             : $res;
     }
+
+    /**
+     * @param string        $attribute
+     * @param string        $value
+     * @param callable|null $callback
+     * @return mixed
+     * @since 5.0
+     */
+    public static function getArticleByAttribute($attribute, $value, callable $callback = null)
+    {
+        $art = ($res = self::getDataByAttribute($attribute, $value)) !== null
+            ? (new Artikel())->fuelleArtikel($res->kArtikel, Artikel::getDefaultOptions())
+            : null;
+
+        return is_callable($callback)
+            ? $callback($art)
+            : $art;
+    }
 }

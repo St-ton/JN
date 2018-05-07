@@ -143,4 +143,22 @@ class HerstellerHelper
             ? $callback($res)
             : $res;
     }
+
+    /**
+     * @param string        $attribute
+     * @param string        $value
+     * @param callable|null $callback
+     * @return mixed
+     * @since 5.0
+     */
+    public static function getManufacturerByAttribute($attribute, $value, callable $callback = null)
+    {
+        $mf  = ($res = self::getDataByAttribute($attribute, $value)) !== null
+            ? new Hersteller($res->kHersteller)
+            : null;
+
+        return is_callable($callback)
+            ? $callback($mf)
+            : $mf;
+    }
 }

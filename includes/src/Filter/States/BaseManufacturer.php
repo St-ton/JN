@@ -10,7 +10,8 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
+use Filter\Type;
 use Filter\Items\ItemManufacturer;
 use Filter\ProductFilter;
 
@@ -46,7 +47,7 @@ class BaseManufacturer extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         return parent::setValue((int)$value);
     }
@@ -54,7 +55,7 @@ class BaseManufacturer extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         $val = $this->getValue();
         if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {
@@ -64,11 +65,10 @@ class BaseManufacturer extends AbstractFilter
             $oSeo_arr = \Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
-                        JOIN thersteller
-                            ON thersteller.kHersteller = tseo.kKey
+                    JOIN thersteller
+                        ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
-                        AND kKey IN (" . implode(', ', $val) . ")
-                    ORDER BY kSprache",
+                        AND kKey IN (" . implode(', ', $val) . ")",
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
@@ -118,7 +118,7 @@ class BaseManufacturer extends AbstractFilter
             $val = [$val];
         }
 
-        return $this->getType() === AbstractFilter::FILTER_TYPE_OR
+        return $this->getType()->equals(Type::OR())
             ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . implode(', ', $val) . ')'
             : implode(' AND ', array_map(function ($e) {
                 return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
@@ -146,17 +146,17 @@ class BaseManufacturer extends AbstractFilter
         if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] === 'N') {
             return $options;
         }
-        $state = $this->productFilter->getCurrentStateData($this->getType() === AbstractFilter::FILTER_TYPE_OR
+        $state = $this->productFilter->getCurrentStateData($this->getType()->equals(Type::OR())
             ? $this->getClassName()
             : null
         );
 
-        $state->joins[] = (new FilterJoin())
+        $state->addJoin((new FilterJoin())
             ->setComment('JOIN from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('thersteller')
             ->setOn('tartikel.kHersteller = thersteller.kHersteller')
-            ->setOrigin(__CLASS__);
+            ->setOrigin(__CLASS__));
 
         $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
             [
@@ -165,9 +165,9 @@ class BaseManufacturer extends AbstractFilter
                 'thersteller.nSortNr',
                 'tartikel.kArtikel'
             ],
-            $state->joins,
-            $state->conditions,
-            $state->having
+            $state->getJoins(),
+            $state->getConditions(),
+            $state->getHaving()
         );
         $manufacturers    = \Shop::Container()->getDB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl

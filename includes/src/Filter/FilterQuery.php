@@ -10,7 +10,7 @@ namespace Filter;
  * Class FilterQuery
  * @package Filter
  */
-class FilterQuery
+class FilterQuery implements FilterQueryInterface
 {
     /**
      * @var string
@@ -20,26 +20,26 @@ class FilterQuery
     /**
      * @var string
      */
-    private $table;
+    private $table = '';
 
     /**
      * @var string
      */
-    private $comment;
+    private $comment = '';
 
     /**
      * @var string
      */
-    private $on;
+    private $on = '';
     /**
      * @var string
      */
-    private $origin;
+    private $origin = '';
 
     /**
      * @var string
      */
-    private $where;
+    private $where = '';
 
     /**
      * @var array
@@ -47,10 +47,9 @@ class FilterQuery
     private $params = [];
 
     /**
-     * @param string $where
-     * @return $this
+     * @inheritdoc
      */
-    public function setWhere($where): self
+    public function setWhere(string $where): FilterQueryInterface
     {
         $this->where = $where;
 
@@ -58,18 +57,17 @@ class FilterQuery
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getWhere()
+    public function getWhere(): string
     {
         return $this->where;
     }
 
     /**
-     * @param string $origin
-     * @return $this
+     * @inheritdoc
      */
-    public function setOrigin($origin): self
+    public function setOrigin(string $origin): FilterQueryInterface
     {
         $this->origin = $origin;
 
@@ -77,18 +75,17 @@ class FilterQuery
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getOrigin()
+    public function getOrigin(): string
     {
         return $this->origin;
     }
 
     /**
-     * @param string $type
-     * @return $this
+     * @inheritdoc
      */
-    public function setType($type): self
+    public function setType(string $type): FilterQueryInterface
     {
         $this->type = $type;
 
@@ -96,27 +93,25 @@ class FilterQuery
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-
     /**
-     * @return mixed
+     * @inheritdoc
      */
-    public function getTable()
+    public function getTable(): string
     {
         return $this->table;
     }
 
     /**
-     * @param string $table
-     * @return $this
+     * @inheritdoc
      */
-    public function setTable($table): self
+    public function setTable(string $table): FilterQueryInterface
     {
         $this->table = $table;
 
@@ -124,7 +119,7 @@ class FilterQuery
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getComment(): string
     {
@@ -134,10 +129,9 @@ class FilterQuery
     }
 
     /**
-     * @param string $comment
-     * @return $this
+     * @inheritdoc
      */
-    public function setComment($comment): self
+    public function setComment(string $comment): FilterQueryInterface
     {
         $this->comment = $comment;
 
@@ -145,18 +139,17 @@ class FilterQuery
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getOn()
+    public function getOn(): string
     {
         return $this->on;
     }
 
     /**
-     * @param string $on
-     * @return $this
+     * @inheritdoc
      */
-    public function setOn($on): self
+    public function setOn(string $on): FilterQueryInterface
     {
         $this->on = $on;
 
@@ -172,10 +165,9 @@ class FilterQuery
     }
 
     /**
-     * @param array $params
-     * @return $this
+     * @inheritdoc
      */
-    public function setParams($params): self
+    public function setParams(array $params): FilterQueryInterface
     {
         $this->params = $params;
 
@@ -183,17 +175,19 @@ class FilterQuery
     }
 
     /**
-     * @param array $params
+     * @inheritdoc
      */
-    public function addParams($params)
+    public function addParams(array $params): FilterQueryInterface
     {
         foreach ($params as $param) {
             $this->params[] = $param;
         }
+
+        return $this;
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getParams(): array
     {
@@ -201,7 +195,7 @@ class FilterQuery
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getSql(): string
     {

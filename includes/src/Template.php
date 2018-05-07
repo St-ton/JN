@@ -115,10 +115,7 @@ class Template
 
             return $this;
         }
-        $bMobil  = (isset($_SESSION['bMobil']) && $_SESSION['bMobil']);
-        $cacheID = 'current_template_' . ($bMobil === true
-                ? 'mobile'
-                : 'nonmobile') .
+        $cacheID = 'current_template_' .
             (self::$isAdmin === true ? '_admin' : '');
         if (($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
             self::$cTemplate   = $oTemplate->cTemplate;
@@ -132,12 +129,7 @@ class Template
 
             return $this;
         }
-        $type      = $bMobil ? 'mobil' : 'standard';
-        $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', $type);
-        if (empty($oTemplate)) {
-            // fallback if no mobile/standard template exists
-            $oTemplate = Shop::Container()->getDB()->query("SELECT * FROM ttemplate WHERE eTyp IN('mobil', 'standard')", 1);
-        }
+        $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         if (!empty($oTemplate)) {
             self::$cTemplate   = $oTemplate->cTemplate;
             self::$parent      = !empty($oTemplate->parent) ? $oTemplate->parent : null;
@@ -150,7 +142,7 @@ class Template
 
             $tplObject              = new stdClass();
             $tplObject->cTemplate   = self::$cTemplate;
-            $tplObject->isMobile    = self::$bMobil;
+            $tplObject->isMobile    = false;
             $tplObject->parent      = self::$parent;
             $tplObject->name        = $this->name;
             $tplObject->version     = $this->version;
@@ -204,7 +196,8 @@ class Template
                     AND tplugin.nStatus = 2
                     AND (tplugin_resources.conditional IS NULL
                     OR tplugin_resources.conditional = '')
-                ORDER BY tplugin_resources.priority DESC", 2
+                ORDER BY tplugin_resources.priority DESC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $pluginResCSSconditional = Shop::Container()->getDB()->query(
             "SELECT * FROM tplugin_resources
@@ -213,7 +206,8 @@ class Template
                     AND tplugin.nStatus = 2
                     AND tplugin_resources.conditional IS NOT NULL
                     AND tplugin_resources.conditional != ''
-                ORDER BY tplugin_resources.priority DESC", 2
+                ORDER BY tplugin_resources.priority DESC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $pluginResJSHead = Shop::Container()->getDB()->query(
             "SELECT * FROM tplugin_resources
@@ -222,7 +216,8 @@ class Template
                 WHERE tplugin_resources.type = 'JS'
                     AND tplugin_resources.position = 'head'
                     AND tplugin.nStatus = 2
-                ORDER BY tplugin_resources.priority DESC", 2
+                ORDER BY tplugin_resources.priority DESC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $pluginResJSBody = Shop::Container()->getDB()->query(
             "SELECT * FROM tplugin_resources
@@ -231,7 +226,8 @@ class Template
                 WHERE tplugin_resources.type = 'JS'
                     AND tplugin_resources.position = 'body'
                     AND tplugin.nStatus = 2
-                ORDER BY tplugin_resources.priority DESC", 2
+                ORDER BY tplugin_resources.priority DESC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         return [
@@ -470,47 +466,30 @@ class Template
     }
 
     /**
-     * @return bool|mixed
+     * @return bool
+     * @deprecated since 5.0.0
      */
     private function getMobileTemplate()
     {
-        $cacheID = 'mobile_template';
-        if (($oTemplate = Shop::Cache()->get($cacheID)) === false) {
-            $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
-            if ($oTemplate === null) {
-                Shop::Cache()->set($cacheID, 'false', [CACHING_GROUP_TEMPLATE]);
-            } else {
-                Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
-            }
-        }
-        // workaround for saving bool values to cache
-        if ($oTemplate === 'false') {
-            $oTemplate = false;
-        }
-
-        return $oTemplate;
+        return false;
     }
 
     /**
-     * check if is mobile
-     *
+     * @deprecated since 5.0.0
      * @return bool
      */
     public function hasMobileTemplate()
     {
-        return $this->getMobileTemplate() !== false;
+        return false;
     }
 
     /**
-     * check if mobile is active
-     *
      * @return bool
+     * @deprecated since 5.0.0
      */
     public function isMobileTemplateActive()
     {
-        $oTemplate = $this->getMobileTemplate();
-
-        return isset($oTemplate->cTemplate) && $oTemplate->cTemplate === $_SESSION['cTemplate'];
+        return false;
     }
 
     /**
@@ -536,11 +515,6 @@ class Template
      */
     public function setzeKundenTemplate($bMobil = false)
     {
-        if (!$this->hasMobileTemplate()) {
-            $bMobil = false;
-        }
-        $_SESSION['bMobil'] = $bMobil;
-        self::$bMobil = $bMobil;
         unset($_SESSION['template'], $_SESSION['cTemplate']);
         $this->init();
 
@@ -859,10 +833,11 @@ class Template
 
     /**
      * @return bool
+     * @deprecated since 5.0.0
      */
     public function IsMobile()
     {
-        return self::$bMobil;
+        return false;
     }
 
     /**
@@ -988,27 +963,5 @@ class Template
     public function getShopTemplate($bCache = true)
     {
         return $this->getDir();
-    }
-
-    /**
-     * check if is mobile
-     *
-     * @return bool
-     * @deprecated since 4.0
-     */
-    public function hatMobilTemplate()
-    {
-        return $this->hasMobileTemplate();
-    }
-
-    /**
-     * check if mobile is active
-     *
-     * @return bool
-     * @deprecated since 4.0
-     */
-    public function mobilTemplateAktiv()
-    {
-        return $this->isMobileTemplateActive();
     }
 }

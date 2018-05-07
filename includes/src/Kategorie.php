@@ -212,7 +212,8 @@ class Kategorie
                 LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
                 WHERE tkategorie.kKategorie = " . $kKategorie . "
                     " . $oSQLKategorie->cWHERE . "
-                    AND tkategoriesichtbarkeit.kKategorie IS NULL", 1
+                    AND tkategoriesichtbarkeit.kKategorie IS NULL",
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if ($oKategorie === null || $oKategorie === false) {
             if (!$recall && !standardspracheAktiv(false, $kSprache)) {
@@ -285,7 +286,8 @@ class Kategorie
                         ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                         AND tkategorieattributsprache.kSprache = " . $kSprache . "
                     WHERE kKategorie = " . (int)$this->kKategorie . "
-                    ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
+                    ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
         if ($oKategorieAttribut_arr !== null && is_array($oKategorieAttribut_arr) && count($oKategorieAttribut_arr) > 0) {
@@ -337,6 +339,10 @@ class Kategorie
                 $this->bUnterKategorien = 1;
             }
         }
+        $this->kKategorie     = (int)$this->kKategorie;
+        $this->kOberKategorie = (int)$this->kOberKategorie;
+        $this->nSort          = (int)$this->nSort;
+        $this->nBildVorhanden = (int)$this->nBildVorhanden;
         //interne Verlinkung $#k:X:Y#$
         $this->cBeschreibung         = parseNewsText($this->cBeschreibung);
         // Kurzbezeichnung
@@ -471,7 +477,8 @@ class Kategorie
                 "SELECT kOberKategorie
                     FROM tkategorie
                     WHERE kOberKategorie > 0
-                        AND kKategorie = " . (int)$this->kKategorie, 1
+                        AND kKategorie = " . (int)$this->kKategorie,
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             return isset($oObj->kOberKategorie) ? (int)$oObj->kOberKategorie : false;

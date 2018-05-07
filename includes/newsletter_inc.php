@@ -201,9 +201,8 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
  */
 function newsletterAnmeldungPlausi($oKunde)
 {
-    global $Einstellungen;
-
-    $nPlausi_arr = [];
+    $Einstellungen = Shop::getSettings([CONF_NEWSLETTER]);
+    $nPlausi_arr   = [];
     if ($Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N' && !validateCaptcha($_POST)) {
         $nPlausi_arr['captcha'] = 2;
     }

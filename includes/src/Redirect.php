@@ -409,7 +409,8 @@ class Redirect
                     LEFT JOIN tredirect t 
                         ON t.kRedirect = tr.kRedirect
                     WHERE tr.cIP = '{$cIP}'
-                    AND t.cFromUrl = '{$cUrl}' LIMIT 1", 1
+                    AND t.cFromUrl = '{$cUrl}' LIMIT 1",
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if ($oEntry === false || $oEntry === null || (is_object($oEntry) && (int)$oEntry->nCount === 0)) {
                 $oReferer               = new stdClass();
@@ -502,7 +503,7 @@ class Redirect
             $qry  .= "cFromUrl LIKE :search";
             $prep = ['search' => '%' . $cSuchbegriff . '%'];
         }
-        $oCount = Shop::Container()->getDB()->executeQueryPrepared($qry, $prep, 1);
+        $oCount = Shop::Container()->getDB()->executeQueryPrepared($qry, $prep, \DB\ReturnType::SINGLE_OBJECT);
 
         return isset($oCount->nCount)
             ? (int)$oCount->nCount
@@ -618,7 +619,11 @@ class Redirect
      */
     public static function getTotalRedirectCount()
     {
-        return (int)Shop::Container()->getDB()->query("SELECT COUNT(kRedirect) AS nCount FROM tredirect", 1)->nCount;
+        return (int)Shop::Container()->getDB()->query(
+            "SELECT COUNT(kRedirect) AS nCount 
+                FROM tredirect",
+            \DB\ReturnType::SINGLE_OBJECT
+        )->nCount;
     }
 
     /**

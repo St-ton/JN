@@ -24,35 +24,34 @@ function pruefeEingabe($cPost_arr)
  */
 function setzeKwKinDB($cPost_arr, $Einstellungen)
 {
-    if ($Einstellungen['kundenwerbenkunden']['kwk_nutzen'] === 'Y') {
-        $cVorname  = StringHandler::filterXSS($cPost_arr['cVorname']);
-        $cNachname = StringHandler::filterXSS($cPost_arr['cNachname']);
-        $cEmail    = StringHandler::filterXSS($cPost_arr['cEmail']);
-        // Prüfe ob Email nicht schon bei einem Kunden vorhanden ist
-        $oKunde = Shop::Container()->getDB()->select('tkunde', 'cMail', $cEmail);
-
-        if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-            return false;
-        }
-        $oKwK = new KundenwerbenKunden($cEmail);
-        if ((int)$oKwK->kKundenWerbenKunden > 0) {
-            return false;
-        }
-        // Setze in tkundenwerbenkunden
-        $oKwK->kKunde       = $_SESSION['Kunde']->kKunde;
-        $oKwK->cVorname     = $cVorname;
-        $oKwK->cNachname    = $cNachname;
-        $oKwK->cEmail       = $cEmail;
-        $oKwK->nRegistriert = 0;
-        $oKwK->fGuthaben    = (float)$Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben'];
-        $oKwK->dErstellt    = 'now()';
-        $oKwK->insertDB();
-        $oKwK->sendeEmailanNeukunde();
-
-        return true;
+    if ($Einstellungen['kundenwerbenkunden']['kwk_nutzen'] !== 'Y') {
+        return false;
     }
+    $cVorname  = StringHandler::filterXSS($cPost_arr['cVorname']);
+    $cNachname = StringHandler::filterXSS($cPost_arr['cNachname']);
+    $cEmail    = StringHandler::filterXSS($cPost_arr['cEmail']);
+    // Prüfe ob Email nicht schon bei einem Kunden vorhanden ist
+    $oKunde = Shop::Container()->getDB()->select('tkunde', 'cMail', $cEmail);
 
-    return false;
+    if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
+        return false;
+    }
+    $oKwK = new KundenwerbenKunden($cEmail);
+    if ((int)$oKwK->kKundenWerbenKunden > 0) {
+        return false;
+    }
+    // Setze in tkundenwerbenkunden
+    $oKwK->kKunde       = $_SESSION['Kunde']->kKunde;
+    $oKwK->cVorname     = $cVorname;
+    $oKwK->cNachname    = $cNachname;
+    $oKwK->cEmail       = $cEmail;
+    $oKwK->nRegistriert = 0;
+    $oKwK->fGuthaben    = (float)$Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben'];
+    $oKwK->dErstellt    = 'now()';
+    $oKwK->insertDB();
+    $oKwK->sendeEmailanNeukunde();
+
+    return true;
 }
 
 /**

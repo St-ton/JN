@@ -171,7 +171,8 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
             "SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = " . Session::Customer()->getID() . "
-                    AND kLieferadresse = " . (int)$cPost_arr['kLieferadresse'], 1
+                    AND kLieferadresse = " . (int)$cPost_arr['kLieferadresse'],
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if ($LA->kLieferadresse > 0) {
             $oLieferadresse            = new Lieferadresse($LA->kLieferadresse);
@@ -202,7 +203,7 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
                     AND tversandzuschlagplz.cPLZBis >= :plz)
                     OR tversandzuschlagplz.cPLZ = :plz)",
             ['plz' => $_SESSION['Lieferadresse']->cPLZ, 'id' => (int)$_SESSION['Versandart']->kVersandart],
-            1
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if (!empty($plz_x->kVersandzuschlagPlz)) {
             $delVersand = true;
@@ -543,7 +544,12 @@ function gibStepUnregistriertBestellen()
 {
     global $Kunde;
     $conf      = Shop::getSettings([CONF_KUNDEN]);
-    $herkunfte = Shop::Container()->getDB()->query("SELECT * FROM tkundenherkunft ORDER BY nSort", 2);
+    $herkunfte = Shop::Container()->getDB()->query(
+        "SELECT * 
+            FROM tkundenherkunft 
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     if (isset($Kunde->dGeburtstag) && preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
         list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
         $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
@@ -593,7 +599,8 @@ function gibStepLieferadresse()
         $oLieferadresseTMP_arr = Shop::Container()->getDB()->query(
             "SELECT DISTINCT(kLieferadresse)
                 FROM tlieferadresse
-                WHERE kKunde = " . Session::Customer()->getID(), 2
+                WHERE kKunde = " . Session::Customer()->getID(),
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oLieferadresseTMP_arr as $oLieferadresseTMP) {
             if ($oLieferadresseTMP->kLieferadresse > 0) {
@@ -965,7 +972,7 @@ function plausiNeukundenKupon()
             $values['kkunde'] = $_SESSION['Kunde']->kKunde;
         }
         $query      .= " LIMIT 1";
-        $oBestellung = Shop::Container()->getDB()->executeQueryPrepared($query, $values, 1);
+        $oBestellung = Shop::Container()->getDB()->executeQueryPrepared($query, $values, \DB\ReturnType::SINGLE_OBJECT);
 
         if (empty($oBestellung)) {
             $NeukundenKupons = (new Kupon())->getNewCustomerCoupon();
@@ -1181,16 +1188,17 @@ function zahlungsartKorrekt($kZahlungsart)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
-    if ($kZahlungsart > 0 &&
-        isset($_SESSION['Versandart']->kVersandart) &&
-        (int)$_SESSION['Versandart']->kVersandart > 0
+    if ($kZahlungsart > 0
+        && isset($_SESSION['Versandart']->kVersandart)
+        && (int)$_SESSION['Versandart']->kVersandart > 0
     ) {
         $Zahlungsart = Shop::Container()->getDB()->query(
             "SELECT tversandartzahlungsart.*, tzahlungsart.*
                 FROM tversandartzahlungsart, tzahlungsart
                 WHERE tversandartzahlungsart.kVersandart = " . (int)$_SESSION['Versandart']->kVersandart . "
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
-                    AND tversandartzahlungsart.kZahlungsart = " . $kZahlungsart, 1
+                    AND tversandartzahlungsart.kZahlungsart = " . $kZahlungsart,
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($Zahlungsart->cModulId) && strlen($Zahlungsart->cModulId) > 0) {
             $einstellungen = Shop::Container()->getDB()->selectAll(
@@ -1455,7 +1463,8 @@ function gibZahlungsart($kZahlungsart)
         "SELECT *
             FROM teinstellungen
             WHERE kEinstellungenSektion = " . CONF_ZAHLUNGSARTEN . "
-                AND cModulId = '" . $Zahlungsart->cModulId . "'", 2
+                AND cModulId = '" . $Zahlungsart->cModulId . "'",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($einstellungen as $einstellung) {
         $Zahlungsart->einstellungen[$einstellung->cName] = $einstellung->cWert;
@@ -1525,7 +1534,8 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
                     OR FIND_IN_SET({$kKundengruppe}, REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
                     AND tzahlungsart.nActive = 1
                     AND tzahlungsart.nNutzbar = 1
-                ORDER BY tzahlungsart.nSort", 2
+                ORDER BY tzahlungsart.nSort",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
     $gueltigeZahlungsarten = [];
@@ -1750,7 +1760,8 @@ function pruefeZahlungsartMinBestellungen($nMinBestellungen)
                     FROM tbestellung
                     WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                         AND (cStatus = '" . BESTELLUNG_STATUS_BEZAHLT . "'
-                        OR cStatus = '" . BESTELLUNG_STATUS_VERSANDT . "')", 1
+                        OR cStatus = '" . BESTELLUNG_STATUS_VERSANDT . "')",
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if ($anzahl_obj->anz < $nMinBestellungen) {
                 Jtllog::writeLog('pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl ' .
@@ -1841,7 +1852,8 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                             OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                                 . "', REPLACE(tverpackung.cKundengruppe, ';', ',')) > 0)
                         AND " . $fSummeWarenkorb . " >= tverpackung.fMindestbestellwert
-                        AND nAktiv = 1", 1
+                        AND nAktiv = 1",
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             $oVerpackung->kVerpackung = (int)$oVerpackung->kVerpackung;
@@ -1895,7 +1907,8 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                             cVersandklassen = '-1' OR
                             cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " '
                         )
-                    AND kVersandart = " . $kVersandart, 1
+                    AND kVersandart = " . $kVersandart,
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (isset($versandart->kVersandart) && $versandart->kVersandart > 0) {
@@ -2491,7 +2504,7 @@ function checkeKupon($Kupon)
     }
     if ($alreadyUsedSQL !== '') {
         //hat der kunde schon die max. Verwendungsanzahl erreicht?
-        $anz = Shop::Container()->getDB()->executeQueryPrepared($alreadyUsedSQL, $bindings, 1);
+        $anz = Shop::Container()->getDB()->executeQueryPrepared($alreadyUsedSQL, $bindings, \DB\ReturnType::SINGLE_OBJECT);
         if (isset($Kupon->nVerwendungenProKunde, $anz->nVerwendungen) &&
             $anz->nVerwendungen >= $Kupon->nVerwendungenProKunde &&
             $Kupon->nVerwendungenProKunde > 0
@@ -2838,7 +2851,8 @@ function getNonEditableCustomerFields()
              LEFT JOIN tkundenfeld AS kf
                 ON ka.kKundenfeld = kf.kKundenfeld
              WHERE kKunde = " . Session::Customer()->getID() . "
-             AND kf.nEditierbar = 0", 2
+             AND kf.nEditierbar = 0",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oKundenattribute_arr as $oKundenattribute) {
         $oKundenfeldAttribut                                  = new stdClass();
@@ -3009,7 +3023,8 @@ function kuponMoeglich()
                 AND (cKategorien = ''
                     OR cKategorien = '-1' $Kategorie_qry)
                 AND (cKunden = ''
-                    OR cKunden = '-1' $Kunden_qry)", 1
+                    OR cKunden = '-1' $Kunden_qry)",
+        \DB\ReturnType::SINGLE_OBJECT
     );
     if (!empty($kupons_mgl->kKupon)) {
         $moeglich = 1;
@@ -3035,7 +3050,8 @@ function freeGiftStillValid()
                     WHERE kArtikel = " . (int)$oPosition->kArtikel . "
                        AND cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                        AND CAST(cWert AS DECIMAL) <= " .
-                            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+                            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (empty($oArtikelGeschenk->kArtikel)) {
@@ -3245,8 +3261,9 @@ function gibSelbstdefKundenfelder()
     $oKundenfeld_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tkundenfeld
-            WHERE kSprache = " . Shop::getLanguage(). "
-            ORDER BY nSort ASC", 2
+            WHERE kSprache = " . Shop::getLanguageID(). "
+            ORDER BY nSort ASC",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     // tkundenfeldwert nachschauen ob dort Werte für tkundenfeld enthalten sind
     foreach ($oKundenfeld_arr as $oKundenfeld) {
@@ -3290,7 +3307,8 @@ function pruefeAjaxEinKlick()
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
                 WHERE tbestellung.kKunde = {$customerID}
                 ORDER BY tbestellung.dErstellt
-                DESC LIMIT 1", 1
+                DESC LIMIT 1",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (isset($oLetzteBestellung->kBestellung) && $oLetzteBestellung->kBestellung > 0) {
@@ -3300,7 +3318,8 @@ function pruefeAjaxEinKlick()
                     "SELECT kLieferadresse
                         FROM tlieferadresse
                         WHERE kKunde = " . $customerID . "
-                            AND kLieferadresse = " . (int)$oLetzteBestellung->kLieferadresse, 1
+                            AND kLieferadresse = " . (int)$oLetzteBestellung->kLieferadresse,
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
 
                 if ($oLieferdaten->kLieferadresse > 0) {
@@ -3494,7 +3513,12 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0)
 {
     global $step;
     $conf      = Shop::getSettings([CONF_KUNDEN]);
-    $herkunfte = Shop::Container()->getDB()->query("SELECT * FROM tkundenherkunft ORDER BY nSort", 2);
+    $herkunfte = Shop::Container()->getDB()->query(
+        "SELECT * 
+            FROM tkundenherkunft 
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     if ($nUnreg) {
         Shop::Smarty()->assign('step', 'formular');
     } else {
@@ -3536,7 +3560,8 @@ function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, 
     $herkunfte  = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tkundenherkunft
-            ORDER BY nSort", 2
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $oKunde_tmp = getKundendaten($cPost_arr, 0);
     if (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $oKunde_tmp->dGeburtstag)) {
@@ -3649,7 +3674,8 @@ function setzeSessionLieferadresse($cPost_arr)
             "SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = " . Session::Customer()->getID() . "
-                AND kLieferadresse = " . (int)$cPost_arr['kLieferadresse'], 1
+                AND kLieferadresse = " . (int)$cPost_arr['kLieferadresse'],
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if ($LA->kLieferadresse > 0) {
             $_SESSION['Lieferadresse'] = new Lieferadresse($LA->kLieferadresse);
@@ -4037,7 +4063,8 @@ function mappeBestellvorgangZahlungshinweis($nHinweisCode)
  */
 function isEmailAvailable($email)
 {
-    return strlen($email) > 0 && (Shop::Container()->getDB()->select('tkunde', 'cMail', $email, 'nRegistriert', 1) === null);
+    return strlen($email) > 0
+        && (Shop::Container()->getDB()->select('tkunde', 'cMail', $email, 'nRegistriert', 1) === null);
 }
 
 /**

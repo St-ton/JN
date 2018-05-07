@@ -93,7 +93,8 @@ class HerstellerHelper
                                     AND tartikelsichtbarkeit.kKundengruppe = " . Kundengruppe::getDefaultGroupID() . "
                                 )
                         )
-                    ORDER BY thersteller.nSortNr, thersteller.cName", 2
+                    ORDER BY thersteller.nSortNr, thersteller.cName",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $shopURL      = Shop::getURL() . '/';
             $imageBaseURL = Shop::getImageBaseURL();
@@ -142,5 +143,23 @@ class HerstellerHelper
         return is_callable($callback)
             ? $callback($res)
             : $res;
+    }
+
+    /**
+     * @param string        $attribute
+     * @param string        $value
+     * @param callable|null $callback
+     * @return mixed
+     * @since 5.0
+     */
+    public static function getManufacturerByAttribute($attribute, $value, callable $callback = null)
+    {
+        $mf  = ($res = self::getDataByAttribute($attribute, $value)) !== null
+            ? new Hersteller($res->kHersteller)
+            : null;
+
+        return is_callable($callback)
+            ? $callback($mf)
+            : $mf;
     }
 }

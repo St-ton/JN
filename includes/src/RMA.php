@@ -82,7 +82,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     $oObj_arr              = Shop::Container()->getDB()->query("
                         SELECT kRMA, kArtikel
                             FROM trmaartikel
-                            WHERE kRMA = " . (int)$kRMA, 2
+                            WHERE kRMA = " . (int)$kRMA,
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
 
                     if (is_array($oObj_arr) && count($oObj_arr) > 0) {
@@ -314,7 +315,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                         WHERE kKunde = " . $kKunde . "
                             AND cStatus = '4'
                             " . $cSQL . "
-                        ORDER BY kBestellung DESC", 2
+                        ORDER BY kBestellung DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oBestellungTMP_arr) && count($oBestellungTMP_arr) > 0) {
@@ -528,7 +530,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 "SELECT kRMA
                     FROM trma
                     ORDER BY kRMA DESC
-                    LIMIT 1", 1
+                    LIMIT 1",
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             $kRMA = 1;
@@ -581,7 +584,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     FROM tbestellung
                     " . $cSQL . "
                     ORDER BY kBestellung ASC
-                    LIMIT 1", 1
+                    LIMIT 1",
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (isset($oObj->kBestellung) && $oObj->kBestellung > 0) {
@@ -670,7 +674,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     "SELECT kRMA
                         FROM trma
                         WHERE kKunde = " . $kKunde . "
-                        ORDER BY dErstellt DESC", 2
+                        ORDER BY dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oObj_arr) && count($oObj_arr) > 0) {
@@ -697,7 +702,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $oObj_arr = Shop::Container()->getDB()->query(
                 "SELECT kRMA
                     FROM trma
-                    ORDER BY dErstellt DESC", 2
+                    ORDER BY dErstellt DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             if (is_array($oObj_arr) && count($oObj_arr) > 0) {

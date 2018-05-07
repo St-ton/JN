@@ -83,7 +83,8 @@ class Bewertung
                         AND kArtikel = " . (int)$kArtikel . "
                         AND nAktiv = 1
                     ORDER BY nHilfreich DESC
-                    LIMIT 1", 1
+                    LIMIT 1",
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (!empty($oBewertungHilfreich)) {
                 $oBewertungHilfreich->nAnzahlHilfreich = $oBewertungHilfreich->nHilfreich + $oBewertungHilfreich->nNichtHilfreich;
@@ -163,7 +164,8 @@ class Bewertung
                         FROM tbewertung
                         WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQLFreischalten . "
                         GROUP BY nSterne
-                        ORDER BY nSterne DESC", 2
+                        ORDER BY nSterne DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
             }
             if ($nSeite > 0) {
@@ -178,7 +180,8 @@ class Bewertung
                             DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                         FROM tbewertung
                         WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQL . $cSQLFreischalten . "
-                        ORDER BY" . $cOrderSQL . $nLimit, 2
+                        ORDER BY" . $cOrderSQL . $nLimit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
             }
             $oBewertungGesamt = Shop::Container()->getDB()->query(
@@ -186,13 +189,15 @@ class Bewertung
                     FROM tartikelext
                     JOIN tbewertung ON tbewertung.kArtikel = tartikelext.kArtikel
                     WHERE tartikelext.kArtikel = " . $kArtikel . $cSQLFreischalten . "
-                    GROUP BY tartikelext.kArtikel", 1
+                    GROUP BY tartikelext.kArtikel",
+                \DB\ReturnType::SINGLE_OBJECT
             );
             // Anzahl Bewertungen für aktuelle Sprache
             $oBewertungGesamtSprache = Shop::Container()->getDB()->query(
                 "SELECT count(*) AS nAnzahlSprache
                     FROM tbewertung
-                    WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQLFreischalten, 1
+                    WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQLFreischalten,
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oBewertungGesamt->fDurchschnitt) && (int)$oBewertungGesamt->fDurchschnitt > 0) {
                 $oBewertungGesamt->fDurchschnitt = round($oBewertungGesamt->fDurchschnitt * 2) / 2;

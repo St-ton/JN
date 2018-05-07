@@ -168,13 +168,11 @@ class Bestseller
                         {$productsql}
                     GROUP BY tartikel.kArtikel
                     ORDER BY tbestseller.fAnzahl DESC
-                    LIMIT {$this->_limit}", 2
+                    LIMIT {$this->_limit}",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-
-            if (is_array($obj_arr) && count($obj_arr) > 0) {
-                foreach ($obj_arr as $obj) {
-                    $products[] = $obj->kArtikel;
-                }
+            foreach ($obj_arr as $obj) {
+                $products[] = $obj->kArtikel;
             }
         }
 

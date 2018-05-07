@@ -76,23 +76,45 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             if ($bProductName) {
                 $oSprache = gibStandardsprache();
                 if (($kSprache > 0 && $kSprache == $oSprache->kSprache) || !$kSprache) {
-                    $oObj = Shop::Container()->getDB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . (int)$kArtikel, 1);
+                    $oObj = Shop::Container()->getDB()->query(
+                        "SELECT cName 
+                            FROM tartikel 
+                            WHERE kArtikel = " . (int)$kArtikel,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
                     if (isset($oObj->cName) && strlen($oObj->cName) > 0) {
                         $this->cArtikelName = $oObj->cName;
                     }
                 } else {
-                    $oObj = Shop::Container()->getDB()->query("SELECT cName FROM tartikelsprache WHERE kArtikel = " . (int)$kArtikel . " AND kSprache = " . (int)$kSprache, 1);
+                    $oObj = Shop::Container()->getDB()->query(
+                        "SELECT cName 
+                            FROM tartikelsprache 
+                            WHERE kArtikel = " . (int)$kArtikel . " 
+                            AND kSprache = " . (int)$kSprache,
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
                     if (isset($oObj->cName) && strlen($oObj->cName) > 0) {
                         $this->cArtikelName = $oObj->cName;
                     } else {
-                        $oObj = Shop::Container()->getDB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . (int)$kArtikel, 1);
+                        $oObj = Shop::Container()->getDB()->query(
+                            "SELECT cName 
+                                FROM tartikel 
+                                WHERE kArtikel = " . (int)$kArtikel,
+                            \DB\ReturnType::SINGLE_OBJECT
+                        );
                         if (isset($oObj->cName) && strlen($oObj->cName) > 0) {
                             $this->cArtikelName = $oObj->cName;
                         }
                     }
                 }
 
-                $oTMP = Shop::Container()->getDB()->query("SELECT cSeo FROM tseo WHERE cKey = 'kArtikel' AND kKey = " . (int)$kArtikel, 1);
+                $oTMP = Shop::Container()->getDB()->query(
+                    "SELECT cSeo 
+                        FROM tseo 
+                        WHERE cKey = 'kArtikel' 
+                        AND kKey = " . (int)$kArtikel,
+                    \DB\ReturnType::SINGLE_OBJECT
+                );
                 if (isset($oTMP->cSeo) && strlen($oTMP->cSeo) > 0) {
                     $this->cArtikelURL = Shop::getURL() . '/' . $oTMP->cSeo;
                 } else {
@@ -326,7 +348,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 $oObj_arr = Shop::Container()->getDB()->query(
                     "SELECT kArtikel
                         FROM trmaartikel
-                        WHERE kBestellung = " . $kBestellung, 2
+                        WHERE kBestellung = " . $kBestellung,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($oObj_arr as $oObj) {
                     $kArtikel_arr[] = (int)$oObj->kArtikel;
@@ -363,11 +386,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $kBestellung = (int)$kBestellung;
             $kArtikel    = (int)$kArtikel;
             if ($kBestellung > 0 && $kArtikel > 0) {
-                $oObj = Shop::Container()->getDB()->query("
-                    SELECT SUM(fAnzahl) AS fAnzahlSum
+                $oObj = Shop::Container()->getDB()->query(
+                    "SELECT SUM(fAnzahl) AS fAnzahlSum
                         FROM trmaartikel
                         WHERE kArtikel = " . $kArtikel . "
-                            AND kBestellung = " . $kBestellung, 1
+                            AND kBestellung = " . $kBestellung,
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
 
                 if (isset($oObj->fAnzahlSum) && $oObj->fAnzahlSum > 0) {

@@ -67,8 +67,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
-                        AND tuploadschemasprache.kSprache = " . Shop::getLanguage() . "
-                    WHERE kUploadSchema =  " . (int)$kUploadSchema, 1
+                        AND tuploadschemasprache.kSprache = " . Shop::getLanguageID() . "
+                    WHERE kUploadSchema =  " . (int)$kUploadSchema,
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (isset($oUpload->kUploadSchema) && (int)$oUpload->kUploadSchema > 0) {
@@ -126,7 +127,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
                         AND tuploadschemasprache.kSprache = " . Shop::getLanguage() . "
-                    WHERE nTyp = " . (int)$nTyp . $cSql, 2
+                    WHERE nTyp = " . (int)$nTyp . $cSql,
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
 

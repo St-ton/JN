@@ -38,7 +38,7 @@ trait MigrationTrait
      */
     public function execute($query, $echo = false, $bExecuteHook = false)
     {
-        return $this->__execute($query, 3, $echo, $bExecuteHook);
+        return $this->__execute($query, \DB\ReturnType::AFFECTED_ROWS, $echo, $bExecuteHook);
     }
 
     /**
@@ -49,7 +49,7 @@ trait MigrationTrait
      */
     public function fetchOne($query, $echo = false, $bExecuteHook = false)
     {
-        return $this->__execute($query, 1, $echo, $bExecuteHook);
+        return $this->__execute($query, \DB\ReturnType::SINGLE_OBJECT, $echo, $bExecuteHook);
     }
 
     /**
@@ -60,7 +60,7 @@ trait MigrationTrait
      */
     public function fetchAll($query, $echo = false, $bExecuteHook = false)
     {
-        return $this->__execute($query, 2, $echo, $bExecuteHook);
+        return $this->__execute($query, \DB\ReturnType::ARRAY_OF_OBJECTS, $echo, $bExecuteHook);
     }
 
     /**
@@ -71,6 +71,6 @@ trait MigrationTrait
      */
     public function fetchArray($query, $echo = false, $bExecuteHook = false)
     {
-        return $this->__execute($query, 9, $echo, $bExecuteHook);
+        return $this->__execute($query, \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS, $echo, $bExecuteHook);
     }
 }

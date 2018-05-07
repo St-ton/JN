@@ -10,7 +10,8 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
+use Filter\Type;
 use Filter\ProductFilter;
 
 /**
@@ -153,7 +154,7 @@ class ItemPriceRange extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         return $this;
     }
@@ -161,7 +162,7 @@ class ItemPriceRange extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function init($id): IFilter
+    public function init($id): FilterInterface
     {
         if ($id === null) {
             $id = '0_0';
@@ -381,13 +382,13 @@ class ItemPriceRange extends AbstractFilter
         $currency = \Session::Currency();
         $state    = $this->productFilter->getCurrentStateData();
 
-        $state->joins[] = (new FilterJoin())
+        $state->addJoin((new FilterJoin())
             ->setType('LEFT JOIN')
             ->setTable('tartikelkategorierabatt')
             ->setOn('tartikelkategorierabatt.kKundengruppe = ' . $this->getCustomerGroupID() .
                 ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel')
-            ->setOrigin(__CLASS__);
-        $state->joins[] = (new FilterJoin())
+            ->setOrigin(__CLASS__));
+        $state->addJoin((new FilterJoin())
             ->setType('LEFT JOIN')
             ->setTable('tartikelsonderpreis')
             ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
@@ -395,27 +396,27 @@ class ItemPriceRange extends AbstractFilter
                         AND tartikelsonderpreis.dStart <= now()
                         AND (tartikelsonderpreis.dEnde >= CURDATE() 
                             OR tartikelsonderpreis.dEnde = '0000-00-00')")
-            ->setOrigin(__CLASS__);
-        $state->joins[] = (new FilterJoin())
+            ->setOrigin(__CLASS__));
+        $state->addJoin((new FilterJoin())
             ->setType('LEFT JOIN')
             ->setTable('tsonderpreise')
             ->setOn('tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis 
                         AND tsonderpreise.kKundengruppe = ' . $this->getCustomerGroupID())
-            ->setOrigin(__CLASS__);
-        $state->joins[] = (new FilterJoin())
+            ->setOrigin(__CLASS__));
+        $state->addJoin((new FilterJoin())
             ->setComment('join1 from ' . __METHOD__)
             ->setTable('tpreise')
             ->setType('JOIN')
             ->setOn('tpreise.kArtikel = tartikel.kArtikel 
                         AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID())
-            ->setOrigin(__CLASS__);
-        $state->joins[] = (new FilterJoin())
+            ->setOrigin(__CLASS__));
+        $state->addJoin((new FilterJoin())
             ->setComment('join2 from ' . __METHOD__)
             ->setTable('tartikelsichtbarkeit')
             ->setType('LEFT JOIN')
             ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getCustomerGroupID())
-            ->setOrigin(__CLASS__);
+            ->setOrigin(__CLASS__));
         // Automatisch
         if ($this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
             $fSteuersatzMax = 0.0;
@@ -437,7 +438,7 @@ class ItemPriceRange extends AbstractFilter
                 : 0.0;
             $state         = $this->productFilter->getCurrentStateData();
             foreach ($this->getSQLJoin() as $join) {
-                $state->joins[] = $join;
+                $state->addJoin($join);
             }
             $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery(
                 [
@@ -454,9 +455,9 @@ class ItemPriceRange extends AbstractFilter
                  IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
                     $currency->getConversionFactor() . '))) * ((100 + ' . $fSteuersatzMin . ') / 100), 2) AS fMin'
                 ],
-                $state->joins,
-                $state->conditions,
-                $state->having
+                $state->getJoins(),
+                $state->getConditions(),
+                $state->getHaving()
             );
             $qry       = 'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin 
                               FROM (' . $baseQuery . ' ) AS ssMerkmal';
@@ -478,9 +479,9 @@ class ItemPriceRange extends AbstractFilter
                 }
                 $baseQuery        = $this->productFilter->getFilterSQL()->getBaseQuery(
                     [$this->getPriceRangeSQL($oPreis, $currency)],
-                    $state->joins,
-                    $state->conditions,
-                    $state->having
+                    $state->getJoins(),
+                    $state->getConditions(),
+                    $state->getHaving()
                 );
                 $qry              = 'SELECT ' . $cSelectSQL . ' FROM (' . $baseQuery . ' ) AS ssMerkmal';
                 $dbRes            = \Shop::Container()->getDB()->query($qry, ReturnType::SINGLE_OBJECT);
@@ -555,13 +556,13 @@ class ItemPriceRange extends AbstractFilter
                     $cSelectSQL .= 'SUM(ssMerkmal.anz' . $i . ') AS anz' . $i;
                 }
                 foreach ($this->getSQLJoin() as $join) {
-                    $state->joins[] = $join;
+                    $state->$state->addJoin($join);
                 }
                 $query = $this->productFilter->getFilterSQL()->getBaseQuery(
                     [$this->getPriceRangeSQL($oPreis, $currency, $ranges)],
-                    $state->joins,
-                    $state->conditions,
-                    $state->having
+                    $state->getJoins(),
+                    $state->getConditions(),
+                    $state->getHaving()
                 );
                 $qry   = 'SELECT ' . $cSelectSQL . ' FROM (' . $query . ' ) AS ssMerkmal';
                 $dbRes = \Shop::Container()->getDB()->query(

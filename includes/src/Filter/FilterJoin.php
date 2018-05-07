@@ -10,7 +10,7 @@ namespace Filter;
  * Class FilterJoin
  * @package Filter
  */
-class FilterJoin
+class FilterJoin implements FilterJoinInterface
 {
     /**
      * @var string
@@ -20,28 +20,27 @@ class FilterJoin
     /**
      * @var string
      */
-    private $table;
+    private $table = '';
 
     /**
      * @var string
      */
-    private $comment;
+    private $comment = '';
 
     /**
      * @var string
      */
-    private $on;
+    private $on = '';
 
     /**
      * @var string
      */
-    private $origin;
+    private $origin = '';
 
     /**
-     * @param string $origin
-     * @return $this
+     * @inheritdoc
      */
-    public function setOrigin($origin): self
+    public function setOrigin(string $origin): FilterJoinInterface
     {
         $this->origin = $origin;
 
@@ -49,18 +48,17 @@ class FilterJoin
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getOrigin()
+    public function getOrigin(): string
     {
         return $this->origin;
     }
 
     /**
-     * @param string $type
-     * @return $this
+     * @inheritdoc
      */
-    public function setType($type): self
+    public function setType($type): FilterJoinInterface
     {
         $this->type = $type;
 
@@ -68,27 +66,25 @@ class FilterJoin
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-
     /**
-     * @return mixed
+     * @inheritdoc
      */
-    public function getTable()
+    public function getTable(): string
     {
         return $this->table;
     }
 
     /**
-     * @param string $table
-     * @return $this
+     * @inheritdoc
      */
-    public function setTable($table): self
+    public function setTable(string $table): FilterJoinInterface
     {
         $this->table = $table;
 
@@ -96,7 +92,7 @@ class FilterJoin
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getComment(): string
     {
@@ -106,10 +102,9 @@ class FilterJoin
     }
 
     /**
-     * @param string $comment
-     * @return $this
+     * @inheritdoc
      */
-    public function setComment($comment): self
+    public function setComment(string $comment): FilterJoinInterface
     {
         $this->comment = $comment;
 
@@ -117,18 +112,17 @@ class FilterJoin
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getOn()
+    public function getOn(): string
     {
         return $this->on;
     }
 
     /**
-     * @param string $on
-     * @return $this
+     * @inheritdoc
      */
-    public function setOn($on): self
+    public function setOn(string $on): FilterJoinInterface
     {
         $this->on = $on;
 
@@ -136,7 +130,7 @@ class FilterJoin
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function __toString(): string
     {
@@ -144,15 +138,15 @@ class FilterJoin
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getSql(): string
     {
         $on = $this->getOn();
-        if ($on !== null) {
+        if ($on !== '') {
             $on = ' ON ' . $on;
         }
-        return $this->getTable() !== null
+        return $this->getTable() !== ''
             ? $this->getComment() . $this->getType() . ' ' . $this->getTable() . $on
             : '';
     }

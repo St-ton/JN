@@ -279,7 +279,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     "SELECT kRMAStatus
                         FROM trmastatus
                         WHERE kSprache = " . $this->kSprache . "
-                            AND eFunktion = '" . $this->eFunktion . "'", 1
+                            AND eFunktion = '" . $this->eFunktion . "'",
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
 
                 if (!isset($oObj->kRMAStatus) || (int)$oObj->kRMAStatus === 0) {
@@ -308,7 +309,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 $oObj_arr = Shop::Container()->getDB()->query(
                     "SELECT kRMAStatus
                         FROM trmastatus
-                        WHERE kSprache = " . $kSprache . $cSQL, 2
+                        WHERE kSprache = " . $kSprache . $cSQL,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (is_array($oObj_arr) && count($oObj_arr) > 0) {
                     foreach ($oObj_arr as $oObj) {
@@ -343,7 +345,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     "SELECT kRMAStatus
                         FROM trmastatus
                         WHERE kSprache = " . (int)$kSprache . "
-                            AND eFunktion = '" . StringHandler::filterXSS($cFunktion) . "'" . $cSQL, 1
+                            AND eFunktion = '" . StringHandler::filterXSS($cFunktion) . "'" . $cSQL,
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
 
                 if (isset($oObj->kRMAStatus) && $oObj->kRMAStatus > 0) {

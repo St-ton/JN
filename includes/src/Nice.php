@@ -50,8 +50,12 @@ class Nice
     {
         if (($this->cBrocken = Shop::Cache()->get('cbrocken')) === false) {
             // Hole Brocken
-            $oBrocken = Shop::Container()->getDB()->query("SELECT cBrocken FROM tbrocken LIMIT 1", 1);
-
+            $oBrocken = Shop::Container()->getDB()->query(
+                "SELECT cBrocken 
+                    FROM tbrocken 
+                    LIMIT 1",
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             if (!empty($oBrocken->cBrocken)) {
                 // Brocken encrypten
                 $cPassA         = substr(base64_decode($oBrocken->cBrocken), 0, 9);

@@ -329,7 +329,7 @@ trait PortletHtml
                     . " id='config-$propname'>";
                 break;
             case 'banner-zones':
-                $res .= $this->getConfigPanelSnippet($instance, 'banner-zones', ['propname' => $propname, 'prop' => $prop]);
+                $res .= $this->getConfigPanelSnippet($instance, 'banner-zones');
                 break;
             case 'text':
             default:

@@ -15,8 +15,9 @@
 
                 $(options.save).click(function() {
                     saveEditor();
-                    var data = JSON.stringify(options.data);
-                    $('#zones').val(data);
+                    var oArea_arr = JSON.stringify(options.oArea_arr);
+                    $('#zones').val(oArea_arr);
+
                     // ioCall('saveBannerAreas', [data]);
                     showInfo('Zonen wurden erfolgreich gespeichert');
                     return false;
@@ -52,7 +53,7 @@
                     'height' : height
                 });
                 setTimeout(function(){
-                    $(options.data.oArea_arr).each(function(idx, item) {
+                    $(options.oArea_arr).each(function(idx, item) {
                         addAreaItem(item, false);
                     });
                 }, 1000);
@@ -66,7 +67,7 @@
 
             function getData(id) {
                 var a = false;
-                $(options.data.oArea_arr).each(function(idx, area) {
+                $(options.oArea_arr).each(function(idx, area) {
                     if (area.uid == id)
                         a = area;
                 });
@@ -96,7 +97,7 @@
             function saveEditor() {
                 var saved = false;
                 var id = $(options.editor).find('#id').val();
-                $(options.data.oArea_arr).each(function(idx, item) {
+                $(options.oArea_arr).each(function(idx, item) {
                     if (item.uid == id) {
                         saved = true;
 
@@ -164,11 +165,10 @@
                 });
 
                 if (area = getData(id)) {
-                    options.data.oArea_arr = jQuery.grep(options.data.oArea_arr, function(value) {
+                    options.oArea_arr = jQuery.grep(options.oArea_arr, function(value) {
                         return value != area;
                     });
                 }
-
                 hideEditor();
             }
 
@@ -179,16 +179,16 @@
                     cBeschreibung : '',
                     cTitel : '',
                     cUrl : '',
-                    kImageMap : options.data.kImageMap,
+                    kImageMap : options.kImageMap,
                     kImageMapArea : 0,
                     oArtikel : null,
                     kArtikel : 0,
                     cStyle : ''
                 };
-                if (options.data.oArea_arr === undefined || options.data.oArea_arr === null){
-                    options.data.oArea_arr = new Array();
+                if (options.oArea_arr === undefined || options.oArea_arr === null){
+                    options.oArea_arr = new Array();
                 }
-                options.data.oArea_arr.push(item);
+                options.oArea_arr.push(item);
                 addAreaItem(item, true);
             }
 

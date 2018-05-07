@@ -1,4 +1,4 @@
-<div id="banner-zones-container" {*{if empty($instance->getProperty('zones'))}style="display:none"{/if}*}>
+<div id="banner-zones-container" {if empty($instance->getProperty('zones'))}style="display:none"{/if}>
     <div class="row">
         <div class="col-xs-12">
             <div id="area_container" class="form-group">
@@ -52,8 +52,8 @@
                         <input type="hidden" name="article_id" id="article_id" value="">
                     </div>
                     <input type="hidden" name="id" id="id" />
-                    <div class="save_wrapper btn-group">
-                        <a href="#" class="btn btn-default" id="article_browser">Artikel w&auml;hlen</a>
+                    <div class="save_wrapper btn-group btn-group-sm" role="group">
+                        {*<a href="#" class="btn btn-default" id="article_browser">Artikel w&auml;hlen</a>*}
                         <a href="#" class="btn btn-default" id="article_unlink">Artikel L&ouml;sen</a>
                         <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i> Zone l&ouml;schen</button>
                         <a class="btn btn-primary" href="#" id="area_save"><i class="fa fa-save"></i> Zonen speichern</a>
@@ -112,13 +112,13 @@
     </style>
     <script type="text/javascript">
         function kcfinderCallback(url) {
-            console.log('callback');
-//            $('#area_wrapper img').attr('src', url);
-//            if ($('#preview-img-src').val().length !== 0 && str.indexOf("preview.banner") == -1){
-//                $('#banner-zones-container').show();
-//            }
-
+            $('#area_wrapper img').attr('src', url);
+            if (url.length !== 0 && url.indexOf("preview.banner") == -1){
+                $('#banner-zones-container').show();
+            }
         }
+
+        opc.setImageSelectCallback(kcfinderCallback);
 
         $(function () {
             $.clickareas({
@@ -127,7 +127,8 @@
                 'save': '#area_save',
                 'add': '#area_new',
                 'info': '#area_info',
-                'data': {$instance->getProperty('data')|@json_encode nofilter}
+                'oArea_arr': {if !empty($instance->getProperty('zones'))}{$instance->getProperty('zones')}{else}[]{/if},
+                'kImageMap': '{$instance->getProperty('kImageMap')}',
             });
 
             $('#article_unlink').click(function () {

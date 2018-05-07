@@ -25,11 +25,60 @@ class Banner extends \OPC\Portlet
     public function getFinalHtml($instance)
     {
         $instance->addClass('img-responsive');
+        $instance->setImageAttributes();
+        $oImageMap = (object)[
+            'cTitel' => $instance->getProperty('kImageMap'),
+            'cBildPfad' => $instance->getProperty('src'),
+            'oArea_arr' => !empty($instance->getProperty('zones')) ? json_decode($instance->getProperty('zones')) : null,
+        ];
 
-        return
-            '<div class="text-center" ' . $instance->getAttributeString() . '>' .
-            '<img src="' . $instance->getProperty('src') . '" class="' . $instance->getAttribute('class') .
-            '"></div>';
+        $isFluid              = false;
+        $cBildPfad            = PFAD_ROOT . $instance->getProperty('src');
+        $oImageMap->cBildPfad = \Shop::getURL() . $oImageMap->cBildPfad;
+        $cParse_arr           = parse_url($oImageMap->cBildPfad);
+        $oImageMap->cBild     = substr($cParse_arr['path'], strrpos($cParse_arr['path'], '/') + 1);
+        list($width, $height) = getimagesize($cBildPfad);
+        $oImageMap->fWidth    = $width;
+        $oImageMap->fHeight   = $height;
+        $defaultOptions       = \Artikel::getDefaultOptions();
+        $fill                 = true;
+
+        if (!empty($oImageMap->oArea_arr)) {
+            foreach ($oImageMap->oArea_arr as &$oArea) {
+                $oArea->oArtikel = null;
+
+                if ((int)$oArea->kArtikel > 0) {
+                    $oArea->oArtikel = new \Artikel();
+
+                    if ($fill === true) {
+                        $oArea->oArtikel->fuelleArtikel($oArea->kArtikel, $defaultOptions);
+                    } else {
+                        $oArea->oArtikel->kArtikel = $oArea->kArtikel;
+                        $oArea->oArtikel->cName    = utf8_encode(
+                            \Shop::Container()->getDB()->select(
+                                'tartikel', 'kArtikel', $oArea->kArtikel, null, null, null, null, false, 'cName'
+                            )->cName
+                        );
+                    }
+
+                    if ($oArea->cTitel === '') {
+                        $oArea->cTitel = $oArea->oArtikel->cName;
+                    }
+                    if ($oArea->cUrl === '') {
+                        $oArea->cUrl = $oArea->oArtikel->cURL;
+                    }
+                    if ($oArea->cBeschreibung === '') {
+                        $oArea->cBeschreibung = $oArea->oArtikel->cKurzBeschreibung;
+                    }
+                }
+            }
+        }
+
+        return \Shop::Smarty()->assign('oBanner', $oImageMap)
+                    ->assign('attribString', $instance->getAttributeString())
+                    ->assign('srcString', $instance->getProperty('src'))
+                    ->assign('isFluid', $isFluid)
+                    ->fetch('portlets/Banner/final.banner.tpl');
     }
 
     public function getButtonHtml()
@@ -60,6 +109,7 @@ class Banner extends \OPC\Portlet
             ],
             'zones' => [
                 'type' => 'banner-zones',
+                'default' => [],
             ],
             'class'      => [
                 'label'=> 'CSS Class',

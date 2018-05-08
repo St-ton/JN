@@ -195,9 +195,10 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
            ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
            ->assign('fAnzahl', $anzahl)
            ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
-           ->assign('Einstellungen', Shop::getSettings([CONF_GLOBAL]))
+           ->assign('Einstellungen', Shopsetting::getInstance()->getAll())
            ->assign('Xselling', $oXSelling)
            ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
+           ->assign('oSpezialseiten_arr', \Link\LinkHelper::getInstance()->getSpecialPages())
            ->assign('Steuerpositionen', $cart->gibSteuerpositionen());
 
     $oResponse->nType           = 2;
@@ -230,7 +231,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
  */
 function pushToComparelist($kArtikel)
 {
-    $Einstellungen = Shop::getSettings([CONF_VERGLEICHSLISTE]);
+    $Einstellungen = Shopsetting::getInstance()->getAll();
     $kArtikel      = (int)$kArtikel;
     $oResponse     = new stdClass();
     $objResponse   = new IOResponse();
@@ -312,7 +313,7 @@ function pushToComparelist($kArtikel)
 function removeFromComparelist($kArtikel)
 {
     $kArtikel      = (int)$kArtikel;
-    $Einstellungen = Shop::getSettings([CONF_VERGLEICHSLISTE]);
+    $Einstellungen = Shopsetting::getInstance()->getAll();
     $oResponse     = new stdClass();
     $objResponse   = new IOResponse();
     $smarty        = Shop::Smarty();
@@ -616,7 +617,7 @@ function getArticleStockInfo($kArtikel, $kEigenschaftWert_arr)
 {
     $oTMPArtikel = getArticleByVariations($kArtikel, $kEigenschaftWert_arr);
 
-    if (isset($oTMPArtikel->kArtikel) && $oTMPArtikel->kArtikel > 0) {
+    if ($oTMPArtikel !== null && $oTMPArtikel->kArtikel > 0) {
         $oTestArtikel                                = new Artikel();
         $oArtikelOptionen                            = new stdClass();
         $oArtikelOptionen->nMain                     = 0;
@@ -653,136 +654,134 @@ function checkDependencies($aValues)
     $valueID_arr   = array_filter((array)$aValues['eigenschaftwert']);
     $wrapper       = isset($aValues['wrapper']) ? StringHandler::filterXSS($aValues['wrapper']) : '';
 
-    if ($kVaterArtikel > 0) {
-        $oArtikelOptionen                            = new stdClass();
-        $oArtikelOptionen->nMerkmale                 = 0;
-        $oArtikelOptionen->nAttribute                = 0;
-        $oArtikelOptionen->nArtikelAttribute         = 0;
-        $oArtikelOptionen->nMedienDatei              = 0;
-        $oArtikelOptionen->nVariationKombi           = 1;
-        $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-        $oArtikelOptionen->nKonfig                   = 0;
-        $oArtikelOptionen->nDownload                 = 0;
-        $oArtikelOptionen->nMain                     = 1;
-        $oArtikelOptionen->nWarenlager               = 1;
-        $oArtikel                                    = new Artikel();
-        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Session::CustomerGroup()->getID());
-        $weightDiff   = 0;
-        $newProductNr = '';
-        foreach ($valueID_arr as $valueID) {
-            $currentValue = new EigenschaftWert($valueID);
-            $weightDiff  += $currentValue->fGewichtDiff;
-            $newProductNr = (!empty($currentValue->cArtNr) && $oArtikel->cArtNr !== $currentValue->cArtNr)
-                ? $currentValue->cArtNr
-                : $oArtikel->cArtNr;
+    if ($kVaterArtikel <= 0) {
+        return $objResponse;
+    }
+    $oArtikelOptionen                            = new stdClass();
+    $oArtikelOptionen->nMerkmale                 = 0;
+    $oArtikelOptionen->nAttribute                = 0;
+    $oArtikelOptionen->nArtikelAttribute         = 0;
+    $oArtikelOptionen->nMedienDatei              = 0;
+    $oArtikelOptionen->nVariationKombi           = 1;
+    $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
+    $oArtikelOptionen->nKonfig                   = 0;
+    $oArtikelOptionen->nDownload                 = 0;
+    $oArtikelOptionen->nMain                     = 1;
+    $oArtikelOptionen->nWarenlager               = 1;
+    $oArtikel                                    = new Artikel();
+    $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Session::CustomerGroup()->getID());
+    $weightDiff   = 0;
+    $newProductNr = '';
+    foreach ($valueID_arr as $valueID) {
+        $currentValue = new EigenschaftWert($valueID);
+        $weightDiff  += $currentValue->fGewichtDiff;
+        $newProductNr = (!empty($currentValue->cArtNr) && $oArtikel->cArtNr !== $currentValue->cArtNr)
+            ? $currentValue->cArtNr
+            : $oArtikel->cArtNr;
+    }
+    $weightTotal        = Trennzeichen::getUnit(
+        JTL_SEPARATOR_WEIGHT,
+        Shop::getLanguage(),
+        $oArtikel->fGewicht + $weightDiff
+    );
+    $weightArticleTotal = Trennzeichen::getUnit(
+        JTL_SEPARATOR_WEIGHT,
+        Shop::getLanguage(),
+        $oArtikel->fArtikelgewicht + $weightDiff
+    );
+    $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
+
+    // Alle Variationen ohne Freifeld
+    $nKeyValueVariation_arr = $oArtikel->keyValueVariations($oArtikel->VariationenOhneFreifeld);
+
+    // Freifeldpositionen gesondert zwischenspeichern
+    foreach ($valueID_arr as $kKey => $cVal) {
+        if (!isset($nKeyValueVariation_arr[$kKey])) {
+            unset($valueID_arr[$kKey]);
+            $kFreifeldEigeschaftWert_arr[$kKey] = $cVal;
         }
-        $weightTotal        = Trennzeichen::getUnit(
-            JTL_SEPARATOR_WEIGHT,
-            Shop::getLanguage(),
-            $oArtikel->fGewicht + $weightDiff
-        );
-        $weightArticleTotal = Trennzeichen::getUnit(
-            JTL_SEPARATOR_WEIGHT,
-            Shop::getLanguage(),
-            $oArtikel->fArtikelgewicht + $weightDiff
-        );
-        $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
+    }
 
-        // Alle Variationen ohne Freifeld
-        $nKeyValueVariation_arr = $oArtikel->keyValueVariations($oArtikel->VariationenOhneFreifeld);
+    $nNettoPreise = Session::CustomerGroup()->getIsMerchant();
+    $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
+    $fVK          = [
+        berechneBrutto($fVKNetto, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]),
+        $fVKNetto
+    ];
+    $cVKLocalized = [
+        0 => gibPreisStringLocalized($fVK[0]),
+        1 => gibPreisStringLocalized($fVK[1])
+    ];
+    $cPriceLabel  = $oArtikel->nVariationOhneFreifeldAnzahl === count($valueID_arr)
+        ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
+        : Shop::Lang()->get('priceStarting');
 
-        // Freifeldpositionen gesondert zwischenspeichern
-        foreach ($valueID_arr as $kKey => $cVal) {
-            if (!isset($nKeyValueVariation_arr[$kKey])) {
-                unset($valueID_arr[$kKey]);
-                $kFreifeldEigeschaftWert_arr[$kKey] = $cVal;
-            }
+    $objResponse->jsfunc(
+        '$.evo.article().setPrice',
+        $fVK[$nNettoPreise],
+        $cVKLocalized[$nNettoPreise],
+        $cPriceLabel,
+        $wrapper
+    );
+    $objResponse->jsfunc('$.evo.article().setArticleWeight', [
+        [$oArtikel->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel],
+        [$oArtikel->fArtikelgewicht, $weightArticleTotal . ' ' . $cUnitWeightLabel],
+    ], $wrapper);
+
+    if (!empty($oArtikel->staffelPreis_arr)) {
+        $fStaffelVK = [0 => [], 1 => []];
+        $cStaffelVK = [0 => [], 1 => []];
+        foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
+            $nAnzahl                 = &$staffelPreis['nAnzahl'];
+            $fStaffelVKNetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
+            $fStaffelVK[0][$nAnzahl] = berechneBrutto(
+                $fStaffelVKNetto,
+                $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
+            );
+            $fStaffelVK[1][$nAnzahl] = $fStaffelVKNetto;
+            $cStaffelVK[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[0][$nAnzahl]);
+            $cStaffelVK[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[1][$nAnzahl]);
         }
-
-        $nNettoPreise = Session::CustomerGroup()->getIsMerchant();
-        $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
-
-        $fVK = [
-            berechneBrutto($fVKNetto, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]),
-            $fVKNetto
-        ];
-
-        $cVKLocalized = [
-            0 => gibPreisStringLocalized($fVK[0]),
-            1 => gibPreisStringLocalized($fVK[1])
-        ];
-
-        $cPriceLabel = $oArtikel->nVariationOhneFreifeldAnzahl === count($valueID_arr)
-            ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
-            : Shop::Lang()->get('priceStarting');
 
         $objResponse->jsfunc(
-            '$.evo.article().setPrice',
-            $fVK[$nNettoPreise],
-            $cVKLocalized[$nNettoPreise],
-            $cPriceLabel,
+            '$.evo.article().setStaffelPrice',
+            $fStaffelVK[$nNettoPreise],
+            $cStaffelVK[$nNettoPreise],
             $wrapper
         );
-        $objResponse->jsfunc('$.evo.article().setArticleWeight', [
-            [$oArtikel->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel],
-            [$oArtikel->fArtikelgewicht, $weightArticleTotal . ' ' . $cUnitWeightLabel],
-        ], $wrapper);
+    }
 
-        if (!empty($oArtikel->staffelPreis_arr)) {
-            $fStaffelVK = [0 => [], 1 => []];
-            $cStaffelVK = [0 => [], 1 => []];
-            foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
-                $nAnzahl                 = &$staffelPreis['nAnzahl'];
-                $fStaffelVKNetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
-                $fStaffelVK[0][$nAnzahl] = berechneBrutto(
-                    $fStaffelVKNetto,
-                    $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
-                );
-                $fStaffelVK[1][$nAnzahl] = $fStaffelVKNetto;
-                $cStaffelVK[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[0][$nAnzahl]);
-                $cStaffelVK[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[1][$nAnzahl]);
-            }
-
-            $objResponse->jsfunc(
-                '$.evo.article().setStaffelPrice',
-                $fStaffelVK[$nNettoPreise],
-                $cStaffelVK[$nNettoPreise],
-                $wrapper
+    if ($oArtikel->cVPE === 'Y'
+        && $oArtikel->fVPEWert > 0
+        && $oArtikel->cVPEEinheit
+        && !empty($oArtikel->Preise)
+    ) {
+        $oArtikel->baueVPE($fVKNetto);
+        $fStaffelVPE = [0 => [], 1 => []];
+        $cStaffelVPE = [0 => [], 1 => []];
+        foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
+            $nAnzahl                  = &$staffelPreis['nAnzahl'];
+            $fStaffelVPENetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
+            $fStaffelVPE[0][$nAnzahl] = berechneBrutto(
+                $fStaffelVPENetto / $oArtikel->fVPEWert,
+                $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
             );
+            $fStaffelVPE[1][$nAnzahl] = $fStaffelVPENetto / $oArtikel->fVPEWert;
+            $cStaffelVPE[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[0][$nAnzahl]);
+            $cStaffelVPE[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[1][$nAnzahl]);
         }
 
-        if ($oArtikel->cVPE === 'Y' &&
-            $oArtikel->fVPEWert > 0 &&
-            $oArtikel->cVPEEinheit &&
-            !empty($oArtikel->Preise)
-        ) {
-            $oArtikel->baueVPE($fVKNetto);
-            $fStaffelVPE = [0 => [], 1 => []];
-            $cStaffelVPE = [0 => [], 1 => []];
-            foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
-                $nAnzahl                  = &$staffelPreis['nAnzahl'];
-                $fStaffelVPENetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
-                $fStaffelVPE[0][$nAnzahl] = berechneBrutto(
-                    $fStaffelVPENetto / $oArtikel->fVPEWert,
-                    $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
-                );
-                $fStaffelVPE[1][$nAnzahl] = $fStaffelVPENetto / $oArtikel->fVPEWert;
-                $cStaffelVPE[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[0][$nAnzahl]);
-                $cStaffelVPE[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[1][$nAnzahl]);
-            }
+        $objResponse->jsfunc(
+            '$.evo.article().setVPEPrice',
+            $oArtikel->cLocalizedVPE[$nNettoPreise],
+            $fStaffelVPE[$nNettoPreise],
+            $cStaffelVPE[$nNettoPreise],
+            $wrapper
+        );
+    }
 
-            $objResponse->jsfunc(
-                '$.evo.article().setVPEPrice',
-                $oArtikel->cLocalizedVPE[$nNettoPreise],
-                $fStaffelVPE[$nNettoPreise],
-                $cStaffelVPE[$nNettoPreise],
-                $wrapper
-            );
-        }
-
-        if (!empty($newProductNr)) {
-            $objResponse->jsfunc('$.evo.article().setProductNumber', $newProductNr, $wrapper);
-        }
+    if (!empty($newProductNr)) {
+        $objResponse->jsfunc('$.evo.article().setProductNumber', $newProductNr, $wrapper);
     }
 
     return $objResponse;
@@ -874,7 +873,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
         if (count($kGesetzteEigeschaftWert_arr) >= $oArtikel->nVariationOhneFreifeldAnzahl) {
             $oArtikelTMP = getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
 
-            if ($kArtikelKind !== (int)$oArtikelTMP->kArtikel) {
+            if ($oArtikelTMP !== null && $kArtikelKind !== (int)$oArtikelTMP->kArtikel) {
                 $oGesetzteEigeschaftWerte_arr = [];
                 foreach ($kFreifeldEigeschaftWert_arr as $cKey => $cValue) {
                     $oGesetzteEigeschaftWerte_arr[] = (object)[
@@ -971,25 +970,19 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
 /**
  * @param int   $kArtikel
  * @param array $kVariationKombi_arr
- * @return mixed
+ * @return stdClass|null
  */
 function getArticleByVariations($kArtikel, $kVariationKombi_arr)
 {
-    $kArtikel = (int)$kArtikel;
-    $cSQL1    = '';
-    $cSQL2    = '';
-    if (is_array($kVariationKombi_arr) && count($kVariationKombi_arr) > 0) {
-        $j = 0;
-        foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
-            if ($j > 0) {
-                $cSQL1 .= ',' . (int)$i;
-                $cSQL2 .= ',' . (int)$kVariationKombi;
-            } else {
-                $cSQL1 .= (int)$i;
-                $cSQL2 .= (int)$kVariationKombi;
-            }
-            $j++;
-        }
+    if (!is_array($kVariationKombi_arr) || count($kVariationKombi_arr) === 0) {
+        return null;
+    }
+    $kArtikel        = (int)$kArtikel;
+    $attributes      = [];
+    $attributeValues = [];
+    foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
+        $attributes[]      = (int)$i;
+        $attributeValues[] = (int)$kVariationKombi;
     }
 
     return  Shop::Container()->getDB()->query(
@@ -1005,8 +998,8 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
             LEFT JOIN tartikelsichtbarkeit 
                 ON a.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
-        WHERE teigenschaftkombiwert.kEigenschaft IN (" . $cSQL1 . ")
-            AND teigenschaftkombiwert.kEigenschaftWert IN (" . $cSQL2 . ")
+        WHERE teigenschaftkombiwert.kEigenschaft IN (" . implode(',', $attributes) . ")
+            AND teigenschaftkombiwert.kEigenschaftWert IN (" . implode(',', $attributeValues) . ")
             AND tartikelsichtbarkeit.kArtikel IS NULL
             AND a.kVaterArtikel = " . $kArtikel . "
         GROUP BY a.kArtikel
@@ -1058,9 +1051,8 @@ function getCategoryMenu($categoryId)
 
     $smarty->assign('result', $result)
            ->assign('nSeitenTyp', 0);
-    $template = $smarty->fetch('snippets/categories_offcanvas.tpl');
 
-    $response->script('this.response = ' . json_encode($template) . ';');
+    $response->script('this.response = ' . json_encode($smarty->fetch('snippets/categories_offcanvas.tpl')) . ';');
 
     return $response;
 }

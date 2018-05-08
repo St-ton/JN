@@ -1294,10 +1294,9 @@ function setzeSteuersaetze($steuerland = 0)
         Jtllog::writeLog('Keine Steuerzone f&uuml;r "' . $country . '" hinterlegt!', JTLLOG_LEVEL_ERROR);
 
         if (isAjaxRequest()) {
-            $link                  = new stdClass();
-            $link->nLinkart        = LINKTYP_STARTSEITE;
-            $link->Sprache         = new stdClass();
-            $link->Sprache->cTitle = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
+            $link                  = new \Link\Link(Shop::Container()->getDB());
+            $link->setLinkType(LINKTYP_STARTSEITE);
+            $link->setTitle(Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
 
             Shop::Smarty()
                 ->assign('cFehler', Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country))
@@ -3330,35 +3329,36 @@ function gibAGBWRB($kSprache, $kKundengruppe)
     $oLinkWRB   = null;
     // kLink für AGB und WRB suchen
     foreach ($linkHelper->getSpecialPages() as $sp) {
-        if ($sp->nLinkart === LINKTYP_AGB) {
+        /** @var \Link\LinkInterface $sp */
+        if ($sp->getLinkType() === LINKTYP_AGB) {
             $oLinkAGB = $sp;
-        } elseif ($sp->nLinkart === LINKTYP_WRB) {
+        } elseif ($sp->getLinkType() === LINKTYP_WRB) {
             $oLinkWRB = $sp;
         }
     }
-    $oAGBWRB = Shop::Container()->getDB()->select('ttext', 'kKundengruppe', (int)$kKundengruppe, 'kSprache', (int)$kSprache);
+    $oAGBWRB = Shop::Container()->getDB()->select(
+        'ttext',
+        'kKundengruppe', (int)$kKundengruppe,
+        'kSprache', (int)$kSprache
+    );
     if (!empty($oAGBWRB->kText)) {
-        $oAGBWRB->cURLAGB  = $oLinkAGB->cURL ?? '';
-        $oAGBWRB->cURLWRB  = $oLinkWRB->cURL ?? '';
-        $oAGBWRB->kLinkAGB = (isset($oLinkAGB->kLink) && $oLinkAGB->kLink > 0)
-            ? (int)$oLinkAGB->kLink
+        $oAGBWRB->cURLAGB  = $oLinkAGB->getURL() ?? '';
+        $oAGBWRB->cURLWRB  = $oLinkWRB->getURL() ?? '';
+        $oAGBWRB->kLinkAGB = $oLinkAGB !== null
+            ? $oLinkAGB->getID()
             : 0;
-        $oAGBWRB->kLinkWRB = (isset($oLinkWRB->kLink) && $oLinkWRB->kLink > 0)
-            ? (int)$oLinkWRB->kLink
+        $oAGBWRB->kLinkWRB = $oLinkWRB !== null
+            ? $oLinkWRB->getID()
             : 0;
 
         return $oAGBWRB;
     }
     $oAGBWRB = Shop::Container()->getDB()->select('ttext', 'nStandard', 1);
     if (!empty($oAGBWRB->kText)) {
-        $oAGBWRB->cURLAGB  = $oLinkAGB->cURL ?? '';
-        $oAGBWRB->cURLWRB  = $oLinkWRB->cURL ?? '';
-        $oAGBWRB->kLinkAGB = (isset($oLinkAGB->kLink) && $oLinkAGB->kLink > 0)
-            ? (int)$oLinkAGB->kLink
-            : 0;
-        $oAGBWRB->kLinkWRB = (isset($oLinkWRB->kLink) && $oLinkWRB->kLink > 0)
-            ? (int)$oLinkWRB->kLink
-            : 0;
+        $oAGBWRB->cURLAGB  = $oLinkAGB !== null ? $oLinkAGB->getURL() : '';
+        $oAGBWRB->cURLWRB  = $oAGBWRB !== null ? $oLinkAGB->getURL() : '';
+        $oAGBWRB->kLinkAGB = $oLinkAGB !== null ? $oLinkAGB->getID() : 0;
+        $oAGBWRB->kLinkWRB = $oAGBWRB !== null ? $oAGBWRB->getID() : 0;
 
         return $oAGBWRB;
     }

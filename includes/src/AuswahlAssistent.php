@@ -70,7 +70,7 @@ class AuswahlAssistent
     private $kSelection_arr = [];
 
     /**
-     * @var ProductFilter
+     * @var \Filter\ProductFilter
      */
     private $oNaviFilter;
 
@@ -340,7 +340,7 @@ class AuswahlAssistent
     }
 
     /**
-     * @return ProductFilter
+     * @return \Filter\ProductFilter
      */
     public function getNaviFilter()
     {

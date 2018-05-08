@@ -103,8 +103,6 @@ function getCitiesByZip($cityQuery, $country, $zip)
  */
 function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 {
-    global $Einstellungen;
-
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
     $smarty      = Shop::Smarty();
@@ -197,7 +195,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
            ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
            ->assign('fAnzahl', $anzahl)
            ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
-           ->assign('Einstellungen', $Einstellungen)
+           ->assign('Einstellungen', Shop::getSettings([CONF_GLOBAL]))
            ->assign('Xselling', $oXSelling)
            ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
            ->assign('Steuerpositionen', $cart->gibSteuerpositionen());
@@ -551,7 +549,7 @@ function getBasketItems($nTyp)
             $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                    ->assign('Warensumme', $cart->gibGesamtsummeWaren())
                    ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
-                   ->assign('Einstellungen', $Einstellungen)
+                   ->assign('Einstellungen', Shop::getSettings([CONF_GLOBAL]))
                    ->assign('WarenkorbArtikelPositionenanzahl', $nAnzahl)
                    ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
                    ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())

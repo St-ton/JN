@@ -112,7 +112,7 @@ class AuswahlAssistent
     private function loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive = true)
     {
         $oDbResult = Shop::Container()->getDB()->queryPrepared(
-                'SELECT *
+            'SELECT *
                     FROM tauswahlassistentort AS ao
                         JOIN tauswahlassistentgruppe AS ag
                             ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
@@ -143,8 +143,8 @@ class AuswahlAssistent
                 'SELECT kAuswahlAssistentFrage AS id
                     FROM tauswahlassistentfrage
                     WHERE kAuswahlAssistentGruppe = :groupID' .
-                    ($bOnlyActive ? ' AND nAktiv = 1 ' : ' ') .
-                    'ORDER BY nSort',
+                ($bOnlyActive ? ' AND nAktiv = 1 ' : ' ') .
+                'ORDER BY nSort',
                 ['groupID' => $this->kAuswahlAssistentGruppe],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -192,11 +192,11 @@ class AuswahlAssistent
                 $cParameter_arr['MerkmalFilter_arr'] = array_slice($this->kSelection_arr, 1);
             }
         }
-        $NaviFilter                           = Shop::buildProductFilter($cParameter_arr);
-        $AktuelleKategorie                    = isset($cParameter_arr['kKategorie'])
+        $NaviFilter         = Shop::buildProductFilter($cParameter_arr);
+        $AktuelleKategorie  = isset($cParameter_arr['kKategorie'])
             ? new Kategorie($cParameter_arr['kKategorie'])
             : null;
-        $oMerkmalFilter_arr                   = (new \Filter\ProductFilterSearchResults())->setFilterOptions(
+        $oMerkmalFilter_arr = (new \Filter\ProductFilterSearchResults())->setFilterOptions(
             $NaviFilter,
             $AktuelleKategorie,
             true
@@ -209,7 +209,7 @@ class AuswahlAssistent
                 $oFrage->oWert_arr         = $oMerkmalFilter->getOptions();
                 $oFrage->nTotalResultCount = 0;
                 foreach ($oMerkmalFilter->getOptions() as $oWert) {
-                    $oFrage->nTotalResultCount                           += $oWert->getCount();
+                    $oFrage->nTotalResultCount                            += $oWert->getCount();
                     $oFrage->oWert_assoc[$oWert->getData('kMerkmalWert')] = $oWert;
                 }
             }
@@ -378,12 +378,12 @@ class AuswahlAssistent
     }
 
     /**
-     * @param string    $cKey
-     * @param int       $kKey
-     * @param int       $kSprache
-     * @param JTLSmarty $smarty
-     * @param array     $selected
-     * @param ProductFilter|null $pf
+     * @param string                     $cKey
+     * @param int                        $kKey
+     * @param int                        $kSprache
+     * @param JTLSmarty                  $smarty
+     * @param array                      $selected
+     * @param \Filter\ProductFilter|null $pf
      * @return self|null
      */
     public static function startIfRequired($cKey, $kKey, $kSprache = 0, $smarty = null, $selected = [], $pf = null)

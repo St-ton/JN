@@ -29,37 +29,38 @@ $io->register('suggestions')
  */
 function suggestions($keyword)
 {
-    if (strlen($keyword) >= 2) {
-        $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
-        $smarty        = Shop::Smarty();
-        $results       = [];
-        $language      = Shop::getLanguage();
-        $maxResults    = ((int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl'] > 0)
-            ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
-            : 10;
-        $results       = Shop::Container()->getDB()->executeQueryPrepared("
-            SELECT cSuche AS keyword, nAnzahlTreffer AS quantity
-              FROM tsuchanfrage
-              WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX(:keyword)), '%')
-                  AND nAktiv = 1
-                  AND kSprache = :lang
-            ORDER BY CASE
-                WHEN cSuche = :keyword THEN 0
-                WHEN cSuche LIKE CONCAT(:keyword, '%') THEN 1
-                WHEN cSuche LIKE CONCAT('%', :keyword, '%') THEN 2
-                ELSE 99
-                END, nAnzahlGesuche DESC, cSuche
-            LIMIT :maxres",
-            [
-                'keyword' => $keyword,
-                'maxres'  => $maxResults,
-                'lang'    => $language
-            ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($results as &$result) {
-            $result->suggestion = $smarty->assign('result', $result)->fetch('snippets/suggestion.tpl');
-        }
+    $results = [];
+    if (strlen($keyword) < 2) {
+        return $results;
+    }
+    $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+    $smarty        = Shop::Smarty();
+    $language      = Shop::getLanguage();
+    $maxResults    = ((int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl'] > 0)
+        ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
+        : 10;
+    $results       = Shop::Container()->getDB()->queryPrepared(
+        "SELECT cSuche AS keyword, nAnzahlTreffer AS quantity
+          FROM tsuchanfrage
+          WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX(:keyword)), '%')
+              AND nAktiv = 1
+              AND kSprache = :lang
+        ORDER BY CASE
+            WHEN cSuche = :keyword THEN 0
+            WHEN cSuche LIKE CONCAT(:keyword, '%') THEN 1
+            WHEN cSuche LIKE CONCAT('%', :keyword, '%') THEN 2
+            ELSE 99
+            END, nAnzahlGesuche DESC, cSuche
+        LIMIT :maxres",
+        [
+            'keyword' => $keyword,
+            'maxres'  => $maxResults,
+            'lang'    => $language
+        ],
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    foreach ($results as $result) {
+        $result->suggestion = $smarty->assign('result', $result)->fetch('snippets/suggestion.tpl');
     }
 
     return $results;
@@ -76,14 +77,12 @@ function getCitiesByZip($cityQuery, $country, $zip)
     $results = [];
     if (!empty($country) && !empty($zip)) {
         $cityQuery = "%" . StringHandler::filterXSS($cityQuery) . "%";
-        $country   = StringHandler::filterXSS($country);
-        $zip       = StringHandler::filterXSS($zip);
         $cities    = Shop::Container()->getDB()->queryPrepared(
             "SELECT cOrt
-            FROM tplz
-            WHERE cLandISO = :country
-                AND cPLZ = :zip
-                AND cOrt LIKE :cityQuery",
+                FROM tplz
+                WHERE cLandISO = :country
+                    AND cPLZ = :zip
+                    AND cOrt LIKE :cityQuery",
             ['country' => $country, 'zip' => $zip, 'cityQuery' => $cityQuery],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );

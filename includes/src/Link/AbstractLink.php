@@ -40,7 +40,19 @@ abstract class AbstractLink implements LinkInterface
         'cSeo'               => 'URL',
         'nHTTPRedirectCode'  => 'RedirectCode',
         'nPluginStatus'      => 'PluginEnabled',
+        'Sprache'            => 'LangCompat',
+        'cContent'           => 'Content',
+        'cTitle'             => 'Title',
+        'cMetaTitle'         => 'MetaTitle',
+        'cMetaKeywords'      => 'MetaKeyword',
+        'cMetaDescription'   => 'MetaDescription',
+        'nLinkart'   => 'LinkType',
     ];
+
+    public function getLangCompat()
+    {
+        return $this;
+    }
 
     /**
      * @return string

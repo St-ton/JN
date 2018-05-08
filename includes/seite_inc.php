@@ -814,7 +814,7 @@ function pruefeSpezialseite($nLinkart)
             Shop::Cache()->set($cacheID, $oSeite, [CACHING_GROUP_CORE]);
         }
         if (isset($oSeite->cDateiname) && strlen($oSeite->cDateiname) > 0) {
-            $linkHelper = LinkHelper::getInstance();
+            $linkHelper = \Link\LinkHelper::getInstance();
             header('Location: ' . $linkHelper->getStaticRoute($oSeite->cDateiname));
             exit();
         }
@@ -828,7 +828,7 @@ function pruefeSpezialseite($nLinkart)
 function gibSeiteSitemap($conf, $smarty)
 {
     Shop::setPageType(PAGE_SITEMAP);
-    $linkGroups = LinkHelper::getInstance()->getLinkGroups();
+//    $linkGroups = LinkHelper::getInstance()->getLinkGroups();
 
     $smarty->assign('oKategorieliste', $conf['sitemap']['sitemap_kategorien_anzeigen'] === 'Y'
         ? gibSitemapKategorien()
@@ -867,7 +867,7 @@ function gibSitemapHersteller($Einstellungen)
 function holeSeitenLink($kLink)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return LinkHelper::getInstance()->getPageLink($kLink);
+    return \Link\LinkHelper::getInstance()->getLinkByID($kLink);
 }
 
 /**
@@ -878,7 +878,7 @@ function holeSeitenLink($kLink)
 function holeSeitenLinkSprache($kLink)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return LinkHelper::getInstance()->getPageLinkLanguage($kLink);
+    return \Link\LinkHelper::getInstance()->getLinkByID($kLink);
 }
 
 /**

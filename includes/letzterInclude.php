@@ -6,7 +6,6 @@
 
 $smarty        = Shop::Smarty();
 $oBrowser      = getBrowser();
-$linkHelper    = LinkHelper::getInstance();
 $oTemplate     = Template::getInstance();
 $tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
 $shopLogo      = Shop::getLogo();
@@ -64,11 +63,10 @@ if (!isset($NaviFilter)) {
 }
 $lgl           = new \Link\LinkGroupList(Shop::Container()->getDB());
 $lgl           = $lgl->loadAll();
-$newHelper     = \Link\LinkHelper::getInstance();
+$linkHelper     = \Link\LinkHelper::getInstance();
 $lgl->activate($pagetType);
 
-$smarty->assign('linkgroups', $linkHelper->activate($pagetType))
-       ->assign('newLinkGroups', $lgl)
+$smarty->assign('linkgroups', $lgl)
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])

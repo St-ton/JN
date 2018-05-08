@@ -18,7 +18,7 @@ function gibRedirect($cRedirect)
 
     switch ($cRedirect) {
         case R_LOGIN_WUNSCHLISTE:
-            $linkHelper                  = LinkHelper::getInstance();
+            $linkHelper                  = \Link\LinkHelper::getInstance();
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'a';
@@ -445,7 +445,6 @@ function fuehreLoginAus($userLogin, $passLogin)
                         $bPersWarenkorbGeladen = true;
                     }
                 }
-                LinkHelper::getInstance()->buildLinkGroups(true);
                 // Pruefe, ob Artikel im Warenkorb vorhanden sind,
                 // welche für den aktuellen Kunden nicht mehr sichtbar sein duerfen
                 pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);

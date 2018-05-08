@@ -10,6 +10,7 @@ namespace Link;
 use function Functional\first;
 use function Functional\first_index_of;
 use function Functional\select;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkHelper
@@ -52,9 +53,9 @@ class LinkHelper
     }
 
     /**
-     * @return mixed|null
+     * @return LinkGroupCollection
      */
-    public function getLinkGroups()
+    public function getLinkGroups(): LinkGroupCollection
     {
         $this->linkGroupList = new LinkGroupList(\Shop::Container()->getDB());
         $this->linkGroups    = $this->linkGroupList->loadAll()->getLinkgroups();
@@ -107,11 +108,28 @@ class LinkHelper
     public function getParentIDs(int $id): array
     {
         $result = [];
-        $oLink  = $this->getParentForID($id);
+        $link   = $this->getParentForID($id);
 
-        while ($oLink !== null && $oLink->getID() > 0) {
-            array_unshift($result, $oLink->getID());
-            $oLink = $this->getParentForID($oLink->getParent());
+        while ($link !== null && $link->getID() > 0) {
+            array_unshift($result, $link->getID());
+            $link = $this->getLinkByID($link->getParent());
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int $id
+     * @return Collection
+     */
+    public function getParentLinks(int $id): Collection
+    {
+        $result = new Collection();
+        $link   = $this->getParentForID($id);
+
+        while ($link !== null && $link->getID() > 0) {
+            $result->push($link);
+            $link = $this->getLinkByID($link->getParent());
         }
 
         return $result;
@@ -178,7 +196,7 @@ class LinkHelper
         $lg = $this->getLinkGroupByName('specialpages');
 
         return $lg !== null
-            ? first($lg->getLinks(), function (LinkInterface $l) use ($nLinkart) {
+            ? $lg->getLinks()->first(function (LinkInterface $l) use ($nLinkart) {
                 return $l->getLinkType() === $nLinkart;
             })
             : null;
@@ -249,7 +267,45 @@ class LinkHelper
             : $id;
     }
 
+    /**
+     * careful: this works compatible to gibSpezialSeiten() -
+     * so only the first special page link per page type is returned!
+     *
+     * @former gibSpezialSeiten()
+     * @return Collection
+     */
+    public function getSpecialPages(): Collection
+    {
+        $lg = $this->getLinkGroupByName('specialpages'); //@todo: use const
+        if ($lg !== null) {
+            return $lg->getLinks()->groupBy(function (LinkInterface $link) {
+                return $link->getLinkType();
+            })->map(function (Collection $group) {
+                return $group->first();
+            });
+        }
+
+        return new Collection();
+    }
+
+    /**
+     * for compatability only
+     *
+     * @param int $id
+     * @return LinkInterface|null
+     */
     public function getPageLinkLanguage(int $id)
+    {
+        return $this->getLinkByID($id);
+    }
+
+    /**
+     * for compatability only
+     *
+     * @param int $id
+     * @return LinkInterface|null
+     */
+    public function getPageLink(int $id)
     {
         return $this->getLinkByID($id);
     }
@@ -325,6 +381,52 @@ class LinkHelper
     public function getParent(int $id)
     {
         return $this->getLinkByID($id);
+    }
+
+    /**
+     * @param int         $type
+     * @param string|null $cISOSprache
+     * @return \stdClass
+     */
+    public function buildSpecialPageMeta(int $type, string $cISOSprache = null): \stdClass
+    {
+        $first = null;
+        foreach ($this->linkGroups as $linkGroup) {
+            /** @var LinkGroupInterface $linkGroup */
+            $first = $linkGroup->getLinks()->first(function (LinkInterface $link) use ($type) {
+                return $link->getLinkType() === $type;
+            });
+        }
+        if ($cISOSprache !== null) {
+            $shopISO = \Shop::getLanguageCode();
+            if ($shopISO !== null && strlen($shopISO) > 0) {
+                $cISOSprache = $shopISO;
+            } else {
+                $oSprache    = gibStandardsprache();
+                $cISOSprache = $oSprache->cISO;
+            }
+        }
+        $oMeta            = new \stdClass();
+        $oMeta->cTitle    = '';
+        $oMeta->cDesc     = '';
+        $oMeta->cKeywords = '';
+
+        if ($first !== null) {
+            /** @var LinkInterface $first */
+            $oMeta->cTitle    = $first->getMetaTitle();
+            $oMeta->cDesc     = $first->getMetaDescription();
+            $oMeta->cKeywords = $first->getMetaKeyword();
+        }
+
+        return $oMeta;
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkNoIndex(): bool
+    {
+        return \Shop::getProductFilter()->getMetaData()->checkNoIndex();
     }
 
     /**

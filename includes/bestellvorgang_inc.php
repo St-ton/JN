@@ -9,7 +9,7 @@
  */
 function pruefeBestellungMoeglich()
 {
-    $linkHelper = LinkHelper::getInstance();
+    $linkHelper = \Link\LinkHelper::getInstance();
     header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php', true) .
         '?fillOut=' . Session::Cart()->istBestellungMoeglich(), true, 303);
     exit;
@@ -579,7 +579,7 @@ function validateCouponInCheckout()
             Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
             $_SESSION['checkCouponResult'] = $checkCouponResult;
             unset($_SESSION['Kupon']);
-            $linkHelper = LinkHelper::getInstance();
+            $linkHelper = \Link\LinkHelper::getInstance();
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php', true));
             exit(0);
         }
@@ -781,7 +781,7 @@ function gibStepZahlungZusatzschritt($cPost_arr)
 function gibStepBestaetigung($cGet_arr)
 {
     global $hinweis;
-    $linkHelper = LinkHelper::getInstance();
+    $linkHelper = \Link\LinkHelper::getInstance();
     //check currenct shipping method again to avoid using invalid methods when using one click method (#9566)
     if (isset($_SESSION['Versandart']->kVersandart) && !versandartKorrekt($_SESSION['Versandart']->kVersandart)) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editVersandart=1', true, 303);

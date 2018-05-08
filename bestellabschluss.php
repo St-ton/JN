@@ -20,7 +20,7 @@ $Einstellungen = Shop::getSettings([
     CONF_TRUSTEDSHOPS
 ]);
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
-$linkHelper    = LinkHelper::getInstance();
+$linkHelper    = \Link\LinkHelper::getInstance();
 $AktuelleSeite = 'BESTELLVORGANG';
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
 $cart          = Session::Cart();

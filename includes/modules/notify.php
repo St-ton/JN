@@ -145,7 +145,7 @@ if (strlen($cSh) > 0) {
                 }
             } else {
                 Jtllog::writeLog('finalizeOrder failed -> zurueck zur Zahlungsauswahl.', JTLLOG_LEVEL_DEBUG, false, 'Notify');
-                $linkHelper = LinkHelper::getInstance();
+                $linkHelper = \Link\LinkHelper::getInstance();
                 // UOS Work Around
                 if ($_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl' ||
                     $paymentMethod->redirectOnCancel() ||

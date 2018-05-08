@@ -399,13 +399,10 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
     $oLink = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_NEWS);
     if (isset($oLink->kLink) && $oLink->kLink > 0) {
         //hole Link
-        $linkHelper    = LinkHelper::getInstance();
-        $Link          = $linkHelper->getPageLink($oLink->kLink);
-        $Link->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
+        $linkHelper    = \Link\LinkHelper::getInstance();
+        $Link          = $linkHelper->getLinkByID($oLink->kLink);
         //url
-        global $sprachURL, $requestURL;
         $requestURL = baueURL($Link, URLART_SEITE);
-        $sprachURL  = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
         // Canonical
         if (strpos($requestURL, '.php') === false) {
             $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
@@ -413,7 +410,7 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
         if (empty($AktuelleSeite)) {
             $AktuelleSeite = null;
         }
-        $smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->Sprache->cName, $requestURL));
+        $smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->getName(), $requestURL));
     } else {
         // Canonical
         $cCanonicalURL = Shop::getURL() . '/news.php';

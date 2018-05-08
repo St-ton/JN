@@ -18,7 +18,7 @@ $Einstellungen = Shop::getSettings([
     CONF_ZAHLUNGSARTEN
 ]);
 $kBestellung   = (int)$_REQUEST['kBestellung'];
-$linkHelper    = LinkHelper::getInstance();
+$linkHelper    = \Link\LinkHelper::getInstance();
 $bestellung    = (new Bestellung($kBestellung))->fuelleBestellung();
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0

@@ -8,8 +8,8 @@
         {/if}
         {if !isset($activeId)}
             {assign var='activeId' value=0}
-            {if isset($Link) && intval($Link->kLink) > 0}
-                {assign var='activeId' value=(int)$Link->kLink}
+            {if isset($Link) && $Link->getID() > 0}
+                {assign var='activeId' value=$Link->getID()}
             {elseif Shop::$kLink > 0}
                 {assign var='activeId' value=Shop::$kLink}
                 {assign var='Link' value=\Link\LinkHelper::getInstance()->getLinkByID($activeId)}

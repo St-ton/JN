@@ -352,28 +352,32 @@ class PortletInstance implements \JsonSerializable
     /**
      * @param string $src
      * @param string $alt
-     * @return $this
+     * @param string $title
+     * @return array
      */
-    public function setImageAttributes($src = null, $alt = null, $title = null)
+    public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1)
     {
-        $src   = $src ?? $this->getProperty('src');
-        $alt   = $alt ?? $this->getProperty('alt');
-        $title = $title ?? $this->getProperty('title');
-
-        $this->setAttribute('alt', $alt);
-        $this->setAttribute('title', $title);
+        $src      = $src ?? $this->getProperty('src');
+        $alt      = $alt ?? $this->getProperty('alt');
+        $title    = $title ?? $this->getProperty('title');
+        $srcset   = '';
+        $srcsizes = '';
 
         if (empty($src)) {
-            $this->setAttribute('src', \Shop::getURL() . '/gfx/keinBild.gif');
-            return $this;
+            $src = \Shop::getURL() . '/gfx/keinBild.gif';
+            return [
+                'srcset' => $srcset,
+                'sizes' => $srcsizes,
+                'src' => $src,
+                'alt' => $alt,
+                'title' => $title,
+            ];
         }
 
         $widthHeuristics = $this->widthHeuristics;
         $settings        = \Shop::getSettings([CONF_BILDER]);
         $name            = explode('/', $src);
         $name            = end($name);
-        $srcset          = '';
-        $srcsizes        = '';
 
         foreach (static::$dirSizes as $size => $width) {
             $sizedImgPath = PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
@@ -401,6 +405,7 @@ class PortletInstance implements \JsonSerializable
 
             foreach ($widthHeuristics as $breakpoint => $col) {
                 if (!empty($col)) {
+                    $col /= $divisor;
                     switch ($breakpoint) {
                         case 'xs':
                             $breakpoint = 767;
@@ -428,9 +433,31 @@ class PortletInstance implements \JsonSerializable
         $srcsizes .= '100vw';
         $src       = PFAD_MEDIAFILES . 'Bilder/.md/' . $name;
 
-        $this->setAttribute('srcset', $srcset);
-        $this->setAttribute('sizes', $srcsizes);
-        $this->setAttribute('src', $src);
+        return [
+            'srcset' => $srcset,
+            'sizes' => $srcsizes,
+            'src' => $src,
+            'alt' => $alt,
+            'title' => $title,
+        ];
+    }
+
+    /**
+     * @param string $src
+     * @param string $alt
+     * @param string $title
+     * @param int $divisor
+     * @return $this
+     */
+    public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1)
+    {
+        $imageAttributes = $this->getImageAttributes($src, $alt, $title);
+
+        $this->setAttribute('srcset', $imageAttributes['srcset']);
+        $this->setAttribute('sizes', $imageAttributes['srcsizes']);
+        $this->setAttribute('src', $imageAttributes['src']);
+        $this->setAttribute('alt', $imageAttributes['alt']);
+        $this->setAttribute('title', $imageAttributes['title']);
 
         return $this;
     }

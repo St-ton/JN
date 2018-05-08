@@ -6,6 +6,7 @@
 
 namespace OPC;
 
+use Filter\AbstractFilter;
 use Filter\IFilter;
 
 class Service
@@ -381,12 +382,17 @@ class Service
      */
     public function getFilterOptions($enabledFilters = [])
     {
+        \Shop::setLanguage(1);
+
         $productFilter    = new \Filter\ProductFilter();
         $availableFilters = $productFilter->getAvailableFilters();
         $results          = [];
 
         foreach ($enabledFilters as $enabledFilter) {
-            $productFilter->addActiveFilter(new $enabledFilter['class']($productFilter), $enabledFilter['value']);
+            /** @var AbstractFilter $newFilter **/
+            $newFilter = new $enabledFilter['class']($productFilter);
+            $newFilter->setType(AbstractFilter::FILTER_TYPE_AND);
+            $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
         }
 
         foreach ($availableFilters as $availableFilter) {
@@ -395,7 +401,7 @@ class Service
             $options = [];
 
             if (\StringHandler::endsWith($class, 'ItemAttribute')) {
-                $name = 'Merkmalwerte';
+                $name = 'Merkmale';
 
                 foreach ($availableFilter->getOptions() as $option) {
                     foreach ($option->getOptions() as $suboption) {
@@ -414,6 +420,7 @@ class Service
                         'name'  => $option->getName(),
                         'value' => $option->getValue(),
                         'count' => $option->getCount(),
+                        'class' => $class,
                     ];
                 }
             }
@@ -426,62 +433,5 @@ class Service
         }
 
         return $results;
-    }
-
-    /**
-     * @param array $filtersEnabled
-     * @return array
-     */
-    public function getFilterOptions2($filtersEnabled = [])
-    {
-        $productFilter     = new \Filter\ProductFilter();
-        $filtersEnabledMap = [];
-
-        foreach ($filtersEnabled as $filterEnabled) {
-            $filtersEnabledMap[$filterEnabled['class'] . ':' . $filterEnabled['value']] = true;
-            $productFilter->addActiveFilter(new $filterEnabled['class']($productFilter), $filterEnabled['value']);
-        }
-
-        $productFilter->getProducts();
-        $searchResults    = $productFilter->getSearchResults(false);
-        $availableFilters = $productFilter->getAvailableFilters();
-
-        $res = [];
-
-        foreach ($availableFilters as $availableFilter) {
-            $frontendName       = $availableFilter->getFrontendName();
-            $filterOptions      = $availableFilter->getOptions();
-            $res[$frontendName] = [];
-
-            foreach ($filterOptions as $filterOption) {
-                $res[$frontendName][] = $filterOption->getOptions();
-            }
-        }
-
-        return $res;
-
-//        foreach (['Category', 'Manufacturer', 'Rating', 'SearchSpecial', 'Tag', 'Attribute', 'PriceRange'] as $term) {
-//            /** @var \Filter\FilterOption[] $filterOptions */
-//            $filterOptions = $searchResults->{"get{$term}FilterOptions"}();
-//
-//            $res[$term] = [];
-//
-//            foreach ($filterOptions as $filterOption) {
-//                if (!array_key_exists(
-//                    $filterOption->getClassName() . ':' . $filterOption->getValue(),
-//                    $filtersEnabledMap
-//                )) {
-//                    $res[$term][] = [
-//                        'name'  => $filterOption->getName(),
-//                        'term'  => $term,
-//                        'class' => $filterOption->getClassName(),
-//                        'value' => $filterOption->getValue(),
-//                        'count' => $filterOption->getCount(),
-//                    ];
-//                }
-//            }
-//        }
-
-//        return $res;
     }
 }

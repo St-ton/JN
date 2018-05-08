@@ -246,8 +246,17 @@ GUI.prototype = {
         this.configSaveCb();
 
         var portletData = this.page.portletToJSON(this.curPortlet);
+        var configArray = this.configForm.serializeArray();
 
-        portletData.properties = this.configForm.serializeControls();
+        configArray.forEach(function(prop) {
+            var propType = $('[name="' + prop.name + '"]').data('prop-type');
+
+            if (propType === 'filter') {
+                prop.value = JSON.parse(prop.value);
+            }
+
+            portletData.properties[prop.name] = prop.value;
+        });
 
         this.io.getPortletPreviewHtml(portletData, this.onPortletPreviewHtml);
 
@@ -370,6 +379,5 @@ GUI.prototype = {
     setImageSelectCallback: function(callback)
     {
         this.imageSelectCB = callback;
-    }
-
+    },
 };

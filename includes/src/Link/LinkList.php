@@ -61,6 +61,7 @@ class LinkList implements LinkListInterface
                 tlinksprache.cMetaTitle AS metaTitle,
                 tseo.kSprache AS languageID,
                 tseo.cSeo AS localizedUrl,
+                tspezialseite.cDateiname,
                 tplugin.nStatus AS pluginState
             FROM tlink
                 JOIN tlinksprache
@@ -71,6 +72,8 @@ class LinkList implements LinkListInterface
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlinksprache.kLink
                     AND tseo.kSprache = tsprache.kSprache
+                LEFT JOIN tspezialseite
+                    ON tspezialseite.nLinkart = tlink.nLinkart
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
                 WHERE tlinksprache.kLink IN (" . implode(',', $this->linkIDs) . ")

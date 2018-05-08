@@ -236,6 +236,15 @@ class LinkHelper
     }
 
     /**
+     * @param int $id
+     * @return LinkGroupInterface|null
+     */
+    public function getLinkGroupByID(int $id)
+    {
+        return $this->linkGroupList->getLinkgroupByID($id);
+    }
+
+    /**
      * @param string      $id
      * @param bool        $full
      * @param bool        $secure

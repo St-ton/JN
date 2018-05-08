@@ -44,6 +44,35 @@ class LinkGroupList implements LinkGroupListInterface
     }
 
     /**
+     * @param string $name
+     * @return LinkGroupInterface|null
+     */
+    public function __get($name)
+    {
+        trigger_error(__CLASS__ . ': getter should be used to get ' . $name, E_USER_DEPRECATED);
+
+        return $this->getLinkgroupByTemplate($name);
+    }
+
+    /**
+     * @param mixed $name
+     * @param mixed $value
+     */
+    public function __set($name, $value)
+    {
+        trigger_error(__CLASS__ . ': setting data like this not supported anymore. ', E_USER_DEPRECATED);
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return $this->__get($name) !== null;
+    }
+
+    /**
      * @inheritdoc
      */
     public function loadAll(): LinkGroupListInterface
@@ -130,6 +159,7 @@ class LinkGroupList implements LinkGroupListInterface
                 tlinksprache.cMetaTitle AS metaTitle,
                 tseo.kSprache AS languageID,
                 tseo.cSeo AS localizedUrl,
+                tspezialseite.cDateiname,
                 2 AS pluginState
                     FROM tlinksprache
                     JOIN tlink
@@ -140,6 +170,8 @@ class LinkGroupList implements LinkGroupListInterface
                         ON tseo.cKey = 'kLink'
                         AND tseo.kKey = tlink.kLink
                         AND tseo.kSprache = tsprache.kSprache
+                    LEFT JOIN tspezialseite
+						ON tspezialseite.nLinkart = tlink.nLinkart
                     WHERE tlink.kLink = tlinksprache.kLink
                         AND tlink.nLinkart >= 5",
                 ReturnType::ARRAY_OF_OBJECTS

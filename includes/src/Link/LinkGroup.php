@@ -18,6 +18,13 @@ use Tightenco\Collect\Support\Collection;
  */
 class LinkGroup implements LinkGroupInterface
 {
+    use \MagicCompatibilityTrait;
+
+    /**
+     * @var array
+     */
+    private static $mapping = ['cLocalizedName' => 'Name'];
+
     /**
      * @var array
      */

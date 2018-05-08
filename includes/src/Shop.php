@@ -1381,48 +1381,46 @@ final class Shop
                 self::setPageType(PAGE_404);
             }
         } elseif (!empty(self::$kLink)) {
-            $linkHelper = LinkHelper::getInstance();
-            $link       = $linkHelper->getPageLink(self::$kLink);
-            $oSeite     = null;
-            if (isset($link->nLinkart)) {
-                if ($link->nLinkart === LINKTYP_EXTERNE_URL) {
+            $linkHelper = \Link\LinkHelper::getInstance();
+            $link       = $linkHelper->getLinkByID(self::$kLink);
+            if ($link !== null && ($linkType = $link->getLinkType()) > 0) {
+                if ($linkType === LINKTYP_EXTERNE_URL) {
                     header('Location: ' . $link->cURL, true, 303);
                     exit;
                 }
                 self::$fileName = 'seite.php';
                 self::setPageType(PAGE_EIGENE);
-                $oSeite = self::Container()->getDB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
-                if ($link->nLinkart === LINKTYP_STARTSEITE) {
+                if ($linkType === LINKTYP_STARTSEITE) {
                     self::setPageType(PAGE_STARTSEITE);
-                } elseif ($link->nLinkart === LINKTYP_DATENSCHUTZ) {
+                } elseif ($linkType === LINKTYP_DATENSCHUTZ) {
                     self::setPageType(PAGE_DATENSCHUTZ);
-                } elseif ($link->nLinkart === LINKTYP_AGB) {
+                } elseif ($linkType === LINKTYP_AGB) {
                     self::setPageType(PAGE_AGB);
-                } elseif ($link->nLinkart === LINKTYP_WRB) {
+                } elseif ($linkType === LINKTYP_WRB) {
                     self::setPageType(PAGE_WRB);
-                } elseif ($link->nLinkart === LINKTYP_VERSAND) {
+                } elseif ($linkType === LINKTYP_VERSAND) {
                     self::setPageType(PAGE_VERSAND);
-                } elseif ($link->nLinkart === LINKTYP_LIVESUCHE) {
+                } elseif ($linkType === LINKTYP_LIVESUCHE) {
                     self::setPageType(PAGE_LIVESUCHE);
-                } elseif ($link->nLinkart === LINKTYP_TAGGING) {
+                } elseif ($linkType === LINKTYP_TAGGING) {
                     self::setPageType(PAGE_TAGGING);
-                } elseif ($link->nLinkart === LINKTYP_HERSTELLER) {
+                } elseif ($linkType === LINKTYP_HERSTELLER) {
                     self::setPageType(PAGE_HERSTELLER);
-                } elseif ($link->nLinkart === LINKTYP_NEWSLETTERARCHIV) {
+                } elseif ($linkType === LINKTYP_NEWSLETTERARCHIV) {
                     self::setPageType(PAGE_NEWSLETTERARCHIV);
-                } elseif ($link->nLinkart === LINKTYP_SITEMAP) {
+                } elseif ($linkType === LINKTYP_SITEMAP) {
                     self::setPageType(PAGE_SITEMAP);
-                } elseif ($link->nLinkart === LINKTYP_GRATISGESCHENK) {
+                } elseif ($linkType === LINKTYP_GRATISGESCHENK) {
                     self::setPageType(PAGE_GRATISGESCHENK);
-                } elseif ($link->nLinkart === LINKTYP_AUSWAHLASSISTENT) {
+                } elseif ($linkType === LINKTYP_AUSWAHLASSISTENT) {
                     self::setPageType(PAGE_AUSWAHLASSISTENT);
-                } elseif ($link->nLinkart === LINKTYP_404) {
+                } elseif ($linkType === LINKTYP_404) {
                     self::setPageType(PAGE_404);
                 }
             }
-            if (!empty($oSeite->cDateiname)) {
-                self::$fileName = $oSeite->cDateiname;
-                switch ($oSeite->cDateiname) {
+            if ($link !== null && !empty($link->getFileName())) {
+                self::$fileName = $link->getFileName();
+                switch (self::$fileName) {
                     case 'news.php' :
                         self::$AktuelleSeite = 'NEWS';
                         self::setPageType(PAGE_NEWS);

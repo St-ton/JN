@@ -355,26 +355,13 @@ class Boxen
      * read linkgroup array and search for specific ID
      *
      * @param int $id
-     * @return array|null
+     * @return \Link\LinkGroupInterface|null
      */
     private function getLinkGroupByID($id)
     {
-        $lgl = new \Link\LinkGroupList(Shop::Container()->getDB());
-        $lgl->loadAll();
+        $linkHelper = \Link\LinkHelper::getInstance();
 
-        $linkHelper = LinkHelper::getInstance();
-        $linkGroups = $linkHelper->getLinkGroups();
-        foreach ($linkGroups as $_tpl => $_lnkgrp) {
-            if (isset($_lnkgrp->kLinkgruppe) && $_lnkgrp->kLinkgruppe === $id) {
-                return [
-                    'tpl' => $_tpl,
-                    'grp' => $_lnkgrp,
-                    'new' => $lgl->getLinkgroupByID($id)
-                ];
-            }
-        }
-
-        return null;
+        return $linkHelper->getLinkGroupByID((int)$id);
     }
 
     /**
@@ -1319,9 +1306,8 @@ class Boxen
                             if ($_cbox->eTyp === 'link') {
                                 $linkGroup = $this->getLinkGroupByID($_cbox->kCustomID);
                                 if ($linkGroup !== null) {
-                                    $_cbox->oLinkGruppe         = $linkGroup['grp'];
-                                    $_cbox->oLinkGruppeTemplate = $linkGroup['tpl'];
-                                    $_cbox->new = $linkGroup['new']; //@test
+                                    $_cbox->oLinkGruppe         = $linkGroup;
+                                    $_cbox->oLinkGruppeTemplate = $linkGroup->getTemplate();
                                     $smarty->assign('oBox', $_cbox);
                                 } else {
                                     continue;
@@ -1341,9 +1327,8 @@ class Boxen
                     if ($_box->eTyp === 'link') {
                         $linkGroup = $this->getLinkGroupByID($_box->kCustomID);
                         if ($linkGroup !== null) {
-                            $_box->oLinkGruppe         = $linkGroup['grp'];
-                            $_box->oLinkGruppeTemplate = $linkGroup['tpl'];
-                            $_box->new = $linkGroup['new']; //@test
+                            $_box->oLinkGruppe         = $linkGroup;
+                            $_box->oLinkGruppeTemplate = $linkGroup->getTemplate();
                             $smarty->assign('oBox', $_box);
                         } else {
                             continue;

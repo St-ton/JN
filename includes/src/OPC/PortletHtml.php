@@ -331,6 +331,9 @@ trait PortletHtml
             case 'banner-zones':
                 $res .= $this->getConfigPanelSnippet($instance, 'banner-zones');
                 break;
+            case 'image-set':
+                $res .= $this->getConfigPanelSnippet($instance, 'image-set');
+                break;
             case 'text':
             default:
                 $res .= "<input type='text' class='form-control' name='$propname' value='$prop'"

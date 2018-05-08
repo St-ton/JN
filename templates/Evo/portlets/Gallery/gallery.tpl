@@ -1,18 +1,18 @@
-<div {$attribString} {$styleString}>
-    {foreach $properties.gllry_images as $image}
-    <div class="{foreach $image['width'] as $gridWidth => $gridCols}{if !empty($gridCols)}col-{$gridWidth}-{$gridCols} {/if}{/foreach}gal-item">
-        <div class="box">
-            {if $popupEnabled === true}
-            <a href="#" class="gallery_zoom_btn">
-                <img {$image['srcStr']} data-desc="{$image['desc']}">
-            </a>
-            {else}
-                <img {$image['srcStr']} data-desc="{$image['desc']}">
-            {/if}
+<div {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}}{/if}>
+    {foreach $instance->getProperty('gllry_images') as $image}
+        <div class="{foreach $image['width'] as $gridWidth => $gridCols}{if !empty($gridCols)}col-{$gridWidth}-{$gridCols} {/if}{/foreach}gal-item">
+            <div class="box">
+                {if $isPreview === false}
+                    <a href="#" class="gallery_zoom_btn">
+                        <img src="{$image['url']}" data-desc="{$image['desc']}">
+                    </a>
+                {else}
+                    <img src="{$image['url']}" data-desc="{$image['desc']}">
+                {/if}
+            </div>
         </div>
-    </div>
     {/foreach}
-    <div class="modal fade" id="gallery_popup_{$properties.attr.id}" tabindex="-1" role="dialog">
+    <div class="modal fade" id="gallery_popup_{$instance->getAttribute('id')}" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -22,28 +22,28 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <img id="gallery_popup_img_{$properties.attr.id}" src="" class="img-responsive">
+                    <img id="gallery_popup_img_{$instance->getAttribute('id')}" src="" class="img-responsive">
                 </div>
                 <div class="modal-footer">
-                    <h4 id="gallery_popup_desc_{$properties.attr.id}"></h4>
+                    <h4 id="gallery_popup_desc_{$instance->getAttribute('id')}"></h4>
                 </div>
             </div>
         </div>
     </div>
-    {if $popupEnabled}
-    <script>
-        $(function () {
-            $("#{$properties.attr.id} .gallery_zoom_btn").click(function (e) {
-                e.preventDefault();
-                var source = $(this).find("img").attr("src");
-                var desc = $(this).find("img").data("desc");
-                source = source || this.getAttribute("data-src");
-                $("#gallery_popup_img_{$properties.attr.id}").attr("src", source);
-                $("#gallery_popup_desc_{$properties.attr.id}").text(desc);
-                $("#gallery_popup_{$properties.attr.id}").modal("show");
+    {if $isPreview === false}
+        <script>
+            $(function () {
+                $("#{$instance->getAttribute('id')} .gallery_zoom_btn").click(function (e) {
+                    e.preventDefault();
+                    var source = $(this).find("img").attr("src");
+                    var desc = $(this).find("img").data("desc");
+                    source = source || this.getAttribute("data-src");
+                    $("#gallery_popup_img_{$instance->getAttribute('id')}").attr("src", source);
+                    $("#gallery_popup_desc_{$instance->getAttribute('id')}").text(desc);
+                    $("#gallery_popup_{$instance->getAttribute('id')}").modal("show");
+                });
             });
-        });
-    </script>
+        </script>
     {/if}
     {*todo editor: in shop-styles übernehmen*}
     <style>
@@ -55,7 +55,7 @@
             padding: 3px;
         }
         .gal-item .box{
-            height: {$properties["gllry_height"]}px;
+            height: {$instance->getProperty('gllry_height')}px;
             overflow: hidden;
         }
         .box img{
@@ -78,7 +78,7 @@
             top: 3px;
             bottom: 3px;
             text-align: center;
-            line-height: {$properties["gllry_height"]}px;
+            line-height: {$instance->getProperty('gllry_height')}px;
             font-size: 30px;
             color: #fff;
             -webkit-transition: all 0.5s ease-in-out 0s;

@@ -19,7 +19,7 @@ class Divider extends \OPC\Portlet
 
     public function getFinalHtml($instance)
     {
-        $res = '<hr ' . $instance->getAttributeString(). ' ' . $instance->getDataAttributeString() . '>';
+        $res = '<hr ' . $instance->getAttributeString(). '>';
 
         return $res;
     }
@@ -40,8 +40,8 @@ class Divider extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'id'           => [
-                'label'    => 'ID',
+            'id' => [
+                'label' => 'ID',
             ],
         ];
     }

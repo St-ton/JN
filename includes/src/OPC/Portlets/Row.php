@@ -38,21 +38,18 @@ class Row extends \OPC\Portlet
                 'type'    => 'text',
                 'default' => '6+6',
                 'dspl_width' => 50,
-                'collapse' => [
+                'layoutCollapse' => [
                     'layout-sm' => [
                         'label'   => 'Layout SM',
                         'type'    => 'text',
-                        'default' => '6+6',
                     ],
                     'layout-md' => [
                         'label'   => 'Layout MD',
                         'type'    => 'text',
-                        'default' => '6+6',
                     ],
                     'layout-lg' => [
                         'label'   => 'Layout LG',
                         'type'    => 'text',
-                        'default' => '6+6',
                     ],
                 ]
             ],

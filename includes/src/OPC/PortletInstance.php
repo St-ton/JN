@@ -354,12 +354,14 @@ class PortletInstance implements \JsonSerializable
      * @param string $alt
      * @return $this
      */
-    public function setImageAttributes($src = null, $alt = null)
+    public function setImageAttributes($src = null, $alt = null, $title = null)
     {
-        $src = $src ?? $this->getProperty('src');
-        $alt = $alt ?? $this->getProperty('alt');
+        $src   = $src ?? $this->getProperty('src');
+        $alt   = $alt ?? $this->getProperty('alt');
+        $title = $title ?? $this->getProperty('title');
 
         $this->setAttribute('alt', $alt);
+        $this->setAttribute('title', $title);
 
         if (empty($src)) {
             $this->setAttribute('src', \Shop::getURL() . '/gfx/keinBild.gif');

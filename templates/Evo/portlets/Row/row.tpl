@@ -1,5 +1,4 @@
 <div {$instance->addClass('row')->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if}>
-
     {foreach $portlet->getLayouts($instance) as $i => $colLayout}
         {assign var="areaId" value="col-"|cat:$i}
         <div class="opc-area {$portlet->getColClasses($colLayout)}"
@@ -11,5 +10,4 @@
             {/if}
         </div>
     {/foreach}
-
 </div>

@@ -59,7 +59,7 @@ abstract class Portlet implements \JsonSerializable
         $defProps = [];
 
         foreach ($this->getPropertyDesc() as $name => $propDesc) {
-            $defProps[$name] = $propDesc['default'];
+            $defProps[$name] = $propDesc['default'] ?? '';
         }
 
         return $defProps;
@@ -157,7 +157,7 @@ abstract class Portlet implements \JsonSerializable
                 'label' => 'border-style',
                 'type' => 'select',
                 'options' => [
-                    'none',
+                    '',
                     'hidden',
                     'dotted',
                     'dashed',
@@ -190,7 +190,7 @@ abstract class Portlet implements \JsonSerializable
                     'optgroup1' => [
                         'label'   => 'Attention Seekers',
                         'options' => [
-                            'none',
+                            '',
                             'bounce',
                             'flash',
                             'pulse',

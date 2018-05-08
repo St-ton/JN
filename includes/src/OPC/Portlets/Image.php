@@ -51,9 +51,10 @@ class Image extends \OPC\Portlet
             ],
             'alt'  => [
                 'label'   => 'Alternativ-Text',
-                'type'    => 'text',
-                'default' => 'Ein Bild',
             ],
+            'title' => [
+                'label' => 'title',
+            ]
         ];
     }
 

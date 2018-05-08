@@ -114,7 +114,8 @@ trait PortletHtml
                 }
             } else {
                 foreach ($propnames as $i => $propname) {
-                    $tabs[$tabname][$i] = $desc[$propname];
+                    $tabs[$tabname][$propname] = $desc[$propname];
+                    unset($tabs[$tabname][$i]);
                     unset($desc[$propname]);
                 }
             }
@@ -147,15 +148,43 @@ trait PortletHtml
             $res   .= "<div class='row'>";
 
             foreach ($props as $propname => $propDesc) {
-                $containerId = !empty($propDesc['collapse']) ? $propname : null;
+                $containerId = !empty($propDesc['layoutCollapse']) ? $propname : null;
+                $cllpsID = uniqid();
+                if (!empty($propDesc['collapseControlStart'])) {
+                    $res .= "<script>
+                                $(function(){
+                                    $('input[name=\"" . $propDesc['showOnProp'] . "\"]').click(function(){
+                                        if (this.type == 'checkbox' && this.checked === true 
+                                        || this.type != 'checkbox' 
+                                            && $(this).val() == " . $propDesc['showOnPropValue'] . "){
+                                            $('#collapseContainer$cllpsID').show();
+                                        }else{
+                                            $('#collapseContainer$cllpsID').hide();
+                                        }
+                                    });
+                                    if (this.type == 'checkbox' && this.checked === true 
+                                    || this.type != 'checkbox' 
+                                        && $(this).val() == " . $propDesc['showOnPropValue'] . "){
+                                        $('#collapseContainer$cllpsID').show();
+                                    }
+                                });
+                            </script>";
+                    ;
+                    $res .= "<div class='collapse' id='collapseContainer$cllpsID'>";
+                }
+
                 $res        .= $this->getAutoConfigProp($instance, $propname, $propDesc, $containerId);
 
-                if (!empty($propDesc['collapse'])) {
+                if (!empty($propDesc['layoutCollapse'])) {
                     $res .= "<div class='collapse' id='collapseContainer$containerId'><div class='row'> ";
-                    foreach ($propDesc['collapse'] as $colapsePropname => $collapsePropdesc) {
+                    foreach ($propDesc['layoutCollapse'] as $colapsePropname => $collapsePropdesc) {
                         $res .= $this->getAutoConfigProp($instance, $colapsePropname, $collapsePropdesc);
                     }
                     $res .= "</div></div></div>"; // row, collapse, col-xs-*
+                }
+
+                if (!empty($propDesc['collapseControlEnd'])) {
+                    $res .= "</div>"; // collapse
                 }
             }
             $i++;
@@ -192,9 +221,10 @@ trait PortletHtml
             $displ = round(12 * ($propDesc['dspl_width'] * 0.01));
         }
         $res .= "<div class='col-xs-$displ'>";
-        $res .= "<div class='form-group'><label for='config-$propname'>$label</label>";
+        $res .= "<div class='form-group'>";
+        $res .= $type!=='hidden' ? "<label for='config-$propname'>$label</label>" : "";
 
-        if (!empty($propDesc['collapse'])) {
+        if (!empty($propDesc['layoutCollapse'])) {
             $res .= '<a title="more" class="pull-right" role="button" data-toggle="collapse"
                        href="#collapseContainer' . $containerId . '"">
                         <i class="fa fa-gears"></i>
@@ -286,6 +316,20 @@ trait PortletHtml
                 break;
             case 'filter':
                 $res .= $this->getConfigPanelSnippet($instance, 'filter', ['propname' => $propname, 'prop' => $prop]);
+                break;
+            case 'icon':
+                $res .= $this->getConfigPanelSnippet($instance, 'icon', [
+                    'propname'   => $propname,
+                    'prop'       => $prop,
+                    'uid'        => uniqid()
+                ]);
+                break;
+            case 'hidden':
+                $res .= "<input type='hidden' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
+                break;
+            case 'banner-zones':
+                $res .= $this->getConfigPanelSnippet($instance, 'banner-zones');
                 break;
             case 'text':
             default:

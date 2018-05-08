@@ -54,10 +54,6 @@ class Heading extends \OPC\Portlet
                 'default' => 'Heading',
                 'dspl_width' => 50,
             ],
-            'bgcolor' => [
-                'type' => 'color',
-                'default' => '#fff',
-            ]
         ];
     }
 

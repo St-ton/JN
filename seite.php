@@ -52,8 +52,8 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 //    [""]=>
 //  string(22) "Versandinformationen_1"
 //}
+//$sprachURL = $link->getURLs() ?? baueSprachURLS($link, URLART_SEITE);
 
-$sprachURL = $link->getURLs() ?? baueSprachURLS($link, URLART_SEITE);
 // hole aktuelle Kategorie, falls eine gesetzt
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
@@ -136,8 +136,6 @@ if (Shop::getPageType() === PAGE_404) {
 }
 $smarty->assign('Navigation', $Navigation)
        ->assign('Link', $link)
-       ->assign('requestURL', $requestURL)
-       ->assign('sprachURL', $sprachURL)
        ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
        ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
        ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));

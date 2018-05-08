@@ -156,8 +156,6 @@ $smarty->assign('NaviFilter', $NaviFilter)
        ->assign('Navigation', $oNavigationsinfo->getBreadCrumb())
        ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())
        ->assign('Suchergebnisse', $oSuchergebnisse)
-       ->assign('requestURL', $requestURL ?? null)
-       ->assign('sprachURL', $sprachURL ?? null)
        ->assign('oNavigationsinfo', $oNavigationsinfo)
        ->assign('SEO', true)
        ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->getProductCount() >=

@@ -16,7 +16,6 @@ $Einstellungen = Shop::getSettings([
     CONF_KAUFABWICKLUNG
 ]);
 $hinweis       = '';
-$requestURL    = '';
 $linkHelper    = \Link\LinkHelper::getInstance();
 
 if (strlen($_GET['uid']) === 40) {
@@ -51,7 +50,6 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $smarty->assign('step', $step)
        ->assign('hinweis', $hinweis)
        ->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('requestURL', $requestURL)
        ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
        ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
        ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN);

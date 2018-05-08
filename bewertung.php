@@ -81,8 +81,6 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
             Shop::Lang()->get('bewertung', 'breadcrumb'),
             'bewertung.php?a=' . $AktuellerArtikel->kArtikel . '&bfa=1'))
         ->assign('Artikel', $AktuellerArtikel)
-        ->assign('requestURL', $requestURL ?? null)
-        ->assign('sprachURL', $sprachURL ?? null)
         ->assign('oBewertung', Shop::Container()->getDB()->select(
             'tbewertung',
             ['kArtikel', 'kKunde'],

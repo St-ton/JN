@@ -106,8 +106,7 @@ if (pruefeBetreffVorhanden()) {
 }
 
 Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
-    ->assign('Spezialcontent', $SpezialContent)
-    ->assign('requestURL', $requestURL ?? null);
+    ->assign('Spezialcontent', $SpezialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);

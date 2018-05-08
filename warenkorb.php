@@ -163,7 +163,6 @@ WarenkorbHelper::addVariationPictures($cart);
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('MsgWarning', $MsgWarning)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
-       ->assign('requestURL', $requestURL ?? null)
        ->assign('laender', gibBelieferbareLaender($kKundengruppe))
        ->assign('KuponMoeglich', kuponMoeglich())
        ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))

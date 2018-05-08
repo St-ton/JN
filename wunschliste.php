@@ -279,9 +279,7 @@ if (verifyGPCDataInteger('error') === 1) {
         exit;
     }
 }
-$link       = ($cParameter_arr['kLink'] > 0) ? $linkHelper->getPageLink($cParameter_arr['kLink']) : null;
-$requestURL = baueURL($link, URLART_SEITE);
-$sprachURL  = $link->languageURLs ?? baueSprachURLS($link, URLART_SEITE);
+$link = ($cParameter_arr['kLink'] > 0) ? $linkHelper->getPageLink($cParameter_arr['kLink']) : null;
 // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
 if (empty($CWunschliste)) {
     $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));

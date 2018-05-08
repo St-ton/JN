@@ -12,13 +12,6 @@ $oVergleichsliste = null;
 $conf             = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
 $cExclude         = [];
 $oMerkVaria_arr   = [[], []];
-if (isset($Link)) {
-    $requestURL = baueURL($Link, URLART_SEITE);
-    $sprachURL  = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
-} else {
-    $sprachURL  = null;
-    $requestURL = null;
-}
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();

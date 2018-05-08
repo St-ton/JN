@@ -4,15 +4,15 @@
 <h2>Aktive Filter</h2>
 <div id="filters-enabled"></div>
 
-<input type="hidden" name="filter" value="{$instance->getProperty('filter')|json_encode}">
+<input type="hidden" name="{$propname}" value="{$prop|json_encode|htmlentities}" data-prop-type="filter">
 
 <script>
     var $filtersAvailable = $('#filters-available');
     var $filtersEnabled   = $('#filters-enabled');
 
-    enableFilters($(''));
+    enableFilters(JSON.parse($('[name="{$propname}"]').val()));
     //opc.setPropertiesCallback(saveFilterProperties);
-    updateFiltersAvailable();
+    //updateFiltersAvailable();
 
     function enableFilters(filters)
     {
@@ -75,21 +75,14 @@
 //                filters.forEach(addFilterAvailableButton);
 //            }
 
-        for(filterTerm in filters) {
-            var filterSubset = filters[filterTerm];
+        filters.forEach(function(filter) {
+            log(filter);
+            var $filterSubCat = $('<div>').append('<h3>' + filter.name + '</h3>').appendTo($filtersAvailable);
 
-            console.log(filterTerm, filterSubset);
-
-            if(filterSubset.length > 0) {
-                var $filterSubCat = $('<div>').append('<h3>' + filterTerm + '</h3>').appendTo($filtersAvailable);
-
-                for(var i=0; i<filterSubset.length; i++) {
-                    var filter = filterSubset[i];
-
-                    addFilterAvailableButton(filter, $filterSubCat);
-                }
-            }
-        }
+            filter.options.forEach(function(option) {
+                addFilterAvailableButton(option, $filterSubCat);
+            });
+        });
     }
 
     function clearFiltersAvailable()

@@ -291,15 +291,17 @@ class PortletInstance implements \JsonSerializable
         $animations  = $this->getAnimations();
 
         foreach ($styles as $styleName => $styleValue) {
-            if (stripos($styleName, 'margin-') !== false ||
-                stripos($styleName, 'padding-') !== false ||
-                stripos($styleName, 'border-width') !== false ||
-                stripos($styleName, '-width') !== false ||
-                stripos($styleName, '-height') !== false
-            ) {
-                $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "px; ";
-            } else {
-                $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "; ";
+            if (!empty($styleValue)) {
+                if (stripos($styleName, 'margin-') !== false ||
+                    stripos($styleName, 'padding-') !== false ||
+                    stripos($styleName, 'border-width') !== false ||
+                    stripos($styleName, '-width') !== false ||
+                    stripos($styleName, '-height') !== false
+                ) {
+                    $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "px; ";
+                } else {
+                    $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "; ";
+                }
             }
         }
 

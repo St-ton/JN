@@ -6,6 +6,7 @@
 
 namespace OPC;
 
+use Filter\AbstractFilter;
 use Filter\IFilter;
 
 class Service
@@ -381,12 +382,17 @@ class Service
      */
     public function getFilterOptions($enabledFilters = [])
     {
+        \Shop::setLanguage(1);
+
         $productFilter    = new \Filter\ProductFilter();
         $availableFilters = $productFilter->getAvailableFilters();
         $results          = [];
 
         foreach ($enabledFilters as $enabledFilter) {
-            $productFilter->addActiveFilter(new $enabledFilter['class']($productFilter), $enabledFilter['value']);
+            /** @var AbstractFilter $newFilter **/
+            $newFilter = new $enabledFilter['class']($productFilter);
+            $newFilter->setType(AbstractFilter::FILTER_TYPE_AND);
+            $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
         }
 
         foreach ($availableFilters as $availableFilter) {
@@ -395,7 +401,7 @@ class Service
             $options = [];
 
             if (\StringHandler::endsWith($class, 'ItemAttribute')) {
-                $name = 'Merkmalwerte';
+                $name = 'Merkmale';
 
                 foreach ($availableFilter->getOptions() as $option) {
                     foreach ($option->getOptions() as $suboption) {
@@ -414,6 +420,7 @@ class Service
                         'name'  => $option->getName(),
                         'value' => $option->getValue(),
                         'count' => $option->getCount(),
+                        'class' => $class,
                     ];
                 }
             }

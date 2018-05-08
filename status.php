@@ -17,16 +17,16 @@ $Einstellungen = Shop::getSettings([
 ]);
 $hinweis       = '';
 $requestURL    = '';
-$linkHelper    = LinkHelper::getInstance();
+$linkHelper    = \Link\LinkHelper::getInstance();
 
 if (strlen($_GET['uid']) === 40) {
-    $status = Shop::Container()->getDB()->executeQueryPrepared("
+    $status = Shop::Container()->getDB()->queryPrepared("
         SELECT kBestellung 
             FROM tbestellstatus 
             WHERE dDatum >= date_sub(now(), INTERVAL 30 DAY) 
             AND cUID = :uid",
         ['uid' => $_GET['uid']],
-        1
+        \DB\ReturnType::SINGLE_OBJECT
     );
     if (empty($status->kBestellung)) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);

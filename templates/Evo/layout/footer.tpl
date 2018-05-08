@@ -31,7 +31,6 @@
     </div>{* /content-wrapper*}
     {/block}
 {/block}
-
 {block name="footer"}
 {if !$bExclusive}
     <div class="clearfix"></div>
@@ -194,9 +193,9 @@
                     {lang key="footnoteInclusiveVat" section="global" assign="footnoteVat"}
                 {/if}
                 {if $Einstellungen.global.global_versandhinweis === 'zzgl'}
-                    {lang key="footnoteExclusiveShipping" section="global" printf=$oSpezialseiten_arr[6]->cURL assign="footnoteShipping"}
+                    {lang key="footnoteExclusiveShipping" section="global" printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() assign="footnoteShipping"}
                 {elseif $Einstellungen.global.global_versandhinweis === 'inkl'}
-                    {lang key="footnoteInclusiveShipping" section="global" printf=$oSpezialseiten_arr[6]->cURL assign="footnoteShipping"}
+                    {lang key="footnoteInclusiveShipping" section="global" printf=$oSpezialseiten_arr[LINKTYP_VERSAND]->getURL() assign="footnoteShipping"}
                 {/if}
                 {block name="footer-vat-notice"}
                     <p class="padded-lg-top">
@@ -248,7 +247,7 @@
 {* JavaScripts *}
 {block name="footer-js"}
     {assign var="isFluidContent" value=false}
-    {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->bIsFluid}
+    {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->getIsFluid()}
         {assign var="isFluidContent" value=true}
     {/if}
 

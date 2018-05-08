@@ -14,7 +14,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 
 $AktuelleSeite = 'MEIN KONTO';
 $cBrotNavi     = '';
-$linkHelper    = LinkHelper::getInstance();
+$linkHelper    = \Link\LinkHelper::getInstance();
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,

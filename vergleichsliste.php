@@ -49,7 +49,7 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
 if ($oVergleichsliste !== null) {
     $oArtikel_arr     = [];
     $defaultOptions   = Artikel::getDefaultOptions();
-    $linkHelper       = LinkHelper::getInstance();
+    $linkHelper       = \Link\LinkHelper::getInstance();
     $baseURL          = $linkHelper->getStaticRoute('vergleichsliste.php');
     foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
         $artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);

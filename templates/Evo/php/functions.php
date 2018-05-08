@@ -105,7 +105,7 @@ function get_static_route($params, $smarty)
     if (isset($params['id'])) {
         $full   = !isset($params['full']) || $params['full'] === true;
         $secure = isset($params['secure']) && $params['secure'] === true;
-        $url    = LinkHelper::getInstance()->getStaticRoute($params['id'], $full, $secure);
+        $url    = \Link\LinkHelper::getInstance()->getStaticRoute($params['id'], $full, $secure);
         $qp     = isset($params['params'])
             ? (array)$params['params']
             : [];
@@ -267,7 +267,7 @@ function load_boxes($params, $smarty)
                         $smarty->assign($oPluginVar, $oPlugin);
                     }
                 } elseif ($oBox->eTyp === 'link') {
-                    foreach (LinkHelper::getInstance()->getLinkGroups() as $oLinkTpl) {
+                    foreach (\Link\LinkHelper::getInstance()->getLinkGroups() as $oLinkTpl) {
                         if ($oLinkTpl->kLinkgruppe == $oBox->kCustomID) {
                             $oBox->oLinkGruppeTemplate = $oLinkTpl;
                             $oBox->oLinkGruppe         = $oLinkTpl;
@@ -440,16 +440,16 @@ function getCheckBoxForLocation($params, $smarty)
         ? Shop::get($cid)
         : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
     if (count($oCheckBox_arr) > 0) {
-        $linkHelper = LinkHelper::getInstance();
+        $linkHelper = \Link\LinkHelper::getInstance();
         foreach ($oCheckBox_arr as $oCheckBox) {
             // Link URL bauen
             $cLinkURL     = '';
             $cLinkURLFull = '';
             if ($oCheckBox->kLink > 0) {
-                $page = $linkHelper->findCMSLinkInSession($oCheckBox->oLink->kLink);
-                if (!empty($page->URL)) {
-                    $cLinkURL     = $page->URL;
-                    $cLinkURLFull = $page->cURLFull;
+                $page = $linkHelper->getLinkByID($oCheckBox->oLink->kLink);
+                if ($page !== null && !empty($page->getURL())) {
+                    $cLinkURL     = $page->getURL();
+                    $cLinkURLFull = $page->getURL();
                 } else {
                     $cLinkURL = baueURL($oCheckBox->oLink, URLART_SEITE);
                 }
@@ -717,14 +717,13 @@ function get_image_size($image)
 function get_cms_content($params, $smarty)
 {
     if (isset($params['kLink']) && (int)$params['kLink'] > 0) {
-        $kLink          = (int)$params['kLink'];
-        $linkHelper     = LinkHelper::getInstance();
-        $oLink          = $linkHelper->getPageLink($kLink);
-        $oLink->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
+        $kLink      = (int)$params['kLink'];
+        $linkHelper = \Link\LinkHelper::getInstance();
+        $oLink      = $linkHelper->getLinkByID($kLink);
         if (isset($params['assign'])) {
-            $smarty->assign($params['assign'], $oLink->Sprache->cContent);
+            $smarty->assign($params['assign'], $oLink->getContent());
         } else {
-            return $oLink->Sprache->cContent;
+            return $oLink->getContent();
         }
     }
 

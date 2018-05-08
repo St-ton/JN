@@ -93,6 +93,7 @@
                         {else}
                             {$link="index.php?s={$Link->kLink}"}
                         {/if}
+                        <pre>{$Link|var_dump}</pre>
                         <a href="{$link}" class="btn btn-default">{lang key="newEstimation" section="checkout"}</a>
                     {else}
                         <div class="row">

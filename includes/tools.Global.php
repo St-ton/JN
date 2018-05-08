@@ -30,7 +30,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
     $ele0->hasChild    = false;
 
     $brotnavi[]    = $ele0;
-    $linkHelper    = LinkHelper::getInstance();
+    $linkHelper    = \Link\LinkHelper::getInstance();
     $ele           = new stdClass();
     $ele->hasChild = false;
     switch ($seite) {
@@ -302,29 +302,19 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         default:
             $SieSindHierString .= ' &gt; <a href="' . $shopURL . $linkURL . '">' . $linkname . '</a>';
             $SieSindHierString .= '<br />';
-            $oLink              = $kLink > 0 ? $linkHelper->getLinkObject($kLink) : null;
-            $kVaterLink         = isset($oLink->kVaterLink) ? (int)$oLink->kVaterLink : null;
-            $elems              = [];
-            do {
-                if ($kVaterLink === 0 || $kVaterLink === null) {
-                    break;
-                }
-                $oItem = Shop::Container()->getDB()->select('tlink', 'kLink', $kVaterLink);
-                if (!is_object($oItem)) {
-                    break;
-                }
-                $oItem          = $linkHelper->getPageLink($oItem->kLink);
-                $oItem->Sprache = $linkHelper->getPageLinkLanguage($oItem->kLink);
-                $itm            = new stdClass();
-                $itm->name      = $oItem->Sprache->cName;
-                $itm->url       = baueURL($oItem, URLART_SEITE);
-                $itm->urlFull   = baueURL($oItem, URLART_SEITE, 0, false, true);
-                $itm->hasChild  = false;
-                $elems[]        = $itm;
-                $kVaterLink     = (int)$oItem->kVaterLink;
-            } while (true);
+            $oLink             = $kLink > 0 ? $linkHelper->getLinkByID($kLink) : null;
+            $elems             = $oLink !== null
+                ? $linkHelper->getParentLinks($oLink->getID())->map(function (\Link\LinkInterface $link) {
+                    $res           = new stdClass();
+                    $res->name     = $link->getName();
+                    $res->url      = $link->getURL();
+                    $res->urlFull  = $link->getURL();
+                    $res->hasChild = false;
 
-            $elems        = array_reverse($elems);
+                    return $res;
+                })->reverse()->all()
+                : [];
+
             $brotnavi     = array_merge($brotnavi, $elems);
             $ele->name    = $linkname;
             $ele->url     = $linkURL;
@@ -1297,7 +1287,7 @@ function setzeSteuersaetze($steuerland = 0)
     );
     if (count($steuerzonen) === 0) {
         // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
-        $redirURL  = LinkHelper::getInstance()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
+        $redirURL  = \Link\LinkHelper::getInstance()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
         $urlHelper = new UrlHelper(Shop::getURL() . $_SERVER['REQUEST_URI']);
         $country   = ISO2land($deliveryCountryCode);
 
@@ -1430,10 +1420,14 @@ function landISO($cLand)
  */
 function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
 {
+    if ($obj instanceof \Link\LinkInterface) {
+        return $obj->getURL();
+    }
     $lang   = !standardspracheAktiv(true)
         ? ('&lang=' . Shop::getLanguageCode())
         : '';
     $prefix = $bFull === false ? '' : Shop::getURL() . '/';
+
     if ($bForceNonSeo) {
         $obj->cSeo = '';
     }
@@ -1909,18 +1903,13 @@ function getFsession()
 }
 
 /**
- * @return null|stdClass
+ * @return \Link\LinkGroupCollection
  */
 function setzeLinks()
 {
-    $linkHelper                    = LinkHelper::getInstance();
-    $linkGroups                    = $linkHelper->getLinkGroups();
-    $_SESSION['Link_Datenschutz']  = $linkGroups->Link_Datenschutz;
-    $_SESSION['Link_AGB']          = $linkGroups->Link_AGB;
-    $_SESSION['Link_Versandseite'] = $linkGroups->Link_Versandseite;
-    executeHook(HOOK_TOOLSGLOBAL_INC_SETZELINKS);
+    $linkHelper = \Link\LinkHelper::getInstance();
 
-    return $linkGroups;
+    return $linkHelper->getLinkGroups();
 }
 
 /**
@@ -3336,7 +3325,7 @@ function gibAGBWRB($kSprache, $kKundengruppe)
     if ($kSprache <= 0 || $kKundengruppe <= 0) {
         return false;
     }
-    $linkHelper = LinkHelper::getInstance();
+    $linkHelper = \Link\LinkHelper::getInstance();
     $oLinkAGB   = null;
     $oLinkWRB   = null;
     // kLink für AGB und WRB suchen
@@ -3533,7 +3522,7 @@ function setzeSpracheUndWaehrungLink()
 {
     global $oZusatzFilter, $sprachURL, $AktuellerArtikel, $kSeite, $kLink, $AktuelleSeite;
     $shopURL    = Shop::getURL() . '/';
-    $helper     = LinkHelper::getInstance();
+    $helper     = \Link\LinkHelper::getInstance();
     $NaviFilter = Shop::getProductFilter();
     if ($kSeite !== null && $kSeite > 0) {
         $kLink = $kSeite;

@@ -23,7 +23,7 @@ foreach ($links as $l) {
     }
 }
 $Link       = new stdClass();
-$linkHelper = LinkHelper::getInstance();
+$linkHelper = \Link\LinkHelper::getInstance();
 if (isset($oLink->kLink) && $oLink->kLink > 0) {
     $Link          = $linkHelper->getPageLink($oLink->kLink);
     $requestURL    = baueURL($Link, URLART_SEITE);

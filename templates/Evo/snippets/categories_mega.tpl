@@ -157,11 +157,11 @@
     {get_manufacturers assign='manufacturers'}
     {if !empty($manufacturers)}
         <li class="dropdown megamenu-fw{if $NaviFilter->hasManufacturer() || $nSeitenTyp == PAGE_HERSTELLER} active{/if}">
-            {assign var="linkKeyHersteller" value=LinkHelper::getInstance()->getSpecialPageLinkKey(LINKTYP_HERSTELLER)}
-            {if !empty($linkKeyHersteller)}{assign var="linkSEOHersteller" value=LinkHelper::getInstance()->getPageLinkLanguage($linkKeyHersteller)}{/if}
+            {assign var="linkKeyHersteller" value=\Link\LinkHelper::getInstance()->getSpecialPageID(LINKTYP_HERSTELLER)}
+            {if !empty($linkKeyHersteller)}{assign var="linkSEOHersteller" value=\Link\LinkHelper::getInstance()->getLinkByID($linkKeyHersteller)}{/if}
             {if isset($linkSEOHersteller)}
-                <a href="{$linkSEOHersteller->cSeo}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true">
-                    {$linkSEOHersteller->cName}
+                <a href="{$linkSEOHersteller->getURL()}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true">
+                    {$linkSEOHersteller->getName()}
                     <span class="caret"></span>
                 </a>
             {else}
@@ -175,7 +175,7 @@
                     <div class="megamenu-content">
                         <div class="category-title manufacturer text-center hidden-xs hidden-sm">
                             {if isset($linkSEOHersteller)}
-                                <a href="{$linkSEOHersteller->cSeo}">{$linkSEOHersteller->cName}</a>
+                                <a href="{$linkSEOHersteller->getURL()}">{$linkSEOHersteller->getName()}</a>
                             {else}
                                 <span>{lang key="manufacturers" section="global"}</span>
                             {/if}

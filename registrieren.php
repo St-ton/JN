@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 
-$linkHelper = LinkHelper::getInstance();
+$linkHelper = \Link\LinkHelper::getInstance();
 if (isset($_SESSION['Kunde']->kKunde)
     && $_SESSION['Kunde']->kKunde > 0
     && verifyGPCDataInteger('editRechnungsadresse') === 0

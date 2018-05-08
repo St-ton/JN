@@ -217,7 +217,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
     }
 
     if ($GLOBALS['GlobaleEinstellungen']['global']['global_warenkorb_weiterleitung'] === 'Y') {
-        $linkHelper           = LinkHelper::getInstance();
+        $linkHelper           = \Link\LinkHelper::getInstance();
         $oResponse->nType     = 1;
         $oResponse->cLocation = $linkHelper->getStaticRoute('warenkorb.php');
         $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
@@ -375,7 +375,7 @@ function pushToWishlist($kArtikel, $qty)
     $qty           = (int)$qty === 0 ? 1 : (int)$qty;
     $smarty        = Shop::Smarty();
     if (empty($customerID = Session::Customer()->getID())) {
-        $linkHelper           = LinkHelper::getInstance();
+        $linkHelper           = \Link\LinkHelper::getInstance();
         $oResponse->nType     = 1;
         $oResponse->cLocation = $linkHelper->getStaticRoute('jtl.php') .
             '?a=' . $kArtikel .
@@ -564,7 +564,7 @@ function getBasketItems($nTyp)
                            [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
                            true)
                    ))
-                   ->assign('oSpezialseiten_arr', LinkHelper::getInstance()->getSpecialPages());
+                   ->assign('oSpezialseiten_arr', \Link\LinkHelper::getInstance()->getSpecialPages());
 
             VersandartHelper::getShippingCosts($cLand, $cPLZ, $error);
             $oResponse->cTemplate = $smarty->fetch('basket/cart_dropdown_label.tpl');

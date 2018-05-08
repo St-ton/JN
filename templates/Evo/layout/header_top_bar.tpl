@@ -53,10 +53,10 @@
     </ul>{* user-settings *}
     {/block}
 {/if}
-{if isset($linkgroups->Kopf) && $linkgroups->Kopf}
+{if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
     <ul class="cms-pages list-inline pull-right">
         {block name="top-bar-cms-pages"}
-            {foreach $newLinkGroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
+            {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
                 <li class="{if $Link->getIsActive()}active{/if}">
                     <a href="{$Link->getURL()}"{if $Link->getNoFollow()} rel="nofollow"{/if} title="{$Link->getTitle()}">{$Link->getName()}</a>
                 </li>

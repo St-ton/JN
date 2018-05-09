@@ -1907,8 +1907,12 @@ function getFsession()
 function setzeLinks()
 {
     $linkHelper = \Link\LinkHelper::getInstance();
+    $linkGroups = $linkHelper->getLinkGroups();
+    $_SESSION['Link_Datenschutz']  = $linkGroups->Link_Datenschutz;
+    $_SESSION['Link_AGB']          = $linkGroups->Link_AGB;
+    $_SESSION['Link_Versandseite'] = $linkGroups->Link_Versandseite;
 
-    return $linkHelper->getLinkGroups();
+    return $linkGroups;
 }
 
 /**

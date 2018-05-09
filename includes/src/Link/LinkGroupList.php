@@ -83,73 +83,54 @@ class LinkGroupList implements LinkGroupListInterface
         $cache = \Shop::Container()->getCache();
         if (($this->linkgroups = $cache->get('linkgroups')) === false) {
             $this->linkgroups = new LinkGroupCollection();
-            $groupLanguages   = $this->db->query(
-                'SELECT tlinkgruppesprache.*, tlinkgruppe.cTemplatename AS template, tsprache.kSprache 
-                    FROM tlinkgruppe
-                    JOIN tlinkgruppesprache
-                        ON tlinkgruppe.kLinkgruppe = tlinkgruppesprache.kLinkgruppe
-                    JOIN tsprache 
-                        ON tsprache.cISO = tlinkgruppesprache.cISOSprache
-                    WHERE tlinkgruppe.kLinkgruppe > 0',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            $grouped          = group($groupLanguages, function ($e) {
-                return $e->kLinkgruppe;
-            });
-            foreach ($grouped as $linkGroupID => $localizedLinkgroup) {
-                $lg = new LinkGroup($this->db);
-                $lg->setID($linkGroupID);
-                $this->linkgroups->push($lg->map($localizedLinkgroup));
+            foreach ($this->loadStandardGroups() as $group) {
+                $this->linkgroups->push($group);
             }
-            $staticRoutes = $this->db->query(
-                "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, 
-                        tspezialseite.nLinkart, tlink.kLink, 
-                        tlinksprache.cName AS localizedName,
-                        tlinksprache.cTitle AS localizedTitle,
-                        tlinksprache.cContent AS content,
-                        tlinksprache.cMetaDescription AS metaDescription,
-                        tlinksprache.cMetaKeywords AS metaKeywords,
-                        tlinksprache.cMetaTitle AS metaTitle,
-                        tlink.cKundengruppen, 
-                        tseo.cSeo AS localizedUrl, 
-                        tsprache.cISO AS cISOSprache, tsprache.kSprache AS languageID, 
-                        tlink.kVaterLink, tspezialseite.kPlugin, 
-                        tlink.kLinkgruppe, tlink.cName, tlink.cNoFollow, tlink.cSichtbarNachLogin, tlink.cDruckButton, 
-                        tlink.nSort, tlink.bIsActive, tlink.bIsFluid, tlink.bSSL,
-                        2 AS pluginState
-                    FROM tspezialseite
-                        LEFT JOIN tlink 
-                            ON tlink.nLinkart = tspezialseite.nLinkart
-                        LEFT JOIN tlinksprache 
-                            ON tlink.kLink = tlinksprache.kLink
-                        JOIN tsprache 
-                            ON tsprache.cISO = tlinksprache.cISOSprache
-                        LEFT JOIN tseo 
-                            ON tseo.cKey = 'kLink' 
-                            AND tseo.kKey = tlink.kLink 
-                            AND tseo.kSprache = tsprache.kSprache
-                    WHERE cDateiname IS NOT NULL 
-                        AND cDateiname != ''",
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            $grouped      = group($staticRoutes, function ($e) {
-                return $e->kLink;
-            });
-            $lg           = new LinkGroup($this->db);
-            $lg->setID(999);
-            $lg->setNames(['staticroutes']);
-            $lg->setTemplate('staticroutes');
-            $links = new Collection();
-            foreach ($grouped as $linkID => $linkData) {
-                $link = new Link($this->db);
-                $link->map($linkData);
-                $links->push($link);
-            }
-            $lg->setLinks($links);
-            $this->linkgroups->push($lg);
+            $this->linkgroups->push($this->loadSpecialPages());
+            $this->linkgroups->push($this->loadStaticRoutes());
 
-            $specialPages = $this->db->query(
-                "SELECT tlink.*,tlinksprache.cISOSprache, 
+            $cache->set('linkgroups', $this->linkgroups, [CACHING_GROUP_CORE]);
+        }
+        $this->applyVisibilityFilter();
+
+        return $this;
+    }
+
+    /**
+     * @return LinkGroupInterface[]
+     */
+    private function loadStandardGroups(): array
+    {
+        $groups         = [];
+        $groupLanguages = $this->db->query(
+            'SELECT tlinkgruppesprache.*, tlinkgruppe.cTemplatename AS template, tsprache.kSprache 
+                FROM tlinkgruppe
+                JOIN tlinkgruppesprache
+                    ON tlinkgruppe.kLinkgruppe = tlinkgruppesprache.kLinkgruppe
+                JOIN tsprache 
+                    ON tsprache.cISO = tlinkgruppesprache.cISOSprache
+                WHERE tlinkgruppe.kLinkgruppe > 0',
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $grouped        = group($groupLanguages, function ($e) {
+            return $e->kLinkgruppe;
+        });
+        foreach ($grouped as $linkGroupID => $localizedLinkgroup) {
+            $lg = new LinkGroup($this->db);
+            $lg->setID($linkGroupID);
+            $groups[] = $lg->map($localizedLinkgroup);
+        }
+
+        return $groups;
+    }
+
+    /**
+     * @return LinkGroupInterface
+     */
+    private function loadSpecialPages(): LinkGroupInterface
+    {
+        $specialPages = $this->db->query(
+            "SELECT tlink.*,tlinksprache.cISOSprache, 
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
                 tlinksprache.kSprache, 
@@ -174,30 +155,95 @@ class LinkGroupList implements LinkGroupListInterface
 						ON tspezialseite.nLinkart = tlink.nLinkart
                     WHERE tlink.kLink = tlinksprache.kLink
                         AND tlink.nLinkart >= 5",
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            ReturnType::ARRAY_OF_OBJECTS
+        );
 
-            $grouped = group($specialPages, function ($e) {
-                return $e->kLink;
-            });
-            $lg      = new LinkGroup($this->db);
-            $lg->setID(998);
-            $lg->setNames(['specialpages']);
-            $lg->setTemplate('specialpages');
-            $links = new Collection();
-            foreach ($grouped as $linkID => $linkData) {
-                $link = new Link($this->db);
-                $link->map($linkData);
-                $links->push($link);
+        $grouped = group($specialPages, function ($e) {
+            return $e->kLink;
+        });
+        $lg      = new LinkGroup($this->db);
+        $lg->setID(998);
+        $lg->setNames(['specialpages']);
+        $lg->setTemplate('specialpages');
+        $links = new Collection();
+        foreach ($grouped as $linkID => $linkData) {
+            $link = new Link($this->db);
+            $link->map($linkData);
+            if ($link->getLinkType() === LINKTYP_DATENSCHUTZ) {
+                $this->linkgroups->Link_Datenschutz = [];
+                foreach ($link->getURLs() as $langID => $url) {
+                    $this->linkgroups->Link_Datenschutz[$link->getLanguageCode($langID)] = $url;
+                }
+            } elseif ($link->getLinkType() === LINKTYP_AGB) {
+                $this->linkgroups->Link_AGB = [];
+                foreach ($link->getURLs() as $langID => $url) {
+                    $this->linkgroups->Link_AGB[$link->getLanguageCode($langID)] = $url;
+                }
+            } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
+                $this->linkgroups->Link_Versandseite = [];
+                foreach ($link->getURLs() as $langID => $url) {
+                    $this->linkgroups->Link_Versandseite[$link->getLanguageCode($langID)] = $url;
+                }
             }
-            $lg->setLinks($links);
-            $this->linkgroups->push($lg);
-
-            $cache->set('linkgroups', $this->linkgroups, [CACHING_GROUP_CORE]);
+            $links->push($link);
         }
-        $this->applyVisibilityFilter();
+        $lg->setLinks($links);
 
-        return $this;
+        return $lg;
+    }
+
+    /**
+     * @return LinkGroupInterface
+     */
+    private function loadStaticRoutes(): LinkGroupInterface
+    {
+        $staticRoutes = $this->db->query(
+            "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, 
+                tspezialseite.nLinkart, tlink.kLink, 
+                tlinksprache.cName AS localizedName,
+                tlinksprache.cTitle AS localizedTitle,
+                tlinksprache.cContent AS content,
+                tlinksprache.cMetaDescription AS metaDescription,
+                tlinksprache.cMetaKeywords AS metaKeywords,
+                tlinksprache.cMetaTitle AS metaTitle,
+                tlink.cKundengruppen, 
+                tseo.cSeo AS localizedUrl, 
+                tsprache.cISO AS cISOSprache, tsprache.kSprache AS languageID, 
+                tlink.kVaterLink, tspezialseite.kPlugin, 
+                tlink.kLinkgruppe, tlink.cName, tlink.cNoFollow, tlink.cSichtbarNachLogin, tlink.cDruckButton, 
+                tlink.nSort, tlink.bIsActive, tlink.bIsFluid, tlink.bSSL,
+                2 AS pluginState
+            FROM tspezialseite
+                LEFT JOIN tlink 
+                    ON tlink.nLinkart = tspezialseite.nLinkart
+                LEFT JOIN tlinksprache 
+                    ON tlink.kLink = tlinksprache.kLink
+                JOIN tsprache 
+                    ON tsprache.cISO = tlinksprache.cISOSprache
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kLink' 
+                    AND tseo.kKey = tlink.kLink 
+                    AND tseo.kSprache = tsprache.kSprache
+            WHERE cDateiname IS NOT NULL 
+                AND cDateiname != ''",
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $grouped      = group($staticRoutes, function ($e) {
+            return $e->kLink;
+        });
+        $lg           = new LinkGroup($this->db);
+        $lg->setID(999);
+        $lg->setNames(['staticroutes']);
+        $lg->setTemplate('staticroutes');
+        $links = new Collection();
+        foreach ($grouped as $linkID => $linkData) {
+            $link = new Link($this->db);
+            $link->map($linkData);
+            $links->push($link);
+        }
+        $lg->setLinks($links);
+
+        return $lg;
     }
 
     /**

@@ -726,6 +726,7 @@ class Exportformat
         $_SESSION['kSprache']                                 = $this->getSprache();
         $_SESSION['Sprachen']                                 = Shop::DB()->query("SELECT * FROM tsprache", 2);
         $_SESSION['Waehrung']                                 = $this->currency;
+        Shop::setLanguage($this->getSprache());
 
         return $this;
     }
@@ -739,6 +740,7 @@ class Exportformat
             $_SESSION['Kundengruppe'] = $this->oldSession->Kundengruppe;
             $_SESSION['Waehrung']     = $this->oldSession->Waehrung;
             $_SESSION['kSprache']     = $this->oldSession->kSprache;
+            Shop::setLanguage($this->oldSession->kSprache);
         }
 
         return $this;

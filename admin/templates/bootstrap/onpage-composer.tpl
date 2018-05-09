@@ -183,19 +183,19 @@
                             {
                                 return function(e) {
                                     $(e.target).closest('li').toggleClass('expanded');
-                                    vit.__expanded = !vit.__expanded;
+                                    //vit.__expanded = !vit.__expanded;
                                     e.stopPropagation();
                                 };
                             },
 
                             expandClass: function(vit)
                             {
-                                return (vit.__expanded === true ? ' expanded' : '')
+                                return '';//(vit.__expanded === true ? ' expanded' : '')
                             },
 
                             refresh: function()
                             {
-                                var json = opc.page.toJSON();
+                                var json = opc.page.toJSON(true);
 
                                 if(this.viewInfoTree === undefined) {
                                     this.viewInfoTree = json;
@@ -250,19 +250,23 @@
 
                                 for(var i=0; i<json.content.length; i++) {
                                     var portlet = json.content[i];
-                                    res.append(this.renderPortlet(portlet, vit.content[i]));
+                                    res.append(this.renderPortlet(i, portlet, vit.content[i]));
                                 }
 
                                 return res;
                             },
 
-                            renderPortlet: function(json, vit)
+                            renderPortlet: function(index, json, vit)
                             {
                                 vit = vit || json;
 
                                 var res = $('<li class="tree' + this.expandClass(vit) + '">')
-                                    .text(json.title + ' (Class: ' + json.class + ')')
-                                    .click(this.createExpandFunc(vit));
+                                    .text(index + ': ' + json.title + ' (Class: ' + json.class + ')')
+                                    .click(this.createExpandFunc(vit))
+                                    .mouseover(function(e) {
+                                        opc.iframe.setHovered(json.elm);
+                                        e.stopPropagation();
+                                    });
 
                                 var ul  = $('<ul>').appendTo(res);
 

@@ -707,12 +707,17 @@ class Exportformat
             ->setIsMerchant($net !== null ? $net->nNettoPreise : 0);
         $_SESSION['kKundengruppe'] = $this->getKundengruppe();
         $_SESSION['kSprache']      = $this->getSprache();
-        $_SESSION['Sprachen']      = Shop::Container()->getDB()->query(
+        $_SESSION['Sprachen']      = \Functional\map(Shop::Container()->getDB()->query(
             "SELECT * 
                 FROM tsprache",
             \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
+        ), function ($lang) {
+            $lang->kSprache = (int)$lang->kSprache;
+
+            return $lang;
+        });
         $_SESSION['Waehrung']      = $this->currency;
+        Shop::setLanguage($this->getSprache());
 
         return $this;
     }
@@ -726,6 +731,7 @@ class Exportformat
             $_SESSION['Kundengruppe'] = $this->oldSession->Kundengruppe;
             $_SESSION['Waehrung']     = $this->oldSession->Waehrung;
             $_SESSION['kSprache']     = $this->oldSession->kSprache;
+            Shop::setLanguage($this->oldSession->kSprache);
         }
 
         return $this;

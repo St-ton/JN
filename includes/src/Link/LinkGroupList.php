@@ -81,7 +81,7 @@ class LinkGroupList implements LinkGroupListInterface
             return $this;
         }
         $cache = \Shop::Container()->getCache();
-        if (true || ($this->linkgroups = $cache->get('linkgroups')) === false) {
+        if (($this->linkgroups = $cache->get('linkgroups')) === false) {
             $this->linkgroups = new LinkGroupCollection();
             $groupLanguages   = $this->db->query(
                 'SELECT tlinkgruppesprache.*, tlinkgruppe.cTemplatename AS template, tsprache.kSprache 

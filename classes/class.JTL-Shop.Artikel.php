@@ -3165,12 +3165,14 @@ class Artikel
                     ) {
                         $oVariationKombiVorschau->inWarenkorbLegbar = INWKNICHTLEGBAR_UNVERKAEUFLICH;
                     }
-                    if (isset($oVariationKombiVorschau->inWarenkorbLegbar) &&
-                        $oVariationKombiVorschau->inWarenkorbLegbar === 0 &&
-                        ($conf['global']['artikel_artikelanzeigefilter'] === '1'
-                            || $conf['global']['artikel_artikelanzeigefilter'] === '1' && $oVariationKombiVorschau->fLagerbestand > 0
-                            || $conf['global']['artikel_artikelanzeigefilter'] === '3' &&
-                            ($oVariationKombiVorschau->cLagerKleinerNull === 'Y' || $oVariationKombiVorschau->fLagerbestand > 0))
+                    if (isset($oVariationKombiVorschau->inWarenkorbLegbar)
+                        && $oVariationKombiVorschau->inWarenkorbLegbar === 0
+                        && ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE
+                            || ($conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                                && $oVariationKombiVorschau->fLagerbestand > 0)
+                            || ((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                                && ($oVariationKombiVorschau->cLagerKleinerNull === 'Y' || $oVariationKombiVorschau->fLagerbestand > 0))
+                        )
                     ) {
                         $oVariationKombiVorschau->inWarenkorbLegbar = 1;
                     }

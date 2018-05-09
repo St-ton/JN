@@ -764,10 +764,12 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
             $objResponse->jsfunc('$.evo.article().variationActive', $key, $escaped, null, $wrapper);
         }
 
+        $notAvailableInSelection = [];
         foreach ($nInvalidVariations as $k => $values) {
             foreach ($values as $v) {
                 $text = utf8_encode(Shop::Lang()->get('notAvailableInSelection'));
                 $objResponse->jsfunc('$.evo.article().variationInfo', $v, -1, $text);
+                $notAvailableInSelection[] = $v;
             }
         }
 
@@ -777,17 +779,17 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                 array_keys($kGesetzteEigeschaftWert_arr)
             )
         );
-        $kZuletztGesetzteEigenschaft = $kEigenschaft;
+        $kZuletztGesetzteEigenschaft   = $kEigenschaft;
         if (count($kNichtGesetzteEigenschaft_arr) <= 1) {
             foreach ($nKeyValueVariation_arr as $kEigenschaft => $kEigenschaftWert) {
                 $kVerfuegbareEigenschaftWert_arr = $nKeyValueVariation_arr[$kEigenschaft];
                 $kMoeglicheEigeschaftWert_arr    = $kGesetzteEigeschaftWert_arr;
 
                 foreach ($kVerfuegbareEigenschaftWert_arr as $kVerfuegbareEigenschaftWert) {
-                    //nur für noch auswählbare Varkombis Lagerbestand holen und Infos setzen
-                    if (in_array($kEigenschaft, $kNichtGesetzteEigenschaft_arr) || $kZuletztGesetzteEigenschaft === 0) {
+                    //nur für noch verfügbare Varkombis Lagerbestand holen und Infos setzen
+                    if (!in_array($kVerfuegbareEigenschaftWert, $notAvailableInSelection) || $kZuletztGesetzteEigenschaft === 0) {
                         $kMoeglicheEigeschaftWert_arr[$kEigenschaft] = $kVerfuegbareEigenschaftWert;
-                        $oKindArtikel = getArticleStockInfo(
+                        $oKindArtikel                                = getArticleStockInfo(
                             $kVaterArtikel,
                             $kMoeglicheEigeschaftWert_arr
                         );

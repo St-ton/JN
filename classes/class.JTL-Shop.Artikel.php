@@ -2099,9 +2099,9 @@ class Artikel
 	                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
 	                    AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL";
                 if ($exportWorkaround === false) {
-                    $oVariationTMP_arr = Shop::DB()->query($baseQuery .
-                        " AND (teigenschaftkombiwert.kEigenschaftWert, COALESCE(ek.score, 0)) IN (
-                            SELECT pref.kEigenschaftWert, MAX(pref.score) score
+                    /* Workaround for performance-issue in MySQL 5.5 with large varcombis */
+                    $oCombinations_arr = Shop::DB()->query(
+                        "SELECT CONCAT('(', pref.kEigenschaftWert, ',', MAX(pref.score), ')') combine
                             FROM (
                                 SELECT teigenschaftkombiwert.kEigenschaftKombi,
                                     teigenschaftkombiwert.kEigenschaftWert
@@ -2116,7 +2116,15 @@ class Artikel
                                 WHERE tartikel.kVaterArtikel = " . (int)$this->kVaterArtikel . "
                                 GROUP BY teigenschaftkombiwert.kEigenschaftKombi, teigenschaftkombiwert.kEigenschaftWert
                             ) pref
-                            GROUP BY pref.kEigenschaftWert
+                            GROUP BY pref.kEigenschaftWert",
+                        2
+                    );
+                    $combinations      = array_reduce($oCombinations_arr, function ($cArry, $item) {
+                        return (empty($cArry) ? '' : $cArry . ', ') . $item->combine;
+                    }, '');
+                    $oVariationTMP_arr = Shop::DB()->query($baseQuery .
+                        " AND (teigenschaftkombiwert.kEigenschaftWert, COALESCE(ek.score, 0)) IN (
+                            {$combinations}
                         )
                         GROUP BY teigenschaftkombiwert.kEigenschaftWert
                         ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort",
@@ -2326,6 +2334,14 @@ class Artikel
                                 || $varCombi->tartikel_fLagerbestand > 0
                                 || $varCombi->cLagerKleinerNull === 'Y';
                         }
+
+                        $value->notExists = $value->notExists
+                            || !$this->aufLagerSichtbarkeit((object)[
+                                'cLagerVariation'   => $varCombi->cLagerVariation,
+                                'fLagerbestand'     => $varCombi->tartikel_fLagerbestand,
+                                'cLagerBeachten'    => $varCombi->cLagerBeachten,
+                                'cLagerKleinerNull' => $varCombi->cLagerKleinerNull,
+                            ]);
 
                         $this->Variationen[$nZaehler]->Werte[$i]->oVariationsKombi = $varCombi;
                     }

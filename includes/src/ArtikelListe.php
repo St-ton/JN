@@ -275,7 +275,9 @@ class ArtikelListe
                 $exclude            = \Functional\map($topArtikelliste->elemente, function ($e) {
                     return (int)$e->kArtikel;
                 });
-                $sql_artikelExclude = ' AND tartikel.kArtikel NOT IN (' . implode(',', $exclude) . ')';
+                $sql_artikelExclude = count($exclude) > 0
+                    ? ' AND tartikel.kArtikel NOT IN (' . implode(',', $exclude) . ')'
+                    : '';
             }
             $conf        = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             $cLimitSql   = isset($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'])

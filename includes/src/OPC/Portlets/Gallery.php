@@ -102,9 +102,10 @@ class Gallery extends \OPC\Portlet
                 'dspl_width' => 50,
             ],
             'gllry_images' => [
-                'label' => 'Bilder',
-                'type'  => 'image-set',
-                'default' => [],
+                'label'      => 'Bilder',
+                'type'       => 'image-set',
+                'default'    => [],
+                'useColumns' => true,
             ],
         ];
     }

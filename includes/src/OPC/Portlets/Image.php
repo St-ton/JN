@@ -14,6 +14,9 @@ class Image extends \OPC\Portlet
     {
         $instance->setImageAttributes();
         $instance->addClass('img-responsive');
+        if (!empty($instance->getProperty('shape'))) {
+            $instance->addClass($instance->getProperty('shape'));
+        }
 
         return '<img '
             . $instance->getAttributeString()
@@ -48,6 +51,16 @@ class Image extends \OPC\Portlet
                 'label'   => 'Bild',
                 'type'    => 'image',
                 'default' => '',
+            ],
+            'shape' => [
+                'label'=> 'shape',
+                'type' => 'select',
+                'options' => [
+                    '',
+                    'img-rounded',
+                    'img-circle',
+                    'img-thumbnail'
+                ],
             ],
             'alt'  => [
                 'label'   => 'Alternativ-Text',

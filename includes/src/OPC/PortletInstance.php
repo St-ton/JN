@@ -457,7 +457,7 @@ class PortletInstance implements \JsonSerializable
         $imageAttributes = $this->getImageAttributes($src, $alt, $title);
 
         $this->setAttribute('srcset', $imageAttributes['srcset']);
-        $this->setAttribute('sizes', $imageAttributes['srcsizes']);
+        $this->setAttribute('sizes', $imageAttributes['sizes']);
         $this->setAttribute('src', $imageAttributes['src']);
         $this->setAttribute('alt', $imageAttributes['alt']);
         $this->setAttribute('title', $imageAttributes['title']);

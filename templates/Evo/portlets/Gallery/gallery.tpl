@@ -4,10 +4,20 @@
             <div class="box">
                 {if $isPreview === false}
                     <a href="#" class="gallery_zoom_btn">
-                        <img src="{$image['url']}" data-desc="{$image['desc']}">
+                        <img srcset="{$image['img_attr']['srcset']}"
+                             sizes="{$image['img_attr']['sizes']}"
+                             src="{$image['img_attr']['src']}"
+                             data-desc="{$image['desc']}"
+                             alt="{$image['img_attr']['alt']}"
+                             title="{$image['img_attr']['title']}">
                     </a>
                 {else}
-                    <img src="{$image['url']}" data-desc="{$image['desc']}">
+                    <img srcset="{$image['img_attr']['srcset']}"
+                         sizes="{$image['img_attr']['sizes']}"
+                         src="{$image['img_attr']['src']}"
+                         data-desc="{$image['desc']}"
+                         alt="{$image['img_attr']['alt']}"
+                         title="{$image['img_attr']['title']}">
                 {/if}
             </div>
         </div>

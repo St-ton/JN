@@ -200,7 +200,7 @@ Page.prototype = {
     computePortletWidthHeuristics: function(portlet)
     {
         var elm             = portlet;
-        var widthHeuristics = {lg: null, md: null, sm: null, xs: null};
+        var widthHeuristics = {xs: null, sm: null, md: null, lg: null};
 
         while(!elm.is(this.rootAreas)) {
             var clsStr = elm.attr('class');

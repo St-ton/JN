@@ -11,7 +11,7 @@
     var $filtersEnabled   = $('#filters-enabled');
 
     enableFilters(JSON.parse($('[name="{$propname}"]').val()));
-    //opc.setPropertiesCallback(saveFilterProperties);
+    opc.setConfigSaveCallback(saveFilterProperties);
     //updateFiltersAvailable();
 
     function enableFilters(filters)
@@ -99,16 +99,8 @@
             .appendTo(target);
     }
 
-    function saveFilterProperties(props)
+    function saveFilterProperties()
     {
-        props.filters = getFiltersEnabled().map(
-            function (filter) {
-                return {
-                    className: filter.className,
-                    name: filter.name,
-                    value: filter.value,
-                }
-            }
-        );
+        $('[name="{$propname}"]').val(JSON.stringify(getFiltersEnabled()));
     }
 </script>

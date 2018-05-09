@@ -130,7 +130,7 @@ class Kategorie
     {
         $this->kSprache = (int)$kSprache;
         if ((int)$kKategorie > 0) {
-            $this->loadFromDB((int)$kKategorie, (int)$kSprache, (int)$kKundengruppe, $noCache);
+            $this->loadFromDB((int)$kKategorie, (int)$kSprache, (int)$kKundengruppe, false, $noCache);
         }
     }
 

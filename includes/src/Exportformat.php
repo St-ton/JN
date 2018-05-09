@@ -693,21 +693,15 @@ class Exportformat
             $this->oldSession               = new stdClass();
             $this->oldSession->Kundengruppe = $_SESSION['Kundengruppe'];
             $this->oldSession->kSprache     = $_SESSION['kSprache'];
+            $this->oldSession->cISO         = $_SESSION['cISOSprache'];
             $this->oldSession->Waehrung     = Session::Currency();
         }
         $this->currency = $this->kWaehrung > 0
             ? new Currency($this->kWaehrung)
             : (new Currency())->getDefault();
         setzeSteuersaetze();
-        $net = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
-
-        $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))
-            ->setMayViewPrices(1)
-            ->setMayViewCategories(1)
-            ->setIsMerchant($net !== null ? $net->nNettoPreise : 0);
-        $_SESSION['kKundengruppe'] = $this->getKundengruppe();
-        $_SESSION['kSprache']      = $this->getSprache();
-        $_SESSION['Sprachen']      = \Functional\map(Shop::Container()->getDB()->query(
+        $net       = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
+        $languages = \Functional\map(Shop::Container()->getDB()->query(
             "SELECT * 
                 FROM tsprache",
             \DB\ReturnType::ARRAY_OF_OBJECTS
@@ -716,8 +710,19 @@ class Exportformat
 
             return $lang;
         });
+        $langISO   = \Functional\first($languages, function ($l) {
+            return $l->kSprache === $this->getSprache();
+        });
+
+        $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))
+            ->setMayViewPrices(1)
+            ->setMayViewCategories(1)
+            ->setIsMerchant($net !== null ? $net->nNettoPreise : 0);
+        $_SESSION['kKundengruppe'] = $this->getKundengruppe();
+        $_SESSION['kSprache']      = $this->getSprache();
+        $_SESSION['Sprachen']      = $languages;
         $_SESSION['Waehrung']      = $this->currency;
-        Shop::setLanguage($this->getSprache());
+        Shop::setLanguage($this->getSprache(), $langISO->cISO ?? null);
 
         return $this;
     }
@@ -731,7 +736,8 @@ class Exportformat
             $_SESSION['Kundengruppe'] = $this->oldSession->Kundengruppe;
             $_SESSION['Waehrung']     = $this->oldSession->Waehrung;
             $_SESSION['kSprache']     = $this->oldSession->kSprache;
-            Shop::setLanguage($this->oldSession->kSprache);
+            $_SESSION['cISOSprache']  = $this->oldSession->cISO;
+            Shop::setLanguage($this->oldSession->kSprache, $this->oldSession->cISO);
         }
 
         return $this;

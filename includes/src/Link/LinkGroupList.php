@@ -302,7 +302,6 @@ class LinkGroupList implements LinkGroupListInterface
         return $this;
     }
 
-
     /**
      * @former aktiviereLinks()
      * @param int $pageType

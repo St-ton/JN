@@ -43,6 +43,7 @@ class LinkGroupCollection extends Collection
         $group = $this->filter(function (LinkGroupInterface $e) use ($key) {
             return $e->getTemplate() === $key;
         })->first();
+
         return $group ?? parent::__get($key);
     }
 }

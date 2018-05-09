@@ -243,24 +243,25 @@ GUI.prototype = {
 
     onConfigForm: function(e)
     {
+        e.preventDefault();
+
         this.configSaveCb();
 
-        var portletData = this.page.portletToJSON(this.curPortlet);
-        var configArray = this.configForm.serializeArray();
+        var portletData  = this.page.portletToJSON(this.curPortlet);
+        var configObject = this.configForm.serializeControls();
 
-        configArray.forEach(function(prop) {
-            var propType = $('[name="' + prop.name + '"]').data('prop-type');
+        for(var propname in configObject) {
+            var propval  = configObject[propname];
+            var propType = $('[name="' + propname + '"]').data('prop-type');
 
             if (propType === 'filter') {
-                prop.value = JSON.parse(prop.value);
+                propval = JSON.parse(propval);
             }
 
-            portletData.properties[prop.name] = prop.value;
-        });
+            portletData.properties[propname] = propval;
+        }
 
         this.io.getPortletPreviewHtml(portletData, this.onPortletPreviewHtml);
-
-        e.preventDefault();
     },
 
     onPortletPreviewHtml: function(preview)

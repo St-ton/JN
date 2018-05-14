@@ -11,6 +11,7 @@ function OPC(env)
     this.gui      = new GUI(this.io, this.page, env.kcfinderUrl);
     this.iframe   = new Iframe(this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
     this.tutorial = new Tutorial(this.gui, this.iframe);
+    this.debug    = new Debug();
 }
 
 OPC.prototype = {
@@ -22,6 +23,7 @@ OPC.prototype = {
         this.gui.init(this.iframe, this.tutorial);
         this.tutorial.init();
         this.page.init(this.onPageLocked);
+        this.debug.init();
     },
 
     onPageLocked: function(state)
@@ -36,6 +38,7 @@ OPC.prototype = {
     onPageLoad: function()
     {
         this.gui.hideLoader();
+        this.debug.refresh();
     },
 
     selectImageProp: function(propName)

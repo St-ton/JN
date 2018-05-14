@@ -367,7 +367,7 @@ class PortletInstance implements \JsonSerializable
             $src = \Shop::getURL() . '/gfx/keinBild.gif';
             return [
                 'srcset' => $srcset,
-                'sizes' => $srcsizes,
+                'srcsizes' => $srcsizes,
                 'src' => $src,
                 'alt' => $alt,
                 'title' => $title,
@@ -435,7 +435,7 @@ class PortletInstance implements \JsonSerializable
 
         return [
             'srcset' => $srcset,
-            'sizes' => $srcsizes,
+            'srcsizes' => $srcsizes,
             'src' => $src,
             'alt' => $alt,
             'title' => $title,

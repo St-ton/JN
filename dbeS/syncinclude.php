@@ -1060,8 +1060,8 @@ function handlePriceRange($kArtikel)
 {
     $priceRangeArr = Shop::Container()->getDB()->queryPrepared(
         "SELECT baseprice.kArtikel,
-                baseprice.kKundengruppe,
-                baseprice.kKunde,
+                COALESCE(baseprice.kKundengruppe, 0) AS kKundengruppe,
+                COALESCE(baseprice.kKunde, 0) AS kKunde,
                 baseprice.nRangeType,
                 MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL, baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
                 MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL, baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMaxAufpreisNetto)) fVKNettoMax,

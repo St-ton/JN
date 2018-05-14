@@ -10,7 +10,7 @@ namespace Filter;
  * Class NavigationURLs
  * @package Filter
  */
-class NavigationURLs
+class NavigationURLs implements NavigationURLsInterface
 {
     use \MagicCompatibilityTrait;
 
@@ -80,9 +80,8 @@ class NavigationURLs
      */
     private $unsetAll = '';
 
-
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getPriceRanges(): string
     {
@@ -90,10 +89,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string $priceRanges
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function setPriceRanges(string $priceRanges): NavigationURLs
+    public function setPriceRanges(string $priceRanges): NavigationURLsInterface
     {
         $this->priceRanges = $priceRanges;
 
@@ -101,7 +99,7 @@ class NavigationURLs
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getRatings(): string
     {
@@ -109,10 +107,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string $ratings
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function setRatings(string $ratings): NavigationURLs
+    public function setRatings(string $ratings): NavigationURLsInterface
     {
         $this->ratings = $ratings;
 
@@ -120,7 +117,7 @@ class NavigationURLs
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getTags(): string
     {
@@ -128,10 +125,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string $tags
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function setTags(string $tags): NavigationURLs
+    public function setTags(string $tags): NavigationURLsInterface
     {
         $this->tags = $tags;
 
@@ -139,7 +135,7 @@ class NavigationURLs
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getSearchSpecials(): string
     {
@@ -147,10 +143,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string $searchSpecials
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function setSearchSpecials(string $searchSpecials): NavigationURLs
+    public function setSearchSpecials(string $searchSpecials): NavigationURLsInterface
     {
         $this->searchSpecials = $searchSpecials;
 
@@ -158,7 +153,7 @@ class NavigationURLs
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getCategories(): string
     {
@@ -166,10 +161,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string $categories
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function setCategories(string $categories): NavigationURLs
+    public function setCategories(string $categories): NavigationURLsInterface
     {
         $this->categories = $categories;
 
@@ -177,18 +171,17 @@ class NavigationURLs
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getManufacturers(): string
+    function getManufacturers(): string
     {
         return $this->manufacturers;
     }
 
     /**
-     * @param string $manufacturers
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function setManufacturers(string $manufacturers): NavigationURLs
+    public function setManufacturers(string $manufacturers): NavigationURLsInterface
     {
         $this->manufacturers = $manufacturers;
 
@@ -196,11 +189,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string|int $idx
-     * @param string     $manufacturer
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function addManufacturer($idx, string $manufacturer): NavigationURLs
+    public function addManufacturer($idx, string $manufacturer): NavigationURLsInterface
     {
         $this->manufacturers[$idx] = $manufacturer;
 
@@ -208,7 +199,7 @@ class NavigationURLs
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getAttributes(): array
     {
@@ -216,10 +207,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string $attributes
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function setAttributes(string $attributes): NavigationURLs
+    public function setAttributes(string $attributes): NavigationURLsInterface
     {
         $this->attributes = $attributes;
 
@@ -227,11 +217,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string|int $idx
-     * @param string     $attribute
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function addAttribute($idx, string $attribute): NavigationURLs
+    public function addAttribute($idx, string $attribute): NavigationURLsInterface
     {
         $this->attributes[$idx] = $attribute;
 
@@ -239,7 +227,7 @@ class NavigationURLs
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getAttributeValues(): array
     {
@@ -247,10 +235,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string $attributeValues
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function setAttributeValues(string $attributeValues): NavigationURLs
+    public function setAttributeValues(string $attributeValues): NavigationURLsInterface
     {
         $this->attributeValues = $attributeValues;
 
@@ -258,11 +245,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string|int $idx
-     * @param string     $attributeValue
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function addAttributeValue($idx, string $attributeValue): NavigationURLs
+    public function addAttributeValue($idx, string $attributeValue): NavigationURLsInterface
     {
         $this->attributeValues[$idx] = $attributeValue;
 
@@ -270,7 +255,7 @@ class NavigationURLs
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getSearchFilters(): array
     {
@@ -278,10 +263,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string $searchFilters
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function setSearchFilters(string $searchFilters): NavigationURLs
+    public function setSearchFilters(string $searchFilters): NavigationURLsInterface
     {
         $this->searchFilters = $searchFilters;
 
@@ -289,11 +273,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string|int $idx
-     * @param string     $searchFilter
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function addSearchFilter($idx, string $searchFilter): NavigationURLs
+    public function addSearchFilter($idx, string $searchFilter): NavigationURLsInterface
     {
         $this->searchFilters[$idx] = $searchFilter;
 
@@ -301,7 +283,7 @@ class NavigationURLs
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getUnsetAll(): string
     {
@@ -309,10 +291,9 @@ class NavigationURLs
     }
 
     /**
-     * @param string $unsetAll
-     * @return NavigationURLs
+     * @inheritdoc
      */
-    public function setUnsetAll(string $unsetAll): NavigationURLs
+    public function setUnsetAll(string $unsetAll): NavigationURLsInterface
     {
         $this->unsetAll = $unsetAll;
 

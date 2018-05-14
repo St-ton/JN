@@ -185,17 +185,14 @@ class JTLSmarty extends SmartyBC
     public function outputFilter($tplOutput)
     {
         $hookList = Plugin::getHookList();
-        $isMobile = $this->template->isMobileTemplateActive();
-        if ($isMobile
-            || ((isset($hookList[HOOK_SMARTY_OUTPUTFILTER])
+        if ((isset($hookList[HOOK_SMARTY_OUTPUTFILTER])
                 && is_array($hookList[HOOK_SMARTY_OUTPUTFILTER])
                 && count($hookList[HOOK_SMARTY_OUTPUTFILTER]) > 0)
                 || count(EventDispatcher::getInstance()->getListeners('shop.hook.' . HOOK_SMARTY_OUTPUTFILTER)) > 0
-            )
         ) {
             $this->unregisterFilter('output', [$this, 'outputFilter']);
             $doc = phpQuery::newDocumentHTML($tplOutput, JTL_CHARSET);
-            executeHook($isMobile ? HOOK_SMARTY_OUTPUTFILTER_MOBILE : HOOK_SMARTY_OUTPUTFILTER);
+            executeHook(HOOK_SMARTY_OUTPUTFILTER);
             $tplOutput = $doc->htmlOuter();
         }
 

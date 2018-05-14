@@ -24,6 +24,10 @@ use Filter\States\BaseManufacturer;
 use Filter\States\BaseSearchQuery;
 use Filter\States\BaseSearchSpecial;
 use Filter\States\BaseTag;
+use function Functional\first;
+use function Functional\group;
+use function Functional\map;
+use function Functional\select;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -154,22 +158,22 @@ class ProductFilter
     private $params = [];
 
     /**
-     * @var IFilter[]
+     * @var FilterInterface[]
      */
     private $filters = [];
 
     /**
-     * @var IFilter[]
+     * @var FilterInterface[]
      */
     private $activeFilters = [];
 
     /**
-     * @var IFilter
+     * @var FilterInterface
      */
     private $baseState;
 
     /**
-     * @var NavigationURLs
+     * @var NavigationURLsInterface
      */
     private $url;
 
@@ -194,17 +198,17 @@ class ProductFilter
     private $baseURL;
 
     /**
-     * @var ProductFilterSearchResults
+     * @var ProductFilterSearchResultsInterface
      */
     private $searchResults;
 
     /**
-     * @var Metadata
+     * @var MetadataInterface
      */
     private $metaData;
 
     /**
-     * @var ProductFilterSQL
+     * @var ProductFilterSQLInterface
      */
     private $filterSQL;
 
@@ -262,9 +266,9 @@ class ProductFilter
     ];
 
     /**
-     * @param array  $languages
-     * @param int    $currentLanguageID
-     * @param array  $config
+     * @param array $languages
+     * @param int   $currentLanguageID
+     * @param array $config
      */
     public function __construct($languages = null, $currentLanguageID = null, $config = null)
     {
@@ -289,7 +293,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function showChildProducts()
+    public function showChildProducts(): bool
     {
         return $this->showChildProducts;
     }
@@ -298,7 +302,7 @@ class ProductFilter
      * @param bool $showChildProducts
      * @return ProductFilter
      */
-    public function setShowChildProducts($showChildProducts)
+    public function setShowChildProducts(bool $showChildProducts): self
     {
         $this->showChildProducts = $showChildProducts;
 
@@ -317,7 +321,7 @@ class ProductFilter
      * @param int $nSortierung
      * @return ProductFilter
      */
-    public function setSort($nSortierung)
+    public function setSort($nSortierung): self
     {
         $this->nSortierung = $nSortierung;
 
@@ -325,18 +329,18 @@ class ProductFilter
     }
 
     /**
-     * @return NavigationURLs
+     * @return NavigationURLsInterface
      */
-    public function getURL()
+    public function getURL(): NavigationURLsInterface
     {
         return $this->url;
     }
 
     /**
-     * @param NavigationURLs $url
+     * @param NavigationURLsInterface $url
      * @return ProductFilter
      */
-    public function setURL(NavigationURLs $url)
+    public function setURL(NavigationURLsInterface $url)
     {
         $this->url = $url;
 
@@ -348,7 +352,7 @@ class ProductFilter
      *
      * @return array
      */
-    public function getLanguages()
+    public function getLanguages(): array
     {
         return $this->languages;
     }
@@ -357,9 +361,9 @@ class ProductFilter
      * for compatibility reasons only - called when oSprache_arr is directly set on ProductFilter instance
      *
      * @param array $languages
-     * @return mixed
+     * @return array
      */
-    public function setLanguages(array $languages)
+    public function setLanguages(array $languages): array
     {
         $this->languages = $languages;
 
@@ -367,18 +371,18 @@ class ProductFilter
     }
 
     /**
-     * @return ProductFilterSQL
+     * @return ProductFilterSQLInterface
      */
-    public function getFilterSQL()
+    public function getFilterSQL(): ProductFilterSQLInterface
     {
         return $this->filterSQL;
     }
 
     /**
-     * @param ProductFilterSQL $filterSQL
+     * @param ProductFilterSQLInterface $filterSQL
      * @return ProductFilter
      */
-    public function setFilterSQL($filterSQL)
+    public function setFilterSQL(ProductFilterSQLInterface $filterSQL): self
     {
         $this->filterSQL = $filterSQL;
 
@@ -397,7 +401,7 @@ class ProductFilter
      * @param ProductFilterURL $filterURL
      * @return ProductFilter
      */
-    public function setFilterURL($filterURL)
+    public function setFilterURL(ProductFilterURL $filterURL): self
     {
         $this->filterURL = $filterURL;
 
@@ -406,7 +410,7 @@ class ProductFilter
 
     /**
      * @param bool $products
-     * @return ProductFilterSearchResults|Collection
+     * @return ProductFilterSearchResultsInterface|Collection
      */
     public function getSearchResults($products = true)
     {
@@ -421,10 +425,10 @@ class ProductFilter
     }
 
     /**
-     * @param ProductFilterSearchResults $results
+     * @param ProductFilterSearchResultsInterface $results
      * @return $this
      */
-    public function setSearchResults($results)
+    public function setSearchResults(ProductFilterSearchResultsInterface $results): self
     {
         $this->searchResults = $results;
 
@@ -432,9 +436,9 @@ class ProductFilter
     }
 
     /**
-     * @return Metadata
+     * @return MetadataInterface
      */
-    public function getMetaData()
+    public function getMetaData(): MetadataInterface
     {
         return $this->metaData;
     }
@@ -450,13 +454,13 @@ class ProductFilter
     /**
      * @return array|null
      */
-    public function getAvailableLanguages()
+    public function getAvailableLanguages(): array
     {
         return $this->languages;
     }
 
     /**
-     * @return IFilter
+     * @return FilterInterface
      */
     public function getBaseState()
     {
@@ -464,10 +468,10 @@ class ProductFilter
     }
 
     /**
-     * @param IFilter $filter
+     * @param FilterInterface $filter
      * @return $this
      */
-    public function setBaseState($filter): ProductFilter
+    public function setBaseState($filter): self
     {
         $this->baseState = $filter;
 
@@ -477,7 +481,7 @@ class ProductFilter
     /**
      * @return string
      */
-    public function getBaseURL()
+    public function getBaseURL(): string
     {
         return $this->baseURL;
     }
@@ -486,7 +490,7 @@ class ProductFilter
      * @param string $baseURL
      * @return ProductFilter
      */
-    public function setBaseURL($baseURL)
+    public function setBaseURL(string $baseURL): self
     {
         $this->baseURL = $baseURL;
 
@@ -496,15 +500,26 @@ class ProductFilter
     /**
      * @return array
      */
-    public function getConfig() : array
+    public function getConfig(): array
     {
         return $this->conf;
     }
 
     /**
+     * @param array $config
+     * @return $this
+     */
+    public function setConfig(array $config): self
+    {
+        $this->conf = $config;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
-    public function getCustomerGroupID() : int
+    public function getCustomerGroupID(): int
     {
         return $this->customerGroupID;
     }
@@ -513,7 +528,7 @@ class ProductFilter
      * @param int $id
      * @return $this
      */
-    public function setCustomerGroupID($id)
+    public function setCustomerGroupID($id): self
     {
         $this->customerGroupID = (int)$id;
 
@@ -523,7 +538,7 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getLanguageID() : int
+    public function getLanguageID(): int
     {
         return $this->languageID;
     }
@@ -532,7 +547,7 @@ class ProductFilter
      * @param int $id
      * @return $this
      */
-    public function setLanguageID($id)
+    public function setLanguageID($id): self
     {
         $this->languageID = (int)$id;
 
@@ -551,7 +566,7 @@ class ProductFilter
      * @param int $limit
      * @return $this
      */
-    public function setProductLimit($limit)
+    public function setProductLimit($limit): self
     {
         $this->productLimit = (int)$limit;
 
@@ -570,7 +585,7 @@ class ProductFilter
      * @param ItemSort $sorting
      * @return $this
      */
-    public function setSorting($sorting)
+    public function setSorting($sorting): self
     {
         $this->sorting = $sorting;
 
@@ -589,7 +604,7 @@ class ProductFilter
      * @param ItemLimit $limits
      * @return $this
      */
-    public function setLimits($limits)
+    public function setLimits($limits): self
     {
         $this->limits = $limits;
 
@@ -607,7 +622,7 @@ class ProductFilter
     /**
      * @return array - default array keys
      */
-    private function getParamsPrototype()
+    private function getParamsPrototype(): array
     {
         return [
             'kKategorie'             => 0,
@@ -655,7 +670,7 @@ class ProductFilter
     /**
      * @return $this
      */
-    public function initBaseStates()
+    public function initBaseStates(): self
     {
         $this->category       = new BaseCategory($this);
         $this->categoryFilter = new ItemCategory($this);
@@ -708,7 +723,7 @@ class ProductFilter
      * @param array $params
      * @return $this
      */
-    public function initStates($params)
+    public function initStates($params): self
     {
         $params = array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
@@ -763,7 +778,8 @@ class ProductFilter
         }
         // @todo: how to handle strlen($params['cSuche']) === 0?
         if ($params['kSuchanfrage'] > 0) {
-            $oSuchanfrage = \Shop::Container()->getDB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
+            $oSuchanfrage = \Shop::Container()->getDB()->select('tsuchanfrage', 'kSuchanfrage',
+                $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
                 $this->search->setName($oSuchanfrage->cSuche);
             }
@@ -782,7 +798,7 @@ class ProductFilter
             $params['cSuche'] = \StringHandler::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
             $this->searchQuery->setName($params['cSuche']);
-            $oSuchanfrage                  = \Shop::Container()->getDB()->select(
+            $oSuchanfrage = \Shop::Container()->getDB()->select(
                 'tsuchanfrage',
                 'cSuche', $params['cSuche'],
                 'kSprache', $this->getLanguageID(),
@@ -790,16 +806,16 @@ class ProductFilter
                 false,
                 'kSuchanfrage'
             );
-            $kSuchCache                    = $this->searchQuery->editSearchCache();
-            $kSuchAnfrage                  = isset($oSuchanfrage->kSuchanfrage)
+            $kSuchCache   = $this->searchQuery->editSearchCache();
+            $kSuchAnfrage = isset($oSuchanfrage->kSuchanfrage)
                 ? (int)$oSuchanfrage->kSuchanfrage
                 : $params['kSuchanfrage'];
             $this->search->setSearchCacheID($kSuchCache);
             $this->searchQuery->setSearchCacheID($kSuchCache)
                               ->init($kSuchAnfrage)
                               ->setName($params['cSuche']);
-            $this->EchteSuche          = new \stdClass();
-            $this->EchteSuche->cSuche  = $params['cSuche'];
+            $this->EchteSuche         = new \stdClass();
+            $this->EchteSuche->cSuche = $params['cSuche'];
             if (!$this->baseState->isInitialized()) {
                 $this->baseState = $this->searchQuery;
             }
@@ -833,12 +849,12 @@ class ProductFilter
             $filterClass = $filter->getClassName();
             if (isset($_GET[$filterParam])) {
                 // OR filters should always get an array as input - even if there is just one value active
-                if (!is_array($_GET[$filterParam]) && $filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
+                if (!is_array($_GET[$filterParam]) && $filter->getType()->equals(Type::OR())) {
                     $_GET[$filterParam] = [$_GET[$filterParam]];
                 }
                 // escape all input values
-                if (($filter->getType() === AbstractFilter::FILTER_TYPE_OR && is_array($_GET[$filterParam]))
-                    || ($filter->getType() === AbstractFilter::FILTER_TYPE_AND
+                if (($filter->getType()->equals(Type::OR()) && is_array($_GET[$filterParam]))
+                    || ($filter->getType()->equals(Type::AND())
                         && (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = is_array($_GET[$filterParam])
@@ -869,7 +885,7 @@ class ProductFilter
      * @param array $values
      * @return $this
      */
-    private function initAttributeFilters(array $values)
+    private function initAttributeFilters(array $values): self
     {
         if (count($values) === 0) {
             return $this;
@@ -892,10 +908,10 @@ class ProductFilter
     }
 
     /**
-     * @param IFilter $filter
+     * @param FilterInterface $filter
      * @return $this
      */
-    public function registerFilter(IFilter $filter)
+    public function registerFilter(FilterInterface $filter): self
     {
         $this->filters[] = $filter->setBaseData($this);
 
@@ -904,14 +920,14 @@ class ProductFilter
 
     /**
      * @param string $filterName
-     * @return IFilter
+     * @return FilterInterface
      * @throws \InvalidArgumentException
      */
-    public function registerFilterByClassName($filterName): IFilter
+    public function registerFilterByClassName($filterName): FilterInterface
     {
         $filter = null;
         if (class_exists($filterName)) {
-            /** @var IFilter $filter */
+            /** @var FilterInterface $filter */
             $filter          = new $filterName($this);
             $this->filters[] = $filter->setClassName($filterName);
         } else {
@@ -922,11 +938,11 @@ class ProductFilter
     }
 
     /**
-     * @param IFilter $filter
-     * @param mixed   $filterValue - shortcut to set active value (same as calling init($filterValue)
-     * @return IFilter
+     * @param FilterInterface $filter
+     * @param mixed           $filterValue - shortcut to set active value (same as calling init($filterValue)
+     * @return FilterInterface
      */
-    public function addActiveFilter(IFilter $filter, $filterValue)
+    public function addActiveFilter(FilterInterface $filter, $filterValue): FilterInterface
     {
         $this->activeFilters[] = $filter->setBaseData($this)->init($filterValue)->generateActiveFilterData();
 
@@ -934,10 +950,10 @@ class ProductFilter
     }
 
     /**
-     * @param IFilter $filter
+     * @param FilterInterface $filter
      * @return $this
      */
-    public function enableFilter(IFilter $filter)
+    public function enableFilter(FilterInterface $filter): self
     {
         foreach ($this->filters as $idx => $registeredFilter) {
             if ($filter->getName() === $registeredFilter->getName()) {
@@ -958,7 +974,7 @@ class ProductFilter
         return array_reduce(
             $this->activeFilters,
             function ($carry, $item) use ($filterClassName) {
-                /** @var IFilter $item */
+                /** @var FilterInterface $item */
                 return $carry ?? ($item->getClassName() === $filterClassName
                         ? $item->getValue()
                         : null);
@@ -970,21 +986,21 @@ class ProductFilter
      * @param string $filterClassName
      * @return bool
      */
-    public function hasFilter($filterClassName)
+    public function hasFilter($filterClassName): bool
     {
         return $this->getActiveFilterByClassName($filterClassName) !== null;
     }
 
     /**
      * @param string $filterClassName
-     * @return IFilter|null
+     * @return FilterInterface|null
      */
     public function getFilterByClassName($filterClassName)
     {
         $filter = array_filter(
             $this->filters,
             function ($f) use ($filterClassName) {
-                /** @var IFilter $f */
+                /** @var FilterInterface $f */
                 return $f->getClassName() === $filterClassName;
             }
         );
@@ -994,14 +1010,14 @@ class ProductFilter
 
     /**
      * @param string $filterClassName
-     * @return IFilter|null
+     * @return FilterInterface|null
      */
     public function getActiveFilterByClassName($filterClassName)
     {
         $filter = array_filter(
             $this->activeFilters,
             function ($f) use ($filterClassName) {
-                /** @var IFilter $f */
+                /** @var FilterInterface $f */
                 return $f->getClassName() === $filterClassName;
             }
         );
@@ -1010,32 +1026,32 @@ class ProductFilter
     }
 
     /**
-     * @return IFilter[]
+     * @return FilterInterface[]
      */
-    public function getCustomFilters()
+    public function getCustomFilters(): array
     {
         return array_filter(
             $this->filters,
             function ($e) {
-                /** @var IFilter $e */
+                /** @var FilterInterface $e */
                 return $e->isCustom();
             }
         );
     }
 
     /**
-     * @return IFilter[]
+     * @return FilterInterface[]
      */
-    public function getAvailableFilters()
+    public function getAvailableFilters(): array
     {
         return $this->filters;
     }
 
     /**
-     * @param IFilter[] $filters
+     * @param FilterInterface[] $filters
      * @return $this
      */
-    public function setAvailableFilters($filters)
+    public function setAvailableFilters($filters): self
     {
         $this->filters = $filters;
 
@@ -1045,16 +1061,16 @@ class ProductFilter
     /**
      * get filters that can be displayed at content level
      *
-     * @return array|IFilter[]
+     * @return array|FilterInterface[]
      */
-    public function getAvailableContentFilters()
+    public function getAvailableContentFilters(): array
     {
         return array_filter(
             $this->filters,
             function ($f) {
-                /** @var IFilter $f */
-                return ($f->getVisibility() === AbstractFilter::SHOW_ALWAYS
-                        || $f->getVisibility() === AbstractFilter::SHOW_CONTENT);
+                /** @var FilterInterface $f */
+                return $f->getVisibility()->equals(Visibility::SHOW_ALWAYS())
+                    || $f->getVisibility()->equals(Visibility::SHOW_CONTENT());
             }
         );
     }
@@ -1062,17 +1078,17 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getFilterCount()
+    public function getFilterCount(): int
     {
         return count($this->activeFilters);
     }
 
     /**
-     * @param string  $className
-     * @param IFilter $filter
+     * @param string          $className
+     * @param FilterInterface $filter
      * @return bool
      */
-    public function override($className, IFilter $filter)
+    public function override($className, FilterInterface $filter): bool
     {
         foreach ($this->filters as $i => $registerdFilter) {
             if ($registerdFilter->getClassName() === $className) {
@@ -1088,7 +1104,7 @@ class ProductFilter
     /**
      * @return ItemManufacturer
      */
-    public function getManufacturerFilter()
+    public function getManufacturerFilter(): FilterInterface
     {
         return $this->manufacturerFilter;
     }
@@ -1097,9 +1113,9 @@ class ProductFilter
      * @param ItemManufacturer $filter
      * @return $this
      */
-    public function setManufacturerFilter($filter)
+    public function setManufacturerFilter($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kHersteller)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kHersteller)) {
             // disallow setting manufacturer filter to empty stdClass
             return $this;
         }
@@ -1111,7 +1127,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasManufacturerFilter()
+    public function hasManufacturerFilter(): bool
     {
         return $this->manufacturerFilter->isInitialized();
     }
@@ -1119,7 +1135,7 @@ class ProductFilter
     /**
      * @return BaseManufacturer
      */
-    public function getManufacturer()
+    public function getManufacturer(): FilterInterface
     {
         return $this->manufacturer;
     }
@@ -1128,9 +1144,9 @@ class ProductFilter
      * @param ItemManufacturer $filter
      * @return $this
      */
-    public function setManufacturer($filter)
+    public function setManufacturer($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kHersteller)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kHersteller)) {
             // disallow setting manufacturer base to empty stdClass
             return $this;
         }
@@ -1142,7 +1158,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasManufacturer()
+    public function hasManufacturer(): bool
     {
         return $this->manufacturer->isInitialized();
     }
@@ -1152,7 +1168,7 @@ class ProductFilter
      *
      * @return ItemAttribute[]
      */
-    public function getAttributeFilters()
+    public function getAttributeFilters(): array
     {
         return $this->attributeFilter;
     }
@@ -1172,9 +1188,9 @@ class ProductFilter
      * @param array|\stdClass $filter
      * @return $this
      */
-    public function setAttributeFilter($filter)
+    public function setAttributeFilter($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kMerkmal)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kMerkmal)) {
             // disallow setting attribute filter to empty stdClass
             return $this;
         }
@@ -1184,10 +1200,10 @@ class ProductFilter
     }
 
     /**
-     * @param IFilter $filter
+     * @param FilterInterface $filter
      * @return $this
      */
-    public function addAttributeFilter($filter)
+    public function addAttributeFilter(FilterInterface $filter): self
     {
         $this->attributeFilter[] = $filter;
 
@@ -1197,7 +1213,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasAttributeFilter()
+    public function hasAttributeFilter(): bool
     {
         return count($this->attributeFilter) > 0;
     }
@@ -1205,7 +1221,7 @@ class ProductFilter
     /**
      * @return BaseAttribute
      */
-    public function getAttributeValue()
+    public function getAttributeValue(): FilterInterface
     {
         return $this->attributeValue;
     }
@@ -1214,9 +1230,9 @@ class ProductFilter
      * @param BaseAttribute $filter
      * @return $this
      */
-    public function setAttributeValue($filter)
+    public function setAttributeValue($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kMerkmalWert)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kMerkmalWert)) {
             // disallow setting attribute value to empty stdClass
             return $this;
         }
@@ -1228,7 +1244,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasAttributeValue()
+    public function hasAttributeValue(): bool
     {
         return $this->attributeValue->isInitialized();
     }
@@ -1236,7 +1252,7 @@ class ProductFilter
     /**
      * @return ItemAttribute
      */
-    public function getAttributeFilterCollection()
+    public function getAttributeFilterCollection(): FilterInterface
     {
         return $this->attributeFilterCollection;
     }
@@ -1253,7 +1269,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasTagFilter()
+    public function hasTagFilter(): bool
     {
         return count($this->tagFilter) > 0;
     }
@@ -1261,7 +1277,7 @@ class ProductFilter
     /**
      * @return BaseTag
      */
-    public function getTag()
+    public function getTag(): FilterInterface
     {
         return $this->tag;
     }
@@ -1270,9 +1286,9 @@ class ProductFilter
      * @param BaseTag $filter
      * @return $this
      */
-    public function setTag($filter)
+    public function setTag($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kTag)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kTag)) {
             // disallow setting tag filter to empty stdClass
             return $this;
         }
@@ -1284,7 +1300,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasTag()
+    public function hasTag(): bool
     {
         return $this->tag->isInitialized();
     }
@@ -1292,7 +1308,7 @@ class ProductFilter
     /**
      * @return BaseCategory
      */
-    public function getCategory()
+    public function getCategory(): FilterInterface
     {
         return $this->category;
     }
@@ -1301,9 +1317,9 @@ class ProductFilter
      * @param BaseCategory $filter
      * @return $this
      */
-    public function setCategory($filter)
+    public function setCategory($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kKategorie)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kKategorie)) {
             // disallow setting category base to empty stdClass
             return $this;
         }
@@ -1315,7 +1331,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasCategory()
+    public function hasCategory(): bool
     {
         return $this->category->isInitialized();
     }
@@ -1323,7 +1339,7 @@ class ProductFilter
     /**
      * @return ItemCategory
      */
-    public function getCategoryFilter()
+    public function getCategoryFilter(): FilterInterface
     {
         return $this->categoryFilter;
     }
@@ -1332,9 +1348,9 @@ class ProductFilter
      * @param BaseTag $filter
      * @return $this
      */
-    public function setCategoryFilter($filter)
+    public function setCategoryFilter($filter): self
     {
-        if (is_a($filter, 'stdClass') && !isset($filter->kKategorie)) {
+        if (is_a($filter, \stdClass::class) && !isset($filter->kKategorie)) {
             // disallow setting category filter to empty stdClass
             return $this;
         }
@@ -1346,7 +1362,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasCategoryFilter()
+    public function hasCategoryFilter(): bool
     {
         return $this->categoryFilter->isInitialized();
     }
@@ -1354,7 +1370,7 @@ class ProductFilter
     /**
      * @return ItemSearch
      */
-    public function getSearch()
+    public function getSearch(): FilterInterface
     {
         return $this->search;
     }
@@ -1362,7 +1378,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasSearch()
+    public function hasSearch(): bool
     {
         return $this->search->getName() !== null;
     }
@@ -1370,7 +1386,7 @@ class ProductFilter
     /**
      * @return BaseSearchQuery
      */
-    public function getSearchQuery()
+    public function getSearchQuery(): FilterInterface
     {
         return $this->searchQuery;
     }
@@ -1378,7 +1394,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasSearchQuery()
+    public function hasSearchQuery(): bool
     {
         return $this->searchQuery->isInitialized();
     }
@@ -1387,7 +1403,7 @@ class ProductFilter
      * @param BaseSearchQuery $filter
      * @return $this
      */
-    public function setSearchQuery($filter)
+    public function setSearchQuery($filter): self
     {
         $this->searchQuery = $filter;
 
@@ -1406,7 +1422,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasSearchFilter()
+    public function hasSearchFilter(): bool
     {
         return count($this->searchFilter) > 0;
     }
@@ -1414,7 +1430,7 @@ class ProductFilter
     /**
      * @return BaseSearchSpecial
      */
-    public function getSearchSpecial()
+    public function getSearchSpecial(): FilterInterface
     {
         return $this->searchSpecial;
     }
@@ -1423,7 +1439,7 @@ class ProductFilter
      * @param BaseSearchSpecial $filter
      * @return $this
      */
-    public function setSearchSpecial($filter)
+    public function setSearchSpecial(FilterInterface $filter): self
     {
         $this->searchSpecial = $filter;
 
@@ -1433,7 +1449,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasSearchSpecial()
+    public function hasSearchSpecial(): bool
     {
         return $this->searchSpecial->isInitialized();
     }
@@ -1441,7 +1457,7 @@ class ProductFilter
     /**
      * @return ItemSearchSpecial
      */
-    public function getSearchSpecialFilter()
+    public function getSearchSpecialFilter(): FilterInterface
     {
         return $this->searchSpecialFilter;
     }
@@ -1450,7 +1466,7 @@ class ProductFilter
      * @param ItemSearchSpecial $filter
      * @return $this
      */
-    public function setSearchSpecialFilter($filter)
+    public function setSearchSpecialFilter(FilterInterface $filter): self
     {
         $this->searchSpecialFilter = $filter;
 
@@ -1460,7 +1476,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasSearchSpecialFilter()
+    public function hasSearchSpecialFilter(): bool
     {
         return $this->searchSpecialFilter->isInitialized();
     }
@@ -1478,7 +1494,7 @@ class ProductFilter
     /**
      * @return ItemRating
      */
-    public function getRatingFilter()
+    public function getRatingFilter(): FilterInterface
     {
         return $this->ratingFilter;
     }
@@ -1487,7 +1503,7 @@ class ProductFilter
      * @param ItemRating $filter
      * @return $this
      */
-    public function setRatingFilter($filter)
+    public function setRatingFilter(FilterInterface $filter): self
     {
         $this->ratingFilter = $filter;
 
@@ -1497,7 +1513,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasRatingFilter()
+    public function hasRatingFilter(): bool
     {
         return $this->ratingFilter->isInitialized();
     }
@@ -1505,7 +1521,7 @@ class ProductFilter
     /**
      * @return ItemPriceRange
      */
-    public function getPriceRangeFilter()
+    public function getPriceRangeFilter(): FilterInterface
     {
         return $this->priceRangeFilter;
     }
@@ -1514,7 +1530,7 @@ class ProductFilter
      * @param ItemPriceRange $filter
      * @return $this
      */
-    public function setPriceRangeFilter($filter)
+    public function setPriceRangeFilter(FilterInterface $filter): self
     {
         $this->priceRangeFilter = $filter;
 
@@ -1524,7 +1540,7 @@ class ProductFilter
     /**
      * @return bool
      */
-    public function hasPriceRangeFilter()
+    public function hasPriceRangeFilter(): bool
     {
         return $this->priceRangeFilter->isInitialized();
     }
@@ -1532,7 +1548,7 @@ class ProductFilter
     /**
      * @return $this
      */
-    public function validate()
+    public function validate(): self
     {
         if ($this->getFilterCount() === 0) {
             return $this;
@@ -1582,40 +1598,39 @@ class ProductFilter
     /**
      * get list of product IDs matching the current filter
      *
-     * @return int[]
+     * @return Collection
      */
-    public function getProductKeys()
+    public function getProductKeys(): Collection
     {
         $state = $this->getCurrentStateData();
         $qry   = $this->getFilterSQL()->getBaseQuery(
             ['tartikel.kArtikel'],
-            $state->joins,
-            $state->conditions,
-            $state->having,
+            $state->getJoins(),
+            $state->getConditions(),
+            $state->getHaving(),
             null,
             '',
             ['tartikel.kArtikel'],
             'listing'
         );
 
-        $productKeys       = array_map(
+        $productKeys       = collect(array_map(
             function ($e) {
                 return (int)$e->kArtikel;
             },
             \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS)
-        );
+        ));
         $order             = $this->getFilterSQL()->getOrder();
         $orderData         = new \stdClass();
         $orderData->cJoin  = $order->join->getSQL();
         $orderData->cOrder = $order->orderBy;
 
         executeHook(HOOK_FILTER_INC_GIBARTIKELKEYS, [
-                'oArtikelKey_arr' => &$productKeys,
-                'FilterSQL'       => new \stdClass(),
-                'NaviFilter'      => $this,
-                'SortierungsSQL'  => &$orderData
-            ]
-        );
+            'oArtikelKey_arr' => &$productKeys,
+            'FilterSQL'       => new \stdClass(),
+            'NaviFilter'      => $this,
+            'SortierungsSQL'  => &$orderData
+        ]);
 
         return $productKeys;
     }
@@ -1627,7 +1642,7 @@ class ProductFilter
      * @param mixed  $value
      * @return bool
      */
-    public function filterOptionIsActive($class, $value)
+    public function filterOptionIsActive($class, $value): bool
     {
         foreach ($this->getActiveFilters() as $filter) {
             if ($filter->getClassName() !== $class) {
@@ -1654,7 +1669,7 @@ class ProductFilter
      * @param \Kategorie|null $currentCategory
      * @param bool            $fillProducts - if true, return Artikel class instances, otherwise keys only
      * @param int             $limit
-     * @return ProductFilterSearchResults|\Tightenco\Collect\Support\Collection
+     * @return ProductFilterSearchResultsInterface|\Tightenco\Collect\Support\Collection
      */
     public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = null)
     {
@@ -1682,7 +1697,7 @@ class ProductFilter
 
             $this->searchResults->setOffsetStart($nLimitN + 1)
                                 ->setOffsetEnd($end > 0 ? $end : $productCount);
-            
+
             $pages                = new \stdClass();
             $pages->AktuelleSeite = $this->nSeite;
             $pages->MaxSeiten     = $limitPerPage > 0 ? ceil($productCount / $limitPerPage) : 1;
@@ -1729,18 +1744,18 @@ class ProductFilter
             if ($limitPerPage < 0) {
                 $limitPerPage = null;
             }
-            foreach (array_slice($productKeys, $nLimitN, $limitPerPage) as $id) {
+            foreach ($productKeys->forPage($this->nSeite, $limitPerPage) as $id) {
                 $productList->push((new \Artikel())->fuelleArtikel($id, $opt));
             }
             $this->searchResults->setVisibleProductCount($productList->count());
         }
-        $this->url = $this->filterURL->createUnsetFilterURLs($this->url);
-        $_SESSION['oArtikelUebersichtKey_arr']   = $productKeys;
+        $this->url                             = $this->filterURL->createUnsetFilterURLs($this->url);
+        $_SESSION['oArtikelUebersichtKey_arr'] = $productKeys;
 
         $this->searchResults->setProducts($productList);
 
         if ($forProductListing === true) {
-            //Weiterleitung, falls nur 1 Artikel rausgeholt
+            // Weiterleitung, falls nur 1 Artikel rausgeholt
             $hasSubCategories = ($categoryID = $this->getCategory()->getValue()) > 0
                 ? (new \Kategorie($categoryID, $this->languageID, $this->customerGroupID))
                     ->existierenUnterkategorien()
@@ -1753,7 +1768,7 @@ class ProductFilter
             ) {
                 http_response_code(301);
                 $product = $productList->pop();
-                $url = empty($product->cURL)
+                $url     = empty($product->cURL)
                     ? (\Shop::getURL() . '/?a=' . $product->kArtikel)
                     : (\Shop::getURL() . '/' . $product->cURL);
                 header('Location: ' . $url);
@@ -1768,165 +1783,137 @@ class ProductFilter
 
     /**
      * @param bool $byType
-     * @return array|IFilter[]
+     * @return array|FilterInterface[]
      */
-    public function getActiveFilters($byType = false)
+    public function getActiveFilters($byType = false): array
     {
-        $result = $byType === false
-            ? []
-            : [
-                'kf'     => [],
-                'hf'     => [],
-                'mm'     => [],
-                'ssf'    => [],
-                'tf'     => [],
-                'sf'     => [],
-                'bf'     => [],
-                'custom' => [],
-                'misc'   => []
-            ];
-        foreach ($this->activeFilters as $activeFilter) {
-            // get custom filters
-            if ($activeFilter->isCustom()) {
-                if ($byType) {
-                    $result['custom'][] = $activeFilter;
-                } else {
-                    $result[] = $activeFilter;
-                }
-            } else {
-                // get built-in filters
-                $found = false;
-                if ($activeFilter->isInitialized() && ($urlPram = $activeFilter->getUrlParam()) !== '') {
-                    if ($byType) {
-                        $result[$urlPram][] = $activeFilter;
-                    } else {
-                        $result[] = $activeFilter;
-                    }
-                    continue;
-                }
-                // get built-in filters that were manually set
-                if ($found === false) {
-                    if ($byType) {
-                        $result['misc'][] = $activeFilter;
-                    } else {
-                        $result[] = $activeFilter;
-                    }
-                }
-            }
+        if ($byType === false) {
+            return $this->activeFilters;
         }
+        $grouped = group($this->activeFilters, function (FilterInterface $f) {
+            if ($f->isCustom()) {
+                return 'custom';
+            }
 
-        return $result;
+            return $f->isInitialized() && ($param = $f->getUrlParam()) !== ''
+                ? $param
+                : 'misc';
+        });
+
+        return array_merge([
+            'kf'     => [],
+            'hf'     => [],
+            'mm'     => [],
+            'ssf'    => [],
+            'tf'     => [],
+            'sf'     => [],
+            'bf'     => [],
+            'custom' => [],
+            'misc'   => []
+        ], map($grouped, function ($e) {
+            return array_values($e);
+        }));
     }
 
     /**
      * @param null|string $ignore - filter class to ignore
-     * @return \stdClass
+     * @return FilterStateSQLInterface
      */
-    public function getCurrentStateData($ignore = null)
+    public function getCurrentStateData($ignore = null): FilterStateSQLInterface
     {
-        $state            = $this->getBaseState();
-        $stateCondition   = $state->getSQLCondition();
-        $stateJoin        = $state->getSQLJoin();
-        $data             = new \stdClass();
-        $data->having     = [];
-        $data->conditions = [];
-        $data->joins      = is_array($stateJoin)
+        $state          = $this->getBaseState();
+        $stateCondition = $state->getSQLCondition();
+        $stateJoin      = $state->getSQLJoin();
+        $data           = new FilterStateSQL();
+        $having         = [];
+        $conditions     = [];
+        $joins          = is_array($stateJoin)
             ? $stateJoin
             : [$stateJoin];
         if (!empty($stateCondition)) {
-            $data->conditions[] = $stateCondition;
+            $conditions[] = $stateCondition;
         }
-        /** @var IFilter $filter */
+        /** @var FilterInterface $filter */
         foreach ($this->getActiveFilters(true) as $type => $active) {
             $count = count($active);
             if ($count > 1 && $type !== 'misc' && $type !== 'custom') {
                 $singleConditions = [];
-                $active           = array_filter(
-                    $active,
-                    function ($f) use ($ignore) {
-                        /** @var IFilter $f */
-                        return $ignore === null
-                            || (is_string($ignore) && $f->getClassName() !== $ignore)
-                            || (is_object($ignore) && $f !== $ignore);
-                    }
-                );
-                $orFilters        = array_filter(
-                    $active,
-                    function ($f) {
-                        /** @var IFilter $f */
-                        return $f->getType() === AbstractFilter::FILTER_TYPE_OR;
-                    }
-                );
-
+                $active           = select($active, function (FilterInterface $f) use ($ignore) {
+                    return $ignore === null
+                        || (is_string($ignore) && $f->getClassName() !== $ignore)
+                        || (is_object($ignore) && $f !== $ignore);
+                });
+                $orFilters        = select($active, function (FilterInterface $f) {
+                    return $f->getType()->equals(Type::OR());
+                });
                 /** @var AbstractFilter $filter */
                 foreach ($active as $filter) {
                     // the built-in filter behave quite strangely and have to be combined this way
-                    $itemJoin    = $filter->getSQLJoin();
-                    $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
+                    $itemJoin = $filter->getSQLJoin();
+                    $joins    = array_merge($joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
                     if (!in_array($filter, $orFilters, true)) {
                         $singleConditions[] = $filter->getSQLCondition();
                     }
                 }
                 if (count($orFilters) > 0) {
                     // group OR filters by their primary key row
-                    $groupedOrFilters = [];
-                    foreach ($orFilters as $filter) {
-                        $primaryKeyRow = $filter->getPrimaryKeyRow();
-                        if (!isset($groupedOrFilters[$primaryKeyRow])) {
-                            $groupedOrFilters[$primaryKeyRow] = [];
-                        }
-                        $groupedOrFilters[$primaryKeyRow][] = $filter;
-                    }
+                    $groupedOrFilters = group($orFilters, function (FilterInterface $f) {
+                        return $f->getPrimaryKeyRow();
+                    });
                     foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
-                        /** @var IFilter[] $orFilters */
+                        /** @var FilterInterface[] $orFilters */
                         $values = implode(
                             ',',
                             array_map(function ($f) {
-                                /** @var IFilter $f */
+                                /** @var FilterInterface $f */
                                 $val = $f->getValue();
 
                                 return is_array($val) ? implode(',', $val) : $val;
                             }, $orFilters)
                         );
-                        $table  = $orFilters[0]->getTableAlias();
+                        $table  = first($orFilters)->getTableAlias();
                         if (empty($table)) {
-                            $table = $orFilters[0]->getTableName();
+                            $table = first($orFilters)->getTableName();
                         }
-                        $data->conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
+                        $conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
                             $table . '.kArtikel IN ' .
-                            '(SELECT kArtikel FROM ' . $orFilters[0]->getTableName() . ' WHERE ' .
+                            '(SELECT kArtikel FROM ' . first($orFilters)->getTableName() . ' WHERE ' .
                             $primaryKeyRow . ' IN (' . $values . '))';
                     }
                 }
                 foreach ($singleConditions as $singleCondition) {
-                    $data->conditions[] = $singleCondition;
+                    $conditions[] = $singleCondition;
                 }
             } elseif ($count === 1) {
-                /** @var IFilter[] $active */
+                /** @var FilterInterface[] $active */
+                $first = first($active);
                 if ($ignore === null
-                    || (is_object($ignore) && $active[0] !== $ignore)
-                    || (is_string($ignore) && $active[0]->getClassName() !== $ignore)
+                    || (is_object($ignore) && $first !== $ignore)
+                    || (is_string($ignore) && $first->getClassName() !== $ignore)
                 ) {
-                    $itemJoin    = $active[0]->getSQLJoin();
-                    $_condition  = $active[0]->getSQLCondition();
-                    $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
+                    $itemJoin   = $first->getSQLJoin();
+                    $_condition = $first->getSQLCondition();
+                    $joins      = array_merge($joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
                     if (!empty($_condition)) {
-                        $data->conditions[] = "\n#condition from filter " . $type . "\n" . $_condition;
+                        $conditions[] = "\n#condition from filter " . $type . "\n" . $_condition;
                     }
                 }
             } elseif ($count > 0 && ($type !== 'misc' || $type !== 'custom')) {
                 // this is the most clean and usual behaviour.
                 // 'misc' and custom contain clean new filters that can be calculated by just iterating over the array
                 foreach ($active as $filter) {
-                    $itemJoin    = $filter->getSQLJoin();
-                    $_condition  = $filter->getSQLCondition();
-                    $data->joins = array_merge($data->joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
+                    $itemJoin   = $filter->getSQLJoin();
+                    $_condition = $filter->getSQLCondition();
+                    $joins      = array_merge($joins, is_array($itemJoin) ? $itemJoin : [$itemJoin]);
                     if (!empty($_condition)) {
-                        $data->conditions[] = "\n#condition from filter " . $type . "\n" . $_condition;
+                        $conditions[] = "\n#condition from filter " . $type . "\n" . $_condition;
                     }
                 }
             }
         }
+        $data->setConditions($conditions);
+        $data->setHaving($having);
+        $data->setJoins($joins);
 
         return $data;
     }
@@ -1946,8 +1933,8 @@ class ProductFilter
         }
         $method = 'get' . $mapped;
         $result = $this->$method();
-        if (is_a($result, 'IFilter')) {
-            /** @var IFilter $result */
+        if (is_a($result, FilterInterface::class)) {
+            /** @var FilterInterface $result */
             return $result->isInitialized();
         }
 

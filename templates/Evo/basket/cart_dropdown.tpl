@@ -7,7 +7,7 @@
                     {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL}
                         <tr>
                             <td class="item-image">
-                                {if $oPosition->Artikel->Bilder[0]->cPfadMini !== $BILD_KEIN_ARTIKELBILD_VORHANDEN}
+                                {if $oPosition->Artikel->Bilder[0]->cPfadMini !== $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}
                                     <img src="{$oPosition->Artikel->Bilder[0]->cURLMini}" alt="" class="img-sm" />
                                 {/if}
                             </td>

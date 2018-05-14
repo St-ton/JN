@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class AdminIO
+ */
 class AdminIO extends IO
 {
     /**
@@ -12,10 +15,10 @@ class AdminIO extends IO
     protected $oAccount;
 
     /**
-     * @param $oAccount
+     * @param AdminAccount $oAccount
      * @return $this
      */
-    public function setAccount($oAccount)
+    public function setAccount(AdminAccount $oAccount)
     {
         $this->oAccount = $oAccount;
 

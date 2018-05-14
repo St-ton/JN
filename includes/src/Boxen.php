@@ -83,7 +83,12 @@ class Boxen
         if ($nSeite >= 0) {
             $cSQL = 'WHERE (cVerfuegbar = "' . (int)$nSeite . '" OR cVerfuegbar = "0")';
         }
-        $oVorlage_arr = Shop::Container()->getDB()->query("SELECT * FROM tboxvorlage " . $cSQL . " ORDER BY cVerfuegbar ASC", 2);
+        $oVorlage_arr = Shop::Container()->getDB()->query(
+            "SELECT * 
+                FROM tboxvorlage " . $cSQL . " 
+                ORDER BY cVerfuegbar ASC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
         foreach ($oVorlage_arr as $oVorlage) {
             $nID   = 0;
             $cName = 'Vorlage';
@@ -163,165 +168,165 @@ class Boxen
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
                 WHERE tboxensichtbar.kSeite = " . $nSeite . $cPluginAktiv .
                     " AND tboxen.kContainer = 0 " . $cSQLAktiv . "
-                ORDER BY tboxensichtbar.nSort ASC", 2
+                ORDER BY tboxensichtbar.nSort ASC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (is_array($oBoxen_arr)) {
-            foreach ($oBoxen_arr as $oBox) {
-                $oBox->kBox        = (int)$oBox->kBox;
-                $oBox->kBoxvorlage = (int)$oBox->kBoxvorlage;
-                $oBox->kCustomID   = (int)$oBox->kCustomID;
-                $oBox->kContainer  = (int)$oBox->kContainer;
-                $oBox->kSeite      = (int)$oBox->kSeite;
-                $oBox->nSort       = (int)$oBox->nSort;
-                $oBox->bAktiv      = (int)$oBox->bAktiv;
-                if (!empty($oBox->cFilter)) {
-                    $_tmp          = explode(',', $oBox->cFilter);
-                    $filterOptions = [];
-                    foreach ($_tmp as $_filterValue) {
-                        $filterEntry       = [];
-                        $filterEntry['id'] = $_filterValue;
-                        $name              = null;
-                        if ($nSeite === PAGE_ARTIKELLISTE) { //map category name
-                            $name = Shop::Container()->getDB()->select(
-                                'tkategorie',
-                                'kKategorie', (int)$_filterValue,
-                                null, null,
-                                null, null,
-                                false,
-                                'cName'
-                            );
-                        } elseif ($nSeite === PAGE_ARTIKEL) { //map article name
-                            $name = Shop::Container()->getDB()->select(
-                                'tartikel',
-                                'kArtikel', (int)$_filterValue,
-                                null, null,
-                                null, null,
-                                false,
-                                'cName'
-                            );
-                        } elseif ($nSeite === PAGE_HERSTELLER) { //map manufacturer name
-                            $name = Shop::Container()->getDB()->select(
-                                'thersteller',
-                                'kHersteller', (int)$_filterValue,
-                                null, null,
-                                null, null,
-                                false,
-                                'cName'
-                            );
-                        } elseif ($nSeite === PAGE_EIGENE) { //map page name
-                            $name = Shop::Container()->getDB()->select(
-                                'tlink',
-                                'kLink', (int)$_filterValue,
-                                null, null,
-                                null, null,
-                                false,
-                                'cName'
-                            );
-                        }
-                        $filterEntry['name'] = !empty($name->cName) ? $name->cName : '???';
-                        $filterOptions[]     = $filterEntry;
-                    }
-                    $oBox->cFilter = $filterOptions;
-                } else {
-                    $oBox->cFilter = [];
-                }
-                unset($oBox->pluginStatus);
-                if ($oBox->eTyp === 'plugin') {
-                    $cacheTags[] = CACHING_GROUP_PLUGIN . '_' . $oBox->kCustomID;
-                }
-                if ($force === true 
-                    || (isset($this->visibility[$oBox->ePosition]) && $this->visibility[$oBox->ePosition] === true)
-                ) {
-                    $kContainer           = (int)$oBox->kBox;
-                    $oBox->oContainer_arr = [];
-                    $oBox->nContainer     = 0;
-                    if ($kContainer > 0) {
-                        $oContainerBoxen_arr = Shop::Container()->getDB()->query(
-                            "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, 
-                                tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, tboxensichtbar.bAktiv, 
-                                tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate
-                                FROM tboxen
-                                LEFT JOIN tboxensichtbar
-                                    ON tboxen.kBox = tboxensichtbar.kBox
-                                LEFT JOIN tboxvorlage
-                                    ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                                WHERE (tboxensichtbar.kSeite = " . $nSeite . ")
-                                    AND tboxen.kContainer = " . $kContainer . $cSQLAktiv . "
-                                    ORDER BY tboxensichtbar.nSort ASC", 2
+        foreach ($oBoxen_arr as $oBox) {
+            $oBox->kBox        = (int)$oBox->kBox;
+            $oBox->kBoxvorlage = (int)$oBox->kBoxvorlage;
+            $oBox->kCustomID   = (int)$oBox->kCustomID;
+            $oBox->kContainer  = (int)$oBox->kContainer;
+            $oBox->kSeite      = (int)$oBox->kSeite;
+            $oBox->nSort       = (int)$oBox->nSort;
+            $oBox->bAktiv      = (int)$oBox->bAktiv;
+            if (!empty($oBox->cFilter)) {
+                $_tmp          = explode(',', $oBox->cFilter);
+                $filterOptions = [];
+                foreach ($_tmp as $_filterValue) {
+                    $filterEntry       = [];
+                    $filterEntry['id'] = (int)$_filterValue;
+                    $name              = null;
+                    if ($nSeite === PAGE_ARTIKELLISTE) { //map category name
+                        $name = Shop::Container()->getDB()->select(
+                            'tkategorie',
+                            'kKategorie', (int)$_filterValue,
+                            null, null,
+                            null, null,
+                            false,
+                            'cName'
                         );
-                        if (count($oContainerBoxen_arr) > 0) {
-                            foreach ($oContainerBoxen_arr as $childBox) {
-                                $childBox->bContainer  = 0;
-                                $childBox->kBox        = (int)$childBox->kBox;
-                                $childBox->kBoxvorlage = (int)$childBox->kBoxvorlage;
-                                $childBox->kCustomID   = (int)$childBox->kCustomID;
-                                $childBox->kContainer  = (int)$childBox->kContainer;
-                                $childBox->kSeite      = (int)$childBox->kSeite;
-                                $childBox->nSort       = (int)$childBox->nSort;
-                                $childBox->bAktiv      = (int)$childBox->bAktiv;
-                                $oVisible_arr     = Shop::Container()->getDB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$childBox->kBox, 1]);
-                                if (count($oVisible_arr) >= count($validPageTypes)) {
-                                    $childBox->cVisibleOn = "sichtbar auf allen Seiten";
-                                    $childBox->nVisibility = 1;
-                                } elseif (count($oVisible_arr) === 0) {
-                                    $childBox->cVisibleOn = "auf keiner Seite sichtbar";
-                                    $childBox->nVisibility = 0;
-                                } else {
-                                    $childBox->cVisibleOn = "sichtbar auf manchen Seiten";
-                                    $childBox->nVisibility = 2;
-                                }
-                            }
-                            $oBox->oContainer_arr = $oContainerBoxen_arr;
-                            $oBox->nContainer     = count($oContainerBoxen_arr);
-                        }
+                    } elseif ($nSeite === PAGE_ARTIKEL) { //map article name
+                        $name = Shop::Container()->getDB()->select(
+                            'tartikel',
+                            'kArtikel', (int)$_filterValue,
+                            null, null,
+                            null, null,
+                            false,
+                            'cName'
+                        );
+                    } elseif ($nSeite === PAGE_HERSTELLER) { //map manufacturer name
+                        $name = Shop::Container()->getDB()->select(
+                            'thersteller',
+                            'kHersteller', (int)$_filterValue,
+                            null, null,
+                            null, null,
+                            false,
+                            'cName'
+                        );
+                    } elseif ($nSeite === PAGE_EIGENE) { //map page name
+                        $name = Shop::Container()->getDB()->select(
+                            'tlink',
+                            'kLink', (int)$_filterValue,
+                            null, null,
+                            null, null,
+                            false,
+                            'cName'
+                        );
                     }
-                    if (empty($oBox->cTitel)) {
-                        $oBox->cTitel = $oBox->cName;
-                    }
-                    if ($bAktiv && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox')) {
-                        $cISO           = !empty($_SESSION['cISOSprache'])
-                            ? $_SESSION['cISOSprache']
-                            : 'ger';
-                        $oBox->cTitel   = '';
-                        $oBox->cInhalt  = '';
-                        $oSpracheInhalt = $this->gibBoxInhalt($oBox->kBox, $cISO);
-                        if (is_object($oSpracheInhalt)) {
-                            $oBox->cTitel  = $oSpracheInhalt->cTitel;
-                            $oBox->cInhalt = $oSpracheInhalt->cInhalt;
-                        }
-                    } elseif ($bAktiv && $oBox->kBoxvorlage === 0 && !empty($oBox->oContainer_arr)) { //container
-                        foreach ($oBox->oContainer_arr as $_box) {
-                            if (isset($_box->eTyp) && ($_box->eTyp === 'text' || $_box->eTyp === 'catbox')) {
-                                $cISO           = !empty($_SESSION['cISOSprache'])
-                                    ? $_SESSION['cISOSprache']
-                                    : 'ger';
-                                $_box->cTitel   = '';
-                                $_box->cInhalt  = '';
-                                $oSpracheInhalt = $this->gibBoxInhalt($_box->kBox, $cISO);
-                                if (is_object($oSpracheInhalt)) {
-                                    $_box->cTitel  = $oSpracheInhalt->cTitel;
-                                    $_box->cInhalt = $oSpracheInhalt->cInhalt;
-                                }
-                            }
-                        }
-                    }
-                    $oBox->bContainer = $oBox->kBoxvorlage === 0;
-                    if ($bVisible) {
-                        $oBox->cVisibleOn = '';
-                        $oVisible_arr     = Shop::Container()->getDB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$oBox->kBox, 1]);
-                        if (count($oVisible_arr) >= count($validPageTypes)) {
-                            $oBox->cVisibleOn = "sichtbar auf allen Seiten";
-                            $oBox->nVisibility = 1;
-                        } elseif (count($oVisible_arr) === 0) {
-                            $oBox->cVisibleOn = "auf keiner Seite sichtbar";
-                            $oBox->nVisibility = 0;
-                        } else {
-                            $oBox->cVisibleOn = "sichtbar auf manchen Seiten";
-                            $oBox->nVisibility = 2;
-                        }
-                    }
-                    $oBox_arr[$oBox->ePosition][] = $oBox;
+                    $filterEntry['name'] = $name->cName ?? '???';
+                    $filterOptions[]     = $filterEntry;
                 }
+                $oBox->cFilter = $filterOptions;
+            } else {
+                $oBox->cFilter = [];
+            }
+            unset($oBox->pluginStatus);
+            if ($oBox->eTyp === 'plugin') {
+                $cacheTags[] = CACHING_GROUP_PLUGIN . '_' . $oBox->kCustomID;
+            }
+            if ($force === true
+                || (isset($this->visibility[$oBox->ePosition]) && $this->visibility[$oBox->ePosition] === true)
+            ) {
+                $kContainer           = (int)$oBox->kBox;
+                $oBox->oContainer_arr = [];
+                $oBox->nContainer     = 0;
+                if ($kContainer > 0) {
+                    $oContainerBoxen_arr = Shop::Container()->getDB()->query(
+                        "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, 
+                            tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, tboxensichtbar.bAktiv, 
+                            tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate
+                            FROM tboxen
+                            LEFT JOIN tboxensichtbar
+                                ON tboxen.kBox = tboxensichtbar.kBox
+                            LEFT JOIN tboxvorlage
+                                ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                            WHERE (tboxensichtbar.kSeite = " . $nSeite . ")
+                                AND tboxen.kContainer = " . $kContainer . $cSQLAktiv . "
+                                ORDER BY tboxensichtbar.nSort ASC",
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
+                    );
+                    if (count($oContainerBoxen_arr) > 0) {
+                        foreach ($oContainerBoxen_arr as $childBox) {
+                            $childBox->bContainer  = 0;
+                            $childBox->kBox        = (int)$childBox->kBox;
+                            $childBox->kBoxvorlage = (int)$childBox->kBoxvorlage;
+                            $childBox->kCustomID   = (int)$childBox->kCustomID;
+                            $childBox->kContainer  = (int)$childBox->kContainer;
+                            $childBox->kSeite      = (int)$childBox->kSeite;
+                            $childBox->nSort       = (int)$childBox->nSort;
+                            $childBox->bAktiv      = (int)$childBox->bAktiv;
+                            $oVisible_arr     = Shop::Container()->getDB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$childBox->kBox, 1]);
+                            if (count($oVisible_arr) >= count($validPageTypes)) {
+                                $childBox->cVisibleOn = "sichtbar auf allen Seiten";
+                                $childBox->nVisibility = 1;
+                            } elseif (count($oVisible_arr) === 0) {
+                                $childBox->cVisibleOn = "auf keiner Seite sichtbar";
+                                $childBox->nVisibility = 0;
+                            } else {
+                                $childBox->cVisibleOn = "sichtbar auf manchen Seiten";
+                                $childBox->nVisibility = 2;
+                            }
+                        }
+                        $oBox->oContainer_arr = $oContainerBoxen_arr;
+                        $oBox->nContainer     = count($oContainerBoxen_arr);
+                    }
+                }
+                if (empty($oBox->cTitel)) {
+                    $oBox->cTitel = $oBox->cName;
+                }
+                if ($bAktiv && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox')) {
+                    $cISO           = !empty($_SESSION['cISOSprache'])
+                        ? $_SESSION['cISOSprache']
+                        : 'ger';
+                    $oBox->cTitel   = '';
+                    $oBox->cInhalt  = '';
+                    $oSpracheInhalt = $this->gibBoxInhalt($oBox->kBox, $cISO);
+                    if (is_object($oSpracheInhalt)) {
+                        $oBox->cTitel  = $oSpracheInhalt->cTitel;
+                        $oBox->cInhalt = $oSpracheInhalt->cInhalt;
+                    }
+                } elseif ($bAktiv && $oBox->kBoxvorlage === 0 && !empty($oBox->oContainer_arr)) { //container
+                    foreach ($oBox->oContainer_arr as $_box) {
+                        if (isset($_box->eTyp) && ($_box->eTyp === 'text' || $_box->eTyp === 'catbox')) {
+                            $cISO           = !empty($_SESSION['cISOSprache'])
+                                ? $_SESSION['cISOSprache']
+                                : 'ger';
+                            $_box->cTitel   = '';
+                            $_box->cInhalt  = '';
+                            $oSpracheInhalt = $this->gibBoxInhalt($_box->kBox, $cISO);
+                            if (is_object($oSpracheInhalt)) {
+                                $_box->cTitel  = $oSpracheInhalt->cTitel;
+                                $_box->cInhalt = $oSpracheInhalt->cInhalt;
+                            }
+                        }
+                    }
+                }
+                $oBox->bContainer = $oBox->kBoxvorlage === 0;
+                if ($bVisible) {
+                    $oBox->cVisibleOn = '';
+                    $oVisible_arr     = Shop::Container()->getDB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$oBox->kBox, 1]);
+                    if (count($oVisible_arr) >= count($validPageTypes)) {
+                        $oBox->cVisibleOn = "sichtbar auf allen Seiten";
+                        $oBox->nVisibility = 1;
+                    } elseif (count($oVisible_arr) === 0) {
+                        $oBox->cVisibleOn = "auf keiner Seite sichtbar";
+                        $oBox->nVisibility = 0;
+                    } else {
+                        $oBox->cVisibleOn = "sichtbar auf manchen Seiten";
+                        $oBox->nVisibility = 2;
+                    }
+                }
+                $oBox_arr[$oBox->ePosition][] = $oBox;
             }
         }
         Shop::Cache()->set($cacheID, $oBox_arr, array_unique($cacheTags));
@@ -405,14 +410,15 @@ class Boxen
                         "SELECT tartikel.kArtikel
                             FROM tbestseller, tartikel
                             LEFT JOIN tartikelsichtbarkeit 
-                                ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                                ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                 AND tbestseller.kArtikel = tartikel.kArtikel
                                 AND round(tbestseller.fAnzahl) >= " . $nAnzahl . "
                                 $this->cVaterSQL
                                 $this->lagerFilter
-                            ORDER BY fAnzahl DESC LIMIT " . $limit, 2
+                            ORDER BY fAnzahl DESC LIMIT " . $limit,
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     if (is_array($menge) && count($menge) > 0) {
                         $rndkeys = array_rand($menge, min($anzahl, count($menge)));
@@ -528,7 +534,8 @@ class Boxen
                                     AND dGueltigBis >= now()) || (dGueltigVon <= now() 
                                     AND dGueltigBis = '0000-00-00 00:00:00'))
                             GROUP BY tumfrage.kUmfrage
-                            ORDER BY tumfrage.dGueltigVon DESC" . $cSQL, 2
+                            ORDER BY tumfrage.dGueltigVon DESC" . $cSQL,
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oUmfrage_arr as $i => $oUmfrage) {
                         $oUmfrage_arr[$i]->cURL     = baueURL($oUmfrage, URLART_UMFRAGE);
@@ -626,7 +633,8 @@ class Boxen
                                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID() . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                                 AND tnews.kSprache = " . $kSprache . "
                             GROUP BY tnewskategorienews.kNewsKategorie
-                            ORDER BY tnewskategorie.nSort DESC" . $cSQL, 2
+                            ORDER BY tnewskategorie.nSort DESC" . $cSQL,
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oNewsKategorie_arr as $i => $oNewsKategorie) {
                         $oNewsKategorie_arr[$i]->cURL     = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
@@ -659,17 +667,20 @@ class Boxen
                     "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
                         month(tnews.dGueltigVon) AS nMonat, year( tnews.dGueltigVon ) AS nJahr, count(*) AS nAnzahl
                         FROM tnews
-                        JOIN tnewsmonatsuebersicht ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
+                        JOIN tnewsmonatsuebersicht 
+                            ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
                             AND tnewsmonatsuebersicht.nJahr = year(tnews.dGueltigVon)
                             AND tnewsmonatsuebersicht.kSprache = " . $kSprache . "
-                        LEFT JOIN tseo ON cKey = 'kNewsMonatsUebersicht'
+                        LEFT JOIN tseo 
+                            ON cKey = 'kNewsMonatsUebersicht'
                             AND kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                             AND tseo.kSprache = " . $kSprache . "
                         WHERE tnews.dGueltigVon < now()
                             AND tnews.nAktiv = 1
                             AND tnews.kSprache = " . $kSprache . "
                         GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
-                        ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
+                        ORDER BY tnews.dGueltigVon DESC" . $cSQL,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($oNewsMonatsUebersicht_arr as $i => $oNewsMonatsUebersicht) {
                     $oNewsMonatsUebersicht_arr[$i]->cURL     = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
@@ -696,7 +707,8 @@ class Boxen
                         WHERE round(fDurchschnittsBewertung) >= " . (int)$this->boxConfig['boxen']['boxen_topbewertet_minsterne'] . "
                         $this->cVaterSQL
                         ORDER BY tartikelext.fDurchschnittsBewertung DESC
-                        LIMIT " . (int)$this->boxConfig['boxen']['boxen_topbewertet_basisanzahl'], 2
+                        LIMIT " . (int)$this->boxConfig['boxen']['boxen_topbewertet_basisanzahl'],
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (count($oTopBewertet_arr) === 0) {
                     break;
@@ -889,7 +901,8 @@ class Boxen
                         WHERE ttag.nAktiv = 1 
                             AND ttag.kSprache = " . $kSprache . " 
                         GROUP BY ttag.kTag 
-                        ORDER BY Anzahl DESC" . $limitSQL, 2
+                        ORDER BY Anzahl DESC" . $limitSQL,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($tagwolke_objs) && ($count = count($tagwolke_objs)) > 0) {
@@ -938,7 +951,8 @@ class Boxen
                             AND tsuchanfrage.nAktiv = 1
                         GROUP BY tsuchanfrage.kSuchanfrage
                         ORDER BY tsuchanfrage.nAnzahlGesuche DESC
-                        LIMIT " . $nWolkenLimit, 2
+                        LIMIT " . $nWolkenLimit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (is_array($oSuchwolke_arr) && ($count = count($oSuchwolke_arr)) > 0) {
                     // Priorität berechnen
@@ -987,7 +1001,8 @@ class Boxen
                             $this->lagerFilter
                             $this->cVaterSQL
                             AND now() < tartikel.dErscheinungsdatum
-                        ORDER BY rand() LIMIT " . $limit, 2
+                        ORDER BY rand() LIMIT " . $limit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
@@ -1055,7 +1070,8 @@ class Boxen
                             AND tartikel.cTopArtikel = 'Y'
                             $this->lagerFilter
                             $this->cVaterSQL
-                        ORDER BY rand() LIMIT " . $limit, 2
+                        ORDER BY rand() LIMIT " . $limit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
@@ -1102,7 +1118,8 @@ class Boxen
                             $this->cVaterSQL
                             AND cNeu = 'Y' 
                             AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
-                        ORDER BY rand() LIMIT " . $limit, 2
+                        ORDER BY rand() LIMIT " . $limit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
@@ -1152,7 +1169,8 @@ class Boxen
                                 OR tartikelsonderpreis.dEnde = '0000-00-00')
                             $this->lagerFilter
                             $this->cVaterSQL
-                        ORDER BY rand() LIMIT " . $limit, 2
+                        ORDER BY rand() LIMIT " . $limit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
@@ -1261,8 +1279,11 @@ class Boxen
             if (is_array($_boxes)) {
                 foreach ($_boxes as $_box) {
                     if (!empty($_box->cFilter)) {
+                        $allowedIDs = [];
+                        foreach ($_box->cFilter as $_filter) {
+                            $allowedIDs[] = (int)$_filter['id'];
+                        }
                         $pageType   = (int)$_box->kSeite;
-                        $allowedIDs = array_map('intval', explode(',', $_box->cFilter));
                         if ($pageType === PAGE_ARTIKELLISTE) {
                             if (!in_array((int)Shop::$kKategorie, $allowedIDs, true)) {
                                 continue;
@@ -1609,12 +1630,13 @@ class Boxen
                 FROM tboxen
                 LEFT JOIN tboxvorlage 
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE kBox = " . $kBox, 1
+                WHERE kBox = " . $kBox,
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if ($oBox && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox')) {
-            $oBox->oSprache_arr = $this->gibBoxInhalt($kBox);
-        }
+        $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox'))
+            ? $this->gibBoxInhalt($kBox)
+            : [];
         $oBox->kBox              = (int)$oBox->kBox;
         $oBox->kBoxvorlage       = (int)$oBox->kBoxvorlage;
         $oBox->supportsRevisions = $oBox->kBoxvorlage === 30 || $oBox->kBoxvorlage === 31; // only "Eigene Box"
@@ -1683,7 +1705,8 @@ class Boxen
                     WHERE tboxensichtbar.kSeite = " . (int)$nSeite . "
                         AND tboxen.ePosition = '" . $ePosition . "'
                         AND tboxen.kContainer = " . (int)$kContainer . "
-                ORDER BY tboxensichtbar.nSort DESC LIMIT 1", 1
+                ORDER BY tboxensichtbar.nSort DESC LIMIT 1",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return $oBox ? ++$oBox->nSort : 0;
@@ -1800,7 +1823,7 @@ class Boxen
      */
     public function gibLinkGruppen()
     {
-        return Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", 2);
+        return Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", \DB\ReturnType::ARRAY_OF_OBJECTS);
     }
 
     /**
@@ -1821,8 +1844,8 @@ class Boxen
     }
 
     /**
-     * @param ProductFilter              $productFilter
-     * @param ProductFilterSearchResults $oSuchergebnisse
+     * @param \Filter\ProductFilter              $productFilter
+     * @param \Filter\ProductFilterSearchResults $oSuchergebnisse
      * @return bool
      */
     public function gibBoxenFilterNach($productFilter, $oSuchergebnisse)
@@ -1977,19 +2000,21 @@ class Boxen
         $layout         = $tpl->getBoxLayoutXML();
         $invisibleBoxes = [];
         foreach ($layout as $position => $isAvailable) {
-            if ($isAvailable === false) {
-                $box = Shop::Container()->getDB()->select('tboxen', 'ePosition', $position);
-                if ($box !== null && isset($box->kBox)) {
-                    $boxes = Shop::Container()->getDB()->query(
-                        "SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
-                            FROM tboxen 
-                                LEFT JOIN tboxvorlage
-                                ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                            WHERE ePosition = '" . $position . "'", 2
-                    );
-                    foreach ($boxes as $box) {
-                        $invisibleBoxes[] = $box;
-                    }
+            if ($isAvailable !== false) {
+                continue;
+            }
+            $box = Shop::Container()->getDB()->select('tboxen', 'ePosition', $position);
+            if ($box !== null && isset($box->kBox)) {
+                $boxes = Shop::Container()->getDB()->query(
+                    "SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
+                        FROM tboxen 
+                            LEFT JOIN tboxvorlage
+                            ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                        WHERE ePosition = '" . $position . "'",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                );
+                foreach ($boxes as $box) {
+                    $invisibleBoxes[] = $box;
                 }
             }
         }

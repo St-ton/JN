@@ -9,12 +9,12 @@
  */
 function speicherStatusemailEinstellungen()
 {
-    if ((int)$_POST['nAktiv'] === 0 ||
-        (valid_email($_POST['cEmail']) &&
-            is_array($_POST['cIntervall_arr']) &&
-            count($_POST['cIntervall_arr']) > 0 &&
-            is_array($_POST['cInhalt_arr']) &&
-            count($_POST['cInhalt_arr']) > 0)
+    if ((int)$_POST['nAktiv'] === 0
+        || (valid_email($_POST['cEmail'])
+            && is_array($_POST['cIntervall_arr'])
+            && count($_POST['cIntervall_arr']) > 0
+            && is_array($_POST['cInhalt_arr'])
+            && count($_POST['cInhalt_arr']) > 0)
     ) {
         if (erstelleStatusemailCron(24)) {
             // Erstellt den Cron Eintrag

@@ -51,16 +51,11 @@ class ExtensionPoint
         $oKey           = $this->getPageKey();
         $oExtension_arr = Shop::Container()->getDB()->query(
             "SELECT * FROM textensionpoint
-                WHERE
-                 (kSprache = '{$this->kSprache}' OR kSprache = 0)
-                    AND
-                 (kKundengruppe = '{$this->kKundengruppe}' OR kKundengruppe = 0)
-                    AND
-                 (nSeite = '{$this->nSeitenTyp}' OR nSeite = 0)
-                    AND
-                 (
-                    (cKey = '{$oKey->cKey}' AND (cValue = '{$oKey->cValue}' OR cValue = '')) OR cValue = ''
-                 )", 2
+                WHERE (kSprache = '{$this->kSprache}' OR kSprache = 0)
+                AND (kKundengruppe = '{$this->kKundengruppe}' OR kKundengruppe = 0)
+                AND (nSeite = '{$this->nSeitenTyp}' OR nSeite = 0)
+                AND ( (cKey = '{$oKey->cKey}' AND (cValue = '{$oKey->cValue}' OR cValue = '')) OR cValue = '')",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oExtension_arr as $oExtension) {
             $oHandle = null;

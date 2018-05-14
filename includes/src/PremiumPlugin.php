@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
 /**
@@ -95,9 +95,10 @@ class PremiumPlugin
      * @var string
      */
     private $downloadLink;
-    
+
     /**
      * PremiumPlugin constructor.
+     *
      * @param string $pluginID
      */
     public function __construct($pluginID)
@@ -128,7 +129,7 @@ class PremiumPlugin
     public function setDownloadLink($link)
     {
         $this->downloadLink = $link;
-        
+
         return $this;
     }
 
@@ -206,7 +207,7 @@ class PremiumPlugin
     public function setServicePartner($sp)
     {
         $this->servicePartner = $sp;
-        
+
         return $this;
     }
 
@@ -282,6 +283,7 @@ class PremiumPlugin
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -336,6 +338,7 @@ class PremiumPlugin
     public function addAdvantage($advantage)
     {
         $this->advantages[] = $advantage;
+
         return $this;
     }
 
@@ -346,6 +349,7 @@ class PremiumPlugin
     public function setAdvantages(array $advantages)
     {
         $this->advantages = $advantages;
+
         return $this;
     }
 
@@ -364,6 +368,7 @@ class PremiumPlugin
     public function addHowTo($howTo)
     {
         $this->howTos[] = $howTo;
+
         return $this;
     }
 
@@ -374,6 +379,7 @@ class PremiumPlugin
     public function setHowTos(array $howTos)
     {
         $this->howTos = $howTos;
+
         return $this;
     }
 
@@ -395,7 +401,7 @@ class PremiumPlugin
         $this->badges[] = $relative
             ? (Shop::getURL() . '/' . PFAD_ADMIN . PFAD_GFX . 'PremiumPlugins/' . $url)
             : $url;
-        
+
         return $this;
     }
 
@@ -406,6 +412,7 @@ class PremiumPlugin
     public function setBadges(array $badges)
     {
         $this->badges = $badges;
+
         return $this;
     }
 
@@ -443,12 +450,12 @@ class PremiumPlugin
      */
     public function addButton($caption, $link, $class = 'btn btn-default', $fa = null, $external = false)
     {
-        $btn             = new stdClass();
-        $btn->link       = $link;
-        $btn->caption    = $caption;
-        $btn->class      = $class;
-        $btn->fa         = $fa;
-        $btn->external   = $external;
+        $btn           = new stdClass();
+        $btn->link     = $link;
+        $btn->caption  = $caption;
+        $btn->class    = $class;
+        $btn->fa       = $fa;
+        $btn->external = $external;
         if ($external === true) {
             $btn->fa .= ' fa-external-link';
         }

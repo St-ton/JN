@@ -110,6 +110,8 @@ if (auth()) {
             if (isset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer'])) {
                 $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] .= ' ' . trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
             }
+            //Trim Konkatenation
+            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] = trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse']);
             unset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
 
             $oRechnungsadresse        = new Rechnungsadresse($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kRechnungsadresse']);
@@ -129,6 +131,8 @@ if (auth()) {
             $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']);
             //Strasse und Hausnummer zusammenführen
             $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse'] .= ' ' . trim($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cHausnummer']);
+            //Trim Konkatenation
+            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse'] = trim($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse']);
             unset($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cHausnummer']);
 
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo'] = Shop::Container()->getDB()->query(

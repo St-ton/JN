@@ -184,12 +184,21 @@ class Preise
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
                 WHERE p.kArtikel = {$kArtikel}
                     {$filterKunde}
-                ORDER BY d.nAnzahlAb", 2);
+                ORDER BY d.nAnzahlAb",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
 
         if (count($prices) > 0) {
             if ($kSteuerklasse === 0) {
                 $tax           =
-                    Shop::Container()->getDB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kSteuerklasse');
+                    Shop::Container()->getDB()->select(
+                        'tartikel',
+                        'kArtikel', $kArtikel,
+                        null, null,
+                        null, null,
+                        false,
+                        'kSteuerklasse'
+                    );
                 $kSteuerklasse = (int)$tax->kSteuerklasse;
             }
             $this->fUst          = gibUst($kSteuerklasse);
@@ -205,8 +214,8 @@ class Preise
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
                     $this->fVKNetto = (float)$price->fVKNetto;
-                    $specialPrice   = Shop::Container()->getDB()->query("
-                        SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
+                    $specialPrice   = Shop::Container()->getDB()->query(
+                        "SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
                             FROM tsonderpreise
                             JOIN tartikel 
@@ -216,9 +225,13 @@ class Preise
                                 AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
                                 AND tartikelsonderpreis.cAktiv = 'Y'
                                 AND tartikelsonderpreis.dStart <= date(now())
-                                AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
-                                AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
-                            WHERE tsonderpreise.kKundengruppe = {$kKundengruppe}", 1);
+                                AND (tartikelsonderpreis.dEnde >= CURDATE() 
+                                    OR tartikelsonderpreis.dEnde = '0000-00-00')
+                                AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand 
+                                    OR tartikelsonderpreis.nIstAnzahl = 0)
+                            WHERE tsonderpreise.kKundengruppe = {$kKundengruppe}",
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
 
                     if (isset($specialPrice->fNettoPreis) && (double)$specialPrice->fNettoPreis < $this->fVKNetto) {
                         $specialPriceValue       = (double)$specialPrice->fNettoPreis;
@@ -305,13 +318,22 @@ class Preise
     {
         $kKundengruppe = (int)$kKundengruppe;
         $kArtikel      = (int)$kArtikel;
-        $obj           = Shop::Container()->getDB()->select('tpreise', 'kArtikel', $kArtikel, 'kKundengruppe', $kKundengruppe);
+        $obj           = Shop::Container()->getDB()->select(
+            'tpreise',
+            'kArtikel', $kArtikel,
+            'kKundengruppe', $kKundengruppe
+        );
         if (!empty($obj->kArtikel)) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
                 $this->$member = $obj->$member;
             }
-            $ust_obj    = Shop::Container()->getDB()->query("SELECT kSteuerklasse FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
+            $ust_obj    = Shop::Container()->getDB()->query(
+                "SELECT kSteuerklasse 
+                    FROM tartikel 
+                    WHERE kArtikel = " . $kArtikel,
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             $this->fUst = gibUst($ust_obj->kSteuerklasse);
             //hat dieser Artikel fuer diese Kundengruppe einen Sonderpreis?
             $sonderpreis = Shop::Container()->getDB()->query(
@@ -324,9 +346,12 @@ class Preise
                         AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
                         AND tartikelsonderpreis.cAktiv = 'Y'
                         AND tartikelsonderpreis.dStart <= date(now())
-                        AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
-                        AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
-                    WHERE tsonderpreise.kKundengruppe = " . $kKundengruppe, 1
+                        AND (tartikelsonderpreis.dEnde >= CURDATE() 
+                            OR tartikelsonderpreis.dEnde = '0000-00-00')
+                        AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand 
+                            OR tartikelsonderpreis.nIstAnzahl = 0)
+                    WHERE tsonderpreise.kKundengruppe = " . $kKundengruppe,
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($sonderpreis->fNettoPreis)) {
                 if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fVKNetto) {

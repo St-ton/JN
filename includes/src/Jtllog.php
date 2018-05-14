@@ -252,7 +252,12 @@ class Jtllog
             }
         }
 
-        $oLog = Shop::Container()->getDB()->query("SELECT count(*) AS nAnzahl FROM tjtllog" . $cSQLWhere, 1);
+        $oLog = Shop::Container()->getDB()->query(
+            "SELECT count(*) AS nAnzahl 
+                FROM tjtllog" .
+                $cSQLWhere,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
 
         return isset($oLog->nAnzahl) && $oLog->nAnzahl > 0
             ? (int)$oLog->nAnzahl
@@ -266,8 +271,16 @@ class Jtllog
      */
     public static function truncateLog()
     {
-        Shop::Container()->getDB()->query("DELETE FROM tjtllog WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < now()", 3);
-        $oObj = Shop::Container()->getDB()->query("SELECT count(*) AS nCount FROM tjtllog", 1);
+        Shop::Container()->getDB()->query(
+            "DELETE FROM tjtllog 
+                WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < now()",
+            \DB\ReturnType::AFFECTED_ROWS
+        );
+        $oObj = Shop::Container()->getDB()->query(
+            "SELECT count(*) AS nCount 
+                FROM tjtllog",
+            \DB\ReturnType::SINGLE_OBJECT
+        );
 
         if (isset($oObj->nCount) && (int)$oObj->nCount > JTLLOG_MAX_LOGSIZE) {
             $nLimit = (int)$oObj->nCount - JTLLOG_MAX_LOGSIZE;

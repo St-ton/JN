@@ -89,9 +89,9 @@ class DBMigrationHelper
                 WHERE `TABLE_SCHEMA` = :schema
                     AND `TABLE_NAME` NOT LIKE 'xplugin_%'
                     AND (`ENGINE` != 'InnoDB' OR `TABLE_COLLATION` != 'utf8_unicode_ci')
-                ORDER BY `TABLE_NAME`", [
-                    'schema' => $database
-                ], 2
+                ORDER BY `TABLE_NAME`",
+            ['schema' => $database],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -111,9 +111,9 @@ class DBMigrationHelper
                     AND `TABLE_NAME` NOT LIKE 'xplugin_%'
                     " . (!empty($excludeStr) ? "AND TABLE_NAME NOT IN ('" . $excludeStr . "')" : '') . "
                     AND (`ENGINE` != 'InnoDB' OR `TABLE_COLLATION` != 'utf8_unicode_ci')
-                ORDER BY `TABLE_NAME` LIMIT 1", [
-                    'schema' => $database
-                ], 1
+                ORDER BY `TABLE_NAME` LIMIT 1",
+            ['schema' => $database],
+            \DB\ReturnType::SINGLE_OBJECT
         );
     }
 
@@ -130,10 +130,9 @@ class DBMigrationHelper
                 FROM information_schema.TABLES
                 WHERE `TABLE_SCHEMA` = :schema
                     AND `TABLE_NAME` = :table
-                ORDER BY `TABLE_NAME` LIMIT 1", [
-                    'schema' => $database,
-                    'table'  => $cTable,
-                ], 1
+                ORDER BY `TABLE_NAME` LIMIT 1",
+            ['schema' => $database, 'table'  => $cTable,],
+            \DB\ReturnType::SINGLE_OBJECT
         );
     }
 
@@ -157,7 +156,8 @@ class DBMigrationHelper
                 WHERE `TABLE_SCHEMA` = :schema
                     {$filter}
                     AND `INDEX_TYPE` = 'FULLTEXT'
-                    ", $params, 2
+                    ", $params,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -192,10 +192,9 @@ class DBMigrationHelper
         $tableStatus = Shop::Container()->getDB()->queryPrepared(
             "SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
-                    AND `Table` LIKE :table", [
-                    'schema' => $database,
-                    'table'  => $cTable,
-                ], 1
+                    AND `Table` LIKE :table",
+            ['schema' => $database, 'table'  => $cTable,],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return is_object($tableStatus) && (int)$tableStatus->In_use > 0;
@@ -216,10 +215,9 @@ class DBMigrationHelper
                     AND `TABLE_NAME` = :table
                     AND `CHARACTER_SET_NAME` IS NOT NULL
                     AND (`CHARACTER_SET_NAME` != 'utf8' OR `COLLATION_NAME` != 'utf8_unicode_ci')
-                ORDER BY `ORDINAL_POSITION`", [
-                    'schema' => $database,
-                    'table'  => $cTable,
-                ], 2
+                ORDER BY `ORDINAL_POSITION`",
+            ['schema' => $database, 'table'  => $cTable],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 

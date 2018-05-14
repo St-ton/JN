@@ -9,12 +9,19 @@
  */
 class SettingSection
 {
-
-    /** @var bool  */
+    /**
+     * @var bool
+     */
     public $hasSectionMarkup = false;
-    /** @var bool  */
+
+    /**
+     * @var bool
+     */
     public $hasValueMarkup = false;
-    /** @var SettingSection[]  */
+
+    /**
+     * @var SettingSection[]
+     */
     private static $instances = [];
 
     /**

@@ -107,7 +107,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     "SELECT kDownload, kDownloadHistory
                          FROM tdownloadhistory
                          WHERE " . $cSQLWhere . "
-                         ORDER BY dErstellt DESC", 2
+                         ORDER BY dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (is_array($oHistoryTMP_arr) && count($oHistoryTMP_arr) > 0) {
                     foreach ($oHistoryTMP_arr as $oHistoryTMP) {

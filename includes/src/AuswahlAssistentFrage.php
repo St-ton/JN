@@ -123,12 +123,11 @@ class AuswahlAssistentFrage
                     FROM tauswahlassistentfrage
                     WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe .
                     $cAktivSQL . "
-                    ORDER BY nSort", 2
+                    ORDER BY nSort",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            if (count($oFrage_arr) > 0) {
-                foreach ($oFrage_arr as $oFrage) {
-                    $oAuswahlAssistentFrage_arr[] = new self($oFrage->kAuswahlAssistentFrage, $bAktiv);
-                }
+            foreach ($oFrage_arr as $oFrage) {
+                $oAuswahlAssistentFrage_arr[] = new self($oFrage->kAuswahlAssistentFrage, $bAktiv);
             }
         }
 

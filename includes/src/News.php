@@ -432,7 +432,8 @@ class News extends MainModel
                         AND tnewskommentar.nAktiv = 1
                     WHERE tnews.kNews = {$kKey}
                     GROUP BY tnews.kNews
-                    LIMIT 1", 1
+                    LIMIT 1",
+                \DB\ReturnType::SINGLE_OBJECT
             );
             $oObj->cUrl = baueURL($oObj, URLART_NEWS);
 

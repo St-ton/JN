@@ -10,7 +10,8 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
+use Filter\Type;
 use Filter\ProductFilter;
 
 /**
@@ -42,14 +43,14 @@ class ItemSearchSpecial extends AbstractFilter
              ->setFrontendName(\Shop::Lang()->get('specificProducts'))
              ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'])
              ->setType($this->getConfig()['navigationsfilter']['search_special_filter_type'] === 'O'
-                 ? AbstractFilter::FILTER_TYPE_OR
-                 : AbstractFilter::FILTER_TYPE_AND);
+                 ? Type::OR()
+                 : Type::AND());
     }
 
     /**
      * @inheritdoc
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         $this->value = is_array($value) ? $value : [(int)$value];
 
@@ -79,7 +80,7 @@ class ItemSearchSpecial extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         $val = $this->getValue();
         if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {
@@ -146,7 +147,7 @@ class ItemSearchSpecial extends AbstractFilter
      */
     public function getSQLCondition(): string
     {
-        $or         = $this->getType() === AbstractFilter::FILTER_TYPE_OR;
+        $or         = $this->getType()->equals(Type::OR());
         $conf       = $this->getConfig();
         $conditions = [];
         foreach ($this->getValue() as $value) {
@@ -219,7 +220,7 @@ class ItemSearchSpecial extends AbstractFilter
     {
         $joins    = [];
         $values   = $this->getValue();
-        $joinType = $this->getType() === AbstractFilter::FILTER_TYPE_AND
+        $joinType = $this->getType() === Type::AND
             ? 'JOIN'
             : 'LEFT JOIN';
         foreach ($values as $value) {
@@ -286,7 +287,7 @@ class ItemSearchSpecial extends AbstractFilter
         $name             = '';
         $options          = [];
         $additionalFilter = new self($this->productFilter);
-        $ignore           = $this->getType() === AbstractFilter::FILTER_TYPE_OR
+        $ignore           = $this->getType()->equals(Type::OR())
             ? $this->getClassName()
             : null;
         for ($i = 1; $i < 7; ++$i) {
@@ -298,78 +299,76 @@ class ItemSearchSpecial extends AbstractFilter
                         ? (int)$min
                         : 100;
 
-                    $state->joins[] = (new FilterJoin())
+                    $state->addJoin((new FilterJoin())
                         ->setComment('bestseller JOIN from ' . __METHOD__)
                         ->setType('JOIN')
                         ->setTable('tbestseller')
                         ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
-                        ->setOrigin(__CLASS__);
-
-                    $state->conditions[] = 'ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl;
+                        ->setOrigin(__CLASS__));
+                    $state->addCondition('ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl);
                     break;
                 case SEARCHSPECIALS_SPECIALOFFERS:
                     $name = \Shop::Lang()->get('specialOffer');
                     if (true || !$this->isInitialized()) {
-                        $state->joins[] = (new FilterJoin())
+                        $state->addJoin((new FilterJoin())
                             ->setComment('special offer JOIN1 from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tartikelsonderpreis')
                             ->setOn('tartikelsonderpreis.kArtikel = tartikel.kArtikel')
-                            ->setOrigin(__CLASS__);
-
-                        $state->joins[] = (new FilterJoin())
+                            ->setOrigin(__CLASS__));
+                        $state->addJoin((new FilterJoin())
                             ->setComment('special offer JOIN2 from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tsonderpreise')
                             ->setOn('tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis')
-                            ->setOrigin(__CLASS__);
+                            ->setOrigin(__CLASS__));
                         $tsonderpreise  = 'tsonderpreise';
                     } else {
                         $tsonderpreise = 'tsonderpreise';
                     }
-                    $state->conditions[] = "tartikelsonderpreis.cAktiv = 'Y' 
-                        AND tartikelsonderpreis.dStart <= now()";
-                    $state->conditions[] = "(tartikelsonderpreis.dEnde >= CURDATE() 
-                        OR tartikelsonderpreis.dEnde = '0000-00-00')";
-                    $state->conditions[] = $tsonderpreise . '.kKundengruppe = ' . $this->getCustomerGroupID();
+                    $state->addCondition("tartikelsonderpreis.cAktiv = 'Y' 
+                        AND tartikelsonderpreis.dStart <= now()");
+                    $state->addCondition("(tartikelsonderpreis.dEnde >= CURDATE() 
+                        OR tartikelsonderpreis.dEnde = '0000-00-00')");
+                    $state->addCondition($tsonderpreise . '.kKundengruppe = ' . $this->getCustomerGroupID());
                     break;
                 case SEARCHSPECIALS_NEWPRODUCTS:
                     $name                = \Shop::Lang()->get('newProducts');
                     $alter_tage          = (($age = $this->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
                         ? (int)$age
                         : 30;
-                    $state->conditions[] = "tartikel.cNeu = 'Y' 
-                        AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt";
+                    $state->addCondition("tartikel.cNeu = 'Y' 
+                        AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt");
                     break;
                 case SEARCHSPECIALS_TOPOFFERS:
                     $name                = \Shop::Lang()->get('topOffer');
-                    $state->conditions[] = "tartikel.cTopArtikel = 'Y'";
+                    $state->addCondition("tartikel.cTopArtikel = 'Y'");
                     break;
                 case SEARCHSPECIALS_UPCOMINGPRODUCTS:
                     $name                = \Shop::Lang()->get('upcomingProducts');
-                    $state->conditions[] = 'now() < tartikel.dErscheinungsdatum';
+                    $state->addCondition('now() < tartikel.dErscheinungsdatum');
                     break;
                 case SEARCHSPECIALS_TOPREVIEWS:
                     $name = \Shop::Lang()->get('topReviews');
                     if (!$this->productFilter->hasRatingFilter()) {
-                        $state->joins[] = (new FilterJoin())
+                        $state->addJoin((new FilterJoin())
                             ->setComment('top reviews JOIN from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tartikelext')
                             ->setOn('tartikelext.kArtikel = tartikel.kArtikel')
-                            ->setOrigin(__CLASS__);
+                            ->setOrigin(__CLASS__));
                     }
-                    $state->conditions[] = 'ROUND(tartikelext.fDurchschnittsBewertung) >= ' .
-                        (int)$this->getConfig()['boxen']['boxen_topbewertet_minsterne'];
+                    $state->addCondition('ROUND(tartikelext.fDurchschnittsBewertung) >= ' .
+                        (int)$this->getConfig()['boxen']['boxen_topbewertet_minsterne']);
                     break;
                 default:
                     break;
             }
             $qry    = $this->productFilter->getFilterSQL()->getBaseQuery(
                 ['tartikel.kArtikel'],
-                $state->joins,
-                $state->conditions,
-                $state->having
+                $state->getJoins(),
+                $state->getConditions(),
+                $state->getHaving()
             );
             $qryRes = \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
             if (($count = count($qryRes)) > 0) {

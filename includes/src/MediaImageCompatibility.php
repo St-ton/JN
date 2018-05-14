@@ -65,14 +65,15 @@ class MediaImageCompatibility implements IMedia
             $barcode       = strtolower(Shop::Container()->getDB()->escape($barcode));
             $seo           = strtolower(Shop::Container()->getDB()->escape($seo));
 
-            $fallback = Shop::Container()->getDB()->executeQuery("
-              SELECT a.kArtikel, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
+            $fallback = Shop::Container()->getDB()->query(
+              "SELECT a.kArtikel, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
               FROM tartikel a 
               WHERE 
-                  LOWER(a.cName) = '{$name}' OR 
-                  LOWER(a.cSeo) = '{$seo}' OR
-                  LOWER(a.cBarcode) = '{$barcode}' OR 
-                  LOWER(a.cArtNr) = '{$articleNumber}'", 1
+                  LOWER(a.cName) = '{$name}' 
+                  OR LOWER(a.cSeo) = '{$seo}' 
+                  OR LOWER(a.cBarcode) = '{$barcode}' 
+                  OR LOWER(a.cArtNr) = '{$articleNumber}'",
+                \DB\ReturnType::SINGLE_OBJECT
             );
         }
 

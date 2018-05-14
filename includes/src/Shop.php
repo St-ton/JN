@@ -252,7 +252,7 @@ final class Shop
     public static $AktuelleSeite;
 
     /**
-     * @var string
+     * @var int
      */
     public static $pageType;
 
@@ -332,7 +332,7 @@ final class Shop
     private static $_settings;
 
     /**
-     * @var IFilter[]
+     * @var \Filter\FilterInterface[]
      */
     public static $customFilters = [];
 
@@ -373,7 +373,7 @@ final class Shop
     /**
      * @return Shop
      */
-    public static function getInstance() : self
+    public static function getInstance(): self
     {
         return self::$_instance ?? new self();
     }
@@ -420,7 +420,7 @@ final class Shop
      * @param mixed  $value
      * @return $this
      */
-    public function _set($key, $value) : self
+    public function _set($key, $value): self
     {
         $this->registry[$key] = $value;
 
@@ -431,7 +431,7 @@ final class Shop
      * @param string $key
      * @return bool
      */
-    public function _has($key) : bool
+    public function _has($key): bool
     {
         return isset($this->registry[$key]);
     }
@@ -458,11 +458,12 @@ final class Shop
     /**
      * @return string
      */
-    public static function getImageBaseURL() : string
+    public static function getImageBaseURL(): string
     {
         if (self::$imageBaseURL === null) {
-            self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL  : self::getURL());
+            self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL : self::getURL());
         }
+
         return self::$imageBaseURL;
     }
 
@@ -473,7 +474,7 @@ final class Shop
      * @deprecated since Shop 5.0 use Shop::Container()->get(JTLApi::class) instead
      * @throws
      */
-    public function RS() : \Network\JTLApi
+    public function RS(): \Network\JTLApi
     {
         return self::Container()->get(\Network\JTLApi::class);
     }
@@ -482,8 +483,9 @@ final class Shop
      * get session instance
      *
      * @return Session
+     * @throws Exception
      */
-    public function Session() : Session
+    public function Session(): Session
     {
         return Session::getInstance();
     }
@@ -494,7 +496,7 @@ final class Shop
      * @return \DB\DbInterface
      * @deprecated since Shop 5 use Shop::Container()->getDB() instead
      */
-    public function _DB() : \DB\DbInterface
+    public function _DB(): \DB\DbInterface
     {
         return self::Container()->getDB();
     }
@@ -503,7 +505,7 @@ final class Shop
      * @return \DB\DbInterface
      * @deprecated since Shop 5 use Shop::Container()->getDB() instead
      */
-    public static function DB() : \DB\DbInterface
+    public static function DB(): \DB\DbInterface
     {
         return self::Container()->getDB();
     }
@@ -513,7 +515,7 @@ final class Shop
      *
      * @return Sprache
      */
-    public function _Language() : Sprache
+    public function _Language(): Sprache
     {
         return Sprache::getInstance();
     }
@@ -523,7 +525,7 @@ final class Shop
      *
      * @return Shopsetting
      */
-    public function Config() : Shopsetting
+    public function Config(): Shopsetting
     {
         return self::$_settings;
     }
@@ -534,7 +536,7 @@ final class Shop
      * @return DbService\GcServiceInterface
      * @deprecated since 5.0 -> use Shop::Container()->getGc() instead
      */
-    public function Gc() : DbService\GcServiceInterface
+    public function Gc(): DbService\GcServiceInterface
     {
         return static::Container()->getDBServiceGC();
     }
@@ -544,7 +546,7 @@ final class Shop
      *
      * @return Jtllog
      */
-    public function Logger() : Jtllog
+    public function Logger(): Jtllog
     {
         return new Jtllog();
     }
@@ -552,7 +554,7 @@ final class Shop
     /**
      * @return PHPSettingsHelper
      */
-    public function PHPSettingsHelper() : PHPSettingsHelper
+    public function PHPSettingsHelper(): PHPSettingsHelper
     {
         return PHPSettingsHelper::getInstance();
     }
@@ -563,7 +565,7 @@ final class Shop
      * @return \Cache\JTLCacheInterface
      * @deprecated since shop 5.0
      */
-    public function _Cache() : \Cache\JTLCacheInterface
+    public function _Cache(): \Cache\JTLCacheInterface
     {
         return self::Container()->getCache();
     }
@@ -575,7 +577,7 @@ final class Shop
      * @param bool $isAdmin
      * @return JTLSmarty
      */
-    public function _Smarty($fast_init = false, $isAdmin = false) : JTLSmarty
+    public function _Smarty($fast_init = false, $isAdmin = false): JTLSmarty
     {
         return JTLSmarty::getInstance($fast_init, $isAdmin);
     }
@@ -585,7 +587,7 @@ final class Shop
      *
      * @return Media
      */
-    public function _Media() : Media
+    public function _Media(): Media
     {
         return Media::getInstance();
     }
@@ -595,7 +597,7 @@ final class Shop
      *
      * @return EventDispatcher
      */
-    public function _Event() : EventDispatcher
+    public function _Event(): EventDispatcher
     {
         return EventDispatcher::getInstance();
     }
@@ -651,7 +653,7 @@ final class Shop
      * @var bool $iso
      * @return int
      */
-    public static function getLanguageID() : int
+    public static function getLanguageID(): int
     {
         return (int)self::$kSprache;
     }
@@ -745,7 +747,7 @@ final class Shop
     /**
      * @return ProductFilter
      */
-    public static function run() : ProductFilter
+    public static function run(): ProductFilter
     {
         self::$kKonfigPos             = verifyGPCDataInteger('ek');
         self::$kKategorie             = verifyGPCDataInteger('k');
@@ -849,7 +851,7 @@ final class Shop
         }
         self::$productFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
         self::seoCheck();
-        self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL  : self::getURL());
+        self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL : self::getURL());
         self::Event()->fire('shop.run');
 
         self::$productFilter->initStates(self::getParameters());
@@ -862,7 +864,7 @@ final class Shop
      *
      * @return array
      */
-    public static function getParameters() : array
+    public static function getParameters(): array
     {
         if (self::$kKategorie > 0 && !Kategorie::isVisible(self::$kKategorie, Session::CustomerGroup()->getID())) {
             self::$kKategorie = 0;
@@ -1125,7 +1127,8 @@ final class Shop
             // manufacturer filter
             if (($seoCount = count($manufSeo)) > 0) {
                 if ($seoCount === 1) {
-                    $oSeo = self::Container()->getDB()->selectAll('tseo', ['cKey', 'cSeo'], ['kHersteller', $manufSeo[0]], 'kKey');
+                    $oSeo = self::Container()->getDB()->selectAll('tseo', ['cKey', 'cSeo'],
+                        ['kHersteller', $manufSeo[0]], 'kKey');
                 } else {
                     $bindValues = [];
                     // PDO::bindValue() is 1-based
@@ -1161,7 +1164,8 @@ final class Shop
                 self::$bSEOMerkmalNotFound = false;
                 foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
                     if ($i > 0 && strlen($cSEOMerkmal) > 0) {
-                        $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
+                        $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo',
+                            $cSEOMerkmal);
                         if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
                             //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
                             $_GET['mf'][] = (int)$oSeo->kKey;
@@ -1376,95 +1380,93 @@ final class Shop
                 self::$AktuelleSeite = '404';
                 self::setPageType(PAGE_404);
             }
-        } else {
-            if (!empty(self::$kLink)) {
-                $linkHelper = LinkHelper::getInstance();
-                $link       = $linkHelper->getPageLink(self::$kLink);
-                $oSeite     = null;
-                if (isset($link->nLinkart)) {
-                    if ($link->nLinkart === LINKTYP_EXTERNE_URL) {
-                        header('Location: ' . $link->cURL, true, 303);
-                        exit;
-                    }
-                    self::$fileName = 'seite.php';
-                    self::setPageType(PAGE_EIGENE);
-                    $oSeite = self::Container()->getDB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
-                    if ($link->nLinkart === LINKTYP_STARTSEITE) {
-                        self::setPageType(PAGE_STARTSEITE);
-                    } elseif ($link->nLinkart === LINKTYP_DATENSCHUTZ) {
-                        self::setPageType(PAGE_DATENSCHUTZ);
-                    } elseif ($link->nLinkart === LINKTYP_AGB) {
-                        self::setPageType(PAGE_AGB);
-                    } elseif ($link->nLinkart === LINKTYP_WRB) {
-                        self::setPageType(PAGE_WRB);
-                    } elseif ($link->nLinkart === LINKTYP_VERSAND) {
-                        self::setPageType(PAGE_VERSAND);
-                    } elseif ($link->nLinkart === LINKTYP_LIVESUCHE) {
-                        self::setPageType(PAGE_LIVESUCHE);
-                    } elseif ($link->nLinkart === LINKTYP_TAGGING) {
-                        self::setPageType(PAGE_TAGGING);
-                    } elseif ($link->nLinkart === LINKTYP_HERSTELLER) {
-                        self::setPageType(PAGE_HERSTELLER);
-                    } elseif ($link->nLinkart === LINKTYP_NEWSLETTERARCHIV) {
-                        self::setPageType(PAGE_NEWSLETTERARCHIV);
-                    } elseif ($link->nLinkart === LINKTYP_SITEMAP) {
-                        self::setPageType(PAGE_SITEMAP);
-                    } elseif ($link->nLinkart === LINKTYP_GRATISGESCHENK) {
-                        self::setPageType(PAGE_GRATISGESCHENK);
-                    } elseif ($link->nLinkart === LINKTYP_AUSWAHLASSISTENT) {
-                        self::setPageType(PAGE_AUSWAHLASSISTENT);
-                    } elseif ($link->nLinkart === LINKTYP_404) {
-                        self::setPageType(PAGE_404);
-                    }
+        } elseif (!empty(self::$kLink)) {
+            $linkHelper = LinkHelper::getInstance();
+            $link       = $linkHelper->getPageLink(self::$kLink);
+            $oSeite     = null;
+            if (isset($link->nLinkart)) {
+                if ($link->nLinkart === LINKTYP_EXTERNE_URL) {
+                    header('Location: ' . $link->cURL, true, 303);
+                    exit;
                 }
-                if (!empty($oSeite->cDateiname)) {
-                    self::$fileName = $oSeite->cDateiname;
-                    switch ($oSeite->cDateiname) {
-                        case 'news.php' :
-                            self::$AktuelleSeite = 'NEWS';
-                            self::setPageType(PAGE_NEWS);
-                            break;
-                        case 'jtl.php' :
-                            self::$AktuelleSeite = 'MEIN KONTO';
-                            self::setPageType(PAGE_MEINKONTO);
-                            break;
-                        case 'kontakt.php' :
-                            self::$AktuelleSeite = 'KONTAKT';
-                            self::setPageType(PAGE_KONTAKT);
-                            break;
-                        case 'newsletter.php' :
-                            self::$AktuelleSeite = 'NEWSLETTER';
-                            self::setPageType(PAGE_NEWSLETTER);
-                            break;
-                        case 'pass.php' :
-                            self::$AktuelleSeite = 'PASSWORT VERGESSEN';
-                            self::setPageType(PAGE_PASSWORTVERGESSEN);
-                            break;
-                        case 'registrieren.php' :
-                            self::$AktuelleSeite = 'REGISTRIEREN';
-                            self::setPageType(PAGE_REGISTRIERUNG);
-                            break;
-                        case 'umfrage.php' :
-                            self::$AktuelleSeite = 'UMFRAGE';
-                            self::setPageType(PAGE_UMFRAGE);
-                            break;
-                        case 'warenkorb.php' :
-                            self::$AktuelleSeite = 'WARENKORB';
-                            self::setPageType(PAGE_WARENKORB);
-                            break;
-                        case 'wunschliste.php' :
-                            self::$AktuelleSeite = 'WUNSCHLISTE';
-                            self::setPageType(PAGE_WUNSCHLISTE);
-                            break;
-                        default :
-                            break;
-                    }
-                }
-            } elseif (self::$fileName === null) {
-                self::$fileName      = 'seite.php';
-                self::$AktuelleSeite = 'SEITE';
+                self::$fileName = 'seite.php';
                 self::setPageType(PAGE_EIGENE);
+                $oSeite = self::Container()->getDB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
+                if ($link->nLinkart === LINKTYP_STARTSEITE) {
+                    self::setPageType(PAGE_STARTSEITE);
+                } elseif ($link->nLinkart === LINKTYP_DATENSCHUTZ) {
+                    self::setPageType(PAGE_DATENSCHUTZ);
+                } elseif ($link->nLinkart === LINKTYP_AGB) {
+                    self::setPageType(PAGE_AGB);
+                } elseif ($link->nLinkart === LINKTYP_WRB) {
+                    self::setPageType(PAGE_WRB);
+                } elseif ($link->nLinkart === LINKTYP_VERSAND) {
+                    self::setPageType(PAGE_VERSAND);
+                } elseif ($link->nLinkart === LINKTYP_LIVESUCHE) {
+                    self::setPageType(PAGE_LIVESUCHE);
+                } elseif ($link->nLinkart === LINKTYP_TAGGING) {
+                    self::setPageType(PAGE_TAGGING);
+                } elseif ($link->nLinkart === LINKTYP_HERSTELLER) {
+                    self::setPageType(PAGE_HERSTELLER);
+                } elseif ($link->nLinkart === LINKTYP_NEWSLETTERARCHIV) {
+                    self::setPageType(PAGE_NEWSLETTERARCHIV);
+                } elseif ($link->nLinkart === LINKTYP_SITEMAP) {
+                    self::setPageType(PAGE_SITEMAP);
+                } elseif ($link->nLinkart === LINKTYP_GRATISGESCHENK) {
+                    self::setPageType(PAGE_GRATISGESCHENK);
+                } elseif ($link->nLinkart === LINKTYP_AUSWAHLASSISTENT) {
+                    self::setPageType(PAGE_AUSWAHLASSISTENT);
+                } elseif ($link->nLinkart === LINKTYP_404) {
+                    self::setPageType(PAGE_404);
+                }
             }
+            if (!empty($oSeite->cDateiname)) {
+                self::$fileName = $oSeite->cDateiname;
+                switch ($oSeite->cDateiname) {
+                    case 'news.php' :
+                        self::$AktuelleSeite = 'NEWS';
+                        self::setPageType(PAGE_NEWS);
+                        break;
+                    case 'jtl.php' :
+                        self::$AktuelleSeite = 'MEIN KONTO';
+                        self::setPageType(PAGE_MEINKONTO);
+                        break;
+                    case 'kontakt.php' :
+                        self::$AktuelleSeite = 'KONTAKT';
+                        self::setPageType(PAGE_KONTAKT);
+                        break;
+                    case 'newsletter.php' :
+                        self::$AktuelleSeite = 'NEWSLETTER';
+                        self::setPageType(PAGE_NEWSLETTER);
+                        break;
+                    case 'pass.php' :
+                        self::$AktuelleSeite = 'PASSWORT VERGESSEN';
+                        self::setPageType(PAGE_PASSWORTVERGESSEN);
+                        break;
+                    case 'registrieren.php' :
+                        self::$AktuelleSeite = 'REGISTRIEREN';
+                        self::setPageType(PAGE_REGISTRIERUNG);
+                        break;
+                    case 'umfrage.php' :
+                        self::$AktuelleSeite = 'UMFRAGE';
+                        self::setPageType(PAGE_UMFRAGE);
+                        break;
+                    case 'warenkorb.php' :
+                        self::$AktuelleSeite = 'WARENKORB';
+                        self::setPageType(PAGE_WARENKORB);
+                        break;
+                    case 'wunschliste.php' :
+                        self::$AktuelleSeite = 'WUNSCHLISTE';
+                        self::setPageType(PAGE_WUNSCHLISTE);
+                        break;
+                    default :
+                        break;
+                }
+            }
+        } elseif (self::$fileName === null) {
+            self::$fileName      = 'seite.php';
+            self::$AktuelleSeite = 'SEITE';
+            self::setPageType(PAGE_EIGENE);
         }
         self::check404();
     }
@@ -1472,7 +1474,7 @@ final class Shop
     /**
      * @return bool
      */
-    public static function check404() : bool
+    public static function check404(): bool
     {
         if (self::$is404 !== true) {
             return false;
@@ -1501,7 +1503,7 @@ final class Shop
      * @return ProductFilter
      * @deprecated since 5.0
      */
-    public static function buildNaviFilter($cParameter_arr, $productFilter = null) : ProductFilter
+    public static function buildNaviFilter($cParameter_arr, $productFilter = null): ProductFilter
     {
         trigger_error(__METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead',
             E_USER_DEPRECATED);
@@ -1516,9 +1518,9 @@ final class Shop
      * @param stdClass|null|ProductFilter $productFilter
      * @return ProductFilter
      */
-    public static function buildProductFilter($cParameter_arr, $productFilter = null) : ProductFilter
+    public static function buildProductFilter($cParameter_arr, $productFilter = null): ProductFilter
     {
-        $pf = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
+        $pf = new ProductFilter(self::Lang()->getLangArray(), self::getLanguageID());
         if ($productFilter !== null) {
             foreach (get_object_vars($productFilter) as $k => $v) {
                 $pf->$k = $v;
@@ -1532,7 +1534,7 @@ final class Shop
      * @return ProductFilter
      * @deprecated since 5.0
      */
-    public static function getNaviFilter() : ProductFilter
+    public static function getNaviFilter(): ProductFilter
     {
         trigger_error(__METHOD__ . 'is deprecated. Use ' . __CLASS__ . '::getProductFilter() instead',
             E_USER_DEPRECATED);
@@ -1543,7 +1545,7 @@ final class Shop
     /**
      * @return ProductFilter
      */
-    public static function getProductFilter() : ProductFilter
+    public static function getProductFilter(): ProductFilter
     {
         if (self::$productFilter === null) {
             self::$productFilter = self::buildProductFilter([]);
@@ -1572,7 +1574,7 @@ final class Shop
     /**
      * @return int
      */
-    public static function getShopVersion() : int
+    public static function getShopVersion(): int
     {
         $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
 
@@ -1586,7 +1588,7 @@ final class Shop
      *
      * @return int
      */
-    public static function getVersion() : int
+    public static function getVersion(): int
     {
         return JTL_VERSION;
     }
@@ -1594,7 +1596,7 @@ final class Shop
     /**
      * @return int
      */
-    public function _getVersion() : int
+    public function _getVersion(): int
     {
         return JTL_VERSION;
     }
@@ -1637,7 +1639,7 @@ final class Shop
      * @param bool $bMultilang
      * @return string - the shop URL without trailing slash
      */
-    public static function getURL($bForceSSL = false, $bMultilang = true) : string
+    public static function getURL($bForceSSL = false, $bMultilang = true): string
     {
         $idx = (int)$bForceSSL;
         if (isset(self::$url[self::$kSprache][$idx])) {
@@ -1665,7 +1667,7 @@ final class Shop
      * @param bool $bForceSSL
      * @return string - the shop Admin URL without trailing slash
      */
-    public static function getAdminURL($bForceSSL = false) : string
+    public static function getAdminURL($bForceSSL = false): string
     {
         return rtrim(static::getURL($bForceSSL, false) . '/' . PFAD_ADMIN, '/');
     }
@@ -1675,8 +1677,8 @@ final class Shop
      */
     public static function setPageType($pageType)
     {
-        self::$pageType        = $pageType;
-        $GLOBALS['nSeitenTyp'] = $pageType;
+        self::$pageType        = (int)$pageType;
+        $GLOBALS['nSeitenTyp'] = (int)$pageType;
         executeHook(HOOK_SHOP_SET_PAGE_TYPE, ['pageType' => $pageType]);
     }
 
@@ -1691,7 +1693,7 @@ final class Shop
     /**
      * @return string
      */
-    public static function getRequestUri() : string
+    public static function getRequestUri(): string
     {
         $uri          = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         $xShopurl_arr = parse_url(self::getURL());
@@ -1708,8 +1710,9 @@ final class Shop
 
     /**
      * @return bool
+     * @throws Exception
      */
-    public static function isAdmin() : bool
+    public static function isAdmin(): bool
     {
         if (is_bool(self::$_logged)) {
             return self::$_logged;
@@ -1739,7 +1742,7 @@ final class Shop
     /**
      * @return bool
      */
-    public static function isBrandfree() : bool
+    public static function isBrandfree(): bool
     {
         return Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_BRANDFREE);
     }
@@ -1749,7 +1752,7 @@ final class Shop
      *
      * @return \Services\DefaultServicesInterface
      */
-    public static function Container()
+    public static function Container(): \Services\DefaultServicesInterface
     {
         if (!static::$container) {
             static::createContainer();
@@ -1763,7 +1766,7 @@ final class Shop
      *
      * @return \Services\DefaultServicesInterface
      */
-    public function _Container()
+    public function _Container(): \Services\DefaultServicesInterface
     {
         return self::Container();
     }
@@ -1775,16 +1778,13 @@ final class Shop
     {
         $container         = new \Services\Container();
         static::$container = $container;
-
         // BASE
         $container->setSingleton(\DB\DbInterface::class, function () {
             return new DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         });
-
         $container->setSingleton(\Cache\JTLCacheInterface::class, function () {
             return new \Cache\JTLCache();
         });
-
         // SECURITY
         $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function () {
             return new \Services\JTL\CryptoService();
@@ -1793,13 +1793,12 @@ final class Shop
         $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function (Container $container) {
             return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
         });
-
         $container->setSingleton('BackendAuthLogger', function (Container $container) {
             $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
             $handlers    = [];
             foreach ($loggingConf as $value) {
                 if ($value === AdminLoginConfig::CONFIG_DB) {
-                    $handlers[] = (new NiceDBHandler(\Shop::DB(), Logger::INFO))
+                    $handlers[] = (new NiceDBHandler(self::Container()->getDB(), Logger::INFO))
                         ->setFormatter(new LineFormatter('%message%', null, false, true));
                 } elseif ($value === AdminLoginConfig::CONFIG_FILE) {
                     $handlers[] = (new StreamHandler(PFAD_LOGFILES . 'auth.log', Logger::INFO))
@@ -1809,20 +1808,16 @@ final class Shop
 
             return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
         });
-
-        $container->setSingleton(ValidationServiceInterface::class, function() {
+        $container->setSingleton(ValidationServiceInterface::class, function () {
             $vs = new ValidationService($_GET, $_POST, $_COOKIE);
             $vs->setRuleSet('identity', (new RuleSet())->integer()->gt(0));
 
             return $vs;
         });
-            
         // NETWORK & API
         $container->setFactory(\Network\JTLApi::class, function () {
             return new \Network\JTLApi($_SESSION, Nice::getInstance(), self::getInstance());
         });
-
-
         // DB SERVICES
         $container->setSingleton(DbService\GcServiceInterface::class, function (Container $container) {
             return new DbService\GcService($container->getDB());

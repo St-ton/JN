@@ -10,7 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\Items\ItemCategory;
 use Filter\ProductFilter;
 
@@ -71,7 +71,7 @@ class BaseCategory extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         $this->value = (int)$value;
 
@@ -81,7 +81,7 @@ class BaseCategory extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         if ($this->getValue() > 0) {
             $oSeo_arr = \Shop::Container()->getDB()->queryPrepared(

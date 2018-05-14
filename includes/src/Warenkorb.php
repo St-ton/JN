@@ -1682,7 +1682,8 @@ class Warenkorb
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND {$totalWeight} <= vas.fBis )
                     OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND {$maxPrices} <= vas.fBis )
                     )
-                ORDER BY minPrice, nSort ASC LIMIT 1", 1
+                ORDER BY minPrice, nSort ASC LIMIT 1",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         $this->oFavourableShipping = null;

@@ -141,7 +141,8 @@ function gibNews($conf)
                             . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
                         )
                 GROUP BY tnews.kNews
-                ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
+                ORDER BY tnews.dGueltigVon DESC" . $cSQL,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         // URLs bauen
         $shopURL      = Shop::getURL() . '/';
@@ -238,8 +239,8 @@ function gibLivesucheTop($conf)
         && (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count'] > 0)
         ? (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count']
         : 100;
-    $suchwolke_objs = Shop::Container()->getDB()->query("
-        SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
+    $suchwolke_objs = Shop::Container()->getDB()->query(
+        "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
             tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
             DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de
             FROM tsuchanfrage
@@ -250,7 +251,8 @@ function gibLivesucheTop($conf)
             WHERE tsuchanfrage.kSprache = " . Shop::getLanguage() . "
                 AND tsuchanfrage.nAktiv = 1
             ORDER BY tsuchanfrage.nAnzahlGesuche DESC
-            LIMIT " . $limit, 2
+            LIMIT " . $limit,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     // Priorität berechnen
     $count         = count($suchwolke_objs);
@@ -310,7 +312,8 @@ function gibLivesucheLast($conf)
             WHERE tsuchanfrage.kSprache = " . Shop::getLanguage() . "
                 AND tsuchanfrage.nAktiv = 1
             ORDER BY tsuchanfrage.dZuletztGesucht DESC
-            LIMIT " . $limit, 2
+            LIMIT " . $limit,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     // Priorität berechnen
     $count         = count($suchwolke_objs);
@@ -354,7 +357,8 @@ function gibTagging($conf)
             WHERE ttag.nAktiv = 1
                 AND ttag.kSprache = " . Shop::getLanguage() . "
             GROUP BY ttag.cName
-            ORDER BY Anzahl DESC LIMIT " . $limit, 2
+            ORDER BY Anzahl DESC LIMIT " . $limit,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     // Priorität berechnen
     $count        = count($tagwolke_objs);
@@ -450,7 +454,8 @@ function gibSitemapGlobaleMerkmale()
                     AND tmerkmalwertsprache.kSprache = " . Shop::getLanguage() . "
                     {$cMerkmalWhere}
                 GROUP BY tmerkmalwertsprache.kMerkmalWert
-                ORDER BY tmerkmal.nSort, {$cMerkmalTabelle}.cName, tmerkmalwert.nSort, tmerkmalwertsprache.cWert", 2
+                ORDER BY tmerkmal.nSort, {$cMerkmalTabelle}.cName, tmerkmalwert.nSort, tmerkmalwertsprache.cWert",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $nPos    = 0;
         $shopURL = Shop::getURL() . '/';
@@ -580,7 +585,7 @@ function verarbeiteMerkmalWertBild(&$oMerkmalWert)
 
 /**
  * @param array $conf
- * @return mixed
+ * @return array
  */
 function gibBoxNews($conf)
 {
@@ -601,12 +606,13 @@ function gibBoxNews($conf)
                     )
             GROUP BY DATE_FORMAT(dErstellt, '%M')
             ORDER BY dErstellt DESC
-            LIMIT " . $nBoxenLimit, 2
+            LIMIT " . $nBoxenLimit,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
 /**
- * @return mixed
+ * @return array
  */
 function gibSitemapNews()
 {
@@ -626,7 +632,8 @@ function gibSitemapNews()
                     AND tnews.nAktiv = 1
                     AND tnews.kSprache = " . Shop::getLanguage() . "
                 GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
-                ORDER BY tnews.dGueltigVon DESC", 2
+                ORDER BY tnews.dGueltigVon DESC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($overview as $news) {
             $entries = Shop::Container()->getDB()->query(
@@ -654,7 +661,8 @@ function gibSitemapNews()
                         AND (YEAR(tnews.dGueltigVon) = '" . $news->nJahr . "') 
                         && (tnews.dGueltigVon <= now())
                     GROUP BY tnews.kNews
-                    ORDER BY dGueltigVon DESC", 2
+                    ORDER BY dGueltigVon DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($entries as $oNews) {
                 $oNews->cURL     = baueURL($oNews, URLART_NEWS);
@@ -702,7 +710,8 @@ function gibNewsKategorie()
                             . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
                         )
                 GROUP BY tnewskategorienews.kNewsKategorie
-                ORDER BY tnewskategorie.nSort DESC", 2
+                ORDER BY tnewskategorie.nSort DESC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($newsCategories as $newsCategory) {
             $newsCategory->cURL      = baueURL($newsCategory, URLART_NEWSKATEGORIE);
@@ -729,7 +738,8 @@ function gibNewsKategorie()
                                 . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
                             )
                     GROUP BY tnews.kNews
-                    ORDER BY tnews.dGueltigVon DESC", 2
+                    ORDER BY tnews.dGueltigVon DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($entries as $entry) {
                 $entry->cURL     = baueURL($entry, URLART_NEWS);
@@ -771,22 +781,21 @@ function gibGratisGeschenkArtikel($conf)
             AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
             Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() .
             $cSQLSort .
-            $cSQLLimit, 2
+            $cSQLLimit,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-    if (is_array($oArtikelGeschenkTMP_arr) && count($oArtikelGeschenkTMP_arr) > 0) {
-        $defaultOptions = Artikel::getDefaultOptions();
-        foreach ($oArtikelGeschenkTMP_arr as $oArtikelGeschenkTMP) {
-            $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
-            $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkTMP->cWert);
+    $defaultOptions = Artikel::getDefaultOptions();
+    foreach ($oArtikelGeschenkTMP_arr as $oArtikelGeschenkTMP) {
+        $oArtikel = new Artikel();
+        $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
+        $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkTMP->cWert);
 
-            if ($oArtikel->kEigenschaftKombi > 0
-                || !is_array($oArtikel->Variationen)
-                || count($oArtikel->Variationen) === 0
-            ) {
-                $oArtikelGeschenk_arr[] = $oArtikel;
-            }
+        if ($oArtikel->kEigenschaftKombi > 0
+            || !is_array($oArtikel->Variationen)
+            || count($oArtikel->Variationen) === 0
+        ) {
+            $oArtikelGeschenk_arr[] = $oArtikel;
         }
     }
 
@@ -795,7 +804,6 @@ function gibGratisGeschenkArtikel($conf)
 
 /**
  * @param int $nLinkart
- * @return null
  */
 function pruefeSpezialseite($nLinkart)
 {
@@ -811,46 +819,33 @@ function pruefeSpezialseite($nLinkart)
             exit();
         }
     }
-
-    return null;
 }
 
 /**
  * @param array $conf
  * @param JTLSmarty $smarty
  */
-function gibSeiteSitemap($conf, &$smarty)
+function gibSeiteSitemap($conf, $smarty)
 {
     Shop::setPageType(PAGE_SITEMAP);
-    $linkHelper             = LinkHelper::getInstance();
-    $linkGroups             = $linkHelper->getLinkGroups();
-    $cLinkgruppenMember_arr = [];
-    if ($linkGroups !== null && is_object($linkGroups)) {
-        $cLinkgruppenMemberTMP_arr = get_object_vars($linkGroups);
-        if (is_array($cLinkgruppenMemberTMP_arr) && count($cLinkgruppenMemberTMP_arr) > 0) {
-            foreach ($cLinkgruppenMemberTMP_arr as $cLinkgruppe => $cLinkgruppenMemberTMP) {
-                $cLinkgruppenMember_arr[] = $cLinkgruppe;
-            }
-        }
-    }
-    // Smarty Hilfe um die Linksgruppen dynamisch zu bauen
-    $smarty->assign('cLinkgruppenMember_arr', $cLinkgruppenMember_arr);
+    $linkGroups = LinkHelper::getInstance()->getLinkGroups();
 
-    if ($conf['sitemap']['sitemap_kategorien_anzeigen'] === 'Y') {
-        $smarty->assign('oKategorieliste', gibSitemapKategorien());
-    }
-    if ($conf['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y') {
-        $smarty->assign('oGlobaleMerkmale_arr', gibSitemapGlobaleMerkmale());
-    }
-    if ($conf['sitemap']['sitemap_hersteller_anzeigen'] === 'Y') {
-        $smarty->assign('oHersteller_arr', Hersteller::getAll());
-    }
-    if ($conf['news']['news_benutzen'] === 'Y' && $conf['sitemap']['sitemap_news_anzeigen'] === 'Y') {
-        $smarty->assign('oNewsMonatsUebersicht_arr', gibSitemapNews());
-    }
-    if ($conf['sitemap']['sitemap_newskategorien_anzeigen'] === 'Y') {
-        $smarty->assign('oNewsKategorie_arr', gibNewsKategorie());
-    }
+    $smarty->assign('oKategorieliste', $conf['sitemap']['sitemap_kategorien_anzeigen'] === 'Y'
+        ? gibSitemapKategorien()
+        : null);
+    $smarty->assign('oGlobaleMerkmale_arr', $conf['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y'
+        ? gibSitemapGlobaleMerkmale()
+        : null);
+    $smarty->assign('oHersteller_arr', $conf['sitemap']['sitemap_hersteller_anzeigen'] === 'Y'
+        ? Hersteller::getAll()
+        : null);
+    $smarty->assign('oNewsMonatsUebersicht_arr', $conf['news']['news_benutzen'] === 'Y'
+    && $conf['sitemap']['sitemap_news_anzeigen'] === 'Y'
+        ? gibSitemapNews()
+        : null);
+    $smarty->assign('oNewsKategorie_arr', $conf['sitemap']['sitemap_newskategorien_anzeigen'] === 'Y'
+        ? gibNewsKategorie()
+        : null);
 }
 
 /**
@@ -916,6 +911,7 @@ function gibNewsArchiv()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
                     )
             GROUP BY tnews.kNews
-            ORDER BY tnews.dErstellt DESC", 2
+            ORDER BY tnews.dErstellt DESC",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }

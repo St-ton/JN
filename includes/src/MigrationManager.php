@@ -225,9 +225,14 @@ class MigrationManager
      */
     public function getCurrentId()
     {
-        $oVersion = Shop::Container()->getDB()->executeQuery("SELECT kMigration FROM tmigration ORDER BY kMigration DESC", 1);
+        $oVersion = Shop::Container()->getDB()->query(
+            "SELECT kMigration 
+                FROM tmigration 
+                ORDER BY kMigration DESC",
+            \DB\ReturnType::SINGLE_OBJECT
+        );
         if ($oVersion) {
-            return $oVersion->kMigration;
+            return (int)$oVersion->kMigration;
         }
 
         return 0;
@@ -265,7 +270,12 @@ class MigrationManager
     protected function _getExecutedMigrations()
     {
         if ($this->executedMigrations === null) {
-            $migrations = Shop::Container()->getDB()->executeQuery("SELECT * FROM tmigration ORDER BY kMigration ASC", 2);
+            $migrations = Shop::Container()->getDB()->executeQuery(
+                "SELECT * 
+                    FROM tmigration 
+                    ORDER BY kMigration ASC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
             foreach ($migrations as $m) {
                 $this->executedMigrations[$m->kMigration] = new DateTime($m->dExecuted);
             }

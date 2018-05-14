@@ -29,7 +29,8 @@ $oCron_arr = Shop::Container()->getDB()->query(
         WHERE (tcron.dLetzterStart = '0000-00-00 00:00:00' 
             OR (UNIX_TIMESTAMP(now()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
             AND tcron.dStart < now()
-            AND tjobqueue.kJobQueue IS NULL", 2
+            AND tjobqueue.kJobQueue IS NULL",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 if (is_array($oCron_arr) && count($oCron_arr) > 0) {
     foreach ($oCron_arr as $oCronTMP) {

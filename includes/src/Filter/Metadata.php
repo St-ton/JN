@@ -7,11 +7,16 @@
 namespace Filter;
 
 use DB\ReturnType;
+use function Functional\group;
+use function Functional\map;
+use function Functional\reduce_left;
+use function Functional\reindex;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class Metadata
  */
-class Metadata
+class Metadata implements MetadataInterface
 {
     use \MagicCompatibilityTrait;
 
@@ -96,18 +101,17 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getBreadCrumb() : string
+    public function getBreadCrumb(): string
     {
         return $this->breadCrumb;
     }
 
     /**
-     * @param string $breadCrumb
-     * @return $this
+     * @inheritdoc
      */
-    public function setBreadCrumb(string $breadCrumb)
+    public function setBreadCrumb(string $breadCrumb): MetadataInterface
     {
         $this->breadCrumb = $breadCrumb;
 
@@ -115,18 +119,17 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getMetaTitle() : string
+    public function getMetaTitle(): string
     {
         return $this->metaTitle;
     }
 
     /**
-     * @param string $metaTitle
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setMetaTitle($metaTitle)
+    public function setMetaTitle($metaTitle): MetadataInterface
     {
         $this->metaTitle = $metaTitle;
 
@@ -134,18 +137,17 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getMetaDescription() : string
+    public function getMetaDescription(): string
     {
         return $this->metaDescription;
     }
 
     /**
-     * @param string $metaDescription
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setMetaDescription($metaDescription)
+    public function setMetaDescription($metaDescription): MetadataInterface
     {
         $this->metaDescription = $metaDescription;
 
@@ -153,18 +155,17 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getMetaKeywords() : string
+    public function getMetaKeywords(): string
     {
         return $this->metaKeywords;
     }
 
     /**
-     * @param string $metaKeywords
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setMetaKeywords($metaKeywords)
+    public function setMetaKeywords($metaKeywords): MetadataInterface
     {
         $this->metaKeywords = $metaKeywords;
 
@@ -172,7 +173,7 @@ class Metadata
     }
 
     /**
-     * @return \Kategorie
+     * @inheritdoc
      */
     public function getCategory()
     {
@@ -180,10 +181,9 @@ class Metadata
     }
 
     /**
-     * @param \Kategorie $category
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setCategory(\Kategorie $category)
+    public function setCategory(\Kategorie $category): MetadataInterface
     {
         $this->category = $category;
 
@@ -191,7 +191,7 @@ class Metadata
     }
 
     /**
-     * @return \Hersteller
+     * @inheritdoc
      */
     public function getManufacturer()
     {
@@ -199,10 +199,9 @@ class Metadata
     }
 
     /**
-     * @param \Hersteller $manufacturer
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setManufacturer(\Hersteller $manufacturer)
+    public function setManufacturer(\Hersteller $manufacturer): MetadataInterface
     {
         $this->manufacturer = $manufacturer;
 
@@ -210,7 +209,7 @@ class Metadata
     }
 
     /**
-     * @return \MerkmalWert
+     * @inheritdoc
      */
     public function getAttributeValue()
     {
@@ -218,10 +217,9 @@ class Metadata
     }
 
     /**
-     * @param \MerkmalWert $attributeValue
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setAttributeValue(\MerkmalWert $attributeValue)
+    public function setAttributeValue(\MerkmalWert $attributeValue): MetadataInterface
     {
         $this->attributeValue = $attributeValue;
 
@@ -229,18 +227,17 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setName(string $name)
+    public function setName(string $name): MetadataInterface
     {
         $this->name = $name;
 
@@ -248,18 +245,17 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getImageURL() : string
+    public function getImageURL(): string
     {
         return $this->imageURL;
     }
 
     /**
-     * @param string $imageURL
-     * @return Metadata
+     * @inheritdoc
      */
-    public function setImageURL(string $imageURL)
+    public function setImageURL(string $imageURL): MetadataInterface
     {
         $this->imageURL = $imageURL;
 
@@ -267,125 +263,101 @@ class Metadata
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function hasData() : bool
+    public function hasData(): bool
     {
         return !empty($this->imageURL) || !empty($this->name);
     }
 
     /**
-     * Holt die Globalen Metaangaben und Return diese als Assoc Array wobei die Keys => kSprache sind
-     *
-     * @return array
-     * @former holeGlobaleMetaAngaben()
+     * @inheritdoc
      */
-    public static function getGlobalMetaData() : array
+    public static function getGlobalMetaData(): array
     {
-        $cacheID = 'jtl_glob_meta';
-        if (($globalMeta = \Shop::Container()->getCache()->get($cacheID)) !== false) {
-            return $globalMeta;
-        }
-        $globalMeta = [];
-        $globalTmp  = \Shop::Container()->getDB()->query(
-            "SELECT cName, kSprache, cWertName 
-                FROM tglobalemetaangaben ORDER BY kSprache",
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($globalTmp as $data) {
-            if (!isset($globalMeta[$data->kSprache])) {
-                $globalMeta[$data->kSprache] = new \stdClass();
-            }
-            $cName                               = $data->cName;
-            $globalMeta[$data->kSprache]->$cName = $data->cWertName;
-        }
-        \Shop::Container()->getCache()->set($cacheID, $globalMeta, [CACHING_GROUP_CORE]);
+        return \Shop::Container()->getCache()->get('jtl_glob_meta', function ($cache, $id, &$content, &$tags) {
+            $globalTmp = \Shop::Container()->getDB()->query(
+                'SELECT cName, kSprache, cWertName 
+                    FROM tglobalemetaangaben ORDER BY kSprache',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            $content   = map(group($globalTmp, function ($g) {
+                return $g->kSprache;
+            }), function ($item) {
+                return reduce_left($item, function ($value, $index, $collection, $reduction) {
+                    $reduction->{$value->cName} = $value->cWertName;
 
-        return $globalMeta;
+                    return $reduction;
+                }, new \stdClass());
+            });
+            $tags      = [CACHING_GROUP_CORE];
+
+            return true;
+        });
     }
 
     /**
-     * @return array
-     * @former holeExcludedKeywords()
+     * @inheritdoc
      */
-    public static function getExcludes()
+    public static function getExcludes(): array
     {
-        $cacheID = 'jtl_glob_excl';
-        if (($exclude = \Shop::Container()->getCache()->get($cacheID)) === false) {
-            $exclude  = [];
+        return \Shop::Container()->getCache()->get('jtl_glob_excl', function ($cache, $id, &$content, &$tags) {
             $keyWords = \Shop::Container()->getDB()->query(
                 'SELECT * 
                     FROM texcludekeywords 
                     ORDER BY cISOSprache',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            foreach ($keyWords as $keyWord) {
-                $exclude[$keyWord->cISOSprache] = $keyWord;
-            }
-            // CACHING_GROUP_OPTION is flushed @ admin/keywording.php
-            \Shop::Container()->getCache()->set($cacheID, $exclude, [CACHING_GROUP_OPTION]);
-        }
+            $content  = reindex($keyWords, function ($e) {
+                return $e->cISOSprache;
+            });
+            $tags     = [CACHING_GROUP_OPTION];
 
-        return $exclude;
+            return true;
+        });
     }
 
     /**
-     * Erhält einen String aus dem alle nicht erlaubten Wörter rausgefiltert werden
-     *
-     * @param string $cString
-     * @param array  $oExcludesKeywords_arr
-     * @return string
-     * @former gibExcludesKeywordsReplace()
+     * @inheritdoc
      */
-    public static function getFilteredString($cString, $oExcludesKeywords_arr)
+    public static function getFilteredString($cString, array $oExcludesKeywords_arr): string
     {
-        if (is_array($oExcludesKeywords_arr) && count($oExcludesKeywords_arr) > 0) {
-            return str_replace(array_map(
-                function ($k) {
-                    return ' ' . $k . ' ';
-                },
-                $oExcludesKeywords_arr
-            ), ' ', $cString);
-        }
-
-        return $cString;
+        return str_replace(array_map(
+            function ($k) {
+                return ' ' . $k . ' ';
+            },
+            $oExcludesKeywords_arr
+        ), ' ', $cString);
     }
 
     /**
-     * Mapped die Suchspecial Einstellungen und liefert die Einstellungswerte als Assoc Array zurück.
-     * Das Array kann via kKey Assoc angesprochen werden.
-     *
-     * @param array $config
-     * @return array
-     * @former gibSuchspecialEinstellungMapping()
+     * @inheritdoc
      */
-    public static function getSearchSpecialConfigMapping($config)
+    public static function getSearchSpecialConfigMapping(array $config): array
     {
         $mapping = [];
-        if (is_array($config) && count($config) > 0) {
-            foreach ($config as $key => $oSuchspecialEinstellung) {
-                switch ($key) {
-                    case 'suchspecials_sortierung_bestseller':
-                        $mapping[SEARCHSPECIALS_BESTSELLER] = $oSuchspecialEinstellung;
-                        break;
-                    case 'suchspecials_sortierung_sonderangebote':
-                        $mapping[SEARCHSPECIALS_SPECIALOFFERS] = $oSuchspecialEinstellung;
-                        break;
-                    case 'suchspecials_sortierung_neuimsortiment':
-                        $mapping[SEARCHSPECIALS_NEWPRODUCTS] = $oSuchspecialEinstellung;
-                        break;
-                    case 'suchspecials_sortierung_topangebote':
-                        $mapping[SEARCHSPECIALS_TOPOFFERS] = $oSuchspecialEinstellung;
-                        break;
-                    case 'suchspecials_sortierung_inkuerzeverfuegbar':
-                        $mapping[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $oSuchspecialEinstellung;
-                        break;
-                    case 'suchspecials_sortierung_topbewertet':
-                        $mapping[SEARCHSPECIALS_TOPREVIEWS] = $oSuchspecialEinstellung;
-                        break;
-                    default:
-                        break;
-                }
+        foreach ($config as $key => $oSuchspecialEinstellung) {
+            switch ($key) {
+                case 'suchspecials_sortierung_bestseller':
+                    $mapping[SEARCHSPECIALS_BESTSELLER] = $oSuchspecialEinstellung;
+                    break;
+                case 'suchspecials_sortierung_sonderangebote':
+                    $mapping[SEARCHSPECIALS_SPECIALOFFERS] = $oSuchspecialEinstellung;
+                    break;
+                case 'suchspecials_sortierung_neuimsortiment':
+                    $mapping[SEARCHSPECIALS_NEWPRODUCTS] = $oSuchspecialEinstellung;
+                    break;
+                case 'suchspecials_sortierung_topangebote':
+                    $mapping[SEARCHSPECIALS_TOPOFFERS] = $oSuchspecialEinstellung;
+                    break;
+                case 'suchspecials_sortierung_inkuerzeverfuegbar':
+                    $mapping[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $oSuchspecialEinstellung;
+                    break;
+                case 'suchspecials_sortierung_topbewertet':
+                    $mapping[SEARCHSPECIALS_TOPREVIEWS] = $oSuchspecialEinstellung;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -393,11 +365,9 @@ class Metadata
     }
 
     /**
-     * @param \Kategorie|null      $currentCategory
-     * @param \KategorieListe|null $openCategories
-     * @return $this
+     * @inheritdoc
      */
-    public function getNavigationInfo($currentCategory = null, $openCategories = null)
+    public function getNavigationInfo($currentCategory = null, $openCategories = null): MetadataInterface
     {
         if ($currentCategory !== null && $this->productFilter->hasCategory()) {
             $this->category = $currentCategory;
@@ -473,14 +443,14 @@ class Metadata
     }
 
     /**
-     * @param array                      $products
-     * @param ProductFilterSearchResults $searchResults
-     * @param array                      $globalMeta
-     * @param \Kategorie|null            $category
-     * @return string
+     * @inheritdoc
      */
-    public function generateMetaDescription($products, $searchResults, $globalMeta, $category = null)
-    {
+    public function generateMetaDescription(
+        array $products,
+        ProductFilterSearchResultsInterface $searchResults,
+        array $globalMeta,
+        $category = null
+    ): string {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
         $maxLength = !empty($this->conf['metaangaben']['global_meta_maxlaenge_description'])
             ? (int)$this->conf['metaangaben']['global_meta_maxlaenge_description']
@@ -553,8 +523,8 @@ class Metadata
                     : trim($cKatDescription);
                 // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
                 if ($searchResults->getPages()->AktuelleSeite > 1
-                    && $searchResults->getOffsetStart()> 0
-                    && $searchResults->getOffsetEnd()> 0
+                    && $searchResults->getOffsetStart() > 0
+                    && $searchResults->getOffsetEnd() > 0
                 ) {
                     $cMetaDescription .= ', ' . \Shop::Lang()->get('products') .
                         " {$searchResults->getOffsetStart()} - {$searchResults->getOffsetEnd()}";
@@ -586,7 +556,7 @@ class Metadata
             // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
             if ($searchResults->getPages()->AktuelleSeite > 1
                 && $searchResults->getOffsetStart() > 0
-                && $searchResults->getOffsetEnd()> 0
+                && $searchResults->getOffsetEnd() > 0
             ) {
                 $cMetaDescription .= ', ' . \Shop::Lang()->get('products') . ' ' .
                     $searchResults->getOffsetStart() . ' - ' . $searchResults->getOffsetEnd();
@@ -597,11 +567,9 @@ class Metadata
     }
 
     /**
-     * @param array           $products
-     * @param \Kategorie|null $category
-     * @return mixed|string
+     * @inheritdoc
      */
-    public function generateMetaKeywords($products, $category = null)
+    public function generateMetaKeywords($products, $category = null): string
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETAKEYWORDS);
         // Prüfen ob bereits eingestellte Metas gesetzt sind
@@ -701,12 +669,9 @@ class Metadata
     }
 
     /**
-     * @param ProductFilterSearchResults $searchResults
-     * @param array                      $globalMeta
-     * @param \Kategorie|null            $category
-     * @return string
+     * @inheritdoc
      */
-    public function generateMetaTitle($searchResults, $globalMeta, $category = null) : string
+    public function generateMetaTitle($searchResults, $globalMeta, $category = null): string
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
         $languageID = $this->productFilter->getLanguageID();
@@ -766,79 +731,76 @@ class Metadata
     /**
      * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.
      *
-     * @param ProductFilterSearchResults $searchResults
+     * @param ProductFilterSearchResultsInterface $searchResults
      * @return string
      */
-    public function getMetaStart($searchResults)
+    public function getMetaStart($searchResults): string
     {
-        $cMetaTitle = '';
-        // @todo: simplify
+        $parts = new Collection();
         // MerkmalWert
         if ($this->productFilter->hasAttributeValue()) {
-            $cMetaTitle .= $this->productFilter->getAttributeValue()->getName();
+            $parts->push($this->productFilter->getAttributeValue()->getName());
         } elseif ($this->productFilter->hasCategory()) { // Kategorie
-            $cMetaTitle .= $this->productFilter->getCategory()->getName();
+            $parts->push($this->productFilter->getCategory()->getName());
         } elseif ($this->productFilter->hasManufacturer()) { // Hersteller
-            $cMetaTitle .= $this->productFilter->getManufacturer()->getName();
+            $parts->push($this->productFilter->getManufacturer()->getName());
         } elseif ($this->productFilter->hasTag()) { // Tag
-            $cMetaTitle .= $this->productFilter->getTag()->getName();
-        } elseif ($this->productFilter->hasSearch()) { // Suchebegriff
-            $cMetaTitle .= $this->productFilter->getSearch()->getName();
-            //@todo: does this work?
-            //$cMetaTitle .= $this->Suche->getName();
-        } elseif ($this->productFilter->hasSearchQuery()) { // Suchebegriff
-            $cMetaTitle .= $this->productFilter->getSearchQuery()->getName();
+            $parts->push($this->productFilter->getTag()->getName());
+        } elseif ($this->productFilter->hasSearch()) { // Suchbegriff
+            $parts->push($this->productFilter->getSearch()->getName());
+        } elseif ($this->productFilter->hasSearchQuery()) { // Suchbegriff
+            $parts->push($this->productFilter->getSearchQuery()->getName());
         } elseif ($this->productFilter->hasSearchSpecial()) { // Suchspecial
-            $cMetaTitle .= $this->productFilter->getSearchSpecial()->getName();
+            $parts->push($this->productFilter->getSearchSpecial()->getName());
         }
         // Kategoriefilter
         if ($this->productFilter->hasCategoryFilter()) {
-            $cMetaTitle .= ' ' . $this->productFilter->getCategoryFilter()->getName();
+            $parts->push($this->productFilter->getCategoryFilter()->getName());
         }
         // Herstellerfilter
-        $manufacturerFilterOptions = $searchResults->getManufacturerFilterOptions();
-        if (!empty($manufacturerFilterOptions[0]->cName) && $this->productFilter->hasManufacturerFilter()) {
-            $cMetaTitle .= ' ' . $this->productFilter->getManufacturerFilter()->getName();
+        if ($this->productFilter->hasManufacturerFilter()) {
+            $parts->push($this->productFilter->getManufacturerFilter()->getName());
         }
         // Tagfilter
         if ($this->productFilter->hasTagFilter()
-            && $this->productFilter->getTagFilter()[0]->getName() !== null
+            && ($name = $this->productFilter->getTagFilter(0)->getName()) !== null
         ) {
-            $cMetaTitle .= ' ' . $this->productFilter->getTagFilter()[0]->getName();
+            $parts->push($name);
         }
         // Suchbegrifffilter
-        if ($this->productFilter->hasSearchFilter()) {
-            foreach ($this->productFilter->getSearchFilter() as $searchFilter) {
-                if ($searchFilter->getName() !== null) {
-                    $cMetaTitle .= ' ' . $searchFilter->getName();
-                }
-            }
-        }
+        $parts = $parts->merge(collect($this->productFilter->getSearchFilter())
+            ->map(function (FilterInterface $filter, $key) {
+                return $filter->getName();
+            })
+            ->reject(function ($name) {
+                return $name === null;
+            })
+        );
         // Suchspecialfilter
         if ($this->productFilter->hasSearchSpecialFilter()) {
             switch ($this->productFilter->getSearchSpecialFilter()->getValue()) {
                 case SEARCHSPECIALS_BESTSELLER:
-                    $cMetaTitle .= ' ' . \Shop::Lang()->get('bestsellers');
+                    $parts->push(\Shop::Lang()->get('bestsellers'));
                     break;
 
                 case SEARCHSPECIALS_SPECIALOFFERS:
-                    $cMetaTitle .= ' ' . \Shop::Lang()->get('specialOffers');
+                    $parts->push(\Shop::Lang()->get('specialOffers'));
                     break;
 
                 case SEARCHSPECIALS_NEWPRODUCTS:
-                    $cMetaTitle .= ' ' . \Shop::Lang()->get('newProducts');
+                    $parts->push(\Shop::Lang()->get('newProducts'));
                     break;
 
                 case SEARCHSPECIALS_TOPOFFERS:
-                    $cMetaTitle .= ' ' . \Shop::Lang()->get('topOffers');
+                    $parts->push(\Shop::Lang()->get('topOffers'));
                     break;
 
                 case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                    $cMetaTitle .= ' ' . \Shop::Lang()->get('upcomingProducts');
+                    $parts->push(\Shop::Lang()->get('upcomingProducts'));
                     break;
 
                 case SEARCHSPECIALS_TOPREVIEWS:
-                    $cMetaTitle .= ' ' . \Shop::Lang()->get('topReviews');
+                    $parts->push(\Shop::Lang()->get('topReviews'));
                     break;
 
                 default:
@@ -846,22 +808,22 @@ class Metadata
             }
         }
         // MerkmalWertfilter
-        if ($this->productFilter->hasAttributeFilter()) {
-            foreach ($this->productFilter->getAttributeFilter() as $oMerkmalFilter) {
-                if ($oMerkmalFilter->getName() !== null) {
-                    $cMetaTitle .= ' ' . $oMerkmalFilter->getName();
-                }
-            }
-        }
+        $parts = $parts->merge(collect($this->productFilter->getAttributeFilter())
+            ->map(function (FilterInterface $filter, $key) {
+                return $filter->getName();
+            })
+            ->reject(function ($name) {
+                return $name === null;
+            })
+        );
 
-        return ltrim($cMetaTitle);
+        return $parts->implode(' ');
     }
 
     /**
-     * @param string $cTitle
-     * @return string
+     * @inheritdoc
      */
-    public function truncateMetaTitle($cTitle)
+    public function truncateMetaTitle($cTitle): string
     {
         return ($length = (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']) > 0
             ? substr($cTitle, 0, $length)
@@ -869,9 +831,9 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getHeader()
+    public function getHeader(): string
     {
         if ($this->productFilter->hasCategory()) {
             $this->breadCrumb = $this->productFilter->getCategory()->getName();
@@ -913,7 +875,7 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getBreadCrumbName()
     {
@@ -921,14 +883,9 @@ class Metadata
     }
 
     /**
-     * @param bool      $bSeo
-     * @param \stdClass $oSeitenzahlen
-     * @param int       $nMaxAnzeige
-     * @param string    $cFilterShopURL
-     * @return array
-     * @former baueSeitenNaviURL
+     * @inheritdoc
      */
-    public function buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = '')
+    public function buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = ''): array
     {
         if (strlen($cFilterShopURL) > 0) {
             $bSeo = false;
@@ -1057,11 +1014,9 @@ class Metadata
     }
 
     /**
-     * @param int $nDarstellung
-     * @return \stdClass
-     * @former gibErweiterteDarstellung
+     * @inheritdoc
      */
-    public function getExtendedView($nDarstellung = 0)
+    public function getExtendedView($nDarstellung = 0): \stdClass
     {
         if (!isset($_SESSION['oErweiterteDarstellung'])) {
             $nStdDarstellung                                    = 0;
@@ -1184,11 +1139,9 @@ class Metadata
     }
 
     /**
-     * @param bool $bExtendedJTLSearch
-     * @return array
-     * @former gibSortierliste
+     * @inheritdoc
      */
-    public function getSortingOptions($bExtendedJTLSearch = false)
+    public function getSortingOptions($bExtendedJTLSearch = false): array
     {
         $sortingOptions = [];
         $search         = [];
@@ -1227,11 +1180,9 @@ class Metadata
     }
 
     /**
-     * @param array $search
-     * @return null|\stdClass
-     * @former gibNextSortPrio
+     * @inheritdoc
      */
-    public function getNextSearchPriority($search)
+    public function getNextSearchPriority(array $search)
     {
         $max = 0;
         $obj = null;
@@ -1347,9 +1298,9 @@ class Metadata
     }
 
     /**
-     * @param null|\Kategorie $currentCategory
+     * @inheritdoc
      */
-    public function setUserSort($currentCategory = null)
+    public function setUserSort($currentCategory = null): MetadataInterface
     {
         $gpcSort = verifyGPCDataInteger('Sortierung');
         // Der User möchte die Standardsortierung wiederherstellen
@@ -1385,9 +1336,10 @@ class Metadata
             // Gibt die Suchspecials als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
             $oSuchspecialEinstellung_arr = self::getSearchSpecialConfigMapping($this->conf['suchspecials']);
             // -1 = Keine spezielle Sortierung
-            $ssConf = isset($oSuchspecialEinstellung_arr[$this->productFilter->getSearchSpecial()->getValue()]) ?: null;
+            $idx    = $this->productFilter->getSearchSpecial()->getValue();
+            $ssConf = isset($oSuchspecialEinstellung_arr[$idx]) ?: null;
             if ($ssConf !== null && $ssConf !== -1 && count($oSuchspecialEinstellung_arr) > 0) {
-                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$this->productFilter->getSearchSpecial()->getValue()];
+                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$idx];
             }
         }
         // Der User hat expliziet eine Sortierung eingestellt
@@ -1397,13 +1349,14 @@ class Metadata
             $_SESSION['nUsersortierungWahl']    = 1;
             setFsession(0, $_SESSION['Usersortierung'], 0);
         }
+
+        return $this;
     }
 
     /**
-     * @param int|string $sort
-     * @return int
+     * @inheritdoc
      */
-    public static function mapUserSorting($sort)
+    public static function mapUserSorting($sort): int
     {
         // Ist die Usersortierung ein Integer => Return direkt den Integer
         preg_match('/\d+/', $sort, $cTreffer_arr);
@@ -1456,9 +1409,9 @@ class Metadata
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
-    public function getProductsPerPageLimit()
+    public function getProductsPerPageLimit(): int
     {
         if ($this->productFilter->getProductLimit() !== 0) {
             $limit = (int)$this->productFilter->getProductLimit();
@@ -1478,11 +1431,7 @@ class Metadata
     }
 
     /**
-     * implemented for compatibility reasons
-     * should catch checks like isset($oNavigationsinfo->oHersteller)
-     *
-     * @param string $name
-     * @return bool
+     * @inheritdoc
      */
     public function __isset($name)
     {

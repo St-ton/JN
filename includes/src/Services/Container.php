@@ -26,7 +26,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getDB()
+    public function getDB(): DbInterface
     {
         return $this->get(DbInterface::class);
     }
@@ -34,7 +34,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getPasswordService()
+    public function getPasswordService(): PasswordServiceInterface
     {
         return $this->get(PasswordServiceInterface::class);
     }
@@ -42,7 +42,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getCryptoService()
+    public function getCryptoService(): CryptoServiceInterface
     {
         return $this->get(CryptoServiceInterface::class);
     }
@@ -50,7 +50,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getBackendLogService() : LoggerInterface
+    public function getBackendLogService(): LoggerInterface
     {
         return $this->get('BackendAuthLogger');
     }
@@ -58,7 +58,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getDBServiceGC()
+    public function getDBServiceGC(): GcServiceInterface
     {
         return $this->get(GcServiceInterface::class);
     }
@@ -66,7 +66,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getCache()
+    public function getCache(): JTLCacheInterface
     {
         return $this->get(JTLCacheInterface::class);
     }

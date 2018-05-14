@@ -5,7 +5,7 @@
 {block name="head"}
 <head>
     {block name="head-meta"}
-        <meta http-equiv="content-type" content="text/html; charset={if isset($smarty.const.JTL_CHARSET)}{$smarty.const.JTL_CHARSET}{else}utf-8{/if}">
+        <meta http-equiv="content-type" content="text/html; charset={$smarty.const.JTL_CHARSET}">
         <meta name="description" itemprop="description" content={block name="head-meta-description"}"{$meta_description|truncate:1000:"":true}{/block}">
         <meta name="keywords" itemprop="keywords" content="{block name="head-meta-keywords"}{$meta_keywords|truncate:255:"":true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">

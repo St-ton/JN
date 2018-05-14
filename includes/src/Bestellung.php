@@ -430,7 +430,8 @@ class Bestellung
             $warenwert              = Shop::Container()->getDB()->query(
                 "SELECT sum(((fPreis*fMwSt)/100+fPreis)*nAnzahl) AS wert
                     FROM twarenkorbpos
-                    WHERE kWarenkorb = " . (int)$this->kWarenkorb, 1
+                    WHERE kWarenkorb = " . (int)$this->kWarenkorb,
+                \DB\ReturnType::SINGLE_OBJECT
             );
             $date = Shop::Container()->getDB()->query(
                 "SELECT date_format(dVersandDatum,'%d.%m.%Y') AS dVersanddatum_de,
@@ -439,7 +440,8 @@ class Bestellung
                     date_format(dVersandDatum,'%D %M %Y') AS dVersanddatum_en,
                     date_format(dBezahltDatum,'%D %M %Y') AS dBezahldatum_en,
                     date_format(dErstellt,'%D %M %Y') AS dErstelldatum_en
-                    FROM tbestellung WHERE kBestellung = " . (int)$this->kBestellung, 1
+                    FROM tbestellung WHERE kBestellung = " . (int)$this->kBestellung,
+                \DB\ReturnType::SINGLE_OBJECT
             );
         }
         if ($date !== null && is_object($date)) {
@@ -460,7 +462,8 @@ class Bestellung
                         ON tbestellung.kBestellung = " . (int)$this->kBestellung . "
                     JOIN tkunde 
                         ON tkunde.kKunde = tbestellung.kKunde
-                    WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe", 1
+                    WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe",
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oKundengruppeBestellung->nNettoPreise) && $oKundengruppeBestellung->nNettoPreise > 0) {
                 $nNettoPreis = 1;
@@ -892,17 +895,15 @@ class Bestellung
                       JOIN twarenkorbpos
                         ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                           AND nPosTyp = " . (int)$nPosTyp . "
-                      WHERE tbestellung.kBestellung = " . $kBestellung, 2
+                      WHERE tbestellung.kBestellung = " . $kBestellung,
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-
-            if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-                foreach ($oObj_arr as $oObj) {
-                    if (isset($oObj->kWarenkorbPos) && $oObj->kWarenkorbPos > 0) {
-                        if ($bAssoc) {
-                            $oPosition_arr[$oObj->kArtikel] = new WarenkorbPos($oObj->kWarenkorbPos);
-                        } else {
-                            $oPosition_arr[] = new WarenkorbPos($oObj->kWarenkorbPos);
-                        }
+            foreach ($oObj_arr as $oObj) {
+                if (isset($oObj->kWarenkorbPos) && $oObj->kWarenkorbPos > 0) {
+                    if ($bAssoc) {
+                        $oPosition_arr[$oObj->kArtikel] = new WarenkorbPos($oObj->kWarenkorbPos);
+                    } else {
+                        $oPosition_arr[] = new WarenkorbPos($oObj->kWarenkorbPos);
                     }
                 }
             }
@@ -954,10 +955,11 @@ class Bestellung
                     JOIN twarenkorbpos
                         ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                     WHERE tbestellung.kBestellung = " . $kBestellung . "
-                        AND twarenkorbpos.kArtikel = " . $kArtikel, 1
+                        AND twarenkorbpos.kArtikel = " . $kArtikel,
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oObj->nAnzahl) && $oObj->nAnzahl > 0) {
-                return $oObj->nAnzahl;
+                return (int)$oObj->nAnzahl;
             }
         }
 

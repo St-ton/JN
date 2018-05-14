@@ -459,7 +459,7 @@ final class JTLCache implements JTLCacheInterface
             if ($res === true) {
                 $this->set($cacheID, $content, $tags, $expiration);
 
-                return $this->get($cacheID);
+                return $content;
             }
         }
 

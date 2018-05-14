@@ -53,37 +53,37 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         $cPass   = $_POST['passwort'];
         $nReturn = $oAccount->login($cLogin, $cPass);
         switch ($nReturn) {
-            case AdminAccount::ERROR_INVALID_PASSWORD_LOCKED:
+            case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
                 @touch(CAPTCHA_LOCKFILE);
                 break;
 
-            case AdminAccount::ERROR_USER_NOT_FOUND:
-            case AdminAccount::ERROR_INVALID_PASSWORD:
+            case AdminLoginStatus::ERROR_USER_NOT_FOUND:
+            case AdminLoginStatus::ERROR_INVALID_PASSWORD:
                 $cFehler = 'Benutzername oder Passwort falsch';
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Auth-Code abgelaufen';
                 }
                 break;
 
-            case AdminAccount::ERROR_USER_DISABLED:
+            case AdminLoginStatus::ERROR_USER_DISABLED:
                 $cFehler = 'Anmeldung zur Zeit nicht m&ouml;glich';
                 break;
 
-            case AdminAccount::ERROR_LOGIN_EXPIRED:
+            case AdminLoginStatus::ERROR_LOGIN_EXPIRED:
                 $cFehler = 'Anmeldedaten nicht mehr g&uuml;ltig';
                 break;
 
-            case AdminAccount::ERROR_TWO_FACTOR_AUTH_EXPIRED:
+            case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
                 }
                 break;
 
-            case AdminAccount::ERROR_NOT_AUTHORIZED:
+            case AdminLoginStatus::ERROR_NOT_AUTHORIZED:
                 $cFehler = 'Keine Berechtigungen vorhanden';
                 break;
 
-            case AdminAccount::LOGIN_OK:
+            case AdminLoginStatus::LOGIN_OK:
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if (file_exists(CAPTCHA_LOCKFILE)) {
                     unlink(CAPTCHA_LOCKFILE);

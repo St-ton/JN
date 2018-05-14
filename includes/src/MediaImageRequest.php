@@ -242,10 +242,11 @@ class MediaImageRequest
             return $path;
         }
 
-        $item = Shop::Container()->getDB()->query("
-          SELECT kArtikel AS id, nNr AS number, cPfad AS path
-            FROM tartikelpict
-            WHERE kArtikel = {$id} AND nNr = {$number} ORDER BY nNr LIMIT 1", 1
+        $item = Shop::Container()->getDB()->query(
+            "SELECT kArtikel AS id, nNr AS number, cPfad AS path
+                FROM tartikelpict
+                WHERE kArtikel = {$id} AND nNr = {$number} ORDER BY nNr LIMIT 1",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         $path = $item->path ?? null;

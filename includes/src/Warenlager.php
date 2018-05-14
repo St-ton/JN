@@ -457,7 +457,8 @@ class Warenlager extends MainModel
                     "SELECT twarenlager.* {$cSqlSelect}
                          FROM twarenlager
                          {$cSqlJoin}
-                         WHERE twarenlager.kWarenlager = {$kKey}", 1
+                         WHERE twarenlager.kWarenlager = {$kKey}",
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
             }
         }

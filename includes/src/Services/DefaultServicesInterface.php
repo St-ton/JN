@@ -28,27 +28,27 @@ interface DefaultServicesInterface extends ContainerInterface
     /**
      * @return DbInterface
      */
-    public function getDB();
+    public function getDB(): DbInterface;
 
     /**
      * @return PasswordServiceInterface
      */
-    public function getPasswordService();
+    public function getPasswordService(): PasswordServiceInterface;
 
     /**
      * @return CryptoServiceInterface
      */
-    public function getCryptoService();
+    public function getCryptoService(): CryptoServiceInterface;
 
     /**
      * @return GcServiceInterface
      */
-    public function getDBServiceGC();
+    public function getDBServiceGC(): GcServiceInterface;
 
     /**
      * @return JTLCacheInterface
      */
-    public function getCache();
+    public function getCache(): JTLCacheInterface;
 
     /**
      * @return LoggerInterface

@@ -9,7 +9,8 @@ namespace Filter\Items;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
+use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseTag;
 
@@ -29,14 +30,14 @@ class ItemTag extends BaseTag
         parent::__construct($productFilter);
         $this->setUrlParam('tf')
              ->setType($this->getConfig()['navigationsfilter']['tag_filter_type'] === 'O'
-                 ? AbstractFilter::FILTER_TYPE_OR
-                 : AbstractFilter::FILTER_TYPE_AND);
+                 ? Type::OR()
+                 : Type::AND());
     }
 
     /**
      * @inheritdoc
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         $this->value = is_array($value) ? $value : (int)$value;
 

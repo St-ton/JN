@@ -10,7 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\ProductFilter;
 
 /**
@@ -48,7 +48,7 @@ class BaseAttribute extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         $this->value = (int)$value;
 
@@ -58,7 +58,7 @@ class BaseAttribute extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         $oSeo_arr = \Shop::Container()->getDB()->selectAll(
             'tseo',

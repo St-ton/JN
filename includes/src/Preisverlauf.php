@@ -68,23 +68,22 @@ class Preisverlauf
                     WHERE tpreisverlauf.kArtikel = " . $kArtikel . "
                         AND tpreisverlauf.kKundengruppe = " . $kKundengruppe . "
                         AND DATE_SUB(now(), INTERVAL " . $nMonat . " MONTH) < tpreisverlauf.dDate
-                    ORDER BY tpreisverlauf.dDate DESC", 2
+                    ORDER BY tpreisverlauf.dDate DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $_currency = Session::Currency();
-            if (is_array($obj_arr)) {
-                $dt = new DateTime();
-                foreach ($obj_arr as &$_pv) {
-                    if (isset($_pv->timestamp)) {
-                        $dt->setTimestamp($_pv->timestamp);
-                        $_pv->date   = $dt->format('d.m.');
-                        $_pv->fPreis = Session::CustomerGroup()->isMerchant()
-                            ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)
-                            : berechneBrutto($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
-                        $_pv->currency = $_currency->getCode();
-                    }
+            $dt        = new DateTime();
+            foreach ($obj_arr as &$_pv) {
+                if (isset($_pv->timestamp)) {
+                    $dt->setTimestamp($_pv->timestamp);
+                    $_pv->date   = $dt->format('d.m.');
+                    $_pv->fPreis = Session::CustomerGroup()->isMerchant()
+                        ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)
+                        : berechneBrutto($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
+                    $_pv->currency = $_currency->getCode();
                 }
-                unset($_pv);
             }
+            unset($_pv);
             Shop::Cache()->set($cacheID, $obj_arr, [CACHING_GROUP_ARTICLE, CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
         }
 

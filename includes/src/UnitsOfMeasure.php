@@ -81,7 +81,8 @@ class UnitsOfMeasure
             $units_tmp = Shop::Container()->getDB()->query(
                 "SELECT kMassEinheit, cCode
                     FROM tmasseinheit
-                    WHERE cCode IN ('" . implode("', '", array_keys(self::$UCUMcodeToPrint)) . "')", 2
+                    WHERE cCode IN ('" . implode("', '", array_keys(self::$UCUMcodeToPrint)) . "')",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($units_tmp as $unit) {
                 $units[$unit->kMassEinheit] = $unit;

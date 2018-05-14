@@ -10,7 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\ProductFilter;
 use Filter\States\BaseCategory;
 
@@ -85,7 +85,7 @@ class BaseSearchQuery extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         $this->value = (int)$value;
 
@@ -96,7 +96,7 @@ class BaseSearchQuery extends AbstractFilter
      * @param string $name
      * @return $this
      */
-    public function setName($name): IFilter
+    public function setName($name): FilterInterface
     {
         $this->error = null;
         $minChars    = ((int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen'] > 0)
@@ -178,7 +178,7 @@ class BaseSearchQuery extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         $oSeo_obj = \Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
@@ -281,33 +281,33 @@ class BaseSearchQuery extends AbstractFilter
             : '';
         $state  = $this->productFilter->getCurrentStateData();
 
-        $state->joins[] = (new FilterJoin())
+        $state->addJoin((new FilterJoin())
             ->setComment('JOIN1 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcachetreffer')
             ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
-            ->setOrigin(__CLASS__);
-        $state->joins[] = (new FilterJoin())
+            ->setOrigin(__CLASS__));
+        $state->addJoin((new FilterJoin())
             ->setComment('JOIN2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcache')
             ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
-            ->setOrigin(__CLASS__);
-        $state->joins[] = (new FilterJoin())
+            ->setOrigin(__CLASS__));
+        $state->addJoin((new FilterJoin())
             ->setComment('JOIN3 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchanfrage')
             ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
                         AND tsuchanfrage.kSprache = ' . $this->getLanguageID())
-            ->setOrigin(__CLASS__);
+            ->setOrigin(__CLASS__));
 
-        $state->conditions[] = 'tsuchanfrage.nAktiv = 1';
+        $state->addCondition('tsuchanfrage.nAktiv = 1');
 
         $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
             ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
-            $state->joins,
-            $state->conditions,
-            $state->having,
+            $state->getJoins(),
+            $state->getConditions(),
+            $state->getHaving(),
             null,
             '',
             ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']

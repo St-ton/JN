@@ -25,50 +25,50 @@ interface DbInterface extends \Serializable
      *
      * @return $this
      */
-    public function reInit();
+    public function reInit(): DbInterface;
 
     /**
      * close db connection
      *
      * @return bool
      */
-    public function close();
+    public function close(): bool;
 
     /**
      * check if connected
      *
      * @return bool
      */
-    public function isConnected();
+    public function isConnected(): bool;
 
     /**
      * get server version information
      *
      * @return string
      */
-    public function getServerInfo();
+    public function getServerInfo(): string;
 
     /**
      * @return string
      */
-    public function info();
+    public function info(): string;
 
     /**
      * get server stats
      *
      * @return string
      */
-    public function getServerStats();
+    public function getServerStats(): string;
 
     /**
      * @return string
      */
-    public function stats();
+    public function stats(): string;
 
     /**
      * @return \PDO
      */
-    public function getPDO();
+    public function getPDO(): \PDO;
 
     /**
      * insert row into db
@@ -79,7 +79,7 @@ interface DbInterface extends \Serializable
      * @param bool     $bExecuteHook - true -> execute corresponding hook
      * @return int - 0 if fails, PrimaryKeyValue if successful
      */
-    public function insertRow($tableName, $object, $echo = false, $bExecuteHook = false);
+    public function insertRow($tableName, $object, $echo = false, $bExecuteHook = false): int;
 
     /**
      * @param string   $tableName
@@ -88,7 +88,7 @@ interface DbInterface extends \Serializable
      * @param bool     $bExecuteHook
      * @return int
      */
-    public function insert($tableName, $object, $echo = false, $bExecuteHook = false);
+    public function insert($tableName, $object, $echo = false, $bExecuteHook = false): int;
 
     /**
      * update table row
@@ -100,7 +100,7 @@ interface DbInterface extends \Serializable
      * @param int|bool         $echo - true -> print statement
      * @return int - -1 if fails, number of affected rows if successful
      */
-    public function updateRow($tableName, $keyname, $keyvalue, $object, $echo = false);
+    public function updateRow($tableName, $keyname, $keyvalue, $object, $echo = false): int;
 
     /**
      * @param string           $tableName
@@ -108,9 +108,9 @@ interface DbInterface extends \Serializable
      * @param string|int|array $keyvalue
      * @param object           $object
      * @param bool|int         $echo
-     * @return int mixed
+     * @return int
      */
-    public function update($tableName, $keyname, $keyvalue, $object, $echo = false);
+    public function update($tableName, $keyname, $keyvalue, $object, $echo = false): int;
 
     /**
      * selects all (*) values in a single row from a table - gives just one row back!
@@ -270,7 +270,7 @@ interface DbInterface extends \Serializable
      * @param bool|int         $echo - true -> print statement
      * @return int - -1 if fails, #affectedRows if successful
      */
-    public function deleteRow($tableName, $keyname, $keyvalue, $echo = false);
+    public function deleteRow($tableName, $keyname, $keyvalue, $echo = false): int;
 
     /**
      * @param string           $tableName
@@ -279,7 +279,7 @@ interface DbInterface extends \Serializable
      * @param bool|int         $echo
      * @return int
      */
-    public function delete($tableName, $keyname, $keyvalue, $echo = false);
+    public function delete($tableName, $keyname, $keyvalue, $echo = false): int;
 
     /**
      * executes a query and gives back the result
@@ -369,12 +369,12 @@ interface DbInterface extends \Serializable
     /**
      * @return bool
      */
-    public function commit();
+    public function commit(): bool;
 
     /**
      * @return bool
      */
-    public function rollback();
+    public function rollback(): bool;
 
     /**
      * @param string $query

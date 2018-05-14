@@ -24,4 +24,21 @@ class AttributeHelper
             ? $callback($res)
             : $res;
     }
+    /**
+     * @param string        $attribute
+     * @param string        $value
+     * @param callable|null $callback
+     * @return mixed
+     * @since 5.0
+     */
+    public static function getAtrributeByAttribute($attribute, $value, callable $callback = null)
+    {
+        $att = ($res = self::getDataByAttribute($attribute, $value)) !== null
+            ? new Merkmal($res->kMerkmal)
+            : null;
+
+        return is_callable($callback)
+            ? $callback($att)
+            : $att;
+    }
 }

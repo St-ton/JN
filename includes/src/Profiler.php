@@ -136,7 +136,7 @@ class Profiler
      *
      * @return int - 0: none, 1: NiceDB profiler, 2: xhprof, 3: plugin profiler, 4: plugin, xhprof, 5: DB, plugin, 6: DB, xhprof, 7: all
      */
-    public static function getIsActive()
+    public static function getIsActive(): int
     {
         if (PROFILE_QUERIES !== false && PROFILE_SHOP === true && PROFILE_PLUGINS === true
         ) {
@@ -183,7 +183,7 @@ class Profiler
      * @param mixed $data
      * @return bool
      */
-    public static function setPluginProfile($data)
+    public static function setPluginProfile($data): bool
     {
         if (defined('PROFILE_PLUGINS') && PROFILE_PLUGINS === true) {
             self::$pluginProfile[] = $data;
@@ -200,7 +200,7 @@ class Profiler
      * @param mixed $data
      * @return bool
      */
-    public static function setSQLProfile($data)
+    public static function setSQLProfile($data): bool
     {
         if (self::$stopProfiling === false) {
             self::$sqlProfile[] = $data;
@@ -217,7 +217,7 @@ class Profiler
      * @param mixed $data
      * @return bool
      */
-    public static function setSQLError($data)
+    public static function setSQLError($data): bool
     {
         if (self::$stopProfiling === false) {
             self::$sqlErrors[] = $data;
@@ -233,7 +233,7 @@ class Profiler
      *
      * @return bool
      */
-    public static function saveSQLProfile()
+    public static function saveSQLProfile(): bool
     {
         self::$stopProfiling = true;
         if (PROFILE_QUERIES_ECHO !== true && count(self::$sqlProfile) > 0) {
@@ -295,7 +295,7 @@ class Profiler
      *
      * @return bool
      */
-    public static function savePluginProfile()
+    public static function savePluginProfile(): bool
     {
         self::$stopProfiling = true;
         if (defined('PROFILE_PLUGINS') && PROFILE_PLUGINS === true && count(self::$pluginProfile) > 0) {
@@ -364,7 +364,7 @@ class Profiler
      *
      * @return array
      */
-    public static function getCurrentSQLProfile()
+    public static function getCurrentSQLProfile(): array
     {
         return self::$sqlProfile;
     }
@@ -375,7 +375,7 @@ class Profiler
      *
      * @return array
      */
-    public static function getCurrentPluginProfile()
+    public static function getCurrentPluginProfile(): array
     {
         return self::$pluginProfile;
     }
@@ -386,7 +386,7 @@ class Profiler
      *
      * @return array
      */
-    public static function getCurrentCacheProfile()
+    public static function getCurrentCacheProfile(): array
     {
         return self::$cacheProfile;
     }
@@ -397,7 +397,7 @@ class Profiler
      * @param bool $combined
      * @return array
      */
-    public static function getPluginProfiles($combined = false)
+    public static function getPluginProfiles($combined = false): array
     {
         return self::getProfile('plugin', $combined);
     }
@@ -406,7 +406,7 @@ class Profiler
      * @param bool $combined
      * @return array
      */
-    public static function getSQLProfiles($combined = false)
+    public static function getSQLProfiles($combined = false): array
     {
         return self::getProfile('sql', $combined);
     }
@@ -418,7 +418,7 @@ class Profiler
      * @param bool   $combined
      * @return array
      */
-    private static function getProfile($type = 'plugin', $combined = false)
+    private static function getProfile($type = 'plugin', $combined = false): array
     {
         if ($combined === true) {
             return Shop::Container()->getDB()->queryPrepared(
@@ -429,21 +429,19 @@ class Profiler
                     WHERE ptype = :type
                     ORDER BY tprofiler.runID DESC",
                 ['type' => $type],
-                2
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
         $profiles = Shop::Container()->getDB()->selectAll('tprofiler', 'ptype', $type, '*', 'runID DESC');
         $data     = [];
-        if (is_array($profiles)) {
-            foreach ($profiles as $_profile) {
-                $_profile->data = Shop::Container()->getDB()->selectAll(
-                    'tprofiler_runs',
-                    'runID',
-                    (int)$_profile->runID,
-                    '*', 'runtime DESC'
-                );
-                $data[] = $_profile;
-            }
+        foreach ($profiles as $_profile) {
+            $_profile->data = Shop::Container()->getDB()->selectAll(
+                'tprofiler_runs',
+                'runID',
+                (int)$_profile->runID,
+                '*', 'runtime DESC'
+            );
+            $data[] = $_profile;
         }
 
         return $data;
@@ -455,7 +453,7 @@ class Profiler
      * @param string $dir
      * @return bool
      */
-    public static function start($flags = -1, $options = [], $dir = '/tmp')
+    public static function start($flags = -1, $options = [], $dir = '/tmp'): bool
     {
         if (defined('PROFILE_SHOP') && PROFILE_SHOP === true) {
             self::$enabled = true;
@@ -493,7 +491,7 @@ class Profiler
     /**
      * @return bool
      */
-    public static function getIsStarted()
+    public static function getIsStarted(): bool
     {
         return self::$started;
     }
@@ -501,7 +499,7 @@ class Profiler
     /**
      * @return bool
      */
-    public static function finish()
+    public static function finish(): bool
     {
         if (self::$enabled === true && self::$functional === true) {
             self::$data = self::$method === 'xhprof'
@@ -517,7 +515,7 @@ class Profiler
     /**
      * @return array
      */
-    public static function getData()
+    public static function getData(): array
     {
         $html  = '';
         $runID = 0;

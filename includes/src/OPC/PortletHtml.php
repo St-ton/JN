@@ -251,7 +251,7 @@ trait PortletHtml
             case 'checkbox':
                 $res .= "<div class='checkbox$class'><label><input type='checkbox' name='" . $propname . "' value='1'";
                 $res .= $prop === "1" ? " checked" : "";
-                $res .= ">$propname</label></div>";
+                $res .= ">$label</label></div>";
                 break;
             case 'radio':
                 foreach ($propDesc['options'] as $option) {
@@ -339,7 +339,8 @@ trait PortletHtml
                     'propname'   => $propname,
                     'prop'       => $prop,
                     'useColumns' => !empty($propDesc['useColumns']) ? $propDesc['useColumns'] : false,
-                    'useLinks'   => !empty($propDesc['useLinks']) ? $propDesc['useLinks'] : false
+                    'useLinks'   => !empty($propDesc['useLinks']) ? $propDesc['useLinks'] : false,
+                    'useTitles'  => !empty($propDesc['useTitles']) ? $propDesc['useTitles'] : false
                 ]);
                 break;
             case 'text':

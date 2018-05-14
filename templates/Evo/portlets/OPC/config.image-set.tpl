@@ -15,13 +15,18 @@
                      alt="Slidergrafik" class="img-responsive" role="button"/>
             </td>
             <td class="tcenter">
+                {if $useTitles}
+                    <input class="form-control margin2" id="cTitle{$kSlide}" type="text"
+                           name="{$propname}[{$kSlide}][cTitle]" value=""
+                           placeholder="title"/>
+                {/if}
                 <input class="form-control margin2" id="desc{$kSlide}" type="text"
                        name="{$propname}[{$kSlide}][desc]" value=""
                        placeholder="description"/>
                 {if $useLinks}
                     <input class="form-control margin2" id="target-url{$kSlide}" type="text"
                            name="{$propname}[{$kSlide}][target-url]" value=""
-                           placeholder="URL"/>
+                           placeholder="Link URL"/>
                 {/if}
             </td>
             {if $useColumns}
@@ -105,6 +110,12 @@
                                              alt="image for gallery" class="img-responsive" role="button"/>
                                     </td>
                                     <td class="tcenter">
+                                        {if $useTitles}
+                                            <input class="form-control margin2" id="cTitle{$slide.nSort}" type="text"
+                                                   name="{$propname}[slide{$slide.nSort}][cTitle]"
+                                                   value="{if isset($slide['cTitle'])}{$slide['cTitle']}{/if}"
+                                                   placeholder="title"/>
+                                        {/if}
                                         <input class="form-control margin2" id="desc{$slide.nSort}" type="text"
                                                name="{$propname}[slide{$slide.nSort}][desc]"
                                                value="{if isset($slide['desc'])}{$slide['desc']}{/if}"

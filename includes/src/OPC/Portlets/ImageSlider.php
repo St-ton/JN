@@ -229,7 +229,8 @@ class ImageSlider extends \OPC\Portlet
                 'type'       => 'image-set',
                 'default'    => [],
                 'useColumns' => false,
-                'useLinks'   => true
+                'useLinks'   => true,
+                'useTitles'  => true,
             ],
         ];
     }

@@ -1032,7 +1032,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kArtikel', (int)$kArtikel]);
         Shop::Container()->getDB()->delete('tartikel', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tpreise', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tpreisrange', 'kArtikel', $kArtikel);
+        Shop::Container()->getDB()->delete('tpricerange', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelsprache', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelattribut', 'kArtikel', $kArtikel);

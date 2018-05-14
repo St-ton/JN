@@ -28,8 +28,8 @@ class Migration_20180404100149 extends Migration implements IMigration
     public function up()
     {
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `tpreisrange` (
-                `kPreisRange`     INT(11)    UNSIGNED NOT NULL AUTO_INCREMENT,
+            "CREATE TABLE IF NOT EXISTS `tpricerange` (
+                `kPriceRange`     INT(11)    UNSIGNED NOT NULL AUTO_INCREMENT,
                 `kArtikel`        INT(11)    UNSIGNED NOT NULL,
                 `kKundengruppe`   INT(11)    UNSIGNED NOT NULL,
                 `kKunde`          INT(11)    UNSIGNED     NULL,
@@ -39,14 +39,14 @@ class Migration_20180404100149 extends Migration implements IMigration
                 `nLagerAnzahlMax` DOUBLE                  NULL,
                 `dStart`          DATE                    NULL,
                 `dEnde`           DATE                    NULL,
-                PRIMARY KEY (`kPreisRange`),
-                UNIQUE INDEX `tpreisrange_uq` (`kArtikel` ASC, `kKundengruppe` ASC, `kKunde` ASC, `nRangeType` ASC)
+                PRIMARY KEY (`kPriceRange`),
+                UNIQUE INDEX `tpricerange_uq` (`kArtikel` ASC, `kKundengruppe` ASC, `kKunde` ASC, `nRangeType` ASC)
             ) ENGINE = InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'"
         );
     }
 
     public function down()
     {
-        $this->execute("DROP TABLE `tpreisrange`");
+        $this->execute("DROP TABLE `tpricerange`");
     }
 }

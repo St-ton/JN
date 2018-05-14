@@ -4609,7 +4609,7 @@ class Artikel
         $ust           = gibUst($this->kSteuerklasse);
 
         if ((int)Shop::getPageType() === PAGE_ARTIKELLISTE && $this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()) {
-            if ($this->Preise->oPriceRange->rangeWidth() <= $this->conf['artikeluebersicht']['artikeluebersicht_pricerange_width']) {
+            if ($this->Preise->oPriceRange->rangeWidth() <= $this->conf['artikeluebersicht']['articleoverview_pricerange_width']) {
                 $this->cLocalizedVPE[0] = gibPreisStringLocalized(
                     berechneBrutto($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
                     $currency,

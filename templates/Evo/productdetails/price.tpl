@@ -14,7 +14,7 @@
         <span class="price_label price_on_application">{lang key="priceOnApplication" section="global"}</span>
     {else}
         {block name="price-label"}
-            {if ($tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange() && $Artikel->Preise->oPriceRange->rangeWidth() > $Einstellungen.artikeluebersicht.artikeluebersicht_pricerange_width)
+            {if ($tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange() && $Artikel->Preise->oPriceRange->rangeWidth() > $Einstellungen.artikeluebersicht.articleoverview_pricerange_width)
                 || ($tplscope === 'detail' && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0)}
                 <span class="price_label pricestarting">{lang key="priceStarting" section="global"} </span>
             {elseif $Artikel->Preise->rabatt > 0}
@@ -27,7 +27,7 @@
             {block name="price-range"}
                 <span{if $Artikel->Preise->oPriceRange->isRange()} itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification"{/if}>
                 {if $tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange()}
-                    {if $Artikel->Preise->oPriceRange->rangeWidth() <= $Einstellungen.artikeluebersicht.artikeluebersicht_pricerange_width}
+                    {if $Artikel->Preise->oPriceRange->rangeWidth() <= $Einstellungen.artikeluebersicht.articleoverview_pricerange_width}
                         {$Artikel->Preise->oPriceRange->getLocalized($NettoPreise)}
                     {else}
                         {$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}

@@ -1135,7 +1135,7 @@ function handlePriceRange($kArtikel)
     $updated = [];
     foreach ($priceRangeArr as $priceRange) {
         Shop::Container()->getDB()->queryPrepared(
-            "INSERT INTO tpreisrange (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
+            "INSERT INTO tpricerange (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
                 VALUES (:kArtikel, :kKundengruppe, :kKunde, :nRangeType, :fVKNettoMin, :fVKNettoMax, :nLagerAnzahlMax, :dStart, :dEnde)
                 ON DUPLICATE KEY UPDATE
                     fVKNettoMin = :fVKNettoMin,
@@ -1151,7 +1151,7 @@ function handlePriceRange($kArtikel)
 
     if (count($updated) > 0) {
         Shop::Container()->getDB()->queryPrepared(
-            "DELETE FROM tpreisrange
+            "DELETE FROM tpricerange
                 WHERE kArtikel = :kArtikel
                     AND (kKundengruppe, nRangeType) NOT IN (" . implode($updated, ', ') . ")",
             ['kArtikel' => $kArtikel],
@@ -1159,7 +1159,7 @@ function handlePriceRange($kArtikel)
         );
     } else {
         Shop::Container()->getDB()->queryPrepared(
-            "DELETE FROM tpreisrange WHERE kArtikel = :kArtikel",
+            "DELETE FROM tpricerange WHERE kArtikel = :kArtikel",
             ['kArtikel' => $kArtikel],
             \DB\ReturnType::AFFECTED_ROWS
         );

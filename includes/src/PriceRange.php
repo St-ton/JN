@@ -95,7 +95,7 @@ class PriceRange
     {
         $priceRange = Shop::Container()->getDB()->queryPrepared(
             'SELECT fVKNettoMin, fVKNettoMax 
-                FROM tpreisrange
+                FROM tpricerange
                 WHERE kArtikel = :articleID
                     AND (
                         (kKundengruppe = 0 AND kKunde = :customerID)

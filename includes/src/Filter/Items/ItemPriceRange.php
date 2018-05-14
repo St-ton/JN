@@ -556,7 +556,7 @@ class ItemPriceRange extends AbstractFilter
                     $cSelectSQL .= 'SUM(ssMerkmal.anz' . $i . ') AS anz' . $i;
                 }
                 foreach ($this->getSQLJoin() as $join) {
-                    $state->$state->addJoin($join);
+                    $state->addJoin($join);
                 }
                 $query = $this->productFilter->getFilterSQL()->getBaseQuery(
                     [$this->getPriceRangeSQL($oPreis, $currency, $ranges)],

@@ -153,18 +153,14 @@ trait PortletHtml
                 if (!empty($propDesc['collapseControlStart'])) {
                     $res .= "<script>
                                 $(function(){
-                                    $('input[name=\"" . $propDesc['showOnProp'] . "\"]').click(function(){
-                                        if (this.type == 'checkbox' && this.checked === true 
-                                        || this.type != 'checkbox' 
-                                            && $(this).val() == " . $propDesc['showOnPropValue'] . "){
+                                    $('input[name=\"" . $propDesc['showOnProp'] . "\"]').click(function(e){
+                                        if ($(e.target).val() == '" . $propDesc['showOnPropValue'] . "'){
                                             $('#collapseContainer$cllpsID').show();
                                         }else{
                                             $('#collapseContainer$cllpsID').hide();
                                         }
                                     });
-                                    if (this.type == 'checkbox' && this.checked === true 
-                                    || this.type != 'checkbox' 
-                                        && $(this).val() == " . $propDesc['showOnPropValue'] . "){
+                                    if ($('input[name=\"" . $propDesc['showOnProp'] . "\"]').val() == '" . $propDesc['showOnPropValue'] . "'){
                                         $('#collapseContainer$cllpsID').show();
                                     }
                                 });
@@ -173,7 +169,7 @@ trait PortletHtml
                     $res .= "<div class='collapse' id='collapseContainer$cllpsID'>";
                 }
 
-                $res        .= $this->getAutoConfigProp($instance, $propname, $propDesc, $containerId);
+                $res .= $this->getAutoConfigProp($instance, $propname, $propDesc, $containerId);
 
                 if (!empty($propDesc['layoutCollapse'])) {
                     $res .= "<div class='collapse' id='collapseContainer$containerId'><div class='row'> ";
@@ -254,10 +250,10 @@ trait PortletHtml
                 $res .= ">$label</label></div>";
                 break;
             case 'radio':
-                foreach ($propDesc['options'] as $option) {
-                    $selected = $prop === $option ? " checked" : "";
-                    $res     .= "<div class='radio$class'><label><input type='radio' name='$propname' value='$option'"
-                        . "$selected>$option</label></div>";
+                foreach ($propDesc['options'] as $name => $value) {
+                    $selected = $prop === $value ? " checked" : "";
+                    $res     .= "<div class='radio$class'><label><input type='radio' name='$propname' value='$value'"
+                        . "$selected>$name</label></div>";
                 }
                 break;
             case 'select':

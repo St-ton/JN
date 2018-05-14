@@ -8,9 +8,7 @@
                     {else}
                         {assign var="slideTitle" value=''}
                     {/if}
-                    {if !empty($slide.cText)}
-                        {assign var="slideTitle" value="#slider-{$instance->getProperty('slider-id')}_slide_caption_{$slide.nSort}"}
-                    {/if}
+                    {assign var="slideTitle" value="#slider-{$instance->getProperty('slider-id')}_slide_caption_{$slide.nSort}"}
                     {if !empty($slide.url)}
                         {if !empty($slide.cLink)}
                             <a href="{$slide.cLink}"{if !empty($slide.cTitle)} title="{$slide.cTitle}"{/if} class="slide">
@@ -22,7 +20,7 @@
                                  src="{$slide['img_attr']['src']}"
                                  data-desc="{$slide['desc']}"
                                  alt="{$slide['img_attr']['alt']}"
-                                 title="{$slide['img_attr']['title']}">
+                                 title="{$slideTitle}">
                         {if !empty($slide.cLink)}
                             </a>
                         {else}
@@ -33,10 +31,10 @@
             </div>
             {* slide captions outside of .nivoSlider *}
             {foreach  from=$instance->getProperty('slides') item=slide}
-                {if !empty($slide.cText)}
+                {if !empty($slide.cTitle) || !empty($slide.desc)}
                     <div id="slider-{$instance->getProperty('slider-id')}_slide_caption_{$slide.nSort}" class="htmlcaption hidden">
                         {if !empty($slide.cTitle)}<strong class="title">{$slide.cTitle}</strong>{/if}
-                        <p class="desc">{$slide.cText}</p>
+                        <p class="desc">{$slide.desc}</p>
                     </div>
                 {/if}
             {/foreach}
@@ -129,14 +127,13 @@
                         }
                     });
                     slider.nivoSlider({
-                        effect:           {if $instance->getProperty('slider-effects-random') === 'true'}'random'
-                        {else}'{foreach name="effects" from=$instance->getProperty('effects') key=effect item=effectval}{$effect}{if !$smarty.foreach.effects.last},{/if}{/foreach}'{/if},
+                        effect:           {if !empty($instance->getProperty('slider-effects-random'))}'random'{else}'{foreach name="effects" from=$instance->getProperty('effects') key=effect item=effectval}{$effect}{if !$smarty.foreach.effects.last},{/if}{/foreach}'{/if},
                         animSpeed:        {if !empty($instance->getProperty('slider-animation-speed'))}{$instance->getProperty('slider-animation-speed')}{else}500{/if},
                         pauseTime:        {if !empty($instance->getProperty('slider-animation-pause'))}{$instance->getProperty('slider-animation-pause')}{else}3000{/if},
-                        directionNav: {$instance->getProperty('slider-direction-navigation')},
-                        controlNav: {$instance->getProperty('slider-navigation')},
+                        directionNav:     {$instance->getProperty('slider-direction-navigation')},
+                        controlNav:       {$instance->getProperty('slider-navigation')},
                         controlNavThumbs: false,
-                        pauseOnHover: {$instance->getProperty('slider-pause')},
+                        pauseOnHover:     {$instance->getProperty('slider-pause')},
                         prevText:         'prev',
                         nextText:         'next',
                         randomStart:      true,

@@ -85,7 +85,7 @@
                                 <select id="kSteuerklasse" name="kSteuerklasse" class="form-control combo">
                                     <option value="-1">{#zusatzverpackungAutoTax#}</option>
                                     {foreach name=steuerklassen from=$oSteuerklasse_arr item=oSteuerklasse}
-                                        <option value="{$oSteuerklasse->kSteuerklasse}">{$oSteuerklasse->cName}</option>
+                                        <option value="{$oSteuerklasse->kSteuerklasse}" {if isset($oVerpackungEdit) && (int)$oSteuerklasse->kSteuerklasse === (int)$oVerpackungEdit->kSteuerklasse} selected{/if}>{$oSteuerklasse->cName}</option>
                                     {/foreach}
                                 </select>
                             </td>

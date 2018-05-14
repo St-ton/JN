@@ -2870,8 +2870,8 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
                 LIMIT 1",
             [
                 'cLangID'        => Shop::getLanguageCode(),
-                'cShippingClass' => $versandklassen,
-                'cGroupID'       => '^([0-9 -]* )?' . $kKundengruppe . ' '
+                'cShippingClass' => '^([0-9 -]* )?' . $versandklassen . ' ',
+                'cGroupID'       => $kKundengruppe
             ],
             \DB\ReturnType::SINGLE_OBJECT
         );

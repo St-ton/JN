@@ -3130,13 +3130,11 @@ class Artikel
                 }
                 if (isset($preview->inWarenkorbLegbar)
                     && $preview->inWarenkorbLegbar === 0
-                    && (
-                        ($this->conf['global']['artikel_artikelanzeigefilter'] === '1'
+                    && ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE
+                        || ($this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
                             && $preview->fLagerbestand > 0)
-                        || ($this->conf['global']['artikel_artikelanzeigefilter'] === '3'
-                            && ($preview->cLagerKleinerNull === 'Y'
-                                || $preview->fLagerbestand > 0)
-                        )
+                        || ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                            && ($preview->cLagerKleinerNull === 'Y' || $preview->fLagerbestand > 0))
                     )
                 ) {
                     $preview->inWarenkorbLegbar = 1;

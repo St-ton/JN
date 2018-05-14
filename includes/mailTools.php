@@ -108,15 +108,20 @@ function sendeMail($ModulId, $Object, $mail = null)
             $Object->tkundengruppe->cName = $kundengruppensprache->cName;
         }
     }
-
-    if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
-        $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$Object->tkunde->kSprache);
-    }
-    if (isset($Object->NewsletterEmpfaenger->kSprache) && $Object->NewsletterEmpfaenger->kSprache > 0) {
-        $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', $Object->NewsletterEmpfaenger->kSprache);
-    }
-    if (empty($Sprache)) {
-        $Sprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+    if (isset($_SESSION['currentLanguage']->kSprache)) {
+        $Sprache = $_SESSION['currentLanguage'];
+    } else {
+        if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
+            $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$Object->tkunde->kSprache);
+        }
+        if (isset($Object->NewsletterEmpfaenger->kSprache) && $Object->NewsletterEmpfaenger->kSprache > 0) {
+            $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', $Object->NewsletterEmpfaenger->kSprache);
+        }
+        if (empty($Sprache)) {
+            $Sprache = isset($_SESSION['kSprache'])
+                ? Shop::Container()->getDB()->select('tsprache', 'kSprache', $_SESSION['kSprache'])
+                : Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+        }
     }
     $oKunde = lokalisiereKunde($Sprache, $Object->tkunde);
 

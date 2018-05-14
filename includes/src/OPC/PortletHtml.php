@@ -315,7 +315,10 @@ trait PortletHtml
                 }});</script>";
                 break;
             case 'filter':
-                $res .= $this->getConfigPanelSnippet($instance, 'filter', ['propname' => $propname, 'prop' => $prop]);
+                $res .= $this->getConfigPanelSnippet($instance, 'filter', [
+                    'propname'   => $propname,
+                    'prop'       => $prop
+                ]);
                 break;
             case 'icon':
                 $res .= $this->getConfigPanelSnippet($instance, 'icon', [
@@ -332,7 +335,12 @@ trait PortletHtml
                 $res .= $this->getConfigPanelSnippet($instance, 'banner-zones');
                 break;
             case 'image-set':
-                $res .= $this->getConfigPanelSnippet($instance, 'image-set');
+                $res .= $this->getConfigPanelSnippet($instance, 'image-set', [
+                    'propname'   => $propname,
+                    'prop'       => $prop,
+                    'useColumns' => !empty($propDesc['useColumns']) ? $propDesc['useColumns'] : false,
+                    'useLinks'   => !empty($propDesc['useLinks']) ? $propDesc['useLinks'] : false
+                ]);
                 break;
             case 'text':
             default:

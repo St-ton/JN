@@ -48,10 +48,10 @@ class PortletInstance implements \JsonSerializable
      * @var array
      */
     protected $widthHeuristics = [
-        'lg' => 1,
-        'md' => 1,
-        'sm' => 1,
         'xs' => 1,
+        'sm' => 1,
+        'md' => 1,
+        'lg' => 1,
     ];
 
     /**
@@ -401,27 +401,30 @@ class PortletInstance implements \JsonSerializable
         $srcset = substr($srcset, 0, -1); // remove trailing comma
 
         if (is_array($widthHeuristics)) {
-            ksort($widthHeuristics);
+//            ksort($widthHeuristics);
 
             foreach ($widthHeuristics as $breakpoint => $col) {
                 if (!empty($col)) {
-                    $col /= $divisor;
+                    $factor = 1;
+                    if(is_array($divisor) && !empty($divisor[$breakpoint])){
+                        $factor = floatval($divisor[$breakpoint]/12);
+                    }
                     switch ($breakpoint) {
                         case 'xs':
                             $breakpoint = 767;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col * 100) . 'vw, ';
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col * 100 * $factor) . 'vw, ';
                             break;
                         case 'sm':
-                            $breakpoint = 768;
-                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint) . 'px, ';
+                            $breakpoint = 991;
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         case 'md':
-                            $breakpoint = 992;
-                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint) . 'px, ';
+                            $breakpoint = 1199;
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         case 'lg':
                             $breakpoint = 1200;
-                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint) . 'px, ';
+                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         default:
                             break;
@@ -454,7 +457,7 @@ class PortletInstance implements \JsonSerializable
         $imageAttributes = $this->getImageAttributes($src, $alt, $title);
 
         $this->setAttribute('srcset', $imageAttributes['srcset']);
-        $this->setAttribute('sizes', $imageAttributes['srcsizes']);
+        $this->setAttribute('sizes', $imageAttributes['sizes']);
         $this->setAttribute('src', $imageAttributes['src']);
         $this->setAttribute('alt', $imageAttributes['alt']);
         $this->setAttribute('title', $imageAttributes['title']);

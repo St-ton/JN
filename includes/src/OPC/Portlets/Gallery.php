@@ -22,18 +22,16 @@ class Gallery extends \OPC\Portlet
                 }
             );
         }
-
+        foreach ($images as &$slide) {
+            if(empty($slide['width']['xs'])) $slide['width']['xs'] = 12;
+            if(empty($slide['width']['sm'])) $slide['width']['sm'] = $slide['width']['xs'];
+            if(empty($slide['width']['md'])) $slide['width']['md'] = $slide['width']['sm'];
+            if(empty($slide['width']['lg'])) $slide['width']['lg'] = $slide['width']['md'];
+            $slide['img_attr'] = $instance->getImageAttributes($slide['url'], null, null, $slide['width']);
+        }
         $instance->setProperty('gllry_images',$images);
         $id = !empty($instance->getProperty('id')) ? $instance->getProperty('id') : uniqid('gllry_');
         $instance->setAttribute('id',$id);
-
-        /*foreach ($images as &$slide) {
-            $slide['srcStr'] = $this->getSrcString($slide['url'],
-                [   'lg' => floatval($slide['width']['lg']/12),
-                    'md' => floatval($slide['width']['md']/12),
-                    'sm' => floatval($slide['width']['sm']/12),
-                    'xs' => floatval($slide['width']['xs']/12)]);
-        }*/
 
         $instance
             ->addClass('row')
@@ -54,18 +52,17 @@ class Gallery extends \OPC\Portlet
                 }
             );
         }
+        foreach ($images as &$slide) {
+            if(empty($slide['width']['xs'])) $slide['width']['xs'] = 12;
+            if(empty($slide['width']['sm'])) $slide['width']['sm'] = $slide['width']['xs'];
+            if(empty($slide['width']['md'])) $slide['width']['md'] = $slide['width']['sm'];
+            if(empty($slide['width']['lg'])) $slide['width']['lg'] = $slide['width']['md'];
+            $slide['img_attr'] = $instance->getImageAttributes($slide['url'], null, null, $slide['width']);
+        }
 
         $instance->setProperty('gllry_images',$images);
         $id = !empty($instance->getProperty('id')) ? $instance->getProperty('id') : uniqid('gllry_');
         $instance->setAttribute('id',$id);
-
-        /*foreach ($images as &$slide) {
-            $slide['srcStr'] = $this->getSrcString($slide['url'],
-                [   'lg' => floatval($slide['width']['lg']/12),
-                    'md' => floatval($slide['width']['md']/12),
-                    'sm' => floatval($slide['width']['sm']/12),
-                    'xs' => floatval($slide['width']['xs']/12)]);
-        }*/
 
         $instance
             ->addClass('row')
@@ -105,9 +102,10 @@ class Gallery extends \OPC\Portlet
                 'dspl_width' => 50,
             ],
             'gllry_images' => [
-                'label' => 'Bilder',
-                'type'  => 'image-set',
-                'default' => [],
+                'label'      => 'Bilder',
+                'type'       => 'image-set',
+                'default'    => [],
+                'useColumns' => true,
             ],
         ];
     }

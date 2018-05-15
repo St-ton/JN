@@ -12,15 +12,17 @@ class Video extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
-        $ret = '<div '.$instance->getAttributeString(). ' ' . $instance->getDataAttributeString().'>';
-        if($instance->getProperty('video-vendor') === 'youtube') {
-            $ret .= '<img src="https://img.youtube.com/vi/' . $instance->getProperty('video-yt-id') . '/maxresdefault.jpg" alt="YouTube Video" class="img-responsive" style="width: 100%;"/>';
-        } elseif($instance->getProperty('video-vendor') === 'vimeo') {
+        $ret = '<div ' . $instance->getAttributeString() . ' ' . $instance->getDataAttributeString() . '>';
+        if ($instance->getProperty('video-vendor') === 'youtube') {
+            $ret .= '<img src="https://img.youtube.com/vi/' . $instance->getProperty('video-yt-id') . '/maxresdefault.jpg" alt="YouTube Video" class="img-responsive"';
+            $ret .= !empty($instance->getProperty('video-yt-responsive')) ? ' style="width: 100%;"/>' : ' style="width: ' . $instance->getProperty('video-yt-width') . 'px; height: ' . $instance->getProperty('video-yt-height') . 'px"/>';
+        } elseif ($instance->getProperty('video-vendor') === 'vimeo') {
             $imgid = $instance->getProperty('video-vim-id');
             $hash  = unserialize(file_get_contents("http://vimeo.com/api/v2/video/$imgid.php"));
-            $ret   .= '<img src="' . $hash[0]['thumbnail_large'] . '" alt="Vimeo Video" class="img-responsive" style="width: 100%;"/>';
+            $ret   .= '<img src="' . $hash[0]['thumbnail_large'] . '" alt="Vimeo Video" class="img-responsive"';
+            $ret   .= !empty($instance->getProperty('video-vim-responsive')) ? ' style="width: 100%;"/>' : ' style="width: ' . $instance->getProperty('video-vim-width') . 'px; height: ' . $instance->getProperty('video-vim-height') . 'px"/>';
         }
-        $ret .='</div>';
+        $ret .= '</div>';
 
         return $ret;
     }
@@ -72,8 +74,13 @@ class Video extends \OPC\Portlet
             ],
             'video-yt-responsive' => [
                 'label'   => 'responsive einbetten?',
-                'type'    => 'checkbox',
-                'default' => true,
+                'type'    => 'radio',
+                'inline'  => true,
+                'options' => [
+                    'ja'   => '1',
+                    'nein' => '0',
+                ],
+                'default' => '1',
             ],
             'video-yt-width'      => [
                 'label'      => 'width',
@@ -146,8 +153,13 @@ class Video extends \OPC\Portlet
             ],
             'video-vim-responsive' => [
                 'label'   => 'responsive einbetten?',
-                'type'    => 'checkbox',
-                'default' => true,
+                'type'    => 'radio',
+                'inline'  => true,
+                'options' => [
+                    'ja'   => '1',
+                    'nein' => '0',
+                ],
+                'default' => '1',
             ],
             'video-vim-width'      => [
                 'label'      => 'width',

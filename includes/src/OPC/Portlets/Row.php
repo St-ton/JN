@@ -84,12 +84,31 @@ class Row extends \OPC\Portlet
         $colLayouts = array_fill(0, $colCount, '');
 
         foreach ($colLayouts as $i => &$colLayout) {
+            $sumXS = 0;
+            $sumSM = 0;
+            $sumMD = 0;
+            $sumLG = 0;
+
+            for ($x=0;$x<=$i;++$x) {
+                $sumXS = !empty($layoutXS[$x]) ? ($sumXS+$layoutXS[$x]) : $sumXS;
+                $sumSM = !empty($layoutSM[$x]) ? ($sumSM+$layoutSM[$x]) : $sumSM;
+                $sumMD = !empty($layoutMD[$x]) ? ($sumMD+$layoutMD[$x]) : $sumMD;
+                $sumLG = !empty($layoutLG[$x]) ? ($sumLG+$layoutLG[$x]) : $sumLG;
+            }
+
             $colLayout = [
                 'xs' => isset($layoutXS[$i]) ? $layoutXS[$i] : '',
                 'sm' => isset($layoutSM[$i]) ? $layoutSM[$i] : '',
                 'md' => isset($layoutMD[$i]) ? $layoutMD[$i] : '',
                 'lg' => isset($layoutLG[$i]) ? $layoutLG[$i] : '',
+                'divider' => [
+                    'xs' => $sumXS === 0 ? false : ($sumXS % 12 === 0),
+                    'sm' => $sumSM === 0 ? false : ($sumSM % 12 === 0),
+                    'md' => $sumMD === 0 ? false : ($sumMD % 12 === 0),
+                    'lg' => $sumLG === 0 ? false : ($sumLG % 12 === 0),
+                ],
             ];
+
         }
 
         return $colLayouts;
@@ -100,8 +119,21 @@ class Row extends \OPC\Portlet
         $result = '';
 
         foreach ($colLayout as $size => $value) {
-            if (!empty($value)) {
+            if (!empty($value) && is_array($value) === false) {
                 $result .= "col-$size-$value ";
+            }
+        }
+
+        return $result;
+    }
+
+    public function getDividers($colLayout)
+    {
+        $result = '';
+
+        foreach ($colLayout['divider'] as $size => $value) {
+            if (!empty($value)) {
+                $result .= '<div class="clearfix visible-' . $size . '-block"></div>';
             }
         }
 

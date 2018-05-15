@@ -160,7 +160,6 @@ trait PortletHtml
                     $res .= "<script>
                                 $(function(){
                                     $('[name=\"" . $propDesc['showOnProp'] . "\"]').click(function(e){
-                                        console.log($(e.target).val());
                                         if ($(e.target).val() == '" . $propDesc['showOnPropValue'] . "'){
                                             $('#collapseContainer$cllpsID').show();
                                         }else{

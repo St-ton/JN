@@ -12,6 +12,7 @@ $shopLogo      = Shop::getLogo();
 $shopURL       = Shop::getURL();
 $cart          = $_SESSION['Warenkorb'] ?? new Warenkorb();
 $Einstellungen = Shopsetting::getInstance()->getAll();
+$linkHelper    = Shop::Container()->getLinkHelper();
 $themeDir      = empty($Einstellungen['template']['theme']['theme_default'])
     ? 'evo'
     : $Einstellungen['template']['theme']['theme_default'];
@@ -61,12 +62,9 @@ if (!isset($AktuelleKategorie)) {
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
-$lgl           = new \Link\LinkGroupList(Shop::Container()->getDB());
-$lgl           = $lgl->loadAll();
-$linkHelper     = \Link\LinkHelper::getInstance();
-$lgl->activate($pagetType);
+$linkHelper->activate($pagetType);
 
-$smarty->assign('linkgroups', $lgl)
+$smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])

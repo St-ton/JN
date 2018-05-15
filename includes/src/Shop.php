@@ -1673,8 +1673,7 @@ final class Shop
      */
     public static function setPageType($pageType)
     {
-        self::$pageType        = (int)$pageType;
-        $GLOBALS['nSeitenTyp'] = (int)$pageType;
+        self::$pageType = (int)$pageType;
         executeHook(HOOK_SHOP_SET_PAGE_TYPE, ['pageType' => $pageType]);
     }
 

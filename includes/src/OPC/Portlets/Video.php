@@ -44,166 +44,172 @@ class Video extends \OPC\Portlet
     {
         return [
             // general
-            'video-title'          => [
-                'label' => 'Titel',
+            'video-title'         => [
+                'label'      => 'Titel',
                 'dspl_width' => 50,
             ],
-            'video-class'=> [
-                'label'=> 'Class',
+            'video-class'         => [
+                'label'      => 'Class',
                 'dspl_width' => 50,
             ],
-            'video-vendor'         => [
-                'label' => 'Quelle',
-                'type' => 'select',
-                'options'=>[
+            'video-vendor'        => [
+                'label'   => 'Quelle',
+                'type'    => 'select',
+                'options' => [
                     'youtube',
                     'vimeo',
                     'upload'
                 ],
                 'default' => 'youtube',
             ],
-            'video-yt-id'          => [
-                'label' => 'Video ID',
-                'default' => 'xITQHgJ3RRo',
-                'help' => 'Bitte nur die ID des Videos eingeben. Bsp.: xITQHgJ3RRo',
+            'video-yt-id'         => [
+                'label'                => 'Video ID',
+                'default'              => 'xITQHgJ3RRo',
+                'help'                 => 'Bitte nur die ID des Videos eingeben. Bsp.: xITQHgJ3RRo',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'video-vendor',
                 'showOnPropValue'      => 'youtube',
             ],
-            'video-yt-responsive'  => [
-                'label'=> 'responsive einbetten?',
-                'type' => 'checkbox',
+            'video-yt-responsive' => [
+                'label'   => 'responsive einbetten?',
+                'type'    => 'checkbox',
                 'default' => true,
             ],
-            'video-yt-width'       => [
-                'label'=> 'width',
-                'type' => 'number',
-                'default' => 600,
+            'video-yt-width'      => [
+                'label'      => 'width',
+                'type'       => 'number',
+                'default'    => 600,
                 'dspl_width' => 50,
             ],
-            'video-yt-height'      => [
-                'label'=> 'height',
-                'type' => 'number',
-                'default' => 338,
+            'video-yt-height'     => [
+                'label'      => 'height',
+                'type'       => 'number',
+                'default'    => 338,
                 'dspl_width' => 50,
             ],
-            'video-yt-start'         => [
-                'label'=> 'Start',
-                'type' => 'number',
+            'video-yt-start'      => [
+                'label'      => 'Start',
+                'type'       => 'number',
                 'dspl_width' => 50,
             ],
-            'video-yt-end'         => [
-                'label'=> 'Ende',
-                'type' => 'number',
+            'video-yt-end'        => [
+                'label'      => 'Ende',
+                'type'       => 'number',
                 'dspl_width' => 50,
             ],
-            'video-yt-controls'    => [
-                'label'=> 'Steuerelemente anzeigen?',
-                'type'=> 'radio',
-                'inline'=> true,
-                'options' => [
-                    'ja' => '1',
+            'video-yt-controls'   => [
+                'label'      => 'Steuerelemente anzeigen?',
+                'type'       => 'radio',
+                'inline'     => true,
+                'options'    => [
+                    'ja'   => '1',
                     'nein' => '0',
                 ],
+                'default'    => '1',
                 'dspl_width' => 50,
             ],
-            'video-yt-rel'         => [
-                'label'=> 'ähnliche Videos anzeigen?',
-                'type'=> 'radio',
-                'inline'=> true,
-                'options' => [
-                    'ja' => '1',
+            'video-yt-rel'        => [
+                'label'      => 'ähnliche Videos anzeigen?',
+                'type'       => 'radio',
+                'inline'     => true,
+                'options'    => [
+                    'ja'   => '1',
                     'nein' => '0',
                 ],
+                'default'    => '0',
                 'dspl_width' => 50,
             ],
-            'video-yt-color'       => [
-                'label'=> 'Farbe',
-                'type' => 'radio',
-                'inline' => true,
-                'options' => [
+            'video-yt-color'      => [
+                'label'      => 'Farbe',
+                'type'       => 'radio',
+                'inline'     => true,
+                'options'    => [
                     'weiß' => 'white',
-                    'rot' => 'red'
+                    'rot'  => 'red'
                 ],
-                'default' => 'white',
+                'default'    => 'white',
                 'dspl_width' => 50,
             ],
-            'video-yt-playlist'    => [
-                'label' => 'Playlist',
-                'help' => 'Geben Sie die Video-IDs durch Komma getrennt ein . Bsp.: xITQHgJ3RRo,sNYv0JgrUlw',
+            'video-yt-playlist'   => [
+                'label'              => 'Playlist',
+                'help'               => 'Geben Sie die Video-IDs durch Komma getrennt ein . Bsp.: xITQHgJ3RRo,sNYv0JgrUlw',
                 'collapseControlEnd' => true,
             ],
 
             'video-vim-id'         => [
-                'label' => 'Video ID',
-                'default' => '141374353',
-                'help' => 'Bitte nur die ID des Videos eingeben. Bsp.: 141374353',
+                'label'                => 'Video ID',
+                'default'              => '141374353',
+                'help'                 => 'Bitte nur die ID des Videos eingeben. Bsp.: 141374353',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'video-vendor',
                 'showOnPropValue'      => 'vimeo',
             ],
             'video-vim-responsive' => [
-                'label'=> 'responsive einbetten?',
-                'type' => 'checkbox',
+                'label'   => 'responsive einbetten?',
+                'type'    => 'checkbox',
                 'default' => true,
             ],
             'video-vim-width'      => [
-                'label'=> 'width',
-                'type' => 'number',
-                'default' => 600,
+                'label'      => 'width',
+                'type'       => 'number',
+                'default'    => 600,
                 'dspl_width' => 50,
             ],
             'video-vim-height'     => [
-                'label'=> 'height',
-                'type' => 'number',
-                'default' => 338,
+                'label'      => 'height',
+                'type'       => 'number',
+                'default'    => 338,
                 'dspl_width' => 50,
             ],
-            'video-vim-loop'       =>[
-                'label'=> 'Video nach ablauf wiederholen?',
-                'type'=> 'radio',
-                'inline'=> true,
-                'options' => [
-                    'ja' => '1',
+            'video-vim-loop'       => [
+                'label'      => 'Video nach ablauf wiederholen?',
+                'type'       => 'radio',
+                'inline'     => true,
+                'options'    => [
+                    'ja'   => '1',
                     'nein' => '0',
                 ],
+                'default'    => '0',
                 'dspl_width' => 50,
             ],
             'video-vim-img'        => [
-                'label'=> 'Bild anzeigen?',
-                'type'=> 'radio',
-                'inline'=> true,
-                'options' => [
-                    'ja' => '1',
+                'label'      => 'Bild anzeigen?',
+                'type'       => 'radio',
+                'inline'     => true,
+                'options'    => [
+                    'ja'   => '1',
                     'nein' => '0',
                 ],
+                'default'    => '0',
                 'dspl_width' => 50,
             ],
             'video-vim-title'      => [
-                'label'=> 'Titel anzeigen?',
-                'type'=> 'radio',
-                'inline'=> true,
-                'options' => [
-                    'ja' => '1',
+                'label'      => 'Titel anzeigen?',
+                'type'       => 'radio',
+                'inline'     => true,
+                'options'    => [
+                    'ja'   => '1',
                     'nein' => '0',
                 ],
+                'default'    => '1',
                 'dspl_width' => 50,
             ],
             'video-vim-byline'     => [
-                'label' => 'Verfasserangabe anzeigen?',
-                'type'=> 'radio',
-                'inline'=> true,
-                'options' => [
-                    'ja' => '1',
+                'label'      => 'Verfasserangabe anzeigen?',
+                'type'       => 'radio',
+                'inline'     => true,
+                'options'    => [
+                    'ja'   => '1',
                     'nein' => '0',
                 ],
+                'default'    => '0',
                 'dspl_width' => 50,
             ],
             'video-vim-color'      => [
-                'label' => 'Farbe',
-                'type' => 'color',
-                'default' => '#ffffff',
-                'dspl_width' => 50,
+                'label'              => 'Farbe',
+                'type'               => 'color',
+                'default'            => '#ffffff',
+                'dspl_width'         => 50,
                 'collapseControlEnd' => true,
             ],
         ];

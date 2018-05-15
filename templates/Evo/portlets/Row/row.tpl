@@ -9,5 +9,6 @@
                 {$instance->getSubareaFinalHtml($areaId)}
             {/if}
         </div>
+        {$portlet->getDividers($colLayout)}
     {/foreach}
 </div>

@@ -153,14 +153,14 @@ trait PortletHtml
                 if (!empty($propDesc['collapseControlStart'])) {
                     $res .= "<script>
                                 $(function(){
-                                    $('input[name=\"" . $propDesc['showOnProp'] . "\"]').click(function(e){
+                                    $('[name=\"" . $propDesc['showOnProp'] . "\"]').click(function(e){
                                         if ($(e.target).val() == '" . $propDesc['showOnPropValue'] . "'){
                                             $('#collapseContainer$cllpsID').show();
                                         }else{
                                             $('#collapseContainer$cllpsID').hide();
                                         }
                                     });
-                                    if ($('input[name=\"" . $propDesc['showOnProp'] . "\"]').val() == '" . $propDesc['showOnPropValue'] . "'){
+                                    if ($('[name=\"" . $propDesc['showOnProp'] . "\"]').val() == '" . $propDesc['showOnPropValue'] . "'){
                                         $('#collapseContainer$cllpsID').show();
                                     }
                                 });

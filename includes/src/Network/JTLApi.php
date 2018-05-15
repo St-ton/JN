@@ -6,15 +6,35 @@
 
 namespace Network;
 
-
+/**
+ * Class JTLApi
+ * @package Network
+ */
 final class JTLApi
 {
     const URI = 'https://api.jtl-software.de/shop';
 
-    protected $session;
-    protected $nice;
-    protected $shop;
+    /**
+     * @var array
+     */
+    private $session;
 
+    /**
+     * @var \Nice
+     */
+    private $nice;
+
+    /**
+     * @var \Shop
+     */
+    private $shop;
+
+    /**
+     * JTLApi constructor.
+     * @param array $session
+     * @param \Nice $nice
+     * @param \Shop $shop
+     */
     public function __construct(array &$session, \Nice $nice, \Shop $shop)
     {
         $this->session = $session;
@@ -25,7 +45,7 @@ final class JTLApi
     /**
      *
      */
-    protected function init()
+    private function init()
     {
         if (!isset($this->session['rs'])) {
             $this->session['rs'] = [];
@@ -86,7 +106,7 @@ final class JTLApi
     /**
      * @return bool
      */
-    public function hasNewerVersion()
+    public function hasNewerVersion(): bool
     {
         if (JTL_MINOR_VERSION === '#JTL_MINOR_VERSION#') {
             return false;
@@ -106,7 +126,7 @@ final class JTLApi
      * @param null   $data
      * @return mixed|null
      */
-    protected function call($uri, $data = null)
+    private function call($uri, $data = null)
     {
         $uri     = self::URI . '/' . ltrim($uri, '/');
         $content = http_get_contents($uri, 10, $data);

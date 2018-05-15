@@ -445,7 +445,7 @@ class AdminAccount
         if (is_object($oGroup) || (int)$oAdmin->kAdminlogingruppe === ADMINGROUP) {
             $_SESSION['AdminAccount']              = new stdClass();
             $_SESSION['AdminAccount']->cURL        = Shop::getURL();
-            $_SESSION['AdminAccount']->kAdminlogin = $oAdmin->kAdminlogin;
+            $_SESSION['AdminAccount']->kAdminlogin = (int)$oAdmin->kAdminlogin;
             $_SESSION['AdminAccount']->cLogin      = $oAdmin->cLogin;
             $_SESSION['AdminAccount']->cMail       = $oAdmin->cMail;
             $_SESSION['AdminAccount']->cPass       = $oAdmin->cPass;

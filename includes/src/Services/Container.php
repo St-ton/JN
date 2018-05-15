@@ -9,6 +9,7 @@ namespace Services;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
+use Link\LinkHelper;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
@@ -69,5 +70,13 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getCache(): JTLCacheInterface
     {
         return $this->get(JTLCacheInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLinkHelper(): LinkHelper
+    {
+        return $this->get(LinkHelper::class);
     }
 }

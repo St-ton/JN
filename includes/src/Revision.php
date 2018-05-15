@@ -50,12 +50,16 @@ class Revision
                 'reference_id'  => 'kBox',
                 'reference_key' => 'cISO'
             ],
-            'newsletter' => [
+            'newsletterstd' => [
                 'table'         => 'tnewslettervorlage',
                 'id'            => 'kNewsletterVorlage',
                 'reference'     => 'tnewslettervorlagestdvarinhalt',
                 'reference_id'  => 'kNewslettervorlage',
                 'reference_key' => 'kNewslettervorlageStdVar'
+            ],
+            'newsletter' => [
+                'table'         => 'tnewslettervorlage',
+                'id'            => 'kNewsletterVorlage'
             ]
         ];
     }

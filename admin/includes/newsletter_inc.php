@@ -249,6 +249,8 @@ function speicherVorlage($cPost_arr)
             ? $dt->format('Y-m-d H:i:s')
             : $now->format('Y-m-d H:i:s');
         if (isset($cPost_arr['kNewsletterVorlage']) && (int)$cPost_arr['kNewsletterVorlage'] > 0) {
+            $revision = new Revision();
+            $revision->addRevision('newsletter', $kNewsletterVorlage, true);
             $_upd                = new stdClass();
             $_upd->cName         = $oNewsletterVorlage->cName;
             $_upd->kKampagne     = $oNewsletterVorlage->kKampagne;
@@ -365,7 +367,7 @@ function speicherVorlageStd($oNewslettervorlageStd, $kNewslettervorlageStd, $cPo
 
         if ($kNewslettervorlage > 0) {
             $revision = new Revision();
-            $revision->addRevision('newsletter', $kNewslettervorlage, true);
+            $revision->addRevision('newsletterstd', $kNewslettervorlage, true);
 
             $upd                = new stdClass();
             $upd->cName         = $oNewsletterVorlage->cName;

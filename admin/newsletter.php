@@ -327,6 +327,7 @@ if (validateToken()) {
                        ->assign('cArtNr_arr', $oExplodedArtikel->cArtNr_arr)
                        ->assign('kKundengruppe_arr', $kKundengruppe_arr);
             }
+
             $smarty->assign('oNewsletterVorlage', $oNewsletterVorlage);
             if (isset($_GET['editieren'])) {
                 $cOption = 'editieren';

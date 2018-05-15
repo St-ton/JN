@@ -396,6 +396,6 @@
         </div>
     </form>
     {if !empty($oNewslettervorlageStd->kNewsletterVorlage)}
-        {getRevisions type='newsletter' key=$oNewslettervorlageStd->kNewsletterVorlage show=['cInhalt'] secondary=true data=$revisionData}
+        {getRevisions type='newsletterstd' key=$oNewslettervorlageStd->kNewsletterVorlage show=['cInhalt'] secondary=true data=$revisionData}
     {/if}
 </div>

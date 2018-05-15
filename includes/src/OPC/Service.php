@@ -370,12 +370,14 @@ class Service
         $productFilter    = new \Filter\ProductFilter();
         $availableFilters = $productFilter->getAvailableFilters();
         $results          = [];
+        $enabledMap       = [];
 
         foreach ($enabledFilters as $enabledFilter) {
             /** @var AbstractFilter $newFilter **/
             $newFilter = new $enabledFilter['class']($productFilter);
             $newFilter->setType(AbstractFilter::FILTER_TYPE_AND);
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
+            $enabledMap[$enabledFilter['class'] . ':' . $enabledFilter['value']] = true;
         }
 
         foreach ($availableFilters as $availableFilter) {
@@ -389,30 +391,42 @@ class Service
                 foreach ($availableFilter->getOptions() as $option) {
                     foreach ($option->getOptions() as $suboption) {
                         /** @var \Filter\FilterOption $suboption */
-                        $options[] = [
-                            'name'  => $suboption->getName(),
-                            'value' => $suboption->kMerkmalWert,
-                            'count' => $suboption->getCount(),
-                            'class' => $class,
-                        ];
+                        $value    = $suboption->kMerkmalWert;
+                        $mapindex = $class . ':' . $value;
+
+                        if (!isset($enabledMap[$mapindex])) {
+                            $options[] = [
+                                'name'  => $suboption->getName(),
+                                'value' => $value,
+                                'count' => $suboption->getCount(),
+                                'class' => $class,
+                            ];
+                        }
                     }
                 }
             } else {
                 foreach ($availableFilter->getOptions() as $option) {
-                    $options[] = [
-                        'name'  => $option->getName(),
-                        'value' => $option->getValue(),
-                        'count' => $option->getCount(),
-                        'class' => $class,
-                    ];
+                    $value    = $option->getValue();
+                    $mapindex = $class . ':' . $value;
+
+                    if (!isset($enabledMap[$mapindex])) {
+                        $options[] = [
+                            'name'  => $option->getName(),
+                            'value' => $value,
+                            'count' => $option->getCount(),
+                            'class' => $class,
+                        ];
+                    }
                 }
             }
 
-            $results[] = [
-                'name'    => $name,
-                'class'   => $class,
-                'options' => $options,
-            ];
+            if (count($options) > 0) {
+                $results[] = [
+                    'name'    => $name,
+                    'class'   => $class,
+                    'options' => $options,
+                ];
+            }
         }
 
         return $results;

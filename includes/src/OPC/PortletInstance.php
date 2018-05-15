@@ -323,7 +323,6 @@ class PortletInstance implements \JsonSerializable
     public function getAttributes()
     {
         $this->updateAttributes();
-
         return $this->attributes;
     }
 

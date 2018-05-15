@@ -89,10 +89,15 @@ trait PortletHtml
      */
     final protected function getConfigPanelSnippet($instance, $id, $extraAssigns = [])
     {
-        return (new \JTLSmarty(true))
+        $smarty = new \JTLSmarty(true);
+
+        foreach ($extraAssigns as $name => $val) {
+            $smarty->assign($name, $val);
+        }
+
+        return $smarty
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->assign($extraAssigns)
             ->fetch("portlets/OPC/config.$id.tpl");
     }
 
@@ -149,7 +154,8 @@ trait PortletHtml
 
             foreach ($props as $propname => $propDesc) {
                 $containerId = !empty($propDesc['layoutCollapse']) ? $propname : null;
-                $cllpsID = uniqid();
+                $cllpsID     = uniqid('', false);
+
                 if (!empty($propDesc['collapseControlStart'])) {
                     $res .= "<script>
                                 $(function(){
@@ -173,7 +179,7 @@ trait PortletHtml
                     $res .= "<div class='collapse' id='collapseContainer$cllpsID'>";
                 }
 
-                $res        .= $this->getAutoConfigProp($instance, $propname, $propDesc, $containerId);
+                $res .= $this->getAutoConfigProp($instance, $propname, $propDesc, $containerId);
 
                 if (!empty($propDesc['layoutCollapse'])) {
                     $res .= "<div class='collapse' id='collapseContainer$containerId'><div class='row'> ";
@@ -222,7 +228,7 @@ trait PortletHtml
         }
         $res .= "<div class='col-xs-$displ'>";
         $res .= "<div class='form-group'>";
-        $res .= $type!=='hidden' ? "<label for='config-$propname'>$label</label>" : "";
+        $res .= $type !== 'hidden' ? "<label for='config-$propname'>$label</label>" : "";
 
         if (!empty($propDesc['layoutCollapse'])) {
             $res .= '<a title="more" class="pull-right" role="button" data-toggle="collapse"
@@ -324,7 +330,7 @@ trait PortletHtml
                 $res .= $this->getConfigPanelSnippet($instance, 'icon', [
                     'propname'   => $propname,
                     'prop'       => $prop,
-                    'uid'        => uniqid()
+                    'uid'        => uniqid('', false)
                 ]);
                 break;
             case 'hidden':

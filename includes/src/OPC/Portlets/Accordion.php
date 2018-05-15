@@ -38,7 +38,7 @@ class Accordion extends \OPC\Portlet
         return [
             'uid'                 => [
                 'type'    => 'hidden',
-                'default' => uniqid('cllps_'),
+                'default' => uniqid('cllps_', false),
             ],
             'cllps-initial-state' => [
                 'label'      => 'initial als ausgeklappt anzeigen',

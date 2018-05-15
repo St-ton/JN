@@ -83,21 +83,13 @@ class Migration_20180507101900 extends Migration implements IMigration
             VALUES (0, 'List', 'PList', 'layout')");
 
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
+            VALUES (0, 'Tabs', 'Tabs', 'layout')");
+
+        $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Panel', 'Panel', 'layout')");
 
         $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
             VALUES (0, 'Video', 'Video', 'content')");
-        /*
-        $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Artikel-Slider', 'ProductSlider', 'content')");
-
-        $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Product-Stream', 'ProductStream', 'content')");
-
-        $this->execute("INSERT INTO topcportlet (kPlugin, cTitle, cClass, cGroup)
-            VALUES (0, 'Tab', 'Tab', 'layout')");
-
-        */
     }
 
     public function down()

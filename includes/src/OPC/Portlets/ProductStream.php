@@ -6,6 +6,7 @@
 
 namespace OPC\Portlets;
 
+use Filter\Type;
 use OPC\PortletInstance;
 
 class ProductStream extends \OPC\Portlet
@@ -17,7 +18,7 @@ class ProductStream extends \OPC\Portlet
         $style         = $instance->getProperty('listStyle');
 
         return "<div $attributes $dataAttribute>"
-            . "<img src='" . PFAD_TEMPLATES . "Evo/portlets/preview.productstream.$style.png' "
+            . "<img src='" . PFAD_TEMPLATES . "Evo/portlets/ProductStream/preview.$style.png' "
             . "style='width:98%;filter:grayscale(50%) opacity(60%)'>"
             . "<div style='color:#5cbcf6;font-size:40px;font-weight:bold;margin:0;margin-top:-1em;line-height:1em;'>
                 Produktliste</div>"
@@ -45,11 +46,22 @@ class ProductStream extends \OPC\Portlet
         return [
             'listStyle'  => [
                 'type'    => 'select',
-                'options' => ['gallery'],
+                'label'   => 'Darstellung',
+                'options' => ['gallery', 'list', 'slider'],
                 'default' => 'gallery',
+            ],
+            'sliderTitle' => [
+                'type'                 => 'text',
+                'label'                => 'Slider-Titel',
+                'default'              => '',
+                'showOnProp'           => 'listStyle',
+                'showOnPropValue'      => 'slider',
+                'collapseControlStart' => true,
+                'collapseControlEnd'   => true,
             ],
             'filters' => [
                 'type'    => 'filter',
+                'label'   => 'Artikelfilter',
                 'default' => [],
             ],
         ];
@@ -76,7 +88,7 @@ class ProductStream extends \OPC\Portlet
         foreach ($enabledFilters as $enabledFilter) {
             /** @var \Filter\AbstractFilter $newFilter **/
             $newFilter = new $enabledFilter['class']($productFilter);
-            $newFilter->setType(\Filter\AbstractFilter::FILTER_TYPE_AND);
+            $newFilter->setType(Type::AND());
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
         }
 

@@ -12,7 +12,6 @@
 
     enableFilters(JSON.parse($('[name="{$propname}"]').val()));
     opc.setConfigSaveCallback(saveFilterProperties);
-    //updateFiltersAvailable();
 
     function enableFilters(filters)
     {
@@ -69,20 +68,19 @@
     {
         clearFiltersAvailable();
 
-//            if(filters.length === 0) {
-//                $filtersAvailable.html('No more filters available');
-//            } else {
-//                filters.forEach(addFilterAvailableButton);
-//            }
+        if(filters.length === 0) {
+            $filtersAvailable.html('No more filters available');
+        } else {
+            filters.forEach(function(filter) {
+                if (filter.options.length > 0) {
+                    var $filterSubCat = $('<div>').append('<h3>' + filter.name + '</h3>').appendTo($filtersAvailable);
 
-        filters.forEach(function(filter) {
-            log(filter);
-            var $filterSubCat = $('<div>').append('<h3>' + filter.name + '</h3>').appendTo($filtersAvailable);
-
-            filter.options.forEach(function(option) {
-                addFilterAvailableButton(option, $filterSubCat);
+                    filter.options.forEach(function(option) {
+                        addFilterAvailableButton(option, $filterSubCat);
+                    });
+                }
             });
-        });
+        }
     }
 
     function clearFiltersAvailable()

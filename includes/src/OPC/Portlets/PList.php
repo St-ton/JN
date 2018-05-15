@@ -18,9 +18,9 @@ class PList extends \OPC\Portlet
         if (!empty($instance->getProperty('list-style-type'))) {
             $res .= ' style="list-style-type:'. $instance->getProperty('list-style-type') .'"';
         }
-        $res .='>';
+        $res .= '>';
 
-        for ($x=0; $x<(int)$instance->getProperty('count'); ++$x) {
+        for ($x = 0; $x < (int)$instance->getProperty('count'); ++$x) {
             $res .= '<li><div class="opc-area" data-area-id="' . $instance->getProperty("list-id"). '_'. $x . '">'
                 . $instance->getSubareaPreviewHtml($instance->getProperty("list-id"). '_'. $x) . '</div></li>';
         }
@@ -37,9 +37,9 @@ class PList extends \OPC\Portlet
         if (!empty($instance->getProperty('list-style-type'))) {
             $res .= ' style="list-style-type:'. $instance->getProperty('list-style-type') .'"';
         }
-        $res .='>';
+        $res .= '>';
 
-        for ($x=0; $x<(int)$instance->getProperty('count'); ++$x) {
+        for ($x = 0; $x < (int)$instance->getProperty('count'); ++$x) {
             $res .= '<li><div class="opc-area">'
                 . $instance->getSubareaFinalHtml($instance->getProperty("list-id") . '_'. $x) . '</div></li>';
         }
@@ -66,7 +66,7 @@ class PList extends \OPC\Portlet
             'list-id'         => [
                 'label'      => 'ID',
                 'dspl_width' => 50,
-                'default'    => uniqid(),
+                'default'    => uniqid('', false),
             ],
             'list-class'      => [
                 'label'      => 'Class',

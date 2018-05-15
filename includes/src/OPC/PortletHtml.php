@@ -13,10 +13,10 @@ namespace OPC;
 trait PortletHtml
 {
     /**
-     * @param PortletInstance $instance
+     * @param PortletInstance $inst
      * @return string
      */
-    abstract public function getPreviewHtml($instance);
+    abstract public function getPreviewHtml($inst);
 
     /**
      * @param PortletInstance $instance
@@ -89,10 +89,15 @@ trait PortletHtml
      */
     final protected function getConfigPanelSnippet($instance, $id, $extraAssigns = [])
     {
-        return (new \JTLSmarty(true))
+        $smarty = new \JTLSmarty(true);
+
+        foreach ($extraAssigns as $name => $val) {
+            $smarty->assign($name, $val);
+        }
+
+        return $smarty
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->assign($extraAssigns)
             ->fetch("portlets/OPC/config.$id.tpl");
     }
 
@@ -149,7 +154,8 @@ trait PortletHtml
 
             foreach ($props as $propname => $propDesc) {
                 $containerId = !empty($propDesc['layoutCollapse']) ? $propname : null;
-                $cllpsID = uniqid();
+                $cllpsID     = uniqid('', false);
+
                 if (!empty($propDesc['collapseControlStart'])) {
                     $res .= "<script>
                                 $(function(){
@@ -197,8 +203,9 @@ trait PortletHtml
      * @param array $propDesc
      * @param string $containerId
      * @return string
+     * @throws \Exception
      */
-    protected function getAutoConfigProp(PortletInstance $instance, $propname, $propDesc, $containerId = null)
+    final protected function getAutoConfigProp(PortletInstance $instance, $propname, $propDesc, $containerId = null)
     {
         $res   = '';
         $label = $propDesc['label'] ?? $propname;
@@ -218,7 +225,7 @@ trait PortletHtml
         }
         $res .= "<div class='col-xs-$displ'>";
         $res .= "<div class='form-group'>";
-        $res .= $type!=='hidden' ? "<label for='config-$propname'>$label</label>" : "";
+        $res .= $type !== 'hidden' ? "<label for='config-$propname'>$label</label>" : "";
 
         if (!empty($propDesc['layoutCollapse'])) {
             $res .= '<a title="more" class="pull-right" role="button" data-toggle="collapse"
@@ -248,6 +255,12 @@ trait PortletHtml
                 $res .= "<div class='checkbox$class'><label><input type='checkbox' name='" . $propname . "' value='1'";
                 $res .= $prop === "1" ? " checked" : "";
                 $res .= ">$label</label></div>";
+                break;
+            case 'textlist':
+                $res .= $this->getConfigPanelSnippet($instance, 'textlist', [
+                    'propname'   => $propname,
+                    'prop'       => $prop
+                ]);
                 break;
             case 'radio':
                 $res     .= "<div class='radio$class'>";
@@ -324,7 +337,7 @@ trait PortletHtml
                 $res .= $this->getConfigPanelSnippet($instance, 'icon', [
                     'propname'   => $propname,
                     'prop'       => $prop,
-                    'uid'        => uniqid()
+                    'uid'        => uniqid('', false)
                 ]);
                 break;
             case 'hidden':
@@ -354,5 +367,32 @@ trait PortletHtml
         $res .= $containerId !== null ? "</div>" : "</div></div>";
 
         return $res;
+    }
+
+    /**
+     * @param PortletInstance $instance
+     * @param string $tag
+     * @param string $innerHtml
+     * @return string
+     */
+    final protected function getPreviewRootHtml($instance, $tag = 'div', $innerHtml = '')
+    {
+        $attributes    = $instance->getAttributeString();
+        $dataAttribute = $instance->getDataAttributeString();
+
+        return "<$tag $attributes $dataAttribute >$innerHtml</$tag>";
+    }
+
+    /**
+     * @param PortletInstance $instance
+     * @param string $tag
+     * @param string $innerHtml
+     * @return string
+     */
+    final protected function getFinalRootHtml($instance, $tag = 'div', $innerHtml = '')
+    {
+        $attributes = $instance->getAttributeString();
+
+        return "<$tag $attributes>$innerHtml</$tag>";
     }
 }

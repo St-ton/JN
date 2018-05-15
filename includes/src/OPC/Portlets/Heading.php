@@ -8,24 +8,14 @@ namespace OPC\Portlets;
 
 class Heading extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    public function getPreviewHtml($inst)
     {
-        $instance->setStyle('background', $instance->getProperty('bgcolor'));
-        $level         = $instance->getProperty('level');
-        $text          = $instance->getProperty('text');
-        $attributes    = $instance->getAttributeString();
-        $dataAttribute = $instance->getDataAttributeString();
-
-        return "<h$level $attributes $dataAttribute >$text</h$level>";
+        return $this->getPreviewRootHtml($inst, 'h' . $inst->getProperty('level'), $inst->getProperty('text'));
     }
 
-    public function getFinalHtml($instance)
+    public function getFinalHtml($inst)
     {
-        $level      = $instance->getProperty('level');
-        $text       = $instance->getProperty('text');
-        $attributes = $instance->getAttributeString();
-
-        return "<h$level $attributes>$text</h$level>";
+        return $this->getFinalRootHtml($inst, 'h' . $inst->getProperty('level'), $inst->getProperty('text'));
     }
 
     public function getButtonHtml()
@@ -33,25 +23,20 @@ class Heading extends \OPC\Portlet
         return '<i class="fa fa-header"></i><br>Überschrift';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
     public function getPropertyDesc()
     {
         return [
             'level' => [
-                'label'   => 'Level',
-                'type'    => 'select',
-                'options' => ['1', '2', '3', '4', '5', '6'],
-                'default' => '1',
+                'label'      => 'Level',
+                'type'       => 'select',
+                'options'    => ['1', '2', '3', '4', '5', '6'],
+                'default'    => '1',
                 'dspl_width' => 50,
             ],
             'text'  => [
-                'label'   => 'Text',
-                'type'    => 'text',
-                'default' => 'Heading',
+                'label'      => 'Text',
+                'type'       => 'text',
+                'default'    => 'Heading',
                 'dspl_width' => 50,
             ],
         ];
@@ -60,7 +45,7 @@ class Heading extends \OPC\Portlet
     public function getPropertyTabs()
     {
         return [
-            'Styles' => 'styles',
+            'Styles'    => 'styles',
             'Animation' => 'animations',
         ];
     }

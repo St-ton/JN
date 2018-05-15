@@ -17,7 +17,6 @@
         "jtlshop/qrcodegenerator": "dev-master",
         "erusev/parsedown": "dev-master",
         "pclzip/pclzip": "^2.8",
-        "paragonie/random_compat": "~2.0",
         "psr/container": "1.0.0",
         "lstrojny/functional-php": "~1.7",
         "monolog/monolog": "^1.23",

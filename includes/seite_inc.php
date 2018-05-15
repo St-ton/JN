@@ -807,14 +807,14 @@ function gibGratisGeschenkArtikel($conf)
  */
 function pruefeSpezialseite($nLinkart)
 {
-    if ((int)$nLinkart > 0) {
-        $cacheID = 'special_page_n_' . $nLinkart;
-        if (($oSeite = Shop::Cache()->get($cacheID)) === false) {
-            $oSeite = Shop::Container()->getDB()->select('tspezialseite', 'nLinkart', (int)$nLinkart);
-            Shop::Cache()->set($cacheID, $oSeite, [CACHING_GROUP_CORE]);
-        }
-        if (isset($oSeite->cDateiname) && strlen($oSeite->cDateiname) > 0) {
-            header('Location: ' . Shop::Container()->getLinkHelper()->getStaticRoute($oSeite->cDateiname));
+    $specialPages = Shop::Container()->getLinkHelper()->getLinkGroupByName('specialpages');
+    if ($nLinkart > 0 && $specialPages !== null) {
+        $res = $specialPages->getLinks()->first(function (\Link\LinkInterface $l) use ($nLinkart) {
+            return $l->getLinkType() === $nLinkart;
+        });
+        /** @var \Link\LinkInterface $res */
+        if ($res !== null && $res->getFileName() !== null) {
+            header('Location: ' . Shop::Container()->getLinkHelper()->getStaticRoute($res->getFileName()));
             exit();
         }
     }
@@ -827,7 +827,6 @@ function pruefeSpezialseite($nLinkart)
 function gibSeiteSitemap($conf, $smarty)
 {
     Shop::setPageType(PAGE_SITEMAP);
-//    $linkGroups = LinkHelper::getInstance()->getLinkGroups();
 
     $smarty->assign('oKategorieliste', $conf['sitemap']['sitemap_kategorien_anzeigen'] === 'Y'
         ? gibSitemapKategorien()

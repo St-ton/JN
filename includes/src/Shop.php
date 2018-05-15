@@ -1781,8 +1781,8 @@ final class Shop
         $container->setSingleton(\Cache\JTLCacheInterface::class, function () {
             return new \Cache\JTLCache();
         });
-        $container->setSingleton(\Link\LinkHelper::class, function () {
-            return new \Link\LinkHelper(self::Container()->getDB());
+        $container->setSingleton(\Link\LinkHelper::class, function (Container $container) {
+            return new \Link\LinkHelper($container->getDB());
         });
         // SECURITY
         $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function () {
@@ -1790,14 +1790,14 @@ final class Shop
         });
 
         $container->setSingleton(\Services\JTL\PasswordServiceInterface::class, function (Container $container) {
-            return new \Services\JTL\PasswordService($container->get(\Services\JTL\CryptoServiceInterface::class));
+            return new \Services\JTL\PasswordService($container->getCryptoService());
         });
         $container->setSingleton('BackendAuthLogger', function (Container $container) {
             $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
             $handlers    = [];
             foreach ($loggingConf as $value) {
                 if ($value === AdminLoginConfig::CONFIG_DB) {
-                    $handlers[] = (new NiceDBHandler(self::Container()->getDB(), Logger::INFO))
+                    $handlers[] = (new NiceDBHandler($container->getDB(), Logger::INFO))
                         ->setFormatter(new LineFormatter('%message%', null, false, true));
                 } elseif ($value === AdminLoginConfig::CONFIG_FILE) {
                     $handlers[] = (new StreamHandler(PFAD_LOGFILES . 'auth.log', Logger::INFO))

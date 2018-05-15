@@ -105,7 +105,7 @@ function get_static_route($params, $smarty)
     if (isset($params['id'])) {
         $full   = !isset($params['full']) || $params['full'] === true;
         $secure = isset($params['secure']) && $params['secure'] === true;
-        $url    = \Link\LinkHelper::getInstance()->getStaticRoute($params['id'], $full, $secure);
+        $url    = Shop::Container()->getLinkHelper()->getStaticRoute($params['id'], $full, $secure);
         $qp     = isset($params['params'])
             ? (array)$params['params']
             : [];
@@ -267,7 +267,7 @@ function load_boxes($params, $smarty)
                         $smarty->assign($oPluginVar, $oPlugin);
                     }
                 } elseif ($oBox->eTyp === 'link') {
-                    foreach (\Link\LinkHelper::getInstance()->getLinkGroups() as $oLinkTpl) {
+                    foreach (Shop::Container()->getLinkHelper()->getLinkGroups() as $oLinkTpl) {
                         if ($oLinkTpl->kLinkgruppe == $oBox->kCustomID) {
                             $oBox->oLinkGruppeTemplate = $oLinkTpl;
                             $oBox->oLinkGruppe         = $oLinkTpl;
@@ -440,7 +440,7 @@ function getCheckBoxForLocation($params, $smarty)
         ? Shop::get($cid)
         : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
     if (count($oCheckBox_arr) > 0) {
-        $linkHelper = \Link\LinkHelper::getInstance();
+        $linkHelper = Shop::Container()->getLinkHelper();
         foreach ($oCheckBox_arr as $oCheckBox) {
             // Link URL bauen
             $cLinkURL     = '';
@@ -718,8 +718,7 @@ function get_cms_content($params, $smarty)
 {
     if (isset($params['kLink']) && (int)$params['kLink'] > 0) {
         $kLink      = (int)$params['kLink'];
-        $linkHelper = \Link\LinkHelper::getInstance();
-        $oLink      = $linkHelper->getLinkByID($kLink);
+        $oLink      = Shop::Container()->getLinkHelper()->getLinkByID($kLink);
         if (isset($params['assign'])) {
             $smarty->assign($params['assign'], $oLink->getContent());
         } else {

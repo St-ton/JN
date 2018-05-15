@@ -367,7 +367,7 @@ class PortletInstance implements \JsonSerializable
             $src = \Shop::getURL() . '/gfx/keinBild.gif';
             return [
                 'srcset' => $srcset,
-                'sizes' => $srcsizes,
+                'srcsizes' => $srcsizes,
                 'src' => $src,
                 'alt' => $alt,
                 'title' => $title,
@@ -406,9 +406,11 @@ class PortletInstance implements \JsonSerializable
             foreach ($widthHeuristics as $breakpoint => $col) {
                 if (!empty($col)) {
                     $factor = 1;
-                    if(is_array($divisor) && !empty($divisor[$breakpoint])){
-                        $factor = floatval($divisor[$breakpoint]/12);
+
+                    if (is_array($divisor) && !empty($divisor[$breakpoint])) {
+                        $factor = (float)($divisor[$breakpoint] / 12);
                     }
+
                     switch ($breakpoint) {
                         case 'xs':
                             $breakpoint = 767;
@@ -438,7 +440,7 @@ class PortletInstance implements \JsonSerializable
 
         return [
             'srcset' => $srcset,
-            'sizes' => $srcsizes,
+            'srcsizes' => $srcsizes,
             'src' => $src,
             'alt' => $alt,
             'title' => $title,
@@ -457,7 +459,7 @@ class PortletInstance implements \JsonSerializable
         $imageAttributes = $this->getImageAttributes($src, $alt, $title);
 
         $this->setAttribute('srcset', $imageAttributes['srcset']);
-        $this->setAttribute('sizes', $imageAttributes['sizes']);
+        $this->setAttribute('sizes', $imageAttributes['srcsizes']);
         $this->setAttribute('src', $imageAttributes['src']);
         $this->setAttribute('alt', $imageAttributes['alt']);
         $this->setAttribute('title', $imageAttributes['title']);

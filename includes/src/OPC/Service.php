@@ -360,23 +360,6 @@ class Service
     }
 
     /**
-     * If this portlet has a property 'filters' set as an array of filters then return the filtered set of product keys
-     *
-     * @return int[] - filtered product keys
-     */
-    public function getFilteredProductIds($filters = [])
-    {
-        \Shop::setLanguage(1);
-        $productFilter = new \Filter\ProductFilter();
-
-        foreach ($filters as $filter) {
-            $productFilter->addActiveFilter(new $filter['class']($productFilter), $filter['value']);
-        }
-
-        return $productFilter->getProductKeys();
-    }
-
-    /**
      * @param array $enabledFilters
      * @return array
      */

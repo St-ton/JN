@@ -6,6 +6,8 @@
 
 namespace OPC\Portlets;
 
+use OPC\PortletInstance;
+
 class ProductStream extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
@@ -24,7 +26,7 @@ class ProductStream extends \OPC\Portlet
 
     public function getFinalHtml($instance)
     {
-        return "";//"<h$level>$text</h$level>";
+        return $this->getFinalHtmlFromTpl($instance);
     }
 
     public function getButtonHtml()
@@ -58,5 +60,44 @@ class ProductStream extends \OPC\Portlet
         return [
             'Styles' => 'styles',
         ];
+    }
+
+    /**
+     * @param PortletInstance $instance
+     * @return int[]
+     */
+    public function getFilteredProductIds(PortletInstance $instance)
+    {
+        \Shop::setLanguage(1);
+
+        $enabledFilters = $instance->getProperty('filters');
+        $productFilter  = new \Filter\ProductFilter();
+
+        foreach ($enabledFilters as $enabledFilter) {
+            /** @var \Filter\AbstractFilter $newFilter **/
+            $newFilter = new $enabledFilter['class']($productFilter);
+            $newFilter->setType(\Filter\AbstractFilter::FILTER_TYPE_AND);
+            $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
+        }
+
+        return $productFilter->getProductKeys();
+    }
+
+    /**
+     * @param PortletInstance $instance
+     * @return \Artikel[]
+     */
+    public function getFilteredProducts(PortletInstance $instance)
+    {
+        $products = [];
+
+        foreach ($this->getFilteredProductIds($instance) as $kArtikel) {
+            $kArtikel = (int)$kArtikel;
+            $product  = new \Artikel($kArtikel);
+            $product->fuelleArtikel($kArtikel, null);
+            $products[] = $product;
+        }
+
+        return $products;
     }
 }

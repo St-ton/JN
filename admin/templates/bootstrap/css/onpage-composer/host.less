@@ -249,3 +249,70 @@ html, body {
         max-height: 100%;
     }
 }
+
+#debugPageTree {
+    overflow: auto;
+    max-height: 70vh;
+    white-space: nowrap;
+    padding: 0.5em;
+    background-color: @portlet-btn-bg;
+    border-radius: 5px;
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
+        cursor: text;
+
+        &:before {
+            content: '\00a0\00a0';
+            display: inline-block;
+            font-family: monospace;
+        }
+    }
+
+    span {
+        &.number {
+            color: #039;
+        }
+        &.string {
+            color: #090;
+            //white-space: normal;
+            //word-wrap: break-word;
+        }
+    }
+
+    li.tree {
+        cursor: pointer;
+
+        > ul {
+            display: none;
+            padding-left: 1em;
+        }
+
+        &.expanded {
+            &:before {
+                content: '- ';
+                color: #00f;
+                display: inline;
+                font-family: monospace;
+            }
+
+            > ul {
+                display: block;
+            }
+        }
+
+        &:not(.expanded) {
+            &:before {
+                content: '+ ';
+                color: #00f;
+                display: inline;
+                font-family: monospace;
+            }
+        }
+    }
+}

@@ -150,49 +150,59 @@ Page.prototype = {
         this.rootAreas.empty();
     },
 
-    toJSON: function()
+    toJSON: function(withDom)
     {
+        withDom = withDom || false;
+
         var result = {id: this.id, url: this.url, areas: {}};
         var areas  = this.rootAreas;
 
         for(var i=0; i<areas.length; i++) {
             var area     = this.jq(areas[i]);
-            var areaData = this.areaToJSON(area);
+            var areaData = this.areaToJSON(area, withDom);
 
-            result.areas[areaData.id] = this.areaToJSON(area);
+            result.areas[areaData.id] = areaData;
         }
 
         return result;
     },
 
-    areaToJSON: function(area)
+    areaToJSON: function(area, withDom)
     {
+        withDom = withDom || false;
+
         var result   = {id: area.data('area-id'), content: []};
         var portlets = area.children('[data-portlet]');
 
         for(var i=0; i<portlets.length; i++) {
             var portlet = this.jq(portlets[i]);
 
-            result.content.push(this.portletToJSON(portlet));
+            result.content.push(this.portletToJSON(portlet, withDom));
         }
 
         return result;
     },
 
-    portletToJSON: function(portlet)
+    portletToJSON: function(portlet, withDom)
     {
+        withDom = withDom || false;
+
         var data     = portlet.data('portlet');
         var result   = {"class": data.class, title: data.title, properties: data.properties, subareas: {}};
         var subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
 
         for(var i=0; i<subareas.length; i++) {
             var subarea     = this.jq(subareas[i]);
-            var subareaData = this.areaToJSON(subarea);
+            var subareaData = this.areaToJSON(subarea, withDom);
 
             result.subareas[subareaData.id] = subareaData;
         }
 
         result.widthHeuristics = this.computePortletWidthHeuristics(portlet);
+
+        if(withDom) {
+            result.elm = portlet;
+        }
 
         return result;
     },

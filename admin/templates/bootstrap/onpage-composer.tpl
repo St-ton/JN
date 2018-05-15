@@ -38,6 +38,7 @@
     <script src="{$templateUrl}js/onpage-composer/Page.js"></script>
     <script src="{$templateUrl}js/onpage-composer/IO.js"></script>
     <script src="{$templateUrl}js/onpage-composer/Tutorial.js"></script>
+    <script src="{$templateUrl}js/onpage-composer/Debug.js"></script>
 
     <script>
         var opc = new OPC({
@@ -120,6 +121,7 @@
             <li class="active"><a href="#portlets" data-toggle="tab">Portlets</a></li>
             <li><a href="#blueprints" data-toggle="tab">Vorlagen</a></li>
             <li><a href="#revisions" data-toggle="tab">Versionen</a></li>
+            <li><a href="#debug" data-toggle="tab"><i class="fa fa-bug"></i></a></li>
         </ul>
 
         <div class="container-fluid">
@@ -164,6 +166,13 @@
                         </a>
                         <div id="revisionList"></div>
                     </div>
+                </div>
+
+                <div class="tab-pane" id="debug">
+                    <button class="btn btn-primary" id="debugTreeRefresh">
+                        <i class="fa fa-refresh"></i>
+                    </button>
+                    <div id="debugPageTree"></div>
                 </div>
 
             </div>

@@ -508,9 +508,13 @@ class AdminAccount
     private function _getPermissionsByGroup($kAdminlogingruppe)
     {
         $kAdminlogingruppe = (int)$kAdminlogingruppe;
-        $oGroup            = Shop::Container()->getDB()->select('tadminlogingruppe', 'kAdminlogingruppe',
-            $kAdminlogingruppe);
+        $oGroup            = Shop::Container()->getDB()->select(
+            'tadminlogingruppe',
+            'kAdminlogingruppe',
+            $kAdminlogingruppe
+        );
         if ($oGroup !== null && isset($oGroup->kAdminlogingruppe)) {
+            $oGroup->kAdminlogingruppe = (int)$oGroup->kAdminlogingruppe;
             $oPermission_arr = Shop::Container()->getDB()->selectAll(
                 'tadminrechtegruppe',
                 'kAdminlogingruppe',

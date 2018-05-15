@@ -398,10 +398,7 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
 {
     $oLink = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_NEWS);
     if (isset($oLink->kLink) && $oLink->kLink > 0) {
-        //hole Link
-        $linkHelper    = \Link\LinkHelper::getInstance();
-        $Link          = $linkHelper->getLinkByID($oLink->kLink);
-        //url
+        $Link       = Shop::Container()->getLinkHelper()->getLinkByID($oLink->kLink);
         $requestURL = baueURL($Link, URLART_SEITE);
         // Canonical
         if (strpos($requestURL, '.php') === false) {

@@ -814,8 +814,7 @@ function pruefeSpezialseite($nLinkart)
             Shop::Cache()->set($cacheID, $oSeite, [CACHING_GROUP_CORE]);
         }
         if (isset($oSeite->cDateiname) && strlen($oSeite->cDateiname) > 0) {
-            $linkHelper = \Link\LinkHelper::getInstance();
-            header('Location: ' . $linkHelper->getStaticRoute($oSeite->cDateiname));
+            header('Location: ' . Shop::Container()->getLinkHelper()->getStaticRoute($oSeite->cDateiname));
             exit();
         }
     }
@@ -867,7 +866,7 @@ function gibSitemapHersteller($Einstellungen)
 function holeSeitenLink($kLink)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Link\LinkHelper::getInstance()->getLinkByID($kLink);
+    return Shop::Container()->getLinkHelper()->getLinkByID($kLink);
 }
 
 /**
@@ -878,7 +877,7 @@ function holeSeitenLink($kLink)
 function holeSeitenLinkSprache($kLink)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Link\LinkHelper::getInstance()->getLinkByID($kLink);
+    return Shop::Container()->getLinkHelper()->getLinkByID($kLink);
 }
 
 /**

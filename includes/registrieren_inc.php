@@ -188,8 +188,8 @@ function kundeSpeichern($cPost_arr)
         }
         if ((int)$cPost_arr['checkout'] === 1) {
             //weiterleitung zum chekout
-            $linkHelper = \Link\LinkHelper::getInstance();
-            header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+            header('Location: ' . Shop::Container()->getLinkHelper()
+                                                   ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         }
         if (isset($cPost_arr['ajaxcheckout_return']) && (int)$cPost_arr['ajaxcheckout_return'] === 1) {
@@ -197,8 +197,8 @@ function kundeSpeichern($cPost_arr)
         }
         if ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
             //weiterleitung zu mein Konto
-            $linkHelper = \Link\LinkHelper::getInstance();
-            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
+            header('Location: ' . Shop::Container()->getLinkHelper()
+                                                   ->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
             exit;
         }
     } else {
@@ -208,8 +208,8 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
             $_SESSION['checkout.cPost_arr']       = $cPost_arr;
 
-            $linkHelper = \Link\LinkHelper::getInstance();
-            header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+            header('Location: ' . Shop::Container()->getLinkHelper()
+                                                   ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         }
         $smarty->assign('fehlendeAngaben', $fehlendeAngaben);

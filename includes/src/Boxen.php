@@ -359,9 +359,7 @@ class Boxen
      */
     private function getLinkGroupByID($id)
     {
-        $linkHelper = \Link\LinkHelper::getInstance();
-
-        return $linkHelper->getLinkGroupByID((int)$id);
+        return Shop::Container()->getLinkHelper()->getLinkGroupByID((int)$id);
     }
 
     /**

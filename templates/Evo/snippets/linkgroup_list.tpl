@@ -11,7 +11,7 @@
         {assign var='activeParents' value=Shop::Container()->getLinkHelper()->getParentIDs($activeId)}
         {assign var=checkLinkParents value=true}
     {/if}
-    {get_navigation2 linkgroupIdentifier=$linkgroupIdentifier assign='links'}
+    {get_navigation linkgroupIdentifier=$linkgroupIdentifier assign='links'}
     {if !empty($links)}
         {foreach $links as $li}
             <li class="{if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)}dropdown dropdown-multi{/if}{if $li->getIsActive() || ($checkLinkParents === true && isset($activeParents) && in_array($li->getID(), $activeParents))} active{/if}{if $tplscope === 'megamenu' && $li->getChildLinks()->count() > 0} bs-hover-enabled{/if}">

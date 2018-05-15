@@ -19,7 +19,7 @@
             {assign var='activeParents' value=Shop::Container()->getLinkHelper()->getParentIDs($activeId)}
         {/if}
         {if !isset($links)}
-            {get_navigation2 linkgroupIdentifier=$linkgroupIdentifier assign='links'}
+            {get_navigation linkgroupIdentifier=$linkgroupIdentifier assign='links'}
         {/if}
         {if !empty($links)}
             {foreach name='links' from=$links item='li'}

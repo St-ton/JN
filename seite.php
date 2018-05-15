@@ -10,18 +10,7 @@ if (!defined('PFAD_ROOT')) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 $smarty                 = Shop::Smarty();
 $AktuelleSeite          = 'SEITE';
-$Einstellungen          = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_KUNDEN,
-    CONF_SONSTIGES,
-    CONF_NEWS,
-    CONF_SITEMAP,
-    CONF_ARTIKELUEBERSICHT,
-    CONF_AUSWAHLASSISTENT,
-    CONF_CACHING,
-    CONF_METAANGABEN
-]);
+$Einstellungen          = Shopsetting::getInstance()->getAll();
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
@@ -32,7 +21,11 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
 }
-$link       = $linkHelper->getLinkByID(Shop::$kLink);
+$link = $linkHelper->getLinkByID(Shop::$kLink);
+if ($link === null || !$link->isVisible()) {
+    $link = $linkHelper->getSpecialPage(LINKTYP_STARTSEITE);
+    $link->setRedirectCode(301);
+}
 $requestURL = baueURL($link, URLART_SEITE);
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     // Work Around für die Startseite
@@ -40,20 +33,6 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 } elseif (strpos($requestURL, '.php') === false) {
     $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
 }
-
-// Link->languageURLs
-//array(4) {
-//    ["ger"]=>
-//  string(20) "Versandinformationen"
-//    ["eng"]=>
-//  string(8) "Shipment"
-//    ["fre"]=>
-//  string(14) "versandinfo-fr"
-//    [""]=>
-//  string(22) "Versandinformationen_1"
-//}
-//$sprachURL = $link->getURLs() ?? baueSprachURLS($link, URLART_SEITE);
-
 // hole aktuelle Kategorie, falls eine gesetzt
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
@@ -159,11 +138,6 @@ if (empty($cMetaTitle) || empty($cMetaDescription) || empty($cMetaKeywords)) {
         }
     }
 }
-
-//Shop::dbg($link->Sprache, false, 'Sprache:');
-//Shop::dbg($link->Sprache->cContent, false, 'cCOntent:');
-//Shop::dbg($link, true, 'Link:');
-
 $cMetaTitle       = prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
 $cMetaDescription = prepareMeta($cMetaDescription, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_description']);
 

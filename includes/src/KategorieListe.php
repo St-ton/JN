@@ -304,7 +304,8 @@ class KategorieListe
                         AND tkategorie.kOberKategorie = " . $kKategorie . "
                     GROUP BY tkategorie.kKategorie
                     ORDER BY tkategorie.nSort, " . $cSortSQLName . "tkategorie.cName";
-            $oKategorie_arr                                                = Shop::Container()->getDB()->query($categorySQL, 2);
+            $oKategorie_arr = Shop::Container()->getDB()->query($categorySQL, \DB\ReturnType::ARRAY_OF_OBJECTS);
+
             $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] = [];
             if (is_array($oKategorie_arr) && count($oKategorie_arr) > 0) {
                 $shopURL      = Shop::getURL();
@@ -374,7 +375,8 @@ class KategorieListe
                                 ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                                 AND tkategorieattributsprache.kSprache = " . Shop::getLanguageID() . "
                             WHERE kKategorie = " . (int)$oKategorie->kKategorie . "
-                            ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
+                            ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort",
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     if (is_array($oKategorieAttribut_arr)) {
                         foreach ($oKategorieAttribut_arr as $oKategorieAttribut) {
@@ -467,12 +469,11 @@ class KategorieListe
                             WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                                 AND tkategorie.kOberKategorie = $kat
                                 AND tkategorie.kKategorie != $kKategorie
-                            ", 2
+                            ",
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
-                    if (is_array($objArr)) {
-                        foreach ($objArr as $obj) {
-                            $kats[] = (int)$obj->kKategorie;
-                        }
+                    foreach ($objArr as $obj) {
+                        $kats[] = (int)$obj->kKategorie;
                     }
                 }
             }
@@ -507,7 +508,8 @@ class KategorieListe
                     AND tartikel.kArtikel = tkategorieartikel.kArtikel
                     AND tkategorieartikel.kKategorie = $kKategorie
                     $lagerfilter
-                LIMIT 1", 1
+                LIMIT 1",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return isset($obj->kArtikel) && $obj->kArtikel > 0;

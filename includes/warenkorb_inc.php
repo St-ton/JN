@@ -117,7 +117,6 @@ function uebernehmeWarenkorbAenderungen()
     }
     $anzahlPositionen            = count(Session::Cart()->PositionenArr);
     $bMindestensEinePosGeaendert = false;
-
     //variationen wurden gesetzt oder anzahl der positionen verändert?
     $kArtikelGratisgeschenk = 0;
     foreach ($cart->PositionenArr as $i => $position) {
@@ -169,19 +168,19 @@ function uebernehmeWarenkorbAenderungen()
                     );
                 }
                 //hole akt. lagerbestand vom artikel
-                if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y' &&
-                    $Artikel->cLagerKleinerNull !== 'Y' &&
-                    $Artikel->fPackeinheit * ((float)$_POST['anzahl'][$i] + $cart->gibAnzahlEinesArtikels(
+                if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y'
+                    && $Artikel->cLagerKleinerNull !== 'Y'
+                    && $Artikel->fPackeinheit * ((float)$_POST['anzahl'][$i] + $cart->gibAnzahlEinesArtikels(
                         $position->kArtikel,
                         $i
-                    )
-                ) > $Artikel->fLagerbestand) {
+                    )) > $Artikel->fLagerbestand
+                ) {
                     $gueltig                         = false;
                     $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailable', 'messages');
                 }
                 // maximale Bestellmenge des Artikels beachten
-                if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]) &&
-                    $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] > 0
+                if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE])
+                    && $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] > 0
                 ) {
                     if ($_POST['anzahl'][$i] > $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]) {
                         $gueltig                         = false;
@@ -189,9 +188,10 @@ function uebernehmeWarenkorbAenderungen()
                     }
                 }
                 //schaue, ob genug auf Lager von jeder var
-                if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation === 'Y' &&
-                    $Artikel->cLagerKleinerNull !== 'Y' &&
-                    is_array($position->WarenkorbPosEigenschaftArr)
+                if ($Artikel->cLagerBeachten === 'Y'
+                    && $Artikel->cLagerVariation === 'Y'
+                    && $Artikel->cLagerKleinerNull !== 'Y'
+                    && is_array($position->WarenkorbPosEigenschaftArr)
                 ) {
                     foreach ($position->WarenkorbPosEigenschaftArr as $eWert) {
                         $EigenschaftWert = new EigenschaftWert($eWert->kEigenschaftWert);
@@ -287,7 +287,8 @@ function uebernehmeWarenkorbAenderungen()
                 WHERE kArtikel = " . $kArtikelGratisgeschenk . "
                     AND cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                     AND CAST(cWert AS DECIMAL) <= " .
-            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (empty($oArtikelGeschenk->kArtikel)) {
@@ -400,7 +401,8 @@ function gibXSelling()
                             AND kXSellArtikel NOT IN ({$cArtikel_str})
                         GROUP BY kXSellArtikel
                         ORDER BY nAnzahl DESC
-                        LIMIT " . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'], 2
+                        LIMIT " . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oXsellkauf_arr) && count($oXsellkauf_arr) > 0) {
@@ -427,7 +429,7 @@ function gibXSelling()
  * @param array $Einstellungen
  * @return array
  */
-function gibGratisGeschenke($Einstellungen)
+function gibGratisGeschenke(array $Einstellungen)
 {
     $oArtikelGeschenke_arr = [];
     if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
@@ -449,20 +451,19 @@ function gibGratisGeschenke($Einstellungen)
                     AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                     AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
                         Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) .
-            $cSQLSort . " LIMIT 20", 2
+            $cSQLSort . " LIMIT 20",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
-        if (is_array($oArtikelGeschenkeTMP_arr) && count($oArtikelGeschenkeTMP_arr) > 0) {
-            foreach ($oArtikelGeschenkeTMP_arr as $i => $oArtikelGeschenkeTMP) {
-                $oArtikel = (new Artikel())->fuelleArtikel($oArtikelGeschenkeTMP->kArtikel, Artikel::getDefaultOptions());
-                if ($oArtikel !== null
-                    && ($oArtikel->kEigenschaftKombi > 0
-                        || !is_array($oArtikel->Variationen)
-                        || count($oArtikel->Variationen) === 0)
-                ) {
-                    $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkeTMP->cWert);
-                    $oArtikelGeschenke_arr[] = $oArtikel;
-                }
+        foreach ($oArtikelGeschenkeTMP_arr as $i => $oArtikelGeschenkeTMP) {
+            $oArtikel = (new Artikel())->fuelleArtikel($oArtikelGeschenkeTMP->kArtikel, Artikel::getDefaultOptions());
+            if ($oArtikel !== null
+                && ($oArtikel->kEigenschaftKombi > 0
+                    || !is_array($oArtikel->Variationen)
+                    || count($oArtikel->Variationen) === 0)
+            ) {
+                $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkeTMP->cWert);
+                $oArtikelGeschenke_arr[] = $oArtikel;
             }
         }
     }

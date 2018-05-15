@@ -65,14 +65,18 @@ class Container extends \OPC\Portlet
                 'default' => uniqid(),
             ],
             'parallax-flag' => [
-                'label' => 'use parrallax effect',
-                'type'  => 'checkbox',
+                'label'   => 'use parrallax effect',
+                'type'    => 'radio',
+                'options' => [
+                    'mitlaufendes Bild'   => 'true',
+                    'einfacher Container' => 'false'
+                ],
             ],
             'src'           => [
                 'type'                 => 'image',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'parallax-flag',
-                'showOnPropValue'      => 1,
+                'showOnPropValue'      => 'true',
                 'dspl_width'           => 50,
             ],
             'min-height'    => [

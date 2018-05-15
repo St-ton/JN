@@ -5,7 +5,7 @@
             {if ($Merkmal->getData('cTyp') === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
                 <div class="panel-heading dropdown">
                     <h5 class="panel-title">
-                        {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein') !== $BILD_KEIN_MERKMALBILD_VORHANDEN}
+                        {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein') !== $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN}
                             <img src="{$Merkmal->getData('cBildURLKlein')}" alt="" class="vmiddle" />
                         {/if}
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
@@ -22,7 +22,7 @@
             {else}
                 <div class="panel-heading">
                     <h5 class="panel-title">
-                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein') !== $BILD_KEIN_MERKMALBILD_VORHANDEN}
+                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein') !== $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN}
                         <img src="{$Merkmal->getData('cBildURLKlein')}" alt="" class="vmiddle" />
                     {/if}
                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}

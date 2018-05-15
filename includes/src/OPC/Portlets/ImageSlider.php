@@ -108,31 +108,49 @@ class ImageSlider extends \OPC\Portlet
             'slider-animation-speed'      => [
                 'label'      => 'slider speed',
                 'type'       => 'number',
+                'default'   => 1500,
                 'dspl_width' => 50,
             ],
             'slider-animation-pause'      => [
                 'label'      => 'pause',
                 'type'       => 'number',
+                'default'   => 6000,
                 'dspl_width' => 50,
             ],
             'slider-start'                => [
                 'label'      => 'auto start',
-                'type'       => 'checkbox',
+                'type'       => 'radio',
+                'options'    => [
+                    'ja' => 'true',
+                    'nööö' => 'false',
+                ],
                 'dspl_width' => 50,
             ],
             'slider-pause'                => [
                 'label'      => 'pause on hover',
-                'type'       => 'checkbox',
+                'type'       => 'radio',
+                'options'    => [
+                    'anhalten'     => 'true',
+                    'weitermachen' => 'false',
+                ],
                 'dspl_width' => 50,
             ],
             'slider-navigation'           => [
                 'label'      => 'slider navigation',
-                'type'       => 'checkbox',
+                'type'       => 'radio',
+                'options'    => [
+                    'ja' => 'true',
+                    'nööö' => 'false',
+                ],
                 'dspl_width' => 50,
             ],
             'slider-direction-navigation' => [
                 'label'      => 'direction nav',
-                'type'       => 'checkbox',
+                'type'       => 'radio',
+                'options'    => [
+                    'ja' => 'true',
+                    'nööö' => 'false',
+                ],
                 'dspl_width' => '50'
             ],
             'slider-kenburns'             => [
@@ -142,15 +160,19 @@ class ImageSlider extends \OPC\Portlet
                 'hint'       => 'overrides other settings',
             ],
             'slider-effects-random'       => [
-                'label' => 'randow effects',
-                'type'  => 'checkbox',
+                'label' => 'random effects',
+                'type'       => 'radio',
+                'options'    => [
+                    'ja' => 'true',
+                    'nööö' => 'false',
+                ],
             ],
             'effects[sliceDown]'                   => [
                 'label'                => 'sliceDown',
                 'type'                 => 'checkbox',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'slider-effects-random',
-                'showOnPropValue'      => 0,
+                'showOnPropValue'      => 'false',
                 'dspl_width'           => 25,
             ],
             'effects[sliceDownLeft]'               => [
@@ -229,7 +251,8 @@ class ImageSlider extends \OPC\Portlet
                 'type'       => 'image-set',
                 'default'    => [],
                 'useColumns' => false,
-                'useLinks'   => true
+                'useLinks'   => true,
+                'useTitles'  => true,
             ],
         ];
     }

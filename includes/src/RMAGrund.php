@@ -61,8 +61,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         {
             $oObj = Shop::Container()->getDB()->query(
                 "SELECT *
-                  FROM trmagrund
-                  WHERE kRMAGrund = " . (int)$kRMAGrund, 1
+                    FROM trmagrund
+                    WHERE kRMAGrund = " . (int)$kRMAGrund,
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if ($oObj->kRMAGrund > 0) {
@@ -320,7 +321,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                         FROM trmagrund
                         WHERE kSprache = " . $kSprache . "
                         " . $cSQL . "
-                        ORDER BY nSort", 2
+                        ORDER BY nSort",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oObj_arr) && count($oObj_arr) > 0) {

@@ -159,18 +159,14 @@ trait PortletHtml
                 if (!empty($propDesc['collapseControlStart'])) {
                     $res .= "<script>
                                 $(function(){
-                                    $('input[name=\"" . $propDesc['showOnProp'] . "\"]').click(function(){
-                                        if (this.type == 'checkbox' && this.checked === true 
-                                        || this.type != 'checkbox' 
-                                            && $(this).val() == " . $propDesc['showOnPropValue'] . "){
+                                    $('input[name=\"" . $propDesc['showOnProp'] . "\"]').click(function(e){
+                                        if ($(e.target).val() == '" . $propDesc['showOnPropValue'] . "'){
                                             $('#collapseContainer$cllpsID').show();
                                         }else{
                                             $('#collapseContainer$cllpsID').hide();
                                         }
                                     });
-                                    if (this.type == 'checkbox' && this.checked === true 
-                                    || this.type != 'checkbox' 
-                                        && $(this).val() == " . $propDesc['showOnPropValue'] . "){
+                                    if ($('input[name=\"" . $propDesc['showOnProp'] . "\"]').val() == '" . $propDesc['showOnPropValue'] . "'){
                                         $('#collapseContainer$cllpsID').show();
                                     }
                                 });
@@ -257,13 +253,13 @@ trait PortletHtml
             case 'checkbox':
                 $res .= "<div class='checkbox$class'><label><input type='checkbox' name='" . $propname . "' value='1'";
                 $res .= $prop === "1" ? " checked" : "";
-                $res .= ">$propname</label></div>";
+                $res .= ">$label</label></div>";
                 break;
             case 'radio':
-                foreach ($propDesc['options'] as $option) {
-                    $selected = $prop === $option ? " checked" : "";
-                    $res     .= "<div class='radio$class'><label><input type='radio' name='$propname' value='$option'"
-                        . "$selected>$option</label></div>";
+                foreach ($propDesc['options'] as $name => $value) {
+                    $selected = $prop === $value ? " checked" : "";
+                    $res     .= "<div class='radio$class'><label><input type='radio' name='$propname' value='$value'"
+                        . "$selected>$name</label></div>";
                 }
                 break;
             case 'select':
@@ -345,7 +341,8 @@ trait PortletHtml
                     'propname'   => $propname,
                     'prop'       => $prop,
                     'useColumns' => !empty($propDesc['useColumns']) ? $propDesc['useColumns'] : false,
-                    'useLinks'   => !empty($propDesc['useLinks']) ? $propDesc['useLinks'] : false
+                    'useLinks'   => !empty($propDesc['useLinks']) ? $propDesc['useLinks'] : false,
+                    'useTitles'  => !empty($propDesc['useTitles']) ? $propDesc['useTitles'] : false
                 ]);
                 break;
             case 'text':

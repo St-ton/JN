@@ -47,12 +47,11 @@ class Synclogin
      * @return bool
      * @throws Exception
      */
-    public function checkLogin($user, $pass)
+    public function checkLogin($user, $pass): bool
     {
-        $passwordService = Shop::Container()->getPasswordService();
         return $this->cName !== null
             && $this->cPass !== null
             && $this->cName === $user
-            && $passwordService->verify($pass, $this->cPass) === true;
+            && Shop::Container()->getPasswordService()->verify($pass, $this->cPass) === true;
     }
 }

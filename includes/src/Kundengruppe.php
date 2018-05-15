@@ -495,13 +495,14 @@ class Kundengruppe
     public static function getGroups()
     {
         $oKdngrp_arr = [];
-        $oObj_arr    = Shop::Container()->getDB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
-
-        if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-            foreach ($oObj_arr as $oObj) {
-                if (isset($oObj->kKundengruppe) && $oObj->kKundengruppe > 0) {
-                    $oKdngrp_arr[] = new self($oObj->kKundengruppe);
-                }
+        $oObj_arr    = Shop::Container()->getDB()->query(
+            "SELECT kKundengruppe 
+                FROM tkundengruppe",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($oObj_arr as $oObj) {
+            if (isset($oObj->kKundengruppe) && $oObj->kKundengruppe > 0) {
+                $oKdngrp_arr[] = new self($oObj->kKundengruppe);
             }
         }
 

@@ -50,8 +50,8 @@ class Accordion extends \OPC\Portlet
                 'label'      => 'layout',
                 'type'       => 'radio',
                 'options'    => [
-                    'button',
-                    'panel'
+                    'button' => 'button',
+                    'panel'  => 'panel',
                 ],
                 'default'    => 'button',
                 'dspl_width' => 100,

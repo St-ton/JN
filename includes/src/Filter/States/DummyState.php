@@ -7,7 +7,7 @@
 namespace Filter\States;
 
 use Filter\AbstractFilter;
-use Filter\IFilter;
+use Filter\FilterInterface;
 use Filter\ProductFilter;
 
 /**
@@ -36,7 +36,7 @@ class DummyState extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         $this->dummyValue = (int)$value;
 
@@ -54,7 +54,7 @@ class DummyState extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         return $this;
     }
@@ -62,7 +62,7 @@ class DummyState extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function init($id): IFilter
+    public function init($id): FilterInterface
     {
         return $this;
     }

@@ -11,7 +11,7 @@
     <section class="panel panel-default box box-global-characteristics" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
             <h5 class="panel-title">
-            {if !empty($oMerkmal->cBildpfadKlein) && $oMerkmal->cBildpfadKlein !== $BILD_KEIN_MERKMALBILD_VORHANDEN}
+            {if !empty($oMerkmal->cBildpfadKlein) && $oMerkmal->cBildpfadKlein !== $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN}
                 <img src="{$oMerkmal->cBildURLKlein}" alt="" class="vmiddle" />
             {/if}
             {$oMerkmal->cName}

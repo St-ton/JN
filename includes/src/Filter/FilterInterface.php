@@ -7,10 +7,10 @@
 namespace Filter;
 
 /**
- * Interface IFilter
+ * Interface FilterInterface
  * @package Filter
  */
-interface IFilter
+interface FilterInterface
 {
     /**
      * initialize an active filter
@@ -18,7 +18,7 @@ interface IFilter
      * @param int|array $value - the current filter value(s)
      * @return $this
      */
-    public function init($value): IFilter;
+    public function init($value): FilterInterface;
 
     /**
      * @return bool
@@ -29,24 +29,24 @@ interface IFilter
      * @param bool $active
      * @return $this
      */
-    public function setIsActive($active): IFilter;
+    public function setIsActive($active): FilterInterface;
 
     /**
      * @param bool $value
      * @return $this
      */
-    public function setIsInitialized($value): IFilter;
+    public function setIsInitialized($value): FilterInterface;
 
     /**
      * @return $this
      */
-    public function generateActiveFilterData(): IFilter;
+    public function generateActiveFilterData(): FilterInterface;
 
     /**
      * @param array $collection
      * @return $this
      */
-    public function setFilterCollection(array $collection): IFilter;
+    public function setFilterCollection(array $collection): FilterInterface;
 
     /**
      * @return array
@@ -62,7 +62,7 @@ interface IFilter
      * @param ProductFilter $productFilter
      * @return mixed
      */
-    public function setProductFilter(ProductFilter $productFilter): IFilter;
+    public function setProductFilter(ProductFilter $productFilter): FilterInterface;
 
     /**
      * check if filter is already initialized
@@ -84,15 +84,15 @@ interface IFilter
      * @param int|string|array $value
      * @return $this
      */
-    public function setValue($value): IFilter;
+    public function setValue($value): FilterInterface;
 
     /**
-     * add filter value to active filter (only for FILTER_TYPE_OR filters)
+     * add filter value to active filter (only for FilterType::OR filters)
      *
      * @param int|string $value
      * @return $this
      */
-    public function addValue($value): IFilter;
+    public function addValue($value): FilterInterface;
 
     /**
      * get the filter's SEO url for a language
@@ -108,28 +108,28 @@ interface IFilter
      * @param array $languages
      * @return $this
      */
-    public function setSeo(array $languages): IFilter;
+    public function setSeo(array $languages): FilterInterface;
 
     /**
      * @param string $name
-     * @return IFilter
+     * @return FilterInterface
      */
-    public function setName($name): IFilter;
+    public function setName($name): FilterInterface;
 
     /**
-     * get the filter's type - FILTER_TYPE_OR/FILTER_TYPE_AND
+     * get the filter's type - \Filter\Type::AND/\Filter\Type::OR
      *
-     * @return int
+     * @return Type
      */
-    public function getType();
+    public function getType(): Type;
 
     /**
-     * set a filter's type - FILTER_TYPE_OR/FILTER_TYPE_AND
+     * set a filter's type - \Filter\Type::AND/\Filter\Type::OR
      *
-     * @param int $type
+     * @param Type $type
      * @return $this
      */
-    public function setType($type): IFilter;
+    public function setType(Type $type): FilterInterface;
 
     /**
      * the filter's base MySQL table name
@@ -142,7 +142,7 @@ interface IFilter
      * @param string $name
      * @return $this
      */
-    public function setTableName($name): IFilter;
+    public function setTableName($name): FilterInterface;
 
     /**
      * alias the filter's base MySQL table name
@@ -168,7 +168,7 @@ interface IFilter
     /**
      * list of necessary joins
      *
-     * @return FilterJoin|FilterJoin[]
+     * @return FilterJoinInterface|FilterJoinInterface[]
      */
     public function getSQLJoin();
 
@@ -186,7 +186,7 @@ interface IFilter
      * @param mixed $mixed
      * @return $this
      */
-    public function setOptions($mixed): IFilter;
+    public function setOptions($mixed): FilterInterface;
 
     /**
      * get a nice name
@@ -206,7 +206,7 @@ interface IFilter
      * @param string $param
      * @return $this
      */
-    public function setUrlParam($param): IFilter;
+    public function setUrlParam($param): FilterInterface;
 
     /**
      * get the SEO url parameter used in frontend for filtering products
@@ -219,7 +219,7 @@ interface IFilter
      * @param string $param
      * @return $this
      */
-    public function setUrlParamSEO($param): IFilter;
+    public function setUrlParamSEO($param): FilterInterface;
 
     /**
      * check if this filter is built-in or not
@@ -232,7 +232,7 @@ interface IFilter
      * @param bool $custom
      * @return $this
      */
-    public function setIsCustom(bool $custom): IFilter;
+    public function setIsCustom(bool $custom): FilterInterface;
 
     /**
      * set basic information for using this filter
@@ -240,7 +240,7 @@ interface IFilter
      * @param ProductFilter|null $productFilter
      * @return $this
      */
-    public function setBaseData($productFilter): IFilter;
+    public function setBaseData($productFilter): FilterInterface;
 
     /**
      * the language ID currently active in the shop
@@ -273,10 +273,25 @@ interface IFilter
     /**
      * set the filter's class name
      *
-     * @param string $className
+     * @param string $name
      * @return $this
      */
-    public function setClassName($className): IFilter;
+    public function setClassName($name): FilterInterface;
+
+    /**
+     * get the filter's nice name without namespace
+     *
+     * @return string
+     */
+    public function getNiceName();
+
+    /**
+     * set the filter's class name
+     *
+     * @param string $name
+     * @return $this
+     */
+    public function setNiceName($name): FilterInterface;
 
     /**
      * @return int
@@ -309,7 +324,7 @@ interface IFilter
      * @param bool $isChecked
      * @return $this
      */
-    public function setIsChecked(bool $isChecked): IFilter;
+    public function setIsChecked(bool $isChecked): FilterInterface;
 
     /**
      * @return bool
@@ -320,13 +335,13 @@ interface IFilter
      * @param bool $doUnset
      * @return $this
      */
-    public function setDoUnset(bool $doUnset): IFilter;
+    public function setDoUnset(bool $doUnset): FilterInterface;
 
     /**
      * @param string|array $url
      * @return $this
      */
-    public function setUnsetFilterURL($url): IFilter;
+    public function setUnsetFilterURL($url): FilterInterface;
 
     /**
      * @param string|null
@@ -340,21 +355,21 @@ interface IFilter
     public function getAvailableLanguages(): array;
 
     /**
-     * @return int
+     * @return Visibility
      */
-    public function getVisibility();
+    public function getVisibility(): Visibility;
 
     /**
      * @param int|string $visibility
      * @return $this
      */
-    public function setVisibility($visibility): IFilter;
+    public function setVisibility($visibility): FilterInterface;
 
     /**
      * @param string $name
      * @return $this
      */
-    public function setFrontendName(string $name): IFilter;
+    public function setFrontendName(string $name): FilterInterface;
 
     /**
      * @return string
@@ -362,21 +377,21 @@ interface IFilter
     public function getFrontendName();
 
     /**
-     * @param int $type
+     * @param InputType $type
      * @return $this
      */
-    public function setInputType($type): IFilter;
+    public function setInputType(InputType $type): FilterInterface;
 
     /**
-     * @return int
+     * @return InputType
      */
-    public function getInputType();
+    public function getInputType(): InputType;
 
     /**
      * @param string|null $icon
      * @return $this
      */
-    public function setIcon($icon): IFilter;
+    public function setIcon($icon): FilterInterface;
 
     /**
      * @return string
@@ -391,7 +406,7 @@ interface IFilter
     /**
      * @return $this
      */
-    public function hide(): IFilter;
+    public function hide(): FilterInterface;
 
     /**
      * @return bool

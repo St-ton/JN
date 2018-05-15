@@ -68,7 +68,7 @@
                             <script type="text/javascript">
                                 $(function () {ldelim}
                                     $('#fileinput{$smarty.foreach.schema.index}{$smarty.foreach.upload.index}').fileinput({
-                                        uploadUrl:             '{$ShopURL}/{$PFAD_UPLOAD_CALLBACK}',
+                                        uploadUrl:             '{$ShopURL}/{$smarty.const.PFAD_UPLOAD_CALLBACK}',
                                         uploadAsync:           true,
                                         showPreview:           false,
                                         showRemove:            false,

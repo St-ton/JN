@@ -23,7 +23,8 @@
         "monolog/monolog": "^1.23",
         "tightenco/collect": "~5.5.0",
         "eloquent/pathogen": "~0.6",
-        "mrclay/minify": "~3.0.0"
+        "mrclay/minify": "~3.0.0",
+        "myclabs/php-enum": "^1.5"
     },
     "require-dev": {
         "phpunit/php-token-stream": "~1.2",

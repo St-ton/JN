@@ -78,6 +78,7 @@ class FilterOption extends AbstractFilter
      */
     public function __construct($productFilter = null)
     {
+        parent::__construct($productFilter);
         $this->isInitialized = true;
         $this->options       = [];
     }
@@ -95,7 +96,7 @@ class FilterOption extends AbstractFilter
      * @param bool|int $isActive
      * @return $this
      */
-    public function setIsActive($isActive): IFilter
+    public function setIsActive($isActive): FilterInterface
     {
         $this->isActive = (bool)$isActive;
         $this->nAktiv   = (int)$isActive;
@@ -115,7 +116,7 @@ class FilterOption extends AbstractFilter
      * @param string $class
      * @return $this
      */
-    public function setClass($class): IFilter
+    public function setClass($class): FilterInterface
     {
         $this->class = $class;
 
@@ -134,7 +135,7 @@ class FilterOption extends AbstractFilter
      * @param string $param
      * @return $this
      */
-    public function setParam($param): IFilter
+    public function setParam($param): FilterInterface
     {
         $this->param = $param;
 
@@ -153,7 +154,7 @@ class FilterOption extends AbstractFilter
      * @param string $url
      * @return $this
      */
-    public function setURL($url): IFilter
+    public function setURL($url): FilterInterface
     {
         $this->url = $url;
 
@@ -172,7 +173,7 @@ class FilterOption extends AbstractFilter
      * @param bool $disableSeoURLs
      * @return $this
      */
-    public function setDisableSeoURLs($disableSeoURLs): IFilter
+    public function setDisableSeoURLs($disableSeoURLs): FilterInterface
     {
         $this->disableSeoURLs = $disableSeoURLs;
 
@@ -191,7 +192,7 @@ class FilterOption extends AbstractFilter
      * @param FilterOption $option
      * @return $this
      */
-    public function addOption($option): IFilter
+    public function addOption($option): FilterInterface
     {
         $this->options[] = $option;
 
@@ -203,7 +204,7 @@ class FilterOption extends AbstractFilter
      * @param mixed  $value
      * @return $this
      */
-    public function setData($name, $value): IFilter
+    public function setData($name, $value): FilterInterface
     {
         $this->data[$name] = $value;
 
@@ -264,7 +265,7 @@ class FilterOption extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         return $this;
     }

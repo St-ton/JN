@@ -9,7 +9,8 @@ namespace Filter\Items;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
+use Filter\Type;
 use Filter\ProductFilter;
 
 /**
@@ -34,7 +35,7 @@ class ItemLimit extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         return $this;
     }
@@ -63,11 +64,13 @@ class ItemLimit extends AbstractFilter
             ? 'products_per_page_list'
             : 'products_per_page_gallery';
         $limitOptions     = explode(',', $this->getConfig()['artikeluebersicht'][$optionIdx]);
+        $activeValue      = $_SESSION['ArtikelProSeite']
+            ?? $this->productFilter->getMetaData()->getProductsPerPageLimit();
         foreach ($limitOptions as $i => $limitOption) {
             $limitOption = (int)trim($limitOption);
             $name        = $limitOption > 0 ? $limitOption : \Shop::Lang()->get('showAll');
             $options[]   = (new FilterOption())
-                ->setIsActive(isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] === $limitOption)
+                ->setIsActive($activeValue === $limitOption)
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($limitOption)
                 ))

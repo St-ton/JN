@@ -125,7 +125,8 @@ class CheckBox
             $oCheckBox = Shop::Container()->getDB()->query("
                 SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE 
                     FROM tcheckbox 
-                    WHERE kCheckBox = " . $kCheckBox, 1
+                    WHERE kCheckBox = " . $kCheckBox,
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0) {
                 $cMember_arr = array_keys(get_object_vars($oCheckBox));
@@ -179,7 +180,8 @@ class CheckBox
                                 AND tseo.kKey = " . (int)$this->kLink . "
                             LEFT JOIN tsprache
                                 ON tsprache.kSprache = tseo.kSprache
-                            WHERE tlink.kLink = " . (int)$this->kLink, 1
+                            WHERE tlink.kLink = " . (int)$this->kLink,
+                        \DB\ReturnType::SINGLE_OBJECT
                     );
                     if (isset($oLink->kLink) && $oLink->kLink > 0) {
                         $this->oLink = new Link(null, $oLink);
@@ -237,7 +239,8 @@ class CheckBox
                 WHERE FIND_IN_SET('" . (int)$nAnzeigeOrt . "', REPLACE(cAnzeigeOrt, ';', ',')) > 0
                     AND FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppe, ';', ',')) > 0
                     " . $cSQL . "
-                ORDER BY nSort", 2
+                ORDER BY nSort",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         if (count($oCheckBoxTMP_arr) > 0) {
@@ -369,15 +372,14 @@ class CheckBox
         if ($bAktiv) {
             $cSQL = ' WHERE nAktiv = 1';
         }
-        $oCheckBoxTMP_arr = Shop::Container()->getDB()->query("
-            SELECT kCheckBox 
+        $oCheckBoxTMP_arr = Shop::Container()->getDB()->query(
+            "SELECT kCheckBox 
                 FROM tcheckbox" . $cSQL . " 
-                ORDER BY nSort " . $cLimitSQL, 2
+                ORDER BY nSort " . $cLimitSQL,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (count($oCheckBoxTMP_arr) > 0) {
-            foreach ($oCheckBoxTMP_arr as $i => $oCheckBoxTMP) {
-                $oCheckBox_arr[$i] = new self($oCheckBoxTMP->kCheckBox, $bSprache);
-            }
+        foreach ($oCheckBoxTMP_arr as $i => $oCheckBoxTMP) {
+            $oCheckBox_arr[$i] = new self($oCheckBoxTMP->kCheckBox, $bSprache);
         }
 
         return $oCheckBox_arr;
@@ -393,7 +395,11 @@ class CheckBox
         if ($bAktiv) {
             $cSQL = ' WHERE nAktiv = 1';
         }
-        $oCheckBoxCount = Shop::Container()->getDB()->query("SELECT count(*) AS nAnzahl FROM tcheckbox" . $cSQL, 1);
+        $oCheckBoxCount = Shop::Container()->getDB()->query(
+            "SELECT count(*) AS nAnzahl 
+                FROM tcheckbox" . $cSQL,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
 
         return isset($oCheckBoxCount->nAnzahl) ? (int)$oCheckBoxCount->nAnzahl : 0;
     }
@@ -457,7 +463,12 @@ class CheckBox
      */
     public function getCheckBoxFunctions()
     {
-        return Shop::Container()->getDB()->query("SELECT * FROM tcheckboxfunktion ORDER BY cName", 2);
+        return Shop::Container()->getDB()->query(
+            "SELECT * 
+                FROM tcheckboxfunktion 
+                ORDER BY cName",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
     }
 
     /**

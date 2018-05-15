@@ -301,7 +301,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $oCount = Shop::Container()->getDB()->query("
                 SELECT COUNT(*) AS nCount 
                     FROM tkonfigitem 
-                    WHERE kKonfiggruppe = " . (int)$this->kKonfiggruppe, 1
+                    WHERE kKonfiggruppe = " . (int)$this->kKonfiggruppe,
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             return isset($oCount->nCount)

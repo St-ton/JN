@@ -120,7 +120,8 @@ class ArtikelHelper
                             AND tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = " . $kArtikel . "
                         GROUP BY tartikel.kArtikel
-                        HAVING count(*) = " . count($kVariationKombi_arr), 1
+                        HAVING count(*) = " . count($kVariationKombi_arr),
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (isset($oArtikelTMP->kArtikel) && $oArtikelTMP->kArtikel > 0) {
                     return (int)$oArtikelTMP->kArtikel;
@@ -188,16 +189,17 @@ class ArtikelHelper
         },
             Shop::Container()->getDB()->query(
                 "SELECT teigenschaftkombiwert.*
-                FROM teigenschaftkombiwert
-                JOIN tartikel
-                    ON tartikel.kVaterArtikel = " . (int)$kVaterArtikel . "
-                    AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                LEFT JOIN tartikelsichtbarkeit
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$kKundengruppe . "
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                {$cGroupBy}
-                ORDER BY teigenschaftkombiwert.kEigenschaftWert", 2
+                    FROM teigenschaftkombiwert
+                    JOIN tartikel
+                        ON tartikel.kVaterArtikel = " . (int)$kVaterArtikel . "
+                        AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                    LEFT JOIN tartikelsichtbarkeit
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = " . (int)$kKundengruppe . "
+                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                    {$cGroupBy}
+                    ORDER BY teigenschaftkombiwert.kEigenschaftWert",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             )
         );
     }
@@ -229,7 +231,8 @@ class ArtikelHelper
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = " . $customerGroup . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                ORDER BY tartikel.kArtikel", 2
+                ORDER BY tartikel.kArtikel",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!is_array($oVariationKombiKind_arr) || count($oVariationKombiKind_arr) === 0) {
             return [];
@@ -291,7 +294,8 @@ class ArtikelHelper
                 WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                     AND teigenschaftwert.kEigenschaft IN (" . $cSQL1 . ")
-                    AND teigenschaftwert.kEigenschaftWert IN (" . $cSQL2 . ")", 2
+                    AND teigenschaftwert.kEigenschaftWert IN (" . $cSQL2 . ")",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         $oEigenschaftTMP_arr = Shop::Container()->getDB()->query(
@@ -304,7 +308,8 @@ class ArtikelHelper
                     OR teigenschaft.kArtikel = " . $kArtikel . ")
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                     AND (teigenschaft.cTyp = 'FREIFELD'
-                    OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')", 2
+                    OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         if (is_array($oEigenschaft_arr) && count($oEigenschaft_arr) > 0) {
@@ -324,7 +329,8 @@ class ArtikelHelper
                                     AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $customerGroup . "
                                 WHERE teigenschaftwert.kEigenschaftWert = " . (int)$oEigenschaft->kEigenschaftWert . "
                                     AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                                    AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft, 1
+                                    AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft,
+                            \DB\ReturnType::SINGLE_OBJECT
                         );
 
                         if ($oEigenschaftWertVorhanden->kEigenschaftWert) {
@@ -432,7 +438,8 @@ class ArtikelHelper
                     ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                     AND teigenschaftsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                 WHERE teigenschaft.kArtikel = " . $kArtikel . "
-                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL", 2
+                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         // $oProperties anlegen
         $oProperties = [];
@@ -454,7 +461,8 @@ class ArtikelHelper
                             WHERE teigenschaftwert.kEigenschaftWert = " . 
                                 (int)self::getSelectedVariationValue($oEigenschaft->kEigenschaft) . "
                                 AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                                AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft, 1
+                                AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft,
+                        \DB\ReturnType::SINGLE_OBJECT
                     );
 
                     if ($oEigenschaftWertVorhanden->kEigenschaftWert) {
@@ -687,5 +695,23 @@ class ArtikelHelper
         return is_callable($callback)
             ? $callback($res)
             : $res;
+    }
+
+    /**
+     * @param string        $attribute
+     * @param string        $value
+     * @param callable|null $callback
+     * @return mixed
+     * @since 5.0
+     */
+    public static function getArticleByAttribute($attribute, $value, callable $callback = null)
+    {
+        $art = ($res = self::getDataByAttribute($attribute, $value)) !== null
+            ? (new Artikel())->fuelleArtikel($res->kArtikel, Artikel::getDefaultOptions())
+            : null;
+
+        return is_callable($callback)
+            ? $callback($art)
+            : $art;
     }
 }

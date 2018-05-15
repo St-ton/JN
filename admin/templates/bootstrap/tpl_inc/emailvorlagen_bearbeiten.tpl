@@ -214,6 +214,7 @@
             <div class="btn-group">
                 <button type="submit" name="continue" value="0" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
                 <button type="submit" name="continue" value="1" class="btn btn-default">{#saveAndContinue#}</button>
+                <a href="emailvorlagen.php" value="{#cancel#}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {#cancel#}</a>
             </div>
         </div>
     </form>

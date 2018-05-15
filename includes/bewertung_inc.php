@@ -222,7 +222,8 @@ function aktualisiereDurchschnitt($kArtikel, $cFreischalten)
     $oAnzahlBewertung = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tbewertung
-            WHERE kArtikel = " . $kArtikel . $cFreiSQL, 1
+            WHERE kArtikel = " . $kArtikel . $cFreiSQL,
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
     if ((int)$oAnzahlBewertung->nAnzahl === 1) {
@@ -236,7 +237,8 @@ function aktualisiereDurchschnitt($kArtikel, $cFreischalten)
     $oBewDurchschnitt = Shop::Container()->getDB()->query(
         "SELECT (sum(nSterne) / count(*)) AS fDurchschnitt
             FROM tbewertung
-            WHERE kArtikel = " . $kArtikel . $cFreiSQL, 1
+            WHERE kArtikel = " . $kArtikel . $cFreiSQL,
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
     if (isset($oBewDurchschnitt->fDurchschnitt) && $oBewDurchschnitt->fDurchschnitt > 0) {
@@ -296,7 +298,9 @@ function pruefeKundeArtikelGekauft($kArtikel, $kKunde)
                 JOIN twarenkorbpos 
                     ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
                 WHERE tbestellung.kKunde = {$kKunde}
-                    AND (twarenkorbpos.kArtikel = {$kArtikel} OR twarenkorbpos.kArtikel = tartikel.kArtikel)", 1
+                    AND (twarenkorbpos.kArtikel = {$kArtikel} 
+                    OR twarenkorbpos.kArtikel = tartikel.kArtikel)",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (!isset($oBestellung->kBestellung) || !$oBestellung->kBestellung) {
@@ -408,10 +412,11 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 }
 
                 // tkunde Guthaben updaten
-                Shop::Container()->getDB()->query("
-                    UPDATE tkunde
+                Shop::Container()->getDB()->query(
+                    "UPDATE tkunde
                         SET fGuthaben = fGuthaben + " . (float)$fBelohnung . "
-                        WHERE kKunde = " . $kKunde, 3
+                        WHERE kKunde = " . $kKunde,
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
 
                 // tbewertungguthabenbonus eintragen

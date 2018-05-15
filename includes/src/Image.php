@@ -127,7 +127,8 @@ class Image
                 FROM tartikelpict 
                 WHERE kArtikel = '{$id}' 
                     AND nNr = '{$number}' 
-                ORDER BY nNr LIMIT 1", 1
+                ORDER BY nNr LIMIT 1",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return is_object($item) ? $item : null;
@@ -244,12 +245,16 @@ class Image
     private static function getBranding()
     {
         $branding    = [];
-        $brandingTmp = Shop::Container()->getDB()->query("SELECT tbranding.cBildKategorie 
-            AS type, tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
+        $brandingTmp = Shop::Container()->getDB()->query(
+            "SELECT tbranding.cBildKategorie AS type, 
+            tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
             tbrandingeinstellung.dTransparenz AS transparency, tbrandingeinstellung.dGroesse AS size
-            FROM tbrandingeinstellung
-            INNER JOIN tbranding ON tbrandingeinstellung.kBranding = tbranding.kBranding
-            WHERE tbrandingeinstellung.nAktiv = 1", 2);
+                FROM tbrandingeinstellung
+                INNER JOIN tbranding 
+                    ON tbrandingeinstellung.kBranding = tbranding.kBranding
+                WHERE tbrandingeinstellung.nAktiv = 1",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
 
         foreach ($brandingTmp as $b) {
             $b->size            = (int)$b->size;

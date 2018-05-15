@@ -37,8 +37,6 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
-// Gehört der kLink zu einer Spezialseite? Wenn ja, leite um
-pruefeSpezialseite($link->getLinkType());
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     if ($link->getRedirectCode() > 0) {
         header('Location: ' . $cCanonicalURL, true, $link->getRedirectCode());

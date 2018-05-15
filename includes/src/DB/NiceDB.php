@@ -197,9 +197,9 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @inh eritdoc
+     * @inheritdoc
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->config;
     }
@@ -1294,7 +1294,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function beginTransaction()
+    public function beginTransaction(): bool
     {
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 

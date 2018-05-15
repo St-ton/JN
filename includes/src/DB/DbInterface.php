@@ -18,7 +18,7 @@ interface DbInterface extends \Serializable
      *
      * @return array
      */
-    public function getConfig();
+    public function getConfig(): array;
 
     /**
      * avoid destructer races with object cache
@@ -362,9 +362,9 @@ interface DbInterface extends \Serializable
     public function getErrorMessage();
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function beginTransaction();
+    public function beginTransaction(): bool;
 
     /**
      * @return bool

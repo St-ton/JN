@@ -102,7 +102,7 @@ final class LinkGroup implements LinkGroupInterface
         foreach ($groupLanguages as $groupLanguage) {
             $langID                      = (int)$groupLanguage->kSprache;
             $this->languageID[]          = $langID;
-            $this->names[$langID]         = $groupLanguage->cName;
+            $this->names[$langID]        = $groupLanguage->cName;
             $this->languageCode[$langID] = $groupLanguage->cISOSprache;
             $this->template              = $groupLanguage->template;
         }
@@ -196,7 +196,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function filterLinks (callable $func): Collection
+    public function filterLinks(callable $func): Collection
     {
         $this->links = $this->links->filter($func);
 

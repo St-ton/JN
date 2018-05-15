@@ -45,8 +45,8 @@ final class LinkHelper
      */
     public function __construct(DbInterface $db)
     {
-        $this->db = $db;
-        self::$_instance = $this;
+        $this->db            = $db;
+        self::$_instance     = $this;
         $this->linkGroupList = new LinkGroupList($this->db);
         $this->initLinkGroups();
     }

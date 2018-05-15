@@ -68,7 +68,7 @@ final class LinkGroupCollection extends Collection
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function __set($name, $value)
     {

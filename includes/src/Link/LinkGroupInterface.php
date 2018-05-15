@@ -77,5 +77,5 @@ interface LinkGroupInterface
      * @param callable $func
      * @return Collection
      */
-    public function filterLinks (callable $func): Collection;
+    public function filterLinks(callable $func): Collection;
 }

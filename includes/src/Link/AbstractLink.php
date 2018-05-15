@@ -49,7 +49,10 @@ abstract class AbstractLink implements LinkInterface
         'nLinkart'   => 'LinkType',
     ];
 
-    public function getLangCompat()
+    /**
+     * @return $this
+     */
+    public function getLangCompat(): LinkInterface
     {
         return $this;
     }

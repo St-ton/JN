@@ -197,7 +197,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
            ->assign('Einstellungen', Shopsetting::getInstance()->getAll())
            ->assign('Xselling', $oXSelling)
            ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
-           ->assign('oSpezialseiten_arr', \Link\LinkHelper::getInstance()->getSpecialPages())
+           ->assign('oSpezialseiten_arr', Shop::Container()->getLinkHelper()->getSpecialPages())
            ->assign('Steuerpositionen', $cart->gibSteuerpositionen());
 
     $oResponse->nType           = 2;
@@ -215,9 +215,8 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
     }
 
     if ($GLOBALS['GlobaleEinstellungen']['global']['global_warenkorb_weiterleitung'] === 'Y') {
-        $linkHelper           = \Link\LinkHelper::getInstance();
         $oResponse->nType     = 1;
-        $oResponse->cLocation = $linkHelper->getStaticRoute('warenkorb.php');
+        $oResponse->cLocation = Shop::Container()->getLinkHelper()->getStaticRoute('warenkorb.php');
         $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
     }
 
@@ -373,9 +372,8 @@ function pushToWishlist($kArtikel, $qty)
     $qty           = (int)$qty === 0 ? 1 : (int)$qty;
     $smarty        = Shop::Smarty();
     if (empty($customerID = Session::Customer()->getID())) {
-        $linkHelper           = \Link\LinkHelper::getInstance();
         $oResponse->nType     = 1;
-        $oResponse->cLocation = $linkHelper->getStaticRoute('jtl.php') .
+        $oResponse->cLocation = Shop::Container()->getLinkHelper()->getStaticRoute('jtl.php') .
             '?a=' . $kArtikel .
             '&n=' . $qty .
             '&r=' . R_LOGIN_WUNSCHLISTE;
@@ -562,7 +560,7 @@ function getBasketItems($nTyp)
                            [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
                            true)
                    ))
-                   ->assign('oSpezialseiten_arr', \Link\LinkHelper::getInstance()->getSpecialPages());
+                   ->assign('oSpezialseiten_arr', Shop::Container()->getLinkHelper()->getSpecialPages());
 
             VersandartHelper::getShippingCosts($cLand, $cPLZ, $error);
             $oResponse->cTemplate = $smarty->fetch('basket/cart_dropdown_label.tpl');

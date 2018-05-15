@@ -730,13 +730,13 @@ final class Shop
         if (($plugins = self::Cache()->get($cacheID)) === false) {
             $plugins = self::Container()->getDB()->query(
                 'SELECT kPlugin 
-                  FROM tplugin 
-                  WHERE nStatus = 2 
-                    AND bBootstrap = 1 
-                  ORDER BY nPrio ASC', \DB\ReturnType::ARRAY_OF_OBJECTS) ?: [];
+                    FROM tplugin 
+                    WHERE nStatus = 2 
+                      AND bBootstrap = 1 
+                    ORDER BY nPrio ASC',
+                \DB\ReturnType::ARRAY_OF_OBJECTS) ?: [];
             self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
-
         foreach ($plugins as $plugin) {
             if (($p = Plugin::bootstrapper($plugin->kPlugin)) !== null) {
                 $p->boot(EventDispatcher::getInstance());

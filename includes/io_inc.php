@@ -104,13 +104,11 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
+    $config      = Shopsetting::getInstance()->getAll();
     $smarty      = Shop::Smarty();
     $oResponse   = new stdClass();
     $objResponse = new IOResponse();
-
-    $GLOBALS['oSprache'] = Sprache::getInstance();
-
-    $kArtikel = (int)$kArtikel;
+    $kArtikel    = (int)$kArtikel;
     if ($anzahl <= 0 || $kArtikel <= 0) {
         return $objResponse;
     }
@@ -194,7 +192,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
            ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
            ->assign('fAnzahl', $anzahl)
            ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
-           ->assign('Einstellungen', Shopsetting::getInstance()->getAll())
+           ->assign('Einstellungen', $config)
            ->assign('Xselling', $oXSelling)
            ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
            ->assign('oSpezialseiten_arr', Shop::Container()->getLinkHelper()->getSpecialPages())
@@ -214,7 +212,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         setzeKampagnenVorgang(KAMPAGNE_DEF_WARENKORB, $kArtikel, $anzahl); // Warenkorb
     }
 
-    if ($GLOBALS['GlobaleEinstellungen']['global']['global_warenkorb_weiterleitung'] === 'Y') {
+    if ($config['global']['global_warenkorb_weiterleitung'] === 'Y') {
         $oResponse->nType     = 1;
         $oResponse->cLocation = Shop::Container()->getLinkHelper()->getStaticRoute('warenkorb.php');
         $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
@@ -526,9 +524,7 @@ function getBasketItems($nTyp)
     $oResponse   = new stdClass();
     $objResponse = new IOResponse();
 
-    $GLOBALS['oSprache'] = Sprache::getInstance();
     WarenkorbHelper::addVariationPictures($cart);
-
     switch ((int)$nTyp) {
         default:
         case 0:

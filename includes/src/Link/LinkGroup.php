@@ -28,37 +28,37 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @var array
      */
-    protected $names = [];
+    private $names = [];
 
     /**
      * @var int
      */
-    protected $id;
+    private $id;
 
     /**
      * @var string
      */
-    protected $template;
+    private $template;
 
     /**
      * @var array
      */
-    protected $languageID = [];
+    private $languageID = [];
 
     /**
      * @var array
      */
-    protected $languageCode = [];
+    private $languageCode = [];
 
     /**
      * @var Collection
      */
-    protected $links;
+    private $links;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    private $db;
 
     /**
      * LinkGroup constructor.
@@ -191,6 +191,16 @@ final class LinkGroup implements LinkGroupInterface
     public function setTemplate(string $template)
     {
         $this->template = $template;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function filterLinks (callable $func): Collection
+    {
+        $this->links = $this->links->filter($func);
+
+        return $this->links;
     }
 
     /**

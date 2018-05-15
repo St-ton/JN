@@ -33,7 +33,7 @@ interface LinkInterface
      * @param int $customerID
      * @return bool
      */
-    public function isVisible(int $customerGroupID, int $customerID = 0): bool;
+    public function checkVisibility(int $customerGroupID, int $customerID = 0): bool;
 
     /**
      * @return int
@@ -363,4 +363,14 @@ interface LinkInterface
      * @param array $metaDescriptions
      */
     public function setMetaDescriptions(array $metaDescriptions);
+
+    /**
+     * @return bool
+     */
+    public function isVisible(): bool;
+
+    /**
+     * @param bool $isVisible
+     */
+    public function setVisibility(bool $isVisible);
 }

@@ -30,7 +30,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @var LinkGroupCollection
      */
-    private $visibleGroups;
+    private $visibleLinkGroups;
 
     /**
      * LinkGroupList constructor.
@@ -38,9 +38,9 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     public function __construct(DbInterface $db)
     {
-        $this->db            = $db;
-        $this->linkGroups    = new LinkGroupCollection();
-        $this->visibleGroups = new LinkGroupCollection();
+        $this->db                = $db;
+        $this->linkGroups        = new LinkGroupCollection();
+        $this->visibleLinkGroups = new LinkGroupCollection();
     }
 
     /**
@@ -83,7 +83,7 @@ final class LinkGroupList implements LinkGroupListInterface
         $cache = \Shop::Container()->getCache();
         if (($this->linkGroups = $cache->get('linkgroups')) === false) {
             $this->linkGroups = new LinkGroupCollection();
-            foreach ($this->loadStandardGroups() as $group) {
+            foreach ($this->loadDefaultGroups() as $group) {
                 $this->linkGroups->push($group);
             }
             $this->linkGroups->push($this->loadSpecialPages());
@@ -91,7 +91,7 @@ final class LinkGroupList implements LinkGroupListInterface
 
             $cache->set('linkgroups', $this->linkGroups, [CACHING_GROUP_CORE]);
         }
-        $this->applyVisibilityFilter();
+        $this->applyVisibilityFilter(\Session::CustomerGroup()->getID(), \Session::Customer()->getID());
 
         return $this;
     }
@@ -99,7 +99,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @return LinkGroupInterface[]
      */
-    private function loadStandardGroups(): array
+    private function loadDefaultGroups(): array
     {
         $groups         = [];
         $groupLanguages = $this->db->query(
@@ -267,7 +267,7 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     public function getVisibleLinkGroups(): Collection
     {
-        return $this->visibleGroups;
+        return $this->visibleLinkGroups;
     }
 
     /**
@@ -275,28 +275,26 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     public function setVisibleLinkGroups(Collection $linkGroups)
     {
-        $this->visibleGroups = $linkGroups;
+        $this->visibleLinkGroups = $linkGroups;
     }
 
     /**
      * @inheritdoc
      */
-    public function applyVisibilityFilter(): LinkGroupListInterface
+    public function applyVisibilityFilter(int $customerGroupID, int $customerID): LinkGroupListInterface
     {
-        $customerGroupID = \Session::CustomerGroup()->getID();
-        $customerID      = \Session::Customer()->getID();
-        //@todo: remove clone hack!
-        $this->visibleGroups = clone $this->linkGroups;
-        foreach ($this->linkGroups as $i => $linkGroup) {
+        foreach ($this->linkGroups as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $this->visibleGroups[$i] = clone $linkGroup;
-        }
-        foreach ($this->visibleGroups as $linkGroup) {
-            /** @var LinkGroupInterface $linkGroup */
-            $linkGroup->setLinks($linkGroup->getLinks()
-                                           ->filter(function (LinkInterface $l) use ($customerID, $customerGroupID) {
-                                               return $l->isVisible($customerGroupID, $customerID);
-                                           }));
+            $linkGroup->getLinks()->map(function (LinkInterface $l) use ($customerID, $customerGroupID) {
+                $l->checkVisibility($customerGroupID, $customerID);
+
+                return $l;
+            });
+            $filtered = clone $linkGroup;
+            $filtered->filterLinks(function (LinkInterface $l) {
+                return $l->isVisible();
+            });
+            $this->visibleLinkGroups->push($filtered);
         }
 
         return $this;
@@ -307,7 +305,7 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     public function getLinkgroupByTemplate(string $name, $filtered = true)
     {
-        $source = $filtered ? $this->visibleGroups : $this->linkGroups;
+        $source = $filtered ? $this->visibleLinkGroups : $this->linkGroups;
 
         return $source->getLinkgroupByTemplate($name);
     }
@@ -317,7 +315,7 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     public function getLinkgroupByID(int $id, $filtered = true)
     {
-        $source = $filtered ? $this->visibleGroups : $this->linkGroups;
+        $source = $filtered ? $this->visibleLinkGroups : $this->linkGroups;
 
         return $source->getLinkgroupByID($id);
     }

@@ -72,4 +72,10 @@ interface LinkGroupInterface
      * @param string $template
      */
     public function setTemplate(string $template);
+
+    /**
+     * @param callable $func
+     * @return Collection
+     */
+    public function filterLinks (callable $func): Collection;
 }

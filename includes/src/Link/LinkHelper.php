@@ -47,7 +47,8 @@ final class LinkHelper
     {
         $this->db = $db;
         self::$_instance = $this;
-        $this->getLinkGroups();
+        $this->linkGroupList = new LinkGroupList($this->db);
+        $this->initLinkGroups();
     }
 
     /**
@@ -65,8 +66,31 @@ final class LinkHelper
      */
     public function getLinkGroups(): LinkGroupCollection
     {
-        $this->linkGroupList = new LinkGroupList($this->db);
-        $this->linkGroups    = $this->linkGroupList->loadAll()->getLinkGroups();
+        return $this->linkGroupList->getVisibleLinkgroups();
+    }
+
+    /**
+     * @return LinkGroupCollection
+     */
+    public function getVisibleLinkGroups(): LinkGroupCollection
+    {
+        return $this->getLinkGroups();
+    }
+
+    /**
+     * @return LinkGroupCollection
+     */
+    public function getAllLinkGroups(): LinkGroupCollection
+    {
+        return $this->linkGroups;
+    }
+
+    /**
+     * @return LinkGroupCollection
+     */
+    public function initLinkGroups(): LinkGroupCollection
+    {
+        $this->linkGroups = $this->linkGroupList->loadAll()->getLinkGroups();
 
         return $this->linkGroupList->getVisibleLinkgroups();
     }

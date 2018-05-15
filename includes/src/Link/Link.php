@@ -118,6 +118,11 @@ final class Link extends AbstractLink
     /**
      * @var bool
      */
+    protected $isVisible = true;
+
+    /**
+     * @var bool
+     */
     protected $visibleLoggedInOnly = false;
 
     /**
@@ -263,14 +268,16 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
-    public function isVisible(int $customerGroupID, int $customerID = 0): bool
+    public function checkVisibility(int $customerGroupID, int $customerID = 0): bool
     {
         $customerVisibilityOK      = $this->visibleLoggedInOnly === false
             || $customerID > 0;
         $customerGroupVisibilityOK = count($this->customerGroups) === 0
             || in_array($customerGroupID, $this->customerGroups, true);
 
-        return $customerVisibilityOK && $customerGroupVisibilityOK && $this->isEnabled === true;
+        $this->isVisible = $customerVisibilityOK && $customerGroupVisibilityOK && $this->isEnabled === true;
+
+        return $this->isVisible;
     }
 
     /**
@@ -807,6 +814,22 @@ final class Link extends AbstractLink
     public function setMetaDescriptions(array $metaDescriptions)
     {
         $this->metaDescriptions = $metaDescriptions;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isVisible(): bool
+    {
+        return $this->isVisible;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setVisibility(bool $isVisible)
+    {
+        $this->isVisible = $isVisible;
     }
 
     /**

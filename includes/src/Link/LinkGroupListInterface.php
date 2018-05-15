@@ -41,9 +41,11 @@ interface LinkGroupListInterface
     public function setVisibleLinkGroups(Collection $linkGroups);
 
     /**
+     * @param int $customerGroupID
+     * @param int $customerID
      * @return $this
      */
-    public function applyVisibilityFilter(): LinkGroupListInterface;
+    public function applyVisibilityFilter(int $customerGroupID, int $customerID): LinkGroupListInterface;
 
     /**
      * @param string $name

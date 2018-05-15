@@ -46,17 +46,15 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 try {
-    $GLOBALS['DB'] = Shop::Container()->getDB();
+    Shop::Container()->getDB();
 } catch (Exception $exc) {
     die($exc->getMessage());
 }
-$GLOBALS['bSeo'] = true; //seo module is always available, keep global for compatibility reasons
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-$cache = Shop::Container()->getCache()->setJtlCacheConfig();
-$conf  = Shop::getSettings([CONF_GLOBAL]);
-
+Shop::Container()->getCache()->setJtlCacheConfig();
+$config = Shop::getSettings([CONF_GLOBAL])['global'];
 if (PHP_SAPI !== 'cli'
-    && $conf['global']['kaufabwicklung_ssl_nutzen'] === 'P'
+    && $config['kaufabwicklung_ssl_nutzen'] === 'P'
     && (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
 ) {
     $https = ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de')
@@ -86,13 +84,6 @@ if (!JTL_INCLUDE_ONLY_DB) {
     $nSystemlogFlag       = Jtllog::getSytemlogFlag();
     $template             = Template::getInstance();
     $template->check(true);
-    $GlobaleEinstellungen         = Shop::getSettings([
-        CONF_GLOBAL,
-        CONF_RSS,
-        CONF_METAANGABEN,
-        CONF_KUNDENWERBENKUNDEN,
-        CONF_BILDER
-    ]);
     $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $oBoxen              = Boxen::getInstance();
@@ -100,9 +91,7 @@ if (!JTL_INCLUDE_ONLY_DB) {
         ? Session::getInstance(true, true, 'JTLCRON')
         : Session::getInstance();
     $bAdminWartungsmodus = false;
-    if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'Y'
-        && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php'
-    ) {
+    if ($config['wartungsmodus_aktiviert'] === 'Y' && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php') {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
         if (!Shop::isAdmin()) {
             http_response_code(503);
@@ -111,7 +100,7 @@ if (!JTL_INCLUDE_ONLY_DB) {
         }
         $bAdminWartungsmodus = true;
     }
-    $GLOBALS['oSprache'] = Sprache::getInstance();
+    Sprache::getInstance();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     Shop::bootstrap();
 }

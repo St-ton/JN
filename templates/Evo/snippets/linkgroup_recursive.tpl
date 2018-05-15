@@ -12,11 +12,11 @@
                 {assign var='activeId' value=$Link->getID()}
             {elseif Shop::$kLink > 0}
                 {assign var='activeId' value=Shop::$kLink}
-                {assign var='Link' value=\Link\LinkHelper::getInstance()->getLinkByID($activeId)}
+                {assign var='Link' value=Shop::Container()->getLinkHelper()->getLinkByID($activeId)}
             {/if}
         {/if}
         {if !isset($activeParents)}
-            {assign var='activeParents' value=\Link\LinkHelper::getInstance()->getParentIDs($activeId)}
+            {assign var='activeParents' value=Shop::Container()->getLinkHelper()->getParentIDs($activeId)}
         {/if}
         {if !isset($links)}
             {get_navigation2 linkgroupIdentifier=$linkgroupIdentifier assign='links'}

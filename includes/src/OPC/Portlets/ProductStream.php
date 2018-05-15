@@ -6,6 +6,7 @@
 
 namespace OPC\Portlets;
 
+use Filter\Type;
 use OPC\PortletInstance;
 
 class ProductStream extends \OPC\Portlet
@@ -45,19 +46,22 @@ class ProductStream extends \OPC\Portlet
         return [
             'listStyle'  => [
                 'type'    => 'select',
+                'label'   => 'Darstellung',
                 'options' => ['gallery', 'list', 'slider'],
                 'default' => 'gallery',
             ],
             'sliderTitle' => [
-                'type' => 'text',
-                'default' => 'Slider-Titel',
+                'type'                 => 'text',
+                'label'                => 'Slider-Titel',
+                'default'              => '',
                 'showOnProp'           => 'listStyle',
                 'showOnPropValue'      => 'slider',
                 'collapseControlStart' => true,
-                'collapseControlEnd' => true,
+                'collapseControlEnd'   => true,
             ],
             'filters' => [
                 'type'    => 'filter',
+                'label'   => 'Artikelfilter',
                 'default' => [],
             ],
         ];
@@ -84,7 +88,7 @@ class ProductStream extends \OPC\Portlet
         foreach ($enabledFilters as $enabledFilter) {
             /** @var \Filter\AbstractFilter $newFilter **/
             $newFilter = new $enabledFilter['class']($productFilter);
-            $newFilter->setType(\Filter\AbstractFilter::FILTER_TYPE_AND);
+            $newFilter->setType(Type::AND());
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
         }
 

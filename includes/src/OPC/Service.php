@@ -8,6 +8,7 @@ namespace OPC;
 
 use Filter\AbstractFilter;
 use Filter\IFilter;
+use Filter\Type;
 
 class Service
 {
@@ -375,7 +376,7 @@ class Service
         foreach ($enabledFilters as $enabledFilter) {
             /** @var AbstractFilter $newFilter **/
             $newFilter = new $enabledFilter['class']($productFilter);
-            $newFilter->setType(AbstractFilter::FILTER_TYPE_AND);
+            $newFilter->setType(Type::AND());
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
             $enabledMap[$enabledFilter['class'] . ':' . $enabledFilter['value']] = true;
         }

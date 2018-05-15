@@ -37,37 +37,29 @@ function installJqueryFixes()
     {
         var data = {};
 
-        function buildInputObject(arr, val)
-        {
-            if (arr.length < 1) {
-                return val;
+        $.each(this.serializeArray(), function(i, item) {
+            var path   = item.name.split('[');
+            var value  = item.value;
+            var target = data;
+
+            while(path.length > 0) {
+                var key = path.shift();
+
+                if (key.slice(-1) === ']') {
+                    key = key.slice(0, -1);
+                }
+
+                if (key === '') {
+                    key = Object.keys(target).length;
+                }
+
+                if(path.length === 0) {
+                    target[key] = value;
+                } else {
+                    target[key] = target[key] || {};
+                    target      = target[key];
+                }
             }
-
-            var objkey = arr[0];
-            var result = {};
-
-            if (objkey.slice(-1) === ']') {
-                objkey = objkey.slice(0, -1);
-            }
-
-            if (arr.length === 1) {
-                result[objkey] = val;
-            }
-            else {
-                arr.shift();
-                result[objkey] = buildInputObject(arr, val);
-            }
-
-            return result;
-        }
-
-        $.each(this.serializeArray(), function() {
-            $.extend(
-                true, data,
-                buildInputObject(
-                    this.name.split('['), this.value
-                )
-            );
         });
 
         return data;

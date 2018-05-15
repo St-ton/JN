@@ -13,10 +13,10 @@ namespace OPC;
 trait PortletHtml
 {
     /**
-     * @param PortletInstance $instance
+     * @param PortletInstance $inst
      * @return string
      */
-    abstract public function getPreviewHtml($instance);
+    abstract public function getPreviewHtml($inst);
 
     /**
      * @param PortletInstance $instance
@@ -159,14 +159,15 @@ trait PortletHtml
                 if (!empty($propDesc['collapseControlStart'])) {
                     $res .= "<script>
                                 $(function(){
-                                    $('input[name=\"" . $propDesc['showOnProp'] . "\"]').click(function(e){
+                                    $('[name=\"" . $propDesc['showOnProp'] . "\"]').click(function(e){
+                                        console.log($(e.target).val());
                                         if ($(e.target).val() == '" . $propDesc['showOnPropValue'] . "'){
                                             $('#collapseContainer$cllpsID').show();
                                         }else{
                                             $('#collapseContainer$cllpsID').hide();
                                         }
                                     });
-                                    if ($('input[name=\"" . $propDesc['showOnProp'] . "\"]').val() == '" . $propDesc['showOnPropValue'] . "'){
+                                    if ($('[name=\"" . $propDesc['showOnProp'] . "\"]').val() == '" . $propDesc['showOnPropValue'] . "'){
                                         $('#collapseContainer$cllpsID').show();
                                     }
                                 });
@@ -203,8 +204,9 @@ trait PortletHtml
      * @param array $propDesc
      * @param string $containerId
      * @return string
+     * @throws \Exception
      */
-    protected function getAutoConfigProp(PortletInstance $instance, $propname, $propDesc, $containerId = null)
+    final protected function getAutoConfigProp(PortletInstance $instance, $propname, $propDesc, $containerId = null)
     {
         $res   = '';
         $label = $propDesc['label'] ?? $propname;
@@ -254,6 +256,12 @@ trait PortletHtml
                 $res .= "<div class='checkbox$class'><label><input type='checkbox' name='" . $propname . "' value='1'";
                 $res .= $prop === "1" ? " checked" : "";
                 $res .= ">$label</label></div>";
+                break;
+            case 'textlist':
+                $res .= $this->getConfigPanelSnippet($instance, 'textlist', [
+                    'propname'   => $propname,
+                    'prop'       => $prop
+                ]);
                 break;
             case 'radio':
                 foreach ($propDesc['options'] as $name => $value) {
@@ -356,5 +364,32 @@ trait PortletHtml
         $res .= $containerId !== null ? "</div>" : "</div></div>";
 
         return $res;
+    }
+
+    /**
+     * @param PortletInstance $instance
+     * @param string $tag
+     * @param string $innerHtml
+     * @return string
+     */
+    final protected function getPreviewRootHtml($instance, $tag = 'div', $innerHtml = '')
+    {
+        $attributes    = $instance->getAttributeString();
+        $dataAttribute = $instance->getDataAttributeString();
+
+        return "<$tag $attributes $dataAttribute >$innerHtml</$tag>";
+    }
+
+    /**
+     * @param PortletInstance $instance
+     * @param string $tag
+     * @param string $innerHtml
+     * @return string
+     */
+    final protected function getFinalRootHtml($instance, $tag = 'div', $innerHtml = '')
+    {
+        $attributes = $instance->getAttributeString();
+
+        return "<$tag $attributes>$innerHtml</$tag>";
     }
 }

@@ -14,7 +14,6 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
        ->registerPlugin('function', 'hasCheckBoxForLocation', 'hasCheckBoxForLocation')
        ->registerPlugin('function', 'aaURLEncode', 'aaURLEncode')
        ->registerPlugin('function', 'get_navigation', 'get_navigation')
-       ->registerPlugin('function', 'get_navigation2', 'get_navigation2')
        ->registerPlugin('function', 'ts_data', 'get_trustedshops_data')
        ->registerPlugin('function', 'get_category_array', 'get_category_array')
        ->registerPlugin('function', 'get_category_parents', 'get_category_parents')
@@ -133,6 +132,7 @@ function get_manufacturers($params, $smarty)
     $manufacturers = HerstellerHelper::getInstance()->getManufacturers();
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $manufacturers);
+
         return;
     }
 
@@ -182,6 +182,7 @@ function get_category_array($params, $smarty)
 
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $list);
+
         return;
     }
 
@@ -204,6 +205,7 @@ function get_category_parents($params, $smarty)
 
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $list);
+
         return;
     }
 
@@ -222,11 +224,11 @@ function get_img_tag($params, $smarty)
     }
     $oImgSize = get_image_size($params['src']);
 
-    $imageURL      = $params['src'];
-    $imageID       = isset($params['id']) ? ' id="' . $params['id'] . '"' : '';
-    $imageALT      = isset($params['alt']) ? ' alt="' . truncate($params['alt'], 75) . '"' : '';
-    $imageTITLE    = isset($params['title']) ? ' title="' . truncate($params['title'], 75) . '"' : '';
-    $imageCLASS    = isset($params['class']) ? ' class="' . truncate($params['class'], 75) . '"' : '';
+    $imageURL   = $params['src'];
+    $imageID    = isset($params['id']) ? ' id="' . $params['id'] . '"' : '';
+    $imageALT   = isset($params['alt']) ? ' alt="' . truncate($params['alt'], 75) . '"' : '';
+    $imageTITLE = isset($params['title']) ? ' title="' . truncate($params['title'], 75) . '"' : '';
+    $imageCLASS = isset($params['class']) ? ' class="' . truncate($params['class'], 75) . '"' : '';
     if (strpos($imageURL, 'http') !== 0) {
         $imageURL = Shop::getImageBaseURL() . ltrim($imageURL, '/');
     }
@@ -302,6 +304,7 @@ function load_boxes($params, $smarty)
     }
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $cTplData);
+
         return;
     }
 
@@ -341,7 +344,7 @@ function truncate($text, $numb)
  */
 function gibPreisStringLocalizedSmarty($params, $smarty)
 {
-    $oAufpreis = new stdClass();
+    $oAufpreis                     = new stdClass();
     $oAufpreis->cAufpreisLocalized = '';
     $oAufpreis->cPreisInklAufpreis = '';
 
@@ -352,7 +355,7 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
         $fVPEWert               = (float)$params['fVPEWert'];
         $cVPEEinheit            = $params['cVPEEinheit'];
         $FunktionsAttribute_arr = $params['FunktionsAttribute'];
-        $nGenauigkeit = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
+        $nGenauigkeit           = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
             && (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
             ? (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
             : 2;
@@ -365,7 +368,7 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
                 : str_replace('-', '- ', $oAufpreis->cAufpreisLocalized);
 
             if ($fVPEWert > 0) {
-                $oAufpreis->cPreisVPEWertAufpreis = gibPreisStringLocalized(
+                $oAufpreis->cPreisVPEWertAufpreis     = gibPreisStringLocalized(
                         $fAufpreisNetto / $fVPEWert,
                         Session::Currency()->getCode(),
                         1,
@@ -382,14 +385,16 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
                 $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis . ', ' . $oAufpreis->cPreisVPEWertInklAufpreis;
             }
         } else {
-            $oAufpreis->cAufpreisLocalized = gibPreisStringLocalized(berechneBrutto($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse]));
-            $oAufpreis->cPreisInklAufpreis = gibPreisStringLocalized(berechneBrutto($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse]));
+            $oAufpreis->cAufpreisLocalized = gibPreisStringLocalized(berechneBrutto($fAufpreisNetto,
+                $_SESSION['Steuersatz'][$kSteuerklasse]));
+            $oAufpreis->cPreisInklAufpreis = gibPreisStringLocalized(berechneBrutto($fAufpreisNetto + $fVKNetto,
+                $_SESSION['Steuersatz'][$kSteuerklasse]));
             $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
                 ? ('+ ' . $oAufpreis->cAufpreisLocalized)
                 : str_replace('-', '- ', $oAufpreis->cAufpreisLocalized);
 
             if ($fVPEWert > 0) {
-                $oAufpreis->cPreisVPEWertAufpreis = gibPreisStringLocalized(
+                $oAufpreis->cPreisVPEWertAufpreis     = gibPreisStringLocalized(
                         berechneBrutto($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
                         Session::Currency()->getCode(),
                         1, $nGenauigkeit
@@ -514,7 +519,7 @@ function aaURLEncode($params, $smarty)
 }
 
 /**
- * @param array $params - ['type'] Templatename of link, ['assign'] array name to assign
+ * @param array     $params - ['type'] Templatename of link, ['assign'] array name to assign
  * @param JTLSmarty $smarty
  */
 function get_navigation($params, $smarty)
@@ -522,71 +527,20 @@ function get_navigation($params, $smarty)
     $linkgroupIdentifier = $params['linkgroupIdentifier'];
     $oLinkGruppe         = null;
     if (strlen($linkgroupIdentifier) > 0) {
-        $linkGroups  = $smarty->getTemplateVars('linkgroups') ?? LinkHelper::getInstance()->getLinkGroups();
-
-        $oLinkGruppe = $linkGroups->{$linkgroupIdentifier} ?? null;
+        $linkGroups  = Shop::Container()->getLinkHelper()->getVisibleLinkGroups();
+        $oLinkGruppe = $linkGroups->getLinkgroupByTemplate($linkgroupIdentifier);
     }
-
     if (is_object($oLinkGruppe) && isset($params['assign'])) {
         $smarty->assign($params['assign'], build_navigation_subs($oLinkGruppe));
     }
 }
 
 /**
- * @param array $params - ['type'] Templatename of link, ['assign'] array name to assign
- * @param JTLSmarty $smarty
- */
-function get_navigation2($params, $smarty)
-{
-    $linkgroupIdentifier = $params['linkgroupIdentifier'];
-    $oLinkGruppe         = null;
-    if (strlen($linkgroupIdentifier) > 0) {
-        $linkGroups  = $smarty->getTemplateVars('newLinkGroups')
-            ?? (new \Link\LinkGroupList(Shop::Container()->getDB()))->loadAll();
-        $oLinkGruppe = $linkGroups->getLinkgroupByTemplate($linkgroupIdentifier);
-    }
-    if (is_object($oLinkGruppe) && isset($params['assign'])) {
-        $smarty->assign($params['assign'], build_navigation_subs2($oLinkGruppe));
-    }
-}
-
-/**
- * @param object $oLink_arr
- * @param int   $kVaterLink
- * @return array
- */
-function build_navigation_subs($oLink_arr, $kVaterLink = 0)
-{
-    $kVaterLink = (int)$kVaterLink;
-    $oNew_arr   = [];
-    if ($oLink_arr->cName === 'hidden') {
-        return $oNew_arr;
-    }
-    $cISO = Shop::getLanguageCode();
-    foreach ($oLink_arr->Links as &$oLink) {
-        if ($oLink->kVaterLink !== $kVaterLink) {
-            continue;
-        }
-        $oLink->oSub_arr = build_navigation_subs($oLink_arr, $oLink->kLink);
-        //append bIsActive property
-        $oLink->bIsActive = $oLink->aktiv === 1 || (Shop::$kLink > 0 && Shop::$kLink === $oLink->kLink);
-        //append cTitle property
-        $oLink->cTitle = (isset($oLink->cLocalizedTitle[$cISO])
-            && $oLink->cLocalizedTitle[$cISO] !== $oLink->cLocalizedName[$cISO])
-            ? StringHandler::htmlentities($oLink->cLocalizedTitle[$cISO], ENT_QUOTES)
-            : '';
-        $oNew_arr[]    = $oLink;
-    }
-
-    return $oNew_arr;
-}
-
-/**
  * @param \Link\LinkGroupInterface $linkGroup
- * @param int   $kVaterLink
+ * @param int                      $kVaterLink
  * @return \Tightenco\Collect\Support\Collection
  */
-function build_navigation_subs2($linkGroup, $kVaterLink = 0)
+function build_navigation_subs($linkGroup, $kVaterLink = 0)
 {
     $kVaterLink = (int)$kVaterLink;
     $oNew_arr   = new \Tightenco\Collect\Support\Collection();
@@ -598,16 +552,10 @@ function build_navigation_subs2($linkGroup, $kVaterLink = 0)
         if ($link->getParent() !== $kVaterLink) {
             continue;
         }
-        $link->setChildLinks(build_navigation_subs2($linkGroup, $link->getID()));
+        $link->setChildLinks(build_navigation_subs($linkGroup, $link->getID()));
         $link->setIsActive($link->getIsActive() || (Shop::$kLink > 0 && Shop::$kLink === $link->getID()));
-        //append cTitle property
-//        $oLink->cTitle = (isset($oLink->cLocalizedTitle[$cISO])
-//            && $oLink->cLocalizedTitle[$cISO] !== $oLink->cLocalizedName[$cISO])
-//            ? StringHandler::htmlentities($oLink->cLocalizedTitle[$cISO], ENT_QUOTES)
-//            : '';
         $oNew_arr->push($link);
     }
-//    Shop::dbg($oNew_arr, false, '$oNew_arr:');
 
     return $oNew_arr;
 }
@@ -710,19 +658,20 @@ function get_image_size($image)
 }
 
 /**
- * @param array $params
+ * @param array     $params
  * @param JTLSmarty $smarty
  * @return mixed
  */
 function get_cms_content($params, $smarty)
 {
     if (isset($params['kLink']) && (int)$params['kLink'] > 0) {
-        $kLink      = (int)$params['kLink'];
-        $oLink      = Shop::Container()->getLinkHelper()->getLinkByID($kLink);
+        $kLink   = (int)$params['kLink'];
+        $oLink   = Shop::Container()->getLinkHelper()->getLinkByID($kLink);
+        $content = $oLink !== null ? $oLink->getContent() : null;
         if (isset($params['assign'])) {
-            $smarty->assign($params['assign'], $oLink->getContent());
+            $smarty->assign($params['assign'], $content);
         } else {
-            return $oLink->getContent();
+            return $content;
         }
     }
 
@@ -730,7 +679,7 @@ function get_cms_content($params, $smarty)
 }
 
 /**
- * @param array $params - variationen, maxVariationCount, maxWerteCount
+ * @param array     $params - variationen, maxVariationCount, maxWerteCount
  * @param JTLSmarty $smarty
  * @return int - 0: no listable variations, 1: normal listable variations, 2: only child listable variations
  */
@@ -771,7 +720,8 @@ function hasOnlyListableVariations($params, $smarty)
     $result = $variationCheck($params['artikel']->Variationen, $maxVariationCount, $maxWerteCount) ? 1 : 0;
     if ($result === 0 && $params['artikel']->kVaterArtikel > 0) {
         // Hat das Kind evtl. mehr Variationen als der Vater?
-        $result = $variationCheck($params['artikel']->oVariationenNurKind_arr, $maxVariationCount, $maxWerteCount) ? 2 : 0;
+        $result = $variationCheck($params['artikel']->oVariationenNurKind_arr, $maxVariationCount,
+            $maxWerteCount) ? 2 : 0;
     }
 
     if (isset($params['assign'])) {
@@ -787,12 +737,12 @@ function hasOnlyListableVariations($params, $smarty)
  * Input: ['ger' => 'Titel', 'eng' => 'Title']
  *
  * @param string|array $mixed
- * @param string|null $to - locale
+ * @param string|null  $to - locale
  * @return null|string
  */
 function get_translation($mixed, $to = null)
 {
-    $to = $to ?: Shop::getLanguage(true);
+    $to = $to ?: Shop::getLanguageCode();
 
     if (has_translation($mixed, $to)) {
         return is_string($mixed) ? $mixed : $mixed[$to];
@@ -805,7 +755,7 @@ function get_translation($mixed, $to = null)
  * Has any translation
  *
  * @param string|array $mixed
- * @param string|null $to - locale
+ * @param string|null  $to - locale
  * @return bool
  */
 function has_translation($mixed, $to = null)

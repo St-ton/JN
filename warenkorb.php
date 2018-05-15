@@ -20,7 +20,7 @@ $Einstellungen = Shop::getSettings([
 ]);
 Shop::setPageType(PAGE_WARENKORB);
 $Schnellkaufhinweis       = checkeSchnellkauf();
-$linkHelper               = \Link\LinkHelper::getInstance();
+$linkHelper               = Shop::Container()->getLinkHelper();
 $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
 $cart                     = Session::Cart();
@@ -92,13 +92,14 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST
                     ON tartikel.kArtikel = tartikelattribut.kArtikel
                 WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                AND CAST(tartikelattribut.cWert AS DECIMAL) <= "
-        . $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+                AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
+        $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+        \DB\ReturnType::SINGLE_OBJECT
     );
     if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
-        if ($oArtikelGeschenk->fLagerbestand <= 0 &&
-            $oArtikelGeschenk->cLagerKleinerNull === 'N' &&
-            $oArtikelGeschenk->cLagerBeachten === 'Y'
+        if ($oArtikelGeschenk->fLagerbestand <= 0
+            && $oArtikelGeschenk->cLagerKleinerNull === 'N'
+            && $oArtikelGeschenk->cLagerBeachten === 'Y'
         ) {
             $MsgWarning = Shop::Lang()->get('freegiftsNostock', 'errorMessages');
         } else {
@@ -154,7 +155,7 @@ if (class_exists('Upload')) {
                ->assign('oUploadSchema_arr', $oUploadSchema_arr);
     }
 }
-if (isset($_SESSION['Warenkorbhinweise']) && $_SESSION['Warenkorbhinweise']) {
+if (!empty($_SESSION['Warenkorbhinweise'])) {
     $cartNotices = $_SESSION['Warenkorbhinweise'];
     unset($_SESSION['Warenkorbhinweise']);
 }

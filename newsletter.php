@@ -23,7 +23,7 @@ foreach ($links as $l) {
     }
 }
 $Link       = new stdClass();
-$linkHelper = \Link\LinkHelper::getInstance();
+$linkHelper = Shop::Container()->getLinkHelper();
 if (isset($oLink->kLink) && $oLink->kLink > 0) {
     $Link = $linkHelper->getLinkByID($oLink->kLink);
     Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->getName(), $Link->getURL()));

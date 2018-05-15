@@ -23,7 +23,7 @@ $CWunschliste     = null;
 $action           = null;
 $kWunschlistePos  = null;
 $oWunschliste_arr = [];
-$linkHelper       = \Link\LinkHelper::getInstance();
+$linkHelper       = Shop::Container()->getLinkHelper();
 
 if ($kWunschliste === 0 && !empty($_SESSION['Kunde']->kKunde) && empty($_SESSION['Wunschliste']->kWunschliste)) {
     //create new wishlist at very first visit

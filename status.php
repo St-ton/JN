@@ -16,7 +16,7 @@ $Einstellungen = Shop::getSettings([
     CONF_KAUFABWICKLUNG
 ]);
 $hinweis       = '';
-$linkHelper    = \Link\LinkHelper::getInstance();
+$linkHelper    = Shop::Container()->getLinkHelper();
 
 if (strlen($_GET['uid']) === 40) {
     $status = Shop::Container()->getDB()->queryPrepared("

@@ -33,7 +33,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
 } elseif (verifyGPCDataInteger('bfa') === 1) {
     // Prüfe, ob Kunde eingeloggt
     if (empty($_SESSION['Kunde']->kKunde)) {
-        $helper = \Link\LinkHelper::getInstance();
+        $helper = Shop::Container()->getLinkHelper();
         header('Location: ' . $helper->getStaticRoute('jtl.php') .
                 '?a=' . verifyGPCDataInteger('a') .
                 '&bfa=1&r=' . R_LOGIN_BEWERTUNG,

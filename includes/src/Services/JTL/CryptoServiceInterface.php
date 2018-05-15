@@ -14,18 +14,18 @@ namespace Services\JTL;
 interface CryptoServiceInterface
 {
     /**
-     * @param $bytesAmount
-     * @return mixed
+     * @param int $bytesAmount
+     * @return string
      * @throws \Exception
      */
-    public function randomBytes($bytesAmount);
+    public function randomBytes($bytesAmount): string;
 
     /**
      * @param int $bytesAmount
      * @return string
      * @throws \Exception
      */
-    public function randomString($bytesAmount);
+    public function randomString($bytesAmount): string;
 
     /**
      * @param int $min
@@ -33,12 +33,12 @@ interface CryptoServiceInterface
      * @return int
      * @throws \Exception
      */
-    public function randomInt($min, $max);
+    public function randomInt($min, $max): int;
 
     /**
      * @param string $string1
      * @param string $string2
      * @return bool
      */
-    public function stableStringEquals(string $string1, string $string2) : bool;
+    public function stableStringEquals(string $string1, string $string2): bool;
 }

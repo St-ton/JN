@@ -15,7 +15,7 @@ class CryptoService implements CryptoServiceInterface
     /**
      * @inheritdoc
      */
-    public function randomBytes($bytesAmount)
+    public function randomBytes($bytesAmount): string
     {
         return random_bytes($bytesAmount);
     }
@@ -23,7 +23,7 @@ class CryptoService implements CryptoServiceInterface
     /**
      * @inheritdoc
      */
-    public function randomString($bytesAmount)
+    public function randomString($bytesAmount): string
     {
         return bin2hex($this->randomBytes($bytesAmount));
     }
@@ -31,7 +31,7 @@ class CryptoService implements CryptoServiceInterface
     /**
      * @inheritdoc
      */
-    public function randomInt($min, $max)
+    public function randomInt($min, $max): int
     {
         return random_int($min, $max);
     }

@@ -5,3 +5,4 @@
  */
 
 class_alias(\DB\NiceDB::class, 'NiceDB', true);
+class_alias(\Link\LinkHelper::class, 'LinkHelper', true);

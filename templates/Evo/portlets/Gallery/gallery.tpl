@@ -5,7 +5,7 @@
                 {if $isPreview === false}
                     <a href="#" class="gallery_zoom_btn">
                         <img srcset="{$image['img_attr']['srcset']}"
-                             sizes="{$image['img_attr']['sizes']}"
+                             sizes="{$image['img_attr']['srcsizes']}"
                              src="{$image['img_attr']['src']}"
                              data-desc="{$image['desc']}"
                              alt="{$image['img_attr']['alt']}"
@@ -13,7 +13,7 @@
                     </a>
                 {else}
                     <img srcset="{$image['img_attr']['srcset']}"
-                         sizes="{$image['img_attr']['sizes']}"
+                         sizes="{$image['img_attr']['srcsizes']}"
                          src="{$image['img_attr']['src']}"
                          data-desc="{$image['desc']}"
                          alt="{$image['img_attr']['alt']}"

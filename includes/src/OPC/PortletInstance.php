@@ -401,7 +401,6 @@ class PortletInstance implements \JsonSerializable
         $srcset = substr($srcset, 0, -1); // remove trailing comma
 
         if (is_array($widthHeuristics)) {
-//            ksort($widthHeuristics);
 
             foreach ($widthHeuristics as $breakpoint => $col) {
                 if (!empty($col)) {

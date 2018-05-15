@@ -31,7 +31,7 @@
             </td>
             {if $useColumns}
                 <td>
-                    <i class="fa fa-desktop"></i>
+                    <i class="fa fa-mobile"></i>
                     <a title="more" class="pull-right" role="button"
                        data-toggle="collapse"
                        href="#collapseLayouts_{$kSlide}" aria-expanded="false"
@@ -39,27 +39,27 @@
                         <i class="fa fa-gears"></i>
                     </a>
                     <input class="form-control margin2" id="width{$slide.nSort}" type="number"
-                           name="{$propname}[{$kSlide}][width][lg]" value=""
+                           name="{$propname}[{$kSlide}][width][xs]" value=""
                            placeholder="width in number of colums"/>
 
                     <div class="collapse" id="collapseLayouts_{$kSlide}">
                         <span class="help-block">
                             Hier können Sie für die unterschiedlichen Gerätegrößen eine alternative Aufteilung angeben.
                         </span>
-                        <i class="fa fa-laptop"></i>
-                        <input class="form-control margin2" id="width{$slide.nSort}"
-                               type="number"
-                               name="{$propname}[{$kSlide}][width][md]" value=""
-                               placeholder="width in number of colums"/>
                         <i class="fa fa-tablet"></i>
                         <input class="form-control margin2" id="width{$slide.nSort}"
                                type="number"
                                name="{$propname}[{$kSlide}][width][sm]" value=""
                                placeholder="width in number of colums"/>
-                        <i class="fa fa-mobile"></i>
+                        <i class="fa fa-laptop"></i>
                         <input class="form-control margin2" id="width{$slide.nSort}"
                                type="number"
-                               name="{$propname}[{$kSlide}][width][xs]" value=""
+                               name="{$propname}[{$kSlide}][width][md]" value=""
+                               placeholder="width in number of colums"/>
+                        <i class="fa fa-desktop"></i>
+                        <input class="form-control margin2" id="width{$slide.nSort}"
+                               type="number"
+                               name="{$propname}[{$kSlide}][width][lg]" value=""
                                placeholder="width in number of colums"/>
                     </div>
                 </td>

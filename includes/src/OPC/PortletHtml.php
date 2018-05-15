@@ -250,11 +250,15 @@ trait PortletHtml
                 $res .= ">$label</label></div>";
                 break;
             case 'radio':
+                $res     .= "<div class='radio$class'>";
                 foreach ($propDesc['options'] as $name => $value) {
                     $selected = $prop === $value ? " checked" : "";
-                    $res     .= "<div class='radio$class'><label><input type='radio' name='$propname' value='$value'"
-                        . "$selected>$name</label></div>";
+                    $res     .= "<label";
+                    $res .= !empty($propDesc['inline']) ? ' class="radio-inline"' : '';
+                    $res .="><input type='radio' name='$propname' value='$value'"
+                        . "$selected>$name</label>";
                 }
+                $res     .= "</div>";
                 break;
             case 'select':
                 $res .= "<select class='form-control$class' name='$propname'>";

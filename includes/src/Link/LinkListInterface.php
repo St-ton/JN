@@ -16,8 +16,23 @@ use Tightenco\Collect\Support\Collection;
 interface LinkListInterface
 {
     /**
-     * @param array $linkIDs
+     * @param int[] $linkIDs
      * @return Collection
      */
     public function createLinks(array $linkIDs): Collection;
+
+    /**
+     * @return Collection
+     */
+    public function getLinks(): Collection;
+
+    /**
+     * @param Collection $links
+     */
+    public function setLinks(Collection $links);
+
+    /**
+     * @param LinkInterface $link
+     */
+    public function addLink(LinkInterface $link);
 }

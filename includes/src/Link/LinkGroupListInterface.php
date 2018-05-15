@@ -23,34 +23,27 @@ interface LinkGroupListInterface
     /**
      * @return LinkGroupCollection
      */
-    public function getLinkgroups(): LinkGroupCollection;
+    public function getLinkGroups(): LinkGroupCollection;
 
     /**
-     * @param Collection $linkgroups
+     * @param Collection $linkGroups
      */
-    public function setLinkgroups(Collection $linkgroups);
+    public function setLinkGroups(Collection $linkGroups);
 
     /**
      * @return Collection
      */
-    public function getVisibleLinkgroups(): Collection;
+    public function getVisibleLinkGroups(): Collection;
 
     /**
-     * @param Collection $linkgroups
+     * @param Collection $linkGroups
      */
-    public function setVisiblyLinkgroups(Collection $linkgroups);
+    public function setVisibleLinkGroups(Collection $linkGroups);
 
     /**
      * @return $this
      */
     public function applyVisibilityFilter(): LinkGroupListInterface;
-
-    /**
-     * @former aktiviereLinks()
-     * @param int $pageType
-     * @return LinkGroupCollection
-     */
-    public function activate(int $pageType): LinkGroupCollection;
 
     /**
      * @param string $name

@@ -17,22 +17,22 @@ use Tightenco\Collect\Support\Collection;
  * Class LinkList
  * @package Link
  */
-class LinkList implements LinkListInterface
+final class LinkList implements LinkListInterface
 {
     /**
      * @var DbInterface
      */
-    protected $db;
+    private $db;
 
     /**
      * @var int[]
      */
-    protected $linkIDs;
+    private $linkIDs;
 
     /**
      * @var Collection
      */
-    protected $links;
+    private $links;
 
     /**
      * LinkList constructor.
@@ -97,18 +97,24 @@ class LinkList implements LinkListInterface
     }
 
     /**
-     * @return Collection
+     * @inheritdoc
      */
     public function getLinks(): Collection
     {
         return $this->links;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setLinks(Collection $links)
     {
         $this->links = $links;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function addLink(LinkInterface $link)
     {
         $this->links->push($link);

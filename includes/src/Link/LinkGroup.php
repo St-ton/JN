@@ -16,7 +16,7 @@ use Tightenco\Collect\Support\Collection;
  * Class LinkGroup
  * @package Link
  */
-class LinkGroup implements LinkGroupInterface
+final class LinkGroup implements LinkGroupInterface
 {
     use \MagicCompatibilityTrait;
 

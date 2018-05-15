@@ -17,9 +17,10 @@ interface LinkInterface
 {
     /**
      * @param int $id
-     * @return LinkInterface|null
+     * @return LinkInterface
+     * @throws \InvalidArgumentException
      */
-    public function load(int $id);
+    public function load(int $id): LinkInterface;
 
     /**
      * @param array $localizedLinks

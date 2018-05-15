@@ -14,7 +14,7 @@ use Tightenco\Collect\Support\Collection;
  * Class Link
  * @package Link
  */
-class Link extends AbstractLink
+final class Link extends AbstractLink
 {
     /**
      * @var int
@@ -173,7 +173,7 @@ class Link extends AbstractLink
     /**
      * @inheritdoc
      */
-    public function load(int $id)
+    public function load(int $id): LinkInterface
     {
         $this->id = $id;
         $link     = $this->db->queryPrepared(
@@ -203,8 +203,11 @@ class Link extends AbstractLink
             ['lid' => $this->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
+        if (count($link) === 0) {
+            throw new \InvalidArgumentException('Provided link id not found.');
+        }
 
-        return count($link) > 0 ? $this->map($link) : null;
+        return $this->map($link);
     }
 
     /**

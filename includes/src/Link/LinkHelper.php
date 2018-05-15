@@ -7,6 +7,7 @@
 namespace Link;
 
 
+use DB\DbInterface;
 use function Functional\first;
 use function Functional\first_index_of;
 use function Functional\select;
@@ -16,7 +17,7 @@ use Tightenco\Collect\Support\Collection;
  * Class LinkHelper
  * @package Link
  */
-class LinkHelper
+final class LinkHelper
 {
     /**
      * @var LinkHelper
@@ -31,13 +32,20 @@ class LinkHelper
     /**
      * @var LinkGroupListInterface
      */
-    protected $linkGroupList;
+    private $linkGroupList;
+
+    /**
+     * @var DbInterface
+     */
+    private $db;
 
     /**
      * LinkHelper constructor.
+     * @param DbInterface $db
      */
-    public function __construct()
+    public function __construct(DbInterface $db)
     {
+        $this->db = $db;
         self::$_instance = $this;
         $this->getLinkGroups();
     }
@@ -49,7 +57,7 @@ class LinkHelper
      */
     public static function getInstance(): self
     {
-        return self::$_instance ?? new self();
+        return self::$_instance ?? new self(\Shop::Container()->getDB());
     }
 
     /**
@@ -57,10 +65,10 @@ class LinkHelper
      */
     public function getLinkGroups(): LinkGroupCollection
     {
-        $this->linkGroupList = new LinkGroupList(\Shop::Container()->getDB());
-        $this->linkGroups    = $this->linkGroupList->loadAll()->getLinkgroups();
+        $this->linkGroupList = new LinkGroupList($this->db);
+        $this->linkGroups    = $this->linkGroupList->loadAll()->getLinkGroups();
 
-        return $this->linkGroups;
+        return $this->linkGroupList->getVisibleLinkgroups();
     }
 
     /**
@@ -177,11 +185,11 @@ class LinkHelper
 
     /**
      * @param int $id
-     * @return LinkInterface|null
+     * @return LinkInterface
      */
-    public function getLinkObjectByID(int $id)
+    public function getLinkObjectByID(int $id): LinkInterface
     {
-        $link = new Link(\Shop::Container()->getDB());
+        $link = new Link($this->db);
 
         return $link->load($id);
     }
@@ -439,11 +447,93 @@ class LinkHelper
     }
 
     /**
+     * @former aktiviereLinks()
      * @param int $pageType
      * @return LinkGroupCollection
      */
     public function activate(int $pageType): LinkGroupCollection
     {
-        return $this->linkGroupList->activate($pageType);
+        foreach ($this->linkGroups as $linkGroup) {
+            /** @var LinkGroupInterface $linkGroup */
+            foreach ($linkGroup->getLinks() as $link) {
+                /** @var LinkInterface $link */
+                $link->setIsActive(false);
+                $linkType = $link->getLinkType();
+                $linkID   = $link->getID();
+                switch ($pageType) {
+                    case PAGE_STARTSEITE:
+                        if ($linkType === LINKTYP_STARTSEITE) {
+                            $link->setIsActive(true);
+                        }
+                        break;
+                    case PAGE_ARTIKEL:
+                    case PAGE_ARTIKELLISTE:
+                    case PAGE_BESTELLVORGANG:
+                        break;
+                    case PAGE_EIGENE:
+                        $parent = $link->getParent();
+                        if ($parent === 0 && $this->isChildActive($linkID, \Shop::$kLink)) {
+                            $link->setIsActive(true);
+                        }
+                        if ($linkID === \Shop::$kLink) {
+                            $link->setIsActive(true);
+                            $parent   = $this->getRootLink($linkID);
+                            $filtered = $linkGroup->getLinks()->filter(function (LinkInterface $l) use ($parent) {
+                                return $l->getID() === $parent;
+                            })->map(function (LinkInterface $l) {
+                                $l->setIsActive(true);
+
+                                return $l;
+                            });
+                        }
+                        break;
+                    case PAGE_WARENKORB:
+                        if ($linkType === LINKTYP_WARENKORB) {
+                            $link->setIsActive(true);
+                        }
+                        break;
+                    case PAGE_LOGIN:
+                    case PAGE_MEINKONTO:
+                        if ($linkType === LINKTYP_LOGIN) {
+                            $link->setIsActive(true);
+                        }
+                        break;
+                    case PAGE_REGISTRIERUNG:
+                        if ($linkType === LINKTYP_REGISTRIEREN) {
+                            $link->setIsActive(true);
+                        }
+                        break;
+                    case PAGE_PASSWORTVERGESSEN:
+                        if ($linkType === LINKTYP_PASSWORD_VERGESSEN) {
+                            $link->setIsActive(true);
+                        }
+                        break;
+                    case PAGE_KONTAKT:
+                        if ($linkType === LINKTYP_KONTAKT) {
+                            $link->setIsActive(true);
+                        }
+                        break;
+                    case PAGE_NEWSLETTER:
+                        if ($linkType === LINKTYP_NEWSLETTER) {
+                            $link->setIsActive(true);
+                        }
+                        break;
+                    case PAGE_UMFRAGE:
+                        if ($linkType === LINKTYP_UMFRAGE) {
+                            $link->setIsActive(true);
+                        }
+                        break;
+                    case PAGE_NEWS:
+                        if ($linkType === LINKTYP_NEWS) {
+                            $link->setIsActive(true);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return $this->linkGroups;
     }
 }

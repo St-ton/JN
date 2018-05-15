@@ -15,22 +15,22 @@ use Tightenco\Collect\Support\Collection;
  * Class LinkGroupList
  * @package Filter
  */
-class LinkGroupList implements LinkGroupListInterface
+final class LinkGroupList implements LinkGroupListInterface
 {
-    /**
-     * @var LinkGroupCollection
-     */
-    protected $linkgroups;
-
     /**
      * @var DbInterface
      */
-    protected $db;
+    private $db;
 
     /**
-     * @var Collection
+     * @var LinkGroupCollection
      */
-    protected $visibleGroups;
+    private $linkGroups;
+
+    /**
+     * @var LinkGroupCollection
+     */
+    private $visibleGroups;
 
     /**
      * LinkGroupList constructor.
@@ -39,8 +39,8 @@ class LinkGroupList implements LinkGroupListInterface
     public function __construct(DbInterface $db)
     {
         $this->db            = $db;
-        $this->linkgroups    = new Collection();
-        $this->visibleGroups = new Collection();
+        $this->linkGroups    = new LinkGroupCollection();
+        $this->visibleGroups = new LinkGroupCollection();
     }
 
     /**
@@ -77,19 +77,19 @@ class LinkGroupList implements LinkGroupListInterface
      */
     public function loadAll(): LinkGroupListInterface
     {
-        if ($this->linkgroups->count() > 0) {
+        if ($this->linkGroups->count() > 0) {
             return $this;
         }
         $cache = \Shop::Container()->getCache();
-        if (($this->linkgroups = $cache->get('linkgroups')) === false) {
-            $this->linkgroups = new LinkGroupCollection();
+        if (($this->linkGroups = $cache->get('linkgroups')) === false) {
+            $this->linkGroups = new LinkGroupCollection();
             foreach ($this->loadStandardGroups() as $group) {
-                $this->linkgroups->push($group);
+                $this->linkGroups->push($group);
             }
-            $this->linkgroups->push($this->loadSpecialPages());
-            $this->linkgroups->push($this->loadStaticRoutes());
+            $this->linkGroups->push($this->loadSpecialPages());
+            $this->linkGroups->push($this->loadStaticRoutes());
 
-            $cache->set('linkgroups', $this->linkgroups, [CACHING_GROUP_CORE]);
+            $cache->set('linkgroups', $this->linkGroups, [CACHING_GROUP_CORE]);
         }
         $this->applyVisibilityFilter();
 
@@ -170,19 +170,19 @@ class LinkGroupList implements LinkGroupListInterface
             $link = new Link($this->db);
             $link->map($linkData);
             if ($link->getLinkType() === LINKTYP_DATENSCHUTZ) {
-                $this->linkgroups->Link_Datenschutz = [];
+                $this->linkGroups->Link_Datenschutz = [];
                 foreach ($link->getURLs() as $langID => $url) {
-                    $this->linkgroups->Link_Datenschutz[$link->getLanguageCode($langID)] = $url;
+                    $this->linkGroups->Link_Datenschutz[$link->getLanguageCode($langID)] = $url;
                 }
             } elseif ($link->getLinkType() === LINKTYP_AGB) {
-                $this->linkgroups->Link_AGB = [];
+                $this->linkGroups->Link_AGB = [];
                 foreach ($link->getURLs() as $langID => $url) {
-                    $this->linkgroups->Link_AGB[$link->getLanguageCode($langID)] = $url;
+                    $this->linkGroups->Link_AGB[$link->getLanguageCode($langID)] = $url;
                 }
             } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
-                $this->linkgroups->Link_Versandseite = [];
+                $this->linkGroups->Link_Versandseite = [];
                 foreach ($link->getURLs() as $langID => $url) {
-                    $this->linkgroups->Link_Versandseite[$link->getLanguageCode($langID)] = $url;
+                    $this->linkGroups->Link_Versandseite[$link->getLanguageCode($langID)] = $url;
                 }
             }
             $links->push($link);
@@ -249,23 +249,23 @@ class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function getLinkgroups(): LinkGroupCollection
+    public function getLinkGroups(): LinkGroupCollection
     {
-        return $this->linkgroups;
+        return $this->linkGroups;
     }
 
     /**
      * @inheritdoc
      */
-    public function setLinkgroups(Collection $linkgroups)
+    public function setLinkGroups(Collection $linkGroups)
     {
-        $this->linkgroups = $linkgroups;
+        $this->linkGroups = $linkGroups;
     }
 
     /**
      * @inheritdoc
      */
-    public function getVisibleLinkgroups(): Collection
+    public function getVisibleLinkGroups(): Collection
     {
         return $this->visibleGroups;
     }
@@ -273,9 +273,9 @@ class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function setVisiblyLinkgroups(Collection $linkgroups)
+    public function setVisibleLinkGroups(Collection $linkGroups)
     {
-        $this->visibleGroups = $linkgroups;
+        $this->visibleGroups = $linkGroups;
     }
 
     /**
@@ -286,14 +286,14 @@ class LinkGroupList implements LinkGroupListInterface
         $customerGroupID = \Session::CustomerGroup()->getID();
         $customerID      = \Session::Customer()->getID();
         //@todo: remove clone hack!
-        $this->visibleGroups = clone $this->linkgroups;
-        foreach ($this->linkgroups as $i => $linkgroup) {
-            /** @var LinkGroupInterface $linkgroup */
-            $this->visibleGroups[$i] = clone $linkgroup;
+        $this->visibleGroups = clone $this->linkGroups;
+        foreach ($this->linkGroups as $i => $linkGroup) {
+            /** @var LinkGroupInterface $linkGroup */
+            $this->visibleGroups[$i] = clone $linkGroup;
         }
-        foreach ($this->visibleGroups as $linkgroup) {
-            /** @var LinkGroupInterface $linkgroup */
-            $linkgroup->setLinks($linkgroup->getLinks()
+        foreach ($this->visibleGroups as $linkGroup) {
+            /** @var LinkGroupInterface $linkGroup */
+            $linkGroup->setLinks($linkGroup->getLinks()
                                            ->filter(function (LinkInterface $l) use ($customerID, $customerGroupID) {
                                                return $l->isVisible($customerGroupID, $customerID);
                                            }));
@@ -303,109 +303,13 @@ class LinkGroupList implements LinkGroupListInterface
     }
 
     /**
-     * @former aktiviereLinks()
-     * @param int $pageType
-     * @return LinkGroupCollection
-     */
-    public function activate(int $pageType): LinkGroupCollection
-    {
-        $helper = LinkHelper::getInstance();
-        foreach ($this->linkgroups as $linkgroup) {
-            /** @var LinkGroupInterface $linkgroup */
-            $links = $linkgroup->getLinks();
-            $cnt   = $links->count();
-            foreach ($links as $link) {
-                /** @var LinkInterface $link */
-                $link->setIsActive(false);
-                $linkType = $link->getLinkType();
-                $linkID   = $link->getID();
-                switch ($pageType) {
-                    case PAGE_STARTSEITE:
-                        if ($linkType === LINKTYP_STARTSEITE) {
-                            $link->setIsActive(true);
-                        }
-                        break;
-                    case PAGE_ARTIKEL:
-                    case PAGE_ARTIKELLISTE:
-                    case PAGE_BESTELLVORGANG:
-                        break;
-                    case PAGE_EIGENE:
-                        $parent = $link->getParent();
-                        if ($parent === 0 && $helper->isChildActive($linkID, \Shop::$kLink)) {
-                            $link->setIsActive(true);
-                        }
-                        if ($linkID === \Shop::$kLink) {
-                            $link->setIsActive(true);
-                            $parent   = $helper->getRootLink($linkID);
-                            $filtered = $linkgroup->getLinks()->filter(function (LinkInterface $l) use ($parent) {
-                                return $l->getID() === $parent;
-                            })->map(function (LinkInterface $l) {
-                                $l->setIsActive(true);
-
-                                return $l;
-                            });
-                        }
-                        break;
-                    case PAGE_WARENKORB:
-                        if ($linkType === LINKTYP_WARENKORB) {
-                            $link->setIsActive(true);
-                        }
-                        break;
-                    case PAGE_LOGIN:
-                    case PAGE_MEINKONTO:
-                        if ($linkType === LINKTYP_LOGIN) {
-                            $link->setIsActive(true);
-                        }
-                        break;
-                    case PAGE_REGISTRIERUNG:
-                        if ($linkType === LINKTYP_REGISTRIEREN) {
-                            $link->setIsActive(true);
-                        }
-                        break;
-                    case PAGE_PASSWORTVERGESSEN:
-                        if ($linkType === LINKTYP_PASSWORD_VERGESSEN) {
-                            $link->setIsActive(true);
-                        }
-                        break;
-                    case PAGE_KONTAKT:
-                        if ($linkType === LINKTYP_KONTAKT) {
-                            $link->setIsActive(true);
-                        }
-                        break;
-                    case PAGE_NEWSLETTER:
-                        if ($linkType === LINKTYP_NEWSLETTER) {
-                            $link->setIsActive(true);
-                        }
-                        break;
-                    case PAGE_UMFRAGE:
-                        if ($linkType === LINKTYP_UMFRAGE) {
-                            $link->setIsActive(true);
-                        }
-                        break;
-                    case PAGE_NEWS:
-                        if ($linkType === LINKTYP_NEWS) {
-                            $link->setIsActive(true);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        return $this->linkgroups;
-    }
-
-    /**
      * @inheritdoc
      */
     public function getLinkgroupByTemplate(string $name, $filtered = true)
     {
-        $source = $filtered ? $this->visibleGroups : $this->linkgroups;
+        $source = $filtered ? $this->visibleGroups : $this->linkGroups;
 
-        return $source->filter(function (LinkGroupInterface $e) use ($name) {
-            return $e->getTemplate() === $name;
-        })->first();
+        return $source->getLinkgroupByTemplate($name);
     }
 
     /**
@@ -413,10 +317,8 @@ class LinkGroupList implements LinkGroupListInterface
      */
     public function getLinkgroupByID(int $id, $filtered = true)
     {
-        $source = $filtered ? $this->visibleGroups : $this->linkgroups;
+        $source = $filtered ? $this->visibleGroups : $this->linkGroups;
 
-        return $source->filter(function (LinkGroupInterface $e) use ($id) {
-            return $e->getID() === $id;
-        })->first();
+        return $source->getLinkgroupByID($id);
     }
 }

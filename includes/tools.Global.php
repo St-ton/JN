@@ -1642,8 +1642,6 @@ function checkeSpracheWaehrung($lang = '')
                 unset($_SESSION['currentLanguage']->cURL);
             }
         }
-        // Suchspecialoverlays
-        holeAlleSuchspecialOverlays(Shop::getLanguageID());
         if (!$bSpracheDa) { //lang mitgegeben, aber nicht mehr in db vorhanden -> alter Sprachlink
             $kArtikel              = verifyGPCDataInteger('a');
             $kKategorie            = verifyGPCDataInteger('k');

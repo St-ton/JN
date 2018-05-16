@@ -30,7 +30,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
     $ele0->hasChild    = false;
 
     $brotnavi[]    = $ele0;
-    $linkHelper    = Shop::Container()->getLinkHelper();
+    $linkHelper    = Shop::Container()->getLinkService();
     $ele           = new stdClass();
     $ele->hasChild = false;
     switch ($seite) {
@@ -1287,7 +1287,7 @@ function setzeSteuersaetze($steuerland = 0)
     );
     if (count($steuerzonen) === 0) {
         // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
-        $redirURL  = Shop::Container()->getLinkHelper()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
+        $redirURL  = Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
         $urlHelper = new UrlHelper(Shop::getURL() . $_SERVER['REQUEST_URI']);
         $country   = ISO2land($deliveryCountryCode);
 
@@ -1906,7 +1906,7 @@ function getFsession()
  */
 function setzeLinks()
 {
-    $linkGroups = Shop::Container()->getLinkHelper()->getLinkGroups();
+    $linkGroups = Shop::Container()->getLinkService()->getLinkGroups();
     $_SESSION['Link_Datenschutz']  = $linkGroups->Link_Datenschutz;
     $_SESSION['Link_AGB']          = $linkGroups->Link_AGB;
     $_SESSION['Link_Versandseite'] = $linkGroups->Link_Versandseite;
@@ -3330,7 +3330,7 @@ function gibAGBWRB($kSprache, $kKundengruppe)
     $oLinkAGB   = null;
     $oLinkWRB   = null;
     // kLink für AGB und WRB suchen
-    foreach (Shop::Container()->getLinkHelper()->getSpecialPages() as $sp) {
+    foreach (Shop::Container()->getLinkService()->getSpecialPages() as $sp) {
         /** @var \Link\LinkInterface $sp */
         if ($sp->getLinkType() === LINKTYP_AGB) {
             $oLinkAGB = $sp;
@@ -3524,7 +3524,7 @@ function setzeSpracheUndWaehrungLink()
 {
     global $oZusatzFilter, $sprachURL, $AktuellerArtikel, $kSeite, $kLink, $AktuelleSeite;
     $shopURL    = Shop::getURL() . '/';
-    $helper     = Shop::Container()->getLinkHelper();
+    $helper     = Shop::Container()->getLinkService();
     $NaviFilter = Shop::getProductFilter();
     if ($kSeite !== null && $kSeite > 0) {
         $kLink = $kSeite;

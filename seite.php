@@ -15,7 +15,7 @@ $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
-$linkHelper             = Shop::Container()->getLinkHelper();
+$linkHelper             = Shop::Container()->getLinkService();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // hole Link
 if (Shop::$isInitialized === true) {

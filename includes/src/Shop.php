@@ -1370,7 +1370,7 @@ final class Shop
                 }
                 self::$kLink = isset($link->kLink)
                     ? (int)$link->kLink
-                    : self::Container()->getLinkHelper()->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
+                    : self::Container()->getLinkService()->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
             } elseif (self::Media()->isValidRequest($cPath)) {
                 self::Media()->handleRequest($cPath);
             } else {
@@ -1380,7 +1380,7 @@ final class Shop
                 self::setPageType(PAGE_404);
             }
         } elseif (!empty(self::$kLink)) {
-            $link       = self::Container()->getLinkHelper()->getLinkByID(self::$kLink);
+            $link       = self::Container()->getLinkService()->getLinkByID(self::$kLink);
             if ($link !== null && ($linkType = $link->getLinkType()) > 0) {
                 if ($linkType === LINKTYP_EXTERNE_URL) {
                     header('Location: ' . $link->cURL, true, 303);
@@ -1484,7 +1484,7 @@ final class Shop
             $kLink         = $hookInfos['value'];
             $bFileNotFound = $hookInfos['isFileNotFound'];
             if (!$kLink) {
-                self::$kLink = self::Container()->getLinkHelper()->getSpecialPageLinkKey(LINKTYP_404);
+                self::$kLink = self::Container()->getLinkService()->getSpecialPageLinkKey(LINKTYP_404);
             }
         }
 
@@ -1780,8 +1780,8 @@ final class Shop
         $container->setSingleton(\Cache\JTLCacheInterface::class, function () {
             return new \Cache\JTLCache();
         });
-        $container->setSingleton(\Link\LinkHelper::class, function (Container $container) {
-            return new \Link\LinkHelper($container->getDB());
+        $container->setSingleton(\Services\JTL\LinkService::class, function (Container $container) {
+            return new \Services\JTL\LinkService($container->getDB());
         });
         // SECURITY
         $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function () {

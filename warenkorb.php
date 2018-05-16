@@ -20,7 +20,7 @@ $Einstellungen = Shop::getSettings([
 ]);
 Shop::setPageType(PAGE_WARENKORB);
 $Schnellkaufhinweis       = checkeSchnellkauf();
-$linkHelper               = Shop::Container()->getLinkHelper();
+$linkHelper               = Shop::Container()->getLinkService();
 $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
 $cart                     = Session::Cart();

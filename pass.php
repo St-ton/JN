@@ -11,7 +11,7 @@ Shop::setPageType(PAGE_PASSWORTVERGESSEN);
 $AktuelleSeite                   = 'PASSWORT VERGESSEN';
 Shop::$AktuelleSeite             = 'PASSWORT VERGESSEN';
 $Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
-$linkHelper                      = Shop::Container()->getLinkHelper();
+$linkHelper                      = Shop::Container()->getLinkService();
 $kLink                           = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
 $AktuelleKategorie               = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien          = new KategorieListe();

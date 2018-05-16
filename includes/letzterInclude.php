@@ -12,7 +12,7 @@ $shopLogo      = Shop::getLogo();
 $shopURL       = Shop::getURL();
 $cart          = $_SESSION['Warenkorb'] ?? new Warenkorb();
 $Einstellungen = Shopsetting::getInstance()->getAll();
-$linkHelper    = Shop::Container()->getLinkHelper();
+$linkHelper    = Shop::Container()->getLinkService();
 $themeDir      = empty($Einstellungen['template']['theme']['theme_default'])
     ? 'evo'
     : $Einstellungen['template']['theme']['theme_default'];

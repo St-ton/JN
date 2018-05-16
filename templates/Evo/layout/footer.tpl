@@ -195,7 +195,7 @@
                 {if $Einstellungen.global.global_versandhinweis === 'zzgl'}
                     {lang key="footnoteExclusiveShipping" section="global" printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() assign="footnoteShipping"}
                 {elseif $Einstellungen.global.global_versandhinweis === 'inkl'}
-                    {lang key="footnoteInclusiveShipping" section="global" printf=$oSpezialseiten_arr[LINKTYP_VERSAND]->getURL() assign="footnoteShipping"}
+                    {lang key="footnoteInclusiveShipping" section="global" printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() assign="footnoteShipping"}
                 {/if}
                 {block name="footer-vat-notice"}
                     <p class="padded-lg-top">

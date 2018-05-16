@@ -12,7 +12,7 @@ use Tightenco\Collect\Support\Collection;
 /**
  * Class LinkGroupCollection
  *
- * this allows calls like LinkHelper::getLinkgroups()->Fuss to access a link group by its template name
+ * this allows calls like LinkService::getLinkgroups()->Fuss to access a link group by its template name
  * for compatability reasons only
  *
  * @package Link

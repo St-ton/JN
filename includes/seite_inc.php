@@ -807,14 +807,14 @@ function gibGratisGeschenkArtikel($conf)
  */
 function pruefeSpezialseite($nLinkart)
 {
-    $specialPages = Shop::Container()->getLinkHelper()->getLinkGroupByName('specialpages');
+    $specialPages = Shop::Container()->getLinkService()->getLinkGroupByName('specialpages');
     if ($nLinkart > 0 && $specialPages !== null) {
         $res = $specialPages->getLinks()->first(function (\Link\LinkInterface $l) use ($nLinkart) {
             return $l->getLinkType() === $nLinkart;
         });
         /** @var \Link\LinkInterface $res */
         if ($res !== null && $res->getFileName() !== null) {
-            header('Location: ' . Shop::Container()->getLinkHelper()->getStaticRoute($res->getFileName()));
+            header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute($res->getFileName()));
             exit();
         }
     }
@@ -865,7 +865,7 @@ function gibSitemapHersteller($Einstellungen)
 function holeSeitenLink($kLink)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getLinkHelper()->getLinkByID($kLink);
+    return Shop::Container()->getLinkService()->getLinkByID($kLink);
 }
 
 /**
@@ -876,7 +876,7 @@ function holeSeitenLink($kLink)
 function holeSeitenLinkSprache($kLink)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getLinkHelper()->getLinkByID($kLink);
+    return Shop::Container()->getLinkService()->getLinkByID($kLink);
 }
 
 /**

@@ -4,23 +4,29 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace Services\JTL;
 
 
 use DB\DbInterface;
 use function Functional\first;
 use function Functional\first_index_of;
 use function Functional\select;
+use Link\LinkGroupCollection;
+use Link\LinkGroupInterface;
+use Link\LinkGroupList;
+use Link\LinkGroupListInterface;
+use Link\LinkInterface;
+use Link\Link;
 use Tightenco\Collect\Support\Collection;
 
 /**
- * Class LinkHelper
+ * Class LinkService
  * @package Link
  */
-final class LinkHelper
+final class LinkService implements LinkServiceInterface
 {
     /**
-     * @var LinkHelper
+     * @var LinkService
      */
     private static $_instance;
 
@@ -40,7 +46,7 @@ final class LinkHelper
     private $db;
 
     /**
-     * LinkHelper constructor.
+     * LinkService constructor.
      * @param DbInterface $db
      */
     public function __construct(DbInterface $db)
@@ -52,17 +58,15 @@ final class LinkHelper
     }
 
     /**
-     * singleton
-     *
-     * @return LinkHelper
+     * @inheritdoc
      */
-    public static function getInstance(): self
+    public static function getInstance(): LinkServiceInterface
     {
         return self::$_instance ?? new self(\Shop::Container()->getDB());
     }
 
     /**
-     * @return LinkGroupCollection
+     * @inheritdoc
      */
     public function getLinkGroups(): LinkGroupCollection
     {
@@ -70,7 +74,7 @@ final class LinkHelper
     }
 
     /**
-     * @return LinkGroupCollection
+     * @inheritdoc
      */
     public function getVisibleLinkGroups(): LinkGroupCollection
     {
@@ -78,7 +82,7 @@ final class LinkHelper
     }
 
     /**
-     * @return LinkGroupCollection
+     * @inheritdoc
      */
     public function getAllLinkGroups(): LinkGroupCollection
     {
@@ -86,7 +90,7 @@ final class LinkHelper
     }
 
     /**
-     * @return LinkGroupCollection
+     * @inheritdoc
      */
     public function initLinkGroups(): LinkGroupCollection
     {
@@ -96,8 +100,7 @@ final class LinkHelper
     }
 
     /**
-     * @param int $id
-     * @return LinkInterface|null
+     * @inheritdoc
      */
     public function getLinkByID(int $id)
     {
@@ -115,8 +118,7 @@ final class LinkHelper
     }
 
     /**
-     * @param int $id
-     * @return LinkInterface|null
+     * @inheritdoc
      */
     public function getParentForID(int $id)
     {
@@ -134,8 +136,7 @@ final class LinkHelper
     }
 
     /**
-     * @param int $id
-     * @return int[]
+     * @inheritdoc
      */
     public function getParentIDs(int $id): array
     {
@@ -151,8 +152,7 @@ final class LinkHelper
     }
 
     /**
-     * @param int $id
-     * @return Collection
+     * @inheritdoc
      */
     public function getParentLinks(int $id): Collection
     {
@@ -168,8 +168,7 @@ final class LinkHelper
     }
 
     /**
-     * @param int $id
-     * @return int|null
+     * @inheritdoc
      */
     public function getRootID(int $id)
     {
@@ -186,9 +185,7 @@ final class LinkHelper
     }
 
     /**
-     * @param int $parentLinkID
-     * @param int $linkID
-     * @return bool
+     * @inheritdoc
      */
     public function isDirectChild(int $parentLinkID, int $linkID): bool
     {
@@ -196,7 +193,7 @@ final class LinkHelper
             foreach ($this->linkGroups as $linkGroup) {
                 /** @var LinkGroupInterface $linkGroup */
                 foreach ($linkGroup->getLinks() as $link) {
-                    /** @var Link $link */
+                    /** @var LinkInterface $link */
                     if ($link->getID() === $linkID && $link->getParent() === $parentLinkID) {
                         return true;
                     }
@@ -208,8 +205,7 @@ final class LinkHelper
     }
 
     /**
-     * @param int $id
-     * @return LinkInterface
+     * @inheritdoc
      */
     public function getLinkObjectByID(int $id): LinkInterface
     {
@@ -235,9 +231,7 @@ final class LinkHelper
     }
 
     /**
-     * @former gibLinkKeySpecialSeite()
-     * @param int $nLinkart
-     * @return int|bool
+     * @inheritdoc
      */
     public function getSpecialPageID($nLinkart)
     {
@@ -247,11 +241,7 @@ final class LinkHelper
     }
 
     /**
-     * for compatability only
-     *
-     * @former gibLinkKeySpecialSeite()
-     * @param int $nLinkart
-     * @return int|bool
+     * @inheritdoc
      */
     public function getSpecialPageLinkKey($nLinkart)
     {
@@ -259,8 +249,7 @@ final class LinkHelper
     }
 
     /**
-     * @param string $name
-     * @return LinkGroupInterface|null
+     * @inheritdoc
      */
     public function getLinkGroupByName(string $name)
     {
@@ -268,8 +257,7 @@ final class LinkHelper
     }
 
     /**
-     * @param int $id
-     * @return LinkGroupInterface|null
+     * @inheritdoc
      */
     public function getLinkGroupByID(int $id)
     {
@@ -277,11 +265,7 @@ final class LinkHelper
     }
 
     /**
-     * @param string      $id
-     * @param bool        $full
-     * @param bool        $secure
-     * @param string|null $langISO
-     * @return string
+     * @inheritdoc
      */
     public function getStaticRoute($id = 'kontakt.php', $full = true, $secure = false, $langISO = null): string
     {
@@ -309,11 +293,7 @@ final class LinkHelper
     }
 
     /**
-     * careful: this works compatible to gibSpezialSeiten() -
-     * so only the first special page link per page type is returned!
-     *
-     * @former gibSpezialSeiten()
-     * @return Collection
+     * @inheritdoc
      */
     public function getSpecialPages(): Collection
     {
@@ -330,10 +310,7 @@ final class LinkHelper
     }
 
     /**
-     * for compatability only
-     *
-     * @param int $id
-     * @return LinkInterface|null
+     * @inheritdoc
      */
     public function getPageLinkLanguage(int $id)
     {
@@ -341,10 +318,7 @@ final class LinkHelper
     }
 
     /**
-     * for compatability only
-     *
-     * @param int $id
-     * @return LinkInterface|null
+     * @inheritdoc
      */
     public function getPageLink(int $id)
     {
@@ -352,10 +326,7 @@ final class LinkHelper
     }
 
     /**
-     * for compatability only
-     *
-     * @param int $id
-     * @return LinkInterface|null
+     * @inheritdoc
      */
     public function getLinkObject(int $id)
     {
@@ -363,11 +334,7 @@ final class LinkHelper
     }
 
     /**
-     * for compatability only
-     *
-     * @param int $id
-     * @param int $pluginID
-     * @return LinkInterface|null
+     * @inheritdoc
      */
     public function findCMSLinkInSession(int $id, int $pluginID = 0)
     {
@@ -379,11 +346,7 @@ final class LinkHelper
     }
 
     /**
-     * for compatability only
-     *
-     * @param int $parentLinkID
-     * @param int $linkID
-     * @return bool
+     * @inheritdoc
      */
     public function isChildActive(int $parentLinkID, int $linkID): bool
     {
@@ -391,10 +354,7 @@ final class LinkHelper
     }
 
     /**
-     * for compatability only
-     *
-     * @param int $id
-     * @return int|null
+     * @inheritdoc
      */
     public function getRootLink(int $id)
     {
@@ -402,10 +362,7 @@ final class LinkHelper
     }
 
     /**
-     * for compatability only
-     *
-     * @param int $id
-     * @return int[]
+     * @inheritdoc
      */
     public function getParentsArray(int $id): array
     {
@@ -413,11 +370,7 @@ final class LinkHelper
     }
 
     /**
-     * for compatability only
-     * careful: does not do what it says it does.
-     *
-     * @param int $id
-     * @return LinkInterface|null
+     * @inheritdoc
      */
     public function getParent(int $id)
     {
@@ -425,9 +378,7 @@ final class LinkHelper
     }
 
     /**
-     * @param int         $type
-     * @param string|null $cISOSprache
-     * @return \stdClass
+     * @inheritdoc
      */
     public function buildSpecialPageMeta(int $type, string $cISOSprache = null): \stdClass
     {
@@ -463,7 +414,7 @@ final class LinkHelper
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function checkNoIndex(): bool
     {
@@ -471,9 +422,7 @@ final class LinkHelper
     }
 
     /**
-     * @former aktiviereLinks()
-     * @param int $pageType
-     * @return LinkGroupCollection
+     * @inheritdoc
      */
     public function activate(int $pageType): LinkGroupCollection
     {

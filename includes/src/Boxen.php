@@ -359,7 +359,7 @@ class Boxen
      */
     private function getLinkGroupByID($id)
     {
-        return Shop::Container()->getLinkHelper()->getLinkGroupByID((int)$id);
+        return Shop::Container()->getLinkService()->getLinkGroupByID((int)$id);
     }
 
     /**

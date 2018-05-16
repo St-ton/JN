@@ -760,7 +760,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
             $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
             // Pruefe ob Kunde eingeloggt
             if (empty($_SESSION['Kunde']->kKunde) && $conf['artikeldetails']['tagging_freischaltung'] === 'Y') {
-                $linkHelper = Shop::Container()->getLinkHelper();
+                $linkHelper = Shop::Container()->getLinkService();
                 header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
                     '?a=' . (int)$_POST['a'] . '&tag=' .
                     StringHandler::htmlentities(StringHandler::filterXSS($_POST['tag'])) .
@@ -896,7 +896,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                 return Shop::Lang()->get('maxTagsExceeded', 'messages');
             }
         } elseif (isset($_POST['einloggen'])) {
-            header('Location: ' . Shop::Container()->getLinkHelper()->getStaticRoute('jtl.php', true) .
+            header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php', true) .
                 '?a=' . (int)$_POST['a'] . '&r=' . R_LOGIN_TAG, true, 303);
             exit();
         } else {

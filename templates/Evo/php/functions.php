@@ -104,7 +104,7 @@ function get_static_route($params, $smarty)
     if (isset($params['id'])) {
         $full   = !isset($params['full']) || $params['full'] === true;
         $secure = isset($params['secure']) && $params['secure'] === true;
-        $url    = Shop::Container()->getLinkHelper()->getStaticRoute($params['id'], $full, $secure);
+        $url    = Shop::Container()->getLinkService()->getStaticRoute($params['id'], $full, $secure);
         $qp     = isset($params['params'])
             ? (array)$params['params']
             : [];
@@ -269,7 +269,7 @@ function load_boxes($params, $smarty)
                         $smarty->assign($oPluginVar, $oPlugin);
                     }
                 } elseif ($oBox->eTyp === 'link') {
-                    foreach (Shop::Container()->getLinkHelper()->getLinkGroups() as $oLinkTpl) {
+                    foreach (Shop::Container()->getLinkService()->getLinkGroups() as $oLinkTpl) {
                         if ($oLinkTpl->kLinkgruppe == $oBox->kCustomID) {
                             $oBox->oLinkGruppeTemplate = $oLinkTpl;
                             $oBox->oLinkGruppe         = $oLinkTpl;
@@ -445,7 +445,7 @@ function getCheckBoxForLocation($params, $smarty)
         ? Shop::get($cid)
         : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
     if (count($oCheckBox_arr) > 0) {
-        $linkHelper = Shop::Container()->getLinkHelper();
+        $linkHelper = Shop::Container()->getLinkService();
         foreach ($oCheckBox_arr as $oCheckBox) {
             // Link URL bauen
             $cLinkURL     = '';
@@ -527,7 +527,7 @@ function get_navigation($params, $smarty)
     $linkgroupIdentifier = $params['linkgroupIdentifier'];
     $oLinkGruppe         = null;
     if (strlen($linkgroupIdentifier) > 0) {
-        $linkGroups  = Shop::Container()->getLinkHelper()->getVisibleLinkGroups();
+        $linkGroups  = Shop::Container()->getLinkService()->getVisibleLinkGroups();
         $oLinkGruppe = $linkGroups->getLinkgroupByTemplate($linkgroupIdentifier);
     }
     if (is_object($oLinkGruppe) && isset($params['assign'])) {
@@ -666,7 +666,7 @@ function get_cms_content($params, $smarty)
 {
     if (isset($params['kLink']) && (int)$params['kLink'] > 0) {
         $kLink   = (int)$params['kLink'];
-        $oLink   = Shop::Container()->getLinkHelper()->getLinkByID($kLink);
+        $oLink   = Shop::Container()->getLinkService()->getLinkByID($kLink);
         $content = $oLink !== null ? $oLink->getContent() : null;
         if (isset($params['assign'])) {
             $smarty->assign($params['assign'], $content);

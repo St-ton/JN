@@ -5,10 +5,10 @@
         {assign var='activeId' value=$Link->getID()}
     {elseif Shop::$kLink > 0}
         {assign var='activeId' value=Shop::$kLink}
-        {assign var='Link' value=Shop::Container()->getLinkHelper()->getLinkByID($activeId)}
+        {assign var='Link' value=Shop::Container()->getLinkService()->getLinkByID($activeId)}
     {/if}
     {if !isset($activeParents) && (isset($Link))}
-        {assign var='activeParents' value=Shop::Container()->getLinkHelper()->getParentIDs($activeId)}
+        {assign var='activeParents' value=Shop::Container()->getLinkService()->getParentIDs($activeId)}
         {assign var=checkLinkParents value=true}
     {/if}
     {get_navigation linkgroupIdentifier=$linkgroupIdentifier assign='links'}

@@ -267,7 +267,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getStaticRoute($id = 'kontakt.php', $full = true, $secure = false, $langISO = null): string
+    public function getStaticRoute($id = 'kontakt.php', $full = true, $secure = true, $langISO = null): string
     {
         $idx = null;
         $lg  = $this->getLinkGroupByName('staticroutes');
@@ -297,7 +297,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getSpecialPages(): Collection
     {
-        $lg = $this->getLinkGroupByName('specialpages'); //@todo: use const
+        $lg = $this->getLinkGroupByName('specialpages');
         if ($lg !== null) {
             return $lg->getLinks()->groupBy(function (LinkInterface $link) {
                 return $link->getLinkType();

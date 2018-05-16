@@ -404,18 +404,18 @@ class Preise
         $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->cPreisLocalized_arr[] = [
-                gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst), $currency),
+                gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst, 4), $currency),
                 gibPreisStringLocalized($fPreis, $currency)
             ];
         }
 
-        $this->cVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->fVKNetto, $this->fUst), $currency);
+        $this->cVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->fVKNetto, $this->fUst, 4), $currency);
         $this->cVKLocalized[1] = gibPreisStringLocalized($this->fVKNetto, $currency);
 
         $this->fVKBrutto = berechneBrutto($this->fVKNetto, $this->fUst);
 
         if ($this->alterVKNetto) {
-            $this->alterVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->alterVKNetto, $this->fUst), $currency);
+            $this->alterVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->alterVKNetto, $this->fUst, 4), $currency);
             $this->alterVKLocalized[1] = gibPreisStringLocalized($this->alterVKNetto, $currency);
         }
 

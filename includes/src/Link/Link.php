@@ -220,7 +220,7 @@ final class Link extends AbstractLink
      */
     public function map(array $localizedLinks): LinkInterface
     {
-        $baseURL = \Shop::getURL() . '/';
+        $baseURL = \Shop::getURL(true) . '/';
         foreach ($localizedLinks as $link) {
             $languageID                          = (int)$link->languageID;
             $this->parent                        = (int)$link->kVaterLink;

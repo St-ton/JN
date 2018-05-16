@@ -26,10 +26,7 @@ class Divider extends \OPC\Portlet
 
     public function getButtonHtml()
     {
-        return '<img class="fa" src="' . \Shop::getURL() . '/'
-            . PFAD_TEMPLATES
-            . 'Evo/themes/base/images/opc/Icon-HR.svg">
-            <br/> Trennlinie';
+        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Trennlinie';
     }
 
     public function getConfigPanelHtml($instance)

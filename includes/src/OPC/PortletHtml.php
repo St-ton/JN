@@ -395,4 +395,9 @@ trait PortletHtml
 
         return "<$tag $attributes>$innerHtml</$tag>";
     }
+
+    final protected function getDefaultIconSvgUrl()
+    {
+        return \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/icon.svg';
+    }
 }

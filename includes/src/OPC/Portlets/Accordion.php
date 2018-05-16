@@ -22,10 +22,7 @@ class Accordion extends \OPC\Portlet
 
     public function getButtonHtml()
     {
-        return '<img class="fa" src="' . \Shop::getURL() . '/'
-            . PFAD_TEMPLATES
-            . 'Evo/themes/base/images/opc/Icon-Accordion.svg"></i>
-            <br/> Akkordeon';
+        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Akkordeon';
     }
 
     public function getConfigPanelHtml($instance)

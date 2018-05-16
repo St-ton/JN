@@ -76,10 +76,7 @@ class ImageSlider extends \OPC\Portlet
 
     public function getButtonHtml()
     {
-        return '<img class="fa" src="' . \Shop::getURL() . '/'
-            . PFAD_TEMPLATES
-            . 'Evo/themes/base/images/opc/Icon-ImageSlider.svg">
-            <br/> Image Slider';
+        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Image Slider';
     }
 
     public function getConfigPanelHtml($instance)
@@ -90,11 +87,11 @@ class ImageSlider extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'slider-id'                   => [
+            'slider-id' => [
                 'label'      => 'Slider ID',
                 'dspl_width' => 50,
             ],
-            'slider-theme'                => [
+            'slider-theme' => [
                 'label'      => 'theme',
                 'type'       => 'select',
                 'options'    => [
@@ -105,19 +102,19 @@ class ImageSlider extends \OPC\Portlet
                 ],
                 'dspl_width' => 50,
             ],
-            'slider-animation-speed'      => [
+            'slider-animation-speed' => [
                 'label'      => 'slider speed',
                 'type'       => 'number',
                 'default'   => 1500,
                 'dspl_width' => 50,
             ],
-            'slider-animation-pause'      => [
+            'slider-animation-pause' => [
                 'label'      => 'pause',
                 'type'       => 'number',
                 'default'   => 6000,
                 'dspl_width' => 50,
             ],
-            'slider-start'                => [
+            'slider-start' => [
                 'label'      => 'auto start',
                 'type'       => 'radio',
                 'options'    => [
@@ -126,7 +123,7 @@ class ImageSlider extends \OPC\Portlet
                 ],
                 'dspl_width' => 50,
             ],
-            'slider-pause'                => [
+            'slider-pause' => [
                 'label'      => 'pause on hover',
                 'type'       => 'radio',
                 'options'    => [
@@ -135,7 +132,7 @@ class ImageSlider extends \OPC\Portlet
                 ],
                 'dspl_width' => 50,
             ],
-            'slider-navigation'           => [
+            'slider-navigation' => [
                 'label'      => 'slider navigation',
                 'type'       => 'radio',
                 'options'    => [
@@ -153,13 +150,13 @@ class ImageSlider extends \OPC\Portlet
                 ],
                 'dspl_width' => '50'
             ],
-            'slider-kenburns'             => [
+            'slider-kenburns' => [
                 'label'      => 'use Ken-Burns',
                 'type'       => 'checkbox',
                 'dspl_width' => 50,
                 'hint'       => 'overrides other settings',
             ],
-            'slider-effects-random'       => [
+            'slider-effects-random' => [
                 'label' => 'random effects',
                 'type'       => 'radio',
                 'options'    => [
@@ -167,7 +164,7 @@ class ImageSlider extends \OPC\Portlet
                     'nööö' => 'false',
                 ],
             ],
-            'effects[sliceDown]'                   => [
+            'effects[sliceDown]' => [
                 'label'                => 'sliceDown',
                 'type'                 => 'checkbox',
                 'collapseControlStart' => true,
@@ -175,78 +172,78 @@ class ImageSlider extends \OPC\Portlet
                 'showOnPropValue'      => 'false',
                 'dspl_width'           => 25,
             ],
-            'effects[sliceDownLeft]'               => [
+            'effects[sliceDownLeft]' => [
                 'label'      => 'sliceDownLeft',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUp]'                     => [
+            'effects[sliceUp]' => [
                 'label'      => 'sliceUp',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUpLeft]'                 => [
+            'effects[sliceUpLeft]' => [
                 'label'      => 'sliceUpLeft',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUpDown]'                 => [
+            'effects[sliceUpDown]' => [
                 'label'      => 'sliceUpDown',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUpDownLeft]'             => [
+            'effects[sliceUpDownLeft]' => [
                 'label'      => 'sliceUpDownLeft',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[fold]'                        => [
+            'effects[fold]' => [
                 'label'      => 'fold',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[fade]'                        => [
+            'effects[fade]' => [
                 'label'      => 'fade',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[slideInRight]'                => [
+            'effects[slideInRight]' => [
                 'label'      => 'sliceInRight',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[slideInLeft]'                 => [
+            'effects[slideInLeft]' => [
                 'label'      => 'slideInRight',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRandom]'                   => [
+            'effects[boxRandom]' => [
                 'label'      => 'boxRandom',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRain]'                     => [
+            'effects[boxRain]' => [
                 'label'      => 'boxRain',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRainReverse]'              => [
+            'effects[boxRainReverse]' => [
                 'label'      => 'boxRainReverse',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRainGrow]'                 => [
+            'effects[boxRainGrow]' => [
                 'label'      => 'boxRainGrow',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRainGrowReverse]'          => [
+            'effects[boxRainGrowReverse]' => [
                 'label'              => 'boxRainGrowReverse',
                 'type'               => 'checkbox',
                 'collapseControlEnd' => true,
                 'dspl_width'         => 25,
             ],
-            'slides'                      => [
+            'slides' => [
                 'label'      => 'Bilder',
                 'type'       => 'image-set',
                 'default'    => [],

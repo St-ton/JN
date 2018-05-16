@@ -110,10 +110,7 @@ class Button extends \OPC\Portlet
 
     public function getButtonHtml()
     {
-        return '<img class="fa" src="' . \Shop::getURL() . '/'
-            . PFAD_TEMPLATES
-            . 'Evo/themes/base/images/opc/Icon-Button.svg">
-            <br/> Button';
+        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Button';
     }
 
     public function getConfigPanelHtml($instance)

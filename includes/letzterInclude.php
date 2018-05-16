@@ -23,12 +23,11 @@ $cMinify_arr = $oTemplate->getMinifyArray();
 $cCSS_arr    = $cMinify_arr["{$themeDir}.css"] ?? [];
 $cJS_arr     = $cMinify_arr['jtl3.js'] ?? [];
 executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
-    'cCSS_arr'                  => &$cCSS_arr,
-    'cJS_arr'                   => &$cJS_arr,
-    'cPluginCss_arr'            => &$cMinify_arr['plugin_css'],
-    'cPluginCssConditional_arr' => &$cMinify_arr['plugin_css_conditional'],
-    'cPluginJsHead_arr'         => &$cMinify_arr['plugin_js_head'],
-    'cPluginJsBody_arr'         => &$cMinify_arr['plugin_js_body']
+    'cCSS_arr'          => &$cCSS_arr,
+    'cJS_arr'           => &$cJS_arr,
+    'cPluginCss_arr'    => &$cMinify_arr['plugin_css'],
+    'cPluginJsHead_arr' => &$cMinify_arr['plugin_js_head'],
+    'cPluginJsBody_arr' => &$cMinify_arr['plugin_js_body']
 ]);
 $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
     ? $_SESSION['Kunde']->kKundengruppe
@@ -69,7 +68,6 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie, false))
-       ->assign('cPluginCssConditional_arr', $cMinify_arr['plugin_css_conditional'])
        ->assign('cPluginJsHead_arr', $cMinify_arr['plugin_js_head'])
        ->assign('cPluginJsBody_arr', $cMinify_arr['plugin_js_body'])
        ->assign('cCSS_arr', $cCSS_arr)

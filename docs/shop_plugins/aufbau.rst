@@ -529,6 +529,11 @@ Falls der Typ der Einstellung **radio** ist, muss das Kindelement <RadioOptions>
 
 (*)Pflichtfelder
 
+Ab Version 5.0.0 kann als Typ auch "none" gewählt werden. Diese Optionen werden nicht im Settings-Tab angezeigt.
+Dies bietet sich an, falls eine eigene Darstellung in einem anderen Tab für die Option gewählt werden soll.
+Der Wert wird dann trotzdem in der Plugin-Instanz gespeichert, sodass kein Umweg über eigene SQL-Logik erforderlich ist.
+Allerdings muss der Objektcache ggf. manuell invalidiert werden.
+
 
 Statt oder zusätzlich zu RadioOptions bzw. SelectboxOptions kann seit Version 4.05 das Element OptionsSource hinzugefügt werden.
 Sobald es vorhanden ist, wird das RadioOptions- bzw. SelectboxOptions-Element ignoriert.

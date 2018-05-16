@@ -11,7 +11,6 @@ $Einstellungen = Shop::getSettings([CONF_METAANGABEN]);
 $chinweis      = '';
 $cfehler       = '';
 setzeSprache();
-
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && validateToken()) {
     saveAdminSectionSettings(CONF_METAANGABEN, $_POST);
 
@@ -56,6 +55,12 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
     $oGlobaleMetaAngaben->cName                 = 'Meta_Description_Praefix';
     $oGlobaleMetaAngaben->cWertName             = $cMetaDescPraefix;
     Shop::Container()->getDB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
+
+    $keywords              = new stdClass();
+    $keywords->cISOSprache = $_SESSION['cISOSprache'];
+    $keywords->cKeywords   = $_POST['keywords'];
+    Shop::Container()->getDB()->delete('texcludekeywords', 'cISOSprache', $keywords->cISOSprache);
+    Shop::Container()->getDB()->insert('texcludekeywords', $keywords);
     Shop::Cache()->flushAll();
     $chinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.<br />';
     unset($oConfig_arr);
@@ -89,14 +94,15 @@ $oMetaangaben_arr = Shop::Container()->getDB()->selectAll(
     [(int)$_SESSION['kSprache'], CONF_METAANGABEN]
 );
 $cTMP_arr         = [];
-if (is_array($oMetaangaben_arr) && count($oMetaangaben_arr) > 0) {
-    foreach ($oMetaangaben_arr as $oMetaangaben) {
-        $cTMP_arr[$oMetaangaben->cName] = $oMetaangaben->cWertName;
-    }
+foreach ($oMetaangaben_arr as $oMetaangaben) {
+    $cTMP_arr[$oMetaangaben->cName] = $oMetaangaben->cWertName;
 }
+
+$excludeKeywords = Shop::Container()->getDB()->select('texcludekeywords', 'cISOSprache', $_SESSION['cISOSprache']);
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oMetaangaben_arr', $cTMP_arr)
+       ->assign('keywords', $excludeKeywords)
        ->assign('Sprachen', gibAlleSprachen())
        ->assign('hinweis', $chinweis)
        ->assign('fehler', $cfehler)

@@ -176,7 +176,7 @@ if (validateToken()) {
         $preview = null;
         if (verifyGPCDataInteger('iframe') === 1) {
             $step = 'vorlage_vorschau_iframe';
-            $smarty->assign('cURL', 'newsletter.php?vorschau=' . $kNewsletterVorlage);
+            $smarty->assign('cURL', 'newsletter.php?vorschau=' . $kNewsletterVorlage . '&token=' . $_SESSION['jtl_token']);
             $preview = baueNewsletterVorschau($oNewsletterVorlage);
         } elseif (isset($oNewsletterVorlage->kNewsletterVorlage) && $oNewsletterVorlage->kNewsletterVorlage > 0) {
             $step                      = 'vorlage_vorschau';

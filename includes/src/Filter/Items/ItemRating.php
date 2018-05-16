@@ -10,7 +10,8 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
+use Filter\Type;
 use Filter\ProductFilter;
 
 /**
@@ -46,7 +47,7 @@ class ItemRating extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         return parent::setValue((int)$value);
     }
@@ -54,7 +55,7 @@ class ItemRating extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         $this->setName(\Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .
@@ -117,17 +118,16 @@ class ItemRating extends AbstractFilter
         }
         $options = [];
         $state   = $this->productFilter->getCurrentStateData();
-
-        $state->joins[] = $this->getSQLJoin();
+        $state->addJoin($this->getSQLJoin());
 
         $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
             [
                 'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
                 'tartikel.kArtikel'
             ],
-            $state->joins,
-            $state->conditions,
-            $state->having
+            $state->getJoins(),
+            $state->getConditions(),
+            $state->getHaving()
         );
         $res              = \Shop::Container()->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl

@@ -553,7 +553,6 @@ function bearbeiteUmfrageAuswertung($oUmfrage)
  */
 function bearbeiteUmfrageDurchfuehrung($kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_arr, &$oNavi_arr, &$nAktuelleSeite)
 {
-    global $smarty;
     // Modulprüfung
     $oNice = Nice::getInstance();
     if (!$oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE) || !$kUmfrage || !isset($oUmfrage->kUmfrage)) {
@@ -631,5 +630,5 @@ function bearbeiteUmfrageDurchfuehrung($kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_
     }
 
     $oUmfrage->oUmfrageFrage_arr = $oUmfrageFrage_arr;
-    $smarty->assign('nSessionFragenWerte_arr', findeFragenInSession($oUmfrageFrage_arr));
+    Shop::Smarty()->assign('nSessionFragenWerte_arr', findeFragenInSession($oUmfrageFrage_arr));
 }

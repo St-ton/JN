@@ -612,8 +612,7 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
     trigger_error('filter_inc.php: calling gibErweiterteDarstellung() is deprecated.', E_USER_DEPRECATED);
     updateNaviFilter($NaviFilter)->getMetaData()->getExtendedView($nDarstellung);
     if (isset($_SESSION['oErweiterteDarstellung'])) {
-        global $smarty;
-        $smarty->assign('oErweiterteDarstellung', $_SESSION['oErweiterteDarstellung']);
+        Shop::Smarty()->assign('oErweiterteDarstellung', $_SESSION['oErweiterteDarstellung']);
     }
 }
 

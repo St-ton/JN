@@ -18,7 +18,7 @@ if (isset($_POST['mail']) && validateToken()) {
         $verified = $account->verifyResetPasswordHash($_POST['fpwh'], $_POST['fpm']);
         if ($verified === true) {
             $_upd                     = new stdClass();
-            $_upd->cPass              = AdminAccount::generatePasswordHash($_POST['pw_new']);
+            $_upd->cPass              = Shop::Container()->getPasswordService()->hash($_POST['pw_new']);
             $update                   = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $_POST['fpm'], $_upd);
             if ($update > 0) {
                 $cHinweis = 'Passwort wurde erfolgreich ge&auml;ndert.';

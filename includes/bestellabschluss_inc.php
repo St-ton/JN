@@ -692,7 +692,8 @@ function aktualisiereStuecklistenLagerbestand($oStueckListeArtikel, $nAnzahl)
                 JOIN tartikel
                   ON tartikel.kArtikel = tstueckliste.kArtikel
                 WHERE tstueckliste.kStueckliste = {$kStueckListe}
-                    AND tartikel.cLagerBeachten = 'Y'", 2
+                    AND tartikel.cLagerBeachten = 'Y'",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         if (is_array($oKomponente_arr) && count($oKomponente_arr) > 0) {
@@ -759,7 +760,8 @@ function aktualisiereKomponenteLagerbestand($kKomponenteArtikel, $fLagerbestand,
             JOIN tartikel
                 ON tartikel.kStueckliste = tstueckliste.kStueckliste
             WHERE tstueckliste.kArtikel = {$kKomponenteArtikel}
-                AND tartikel.cLagerBeachten = 'Y'", 2
+                AND tartikel.cLagerBeachten = 'Y'",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     if (is_array($oStueckliste_arr) && count($oStueckliste_arr) > 0) {
@@ -872,7 +874,8 @@ function KuponVerwendungen($oBestellung)
         $KuponKundeBisher          = Shop::Container()->getDB()->query(
             "SELECT SUM(nVerwendungen) AS nVerwendungen
                 FROM tkuponkunde
-                WHERE cMail = '{$KuponKunde->cMail}'", 1
+                WHERE cMail = '{$KuponKunde->cMail}'",
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
             $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
@@ -1307,7 +1310,7 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     }
     $_SESSION['Kunde'] = $oKunde;
     $kKundengruppe     = Session::CustomerGroup()->getID();
-    $oCheckBox = new CheckBox();
+    $oCheckBox         = new CheckBox();
     // CheckBox Spezialfunktion ausführen
     $oCheckBox->triggerSpecialFunction(
         CHECKBOX_ORT_BESTELLABSCHLUSS,
@@ -1319,29 +1322,4 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     $oCheckBox->checkLogging(CHECKBOX_ORT_BESTELLABSCHLUSS, $kKundengruppe, $_POST, true);
 
     return $bestellung;
-}
-
-/**
- * EOS Server to Server.
- *
- * @param string $cSh
- */
-function pruefeEOSServerCom($cSh)
-{
-    if (strlen($cSh) > 0 && strlen(verifyGPDataString('eos')) > 0) {
-        $oZahlungbackground              = new stdClass();
-        $oZahlungbackground->cSID        = $cSh;
-        $oZahlungbackground->cKey        = 'eos';
-        $oZahlungbackground->kKey        = verifyGPCDataInteger('eos');
-        $oZahlungbackground->cCustomData = '';
-        $oZahlungbackground->dErstellt   = 'now()';
-
-        Shop::Container()->getDB()->insert('tzahlungbackground', $oZahlungbackground);
-
-        if (NO_MODE === 1) {
-            Jtllog::writeLog(NO_PFAD, 'pruefeEOSServerCom Hash ' .
-                $cSh . ' ergab ' . print_r($oZahlungbackground, true), 1);
-        }
-        die();
-    }
 }

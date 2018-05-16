@@ -10,7 +10,8 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\IFilter;
+use Filter\FilterInterface;
+use Filter\Type;
 use Filter\Items\ItemTag;
 use Filter\ProductFilter;
 
@@ -47,7 +48,7 @@ class BaseTag extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value): IFilter
+    public function setValue($value): FilterInterface
     {
         return parent::setValue((int)$value);
     }
@@ -55,7 +56,7 @@ class BaseTag extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages): IFilter
+    public function setSeo(array $languages): FilterInterface
     {
         $oSeo_obj = \Shop::Container()->getDB()->queryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, ttag.cName
@@ -65,7 +66,7 @@ class BaseTag extends AbstractFilter
                 WHERE tseo.cKey = 'kTag' 
                     AND tseo.kKey = :val",
             ['val' => $this->getValue()],
-            1
+            ReturnType::SINGLE_OBJECT
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -139,34 +140,24 @@ class BaseTag extends AbstractFilter
             return $options;
         }
         $joinedTables = [];
-        $state        = $this->productFilter->getCurrentStateData($this->getType() === AbstractFilter::FILTER_TYPE_OR
+        $state        = $this->productFilter->getCurrentStateData($this->getType()->equals(Type::OR())
             ? $this->getClassName()
             : null
         );
-
-        $state->joins[] = (new FilterJoin())
+        $state->addJoin((new FilterJoin())
             ->setComment('join1 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('ttagartikel')
             ->setOn('ttagartikel.kArtikel = tartikel.kArtikel')
-            ->setOrigin(__CLASS__);
-        $state->joins[] = (new FilterJoin())
+            ->setOrigin(__CLASS__));
+        $state->addJoin((new FilterJoin())
             ->setComment('join2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('ttag')
             ->setOn('ttagartikel.kTag = ttag.kTag')
-            ->setOrigin(__CLASS__);
-        // remove duplicate joins
-        foreach ($state->joins as $i => $stateJoin) {
-            /** @var FilterJoin $stateJoin */
-            if (!in_array($stateJoin->getTable(), $joinedTables, true)) {
-                $joinedTables[] = $stateJoin->getTable();
-            } else {
-                unset($state->joins[$i]);
-            }
-        }
-        $state->conditions[] = 'ttag.nAktiv = 1';
-        $state->conditions[] = 'ttag.kSprache = ' . $this->getLanguageID();
+            ->setOrigin(__CLASS__));
+        $state->addCondition('ttag.nAktiv = 1');
+        $state->addCondition('ttag.kSprache = ' . $this->getLanguageID());
         $query               = $this->productFilter->getFilterSQL()->getBaseQuery(
             [
                 'ttag.kTag',
@@ -174,9 +165,9 @@ class BaseTag extends AbstractFilter
                 'ttagartikel.nAnzahlTagging',
                 'tartikel.kArtikel'
             ],
-            $state->joins,
-            $state->conditions,
-            $state->having,
+            $state->getDeduplicatedJoins(),
+            $state->getConditions(),
+            $state->getHaving(),
             null,
             '',
             ['ttag.kTag', 'tartikel.kArtikel']

@@ -470,7 +470,8 @@ class TrustedShops
                 "SELECT *
                     FROM ttrustedeshopsprodukt
                     WHERE kTrustedShopsZertifikat = " . $oZertifikat->kTrustedShopsZertifikat . $cSQL . "
-                    ORDER BY cWaehrung, nWert", 2
+                    ORDER BY cWaehrung, nWert",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
 

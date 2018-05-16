@@ -10,6 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
+use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseCategory;
 
@@ -49,7 +50,7 @@ class ItemCategory extends BaseCategory
 
         return $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF'
             ? '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() .
-                ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') '
+            ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') '
             : ' tkategorieartikel.kKategorie = ' . $this->getValue();
     }
 
@@ -94,7 +95,7 @@ class ItemCategory extends BaseCategory
         }
         $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
         $state              = $this->productFilter->getCurrentStateData(
-            $this->getType() === AbstractFilter::FILTER_TYPE_OR
+            $this->getType()->equals(Type::OR())
                 ? $this->getClassName()
                 : null
         );
@@ -106,7 +107,7 @@ class ItemCategory extends BaseCategory
                 ? ''
                 : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
 
-            $state->joins[] = (new FilterJoin())
+            $state->addJoin((new FilterJoin())
                 ->setComment('join1 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('(
@@ -119,68 +120,69 @@ class ItemCategory extends BaseCategory
                 AND oberkategorie.rght
             ) tkategorieartikelgesamt')
                 ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter)
-                ->setOrigin(__CLASS__);
-            $state->joins[] = (new FilterJoin())
+                ->setOrigin(__CLASS__));
+            $state->addJoin((new FilterJoin())
                 ->setComment('join2 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tkategorie')
                 ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie')
-                ->setOrigin(__CLASS__);
+                ->setOrigin(__CLASS__));
         } else {
             // @todo: this instead of $naviFilter->Kategorie?
             if (!$this->productFilter->hasCategory()) {
-                $state->joins[] = (new FilterJoin())
+                $state->addJoin((new FilterJoin())
                     ->setComment('join3 from ' . __METHOD__)
                     ->setType('JOIN')
                     ->setTable('tkategorieartikel')
                     ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
-                    ->setOrigin(__CLASS__);
+                    ->setOrigin(__CLASS__));
             }
-            $state->joins[] = (new FilterJoin())
+            $state->addJoin((new FilterJoin())
                 ->setComment('join4 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tkategorie')
                 ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie')
-                ->setOrigin(__CLASS__);
+                ->setOrigin(__CLASS__));
         }
         if (!\Shop::has('checkCategoryVisibility')) {
             \Shop::set(
                 'checkCategoryVisibility',
-                \Shop::Container()->getDB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', ReturnType::AFFECTED_ROWS) > 0
+                \Shop::Container()->getDB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit',
+                    ReturnType::AFFECTED_ROWS) > 0
             );
         }
         if (\Shop::get('checkCategoryVisibility')) {
-            $state->joins[] = (new FilterJoin())
+            $state->addJoin((new FilterJoin())
                 ->setComment('join5 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tkategoriesichtbarkeit')
                 ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie')
-                ->setOrigin(__CLASS__);
+                ->setOrigin(__CLASS__));
 
-            $state->conditions[] = 'tkategoriesichtbarkeit.kKategorie IS NULL';
+            $state->addCondition('tkategoriesichtbarkeit.kKategorie IS NULL');
         }
         // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
         $cSQLKategorieSprache        = new \stdClass();
         $cSQLKategorieSprache->cJOIN = '';
         $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
         if (!standardspracheAktiv()) {
-            $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
-            $state->joins[] = (new FilterJoin())
+            $select[]       = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
+            $state->addJoin((new FilterJoin())
                 ->setComment('join5 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tkategoriesprache')
                 ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie 
                             AND tkategoriesprache.kSprache = ' . $this->getLanguageID())
-                ->setOrigin(__CLASS__);
+                ->setOrigin(__CLASS__));
         } else {
             $select[] = 'tkategorie.cName';
         }
 
         $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
             $select,
-            $state->joins,
-            $state->conditions,
-            $state->having,
+            $state->getJoins(),
+            $state->getConditions(),
+            $state->getHaving(),
             null,
             '',
             ['tkategorie.kKategorie', 'tartikel.kArtikel']
@@ -194,7 +196,7 @@ class ItemCategory extends BaseCategory
                         AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kKategorie
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName"
-                , 2
+            , 2
         );
         $langID           = $this->getLanguageID();
         $customerGroupID  = $this->getCustomerGroupID();

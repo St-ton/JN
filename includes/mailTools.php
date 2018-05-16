@@ -9,14 +9,19 @@
  * @param JTLSmarty $smarty
  * @return string
  */
-function includeMailTemplate($params, &$smarty)
+function includeMailTemplate($params, $smarty)
 {
-    if (isset($params['template'], $params['type']) &&
-        ($params['type'] === 'text' || $params['type'] === 'plain' || $params['type'] === 'html') &&
-        $smarty->getTemplateVars('int_lang') !== null) {
+    if (isset($params['template'], $params['type'])
+        && ($params['type'] === 'text' || $params['type'] === 'plain' || $params['type'] === 'html')
+        && $smarty->getTemplateVars('int_lang') !== null
+    ) {
         $res            = null;
         $currenLanguage = null;
-        $vorlage        = Shop::Container()->getDB()->select('temailvorlageoriginal', 'cDateiname', $params['template']);
+        $vorlage        = Shop::Container()->getDB()->select(
+            'temailvorlageoriginal',
+            'cDateiname',
+            $params['template']
+        );
         if (isset($vorlage->kEmailvorlage) && $vorlage->kEmailvorlage > 0) {
             $row            = 'cContentText';
             $currenLanguage = $smarty->getTemplateVars('int_lang');
@@ -85,7 +90,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     if (!isset($Object->tkunde->kKundengruppe) || !$Object->tkunde->kKundengruppe) {
         $Object->tkunde->kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $Object->tfirma        = Shop::Container()->getDB()->query("SELECT * FROM tfirma", 1);
+    $Object->tfirma        = Shop::Container()->getDB()->query("SELECT * FROM tfirma", \DB\ReturnType::SINGLE_OBJECT);
     $Object->tkundengruppe = Shop::Container()->getDB()->select(
         'tkundengruppe',
         'kKundengruppe',
@@ -103,15 +108,20 @@ function sendeMail($ModulId, $Object, $mail = null)
             $Object->tkundengruppe->cName = $kundengruppensprache->cName;
         }
     }
-
-    if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
-        $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$Object->tkunde->kSprache);
-    }
-    if (isset($Object->NewsletterEmpfaenger->kSprache) && $Object->NewsletterEmpfaenger->kSprache > 0) {
-        $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', $Object->NewsletterEmpfaenger->kSprache);
-    }
-    if (empty($Sprache)) {
-        $Sprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+    if (isset($_SESSION['currentLanguage']->kSprache)) {
+        $Sprache = $_SESSION['currentLanguage'];
+    } else {
+        if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
+            $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$Object->tkunde->kSprache);
+        }
+        if (isset($Object->NewsletterEmpfaenger->kSprache) && $Object->NewsletterEmpfaenger->kSprache > 0) {
+            $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', $Object->NewsletterEmpfaenger->kSprache);
+        }
+        if (empty($Sprache)) {
+            $Sprache = isset($_SESSION['kSprache'])
+                ? Shop::Container()->getDB()->select('tsprache', 'kSprache', $_SESSION['kSprache'])
+                : Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+        }
     }
     $oKunde = lokalisiereKunde($Sprache, $Object->tkunde);
 
@@ -158,7 +168,12 @@ function sendeMail($ModulId, $Object, $mail = null)
         $mailSmarty->assign('oPluginMail', $Object);
     }
 
-    $Emailvorlage = Shop::Container()->getDB()->query("SELECT * FROM " . $cTable . " WHERE " . $cSQLWhere, 1);
+    $Emailvorlage = Shop::Container()->getDB()->query(
+        "SELECT * 
+            FROM " . $cTable . " 
+            WHERE " . $cSQLWhere,
+        \DB\ReturnType::SINGLE_OBJECT
+    );
     // Email aktiv?
     if (isset($Emailvorlage->cAktiv) && $Emailvorlage->cAktiv === 'N') {
         Jtllog::writeLog(
@@ -234,7 +249,8 @@ function sendeMail($ModulId, $Object, $mail = null)
                         JOIN tzahlungsart 
                             ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
                             AND tzahlungsart.cModulId = '" . $cModulId . "'
-                        WHERE tzahlungsartsprache.cISOSprache = '" . $Sprache->cISO . "'", 1
+                        WHERE tzahlungsartsprache.cISOSprache = '" . $Sprache->cISO . "'",
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (isset($oZahlungsartConf->kZahlungsart) && $oZahlungsartConf->kZahlungsart > 0) {
                     $mailSmarty->assign('Zahlungsart', $oZahlungsartConf);
@@ -264,17 +280,19 @@ function sendeMail($ModulId, $Object, $mail = null)
         case MAILTEMPLATE_BESTELLUNG_AKTUALISIERT:
             $mailSmarty->assign('Bestellung', $Object->tbestellung);
             // Zahlungsart Einstellungen
-            if (isset($Object->tbestellung->Zahlungsart->cModulId) &&
-                strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
+            if (isset($Object->tbestellung->Zahlungsart->cModulId)
+                && strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
             ) {
                 $cModulId         = $Object->tbestellung->Zahlungsart->cModulId;
-                $oZahlungsartConf = Shop::Container()->getDB()->query(
-                    "SELECT tzahlungsartsprache.*
+                $oZahlungsartConf = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT tzahlungsartsprache.*
                         FROM tzahlungsartsprache
                         JOIN tzahlungsart 
                             ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
-                            AND tzahlungsart.cModulId = '" . $cModulId . "'
-                        WHERE tzahlungsartsprache.cISOSprache = '" . $Sprache->cISO . "'", 1
+                            AND tzahlungsart.cModulId = :module
+                        WHERE tzahlungsartsprache.cISOSprache = :iso',
+                    ['module' => $cModulId, 'iso' => $Sprache->cISO],
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
 
                 if (isset($oZahlungsartConf->kZahlungsart) && $oZahlungsartConf->kZahlungsart > 0) {
@@ -452,7 +470,8 @@ function sendeMail($ModulId, $Object, $mail = null)
             $mailSmarty->assign('oRMA', $Object->oRMA);
             break;
         case MAILTEMPLATE_BEWERTUNG_GUTHABEN:
-            $waehrung                                                 = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
+            $waehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
+
             $Object->oBewertungGuthabenBonus->fGuthabenBonusLocalized = gibPreisStringLocalized(
                 $Object->oBewertungGuthabenBonus->fGuthabenBonus,
                 $waehrung,
@@ -622,7 +641,7 @@ function sendeMail($ModulId, $Object, $mail = null)
  */
 function pruefeGlobaleEmailBlacklist($cEmail)
 {
-    $oEmailBlacklist = Shop::Container()->getDB()->select('temailblacklist', 'cEmail', Shop::Container()->getDB()->escape($cEmail));
+    $oEmailBlacklist = Shop::Container()->getDB()->select('temailblacklist', 'cEmail', $cEmail);
 
     if (isset($oEmailBlacklist->cEmail) && strlen($oEmailBlacklist->cEmail) > 0) {
         $oEmailBlacklistBlock                = new stdClass();
@@ -652,10 +671,8 @@ function verschickeMail($mail)
 
     // EmailBlacklist beachten
     $Emailconfig = Shop::getSettings([CONF_EMAILBLACKLIST]);
-    if ($Emailconfig['emailblacklist']['blacklist_benutzen'] === 'Y') {
-        if (pruefeGlobaleEmailBlacklist($mail->toEmail)) {
-            return;
-        }
+    if ($Emailconfig['emailblacklist']['blacklist_benutzen'] === 'Y' && pruefeGlobaleEmailBlacklist($mail->toEmail)) {
+        return;
     }
     // BodyText encoden
     $mail->bodyText  = StringHandler::htmlentitydecode(str_replace('&euro;', 'EUR', $mail->bodyText), ENT_NOQUOTES);
@@ -905,11 +922,9 @@ function bauePDFArrayZumVeschicken($cPDF)
     $cPDFTMP_arr        = explode(';', $cPDF);
     $cPDF_arr           = [];
     $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    if (count($cPDFTMP_arr) > 0) {
-        foreach ($cPDFTMP_arr as $cPDFTMP) {
-            if (strlen($cPDFTMP) > 0 && file_exists($cUploadVerzeichnis . $cPDFTMP)) {
-                $cPDF_arr[] = $cPDFTMP;
-            }
+    foreach ($cPDFTMP_arr as $cPDFTMP) {
+        if (strlen($cPDFTMP) > 0 && file_exists($cUploadVerzeichnis . $cPDFTMP)) {
+            $cPDF_arr[] = $cPDFTMP;
         }
     }
 
@@ -962,4 +977,100 @@ function baueDateinameArrayZumVeschicken($cDateiname)
     }
 
     return $cDateiname_arr;
+}
+
+/**
+ * mail functions
+ *
+ * @param string $FromName
+ * @param string $FromMail
+ * @param string $ReplyAdresse
+ * @param string $To
+ * @param string $Subject
+ * @param string $Text
+ * @param string $Html
+ * @return bool
+ */
+function SendNiceMailReply($FromName, $FromMail, $ReplyAdresse, $To, $Subject, $Text, $Html = '')
+{
+    //endl definieren
+    $eol = "\n";
+    if (stripos(PHP_OS, 'WIN') === 0) {
+        $eol = "\r\n";
+    } elseif (stripos(PHP_OS, 'MAC') === 0) {
+        $eol = "\r";
+    }
+
+    $FromName = StringHandler::unhtmlentities($FromName);
+    $FromMail = StringHandler::unhtmlentities($FromMail);
+    $Subject  = StringHandler::unhtmlentities($Subject);
+    $Text     = StringHandler::unhtmlentities($Text);
+
+    $Text = $Text ?: 'Sorry, but you need an html mailer to read this mail.';
+
+    if (empty($To)) {
+        return false;
+    }
+
+    $mime_boundary = md5(time()) . '_jtlshop2';
+    $headers       = '';
+
+    if (strpos($To, 'freenet')) {
+        $headers .= 'From: ' . strtolower($FromMail) . $eol;
+    } else {
+        $headers .= 'From: ' . $FromName . ' <' . strtolower($FromMail) . '>' . $eol;
+    }
+
+    $headers .= 'Reply-To: ' . strtolower($ReplyAdresse) . $eol;
+    $headers .= 'MIME-Version: 1.0' . $eol;
+    if (!$Html) {
+        $headers .= 'Content-Type: text/plain; charset=' . JTL_CHARSET . $eol;
+        $headers .= 'Content-Transfer-Encoding: 8bit' . $eol . $eol;
+    }
+
+    $Msg = $Text;
+    if ($Html) {
+        $Msg = '';
+        $headers .= 'Content-Type: multipart/alternative; boundary=' . $mime_boundary . $eol;
+
+        # Text Version
+        $Msg .= '--' . $mime_boundary . $eol;
+        $Msg .= 'Content-Type: text/plain; charset=' . JTL_CHARSET . $eol;
+        $Msg .= 'Content-Transfer-Encoding: 8bit' . $eol . $eol;
+        $Msg .= $Text . $eol;
+
+        # HTML Version
+        $Msg .= '--' . $mime_boundary . $eol;
+        $Msg .= 'Content-Type: text/html; charset=' . JTL_CHARSET . $eol;
+        $Msg .= 'Content-Transfer-Encoding: 8bit' . $eol . $eol;
+        $Msg .= $Html . $eol . $eol;
+
+        # Finished
+        $Msg .= '--' . $mime_boundary . '--' . $eol . $eol;
+    }
+    mail($To, encode_iso88591($Subject), $Msg, $headers);
+
+    return true;
+}
+
+/**
+ * @param string $string
+ * @return string
+ */
+function encode_iso88591($string)
+{
+    $text = '=?' . JTL_CHARSET . '?Q?';
+    $max  = strlen($string);
+    for ($i = 0; $i < $max; $i++) {
+        $val = ord($string[$i]);
+        if ($val > 127 || $val === 63) {
+            $val = dechex($val);
+            $text .= '=' . $val;
+        } else {
+            $text .= $string[$i];
+        }
+    }
+    $text .= '?=';
+
+    return $text;
 }

@@ -6,7 +6,7 @@
 <ul {if $is_dropdown}class="dropdown-menu" role="menu" {elseif isset($class)}class="{$class}" {else}class="nav nav-list"{/if}>
     {foreach $Merkmal->getOptions() as $attributeValue}
         {assign var=attributeImageURL value=''}
-        {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $attributeValue->getData('cBildpfadKlein') !== $BILD_KEIN_MERKMALWERTBILD_VORHANDEN}
+        {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $attributeValue->getData('cBildpfadKlein') !== $smarty.const.BILD_KEIN_MERKMALWERTBILD_VORHANDEN}
             {assign var=attributeImageURL value=$attributeValue->getData('cBildURLKlein')}
         {/if}
 

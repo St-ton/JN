@@ -1018,7 +1018,10 @@
                         }
                         break;
                     case 'swatch':
-                        $item.tooltip('destroy');
+                        if ($item.data('bs.tooltip')) {
+                            $item.tooltip('destroy');
+                            $item.attr('title', $item.attr('data-original-title'));
+                        }
                         break;
                 }
 
@@ -1028,7 +1031,7 @@
 
         variationInfo: function(value, status, note) {
             var $item = $('[data-value="' + value + '"].variation'),
-                type = $item.attr('data-type'),
+                type  = $item.attr('data-type'),
                 text,
                 content,
                 $wrapper,
@@ -1070,11 +1073,14 @@
                     $item.append(label);
                     break;
                 case 'swatch':
-                    $item.tooltip({
-                        title: note,
-                        trigger: 'hover',
-                        container: 'body'
-                    });
+                    $item.attr('title', note);
+                    window.setTimeout(function () {
+                        $item.tooltip({
+                            title: note,
+                            trigger: 'hover',
+                            container: 'body'
+                        });
+                    }, 300);
                     break;
             }
         },
@@ -1195,7 +1201,6 @@
 
         variationDispose: function(wrapper) {
             var $wrapper = this.getWrapper(wrapper);
-
             $('[role="tooltip"]', $wrapper).remove();
         }
     };

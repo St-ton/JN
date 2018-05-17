@@ -10,7 +10,7 @@
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if !empty($fehlendeAngaben.anrede)} has-error{/if} required">
                 <label for="{$prefix}-{$name}-salutation" class="control-label">{lang key="salutation" section="account data"}</label>
-                <select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" class="form-control" required>
+                <select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" class="form-control" required autocomplete="shipping sex">
                     <option value="" selected="selected" disabled>{lang key="salutation" section="account data"}</option>
                     <option value="w"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'w'} selected="selected"{/if}>{lang key='salutationW'}</option>
                     <option value="m"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
@@ -25,7 +25,11 @@
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if !empty($fehlendeAngaben.titel)} has-error{/if}{if $Einstellungen.kunden.lieferadresse_abfragen_titel === 'Y'} required{/if}">
                 <label for="{$prefix}-{$name}-title" class="control-label">{lang key="title" section="account data"}</label>
-                <input type="text" name="{$prefix}[{$name}][titel]" value="{if isset($Lieferadresse->cTitel)}{$Lieferadresse->cTitel}{/if}" id="{$prefix}-{$name}-title" class="form-control" placeholder="{lang key="title" section="account data"}"{if $Einstellungen.kunden.lieferadresse_abfragen_titel === 'Y'} required{/if}>
+                <input type="text" name="{$prefix}[{$name}][titel]"
+                       value="{if isset($Lieferadresse->cTitel)}{$Lieferadresse->cTitel}{/if}"
+                       id="{$prefix}-{$name}-title" class="form-control"
+                       placeholder="{lang key="title" section="account data"}"{if $Einstellungen.kunden.lieferadresse_abfragen_titel === 'Y'} required{/if}
+                       autocomplete="shipping honorific-prefix">
                 {if !empty($fehlendeAngaben.titel)}
                     <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
                 {/if}
@@ -39,7 +43,11 @@
     <div class="col-xs-12 col-md-6">
         <div class="form-group float-label-control{if !empty($fehlendeAngaben.vorname)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_pflicht_vorname === 'Y'} required{/if}">
             <label for="{$prefix}-{$name}-firstName" class="control-label">{lang key="firstName" section="account data"}</label>
-            <input type="text" name="{$prefix}[{$name}][vorname]" value="{if isset($Lieferadresse->cVorname)}{$Lieferadresse->cVorname}{/if}" id="{$prefix}-{$name}-firstName" class="form-control" placeholder="{lang key="firstName" section="account data"}"{if $Einstellungen.kunden.kundenregistrierung_pflicht_vorname === 'Y'} required{/if}>
+            <input type="text" name="{$prefix}[{$name}][vorname]"
+                   value="{if isset($Lieferadresse->cVorname)}{$Lieferadresse->cVorname}{/if}"
+                   id="{$prefix}-{$name}-firstName" class="form-control"
+                   placeholder="{lang key="firstName" section="account data"}"{if $Einstellungen.kunden.kundenregistrierung_pflicht_vorname === 'Y'} required{/if}
+                   autocomplete="shipping given-name">
             {if !empty($fehlendeAngaben.vorname)}
                 {if $fehlendeAngaben.vorname == 1}
                     <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
@@ -52,7 +60,11 @@
     <div class="col-xs-12 col-md-6">
         <div class="form-group float-label-control{if !empty($fehlendeAngaben.nachname)} has-error{/if} required">
             <label for="{$prefix}-{$name}-lastName" class="control-label">{lang key="lastName" section="account data"}</label>
-            <input type="text" name="{$prefix}[{$name}][nachname]" value="{if isset($Lieferadresse->cNachname)}{$Lieferadresse->cNachname}{/if}" id="{$prefix}-{$name}-lastName" class="form-control" placeholder="{lang key="lastName" section="account data"}" required />
+            <input type="text" name="{$prefix}[{$name}][nachname]"
+                   value="{if isset($Lieferadresse->cNachname)}{$Lieferadresse->cNachname}{/if}"
+                   id="{$prefix}-{$name}-lastName" class="form-control"
+                   placeholder="{lang key="lastName" section="account data"}" required
+                   autocomplete="shipping family-name"/>
             {if !empty($fehlendeAngaben.nachname)}
                 {if $fehlendeAngaben.nachname == 1}
                     <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
@@ -70,7 +82,11 @@
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if !empty($fehlendeAngaben.firma)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_firma === 'Y'} required{/if}">
                 <label for="{$prefix}-{$name}-firm" class="control-label">{lang key="firm" section="account data"}</label>
-                <input type="text" name="{$prefix}[{$name}][firma]" value="{if isset($Lieferadresse->cFirma)}{$Lieferadresse->cFirma}{/if}" id="{$prefix}-{$name}-firm" class="form-control" placeholder="{lang key="firm" section="account data"}"{if $Einstellungen.kunden.kundenregistrierung_abfragen_firma === 'Y'} required{/if}>
+                <input type="text" name="{$prefix}[{$name}][firma]"
+                       value="{if isset($Lieferadresse->cFirma)}{$Lieferadresse->cFirma}{/if}"
+                       id="{$prefix}-{$name}-firm" class="form-control"
+                       placeholder="{lang key="firm" section="account data"}"{if $Einstellungen.kunden.kundenregistrierung_abfragen_firma === 'Y'} required{/if}
+                       autocomplete="shipping organization">
                 {if !empty($fehlendeAngaben.firma)}
                     <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
                 {/if}
@@ -81,7 +97,10 @@
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if !empty($fehlendeAngaben.firmazusatz)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if}">
                 <label for="{$prefix}-{$name}-firmext" class="control-label">{lang key="firmext" section="account data"}</label>
-                <input type="text" name="{$prefix}[{$name}][firmazusatz]" value="{if isset($Lieferadresse->cZusatz)}{$Lieferadresse->cZusatz}{/if}" id="{$prefix}-{$name}-firmext" class="form-control" placeholder="{lang key="firmext" section="account data"}"{if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if}>
+                <input type="text" name="{$prefix}[{$name}][firmazusatz]"
+                       value="{if isset($Lieferadresse->cZusatz)}{$Lieferadresse->cZusatz}{/if}"
+                       id="{$prefix}-{$name}-firmext" class="form-control"
+                       placeholder="{lang key="firmext" section="account data"}"{if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if}>
                 {if !empty($fehlendeAngaben.firmazusatz)}
                     <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
                 {/if}
@@ -95,7 +114,11 @@
     <div class="col-xs-12 col-md-8">
         <div class="form-group float-label-control{if !empty($fehlendeAngaben.strasse)} has-error{/if} required">
             <label class="control-label" for="{$prefix}-{$name}-street">{lang key="street" section="account data"}</label>
-            <input type="text" name="{$prefix}[{$name}][strasse]" value="{if isset($Lieferadresse->cStrasse)}{$Lieferadresse->cStrasse}{/if}" id="{$prefix}-{$name}-street" class="form-control" placeholder="{lang key="street" section="account data"}*" required>
+            <input type="text" name="{$prefix}[{$name}][strasse]"
+                   value="{if isset($Lieferadresse->cStrasse)}{$Lieferadresse->cStrasse}{/if}"
+                   id="{$prefix}-{$name}-street" class="form-control"
+                   placeholder="{lang key="street" section="account data"}*" required
+                   autocomplete="shipping address-line1">
             {if !empty($fehlendeAngaben.strasse)}
                 <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
             {/if}
@@ -104,7 +127,11 @@
     <div class="col-xs-12 col-md-4">
         <div class="form-group float-label-control{if !empty($fehlendeAngaben.hausnummer)} has-error{/if} required">
             <label class="control-label" for="{$prefix}-{$name}-streetnumber">{lang key="streetnumber" section="account data"}</label>
-            <input type="text" name="{$prefix}[{$name}][hausnummer]" value="{if isset($Lieferadresse->cHausnummer)}{$Lieferadresse->cHausnummer}{/if}" id="{$prefix}-{$name}-streetnumber" class="form-control" placeholder="{lang key="streetnumber" section="account data"}*" required />
+            <input type="text" name="{$prefix}[{$name}][hausnummer]"
+                   value="{if isset($Lieferadresse->cHausnummer)}{$Lieferadresse->cHausnummer}{/if}"
+                   id="{$prefix}-{$name}-streetnumber" class="form-control"
+                   placeholder="{lang key="streetnumber" section="account data"}*" required
+                   autocomplete="shipping address-line2"/>
             {if !empty($fehlendeAngaben.hausnummer)}
                 <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
             {/if}
@@ -118,7 +145,11 @@
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if !empty($fehlendeAngaben.adresszusatz)} has-error{/if}{if $Einstellungen.kunden.lieferadresse_abfragen_adresszusatz === 'Y'} required{/if}">
                 <label class="control-label" for="{$prefix}-{$name}-street2">{lang key="street2" section="account data"}</label>
-                <input type="text" name="{$prefix}[{$name}][adresszusatz]" value="{if isset($Lieferadresse->cAdressZusatz)}{$Lieferadresse->cAdressZusatz}{/if}" id="{$prefix}-{$name}-street2" class="form-control" placeholder="{lang key="street2" section="account data"}"{if $Einstellungen.kunden.lieferadresse_abfragen_adresszusatz === 'Y'} required{/if}>
+                <input type="text" name="{$prefix}[{$name}][adresszusatz]"
+                       value="{if isset($Lieferadresse->cAdressZusatz)}{$Lieferadresse->cAdressZusatz}{/if}"
+                       id="{$prefix}-{$name}-street2" class="form-control"
+                       placeholder="{lang key="street2" section="account data"}"{if $Einstellungen.kunden.lieferadresse_abfragen_adresszusatz === 'Y'} required{/if}
+                       autocomplete="shipping address-line3">
                 {if !empty($fehlendeAngaben.adresszusatz)}
                     <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
                 {/if}
@@ -132,7 +163,7 @@
     <div class="col-xs-12 col-md-6">
         <div class="form-group float-label-control">
             <label class="control-label" for="{$prefix}-{$name}-country">{lang key="country" section="account data"}</label>
-            <select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country_input form-control">
+            <select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country_input form-control" autocomplete="shipping country">
                 <option value="" selected disabled>{lang key="country" section="account data"}*</option>
                 {foreach name=land from=$laender item=land}
                     <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland == $land->cISO && empty($Lieferadresse->cLand)) || (isset($Lieferadresse->cLand) && $Lieferadresse->cLand == $land->cISO)}selected="selected"{/if}>{$land->cName}</option>
@@ -152,7 +183,8 @@
                     id="{$prefix}-{$name}-state"
                     class="form-control"
                     data-toggle="state" data-target="#{$prefix}-{$name}-country"
-                    placeholder="{lang key="state" section="account data"}"{if $Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y'} required{/if}>
+                    placeholder="{lang key="state" section="account data"}"{if $Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y'} required{/if}
+                    autocomplete="shipping address-level1">
 
                 {if !empty($fehlendeAngaben.bundesland)}
                     <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
@@ -175,7 +207,8 @@
                 class="postcode_input form-control"
                 placeholder="{lang key="plz" section="account data"}"
                 data-toggle="postcode" data-city="#{$prefix}-{$name}-city" data-country="#{$prefix}-{$name}-country"
-                required>
+                required
+                autocomplete="shipping postal-code">
             {if !empty($fehlendeAngaben.plz)}
                 <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>{/if}
         </div>
@@ -184,7 +217,10 @@
     <div class="col-xs-12 col-md-8">
         <div class="form-group float-label-control{if !empty($fehlendeAngaben.ort)} has-error{/if} required">
             <label class="control-label" for="{$prefix}-{$name}-city">{lang key="city" section="account data"}</label>
-            <input type="text" name="{$prefix}[{$name}][ort]" value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}" id="{$prefix}-{$name}-city" class="city_input form-control" placeholder="{lang key="city" section="account data"}" required>
+            <input type="text" name="{$prefix}[{$name}][ort]"
+                   value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}" id="{$prefix}-{$name}-city"
+                   class="city_input form-control" placeholder="{lang key="city" section="account data"}" required
+                   autocomplete="shipping address-level2">
             {if !empty($fehlendeAngaben.ort)}
                 {if $fehlendeAngaben.ort == 3}
                     <div class="alert alert-danger">{lang key="cityNotNumeric" section="account data"}</div>

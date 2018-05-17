@@ -56,7 +56,6 @@ function includeMailTemplate($params, $smarty)
  */
 function sendeMail($ModulId, $Object, $mail = null)
 {
-    error_log('sending ' . $ModulId);
     $Emailvorlage = null;
     $bodyHtml     = '';
     if (!is_object($mail)) {

@@ -381,12 +381,18 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
-                $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized . ', ' . $oAufpreis->cPreisVPEWertAufpreis;
-                $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis . ', ' . $oAufpreis->cPreisVPEWertInklAufpreis;
+                $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized . ', ' .
+                    $oAufpreis->cPreisVPEWertAufpreis;
+                $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis . ', ' .
+                    $oAufpreis->cPreisVPEWertInklAufpreis;
             }
         } else {
-            $oAufpreis->cAufpreisLocalized = gibPreisStringLocalized(berechneBrutto($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4));
-            $oAufpreis->cPreisInklAufpreis = gibPreisStringLocalized(berechneBrutto($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4));
+            $oAufpreis->cAufpreisLocalized = gibPreisStringLocalized(
+                berechneBrutto($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
+            );
+            $oAufpreis->cPreisInklAufpreis = gibPreisStringLocalized(
+                berechneBrutto($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
+            );
             $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
                 ? ('+ ' . $oAufpreis->cAufpreisLocalized)
                 : str_replace('-', '- ', $oAufpreis->cAufpreisLocalized);

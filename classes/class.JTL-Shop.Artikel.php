@@ -3577,6 +3577,7 @@ class Artikel
         $options->nArtikelAttribute = 1;
         $options->nKonfig           = 1;
         $options->nDownload         = 1;
+        $options->nVariationen      = 1;
 
         return $options;
     }
@@ -3593,6 +3594,7 @@ class Artikel
         $options->nKategorie                = 1;
         $options->nKeinLagerbestandBeachten = 1;
         $options->nMedienDatei              = 1;
+        $options->nVariationen              = 1;
         $options->nVariationKombi           = 0;
 
         return $options;
@@ -4082,8 +4084,11 @@ class Artikel
         if (!isset($oArtikelOptionen->nVariationKombi)) {
             $oArtikelOptionen->nVariationKombi = 0;
         }
-        $this->holVariationen($kKundengruppe, $kSprache, $oArtikelOptionen->nVariationKombi, $workaround);
+        $this->Variationen = [];
 
+        if (!isset($oArtikelOptionen->nVariationen) || $oArtikelOptionen->nVariationen === 1) {
+            $this->holVariationen($kKundengruppe, $kSprache, $oArtikelOptionen->nVariationKombi, $workaround);
+        }
         /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1
            gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */

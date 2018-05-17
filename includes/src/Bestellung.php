@@ -661,7 +661,7 @@ class Bestellung
         $this->fWarensummeKundenwaehrung  = ($this->fWarensumme + $this->fGuthaben) * $this->fWaehrungsFaktor;
         $this->fVersandKundenwaehrung     = $this->fVersand * $this->fWaehrungsFaktor;
         $this->fSteuern                   = $this->fGesamtsumme - $this->fGesamtsummeNetto;
-        $this->fGesamtsummeKundenwaehrung = optionaleRundung($this->fWarensummeKundenwaehrung + $this->fVersandKundenwaehrung);
+        $this->fGesamtsummeKundenwaehrung = WarenkorbHelper::roundOptional($this->fWarensummeKundenwaehrung + $this->fVersandKundenwaehrung);
 
         $oData       = new stdClass();
         $oData->cPLZ = $this->oRechnungsadresse->cPLZ ?? $this->Lieferadresse->cPLZ;

@@ -122,6 +122,7 @@ function bearbeiteInsert($xml)
             $upd->dLetzteAktualisierung = 'now()';
             Shop::Container()->getDB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
             executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);
+            handlePriceRange((int)$oArtikel->kArtikel);
             // clear object cache for this article and its parent if there is any
             $parentArticle = Shop::Container()->getDB()->select(
                 'tartikel',

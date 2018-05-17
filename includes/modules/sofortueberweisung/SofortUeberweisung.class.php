@@ -93,8 +93,8 @@ class SofortUeberweisung extends PaymentMethod
     public function init($nAgainCheckout = 0)
     {
         parent::init($nAgainCheckout);
-        $this->name    = utf8_decode('SOFORT Überweisung');
-        $this->caption = utf8_decode('SOFORT Überweisung');
+        $this->name    = 'SOFORT Überweisung';
+        $this->caption = 'SOFORT Überweisung';
 
         return $this;
     }
@@ -277,7 +277,7 @@ class SofortUeberweisung extends PaymentMethod
         ];
 
         $data_implode = implode('|', $data);
-        $this->hash   = sha1(utf8_encode($data_implode));
+        $this->hash   = sha1($data_implode);
 
         if (D_MODE === 1) {
             Jtllog::writeLog(': baueSicherheitsHash data: ' . print_r($data, true), JTLLOG_LEVEL_DEBUG);

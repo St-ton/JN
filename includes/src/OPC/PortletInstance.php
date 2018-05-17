@@ -412,19 +412,23 @@ class PortletInstance implements \JsonSerializable
                     switch ($breakpoint) {
                         case 'xs':
                             $breakpoint = 767;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col * 100 * $factor) . 'vw, ';
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                                . (int)($col * 100 * $factor) . 'vw, ';
                             break;
                         case 'sm':
                             $breakpoint = 991;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint * $factor) . 'px, ';
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                                . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         case 'md':
                             $breakpoint = 1199;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint * $factor) . 'px, ';
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                                . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         case 'lg':
                             $breakpoint = 1200;
-                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) ' . (int)($col * $breakpoint * $factor) . 'px, ';
+                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
+                                . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         default:
                             break;

@@ -1103,7 +1103,7 @@ class Artikel
         }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
         $this->Preise = new Preise($kKundengruppe, $oArtikelTMP->kArtikel, $kKunde, (int)$oArtikelTMP->kSteuerklasse);
-        if (!Session::CustomerGroup()->mayViewPrices() || ($this->getOption('nHidePrices', 0) === 1)) {
+        if ($this->getOption('nHidePrices', 0) === 1 || !Session::CustomerGroup()->mayViewPrices()) {
             $this->Preise->setPricesToZero();
         }
         $this->Preise->localizePreise();
@@ -3694,11 +3694,11 @@ class Artikel
         }
         // Work Around Lagerbestand nicht beachten wenn es sich um ein VariKind handelt
         // Da das Kind geladen werden muss. Erst nach dem Laden wird angezeigt, dass der Lagerbestand auf "ausverkauft" steht
-        $cLagerbestandSQL = (isset($oArtikelOptionen->nKeinLagerbestandBeachten) && $oArtikelOptionen->nKeinLagerbestandBeachten === 1)
+        $cLagerbestandSQL = $this->getOption('nKeinLagerbestandBeachten', 0) === 1
             ? ''
             : Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         // Nicht sichtbare Artikel je nach ArtikelOption trotzdem laden
-        $cSichbarkeitSQL = (isset($oArtikelOptionen->nKeineSichtbarkeitBeachten) && $oArtikelOptionen->nKeineSichtbarkeitBeachten === 1)
+        $cSichbarkeitSQL = $this->getOption('nKeineSichtbarkeitBeachten', 0) === 1
             ? ''
             : ' AND tartikelsichtbarkeit.kArtikel IS NULL ';
 
@@ -3933,8 +3933,7 @@ class Artikel
         if (!empty($_abbr)) {
             $this->cMasseinheitName = $_abbr;
         }
-        if (isset($oArtikelOptionen->bSimilar)
-            && $oArtikelOptionen->bSimilar === true
+        if ($this->getOption('bSimilar', false) === true
             && (int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
         ) {
             $this->similarProducts = $this->getSimilarProducts();
@@ -3986,43 +3985,43 @@ class Artikel
         $this->setzeSprache($kSprache);
         $this->cURL     = baueURL($this, URLART_ARTIKEL);
         $this->cURLFull = baueURL($this, URLART_ARTIKEL, 0, false, true);
-        if (!empty($oArtikelOptionen->nArtikelAttribute)) {
+        if ($this->getOption('nArtikelAttribute', 0) === 1) {
             $this->holArtikelAttribute();
         }
         $this->inWarenkorbLegbar = 1;
-        if (!empty($oArtikelOptionen->nAttribute)) {
+        if ($this->getOption('nAttribute', 0) === 1) {
             $this->holAttribute($kSprache);
         }
         $this->holBilder();
         // Warenlager
-        if (isset($oArtikelOptionen->nWarenlager) && $oArtikelOptionen->nWarenlager === 1) {
+        if ($this->getOption('nWarenlager', 0) === 1) {
             $this->holWarenlager($kSprache);
         }
         $this->baueLageranzeige();
-        if (!empty($oArtikelOptionen->nMerkmale)) {
+        if ($this->getOption('nMerkmale', 0) === 1) {
             $this->holeMerkmale();
         }
-        if (!empty($oArtikelOptionen->nMedienDatei)) {
+        if ($this->getOption('nMedienDatei', 0) === 1) {
             $this->holeMedienDatei($kSprache);
         }
-        if (!empty($oArtikelOptionen->nVariationKombiKinder)
-            && $this->nIstVater === 1
+        if ($this->nIstVater === 1
+            && $this->getOption('nVariationKombiKinder', 0) === 1
             && ($this->conf['artikeldetails']['artikeldetails_variationskombikind_bildvorschau'] === 'Y'
                 || $this->conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0)
         ) {
             $this->holeVariationKombiKinder($kKundengruppe, $kSprache);
         }
-        if ((isset($oArtikelOptionen->nStueckliste) && $oArtikelOptionen->nStueckliste)
+        if ($this->getOption('nStueckliste', 0) === 1
             || (isset($this->FunktionsAttribute[FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN])
                 && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN] === 1)
         ) {
             $this->holeStueckliste($kKundengruppe);
         }
-        if (!empty($oArtikelOptionen->nProductBundle)) {
+        if ($this->getOption('nProductBundle', 0) === 1) {
             $this->holeProductBundle();
         }
         // Kategorie
-        if (isset($oArtikelOptionen->nKategorie) && $oArtikelOptionen->nKategorie === 1) {
+        if ($this->getOption('nKategorie', 0) === 1) {
             $kArtikel             = $this->kVaterArtikel > 0 ? $this->kVaterArtikel : $this->kArtikel;
             $this->oKategorie_arr = $this->getCategories($kArtikel, $kKundengruppe);
         }
@@ -4055,18 +4054,14 @@ class Artikel
 
             $this->nVariationsAufpreisVorhanden = (int)$oKindSonderpreis->nVariationsAufpreisVorhanden > 0 ? 1 : 0;
         }
-        if (!empty($oArtikelOptionen->nVariationDetailPreis)
-            && $this->nIstVater === 1
-        ) {
+        if ($this->nIstVater === 1 && $this->getOption('nVariationDetailPreis', 0) === 1) {
             $this->holeVariationDetailPreis($kKundengruppe, $kSprache);
         }
         // Warenkorbmatrix Variationskinder holen?
-        if ((isset($oArtikelOptionen->nWarenkorbmatrix)
-                && $oArtikelOptionen->nWarenkorbmatrix === 1)
+        if ($this->getOption('nWarenkorbmatrix', 0) === 1
             || (isset($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX])
                 && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === 1
-                && isset($oArtikelOptionen->nMain)
-                && $oArtikelOptionen->nMain === 1)
+                && $this->getOption('nMain', 0) === 1)
         ) {
             $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($kKundengruppe, $kSprache);
         }
@@ -4075,7 +4070,7 @@ class Artikel
         );
         // Download Dateien
         $this->oDownload_arr = [];
-        if (isset($oArtikelOptionen->nDownload) && $oArtikelOptionen->nDownload === 1 && class_exists('Download')) {
+        if ($this->getOption('nDownload', 0) === 1 && class_exists('Download')) {
             $this->oDownload_arr = Download::getDownloads(['kArtikel' => $this->kArtikel], $kSprache);
         }
         // Konfiguration
@@ -4083,7 +4078,7 @@ class Artikel
         $this->oKonfig_arr = [];
         if (class_exists('Konfigurator')) {
             $this->bHasKonfig = Konfigurator::hasKonfig($this->kArtikel);
-            if (isset($oArtikelOptionen->nKonfig) && $oArtikelOptionen->nKonfig === 1 && $this->bHasKonfig) {
+            if ($this->bHasKonfig && $this->getOption('nKonfig', 0) === 1) {
                 if (Konfigurator::validateKonfig($this->kArtikel)) {
                     $this->oKonfig_arr = Konfigurator::getKonfig($this->kArtikel, $kSprache);
                 } else {
@@ -4163,17 +4158,11 @@ class Artikel
         $this->metaDescription = $this->setMetaDescription();
         $this->tags            = $this->getTags($kSprache);
         $this->taxData         = $this->getShippingAndTaxData();
-        if (isset($oArtikelOptionen->nRatings)
-            && $oArtikelOptionen->nRatings === 1
-            && $this->conf['bewertung']['bewertung_anzeigen'] === 'Y'
-        ) {
+        if ($this->conf['bewertung']['bewertung_anzeigen'] === 'Y' && $this->getOption('nRatings', 0) === 1) {
             $this->holehilfreichsteBewertung($kSprache)
                  ->holeBewertung($kSprache, -1, 1, 0, $this->conf['bewertung']['bewertung_freischalten']);
         }
-        if (isset($oArtikelOptionen->nLanguageURLs)
-            && $oArtikelOptionen->nLanguageURLs === 1
-            && count($_SESSION['Sprachen']) > 0
-        ) {
+        if (count($_SESSION['Sprachen']) > 0 && $this->getOption('nLanguageURLs', 0) === 1) {
             $this->baueArtikelSprachURL();
         }
         $this->cKurzbezeichnung = !empty($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME])
@@ -6316,7 +6305,7 @@ class Artikel
     /**
      * @return bool
      */
-    public function showMatrix()
+    public function showMatrix(): bool
     {
         if (verifyGPCDataInteger('quickView') === 0
             && !$this->kArtikelVariKombi
@@ -6358,7 +6347,7 @@ class Artikel
      * @param array $mEigenschaft_arr
      * @return array
      */
-    public function keyValueVariations($mEigenschaft_arr)
+    public function keyValueVariations(array $mEigenschaft_arr): array
     {
         $nKeyValue_arr = [];
         foreach ($mEigenschaft_arr as $kKey => $mEigenschaft) {
@@ -6393,7 +6382,7 @@ class Artikel
      * @param array $kGesetzteEigeschaftWert_arr
      * @return array
      */
-    public function getPossibleVariationsBySelection($nEigenschaft_arr, $kGesetzteEigeschaftWert_arr)
+    public function getPossibleVariationsBySelection(array $nEigenschaft_arr, array $kGesetzteEigeschaftWert_arr): array
     {
         $nPossibleVariation_arr = [];
         foreach ($nEigenschaft_arr as $kEigenschaft => $nEigenschaftWert_arr) {
@@ -6446,7 +6435,7 @@ class Artikel
      * @param bool  $bInvert
      * @return array
      */
-    public function getVariationsBySelection($kGesetzteEigeschaftWert_arr, $bInvert = false)
+    public function getVariationsBySelection(array $kGesetzteEigeschaftWert_arr, bool $bInvert = false): array
     {
         $nKeyValueVariation_arr          = $this->keyValueVariations($this->VariationenOhneFreifeld);
         $nPossibleVariationsForSelection = $this->getPossibleVariationsBySelection(
@@ -6477,7 +6466,7 @@ class Artikel
     /**
      * @return array
      */
-    public function getChildVariations()
+    public function getChildVariations(): array
     {
         return ($this->oVariationKombi_arr !== null && count($this->oVariationKombi_arr) > 0)
             ? $this->keyValueVariations($this->oVariationKombi_arr)
@@ -6487,7 +6476,7 @@ class Artikel
     /**
      * @return array of float product dimensions
      */
-    public function getDimension()
+    public function getDimension(): array
     {
         return [
             'length' => (float)$this->fLaenge,
@@ -6499,7 +6488,7 @@ class Artikel
     /**
      * @return array of string Product Dimension
      */
-    public function getDimensionLocalized()
+    public function getDimensionLocalized(): array
     {
         $cValue_arr = [];
         if (($fDimension_arr = $this->getDimension()) !== null) {
@@ -6522,6 +6511,6 @@ class Artikel
      */
     public function getOption($option, $default = null)
     {
-        return isset($this->options->$option) ? $this->options->$option : $default;
+        return $this->options->$option ?? $default;
     }
 }

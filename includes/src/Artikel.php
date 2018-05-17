@@ -3490,28 +3490,29 @@ class Artikel
      */
     public static function getDetailOptions()
     {
-        $conf                                    = Shop::getSettings([CONF_ARTIKELDETAILS]);
-        $oArtikelOptionen                        = new stdClass();
-        $oArtikelOptionen->nMerkmale             = 1;
-        $oArtikelOptionen->nKategorie            = 1;
-        $oArtikelOptionen->nAttribute            = 1;
-        $oArtikelOptionen->nArtikelAttribute     = 1;
-        $oArtikelOptionen->nMedienDatei          = 1;
-        $oArtikelOptionen->nVariationKombi       = 1;
-        $oArtikelOptionen->nVariationKombiKinder = 1;
-        $oArtikelOptionen->nWarenlager           = 1;
-        $oArtikelOptionen->nVariationDetailPreis = 1;
-        $oArtikelOptionen->nRatings              = 1;
-        $oArtikelOptionen->nWarenkorbmatrix      = (int)($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
-        $oArtikelOptionen->nStueckliste          = (int)($conf['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
-        $oArtikelOptionen->nProductBundle        = (int)($conf['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
-        $oArtikelOptionen->nDownload             = 1;
-        $oArtikelOptionen->nKonfig               = 1;
-        $oArtikelOptionen->nMain                 = 1;
-        $oArtikelOptionen->bSimilar              = true;
-        $oArtikelOptionen->nLanguageURLs         = 1;
+        $conf                           = Shop::getSettings([CONF_ARTIKELDETAILS]);
+        $options                        = new stdClass();
+        $options->nMerkmale             = 1;
+        $options->nKategorie            = 1;
+        $options->nAttribute            = 1;
+        $options->nArtikelAttribute     = 1;
+        $options->nMedienDatei          = 1;
+        $options->nVariationKombi       = 1;
+        $options->nVariationKombiKinder = 1;
+        $options->nWarenlager           = 1;
+        $options->nVariationDetailPreis = 1;
+        $options->nRatings              = 1;
+        $options->nWarenkorbmatrix      = (int)($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
+        $options->nStueckliste          = (int)($conf['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
+        $options->nProductBundle        = (int)($conf['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
+        $options->nDownload             = 1;
+        $options->nKonfig               = 1;
+        $options->nMain                 = 1;
+        $options->bSimilar              = true;
+        $options->nLanguageURLs         = 1;
+        $options->nVariationen         = 1;
 
-        return $oArtikelOptionen;
+        return $options;
     }
 
     /**
@@ -3525,6 +3526,7 @@ class Artikel
         $options->nArtikelAttribute = 1;
         $options->nKonfig           = 1;
         $options->nDownload         = 1;
+        $options->nVariationen      = 1;
 
         return $options;
     }
@@ -4029,7 +4031,9 @@ class Artikel
         if (!isset($oArtikelOptionen->nVariationKombi)) {
             $oArtikelOptionen->nVariationKombi = 0;
         }
-        $this->holVariationen($kKundengruppe, $kSprache, $oArtikelOptionen->nVariationKombi);
+        if (!isset($oArtikelOptionen->nVariationen) || $oArtikelOptionen->nVariationen === 1) {
+            $this->holVariationen($kKundengruppe, $kSprache, $oArtikelOptionen->nVariationKombi);
+        }
         /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1
            gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */

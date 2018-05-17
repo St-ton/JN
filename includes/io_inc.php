@@ -710,9 +710,12 @@ function checkDependencies($aValues)
         0 => gibPreisStringLocalized($fVK[0]),
         1 => gibPreisStringLocalized($fVK[1])
     ];
-    $cPriceLabel  = $oArtikel->nVariationOhneFreifeldAnzahl === count($valueID_arr)
-        ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
-        : Shop::Lang()->get('priceStarting');
+    $cPriceLabel  = '';
+    if (isset($oArtikel->nVariationAnzahl) && $oArtikel->nVariationAnzahl > 0) {
+        $cPriceLabel = $oArtikel->nVariationOhneFreifeldAnzahl === count($valueID_arr)
+            ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
+            : Shop::Lang()->get('priceStarting');
+    }
 
     $objResponse->jsfunc(
         '$.evo.article().setPrice',
@@ -757,16 +760,12 @@ function checkDependencies($aValues)
         $oArtikel->baueVPE($fVKNetto);
         $fStaffelVPE = [0 => [], 1 => []];
         $cStaffelVPE = [0 => [], 1 => []];
-        foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
+        foreach ($oArtikel->staffelPreis_arr as $key => $staffelPreis) {
             $nAnzahl                  = &$staffelPreis['nAnzahl'];
-            $fStaffelVPENetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
-            $fStaffelVPE[0][$nAnzahl] = berechneBrutto(
-                $fStaffelVPENetto / $oArtikel->fVPEWert,
-                $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
-            );
-            $fStaffelVPE[1][$nAnzahl] = $fStaffelVPENetto / $oArtikel->fVPEWert;
-            $cStaffelVPE[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[0][$nAnzahl]);
-            $cStaffelVPE[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[1][$nAnzahl]);
+            $fStaffelVPE[0][$nAnzahl] = $oArtikel->fStaffelpreisVPE_arr[$key][0];
+            $fStaffelVPE[1][$nAnzahl] = $oArtikel->fStaffelpreisVPE_arr[$key][1];
+            $cStaffelVPE[0][$nAnzahl] = $staffelPreis['cBasePriceLocalized'][0];
+            $cStaffelVPE[1][$nAnzahl] = $staffelPreis['cBasePriceLocalized'][1];
         }
 
         $objResponse->jsfunc(

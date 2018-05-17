@@ -2368,7 +2368,7 @@ class Artikel
 
             if (isset($value->fAufpreisNetto) && $value->fAufpreisNetto != 0) {
                 $surcharge                    = $value->fAufpreisNetto;
-                $value->cAufpreisLocalized[0] = gibPreisStringLocalized(berechneBrutto($surcharge, $taxRate), $currency);
+                $value->cAufpreisLocalized[0] = gibPreisStringLocalized(berechneBrutto($surcharge, $taxRate, 4), $currency);
                 $value->cAufpreisLocalized[1] = gibPreisStringLocalized($surcharge, $currency);
                 // Wenn der Artikel ein VarikombiKind ist, rechne nicht nochmal die Variationsaufpreise drauf
                 if ($this->kVaterArtikel > 0) {

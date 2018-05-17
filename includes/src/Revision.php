@@ -21,34 +21,45 @@ class Revision
     public function __construct()
     {
         $this->mapping = [
-            'link'   => [
+            'link'       => [
                 'table'         => 'tlink',
                 'id'            => 'kLink',
                 'reference'     => 'tlinksprache',
                 'reference_id'  => 'kLink',
                 'reference_key' => 'cISOSprache'
             ],
-            'export' => [
+            'export'     => [
                 'table' => 'texportformat',
                 'id'    => 'kExportformat'
             ],
-            'mail'   => [
+            'mail'       => [
                 'table'         => 'temailvorlage',
                 'id'            => 'kEmailvorlage',
                 'reference'     => 'temailvorlagesprache',
                 'reference_id'  => 'kEmailvorlage',
                 'reference_key' => 'kSprache'
             ],
-            'news'   => [
+            'news'       => [
                 'table' => 'tnews',
                 'id'    => 'kNews'
             ],
-            'box'    => [
+            'box'        => [
                 'table'         => 'tboxen',
                 'id'            => 'kBox',
                 'reference'     => 'tboxsprache',
                 'reference_id'  => 'kBox',
                 'reference_key' => 'cISO'
+            ],
+            'newsletterstd' => [
+                'table'         => 'tnewslettervorlage',
+                'id'            => 'kNewsletterVorlage',
+                'reference'     => 'tnewslettervorlagestdvarinhalt',
+                'reference_id'  => 'kNewslettervorlage',
+                'reference_key' => 'kNewslettervorlageStdVar'
+            ],
+            'newsletter' => [
+                'table'         => 'tnewslettervorlage',
+                'id'            => 'kNewsletterVorlage'
             ]
         ];
     }

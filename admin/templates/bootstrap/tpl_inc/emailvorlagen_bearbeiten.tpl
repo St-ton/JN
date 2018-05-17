@@ -108,6 +108,17 @@
                                 </select>
                             </span>
                         </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <label for="nDSE">{#emailAddDSE#}</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <select id="nDSE" name="nDSE" class="form-control">
+                                    <option value="0"{if $Emailvorlage->nDSE == "0"} selected{/if}>{#no#}</option>
+                                    <option value="1"{if $Emailvorlage->nDSE == "1"} selected{/if}>{#yes#}</option>
+                                </select>
+                            </span>
+                        </div>
                     </div>
                 </div>
             {else}

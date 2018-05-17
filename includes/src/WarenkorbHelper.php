@@ -901,4 +901,33 @@ class WarenkorbHelper
 
         return false;
     }
+
+    /**
+     * @param float $total
+     * @param Currency $currency
+     * @return float
+     */
+    public static function roundOptionalCurrency($total, Currency $currency = null)
+    {
+        $factor = ($currency ?? Session::Currency())->getConversionFactor();
+
+        return self::roundOptional($total * $factor) / $factor;
+    }
+
+    /**
+     * @param float $total
+     * @return float
+     */
+    public static function roundOptional($total)
+    {
+        $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
+
+        if (isset($conf['kaufabwicklung']['bestellabschluss_runden5'])
+            && (int)$conf['kaufabwicklung']['bestellabschluss_runden5'] === 1
+        ) {
+            return round($total * 20) / 20;
+        }
+
+        return $total;
+    }
 }

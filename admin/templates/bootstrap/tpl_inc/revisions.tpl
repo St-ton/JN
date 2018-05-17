@@ -14,7 +14,7 @@
                     {/foreach}
                 {else}
                     {foreach $show as $attribute}
-                        <div class="hidden" id="original-{$attribute|escape}" class="original" data-references="{$attribute|escape}">{$data->$attribute|escape}</div>
+                        <div class="hidden original" id="original-{$attribute|escape}" data-references="{$attribute|escape}">{$data->$attribute|escape}</div>
                     {/foreach}
                 {/if}
             {/if}

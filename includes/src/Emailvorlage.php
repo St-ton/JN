@@ -67,6 +67,11 @@ class Emailvorlage
     /**
      * @var int
      */
+    protected $nDSE;
+
+    /**
+     * @var int
+     */
     protected $nFehlerhaft;
 
     /**
@@ -239,6 +244,17 @@ class Emailvorlage
      * @param int
      * @return $this
      */
+    public function setDSE($nDSE)
+    {
+        $this->nDSE = (int)$nDSE;
+
+        return $this;
+    }
+
+    /**
+     * @param int
+     * @return $this
+     */
     public function setWRBForm($nWRBForm)
     {
         $this->nWRBForm = (int)$nWRBForm;
@@ -343,6 +359,14 @@ class Emailvorlage
     public function getWRBForm()
     {
         return $this->nWRBForm;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDSE()
+    {
+        return $this->nDSE;
     }
 
     /**

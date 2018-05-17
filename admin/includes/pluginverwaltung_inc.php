@@ -2764,6 +2764,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oTemplate->nAGB          = $Template_arr['AGB'] ?? 0;
         $oTemplate->nWRB          = $Template_arr['WRB'] ?? 0;
         $oTemplate->nWRBForm      = $Template_arr['WRBForm'] ?? 0;
+        $oTemplate->nDSE          = $Template_arr['DSE'] ?? 0;
         // tpluginemailvorlage füllen
         $kEmailvorlage = Shop::Container()->getDB()->insert('tpluginemailvorlage', $oTemplate);
 

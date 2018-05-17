@@ -56,6 +56,7 @@ function includeMailTemplate($params, $smarty)
  */
 function sendeMail($ModulId, $Object, $mail = null)
 {
+    error_log('sending ' . $ModulId);
     $Emailvorlage = null;
     $bodyHtml     = '';
     if (!is_object($mail)) {
@@ -136,6 +137,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     $AGB     = new stdClass();
     $WRB     = new stdClass();
     $WRBForm = new stdClass();
+    $DSE     = new stdClass();
     $oAGBWRB = Shop::Container()->getDB()->select(
         'ttext',
         ['kSprache', 'kKundengruppe'],
@@ -145,11 +147,14 @@ function sendeMail($ModulId, $Object, $mail = null)
     $AGB->cContentHtml     = $oAGBWRB->cAGBContentHtml ?? '';
     $WRB->cContentText     = $oAGBWRB->cWRBContentText ?? '';
     $WRB->cContentHtml     = $oAGBWRB->cWRBContentHtml ?? '';
+    $DSE->cContentText     = $oAGBWRB->cDSEContentText ?? '';
+    $DSE->cContentHtml     = $oAGBWRB->cDSEContentHtml ?? '';
     $WRBForm->cContentHtml = $oAGBWRB->cWRBFormContentHtml ?? '';
     $WRBForm->cContentText = $oAGBWRB->cWRBFormContentText ?? '';
 
     $mailSmarty->assign('AGB', $AGB)
                ->assign('WRB', $WRB)
+               ->assign('DSE', $DSE)
                ->assign('WRBForm', $WRBForm)
                ->assign('IP', StringHandler::htmlentities(StringHandler::filterXSS(gibIP())));
 
@@ -219,6 +224,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]
     );
     $Emailvorlage->cBetreff = injectSubject($Object, $Emailvorlagesprache->cBetreff ?? null);
+    error_log('betreff: ' . $Emailvorlage->cBetreff);
 
     if (isset($Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'])) {
         $absender_name = $Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'];
@@ -525,6 +531,13 @@ function sendeMail($ModulId, $Object, $mail = null)
             $bodyHtml .= "<br /><br /><h3>{$cUeberschrift}</h3>" . $AGB->cContentHtml;
         }
         $bodyText .= "\n\n{$cUeberschrift}\n\n{$AGB->cContentText}";
+    }
+    if ($Emailvorlage->nDSE == 1) {
+        $cUeberschrift = 'Datenschutzerklärung';//Shop::Lang()->get('agb');
+        if (strlen($bodyHtml) > 0) {
+            $bodyHtml .= "<br /><br /><h3>{$cUeberschrift}</h3>" . $DSE->cContentHtml;
+        }
+        $bodyText .= "\n\n{$cUeberschrift}\n\n{$DSE->cContentText}";
     }
     //mail vorbereiten
     if (isset($Object->tkunde->cMail)) {

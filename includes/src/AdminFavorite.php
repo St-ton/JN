@@ -91,7 +91,7 @@ class AdminFavorite
 
     /**
      * @param $kAdminlogin
-     * @return array|int
+     * @return array
      */
     public static function fetchAll($kAdminlogin)
     {

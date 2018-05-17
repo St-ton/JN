@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -794,7 +795,7 @@ class ProductFilter
                     $this->baseState = $this->searchQuery;
                 }
             }
-        } elseif (strlen($params['cSuche']) > 0) {
+        } elseif ($params['cSuche'] !== null && strlen($params['cSuche']) > 0) {
             $params['cSuche'] = \StringHandler::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
             $this->searchQuery->setName($params['cSuche']);

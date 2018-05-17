@@ -300,7 +300,10 @@ class Template
                 'plugin_js_body' => []
             ];
             foreach ($folders as $cOrdner) {
-                $oXML      = self::$helper->getXML($cOrdner);
+                $oXML = self::$helper->getXML($cOrdner);
+                if ($oXML === null) {
+                    continue;
+                }
                 $cssSource = $oXML->Minify->CSS ?? [];
                 $jsSource  = $oXML->Minify->JS ?? [];
                 /** @var SimpleXMLElement $oCSS */

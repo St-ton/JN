@@ -70,10 +70,10 @@ class Currency
      * Currency constructor.
      * @param int|null $id
      */
-    public function __construct($id = null)
+    public function __construct(int $id = null)
     {
         if ($id > 0) {
-            $this->extract(Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', (int)$id));
+            $this->extract(Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', $id));
         }
     }
 

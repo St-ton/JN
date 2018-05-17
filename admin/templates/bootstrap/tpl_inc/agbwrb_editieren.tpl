@@ -51,6 +51,18 @@
                             <textarea id="cWRBFormContentHtml" name="cWRBFormContentHtml" class="form-control ckeditor" rows="15" cols="60">{if isset($oAGBWRB->cWRBFormContentHtml)}{$oAGBWRB->cWRBFormContentHtml}{/if}</textarea>
                         </td>
                     </tr>
+                    <tr>
+                        <td><label for="cDSEContentText">{#dse#} (Text):</label></td>
+                        <td>
+                            <textarea id="cDSEContentText" class="form-control" name="cDSEContentText" rows="15" cols="60">{if isset($oAGBWRB->cDSEContentText)}{$oAGBWRB->cDSEContentText}{/if}</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="cDSEContentHtml">{#dse#} (HTML):</label></td>
+                        <td>
+                            <textarea id="cDSEContentHtml" name="cDSEContentHtml" class="form-control ckeditor" rows="15" cols="60">{if isset($oAGBWRB->cDSEContentHtml)}{$oAGBWRB->cDSEContentHtml}{/if}</textarea>
+                        </td>
+                    </tr>
                 </table>
                 <div class="panel-footer">
                     <button name="agbwrbsubmit" type="submit" value="{#agbwrbSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#agbwrbSave#}</button>

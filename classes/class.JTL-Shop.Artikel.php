@@ -3509,6 +3509,7 @@ class Artikel
             'bSimilar',
             'nRatings',
             'nLanguageURLs',
+            'nVariationen',
         ];
     }
 

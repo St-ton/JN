@@ -325,8 +325,6 @@ GUI.prototype = {
     {
         var blueprint = JSON.parse(this.importReader.result);
 
-        console.log(blueprint);
-
         this.io.saveBlueprint(blueprint.name, blueprint.instance, this.onBlueprintSaved);
     },
 
@@ -351,10 +349,30 @@ GUI.prototype = {
             this.imageSelectCB(url, propName);
             this.configForm.find('[name="' + propName + '"]').val(url);
             this.configForm.find('#preview-img-' + propName).attr('src', url);
-        }.bind(this));
+        }.bind(this),'Bilder');
     },
 
-    onOpenKCFinder: function (callback)
+    selectVideoProp: function(propName)
+    {
+         this.onOpenKCFinder(function(url) {
+             this.configForm.find('[name="' + propName + '"]').val(url);
+             this.configForm.find('#preview-vid-' + propName).attr('src', url);
+             var canvas = document.getElementById('preview-canvas-' + propName);
+             var video = document.getElementById('cont-preview-vid-' + propName);
+             var previmg = document.getElementById('preview-img-' + propName);
+             video.addEventListener('loadeddata', function() {
+                 canvas.getContext('2d').drawImage(video, 0, 0, 300, 160);
+                 previmg.src = canvas.toDataURL();
+
+                 
+
+
+             }, false);
+             this.configForm.find('#cont-preview-vid-' + propName).load();
+         }.bind(this),'Videos');
+    },
+
+    onOpenKCFinder: function (callback, type)
     {
         callback = callback || noop;
 
@@ -366,7 +384,7 @@ GUI.prototype = {
         };
 
         var kcFinder = open(
-            this.kcfinderUrl + 'browse.php?type=Bilder&lang=de', 'kcfinder_textbox',
+            this.kcfinderUrl + 'browse.php?type='+ type +'&lang=de', 'kcfinder_textbox',
             'status=0, toolbar=0, location=0, menubar=0, directories=0, resizable=1, scrollbars=0,' +
             'width=800, height=600'
         );

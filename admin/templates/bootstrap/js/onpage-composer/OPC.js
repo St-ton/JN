@@ -46,6 +46,11 @@ OPC.prototype = {
         this.gui.selectImageProp(propName);
     },
 
+    selectVideoProp: function(propName)
+    {
+        this.gui.selectVideoProp(propName);
+    },
+
     setConfigSaveCallback: function(callback)
     {
         this.gui.setConfigSaveCallback(callback);

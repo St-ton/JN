@@ -3,7 +3,7 @@
         <label>{$instance->getProperty('video-title')}</label>
     {/if}
     {if $instance->getProperty('video-vendor') === 'youtube'}
-        <div{if $instance->getProperty('video-yt-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
+        <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
             <iframe {strip}src="https://www.youtube.com/embed/{$instance->getProperty('video-yt-id')}
                 ?controls={$instance->getProperty('video-yt-controls')}
                 &loop={$instance->getProperty('video-yt-loop')}
@@ -14,16 +14,16 @@
                 {if !empty($instance->getProperty('video-yt-start'))}&start={$instance->getProperty('video-yt-start')}{/if}
                 {if !empty($instance->getProperty('video-yt-end'))}&end={$instance->getProperty('video-yt-end')}{/if}"{/strip}
                     type="text/html"
-                    {if $instance->getProperty('video-yt-responsive')}
+                    {if $instance->getProperty('video-responsive')}
                         class="embed-responsive-item"
                     {else}
-                        width="{$instance->getProperty('video-yt-width')}"
-                        height="{$instance->getProperty('video-yt-height')}"
+                        width="{$instance->getProperty('video-width')}"
+                        height="{$instance->getProperty('video-height')}"
                     {/if}
                     frameborder="0" allowfullscreen></iframe>
         </div>
-    {else}
-        <div{if $instance->getProperty('video-vim-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
+    {elseif $instance->getProperty('video-vendor') === 'vimeo'}
+        <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
             <iframe {strip}src="https://player.vimeo.com/video/{$instance->getProperty('video-vim-id')}
                 ?color={$instance->getProperty('video-vim-color')|replace:'#':''}
                 &portrait={$instance->getProperty('video-vim-img')}
@@ -31,11 +31,18 @@
                 &byline={$instance->getProperty('video-vim-byline')}
                 &loop={$instance->getProperty('video-vim-loop')}"{/strip}
                     frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen
-                    {if $instance->getProperty('video-vim-responsive')}
-                class="embed-responsive-item"
+                    {if $instance->getProperty('video-responsive')}
+                        class="embed-responsive-item"
                     {else}
-                width="{$instance->getProperty('video-vim-width')}" height="{$instance->getProperty('video-vim-height')}"
+                        width="{$instance->getProperty('video-width')}" height="{$instance->getProperty('video-height')}"
                     {/if}></iframe>
+        </div>
+    {else}
+        <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
+            <video width="{$instance->getProperty('video-width')}" height="{$instance->getProperty('video-height')}" controls controlsList="nodownload" style="">
+                <source src="{$instance->getProperty('video-local-url')}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
         </div>
     {/if}
 </div>

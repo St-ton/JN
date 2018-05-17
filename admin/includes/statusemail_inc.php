@@ -27,7 +27,7 @@ function speicherStatusemailEinstellungen()
             $oStatusemail->dLetzterWochenVersand = 'now()';
             $oStatusemail->dLetzterMonatsVersand = 'now()';
 
-            Shop::Container()->getDB()->query("DELETE FROM tstatusemail", 4);
+            Shop::Container()->getDB()->query("DELETE FROM tstatusemail", \DB\ReturnType::DEFAULT);
             Shop::Container()->getDB()->insert('tstatusemail', $oStatusemail);
         }
 
@@ -47,22 +47,25 @@ function erstelleStatusemailCron($nAlleXStunden)
         Shop::Container()->getDB()->query(
             "DELETE tcron, tjobqueue
                 FROM tcron
-                LEFT JOIN tjobqueue ON tjobqueue.kCron = tcron.kCron
+                LEFT JOIN tjobqueue 
+                    ON tjobqueue.kCron = tcron.kCron
                 WHERE tcron.kKey = 1
                     AND tcron.cKey = 'nAktiv'
-                    AND tcron.cJobArt = 'statusemail'", 4
+                    AND tcron.cJobArt = 'statusemail'",
+            \DB\ReturnType::DEFAULT
         );
 
         $oCron = new Cron(
-            0, 
-            1, 
-            $nAlleXStunden, 
-            'statusemail', 
-            'statusemail', 
-            'tstatusemail', 
-            'nAktiv', 
-            date('Y-m-d', time() + 3600 * 24) . 
-                ' 00:00:00', '00:00:00', '0000-00-00 00:00:00'
+            0,
+            1,
+            $nAlleXStunden,
+            'statusemail',
+            'statusemail',
+            'tstatusemail',
+            'nAktiv',
+            date('Y-m-d', time() + 3600 * 24) . ' 00:00:00',
+            '00:00:00',
+            '0000-00-00 00:00:00'
         );
         $oCron->speicherInDB();
 
@@ -77,17 +80,21 @@ function erstelleStatusemailCron($nAlleXStunden)
  */
 function ladeStatusemailEinstellungen()
 {
-    $oStatusemailEinstellungen = Shop::Container()->getDB()->query("SELECT * FROM tstatusemail", 1);
+    $oStatusemailEinstellungen = Shop::Container()->getDB()->query(
+        "SELECT * 
+            FROM tstatusemail",
+        \DB\ReturnType::SINGLE_OBJECT
+    );
     if (!is_object($oStatusemailEinstellungen)) {
         $oStatusemailEinstellungen = new stdClass();
     }
     $oStatusemailEinstellungen->cIntervallMoeglich_arr = gibIntervallMoeglichkeiten();
     $oStatusemailEinstellungen->cInhaltMoeglich_arr    = gibInhaltMoeglichkeiten();
     $oStatusemailEinstellungen->nIntervall_arr         = isset($oStatusemailEinstellungen->cIntervall)
-        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cIntervall, ';') 
+        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cIntervall, ';')
         : [];
     $oStatusemailEinstellungen->nInhalt_arr            = isset($oStatusemailEinstellungen->cInhalt)
-        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cInhalt, ';') 
+        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cInhalt, ';')
         : [];
 
     return $oStatusemailEinstellungen;
@@ -150,26 +157,25 @@ function gibAnzahlArtikelProKundengruppe()
     // Hole alle Kundengruppen im Shop
     $oKundengruppe_arr = Shop::Container()->getDB()->query(
         "SELECT kKundengruppe, cName
-            FROM tkundengruppe", 2
+            FROM tkundengruppe",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
+    foreach ($oKundengruppe_arr as $oKundengruppe) {
+        $oArtikel            = Shop::Container()->getDB()->query(
+            "SELECT count(*) AS nAnzahl
+                FROM tartikel
+                LEFT JOIN tartikelsichtbarkeit 
+                    ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oKundengruppe->kKundengruppe . "
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL",
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+        $oTMP                = new stdClass();
+        $oTMP->nAnzahl       = $oArtikel->nAnzahl;
+        $oTMP->kKundengruppe = $oKundengruppe->kKundengruppe;
+        $oTMP->cName         = $oKundengruppe->cName;
 
-    if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
-        foreach ($oKundengruppe_arr as $oKundengruppe) {
-            $oArtikel            = Shop::Container()->getDB()->query(
-                "SELECT count(*) AS nAnzahl
-                    FROM tartikel
-                    LEFT JOIN tartikelsichtbarkeit 
-                        ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oKundengruppe->kKundengruppe . "
-                    WHERE tartikelsichtbarkeit.kArtikel IS NULL", 1
-            );
-            $oTMP                = new stdClass();
-            $oTMP->nAnzahl       = $oArtikel->nAnzahl;
-            $oTMP->kKundengruppe = $oKundengruppe->kKundengruppe;
-            $oTMP->cName         = $oKundengruppe->cName;
-
-            $oArtikelProKundengruppe_arr[] = $oTMP;
-        }
+        $oArtikelProKundengruppe_arr[] = $oTMP;
     }
 
     return $oArtikelProKundengruppe_arr;
@@ -182,21 +188,21 @@ function gibAnzahlArtikelProKundengruppe()
  */
 function gibAnzahlNeukunden($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oKunde = Shop::Container()->getDB()->query(
+        $oKunde = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tkunde
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'
-                    AND nRegistriert = 1", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to
+                    AND nRegistriert = 1",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if (isset($oKunde->nAnzahl) && $oKunde->nAnzahl > 0) {
-            return $oKunde->nAnzahl;
-        }
+        return (int)$oKunde->nAnzahl;
     }
 
     return 0;
@@ -209,25 +215,25 @@ function gibAnzahlNeukunden($dVon, $dBis)
  */
 function gibAnzahlNeukundenGekauft($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oKunde = Shop::Container()->getDB()->query(
+        $oKunde = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(DISTINCT(tkunde.kKunde)) AS nAnzahl
                 FROM tkunde
                 JOIN tbestellung 
                     ON tbestellung.kKunde = tkunde.kKunde
-                WHERE tbestellung.dErstellt >= '" . $dVon . "'
-                    AND tbestellung.dErstellt < '" . $dBis . "'
-                    AND tkunde.dErstellt >= '" . $dVon . "'
-                    AND tkunde.dErstellt < '" . $dBis . "'
-                    AND tkunde.nRegistriert = 1", 1
+                WHERE tbestellung.dErstellt >= :from
+                    AND tbestellung.dErstellt < :to
+                    AND tkunde.dErstellt >= :from
+                    AND tkunde.dErstellt < :to
+                    AND tkunde.nRegistriert = 1",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oKunde->nAnzahl) && $oKunde->nAnzahl > 0) ?
-            (int)$oKunde->nAnzahl :
-            0;
+        return (int)$oKunde->nAnzahl;
     }
 
     return 0;
@@ -242,20 +248,20 @@ function gibAnzahlNeukundenGekauft($dVon, $dBis)
  */
 function gibAnzahlBestellungen($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBestellung = Shop::Container()->getDB()->query(
+        $oBestellung = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbestellung
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0) ?
-            (int)$oBestellung->nAnzahl :
-            0;
+        return (int)$oBestellung->nAnzahl;
     }
 
     return 0;
@@ -270,23 +276,23 @@ function gibAnzahlBestellungen($dVon, $dBis)
  */
 function gibAnzahlBestellungenNeukunden($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBestellung = Shop::Container()->getDB()->query(
+        $oBestellung = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbestellung
                 JOIN tkunde 
                     ON tkunde.kKunde = tbestellung.kKunde
-                WHERE tbestellung.dErstellt >= '" . $dVon . "'
-                    AND tbestellung.dErstellt < '" . $dBis . "'
-                    AND tkunde.nRegistriert = 1", 1
+                WHERE tbestellung.dErstellt >= :from
+                    AND tbestellung.dErstellt < :to
+                    AND tkunde.nRegistriert = 1",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0) ?
-            (int)$oBestellung->nAnzahl :
-            0;
+        return (int)$oBestellung->nAnzahl;
     }
 
     return 0;
@@ -301,21 +307,21 @@ function gibAnzahlBestellungenNeukunden($dVon, $dBis)
  */
 function gibAnzahlZahlungseingaengeVonBestellungen($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBestellung = Shop::Container()->getDB()->query(
+        $oBestellung = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbestellung
-                WHERE tbestellung.dErstellt >= '" . $dVon . "'
-                    AND tbestellung.dErstellt < '" . $dBis . "'
-                    AND tbestellung.dBezahltDatum != '0000-00-00'", 1
+                WHERE tbestellung.dErstellt >= :from
+                    AND tbestellung.dErstellt < :to
+                    AND tbestellung.dBezahltDatum != '0000-00-00'",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0) ?
-            (int)$oBestellung->nAnzahl :
-            0;
+        return (int)$oBestellung->nAnzahl;
     }
 
     return 0;
@@ -330,21 +336,21 @@ function gibAnzahlZahlungseingaengeVonBestellungen($dVon, $dBis)
  */
 function gibAnzahlVersendeterBestellungen($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBestellung = Shop::Container()->getDB()->query(
+        $oBestellung = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbestellung
-                WHERE tbestellung.dErstellt >= '" . $dVon . "'
-                    AND tbestellung.dErstellt < '" . $dBis . "'
-                    AND tbestellung.dVersandDatum != '0000-00-00'", 1
+                WHERE tbestellung.dErstellt >= :from
+                    AND tbestellung.dErstellt < :to
+                    AND tbestellung.dVersandDatum != '0000-00-00'",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0)
-            ? (int)$oBestellung->nAnzahl
-            : 0;
+        return (int)$oBestellung->nAnzahl0;
     }
 
     return 0;
@@ -359,20 +365,21 @@ function gibAnzahlVersendeterBestellungen($dVon, $dBis)
  */
 function gibAnzahlBesucher($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBesucher = Shop::Container()->getDB()->query(
+        $oBesucher = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbesucherarchiv
-                WHERE dZeit >= '" . $dVon . "'
-                    AND dZeit < '" . $dBis . "' AND kBesucherBot = 0", 1
+                WHERE dZeit >= :from
+                    AND dZeit < :to 
+                    AND kBesucherBot = 0",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oBesucher->nAnzahl) && $oBesucher->nAnzahl > 0)
-            ? (int)$oBesucher->nAnzahl
-            : 0;
+        return (int)$oBesucher->nAnzahl;
     }
 
     return 0;
@@ -387,21 +394,21 @@ function gibAnzahlBesucher($dVon, $dBis)
  */
 function gibAnzahlBesucherSuchmaschine($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBesucher = Shop::Container()->getDB()->query(
+        $oBesucher = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbesucherarchiv
-                WHERE dZeit >= '" . $dVon . "'
-                    AND dZeit < '" . $dBis . "'
-                    AND cReferer != ''", 1
+                WHERE dZeit >= :from
+                    AND dZeit < :to
+                    AND cReferer != ''",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oBesucher->nAnzahl) && $oBesucher->nAnzahl > 0)
-            ? (int)$oBesucher->nAnzahl
-            : 0;
+        return (int)$oBesucher->nAnzahl;
     }
 
     return 0;
@@ -416,21 +423,21 @@ function gibAnzahlBesucherSuchmaschine($dVon, $dBis)
  */
 function gibAnzahlBewertungen($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBewertung = Shop::Container()->getDB()->query(
+        $oBewertung = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbewertung
-                WHERE dDatum >= '" . $dVon . "'
-                    AND dDatum < '" . $dBis . "'
-                    AND nAktiv = 1", 1
+                WHERE dDatum >= :from
+                    AND dDatum < :to
+                    AND nAktiv = 1",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0)
-            ? (int)$oBewertung->nAnzahl
-            : 0;
+        return (int)$oBewertung->nAnzahl;
     }
 
     return 0;
@@ -445,21 +452,21 @@ function gibAnzahlBewertungen($dVon, $dBis)
  */
 function gibAnzahlBewertungenNichtFreigeschaltet($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBewertung = Shop::Container()->getDB()->query(
+        $oBewertung = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbewertung
-                WHERE dDatum >= '" . $dVon . "'
-                    AND dDatum < '" . $dBis . "'
-                    AND nAktiv = 0", 1
+                WHERE dDatum >= :from
+                    AND dDatum < :to
+                    AND nAktiv = 0",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0)
-            ? (int)$oBewertung->nAnzahl
-            : 0;
+        return (int)$oBewertung->nAnzahl;
     }
 
     return 0;
@@ -474,18 +481,21 @@ function gibAnzahlBewertungenNichtFreigeschaltet($dVon, $dBis)
  */
 function gibAnzahlGezahltesGuthaben($dVon, $dBis)
 {
-    $dVon                 = Shop::Container()->getDB()->escape($dVon);
-    $dBis                 = Shop::Container()->getDB()->escape($dBis);
     $oTMP                 = new stdClass();
     $oTMP->nAnzahl        = 0;
     $oTMP->fSummeGuthaben = 0;
 
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBewertung = Shop::Container()->getDB()->query(
+        $oBewertung = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl, sum(fGuthabenBonus) AS fSummeGuthaben
                 FROM tbewertungguthabenbonus
-                WHERE dDatum >= '" . $dVon . "'
-                    AND dDatum < '" . $dBis . "'", 1
+                WHERE dDatum >= :from
+                    AND dDatum < :to",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0) {
@@ -509,23 +519,23 @@ function gibAnzahlGezahltesGuthaben($dVon, $dBis)
  */
 function gibAnzahlTags($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oTag = Shop::Container()->getDB()->query(
+        $oTag = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM ttagkunde
                 JOIN ttag 
                     ON ttag.kTag = ttagkunde.kTag
                     AND ttag.nAktiv = 1
-                WHERE ttagkunde.dZeit >= '" . $dVon . "'
-                    AND ttagkunde.dZeit < '" . $dBis . "'", 1
+                WHERE ttagkunde.dZeit >= :from
+                    AND ttagkunde.dZeit < :to",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oTag->nAnzahl) && $oTag->nAnzahl > 0)
-            ? (int)$oTag->nAnzahl
-            : 0;
+        return (int)$oTag->nAnzahl;
     }
 
     return 0;
@@ -540,22 +550,22 @@ function gibAnzahlTags($dVon, $dBis)
  */
 function gibAnzahlTagsNichtFreigeschaltet($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oTag = Shop::Container()->getDB()->query(
+        $oTag = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM ttagkunde
                 JOIN ttag ON ttag.kTag = ttagkunde.kTag
                     AND ttag.nAktiv = 0
-                WHERE ttagkunde.dZeit >= '" . $dVon . "'
-                    AND ttagkunde.dZeit < '" . $dBis . "'", 1
+                WHERE ttagkunde.dZeit >= :from
+                    AND ttagkunde.dZeit < :to",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oTag->nAnzahl) && $oTag->nAnzahl > 0)
-            ? (int)$oTag->nAnzahl
-            : 0;
+        return (int)$oTag->nAnzahl;
     }
 
     return 0;
@@ -570,20 +580,20 @@ function gibAnzahlTagsNichtFreigeschaltet($dVon, $dBis)
  */
 function gibAnzahlGeworbenerKunden($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oKwK = Shop::Container()->getDB()->query(
+        $oKwK = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tkundenwerbenkunden
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oKwK->nAnzahl) && $oKwK->nAnzahl > 0)
-            ? (int)$oKwK->nAnzahl
-            : 0;
+        return (int)$oKwK->nAnzahl;
     }
 
     return 0;
@@ -598,22 +608,22 @@ function gibAnzahlGeworbenerKunden($dVon, $dBis)
  */
 function gibAnzahlErfolgreichGeworbenerKunden($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oKwK = Shop::Container()->getDB()->query(
+        $oKwK = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tkundenwerbenkunden
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to
                     AND nRegistriert = 1
-                    AND nGuthabenVergeben = 1", 1
+                    AND nGuthabenVergeben = 1",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oKwK->nAnzahl) && $oKwK->nAnzahl > 0)
-            ? (int)$oKwK->nAnzahl
-            : 0;
+        return (int)$oKwK->nAnzahl;
     }
 
     return 0;
@@ -628,20 +638,20 @@ function gibAnzahlErfolgreichGeworbenerKunden($dVon, $dBis)
  */
 function gibAnzahlVersendeterWunschlisten($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oWunschliste = Shop::Container()->getDB()->query(
+        $oWunschliste = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM twunschlisteversand
-                WHERE dZeit >= '" . $dVon . "'
-                    AND dZeit < '" . $dBis . "'", 1
+                WHERE dZeit >= :from
+                    AND dZeit < :to",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oWunschliste->nAnzahl) && $oWunschliste->nAnzahl > 0)
-            ? (int)$oWunschliste->nAnzahl
-            : 0;
+        return (int)$oWunschliste->nAnzahl;
     }
 
     return 0;
@@ -656,20 +666,20 @@ function gibAnzahlVersendeterWunschlisten($dVon, $dBis)
  */
 function gibAnzahlDurchgefuehrteUmfragen($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oUmfrage = Shop::Container()->getDB()->query(
+        $oUmfrage = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tumfragedurchfuehrung
-                WHERE dDurchgefuehrt >= '" . $dVon . "'
-                    AND dDurchgefuehrt < '" . $dBis . "'", 1
+                WHERE dDurchgefuehrt >= :from
+                    AND dDurchgefuehrt < :to",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oUmfrage->nAnzahl) && $oUmfrage->nAnzahl > 0)
-            ? (int)$oUmfrage->nAnzahl
-            : 0;
+        return (int)$oUmfrage->nAnzahl;
     }
 
     return 0;
@@ -684,21 +694,21 @@ function gibAnzahlDurchgefuehrteUmfragen($dVon, $dBis)
  */
 function gibAnzahlNewskommentare($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oNewskommentar = Shop::Container()->getDB()->query(
+        $oNewskommentar = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tnewskommentar
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'
-                    AND nAktiv = 1", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to
+                    AND nAktiv = 1",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oNewskommentar->nAnzahl) && $oNewskommentar->nAnzahl > 0)
-            ? (int)$oNewskommentar->nAnzahl
-            : 0;
+        return (int)$oNewskommentar->nAnzahl;
     }
 
     return 0;
@@ -713,21 +723,21 @@ function gibAnzahlNewskommentare($dVon, $dBis)
  */
 function gibAnzahlNewskommentareNichtFreigeschaltet($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oNewskommentar = Shop::Container()->getDB()->query(
+        $oNewskommentar = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tnewskommentar
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'
-                    AND nAktiv = 0", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to
+                    AND nAktiv = 0",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oNewskommentar->nAnzahl) && $oNewskommentar->nAnzahl > 0)
-            ? (int)$oNewskommentar->nAnzahl
-            : 0;
+        return (int)$oNewskommentar->nAnzahl;
     }
 
     return 0;
@@ -742,20 +752,20 @@ function gibAnzahlNewskommentareNichtFreigeschaltet($dVon, $dBis)
  */
 function gibAnzahlProduktanfrageVerfuegbarkeit($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oVerfuegbarkeit = Shop::Container()->getDB()->query(
+        $oVerfuegbarkeit = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tverfuegbarkeitsbenachrichtigung
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oVerfuegbarkeit->nAnzahl) && $oVerfuegbarkeit->nAnzahl > 0)
-            ? (int)$oVerfuegbarkeit->nAnzahl
-            : 0;
+        return (int)$oVerfuegbarkeit->nAnzahl;
     }
 
     return 0;
@@ -770,20 +780,20 @@ function gibAnzahlProduktanfrageVerfuegbarkeit($dVon, $dBis)
  */
 function gibAnzahlProduktanfrageArtikel($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oFrageProdukt = Shop::Container()->getDB()->query(
+        $oFrageProdukt = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tproduktanfragehistory
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oFrageProdukt->nAnzahl) && $oFrageProdukt->nAnzahl > 0)
-            ? (int)$oFrageProdukt->nAnzahl
-            : 0;
+        return (int)$oFrageProdukt->nAnzahl;
     }
 
     return 0;
@@ -798,20 +808,20 @@ function gibAnzahlProduktanfrageArtikel($dVon, $dBis)
  */
 function gibAnzahlVergleiche($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oVergleich = Shop::Container()->getDB()->query(
+        $oVergleich = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tvergleichsliste
-                WHERE dDate >= '" . $dVon . "'
-                    AND dDate < '" . $dBis . "'", 1
+                WHERE dDate >= :from
+                    AND dDate < :to",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oVergleich->nAnzahl) && $oVergleich->nAnzahl > 0)
-            ? (int)$oVergleich->nAnzahl
-            : 0;
+        return (int)$oVergleich->nAnzahl;
     }
 
     return 0;
@@ -826,20 +836,20 @@ function gibAnzahlVergleiche($dVon, $dBis)
  */
 function gibAnzahlGenutzteKupons($dVon, $dBis)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oKupon = Shop::Container()->getDB()->query(
+        $oKupon = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tkuponkunde
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (isset($oKupon->nAnzahl) && $oKupon->nAnzahl > 0)
-            ? (int)$oKupon->nAnzahl
-            : 0;
+        return (int)$oKupon->nAnzahl;
     }
 
     return 0;
@@ -853,17 +863,20 @@ function gibAnzahlGenutzteKupons($dVon, $dBis)
  */
 function getLogEntries($dVon, $dBis, $nLogLevel_arr)
 {
-    $dVon = Shop::Container()->getDB()->escape($dVon);
-    $dBis = Shop::Container()->getDB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oLog_arr = Shop::Container()->getDB()->query(
+        $nLogLevel_arr = array_map('intval', $nLogLevel_arr);
+        $oLog_arr      = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
                 FROM tjtllog
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to
                     AND nLevel IN (" . implode(',', $nLogLevel_arr) . ")
-                ORDER BY dErstellt DESC", 2
+                ORDER BY dErstellt DESC",
+            [
+                'from' => $dVon,
+                'to'   => $dBis
+            ],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         return $oLog_arr;
@@ -880,201 +893,206 @@ function getLogEntries($dVon, $dBis, $nLogLevel_arr)
  */
 function baueStatusEmail($oStatusemail, $dVon, $dBis)
 {
-    global $smarty;
-
-    if (is_array($oStatusemail->nInhalt_arr) && count($oStatusemail->nInhalt_arr) > 0 &&
-        strlen($dVon) > 0 && strlen($dBis) > 0)
-    {
-        $cMailTyp                                              = Shop::Container()->getDB()->select(
-            'temailvorlage',
-            'cModulId',
-            MAILTEMPLATE_STATUSEMAIL,
-            null,
-            null,
-            null,
-            null,
-            false,
-            'cMailTyp'
-        )->cMailTyp;
-        $oMailObjekt                                           = new stdClass();
-        $oMailObjekt->mail                                     = new stdClass();
-        $oMailObjekt->oAnzahlArtikelProKundengruppe            = -1;
-        $oMailObjekt->nAnzahlNeukunden                         = -1;
-        $oMailObjekt->nAnzahlNeukundenGekauft                  = -1;
-        $oMailObjekt->nAnzahlBestellungen                      = -1;
-        $oMailObjekt->nAnzahlBestellungenNeukunden             = -1;
-        $oMailObjekt->nAnzahlBesucher                          = -1;
-        $oMailObjekt->nAnzahlBesucherSuchmaschine              = -1;
-        $oMailObjekt->nAnzahlBewertungen                       = -1;
-        $oMailObjekt->nAnzahlBewertungenNichtFreigeschaltet    = -1;
-        $oMailObjekt->oAnzahlGezahltesGuthaben                 = -1;
-        $oMailObjekt->nAnzahlTags                              = -1;
-        $oMailObjekt->nAnzahlTagsNichtFreigeschaltet           = -1;
-        $oMailObjekt->nAnzahlGeworbenerKunden                  = -1;
-        $oMailObjekt->nAnzahlErfolgreichGeworbenerKunden       = -1;
-        $oMailObjekt->nAnzahlVersendeterWunschlisten           = -1;
-        $oMailObjekt->nAnzahlDurchgefuehrteUmfragen            = -1;
-        $oMailObjekt->nAnzahlNewskommentare                    = -1;
-        $oMailObjekt->nAnzahlNewskommentareNichtFreigeschaltet = -1;
-        $oMailObjekt->nAnzahlProduktanfrageArtikel             = -1;
-        $oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit      = -1;
-        $oMailObjekt->nAnzahlVergleiche                        = -1;
-        $oMailObjekt->nAnzahlGenutzteKupons                    = -1;
-        $oMailObjekt->nAnzahlZahlungseingaengeVonBestellungen  = -1;
-        $oMailObjekt->nAnzahlVersendeterBestellungen           = -1;
-        $oMailObjekt->dVon                                     = $dVon;
-        $oMailObjekt->dBis                                     = $dBis;
-        $oMailObjekt->oLogEntry_arr                            = [];
-        $nLogLevel_arr                                         = [];
-
-        foreach ($oStatusemail->nInhalt_arr as $nInhalt) {
-            switch ($nInhalt) {
-                // Anzahl Artikel pro Kundengruppe
-                case 1:
-                    $oMailObjekt->oAnzahlArtikelProKundengruppe = gibAnzahlArtikelProKundengruppe();
-                    break;
-
-                // Anzahl Neukunden
-                case 2:
-                    $oMailObjekt->nAnzahlNeukunden = gibAnzahlNeukunden($dVon, $dBis);
-                    break;
-
-                // Anzahl Neukunden die gekauft haben
-                case 3:
-                    $oMailObjekt->nAnzahlNeukundenGekauft = gibAnzahlNeukundenGekauft($dVon, $dBis);
-                    break;
-
-                // Anzahl Bestellungen
-                case 4:
-                    $oMailObjekt->nAnzahlBestellungen = gibAnzahlBestellungen($dVon, $dBis);
-                    break;
-
-                // Anzahl Bestellungen von Neukunden
-                case 5:
-                    $oMailObjekt->nAnzahlBestellungenNeukunden = gibAnzahlBestellungenNeukunden($dVon, $dBis);
-                    break;
-
-                // Anzahl Besucher
-                case 6:
-                    $oMailObjekt->nAnzahlBesucher = gibAnzahlBesucher($dVon, $dBis);
-                    break;
-
-                // Anzahl Besucher von Suchmaschinen
-                case 7:
-                    $oMailObjekt->nAnzahlBesucherSuchmaschine = gibAnzahlBesucherSuchmaschine($dVon, $dBis);
-                    break;
-
-                // Anzahl Bewertungen
-                case 8:
-                    $oMailObjekt->nAnzahlBewertungen = gibAnzahlBewertungen($dVon, $dBis);
-                    break;
-
-                // Anzahl nicht-freigeschaltete Bewertungen
-                case 9:
-                    $oMailObjekt->nAnzahlBewertungenNichtFreigeschaltet = gibAnzahlBewertungenNichtFreigeschaltet($dVon, $dBis);
-                    break;
-
-                case 10:
-                    $oMailObjekt->oAnzahlGezahltesGuthaben = gibAnzahlGezahltesGuthaben($dVon, $dBis);
-                    break;
-
-                case 11:
-                    $oMailObjekt->nAnzahlTags = gibAnzahlTags($dVon, $dBis);
-                    break;
-
-                case 12:
-                    $oMailObjekt->nAnzahlTagsNichtFreigeschaltet = gibAnzahlTagsNichtFreigeschaltet($dVon, $dBis);
-                    break;
-
-                case 13:
-                    $oMailObjekt->nAnzahlGeworbenerKunden = gibAnzahlGeworbenerKunden($dVon, $dBis);
-                    break;
-
-                case 14:
-                    $oMailObjekt->nAnzahlErfolgreichGeworbenerKunden = gibAnzahlErfolgreichGeworbenerKunden($dVon, $dBis);
-                    break;
-
-                case 15:
-                    $oMailObjekt->nAnzahlVersendeterWunschlisten = gibAnzahlVersendeterWunschlisten($dVon, $dBis);
-                    break;
-
-                case 16:
-                    $oMailObjekt->nAnzahlDurchgefuehrteUmfragen = gibAnzahlDurchgefuehrteUmfragen($dVon, $dBis);
-                    break;
-
-                case 17:
-                    $oMailObjekt->nAnzahlNewskommentare = gibAnzahlNewskommentare($dVon, $dBis);
-                    break;
-
-                case 18:
-                    $oMailObjekt->nAnzahlNewskommentareNichtFreigeschaltet = gibAnzahlNewskommentareNichtFreigeschaltet($dVon, $dBis);
-                    break;
-
-                case 19:
-                    $oMailObjekt->nAnzahlProduktanfrageArtikel = gibAnzahlProduktanfrageArtikel($dVon, $dBis);
-                    break;
-
-                case 20:
-                    $oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit = gibAnzahlProduktanfrageVerfuegbarkeit($dVon, $dBis);
-                    break;
-
-                case 21:
-                    $oMailObjekt->nAnzahlVergleiche = gibAnzahlVergleiche($dVon, $dBis);
-                    break;
-
-                case 22:
-                    $oMailObjekt->nAnzahlGenutzteKupons = gibAnzahlGenutzteKupons($dVon, $dBis);
-                    break;
-
-                // Anzahl Zahlungseingänge von Bestellungen
-                case 23:
-                    $oMailObjekt->nAnzahlZahlungseingaengeVonBestellungen = gibAnzahlZahlungseingaengeVonBestellungen($dVon, $dBis);
-                    break;
-
-                // Anzahl versendeter Bestellungen
-                case 24:
-                    $oMailObjekt->nAnzahlVersendeterBestellungen = gibAnzahlVersendeterBestellungen($dVon, $dBis);
-                    break;
-
-                // Log-Einträge
-                case 25:
-                    $nLogLevel_arr[] = JTLLOG_LEVEL_ERROR;
-                    break;
-                case 26:
-                    $nLogLevel_arr[] = JTLLOG_LEVEL_NOTICE;
-                    break;
-                case 27:
-                    $nLogLevel_arr[] = JTLLOG_LEVEL_DEBUG;
-                    break;
-            }
-        }
-
-        if (count($nLogLevel_arr) > 0) {
-            $oMailObjekt->oLogEntry_arr = getLogEntries($dVon, $dBis, $nLogLevel_arr);
-            $cLogFilePath               = tempnam(sys_get_temp_dir(), 'jtl');
-            $fileStream                 = fopen($cLogFilePath, 'w');
-            $smarty->assign('oMailObjekt', $oMailObjekt);
-            $oAttachment            = new stdClass();
-            $oAttachment->cFilePath = $cLogFilePath;
-
-            if ($cMailTyp === 'text') {
-                fwrite($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_plain_log.tpl'));
-                $oAttachment->cName = 'jtl-log-digest.txt';
-            } else {
-                fwrite($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_html_log.tpl'));
-                $oAttachment->cName = 'jtl-log-digest.html';
-            }
-
-            fclose($fileStream);
-            $oMailObjekt->mail->oAttachment_arr = [$oAttachment];
-        }
-
-        $oMailObjekt->mail->toEmail = $oStatusemail->cEmail;
-
-        return $oMailObjekt;
+    if (!is_array($oStatusemail->nInhalt_arr)
+        || count($oStatusemail->nInhalt_arr) === 0
+        || empty($dVon)
+        || empty($dBis)
+    ) {
+        return false;
     }
 
-    return false;
+    global $smarty;
+
+    $cMailTyp                                              = Shop::Container()->getDB()->select(
+        'temailvorlage',
+        'cModulId',
+        MAILTEMPLATE_STATUSEMAIL,
+        null,
+        null,
+        null,
+        null,
+        false,
+        'cMailTyp'
+    )->cMailTyp;
+    $oMailObjekt                                           = new stdClass();
+    $oMailObjekt->mail                                     = new stdClass();
+    $oMailObjekt->oAnzahlArtikelProKundengruppe            = -1;
+    $oMailObjekt->nAnzahlNeukunden                         = -1;
+    $oMailObjekt->nAnzahlNeukundenGekauft                  = -1;
+    $oMailObjekt->nAnzahlBestellungen                      = -1;
+    $oMailObjekt->nAnzahlBestellungenNeukunden             = -1;
+    $oMailObjekt->nAnzahlBesucher                          = -1;
+    $oMailObjekt->nAnzahlBesucherSuchmaschine              = -1;
+    $oMailObjekt->nAnzahlBewertungen                       = -1;
+    $oMailObjekt->nAnzahlBewertungenNichtFreigeschaltet    = -1;
+    $oMailObjekt->oAnzahlGezahltesGuthaben                 = -1;
+    $oMailObjekt->nAnzahlTags                              = -1;
+    $oMailObjekt->nAnzahlTagsNichtFreigeschaltet           = -1;
+    $oMailObjekt->nAnzahlGeworbenerKunden                  = -1;
+    $oMailObjekt->nAnzahlErfolgreichGeworbenerKunden       = -1;
+    $oMailObjekt->nAnzahlVersendeterWunschlisten           = -1;
+    $oMailObjekt->nAnzahlDurchgefuehrteUmfragen            = -1;
+    $oMailObjekt->nAnzahlNewskommentare                    = -1;
+    $oMailObjekt->nAnzahlNewskommentareNichtFreigeschaltet = -1;
+    $oMailObjekt->nAnzahlProduktanfrageArtikel             = -1;
+    $oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit      = -1;
+    $oMailObjekt->nAnzahlVergleiche                        = -1;
+    $oMailObjekt->nAnzahlGenutzteKupons                    = -1;
+    $oMailObjekt->nAnzahlZahlungseingaengeVonBestellungen  = -1;
+    $oMailObjekt->nAnzahlVersendeterBestellungen           = -1;
+    $oMailObjekt->dVon                                     = $dVon;
+    $oMailObjekt->dBis                                     = $dBis;
+    $oMailObjekt->oLogEntry_arr                            = [];
+    $nLogLevel_arr                                         = [];
+
+    foreach ($oStatusemail->nInhalt_arr as $nInhalt) {
+        switch ($nInhalt) {
+            // Anzahl Artikel pro Kundengruppe
+            case 1:
+                $oMailObjekt->oAnzahlArtikelProKundengruppe = gibAnzahlArtikelProKundengruppe();
+                break;
+
+            // Anzahl Neukunden
+            case 2:
+                $oMailObjekt->nAnzahlNeukunden = gibAnzahlNeukunden($dVon, $dBis);
+                break;
+
+            // Anzahl Neukunden die gekauft haben
+            case 3:
+                $oMailObjekt->nAnzahlNeukundenGekauft = gibAnzahlNeukundenGekauft($dVon, $dBis);
+                break;
+
+            // Anzahl Bestellungen
+            case 4:
+                $oMailObjekt->nAnzahlBestellungen = gibAnzahlBestellungen($dVon, $dBis);
+                break;
+
+            // Anzahl Bestellungen von Neukunden
+            case 5:
+                $oMailObjekt->nAnzahlBestellungenNeukunden = gibAnzahlBestellungenNeukunden($dVon, $dBis);
+                break;
+
+            // Anzahl Besucher
+            case 6:
+                $oMailObjekt->nAnzahlBesucher = gibAnzahlBesucher($dVon, $dBis);
+                break;
+
+            // Anzahl Besucher von Suchmaschinen
+            case 7:
+                $oMailObjekt->nAnzahlBesucherSuchmaschine = gibAnzahlBesucherSuchmaschine($dVon, $dBis);
+                break;
+
+            // Anzahl Bewertungen
+            case 8:
+                $oMailObjekt->nAnzahlBewertungen = gibAnzahlBewertungen($dVon, $dBis);
+                break;
+
+            // Anzahl nicht-freigeschaltete Bewertungen
+            case 9:
+                $oMailObjekt->nAnzahlBewertungenNichtFreigeschaltet = gibAnzahlBewertungenNichtFreigeschaltet($dVon,
+                    $dBis);
+                break;
+
+            case 10:
+                $oMailObjekt->oAnzahlGezahltesGuthaben = gibAnzahlGezahltesGuthaben($dVon, $dBis);
+                break;
+
+            case 11:
+                $oMailObjekt->nAnzahlTags = gibAnzahlTags($dVon, $dBis);
+                break;
+
+            case 12:
+                $oMailObjekt->nAnzahlTagsNichtFreigeschaltet = gibAnzahlTagsNichtFreigeschaltet($dVon, $dBis);
+                break;
+
+            case 13:
+                $oMailObjekt->nAnzahlGeworbenerKunden = gibAnzahlGeworbenerKunden($dVon, $dBis);
+                break;
+
+            case 14:
+                $oMailObjekt->nAnzahlErfolgreichGeworbenerKunden = gibAnzahlErfolgreichGeworbenerKunden($dVon, $dBis);
+                break;
+
+            case 15:
+                $oMailObjekt->nAnzahlVersendeterWunschlisten = gibAnzahlVersendeterWunschlisten($dVon, $dBis);
+                break;
+
+            case 16:
+                $oMailObjekt->nAnzahlDurchgefuehrteUmfragen = gibAnzahlDurchgefuehrteUmfragen($dVon, $dBis);
+                break;
+
+            case 17:
+                $oMailObjekt->nAnzahlNewskommentare = gibAnzahlNewskommentare($dVon, $dBis);
+                break;
+
+            case 18:
+                $oMailObjekt->nAnzahlNewskommentareNichtFreigeschaltet = gibAnzahlNewskommentareNichtFreigeschaltet($dVon,
+                    $dBis);
+                break;
+
+            case 19:
+                $oMailObjekt->nAnzahlProduktanfrageArtikel = gibAnzahlProduktanfrageArtikel($dVon, $dBis);
+                break;
+
+            case 20:
+                $oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit = gibAnzahlProduktanfrageVerfuegbarkeit($dVon, $dBis);
+                break;
+
+            case 21:
+                $oMailObjekt->nAnzahlVergleiche = gibAnzahlVergleiche($dVon, $dBis);
+                break;
+
+            case 22:
+                $oMailObjekt->nAnzahlGenutzteKupons = gibAnzahlGenutzteKupons($dVon, $dBis);
+                break;
+
+            // Anzahl Zahlungseingänge von Bestellungen
+            case 23:
+                $oMailObjekt->nAnzahlZahlungseingaengeVonBestellungen = gibAnzahlZahlungseingaengeVonBestellungen($dVon,
+                    $dBis);
+                break;
+
+            // Anzahl versendeter Bestellungen
+            case 24:
+                $oMailObjekt->nAnzahlVersendeterBestellungen = gibAnzahlVersendeterBestellungen($dVon, $dBis);
+                break;
+
+            // Log-Einträge
+            case 25:
+                $nLogLevel_arr[] = JTLLOG_LEVEL_ERROR;
+                break;
+            case 26:
+                $nLogLevel_arr[] = JTLLOG_LEVEL_NOTICE;
+                break;
+            case 27:
+                $nLogLevel_arr[] = JTLLOG_LEVEL_DEBUG;
+                break;
+        }
+    }
+
+    if (count($nLogLevel_arr) > 0) {
+        $oMailObjekt->oLogEntry_arr = getLogEntries($dVon, $dBis, $nLogLevel_arr);
+        $cLogFilePath               = tempnam(sys_get_temp_dir(), 'jtl');
+        $fileStream                 = fopen($cLogFilePath, 'w');
+        $smarty->assign('oMailObjekt', $oMailObjekt);
+        $oAttachment            = new stdClass();
+        $oAttachment->cFilePath = $cLogFilePath;
+
+        if ($cMailTyp === 'text') {
+            fwrite($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_plain_log.tpl'));
+            $oAttachment->cName = 'jtl-log-digest.txt';
+        } else {
+            fwrite($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_html_log.tpl'));
+            $oAttachment->cName = 'jtl-log-digest.html';
+        }
+
+        fclose($fileStream);
+        $oMailObjekt->mail->oAttachment_arr = [$oAttachment];
+    }
+
+    $oMailObjekt->mail->toEmail = $oStatusemail->cEmail;
+
+    return $oMailObjekt;
 }
 
 /**
@@ -1083,26 +1101,25 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
  */
 function gibSplitStamp($dStamp)
 {
-    if (strlen($dStamp) > 0) {
-        // DATETIME splitten
-        list($dDatum, $dZeit)               = explode(' ', $dStamp);
-        list($dJahr, $dMonat, $dTag)        = explode('-', $dDatum);
-        list($dStunde, $dMinute, $dSekunde) = explode(':', $dZeit);
-
-        $oZeit           = new stdClass();
-        $oZeit->dDatum   = $dDatum;
-        $oZeit->dZeit    = $dZeit;
-        $oZeit->dJahr    = $dJahr;
-        $oZeit->dMonat   = $dMonat;
-        $oZeit->dTag     = $dTag;
-        $oZeit->dStunde  = $dStunde;
-        $oZeit->dMinute  = $dMinute;
-        $oZeit->dSekunde = $dSekunde;
-
-        return $oZeit;
+    if (empty($dStamp)) {
+        return false;
     }
+    // DATETIME splitten
+    list($dDatum, $dZeit) = explode(' ', $dStamp);
+    list($dJahr, $dMonat, $dTag) = explode('-', $dDatum);
+    list($dStunde, $dMinute, $dSekunde) = explode(':', $dZeit);
 
-    return false;
+    $oZeit           = new stdClass();
+    $oZeit->dDatum   = $dDatum;
+    $oZeit->dZeit    = $dZeit;
+    $oZeit->dJahr    = $dJahr;
+    $oZeit->dMonat   = $dMonat;
+    $oZeit->dTag     = $dTag;
+    $oZeit->dStunde  = $dStunde;
+    $oZeit->dMinute  = $dMinute;
+    $oZeit->dSekunde = $dSekunde;
+
+    return $oZeit;
 }
 
 /**
@@ -1132,7 +1149,7 @@ function isIntervalExceeded($dStart, $cInterval)
 }
 
 /**
- * Sendet eine Status-Mail xD ;) hehe, lolz!!!!111einself
+ *
  */
 function sendStatusMail()
 {
@@ -1169,7 +1186,7 @@ function sendStatusMail()
         $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
 
         if ($oMailObjekt) {
-            $oMailObjekt->cIntervall = (JTL_CHARSET !== 'UTF-8' ? StringHandler::convertISO($cIntervalAdj) : $cIntervalAdj) . ' Status-Email';
+            $oMailObjekt->cIntervall = (JTL_CHARSET !== 'utf-8' ? StringHandler::convertISO($cIntervalAdj) : $cIntervalAdj) . ' Status-Email';
 
             sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $oMailObjekt->mail);
 

@@ -28,10 +28,7 @@
             {get_category_parents categoryId=$activeId assign='activeParents'}
         {/if}
         {foreach name='categories' from=$categories item='category'}
-            {assign var='isDropdown' value=false}
-            {if isset($category->bUnterKategorien) && $category->bUnterKategorien}
-                {assign var='isDropdown' value=true}
-            {/if}
+            {assign var='isDropdown' value=$category->bUnterKategorien && $category->Unterkategorien|count > 0}
             <li role="presentation" class="nav-item {if $isDropdown}dropdown megamenu-fw{/if}{if $category->kKategorie == $activeId || (isset($activeParents[0]) && $activeParents[0]->kKategorie == $category->kKategorie)} active{/if}">
                 <a href="{$category->cURLFull}"{if $isDropdown} class="dropdown-toggle nav-link" data-target="#" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true"{/if}>
                     {$category->cKurzbezeichnung}

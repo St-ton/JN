@@ -223,6 +223,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $oArtikelOptionen->nVariationKombi            = 1;
                     $oArtikelOptionen->nVariationKombiKinder      = 1;
                     $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
+                    $oArtikelOptionen->nVariationen               = 0;
 
                     $this->oArtikel = new Artikel();
                     $this->oArtikel->fuelleArtikel($this->kArtikel, $oArtikelOptionen, $kKundengruppe, $kSprache);

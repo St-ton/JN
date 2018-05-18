@@ -25,6 +25,8 @@ abstract class AbstractLink implements LinkInterface
         'cLocalizedName'     => 'Name',
         'cLocalizedTitle'    => 'Title',
         'kLink'              => 'ID',
+        'cName'              => 'Name',
+        'kPlugin'            => 'PluginID',
         'kVaterLink'         => 'Parent',
         'kLinkgruppe'        => 'LinkGroupID',
         'cKundengruppen'     => 'CustomerGroups',
@@ -46,7 +48,8 @@ abstract class AbstractLink implements LinkInterface
         'cMetaTitle'         => 'MetaTitle',
         'cMetaKeywords'      => 'MetaKeyword',
         'cMetaDescription'   => 'MetaDescription',
-        'nLinkart'   => 'LinkType',
+        'cDruckButton'       => 'PrintButtonCompat',
+        'nLinkart'           => 'LinkType',
     ];
 
     /**
@@ -55,6 +58,22 @@ abstract class AbstractLink implements LinkInterface
     public function getLangCompat(): LinkInterface
     {
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrintButtonCompat(): string
+    {
+        return $this->hasPrintButton() === true ? 'Y' : 'N';
+    }
+
+    /**
+     * @param string|bool $value
+     */
+    public function setPrintButtonCompat($value)
+    {
+        $this->setPrintButton($value === 'Y' || $value === true);
     }
 
     /**

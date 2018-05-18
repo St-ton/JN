@@ -41,7 +41,7 @@ class Session
      * @return Session
      * @throws Exception
      */
-    public static function getInstance($start = true, $force = false, $sessionName = self::DefaultSession)
+    public static function getInstance(bool $start = true, bool $force = false, string $sessionName = self::DefaultSession)
     {
         if ($force === false && self::$_sessionName !== $sessionName) {
             $force = true;
@@ -58,7 +58,7 @@ class Session
      * @param string $sessionName
      * @throws Exception
      */
-    public function __construct($start = true, $sessionName = self::DefaultSession)
+    public function __construct(bool $start = true, string $sessionName = self::DefaultSession)
     {
         self::$_instance    = $this;
         self::$_sessionName = $sessionName;
@@ -102,7 +102,7 @@ class Session
      * @param string $userAgent
      * @return bool
      */
-    public static function getIsCrawler($userAgent) : bool
+    public static function getIsCrawler(string $userAgent) : bool
     {
         return preg_match(
             '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .
@@ -137,7 +137,7 @@ class Session
      * @return $this
      * @throws Exception
      */
-    public function setStandardSessionVars()
+    public function setStandardSessionVars(): self
     {
         $globalsAktualisieren = true;
         $updateLanguage       = false;
@@ -335,7 +335,7 @@ class Session
     /**
      * @return $this
      */
-    private function checkWishlistDeletes()
+    private function checkWishlistDeletes(): self
     {
         $kWunschlistePos = verifyGPCDataInteger('wlplo');
         if ($kWunschlistePos !== 0) {
@@ -349,7 +349,7 @@ class Session
     /**
      * @return $this
      */
-    private function checkComparelistDeletes()
+    private function checkComparelistDeletes(): self
     {
         $kVergleichlistePos = verifyGPCDataInteger('vlplo');
         if ($kVergleichlistePos !== 0
@@ -410,12 +410,12 @@ class Session
                 ? (float)$cMatch_arr[2]
                 : 1.0;
             while (count($cLangeCode)) {
-                if (in_array(strtolower(implode('-', $cLangeCode)), $cAllowed_arr, true)) {
-                    if ($nLangQuality > $nCurrentQuality) {
-                        $cCurrentLang    = strtolower(implode('-', $cLangeCode));
-                        $nCurrentQuality = $nLangQuality;
-                        break;
-                    }
+                if ($nLangQuality > $nCurrentQuality
+                    && in_array(strtolower(implode('-', $cLangeCode)), $cAllowed_arr, true)
+                ) {
+                    $cCurrentLang    = strtolower(implode('-', $cLangeCode));
+                    $nCurrentQuality = $nLangQuality;
+                    break;
                 }
                 array_pop($cLangeCode);
             }
@@ -427,7 +427,7 @@ class Session
     /**
      * @return $this
      */
-    public function cleanUp()
+    public function cleanUp(): self
     {
         // Unregistrierten Benutzer löschen
         if (isset($_SESSION['Kunde']->nRegistriert) && (int)$_SESSION['Kunde']->nRegistriert === 0) {
@@ -461,7 +461,7 @@ class Session
      * @param Kunde $Kunde
      * @return $this
      */
-    public function setCustomer($Kunde)
+    public function setCustomer($Kunde): self
     {
         $Kunde->angezeigtesLand   = ISO2land($Kunde->cLand);
         $_SESSION['Kunde']        = $Kunde;
@@ -479,7 +479,7 @@ class Session
     /**
      * @return Kunde
      */
-    public static function Customer()
+    public static function Customer(): Kunde
     {
         return $_SESSION['Kunde'] ?? new Kunde();
     }
@@ -487,7 +487,7 @@ class Session
     /**
      * @return Kundengruppe
      */
-    public static function CustomerGroup()
+    public static function CustomerGroup(): Kundengruppe
     {
         return $_SESSION['Kundengruppe'] ?? (new Kundengruppe())->loadDefaultGroup();
     }
@@ -495,7 +495,7 @@ class Session
     /**
      * @return Sprache
      */
-    public function Language()
+    public function Language(): Sprache
     {
         $o              = Sprache::getInstance(false);
         $o->kSprache    = (int)$_SESSION['kSprache'];
@@ -508,7 +508,7 @@ class Session
     /**
      * @return array
      */
-    public static function Languages()
+    public static function Languages(): array
     {
         return $_SESSION['Sprachen'] ?? [];
     }
@@ -516,7 +516,7 @@ class Session
     /**
      * @return array
      */
-    public function Payments()
+    public function Payments(): array
     {
         return $_SESSION['Zahlungsarten'];
     }
@@ -575,32 +575,5 @@ class Session
     public static function CompareList() : Vergleichsliste
     {
         return $_SESSION['Vergleichsliste'] ?? new Vergleichsliste();
-    }
-
-    /**
-     * @return array
-     * @deprecated since 4.00
-     */
-    public function Manufacturers()
-    {
-        return [];
-    }
-
-    /**
-     * @return array
-     * @deprecated since 4.00
-     */
-    public function LinkGroups()
-    {
-        return LinkHelper::getInstance()->getLinkGroups();
-    }
-
-    /**
-     * @return array
-     * @deprecated since 4.00
-     */
-    public function Categories()
-    {
-        return [];
     }
 }

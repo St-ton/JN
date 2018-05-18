@@ -512,7 +512,7 @@ class ItemSearch extends AbstractFilter
                 ->setParam($this->getUrlParam())
                 ->setName($searchFilter->cSuche)
                 ->setValue((int)$searchFilter->kSuchanfrage)
-                ->setCount($searchFilter->nAnzahl);
+                ->setCount((int)$searchFilter->nAnzahl);
         }
         $this->options = $options;
 

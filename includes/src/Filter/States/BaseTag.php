@@ -210,7 +210,7 @@ class BaseTag extends AbstractFilter
                 ->setClassName($this->getClassName())
                 ->setName($tag->cName)
                 ->setValue((int)$tag->kTag)
-                ->setCount($tag->nAnzahl);
+                ->setCount((int)$tag->nAnzahl);
         }
         $this->options = $options;
 

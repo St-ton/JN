@@ -313,7 +313,7 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getSort()
+    public function getSort(): int
     {
         return $this->nSortierung;
     }
@@ -322,7 +322,7 @@ class ProductFilter
      * @param int $nSortierung
      * @return ProductFilter
      */
-    public function setSort($nSortierung): self
+    public function setSort(int $nSortierung): self
     {
         $this->nSortierung = $nSortierung;
 

@@ -1358,9 +1358,7 @@ class Metadata implements MetadataInterface
      */
     public static function mapUserSorting($sort): int
     {
-        // Ist die Usersortierung ein Integer => Return direkt den Integer
-        preg_match('/\d+/', $sort, $cTreffer_arr);
-        if (isset($cTreffer_arr[0]) && strlen($sort) === strlen($cTreffer_arr[0])) {
+        if (is_numeric($sort)) {
             return (int)$sort;
         }
         // Usersortierung ist ein String aus einem Kategorieattribut

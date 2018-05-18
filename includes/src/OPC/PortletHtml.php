@@ -247,6 +247,10 @@ trait PortletHtml
                 $res .= "<input type='date' class='form-control$class' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
                 break;
+            case 'time':
+                $res .= "<input type='time' class='form-control$class' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
+                break;
             case 'password':
                 $res .= "<input type='password' class='form-control$class' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
@@ -304,7 +308,7 @@ trait PortletHtml
                     . "</button>";
                 break;
             case 'richtext':
-                $res .= "<textarea name='text' id='textarea-$propname' class='form-control'>"
+                $res .= "<textarea name='$propname' id='textarea-$propname' class='form-control'>"
                     . htmlspecialchars($prop)
                     . "</textarea>"
                     . "<script>CKEDITOR.replace('textarea-$propname', {baseFloatZIndex: 9000});"

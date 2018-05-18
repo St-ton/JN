@@ -308,7 +308,7 @@ class PortletInstance implements \JsonSerializable
         $this->setAttribute('style', $styleString);
 
         foreach ($animations as $aniName => $aniValue) {
-            if ($aniName === 'animation-style') {
+            if ($aniName === 'animation-style' && !empty($aniValue)) {
                 $this->addClass("wow " . $aniValue);
             } else {
                 if (!empty($aniValue)) {

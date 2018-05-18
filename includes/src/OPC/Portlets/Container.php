@@ -61,8 +61,8 @@ class Container extends \OPC\Portlet
     {
         return [
             'uid'           => [
-                'type'    => 'hidden',
-                'default' => uniqid(),
+                'label'    => 'ID',
+                'default' => uniqid('cntr-', false),
             ],
             'parallax-flag' => [
                 'label'   => 'use parrallax effect',

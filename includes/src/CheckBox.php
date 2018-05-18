@@ -100,7 +100,7 @@ class CheckBox
     public $cLink;
 
     /**
-     * @var stdClass
+     * @var \Link\Link
      */
     public $oLink;
 
@@ -110,6 +110,7 @@ class CheckBox
      */
     public function __construct(int $kCheckBox = 0, bool $bSprachWerte = false)
     {
+        $this->oLink = new \Link\Link(Shop::Container()->getDB());
         $this->loadFromDB($kCheckBox, $bSprachWerte);
     }
 
@@ -123,8 +124,8 @@ class CheckBox
         if ($kCheckBox <= 0) {
             return $this;
         }
-        $oCheckBox = Shop::Container()->getDB()->query("
-            SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE 
+        $oCheckBox = Shop::Container()->getDB()->query(
+            "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE 
                 FROM tcheckbox 
                 WHERE kCheckBox = " . $kCheckBox,
             \DB\ReturnType::SINGLE_OBJECT
@@ -181,20 +182,8 @@ class CheckBox
         }
         // Mapping Link
         if ($this->kLink > 0) {
-            $oLink = Shop::Container()->getDB()->query(
-                "SELECT tlink.*, tseo.cSeo, tseo.kSprache, tsprache.cISO
-                    FROM tlink
-                    LEFT JOIN tseo
-                        ON tseo.cKey = 'kLink'
-                        AND tseo.kKey = " . (int)$this->kLink . "
-                    LEFT JOIN tsprache
-                        ON tsprache.kSprache = tseo.kSprache
-                    WHERE tlink.kLink = " . (int)$this->kLink,
-                \DB\ReturnType::SINGLE_OBJECT
-            );
-            if (isset($oLink->kLink) && $oLink->kLink > 0) {
-                $this->oLink = new Link(null, $oLink);
-            }
+            $this->oLink = new \Link\Link(Shop::Container()->getDB());
+            $this->oLink->load($this->kLink);
         } else {
             $this->cLink = 'kein interner Link';
         }
@@ -220,7 +209,7 @@ class CheckBox
      * @param bool $bSprache
      * @param bool $bSpecial
      * @param bool $bLogging
-     * @return array
+     * @return CheckBox[]
      */
     public function getCheckBoxFrontend(
         int $nAnzeigeOrt,
@@ -310,7 +299,7 @@ class CheckBox
         bool $bAktiv = false,
         array $cPost_arr,
         array $xParamas_arr = []
-    ) {
+    ): self {
         $oCheckBox_arr = $this->getCheckBoxFrontend($nAnzeigeOrt, $kKundengruppe, $bAktiv, true, true);
         foreach ($oCheckBox_arr as $oCheckBox) {
             if (isset($cPost_arr[$oCheckBox->cID])) {
@@ -634,5 +623,13 @@ class CheckBox
             CHECKBOX_ORT_FRAGE_ZUM_PRODUKT    => 'Frage zum Produkt',
             CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT => 'Verf&uuml;gbarkeitsanfrage'
         ];
+    }
+
+    /**
+     * @return \Link\Link
+     */
+    public function getLink(): \Link\Link
+    {
+        return $this->oLink;
     }
 }

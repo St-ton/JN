@@ -224,7 +224,7 @@ class Kundengruppe
      * @param int $id
      * @return $this
      */
-    public function setID(int $id): int
+    public function setID(int $id): self
     {
         $this->id = $id;
 

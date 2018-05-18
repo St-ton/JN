@@ -451,25 +451,15 @@ function getCheckBoxForLocation($params, $smarty)
     if (count($oCheckBox_arr) > 0) {
         $linkHelper = Shop::Container()->getLinkService();
         foreach ($oCheckBox_arr as $oCheckBox) {
-            // Link URL bauen
-            $cLinkURL     = '';
-            $cLinkURLFull = '';
-            if ($oCheckBox->kLink > 0) {
-                $page = $linkHelper->getLinkByID($oCheckBox->oLink->kLink);
-                if ($page !== null && !empty($page->getURL())) {
-                    $cLinkURL     = $page->getURL();
-                    $cLinkURLFull = $page->getURL();
-                } else {
-                    $cLinkURL = baueURL($oCheckBox->oLink, URLART_SEITE);
-                }
-            }
-            // Fehlende Angaben
+            $cLinkURL                 = $oCheckBox->kLink > 0
+                ? $oCheckBox->getLink()->getURL()
+                : '';
             $bError                   = isset($params['cPlausi_arr'][$oCheckBox->cID]);
             $cPost_arr                = $params['cPost_arr'];
             $oCheckBox->isActive      = isset($cPost_arr[$oCheckBox->cID]);
             $oCheckBox->cName         = $oCheckBox->oCheckBoxSprache_arr[$langID]->cText;
-            $oCheckBox->cLinkURL      = strlen($cLinkURL) > 0 ? $cLinkURL : '';
-            $oCheckBox->cLinkURLFull  = $cLinkURLFull;
+            $oCheckBox->cLinkURL      = $cLinkURL;
+            $oCheckBox->cLinkURLFull  = $cLinkURL;
             $oCheckBox->cBeschreibung = !empty($oCheckBox->oCheckBoxSprache_arr[$langID]->cBeschreibung)
                 ? $oCheckBox->oCheckBoxSprache_arr[$langID]->cBeschreibung
                 : '';

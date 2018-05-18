@@ -101,12 +101,12 @@ class Kundengruppe
         $oObj = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
         if ($oObj !== null) {
             $conf = Shop::getSettings([CONF_GLOBAL]);
-            $this->setID($oObj->kKundengruppe)
+            $this->setID((int)$oObj->kKundengruppe)
                  ->setName($oObj->cName)
                  ->setDiscount($oObj->fRabatt)
                  ->setDefault($oObj->cStandard)
                  ->setShopLogin($oObj->cShopLogin)
-                 ->setIsMerchant($oObj->nNettoPreise);
+                 ->setIsMerchant((int)$oObj->nNettoPreise);
             if ($this->isDefault()) {
                 if ((int)$conf['global']['global_sichtbarkeit'] === 2) {
                     $this->mayViewPrices = 0;

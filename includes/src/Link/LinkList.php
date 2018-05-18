@@ -50,6 +50,9 @@ final class LinkList implements LinkListInterface
     public function createLinks(array $linkIDs): Collection
     {
         $this->linkIDs = array_map('intval', $linkIDs);
+        if (count($this->linkIDs) === 0) {
+            return $this->links;
+        }
         $linkLanguages = $this->db->query(
             "SELECT tlink.*, tlinksprache.cISOSprache, 
                 tlinksprache.cName AS localizedName, 

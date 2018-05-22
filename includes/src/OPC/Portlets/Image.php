@@ -13,7 +13,9 @@ class Image extends \OPC\Portlet
     public function getHtml(PortletInstance $instance, $preview = false)
     {
         $instance->setImageAttributes();
-        $instance->addClass('img-responsive');
+        if (!empty($instance->getProperty('responsive'))) {
+            $instance->addClass('img-responsive');
+        }
         if (!empty($instance->getProperty('shape'))) {
             $instance->addClass($instance->getProperty('shape'));
         }
@@ -47,25 +49,37 @@ class Image extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'src' => [
+            'src'        => [
                 'label'   => 'Bild',
                 'type'    => 'image',
                 'default' => '',
             ],
-            'shape' => [
-                'label'=> 'shape',
-                'type' => 'select',
-                'options' => [
+            'shape'      => [
+                'label'      => 'shape',
+                'type'       => 'select',
+                'options'    => [
                     '',
                     'img-rounded',
                     'img-circle',
                     'img-thumbnail'
                 ],
+                'dspl_width' => 50,
             ],
-            'alt'  => [
-                'label'   => 'Alternativ-Text',
+            'responsive' => [
+                'label'      => 'responsive image?',
+                'type'       => 'radio',
+                'options'    => [
+                    'yes' => true,
+                    'no'  => false,
+                ],
+                'default'    => true,
+                'inline'     => true,
+                'dspl_width' => 50,
             ],
-            'title' => [
+            'alt'        => [
+                'label' => 'Alternativ-Text',
+            ],
+            'title'      => [
                 'label' => 'title',
             ]
         ];

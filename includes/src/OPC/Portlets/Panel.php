@@ -13,7 +13,7 @@ class Panel extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
-        $instance->addClass('panel')->addClass('panel-' . $instance->getProperty('panel-state'));
+        $instance->addClass('panel')->addClass('panel-' . $instance->getProperty('panel-state'))->addClass($instance->getProperty('panel-class'));
 
         $ret  = '<div ' . $instance->getAttributeString() . ' ' . $instance->getDataAttributeString() . '>';
         $ret .= !empty($instance->getProperty('title-flag')) ? '<div class="panel-heading opc-area" data-area-id="pnl_' . $instance->getProperty("uid") . '_title">' . $instance->getSubareaPreviewHtml('pnl_' . $instance->getProperty("uid") . '_title') . '</div>' : '';
@@ -26,7 +26,7 @@ class Panel extends \OPC\Portlet
 
     public function getFinalHtml($instance)
     {
-        $instance->addClass('panel')->addClass('panel-' . $instance->getProperty('panel-state'));
+        $instance->addClass('panel')->addClass('panel-' . $instance->getProperty('panel-state'))->addClass($instance->getProperty('panel-class'));
 
         $ret  = '<div ' . $instance->getAttributeString() . '>';
         $ret .= !empty($instance->getProperty('title-flag')) ? '<div class="panel-heading">' . $instance->getSubareaFinalHtml('pnl_' . $instance->getProperty("uid") . '_title') . '</div>' : '';

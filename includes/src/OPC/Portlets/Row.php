@@ -12,11 +12,15 @@ class Row extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->addClass($instance->getProperty('class'));
+
         return $this->getPreviewHtmlFromTpl($instance);
     }
 
     public function getFinalHtml($instance)
     {
+        $instance->addClass($instance->getProperty('class'));
+
         return $this->getFinalHtmlFromTpl($instance);
     }
 
@@ -53,11 +57,9 @@ class Row extends \OPC\Portlet
                     ],
                 ]
             ],
-            'border-color' => [
-                'label'   => 'noob color',
-               'type'    => 'color',
-               'default' => 'blue',
-               'dspl_width' => 50,
+            'class' => [
+                'label' => 'CSS Class',
+                'dspl_width' => 50,
             ],
         ];
     }

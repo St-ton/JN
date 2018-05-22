@@ -178,6 +178,8 @@ class Button extends \OPC\Portlet
                     'ja' => 'true',
                     'nein' => 'false',
                 ],
+                'default' => 'false',
+                'inline' => true,
             ],
             'btn-icon-alignment'    => [
                 'label'                => 'icon alignment',

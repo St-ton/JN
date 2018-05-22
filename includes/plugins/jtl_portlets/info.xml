@@ -13,16 +13,40 @@
         </Version>
         <Portlets>
             <Portlet>
-                <Title>Sample</Title>
-                <Class>Sample</Class>
+                <Title>Alert</Title>
+                <Class>Alert</Class>
                 <Group>content</Group>
                 <Active>1</Active>
             </Portlet>
         </Portlets>
         <Blueprints>
             <Blueprint>
-                <Name>Zwei Tiere</Name>
-                <JSONFile>zwei_tiere.json</JSONFile>
+                <Name>Bild links Text rechts</Name>
+                <JSONFile>Bild_4_Text_8.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Text links Bild rechts</Name>
+                <JSONFile>Text_8_Bild_4.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Teamcards mehrspaltig mit Bild</Name>
+                <JSONFile>Teamcards.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Personalcard Bild Position Beschr</Name>
+                <JSONFile>PersonalCard.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Product teaser 2-spaltig</Name>
+                <JSONFile>ProductTeaser.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Text Video 2-spaltig</Name>
+                <JSONFile>Text_6_Video_6.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Icon Text 4-spaltig</Name>
+                <JSONFile>IconText4col.json</JSONFile>
             </Blueprint>
         </Blueprints>
     </Install>

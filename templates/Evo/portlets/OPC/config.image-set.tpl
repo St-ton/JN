@@ -11,7 +11,7 @@
             </td>
             <td class="tcenter">
                 <img src="templates/bootstrap/gfx/layout/upload.png"
-                     id="{$kSlide}-img" onclick="opc.gui.onOpenKCFinder(kcfinderCallback.bind(this, '{$kSlide}'));"
+                     id="{$kSlide}-img" onclick="opc.gui.onOpenKCFinder(kcfinderCallback.bind(this, '{$kSlide}'), 'Bilder');"
                      alt="Slidergrafik" class="img-responsive" role="button"/>
             </td>
             <td class="tcenter">
@@ -106,7 +106,7 @@
                                     <td class="tcenter">
                                         <img src="{if isset($slide['url'])}{$slide['url']}{else}templates/bootstrap/gfx/layout/upload.png{/if}"
                                              id="gllry_image{$slide.nSort}-img"
-                                             onclick="opc.gui.onOpenKCFinder(kcfinderCallback.bind(this, '{$slide.nSort}'));"
+                                             onclick="opc.gui.onOpenKCFinder(kcfinderCallback.bind(this, '{$slide.nSort}'), 'Bilder');"
                                              alt="image for gallery" class="img-responsive" role="button"/>
                                     </td>
                                     <td class="tcenter">

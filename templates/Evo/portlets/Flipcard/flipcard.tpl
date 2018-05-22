@@ -17,6 +17,14 @@
         </div>
     </div>
     <script>
+        function setCardHeight() {
+            var max_h = 0;
+            $('#flp-{$instance->getProperty("uid")} .face').each(function (e) {
+                max_h = Math.max($(this).prop("scrollHeight"), max_h);
+            });
+            $('#flp-{$instance->getProperty("uid")} .card').css('min-height',max_h);
+        }
+
         {if $isPreview}
             $('#flp-{$instance->getProperty("uid")} i.fa-exchange').click(function () {
                 var card = $('.flip');
@@ -25,6 +33,7 @@
                 } else {
                     card.addClass('flipped');
                 }
+                setCardHeight();
             });
         {else}
             $('#flp-{$instance->getProperty("uid")}').click(function () {
@@ -38,11 +47,7 @@
         {/if}
 
         $(document).ready(function () {
-            var max_h = 0;
-            $('#flp-{$instance->getProperty("uid")} .face').each(function (e) {
-                max_h = Math.max($(this).prop("scrollHeight"), max_h);
-            });
-            $('#flp-{$instance->getProperty("uid")} .card').css('min-height',max_h);
+            setCardHeight();
         });
     </script>
 </div>

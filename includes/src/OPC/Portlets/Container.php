@@ -19,6 +19,9 @@ class Container extends \OPC\Portlet
             $instance->setStyle('background-size', 'cover');
             $instance->setStyle('min-height', $instance->getProperty('min-height'));
         }
+        if (!empty($instance->getProperty("class"))) {
+            $instance->addClass($instance->getProperty("class"));
+        }
 
         $res = "<div ".$instance->getAttributeString().$instance->getDataAttributeString().">";
 
@@ -39,6 +42,10 @@ class Container extends \OPC\Portlet
             $instance->setAttribute('data-z-index', '1');
             $instance->setAttribute('data-image-src', \Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.lg/' . $name);
         }
+        if (!empty($instance->getProperty("class"))) {
+            $instance->addClass($instance->getProperty("class"));
+        }
+
         $res = "<div ".$instance->getAttributeString().">";
 
         $res.= $instance->getSubareaFinalHtml($instance->getProperty("uid"));
@@ -63,6 +70,11 @@ class Container extends \OPC\Portlet
             'uid'           => [
                 'label'    => 'ID',
                 'default' => uniqid('cntr-', false),
+                'dspl_width' => 50,
+            ],
+            'class' => [
+                'label' => 'CSS class',
+                'dspl_width' => 50,
             ],
             'parallax-flag' => [
                 'label'   => 'use parrallax effect',
@@ -71,6 +83,7 @@ class Container extends \OPC\Portlet
                     'mitlaufendes Bild'   => 'true',
                     'einfacher Container' => 'false'
                 ],
+                'inline' => true,
             ],
             'src'           => [
                 'type'                 => 'image',

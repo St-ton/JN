@@ -1,20 +1,24 @@
 <?php
 
 /**
- * @param array $oLink_arr
- * @param int   $kVaterLink
- * @param int   $nLevel
- * @return array
+ * @param \Link\LinkGroupInterface $linkGroup
+ * @param int                      $kVaterLink
+ * @return \Tightenco\Collect\Support\Collection
  */
-function build_navigation_subs_admin($oLink_arr, $kVaterLink = 0, $nLevel = 0)
+function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
 {
-    $oNew_arr = [];
-    foreach ($oLink_arr as &$oLink) {
-        if ($oLink->kVaterLink == $kVaterLink) {
-            $oLink->nLevel   = $nLevel;
-            $oLink->oSub_arr = build_navigation_subs_admin($oLink_arr, $oLink->kLink, $nLevel + 1);
-            $oNew_arr[]      = $oLink;
+    $kVaterLink = (int)$kVaterLink;
+    $oNew_arr   = new \Tightenco\Collect\Support\Collection();
+    $lh         = Shop::Container()->getLinkService();
+    $i          = 0;
+    foreach ($linkGroup->getLinks() as $link) {
+        $link->setLevel(count($lh->getParentIDs($link->getID())));
+        /** @var \Link\Link $link */
+        if ($link->getParent() !== $kVaterLink) {
+            continue;
         }
+        $link->setChildLinks(build_navigation_subs_admin($linkGroup, $link->getID()));
+        $oNew_arr->push($link);
     }
 
     return $oNew_arr;
@@ -131,12 +135,24 @@ function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
 /**
  * @param int $kLink
  * @param int $kLinkgruppe
+ * @return int
  */
-function removeLink($kLink, $kLinkgruppe)
+function removeLink($kLink, $kLinkgruppe = 0)
 {
-    $oLink              = new Link($kLink, null, true);
-    $oLink->kLinkgruppe = $kLinkgruppe;
-    $oLink->delete(true, $kLinkgruppe);
+    return Shop::Container()->getDB()->executeQueryPrepared(
+        "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations
+            FROM tlink
+            JOIN tlinkgroupassociations
+                ON tlinkgroupassociations.linkID = tlink.kLink
+            LEFT JOIN tlinksprache
+                ON tlink.kLink = tlinksprache.kLink
+            LEFT JOIN tseo
+                ON tseo.cKey = 'kLink'
+                AND tseo.kKey = :lid
+            WHERE tlink.kLink = :lid",
+        ['lid' => $kLink],
+        \DB\ReturnType::AFFECTED_ROWS
+    );
 }
 
 /**
@@ -236,28 +252,4 @@ function holeSpezialseiten()
             FROM tspezialseite
             ORDER BY nSort", 2
     );
-}
-
-/**
- * @param array $oSub_arr
- * @param int   $kLinkgruppe
- * @param int   $kLinkgruppeAlt
- */
-function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe, $kLinkgruppeAlt)
-{
-    if (is_array($oSub_arr) && count($oSub_arr) > 0) {
-        foreach ($oSub_arr as $oSub) {
-            $exists = Shop::Container()->getDB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oSub->kLink,  (int)$kLinkgruppe]);
-            if (empty($exists)) {
-                $oSub->setLinkgruppe($kLinkgruppe)
-                    ->save();
-                aenderLinkgruppeRek($oSub->oSub_arr, $kLinkgruppe, $kLinkgruppeAlt);
-                $oSub->setLinkgruppe($kLinkgruppeAlt)
-                    ->delete(false, $kLinkgruppeAlt);
-            } else {
-                $oSub->setVaterLink(0)
-                     ->update();
-            }
-        }
-    }
 }

@@ -118,6 +118,7 @@ final class LinkGroupList implements LinkGroupListInterface
         foreach ($grouped as $linkGroupID => $localizedLinkgroup) {
             $lg = new LinkGroup($this->db);
             $lg->setID($linkGroupID);
+            $lg->setIsSpecial(false);
             $groups[] = $lg->map($localizedLinkgroup);
         }
 
@@ -141,12 +142,15 @@ final class LinkGroupList implements LinkGroupListInterface
                 tseo.kSprache AS languageID,
                 tseo.cSeo AS localizedUrl,
                 tspezialseite.cDateiname,
+                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups,
                 2 AS pluginState
                     FROM tlinksprache
                     JOIN tlink
                         ON tlink.kLink = tlinksprache.kLink
                     JOIN tsprache
                         ON tsprache.cISO = tlinksprache.cISOSprache
+                    JOIN tlinkgroupassociations
+					    ON tlinkgroupassociations.linkID = tlinksprache.kLink
                     LEFT JOIN tseo
                         ON tseo.cKey = 'kLink'
                         AND tseo.kKey = tlink.kLink
@@ -154,7 +158,8 @@ final class LinkGroupList implements LinkGroupListInterface
                     LEFT JOIN tspezialseite
 						ON tspezialseite.nLinkart = tlink.nLinkart
                     WHERE tlink.kLink = tlinksprache.kLink
-                        AND tlink.nLinkart >= 5",
+                        AND tlink.nLinkart >= 5
+                    GROUP BY tlink.kLink, tseo.kSprache",
             ReturnType::ARRAY_OF_OBJECTS
         );
 
@@ -210,8 +215,9 @@ final class LinkGroupList implements LinkGroupListInterface
                 tseo.cSeo AS localizedUrl, 
                 tsprache.cISO AS cISOSprache, tsprache.kSprache AS languageID, 
                 tlink.kVaterLink, tspezialseite.kPlugin, 
-                tlink.kLinkgruppe, tlink.cName, tlink.cNoFollow, tlink.cSichtbarNachLogin, tlink.cDruckButton, 
+                tlink.cName, tlink.cNoFollow, tlink.cSichtbarNachLogin, tlink.cDruckButton, 
                 tlink.nSort, tlink.bIsActive, tlink.bIsFluid, tlink.bSSL,
+                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups,
                 2 AS pluginState
             FROM tspezialseite
                 LEFT JOIN tlink 
@@ -220,12 +226,15 @@ final class LinkGroupList implements LinkGroupListInterface
                     ON tlink.kLink = tlinksprache.kLink
                 JOIN tsprache 
                     ON tsprache.cISO = tlinksprache.cISOSprache
+                JOIN tlinkgroupassociations
+                    ON tlinkgroupassociations.linkID = tlinksprache.kLink
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kLink' 
                     AND tseo.kKey = tlink.kLink 
                     AND tseo.kSprache = tsprache.kSprache
-            WHERE cDateiname IS NOT NULL 
-                AND cDateiname != ''",
+                WHERE cDateiname IS NOT NULL 
+                    AND cDateiname != ''
+                GROUP BY tsprache.kSprache",
             ReturnType::ARRAY_OF_OBJECTS
         );
         $grouped      = group($staticRoutes, function ($e) {

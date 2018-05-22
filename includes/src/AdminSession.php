@@ -100,6 +100,11 @@ class AdminSession
             $_SESSION['kSprache']    = isset($lang->kSprache) ? (int)$lang->kSprache : 1;
             $_SESSION['cISOSprache'] = $lang->cISO ?? 'ger';
         }
+        if (!isset($_SESSION['cISOSprache'])) {
+            // after shop updates this may not be set
+            $lang                    = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+            $_SESSION['cISOSprache'] = $lang->cISO ?? 'ger';
+        }
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
         if (isset($_SESSION['Kundengruppe']) && get_class($_SESSION['Kundengruppe']) === 'stdClass') {
             $_SESSION['Kundengruppe'] = new Kundengruppe($_SESSION['Kundengruppe']->kKundengruppe);

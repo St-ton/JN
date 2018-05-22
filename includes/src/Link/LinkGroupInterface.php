@@ -74,6 +74,36 @@ interface LinkGroupInterface
     public function setTemplate(string $template);
 
     /**
+     * @return array
+     */
+    public function getLanguageID(): array;
+
+    /**
+     * @param array $languageID
+     */
+    public function setLanguageID(array $languageID);
+
+    /**
+     * @return array
+     */
+    public function getLanguageCode(): array;
+
+    /**
+     * @param array $languageCode
+     */
+    public function setLanguageCode(array $languageCode);
+
+    /**
+     * @return bool
+     */
+    public function isSpecial(): bool;
+
+    /**
+     * @param bool $isSpecial
+     */
+    public function setIsSpecial(bool $isSpecial);
+
+    /**
      * @param callable $func
      * @return Collection
      */

@@ -15,7 +15,7 @@
     <div class="panel-group accordion" id="accordion2" role="tablist" aria-multiselectable="true">
         {foreach $linkgruppen as $linkgruppe}
             {assign var=lgName value='linkgroup-'|cat:$linkgruppe->getID()}
-            <div class="panel panel-default">
+            <div class="panel panel-{if $linkgruppe->getID() > 0}default{else}danger{/if}">
                 <div class="panel-heading accordion-heading">
                     <h3 class="panel-title" id="heading-{$lgName}">
                         <span class="pull-left">
@@ -27,9 +27,11 @@
                     <form method="post" action="links.php">
                         {$jtl_token}
                         <span class="btn-group pull-right">
-                            <button name="kLinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-primary" title="{#modify#}"><i class="fa fa-edit"></i></button>
-                            <button name="addlink" value="{$linkgruppe->getID()}" class="btn btn-default add" title="{#addLink#}">{#addLink#}</button>
-                            <button name="delconfirmlinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-danger" title="{#linkGroup#} {#delete#}"><i class="fa fa-trash"></i></button>
+                            {if $linkgruppe->getID() > 0}
+                                <button name="kLinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-primary" title="{#modify#}"><i class="fa fa-edit"></i></button>
+                                <button name="addlink" value="{$linkgruppe->getID()}" class="btn btn-default add" title="{#addLink#}">{#addLink#}</button>
+                                <button name="delconfirmlinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-danger" title="{#linkGroup#} {#delete#}"><i class="fa fa-trash"></i></button>
+                            {/if}
                         </span>
                     </form>
                 </div>

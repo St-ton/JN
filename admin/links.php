@@ -26,16 +26,19 @@ if (isset($_POST['addlink']) && (int)$_POST['addlink'] > 0) {
     $link->kLinkgruppe = (int)$_POST['addlink'];
 }
 
-if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe']) && (int)$_POST['removefromlinkgroup'] > 0 && validateToken()) {
+if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
+    && (int)$_POST['removefromlinkgroup'] > 0
+    && validateToken()
+) {
     $linkID      = (int)$_POST['removefromlinkgroup'];
     $linkGroupID = (int)$_POST['kLinkgruppe'];
-    $res = Shop::Container()->getDB()->delete(
+    $res         = Shop::Container()->getDB()->delete(
         'tlinkgroupassociations',
         ['linkGroupID', 'linkID'],
         [$linkGroupID, $linkID]
     );
     if ($res > 0) {
-        $hinweis    .= 'Link erfolgreich aus Linkgruppe entfernt.';
+        $hinweis .= 'Link erfolgreich aus Linkgruppe entfernt.';
     } else {
         $fehler .= 'Link konnte nicht aus Linkgruppe entfernt werden.';
     }
@@ -63,7 +66,10 @@ if (isset($_POST['loesch_linkgruppe']) && (int)$_POST['loesch_linkgruppe'] === 1
     }
 }
 
-if ((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0 && validateToken()) || $step === 'loesch_linkgruppe') {
+if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
+        || $step === 'loesch_linkgruppe')
+    && validateToken()
+) {
     $step        = 'uebersicht';
     $kLinkgruppe = -1;
     if (isset($_POST['dellinkgruppe'])) {
@@ -87,7 +93,22 @@ if ((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0 && valid
 
 if (isset($_POST['delconfirmlinkgruppe']) && (int)$_POST['delconfirmlinkgruppe'] > 0 && validateToken()) {
     $step = 'linkgruppe_loeschen_confirm';
-    $smarty->assign('oLinkgruppe', holeLinkgruppe((int)$_POST['delconfirmlinkgruppe']));
+    $links = Shop::Container()->getDB()->query(
+        'SELECT tlink.cName
+            FROM tlink
+            JOIN tlinkgroupassociations A
+                ON tlink.kLink = A.linkID
+            JOIN tlinkgroupassociations B
+                ON A.linkID = B.linkID
+            WHERE A.linkGroupID = 15
+            GROUP BY A.linkID
+            HAVING COUNT(A.linkID) > 1',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    $smarty->assign('oLinkgruppe', holeLinkgruppe((int)$_POST['delconfirmlinkgruppe']))
+           ->assign('affectedLinkNames', \Functional\map($links, function ($l) {
+            return $l->cName;
+        }));
 }
 
 if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken()) {
@@ -103,9 +124,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
     $oPlausiCMS->doPlausi('lnk');
 
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
-        if (!isset($link)) {
-            $link = new stdClass();
-        }
+        $link                     = new stdClass();
         $link->kLink              = (int)$_POST['kLink'];
         $link->kPlugin            = (int)$_POST['kPlugin'];
         $link->cName              = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
@@ -141,9 +160,9 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
         $kLink      = 0;
         if ((int)$_POST['kLink'] === 0) {
             //einfuegen
-            $kLink   = Shop::Container()->getDB()->insert('tlink', $link);
-            $assoc = new stdClass();
-            $assoc->linkID = $kLink;
+            $kLink              = Shop::Container()->getDB()->insert('tlink', $link);
+            $assoc              = new stdClass();
+            $assoc->linkID      = $kLink;
             $assoc->linkGroupID = (int)$_POST['kLinkgruppe'];
             Shop::Container()->getDB()->insert('tlinkgroupassociations', $assoc);
             $hinweis .= 'Link wurde erfolgreich hinzugef&uuml;gt.';
@@ -238,16 +257,16 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
         }
     } else {
         $step = 'neuer Link';
-        if (!isset($link)) {
-            $link = new stdClass();
-        }
+        $link = new stdClass();
         $link->kLinkgruppe = (int)$_POST['kLinkgruppe'];
         $fehler            = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
         $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
                ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
     }
-} elseif (((isset($_POST['neuelinkgruppe']) && (int)$_POST['neuelinkgruppe'] === 1) ||
-        (isset($_POST['kLinkgruppe']) && (int)$_POST['kLinkgruppe'] > 0)) && validateToken()) {
+} elseif (((isset($_POST['neuelinkgruppe']) && (int)$_POST['neuelinkgruppe'] === 1)
+        || (isset($_POST['kLinkgruppe']) && (int)$_POST['kLinkgruppe'] > 0))
+    && validateToken()
+) {
     $step = 'neue Linkgruppe';
     if (isset($_POST['kLinkgruppe']) && (int)$_POST['kLinkgruppe'] > 0) {
         $linkgruppe = Shop::Container()->getDB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
@@ -339,8 +358,11 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && va
                     ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             }
 
-            Shop::Container()->getDB()->delete('tlinkgruppesprache', ['kLinkgruppe', 'cISOSprache'],
-                [$kLinkgruppe, $sprache->cISO]);
+            Shop::Container()->getDB()->delete(
+                'tlinkgruppesprache',
+                ['kLinkgruppe', 'cISOSprache'],
+                [$kLinkgruppe, $sprache->cISO]
+            );
             Shop::Container()->getDB()->insert('tlinkgruppesprache', $linkgruppeSprache);
         }
     } else {
@@ -352,7 +374,7 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && va
 }
 // Verschiebt einen Link in eine andere Linkgruppe
 if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1 && validateToken()) {
-    if ((int)$_POST['kLink'] > 0 && (int)$_POST['kLinkgruppe'] > 0 && (int)$_POST['kLinkgruppeAlt'] > 0) {
+    if ((int)$_POST['kLink'] > 0 && (int)$_POST['kLinkgruppe'] > 0 && (int)$_POST['kLinkgruppeAlt'] >= 0) {
         $oLink = new \Link\Link(Shop::Container()->getDB());
         $oLink->load((int)$_POST['kLink']);
         if ($oLink->getID() > 0) {
@@ -364,14 +386,24 @@ if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1
                     [(int)$_POST['kLinkgruppe'], $oLink->getID()]
                 );
                 if (empty($exists)) {
-                    $upd = new stdClass();
+                    $upd              = new stdClass();
                     $upd->linkGroupID = (int)$_POST['kLinkgruppe'];
-                    Shop::Container()->getDB()->update(
+                    $rows = Shop::Container()->getDB()->update(
                         'tlinkgroupassociations',
                         ['linkGroupID', 'linkID'],
                         [(int)$_POST['kLinkgruppeAlt'], $oLink->getID()],
                         $upd
                     );
+                    if ($rows === 0) {
+                        // previously unassigned link
+                        $upd              = new stdClass();
+                        $upd->linkGroupID = (int)$_POST['kLinkgruppe'];
+                        $upd->linkID      = $oLink->getID();
+                        $rows = Shop::Container()->getDB()->insert(
+                            'tlinkgroupassociations',
+                            $upd
+                        );
+                    }
                     foreach ($oLink->getChildLinks() as $childLink) {
                         Shop::Container()->getDB()->update(
                             'tlinkgroupassociations',
@@ -417,7 +449,7 @@ if (isset($_POST['kopiere_in_linkgruppe'])
                 $ins->linkID      = $link->getID();
                 $ins->linkGroupID = (int)$_POST['kLinkgruppe'];
                 Shop::Container()->getDB()->insert('tlinkgroupassociations', $ins);
-                $hinweis          .= 'Sie haben den Link "' . $link->getName() . '" erfolgreich in die Linkgruppe "' .
+                $hinweis .= 'Sie haben den Link "' . $link->getName() . '" erfolgreich in die Linkgruppe "' .
                     $oLinkgruppe->cName . '" kopiert.';
             } else {
                 $fehler .= 'Fehler: Der Link konnte nicht kopiert werden. Er existiert bereits in der Zielgruppe.';
@@ -460,8 +492,15 @@ if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 &
     }
 }
 
+
+//clear cache
+if ($clearCache === true) {
+    Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+}
 if ($step === 'uebersicht') {
-    $lgl = new \Link\LinkGroupList(Shop::Container()->getDB());
+    $db = Shop::Container()->getDB();
+    $lgl = new \Link\LinkGroupList($db);
     $lgl->loadAll();
     $linkGroups = $lgl->getLinkGroups()->filter(function (\Link\LinkGroupInterface $e) {
         return $e->isSpecial() === false;
@@ -470,6 +509,36 @@ if ($step === 'uebersicht') {
         /** @var \Link\LinkGroupInterface $linkGroup */
         $filtered = build_navigation_subs_admin($linkGroup);
         $linkGroup->setLinks($filtered);
+    }
+    $unassigned = $db->query(
+        'SELECT kLink 
+            FROM tlink 
+            WHERE kLink NOT IN (SELECT linkID FROM tlinkgroupassociations)',
+        \DB\ReturnType::ARRAY_OF_OBJECTS);
+
+    if (count($unassigned) > 0) {
+        $languages     = $db->query('SELECT * FROM tsprache', \DB\ReturnType::ARRAY_OF_OBJECTS);
+        $names         = [];
+        $languageIDs   = [];
+        $languageCodes = [];
+        foreach ($languages as $language) {
+            $langID                 = (int)$language->kSprache;
+            $names[$langID]         = $language->cISO === 'ger' ? 'Links ohne Linkgruppe' : 'Links without link group';
+            $languageIDs[]          = $langID;
+            $languageCodes[$langID] = $language->cISO;
+        }
+        $ualg       = new \Link\LinkGroup($db);
+        $ull        = new \Link\LinkList($db);
+        $unassigned = \Functional\map($unassigned, function ($l) {
+            return (int)$l->kLink;
+        });
+        $ualg->setLinks($ull->createLinks($unassigned));
+        $ualg->setNames($names);
+        $ualg->setLanguageCode($languageCodes);
+        $ualg->setLanguageID($languageIDs);
+        $ualg->setID(0);
+        $ualg->setTemplate('');
+        $linkGroups->push($ualg);
     }
     $smarty->assign('kPlugin', verifyGPCDataInteger('kPlugin'))
            ->assign('linkgruppen', $linkGroups);

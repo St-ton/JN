@@ -72,12 +72,12 @@ final class LinkList implements LinkListInterface
                     ON tlink.kLink = tlinksprache.kLink
                 JOIN tsprache
                     ON tsprache.cISO = tlinksprache.cISOSprache
-                JOIN tlinkgroupassociations
-                    ON tlinkgroupassociations.linkID = tlinksprache.kLink
                 JOIN tseo
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlinksprache.kLink
                     AND tseo.kSprache = tsprache.kSprache
+                LEFT JOIN tlinkgroupassociations
+                    ON tlinkgroupassociations.linkID = tlinksprache.kLink
                 LEFT JOIN tspezialseite
                     ON tspezialseite.nLinkart = tlink.nLinkart
                 LEFT JOIN tplugin

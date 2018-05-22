@@ -21,7 +21,7 @@
                 <select class="form-control" name="kLinkgruppe" onchange="document.forms['aenderlinkgruppe_{$link->getID()}_{$id}'].submit();">
                     <option value="-1">{#linkGroupMove#}</option>
                     {foreach name=aenderlinkgruppe from=$linkgruppen item=linkgruppeTMP}
-                        {if $linkgruppeTMP->getID() != $id}
+                        {if $linkgruppeTMP->getID() != $id && $linkgruppeTMP->getID() > 0}
                             <option value="{$linkgruppeTMP->getID()}">{$linkgruppeTMP->getName()}</option>
                         {/if}
                     {/foreach}
@@ -34,14 +34,16 @@
                 {if $kPlugin > 0}
                     <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                 {/if}
-                <select class="form-control" name="kLinkgruppe" onchange="document.forms['kopiereinlinkgruppe_{$link->getID()}_{$id}'].submit();">
-                    <option value="-1">{#linkGroupCopy#}</option>
-                    {foreach name=kopiereinlinkgruppe from=$linkgruppen item=linkgruppeTMP}
-                        {if $linkgruppeTMP->getID() != $id}
-                            <option value="{$linkgruppeTMP->getID()}">{$linkgruppeTMP->getName()}</option>
-                        {/if}
-                    {/foreach}
-                </select>
+                {if $id > 0}
+                    <select class="form-control" name="kLinkgruppe" onchange="document.forms['kopiereinlinkgruppe_{$link->getID()}_{$id}'].submit();">
+                        <option value="-1">{#linkGroupCopy#}</option>
+                        {foreach name=kopiereinlinkgruppe from=$linkgruppen item=linkgruppeTMP}
+                            {if $linkgruppeTMP->getID() != $id && $linkgruppeTMP->getID() > 0}
+                                <option value="{$linkgruppeTMP->getID()}">{$linkgruppeTMP->getName()}</option>
+                            {/if}
+                        {/foreach}
+                    </select>
+                {/if}
             </form>
             <form class="navbar-form2 p33 left" method="post" action="links.php" name="aenderlinkvater_{$link->getID()}_{$id}">
                 {$jtl_token}
@@ -51,15 +53,17 @@
                 {if $kPlugin > 0}
                     <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                 {/if}
-                <select class="form-control" name="kVaterLink" onchange="document.forms['aenderlinkvater_{$link->getID()}_{$id}'].submit();">
-                    <option value="-1">Unter Link einordnen</option>
-                    <option value="0">-- Root --</option>
-                    {foreach $list as $linkTMP}
-                        {if $linkTMP->getID() !== $link->getID() && $linkTMP->getID() !== $link->getParent()}
-                            <option value="{$linkTMP->getID()}">{$linkTMP->getName()}</option>
-                        {/if}
-                    {/foreach}
-                </select>
+                {if $id > 0}
+                    <select class="form-control" name="kVaterLink" onchange="document.forms['aenderlinkvater_{$link->getID()}_{$id}'].submit();">
+                        <option value="-1">Unter Link einordnen</option>
+                        <option value="0">-- Root --</option>
+                        {foreach $list as $linkTMP}
+                            {if $linkTMP->getID() !== $link->getID() && $linkTMP->getID() !== $link->getParent()}
+                                <option value="{$linkTMP->getID()}">{$linkTMP->getName()}</option>
+                            {/if}
+                        {/foreach}
+                    </select>
+                {/if}
             </form>
         </td>
         <td class="tcenter" style="width: 10%;min-width: 143px;">
@@ -70,8 +74,10 @@
                 {/if}
                 <input type="hidden" name="kLinkgruppe" value="{$id}" />
                 <div class="btn-group">
-                    <button name="kLink" value="{$link->getID()}" class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i></button>
-                    <button name="removefromlinkgroup" value="{$link->getID()}" class="btn btn-warning" title="{#linkGroupRemove#}"><i class="fa fa-refresh"></i></button>
+                    {if $id > 0}
+                        <button name="kLink" value="{$link->getID()}" class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i></button>
+                        <button name="removefromlinkgroup" value="{$link->getID()}" class="btn btn-warning" title="{#linkGroupRemove#}"><i class="fa fa-refresh"></i></button>
+                    {/if}
                     <button name="dellink" value="{$link->getID()}" class="btn btn-danger{if $link->getPluginID() > 0} disabled{/if}" onclick="return confirmDelete();" title="{#delete#}"><i class="fa fa-trash"></i></button>
                 </div>
             </form>

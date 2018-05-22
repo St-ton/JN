@@ -41,6 +41,11 @@ final class LinkGroup implements LinkGroupInterface
     private $template;
 
     /**
+     * @var bool
+     */
+    private $isSpecial = true;
+
+    /**
      * @var array
      */
     private $languageID = [];
@@ -109,7 +114,10 @@ final class LinkGroup implements LinkGroupInterface
         $this->links = (new LinkList($this->db))->createLinks(map(flatten($this->db->queryPrepared(
             'SELECT kLink
                 FROM tlink
-                WHERE kLinkgruppe = :lgid',
+                JOIN tlinkgroupassociations a 
+                    ON tlink.kLink = a.linkID
+                WHERE a.linkGroupID = :lgid
+                ORDER BY tlink.nSort, tlink.cName',
             ['lgid' => $this->id],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         )), function ($e) {
@@ -201,6 +209,54 @@ final class LinkGroup implements LinkGroupInterface
         $this->links = $this->links->filter($func);
 
         return $this->links;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLanguageID(): array
+    {
+        return $this->languageID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLanguageID(array $languageID)
+    {
+        $this->languageID = $languageID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLanguageCode(): array
+    {
+        return $this->languageCode;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLanguageCode(array $languageCode)
+    {
+        $this->languageCode = $languageCode;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isSpecial(): bool
+    {
+        return $this->isSpecial;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setIsSpecial(bool $isSpecial)
+    {
+        $this->isSpecial = $isSpecial;
     }
 
     /**

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * @param \Link\LinkGroupInterface $linkGroup
@@ -40,14 +44,11 @@ function gibLetzteBildNummer($kLink)
             }
         }
     }
-    $nMax       = 0;
-    $imageCount = count($cBild_arr);
-    if ($imageCount > 0) {
-        for ($i = 0; $i < $imageCount; $i++) {
-            $cNummer = substr($cBild_arr[$i], 4, (strlen($cBild_arr[$i]) - strpos($cBild_arr[$i], '.')) - 3);
-            if ($cNummer > $nMax) {
-                $nMax = $cNummer;
-            }
+    $nMax = 0;
+    foreach ($cBild_arr as $image) {
+        $cNummer = substr($image, 4, (strlen($image) - strpos($image, '.')) - 3);
+        if ($cNummer > $nMax) {
+            $nMax = $cNummer;
         }
     }
 
@@ -170,7 +171,7 @@ function getLinkVar($kLink, $var)
     $kLink = (int)$kLink;
     // tseo work around
     if ($var === 'cSeo') {
-        $linknamen = Shop::Container()->getDB()->query(
+        $links = Shop::Container()->getDB()->query(
             "SELECT tlinksprache.cISOSprache, tseo.cSeo
                 FROM tlinksprache
                 JOIN tsprache 
@@ -179,14 +180,14 @@ function getLinkVar($kLink, $var)
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlinksprache.kLink
                     AND tseo.kSprache = tsprache.kSprache
-                WHERE tlinksprache.kLink = " . $kLink, 2
+                WHERE tlinksprache.kLink = " . $kLink,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     } else {
-        $linknamen = Shop::Container()->getDB()->selectAll('tlinksprache', 'kLink', $kLink);
+        $links = Shop::Container()->getDB()->selectAll('tlinksprache', 'kLink', $kLink);
     }
-    $linkCount = count($linknamen);
-    for ($i = 0; $i < $linkCount; $i++) {
-        $namen[$linknamen[$i]->cISOSprache] = $linknamen[$i]->$var;
+    foreach ($links as $link) {
+        $namen[$link->cISOSprache] = $link->$var;
     }
 
     return $namen;
@@ -224,10 +225,9 @@ function getLinkgruppeNames($kLinkgruppe)
     if (!$kLinkgruppe) {
         return $namen;
     }
-    $linknamen = Shop::Container()->getDB()->selectAll('tlinkgruppesprache', 'kLinkgruppe', (int)$kLinkgruppe);
-    $linkCount = count($linknamen);
-    for ($i = 0; $i < $linkCount; $i++) {
-        $namen[$linknamen[$i]->cISOSprache] = $linknamen[$i]->cName;
+    $links = Shop::Container()->getDB()->selectAll('tlinkgruppesprache', 'kLinkgruppe', (int)$kLinkgruppe);
+    foreach ($links as $link) {
+        $namen[$link->cISOSprache] = $link->cName;
     }
 
     return $namen;
@@ -250,6 +250,7 @@ function holeSpezialseiten()
     return Shop::Container()->getDB()->query(
         "SELECT *
             FROM tspezialseite
-            ORDER BY nSort", 2
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }

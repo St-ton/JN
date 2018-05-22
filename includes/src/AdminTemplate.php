@@ -123,7 +123,7 @@ class AdminTemplate
                 self::$cTemplate = $oTemplate->cTemplate;
                 Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
 
-                return $oTemplate->cTemplate;
+                return $this;
             }
             // fall back to admin template "default"
             self::$cTemplate = 'default';

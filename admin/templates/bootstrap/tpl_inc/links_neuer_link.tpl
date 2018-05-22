@@ -44,7 +44,9 @@
         <form id="create_link" name="link_erstellen" method="post" action="links.php" enctype="multipart/form-data">
             {$jtl_token}
             <input type="hidden" name="neu_link" value="1" />
-            <input type="hidden" name="kLinkgruppe" value="{if isset($Link->kLinkgruppe)}{$Link->kLinkgruppe}{/if}" />
+            {if isset($Link->kLinkgruppe) && !is_array($Link->kLinkgruppe)}
+                <input type="hidden" name="kLinkgruppe" value="{$Link->kLinkgruppe}" />
+            {/if}
             <input type="hidden" name="kLink" value="{if isset($Link->kLink)}{$Link->kLink}{/if}" />
             <input type="hidden" name="kPlugin" value="{if isset($Link->kPlugin)}{$Link->kPlugin}{/if}" />
             <div class="panel panel-default">

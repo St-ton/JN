@@ -1,6 +1,6 @@
 <script type="text/javascript">
     function confirmDelete() {ldelim}
-        return confirm('M\u00f6chten Sie den Link wirklich l\u00f6schen?\nBitte beachten Sie, dass auch untergeordnete Links gel\u00f6scht werden!');
+        return confirm('Möchten Sie den Link wirklich löschen?\nBitte beachten Sie, dass auch untergeordnete Links gelöscht werden!');
     {rdelim}
 </script>
 
@@ -13,30 +13,30 @@
         </form>
     </div>
     <div class="panel-group accordion" id="accordion2" role="tablist" aria-multiselectable="true">
-        {foreach name=linkgruppen from=$linkgruppen item=linkgruppe}
-            {assign var=lgName value='linkgroup-'|cat:$linkgruppe->kLinkgruppe}
+        {foreach $linkgruppen as $linkgruppe}
+            {assign var=lgName value='linkgroup-'|cat:$linkgruppe->getID()}
             <div class="panel panel-default">
                 <div class="panel-heading accordion-heading">
                     <h3 class="panel-title" id="heading-{$lgName}">
                         <span class="pull-left">
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}">
-                                <span class="accordion-toggle-icon"><i class="fa fa-plus"></i></span> {$linkgruppe->cName} ({#linkGroupTemplatename#}: {$linkgruppe->cTemplatename})
+                                <span class="accordion-toggle-icon"><i class="fa fa-plus"></i></span> {$linkgruppe->getName()} ({#linkGroupTemplatename#}: {$linkgruppe->getTemplate()})
                             </a>
                         </span>
                     </h3>
                     <form method="post" action="links.php">
                         {$jtl_token}
                         <span class="btn-group pull-right">
-                            <button name="kLinkgruppe" value="{$linkgruppe->kLinkgruppe}" class="btn btn-primary" title="{#modify#}"><i class="fa fa-edit"></i></button>
-                            <button name="addlink" value="{$linkgruppe->kLinkgruppe}" class="btn btn-default add" title="{#addLink#}">{#addLink#}</button>
-                            <button name="delconfirmlinkgruppe" value="{$linkgruppe->kLinkgruppe}" class="btn btn-danger" title="{#linkGroup#} {#delete#}"><i class="fa fa-trash"></i></button>
+                            <button name="kLinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-primary" title="{#modify#}"><i class="fa fa-edit"></i></button>
+                            <button name="addlink" value="{$linkgruppe->getID()}" class="btn btn-default add" title="{#addLink#}">{#addLink#}</button>
+                            <button name="delconfirmlinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-danger" title="{#linkGroup#} {#delete#}"><i class="fa fa-trash"></i></button>
                         </span>
                     </form>
                 </div>
                 <div id="collapse{$lgName}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{$lgName}">
-                    {if $linkgruppe->links|count > 0}
+                    {if $linkgruppe->getLinks()->count() > 0}
                         <table class="table">
-                            {include file="tpl_inc/links_uebersicht_item.tpl" list=$linkgruppe->links id=$linkgruppe->kLinkgruppe}
+                            {include file="tpl_inc/links_uebersicht_item.tpl" list=$linkgruppe->getLinks() id=$linkgruppe->getID()}
                         </table>
                     {else}
                         <p class="alert alert-info" style="margin:10px;"><i class="fa fa-info-circle"></i> {#noData#}</p>

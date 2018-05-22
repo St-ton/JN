@@ -2045,8 +2045,10 @@ class Artikel
                     $oVariationTMP_arr = array_merge($oVariationTMP_arr, $oVariationVaterTMP_arr);
                 }
             } elseif ($this->kVaterArtikel > 0) { //child?
-                $scoreJoin = '';
+                $scoreJoin   = '';
+                $scoreSelect = '';
                 if (!$exportWorkaround) {
+                    $scoreSelect    = ', COALESCE(ek.score, 0) nMatched';
                     $scoreJoin      = "LEFT JOIN (
 	                        SELECT kEigenschaftKombi, COUNT(teigenschaftkombiwert.kEigenschaftWert) AS score
                             FROM teigenschaftkombiwert
@@ -2072,8 +2074,8 @@ class Artikel
                         teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort,
                         teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit, teigenschaftwertpict.cType,
                         teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad,
-                        teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis,
-                        COALESCE(ek.score, 0) nMatched
+                        teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
+                        " . $scoreSelect . "
                     FROM tartikel
                     JOIN teigenschaftkombiwert
 	                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi

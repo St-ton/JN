@@ -19,7 +19,12 @@ final class Link extends AbstractLink
     /**
      * @var int
      */
-    protected $id;
+    protected $id = 0;
+
+    /**
+     * @var int
+     */
+    protected $level = 0;
 
     /**
      * @var int
@@ -40,6 +45,11 @@ final class Link extends AbstractLink
      * @var int
      */
     protected $linkType;
+
+    /**
+     * @var array
+     */
+    protected $linkGroups = [];
 
     /**
      * @var array
@@ -192,7 +202,8 @@ final class Link extends AbstractLink
                 tlinksprache.cMetaTitle AS metaTitle,
                 tseo.kSprache AS languageID,
                 tseo.cSeo AS localizedUrl,
-                tplugin.nStatus AS pluginState
+                tplugin.nStatus AS pluginState,
+                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups
             FROM tlink
                 JOIN tlinksprache
                     ON tlink.kLink = tlinksprache.kLink
@@ -202,14 +213,17 @@ final class Link extends AbstractLink
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlinksprache.kLink
                     AND tseo.kSprache = tsprache.kSprache
+                JOIN tlinkgroupassociations
+					ON tlinkgroupassociations.linkID = tlinksprache.kLink
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
-                WHERE tlinksprache.kLink = :lid",
+                WHERE tlinksprache.kLink = :lid
+                GROUP BY tseo.kSprache",
             ['lid' => $this->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (count($link) === 0) {
-            throw new \InvalidArgumentException('Provided link id not found.');
+            throw new \InvalidArgumentException('Provided link id ' . $this->id . ' not found.');
         }
 
         return $this->map($link);
@@ -225,7 +239,8 @@ final class Link extends AbstractLink
             $languageID                          = (int)$link->languageID;
             $this->parent                        = (int)$link->kVaterLink;
             $this->pluginID                      = (int)$link->kPlugin;
-            $this->linkGroupID                   = (int)$link->kLinkgruppe;
+            $this->linkGroups                    = array_unique(array_map('intval', explode(',', $link->linkGroups)));
+            $this->linkGroupID                   = (int)$this->linkGroups[0];
             $this->linkType                      = (int)$link->nLinkart;
             $this->noFollow                      = $link->cNoFollow === 'Y';
             $this->customerGroups                = self::parseSSKAdvanced($link->cKundengruppen);
@@ -253,16 +268,6 @@ final class Link extends AbstractLink
         }
 
         return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    private static function parseSSKAdvanced($ssk): array
-    {
-        return is_string($ssk) && strtolower($ssk) !== 'null'
-            ? array_map('intval', array_map('trim', array_filter(explode(';', $ssk))))
-            : [];
     }
 
     /**
@@ -534,6 +539,14 @@ final class Link extends AbstractLink
     public function hasPrintButton(): bool
     {
         return $this->printButton;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getPrintButton(): bool
+    {
+        return $this->hasPrintButton();
     }
 
     /**
@@ -830,6 +843,45 @@ final class Link extends AbstractLink
     public function setVisibility(bool $isVisible)
     {
         $this->isVisible = $isVisible;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLevel(): int
+    {
+        return $this->level;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLevel(int $level)
+    {
+        $this->level = $level;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getChildren(): array
+    {
+        if ($this->getID() > 0) {
+            if ($this->db === null) {
+                $this->db = \Shop::Container()->getDB();
+            }
+            $links = [];
+            $ids   = $this->db->selectAll('tlink', 'kVaterLink', $this->getID(), 'kLink');
+            foreach ($ids as $id) {
+                $link = new self($this->db);
+                $link->load((int)$id->kLink);
+                $links[] = $link;
+            }
+
+            return $links;
+        }
+
+        return [];
     }
 
     /**

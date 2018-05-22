@@ -373,4 +373,19 @@ interface LinkInterface
      * @param bool $isVisible
      */
     public function setVisibility(bool $isVisible);
+
+    /**
+     * @return int
+     */
+    public function getLevel(): int;
+
+    /**
+     * @param int $level
+     */
+    public function setLevel(int $level);
+
+    /**
+     * @return LinkInterface[]
+     */
+    public function getChildren(): array;
 }

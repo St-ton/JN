@@ -1125,7 +1125,7 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach (Shop::Container()->getDB()->query($this->getExportSQL(), 10) as $iterArticle) {
+        foreach (Shop::Container()->getDB()->query($this->getExportSQL(), \DB\ReturnType::QUERYSINGLE) as $iterArticle) {
             $started = true;
             $Artikel = new Artikel();
             $Artikel->fuelleArtikel(
@@ -1151,7 +1151,7 @@ class Exportformat
                 }
                 $Artikel->oKategorie_arr = $categories;
             }
-
+            ++$this->queue->nLimitN;
             if ($Artikel->kArtikel > 0) {
                 if ($Artikel->cacheHit === true) {
                     ++$cacheHits;
@@ -1240,12 +1240,9 @@ class Exportformat
                 }
 
                 executeHook(HOOK_DO_EXPORT_OUTPUT_FETCHED);
-                if (!$isAsync) {
-                    ++$queueObject->nLimitN;
+                if (!$isAsync && ($queueObject->nLimitN % max(round($queueObject->nLimitM / 10), 10)) === 0) {
                     //max. 10 status updates per run
-                    if (($queueObject->nLimitN % max(round($queueObject->nLimitM / 10), 10)) === 0) {
-                        Jtllog::cronLog($queueObject->nLimitN . '/' . $max . ' products exported', 2);
-                    }
+                    Jtllog::cronLog($queueObject->nLimitN . '/' . $max . ' products exported', 2);
                 }
             }
         }
@@ -1256,12 +1253,13 @@ class Exportformat
         }
 
         if ($isCron === false) {
-            if ($max > $this->queue->nLimitN + $this->queue->nLimitM) {
+            if ($max > $this->queue->nLimitN) {
                 fclose($datei);
-                Shop::Container()->getDB()->query("
-                    UPDATE texportqueue 
+                Shop::Container()->getDB()->query(
+                    "UPDATE texportqueue 
                       SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " 
-                      WHERE kExportqueue = " . (int)$this->queue->kExportqueue, 4
+                      WHERE kExportqueue = " . (int)$this->queue->kExportqueue,
+                    \DB\ReturnType::DEFAULT
                 );
                 $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
                     || (function_exists('pruefeSSL') && pruefeSSL() === 2))
@@ -1272,7 +1270,7 @@ class Exportformat
                     $oCallback->kExportformat = $this->getExportformat();
                     $oCallback->kExportqueue  = $this->queue->kExportqueue;
                     $oCallback->nMax          = $max;
-                    $oCallback->nCurrent      = $this->queue->nLimitN + $this->queue->nLimitM;
+                    $oCallback->nCurrent      = $this->queue->nLimitN;
                     $oCallback->bFinished     = false;
                     $oCallback->bFirst        = ((int)$this->queue->nLimitN === 0);
                     $oCallback->cURL          = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
@@ -1286,10 +1284,11 @@ class Exportformat
                     header('Location: ' . $cURL);
                 }
             } else {
-                Shop::Container()->getDB()->query("
-                    UPDATE texportformat 
+                Shop::Container()->getDB()->query(
+                    "UPDATE texportformat 
                         SET dZuletztErstellt = now() 
-                        WHERE kExportformat = " . $this->getExportformat(), 4
+                        WHERE kExportformat = " . $this->getExportformat(),
+                    \DB\ReturnType::DEFAULT
                 );
                 Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
 
@@ -1450,8 +1449,8 @@ class Exportformat
         $error = false;
         try {
             $article       = null;
-            $articleObject = Shop::Container()->getDB()->query("
-                SELECT * 
+            $articleObject = Shop::Container()->getDB()->query(
+                "SELECT * 
                     FROM tartikel 
                     WHERE kVaterArtikel = 0 
                     AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",

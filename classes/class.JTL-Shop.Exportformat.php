@@ -1080,7 +1080,6 @@ class Exportformat
         } else {
             $max = (int)$max;
         }
-
         Jtllog::cronLog('Starting exportformat "' . utf8_encode($this->getName()) .
             '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
             ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
@@ -1099,7 +1098,6 @@ class Exportformat
         $replace    = [' ', ' ', ' </'];
         $findTwo    = ["\r\n", "\r", "\n", "\x0B", "\x0"];
         $replaceTwo = [' ', ' ', ' ', ' ', ''];
-
         if (isset($this->config['exportformate_quot']) && $this->config['exportformate_quot'] !== 'N') {
             $findTwo[] = '"';
             if ($this->config['exportformate_quot'] === 'q' || $this->config['exportformate_quot'] === 'bq') {
@@ -1142,7 +1140,7 @@ class Exportformat
                 }
                 $Artikel->oKategorie_arr = $categories;
             }
-
+            ++$queueObject->nLimitN;
             if ($Artikel->kArtikel > 0) {
                 if ($Artikel->cacheHit === true) {
                     ++$cacheHits;
@@ -1234,12 +1232,9 @@ class Exportformat
                 }
 
                 executeHook(HOOK_DO_EXPORT_OUTPUT_FETCHED);
-                if (!$isAsync) {
-                    ++$queueObject->nLimitN;
+                if (!$isAsync && ($queueObject->nLimitN % max(round($queueObject->nLimitM / 10), 10)) === 0) {
                     //max. 10 status updates per run
-                    if (($queueObject->nLimitN % max(round($queueObject->nLimitM / 10), 10)) === 0) {
-                        Jtllog::cronLog($queueObject->nLimitN . '/' . $max . ' products exported', 2);
-                    }
+                    Jtllog::cronLog($queueObject->nLimitN . '/' . $max . ' products exported', 2);
                 }
             }
         }
@@ -1248,9 +1243,8 @@ class Exportformat
                 ? utf8_encode($cOutput)
                 : $cOutput));
         }
-
         if ($isCron === false) {
-            if ($max > $this->queue->nLimitN + $this->queue->nLimitM) {
+            if ($max > $this->queue->nLimitN) {
                 fclose($datei);
                 Shop::DB()->query("
                     UPDATE texportqueue 
@@ -1266,7 +1260,7 @@ class Exportformat
                     $oCallback->kExportformat = $this->getExportformat();
                     $oCallback->kExportqueue  = $this->queue->kExportqueue;
                     $oCallback->nMax          = $max;
-                    $oCallback->nCurrent      = $this->queue->nLimitN + $this->queue->nLimitM;
+                    $oCallback->nCurrent      = $this->queue->nLimitN;
                     $oCallback->bFinished     = false;
                     $oCallback->bFirst        = ((int)$this->queue->nLimitN === 0);
                     $oCallback->cURL          = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];

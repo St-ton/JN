@@ -150,6 +150,11 @@ class Preise
     public $Kundenpreis_aktiv = false;
 
     /**
+     * @var PriceRange
+     */
+    public $oPriceRange;
+
+    /**
      * Konstruktor
      *
      * @param int $kKundengruppe
@@ -251,6 +256,7 @@ class Preise
             }
         }
         $this->berechneVKs();
+        $this->oPriceRange = new PriceRange($kArtikel, $kKundengruppe, $kKunde);
         executeHook('HOOK_PRICES_CONSTRUCT', [
             'customerGroupID' => $kKundengruppe,
             'customerID'      => $kKunde,
@@ -275,7 +281,6 @@ class Preise
                         WHERE kKunde = {$kKunde}",
                     \DB\ReturnType::SINGLE_OBJECT
                 );
-
                 if (is_object($oCustomPrice)) {
                     $cacheTags = [CACHING_GROUP_ARTICLE];
                     Shop::Cache()->set($cacheID, $oCustomPrice, $cacheTags);
@@ -286,6 +291,14 @@ class Preise
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDiscountable()
+    {
+        return !($this->Kundenpreis_aktiv || $this->Sonderpreis_aktiv);
     }
 
     /**
@@ -367,7 +380,7 @@ class Preise
      */
     public function rabbatierePreise($Rabatt, $offset = 0.0): self
     {
-        if ($Rabatt != 0 && !$this->Sonderpreis_aktiv && !$this->Kundenpreis_aktiv) {
+        if ($Rabatt != 0 && $this->isDiscountable()) {
             $this->rabatt       = $Rabatt;
             $this->alterVKNetto = $this->fVKNetto;
 
@@ -382,6 +395,7 @@ class Preise
                 $this->fPreis_arr[$i] = ($fPreis - $fPreis * $Rabatt / 100.0) + $offset;
             }
             $this->berechneVKs();
+            $this->oPriceRange->setDiscount($Rabatt);
         }
 
         return $this;

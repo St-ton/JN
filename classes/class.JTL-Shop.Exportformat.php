@@ -1140,7 +1140,7 @@ class Exportformat
                 }
                 $Artikel->oKategorie_arr = $categories;
             }
-            ++$queueObject->nLimitN;
+            ++$this->queue->nLimitN;
             if ($Artikel->kArtikel > 0) {
                 if ($Artikel->cacheHit === true) {
                     ++$cacheHits;

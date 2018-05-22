@@ -29,7 +29,7 @@ abstract class AbstractLink implements LinkInterface
         'kPlugin'            => 'PluginID',
         'kVaterLink'         => 'Parent',
         'kLinkgruppe'        => 'LinkGroupID',
-        'cKundengruppen'     => 'CustomerGroups',
+        'cKundengruppen'     => 'CustomerGroupsCompat',
         'cSichtbarNachLogin' => 'VisibleLoggedInOnlyCompat',
         'nSort'              => 'Sort',
         'bSSL'               => 'SSL',
@@ -50,7 +50,19 @@ abstract class AbstractLink implements LinkInterface
         'cMetaDescription'   => 'MetaDescription',
         'cDruckButton'       => 'PrintButtonCompat',
         'nLinkart'           => 'LinkType',
+        'level'              => 'Level',
     ];
+
+    /**
+     * @param string|array $ssk
+     * @return array
+     */
+    protected static function parseSSKAdvanced($ssk): array
+    {
+        return is_string($ssk) && strtolower($ssk) !== 'null'
+            ? array_map('intval', array_map('trim', array_filter(explode(';', $ssk))))
+            : [];
+    }
 
     /**
      * @return $this
@@ -58,6 +70,26 @@ abstract class AbstractLink implements LinkInterface
     public function getLangCompat(): LinkInterface
     {
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCustomerGroupsCompat()
+    {
+        $groups = $this->getCustomerGroups();
+
+        return is_array($groups) && count($groups) > 0
+            ? implode(';', $groups) . ';'
+            : null;
+    }
+
+    /**
+     * @param string|array $value
+     */
+    public function setCustomerGroupsCompat($value)
+    {
+        $this->setCustomerGroups(!is_array($value) ? self::parseSSKAdvanced($value) : $value);
     }
 
     /**

@@ -65,12 +65,15 @@ final class LinkList implements LinkListInterface
                 tseo.kSprache AS languageID,
                 tseo.cSeo AS localizedUrl,
                 tspezialseite.cDateiname,
-                tplugin.nStatus AS pluginState
+                tplugin.nStatus AS pluginState,
+                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups
             FROM tlink
                 JOIN tlinksprache
                     ON tlink.kLink = tlinksprache.kLink
                 JOIN tsprache
                     ON tsprache.cISO = tlinksprache.cISOSprache
+                JOIN tlinkgroupassociations
+                    ON tlinkgroupassociations.linkID = tlinksprache.kLink
                 JOIN tseo
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlinksprache.kLink
@@ -80,6 +83,7 @@ final class LinkList implements LinkListInterface
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
                 WHERE tlinksprache.kLink IN (" . implode(',', $this->linkIDs) . ")
+                GROUP BY tlink.kLink, tseo.kSprache
                 ORDER BY tlink.nSort, tlink.cName",
             ReturnType::ARRAY_OF_OBJECTS
         );

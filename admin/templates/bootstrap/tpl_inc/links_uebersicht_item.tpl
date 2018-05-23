@@ -18,7 +18,7 @@
                 {if $kPlugin > 0}
                     <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                 {/if}
-                <select class="form-control" name="kLinkgruppe" onchange="document.forms['aenderlinkgruppe_{$link->getID()}_{$id}'].submit();">
+                <select title="{#linkGroupMove#}" class="form-control" name="kLinkgruppe" onchange="document.forms['aenderlinkgruppe_{$link->getID()}_{$id}'].submit();">
                     <option value="-1">{#linkGroupMove#}</option>
                     {foreach name=aenderlinkgruppe from=$linkgruppen item=linkgruppeTMP}
                         {if $linkgruppeTMP->getID() != $id && $linkgruppeTMP->getID() > 0}
@@ -35,7 +35,7 @@
                     <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                 {/if}
                 {if $id > 0}
-                    <select class="form-control" name="kLinkgruppe" onchange="document.forms['kopiereinlinkgruppe_{$link->getID()}_{$id}'].submit();">
+                    <select title="{#linkGroupCopy#}" class="form-control" name="kLinkgruppe" onchange="document.forms['kopiereinlinkgruppe_{$link->getID()}_{$id}'].submit();">
                         <option value="-1">{#linkGroupCopy#}</option>
                         {foreach name=kopiereinlinkgruppe from=$linkgruppen item=linkgruppeTMP}
                             {if $linkgruppeTMP->getID() != $id && $linkgruppeTMP->getID() > 0}
@@ -54,8 +54,8 @@
                     <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                 {/if}
                 {if $id > 0}
-                    <select class="form-control" name="kVaterLink" onchange="document.forms['aenderlinkvater_{$link->getID()}_{$id}'].submit();">
-                        <option value="-1">Unter Link einordnen</option>
+                    <select title="{#linkMove#}" class="form-control" name="kVaterLink" onchange="document.forms['aenderlinkvater_{$link->getID()}_{$id}'].submit();">
+                        <option value="-1">{#linkMove#}</option>
                         <option value="0">-- Root --</option>
                         {foreach $list as $linkTMP}
                             {if $linkTMP->getID() !== $link->getID() && $linkTMP->getID() !== $link->getParent()}

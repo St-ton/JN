@@ -5,7 +5,7 @@ stages:
 archive:
   stage: build
   script:
-    - buildscript pipeline:shop "$CI_PROJECT_DIR" "CI_COMMIT_REF_NAME" "$CI_PROJECT_URL" "$CI_COMMIT_SHA"
+    - buildscript pipeline:shop "$CI_PROJECT_DIR" "$CI_COMMIT_REF_NAME" "$CI_PROJECT_URL" "$CI_COMMIT_SHA"
   only:
     - master
     - /^release\/.*$/

@@ -12,6 +12,7 @@ class Flipcard extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->setProperty('uid', uniqid('flp-', false));
         $instance->addClass('flip');
         $instance->addClass($instance->getProperty('flip-style'));
         $instance->addClass($instance->getProperty('class'));
@@ -41,24 +42,20 @@ class Flipcard extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'uid'        => [
-                'label'      => 'ID',
-                'default'    => uniqid('flp-', false),
-                'dspl_width' => 50,
-            ],
             'class'      => [
                 'label'      => 'CSS Class',
                 'dspl_width' => 50,
             ],
             'flip-style' => [
-                'label'   => 'Richtung',
-                'type'    => 'radio',
-                'inline'  => true,
-                'options' => [
-                    'vertical'   => 'flip_v',
-                    'horizontal' => 'flip_h',
+                'label'      => 'Richtung',
+                'type'       => 'radio',
+                'inline'     => true,
+                'options'    => [
+                    'flip_v' => 'vertical',
+                    'flip_h' => 'horizontal',
                 ],
-                'default' => 'flip_v',
+                'default'    => 'flip_v',
+                'dspl_width' => 50,
             ],
         ];
     }

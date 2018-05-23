@@ -12,6 +12,7 @@ class ImageSlider extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->setProperty('uid', uniqid('sldr-', false));
         $images = $instance->getProperty('slides');
         unset($images['NEU']);
         if (!empty($images)) {
@@ -22,17 +23,7 @@ class ImageSlider extends \OPC\Portlet
                 }
             );
         }
-        /*foreach ($images as &$slide) {
-            if(empty($slide['width']['xs'])) $slide['width']['xs'] = 12;
-            if(empty($slide['width']['sm'])) $slide['width']['sm'] = $slide['width']['xs'];
-            if(empty($slide['width']['md'])) $slide['width']['md'] = $slide['width']['sm'];
-            if(empty($slide['width']['lg'])) $slide['width']['lg'] = $slide['width']['md'];
-            $slide['img_attr'] = $instance->getImageAttributes($slide['url'], null, null, $slide['width']);
-        }*/
         $instance->setProperty('slides',$images);
-        $id = !empty($instance->getProperty('slider-id')) ? $instance->getProperty('slider-id') : uniqid('sldr_');
-        $instance->setAttribute('slider-id',$id);
-
         $instance->addClass('text-center');
 
         if (!empty($images[0]['url'])) {
@@ -66,10 +57,7 @@ class ImageSlider extends \OPC\Portlet
             if(empty($slide['width']['lg'])) $slide['width']['lg'] = $slide['width']['md'];
             $slide['img_attr'] = $instance->getImageAttributes($slide['url'], null, null, $slide['width']);
         }
-
         $instance->setProperty('slides',$images);
-        $id = !empty($instance->getProperty('slider-id')) ? $instance->getProperty('slider-id') : uniqid('sldr');
-        $instance->setAttribute('slider-id',$id);
 
         return $this->getFinalHtmlFromTpl($instance);
     }
@@ -90,10 +78,6 @@ class ImageSlider extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'slider-id'                   => [
-                'label'      => 'Slider ID',
-                'dspl_width' => 50,
-            ],
             'slider-theme'                => [
                 'label'      => 'theme',
                 'type'       => 'select',
@@ -108,50 +92,55 @@ class ImageSlider extends \OPC\Portlet
             'slider-animation-speed'      => [
                 'label'      => 'slider speed',
                 'type'       => 'number',
-                'default'   => 1500,
+                'default'    => 1500,
                 'dspl_width' => 50,
             ],
             'slider-animation-pause'      => [
                 'label'      => 'pause',
                 'type'       => 'number',
-                'default'   => 6000,
+                'default'    => 6000,
                 'dspl_width' => 50,
             ],
             'slider-start'                => [
                 'label'      => 'auto start',
                 'type'       => 'radio',
                 'options'    => [
-                    'ja' => 'true',
-                    'nööö' => 'false',
+                    true  => 'ja',
+                    false => 'nein',
                 ],
+                'default'    => true,
+                'inline'     => true,
                 'dspl_width' => 50,
             ],
             'slider-pause'                => [
                 'label'      => 'pause on hover',
                 'type'       => 'radio',
                 'options'    => [
-                    'anhalten'     => 'true',
-                    'weitermachen' => 'false',
+                    true  => 'anhalten',
+                    false => 'weitermachen',
                 ],
+                'default'    => false,
                 'dspl_width' => 50,
             ],
             'slider-navigation'           => [
                 'label'      => 'slider navigation',
                 'type'       => 'radio',
                 'options'    => [
-                    'ja' => 'true',
-                    'nööö' => 'false',
+                    true  => 'ja',
+                    false => 'nein',
                 ],
+                'default'    => false,
                 'dspl_width' => 50,
             ],
             'slider-direction-navigation' => [
                 'label'      => 'direction nav',
                 'type'       => 'radio',
                 'options'    => [
-                    'ja' => 'true',
-                    'nööö' => 'false',
+                    true  => 'ja',
+                    false => 'nein',
                 ],
-                'dspl_width' => '50'
+                'default'    => false,
+                'dspl_width' => 50
             ],
             'slider-kenburns'             => [
                 'label'      => 'use Ken-Burns',
@@ -160,14 +149,15 @@ class ImageSlider extends \OPC\Portlet
                 'hint'       => 'overrides other settings',
             ],
             'slider-effects-random'       => [
-                'label' => 'random effects',
-                'type'       => 'radio',
-                'options'    => [
-                    'ja' => 'true',
-                    'nööö' => 'false',
+                'label'   => 'random effects',
+                'type'    => 'radio',
+                'options' => [
+                    true  => 'ja',
+                    false => 'nein',
                 ],
+                'default' => true,
             ],
-            'effects[sliceDown]'                   => [
+            'effects[sliceDown]'          => [
                 'label'                => 'sliceDown',
                 'type'                 => 'checkbox',
                 'collapseControlStart' => true,
@@ -175,72 +165,72 @@ class ImageSlider extends \OPC\Portlet
                 'showOnPropValue'      => 'false',
                 'dspl_width'           => 25,
             ],
-            'effects[sliceDownLeft]'               => [
+            'effects[sliceDownLeft]'      => [
                 'label'      => 'sliceDownLeft',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUp]'                     => [
+            'effects[sliceUp]'            => [
                 'label'      => 'sliceUp',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUpLeft]'                 => [
+            'effects[sliceUpLeft]'        => [
                 'label'      => 'sliceUpLeft',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUpDown]'                 => [
+            'effects[sliceUpDown]'        => [
                 'label'      => 'sliceUpDown',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUpDownLeft]'             => [
+            'effects[sliceUpDownLeft]'    => [
                 'label'      => 'sliceUpDownLeft',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[fold]'                        => [
+            'effects[fold]'               => [
                 'label'      => 'fold',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[fade]'                        => [
+            'effects[fade]'               => [
                 'label'      => 'fade',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[slideInRight]'                => [
+            'effects[slideInRight]'       => [
                 'label'      => 'sliceInRight',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[slideInLeft]'                 => [
+            'effects[slideInLeft]'        => [
                 'label'      => 'slideInRight',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRandom]'                   => [
+            'effects[boxRandom]'          => [
                 'label'      => 'boxRandom',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRain]'                     => [
+            'effects[boxRain]'            => [
                 'label'      => 'boxRain',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRainReverse]'              => [
+            'effects[boxRainReverse]'     => [
                 'label'      => 'boxRainReverse',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRainGrow]'                 => [
+            'effects[boxRainGrow]'        => [
                 'label'      => 'boxRainGrow',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRainGrowReverse]'          => [
+            'effects[boxRainGrowReverse]' => [
                 'label'              => 'boxRainGrowReverse',
                 'type'               => 'checkbox',
                 'collapseControlEnd' => true,

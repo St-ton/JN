@@ -44,7 +44,7 @@ class ProductStream extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'listStyle'  => [
+            'listStyle'   => [
                 'type'    => 'select',
                 'label'   => 'Darstellung',
                 'options' => ['gallery', 'list', 'slider'],
@@ -59,7 +59,7 @@ class ProductStream extends \OPC\Portlet
                 'collapseControlStart' => true,
                 'collapseControlEnd'   => true,
             ],
-            'filters' => [
+            'filters'     => [
                 'type'    => 'filter',
                 'label'   => 'Artikelfilter',
                 'default' => [],

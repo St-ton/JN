@@ -257,7 +257,7 @@ trait PortletHtml
                 break;
             case 'checkbox':
                 $res .= "<div class='checkbox$class'><label><input type='checkbox' name='" . $propname . "' value='1'";
-                $res .= $prop === "1" ? " checked" : "";
+                $res .= $prop == "1" ? " checked" : "";
                 $res .= ">$label</label></div>";
                 break;
             case 'textlist':
@@ -267,15 +267,17 @@ trait PortletHtml
                 ]);
                 break;
             case 'radio':
-                $res     .= "<div class='radio$class'>";
-                foreach ($propDesc['options'] as $name => $value) {
-                    $selected = $prop === $value ? " checked" : "";
-                    $res     .= "<label";
-                    $res .= !empty($propDesc['inline']) ? ' class="radio-inline"' : '';
-                    $res .="><input type='radio' name='$propname' value='$value'"
+                $res      .= "<div class='radio'>";
+                foreach ($propDesc['options'] as $value => $name) {
+                    $res      .= !empty($propDesc['inline']) ? "" : "<div class='radio$class'>";
+                    $selected = $prop == $value ? " checked" : "";
+                    $res      .= "<label";
+                    $res      .= !empty($propDesc['inline']) ? ' class="radio-inline"' : '';
+                    $res      .= "><input type='radio' name='$propname' value='$value'"
                         . "$selected>$name</label>";
+                    $res      .= !empty($propDesc['inline']) ? "" : "</div>";
                 }
-                $res     .= "</div>";
+                $res      .= "</div>";
                 break;
             case 'select':
                 $res .= "<select class='form-control$class' name='$propname'>";

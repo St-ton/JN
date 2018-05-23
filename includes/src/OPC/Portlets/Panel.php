@@ -16,9 +16,9 @@ class Panel extends \OPC\Portlet
         $instance->addClass('panel')->addClass('panel-' . $instance->getProperty('panel-state'))->addClass($instance->getProperty('panel-class'));
 
         $ret  = '<div ' . $instance->getAttributeString() . ' ' . $instance->getDataAttributeString() . '>';
-        $ret .= !empty($instance->getProperty('title-flag')) ? '<div class="panel-heading opc-area" data-area-id="pnl_' . $instance->getProperty("uid") . '_title">' . $instance->getSubareaPreviewHtml('pnl_' . $instance->getProperty("uid") . '_title') . '</div>' : '';
-        $ret .= '<div class="panel-body opc-area" data-area-id="pnl_' . $instance->getProperty("uid") . '_body">' . $instance->getSubareaPreviewHtml('pnl_' . $instance->getProperty("uid") . '_body') . '</div>';
-        $ret .= !empty($instance->getProperty('footer-flag')) ? '<div class="panel-footer opc-area" data-area-id="pnl_' . $instance->getProperty("uid") . '_footer">' . $instance->getSubareaPreviewHtml('pnl_' . $instance->getProperty("uid") . '_footer') . '</div>' : '';
+        $ret .= !empty($instance->getProperty('title-flag')) ? '<div class="panel-heading opc-area" data-area-id="pnl_title">' . $instance->getSubareaPreviewHtml('pnl_title') . '</div>' : '';
+        $ret .= '<div class="panel-body opc-area" data-area-id="pnl_body">' . $instance->getSubareaPreviewHtml('pnl_body') . '</div>';
+        $ret .= !empty($instance->getProperty('footer-flag')) ? '<div class="panel-footer opc-area" data-area-id="pnl_footer">' . $instance->getSubareaPreviewHtml('pnl_footer') . '</div>' : '';
         $ret .= '</div>';
 
         return $ret;
@@ -29,9 +29,9 @@ class Panel extends \OPC\Portlet
         $instance->addClass('panel')->addClass('panel-' . $instance->getProperty('panel-state'))->addClass($instance->getProperty('panel-class'));
 
         $ret  = '<div ' . $instance->getAttributeString() . '>';
-        $ret .= !empty($instance->getProperty('title-flag')) ? '<div class="panel-heading">' . $instance->getSubareaFinalHtml('pnl_' . $instance->getProperty("uid") . '_title') . '</div>' : '';
-        $ret .= '<div class="panel-body">' . $instance->getSubareaFinalHtml('pnl_' . $instance->getProperty("uid") . '_body') . '</div>';
-        $ret .= !empty($instance->getProperty('footer-flag')) ? '<div class="panel-footer">' . $instance->getSubareaFinalHtml('pnl_' . $instance->getProperty("uid") . '_footer') . '</div>' : '';
+        $ret .= !empty($instance->getProperty('title-flag')) ? '<div class="panel-heading">' . $instance->getSubareaFinalHtml('pnl_title') . '</div>' : '';
+        $ret .= '<div class="panel-body">' . $instance->getSubareaFinalHtml('pnl_body') . '</div>';
+        $ret .= !empty($instance->getProperty('footer-flag')) ? '<div class="panel-footer">' . $instance->getSubareaFinalHtml('pnl_footer') . '</div>' : '';
         $ret .= '</div>';
 
         return $ret;
@@ -50,37 +50,32 @@ class Panel extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'panel-id'         => [
-                'label'      => 'ID',
-                'dspl_width' => 50,
-                'default'    => uniqid(),
-            ],
-            'panel-class'      => [
+            'panel-class' => [
                 'label'      => 'Class',
                 'dspl_width' => 50,
             ],
-            'title-flag' => [
-                'label' => 'titel anzeigen',
-                'type'  => 'checkbox',
+            'panel-state' => [
+                'label'      => 'panel type',
+                'type'       => 'select',
+                'dspl_width' => 50,
+                'options'    => [
+                    'default',
+                    'primary',
+                    'success',
+                    'info',
+                    'warning',
+                    'danger',
+                ],
+            ],
+            'title-flag'  => [
+                'label'      => 'titel anzeigen',
+                'type'       => 'checkbox',
                 'dspl_width' => 50,
             ],
             'footer-flag' => [
-                'label' => 'footer anzeigen',
-                'type'  => 'checkbox',
+                'label'      => 'footer anzeigen',
+                'type'       => 'checkbox',
                 'dspl_width' => 50,
-            ],
-            'panel-state' => [
-                'label' => 'panel type',
-                'type' => 'select',
-                'dspl_width' => 50,
-                'options' => [
-                  'default',
-                  'primary',
-                  'success',
-                  'info',
-                  'warning',
-                  'danger',
-                ],
             ],
         ];
     }

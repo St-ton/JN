@@ -11,11 +11,11 @@
         </button>
         <div class="collapse{if $isPreview || $instance->getProperty('cllps-initial-state') === '1'} in{/if}" id="div_{$areaId}">
             {if $isPreview}
-                <div class="opc-area" data-area-id="{$areaId}">
-                    {$instance->getSubareaPreviewHtml($areaId)}
+                <div class="opc-area" data-area-id="cllpse_0">
+                    {$instance->getSubareaPreviewHtml('cllpse_0')}
                 </div>
             {else}
-                {$instance->getSubareaFinalHtml($areaId)}
+                {$instance->getSubareaFinalHtml('cllpse_0')}
             {/if}
         </div>
     </div>
@@ -34,11 +34,11 @@
                            aria-expanded="{if $isPreview || $instance->getProperty('cllps-initial-state') === '1'}true{else}false{/if}"
                            aria-controls="div_{$areaId}">
                             {if $isPreview}
-                                <div class="opc-area" {if $isPreview}data-area-id="{$areaId}_0"{/if}>
-                                    {$instance->getSubareaPreviewHtml($areaId|cat:'_0')}
+                                <div class="opc-area" {if $isPreview}data-area-id="cllpse_0"{/if}>
+                                    {$instance->getSubareaPreviewHtml('cllpse_0')}
                                 </div>
                             {else}
-                                {$instance->getSubareaFinalHtml($areaId|cat:'_0')}
+                                {$instance->getSubareaFinalHtml('cllpse_0')}
                             {/if}
                         </a>
                     </h4>
@@ -48,11 +48,11 @@
                      role="tabpanel" aria-labelledby="pnl_hd_{$areaId}">
                     <div class="panel-body">
                         {if $isPreview}
-                            <div class="opc-area" {if $isPreview}data-area-id="{$areaId}_1"{/if}>
-                                {$instance->getSubareaPreviewHtml($areaId|cat:'_1')}
+                            <div class="opc-area" {if $isPreview}data-area-id="cllpse_1"{/if}>
+                                {$instance->getSubareaPreviewHtml('cllpse_1')}
                             </div>
                         {else}
-                            {$instance->getSubareaFinalHtml($areaId|cat:'_1')}
+                            {$instance->getSubareaFinalHtml('cllpse_1')}
                         {/if}
                     </div>
                 </div>

@@ -48,6 +48,18 @@
                 <Name>Icon Text 4-spaltig</Name>
                 <JSONFile>IconText4col.json</JSONFile>
             </Blueprint>
+            <Blueprint>
+                <Name>Price Item</Name>
+                <JSONFile>priceItem.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Price Table</Name>
+                <JSONFile>priceTable.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Flip Cards 4-spaltig</Name>
+                <JSONFile>flipCards4col.json</JSONFile>
+            </Blueprint>
         </Blueprints>
     </Install>
 </jtlshop3plugin>

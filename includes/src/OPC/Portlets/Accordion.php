@@ -12,6 +12,7 @@ class Accordion extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->setProperty('uid', uniqid('cllps_', false));
         return $this->getPreviewHtmlFromTpl($instance);
     }
 
@@ -36,13 +37,15 @@ class Accordion extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'uid'                 => [
-                'type'    => 'hidden',
-                'default' => uniqid('cllps_', false),
-            ],
             'cllps-initial-state' => [
                 'label'      => 'initial als ausgeklappt anzeigen',
                 'type'       => 'checkbox',
+               /* 'options'    => [
+                    true  => 'ja',
+                    false => 'nein',
+                ],*/
+                'default'    => false,
+                'inline'     => true,
                 'help'       => 'In der Vorschau und beim Bearbeiten ist wird der Bereich immer angezeigt.',
                 'dspl_width' => 50,
             ],
@@ -50,9 +53,10 @@ class Accordion extends \OPC\Portlet
                 'label'      => 'layout',
                 'type'       => 'radio',
                 'options'    => [
-                    'button' => 'button',
-                    'panel'  => 'panel',
+                    'button' => 'Button',
+                    'panel'  => 'Panel',
                 ],
+                'inline'     => true,
                 'default'    => 'button',
                 'dspl_width' => 100,
 

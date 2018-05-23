@@ -1,33 +1,33 @@
-<div id="flp-{$instance->getProperty('uid')}" {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if} >
+<div id="{$instance->getProperty('uid')}" {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if} >
     {if $isPreview}<i class="fa fa-exchange"></i>{/if}
     <div class="card">
-        <div class="opc-area face front" {if $isPreview}data-area-id="flp-{$instance->getProperty('uid')}-front"{/if}>
+        <div class="opc-area face front" {if $isPreview}data-area-id="flp-front"{/if}>
             {if $isPreview}
-                {$instance->getSubareaPreviewHtml("flp-{$instance->getProperty('uid')}-front")}
+                {$instance->getSubareaPreviewHtml("flp-front")}
             {else}
-                {$instance->getSubareaFinalHtml("flp-{$instance->getProperty('uid')}-front")}
+                {$instance->getSubareaFinalHtml("flp-front")}
             {/if}
         </div>
-        <div class="opc-area face back" {if $isPreview}data-area-id="flp-{$instance->getProperty('uid')}-back"{/if}>
+        <div class="opc-area face back" {if $isPreview}data-area-id="flp-back"{/if}>
             {if $isPreview}
-                {$instance->getSubareaPreviewHtml("flp-{$instance->getProperty('uid')}-back")}
+                {$instance->getSubareaPreviewHtml("flp-back")}
             {else}
-                {$instance->getSubareaFinalHtml("flp-{$instance->getProperty('uid')}-back")}
+                {$instance->getSubareaFinalHtml("flp-back")}
             {/if}
         </div>
     </div>
     <script>
         function setCardHeight() {
             var max_h = 0;
-            $('#flp-{$instance->getProperty("uid")} .face').each(function (e) {
+            $('#{$instance->getProperty("uid")} .face').each(function (e) {
                 max_h = Math.max($(this).prop("scrollHeight"), max_h);
             });
-            $('#flp-{$instance->getProperty("uid")} .card').css('min-height',max_h);
+            $('#{$instance->getProperty("uid")} .card').css('min-height',max_h);
         }
 
         {if $isPreview}
-            $('#flp-{$instance->getProperty("uid")} i.fa-exchange').click(function () {
-                var card = $('.flip');
+            $('#{$instance->getProperty("uid")} i.fa-exchange').click(function () {
+                var card = $('#{$instance->getProperty("uid")}');
                 if (card.hasClass('flipped')) {
                     card.removeClass('flipped');
                 } else {
@@ -36,7 +36,7 @@
                 setCardHeight();
             });
         {else}
-            $('#flp-{$instance->getProperty("uid")}').click(function () {
+            $('#{$instance->getProperty("uid")}').click(function () {
                 var card = $(this);
                 if (card.hasClass('flipped')) {
                     card.removeClass('flipped');

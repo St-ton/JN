@@ -12,6 +12,7 @@ class Container extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->setProperty('uid', uniqid('cntr-', false));
         if (!empty($instance->getProperty('parallax-flag')) && !empty($instance->getProperty('src'))) {
             $name      = explode('/', $instance->getProperty('src'));
             $name      = end($name);
@@ -25,8 +26,8 @@ class Container extends \OPC\Portlet
 
         $res = "<div ".$instance->getAttributeString().$instance->getDataAttributeString().">";
 
-        $res .= "<div class='opc-area' data-area-id='" . $instance->getProperty("uid") . "'>"
-                . $instance->getSubareaPreviewHtml($instance->getProperty("uid")) . "</div></div>";
+        $res .= "<div class='opc-area' data-area-id='cntr-0'>"
+                . $instance->getSubareaPreviewHtml('cntr-0') . "</div></div>";
 
         return $res;
     }
@@ -48,7 +49,7 @@ class Container extends \OPC\Portlet
 
         $res = "<div ".$instance->getAttributeString().">";
 
-        $res.= $instance->getSubareaFinalHtml($instance->getProperty("uid"));
+        $res.= $instance->getSubareaFinalHtml('cntr-0');
         $res .= "</div>";
 
         return $res;
@@ -67,23 +68,18 @@ class Container extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'uid'           => [
-                'label'    => 'ID',
-                'default' => uniqid('cntr-', false),
-                'dspl_width' => 50,
-            ],
-            'class' => [
-                'label' => 'CSS class',
+            'class'         => [
+                'label'      => 'CSS class',
                 'dspl_width' => 50,
             ],
             'parallax-flag' => [
                 'label'   => 'use parrallax effect',
                 'type'    => 'radio',
                 'options' => [
-                    'mitlaufendes Bild'   => 'true',
-                    'einfacher Container' => 'false'
+                    'true'  => 'mitlaufendes Bild',
+                    'false' => 'einfacher Container',
                 ],
-                'inline' => true,
+                'inline'  => true,
             ],
             'src'           => [
                 'type'                 => 'image',

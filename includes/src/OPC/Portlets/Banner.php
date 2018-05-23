@@ -12,6 +12,7 @@ class Banner extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->setProperty('kImageMap', uniqid('', false));
         $instance->addClass('img-responsive');
 
         return
@@ -102,10 +103,6 @@ class Banner extends \OPC\Portlet
                 'default'    => \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png',
                 'type'       => 'image',
                 'dspl_width' => 50,
-            ],
-            'kImageMap' => [
-                'type'    => 'hidden',
-                'default' => uniqid(),
             ],
             'zones'     => [
                 'type'    => 'banner-zones',

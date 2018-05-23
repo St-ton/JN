@@ -12,6 +12,7 @@ class Countdown extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->setProperty('uid', uniqid('cntdwn-', false));
         $instance->addClass('countdown');
         $instance->addClass($instance->getProperty('class'));
 
@@ -39,10 +40,6 @@ class Countdown extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'uid' => [
-                'type' => 'hidden',
-                'default' => uniqid(),
-            ],
             'date' => [
                 'label' => 'Zieldatum',
                 'type' => 'date',

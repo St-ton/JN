@@ -172,14 +172,14 @@ class Button extends \OPC\Portlet
                 'type'  => 'checkbox',
             ],
             'btn-icon-flag'         => [
-                'label' => 'Icon?',
-                'type' => 'radio',
-                'options'    => [
-                    'ja' => 'true',
-                    'nein' => 'false',
+                'label'   => 'Icon?',
+                'type'    => 'radio',
+                'options' => [
+                    'true'  => 'ja',
+                    'false' => 'nein',
                 ],
                 'default' => 'false',
-                'inline' => true,
+                'inline'  => true,
             ],
             'btn-icon-alignment'    => [
                 'label'                => 'icon alignment',
@@ -201,10 +201,10 @@ class Button extends \OPC\Portlet
             ],
             'btn-link-flag'         => [
                 'label'      => 'link?',
-                'type' => 'radio',
+                'type'       => 'radio',
                 'options'    => [
-                    'ja' => 'true',
-                    'nein' => 'false',
+                    'true'  => 'ja',
+                    'false' => 'nein',
                 ],
                 'dspl_width' => 100,
             ],

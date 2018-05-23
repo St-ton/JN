@@ -69,8 +69,8 @@ class Image extends \OPC\Portlet
                 'label'      => 'responsive image?',
                 'type'       => 'radio',
                 'options'    => [
-                    'yes' => true,
-                    'no'  => false,
+                    true  => 'yes',
+                    false => 'no',
                 ],
                 'default'    => true,
                 'inline'     => true,

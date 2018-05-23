@@ -25,6 +25,7 @@ abstract class AbstractLink implements LinkInterface
         'cLocalizedName'     => 'Name',
         'cLocalizedTitle'    => 'Title',
         'kLink'              => 'ID',
+        'kSprache'           => 'LanguageID',
         'cName'              => 'Name',
         'kPlugin'            => 'PluginID',
         'kVaterLink'         => 'Parent',

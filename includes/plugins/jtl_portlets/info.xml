@@ -60,6 +60,10 @@
                 <Name>Flip Cards 4-spaltig</Name>
                 <JSONFile>flip_cards_4_cols.json</JSONFile>
             </Blueprint>
+            <Blueprint>
+                <Name>FAQ</Name>
+                <JSONFile>faq.json</JSONFile>
+            </Blueprint>
         </Blueprints>
     </Install>
 </jtlshop3plugin>

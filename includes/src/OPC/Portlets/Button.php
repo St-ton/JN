@@ -123,49 +123,49 @@ class Button extends \OPC\Portlet
         return [
             'btn-text'              => [
                 'label'      => 'Text',
-                'default'    => 'Hey there',
+                'default'    => 'Hey there!',
                 'dspl_width' => 50,
             ],
             'btn-type'              => [
-                'label'      => 'Type',
+                'label'      => 'Typ',
                 'type'       => 'select',
                 'options'    => [
-                    'default',
-                    'primary',
-                    'success',
-                    'info',
-                    'warning',
-                    'danger',
+                    'default' => 'Standard',
+                    'primary' => 'Primär',
+                    'success' => 'Erfolg',
+                    'info'    => 'Info',
+                    'warning' => 'Warunug',
+                    'danger'  => 'Gefahr',
                 ],
                 'default'    => 'default',
                 'dspl_width' => 50,
             ],
             'btn-size'              => [
-                'label'      => 'Size',
+                'label'      => 'Größe',
                 'type'       => 'select',
-                'options'    => [
-                    'xs',
-                    'sm',
-                    'md',
-                    'lg',
+                'options'            => [
+                    'xs' => 'XS',
+                    'sm' => 'S',
+                    'md' => 'M',
+                    'lg' => 'L',
                 ],
                 'default'    => 'md',
                 'dspl_width' => 50,
             ],
             'btn-alignment'         => [
-                'label'      => 'alignment',
+                'label'      => 'Ausrichtung',
                 'type'       => 'select',
-                'options'    => [
-                    'inline',
-                    'left',
-                    'right',
-                    'center',
+                'options' => [
+                    'inline' => 'ohne',
+                    'left'   => 'links',
+                    'right'  => 'rechts',
+                    'center' => 'mittig',
                 ],
                 'default'    => 'inline',
                 'dspl_width' => 50,
             ],
             'btn-full-width-flag'   => [
-                'label' => 'Full width?',
+                'label' => 'gesamte Breite nutzen',
                 'type'  => 'checkbox',
             ],
             'btn-icon-flag'         => [
@@ -179,11 +179,11 @@ class Button extends \OPC\Portlet
                 'inline'  => true,
             ],
             'btn-icon-alignment'    => [
-                'label'                => 'icon alignment',
+                'label'                => 'Iconausrichtung',
                 'type'                 => 'select',
                 'options'              => [
-                    'left',
-                    'right'
+                    'left' => 'links',
+                    'right' => 'rechts'
                 ],
                 'collapseControlStart' => true,
                 'showOnProp'           => 'btn-icon-flag',
@@ -197,7 +197,7 @@ class Button extends \OPC\Portlet
                 'dspl_width'         => 100,
             ],
             'btn-link-flag'         => [
-                'label'      => 'link?',
+                'label'      => 'Link?',
                 'type'       => 'radio',
                 'options'    => [
                     'true'  => 'ja',
@@ -206,18 +206,18 @@ class Button extends \OPC\Portlet
                 'dspl_width' => 100,
             ],
             'btn-link-url'          => [
-                'label'                => 'url',
+                'label'                => 'URL',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'btn-link-flag',
                 'showOnPropValue'      => 'true',
                 'dspl_width'           => 50,
             ],
             'btn-link-title'        => [
-                'label'      => 'link title',
+                'label'      => 'Linktitel',
                 'dspl_width' => 50,
             ],
             'btn-link-new-tab-flag' => [
-                'label'              => 'open in new tab?',
+                'label'              => 'In neuem Tab öffnen?',
                 'type'               => 'checkbox',
                 'dspl_width'         => 50,
                 'collapseControlEnd' => true,

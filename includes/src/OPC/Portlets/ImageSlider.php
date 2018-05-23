@@ -76,7 +76,7 @@ class ImageSlider extends \OPC\Portlet
     {
         return [
             'slider-theme'                => [
-                'label'      => 'theme',
+                'label'      => 'Theme',
                 'type'       => 'select',
                 'options'    => [
                     'default',
@@ -87,73 +87,73 @@ class ImageSlider extends \OPC\Portlet
                 'dspl_width' => 50,
             ],
             'slider-animation-speed'      => [
-                'label'      => 'slider speed',
+                'label'      => 'Slidergeschwindigkeit',
                 'type'       => 'number',
                 'default'    => 1500,
                 'dspl_width' => 50,
             ],
             'slider-animation-pause'      => [
-                'label'      => 'pause',
+                'label'      => 'Pause',
                 'type'       => 'number',
                 'default'    => 6000,
                 'dspl_width' => 50,
             ],
             'slider-start'                => [
-                'label'      => 'auto start',
+                'label'      => 'Autostart?',
                 'type'       => 'radio',
                 'options'    => [
-                    true  => 'ja',
-                    false => 'nein',
+                    'true'  => 'ja',
+                    'false' => 'nein',
                 ],
-                'default'    => true,
+                'default'    => 'true',
                 'inline'     => true,
                 'dspl_width' => 50,
             ],
             'slider-pause'                => [
-                'label'      => 'pause on hover',
+                'label'      => 'Pause bei "hover"?',
                 'type'       => 'radio',
                 'options'    => [
-                    true  => 'anhalten',
-                    false => 'weitermachen',
+                    'true'  => 'anhalten',
+                    'false' => 'weitermachen',
                 ],
-                'default'    => false,
+                'default'    => 'false',
                 'dspl_width' => 50,
             ],
             'slider-navigation'           => [
-                'label'      => 'slider navigation',
+                'label'      => 'Punktnavigation?',
                 'type'       => 'radio',
                 'options'    => [
-                    true  => 'ja',
-                    false => 'nein',
+                    'true'  => 'ja',
+                    'false' => 'nein',
                 ],
-                'default'    => false,
+                'default'    => 'false',
                 'dspl_width' => 50,
             ],
             'slider-direction-navigation' => [
-                'label'      => 'direction nav',
+                'label'      => 'Navipfeile anzeigen?',
                 'type'       => 'radio',
                 'options'    => [
-                    true  => 'ja',
-                    false => 'nein',
+                    'true'  => 'ja',
+                    'false' => 'nein',
                 ],
-                'default'    => false,
+                'default'    => 'false',
                 'dspl_width' => 50
             ],
             'slider-kenburns'             => [
-                'label'      => 'use Ken-Burns',
+                'label'      => 'Ken-Burns-Effekt nutzen?',
                 'type'       => 'checkbox',
                 'dspl_width' => 50,
                 'hint'       => 'overrides other settings',
             ],
 
             'slider-effects-random'       => [
-                'label'   => 'random effects',
+                'label'   => 'zufällige Effekte?',
                 'type'    => 'radio',
                 'options' => [
-                    true  => 'ja',
-                    false => 'nein',
+                    'true'  => 'ja',
+                    'false' => 'nein',
                 ],
-                'default' => true,
+                'default' => 'true',
             ],
             'effects[sliceDown]'          => [
                 'label'                => 'sliceDown',

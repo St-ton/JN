@@ -50,9 +50,7 @@ class ProductStream extends \OPC\Portlet
                 'default' => 'gallery',
             ],
             'sliderTitle' => [
-                'type'                 => 'text',
-                'label'                => 'Slider-Titel',
-                'default'              => '',
+                'label'                => 'Slidertitel',
                 'showOnProp'           => 'listStyle',
                 'showOnPropValue'      => 'slider',
                 'collapseControlStart' => true,

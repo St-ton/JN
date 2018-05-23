@@ -44,21 +44,21 @@ class Row extends \OPC\Portlet
                 'dspl_width' => 50,
                 'layoutCollapse' => [
                     'layout-sm' => [
-                        'label'   => 'Layout SM',
+                        'label'   => 'Layout S',
                         'type'    => 'text',
                     ],
                     'layout-md' => [
-                        'label'   => 'Layout MD',
+                        'label'   => 'Layout M',
                         'type'    => 'text',
                     ],
                     'layout-lg' => [
-                        'label'   => 'Layout LG',
+                        'label'   => 'Layout L',
                         'type'    => 'text',
                     ],
                 ]
             ],
             'class' => [
-                'label' => 'CSS Class',
+                'label' => 'CSS Klasse',
                 'dspl_width' => 50,
             ],
         ];

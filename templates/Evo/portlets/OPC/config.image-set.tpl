@@ -22,7 +22,7 @@
                 {/if}
                 <input class="form-control margin2" id="desc{$kSlide}" type="text"
                        name="{$propname}[{$kSlide}][desc]" value=""
-                       placeholder="description"/>
+                       placeholder="Beschreibung"/>
                 {if $useLinks}
                     <input class="form-control margin2" id="target-url{$kSlide}" type="text"
                            name="{$propname}[{$kSlide}][target-url]" value=""

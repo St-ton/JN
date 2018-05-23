@@ -37,17 +37,11 @@ class Accordion extends \OPC\Portlet
             'cllps-initial-state' => [
                 'label'      => 'initial als ausgeklappt anzeigen',
                 'type'       => 'checkbox',
-               /* 'options'    => [
-                    true  => 'ja',
-                    false => 'nein',
-                ],*/
-                'default'    => false,
-                'inline'     => true,
                 'help'       => 'In der Vorschau und beim Bearbeiten ist wird der Bereich immer angezeigt.',
                 'dspl_width' => 50,
             ],
             'layout'              => [
-                'label'      => 'layout',
+                'label'      => 'Anzeigen als',
                 'type'       => 'radio',
                 'options'    => [
                     'button' => 'Button',
@@ -59,7 +53,7 @@ class Accordion extends \OPC\Portlet
 
             ],
             'cllps-button-text'   => [
-                'label'                => 'Button text',
+                'label'                => 'Buttontext',
                 'type'                 => 'Text',
                 'default'              => 'Button',
                 'dspl_width'           => 50,
@@ -68,39 +62,31 @@ class Accordion extends \OPC\Portlet
                 'showOnPropValue'      => 'button',
             ],
             'cllps-button-type'   => [
-                'label'      => 'Type',
+                'label'      => 'Typ',
                 'type'       => 'select',
                 'options'    => [
-                    'default',
-                    'primary',
-                    'success',
-                    'info',
-                    'warning',
-                    'danger',
+                    'default' => 'Standard',
+                    'primary' => 'Primär',
+                    'success' => 'Erfolg',
+                    'info'    => 'Info',
+                    'warning' => 'Warunug',
+                    'danger'  => 'Gefahr',
                 ],
                 'default'    => 'default',
                 'dspl_width' => 50,
             ],
             'cllps-button-size'   => [
-                'label'              => 'Size',
+                'label'              => 'Größe',
                 'type'               => 'select',
                 'options'            => [
-                    'xs',
-                    'sm',
-                    'md',
-                    'lg',
+                    'xs' => 'XS',
+                    'sm' => 'S',
+                    'md' => 'M',
+                    'lg' => 'L',
                 ],
                 'default'            => 'md',
                 'dspl_width'         => 50,
                 'collapseControlEnd' => true,
-            ],
-            'only-on-panel'       => [
-                'label'                => 'only-on-panel',
-                'dspl_width'           => 50,
-                'collapseControlStart' => true,
-                'showOnProp'           => 'layout',
-                'showOnPropValue'      => 'panel',
-                'collapseControlEnd'   => true,
             ],
         ];
     }

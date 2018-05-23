@@ -69,11 +69,11 @@ class Container extends \OPC\Portlet
     {
         return [
             'class'         => [
-                'label'      => 'CSS class',
+                'label'      => 'CSS Klasse',
                 'dspl_width' => 50,
             ],
             'parallax-flag' => [
-                'label'   => 'use parrallax effect',
+                'label'   => 'Parallaxeffekt nutzen?',
                 'type'    => 'radio',
                 'options' => [
                     'true'  => 'mitlaufendes Bild',
@@ -82,14 +82,14 @@ class Container extends \OPC\Portlet
                 'inline'  => true,
             ],
             'src'           => [
-                'type'                 => 'image',
+                'type'                 => 'Bild',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'parallax-flag',
                 'showOnPropValue'      => 'true',
                 'dspl_width'           => 50,
             ],
             'min-height'    => [
-                'label'              => 'min-height in px',
+                'label'              => 'Mindesthöhe in px',
                 'type'               => 'number',
                 'default'            => 300,
                 'dspl_width'         => 50,

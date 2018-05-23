@@ -82,13 +82,13 @@ class Gallery extends \OPC\Portlet
     {
         return [
             'gllry_height' => [
-                'label'      => 'height of preview',
+                'label'      => 'Höhe der Vorschaubilder',
                 'type'       => 'number',
                 'default'    => 250,
                 'dspl_width' => 50,
             ],
             'class'        => [
-                'label'      => 'CSS Class',
+                'label'      => 'CSS Klasse',
                 'dspl_width' => 50,
             ],
             'gllry_images' => [

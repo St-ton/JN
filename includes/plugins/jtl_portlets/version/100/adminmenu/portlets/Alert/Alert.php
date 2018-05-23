@@ -44,7 +44,12 @@ class Alert extends \OPC\Portlet
             'type-select' => [
                 'label'   => 'Alert Type',
                 'type'    => 'select',
-                'options' => ['success', 'info', 'warning', 'danger'],
+                'options'    => [
+                    'success' => 'Erfolg',
+                    'info'    => 'Info',
+                    'warning' => 'Warunug',
+                    'danger'  => 'Gefahr',
+                ],
                 'default' => 'info',
             ],
         ];

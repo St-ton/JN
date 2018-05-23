@@ -102,17 +102,17 @@ class Banner extends \OPC\Portlet
                 'dspl_width' => 50,
             ],
             'zones'     => [
-                'type'    => 'banner-zones',
+                'type'    => 'Zonen',
                 'default' => [],
             ],
             'class'     => [
                 'label' => 'CSS Class',
             ],
             'alt'       => [
-                'label' => 'alt text',
+                'label' => 'Altenativtext',
             ],
             'title'     => [
-                'label' => 'title'
+                'label' => 'Titel'
             ],
         ];
 

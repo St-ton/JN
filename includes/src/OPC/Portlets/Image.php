@@ -55,29 +55,29 @@ class Image extends \OPC\Portlet
                 'default' => '',
             ],
             'shape'      => [
-                'label'      => 'shape',
+                'label'      => 'Form',
                 'type'       => 'select',
                 'options'    => [
                     '',
-                    'img-rounded',
-                    'img-circle',
-                    'img-thumbnail'
+                    'img-rounded' => 'abgerundete Ecken',
+                    'img-circle' => 'Kreis',
+                    'img-thumbnail' => 'mit Rahmen'
                 ],
                 'dspl_width' => 50,
             ],
             'responsive' => [
-                'label'      => 'responsive image?',
+                'label'      => 'responsives Bild?',
                 'type'       => 'radio',
                 'options'    => [
-                    true  => 'yes',
-                    false => 'no',
+                    true  => 'ja',
+                    false => 'nein',
                 ],
                 'default'    => true,
                 'inline'     => true,
                 'dspl_width' => 50,
             ],
             'alt'        => [
-                'label' => 'Alternativ-Text',
+                'label' => 'Alternativtext',
             ],
             'title'      => [
                 'label' => 'title',

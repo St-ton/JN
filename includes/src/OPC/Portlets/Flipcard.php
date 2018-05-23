@@ -43,7 +43,7 @@ class Flipcard extends \OPC\Portlet
     {
         return [
             'class'      => [
-                'label'      => 'CSS Class',
+                'label'      => 'CSS Klasse',
                 'dspl_width' => 50,
             ],
             'flip-style' => [

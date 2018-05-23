@@ -51,29 +51,29 @@ class Panel extends \OPC\Portlet
     {
         return [
             'panel-class' => [
-                'label'      => 'Class',
+                'label'      => 'CSS Klasse',
                 'dspl_width' => 50,
             ],
             'panel-state' => [
-                'label'      => 'panel type',
+                'label'      => 'Typ',
                 'type'       => 'select',
                 'dspl_width' => 50,
                 'options'    => [
-                    'default',
-                    'primary',
-                    'success',
-                    'info',
-                    'warning',
-                    'danger',
+                    'default' => 'Standard',
+                    'primary' => 'Primär',
+                    'success' => 'Erfolg',
+                    'info'    => 'Info',
+                    'warning' => 'Warunug',
+                    'danger'  => 'Gefahr',
                 ],
             ],
             'title-flag'  => [
-                'label'      => 'titel anzeigen',
+                'label'      => 'Kopf anzeigen?',
                 'type'       => 'checkbox',
                 'dspl_width' => 50,
             ],
             'footer-flag' => [
-                'label'      => 'footer anzeigen',
+                'label'      => 'Fuß anzeigen?',
                 'type'       => 'checkbox',
                 'dspl_width' => 50,
             ],

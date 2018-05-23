@@ -64,7 +64,7 @@ class PList extends \OPC\Portlet
         return [
             // general
             'list-class'      => [
-                'label'      => 'Class',
+                'label'      => 'CSS Klasse',
                 'dspl_width' => 50,
             ],
             'listType'        => [
@@ -72,8 +72,8 @@ class PList extends \OPC\Portlet
                 'type'       => 'radio',
                 'dspl_width' => 50,
                 'options'    => [
-                    'ol' => 'ordered list',
-                    'ul' => 'unordered list',
+                    'ol' => 'geordnete Liste',
+                    'ul' => 'einfache Aufzählung',
                 ],
                 'default'    => 'ol',
             ],
@@ -84,15 +84,15 @@ class PList extends \OPC\Portlet
                 'dspl_width' => 50,
             ],
             'list-style-type' => [
-                'label'      => 'Type',
+                'label'      => 'Typ',
                 'type'       => 'select',
                 'dspl_width' => 50,
                 'options'    => [
                     ''            => 'default',
-                    'lower-latin' => 'lower-latin',
-                    'lower-roman' => 'lower-roman',
-                    'upper-latin' => 'upper-latin',
-                    'upper-roman' => 'upper-roman',
+                    'lower-latin' => 'latein. Kleinbuchstaben',
+                    'lower-roman' => 'kleine röm. Zahlen',
+                    'upper-latin' => 'latein. Großbuchstaben',
+                    'upper-roman' => 'große röm. Zahlen',
                 ]
             ],
         ];

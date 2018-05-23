@@ -57,7 +57,7 @@ class Video extends \OPC\Portlet
                 'dspl_width' => 50,
             ],
             'video-class'       => [
-                'label'      => 'Class',
+                'label'      => 'CSS Klasse',
                 'dspl_width' => 50,
             ],
             'video-responsive'  => [
@@ -71,13 +71,13 @@ class Video extends \OPC\Portlet
                 'default' => '1',
             ],
             'video-width'       => [
-                'label'      => 'width',
+                'label'      => 'Breite',
                 'type'       => 'number',
                 'default'    => 600,
                 'dspl_width' => 50,
             ],
             'video-height'      => [
-                'label'      => 'height',
+                'label'      => 'Höhe',
                 'type'       => 'number',
                 'default'    => 338,
                 'dspl_width' => 50,
@@ -137,8 +137,8 @@ class Video extends \OPC\Portlet
                 'type'       => 'radio',
                 'inline'     => true,
                 'options'    => [
-                    'weiß' => 'white',
-                    'rot'  => 'red'
+                    'white' => 'weiß',
+                    'red'   => 'rot',
                 ],
                 'default'    => 'white',
                 'dspl_width' => 50,
@@ -159,7 +159,7 @@ class Video extends \OPC\Portlet
                 'showOnPropValue'      => 'vimeo',
             ],
             'video-vim-loop'   => [
-                'label'      => 'Video nach ablauf wiederholen?',
+                'label'      => 'Video nach Ablauf wiederholen?',
                 'type'       => 'radio',
                 'inline'     => true,
                 'options'    => [

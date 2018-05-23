@@ -51,10 +51,10 @@ class Countdown extends \OPC\Portlet
                 'dspl_width' => 50,
             ],
             'class' => [
-                'label' => 'CSS Class',
+                'label' => 'CSS Klasse',
             ],
             'expired-text' => [
-                'label' => 'text nach Ablauf',
+                'label' => 'Text nach Ablauf',
                 'type' => 'richtext',
             ]
         ];

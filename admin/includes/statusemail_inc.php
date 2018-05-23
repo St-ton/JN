@@ -161,18 +161,19 @@ function gibAnzahlArtikelProKundengruppe()
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oKundengruppe_arr as $oKundengruppe) {
-        $oArtikel            = Shop::Container()->getDB()->query(
+        $oArtikel            = Shop::Container()->getDB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oKundengruppe->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL",
+            ['cgid' => (int)$oKundengruppe->kKundengruppe],
             \DB\ReturnType::SINGLE_OBJECT
         );
         $oTMP                = new stdClass();
-        $oTMP->nAnzahl       = $oArtikel->nAnzahl;
-        $oTMP->kKundengruppe = $oKundengruppe->kKundengruppe;
+        $oTMP->nAnzahl       = (int)$oArtikel->nAnzahl;
+        $oTMP->kKundengruppe = (int)$oKundengruppe->kKundengruppe;
         $oTMP->cName         = $oKundengruppe->cName;
 
         $oArtikelProKundengruppe_arr[] = $oTMP;

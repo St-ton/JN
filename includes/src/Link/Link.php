@@ -29,7 +29,7 @@ final class Link extends AbstractLink
     /**
      * @var int
      */
-    protected $parent;
+    protected $parent = 0;
 
     /**
      * @var int
@@ -94,7 +94,7 @@ final class Link extends AbstractLink
     /**
      * @var int
      */
-    protected $sort;
+    protected $sort = 0;
 
     /**
      * @var bool
@@ -322,7 +322,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @param array $linkGroups
+     * @inheritdoc
      */
     public function setLinkGroups(array $linkGroups)
     {
@@ -430,8 +430,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @param string $url
-     * @param int    $idx
+     * @inheritdoc
      */
     public function setURL(string $url, int $idx)
     {

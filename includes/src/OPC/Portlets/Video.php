@@ -16,12 +16,16 @@ class Video extends \OPC\Portlet
 
         if ($instance->getProperty('video-vendor') === 'youtube') {
             $ret .= '<img src="https://img.youtube.com/vi/' . $instance->getProperty('video-yt-id') . '/maxresdefault.jpg" alt="YouTube Video" class="img-responsive"';
-            $ret .= !empty($instance->getProperty('video-yt-responsive')) ? ' style="width: 100%;"/>' : ' style="width: ' . $instance->getProperty('video-yt-width') . 'px; height: ' . $instance->getProperty('video-yt-height') . 'px"/>';
+            $ret .= !empty($instance->getProperty('video-responsive')) ? ' style="width: 100%;"/>' : ' style="width: ' . $instance->getProperty('video-width') . 'px; height: ' . $instance->getProperty('video-height') . 'px"/>';
         } elseif ($instance->getProperty('video-vendor') === 'vimeo') {
             $imgid = $instance->getProperty('video-vim-id');
             $hash  = unserialize(file_get_contents("http://vimeo.com/api/v2/video/$imgid.php"));
             $ret  .= '<img src="' . $hash[0]['thumbnail_large'] . '" alt="Vimeo Video" class="img-responsive"';
-            $ret  .= !empty($instance->getProperty('video-vim-responsive')) ? ' style="width: 100%;"/>' : ' style="width: ' . $instance->getProperty('video-vim-width') . 'px; height: ' . $instance->getProperty('video-vim-height') . 'px"/>';
+            $ret  .= !empty($instance->getProperty('video-responsive')) ? ' style="width: 100%;"/>' : ' style="width: ' . $instance->getProperty('video-width') . 'px; height: ' . $instance->getProperty('video-height') . 'px"/>';
+        } else {
+            $ret .= '<div class="text-center" style="width: ';
+            $ret .= !empty($instance->getProperty('video-responsive')) ? '100%;"><img src="http://marco.vm1.halle/gfx/keinBild.gif"><br/>' : $instance->getProperty('video-width') . 'px; height: ' . $instance->getProperty('video-height') . 'px">';
+            $ret .= '<i class="fa fa-film"></i><br/> Video</div>';
         }
 
         $ret .= '</div>';
@@ -56,13 +60,35 @@ class Video extends \OPC\Portlet
                 'label'      => 'Class',
                 'dspl_width' => 50,
             ],
+            'video-responsive' => [
+                'label'   => 'responsive einbetten?',
+                'type'    => 'radio',
+                'inline'  => true,
+                'options' => [
+                    'ja'   => '1',
+                    'nein' => '0',
+                ],
+                'default' => '1',
+            ],
+            'video-width'      => [
+                'label'      => 'width',
+                'type'       => 'number',
+                'default'    => 600,
+                'dspl_width' => 50,
+            ],
+            'video-height'     => [
+                'label'      => 'height',
+                'type'       => 'number',
+                'default'    => 338,
+                'dspl_width' => 50,
+            ],
             'video-vendor'        => [
                 'label'   => 'Quelle',
                 'type'    => 'select',
                 'options' => [
                     'youtube',
                     'vimeo',
-                    'upload'
+                    'local'
                 ],
                 'default' => 'youtube',
             ],
@@ -73,28 +99,6 @@ class Video extends \OPC\Portlet
                 'collapseControlStart' => true,
                 'showOnProp'           => 'video-vendor',
                 'showOnPropValue'      => 'youtube',
-            ],
-            'video-yt-responsive' => [
-                'label'   => 'responsive einbetten?',
-                'type'    => 'radio',
-                'inline'  => true,
-                'options' => [
-                    'ja'   => '1',
-                    'nein' => '0',
-                ],
-                'default' => '1',
-            ],
-            'video-yt-width'      => [
-                'label'      => 'width',
-                'type'       => 'number',
-                'default'    => 600,
-                'dspl_width' => 50,
-            ],
-            'video-yt-height'     => [
-                'label'      => 'height',
-                'type'       => 'number',
-                'default'    => 338,
-                'dspl_width' => 50,
             ],
             'video-yt-start'      => [
                 'label'      => 'Start',
@@ -148,32 +152,11 @@ class Video extends \OPC\Portlet
             'video-vim-id'         => [
                 'label'                => 'Video ID',
                 'default'              => '141374353',
+                'nonempty'             => true,
                 'help'                 => 'Bitte nur die ID des Videos eingeben. Bsp.: 141374353',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'video-vendor',
                 'showOnPropValue'      => 'vimeo',
-            ],
-            'video-vim-responsive' => [
-                'label'   => 'responsive einbetten?',
-                'type'    => 'radio',
-                'inline'  => true,
-                'options' => [
-                    'ja'   => '1',
-                    'nein' => '0',
-                ],
-                'default' => '1',
-            ],
-            'video-vim-width'      => [
-                'label'      => 'width',
-                'type'       => 'number',
-                'default'    => 600,
-                'dspl_width' => 50,
-            ],
-            'video-vim-height'     => [
-                'label'      => 'height',
-                'type'       => 'number',
-                'default'    => 338,
-                'dspl_width' => 50,
             ],
             'video-vim-loop'       => [
                 'label'      => 'Video nach ablauf wiederholen?',
@@ -224,6 +207,15 @@ class Video extends \OPC\Portlet
                 'type'               => 'color',
                 'default'            => '#ffffff',
                 'dspl_width'         => 50,
+                'collapseControlEnd' => true,
+            ],
+            'video-local-url'      => [
+                'label'                => 'Video URL',
+                'type'                 => 'video',
+                'collapseControlStart' => true,
+                'showOnProp'           => 'video-vendor',
+                'showOnPropValue'      => 'local',
+                'dspl_width' => 50,
                 'collapseControlEnd' => true,
             ],
         ];

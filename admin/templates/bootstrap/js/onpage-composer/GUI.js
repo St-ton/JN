@@ -258,8 +258,10 @@ GUI.prototype = {
                 propval = JSON.parse(propval);
             }
 
-            portletData.properties[propname] = propval;
+            configObject[propname] = propval;
         }
+
+        portletData.properties = configObject;
 
         this.io.getPortletPreviewHtml(portletData, this.onPortletPreviewHtml);
     },
@@ -325,8 +327,6 @@ GUI.prototype = {
     {
         var blueprint = JSON.parse(this.importReader.result);
 
-        console.log(blueprint);
-
         this.io.saveBlueprint(blueprint.name, blueprint.instance, this.onBlueprintSaved);
     },
 
@@ -351,10 +351,19 @@ GUI.prototype = {
             this.imageSelectCB(url, propName);
             this.configForm.find('[name="' + propName + '"]').val(url);
             this.configForm.find('#preview-img-' + propName).attr('src', url);
-        }.bind(this));
+        }.bind(this),'Bilder');
     },
 
-    onOpenKCFinder: function (callback)
+    selectVideoProp: function(propName)
+    {
+         this.onOpenKCFinder(function(url) {
+             this.configForm.find('[name="' + propName + '"]').val(url);
+             this.configForm.find('#preview-vid-' + propName).attr('src', url);
+             this.configForm.find('#cont-preview-vid-' + propName).load();
+         }.bind(this),'Videos');
+    },
+
+    onOpenKCFinder: function (callback, type)
     {
         callback = callback || noop;
 
@@ -366,7 +375,7 @@ GUI.prototype = {
         };
 
         var kcFinder = open(
-            this.kcfinderUrl + 'browse.php?type=Bilder&lang=de', 'kcfinder_textbox',
+            this.kcfinderUrl + 'browse.php?type='+ type +'&lang=de', 'kcfinder_textbox',
             'status=0, toolbar=0, location=0, menubar=0, directories=0, resizable=1, scrollbars=0,' +
             'width=800, height=600'
         );

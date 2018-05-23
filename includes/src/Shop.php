@@ -577,7 +577,7 @@ final class Shop
      * @param bool $isAdmin
      * @return JTLSmarty
      */
-    public function _Smarty($fast_init = false, $isAdmin = false): JTLSmarty
+    public function _Smarty(bool $fast_init = false, bool $isAdmin = false): JTLSmarty
     {
         return JTLSmarty::getInstance($fast_init, $isAdmin);
     }
@@ -606,7 +606,7 @@ final class Shop
      * @param string       $eventName
      * @param array|object $arguments
      */
-    public static function fire($eventName, $arguments = [])
+    public static function fire(string $eventName, $arguments = [])
     {
         self::Event()->fire($eventName, $arguments);
     }
@@ -619,7 +619,7 @@ final class Shop
      * @param null|string $beforeString - a prefix string
      * @param int         $backtrace - backtrace depth
      */
-    public static function dbg($var, $die = false, $beforeString = null, $backtrace = 0)
+    public static function dbg($var, bool $die = false, $beforeString = null, int $backtrace = 0)
     {
         if ($beforeString !== null) {
             echo $beforeString . '<br />';
@@ -675,9 +675,9 @@ final class Shop
      * @param int    $languageID
      * @param string $cISO
      */
-    public static function setLanguage($languageID, $cISO = null)
+    public static function setLanguage(int $languageID, string $cISO = null)
     {
-        self::$kSprache = (int)$languageID;
+        self::$kSprache = $languageID;
         if ($cISO !== null) {
             self::$cISO = $cISO;
         }
@@ -1112,7 +1112,7 @@ final class Shop
                     self::$bKatFilterNotFound = true;
                 }
                 if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
-                    self::updateLanguage($oSeo->kSprache);
+                    self::updateLanguage((int)$oSeo->kSprache);
                 }
             }
             // category filter
@@ -1196,57 +1196,56 @@ final class Shop
                 $oSeo->kKey          = (int)$oSeo->kKey;
                 switch ($oSeo->cKey) {
                     case 'kKategorie':
-                        self::$kKategorie = (int)$oSeo->kKey;
+                        self::$kKategorie = $oSeo->kKey;
                         break;
 
                     case 'kHersteller':
-                        self::$kHersteller = (int)$oSeo->kKey;
+                        self::$kHersteller = $oSeo->kKey;
                         break;
 
                     case 'kArtikel':
-                        self::$kArtikel = (int)$oSeo->kKey;
+                        self::$kArtikel = $oSeo->kKey;
                         break;
 
                     case 'kLink':
-                        self::$kLink = (int)$oSeo->kKey;
+                        self::$kLink = $oSeo->kKey;
                         break;
 
                     case 'kSuchanfrage':
-                        self::$kSuchanfrage = (int)$oSeo->kKey;
+                        self::$kSuchanfrage = $oSeo->kKey;
                         break;
 
                     case 'kMerkmalWert':
-                        self::$kMerkmalWert = (int)$oSeo->kKey;
+                        self::$kMerkmalWert = $oSeo->kKey;
                         break;
 
                     case 'kTag':
-                        self::$kTag = (int)$oSeo->kKey;
+                        self::$kTag = $oSeo->kKey;
                         break;
 
                     case 'suchspecial':
-                        self::$kSuchspecial = (int)$oSeo->kKey;
+                        self::$kSuchspecial = $oSeo->kKey;
                         break;
 
                     case 'kNews':
-                        self::$kNews = (int)$oSeo->kKey;
+                        self::$kNews = $oSeo->kKey;
                         break;
 
                     case 'kNewsMonatsUebersicht':
-                        self::$kNewsMonatsUebersicht = (int)$oSeo->kKey;
+                        self::$kNewsMonatsUebersicht = $oSeo->kKey;
                         break;
 
                     case 'kNewsKategorie':
-                        self::$kNewsKategorie = (int)$oSeo->kKey;
+                        self::$kNewsKategorie = $oSeo->kKey;
                         break;
 
                     case 'kUmfrage':
-                        self::$kUmfrage = (int)$oSeo->kKey;
+                        self::$kUmfrage = $oSeo->kKey;
                         break;
-
                 }
             }
             if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
-                self::updateLanguage($oSeo->kSprache);
+                self::updateLanguage((int)$oSeo->kSprache);
             }
         }
         self::$MerkmalFilter = setzeMerkmalFilter();
@@ -1259,9 +1258,8 @@ final class Shop
     /**
      * @param int $languageID
      */
-    private static function updateLanguage($languageID)
+    private static function updateLanguage(int $languageID)
     {
-        $languageID = (int)$languageID;
         if (self::$productFilter->getLanguageID() !== $languageID) {
             self::$productFilter->setLanguageID($languageID);
         }
@@ -1499,7 +1497,7 @@ final class Shop
      * @return ProductFilter
      * @deprecated since 5.0
      */
-    public static function buildNaviFilter($cParameter_arr, $productFilter = null): ProductFilter
+    public static function buildNaviFilter(array $cParameter_arr, $productFilter = null): ProductFilter
     {
         trigger_error(__METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead',
             E_USER_DEPRECATED);
@@ -1514,7 +1512,7 @@ final class Shop
      * @param stdClass|null|ProductFilter $productFilter
      * @return ProductFilter
      */
-    public static function buildProductFilter($cParameter_arr, $productFilter = null): ProductFilter
+    public static function buildProductFilter(array $cParameter_arr, $productFilter = null): ProductFilter
     {
         $pf = new ProductFilter(self::Lang()->getLangArray(), self::getLanguageID());
         if ($productFilter !== null) {
@@ -1603,7 +1601,7 @@ final class Shop
      * @var bool $fullURL - prepend shop url if set to true
      * @return string|null - image path/null if no logo was found
      */
-    public static function getLogo($fullUrl = false)
+    public static function getLogo(bool $fullUrl = false)
     {
         $ret  = null;
         $conf = self::getSettings([CONF_LOGO]);
@@ -1635,7 +1633,7 @@ final class Shop
      * @param bool $bMultilang
      * @return string - the shop URL without trailing slash
      */
-    public static function getURL($bForceSSL = false, $bMultilang = true): string
+    public static function getURL(bool $bForceSSL = false, bool $bMultilang = true): string
     {
         $idx = (int)$bForceSSL;
         if (isset(self::$url[self::$kSprache][$idx])) {
@@ -1663,7 +1661,7 @@ final class Shop
      * @param bool $bForceSSL
      * @return string - the shop Admin URL without trailing slash
      */
-    public static function getAdminURL($bForceSSL = false): string
+    public static function getAdminURL(bool $bForceSSL = false): string
     {
         return rtrim(static::getURL($bForceSSL, false) . '/' . PFAD_ADMIN, '/');
     }
@@ -1671,16 +1669,16 @@ final class Shop
     /**
      * @param int $pageType
      */
-    public static function setPageType($pageType)
+    public static function setPageType(int $pageType)
     {
-        self::$pageType = (int)$pageType;
+        self::$pageType = $pageType;
         executeHook(HOOK_SHOP_SET_PAGE_TYPE, ['pageType' => $pageType]);
     }
 
     /**
      * @return int
      */
-    public static function getPageType()
+    public static function getPageType(): int
     {
         return self::$pageType ?? PAGE_UNBEKANNT;
     }

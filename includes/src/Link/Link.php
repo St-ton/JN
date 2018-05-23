@@ -92,6 +92,11 @@ final class Link extends AbstractLink
     protected $customerGroups = [];
 
     /**
+     * @var int[]
+     */
+    protected $languageIDs = [];
+
+    /**
      * @var int
      */
     protected $sort = 0;
@@ -134,11 +139,6 @@ final class Link extends AbstractLink
      * @var bool
      */
     protected $visibleLoggedInOnly = false;
-
-    /**
-     * @var int
-     */
-    protected $languageID = 0;
 
     /**
      * @var array
@@ -195,7 +195,6 @@ final class Link extends AbstractLink
             "SELECT tlink.*, tlinksprache.cISOSprache, 
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
-                tlinksprache.kSprache, 
                 tlinksprache.cContent AS content,
                 tlinksprache.cMetaDescription AS metaDescription,
                 tlinksprache.cMetaKeywords AS metaKeywords,
@@ -259,6 +258,7 @@ final class Link extends AbstractLink
             $this->setMetaKeyword($link->metaKeywords ?? '', $languageID);
             $this->setName($link->localizedName, $languageID);
             $this->setTitle($link->localizedTitle, $languageID);
+            $this->setLanguageID($languageID, $languageID);
             $this->setURL($this->linkType === 2 ? $link->cURL : $baseURL . $link->localizedUrl, $languageID);
             if ($this->id === null && isset($link->kLink)) {
                 $this->setID((int)$link->kLink);
@@ -398,7 +398,7 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
-    public function setName(string $name, int $idx)
+    public function setName(string $name, int $idx = null)
     {
         $this->names[$idx ?? \Shop::getLanguageID()] = $name;
     }
@@ -432,7 +432,7 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
-    public function setURL(string $url, int $idx)
+    public function setURL(string $url, int $idx = null)
     {
         $this->urls[$idx ?? \Shop::getLanguageID()] = $url;
     }
@@ -652,17 +652,35 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
-    public function getLanguageID(): int
+    public function getLanguageID(int $idx = null): int
     {
-        return $this->languageID;
+        $idx = $idx ?? \Shop::getLanguageID();
+
+        return $this->languageIDs[$idx] ?? 0;
     }
 
     /**
      * @inheritdoc
      */
-    public function setLanguageID(int $languageID)
+    public function setLanguageID(int $languageID, int $idx = null)
     {
-        $this->languageID = $languageID;
+        $this->languageIDs[$idx ?? \Shop::getLanguageID()] = $languageID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLanguageIDs(): array
+    {
+        return $this->languageIDs;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLanguageIDs(array $ids)
+    {
+        $this->languageIDs = array_map('intval', $ids);
     }
 
     /**

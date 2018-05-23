@@ -263,9 +263,10 @@ interface LinkInterface
     public function setIsFluid(bool $isFluid);
 
     /**
+     * @param int $idx
      * @return int
      */
-    public function getLanguageID(): int;
+    public function getLanguageID(int $idx): int;
 
     /**
      * @param int $languageID

@@ -32,8 +32,7 @@ class ProductStream extends \OPC\Portlet
 
     public function getButtonHtml()
     {
-        return '<img class="fa" src="' . \Shop::getURL() . '/' . PFAD_TEMPLATES
-            . 'Evo/themes/base/images/opc/Icon-ProductStream.svg"><br>Product<br>Stream';
+        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Product<br>Stream';
     }
 
     public function getConfigPanelHtml($instance)

@@ -13,19 +13,21 @@ class Video extends \OPC\Portlet
     public function getPreviewHtml($instance)
     {
         $ret = '<div ' . $instance->getAttributeString() . ' ' . $instance->getDataAttributeString() . '>';
+
         if ($instance->getProperty('video-vendor') === 'youtube') {
             $ret .= '<img src="https://img.youtube.com/vi/' . $instance->getProperty('video-yt-id') . '/maxresdefault.jpg" alt="YouTube Video" class="img-responsive"';
             $ret .= !empty($instance->getProperty('video-responsive')) ? ' style="width: 100%;"/>' : ' style="width: ' . $instance->getProperty('video-width') . 'px; height: ' . $instance->getProperty('video-height') . 'px"/>';
         } elseif ($instance->getProperty('video-vendor') === 'vimeo') {
             $imgid = $instance->getProperty('video-vim-id');
             $hash  = unserialize(file_get_contents("http://vimeo.com/api/v2/video/$imgid.php"));
-            $ret   .= '<img src="' . $hash[0]['thumbnail_large'] . '" alt="Vimeo Video" class="img-responsive"';
-            $ret   .= !empty($instance->getProperty('video-responsive')) ? ' style="width: 100%;"/>' : ' style="width: ' . $instance->getProperty('video-width') . 'px; height: ' . $instance->getProperty('video-height') . 'px"/>';
+            $ret  .= '<img src="' . $hash[0]['thumbnail_large'] . '" alt="Vimeo Video" class="img-responsive"';
+            $ret  .= !empty($instance->getProperty('video-responsive')) ? ' style="width: 100%;"/>' : ' style="width: ' . $instance->getProperty('video-width') . 'px; height: ' . $instance->getProperty('video-height') . 'px"/>';
         } else {
             $ret .= '<div class="text-center" style="width: ';
             $ret .= !empty($instance->getProperty('video-responsive')) ? '100%;"><img src="http://marco.vm1.halle/gfx/keinBild.gif"><br/>' : $instance->getProperty('video-width') . 'px; height: ' . $instance->getProperty('video-height') . 'px">';
             $ret .= '<i class="fa fa-film"></i><br/> Video</div>';
         }
+
         $ret .= '</div>';
 
         return $ret;
@@ -150,6 +152,7 @@ class Video extends \OPC\Portlet
             'video-vim-id'     => [
                 'label'                => 'Video ID',
                 'default'              => '141374353',
+                'nonempty'             => true,
                 'help'                 => 'Bitte nur die ID des Videos eingeben. Bsp.: 141374353',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'video-vendor',

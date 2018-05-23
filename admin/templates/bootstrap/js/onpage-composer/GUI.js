@@ -258,8 +258,10 @@ GUI.prototype = {
                 propval = JSON.parse(propval);
             }
 
-            portletData.properties[propname] = propval;
+            configObject[propname] = propval;
         }
+
+        portletData.properties = configObject;
 
         this.io.getPortletPreviewHtml(portletData, this.onPortletPreviewHtml);
     },
@@ -357,17 +359,6 @@ GUI.prototype = {
          this.onOpenKCFinder(function(url) {
              this.configForm.find('[name="' + propName + '"]').val(url);
              this.configForm.find('#preview-vid-' + propName).attr('src', url);
-             var canvas = document.getElementById('preview-canvas-' + propName);
-             var video = document.getElementById('cont-preview-vid-' + propName);
-             var previmg = document.getElementById('preview-img-' + propName);
-             video.addEventListener('loadeddata', function() {
-                 canvas.getContext('2d').drawImage(video, 0, 0, 300, 160);
-                 previmg.src = canvas.toDataURL();
-
-                 
-
-
-             }, false);
              this.configForm.find('#cont-preview-vid-' + propName).load();
          }.bind(this),'Videos');
     },

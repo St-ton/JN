@@ -84,10 +84,7 @@ class Banner extends \OPC\Portlet
 
     public function getButtonHtml()
     {
-        return '<img class="fa" src="' . \Shop::getURL() .'/'
-            . PFAD_TEMPLATES
-            . 'Evo/themes/base/images/opc/Icon-Banner.svg"></i>
-            <br/> Banner';
+        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Banner';
     }
 
     public function getConfigPanelHtml($instance)

@@ -64,10 +64,7 @@ class ImageSlider extends \OPC\Portlet
 
     public function getButtonHtml()
     {
-        return '<img class="fa" src="' . \Shop::getURL() . '/'
-            . PFAD_TEMPLATES
-            . 'Evo/themes/base/images/opc/Icon-ImageSlider.svg">
-            <br/> Image Slider';
+        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Image Slider';
     }
 
     public function getConfigPanelHtml($instance)
@@ -148,6 +145,7 @@ class ImageSlider extends \OPC\Portlet
                 'dspl_width' => 50,
                 'hint'       => 'overrides other settings',
             ],
+
             'slider-effects-random'       => [
                 'label'   => 'random effects',
                 'type'    => 'radio',

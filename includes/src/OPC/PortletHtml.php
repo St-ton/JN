@@ -302,7 +302,7 @@ trait PortletHtml
 
                         $res .= "</optgroup>";
                     } else {
-                        $selected = ($prop === $key) ? " selected" : "";
+                        $selected = ($prop == $key) ? " selected" : "";
                         $res     .= "<option value='$key' $selected>$val</option>";
                     }
                 }

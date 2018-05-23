@@ -134,7 +134,7 @@ class Button extends \OPC\Portlet
                     'primary' => 'Primär',
                     'success' => 'Erfolg',
                     'info'    => 'Info',
-                    'warning' => 'Warunug',
+                    'warning' => 'Warnung',
                     'danger'  => 'Gefahr',
                 ],
                 'default'    => 'default',

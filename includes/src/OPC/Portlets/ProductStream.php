@@ -13,6 +13,7 @@ class ProductStream extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->addClass('text-center');
         $attributes    = $instance->getAttributeString();
         $dataAttribute = $instance->getDataAttributeString();
         $style         = $instance->getProperty('listStyle');
@@ -46,7 +47,11 @@ class ProductStream extends \OPC\Portlet
             'listStyle'   => [
                 'type'    => 'select',
                 'label'   => 'Darstellung',
-                'options' => ['gallery', 'list', 'slider'],
+                'options' => [
+                    'gallery' => 'Galerie',
+                    'list'    => 'Liste',
+                    'slider'  => 'Slider',
+                ],
                 'default' => 'gallery',
             ],
             'sliderTitle' => [

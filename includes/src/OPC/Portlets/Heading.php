@@ -29,7 +29,14 @@ class Heading extends \OPC\Portlet
             'level' => [
                 'label'      => 'Level',
                 'type'       => 'select',
-                'options'    => ['1', '2', '3', '4', '5', '6'],
+                'options'    => [
+                    '1' => '1',
+                    '2' => '2',
+                    '3' => '3',
+                    '4' => '4',
+                    '5' => '5',
+                    '6' => '6',
+                ],
                 'default'    => '1',
                 'dspl_width' => 50,
             ],

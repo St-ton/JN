@@ -86,9 +86,9 @@ class Video extends \OPC\Portlet
                 'label'   => 'Quelle',
                 'type'    => 'select',
                 'options' => [
-                    'youtube',
-                    'vimeo',
-                    'local'
+                    'youtube' => 'YouTube',
+                    'vimeo'   => 'Vimeo',
+                    'local'   => 'lokales Video'
                 ],
                 'default' => 'youtube',
             ],

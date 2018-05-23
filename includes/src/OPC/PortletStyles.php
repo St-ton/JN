@@ -11,7 +11,7 @@ trait PortletStyles
     public function getStylesPropertyDesc()
     {
         return [
-            'color' => [
+            'color'            => [
                 'label'   => 'Schriftfarbe',
                 'type'    => 'color',
                 'default' => '',
@@ -21,93 +21,93 @@ trait PortletStyles
                 'type'    => 'color',
                 'default' => '',
             ],
-            'font-size' => [
+            'font-size'        => [
                 'label'   => 'Schriftgröße',
                 'default' => '',
             ],
-            'margin-top' => [
-                'label' => 'margin-top',
-                'type' => 'number',
-                'default' => '',
-                'class' => 'css-input-grid',
+            'margin-top'       => [
+                'label'      => 'margin-top',
+                'type'       => 'number',
+                'default'    => '',
+                'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
-            'margin-right' => [
-                'label' => 'margin-right',
-                'type' => 'number',
-                'default' => '',
-                'class' => 'css-input-grid',
+            'margin-right'     => [
+                'label'      => 'margin-right',
+                'type'       => 'number',
+                'default'    => '',
+                'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
-            'margin-bottom' => [
-                'label' => 'margin-bottom',
-                'type' => 'number',
-                'default' => '',
-                'class' => 'css-input-grid',
+            'margin-bottom'    => [
+                'label'      => 'margin-bottom',
+                'type'       => 'number',
+                'default'    => '',
+                'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
-            'margin-left' => [
-                'label' => 'margin-left',
-                'type' => 'number',
-                'default' => '',
-                'class' => 'css-input-grid',
+            'margin-left'      => [
+                'label'      => 'margin-left',
+                'type'       => 'number',
+                'default'    => '',
+                'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
-            'padding-top' => [
-                'label' => 'padding-top',
-                'type' => 'number',
-                'default' => '',
-                'class' => 'css-input-grid',
+            'padding-top'      => [
+                'label'      => 'padding-top',
+                'type'       => 'number',
+                'default'    => '',
+                'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
-            'padding-right' => [
-                'label' => 'padding-right',
-                'type' => 'number',
-                'default' => '',
-                'class' => 'css-input-grid',
+            'padding-right'    => [
+                'label'      => 'padding-right',
+                'type'       => 'number',
+                'default'    => '',
+                'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
-            'padding-bottom' => [
-                'label' => 'padding-bottom',
-                'type' => 'number',
-                'default' => '',
-                'class' => 'css-input-grid',
+            'padding-bottom'   => [
+                'label'      => 'padding-bottom',
+                'type'       => 'number',
+                'default'    => '',
+                'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
-            'padding-left' => [
-                'label' => 'padding-left',
-                'type' => 'number',
-                'default' => '',
-                'class' => 'css-input-grid',
+            'padding-left'     => [
+                'label'      => 'padding-left',
+                'type'       => 'number',
+                'default'    => '',
+                'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
-            'border-width' => [
-                'label' => 'border-width',
-                'type' => 'number',
-                'default' => '',
-                'class' => 'css-input-grid',
+            'border-width'     => [
+                'label'      => 'border-width',
+                'type'       => 'number',
+                'default'    => '',
+                'class'      => 'css-input-grid',
                 'dspl_width' => 50
             ],
-            'border-style' => [
-                'label' => 'border-style',
-                'type' => 'select',
-                'options' => [
+            'border-style'     => [
+                'label'      => 'border-style',
+                'type'       => 'select',
+                'options'    => [
                     '',
-                    'hidden',
-                    'dotted',
-                    'dashed',
-                    'solid',
-                    'double',
-                    'groove',
-                    'ridge',
-                    'inset',
-                    'outset',
-                    'initial',
-                    'inherit'
+                    'hidden'  => 'hidden',
+                    'dotted'  => 'dotted',
+                    'dashed'  => 'dashed',
+                    'solid'   => 'solid',
+                    'double'  => 'double',
+                    'groove'  => 'groove',
+                    'ridge'   => 'ridge',
+                    'inset'   => 'inset',
+                    'outset'  => 'outset',
+                    'initial' => 'initial',
+                    'inherit' => 'inherit',
                 ],
                 'dspl_width' => 50
             ],
-            'border-color' => [
+            'border-color'     => [
                 'label'      => 'border-color',
                 'type'       => 'color',
                 'dspl_width' => 100

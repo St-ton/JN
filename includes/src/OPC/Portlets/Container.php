@@ -79,6 +79,7 @@ class Container extends \OPC\Portlet
                     'true'  => 'mitlaufendes Bild',
                     'false' => 'einfacher Container',
                 ],
+                'default' => 'false',
                 'inline'  => true,
             ],
             'src'           => [

@@ -56,6 +56,16 @@ interface LinkInterface
     public function setParent(int $parent);
 
     /**
+     * @return array
+     */
+    public function getLinkGroups(): array;
+
+    /**
+     * @param array $linkGroups
+     */
+    public function setLinkGroups(array $linkGroups);
+
+    /**
      * @return int
      */
     public function getLinkGroupID(): int;
@@ -97,6 +107,11 @@ interface LinkInterface
     public function getNames(): array;
 
     /**
+     * @param string $name
+     * @param int    $idx
+     */
+    public function setName(string $name, int $idx);
+    /**
      * @param array $names
      */
     public function setNames(array $names);
@@ -111,6 +126,12 @@ interface LinkInterface
      * @return array
      */
     public function getURLs(): array;
+
+    /**
+     * @param string $url
+     * @param int    $idx
+     */
+    public function setURL(string $url, int $idx);
 
     /**
      * @param array $urls
@@ -129,9 +150,15 @@ interface LinkInterface
     public function getTitles(): array;
 
     /**
+     * @param string $title
+     * @param int    $idx
+     */
+    public function setTitle(string $title, int $idx);
+
+    /**
      * @param array $title
      */
-    public function setTitle(array $title);
+    public function setTitles(array $title);
 
     /**
      * @return array
@@ -153,6 +180,12 @@ interface LinkInterface
      * @return array
      */
     public function getLanguageCodes(): array;
+
+    /**
+     * @param string $languageCode
+     * @param int    $idx
+     */
+    public function setLanguageCode(string $languageCode, int $idx = 0);
 
     /**
      * @param array $languageCodes
@@ -315,6 +348,12 @@ interface LinkInterface
     public function getContents(): array;
 
     /**
+     * @param string $content
+     * @param int    $idx
+     */
+    public function setContent(string $content, int $idx);
+
+    /**
      * @param array $contents
      */
     public function setContents(array $contents);
@@ -328,6 +367,12 @@ interface LinkInterface
      * @return array
      */
     public function getMetaTitles(): array;
+
+    /**
+     * @param string $metaTitle
+     * @param int    $idx
+     */
+    public function setMetaTitle(string $metaTitle, int $idx);
 
     /**
      * @param array $metaTitles
@@ -345,6 +390,12 @@ interface LinkInterface
     public function getMetaKeywords(): array;
 
     /**
+     * @param string $metaKeyword
+     * @param int    $idx
+     */
+    public function setMetaKeyword(string $metaKeyword, int $idx);
+
+    /**
      * @param array $metaKeywords
      */
     public function setMetaKeywords(array $metaKeywords);
@@ -358,6 +409,12 @@ interface LinkInterface
      * @return array
      */
     public function getMetaDescriptions(): array;
+
+    /**
+     * @param string $metaDescription
+     * @param int    $idx
+     */
+    public function setMetaDescription(string $metaDescription, int $idx);
 
     /**
      * @param array $metaDescriptions

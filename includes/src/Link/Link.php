@@ -236,34 +236,32 @@ final class Link extends AbstractLink
     {
         $baseURL = \Shop::getURL(true) . '/';
         foreach ($localizedLinks as $link) {
-            $languageID                          = (int)$link->languageID;
-            $this->parent                        = (int)$link->kVaterLink;
-            $this->pluginID                      = (int)$link->kPlugin;
-            $this->linkGroups                    = array_unique(array_map('intval', explode(',', $link->linkGroups)));
-            $this->linkGroupID                   = (int)$this->linkGroups[0];
-            $this->linkType                      = (int)$link->nLinkart;
-            $this->noFollow                      = $link->cNoFollow === 'Y';
-            $this->customerGroups                = self::parseSSKAdvanced($link->cKundengruppen);
-            $this->visibleLoggedInOnly           = $link->cSichtbarNachLogin === 'Y';
-            $this->printButton                   = $link->cDruckButton === 'Y';
-            $this->sort                          = (int)$link->nSort;
-            $this->ssl                           = (bool)$link->bSSL;
-            $this->isFluid                       = (bool)$link->bIsFluid;
-            $this->isEnabled                     = (bool)$link->bIsActive;
-            $this->fileName                      = $link->cDateiname ?? '';
-            $this->languageCodes[$languageID]    = $link->cISOSprache;
-            $this->contents[$languageID]         = parseNewsText($link->content ?? '');
-            $this->metaDescriptions[$languageID] = $link->metaDescription ?? '';
-            $this->metaTitles[$languageID]       = $link->metaTitle ?? '';
-            $this->metaKeywords[$languageID]     = $link->metaKeywords ?? '';
-            $this->names[$languageID]            = $link->localizedName;
-            $this->titles[$languageID]           = $link->localizedTitle;
-            $this->pluginEnabled                 = $link->pluginState === null || (int)$link->pluginState === 2;
-            $this->urls[$languageID]             = $this->linkType === 2
-                ? $link->cURL
-                : $baseURL . $link->localizedUrl;
+            $languageID = (int)$link->languageID;
+            $this->setParent((int)$link->kVaterLink);
+            $this->setPluginID((int)$link->kPlugin);
+            $this->setPluginEnabled($link->pluginState === null || (int)$link->pluginState === 2);
+            $this->setLinkGroups(array_unique(array_map('intval', explode(',', $link->linkGroups))));
+            $this->setLinkGroupID((int)$this->linkGroups[0]);
+            $this->setLinkType((int)$link->nLinkart);
+            $this->setNoFollow($link->cNoFollow === 'Y');
+            $this->setCustomerGroups(self::parseSSKAdvanced($link->cKundengruppen));
+            $this->setVisibleLoggedInOnly($link->cSichtbarNachLogin === 'Y');
+            $this->setPrintButton($link->cDruckButton === 'Y');
+            $this->setSort((int)$link->nSort);
+            $this->setSSL((bool)$link->bSSL);
+            $this->setIsFluid((bool)$link->bIsFluid);
+            $this->setIsEnabled((bool)$link->bIsActive);
+            $this->setFileName($link->cDateiname ?? '');
+            $this->setLanguageCode($link->cISOSprache, $languageID);
+            $this->setContent(parseNewsText($link->content ?? ''), $languageID);
+            $this->setMetaDescription($link->metaDescription ?? '', $languageID);
+            $this->setMetaTitle($link->metaTitle ?? '', $languageID);
+            $this->setMetaKeyword($link->metaKeywords ?? '', $languageID);
+            $this->setName($link->localizedName, $languageID);
+            $this->setTitle($link->localizedTitle, $languageID);
+            $this->setURL($this->linkType === 2 ? $link->cURL : $baseURL . $link->localizedUrl, $languageID);
             if ($this->id === null && isset($link->kLink)) {
-                $this->id = (int)$link->kLink;
+                $this->setID((int)$link->kLink);
             }
         }
 
@@ -275,12 +273,10 @@ final class Link extends AbstractLink
      */
     public function checkVisibility(int $customerGroupID, int $customerID = 0): bool
     {
-        $customerVisibilityOK      = $this->visibleLoggedInOnly === false
-            || $customerID > 0;
-        $customerGroupVisibilityOK = count($this->customerGroups) === 0
-            || in_array($customerGroupID, $this->customerGroups, true);
+        $cVis   = $this->visibleLoggedInOnly === false || $customerID > 0;
+        $cgVisi = count($this->customerGroups) === 0 || in_array($customerGroupID, $this->customerGroups, true);
 
-        $this->isVisible = $customerVisibilityOK && $customerGroupVisibilityOK && $this->isEnabled === true;
+        $this->isVisible = $cVis && $cgVisi && $this->isEnabled === true;
 
         return $this->isVisible;
     }
@@ -315,6 +311,22 @@ final class Link extends AbstractLink
     public function setParent(int $parent)
     {
         $this->parent = $parent;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLinkGroups(): array
+    {
+        return $this->linkGroups;
+    }
+
+    /**
+     * @param array $linkGroups
+     */
+    public function setLinkGroups(array $linkGroups)
+    {
+        $this->linkGroups = $linkGroups;
     }
 
     /**
@@ -386,6 +398,14 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
+    public function setName(string $name, int $idx)
+    {
+        $this->names[$idx ?? \Shop::getLanguageID()] = $name;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function setNames(array $names)
     {
         $this->names = $names;
@@ -410,11 +430,20 @@ final class Link extends AbstractLink
     }
 
     /**
+     * @param string $url
+     * @param int    $idx
+     */
+    public function setURL(string $url, int $idx)
+    {
+        $this->urls[$idx ?? \Shop::getLanguageID()] = $url;
+    }
+
+    /**
      * @inheritdoc
      */
     public function setURLs(array $urls)
     {
-        $this->url = $urls;
+        $this->urls = $urls;
     }
 
     /**
@@ -432,19 +461,27 @@ final class Link extends AbstractLink
      */
     public function getTitles(): array
     {
-        return $this->title;
+        return $this->titles;
     }
 
     /**
      * @inheritdoc
      */
-    public function setTitle(array $title)
+    public function setTitle(string $title, int $idx = null)
     {
-        $this->title = $title;
+        $this->titles[$idx ?? \Shop::getLanguageID()] = $title;
     }
 
     /**
-     * @return array
+     * @inheritdoc
+     */
+    public function setTitles(array $title)
+    {
+        $this->titles = $title;
+    }
+
+    /**
+     * @inheritdoc
      */
     public function getCustomerGroups(): array
     {
@@ -475,6 +512,14 @@ final class Link extends AbstractLink
     public function getLanguageCodes(): array
     {
         return $this->languageCodes;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLanguageCode(string $languageCode, int $idx = null)
+    {
+        $this->languageCodes[$idx ?? \Shop::getLanguageID()] = $languageCode;
     }
 
     /**
@@ -542,7 +587,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function getPrintButton(): bool
     {
@@ -710,7 +755,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getFileName(): string
     {
@@ -718,7 +763,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @param string $fileName
+     * @inheritdoc
      */
     public function setFileName(string $fileName)
     {
@@ -726,7 +771,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getContents(): array
     {
@@ -744,7 +789,15 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @param array $contents
+     * @inheritdoc
+     */
+    public function setContent(string $content, int $idx = null)
+    {
+        $this->contents[$idx ?? \Shop::getLanguageID()] = $content;
+    }
+
+    /**
+     * @inheritdoc
      */
     public function setContents(array $contents)
     {
@@ -752,7 +805,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getMetaTitles(): array
     {
@@ -770,7 +823,15 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @param array $metaTitles
+     * @inheritdoc
+     */
+    public function setMetaTitle(string $metaTitle, int $idx = null)
+    {
+        $this->metaTitles[$idx ?? \Shop::getLanguageID()] = $metaTitle;
+    }
+
+    /**
+     * @inheritdoc
      */
     public function setMetaTitles(array $metaTitles)
     {
@@ -788,7 +849,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getMetaKeywords(): array
     {
@@ -796,7 +857,15 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @param array $metaKeywords
+     * @inheritdoc
+     */
+    public function setMetaKeyword(string $metaKeyword, int $idx = null)
+    {
+        $this->metaKeywords[$idx ?? \Shop::getLanguageID()] = $metaKeyword;
+    }
+
+    /**
+     * @inheritdoc
      */
     public function setMetaKeywords(array $metaKeywords)
     {
@@ -814,7 +883,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getMetaDescriptions(): array
     {
@@ -822,7 +891,15 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @param array $metaDescriptions
+     * @inheritdoc
+     */
+    public function setMetaDescription(string $metaDescription, int $idx = null)
+    {
+        $this->metaDescriptions[$idx ?? \Shop::getLanguageID()] = $metaDescription;
+    }
+
+    /**
+     * @inheritdoc
      */
     public function setMetaDescriptions(array $metaDescriptions)
     {

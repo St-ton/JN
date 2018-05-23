@@ -1824,9 +1824,14 @@ final class Shop
         });
         // Captcha
         $container->setSingleton(\Services\JTL\CaptchaServiceInterface::class, function (Container $container) {
-            // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
-            // oder ausgeschaltetem Captcha nicht notwendig
+            if (!self::$isInitialized) {
+                // Backend
+                return new \Services\JTL\SimpleCaptchaService(true);
+            }
+
             return new \Services\JTL\CaptchaService(new \Services\JTL\SimpleCaptchaService(
+                // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
+                // oder ausgeschaltetem Captcha nicht notwendig
                 (self::getConfigValue(CONF_GLOBAL, 'anti_spam_method') !== 'N')
                 && !Session::get('bAnti_spam_already_checked', false)
                 && !Session::Customer()->isLoggedIn()

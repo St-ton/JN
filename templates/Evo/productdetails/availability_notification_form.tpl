@@ -15,7 +15,7 @@
             </div>
         {/if}
     {/if}
-    <form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" method="post" id="article_availability{$Artikel->kArtikel}">
+    <form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" method="post" id="article_availability{$Artikel->kArtikel}" class="evo-validate">
         {$jtl_token}
         <fieldset>
             <legend>{lang key="contact" section="global"}</legend>

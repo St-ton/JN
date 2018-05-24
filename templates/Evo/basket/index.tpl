@@ -60,12 +60,12 @@
                             {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
                                 {assign var="showCoupon" value=true}
                                 <div class="apply-coupon col-sm-6 col-lg-4">
-                                    <form class="form-inline" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}">
+                                    <form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}">
                                         {$jtl_token}
                                         {block name="basket-coupon"}
                                             <div class="form-group{if !empty($invalidCouponCode) || !empty($cKuponfehler)} has-error{/if}">
                                                 <p class="input-group">
-                                                    <input aria-label="{lang key='couponCode' section='account data'}" class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" />
+                                                    <input aria-label="{lang key='couponCode' section='account data'}" class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required/>
                                                     <span class="input-group-btn">
                                                         <input class="btn btn-default" type="submit" value="{lang key='useCoupon' section='checkout'}" />
                                                     </span>

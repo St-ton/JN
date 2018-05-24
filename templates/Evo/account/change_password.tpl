@@ -11,7 +11,7 @@
         <p class="alert alert-danger">{$cFehler}</p>
     {/if}
     <div class="row">
-        <form id="password" action="{get_static_route id='jtl.php'}" method="post" class="col-xs-8 col-md-5 col-lg-4">
+        <form id="password" action="{get_static_route id='jtl.php'}" method="post" class="col-xs-8 col-md-5 col-lg-4 evo-validate">
             {$jtl_token}
             <div class="form-group required">
                 <label for="currentPassword" class="control-label">{lang key="currentPassword" section="login"}</label>

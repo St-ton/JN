@@ -30,7 +30,7 @@
                         {lang key="fillOut" section="global"}
                     </div>
                 {/if}
-                <form name="contact" action="{get_static_route id='kontakt.php'}" method="post">
+                <form name="contact" action="{get_static_route id='kontakt.php'}" method="post" class="evo-validate">
                     {$jtl_token}
                     <fieldset>
                         <legend>{lang key="contact" section="global"}</legend>

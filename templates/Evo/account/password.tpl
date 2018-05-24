@@ -20,7 +20,7 @@
                 {block name="password-reset-form"}
                 <div class="panel-wrap">
                     {block name="password-reset-form-body"}
-                    <form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post">
+                    <form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="evo-validate">
                         {$jtl_token}
                         <fieldset>
                             <div class="form-group float-label-control required">
@@ -60,7 +60,7 @@
                         <div class="panel-heading"><h3 class="panel-title">{block name="password-reset-confirm-title"}{lang key="customerInformation" section="global"}{/block}</h3></div>
                         <div class="panel-body">
                             {block name="password-reset-confirm-body"}
-                            <form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post">
+                            <form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="evo-validate">
                                 {$jtl_token}
                                 <fieldset>
                                     <div class="form-group required">

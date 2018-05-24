@@ -11,11 +11,6 @@
 		<Version nr="100">
 			<CreateDate>2018-05-22</CreateDate>
 		</Version>
-		<Hooks>
-			<Hook id="270">jtl_google_recaptcha_configured.php</Hook>
-			<Hook id="271">jtl_google_recaptcha_markup.php</Hook>
-			<Hook id="272">jtl_google_recaptcha_validate.php</Hook>
-		</Hooks>
 		<Adminmenu>
 			<Settingslink sort="2">
 				<Name>Einstellungen</Name>

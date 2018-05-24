@@ -86,10 +86,9 @@
                                     isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
                                     isset($Einstellungen.newsletter.newsletter_sicherheitscode) && $Einstellungen.newsletter.newsletter_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
                                     <hr>
-                                    <div class="g-recaptcha form-group" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
-                                    {if !empty($plausiArr.captcha) && $plausiArr.captcha === true}
-                                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="invalidToken" section="global"}</div>
-                                    {/if}
+                                    <div class="form-group float-label-control{if !empty($plausiArr.captcha) && $plausiArr.captcha === true}} has-error{/if} required">
+                                    {captchaMarkup getBody=true}
+                                    </div>
                                 {/if}
                                 {hasCheckBoxForLocation nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$plausiArr cPost_arr=$cPost_arr bReturn="bHasCheckbox"}
                                 {if $bHasCheckbox}

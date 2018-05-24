@@ -125,10 +125,6 @@ class Notification implements IteratorAggregate, Countable
             $this->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Es sind neue Plugin-Versionen vorhanden.', 'pluginverwaltung.php');
         }
 
-        if ((int)$config['global']['anti_spam_method'] === 7 && !reCaptchaConfigured()) {
-            $this->add(NotificationEntry::TYPE_WARNING, 'Konfiguration', 'Sie haben Google reCaptcha als Spamschutz-Methode gew&auml;hlt, aber Website- und/oder Geheimer Schl&uuml;ssel nicht angegeben.', 'einstellungen.php?kSektion=1#anti_spam_method');
-        }
-
         /* REMOTE CALL
         if (($subscription =  Shop()->RS()->getSubscription()) !== null) {
             if ((int)$subscription->bUpdate === 1) {

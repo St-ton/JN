@@ -602,11 +602,8 @@
     isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
     isset($Einstellungen.kunden.registrieren_captcha) && $Einstellungen.kunden.registrieren_captcha !== 'N' && empty($Kunde->kKunde)}
     <hr>
-    <div class="g-recaptcha form-group" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
-    {if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false}
-        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-            {lang key="invalidToken" section="global"}
-        </div>
-    {/if}
+    <div class="form-group float-label-control required{if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}">
+        {captchaMarkup getBody=true}
+    </div>
     <hr>
 {/if}

@@ -6100,13 +6100,15 @@ function truncateMetaDescription($cDesc)
  */
 function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 {
-    $metaProposal = str_replace('"', '', StringHandler::unhtmlentities($metaProposal));
+    // Convert special entities in internal multibyte string
+    $metaProposal = str_replace('"', '', StringHandler::htmlentitydecode($metaProposal, ENT_COMPAT, 'UTF-8'));
     $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
     if (!empty($maxLength) && $maxLength > 0) {
-        $metaProposal = substr($metaProposal, 0, (int)$maxLength);
+        // shorten the string multibyte safe
+        $metaProposal = mb_substr($metaProposal, 0, (int)$maxLength);
     }
 
-    return StringHandler::htmlentities(trim(preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
+    return StringHandler::htmlentities(trim(preg_replace('/\s\s+/', ' ', $metaProposal)), ENT_COMPAT, 'UTF-8') . $metaSuffix;
 }
 
 /**

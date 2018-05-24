@@ -23,12 +23,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @var string
          */
-        protected $cName;
+        protected $cName = '';
 
         /**
          * @var string
          */
-        protected $cBeschreibung;
+        protected $cBeschreibung = '';
 
         /**
          * Constructor
@@ -36,9 +36,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKonfigitem
          * @param int $kSprache
          */
-        public function __construct($kKonfigitem = 0, $kSprache = 0)
+        public function __construct(int $kKonfigitem = 0, int $kSprache = 0)
         {
-            if ((int)$kKonfigitem > 0 && (int)$kSprache > 0) {
+            if ($kKonfigitem > 0 && $kSprache > 0) {
                 $this->loadFromDB($kKonfigitem, $kSprache);
             }
         }
@@ -49,14 +49,18 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKonfigitem
          * @param int $kSprache
          */
-        private function loadFromDB($kKonfigitem = 0, $kSprache = 0)
+        private function loadFromDB(int $kKonfigitem = 0, int $kSprache = 0)
         {
-            $oObj = Shop::Container()->getDB()->select('tkonfigitemsprache', 'kKonfigitem', (int)$kKonfigitem, 'kSprache', (int)$kSprache);
-            if (isset($oObj) && empty($oObj->cName)) {
+            $oObj = Shop::Container()->getDB()->select(
+                'tkonfigitemsprache',
+                'kKonfigitem', $kKonfigitem,
+                'kSprache', $kSprache
+            );
+            if ($oObj !== null && empty($oObj->cName)) {
                 $kSprache         = gibStandardsprache();
                 $StandardLanguage = Shop::Container()->getDB()->select(
                     'tkonfigitemsprache',
-                    'kKonfigitem', (int)$kKonfigitem,
+                    'kKonfigitem', $kKonfigitem,
                     'kSprache', (int)$kSprache->kSprache,
                     null, null,
                     false,
@@ -64,11 +68,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 );
                 $oObj->cName      = $StandardLanguage->cName;
             }
-            if (isset($oObj) && empty($oObj->cBeschreibung)) {
+            if ($oObj !== null && empty($oObj->cBeschreibung)) {
                 $kSprache            = gibStandardsprache();
                 $StandardLanguage    = Shop::Container()->getDB()->select(
                     'tkonfigitemsprache',
-                    'kKonfigitem', (int)$kKonfigitem,
+                    'kKonfigitem', $kKonfigitem,
                     'kSprache', (int)$kSprache->kSprache,
                     null, null,
                     false,
@@ -116,7 +120,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @return int
          */
-        public function update()
+        public function update(): int
         {
             $_upd                = new stdClass();
             $_upd->cName         = $this->getName();
@@ -135,7 +139,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @return int
          */
-        public function delete()
+        public function delete(): int
         {
             return Shop::Container()->getDB()->delete(
                 'tkonfigitemsprache',
@@ -148,9 +152,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKonfigitem
          * @return $this
          */
-        public function setKonfigitem($kKonfigitem)
+        public function setKonfigitem(int $kKonfigitem): self
         {
-            $this->kKonfigitem = (int)$kKonfigitem;
+            $this->kKonfigitem = $kKonfigitem;
 
             return $this;
         }
@@ -159,9 +163,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kSprache
          * @return $this
          */
-        public function setSprache($kSprache)
+        public function setSprache(int $kSprache): self
         {
-            $this->kSprache = (int)$kSprache;
+            $this->kSprache = $kSprache;
 
             return $this;
         }
@@ -170,7 +174,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param string $cName
          * @return $this
          */
-        public function setName($cName)
+        public function setName(string $cName): self
         {
             $this->cName = Shop::Container()->getDB()->escape($cName);
 
@@ -181,7 +185,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param string $cBeschreibung
          * @return $this
          */
-        public function setBeschreibung($cBeschreibung)
+        public function setBeschreibung(string $cBeschreibung): self
         {
             $this->cBeschreibung = Shop::Container()->getDB()->escape($cBeschreibung);
 
@@ -191,7 +195,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return int
          */
-        public function getKonfigitem()
+        public function getKonfigitem(): int
         {
             return (int)$this->kKonfigitem;
         }
@@ -199,7 +203,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return int
          */
-        public function getSprache()
+        public function getSprache(): int
         {
             return (int)$this->kSprache;
         }
@@ -207,7 +211,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return string
          */
-        public function getName()
+        public function getName(): string
         {
             return $this->cName;
         }
@@ -215,7 +219,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return string
          */
-        public function getBeschreibung()
+        public function getBeschreibung(): string
         {
             return $this->cBeschreibung;
         }

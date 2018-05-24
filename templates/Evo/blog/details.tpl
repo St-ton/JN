@@ -92,7 +92,7 @@
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h4 class="panel-title">{lang key="newsCommentAdd" section="news"}</h4></div>
                                 <div class="panel-body">
-                                    <form method="post" action="{if !empty($oNewsArchiv->cSeo)}{$ShopURL}/{$oNewsArchiv->cSeo}{else}{get_static_route id='news.php'}{/if}" class="form" id="news-addcomment">
+                                    <form method="post" action="{if !empty($oNewsArchiv->cSeo)}{$ShopURL}/{$oNewsArchiv->cSeo}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate" id="news-addcomment">
                                         {$jtl_token}
                                         <input type="hidden" name="kNews" value="{$oNewsArchiv->kNews}" />
                                         <input type="hidden" name="kommentar_einfuegen" value="1" />

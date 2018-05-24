@@ -14,7 +14,7 @@
 {include file='snippets/opc_mount_point.tpl' id='opc_poll_content_prepend'}
 
 {if $oUmfrage->oUmfrageFrage_arr|@count > 0 && $oUmfrage->oUmfrageFrage_arr}
-    <form method="post" action="{get_static_route id='umfrage.php'}">
+    <form method="post" action="{get_static_route id='umfrage.php'}" class="evo-validate">
         {$jtl_token}
         <input name="u" type="hidden" value="{$oUmfrage->kUmfrage}" />
         {foreach name=umfragefrage from=$oUmfrage->oUmfrageFrage_arr item=oUmfrageFrage}

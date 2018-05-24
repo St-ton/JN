@@ -117,9 +117,9 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
         if (!valid_email($cEmail)) {
             $nPlausiValue_arr['cEmail'] = 1;
         }
-        if (isset($conf['news']['news_sicherheitscode']) &&
-            $conf['news']['news_sicherheitscode'] !== 'N' &&
-            !validateCaptcha($_POST)
+        if (isset($conf['news']['news_sicherheitscode'])
+            && $conf['news']['news_sicherheitscode'] !== 'N'
+            && !validateCaptcha($_POST)
         ) {
             $nPlausiValue_arr['captcha'] = 2;
         }

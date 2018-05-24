@@ -11,7 +11,7 @@
     <h1>{lang key="productRating" section="product rating"}</h1>
     {block name="productdetails-review-form"}
     <div class="panel-wrap">
-        <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes">
+        <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="evo-validate">
             {$jtl_token}
             {if isset($nArtikelNichtGekauft) && $nArtikelNichtGekauft == 1}
                 <div class="alert alert-danger">{lang key="productNotBuyed" section="product rating"}</div>

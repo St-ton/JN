@@ -40,7 +40,7 @@
         </div>
     </div>{* /caption *}
     {/block}
-    <form id="buy_form_{$Artikel->kArtikel}" action="index.php" method="post" class="form form-basket" data-toggle="basket-add">
+    <form id="buy_form_{$Artikel->kArtikel}" action="index.php" method="post" class="form form-basket evo-validate" data-toggle="basket-add">
         {$jtl_token}
         {block name="productlist-delivery-status"}
             <div class="delivery-status">

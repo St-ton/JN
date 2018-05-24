@@ -26,7 +26,7 @@
     <div class="col-sm-8 col-sm-offset-2">
         {block name="login-form"}
         <div class="panel-wrap">
-            <form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form">
+            <form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="evo-validate">
                 {$jtl_token}
                 <fieldset>
                     <legend>{lang section="checkout" key="loginForRegisteredCustomers"}</legend>

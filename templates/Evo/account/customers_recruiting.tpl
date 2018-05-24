@@ -3,7 +3,7 @@
     <div class="alert alert-danger">{$cFehler}</div>
 {/if}
 {block name="customers-recruiting"}
-<form id="kwk" action="{get_static_route id='jtl.php'}" method="post" class="form form-horizontal col-md-6 col-md-offset-3">
+<form id="kwk" action="{get_static_route id='jtl.php'}" method="post" class="form form-horizontal col-md-6 col-md-offset-3 evo-validate">
     {$jtl_token}
     <div class="form-group float-label-control required">
         <label for="kwkFirstName" class="control-label">{lang key="kwkFirstName" section="login"}</label>

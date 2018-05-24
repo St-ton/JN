@@ -4,7 +4,7 @@
     </div>
     <div class="panel-body">
         {if empty($smarty.session.Kunde->kKunde)}
-            <form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login">
+            <form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login evo-validate">
                 <input type="hidden" name="login" value="1" />
                 {$jtl_token}
                 <div class="form-group required">

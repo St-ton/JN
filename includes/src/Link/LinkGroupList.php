@@ -234,7 +234,7 @@ final class LinkGroupList implements LinkGroupListInterface
                     AND tseo.kSprache = tsprache.kSprache
                 WHERE cDateiname IS NOT NULL 
                     AND cDateiname != ''
-                GROUP BY tsprache.kSprache",
+                GROUP BY tlink.kLink, tsprache.kSprache",
             ReturnType::ARRAY_OF_OBJECTS
         );
         $grouped      = group($staticRoutes, function ($e) {

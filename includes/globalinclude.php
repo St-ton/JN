@@ -80,10 +80,9 @@ if (!JTL_INCLUDE_ONLY_DB) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_ext_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
-    $oPluginHookListe_arr = Plugin::getHookList();
-    $nSystemlogFlag       = Jtllog::getSytemlogFlag();
-    $template             = Template::getInstance();
-    $template->check(true);
+    $oPluginHookListe_arr         = Plugin::getHookList();
+    $nSystemlogFlag               = Jtllog::getSytemlogFlag();
+    $template                     = Template::getInstance();
     $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $oBoxen              = Boxen::getInstance();

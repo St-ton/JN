@@ -172,93 +172,92 @@ function bearbeiteNachricht()
     $betreff = isset($_POST['subject'])
         ? Shop::Container()->getDB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_POST['subject'])
         : null;
-    if (!empty($betreff->kKontaktBetreff)) {
-        $betreffSprache               = Shop::Container()->getDB()->select(
-            'tkontaktbetreffsprache',
-            'kKontaktBetreff',
-            (int)$betreff->kKontaktBetreff,
-            'cISOSprache',
-            $_SESSION['cISOSprache']
-        );
-        $Objekt                       = new stdClass();
-        $Objekt->tnachricht           = baueKontaktFormularVorgaben();
-        $Objekt->tnachricht->cBetreff = $betreffSprache->cName;
-
-        $conf     = Shop::getSettings([CONF_KONTAKTFORMULAR, CONF_GLOBAL]);
-        $from     = new stdClass();
-        $from_arr = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
-        $mail     = new stdClass();
-        if (is_array($from_arr) && count($from_arr)) {
-            foreach ($from_arr as $f) {
-                $from->{$f->cKey} = $f->cValue;
-            }
-            $mail->fromEmail = $from->cEmailOut;
-            $mail->fromName  = $from->cEmailSenderName;
-        }
-        $mail->toEmail      = $betreff->cMail;
-        $mail->toName       = $conf['global']['global_shopname'];
-        $mail->replyToEmail = $Objekt->tnachricht->cMail;
-        $mail->replyToName  = '';
-        if (isset($Objekt->tnachricht->cVorname)) {
-            $mail->replyToName .= $Objekt->tnachricht->cVorname . ' ';
-        }
-        if (isset($Objekt->tnachricht->cNachname)) {
-            $mail->replyToName .= $Objekt->tnachricht->cNachname;
-        }
-        if (isset($Objekt->tnachricht->cFirma)) {
-            $mail->replyToName .= ' - ' . $Objekt->tnachricht->cFirma;
-        }
-        $Objekt->mail = $mail;
-        if (isset($_SESSION['kSprache']) && !isset($Objekt->tkunde)) {
-            if (!isset($Objekt->tkunde)) {
-                $Objekt->tkunde = new stdClass();
-            }
-            $Objekt->tkunde->kSprache = $_SESSION['kSprache'];
-        }
-        sendeMail(MAILTEMPLATE_KONTAKTFORMULAR, $Objekt);
-
-        if ($conf['kontakt']['kontakt_kopiekunde'] === 'Y') {
-            $mail->toEmail = $Objekt->tnachricht->cMail;
-            $mail->toName  = $mail->toEmail;
-            if (isset($Objekt->tnachricht->cVorname) ||
-                isset($Objekt->tnachricht->cNachname) ||
-                isset($Objekt->tnachricht->cFirma)
-            ) {
-                $mail->toName = '';
-                if (isset($Objekt->tnachricht->cVorname)) {
-                    $mail->toName .= $Objekt->tnachricht->cVorname . ' ';
-                }
-                if (isset($Objekt->tnachricht->cNachname)) {
-                    $mail->toName .= $Objekt->tnachricht->cNachname;
-                }
-                if (isset($Objekt->tnachricht->cFirma)) {
-                    $mail->toName .= ' - ' . $Objekt->tnachricht->cFirma;
-                }
-            }
-            $mail->replyToEmail = $Objekt->tnachricht->cMail;
-            $mail->replyToName  = $mail->toName;
-            $Objekt->mail       = $mail;
-            sendeMail(MAILTEMPLATE_KONTAKTFORMULAR, $Objekt);
-        }
-        $KontaktHistory                  = new stdClass();
-        $KontaktHistory->kKontaktBetreff = $betreff->kKontaktBetreff;
-        $KontaktHistory->kSprache        = $_SESSION['kSprache'];
-        $KontaktHistory->cAnrede         = $Objekt->tnachricht->cAnrede ?? null;
-        $KontaktHistory->cVorname        = $Objekt->tnachricht->cVorname ?? null;
-        $KontaktHistory->cNachname       = $Objekt->tnachricht->cNachname ?? null;
-        $KontaktHistory->cFirma          = $Objekt->tnachricht->cFirma ?? null;
-        $KontaktHistory->cTel            = $Objekt->tnachricht->cTel ?? null;
-        $KontaktHistory->cMobil          = $Objekt->tnachricht->cMobil ?? null;
-        $KontaktHistory->cFax            = $Objekt->tnachricht->cFax ?? null;
-        $KontaktHistory->cMail           = $Objekt->tnachricht->cMail ?? null;
-        $KontaktHistory->cNachricht      = $Objekt->tnachricht->cNachricht ?? null;
-        $KontaktHistory->cIP             = gibIP();
-        $KontaktHistory->dErstellt       = 'now()';
-
-        return Shop::Container()->getDB()->insert('tkontakthistory', $KontaktHistory);
+    if (empty($betreff->kKontaktBetreff)) {
+        return false;
     }
+    $betreffSprache               = Shop::Container()->getDB()->select(
+        'tkontaktbetreffsprache',
+        'kKontaktBetreff',
+        (int)$betreff->kKontaktBetreff,
+        'cISOSprache',
+        Shop::getLanguageCode()
+    );
+    $Objekt                       = new stdClass();
+    $Objekt->tnachricht           = baueKontaktFormularVorgaben();
+    $Objekt->tnachricht->cBetreff = $betreffSprache->cName;
 
-    return false;
+    $conf     = Shop::getSettings([CONF_KONTAKTFORMULAR, CONF_GLOBAL]);
+    $from     = new stdClass();
+    $from_arr = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
+    $mail     = new stdClass();
+    if (is_array($from_arr) && count($from_arr)) {
+        foreach ($from_arr as $f) {
+            $from->{$f->cKey} = $f->cValue;
+        }
+        $mail->fromEmail = $from->cEmailOut;
+        $mail->fromName  = $from->cEmailSenderName;
+    }
+    $mail->toEmail      = $betreff->cMail;
+    $mail->toName       = $conf['global']['global_shopname'];
+    $mail->replyToEmail = $Objekt->tnachricht->cMail;
+    $mail->replyToName  = '';
+    if (isset($Objekt->tnachricht->cVorname)) {
+        $mail->replyToName .= $Objekt->tnachricht->cVorname . ' ';
+    }
+    if (isset($Objekt->tnachricht->cNachname)) {
+        $mail->replyToName .= $Objekt->tnachricht->cNachname;
+    }
+    if (isset($Objekt->tnachricht->cFirma)) {
+        $mail->replyToName .= ' - ' . $Objekt->tnachricht->cFirma;
+    }
+    $Objekt->mail = $mail;
+    if (isset($_SESSION['kSprache']) && !isset($Objekt->tkunde)) {
+        if (!isset($Objekt->tkunde)) {
+            $Objekt->tkunde = new stdClass();
+        }
+        $Objekt->tkunde->kSprache = $_SESSION['kSprache'];
+    }
+    sendeMail(MAILTEMPLATE_KONTAKTFORMULAR, $Objekt);
+
+    if ($conf['kontakt']['kontakt_kopiekunde'] === 'Y') {
+        $mail->toEmail = $Objekt->tnachricht->cMail;
+        $mail->toName  = $mail->toEmail;
+        if (isset($Objekt->tnachricht->cVorname)
+            || isset($Objekt->tnachricht->cNachname)
+            || isset($Objekt->tnachricht->cFirma)
+        ) {
+            $mail->toName = '';
+            if (isset($Objekt->tnachricht->cVorname)) {
+                $mail->toName .= $Objekt->tnachricht->cVorname . ' ';
+            }
+            if (isset($Objekt->tnachricht->cNachname)) {
+                $mail->toName .= $Objekt->tnachricht->cNachname;
+            }
+            if (isset($Objekt->tnachricht->cFirma)) {
+                $mail->toName .= ' - ' . $Objekt->tnachricht->cFirma;
+            }
+        }
+        $mail->replyToEmail = $Objekt->tnachricht->cMail;
+        $mail->replyToName  = $mail->toName;
+        $Objekt->mail       = $mail;
+        sendeMail(MAILTEMPLATE_KONTAKTFORMULAR, $Objekt);
+    }
+    $KontaktHistory                  = new stdClass();
+    $KontaktHistory->kKontaktBetreff = $betreff->kKontaktBetreff;
+    $KontaktHistory->kSprache        = $_SESSION['kSprache'];
+    $KontaktHistory->cAnrede         = $Objekt->tnachricht->cAnrede ?? null;
+    $KontaktHistory->cVorname        = $Objekt->tnachricht->cVorname ?? null;
+    $KontaktHistory->cNachname       = $Objekt->tnachricht->cNachname ?? null;
+    $KontaktHistory->cFirma          = $Objekt->tnachricht->cFirma ?? null;
+    $KontaktHistory->cTel            = $Objekt->tnachricht->cTel ?? null;
+    $KontaktHistory->cMobil          = $Objekt->tnachricht->cMobil ?? null;
+    $KontaktHistory->cFax            = $Objekt->tnachricht->cFax ?? null;
+    $KontaktHistory->cMail           = $Objekt->tnachricht->cMail ?? null;
+    $KontaktHistory->cNachricht      = $Objekt->tnachricht->cNachricht ?? null;
+    $KontaktHistory->cIP             = gibIP();
+    $KontaktHistory->dErstellt       = 'now()';
+
+    return Shop::Container()->getDB()->insert('tkontakthistory', $KontaktHistory);
 }
 
 /**

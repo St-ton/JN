@@ -18,10 +18,8 @@ function gibVaterSQL()
  * @param int $kKundengruppe
  * @return array
  */
-function gibTopAngebote($nLimit = 20, $kKundengruppe = 0)
+function gibTopAngebote(int $nLimit = 20, int $kKundengruppe = 0)
 {
-    $kKundengruppe = (int)$kKundengruppe;
-    $nLimit        = (int)$nLimit;
     if (!$kKundengruppe) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
@@ -43,10 +41,10 @@ function gibTopAngebote($nLimit = 20, $kKundengruppe = 0)
 
 /**
  * @param array $arr
- * @param limit $num
+ * @param int   $limit
  * @return array
  */
-function randomizeAndLimit($arr, $limit = 1)
+function randomizeAndLimit(array $arr, int $limit = 1)
 {
     shuffle($arr);
 
@@ -58,10 +56,8 @@ function randomizeAndLimit($arr, $limit = 1)
  * @param int $kKundengruppe
  * @return array
  */
-function gibBestseller($nLimit = 20, $kKundengruppe = 0)
+function gibBestseller(int $nLimit = 20, int $kKundengruppe = 0)
 {
-    $kKundengruppe = (int)$kKundengruppe;
-    $nLimit        = (int)$nLimit;
     if (!$kKundengruppe) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
@@ -92,10 +88,8 @@ function gibBestseller($nLimit = 20, $kKundengruppe = 0)
  * @param int $kKundengruppe
  * @return array
  */
-function gibSonderangebote($nLimit = 20, $kKundengruppe = 0)
+function gibSonderangebote(int $nLimit = 20, int $kKundengruppe = 0)
 {
-    $kKundengruppe = (int)$kKundengruppe;
-    $nLimit        = (int)$nLimit;
     if (!$kKundengruppe) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
@@ -129,10 +123,8 @@ function gibSonderangebote($nLimit = 20, $kKundengruppe = 0)
  * @param int $kKundengruppe
  * @return array
  */
-function gibNeuImSortiment($nLimit, $kKundengruppe = 0)
+function gibNeuImSortiment(int $nLimit, int $kKundengruppe = 0)
 {
-    $kKundengruppe = (int)$kKundengruppe;
-    $nLimit        = (int)$nLimit;
     if (!$nLimit) {
         $nLimit = 20;
     }

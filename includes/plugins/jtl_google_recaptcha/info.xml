@@ -15,9 +15,9 @@
 			<Settingslink sort="2">
 				<Name>Einstellungen</Name>
 				<Setting type="selectbox" initialValue="selectbox" sort="1" conf="Y">
-					<Name>jtl_google_recaptcha_type</Name>
+					<Name>Google reCAPTCHA Integration</Name>
 					<Description>Wählen Sie die Integrationsart des Google reCAPTCHA. </Description>
-					<ValueName>Google reCAPTCHA Integration</ValueName>
+					<ValueName>jtl_google_recaptcha_type</ValueName>
 					<SelectboxOptions>
 						<Option value="checkbox" sort="0">Checkbox</Option>
 						<Option value="invisible" sort="1">Unsichtbar</Option>

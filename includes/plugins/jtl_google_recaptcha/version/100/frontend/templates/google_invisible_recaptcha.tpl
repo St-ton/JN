@@ -1,0 +1,1 @@
+<div class="g-recaptcha" data-sitekey="{$jtl_google_recaptcha_sitekey}" data-size="invisible" data-badge="inline" data-callback="g_recaptcha_filled"></div>

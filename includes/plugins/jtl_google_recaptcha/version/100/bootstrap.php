@@ -50,9 +50,18 @@ class Bootstrap extends \AbstractPlugin
     protected function getBody():string
     {
         try {
+            switch ($this->getPlugin()->oPluginEinstellungAssoc_arr['jtl_google_recaptcha_type']) {
+                case 'invisible':
+                    $tplFile = 'google_invisible_recaptcha.tpl';
+                    break;
+                case 'checkbox':
+                default:
+                    $tplFile = 'google_recaptcha.tpl';
+            }
+
             return Shop::Smarty()
                 ->assign('jtl_google_recaptcha_sitekey', $this->getPlugin()->oPluginEinstellungAssoc_arr['jtl_google_recaptcha_sitekey'])
-                ->fetch($this->getPlugin()->cFrontendPfad . '/templates/google_recaptcha.tpl');
+                ->fetch($this->getPlugin()->cFrontendPfad . '/templates/' . $tplFile);
         } catch (Exception $e) {
             Jtllog::writeLog($e->getMessage(), JTLLOG_LEVEL_ERROR);
 

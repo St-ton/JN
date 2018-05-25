@@ -292,15 +292,19 @@ class PortletInstance implements \JsonSerializable
 
         foreach ($styles as $styleName => $styleValue) {
             if (!empty($styleValue)) {
-                if (stripos($styleName, 'margin-') !== false ||
-                    stripos($styleName, 'padding-') !== false ||
-                    stripos($styleName, 'border-width') !== false ||
-                    stripos($styleName, '-width') !== false ||
-                    stripos($styleName, '-height') !== false
-                ) {
-                    $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "px; ";
+                if (strpos($styleName,'hidden-') !== false && !empty($styleValue)) {
+                    $this->addClass($styleName);
                 } else {
-                    $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "; ";
+                    if (stripos($styleName, 'margin-') !== false ||
+                        stripos($styleName, 'padding-') !== false ||
+                        stripos($styleName, 'border-width') !== false ||
+                        stripos($styleName, '-width') !== false ||
+                        stripos($styleName, '-height') !== false
+                    ) {
+                        $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "px; ";
+                    } else {
+                        $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "; ";
+                    }
                 }
             }
         }

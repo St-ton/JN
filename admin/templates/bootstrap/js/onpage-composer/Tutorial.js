@@ -36,10 +36,9 @@ Tutorial.prototype = {
     fixIframePos: function(element)
     {
         var off   = element.offset();
-        var pTop  = this.gui.topNav.height();
         var pLeft = this.gui.sidebarPanel.outerWidth();
 
-        element.offset({top: off.top + pTop, left: off.left + pLeft});
+        element.offset({left: off.left + pLeft});
     },
 
     fixBackdrop: function()
@@ -54,17 +53,18 @@ Tutorial.prototype = {
         var pLeft     = this.gui.sidebarPanel.outerWidth();
         var leftWidth = backdropLeft.width();
 
-        backdropTop.offset({top: off.top + pTop});
+        // backdropTop.offset({top: off.top + pTop});
 
         off = backdropLeft.offset();
-        backdropLeft.offset({top: off.top + pTop});
+        // backdropLeft.offset({top: off.top + pTop});
         backdropLeft.width(leftWidth + pLeft);
 
         off = backdropRight.offset();
-        backdropRight.offset({top: off.top + pTop, left: off.left + pLeft});
+        // backdropRight.offset({top: off.top + pTop, left: off.left + pLeft});
+        backdropRight.offset({left: off.left + pLeft});
 
-        off = backdropBottom.offset();
-        backdropBottom.offset({top: off.top + pTop});
+        // off = backdropBottom.offset();
+        // backdropBottom.offset({top: off.top + pTop});
     },
 
     startTour_ht1: function()
@@ -105,7 +105,7 @@ Tutorial.prototype = {
                     element: "#portlets",
                     placement: "right",
                     title: "Portlets",
-                    content: "Das ist eines unserer Portlets. Diese kannst du nutzen um deine Seiten mit Inhalt zu füllen."
+                    content: "Das sind unserer Portlets. Diese kannst du nutzen um deine Seiten mit Inhalt zu füllen."
                 },
                 {
                     backdrop: true,
@@ -128,7 +128,7 @@ Tutorial.prototype = {
                 },
                 {
                     element: this.iframe.portletToolbar,
-                    placement: "left",
+                    placement: "right",
                     title: "Einstellungen",
                     onShown: function (tour) {
                         this.fixIframePos($('#step-6'));
@@ -136,7 +136,7 @@ Tutorial.prototype = {
                             tour.next();
                         });
                     }.bind(this),
-                    content: "An diesem Portlet siehst du eine Leiste mit verschiedenen Icons. Klicke auf das Zahnrad" +
+                    content: "An diesem Portlet siehst du eine Leiste mit verschiedenen Icons. Klicke auf den Stift" +
                         " um die Einstellungen zu öffnen."
                 },
                 {
@@ -170,9 +170,12 @@ Tutorial.prototype = {
 
     startTour_ht2: function()
     {
+        var confModal = this.gui.configModal;
+
         var tour2 = new Tour({
             name: "tAnimation",
             debug: true,
+            smartPlacement: false,
             orphan: true,
             template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>" +
                 "<div class='popover-content'></div><div class='popover-navigation'>" +
@@ -182,10 +185,148 @@ Tutorial.prototype = {
                 "</div></div>",
             steps: [
                 {
+                    element: '',
                     backdrop: true,
                     title: "Animationen",
-                    content: "Lerne hier wie du Portlets mit einfachen Animationen erstellst."
-                }
+                    content: "Lerne hier wie du Portlets mit einfachen Animationen erstellst. Es empfiehlt sich mit einer leeren Seite zu arbeiten."
+                },
+                {
+                    backdrop: true,
+                    title: "Animationen",
+                    content: "Nicht jedes Portlet verfügt über die Einstellungen um Animationen zu erstellen."
+                },
+                {
+                    title: "Animationen",
+                    content: "Ziehe zunächst einen Button in deine Seite und öffne die Einstellungen.",
+                    onShown: function (tour) {
+                        confModal.off('shown').on('shown.bs.modal', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    element: "#configModalBody .nav-tabs a[href='#Animation']",
+                    title: "Animationen",
+                    reflex: true,
+                    content: "Wechsel nun zu dem Reiter 'Animation'.",
+                },
+                {
+                    title: "Animationen",
+                    content: "Die Einstellung 'animation-style' enthält viele verschiedene Type." +
+                             " Bitte wähle einen Animationsstil aus und speichere die Einstellungen.",
+                    onShown: function (tour) {
+                        confModal.off('hide').on('hide.bs.modal', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "Hier siehts du deine erste einfache Animation. Wenden wir uns einer etwas umfangreicheren Aufgabe zu. Lösche dazu den erstellten Button.",
+                    onShown: function (tour) {
+                        this.iframe.btnTrash.on('click', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "Erstelle nun ein Spaltenportlet (in der Sidebar unter 'LAYOUT') und öffne die Einstellungen.",
+                    onShown: function (tour) {
+                        confModal.off('shown').on('shown.bs.modal', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "Setze das Layout auf die volle Breite (12). Im Tab 'Styles' änderst du 'margin-bottom' auf 50, wählst eine Hintergrundfarbe und wechselst zu Animationen.",
+                    onShown: function (tour) {
+                        $('#configModalBody .nav-tabs a[href="#Animation"]').on('click', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "Wähle 'fade-in' als Animationsstil und gibt bei 'offset' 150 ein. Nun Kannst du die Einstellungen schließen.",
+                    onShown: function (tour) {
+                        confModal.off('hide').on('hide.bs.modal', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "Füge in das Spaltenportlet eine Überschrift ein und öffne auch hier die Einstellungen.",
+                    onShown: function (tour) {
+                        confModal.off('shown').on('shown.bs.modal', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "Im Styles-tab gibst du unter 'margin-bottom' 250 ein und speicherst die Einstellungen.",
+                    onShown: function (tour) {
+                        confModal.off('hide').on('hide.bs.modal', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "Kopiere nun das Spaltenportlet ein paar mal.",
+                    onShown: function (tour) {
+                        this.iframe.btnClone.off('click.tour').on('click.tour', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "1x",
+                    onShown: function (tour) {
+                        this.iframe.btnClone.off('click.tour').on('click.tour', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "2x",
+                    onShown: function (tour) {
+                        this.iframe.btnClone.off('click.tour').on('click.tour', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "3x",
+                    onShown: function (tour) {
+                        this.iframe.btnClone.off('click.tour').on('click.tour', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "einmal noch!",
+                    onShown: function (tour) {
+                        this.iframe.btnClone.off('click.tour').on('click.tour', function () {
+                            tour.next();
+                        });
+                    }.bind(this),
+                },
+                {
+                    title: "Animationen",
+                    content: "<p>Du kannst die Seite jetzt speichern und dir im Frontend anschauen. <br/>" +
+                             "Beim Scrollen solltest du nun sehen, dass die verschiedenen Zeilen nacheinander eingeblendet werden. </p><p>" +
+                             "Man kann dieses Konzept auch weiter ausbauen und die Bereiche z.B. abwechselnd von rechts und links in die Seite einfahren lassen. " +
+                             "Mit einem schönen zweifarbigen Design lassen sich damit effektvolle Seiten kreieren. " +
+                             "Bedenke aber bitte, dass 'weniger oft mehr ist'. Soll heißen: geh sparsam mit Animationen um, damit deine Kunden nicht abgelenkt oder gar verschreckt werden.</p>",
+                },
             ]
         });
         tour2.init();

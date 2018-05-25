@@ -67,7 +67,8 @@ class Row extends \OPC\Portlet
     public function getPropertyTabs()
     {
         return [
-            'Styles' => 'styles',
+            'Styles'    => 'styles',
+            'Animation' => 'animations',
         ];
     }
 

@@ -11,6 +11,30 @@ trait PortletStyles
     public function getStylesPropertyDesc()
     {
         return [
+            'hidden-viewport'        => [
+                'label'      => 'Sichtbarkeit',
+                'options'    => 'ausblenden',
+                'type'       => 'checkbox',
+                'dspl_width' => 25,
+            ],
+            'hidden-sm'        => [
+                'label'      => 'Sichtbarkeit S',
+                'option'     => 'ausblenden',
+                'type'       => 'checkbox',
+                'dspl_width' => 25,
+            ],
+            'hidden-md'        => [
+                'label'      => 'Sichtbarkeit M',
+                'option'     => 'ausblenden',
+                'type'       => 'checkbox',
+                'dspl_width' => 25,
+            ],
+            'hidden-lg'        => [
+                'label'      => 'Sichtbarkeit L',
+                'option'     => 'ausblenden',
+                'type'       => 'checkbox',
+                'dspl_width' => 25,
+            ],
             'color'            => [
                 'label'   => 'Schriftfarbe',
                 'type'    => 'color',

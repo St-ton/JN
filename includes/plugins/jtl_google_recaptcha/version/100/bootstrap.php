@@ -17,6 +17,10 @@ use Shop;
 
 class Bootstrap extends \AbstractPlugin
 {
+    /**
+     * @param EventDispatcher $dispatcher
+     * @return void
+     */
     public function boot(EventDispatcher $dispatcher)
     {
         parent::boot($dispatcher);

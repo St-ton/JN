@@ -2,7 +2,6 @@
 <div class="captcha">
     <img src="{$captchaCodeURL}" alt="{lang key="captcha_enter_code"}" id="captcha" />
 </div>
-<p><a href="" class="captcha">{lang key="captcha_reload"}</a></p>
 <input class="form-control" type="text" name="captcha" tabindex="30" id="captcha_text" placeholder="{lang key="captcha_enter_code"}" required="required" />
 {if isset($bAnti_spam_failed) && $bAnti_spam_failed}
     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>

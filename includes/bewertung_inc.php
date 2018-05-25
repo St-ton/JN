@@ -335,7 +335,7 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
         $oBewertungGuthabenBonus = Shop::Container()->getDB()->queryPrepared(
             'SELECT sum(fGuthabenBonus) AS fGuthabenProMonat
                 FROM tbewertungguthabenbonus
-                WHERE kKunde = :ci
+                WHERE kKunde = :cID
                     AND kBewertung != :rID
                     AND YEAR(dDatum) = :dYear
                     AND MONTH(dDatum) = :dMonth',

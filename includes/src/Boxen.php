@@ -628,8 +628,13 @@ class Boxen
                     );
                     foreach ($oNewsKategorie_arr as $i => $oNewsKategorie) {
                         $oNewsKategorie_arr[$i]->cURL     = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
-                        $oNewsKategorie_arr[$i]->cURLFull = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false,
-                            true);
+                        $oNewsKategorie_arr[$i]->cURLFull = baueURL(
+                            $oNewsKategorie,
+                            URLART_NEWSKATEGORIE,
+                            0,
+                            false,
+                            true
+                        );
                     }
                     $oBox->anzeigen           = 'Y';
                     $oBox->oNewsKategorie_arr = $oNewsKategorie_arr;
@@ -642,10 +647,9 @@ class Boxen
                 break;
 
             case BOX_HERSTELLER :
-                $helper              = HerstellerHelper::getInstance();
                 $oBox->compatName    = 'Hersteller';
                 $oBox->anzeigen      = 'Y';
-                $oBox->manufacturers = $helper->getManufacturers();
+                $oBox->manufacturers = HerstellerHelper::getInstance()->getManufacturers();
                 break;
 
             case BOX_NEWS_AKTUELLER_MONAT :
@@ -675,8 +679,13 @@ class Boxen
                 );
                 foreach ($oNewsMonatsUebersicht_arr as $i => $oNewsMonatsUebersicht) {
                     $oNewsMonatsUebersicht_arr[$i]->cURL     = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
-                    $oNewsMonatsUebersicht_arr[$i]->cURLFull = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT, 0,
-                        false, true);
+                    $oNewsMonatsUebersicht_arr[$i]->cURLFull = baueURL(
+                        $oNewsMonatsUebersicht,
+                        URLART_NEWSMONAT,
+                        0,
+                        false,
+                        true
+                    );
                 }
                 $oBox->anzeigen                  = 'Y';
                 $oBox->oNewsMonatsUebersicht_arr = $oNewsMonatsUebersicht_arr;
@@ -713,7 +722,7 @@ class Boxen
                     $kArtikel_arr[]         = (int)$oTopBewertet->kArtikel;
                 }
                 // Wenn das Array Elemente besitzt
-                if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
+                if (count($kArtikel_arr) > 0) {
                     // Gib mir X viele Random Keys
                     $nAnzahlKeys = (int)$this->boxConfig['boxen']['boxen_topbewertet_anzahl'];
                     if (count($oTopBewertet_arr) < (int)$this->boxConfig['boxen']['boxen_topbewertet_anzahl']) {
@@ -762,9 +771,10 @@ class Boxen
                         $cZusatzParams .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
                     }
                 }
-                $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
-                $oTMP_arr      = [];
-                $cRequestURI   = Shop::getRequestUri();
+                $cZusatzParams  = StringHandler::filterXSS($cZusatzParams);
+                $oTMP_arr       = [];
+                $cRequestURI    = Shop::getRequestUri();
+                $defaultOptions = Artikel::getDefaultOptions();
                 if ($cRequestURI === 'io.php') {
                     // Box wird von einem Ajax-Call gerendert
                     $cRequestURI = LinkHelper::getInstance()->getStaticRoute('vergleichsliste.php');
@@ -793,7 +803,7 @@ class Boxen
                         $cDeleteParam = 'vlplo=';
                     }
                     $artikel = new Artikel();
-                    $artikel->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
+                    $artikel->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
                     $artikel->cURLDEL = $cRequestURI . $cDeleteParam . $oArtikel->kArtikel . $cZusatzParams;
                     if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
                         $artikel->Variationen = $oArtikel->oVariationen_arr;
@@ -897,7 +907,7 @@ class Boxen
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
-                if (is_array($tagwolke_objs) && ($count = count($tagwolke_objs)) > 0) {
+                if (($count = count($tagwolke_objs)) > 0) {
                     // Priorität berechnen
                     $prio_step = ($tagwolke_objs[0]->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / 9;
                     foreach ($tagwolke_objs as $tagwolke) {
@@ -946,7 +956,7 @@ class Boxen
                         LIMIT " . $nWolkenLimit,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (is_array($oSuchwolke_arr) && ($count = count($oSuchwolke_arr)) > 0) {
+                if (($count = count($oSuchwolke_arr)) > 0) {
                     // Priorität berechnen
                     $prio_step = ($oSuchwolke_arr[0]->nAnzahlGesuche - $oSuchwolke_arr[$count - 1]->nAnzahlGesuche) / 9;
                     foreach ($oSuchwolke_arr as $i => $oSuchwolke) {

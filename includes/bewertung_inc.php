@@ -341,15 +341,15 @@ function checkeBewertungGuthabenBonus(int $kBewertung, array $Einstellungen)
     $oBewertungGuthabenBonus = Shop::Container()->getDB()->queryPrepared(
         'SELECT sum(fGuthabenBonus) AS fGuthabenProMonat
             FROM tbewertungguthabenbonus
-            WHERE kKunde = :ci
-                AND kBewertung != :rID
-                AND YEAR(dDatum) = :dYear
-                AND MONTH(dDatum) = :dMonth',
+            WHERE kKunde = :cid
+                AND kBewertung != :rid
+                AND YEAR(dDatum) = :dyear
+                AND MONTH(dDatum) = :dmonth',
         [
-            'cID'    => $kKunde,
-            'rID'    => $kBewertung,
-            'dYear'  => date('Y'),
-            'dMonth' => date('m')
+            'cid'    => $kKunde,
+            'rid'    => $kBewertung,
+            'dyear'  => date('Y'),
+            'dmonth' => date('m')
         ],
         \DB\ReturnType::SINGLE_OBJECT
     );

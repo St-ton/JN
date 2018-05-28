@@ -35,7 +35,7 @@
                         {block name="newsletter-subscribe-body"}
                         <p>{lang key="newsletterSubscribeDesc" section="newsletter"}</p>
     
-                        <form method="post" action="{get_static_route id='newsletter.php'}" role="form">
+                        <form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="evo-validate">
                             <fieldset>
                                 <div class="form-group float-label-control">
                                     <label for="newslettertitle" class="control-label">{lang key="newslettertitle" section="newsletter"}</label>
@@ -126,7 +126,7 @@
                     {block name="newsletter-unsubscribe-body"}
                     <p>{lang key="newsletterUnsubscribeDesc" section="newsletter"}</p>
     
-                    <form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden">
+                    <form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden" class="evo-validate">
                         <fieldset>
                             <div class="form-group float-label-control required{if !empty($oFehlendeAngaben->cUnsubscribeEmail)} has-error{/if}">
                                 <label for="checkOut" class="control-label">{lang key="newsletteremail" section="newsletter"}</label>

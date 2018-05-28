@@ -15,20 +15,21 @@ namespace Services\JTL;
 class CaptchaService implements CaptchaServiceInterface
 {
     /**
-     * @var SimpleCaptchaService
+     * @var CaptchaServiceInterface
      */
     private $fallbackCaptcha;
 
     /**
      * CaptchaService constructor.
-     * @param SimpleCaptchaService $fallbackCaptcha
+     * @param CaptchaServiceInterface $fallbackCaptcha
      */
-    public function __construct(SimpleCaptchaService $fallbackCaptcha)
+    public function __construct(CaptchaServiceInterface $fallbackCaptcha)
     {
         $this->fallbackCaptcha = $fallbackCaptcha;
     }
 
     /**
+     *
      * @return bool
      */
     public function isConfigured(): bool
@@ -93,11 +94,7 @@ class CaptchaService implements CaptchaServiceInterface
                 'markup'  => &$result,
             ]);
         } else {
-            try {
-                $result = $this->fallbackCaptcha->getBodyMarkup($smarty);
-            } catch (\SmartyException $e) {
-                return '';
-            }
+            $result = $this->fallbackCaptcha->getBodyMarkup($smarty);
         }
 
         return $result;

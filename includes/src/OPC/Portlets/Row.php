@@ -38,21 +38,21 @@ class Row extends \OPC\Portlet
     {
         return [
             'layout-xs' => [
-                'label'   => 'Layout XS',
+                'label'   => '<i class="fa fa-mobile"></i> Layout XS',
                 'type'    => 'text',
                 'default' => '6+6',
                 'dspl_width' => 50,
                 'layoutCollapse' => [
                     'layout-sm' => [
-                        'label'   => 'Layout S',
+                        'label'   => '<i class="fa fa-tablet"></i> Layout S',
                         'type'    => 'text',
                     ],
                     'layout-md' => [
-                        'label'   => 'Layout M',
+                        'label'   => '<i class="fa fa-laptop"></i> Layout M',
                         'type'    => 'text',
                     ],
                     'layout-lg' => [
-                        'label'   => 'Layout L',
+                        'label'   => '<i class="fa fa-desktop"></i> Layout L',
                         'type'    => 'text',
                     ],
                 ]

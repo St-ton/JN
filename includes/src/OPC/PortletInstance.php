@@ -370,7 +370,7 @@ class PortletInstance implements \JsonSerializable
             $src = \Shop::getURL() . '/gfx/keinBild.gif';
             return [
                 'srcset' => $srcset,
-                'sizes' => $srcsizes,
+                'srcsizes' => $srcsizes,
                 'src' => $src,
                 'alt' => $alt,
                 'title' => $title,
@@ -446,7 +446,7 @@ class PortletInstance implements \JsonSerializable
 
         return [
             'srcset' => $srcset,
-            'sizes' => $srcsizes,
+            'srcsizes' => $srcsizes,
             'src' => $src,
             'alt' => $alt,
             'title' => $title,
@@ -465,7 +465,7 @@ class PortletInstance implements \JsonSerializable
         $imageAttributes = $this->getImageAttributes($src, $alt, $title);
 
         $this->setAttribute('srcset', $imageAttributes['srcset']);
-        $this->setAttribute('sizes', $imageAttributes['sizes']);
+        $this->setAttribute('srcsizes', $imageAttributes['srcsizes']);
         $this->setAttribute('src', $imageAttributes['src']);
         $this->setAttribute('alt', $imageAttributes['alt']);
         $this->setAttribute('title', $imageAttributes['title']);

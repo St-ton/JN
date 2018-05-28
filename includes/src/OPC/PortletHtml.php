@@ -267,7 +267,9 @@ trait PortletHtml
             case 'checkbox':
                 $res .= "<div class='checkbox$class'><label><input type='checkbox' name='" . $propname . "' value='1'";
                 $res .= $prop == "1" ? " checked" : "";
-                $res .= ">$label</label></div>";
+                $res .= ">";
+                $res .= !empty($propDesc['option']) ? $propDesc['option'] : $label;
+                $res .= "</label></div>";
                 break;
             case 'textlist':
                 $res .= $this->getConfigPanelSnippet($instance, 'textlist', [

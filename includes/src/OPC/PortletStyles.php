@@ -11,26 +11,26 @@ trait PortletStyles
     public function getStylesPropertyDesc()
     {
         return [
-            'hidden-viewport'        => [
-                'label'      => 'Sichtbarkeit',
-                'options'    => 'ausblenden',
+            'hidden-xs'        => [
+                'label'      => '<i class="fa fa-mobile"></i> Sichtbarkeit XS',
+                'option'    => 'ausblenden',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
             'hidden-sm'        => [
-                'label'      => 'Sichtbarkeit S',
+                'label'      => '<i class="fa fa-tablet"></i> Sichtbarkeit S',
                 'option'     => 'ausblenden',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
             'hidden-md'        => [
-                'label'      => 'Sichtbarkeit M',
+                'label'      => '<i class="fa fa-laptop"></i> Sichtbarkeit M',
                 'option'     => 'ausblenden',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
             'hidden-lg'        => [
-                'label'      => 'Sichtbarkeit L',
+                'label'      => '<i class="fa fa-desktop"></i> Sichtbarkeit L',
                 'option'     => 'ausblenden',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,

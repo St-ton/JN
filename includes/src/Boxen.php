@@ -370,7 +370,6 @@ class Boxen
     public function prepareBox(int $kBoxVorlage, $oBox)
     {
         $kKundengruppe     = Session::CustomerGroup()->getID();
-        $kBoxVorlage       = (int)$kBoxVorlage;
         $currencyCachePart = '_cur_' . Session::Currency()->getID();
         $kSprache          = Shop::getLanguage();
         switch ($kBoxVorlage) {
@@ -1421,7 +1420,7 @@ class Boxen
      * @param int $kSeite
      * @return string
      */
-    public function mappekSeite($kSeite): string
+    public function mappekSeite(int $kSeite): string
     {
         switch ($kSeite) {
             default:
@@ -1536,12 +1535,12 @@ class Boxen
             $bOk = true;
             for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
                 $bOk = Shop::Container()->getDB()->executeQueryPrepared(
-                        "REPLACE INTO tboxenanzeige 
-                      SET bAnzeigen = :show,
-                          nSeite = :page, 
-                          ePosition = :position",
+                    "REPLACE INTO tboxenanzeige 
+                        SET bAnzeigen = :show,
+                            nSeite = :page, 
+                            ePosition = :position",
                         ['show' => $bAnzeigen, 'page' => $i, 'position' => $ePosition],
-                        4
+                        \DB\ReturnType::DEFAULT
                     ) && $bOk;
             }
 
@@ -1584,7 +1583,7 @@ class Boxen
      * @param int    $kContainer
      * @return bool
      */
-    public function setzeBox(int $kBoxvorlage, int $nSeite, string $ePosition = 'left', int $kContainer = 0)
+    public function setzeBox(int $kBoxvorlage, int $nSeite, string $ePosition = 'left', int $kContainer = 0): bool
     {
         $validPageTypes = $this->getValidPageTypes();
         $oBox           = new stdClass();
@@ -1667,7 +1666,7 @@ class Boxen
      * @param string $cInhalt
      * @return bool
      */
-    public function bearbeiteBoxSprache(int $kBox, string $cISO, $cTitel, $cInhalt): bool
+    public function bearbeiteBoxSprache(int $kBox, string $cISO, string $cTitel, string $cInhalt): bool
     {
         $oBox = Shop::Container()->getDB()->select('tboxsprache', 'kBox', $kBox, 'cISO', $cISO);
         if (isset($oBox->kBox)) {
@@ -1739,7 +1738,7 @@ class Boxen
      * @param bool|int $bAktiv
      * @return bool
      */
-    public function sortBox(int $kBox, int $nSeite, int $nSort, $bAktiv = true)
+    public function sortBox(int $kBox, int $nSeite, int $nSort, $bAktiv = true): bool
     {
         $bAktiv         = (int)$bAktiv;
         $validPageTypes = $this->getValidPageTypes();
@@ -1750,17 +1749,17 @@ class Boxen
                 $bOk  = !empty($oBox)
                     ? (Shop::Container()->getDB()->query(
                             "UPDATE tboxensichtbar 
-                            SET nSort = " . $nSort . ",
-                                bAktiv = " . $bAktiv . " 
-                            WHERE kBox = " . $kBox . " 
-                                AND kSeite = " . $i, 4
+                                SET nSort = " . $nSort . ",
+                                    bAktiv = " . $bAktiv . " 
+                                WHERE kBox = " . $kBox . " 
+                                    AND kSeite = " . $i, 4
                         ) !== false)
                     : (Shop::Container()->getDB()->query(
                             "INSERT INTO tboxensichtbar 
-                            SET kBox = " . $kBox . ",
-                                kSeite = " . $i . ", 
-                                nSort = " . $nSort . ", 
-                                bAktiv = " . $bAktiv, 4
+                                SET kBox = " . $kBox . ",
+                                    kSeite = " . $i . ", 
+                                    nSort = " . $nSort . ", 
+                                    bAktiv = " . $bAktiv, 4
                         ) === true);
             }
 
@@ -1769,10 +1768,10 @@ class Boxen
 
         return Shop::Container()->getDB()->query(
                 "REPLACE INTO tboxensichtbar 
-              SET kBox = " . $kBox . ", 
-                  kSeite = " . $nSeite . ", 
-                  nSort = " . $nSort . ", 
-                  bAktiv = " . $bAktiv, 3
+                  SET kBox = " . $kBox . ", 
+                      kSeite = " . $nSeite . ", 
+                      nSort = " . $nSort . ", 
+                      bAktiv = " . $bAktiv, 3
             ) !== false;
     }
 
@@ -1850,7 +1849,7 @@ class Boxen
      * @param \Filter\ProductFilterSearchResults $sr
      * @return bool
      */
-    public function gibBoxenFilterNach(\Filter\ProductFilter $pf, \Filter\ProductFilterSearchResults $sr)
+    public function gibBoxenFilterNach(\Filter\ProductFilter $pf, \Filter\ProductFilterSearchResults $sr): bool
     {
         $conf   = Shop::getSettings([CONF_GLOBAL])['global'];
         $nfConf = $this->boxConfig['navigationsfilter'];

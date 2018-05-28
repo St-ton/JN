@@ -6108,6 +6108,7 @@ function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
         // set escape-sequence as placeholder for multibyte entities
         $metaProposal = preg_replace($regex, chr(27), $metaProposal);
     }
+    $metaProposal = StringHandler::unhtmlentities($metaProposal);
     if (!empty($maxLength) && $maxLength > 0) {
         $metaProposal = substr($metaProposal, 0, (int)$maxLength);
     }

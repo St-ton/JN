@@ -44,7 +44,7 @@ class ProductStream extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'listStyle'   => [
+            'listStyle'    => [
                 'type'    => 'select',
                 'label'   => 'Darstellung',
                 'options' => [
@@ -55,14 +55,21 @@ class ProductStream extends \OPC\Portlet
                 ],
                 'default' => 'gallery',
             ],
-            'sliderTitle' => [
+            'sliderTitle'  => [
                 'label'                => 'Slidertitel',
                 'showOnProp'           => 'listStyle',
                 'showOnPropValue'      => 'slider',
                 'collapseControlStart' => true,
-                'collapseControlEnd'   => true,
+                'dspl_width'           => 50,
             ],
-            'filters'     => [
+            'productCount' => [
+                'label'              => 'Anzahl sichtbare Artikel',
+                'type'               => 'number',
+                'collapseControlEnd' => true,
+                'dspl_width'         => 50,
+                'default'            => 3,
+            ],
+            'filters'      => [
                 'type'    => 'filter',
                 'label'   => 'Artikelfilter',
                 'default' => [],

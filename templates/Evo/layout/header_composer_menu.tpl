@@ -15,12 +15,12 @@
                     {if $opc->curPageExists()}
                         <p>
                             <button name="action" value="edit" class="btn btn-primary">
-                                Inhalt bearbeiten
+                                Seite bearbeiten
                             </button>
                         </p>
                         <p>
                             <button name="action" value="restore" class="btn">
-                                Seite zurücksetzen
+                                Auf Standard zurücksetzen
                             </button>
                         </p>
                     {else}

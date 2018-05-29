@@ -372,6 +372,7 @@ define('PAGE_IO', 37);
 define('PAGE_BESTELLSTATUS', 38);
 define('PAGE_MEDIA', 39);
 // Boxen
+define('BOX_CONTAINER', 0);
 define('BOX_BESTSELLER', 1);
 define('BOX_KATEGORIEN', 2);
 define('BOX_VERGLEICHSLISTE', 3);

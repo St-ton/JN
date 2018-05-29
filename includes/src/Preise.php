@@ -150,6 +150,11 @@ class Preise
     public $Kundenpreis_aktiv = false;
 
     /**
+     * @var PriceRange
+     */
+    public $oPriceRange;
+
+    /**
      * Konstruktor
      *
      * @param int $kKundengruppe
@@ -255,6 +260,7 @@ class Preise
             }
         }
         $this->berechneVKs();
+        $this->oPriceRange = new PriceRange($kArtikel, $kKundengruppe, $kKunde);
         executeHook('HOOK_PRICES_CONSTRUCT', [
             'customerGroupID' => $kKundengruppe,
             'customerID'      => $kKunde,
@@ -270,7 +276,7 @@ class Preise
      */
     protected function hasCustomPrice($kKunde)
     {
-        $kKunde   = (int)$kKunde;
+        $kKunde = (int)$kKunde;
         if ($kKunde > 0) {
             $cacheID = 'custprice_' . $kKunde;
             if (($oCustomPrice = Shop::Cache()->get($cacheID)) === false) {
@@ -291,6 +297,14 @@ class Preise
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDiscountable()
+    {
+        return !($this->Kundenpreis_aktiv || $this->Sonderpreis_aktiv);
     }
 
     /**
@@ -374,7 +388,7 @@ class Preise
      */
     public function rabbatierePreise($Rabatt, $offset = 0.0)
     {
-        if ($Rabatt != 0 && !$this->Sonderpreis_aktiv && !$this->Kundenpreis_aktiv) {
+        if ($Rabatt != 0 && $this->isDiscountable()) {
             $this->rabatt       = $Rabatt;
             $this->alterVKNetto = $this->fVKNetto;
 
@@ -389,6 +403,7 @@ class Preise
                 $this->fPreis_arr[$i] = ($fPreis - $fPreis * $Rabatt / 100.0) + $offset;
             }
             $this->berechneVKs();
+            $this->oPriceRange->setDiscount($Rabatt);
         }
 
         return $this;
@@ -404,18 +419,18 @@ class Preise
         $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->cPreisLocalized_arr[] = [
-                gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst), $currency),
+                gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst, 4), $currency),
                 gibPreisStringLocalized($fPreis, $currency)
             ];
         }
 
-        $this->cVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->fVKNetto, $this->fUst), $currency);
+        $this->cVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->fVKNetto, $this->fUst, 4), $currency);
         $this->cVKLocalized[1] = gibPreisStringLocalized($this->fVKNetto, $currency);
 
         $this->fVKBrutto = berechneBrutto($this->fVKNetto, $this->fUst);
 
         if ($this->alterVKNetto) {
-            $this->alterVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->alterVKNetto, $this->fUst), $currency);
+            $this->alterVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->alterVKNetto, $this->fUst, 4), $currency);
             $this->alterVKLocalized[1] = gibPreisStringLocalized($this->alterVKNetto, $currency);
         }
 
@@ -427,7 +442,7 @@ class Preise
      */
     public function berechneVKs()
     {
-        $factor = Session::Currency()->getConversionFactor(); 
+        $factor = Session::Currency()->getConversionFactor();
 
         $this->fVKBrutto = berechneBrutto($this->fVKNetto, $this->fUst);
 

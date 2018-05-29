@@ -28,11 +28,11 @@ class Revision
                 'reference_id'  => 'kLink',
                 'reference_key' => 'cISOSprache'
             ],
-            'export'  => [
+            'export'     => [
                 'table' => 'texportformat',
                 'id'    => 'kExportformat'
             ],
-            'mail'    => [
+            'mail'       => [
                 'table'         => 'temailvorlage',
                 'id'            => 'kEmailvorlage',
                 'reference'     => 'temailvorlagesprache',
@@ -53,6 +53,17 @@ class Revision
                 'reference'     => 'tboxsprache',
                 'reference_id'  => 'kBox',
                 'reference_key' => 'cISO'
+            ],
+            'newsletterstd' => [
+                'table'         => 'tnewslettervorlage',
+                'id'            => 'kNewsletterVorlage',
+                'reference'     => 'tnewslettervorlagestdvarinhalt',
+                'reference_id'  => 'kNewslettervorlage',
+                'reference_key' => 'kNewslettervorlageStdVar'
+            ],
+            'newsletter' => [
+                'table'         => 'tnewslettervorlage',
+                'id'            => 'kNewsletterVorlage'
             ]
         ];
     }

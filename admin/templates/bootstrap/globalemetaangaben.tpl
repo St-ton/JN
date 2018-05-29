@@ -54,6 +54,13 @@
                         </span>
                         <input type="text" class="form-control" id="Meta_Description_Praefix" name="Meta_Description_Praefix" value="{if isset($oMetaangaben_arr.Meta_Description_Praefix)}{$oMetaangaben_arr.Meta_Description_Praefix}{/if}" tabindex="1" />
                     </div>
+
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <label for="keywords">{#excludeKeywords#} ({#spaceSeparated#})</label>
+                        </span>
+                        <textarea class="form-control" id="keywords" name="keywords">{if isset($keywords->cKeywords)}{$keywords->cKeywords}{/if}</textarea>
+                    </div>
                 </div>
             </div>
 

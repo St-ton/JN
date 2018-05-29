@@ -37,8 +37,7 @@
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
 {include file='snippets/opc_mount_point.tpl' id='opc_article_content_prepend'}
-
-<form id="buy_form" method="post" action="{$Artikel->cURLFull}" >
+<form id="buy_form" method="post" action="{$Artikel->cURLFull}" class="evo-validate">
     {$jtl_token}
     <div class="row product-primary" id="product-offer">
         <div class="product-gallery{if $hasLeftBox} col-sm-5{else} col-sm-6{/if}">

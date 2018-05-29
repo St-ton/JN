@@ -375,7 +375,9 @@
                                 <div class="input-group-addon">
                                     <label for="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}">{$oNewslettervorlageStdVar->cName}</label>
                                 </div>
-                                <textarea id="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" class="form-control codemirror smarty" name="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" style="width: 500px; height: 400px;">{if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}{$oNewslettervorlageStdVar->cInhalt}{/if}</textarea>
+                                <textarea id="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" class="form-control codemirror smarty" name="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" style="width: 500px; height: 400px;">
+                                    {if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}{$oNewslettervorlageStdVar->cInhalt}{/if}
+                                </textarea>
                             </div>
                         {/if}
                     {/foreach}
@@ -393,4 +395,7 @@
             </div>
         </div>
     </form>
+    {if !empty($oNewslettervorlageStd->kNewsletterVorlage)}
+        {getRevisions type='newsletterstd' key=$oNewslettervorlageStd->kNewsletterVorlage show=['cInhalt'] secondary=true data=$revisionData}
+    {/if}
 </div>

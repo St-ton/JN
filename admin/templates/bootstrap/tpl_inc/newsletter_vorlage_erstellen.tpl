@@ -53,7 +53,7 @@ function checkNewsletterSend() {ldelim}
                         <span class="input-group-addon">
                             <label for="cBetreff">{#newsletterdraftsubject#}</label>
                         </span>
-                        <input name="cBetreff" type="text" class="form-control {if isset($cPlausiValue_arr.cBetreff)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cBetreff)}{$cPostVar_arr.cBetreff}{elseif isset($oNewsletterVorlage->cBetreff)}{$oNewsletterVorlage->cBetreff}{/if}">
+                        <input id="cBetreff" name="cBetreff" type="text" class="form-control {if isset($cPlausiValue_arr.cBetreff)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cBetreff)}{$cPostVar_arr.cBetreff}{elseif isset($oNewsletterVorlage->cBetreff)}{$oNewsletterVorlage->cBetreff}{/if}">
                         {if isset($cPlausiValue_arr.cBetreff)}<font class="fillout">{#newsletterdraftFillOut#}</font>{/if}
                     </div>
                     <div class="input-group">
@@ -326,5 +326,8 @@ function checkNewsletterSend() {ldelim}
                 <button class="btn btn-default" name="back" type="submit" value="{#newsletterback#}"><i class="fa fa-angle-double-left"></i> {#newsletterback#}</button>
             </p>
         </form>
+        {if !empty($oNewsletterVorlage->kNewsletterVorlage)}
+            {getRevisions type='newsletter' key=$oNewsletterVorlage->kNewsletterVorlage show=['cInhaltHTML', 'cInhaltText'] secondary=false data=$oNewsletterVorlage}
+        {/if}
     </div>
 </div>

@@ -28,6 +28,8 @@
                     </div>
                     <div class="panel-body">
                     {assign var=open value=1}
+                {elseif $oPluginEinstellungConf->cInputTyp === 'none'}
+                    <!-- not showing {$oPluginEinstellungConf->cWertName} -->
                 {else}
                     {if $open === 0 && $smarty.foreach.plugineinstellungenconf.index === 0}
                         <div class="panel panel-default first">

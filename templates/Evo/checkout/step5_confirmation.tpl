@@ -147,7 +147,7 @@
     {if isset($safetypay_form)}
         <div class="alert alert-info">{$safetypay_form}</div>
     {/if}
-    <form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}">
+    <form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}" class="evo-validate">
         {$jtl_token}
         {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen == 1}
             {lang key='cancellationPolicyNotice' section='checkout' assign='cancellationPolicyNotice'}

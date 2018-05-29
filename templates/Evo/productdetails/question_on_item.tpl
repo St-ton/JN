@@ -11,7 +11,7 @@
             </div>
         {/if}
     {/if}
-    <form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}#tab-productquestion{/if}{else}index.php{/if}" method="post" id="article_question">
+    <form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}#tab-productquestion{/if}{else}index.php{/if}" method="post" id="article_question" class="evo-validate">
         {$jtl_token}
         <fieldset>
             <legend>{lang key="contact" section="global"}</legend>
@@ -20,7 +20,7 @@
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group float-label-control">
                             <label for="salutation" class="control-label">{lang key="salutation" section="account data"}</label>
-                            <select name="anrede" id="salutation" class="form-control">
+                            <select name="anrede" id="salutation" class="form-control" autocomplete="honorific-prefix">
                                 <option value="" disabled selected>{lang key="salutation" section="account data"}</option>
                                 <option value="w" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                                 <option value="m" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
@@ -37,7 +37,11 @@
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group float-label-control {if isset($fehlendeAngaben_fragezumprodukt.vorname) && $fehlendeAngaben_fragezumprodukt.vorname > 0}has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname === 'Y'} required{/if}">
                                 <label class="control-label" for="firstName">{lang key="firstName" section="account data"}</label>
-                                <input class="form-control" type="text" name="vorname" value="{if isset($Anfrage)}{$Anfrage->cVorname}{/if}" id="firstName"{if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname === 'Y'} required{/if}>
+                                <input class="form-control" type="text" name="vorname"
+                                       value="{if isset($Anfrage)}{$Anfrage->cVorname}{/if}"
+                                       id="firstName"{if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname === 'Y'} required{/if}
+                                       autocomplete="given-name"
+                                >
                                 {if isset($fehlendeAngaben_fragezumprodukt.vorname) && $fehlendeAngaben_fragezumprodukt.vorname > 0}
                                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="fillOut" section="global"}</div>
                                 {/if}
@@ -49,7 +53,11 @@
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group float-label-control{if isset($fehlendeAngaben_fragezumprodukt.nachname) && $fehlendeAngaben_fragezumprodukt.nachname > 0} has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_nachname === 'Y'} required{/if}">
                                 <label class="control-label" for="lastName">{lang key="lastName" section="account data"}</label>
-                                <input class="form-control" type="text" name="nachname" value="{if isset($Anfrage)}{$Anfrage->cNachname}{/if}" id="lastName"{if $Einstellungen.artikeldetails.produktfrage_abfragen_nachname === 'Y'} required{/if}>
+                                <input class="form-control" type="text" name="nachname"
+                                       value="{if isset($Anfrage)}{$Anfrage->cNachname}{/if}"
+                                       id="lastName"{if $Einstellungen.artikeldetails.produktfrage_abfragen_nachname === 'Y'} required{/if}
+                                       autocomplete="family-name"
+                                >
                                 {if isset($fehlendeAngaben_fragezumprodukt.nachname) && $fehlendeAngaben_fragezumprodukt.nachname > 0}
                                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="fillOut" section="global"}</div>
                                 {/if}
@@ -64,7 +72,11 @@
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group float-label-control {if isset($fehlendeAngaben_fragezumprodukt.firma) && $fehlendeAngaben_fragezumprodukt.firma > 0}has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_firma === 'Y'} required{/if}">
                             <label class="control-label" for="company">{lang key="firm" section="account data"}</label>
-                            <input class="form-control" type="text" name="firma" value="{if isset($Anfrage)}{$Anfrage->cFirma}{/if}" id="company"{if $Einstellungen.artikeldetails.produktfrage_abfragen_firma === 'Y'} required{/if}>
+                            <input class="form-control" type="text" name="firma"
+                                   value="{if isset($Anfrage)}{$Anfrage->cFirma}{/if}"
+                                   id="company"{if $Einstellungen.artikeldetails.produktfrage_abfragen_firma === 'Y'} required{/if}
+                                   autocomplete="organization"
+                            >
                             {if isset($fehlendeAngaben_fragezumprodukt.firma) && $fehlendeAngaben_fragezumprodukt.firma > 0}
                                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="fillOut" section="global"}</div>
                             {/if}
@@ -77,7 +89,10 @@
                 <div class="col-xs-12 col-md-6">
                     <div class="form-group float-label-control {if isset($fehlendeAngaben_fragezumprodukt.email) && $fehlendeAngaben_fragezumprodukt.email > 0}has-error{/if} required">
                         <label class="control-label" for="question_email">{lang key="email" section="account data"}</label>
-                        <input class="form-control" type="email" name="email" value="{if isset($Anfrage)}{$Anfrage->cMail}{/if}" id="question_email" required>
+                        <input class="form-control" type="email" name="email"
+                               value="{if isset($Anfrage)}{$Anfrage->cMail}{/if}" id="question_email" required
+                               autocomplete="email"
+                        >
                         {if isset($fehlendeAngaben_fragezumprodukt.email) && $fehlendeAngaben_fragezumprodukt.email > 0}
                             <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {if $fehlendeAngaben_fragezumprodukt.email == 1}{lang key="fillOut" section="global"}{elseif $fehlendeAngaben_fragezumprodukt.email == 2}{lang key="invalidEmail" section="global"}{elseif $fehlendeAngaben_fragezumprodukt.email==3}{lang key="blockedEmail" section="global"}{/if}</div>
                         {/if}
@@ -91,7 +106,11 @@
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group float-label-control {if isset($fehlendeAngaben_fragezumprodukt.tel) && $fehlendeAngaben_fragezumprodukt.tel > 0}has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_tel === 'Y'} required{/if}">
                                 <label class="control-label" for="tel">{lang key="tel" section="account data"}</label>
-                                <input class="form-control" type="text" name="tel" value="{if isset($Anfrage)}{$Anfrage->cTel}{/if}" id="tel"{if $Einstellungen.artikeldetails.produktfrage_abfragen_tel === 'Y'} required{/if}>
+                                <input class="form-control" type="text" name="tel"
+                                       value="{if isset($Anfrage)}{$Anfrage->cTel}{/if}"
+                                       id="tel"{if $Einstellungen.artikeldetails.produktfrage_abfragen_tel === 'Y'} required{/if}
+                                       autocomplete="home tel"
+                                >
                                 {if isset($fehlendeAngaben_fragezumprodukt.tel) && $fehlendeAngaben_fragezumprodukt.tel > 0}
                                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                         {if $fehlendeAngaben_fragezumprodukt.tel == 1}
@@ -109,7 +128,11 @@
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group float-label-control{if isset($fehlendeAngaben_fragezumprodukt.mobil) && $fehlendeAngaben_fragezumprodukt.mobil > 0} has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_mobil === 'Y'} required{/if}">
                                 <label class="control-label" for="mobile">{lang key="mobile" section="account data"}</label>
-                                <input class="form-control" type="text" name="mobil" value="{if isset($Anfrage)}{$Anfrage->cMobil}{/if}" id="mobile"{if $Einstellungen.artikeldetails.produktfrage_abfragen_mobil === 'Y'} required{/if}>
+                                <input class="form-control" type="text" name="mobil"
+                                       value="{if isset($Anfrage)}{$Anfrage->cMobil}{/if}"
+                                       id="mobile"{if $Einstellungen.artikeldetails.produktfrage_abfragen_mobil === 'Y'} required{/if}
+                                       autocomplete="mobile tel"
+                                >
                                 {if isset($fehlendeAngaben_fragezumprodukt.mobil) && $fehlendeAngaben_fragezumprodukt.mobil > 0}
                                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                         {if $fehlendeAngaben_fragezumprodukt.mobil == 1}
@@ -130,7 +153,11 @@
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group float-label-control{if isset($fehlendeAngaben_fragezumprodukt.fax) && $fehlendeAngaben_fragezumprodukt.fax > 0} has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_fax === 'Y'} required{/if}">
                             <label class="control-label" for="fax">{lang key="fax" section="account data"}</label>
-                            <input class="form-control" type="text" name="fax" value="{if isset($Anfrage)}{$Anfrage->cFax}{/if}" id="fax"{if $Einstellungen.artikeldetails.produktfrage_abfragen_fax === 'Y'} required{/if}>
+                            <input class="form-control" type="text" name="fax"
+                                   value="{if isset($Anfrage)}{$Anfrage->cFax}{/if}"
+                                   id="fax"{if $Einstellungen.artikeldetails.produktfrage_abfragen_fax === 'Y'} required{/if}
+                                   autocomplete="fax tel"
+                            >
                             {if isset($fehlendeAngaben_fragezumprodukt.fax) && $fehlendeAngaben_fragezumprodukt.fax > 0}
                                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                     {if $fehlendeAngaben_fragezumprodukt.fax == 1}

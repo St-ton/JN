@@ -1010,7 +1010,7 @@ class Warenkorb
         $gesamtsumme /= $conversionFactor;
         $this->useSummationRounding();
 
-        return $this->optionaleRundung($gesamtsumme);
+        return WarenkorbHelper::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? Session::Currency());
     }
 
     /**
@@ -1041,7 +1041,7 @@ class Warenkorb
         }
         $this->useSummationRounding();
 
-        return $this->optionaleRundung($gesamtsumme);
+        return WarenkorbHelper::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? Session::Currency());
     }
 
     /**
@@ -1077,24 +1077,13 @@ class Warenkorb
     }
 
     /**
+     * @deprecated since 5.0 - use WarenkorbHelper::roundOptionalCurrency instead
      * @param float|int $gesamtsumme
      * @return float
      */
     public function optionaleRundung($gesamtsumme)
     {
-        if (isset($this->config['kaufabwicklung']['bestellabschluss_runden5'])
-            && (int)$this->config['kaufabwicklung']['bestellabschluss_runden5'] === 1
-        ) {
-            $currency    = $this->Waehrung ?? Session::Currency();
-            $factor      = $currency->getConversionFactor();
-            $gesamtsumme *= $factor;
-
-            // simplification. see https://de.wikipedia.org/wiki/Rundung#Rappenrundung
-            $gesamtsumme = round($gesamtsumme * 20) / 20;
-            $gesamtsumme /= $factor;
-        }
-
-        return $gesamtsumme;
+        return WarenkorbHelper::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? Session::Currency());
     }
 
     /**

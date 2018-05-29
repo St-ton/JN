@@ -711,7 +711,23 @@ function bearbeiteInsert($xml, array $conf)
             if (isset($oArtikelWarenlager->dZulaufDatum) && $oArtikelWarenlager->dZulaufDatum === '') {
                 $oArtikelWarenlager->dZulaufDatum = '0000-00-00 00:00:00';
             }
-            Shop::Container()->getDB()->insert('tartikelwarenlager', $oArtikelWarenlager);
+            // Prevent SQL-Exception if duplicate datasets will be sent falsely
+            Shop::Container()->getDB()->queryPrepared(
+                "INSERT INTO tartikelwarenlager (kArtikel, kWarenlager, fBestand, fZulauf, dZulaufDatum)
+                    VALUES (:kArtikel, :kWarenlager, :fBestand, :fZulauf, :dZulaufDatum)
+                    ON DUPLICATE KEY UPDATE
+                        fBestand = :fBestand,
+                        fZulauf = :fZulauf,
+                        dZulaufDatum = :dZulaufDatum",
+                [
+                    'kArtikel'     => $oArtikelWarenlager->kArtikel,
+                    'kWarenlager'  => $oArtikelWarenlager->kWarenlager,
+                    'fBestand'     => $oArtikelWarenlager->fBestand,
+                    'fZulauf'      => $oArtikelWarenlager->fZulauf,
+                    'dZulaufDatum' => $oArtikelWarenlager->dZulaufDatum,
+                ],
+                \DB\ReturnType::QUERYSINGLE
+            );
         }
     }
     $bTesteSonderpreis = false;
@@ -976,6 +992,8 @@ function bearbeiteInsert($xml, array $conf)
     if (!empty($artikel_arr[0]->kVaterartikel)) {
         $res[] = (int)$artikel_arr[0]->kVaterartikel;
     }
+    handlePriceRange((int)$Artikel->kArtikel);
+
     //emailbenachrichtigung, wenn verfügbar
     versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
 
@@ -1030,6 +1048,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kArtikel', (int)$kArtikel]);
         Shop::Container()->getDB()->delete('tartikel', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tpreise', 'kArtikel', $kArtikel);
+        Shop::Container()->getDB()->delete('tpricerange', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelsprache', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelattribut', 'kArtikel', $kArtikel);

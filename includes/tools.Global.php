@@ -4398,29 +4398,13 @@ function gibSprachKeyISO($cISO = '', $kSprache = 0)
 }
 
 /**
+ * @deprecated since 5.0 - use WarenkorbHelper::roundOptional instead
  * @param float $gesamtsumme
  * @return float
  */
 function optionaleRundung($gesamtsumme)
 {
-    $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
-    if (isset($conf['kaufabwicklung']['bestellabschluss_runden5'])
-        && (int)$conf['kaufabwicklung']['bestellabschluss_runden5'] === 1
-    ) {
-        $int          = (int)($gesamtsumme * 100); // FIRST multiply, THEN cast to int!
-        $letzteStelle = $int % 10;
-        if ($letzteStelle < 3) {
-            $int -= $letzteStelle;
-        } elseif ($letzteStelle > 2 && $letzteStelle < 8) {
-            $int = $int - $letzteStelle + 5;
-        } elseif ($letzteStelle > 7) {
-            $int = $int - $letzteStelle + 10;
-        }
-
-        return $int / 100;
-    }
-
-    return $gesamtsumme;
+    return WarenkorbHelper::roundOptional($gesamtsumme);
 }
 
 /**

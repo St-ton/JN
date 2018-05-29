@@ -35,7 +35,7 @@
                         {block name="newsletter-subscribe-body"}
                         <p>{lang key="newsletterSubscribeDesc" section="newsletter"}</p>
     
-                        <form method="post" action="{get_static_route id='newsletter.php'}" role="form">
+                        <form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="evo-validate">
                             <fieldset>
                                 <div class="form-group float-label-control">
                                     <label for="newslettertitle" class="control-label">{lang key="newslettertitle" section="newsletter"}</label>
@@ -46,21 +46,33 @@
                                 </div>
                                 <div class="form-group float-label-control">
                                     <label for="newsletterfirstname" class="control-label">{lang key="newsletterfirstname" section="newsletter"}</label>
-                                    <input type="text" name="cVorname" class="form-control" value="{if !empty($oPlausi->cPost_arr.cVorname)}{$oPlausi->cPost_arr.cVorname}{elseif !empty($oKunde->cVorname)}{$oKunde->cVorname}{/if}" id="newsletterfirstname" />
+                                    <input type="text" name="cVorname" class="form-control"
+                                           value="{if !empty($oPlausi->cPost_arr.cVorname)}{$oPlausi->cPost_arr.cVorname}{elseif !empty($oKunde->cVorname)}{$oKunde->cVorname}{/if}"
+                                           id="newsletterfirstname"
+                                           autocomplete="given-name"
+                                    />
                                     {if !empty($oPlausi->nPlausi_arr.cVorname)}
                                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="fillOut" section="global"}</div>
                                     {/if}
                                 </div>
                                 <div class="form-group float-label-control">
                                     <label for="lastName" class="control-label">{lang key="newsletterlastname" section="newsletter"}</label>
-                                    <input type="text" name="cNachname" class="form-control" value="{if !empty($oPlausi->cPost_arr.cNachname)}{$oPlausi->cPost_arr.cNachname}{elseif !empty($oKunde->cNachname)}{$oKunde->cNachname}{/if}" id="lastName" />
+                                    <input type="text" name="cNachname" class="form-control"
+                                           value="{if !empty($oPlausi->cPost_arr.cNachname)}{$oPlausi->cPost_arr.cNachname}{elseif !empty($oKunde->cNachname)}{$oKunde->cNachname}{/if}"
+                                           id="lastName"
+                                           autocomplete="family-name"
+                                    />
                                     {if !empty($oPlausi->nPlausi_arr.cNachname)}
                                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="fillOut" section="global"}</div>
                                     {/if}
                                 </div>
                                 <div class="form-group float-label-control{if !empty($oPlausi->nPlausi_arr.cEmail)} has-error{/if} required">
                                     <label for="email" class="control-label">{lang key="newsletteremail" section="newsletter"}</label>
-                                    <input type="email" name="cEmail" class="form-control" required value="{if !empty($oPlausi->cPost_arr.cEmail)}{$oPlausi->cPost_arr.cEmail}{elseif !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="email" />
+                                    <input type="email" name="cEmail" class="form-control" required
+                                           value="{if !empty($oPlausi->cPost_arr.cEmail)}{$oPlausi->cPost_arr.cEmail}{elseif !empty($oKunde->cMail)}{$oKunde->cMail}{/if}"
+                                           id="email"
+                                           autocomplete="email"
+                                    />
                                     {if !empty($oPlausi->nPlausi_arr.cEmail)}
                                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="fillOut" section="global"}</div>
                                     {/if}
@@ -114,11 +126,14 @@
                     {block name="newsletter-unsubscribe-body"}
                     <p>{lang key="newsletterUnsubscribeDesc" section="newsletter"}</p>
     
-                    <form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden">
+                    <form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden" class="evo-validate">
                         <fieldset>
                             <div class="form-group float-label-control required{if !empty($oFehlendeAngaben->cUnsubscribeEmail)} has-error{/if}">
                                 <label for="checkOut" class="control-label">{lang key="newsletteremail" section="newsletter"}</label>
-                                <input type="email" class="form-control" required name="cEmail" value="{if !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="checkOut" />
+                                <input type="email" class="form-control" required name="cEmail"
+                                       value="{if !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="checkOut"
+                                       autocomplete="email"
+                                />
                                 {if !empty($oFehlendeAngaben->cUnsubscribeEmail)}
                                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="fillOut" section="global"}</div>
                                 {/if}

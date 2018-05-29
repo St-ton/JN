@@ -28,6 +28,8 @@ Iframe.prototype = {
 
     init: function(loadCB)
     {
+        debuglog('Iframe init');
+
         installGuiElements(this, [
             'iframe',
             'portletToolbar',
@@ -62,6 +64,8 @@ Iframe.prototype = {
 
     onIframeLoad: function(loadCB)
     {
+        debuglog('Iframe onIframeLoad');
+
         this.ctx = this.iframe[0].contentWindow;
         this.jq  = this.ctx.$;
 
@@ -84,6 +88,8 @@ Iframe.prototype = {
 
     onPopperLoad: function()
     {
+        debuglog('Iframe onPopperLoad');
+
         this.toolbarPopper      = this.makePopper(this.portletToolbar);
         this.previewLabelPopper = this.makePopper(this.portletPreviewLabel);
     },

@@ -6,7 +6,7 @@
 
 {block name="content"}
     <div id="result-wrapper">
-        {if $opcPage->isReplace()}
+        {if $opc->getCurPage()->isReplace()}
             {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
         {else}
             {block name="productlist-header"}

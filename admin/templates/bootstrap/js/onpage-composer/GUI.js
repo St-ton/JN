@@ -1,5 +1,7 @@
 function GUI(io, page, kcfinderUrl)
 {
+    debuglog('construct GUI');
+
     bindProtoOnHandlers(this);
 
     this.io            = io;
@@ -13,8 +15,10 @@ GUI.prototype = {
 
     constructor: GUI,
 
-    init: function(iframe, tutorial)
+    init: function(iframe, tutorial, error)
     {
+        debuglog('GUI init');
+
         this.iframe    = iframe;
         this.tutorial  = tutorial;
 
@@ -35,10 +39,13 @@ GUI.prototype = {
             'blueprintDeleteModal',
             'blueprintDeleteId',
             'blueprintDeleteForm',
+            'publishModal',
+            'publishFrom',
             'btnImport',
             'btnExport',
             'btnHelp',
             'btnPreview',
+            'btnPublish',
             'btnSave',
             'btnClose',
             'btnImportBlueprint',
@@ -50,10 +57,14 @@ GUI.prototype = {
             'collapseGroup',
         ]);
 
-        this.showLoader();
-        this.collapseGroups.first().click();
-        this.updateBlueprintList();
-        this.updateRevisionList();
+        if(typeof error === 'string' && error.length > 0) {
+            this.showError(error);
+        } else {
+            this.showLoader();
+            this.collapseGroups.first().click();
+            this.updateBlueprintList();
+            this.updateRevisionList();
+        }
     },
 
     showLoader: function()
@@ -147,6 +158,11 @@ GUI.prototype = {
         this.iframe.togglePreview()
     },
 
+    onBtnPublish: function(e)
+    {
+        this.publishModal.modal('show');
+    },
+
     onBtnSave: function(e)
     {
         this.showLoader();
@@ -172,7 +188,12 @@ GUI.prototype = {
 
     onBtnClose: function(e)
     {
-        this.page.unlock();
+        this.page.unlock(this.onUnlockedPage);
+    },
+
+    onUnlockedPage: function()
+    {
+        window.location = this.page.fullUrl;
     },
 
     onCollapseGroup: function(e)

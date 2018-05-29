@@ -30,6 +30,7 @@
     <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>
     <script src="{$templateUrl}js/typeahead.bundle.js"></script>
     <script src="{$templateUrl}js/less.min.js"></script>
+    <script src="{$templateUrl}js/bootstrap-datetimepicker.min.js"></script>
 
     <script src="{$templateUrl}js/onpage-composer/utils.js"></script>
     <script src="{$templateUrl}js/onpage-composer/OPC.js"></script>
@@ -46,9 +47,8 @@
             shopUrl:     '{$shopUrl}',
             templateUrl: '{$templateUrl}',
             kcfinderUrl: '{$PFAD_KCFINDER}',
-            pageUrl:     '{$pageUrl}',
-            pageId:      '{$pageId}',
-            fullPageUrl: '{$fullPageUrl}'
+            pageKey:     {$pageKey},
+            error:       {$error|json_encode},
         });
     </script>
 </head>
@@ -95,9 +95,9 @@
                             </ul>
                         </li>
                         <li>
-                            <a href="#" id="btnPreview" data-toggle="tooltip" data-placement="bottom"
-                               title="Preview">
-                                <i class="fa fa-eye"></i>
+                            <a href="#" id="btnPublish" data-toggle="tooltip" data-placement="bottom"
+                               title="Veröffentlichen">
+                                <i class="fa fa-newspaper-o fa-fw"></i>
                             </a>
                         </li>
                         <li>
@@ -107,7 +107,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{$fullPageUrl}" id="btnClose" data-toggle="tooltip"
+                            <a href="#" id="btnClose" data-toggle="tooltip"
                                data-placement="bottom" title="Editor schließen">
                                 <i class="fa fa-close"></i>
                             </a>
@@ -121,6 +121,7 @@
             <li class="active"><a href="#portlets" data-toggle="tab">Portlets</a></li>
             <li><a href="#blueprints" data-toggle="tab">Vorlagen</a></li>
             <li><a href="#revisions" data-toggle="tab">Versionen</a></li>
+            <li><a href="#drafts" data-toggle="tab">Drafts</a></li>
             <li><a href="#debug" data-toggle="tab"><i class="fa fa-bug"></i></a></li>
         </ul>
 
@@ -191,6 +192,12 @@
                 </li>
                 <li>
                     <a href="#" onclick="$('#iframe').width('100%');$('#displayPreviews a').removeClass('active'); $(this).addClass('active');" class="active"><i class="fa fa-desktop"></i></a>
+                </li>
+                <li>
+                    <a href="#" id="btnPreview" data-toggle="tooltip" data-placement="right"
+                       title="Preview">
+                        <i class="fa fa-eye"></i>
+                    </a>
                 </li>
             </ul>
         </div>
@@ -363,6 +370,37 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="publishModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Diesen Draft veröffentlichen...</h4>
+                </div>
+                <form id="publishForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="draftName">Name dieses Entwurfes</label>
+                            <input type="text" class="form-control" id="draftName" name="draftName"
+                                   value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="publishFrom">Veröffentlichen ab</label>
+                            <input type="text" class="form-control" id="publishFrom" name="publishFrom"
+                                   value="">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <input type="hidden" id="blueprintDeleteId" name="id" value="">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                            <button class="btn btn-primary">Veröffentlichen</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

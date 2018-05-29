@@ -6,6 +6,7 @@
 
 namespace OPC\Portlets;
 
+use function Functional\unique;
 use OPC\PortletInstance;
 
 class Container extends \OPC\Portlet
@@ -13,11 +14,18 @@ class Container extends \OPC\Portlet
     public function getPreviewHtml($instance)
     {
         if (!empty($instance->getProperty('parallax-flag')) && !empty($instance->getProperty('src'))) {
-            $name      = explode('/', $instance->getProperty('src'));
-            $name      = end($name);
-            $instance->setStyle('background', 'url("../' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name .'")');
+            $name = explode('/', $instance->getProperty('src'));
+            $name = end($name);
+
+            $instance->setStyle(
+                'background',
+                'url("' . \Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name .'")'
+            );
+
             $instance->setStyle('background-size', 'cover');
             $instance->setStyle('min-height', $instance->getProperty('min-height'));
+
+            $instance->getImageAttributes(\Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
         }
 
         $res = "<div ".$instance->getAttributeString().$instance->getDataAttributeString().">";
@@ -31,13 +39,15 @@ class Container extends \OPC\Portlet
     public function getFinalHtml($instance)
     {
         if (!empty($instance->getProperty('parallax-flag')) && !empty($instance->getProperty('src'))) {
-            $name      = explode('/', $instance->getProperty('src'));
-            $name      = end($name);
+            $name = explode('/', $instance->getProperty('src'));
+            $name = end($name);
             $instance->addClass('parallax-window');
             $instance->setStyle('min-height', $instance->getProperty('min-height'));
             $instance->setAttribute('data-parallax', 'scroll');
             $instance->setAttribute('data-z-index', '1');
             $instance->setAttribute('data-image-src', \Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.lg/' . $name);
+
+            $instance->getImageAttributes(\Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
         }
         $res = "<div ".$instance->getAttributeString().">";
 

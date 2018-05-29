@@ -4,6 +4,14 @@
  */
 
 var log = console.log;
+var debugging = true;
+
+function debuglog()
+{
+    if(debugging) {
+        console.log.apply(console.log, arguments);
+    }
+}
 
 function noop() {}
 

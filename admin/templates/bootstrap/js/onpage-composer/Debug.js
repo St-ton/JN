@@ -1,5 +1,7 @@
 function Debug()
 {
+    debuglog('construct Debug');
+
     bindProtoOnHandlers(this);
 
     this.viewInfoTree = undefined;
@@ -11,6 +13,8 @@ Debug.prototype = {
 
     init: function()
     {
+        debuglog('Debug init');
+
         installGuiElements(this, ['debugPageTree', 'debugTreeRefresh']);
     },
 
@@ -61,7 +65,7 @@ Debug.prototype = {
                     .append(this.renderAreas(json.areas, vit.areas))
                     .click(this.createExpandFunc(vit.areas))
             )
-            ;
+        ;
     },
 
     renderAreas: function(json, vit)

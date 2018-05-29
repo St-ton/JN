@@ -30,7 +30,7 @@ class Gallery extends \OPC\Portlet
             $slide['img_attr'] = $instance->getImageAttributes($slide['url'], null, null, $slide['width']);
         }
         $instance->setProperty('gllry_images',$images);
-        $id = !empty($instance->getProperty('id')) ? $instance->getProperty('id') : uniqid('gllry_');
+        $id = !empty($instance->getProperty('id')) ? $instance->getProperty('id') : uniqid('gllry_', false);
         $instance->setAttribute('id',$id);
 
         $instance

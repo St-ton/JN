@@ -6,7 +6,7 @@
     {if $step === 'umfrage_uebersicht'}
         {include file='poll/overview.tpl'}
     {elseif $step === 'umfrage_durchfuehren'}
-        {if $opcPage->isReplace()}
+        {if $opc->getCurPage()->isReplace()}
             {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
         {else}
             {include file='poll/progress.tpl'}

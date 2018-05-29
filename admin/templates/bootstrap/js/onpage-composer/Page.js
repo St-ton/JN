@@ -1,11 +1,16 @@
-function Page(io, id, url, fullUrl)
+function Page(io, shopUrl, key)
 {
+    debuglog('construct Page');
+
     bindProtoOnHandlers(this);
 
-    this.io  = io;
-    this.id  = id;
-    this.url = url;
-    this.fullUrl = fullUrl;
+    this.io      = io;
+    this.shopUrl = shopUrl;
+    this.key     = key;
+
+    // this.id  = id;
+    // this.url = url;
+    // this.fullUrl = fullUrl;
 }
 
 Page.prototype = {
@@ -14,19 +19,23 @@ Page.prototype = {
 
     init: function(lockedCB)
     {
-        this.lock(lockedCB);
+        debuglog('Page init');
+
+        this.loadDraft(this.lock.bind(this, lockedCB));
 
         setInterval(this.onTimeToLockAgain, 1000 * 60);
     },
 
     lock: function(lockedCB)
     {
+        debuglog('Page lock');
+
         this.io.lockPage(this.id, lockedCB);
     },
 
-    unlock: function()
+    unlock: function(unlockedCB)
     {
-        this.io.unlockPage(this.id);
+        this.io.unlockPage(this.id, unlockedCB);
     },
 
     onTimeToLockAgain: function()
@@ -41,13 +50,26 @@ Page.prototype = {
 
     initIframe: function(jq, loadCB)
     {
+        debuglog('Page initIframe');
+
         this.jq  = jq;
 
         this.rootAreas = this.jq('.opc-rootarea');
         this.fileInput = this.jq('<input type="file" accept=".json">');
 
-        this.lock();
-        this.load(loadCB);
+        this.loadDraftPreview(loadCB);
+    },
+
+    loadDraft: function(loadCB)
+    {
+        debuglog('Page loadDraft');
+
+        this.io.getPageDraft(this.key, this.onLoadDraft.bind(this, loadCB || noop));
+    },
+
+    loadDraftPreview: function(loadCB)
+    {
+        this.io.getPageDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop));
     },
 
     load: function(loadCB)
@@ -105,6 +127,20 @@ Page.prototype = {
         this.loadFromJSON(this.importReader.result, loadCB);
     },
 
+    onLoadDraft: function(loadCB, pageData)
+    {
+        debuglog('Page on draft loaded');
+
+        this.id          = pageData.id;
+        this.name        = pageData.name;
+        this.publishFrom = pageData.publishFrom;
+        this.publishTo   = pageData.publishTo;
+        this.url         = pageData.url;
+        this.fullUrl     = this.shopUrl + this.url;
+
+        loadCB();
+    },
+
     onLoad: function(loadCB, preview)
     {
         var areas = this.rootAreas;
@@ -154,7 +190,7 @@ Page.prototype = {
     {
         withDom = withDom || false;
 
-        var result = {id: this.id, url: this.url, areas: {}};
+        var result = {key: this.key, areas: {}};
         var areas  = this.rootAreas;
 
         for(var i=0; i<areas.length; i++) {

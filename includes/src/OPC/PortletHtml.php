@@ -357,15 +357,13 @@ trait PortletHtml
                 ]);
                 break;
             case 'video':
-            case 'image':
                 $previewVidUrl = empty($prop) ? \Shop::getURL() . '/gfx/keinBild.gif' : $prop;
                 $res .= "<input type='hidden' name='$propname' value='$prop'>"
                     . "<button type='button' class='btn btn-default image-btn' "
                     . "onclick='opc.selectVideoProp(\"$propname\")'>"
                     . "<video width='300' height='160' controls controlsList='nodownload' id='cont-preview-vid-$propname'>"
                     . "<source src='$previewVidUrl' id='preview-vid-$propname' type='video/mp4'>"
-                    . "Your browser does not support the video tag.</video></button>"
-                    . "<canvas id='preview-canvas-$propname' style='display: none'></canvas><img id='preview-img-$propname' style='display: none'/>";
+                    . "Your browser does not support the video tag.</video></button>";
                 break;
             case 'text':
             default:
@@ -407,6 +405,9 @@ trait PortletHtml
         return "<$tag $attributes>$innerHtml</$tag>";
     }
 
+    /**
+     * @return string
+     */
     final protected function getDefaultIconSvgUrl()
     {
         return \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/icon.svg';

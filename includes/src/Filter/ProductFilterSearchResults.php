@@ -744,7 +744,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
                  $searchFilterOptions
              )));
 
-        if ($productFilter->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
+        if ($productFilter->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] !== 'N') {
             $this->setTagFilterJSON(\Boxen::gibJSONString(array_map(
                 function ($e) {
                     /** @var FilterOption $e */

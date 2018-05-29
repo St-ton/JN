@@ -48,9 +48,10 @@ class ProductStream extends \OPC\Portlet
                 'type'    => 'select',
                 'label'   => 'Darstellung',
                 'options' => [
-                    'gallery' => 'Galerie',
-                    'list'    => 'Liste',
-                    'slider'  => 'Slider',
+                    'gallery'    => 'Galerie',
+                    'list'       => 'Liste',
+                    'slider'     => 'Slider',
+                    'vertSlider' => 'vertikaler Slider'
                 ],
                 'default' => 'gallery',
             ],

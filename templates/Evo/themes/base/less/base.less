@@ -3426,17 +3426,25 @@ header.fixed-navbar {
 }
 
 /*Artikel Bilder Slider Start*/
-.slick-up:before {
-    content: '\2190';
+.slick-down {
+    z-index: 2;
+    left: 50%;
+    &:before {
+        content: '\f078';
+    }
 }
 
-.stick-down:before {
-    content: '\2192';
+.slick-up {
+    z-index: 2;
+    left: 50%;
+    &:before {
+        content: '\f077';
+    }
 }
 
-.slick-up, .stick-down {
+.slick-up, .slick-down {
     outline: none;
-    font-family: "slick";
+    font-family: "fontawesome";
     background: transparent;
     border: none;
     font-size: 20px;
@@ -3468,14 +3476,12 @@ header.fixed-navbar {
     top: 0px;
     z-index: 5;
     position: absolute;
-    transform: rotate(90deg);
 }
 
 .btn-gallery-down {
     bottom: 0px;
     z-index: 5;
     position: absolute;
-    transform: rotate(90deg);
 }
 
 .thumbs {

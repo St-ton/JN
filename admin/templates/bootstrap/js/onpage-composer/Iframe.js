@@ -149,7 +149,7 @@ Iframe.prototype = {
         script.src = url;
         script.addEventListener('load', callback || noop);
 
-        this.head[0].append(script);
+        this.head[0].appendChild(script);
     },
 
     enableEditingEvents: function()

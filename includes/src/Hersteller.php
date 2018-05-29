@@ -219,7 +219,7 @@ class Hersteller
     public static function getAll($productLookup = true)
     {
         $sqlWhere = '';
-        $kSprache = Shop::getLanguage();
+        $kSprache = Shop::getLanguageID();
         if ($productLookup) {
             $sqlWhere = "WHERE EXISTS (
                             SELECT 1

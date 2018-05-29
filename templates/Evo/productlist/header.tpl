@@ -102,65 +102,68 @@
 {include file='productwizard/index.tpl'}
 
 {if count($Suchergebnisse->getProducts()) > 0}
-    <form id="improve_search" action="{$ShopURL}" method="get" class="form-inline clearfix">
-        {if $NaviFilter->hasCategory()}
-            <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />
-        {/if}
-        {if $NaviFilter->hasManufacturer()}
-            <input type="hidden" name="h" value="{$NaviFilter->getManufacturer()->getValue()}" />
-        {/if}
-        {if $NaviFilter->hasSearchQuery() && $NaviFilter->getSearchQuery()->getValue() > 0}
-            <input type="hidden" name="l" value="{$NaviFilter->getSearchQuery()->getValue()}" />
-        {/if}
-        {if $NaviFilter->hasAttributeValue()}
-            <input type="hidden" name="m" value="{$NaviFilter->getAttributeValue()->getValue()}" />
-        {/if}
-        {if $NaviFilter->hasSearchSpecial()}
-            <input type="hidden" name="q" value="{$NaviFilter->getSearchSpecial()->getValue()}" />
-        {/if}
-        {if $NaviFilter->hasSearch()}
-            <input type="hidden" name="suche" value="{$NaviFilter->getSearch()->getName()|escape:'htmlall'}" />
-        {/if}
-        {if $NaviFilter->hasTag()}
-            <input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}" />
-        {/if}
-        {if $NaviFilter->hasCategoryFilter()}
-            <input type="hidden" name="kf" value="{$NaviFilter->getCategoryFilter()->getValue()}" />
-        {/if}
-        {if $NaviFilter->hasManufacturerFilter()}
-            <input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />
-        {/if}
-        {if $NaviFilter->hasSearchSpecialFilter()}
-            <input type="hidden" name="qf" value="{$NaviFilter->getSearchSpecialFilter()->getValueCompat()}" />
-        {/if}
-        {if $NaviFilter->hasRatingFilter()}
-            <input type="hidden" name="bf" value="{$NaviFilter->getRatingFilter()->getValue()}" />
-        {/if}
-        {if $NaviFilter->hasPriceRangeFilter()}
-            <input type="hidden" name="pf" value="{$NaviFilter->getPriceRangeFilter()->getValue()}" />
-        {/if}
-        {if $NaviFilter->hasAttributeFilter()}
-            {foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}
-                <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$attributeFilter->getValue()}" />
-            {/foreach}
-        {/if}
-        {if isset($cJTLSearchStatedFilter_arr) && is_array($cJTLSearchStatedFilter_arr)}
-            {foreach name=jtlsearchstatedfilter from=$cJTLSearchStatedFilter_arr key=key item=cJTLSearchStatedFilter}
-                <input name="fq{$key}" type="hidden" value="{$cJTLSearchStatedFilter}" />
-            {/foreach}
-        {/if}
-        {if $NaviFilter->hasTagFilter()}
-            {foreach name=tagfilter from=$NaviFilter->getTagFilter() item=tagFilter}
-                <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tagFilter->getValue()}" />
-            {/foreach}
-        {/if}
-        {if $NaviFilter->hasSearchFilter()}
-            {foreach name=suchfilter from=$NaviFilter->getSearchFilter() item=searchFilter}
-                <input type="hidden" name="sf{$smarty.foreach.suchfilter.iteration}" value="{$searchFilter->getValue()}" />
-            {/foreach}
-        {/if}
+    {*<form id="improve_search" action="{$ShopURL}" method="get" class="form-inline clearfix">*}
+        {*{if $NaviFilter->hasCategory()}*}
+            {*<input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasManufacturer()}*}
+            {*<input type="hidden" name="h" value="{$NaviFilter->getManufacturer()->getValue()}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasSearchQuery() && $NaviFilter->getSearchQuery()->getValue() > 0}*}
+            {*<input type="hidden" name="l" value="{$NaviFilter->getSearchQuery()->getValue()}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasAttributeValue()}*}
+            {*<input type="hidden" name="m" value="{$NaviFilter->getAttributeValue()->getValue()}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasSearchSpecial()}*}
+            {*<input type="hidden" name="q" value="{$NaviFilter->getSearchSpecial()->getValue()}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasSearch()}*}
+            {*<input type="hidden" name="suche" value="{$NaviFilter->getSearch()->getName()|escape:'htmlall'}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasTag()}*}
+            {*<input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasCategoryFilter()}*}
+            {*<input type="hidden" name="kf" value="{$NaviFilter->getCategoryFilter()->getValue()}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasManufacturerFilter()}*}
+            {*<input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasSearchSpecialFilter()}*}
+            {*<input type="hidden" name="qf" value="{$NaviFilter->getSearchSpecialFilter()->getValueCompat()}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasRatingFilter()}*}
+            {*<input type="hidden" name="bf" value="{$NaviFilter->getRatingFilter()->getValue()}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasPriceRangeFilter()}*}
+            {*<input type="hidden" name="pf" value="{$NaviFilter->getPriceRangeFilter()->getValue()}" />*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasAttributeFilter()}*}
+            {*{foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}*}
+                {*<input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$attributeFilter->getValue()}" />*}
+            {*{/foreach}*}
+        {*{/if}*}
+        {*{if isset($cJTLSearchStatedFilter_arr) && is_array($cJTLSearchStatedFilter_arr)}*}
+            {*{foreach name=jtlsearchstatedfilter from=$cJTLSearchStatedFilter_arr key=key item=cJTLSearchStatedFilter}*}
+                {*<input name="fq{$key}" type="hidden" value="{$cJTLSearchStatedFilter}" />*}
+            {*{/foreach}*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasTagFilter()}*}
+            {*{foreach name=tagfilter from=$NaviFilter->getTagFilter() item=tagFilter}*}
+                {*<input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tagFilter->getValue()}" />*}
+            {*{/foreach}*}
+        {*{/if}*}
+        {*{if $NaviFilter->hasSearchFilter()}*}
+            {*{foreach name=suchfilter from=$NaviFilter->getSearchFilter() item=searchFilter}*}
+                {*<input type="hidden" name="sf{$smarty.foreach.suchfilter.iteration}" value="{$searchFilter->getValue()}" />*}
+            {*{/foreach}*}
+        {*{/if}*}
+        {*{include file='productlist/result_options.tpl'}*}
+    {*</form>*}
+    <div id="improve_search" class="form-inline clearfix">
         {include file='productlist/result_options.tpl'}
-    </form>
+    </div>
 {/if}
 
 {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}

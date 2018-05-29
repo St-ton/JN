@@ -1,6 +1,6 @@
 <section class="panel panel-default box box-basket" id="sidebox{$oBox->kBox}">
     <div class="panel-heading">
-        <h5 class="panel-title">{lang key="yourBasket" section="global"}<span id="basket_loader"></span></h5>
+        <div class="panel-title">{lang key="yourBasket" section="global"}<span id="basket_loader"></span></div>
     </div>
     <div class="box-body panel-body text-center">
         <a href="{get_static_route id='warenkorb.php'}" class="basket {if $WarenkorbArtikelanzahl > 0}pushed{/if}" id="basket_drag_area">

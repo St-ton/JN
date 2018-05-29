@@ -7,7 +7,7 @@
 {if isset($wishlistItems)}
     <section class="panel panel-default box box-wishlist" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
-            <h5 class="panel-title"><i class="fa fa-heart"></i> {lang key="wishlist" section="global"}</h5>
+            <div class="panel-title"><i class="fa fa-heart"></i> {lang key='wishlist'}</div>
         </div>
         <div class="box-body panel-body">
             <ul class="list-unstyled">
@@ -32,7 +32,9 @@
                 {/foreach}
             </ul>
             <hr>
-            <a href="{get_static_route id='jtl.php'}?wl={if isset($Boxen.Wunschliste->CWunschlistePos_arr)}{$Boxen.Wunschliste->CWunschlistePos_arr[0]->kWunschliste}{else}{$oBox->CWunschlistePos_arr[0]->kWunschliste}{/if}" class="btn btn-default btn-block btn-sm">{lang key="goToWishlist" section="global"}</a>
+            <a href="{get_static_route id='jtl.php'}?wl={if isset($Boxen.Wunschliste->CWunschlistePos_arr)}{$Boxen.Wunschliste->CWunschlistePos_arr[0]->kWunschliste}{else}{$oBox->CWunschlistePos_arr[0]->kWunschliste}{/if}" class="btn btn-default btn-block btn-sm">
+                {lang key='goToWishlist'}
+            </a>
         </div>
     </section>
 {else}

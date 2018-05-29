@@ -1,7 +1,11 @@
-{if $bBoxenFilterNach && $Suchergebnisse !== null && !empty($Suchergebnisse->getTagFilterOptions())}
+{assign var=tf value=$NaviFilter->tagFilterCompat}
+{if $bBoxenFilterNach
+    && !$tf->getVisibility()->equals(\Filter\Visibility::SHOW_NEVER())
+    && !$tf->getVisibility()->equals(\Filter\Visibility::SHOW_CONTENT())
+    && (!empty($Suchergebnisse->getTagFilterOptions()) || $tf->isInitialized())}
     <section class="panel panel-default box box-filter-tag" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
-            <h5 class="panel-title">{lang key="tagFilter" section="global"}</h5>
+            <div class="panel-title">{lang key='tagFilter'}</div>
         </div>
         <div class="box-body">
             <ul class="nav nav-list">

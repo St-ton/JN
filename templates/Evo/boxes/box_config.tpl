@@ -1,6 +1,6 @@
 <section class="panel panel-default box autoscroll box-config hidden" id="sidebox{$oBox->kBox}">
     <div class="panel-heading">
-        <h5 class="panel-title">{lang key="yourConfiguration"}</h5>
+        <div class="panel-title">{lang key="yourConfiguration"}</div>
     </div>
     <div class="box-body panel-body">
         <div id="box_config_list">

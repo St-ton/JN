@@ -1,7 +1,7 @@
 {if isset($oBox->oNewsMonatsUebersicht_arr) && $oBox->oNewsMonatsUebersicht_arr|@count > 0}
     <section class="panel panel-default box box-monthlynews" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
-            <h5 class="panel-title">{lang key="newsBoxMonthOverview" section="global"}</h5>
+            <div class="panel-title">{lang key="newsBoxMonthOverview" section="global"}</div>
         </div>
         <div class="box-body dropdown">
             <ul class="nav nav-list">
@@ -21,7 +21,7 @@
 {elseif isset($Boxen.News->oNewsMonatsUebersicht_arr) && $Boxen.News->oNewsMonatsUebersicht_arr|@count > 0}
     <section class="panel panel-default box box-monthlynews" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
-            <h5 class="panel-title">{lang key="newsBoxMonthOverview" section="global"}</h5>
+            <div class="panel-title">{lang key="newsBoxMonthOverview" section="global"}</div>
         </div>
         <div class="box-body panel-body">
             <ul>

@@ -1,6 +1,6 @@
 <section class="panel panel-default box box-manufacturers" id="sidebox{$oBox->kBox}">
     <div class="panel-heading">
-        <h5 class="panel-title">{lang key="manufacturers" section="global"}</h5>
+        <div class="panel-title">{lang key='manufacturers'}</div>
     </div>
     {if $oBox->manufacturers|@count > 8}
         <div class="box-body">

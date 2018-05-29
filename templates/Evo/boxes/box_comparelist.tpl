@@ -9,7 +9,7 @@
     {if isset($from)}
         <section class="panel panel-default box box-compare" id="sidebox{$oBox->kBox}">
             <div class="panel-heading">
-                <h5 class="panel-title"><i class="fa fa-tasks"></i> {lang key="compare" section="global"}</h5>
+                <div class="panel-title"><i class="fa fa-tasks"></i> {lang key='compare'}</div>
             </div>{* /panel-heading *}
             <div class="box-body panel-body">
                 <ul class="list-unstyled">

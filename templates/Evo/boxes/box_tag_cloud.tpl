@@ -1,7 +1,7 @@
 {if (isset($Boxen.Tagwolke->Tagbegriffe) && $Boxen.Tagwolke->Tagbegriffe|@count > 0) || (isset($oBox->Tagbegriffe) && $oBox->Tagbegriffe|@count > 0)}
     <section class="panel panel-default box box-tagcloud" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
-            <h5 class="panel-title">{lang key="tagcloud" section="global"}</h5>
+            <div class="panel-title">{lang key='tagcloud'}</div>
         </div>
         <div class="box-body panel-body">
             <div class="tagbox">

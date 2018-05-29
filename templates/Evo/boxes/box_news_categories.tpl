@@ -1,7 +1,7 @@
 {if isset($oBox->oNewsKategorie_arr) && $oBox->oNewsKategorie_arr|@count > 0}
     <section class="panel panel-default box box-newscategories" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
-            <h5 class="panel-title">{lang key='newsBoxCatOverview'}</h5>
+            <div class="panel-title">{lang key='newsBoxCatOverview'}</div>
         </div>
         <div class="box-body dropdown">
             <ul class="nav nav-list">
@@ -20,7 +20,7 @@
 {elseif isset($Boxen.NewsKategorie->oNewsKategorie_arr) && $Boxen.NewsKategorie->oNewsKategorie_arr|@count > 0}
     <section class="panel panel-default box box-newscategories" id="sidebox{$oBox->kBox}">
        <div class="panel-heading">
-           <h5 class="panel-title">{lang key='newsBoxCatOverview'}</h5>
+           <div class="panel-title">{lang key='newsBoxCatOverview'}</div>
        </div>{* /panel-heading *}
        <div class="box-body panel-body">
           <ul>

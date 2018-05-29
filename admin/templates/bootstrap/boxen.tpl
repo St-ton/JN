@@ -101,7 +101,7 @@
 <div id="content">
     {if $invisibleBoxes|count > 0}
         <div class="alert alert-danger">{#warningInvisibleBoxes#}</div>
-        <form action="boxen.php" method="post">
+        <form action="boxen.php" method="post" class="block">
             {$jtl_token}
             <div class="panel panel-default editorInner">
                 <div class="panel-heading">
@@ -246,7 +246,7 @@
                 </form>
             </div>
         {else}
-            <div class="block">
+            <div class="">
                 <form name="boxen" method="post" action="boxen.php">
                     {$jtl_token}
                     <div class="input-group p25 left">

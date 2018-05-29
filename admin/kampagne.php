@@ -67,8 +67,8 @@ if (verifyGPCDataInteger('neu') === 1 && validateToken()) {
     $oKampagne             = new Kampagne();
     $oKampagne->cName      = $_POST['cName'];
     $oKampagne->cParameter = $_POST['cParameter'];
-    $oKampagne->cWert      = $_POST['cWert'];
-    $oKampagne->nDynamisch = $_POST['nDynamisch'];
+    $oKampagne->cWert      = isset($_POST['cWert']) ? $_POST['cWert'] : null;
+    $oKampagne->nDynamisch = isset($_POST['nDynamisch']) ? $_POST['nDynamisch'] : 0;
     $oKampagne->nAktiv     = $_POST['nAktiv'];
     $oKampagne->dErstellt  = 'now()';
 

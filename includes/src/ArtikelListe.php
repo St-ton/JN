@@ -263,7 +263,13 @@ class ArtikelListe
                 }
             }
         }
-        $cacheID = 'hBsA_' . md5(json_encode($arr_kKategorie) . json_encode($topArtikelliste));
+        $keys = null;
+        if ($topArtikelliste instanceof self) {
+            $keys = \Functional\map($topArtikelliste->elemente, function ($e) {
+                return $e->cacheID ?? 0;
+            });
+        }
+        $cacheID = 'hBsA_' . md5(json_encode($arr_kKategorie) . json_encode($keys));
         $objArr  = Shop::Cache()->get($cacheID);
         if ($objArr === false && count($arr_kKategorie) > 0) {
             $kKundengruppe = Session::CustomerGroup()->getID();

@@ -59,15 +59,7 @@ class Boxen
      */
     public function __construct()
     {
-        $this->boxConfig = Shop::getSettings([
-            CONF_GLOBAL,
-            CONF_BOXEN,
-            CONF_VERGLEICHSLISTE,
-            CONF_NAVIGATIONSFILTER,
-            CONF_NEWS,
-            CONF_UMFRAGE,
-            CONF_TRUSTEDSHOPS
-        ]);
+        $this->boxConfig = Shopsetting::getInstance()->getAll();
         self::$_instance = $this;
     }
 
@@ -155,19 +147,19 @@ class Boxen
             : "";
         $oBoxen_arr       = Shop::Container()->getDB()->query(
             "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
-                   tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
-                   tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
-                   tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus
-                FROM tboxen
-                LEFT JOIN tboxensichtbar
-                    ON tboxen.kBox = tboxensichtbar.kBox
-                LEFT JOIN tplugin
-                    ON tboxen.kCustomID = tplugin.kPlugin
-                LEFT JOIN tboxvorlage
-                    ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE tboxensichtbar.kSeite = " . $nSeite . $cPluginAktiv .
+                       tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
+                       tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
+                       tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus
+                    FROM tboxen
+                    LEFT JOIN tboxensichtbar
+                        ON tboxen.kBox = tboxensichtbar.kBox
+                    LEFT JOIN tplugin
+                        ON tboxen.kCustomID = tplugin.kPlugin
+                    LEFT JOIN tboxvorlage
+                        ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                    WHERE tboxensichtbar.kSeite = " . $nSeite . $cPluginAktiv .
             " AND tboxen.kContainer = 0 " . $cSQLAktiv . "
-                ORDER BY tboxensichtbar.nSort ASC",
+                    ORDER BY tboxensichtbar.nSort ASC",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oBoxen_arr as $oBox) {
@@ -263,8 +255,10 @@ class Boxen
                         $childBox->kSeite      = (int)$childBox->kSeite;
                         $childBox->nSort       = (int)$childBox->nSort;
                         $childBox->bAktiv      = (int)$childBox->bAktiv;
-                        $oVisible_arr          = Shop::Container()->getDB()->selectAll('tboxensichtbar',
-                            ['kBox', 'bAktiv'], [(int)$childBox->kBox, 1]);
+                        $oVisible_arr          = Shop::Container()->getDB()->selectAll(
+                            'tboxensichtbar',
+                            ['kBox', 'bAktiv'], [(int)$childBox->kBox, 1]
+                        );
                         if (count($oVisible_arr) >= count($validPageTypes)) {
                             $childBox->cVisibleOn  = 'sichtbar auf allen Seiten';
                             $childBox->nVisibility = 1;
@@ -1545,7 +1539,7 @@ class Boxen
             $bOk = true;
             for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
                 $bOk = Shop::Container()->getDB()->executeQueryPrepared(
-                    "REPLACE INTO tboxenanzeige 
+                        "REPLACE INTO tboxenanzeige 
                         SET bAnzeigen = :show,
                             nSeite = :page, 
                             ePosition = :position",
@@ -1801,11 +1795,11 @@ class Boxen
                 $_upd         = new stdClass();
                 $_upd->bAktiv = $bAktiv;
                 $bOk          = Shop::Container()->getDB()->update(
-                    'tboxensichtbar',
-                    ['kBox', 'kSeite'],
-                    [$kBox, $i],
-                    $_upd
-                ) >= 0;
+                        'tboxensichtbar',
+                        ['kBox', 'kSeite'],
+                        [$kBox, $i],
+                        $_upd
+                    ) >= 0;
             }
 
             return $bOk;
@@ -1822,7 +1816,7 @@ class Boxen
      */
     public function loescheBox(int $kBox): bool
     {
-        $bOk  = Shop::Container()->getDB()->delete('tboxen', 'kBox', $kBox) > 0;
+        $bOk = Shop::Container()->getDB()->delete('tboxen', 'kBox', $kBox) > 0;
 
         return $bOk
             ? (Shop::Container()->getDB()->delete('tboxensichtbar', 'kBox', $kBox) > 0)
@@ -1861,27 +1855,26 @@ class Boxen
      */
     public function gibBoxenFilterNach(\Filter\ProductFilter $pf, \Filter\ProductFilterSearchResults $sr): bool
     {
-        $conf   = Shop::getSettings([CONF_GLOBAL])['global'];
-        $nfConf = $this->boxConfig['navigationsfilter'];
+        $cf  = $pf->getCategoryFilter();
+        $mf  = $pf->getManufacturerFilter();
+        $prf = $pf->getPriceRangeFilter();
+        $rf  = $pf->getRatingFilter();
+        $tf  = $pf->tagFilterCompat;
+        $afc = $pf->getAttributeFilterCollection();
+        $ssf = $pf->getSearchSpecialFilter();
+        $sf  = $pf->searchFilterCompat;
 
-        return (
-            ($pf->hasCategoryFilter() && $nfConf['allgemein_kategoriefilter_benutzen'] === 'Y')
-            || ($pf->hasManufacturerFilter() && $nfConf['allgemein_herstellerfilter_benutzen'] === 'Y')
-            || ($pf->hasPriceRangeFilter()
-                && $nfConf['preisspannenfilter_benutzen'] !== 'N'
-                && (int)$conf['global_sichtbarkeit'] === 1)
-            || ($pf->hasRatingFilter() && $nfConf['bewertungsfilter_benutzen'] !== 'N')
-            || ($pf->hasTagFilter() && $nfConf['allgemein_tagfilter_benutzen'] === 'Y')
-            || (count($sr->getAttributeFilterOptions()) > 0 && $nfConf['merkmalfilter_verwenden'] === 'box')
-            || ($pf->hasAttributeFilter() && $nfConf['merkmalfilter_verwenden'] === 'box')
-            || (count($sr->getRatingFilterOptions()) > 0 && $nfConf['bewertungsfilter_benutzen'] === 'box')
-            || (count($sr->getPriceRangeFilterOptions()) > 0
-                && $nfConf['preisspannenfilter_benutzen'] === 'box'
-                && (int)$conf['global_sichtbarkeit'] === 1)
-            || (count($sr->getSearchSpecialFilterOptions()) > 0
-                && $nfConf['allgemein_suchspecialfilter_benutzen'] === 'Y')
-            || ($pf->hasSearchSpecialFilter() && $nfConf['allgemein_suchspecialfilter_benutzen'] === 'Y')
-            || ($pf->hasSearchFilter() && $nfConf['suchtrefferfilter_nutzen'] === 'Y')
+        $invis      = \Filter\Visibility::SHOW_NEVER();
+        $visContent = \Filter\Visibility::SHOW_CONTENT();
+
+        return ((!$cf->getVisibility()->equals($invis) && !$cf->getVisibility()->equals($visContent))
+            || (!$mf->getVisibility()->equals($invis) && !$mf->getVisibility()->equals($visContent))
+            || (!$prf->getVisibility()->equals($invis) && !$prf->getVisibility()->equals($visContent))
+            || (!$rf->getVisibility()->equals($invis) && !$rf->getVisibility()->equals($visContent))
+            || (!$tf->getVisibility()->equals($invis) && !$tf->getVisibility()->equals($visContent))
+            || (!$afc->getVisibility()->equals($invis) && !$afc->getVisibility()->equals($visContent))
+            || (!$ssf->getVisibility()->equals($invis) && !$ssf->getVisibility()->equals($visContent))
+            || (!$sf->getVisibility()->equals($invis) && !$sf->getVisibility()->equals($visContent))
         );
     }
 

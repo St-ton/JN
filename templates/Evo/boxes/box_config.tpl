@@ -1,4 +1,4 @@
-<section class="panel panel-default box autoscroll box-config hidden" id="sidebox{$oBox->kBox}">
+<section class="panel panel-default box autoscroll box-config hidden" id="sidebox{$oBox->getID()}">
     <div class="panel-heading">
         <div class="panel-title">{lang key="yourConfiguration"}</div>
     </div>

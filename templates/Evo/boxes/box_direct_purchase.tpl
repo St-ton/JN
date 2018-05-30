@@ -1,5 +1,5 @@
-{if (isset($Boxen.Schnellkauf) && $Boxen.Schnellkauf->anzeigen === 'Y') || (isset($oBox->anzeigen) && $oBox->anzeigen)}
-    <section class="panel panel-default box box-direct-purchase" id="sidebox{$oBox->kBox}">
+{if $oBox->show()}
+    <section class="panel panel-default box box-direct-purchase" id="sidebox{$oBox->getID()}">
         <div class="panel-heading">
             <div class="panel-title">{lang key='quickBuy'}</div>
         </div>{* /panel-heading *}

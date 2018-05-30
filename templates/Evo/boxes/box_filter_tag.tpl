@@ -1,15 +1,12 @@
 {assign var=tf value=$NaviFilter->tagFilterCompat}
-{if $bBoxenFilterNach
-    && !$tf->getVisibility()->equals(\Filter\Visibility::SHOW_NEVER())
-    && !$tf->getVisibility()->equals(\Filter\Visibility::SHOW_CONTENT())
-    && (!empty($Suchergebnisse->getTagFilterOptions()) || $tf->isInitialized())}
-    <section class="panel panel-default box box-filter-tag" id="sidebox{$oBox->kBox}">
+{if $oBox->show()}
+    <section class="panel panel-default box box-filter-tag" id="sidebox{$oBox->getID()}">
         <div class="panel-heading">
             <div class="panel-title">{lang key='tagFilter'}</div>
         </div>
         <div class="box-body">
             <ul class="nav nav-list">
-             {foreach $Suchergebnisse->getTagFilterOptions() as $oTag}
+             {foreach $oBox->getItems() as $oTag}
                  {if $NaviFilter->hasTagFilter() && $NaviFilter->getTagFilter(0)->getValue() === $oTag->kTag}
                      <li>
                          {* @todo: use getter *}

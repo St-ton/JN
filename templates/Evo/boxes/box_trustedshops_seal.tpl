@@ -1,5 +1,5 @@
 {if isset($oBox->anzeigen) && $oBox->anzeigen === 'Y' && $oBox->cLogoURL|strlen > 0}
-    <section class="panel panel-default box box-trustedshops-seal" id="sidebox{$oBox->kBox}">
+    <section class="panel panel-default box box-trustedshops-seal" id="sidebox{$oBox->getID()}">
         {if $oBox->ePosition != 'bottom'}
             <div class="panel-heading">
                 <div class="panel-title">{lang key='safety'}</div>
@@ -13,7 +13,7 @@
         </div>
     </section>
 {elseif isset($Boxen.TrustedShopsSiegelbox) && $Boxen.TrustedShopsSiegelbox->anzeigen === 'Y' && $Boxen.TrustedShopsSiegelbox->cLogoURL|strlen > 0}
-    <section class="panel panel-default box box-trustedshops-seal" id="sidebox{$oBox->kBox}">
+    <section class="panel panel-default box box-trustedshops-seal" id="sidebox{$oBox->getID()}">
         {if $oBox->ePosition != 'bottom'}
             <div class="panel-heading">
                 <div class="panel-title">{lang key='safety'}</div>

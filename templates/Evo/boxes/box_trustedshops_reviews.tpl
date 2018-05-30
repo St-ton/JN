@@ -1,5 +1,5 @@
 {if isset($oBox->anzeigen) && $oBox->anzeigen === 'Y'}
-    <section class="panel panel-default box box-trustedshops-reviews" id="sidebox{$oBox->kBox}">
+    <section class="panel panel-default box box-trustedshops-reviews" id="sidebox{$oBox->getID()}">
         {if $oBox->ePosition != 'bottom'}
             <div class="panel-heading">
                 <div class="panel-title">{lang key='trustedshopsRating'}</div>
@@ -22,7 +22,7 @@
         </span>
     </section>
 {elseif isset($Boxen.TrustedShopsKundenbewertung) && $Boxen.TrustedShopsKundenbewertung->anzeigen === 'Y'}
-    <section class="panel panel-default box box-trustedshops-reviews" id="sidebox{$oBox->kBox}">
+    <section class="panel panel-default box box-trustedshops-reviews" id="sidebox{$oBox->getID()}">
         {if $oBox->ePosition != 'bottom'}
             <div class="panel-heading">
                 <div class="panel-title">{lang key='trustedshopsRating'}</div>

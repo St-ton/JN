@@ -1,8 +1,8 @@
-<section class="panel panel-default box box-custom" id="sidebox{$oBox->kBox}">
+<section class="panel panel-default box box-custom" id="sidebox{$oBox->getID()}">
     <div class="panel-heading">
-        <div class="panel-title">{$oBox->cTitel}</div>
+        <div class="panel-title">{$oBox->getTitle())}</div>
     </div>
     <div class="box-body panel-body panel-strap">
-        {eval var=$oBox->cInhalt}
+        {eval var=$oBox->getContent()}
     </div>
 </section>

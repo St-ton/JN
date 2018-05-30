@@ -1,5 +1,5 @@
 {if isset($linkgroups->Informationen)}
-    <section class="panel panel-default box box-info" id="sidebox{$oBox->kBox}">
+    <section class="panel panel-default box box-info" id="sidebox{$oBox->getID()}">
         <div class="panel-heading">
             <div class="panel-title">{$linkgroups->Informationen->cLocalizedName|trans}</div>
         </div>{* /panel-heading *}

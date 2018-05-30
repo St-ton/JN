@@ -1,9 +1,5 @@
-{assign var=mf value=$NaviFilter->getAttributeFilterCollection()}
-{if $bBoxenFilterNach
-    && !$mf->getVisibility()->equals(\Filter\Visibility::SHOW_NEVER())
-    && !$mf->getVisibility()->equals(\Filter\Visibility::SHOW_CONTENT())
-    && (!empty($Suchergebnisse->getAttributeFilterOptions()) || $mf->isInitialized())}
-    {foreach name=merkmalfilter from=$Suchergebnisse->getAttributeFilterOptions() item=Merkmal}
+{if $oBox->show()}
+    {foreach $oBox->getItems() as $Merkmal}
         {assign var=kMerkmal value=$Merkmal->kMerkmal}
         <section class="panel panel-default box box-filter-characteristics">
             {if ($Merkmal->getData('cTyp') === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}

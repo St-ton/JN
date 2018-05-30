@@ -5,7 +5,7 @@
 {/if}
 
 {if isset($wishlistItems)}
-    <section class="panel panel-default box box-wishlist" id="sidebox{$oBox->kBox}">
+    <section class="panel panel-default box box-wishlist" id="sidebox{$oBox->getID()}">
         <div class="panel-heading">
             <div class="panel-title"><i class="fa fa-heart"></i> {lang key='wishlist'}</div>
         </div>
@@ -38,5 +38,5 @@
         </div>
     </section>
 {else}
-    <section class="hidden box-wishlist" id="sidebox{$oBox->kBox}"></section>
+    <section class="hidden box-wishlist" id="sidebox{$oBox->getID()}"></section>
 {/if}

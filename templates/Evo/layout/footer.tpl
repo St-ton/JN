@@ -39,14 +39,13 @@
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 <div class="container-block clearfix">
             {/if}
-
             {block name="footer-boxes"}
             {load_boxes_raw type='bottom' assign='arrBoxBottom' array=true}
             {if isset($arrBoxBottom) && count($arrBoxBottom) > 0}
                 <div class="row" id="footer-boxes">
                     {foreach name=bottomBoxes from=$arrBoxBottom item=box}
-                        {if ($box.obj->kBoxvorlage != 0 && $box.obj->anzeigen === 'Y' )
-                        || ($box.obj->kBoxvorlage == 0 && !empty($box.obj->oContainer_arr))}
+                        {if ($box.obj->getBaseType() !== 0 && $box.obj->show())
+                        || ($box.obj->getBaseType() === 0 && !empty($box.obj->getChildren()))}
                             <div class="{block name="footer-boxes-class"}col-xs-12 col-sm-6 col-md-3{/block}">
                                 {if isset($box.obj) && isset($box.tpl)}
                                     {assign var=oBox value=$box.obj}

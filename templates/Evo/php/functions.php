@@ -317,8 +317,8 @@ function load_boxes($params, $smarty)
  */
 function has_boxes($params, $smarty)
 {
-    $boxes = Boxen::getInstance();
-    $smarty->assign($params['assign'], isset($boxes->boxes[$params['position']]));
+    $boxData = $smarty->getTemplateVars('boxes');
+    $smarty->assign($params['assign'], !empty($boxData[$params['position']]));
 }
 
 /**

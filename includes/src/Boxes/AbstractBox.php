@@ -176,10 +176,10 @@ abstract class AbstractBox implements BoxInterface
             $data->cName     = '';
         }
         $this->setID($data->kBox);
-        $this->setBaseType($data->kBoxvorlage);
-        $this->setCustomID($data->kCustomID);
-        $this->setContainerID($data->kContainer);
-        $this->setSort($data->nSort);
+        $this->setBaseType((int)$data->kBoxvorlage);
+        $this->setCustomID((int)$data->kCustomID);
+        $this->setContainerID((int)$data->kContainer);
+        $this->setSort((int)$data->nSort);
         $this->setIsActive((int)$data->bAktiv === 1);
         if (!is_bool($this->show)) {
             // may be overridden in concrete classes' __construct
@@ -253,7 +253,7 @@ abstract class AbstractBox implements BoxInterface
                 ? $smarty->fetch($this->getTemplateFile())
                 : '';
         } catch (\SmartyException $e) {
-            return $this->getTemplateFile();
+            return \Shop::dbg($e->getMessage());
         }
     }
 

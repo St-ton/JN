@@ -98,7 +98,7 @@ class HerstellerHelper
             );
             $shopURL       = Shop::getURL() . '/';
             $imageBaseURL  = Shop::getImageBaseURL();
-            foreach ($manufacturers as $manufacturer) {
+            foreach ($manufacturers as &$manufacturer) {
                 if (!empty($manufacturer->cBildpfad)) {
                     $manufacturer->cBildpfadKlein  = PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildpfad;
                     $manufacturer->cBildpfadNormal = PFAD_HERSTELLERBILDER_NORMAL . $manufacturer->cBildpfad;
@@ -108,10 +108,11 @@ class HerstellerHelper
                 }
                 $manufacturer->cBildURLKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;
                 $manufacturer->cBildURLNormal = $imageBaseURL . $manufacturer->cBildpfadKlein;
-                $manufacturer->kHersteller    = (int)$manufacturer->kHersteller;
-                $manufacturer->nSortNr        = (int)$manufacturer->nSortNr;
                 $manufacturer->cURLFull       = $shopURL . $manufacturer->cSeo;
+                $instance                     = new Hersteller();
+                $manufacturer                 = $instance->loadFromObject($manufacturer);
             }
+            unset($manufacturer);
             $cacheTags = [CACHING_GROUP_MANUFACTURER, CACHING_GROUP_CORE];
             executeHook(HOOK_GET_MANUFACTURERS, [
                 'cached'        => false,

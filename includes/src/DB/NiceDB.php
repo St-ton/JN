@@ -439,7 +439,7 @@ class NiceDB implements DbInterface
             if ($this->logErrors && $this->logfileName) {
                 $this->writeLog(
                     $stmt . "\n" .
-                    $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() .
+                    $this->getErrorCode() . ': ' . $this->getErrorMessage() .
                     "\n\nBacktrace:" . print_r(debug_backtrace(), 1)
                 );
             }
@@ -595,7 +595,7 @@ class NiceDB implements DbInterface
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ": " . $this->pdo->errorInfo());
+                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
             }
             $ret = -1;
         } else {
@@ -710,7 +710,7 @@ class NiceDB implements DbInterface
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo());
+                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
             }
 
             return null;
@@ -997,7 +997,7 @@ class NiceDB implements DbInterface
             if ($this->logErrors && $this->logfileName) {
                 $this->writeLog(
                     $stmt . "\n" .
-                    $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() .
+                    $this->getErrorCode() . ': ' . $this->getErrorMessage() .
                     "\n\nBacktrace: " . print_r(debug_backtrace(), true)
                 );
             }
@@ -1118,7 +1118,7 @@ class NiceDB implements DbInterface
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo());
+                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
             }
 
             return -1;
@@ -1168,7 +1168,7 @@ class NiceDB implements DbInterface
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo());
+                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
             }
 
             return 0;

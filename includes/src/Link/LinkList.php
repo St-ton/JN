@@ -57,7 +57,7 @@ final class LinkList implements LinkListInterface
             "SELECT tlink.*, tlinksprache.cISOSprache, 
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
-                tseo.kSprache, 
+                tsprache.kSprache, 
                 tlinksprache.cContent AS content,
                 tlinksprache.cMetaDescription AS metaDescription,
                 tlinksprache.cMetaKeywords AS metaKeywords,

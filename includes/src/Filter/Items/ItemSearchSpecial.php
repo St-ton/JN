@@ -278,7 +278,7 @@ class ItemSearchSpecial extends AbstractFilter
      */
     public function getOptions($data = null): array
     {
-        if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] !== 'Y') {
+        if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'N') {
             $this->options = [];
         }
         if ($this->options !== null) {

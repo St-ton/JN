@@ -1,12 +1,14 @@
 {if isset($oBox->anzeigen) && $oBox->anzeigen === 'Y'}
-    <section class="panel panel-default box box-trustedshops-reviews" id="sidebox{$oBox->kBox}">
+    <section class="panel panel-default box box-trustedshops-reviews" id="sidebox{$oBox->getID()}">
         {if $oBox->ePosition != 'bottom'}
             <div class="panel-heading">
-                <h5 class="panel-title">{lang key="trustedshopsRating" section="global"}</h5>
+                <div class="panel-title">{lang key='trustedshopsRating'}</div>
             </div>
         {/if}
         <div class="sidebox_content text-center">
-            <a href="{$oBox->cBildPfadURL}" target="_blank"><img src="{$oBox->cBildPfad}" alt="Trusted-Shops-Kundenbewertung" /></a>
+            <a href="{$oBox->cBildPfadURL}" target="_blank">
+                <img src="{$oBox->cBildPfad}" alt="Trusted-Shops-Kundenbewertung" />
+            </a>
         </div>
         <span class="review-aggregate">
             <span class="rating">
@@ -20,14 +22,16 @@
         </span>
     </section>
 {elseif isset($Boxen.TrustedShopsKundenbewertung) && $Boxen.TrustedShopsKundenbewertung->anzeigen === 'Y'}
-    <section class="panel panel-default box box-trustedshops-reviews" id="sidebox{$oBox->kBox}">
+    <section class="panel panel-default box box-trustedshops-reviews" id="sidebox{$oBox->getID()}">
         {if $oBox->ePosition != 'bottom'}
             <div class="panel-heading">
-                <h5 class="panel-title">{lang key="trustedshopsRating" section="global"}</h5>
+                <div class="panel-title">{lang key='trustedshopsRating'}</div>
             </div>
         {/if}
         <div class="sidebox_content text-center">
-            <a href="{$Boxen.TrustedShopsKundenbewertung->cBildPfadURL}" target="_blank"><img src="{$Boxen.TrustedShopsKundenbewertung->cBildPfad}" alt="Trusted-Shops-Kundenbewertung" /></a>
+            <a href="{$Boxen.TrustedShopsKundenbewertung->cBildPfadURL}" target="_blank">
+                <img src="{$Boxen.TrustedShopsKundenbewertung->cBildPfad}" alt="Trusted-Shops-Kundenbewertung" />
+            </a>
         </div>
         <span class="review-aggregate">
             <span class="rating">

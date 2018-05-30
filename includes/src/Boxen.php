@@ -59,15 +59,7 @@ class Boxen
      */
     public function __construct()
     {
-        $this->boxConfig = Shop::getSettings([
-            CONF_GLOBAL,
-            CONF_BOXEN,
-            CONF_VERGLEICHSLISTE,
-            CONF_NAVIGATIONSFILTER,
-            CONF_NEWS,
-            CONF_UMFRAGE,
-            CONF_TRUSTEDSHOPS
-        ]);
+        $this->boxConfig = Shopsetting::getInstance()->getAll();
         self::$_instance = $this;
     }
 
@@ -155,19 +147,19 @@ class Boxen
             : "";
         $oBoxen_arr       = Shop::Container()->getDB()->query(
             "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
-                   tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
-                   tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
-                   tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus
-                FROM tboxen
-                LEFT JOIN tboxensichtbar
-                    ON tboxen.kBox = tboxensichtbar.kBox
-                LEFT JOIN tplugin
-                    ON tboxen.kCustomID = tplugin.kPlugin
-                LEFT JOIN tboxvorlage
-                    ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE tboxensichtbar.kSeite = " . $nSeite . $cPluginAktiv .
+                       tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
+                       tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
+                       tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus
+                    FROM tboxen
+                    LEFT JOIN tboxensichtbar
+                        ON tboxen.kBox = tboxensichtbar.kBox
+                    LEFT JOIN tplugin
+                        ON tboxen.kCustomID = tplugin.kPlugin
+                    LEFT JOIN tboxvorlage
+                        ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                    WHERE tboxensichtbar.kSeite = " . $nSeite . $cPluginAktiv .
             " AND tboxen.kContainer = 0 " . $cSQLAktiv . "
-                ORDER BY tboxensichtbar.nSort ASC",
+                    ORDER BY tboxensichtbar.nSort ASC",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oBoxen_arr as $oBox) {
@@ -263,8 +255,10 @@ class Boxen
                         $childBox->kSeite      = (int)$childBox->kSeite;
                         $childBox->nSort       = (int)$childBox->nSort;
                         $childBox->bAktiv      = (int)$childBox->bAktiv;
-                        $oVisible_arr          = Shop::Container()->getDB()->selectAll('tboxensichtbar',
-                            ['kBox', 'bAktiv'], [(int)$childBox->kBox, 1]);
+                        $oVisible_arr          = Shop::Container()->getDB()->selectAll(
+                            'tboxensichtbar',
+                            ['kBox', 'bAktiv'], [(int)$childBox->kBox, 1]
+                        );
                         if (count($oVisible_arr) >= count($validPageTypes)) {
                             $childBox->cVisibleOn  = 'sichtbar auf allen Seiten';
                             $childBox->nVisibility = 1;
@@ -1545,7 +1539,7 @@ class Boxen
             $bOk = true;
             for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
                 $bOk = Shop::Container()->getDB()->executeQueryPrepared(
-                    "REPLACE INTO tboxenanzeige 
+                        "REPLACE INTO tboxenanzeige 
                         SET bAnzeigen = :show,
                             nSeite = :page, 
                             ePosition = :position",
@@ -1801,11 +1795,11 @@ class Boxen
                 $_upd         = new stdClass();
                 $_upd->bAktiv = $bAktiv;
                 $bOk          = Shop::Container()->getDB()->update(
-                    'tboxensichtbar',
-                    ['kBox', 'kSeite'],
-                    [$kBox, $i],
-                    $_upd
-                ) >= 0;
+                        'tboxensichtbar',
+                        ['kBox', 'kSeite'],
+                        [$kBox, $i],
+                        $_upd
+                    ) >= 0;
             }
 
             return $bOk;
@@ -1822,7 +1816,7 @@ class Boxen
      */
     public function loescheBox(int $kBox): bool
     {
-        $bOk  = Shop::Container()->getDB()->delete('tboxen', 'kBox', $kBox) > 0;
+        $bOk = Shop::Container()->getDB()->delete('tboxen', 'kBox', $kBox) > 0;
 
         return $bOk
             ? (Shop::Container()->getDB()->delete('tboxensichtbar', 'kBox', $kBox) > 0)
@@ -1861,27 +1855,26 @@ class Boxen
      */
     public function gibBoxenFilterNach(\Filter\ProductFilter $pf, \Filter\ProductFilterSearchResults $sr): bool
     {
-        $conf   = Shop::getSettings([CONF_GLOBAL])['global'];
-        $nfConf = $this->boxConfig['navigationsfilter'];
+        $cf  = $pf->getCategoryFilter();
+        $mf  = $pf->getManufacturerFilter();
+        $prf = $pf->getPriceRangeFilter();
+        $rf  = $pf->getRatingFilter();
+        $tf  = $pf->tagFilterCompat;
+        $afc = $pf->getAttributeFilterCollection();
+        $ssf = $pf->getSearchSpecialFilter();
+        $sf  = $pf->searchFilterCompat;
 
-        return (
-            ($pf->hasCategoryFilter() && $nfConf['allgemein_kategoriefilter_benutzen'] === 'Y')
-            || ($pf->hasManufacturerFilter() && $nfConf['allgemein_herstellerfilter_benutzen'] === 'Y')
-            || ($pf->hasPriceRangeFilter()
-                && $nfConf['preisspannenfilter_benutzen'] !== 'N'
-                && (int)$conf['global_sichtbarkeit'] === 1)
-            || ($pf->hasRatingFilter() && $nfConf['bewertungsfilter_benutzen'] !== 'N')
-            || ($pf->hasTagFilter() && $nfConf['allgemein_tagfilter_benutzen'] === 'Y')
-            || (count($sr->getAttributeFilterOptions()) > 0 && $nfConf['merkmalfilter_verwenden'] === 'box')
-            || ($pf->hasAttributeFilter() && $nfConf['merkmalfilter_verwenden'] === 'box')
-            || (count($sr->getRatingFilterOptions()) > 0 && $nfConf['bewertungsfilter_benutzen'] === 'box')
-            || (count($sr->getPriceRangeFilterOptions()) > 0
-                && $nfConf['preisspannenfilter_benutzen'] === 'box'
-                && (int)$conf['global_sichtbarkeit'] === 1)
-            || (count($sr->getSearchSpecialFilterOptions()) > 0
-                && $nfConf['allgemein_suchspecialfilter_benutzen'] === 'Y')
-            || ($pf->hasSearchSpecialFilter() && $nfConf['allgemein_suchspecialfilter_benutzen'] === 'Y')
-            || ($pf->hasSearchFilter() && $nfConf['suchtrefferfilter_nutzen'] === 'Y')
+        $invis      = \Filter\Visibility::SHOW_NEVER();
+        $visContent = \Filter\Visibility::SHOW_CONTENT();
+
+        return ((!$cf->getVisibility()->equals($invis) && !$cf->getVisibility()->equals($visContent))
+            || (!$mf->getVisibility()->equals($invis) && !$mf->getVisibility()->equals($visContent))
+            || (!$prf->getVisibility()->equals($invis) && !$prf->getVisibility()->equals($visContent))
+            || (!$rf->getVisibility()->equals($invis) && !$rf->getVisibility()->equals($visContent))
+            || (!$tf->getVisibility()->equals($invis) && !$tf->getVisibility()->equals($visContent))
+            || (!$afc->getVisibility()->equals($invis) && !$afc->getVisibility()->equals($visContent))
+            || (!$ssf->getVisibility()->equals($invis) && !$ssf->getVisibility()->equals($visContent))
+            || (!$sf->getVisibility()->equals($invis) && !$sf->getVisibility()->equals($visContent))
         );
     }
 
@@ -2052,5 +2045,237 @@ class Boxen
             PAGE_BESTELLABSCHLUSS,
             PAGE_RMA
         ];
+    }
+
+    /**
+     * @param array $positionedBoxes
+     * @return array
+     * @throws Exception
+     * @throws SmartyException
+     */
+    public function renderNew(array $positionedBoxes): array
+    {
+        $smarty   = Shop::Smarty();
+        $pageType = Shop::getPageType();
+        $pageID   = 0;
+        if ($pageType === PAGE_ARTIKELLISTE) {
+            $pageID = (int)\Shop::$kKategorie;
+        } elseif ($pageType === PAGE_ARTIKEL) {
+            $pageID = (int)\Shop::$kArtikel;
+        } elseif ($pageType === PAGE_EIGENE) {
+            $pageID = (int)\Shop::$kLink;
+        } elseif ($pageType === PAGE_HERSTELLER) {
+            $pageID = (int)\Shop::$kHersteller;
+        }
+        $originalArticle   = $smarty->getTemplateVars('Artikel');
+        $productFilter     = Shop::getProductFilter();
+        $filterAfter       = !empty($this->boxConfig)
+            ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults(false))
+            : 0;
+        $path              = 'boxes/';
+        $this->lagerFilter = $productFilter->getFilterSQL()->getStockFilterSQL();
+        $htmlArray         = [
+            'top'    => null,
+            'right'  => null,
+            'bottom' => null,
+            'left'   => null
+        ];
+        $smarty->assign('BoxenEinstellungen', $this->boxConfig)
+               ->assign('bBoxenFilterNach', $filterAfter)
+               ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
+
+        foreach ($positionedBoxes as $_position => $_boxes) {
+            if (!is_array($_boxes)) {
+                $_boxes = [];
+            }
+            $htmlArray[$_position]     = '';
+            $this->rawData[$_position] = [];
+            foreach ($_boxes as $_box) {
+                /** @var \Boxes\BoxInterface $_box */
+                $htmlArray[$_position]       .= trim($_box->render($smarty, $pageType, $pageID));
+                $this->rawData[$_position][] = [
+                    'obj' => $_box,
+                    'tpl' => $_box->getTemplateFile()
+                ];
+            }
+        }
+
+        return $htmlArray;
+    }
+
+    /**
+     * @param int $baseType
+     * @return \Boxes\BoxInterface
+     */
+    private function getBoxByBaseType(int $baseType): \Boxes\BoxInterface
+    {
+        switch ($baseType) {
+            case BOX_BESTSELLER:
+                return new \Boxes\BoxBestsellingProducts($this->boxConfig);
+            case BOX_CONTAINER:
+                return new \Boxes\BoxContainer($this->boxConfig);
+            case BOX_IN_KUERZE_VERFUEGBAR:
+                return new \Boxes\BoxUpcomingProducts($this->boxConfig);
+            case BOX_ZULETZT_ANGESEHEN:
+                return new \Boxes\BoxRecentlyViewedProducts($this->boxConfig);
+            case BOX_NEUE_IM_SORTIMENT:
+                return new \Boxes\BoxNewProducts($this->boxConfig);
+            case BOX_TOP_ANGEBOT:
+                return new \Boxes\BoxTopOffers($this->boxConfig);
+            case BOX_SONDERANGEBOT:
+                return new \Boxes\BoxSpecialOffers($this->boxConfig);
+            case BOX_LOGIN:
+                return new \Boxes\BoxLogin($this->boxConfig);
+            case BOX_GLOBALE_MERKMALE:
+                return new \Boxes\BoxGlobalAttributes($this->boxConfig);
+            case BOX_KATEGORIEN:
+                return new \Boxes\BoxProductCategories($this->boxConfig);
+            case BOX_NEWS_KATEGORIEN:
+                return new \Boxes\BoxNewsCategories($this->boxConfig);
+            case BOX_NEWS_AKTUELLER_MONAT:
+                return new \Boxes\BoxNewsCurrentMonth($this->boxConfig);
+            case BOX_TAGWOLKE:
+                return new \Boxes\BoxTagCloud($this->boxConfig);
+            case BOX_WUNSCHLISTE:
+                return new \Boxes\BoxWishlist($this->boxConfig);
+            case BOX_WARENKORB:
+                return new \Boxes\BoxCart($this->boxConfig);
+            case BOX_SCHNELLKAUF:
+                return new \Boxes\BoxDirectPurchase($this->boxConfig);
+            case BOX_VERGLEICHSLISTE:
+                return new \Boxes\BoxCompareList($this->boxConfig);
+            case BOX_EIGENE_BOX_MIT_RAHMEN:
+            case BOX_EIGENE_BOX_OHNE_RAHMEN:
+                return new \Boxes\BoxPlain($this->boxConfig);
+            case BOX_LINKGRUPPE:
+                return new \Boxes\BoxLinkGroup($this->boxConfig);
+            case BOX_UMFRAGE:
+                return new \Boxes\BoxPoll($this->boxConfig);
+            case BOX_PREISRADAR:
+                return new \Boxes\BoxPriceRadar($this->boxConfig);
+            case BOX_HERSTELLER:
+                return new \Boxes\BoxManufacturer($this->boxConfig);
+            case BOX_FILTER_MERKMALE:
+                return new \Boxes\BoxFilterAttribute($this->boxConfig);
+            case BOX_FILTER_KATEGORIE:
+                return new \Boxes\BoxFilterCategory($this->boxConfig);
+            case BOX_FILTER_HERSTELLER:
+                return new \Boxes\BoxFilterManufacturer($this->boxConfig);
+            case BOX_FILTER_TAG:
+                return new \Boxes\BoxFilterTag($this->boxConfig);
+            case BOX_FILTER_PREISSPANNE:
+                return new \Boxes\BoxFilterPricerange($this->boxConfig);
+            case BOX_FILTER_BEWERTUNG:
+                return new \Boxes\BoxFilterRating($this->boxConfig);
+            case BOX_FILTER_SUCHE:
+                return new \Boxes\BoxFilterSearch($this->boxConfig);
+            case BOX_FILTER_SUCHSPECIAL:
+                return new \Boxes\BoxFilterItem($this->boxConfig);
+            default:
+                return new \Boxes\BoxDefault($this->boxConfig);
+        }
+    }
+
+    /**
+     * @param int  $nSeite
+     * @param bool $bAktiv
+     * @param bool $bVisible
+     * @param bool $force
+     * @return array
+     */
+    public function getBoxes(int $nSeite = 0, bool $bAktiv = true, bool $bVisible = false, bool $force = false): array
+    {
+        $cacheID           = 'bx_' . $nSeite .
+            '_' . (($bAktiv === true) ? '1' : '0') .
+            '_' . (($bVisible === true) ? '1' : '0') .
+            '_' . Shop::getLanguageID();
+        $this->visibility  = $this->holeBoxAnzeige($nSeite);
+        $template          = Template::getInstance();
+        $templatePositions = $template->getBoxLayoutXML();
+        $visiblePositions  = [];
+        foreach ($this->visibility as $position => $isVisible) {
+            if (isset($templatePositions[$position])) {
+                $isVisible = $isVisible && $templatePositions[$position];
+            }
+            if ($isVisible) {
+                $visiblePositions[] = $position;
+            }
+        }
+        $visiblePositions = \Functional\map($visiblePositions, function ($e) {
+            return "'" . $e . "'";
+        });
+        $validPageTypes   = $this->getValidPageTypes();
+        $oBox_arr         = [];
+        $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
+        $cSQLAktiv        = $bAktiv
+            ? " AND bAktiv = 1 AND tboxen.ePosition IN (" . implode(',', $visiblePositions) . ")"
+            : '';
+        $cPluginAktiv     = $bAktiv
+            ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
+            : "";
+        if (($grouped = Shop::Cache()->get($cacheID)) === false) {
+            $boxData = Shop::Container()->getDB()->query(
+                "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
+                       tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
+                       tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
+                       tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus,
+                       GROUP_CONCAT(tboxensichtbar.kSeite) AS visiblePages,
+                       tsprache.kSprache, tboxsprache.cInhalt, tboxsprache.cTitel
+                    FROM tboxen
+                    LEFT JOIN tboxensichtbar
+                        ON tboxen.kBox = tboxensichtbar.kBox
+                    LEFT JOIN tplugin
+                        ON tboxen.kCustomID = tplugin.kPlugin
+                    LEFT JOIN tboxvorlage
+                        ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                    LEFT JOIN tboxsprache
+                        ON tboxsprache.kBox = tboxen.kBox
+                    LEFT JOIN tsprache
+                        ON tsprache.cISO = tboxsprache.cISO
+                    WHERE tboxen.kContainer > -1 " . $cSQLAktiv .
+                " GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
+                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
+            $grouped = \Functional\group($boxData, function ($e) {
+                return $e->kBox;
+            });
+            Shop::Cache()->set($cacheID, $grouped, array_unique($cacheTags));
+        }
+        $children = [];
+        foreach ($grouped as $i => $boxes) {
+            if (!is_array($boxes)) {
+                continue;
+            }
+            $first = \Functional\first($boxes);
+            if ((int)$first->kContainer > 0) {
+                $boxInstance = $this->getBoxByBaseType($first->kBoxvorlage);
+                $boxInstance->map($boxes);
+                if (!isset($children[(int)$first->kContainer])) {
+                    $children[(int)$first->kContainer] = [];
+                }
+                $children[(int)$first->kContainer][] = $boxInstance;
+                unset($grouped[$i]);
+            }
+        }
+        $result = [];
+        foreach ($grouped as $boxes) {
+            if (!is_array($boxes)) {
+                continue;
+            }
+            $first       = \Functional\first($boxes);
+            $boxInstance = $this->getBoxByBaseType($first->kBoxvorlage);
+            $boxInstance->map($boxes);
+            if ($boxInstance->getType() === \Boxes\BoxType::CONTAINER) {
+                $boxInstance->setChildren($children);
+            }
+            $result[] = $boxInstance;
+        }
+        $byPosition  = \Functional\group($result, function (\Boxes\BoxInterface $e) {
+            return $e->getPosition();
+        });
+        $this->boxes = $byPosition; // shop 4.x compatability only
+
+        return $byPosition;
     }
 }

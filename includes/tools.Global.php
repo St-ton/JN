@@ -6114,7 +6114,7 @@ function truncateMetaDescription($cDesc)
  * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
  * @return string truncated meta value with optional suffix (always appended if set)
  */
-function prepareMeta1($metaProposal, $metaSuffix = null, $maxLength = null)
+function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 {
     $metaProposal = str_replace('"', '', StringHandler::unhtmlentities($metaProposal));
     $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
@@ -6123,25 +6123,6 @@ function prepareMeta1($metaProposal, $metaSuffix = null, $maxLength = null)
     }
 
     return StringHandler::htmlentities(trim(preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
-}
-
-/**
- * @param string $metaProposal the proposed meta text value.
- * @param string $metaSuffix append suffix to meta value that wont be shortened
- * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
- * @return string truncated meta value with optional suffix (always appended if set)
- */
-function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
-{
-    $metaProposal = utf8_decode('Leuchtmittel &#128161; für sämtliche Fassung kaufen. 7% Rabatt und Kauf auf Rechnung. Über 1000 Leuchtmittel verfügbar.');
-
-    $metaProposal = str_replace('"', '', StringHandler::htmlentitydecode($metaProposal));
-    $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
-    if (!empty($maxLength) && $maxLength > 0) {
-        $metaProposal = mb_substr($metaProposal, 0, (int)$maxLength);
-    }
-
-    return (trim(preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
 }
 
 /**

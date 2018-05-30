@@ -4797,8 +4797,7 @@ function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
     if (count($hits[0]) > 0) {
         // reset placeholder to preserved multibyte entities
         $metaProposal = str_replace(['%', chr(27)], ['%%', '%s'], $metaProposal);
-        array_unshift($hits[0], $metaProposal);
-        $metaProposal = call_user_func_array('sprintf', $hits[0]);
+        $metaProposal = vsprintf($metaProposal, $hits[0]);
     }
 
     return $metaProposal . $metaSuffix;

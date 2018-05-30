@@ -108,6 +108,8 @@ class HerstellerHelper
                 }
                 $manufacturer->cBildURLKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;
                 $manufacturer->cBildURLNormal = $imageBaseURL . $manufacturer->cBildpfadKlein;
+                $manufacturer->kHersteller    = (int)$manufacturer->kHersteller;
+                $manufacturer->nSortNr        = (int)$manufacturer->nSortNr;
                 $manufacturer->cURLFull       = $shopURL . $manufacturer->cSeo;
             }
             $cacheTags = [CACHING_GROUP_MANUFACTURER, CACHING_GROUP_CORE];

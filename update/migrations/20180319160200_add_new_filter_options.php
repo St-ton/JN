@@ -33,10 +33,9 @@ class Migration_20180319160200 extends Migration implements IMigration
     {
         $this->execute(
             "INSERT INTO tboxvorlage 
-                  (kCustomID, eTyp, cName, cVerfuegbar, cTemplate) 
-                VALUES ('0', 'tpl', 'Filter (Hersteller)', '2', 'box_filter_manufacturer.tpl'),
-                       ('0', 'tpl', 'Filter (Suchspecial)', '2', 'box_filter_search_special.tpl'),
-                       ('0', 'tpl', 'Filter (Kategorie)', '2', 'box_filter_category.tpl')"
+                  (kBoxvorlage, kCustomID, eTyp, cName, cVerfuegbar, cTemplate) 
+                VALUES (101, 0, 'tpl', 'Filter (Hersteller)', '2', 'box_filter_manufacturer.tpl'),
+                       (102, 0, 'tpl', 'Filter (Kategorie)', '2', 'box_filter_category.tpl')"
         );
 
         $this->execute("UPDATE teinstellungenconf SET cName='Typ des Kategoriefilters' WHERE cWertName ='category_filter_type';");
@@ -155,10 +154,10 @@ class Migration_20180319160200 extends Migration implements IMigration
     public function down()
     {
         $this->execute(
-            "DELETE FROM tboxvorlage WHERE cTemplate='box_filter_manufacturer.tpl' || cTemplate='box_filter_search_special.tpl' || cTemplate='box_filter_category.tpl';"
+            "DELETE FROM tboxvorlage WHERE cTemplate='box_filter_manufacturer.tpl' OR cTemplate='box_filter_category.tpl';"
         );
         $this->execute(
-            "DELETE FROM tboxen WHERE cTitel='Filter (Hersteller)' || cTitel='Filter (Suchspecial)' || cTitel='Filter (Kategorie)';"
+            "DELETE FROM tboxen WHERE cTitel='Filter (Hersteller)' OR cTitel='Filter (Kategorie)';"
         );
 
         // Bewertungsfilter

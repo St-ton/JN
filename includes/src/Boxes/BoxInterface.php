@@ -244,12 +244,12 @@ interface BoxInterface
     public function isBoxVisible(int $pageType = 0, int $pageID = 0): bool;
 
     /**
-     * @param \JTLSmarty|\SmartyBC|\Smarty $smarty
-     * @param int                          $pageType
-     * @param int                          $pageID
+     * @param \JTLSmarty $smarty
+     * @param int        $pageType
+     * @param int        $pageID
      * @return string
      */
-    public function render($smarty, int $pageType = 0, int $pageID = 0): string;
+    public function render(\JTLSmarty $smarty, int $pageType = 0, int $pageID = 0): string;
 
     /**
      * @param array $boxData

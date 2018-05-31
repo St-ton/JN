@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="{$templateUrl}css/typeaheadjs.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-tour.min.css">
 
+    <link rel="stylesheet" href="{$templateUrl}css/bootstrap-datetimepicker.min.css">
+
     <link rel="stylesheet/less" href="{$templateUrl}css/onpage-composer/host.less">
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
@@ -25,11 +27,12 @@
     <script src="{$templateUrl}js/searchpicker.js"></script>
     <script src="{$templateUrl}js/ckeditor_4.7.3_basic/ckeditor.js"></script>
     <script src="{$templateUrl}js/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
-    <script src="{$templateUrl}js/moment.js"></script>
+    <script src="{$templateUrl}js/moment-with-locales.js"></script>
     <script src="{$templateUrl}js/download.js"></script>
     <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>
     <script src="{$templateUrl}js/typeahead.bundle.js"></script>
     <script src="{$templateUrl}js/less.min.js"></script>
+
     <script src="{$templateUrl}js/bootstrap-datetimepicker.min.js"></script>
 
     <script src="{$templateUrl}js/onpage-composer/utils.js"></script>
@@ -121,7 +124,6 @@
             <li class="active"><a href="#portlets" data-toggle="tab">Portlets</a></li>
             <li><a href="#blueprints" data-toggle="tab">Vorlagen</a></li>
             <li><a href="#revisions" data-toggle="tab">Versionen</a></li>
-            <li><a href="#drafts" data-toggle="tab">Drafts</a></li>
             <li><a href="#debug" data-toggle="tab"><i class="fa fa-bug"></i></a></li>
         </ul>
 
@@ -216,8 +218,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="progress">
-                        <div class="progress-bar progress-bar-striped progress-bar-info active"
-                             style="width:100%">
+                        <div class="progress-bar progress-bar-striped progress-bar-info active" style="width:100%">
                         </div>
                     </div>
                 </div>
@@ -383,21 +384,29 @@
                 <form id="publishForm">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="draftName">Name dieses Entwurfes</label>
+                            <label for="draftName">Interner Name des Entwurfes</label>
                             <input type="text" class="form-control" id="draftName" name="draftName"
                                    value="">
                         </div>
                         <div class="form-group">
-                            <label for="publishFrom">Veröffentlichen ab</label>
-                            <input type="text" class="form-control" id="publishFrom" name="publishFrom"
-                                   value="">
+                            <label>
+                                <input type="checkbox" id="publishFromEnabled">
+                                Veröffentlichen ab
+                            </label>
+                            <input type="text" class="form-control" id="publishFrom" name="publishFrom">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="publishToEnabled">
+                                Veröffentlichen bis
+                            </label>
+                            <input type="text" class="form-control" id="publishTo" name="publishTo">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <div class="btn-group">
-                            <input type="hidden" id="blueprintDeleteId" name="id" value="">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                            <button class="btn btn-primary">Veröffentlichen</button>
+                            <button class="btn btn-primary">Übernehmen</button>
                         </div>
                     </div>
                 </form>

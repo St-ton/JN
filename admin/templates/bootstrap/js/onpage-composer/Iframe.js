@@ -59,6 +59,8 @@ Iframe.prototype = {
             pageUrlLink.search = '?opcEditMode=yes';
         }
 
+        pageUrlLink.search += '&opcEditedPageKey=' + this.page.key;
+
         return pageUrlLink.href.toString();
     },
 

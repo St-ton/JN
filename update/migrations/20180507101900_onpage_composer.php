@@ -32,8 +32,8 @@ class Migration_20180507101900 extends Migration implements IMigration
         $this->execute("CREATE TABLE topcpage (
             kPage INT AUTO_INCREMENT PRIMARY KEY,
             cPageId CHAR(32) NOT NULL,
-            dPublishFrom DATETIME,
-            dPublishTo DATETIME,
+            dPublishFrom DATETIME NULL,
+            dPublishTo DATETIME NULL,
             cName VARCHAR(255),
             cPageUrl VARCHAR(255) NOT NULL,
             cAreasJson LONGTEXT NOT NULL,

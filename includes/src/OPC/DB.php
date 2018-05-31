@@ -470,6 +470,26 @@ class DB
 
     /**
      * @param Page $page
+     * @return $this
+     * @throws \Exception
+     */
+    public function savePagePublicationStatus(Page $page)
+    {
+        $pageDB = (object)[
+            'dPublishFrom' => $page->getPublishFrom() ?? '_DBNULL_',
+            'dPublishTo'   => $page->getPublishTo() ?? '_DBNULL_',
+            'cName'        => $page->getName(),
+        ];
+
+        if ($this->shopDB->update('topcpage', 'kPage', $page->getKey(), $pageDB) === -1) {
+            throw new \Exception('The OPC page publication status could not be updated in the DB.');
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Page $page
      * @return array
      */
     public function getPageRevisions(Page $page)

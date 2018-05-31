@@ -5,6 +5,8 @@
 
 var log = console.log;
 var debugging = true;
+var localDateFormat = 'DD.MM.YYYY HH:mm';
+var internalDateFormat = 'YYYY-MM-DD HH:mm:ss';
 
 function debuglog()
 {
@@ -147,6 +149,12 @@ function installGuiElements(obj, elmIds)
 
             if (obj[handlerName]) {
                 elm.off('submit').submit(obj[handlerName]);
+            }
+        } else if (elm.tagName() === 'input' && elm.attr('type') === 'checkbox') {
+            handlerName = 'on' + capitalize(elmId);
+
+            if (obj[handlerName]) {
+                elm.off('click').click(obj[handlerName]);
             }
         }
 

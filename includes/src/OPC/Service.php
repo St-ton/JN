@@ -57,6 +57,7 @@ class Service
             'deleteBlueprint',
             'getPageDraft',
             'getPageRevisions',
+            'publicatePage',
             'lockPage',
             'unlockPage',
             'savePage',
@@ -170,11 +171,16 @@ class Service
     public function getCurPage()
     {
         if ($this->curPage === null) {
-            $curPageUrl                    = '/' . ltrim(\Shop::getRequestUri(), '/');
-            $curPageParameters             = \Shop::getParameters();
-            $curPageParameters['kSprache'] = \Shop::getLanguage();
-            $curPageId                     = md5(serialize($curPageParameters));
-            $this->curPage                 = $this->getPage($curPageId)->setUrl($curPageUrl);
+            if ($this->isEditMode() && $this->getEditedPageKey() > 0) {
+                $key           = $this->getEditedPageKey();
+                $this->curPage = $this->getPageDraft($key);
+            } else {
+                $curPageUrl                    = '/' . ltrim(\Shop::getRequestUri(), '/');
+                $curPageParameters             = \Shop::getParameters();
+                $curPageParameters['kSprache'] = \Shop::getLanguage();
+                $curPageId                     = md5(serialize($curPageParameters));
+                $this->curPage                 = $this->getPage($curPageId)->setUrl($curPageUrl);
+            }
         }
 
         return $this->curPage;
@@ -187,14 +193,6 @@ class Service
     public function pageIdExists($id)
     {
         return $this->db->pageIdExists($id);
-    }
-
-    /**
-     * @return bool
-     */
-    public function curPageExists()
-    {
-        return $this->db->pageExists($this->getCurPage());
     }
 
     /**
@@ -254,6 +252,15 @@ class Service
         $page = $this->getPage($id);
 
         return $this->db->getPageRevisions($page);
+    }
+
+    /**
+     * @param array $data
+     */
+    public function publicatePage($data)
+    {
+        $page = (new Page())->setKey($data['key'])->deserialize($data);
+        $this->db->savePagePublicationStatus($page);
     }
 
     /**
@@ -417,6 +424,14 @@ class Service
     public function isEditMode()
     {
         return verifyGPDataString('opcEditMode') === 'yes';
+    }
+
+    /**
+     * @return int
+     */
+    public function getEditedPageKey()
+    {
+        return verifyGPCDataInteger('opcEditedPageKey');
     }
 
     /**

@@ -132,7 +132,7 @@ class Page implements \JsonSerializable
      */
     public function setPublishFrom($publishFrom)
     {
-        $this->publishFrom = $publishFrom;
+        $this->publishFrom = $publishFrom === '0000-00-00 00:00:00' ? null : $publishFrom;
 
         return $this;
     }
@@ -151,7 +151,7 @@ class Page implements \JsonSerializable
      */
     public function setPublishTo($publishTo)
     {
-        $this->publishTo = $publishTo;
+        $this->publishTo = $publishTo === '0000-00-00 00:00:00' ? null : $publishTo;
 
         return $this;
     }

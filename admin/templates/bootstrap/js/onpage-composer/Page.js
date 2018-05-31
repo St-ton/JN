@@ -110,6 +110,26 @@ Page.prototype = {
         }
     },
 
+    publicate: function(saveCB, errorCB)
+    {
+        this.io.publicatePage({
+            key: this.key,
+            publishFrom: this.publishFrom ? this.encodeDate(this.publishFrom) : null,
+            publishTo: this.publishTo ? this.encodeDate(this.publishTo) : null,
+            name: this.name,
+        }, saveCB, errorCB);
+    },
+
+    encodeDate: function(localDate)
+    {
+        return moment(localDate, localDateFormat).format(internalDateFormat);
+    },
+
+    decodeDate: function(internalDate)
+    {
+        return moment(internalDate, internalDateFormat).format(localDateFormat);
+    },
+
     getStorageId: function()
     {
         return 'opcpage.' + this.id;
@@ -133,8 +153,8 @@ Page.prototype = {
 
         this.id          = pageData.id;
         this.name        = pageData.name;
-        this.publishFrom = pageData.publishFrom;
-        this.publishTo   = pageData.publishTo;
+        this.publishFrom = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
+        this.publishTo   = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
         this.url         = pageData.url;
         this.fullUrl     = this.shopUrl + this.url;
 

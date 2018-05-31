@@ -2171,6 +2171,10 @@ class Boxen
                 return new \Boxes\BoxFilterSearch($this->boxConfig);
             case BOX_FILTER_SUCHSPECIAL:
                 return new \Boxes\BoxFilterItem($this->boxConfig);
+            case BOX_TRUSTEDSHOPS_GUETESIEGEL:
+                return new \Boxes\BoxTrustedShopsSeal($this->boxConfig);
+            case BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN:
+                return new \Boxes\BoxTrustedShopsReviews($this->boxConfig);
             default:
                 return new \Boxes\BoxDefault($this->boxConfig);
         }

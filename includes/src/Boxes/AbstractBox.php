@@ -244,7 +244,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function render($smarty, int $pageType = 0, int $pageID = 0): string
+    public function render(\JTLSmarty $smarty, int $pageType = 0, int $pageID = 0): string
     {
         $smarty->assign('oBox', $this);
 
@@ -403,7 +403,7 @@ abstract class AbstractBox implements BoxInterface
         }
         $idx = $idx ?? \Shop::getLanguageID();
 
-        return $this->title[$idx];
+        return $this->title[$idx] ?? '';
     }
 
     /**
@@ -424,7 +424,7 @@ abstract class AbstractBox implements BoxInterface
         }
         $idx = $idx ?? \Shop::getLanguageID();
 
-        return $this->content[$idx];
+        return $this->content[$idx] ?? '';
     }
 
     /**

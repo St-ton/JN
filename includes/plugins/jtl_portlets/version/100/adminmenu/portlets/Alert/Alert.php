@@ -35,20 +35,24 @@ class Alert extends \OPC\Portlet
 
     public function getPropertyDesc()
     {
+        \Shop::dbg($this->getPlugin()->cPluginPfad . 'lang');
+        $path = $this->getPlugin()->cPluginPfad . 'lang';
+        \Shop::Lang()->setLocalization('jtl_portlets', $path);
+
         return [
             'some-text'   => [
-                'label'   => 'Ein Text',
+                'label'   => _('a text'),
                 'type'    => 'text',
-                'default' => 'Hallo Welt!',
+                'default' => gettext('Hello world!'),
             ],
             'type-select' => [
-                'label'   => 'Alert Type',
+                'label'   => _('Alert Type'),
                 'type'    => 'select',
                 'options'    => [
-                    'success' => 'Erfolg',
-                    'info'    => 'Info',
-                    'warning' => 'Warunug',
-                    'danger'  => 'Gefahr',
+                    'success' => _('Success'),
+                    'info'    => _('Info'),
+                    'warning' => _('Warning'),
+                    'danger'  => _('Danger'),
                 ],
                 'default' => 'info',
             ],

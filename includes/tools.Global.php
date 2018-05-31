@@ -5310,78 +5310,94 @@ function pruefeKampagnenParameter()
     if (count($campaigns) > 0 && isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0) {
         $bKampagnenHit = false;
         foreach ($campaigns as $oKampagne) {
-            // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
-            if (strlen(verifyGPDataString($oKampagne->cParameter)) > 0) {
-                // Wurde bei nicht dynamischen Kampagnen der richtige Wert uebergeben?
-                if (isset($oKampagne->nDynamisch) && ((int)$oKampagne->nDynamisch === 1 ||
-                        ((int)$oKampagne->nDynamisch === 0 &&
-                            isset($oKampagne->cWert) &&
-                            strtolower($oKampagne->cWert) === strtolower(verifyGPDataString($oKampagne->cParameter))))
-                ) {
-                    $referrer = gibReferer();
-                    //wurde der HIT für diesen Besucher schon gezaehlt?
-                    $oVorgang = Shop::DB()->select(
-                        'tkampagnevorgang',
-                        ['kKampagneDef', 'kKampagne', 'kKey', 'cCustomData'],
-                        [
-                            KAMPAGNE_DEF_HIT,
-                            (int)$oKampagne->kKampagne,
-                            (int)$_SESSION['oBesucher']->kBesucher,
-                            StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer
-                        ]
-                    );
-
-                    if (!isset($oVorgang->kKampagneVorgang)) {
-                        $oKampagnenVorgang               = new stdClass();
-                        $oKampagnenVorgang->kKampagne    = $oKampagne->kKampagne;
-                        $oKampagnenVorgang->kKampagneDef = KAMPAGNE_DEF_HIT;
-                        $oKampagnenVorgang->kKey         = $_SESSION['oBesucher']->kBesucher;
-                        $oKampagnenVorgang->fWert        = 1.0;
-                        $oKampagnenVorgang->cParamWert   = verifyGPDataString($oKampagne->cParameter);
-                        $oKampagnenVorgang->cCustomData  = StringHandler::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer;
-                        if ((int)$oKampagne->nDynamisch === 0) {
-                            $oKampagnenVorgang->cParamWert = $oKampagne->cWert;
-                        }
-                        $oKampagnenVorgang->dErstellt = 'now()';
-
-                        Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);
-                        // Kampagnenbesucher in die Session
-                        $_SESSION['Kampagnenbesucher']        = new stdClass();
-                        $_SESSION['Kampagnenbesucher']        = $oKampagne;
-                        $_SESSION['Kampagnenbesucher']->cWert = $oKampagnenVorgang->cParamWert;
-
+            $complexHit = false;
+            if (strpos($oKampagne->cWert, '&') !== false) {
+                // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
+                $full = Shop::getURL() . '/?' . $oKampagne->cParameter . '=' . $oKampagne->cWert;
+                parse_str(parse_url($full, PHP_URL_QUERY), $query_params);
+                $ok = true;
+                foreach ($query_params as $param => $value) {
+                    if (strtolower(verifyGPDataString($param)) !== strtolower($value)) {
+                        $ok = false;
                         break;
                     }
                 }
+                $complexHit = $ok;
             }
-
-            if (!$bKampagnenHit && isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], '.google.') !== false) {
-                // Besucher kommt von Google und hat vorher keine Kampagne getroffen
+            if ($complexHit === true
+                || (strlen(verifyGPDataString($oKampagne->cParameter)) > 0
+                    && isset($oKampagne->nDynamisch)
+                    && ((int)$oKampagne->nDynamisch === 1
+                        || ((int)$oKampagne->nDynamisch === 0
+                            && isset($oKampagne->cWert)
+                            && strtolower($oKampagne->cWert) === strtolower(verifyGPDataString($oKampagne->cParameter)))
+                    ))
+            ) {
+                $referrer = gibReferer();
+                //wurde der HIT für diesen Besucher schon gezaehlt?
                 $oVorgang = Shop::DB()->select(
                     'tkampagnevorgang',
-                    ['kKampagneDef', 'kKampagne', 'kKey'],
-                    [KAMPAGNE_DEF_HIT, KAMPAGNE_INTERN_GOOGLE, (int)$_SESSION['oBesucher']->kBesucher]
+                    ['kKampagneDef', 'kKampagne', 'kKey', 'cCustomData'],
+                    [
+                        KAMPAGNE_DEF_HIT,
+                        (int)$oKampagne->kKampagne,
+                        (int)$_SESSION['oBesucher']->kBesucher,
+                        StringHandler::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer
+                    ]
                 );
 
                 if (!isset($oVorgang->kKampagneVorgang)) {
-                    $oKampagne                       = new Kampagne(KAMPAGNE_INTERN_GOOGLE);
                     $oKampagnenVorgang               = new stdClass();
-                    $oKampagnenVorgang->kKampagne    = KAMPAGNE_INTERN_GOOGLE;
+                    $oKampagnenVorgang->kKampagne    = $oKampagne->kKampagne;
                     $oKampagnenVorgang->kKampagneDef = KAMPAGNE_DEF_HIT;
                     $oKampagnenVorgang->kKey         = $_SESSION['oBesucher']->kBesucher;
                     $oKampagnenVorgang->fWert        = 1.0;
-                    $oKampagnenVorgang->cParamWert   = $oKampagne->cWert;
-                    $oKampagnenVorgang->dErstellt    = 'now()';
-
-                    if ((int)$oKampagne->nDynamisch === 1) {
-                        $oKampagnenVorgang->cParamWert = verifyGPDataString($oKampagne->cParameter);
+                    $oKampagnenVorgang->cParamWert   = $complexHit
+                        ? $oKampagne->cParameter . '=' . $oKampagne->cWert
+                        : verifyGPDataString($oKampagne->cParameter);
+                    $oKampagnenVorgang->cCustomData  = StringHandler::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer;
+                    if ((int)$oKampagne->nDynamisch === 0) {
+                        $oKampagnenVorgang->cParamWert = $oKampagne->cWert;
                     }
+                    $oKampagnenVorgang->dErstellt = 'now()';
 
                     Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);
                     // Kampagnenbesucher in die Session
+                    $_SESSION['Kampagnenbesucher']        = new stdClass();
                     $_SESSION['Kampagnenbesucher']        = $oKampagne;
                     $_SESSION['Kampagnenbesucher']->cWert = $oKampagnenVorgang->cParamWert;
+
+                    break;
                 }
+            }
+        }
+
+        if (!$bKampagnenHit && isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], '.google.') !== false) {
+            // Besucher kommt von Google und hat vorher keine Kampagne getroffen
+            $oVorgang = Shop::DB()->select(
+                'tkampagnevorgang',
+                ['kKampagneDef', 'kKampagne', 'kKey'],
+                [KAMPAGNE_DEF_HIT, KAMPAGNE_INTERN_GOOGLE, (int)$_SESSION['oBesucher']->kBesucher]
+            );
+
+            if (!isset($oVorgang->kKampagneVorgang)) {
+                $oKampagne                       = new Kampagne(KAMPAGNE_INTERN_GOOGLE);
+                $oKampagnenVorgang               = new stdClass();
+                $oKampagnenVorgang->kKampagne    = KAMPAGNE_INTERN_GOOGLE;
+                $oKampagnenVorgang->kKampagneDef = KAMPAGNE_DEF_HIT;
+                $oKampagnenVorgang->kKey         = $_SESSION['oBesucher']->kBesucher;
+                $oKampagnenVorgang->fWert        = 1.0;
+                $oKampagnenVorgang->cParamWert   = $oKampagne->cWert;
+                $oKampagnenVorgang->dErstellt    = 'now()';
+
+                if ((int)$oKampagne->nDynamisch === 1) {
+                    $oKampagnenVorgang->cParamWert = verifyGPDataString($oKampagne->cParameter);
+                }
+
+                Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);
+                // Kampagnenbesucher in die Session
+                $_SESSION['Kampagnenbesucher']        = $oKampagne;
+                $_SESSION['Kampagnenbesucher']->cWert = $oKampagnenVorgang->cParamWert;
             }
         }
     }

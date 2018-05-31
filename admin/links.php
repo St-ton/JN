@@ -203,10 +203,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
                 }
             }
         }
-
-        if (!isset($linkSprache)) {
-            $linkSprache = new stdClass();
-        }
+        $linkSprache        = new stdClass();
         $linkSprache->kLink = $kLink;
         foreach ($sprachen as $sprache) {
             $linkSprache->cISOSprache = $sprache->cISO;

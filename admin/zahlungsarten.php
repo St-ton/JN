@@ -20,9 +20,10 @@ if (verifyGPCDataInteger('checkNutzbar') === 1) {
     $hinweis = 'Ihre Zahlungsarten wurden auf Nutzbarkeit gepr&uuml;ft.';
 }
 // reset log
-if (($action = verifyGPDataString('a')) !== '' &&
-    ($kZahlungsart = verifyGPCDataInteger('kZahlungsart')) > 0 &&
-    $action === 'logreset' && validateToken()) {
+if (($action = verifyGPDataString('a')) !== ''
+    && ($kZahlungsart = verifyGPCDataInteger('kZahlungsart')) > 0
+    && $action === 'logreset' && validateToken()
+) {
     $oZahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
@@ -41,8 +42,9 @@ if (verifyGPCDataInteger('kZahlungsart') > 0 && $action !== 'logreset' && valida
     }
 }
 
-if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
-    (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && validateToken()) {
+if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
+    && (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && validateToken()
+) {
     $step              = 'uebersicht';
     $zahlungsart       = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', (int)$_POST['kZahlungsart']);
     $nMailSenden       = (int)$_POST['nMailSenden'];
@@ -79,11 +81,12 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
     if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
         $kPlugin     = gibkPluginAuscModulId($zahlungsart->cModulId);
         $cModulId    = gibPlugincModulId($kPlugin, $zahlungsart->cName);
-        $Conf        = Shop::Container()->getDB()->query("
-            SELECT *
+        $Conf        = Shop::Container()->getDB()->query(
+            "SELECT *
                 FROM tplugineinstellungenconf
                 WHERE cWertName LIKE '" . $cModulId . "\_%'
-                AND cConf = 'Y' ORDER BY nSort", 2
+                AND cConf = 'Y' ORDER BY nSort",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
@@ -179,18 +182,19 @@ if ($step === 'einstellen') {
         $hinweis = 'Zahlungsart nicht gefunden.';
     } else {
         // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
-        if ($zahlungsart->nSOAP == 1 || $zahlungsart->nCURL == 1 || $zahlungsart->nSOCKETS == 1) {
+        if ((int)$zahlungsart->nSOAP === 1 || (int)$zahlungsart->nCURL === 1 || (int)$zahlungsart->nSOCKETS === 1) {
             aktiviereZahlungsart($zahlungsart);
         }
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
             $kPlugin     = gibkPluginAuscModulId($zahlungsart->cModulId);
             $cModulId    = gibPlugincModulId($kPlugin, $zahlungsart->cName);
-            $Conf        = Shop::Container()->getDB()->query("
-                SELECT *
+            $Conf        = Shop::Container()->getDB()->query(
+                "SELECT *
                     FROM tplugineinstellungenconf
                     WHERE cWertName LIKE '" . $cModulId . "\_%'
-                    ORDER BY nSort", 2
+                    ORDER BY nSort",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $configCount = count($Conf);
             for ($i = 0; $i < $configCount; ++$i) {
@@ -242,7 +246,12 @@ if ($step === 'einstellen') {
             }
         }
 
-        $kundengruppen = Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2);
+        $kundengruppen = Shop::Container()->getDB()->query(
+            "SELECT * 
+                FROM tkundengruppe 
+                ORDER BY cName",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
         $smarty->assign('Conf', $Conf)
                ->assign('zahlungsart', $zahlungsart)
                ->assign('kundengruppen', $kundengruppen)
@@ -264,9 +273,9 @@ if ($step === 'einstellen') {
                ->assign('kZahlungsart', $kZahlungsart);
     }
 } elseif ($step === 'payments') {
-    if (isset($_POST['action'], $_POST['kEingang_arr']) &&
-        $_POST['action'] === 'paymentwawireset' &&
-        validateToken()
+    if (isset($_POST['action'], $_POST['kEingang_arr'])
+        && $_POST['action'] === 'paymentwawireset'
+        && validateToken()
     ) {
         $kEingang_arr = $_POST['kEingang_arr'];
         array_walk($kEingang_arr, function (&$i) {
@@ -276,7 +285,8 @@ if ($step === 'einstellen') {
             UPDATE tzahlungseingang
                 SET cAbgeholt = 'N'
                 WHERE kZahlungseingang IN (" . implode(',', $kEingang_arr) . ")",
-            10);
+            \DB\ReturnType::QUERYSINGLE
+        );
     }
 
     $kZahlungsart = verifyGPCDataInteger('kZahlungsart');
@@ -300,7 +310,8 @@ if ($step === 'einstellen') {
             WHERE b.kZahlungsart = " . $kZahlungsart . "
                 " . ($oFilter->getWhereSQL() !== '' ? " AND " . $oFilter->getWhereSQL() : "") . "
             ORDER BY dZeit DESC",
-        2);
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     $oPagination         = (new Pagination('payments' . $kZahlungsart))
         ->setItemArray($oZahlunseingang_arr)
         ->assemble();
@@ -309,7 +320,7 @@ if ($step === 'einstellen') {
         $oZahlunseingang->cNachname = entschluesselXTEA($oZahlunseingang->cNachname);
         $oZahlunseingang->dZeit     = date_create($oZahlunseingang->dZeit)->format('d.m.Y\<\b\r\>H:i');
     }
-
+    unset($oZahlunseingang);
     $smarty->assign('oZahlungsart', $oZahlungsart)
            ->assign('oZahlunseingang_arr', $oPagination->getPageItems())
            ->assign('oPagination', $oPagination)
@@ -324,21 +335,19 @@ if ($step === 'uebersicht') {
         '*',
         'cAnbieter, cName, nSort, kZahlungsart'
     );
-
     foreach ($oZahlungsart_arr as $oZahlungsart) {
-        $oZahlungsart->nEingangAnzahl = (int)Shop::Container()->getDB()->query("
-                    SELECT count(*) AS nAnzahl
-                        FROM tzahlungseingang AS ze
-                            JOIN tbestellung AS b
-                                ON ze.kBestellung = b.kBestellung
-                        WHERE b.kZahlungsart = " . $oZahlungsart->kZahlungsart,
-            1)->nAnzahl;
-
+        $oZahlungsart->nEingangAnzahl = (int)Shop::Container()->getDB()->query(
+            "SELECT count(*) AS nAnzahl
+                FROM tzahlungseingang AS ze
+                    JOIN tbestellung AS b
+                        ON ze.kBestellung = b.kBestellung
+                WHERE b.kZahlungsart = " . $oZahlungsart->kZahlungsart,
+            \DB\ReturnType::SINGLE_OBJECT
+        )->nAnzahl;
         $oZahlungsart->nLogCount = ZahlungsLog::count($oZahlungsart->cModulId);
         // jtl-shop/issues#288
         $oZahlungsart->nErrorLogCount = ZahlungsLog::count($oZahlungsart->cModulId, JTLLOG_LEVEL_ERROR);
     }
-
     $smarty->assign('zahlungsarten', $oZahlungsart_arr);
 }
 $smarty->assign('step', $step)

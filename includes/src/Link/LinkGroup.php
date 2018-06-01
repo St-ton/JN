@@ -260,6 +260,15 @@ final class LinkGroup implements LinkGroupInterface
     }
 
     /**
+     * @param int $langID
+     * @return bool
+     */
+    public function isAvailableInLanguage(int $langID): bool
+    {
+        return in_array($langID, $this->languageID, true);
+    }
+
+    /**
      * @return array
      */
     public function __debugInfo()

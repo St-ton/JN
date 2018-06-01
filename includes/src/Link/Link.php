@@ -216,7 +216,7 @@ final class Link extends AbstractLink
 					ON tlinkgroupassociations.linkID = tlinksprache.kLink
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
-                WHERE tlinksprache.kLink = :lid
+                WHERE tlink.kLink = :lid
                 GROUP BY tseo.kSprache",
             ['lid' => $this->id],
             ReturnType::ARRAY_OF_OBJECTS
@@ -236,6 +236,12 @@ final class Link extends AbstractLink
         $baseURL = \Shop::getURL(true) . '/';
         foreach ($localizedLinks as $link) {
             $languageID = (int)$link->languageID;
+            if ($languageID === 0) {
+                $languageID = \Shop::getLanguageID();
+            }
+            if ($link->localizedUrl === null && !empty($link->cDateiname)) {
+                $link->localizedUrl = $link->cDateiname;
+            }
             $this->setParent((int)$link->kVaterLink);
             $this->setPluginID((int)$link->kPlugin);
             $this->setPluginEnabled($link->pluginState === null || (int)$link->pluginState === 2);
@@ -251,16 +257,16 @@ final class Link extends AbstractLink
             $this->setIsFluid((bool)$link->bIsFluid);
             $this->setIsEnabled((bool)$link->bIsActive);
             $this->setFileName($link->cDateiname ?? '');
-            $this->setLanguageCode($link->cISOSprache, $languageID);
+            $this->setLanguageCode($link->cISOSprache ?? \Shop::getLanguageCode(), $languageID);
             $this->setContent(parseNewsText($link->content ?? ''), $languageID);
             $this->setMetaDescription($link->metaDescription ?? '', $languageID);
             $this->setMetaTitle($link->metaTitle ?? '', $languageID);
             $this->setMetaKeyword($link->metaKeywords ?? '', $languageID);
-            $this->setName($link->localizedName, $languageID);
-            $this->setTitle($link->localizedTitle, $languageID);
+            $this->setName($link->localizedName ?? $link->cName, $languageID);
+            $this->setTitle($link->localizedTitle ?? $link->cName, $languageID);
             $this->setLanguageID($languageID, $languageID);
-            $this->setURL($this->linkType === 2 ? $link->cURL : $baseURL . $link->localizedUrl, $languageID);
-            if ($this->id === null && isset($link->kLink)) {
+            $this->setURL($this->linkType === 2 ? $link->cURL : ($baseURL . $link->localizedUrl), $languageID);
+            if (($this->id === null || $this->id === 0) && isset($link->kLink)) {
                 $this->setID((int)$link->kLink);
             }
         }

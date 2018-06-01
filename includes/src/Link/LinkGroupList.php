@@ -109,7 +109,7 @@ final class LinkGroupList implements LinkGroupListInterface
                     ON tlinkgruppe.kLinkgruppe = tlinkgruppesprache.kLinkgruppe
                 JOIN tsprache 
                     ON tsprache.cISO = tlinkgruppesprache.cISOSprache
-                WHERE tlinkgruppe.kLinkgruppe > 0',
+                WHERE tlinkgruppe.kLinkgruppe > 0 AND tlinkgruppesprache.kLinkgruppe > 0',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $grouped        = group($groupLanguages, function ($e) {

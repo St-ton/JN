@@ -108,4 +108,10 @@ interface LinkGroupInterface
      * @return Collection
      */
     public function filterLinks(callable $func): Collection;
+
+    /**
+     * @param int $langID
+     * @return bool
+     */
+    public function isAvailableInLanguage(int $langID): bool;
 }

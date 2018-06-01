@@ -524,7 +524,7 @@ function get_navigation($params, $smarty)
         $linkGroups  = Shop::Container()->getLinkService()->getVisibleLinkGroups();
         $oLinkGruppe = $linkGroups->getLinkgroupByTemplate($linkgroupIdentifier);
     }
-    if (is_object($oLinkGruppe) && isset($params['assign'])) {
+    if (is_object($oLinkGruppe) && isset($params['assign']) && $oLinkGruppe->isAvailableInLanguage(Shop::getLanguageID())) {
         $smarty->assign($params['assign'], build_navigation_subs($oLinkGruppe));
     }
 }

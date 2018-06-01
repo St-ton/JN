@@ -838,7 +838,7 @@ class Metadata implements MetadataInterface
         if ($this->productFilter->hasCategory()) {
             $this->breadCrumb = $this->productFilter->getCategory()->getName();
 
-            return $this->breadCrumb;
+            return $this->breadCrumb ?? '';
         }
         if ($this->productFilter->hasManufacturer()) {
             $this->breadCrumb = $this->productFilter->getManufacturer()->getName();

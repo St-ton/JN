@@ -985,6 +985,28 @@ final class Link extends AbstractLink
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getMissingTranslations(): array
+    {
+        return $this->db->queryPrepared(
+            'SELECT tlink.*,tsprache.*
+                FROM tlink
+                JOIN tsprache
+                LEFT JOIN tlinksprache
+                    ON tlink.kLink = tlinksprache.kLink
+                    AND tlinksprache.cISOSprache = tsprache.cISO
+                LEFT JOIN tsprache t2
+                    ON t2.cISO = tlinksprache.cISOSprache
+                    AND t2.cISO = tsprache.cISO
+                WHERE t2.cISO IS NULL
+                    AND tlink.kLink = :lid',
+            ['lid' => $this->id],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+    }
+
+    /**
      * @return array
      */
     public function __debugInfo()

@@ -446,4 +446,9 @@ interface LinkInterface
      * @return LinkInterface[]
      */
     public function getChildren(): array;
+
+    /**
+     * @return array
+     */
+    public function getMissingTranslations(): array;
 }

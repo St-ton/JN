@@ -512,8 +512,8 @@ if ($step === 'uebersicht') {
         'SELECT kLink 
             FROM tlink 
             WHERE kLink NOT IN (SELECT linkID FROM tlinkgroupassociations)',
-        \DB\ReturnType::ARRAY_OF_OBJECTS);
-
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     if (count($unassigned) > 0) {
         $languages     = $db->query('SELECT * FROM tsprache', \DB\ReturnType::ARRAY_OF_OBJECTS);
         $names         = [];

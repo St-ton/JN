@@ -74,11 +74,10 @@ Iframe.prototype = {
         this.head = this.jq('head');
         this.body = this.jq('body');
 
-        this.loadStylesheet(this.templateUrl + 'css/onpage-composer/iframe.less', true);
-        this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js');
+        this.loadStylesheet(this.templateUrl + 'css/onpage-composer/iframe.css');
         this.loadScript('https://unpkg.com/popper.js/dist/umd/popper.min.js', this.onPopperLoad);
 
-        this.jq('a, button')      // disable links and buttons that could change the current iframes location
+        this.jq('a, button')      // disable links and buttons that could change the current iframe page
             .off('click')
             .attr('onclick', '')
             .click(function(e) { e.preventDefault(); });

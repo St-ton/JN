@@ -16,7 +16,7 @@
 
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-datetimepicker.min.css">
 
-    <link rel="stylesheet/less" href="{$templateUrl}css/onpage-composer/host.less">
+    <link rel="stylesheet" href="{$templateUrl}css/onpage-composer/host.css">
 
     <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
     <script src="{$templateUrl}js/jquery-ui-1.11.4.min.js"></script>
@@ -31,7 +31,6 @@
     <script src="{$templateUrl}js/download.js"></script>
     <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>
     <script src="{$templateUrl}js/typeahead.bundle.js"></script>
-    <script src="{$templateUrl}js/less.min.js"></script>
 
     <script src="{$templateUrl}js/bootstrap-datetimepicker.min.js"></script>
 

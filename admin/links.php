@@ -17,7 +17,6 @@ $link               = null;
 $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
 $clearCache         = false;
 $continue           = true;
-
 if (isset($_POST['addlink']) && (int)$_POST['addlink'] > 0) {
     $step = 'neuer Link';
     if (!isset($link)) {
@@ -50,8 +49,12 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
 if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && validateToken()) {
     $kLink       = (int)$_POST['dellink'];
     $kLinkgruppe = (int)$_POST['kLinkgruppe'];
-    removeLink($kLink, $kLinkgruppe);
-    $hinweis    .= 'Link erfolgreich gel&ouml;scht!';
+    $res         = removeLink($kLink, $kLinkgruppe);
+    if ($res > 0) {
+        $hinweis .= 'Link erfolgreich gel&ouml;scht!';
+    } else {
+        $fehler .= 'Link konnte nicht gel&ouml;scht werden.';
+    }
     $clearCache = true;
     $step       = 'uebersicht';
     $_POST      = [];
@@ -488,8 +491,6 @@ if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 &
         $fehler .= 'Fehler: Link konnte nicht verschoben werden.';
     }
 }
-
-
 //clear cache
 if ($clearCache === true) {
     Shop::Cache()->flushTags([CACHING_GROUP_CORE]);

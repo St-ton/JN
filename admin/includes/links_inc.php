@@ -143,7 +143,7 @@ function removeLink($kLink, $kLinkgruppe = 0)
     return Shop::Container()->getDB()->executeQueryPrepared(
         "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations
             FROM tlink
-            JOIN tlinkgroupassociations
+            LEFT JOIN tlinkgroupassociations
                 ON tlinkgroupassociations.linkID = tlink.kLink
             LEFT JOIN tlinksprache
                 ON tlink.kLink = tlinksprache.kLink

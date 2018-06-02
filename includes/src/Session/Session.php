@@ -118,7 +118,7 @@ class Session
      * @param string $userAgent
      * @return bool
      */
-    public static function getIsCrawler($userAgent): bool
+    public static function getIsCrawler(string $userAgent): bool
     {
         return preg_match(
                 '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .
@@ -345,7 +345,7 @@ class Session
             $_SESSION['Kundengruppe']->initAttributes();
         }
         if (\Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CORE) === false) {
-            $_SESSION['Linkgruppen'] = \LinkHelper::getInstance()->getLinkGroups();
+            $_SESSION['Linkgruppen'] = \Shop::Container()->getLinkService()->getLinkGroups();
             $_SESSION['Hersteller']  = \HerstellerHelper::getInstance()->getManufacturers();
         }
         $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
@@ -432,7 +432,9 @@ class Session
                 ? (float)$cMatch_arr[2]
                 : 1.0;
             while (count($cLangeCode)) {
-                if (in_array(strtolower(implode('-', $cLangeCode)), $cAllowed_arr, true) && $nLangQuality > $nCurrentQuality) {
+                if ($nLangQuality > $nCurrentQuality
+                    && in_array(strtolower(implode('-', $cLangeCode)), $cAllowed_arr, true)
+                ) {
                     $cCurrentLang    = strtolower(implode('-', $cLangeCode));
                     $nCurrentQuality = $nLangQuality;
                     break;

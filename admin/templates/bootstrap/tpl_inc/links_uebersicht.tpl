@@ -1,6 +1,6 @@
 <script type="text/javascript">
     function confirmDelete() {ldelim}
-        return confirm('M\u00f6chten Sie den Link wirklich l\u00f6schen?\nBitte beachten Sie, dass auch untergeordnete Links gel\u00f6scht werden!');
+        return confirm('Möchten Sie den Link wirklich löschen?\nBitte beachten Sie, dass auch untergeordnete Links gelöscht werden!');
     {rdelim}
 </script>
 
@@ -13,30 +13,44 @@
         </form>
     </div>
     <div class="panel-group accordion" id="accordion2" role="tablist" aria-multiselectable="true">
-        {foreach name=linkgruppen from=$linkgruppen item=linkgruppe}
-            {assign var=lgName value='linkgroup-'|cat:$linkgruppe->kLinkgruppe}
-            <div class="panel panel-default">
+        {foreach $linkgruppen as $linkgruppe}
+            {assign var=lgName value='linkgroup-'|cat:$linkgruppe->getID()}
+            {assign var=missingTranslations value=$linkgruppe->getMissingTranslations()}
+            <div class="panel panel-{if $linkgruppe->getID() > 0}default{else}danger{/if}">
                 <div class="panel-heading accordion-heading">
                     <h3 class="panel-title" id="heading-{$lgName}">
                         <span class="pull-left">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}">
-                                <span class="accordion-toggle-icon"><i class="fa fa-plus"></i></span> {$linkgruppe->cName} ({#linkGroupTemplatename#}: {$linkgruppe->cTemplatename})
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}"{if $missingTranslations|count > 0} title="Fehlende Übersetzungen: {$missingTranslations|count}"{/if}>
+                                <span class="accordion-toggle-icon"><i class="fa fa-plus"></i></span> {$linkgruppe->getName()} ({#linkGroupTemplatename#}: {$linkgruppe->getTemplate()})
+                                {if $missingTranslations|count > 0}<i class="fa fa-warning"></i>{/if}
                             </a>
                         </span>
                     </h3>
                     <form method="post" action="links.php">
                         {$jtl_token}
                         <span class="btn-group pull-right">
-                            <button name="kLinkgruppe" value="{$linkgruppe->kLinkgruppe}" class="btn btn-primary" title="{#modify#}"><i class="fa fa-edit"></i></button>
-                            <button name="addlink" value="{$linkgruppe->kLinkgruppe}" class="btn btn-default add" title="{#addLink#}">{#addLink#}</button>
-                            <button name="delconfirmlinkgruppe" value="{$linkgruppe->kLinkgruppe}" class="btn btn-danger" title="{#linkGroup#} {#delete#}"><i class="fa fa-trash"></i></button>
+                            {if $linkgruppe->getID() > 0}
+                                <button name="kLinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-primary" title="{#modify#}"><i class="fa fa-edit"></i></button>
+                                <button name="addlink" value="{$linkgruppe->getID()}" class="btn btn-default add" title="{#addLink#}">{#addLink#}</button>
+                                <button name="delconfirmlinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-danger" title="{#linkGroup#} {#delete#}"><i class="fa fa-trash"></i></button>
+                            {/if}
                         </span>
                     </form>
                 </div>
                 <div id="collapse{$lgName}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{$lgName}">
-                    {if $linkgruppe->links|count > 0}
+                    {*{if $missingTranslations|count > 0}*}
+                        {*<div class="help-block container">*}
+                            {*<p>Achtung: Übersetzungen fehlen!</p>*}
+                            {*<ul class="default">*}
+                                {*{foreach $missingTranslations as $translation}*}
+                                    {*<li>{$translation->cNameDeutsch}</li>*}
+                                {*{/foreach}*}
+                            {*</ul>*}
+                        {*</div>*}
+                    {*{/if}*}
+                    {if $linkgruppe->getLinks()->count() > 0}
                         <table class="table">
-                            {include file="tpl_inc/links_uebersicht_item.tpl" list=$linkgruppe->links id=$linkgruppe->kLinkgruppe}
+                            {include file="tpl_inc/links_uebersicht_item.tpl" list=$linkgruppe->getLinks() id=$linkgruppe->getID()}
                         </table>
                     {else}
                         <p class="alert alert-info" style="margin:10px;"><i class="fa fa-info-circle"></i> {#noData#}</p>

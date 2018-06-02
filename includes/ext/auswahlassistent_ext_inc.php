@@ -14,7 +14,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
      * @param array     $Einstellungen
      * @return bool
      */
-    function starteAuswahlAssistent($cKey, $kKey, $kSprache, &$smarty, $Einstellungen)
+    function starteAuswahlAssistent($cKey, $kKey, $kSprache, $smarty, $Einstellungen)
     {
         trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         $kMerkmalWert           = null;
@@ -262,8 +262,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     function setSelectionWizardAnswer($kMerkmalWert, $kAuswahlAssistentFrage, $nFrage, $kKategorie)
     {
         trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-        global $smarty;
-
         $bMerkmalFilterVorhanden = false;
         $bFragenEnde             = false;
         $oSuchergebnisse         = null;
@@ -279,7 +277,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         );
 
         if (!$bFragenEnde && $bMerkmalFilterVorhanden && $oSuchergebnisse->GesamtanzahlArtikel > 1) {
-            $smarty->assign('NaviFilter', $NaviFilter);
+            Shop::Smarty()->assign('NaviFilter', $NaviFilter);
         } elseif (!$bFragenEnde || $oSuchergebnisse->GesamtanzahlArtikel == 1 || !$bMerkmalFilterVorhanden) {
             // Abbruch
             if (!$kKategorie) {
@@ -300,7 +298,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     function resetSelectionWizard($nFrage, $kKategorie)
     {
         trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-        global $smarty, $bMerkmalFilterVorhanden;
+        global $bMerkmalFilterVorhanden;
 
         $_SESSION['AuswahlAssistent']->nFrage            = $nFrage;
         $_SESSION['AuswahlAssistent']->oAuswahlAssistent = AuswahlAssistent::getGroupsByLocation(
@@ -323,7 +321,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         baueFilterSelectionWizard($kKategorie, $NaviFilter, $FilterSQL, $oSuchergebnisse, $nArtikelProSeite, $nLimitN);
         filterSelectionWizard($oSuchergebnisse->MerkmalFilter, $bMerkmalFilterVorhanden);
 
-        $smarty->assign('NaviFilter', $NaviFilter);
+        Shop::Smarty()->assign('NaviFilter', $NaviFilter);
     }
 
     /**

@@ -39,9 +39,8 @@ class Attribut
      *
      * @param int $kAttribut - Falls angegeben, wird Attribut mit angegebenem kAttribut aus der DB geholt
      */
-    public function __construct($kAttribut = 0)
+    public function __construct(int $kAttribut = 0)
     {
-        $kAttribut = (int)$kAttribut;
         if ($kAttribut > 0) {
             $this->loadFromDB($kAttribut);
         }
@@ -53,9 +52,9 @@ class Attribut
      * @param int $kAttribut Primary Key
      * @return $this
      */
-    public function loadFromDB($kAttribut)
+    public function loadFromDB(int $kAttribut): self
     {
-        $obj = Shop::Container()->getDB()->select('tattribut', 'kAttribut', (int)$kAttribut);
+        $obj = Shop::Container()->getDB()->select('tattribut', 'kAttribut', $kAttribut);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -67,9 +66,9 @@ class Attribut
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @return mixed
+     * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $obj = kopiereMembers($this);
         unset($obj->kAttribut);
@@ -82,7 +81,7 @@ class Attribut
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $obj = kopiereMembers($this);
 
@@ -92,16 +91,11 @@ class Attribut
     /**
      * setzt Daten aus Sync POST request.
      *
-     * @return bool - true, wenn alle notwendigen Daten vorhanden, sonst false
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzePostDaten()
+    public function setzePostDaten(): bool
     {
-        $this->kAttribut   = (int)$_POST['KeyAttribut'];
-        $this->kArtikel    = (int)$_POST['KeyArtikel'];
-        $this->cName       = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Name']));
-        $this->cStringWert = StringHandler::htmlentities(StringHandler::filterXSS($_POST['StringWert']));
-        $this->cTextWert   = StringHandler::htmlentities(StringHandler::filterXSS($_POST['TextWert']));
-
-        return ($this->kAttribut > 0 && $this->kArtikel > 0 && $this->cName);
+        return false;
     }
 }

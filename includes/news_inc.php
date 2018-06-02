@@ -117,9 +117,9 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
         if (!valid_email($cEmail)) {
             $nPlausiValue_arr['cEmail'] = 1;
         }
-        if (isset($conf['news']['news_sicherheitscode']) &&
-            $conf['news']['news_sicherheitscode'] !== 'N' &&
-            !validateCaptcha($_POST)
+        if (isset($conf['news']['news_sicherheitscode'])
+            && $conf['news']['news_sicherheitscode'] !== 'N'
+            && !validateCaptcha($_POST)
         ) {
             $nPlausiValue_arr['captcha'] = 2;
         }
@@ -398,14 +398,8 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
 {
     $oLink = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_NEWS);
     if (isset($oLink->kLink) && $oLink->kLink > 0) {
-        //hole Link
-        $linkHelper    = LinkHelper::getInstance();
-        $Link          = $linkHelper->getPageLink($oLink->kLink);
-        $Link->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
-        //url
-        global $sprachURL, $requestURL;
+        $Link       = Shop::Container()->getLinkService()->getLinkByID($oLink->kLink);
         $requestURL = baueURL($Link, URLART_SEITE);
-        $sprachURL  = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
         // Canonical
         if (strpos($requestURL, '.php') === false) {
             $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
@@ -413,7 +407,7 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
         if (empty($AktuelleSeite)) {
             $AktuelleSeite = null;
         }
-        $smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->Sprache->cName, $requestURL));
+        $smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->getName(), $requestURL));
     } else {
         // Canonical
         $cCanonicalURL = Shop::getURL() . '/news.php';

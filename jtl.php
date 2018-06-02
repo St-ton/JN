@@ -14,7 +14,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 
 $AktuelleSeite = 'MEIN KONTO';
 $cBrotNavi     = '';
-$linkHelper    = LinkHelper::getInstance();
+$linkHelper    = Shop::Container()->getLinkService();
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
@@ -866,7 +866,6 @@ Shop::Smarty()
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
     ->assign('Navigation', $cBrotNavi)
-    ->assign('requestURL', $requestURL ?? null)
     ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
     ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
     ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)

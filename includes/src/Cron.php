@@ -71,8 +71,18 @@ class Cron
      * @param string $dStartZeit
      * @param string $dLetzterStart
      */
-    public function __construct($kCron = 0, $kKey = 0, $nAlleXStd = 0, $cName = '', $cJobArt = '', $cTabelle = '', $cKey = '', $dStart = '0000-00-00 00:00:00', $dStartZeit = '00:00:00', $dLetzterStart = '0000-00-00 00:00:00')
-    {
+    public function __construct(
+        $kCron = 0,
+        $kKey = 0,
+        $nAlleXStd = 0,
+        $cName = '',
+        $cJobArt = '',
+        $cTabelle = '',
+        $cKey = '',
+        $dStart = '0000-00-00 00:00:00',
+        $dStartZeit = '00:00:00',
+        $dLetzterStart = '0000-00-00 00:00:00'
+    ) {
         $this->kCron         = (int)$kCron;
         $this->kKey          = $kKey;
         $this->cKey          = $cKey;
@@ -134,7 +144,7 @@ class Cron
     /**
      * @return bool
      */
-    public function updateCronDB()
+    public function updateCronDB(): bool
     {
         if ($this->kCron > 0) {
             $_upd                = new stdClass();

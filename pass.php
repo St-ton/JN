@@ -11,8 +11,7 @@ Shop::setPageType(PAGE_PASSWORTVERGESSEN);
 $AktuelleSeite                   = 'PASSWORT VERGESSEN';
 Shop::$AktuelleSeite             = 'PASSWORT VERGESSEN';
 $Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
-$GLOBALS['GlobaleEinstellungen'] = array_merge($GLOBALS['GlobaleEinstellungen'], $Einstellungen);
-$linkHelper                      = LinkHelper::getInstance();
+$linkHelper                      = Shop::Container()->getLinkService();
 $kLink                           = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
 $AktuelleKategorie               = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien          = new KategorieListe();
@@ -94,8 +93,7 @@ $cMetaKeywords    = $oMeta->cKeywords;
 Shop::Smarty()->assign('step', $step)
     ->assign('hinweis', $hinweis)
     ->assign('cFehler', $cFehler)
-    ->assign('Navigation', createNavigation($AktuelleSeite))
-    ->assign('requestURL', $requestURL ?? null);
+    ->assign('Navigation', createNavigation($AktuelleSeite));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 Shop::Smarty()->display('account/password.tpl');

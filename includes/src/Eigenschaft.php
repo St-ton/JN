@@ -41,9 +41,9 @@ class Eigenschaft
      *
      * @param int $kEigenschaft - Falls angegeben, wird der Eigenschaft mit angegebenem kEigenschaft aus der DB geholt
      */
-    public function __construct($kEigenschaft = 0)
+    public function __construct(int $kEigenschaft = 0)
     {
-        if ((int)$kEigenschaft > 0) {
+        if ($kEigenschaft > 0) {
             $this->loadFromDB($kEigenschaft);
         }
     }
@@ -51,12 +51,12 @@ class Eigenschaft
     /**
      * Setzt Eigenschaft mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @param int $kEigenschaft Primary Key
+     * @param int $kEigenschaft
      * @return $this
      */
-    public function loadFromDB($kEigenschaft)
+    public function loadFromDB(int $kEigenschaft): self
     {
-        $obj = Shop::Container()->getDB()->select('teigenschaft', 'kEigenschaft', (int)$kEigenschaft);
+        $obj = Shop::Container()->getDB()->select('teigenschaft', 'kEigenschaft', $kEigenschaft);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -70,7 +70,7 @@ class Eigenschaft
      *
      * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $obj = kopiereMembers($this);
         unset($obj->EigenschaftsWert);
@@ -83,7 +83,7 @@ class Eigenschaft
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $obj = kopiereMembers($this);
 
@@ -93,15 +93,11 @@ class Eigenschaft
     /**
      * setzt Daten aus Sync POST request.
      *
-     * @return bool - true, wenn alle notwendigen Daten vorhanden, sonst false
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzePostDaten()
+    public function setzePostDaten(): bool
     {
-        $this->kEigenschaft = (int)$_POST['KeyEigenschaft'];
-        $this->kArtikel     = (int)$_POST['KeyArtikel'];
-        $this->cName        = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Name']));
-        $this->cWaehlbar    = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Waehlbar']));
-
-        return ($this->kEigenschaft > 0 && $this->kArtikel > 0);
+        return false;
     }
 }

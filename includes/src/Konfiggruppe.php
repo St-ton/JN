@@ -81,6 +81,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function jsonSerialize()
         {
+            if ($this->oSprache === null) {
+                $this->oSprache  = new Konfiggruppesprache($this->kKonfiggruppe);
+            }
             $override = [
                 'kKonfiggruppe' => (int)$this->kKonfiggruppe,
                 'cBildPfad'     => $this->getBildPfad(),

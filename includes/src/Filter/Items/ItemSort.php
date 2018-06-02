@@ -70,7 +70,6 @@ class ItemSort extends AbstractFilter
                 ->setParam($this->getUrlParam())
                 ->setName($sortingOption->angezeigterName)
                 ->setValue((int)$sortingOption->value)
-                ->setCount(null)
                 ->setSort($i);
         }
         $this->options = $options;

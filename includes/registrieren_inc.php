@@ -10,8 +10,7 @@
  */
 function kundeSpeichern($cPost_arr)
 {
-    global $smarty,
-           $Kunde,
+    global $Kunde,
            $GlobaleEinstellungen,
            $Einstellungen,
            $step,
@@ -26,7 +25,7 @@ function kundeSpeichern($cPost_arr)
 
     $editRechnungsadresse = (int)$cPost_arr['editRechnungsadresse'];
     $step                 = 'formular';
-    $smarty->assign('cPost_arr', StringHandler::filterXSS($cPost_arr));
+    Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($cPost_arr));
     $fehlendeAngaben     = (!$editRechnungsadresse)
         ? checkKundenFormular(1)
         : checkKundenFormular(1, 0);
@@ -188,8 +187,8 @@ function kundeSpeichern($cPost_arr)
         }
         if ((int)$cPost_arr['checkout'] === 1) {
             //weiterleitung zum chekout
-            $linkHelper = LinkHelper::getInstance();
-            header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+            header('Location: ' . Shop::Container()->getLinkService()
+                                                   ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         }
         if (isset($cPost_arr['ajaxcheckout_return']) && (int)$cPost_arr['ajaxcheckout_return'] === 1) {
@@ -197,8 +196,8 @@ function kundeSpeichern($cPost_arr)
         }
         if ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
             //weiterleitung zu mein Konto
-            $linkHelper = LinkHelper::getInstance();
-            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
+            header('Location: ' . Shop::Container()->getLinkService()
+                                                   ->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
             exit;
         }
     } else {
@@ -208,11 +207,11 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
             $_SESSION['checkout.cPost_arr']       = $cPost_arr;
 
-            $linkHelper = LinkHelper::getInstance();
-            header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+            header('Location: ' . Shop::Container()->getLinkService()
+                                                   ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         }
-        $smarty->assign('fehlendeAngaben', $fehlendeAngaben);
+        Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
         $Kunde = $knd;
 
         return $fehlendeAngaben;
@@ -226,7 +225,7 @@ function kundeSpeichern($cPost_arr)
  */
 function gibFormularDaten($nCheckout = 0)
 {
-    global $smarty, $cKundenattribut_arr, $Kunde, $Einstellungen;
+    global $cKundenattribut_arr, $Kunde;
 
     if ($cKundenattribut_arr === null || count($cKundenattribut_arr) === 0) {
         $cKundenattribut_arr = $_SESSION['Kunde']->cKundenattribut_arr ?? [];
@@ -236,18 +235,24 @@ function gibFormularDaten($nCheckout = 0)
         list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
         $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
     }
-    $herkunfte = Shop::Container()->getDB()->query("SELECT * FROM tkundenherkunft ORDER BY nSort", 2);
+    $herkunfte = Shop::Container()->getDB()->query(
+        'SELECT * 
+            FROM tkundenherkunft 
+            ORDER BY nSort',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
 
-    $smarty->assign('herkunfte', $herkunfte)
-           ->assign('Kunde', $Kunde)
-           ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-           ->assign('laender', gibBelieferbareLaender(Session::CustomerGroup()->getID()))
-           ->assign('warning_passwortlaenge', lang_passwortlaenge($Einstellungen['kunden']['kundenregistrierung_passwortlaenge']))
-           ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
+    Shop::Smarty()->assign('herkunfte', $herkunfte)
+        ->assign('Kunde', $Kunde)
+        ->assign('cKundenattribut_arr', $cKundenattribut_arr)
+        ->assign('laender', gibBelieferbareLaender(Session::CustomerGroup()->getID()))
+        ->assign('warning_passwortlaenge',
+            lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge')))
+        ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
 
     if ((int)$nCheckout === 1) {
-        $smarty->assign('checkout', 1)
-               ->assign('bestellschritt', [1 => 1, 2 => 3, 3 => 3, 4 => 3, 5 => 3]); // Rechnungsadresse ändern
+        Shop::Smarty()->assign('checkout', 1)
+            ->assign('bestellschritt', [1 => 1, 2 => 3, 3 => 3, 4 => 3, 5 => 3]); // Rechnungsadresse ändern
     }
 }
 
@@ -273,12 +278,12 @@ function gibKunde()
 function gibKundeFromVCard($vCardFile)
 {
     if (is_file($vCardFile)) {
-        global $smarty, $Kunde, $hinweis;
+        global $Kunde, $hinweis;
 
         try {
             $vCard = new VCard(file_get_contents($vCardFile), ['handling' => VCard::OPT_ERR_RAISE]);
             $Kunde = $vCard->selectVCard(0)->asKunde();
-            $smarty->assign('Kunde', $Kunde);
+            Shop::Smarty()->assign('Kunde', $Kunde);
         } catch (Exception $e) {
             $hinweis = Shop::Lang()->get('uploadError');
         }

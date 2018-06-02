@@ -65,18 +65,18 @@
                         {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
                     {/if}
                     <tr class="shipping-costs">
-                        <td colspan="4"><small>{lang|sprintf:$oSpezialseiten_arr[6]->cURL:$shippingCosts:$FavourableShipping->cCountryCode key="shippingInformationSpecific" section="basket"}</small></td>
+                        <td colspan="4"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key="shippingInformationSpecific" section="basket"}</small></td>
                     </tr>
                 {elseif empty($FavourableShipping)}
                     <tr class="shipping-costs text-right">
-                        <td colspan="4"><small>{lang|sprintf:$oSpezialseiten_arr[6]->cURL key="shippingInformation" section="basket"}</small></td>
+                        <td colspan="4"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key="shippingInformation" section="basket"}</small></td>
                     </tr>
                 {/if}
             </tfoot>
         </table>
         {if !empty($WarenkorbVersandkostenfreiHinweis)}
             <p class="small text-muted">{$WarenkorbVersandkostenfreiHinweis|truncate:120:"..."}
-                <a class="popup" href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[6])}{$oSpezialseiten_arr[6]->cURL}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang section="login" key="shippingInfo"}">
+                <a class="popup" href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang section="login" key="shippingInfo"}">
                     <i class="fa fa-info-circle"></i>
                 </a>
             </p>

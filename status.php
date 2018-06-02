@@ -16,17 +16,16 @@ $Einstellungen = Shop::getSettings([
     CONF_KAUFABWICKLUNG
 ]);
 $hinweis       = '';
-$requestURL    = '';
-$linkHelper    = LinkHelper::getInstance();
+$linkHelper    = Shop::Container()->getLinkService();
 
 if (strlen($_GET['uid']) === 40) {
-    $status = Shop::Container()->getDB()->executeQueryPrepared("
+    $status = Shop::Container()->getDB()->queryPrepared("
         SELECT kBestellung 
             FROM tbestellstatus 
             WHERE dDatum >= date_sub(now(), INTERVAL 30 DAY) 
             AND cUID = :uid",
         ['uid' => $_GET['uid']],
-        1
+        \DB\ReturnType::SINGLE_OBJECT
     );
     if (empty($status->kBestellung)) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
@@ -51,7 +50,6 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $smarty->assign('step', $step)
        ->assign('hinweis', $hinweis)
        ->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('requestURL', $requestURL)
        ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
        ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
        ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN);

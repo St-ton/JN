@@ -30,7 +30,7 @@ $Einstellungen          = Shop::getSettings([
 ]);
 $nAktuelleSeite         = (Shop::$kSeite !== null && Shop::$kSeite > 0) ? Shop::$kSeite : 1;
 $oNewsUebersicht_arr    = [];
-$linkHelper             = LinkHelper::getInstance();
+$linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_NEWS);
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();

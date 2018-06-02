@@ -31,7 +31,7 @@ interface ContainerInterface extends \Psr\Container\ContainerInterface
     public function setFactory($id, $factory);
 
     /**
-     * @param $id
+     * @param string $id
      * @return callable
      */
     public function getFactoryMethod($id);

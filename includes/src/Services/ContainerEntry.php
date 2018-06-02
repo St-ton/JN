@@ -6,15 +6,34 @@
 
 namespace Services;
 
-
+/**
+ * Class ContainerEntry
+ * @package Services
+ */
 class ContainerEntry
 {
     const TYPE_FACTORY = 1;
+
     const TYPE_SINGLETON = 2;
 
+    /**
+     * @var callable
+     */
     protected $factory;
+
+    /**
+     * @var object
+     */
     protected $instance;
+
+    /**
+     * @var int
+     */
     protected $type;
+
+    /**
+     * @var bool
+     */
     protected $locked = false;
 
     /**
@@ -42,7 +61,7 @@ class ContainerEntry
     /**
      * @return bool
      */
-    public function hasInstance()
+    public function hasInstance(): bool
     {
         return $this->instance !== null;
     }

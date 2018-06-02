@@ -105,8 +105,8 @@ function uebernehmeWarenkorbAenderungen()
         freeGiftStillValid();
         if ($post) {
             //prg
-            $linkHelper = LinkHelper::getInstance();
-            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php', true, true), true, 303);
+            header('Location: ' . Shop::Container()->getLinkService()
+                                                   ->getStaticRoute('warenkorb.php', true, true), true, 303);
         }
 
         return;

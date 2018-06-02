@@ -19,10 +19,6 @@ class PlausiCMS extends Plausi
         if (count($this->xPostVar_arr) > 0 && strlen($cType) > 0) {
             switch ($cType) {
                 case 'lnk':
-                    // kLinkgruppe
-                    if (!isset($this->xPostVar_arr['kLinkgruppe']) || (int)$this->xPostVar_arr['kLinkgruppe'] === 0) {
-                        $this->xPlausiVar_arr['kLinkgruppe'] = 1;
-                    }
                     // cName
                     if (!isset($this->xPostVar_arr['cName']) || strlen($this->xPostVar_arr['cName']) === 0) {
                         $this->xPlausiVar_arr['cName'] = 1;

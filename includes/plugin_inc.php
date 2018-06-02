@@ -15,55 +15,56 @@ function executeHook($nHook, $args_arr = [])
     EventDispatcher::getInstance()->fire("shop.hook.{$nHook}", array_merge((array)$nHook, $args_arr));
 
     $hookList = Plugin::getHookList();
-    if (!empty($hookList[$nHook]) && is_array($hookList[$nHook])) {
-        foreach ($hookList[$nHook] as $oPluginTmp) {
-            //try to get plugin instance from registry
-            $oPlugin = Shop::get('oplugin_' . $oPluginTmp->kPlugin);
-            //not found in registry - create new
-            if ($oPlugin === null) {
-                $oPlugin = new Plugin($oPluginTmp->kPlugin);
-                if (!$oPlugin->kPlugin) {
-                    continue;
-                }
-                //license check is only executed once per plugin
-                if (!pluginLizenzpruefung($oPlugin)) {
-                    continue;
-                }
-                //save to registry
-                Shop::set('oplugin_' . $oPluginTmp->kPlugin, $oPlugin);
+    if (empty($hookList[$nHook]) || !is_array($hookList[$nHook])) {
+        return;
+    }
+    foreach ($hookList[$nHook] as $oPluginTmp) {
+        //try to get plugin instance from registry
+        $oPlugin = Shop::get('oplugin_' . $oPluginTmp->kPlugin);
+        //not found in registry - create new
+        if ($oPlugin === null) {
+            $oPlugin = new Plugin($oPluginTmp->kPlugin);
+            if (!$oPlugin->kPlugin) {
+                continue;
             }
-            if ($smarty !== null) {
-                $smarty->assign('oPlugin_' . $oPlugin->cPluginID, $oPlugin);
+            //license check is only executed once per plugin
+            if (!pluginLizenzpruefung($oPlugin)) {
+                continue;
             }
-            $cDateiname = $oPluginTmp->cDateiname;
-            // Welcher Hook wurde aufgerufen?
-            $oPlugin->nCalledHook = $nHook;
-            if ($nHook === HOOK_SEITE_PAGE_IF_LINKART && $cDateiname === PLUGIN_SEITENHANDLER) {
-                // Work Around, falls der Hook auf geht => Frontend Link
-                include PFAD_ROOT . PFAD_INCLUDES . PLUGIN_SEITENHANDLER;
-            } elseif ($nHook == HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
-                // Work Around, falls der Hook auf geht => CheckBox Trigger Special Function
-                if ($oPlugin->kPlugin == $args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
-                    include PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
-                        PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname;
-                }
-            } elseif (is_file(PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
-                PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname)) {
-                $start = microtime(true);
+            //save to registry
+            Shop::set('oplugin_' . $oPluginTmp->kPlugin, $oPlugin);
+        }
+        if ($smarty !== null) {
+            $smarty->assign('oPlugin_' . $oPlugin->cPluginID, $oPlugin);
+        }
+        $cDateiname = $oPluginTmp->cDateiname;
+        // Welcher Hook wurde aufgerufen?
+        $oPlugin->nCalledHook = $nHook;
+        if ($nHook === HOOK_SEITE_PAGE_IF_LINKART && $cDateiname === PLUGIN_SEITENHANDLER) {
+            // Work Around, falls der Hook auf geht => Frontend Link
+            include PFAD_ROOT . PFAD_INCLUDES . PLUGIN_SEITENHANDLER;
+        } elseif ($nHook == HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
+            // Work Around, falls der Hook auf geht => CheckBox Trigger Special Function
+            if ($oPlugin->kPlugin == $args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
                 include PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
                     PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname;
-                if (PROFILE_PLUGINS === true) {
-                    $runData = [
-                        'runtime'   => microtime(true) - $start,
-                        'timestamp' => microtime(true),
-                        'hookID'    => (int)$nHook,
-                        'runcount'  => 1,
-                        'file'      => $oPlugin->cVerzeichnis . '/' .
-                            PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
-                            PFAD_PLUGIN_FRONTEND . $cDateiname
-                    ];
-                    Profiler::setPluginProfile($runData);
-                }
+            }
+        } elseif (is_file(PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname)) {
+            $start = microtime(true);
+            include PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
+                PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname;
+            if (PROFILE_PLUGINS === true) {
+                $runData = [
+                    'runtime'   => microtime(true) - $start,
+                    'timestamp' => microtime(true),
+                    'hookID'    => (int)$nHook,
+                    'runcount'  => 1,
+                    'file'      => $oPlugin->cVerzeichnis . '/' .
+                        PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
+                        PFAD_PLUGIN_FRONTEND . $cDateiname
+                ];
+                Profiler::setPluginProfile($runData);
             }
         }
     }
@@ -127,26 +128,25 @@ function aenderPluginZahlungsartStatus(&$oPlugin, $nStatus)
  * @param int $kPlugin
  * @return array
  */
-function gibPluginEinstellungen($kPlugin)
+function gibPluginEinstellungen(int $kPlugin)
 {
-    $oPluginEinstellungen_arr = [];
-    if ($kPlugin > 0) {
-        $oPluginEinstellungenTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
-                FROM tplugin
-                JOIN tplugineinstellungen 
-                    ON tplugineinstellungen.kPlugin = tplugin.kPlugin
-                LEFT JOIN tplugineinstellungenconf 
-                    ON tplugineinstellungenconf.kPlugin = tplugin.kPlugin 
-                    AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
-                WHERE tplugin.kPlugin = " . (int)$kPlugin,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($oPluginEinstellungenTMP_arr as $oPluginEinstellungenTMP) {
-            $oPluginEinstellungen_arr[$oPluginEinstellungenTMP->cName] = $oPluginEinstellungenTMP->cConf === 'M'
-                ? unserialize($oPluginEinstellungenTMP->cWert)
-                : $oPluginEinstellungenTMP->cWert;
-        }
+    $oPluginEinstellungen_arr    = [];
+    $oPluginEinstellungenTMP_arr = Shop::Container()->getDB()->queryPrepared(
+        "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
+            FROM tplugin
+            JOIN tplugineinstellungen 
+                ON tplugineinstellungen.kPlugin = tplugin.kPlugin
+            LEFT JOIN tplugineinstellungenconf 
+                ON tplugineinstellungenconf.kPlugin = tplugin.kPlugin 
+                AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
+            WHERE tplugin.kPlugin = :pid",
+        ['pid' => $kPlugin],
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    foreach ($oPluginEinstellungenTMP_arr as $oPluginEinstellungenTMP) {
+        $oPluginEinstellungen_arr[$oPluginEinstellungenTMP->cName] = $oPluginEinstellungenTMP->cConf === 'M'
+            ? unserialize($oPluginEinstellungenTMP->cWert)
+            : $oPluginEinstellungenTMP->cWert;
     }
 
     return $oPluginEinstellungen_arr;
@@ -157,11 +157,10 @@ function gibPluginEinstellungen($kPlugin)
  * @param string $cISO
  * @return array
  */
-function gibPluginSprachvariablen($kPlugin, $cISO = '')
+function gibPluginSprachvariablen(int $kPlugin, $cISO = '')
 {
-    $return  = [];
-    $cSQL    = '';
-    $kPlugin = (int)$kPlugin;
+    $return = [];
+    $cSQL   = '';
     if (strlen($cISO) > 0) {
         $cSQL = " AND tpluginsprachvariablesprache.cISO = '" . strtoupper($cISO) . "'";
     }
@@ -208,7 +207,7 @@ function gibPluginSprachvariablen($kPlugin, $cISO = '')
  * @param int $kPlugin
  * @return bool
  */
-function aenderPluginStatus($nStatus, $kPlugin)
+function aenderPluginStatus(int $nStatus, int $kPlugin)
 {
     return Shop::Container()->getDB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => $nStatus]) > 0;
 }
@@ -218,10 +217,8 @@ function aenderPluginStatus($nStatus, $kPlugin)
  * @param string $cNameZahlungsmethode
  * @return string
  */
-function gibPlugincModulId($kPlugin, $cNameZahlungsmethode)
+function gibPlugincModulId(int $kPlugin, string $cNameZahlungsmethode)
 {
-    $kPlugin = (int)$kPlugin;
-
     return $kPlugin > 0 && strlen($cNameZahlungsmethode) > 0
         ? 'kPlugin_' . $kPlugin . '_' . strtolower(str_replace([' ', '-', '_'], '', $cNameZahlungsmethode))
         : '';
@@ -231,7 +228,7 @@ function gibPlugincModulId($kPlugin, $cNameZahlungsmethode)
  * @param string $cModulId
  * @return int
  */
-function gibkPluginAuscModulId($cModulId)
+function gibkPluginAuscModulId(string $cModulId)
 {
     return preg_match('/^kPlugin_(\d+)_/', $cModulId, $cMatch_arr)
         ? (int)$cMatch_arr[1]
@@ -242,7 +239,7 @@ function gibkPluginAuscModulId($cModulId)
  * @param string $cPluginID
  * @return int
  */
-function gibkPluginAuscPluginID($cPluginID)
+function gibkPluginAuscPluginID(string $cPluginID)
 {
     $oPlugin = Shop::Container()->getDB()->select('tplugin', 'cPluginID', $cPluginID);
 

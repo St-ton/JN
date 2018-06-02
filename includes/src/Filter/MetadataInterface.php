@@ -214,7 +214,18 @@ interface MetadataInterface
     public function setUserSort($currentCategory = null): MetadataInterface;
 
     /**
+     * @param int|string $sort
+     * @return int
+     */
+    public static function mapUserSorting($sort): int;
+
+    /**
      * @return int
      */
     public function getProductsPerPageLimit(): int;
+
+    /**
+     * @return bool
+     */
+    public function checkNoIndex(): bool;
 }

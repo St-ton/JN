@@ -529,7 +529,7 @@ class ItemAttribute extends BaseAttribute
                 $attributeValue->setParam($this->getUrlParam());
                 $attributeValue->setName(htmlentities($filterValue->cWert));
                 $attributeValue->setValue($filterValue->cWert);
-                $attributeValue->setCount($filterValue->nAnzahl);
+                $attributeValue->setCount((int)$filterValue->nAnzahl);
                 if ($attributeValue->isActive()) {
                     $option->setIsActive(true);
                 }

@@ -79,7 +79,6 @@ class ItemLimit extends AbstractFilter
                 ->setParam($this->getUrlParam())
                 ->setName($name)
                 ->setValue($limitOption)
-                ->setCount(null)
                 ->setSort($i);
         }
         $this->options = $options;

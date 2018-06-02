@@ -32,7 +32,7 @@ class DirManager
      * @param array         $parameters
      * @return $this
      */
-    public function getData($path, $userfunc = null, array $parameters = null)
+    public function getData(string $path, callable $userfunc = null, array $parameters = null): self
     {
         // Linux or Windows?
         $islinux = true;

@@ -147,7 +147,7 @@ class BaseSearchQuery extends AbstractFilter
     /**
      * @return string
      */
-    public function getUrlParam()
+    public function getUrlParam(): string
     {
         if ($this->productFilter->getRealSearch() !== null && !$this->productFilter->hasSearchQuery()) {
             return 'suche';
@@ -361,7 +361,7 @@ class BaseSearchQuery extends AbstractFilter
                 ->setClassName($this->getClassName())
                 ->setName($searchFilter->cSuche)
                 ->setValue((int)$searchFilter->kSuchanfrage)
-                ->setCount($searchFilter->nAnzahl);
+                ->setCount((int)$searchFilter->nAnzahl);
             if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
                 $fo->setClass(round(
                         ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /

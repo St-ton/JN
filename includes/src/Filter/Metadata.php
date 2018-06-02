@@ -838,7 +838,7 @@ class Metadata implements MetadataInterface
         if ($this->productFilter->hasCategory()) {
             $this->breadCrumb = $this->productFilter->getCategory()->getName();
 
-            return $this->breadCrumb;
+            return $this->breadCrumb ?? '';
         }
         if ($this->productFilter->hasManufacturer()) {
             $this->breadCrumb = $this->productFilter->getManufacturer()->getName();
@@ -1358,9 +1358,7 @@ class Metadata implements MetadataInterface
      */
     public static function mapUserSorting($sort): int
     {
-        // Ist die Usersortierung ein Integer => Return direkt den Integer
-        preg_match('/\d+/', $sort, $cTreffer_arr);
-        if (isset($cTreffer_arr[0]) && strlen($sort) === strlen($cTreffer_arr[0])) {
+        if (is_numeric($sort)) {
             return (int)$sort;
         }
         // Usersortierung ist ein String aus einem Kategorieattribut
@@ -1428,6 +1426,39 @@ class Metadata implements MetadataInterface
         }
 
         return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function checkNoIndex(): bool
+    {
+        $bNoIndex = false;
+        switch (basename($_SERVER['SCRIPT_NAME'])) {
+            case 'wartung.php':
+            case 'navi.php':
+            case 'bestellabschluss.php':
+            case 'bestellvorgang.php':
+            case 'jtl.php':
+            case 'pass.php':
+            case 'registrieren.php':
+            case 'warenkorb.php':
+            case 'wunschliste.php':
+                $bNoIndex = true;
+                break;
+            default:
+                break;
+        }
+        if ($this->productFilter->hasSearch()) {
+            $bNoIndex = true;
+        }
+        if (!$bNoIndex) {
+            $bNoIndex = $this->productFilter->hasAttributeValue()
+                && $this->productFilter->getAttributeValue()->getValue() > 0
+                && $this->conf['global']['global_merkmalwert_url_indexierung'] === 'N';
+        }
+
+        return $bNoIndex;
     }
 
     /**

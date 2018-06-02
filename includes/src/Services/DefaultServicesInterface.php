@@ -11,6 +11,7 @@ use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use Services\JTL\LinkService;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
@@ -56,4 +57,9 @@ interface DefaultServicesInterface extends ContainerInterface
      * @throws CircularReferenceException
      */
     public function getBackendLogService(): LoggerInterface;
+
+    /**
+     * @return LinkService
+     */
+    public function getLinkService(): LinkService;
 }

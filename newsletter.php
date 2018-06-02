@@ -23,13 +23,10 @@ foreach ($links as $l) {
     }
 }
 $Link       = new stdClass();
-$linkHelper = LinkHelper::getInstance();
+$linkHelper = Shop::Container()->getLinkService();
 if (isset($oLink->kLink) && $oLink->kLink > 0) {
-    $Link          = $linkHelper->getPageLink($oLink->kLink);
-    $requestURL    = baueURL($Link, URLART_SEITE);
-    $sprachURL     = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
-    $Link->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
-    Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->Sprache->cName, $requestURL));
+    $Link = $linkHelper->getLinkByID($oLink->kLink);
+    Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->getName(), $Link->getURL()));
 } else {
     $oLink                   = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_404);
     $bFileNotFound           = true;

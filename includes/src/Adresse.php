@@ -113,7 +113,7 @@ class Adresse
      *
      * @return $this
      */
-    public function encrypt()
+    public function encrypt(): self
     {
         foreach (self::$encodedProperties as $property) {
             $this->{$property} = verschluesselXTEA(trim($this->{$property}));
@@ -127,7 +127,7 @@ class Adresse
      *
      * @return $this
      */
-    public function decrypt()
+    public function decrypt(): self
     {
         foreach (self::$encodedProperties as $property) {
             $this->{$property} = trim(entschluesselXTEA($this->{$property}));
@@ -139,7 +139,7 @@ class Adresse
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return get_object_vars($this);
     }
@@ -171,7 +171,7 @@ class Adresse
      * @param object $object
      * @return $this
      */
-    public function fromObject($object)
+    public function fromObject($object): self
     {
         return $this->fromArray((array)$object);
     }
@@ -180,7 +180,7 @@ class Adresse
      * @param string $anrede
      * @return string
      */
-    public function mappeAnrede($anrede)
+    public function mappeAnrede(string $anrede): string
     {
         switch (strtolower($anrede)) {
             case 'm':
@@ -196,7 +196,7 @@ class Adresse
      * @param string $iso
      * @return string
      */
-    public function pruefeLandISO($iso)
+    public function pruefeLandISO(string $iso): string
     {
         preg_match('/[a-zA-Z]{2}/', $iso, $matches);
         if (strlen($matches[0]) !== strlen($iso)) {

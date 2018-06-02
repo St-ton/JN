@@ -104,13 +104,11 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
+    $config      = Shopsetting::getInstance()->getAll();
     $smarty      = Shop::Smarty();
     $oResponse   = new stdClass();
     $objResponse = new IOResponse();
-
-    $GLOBALS['oSprache'] = Sprache::getInstance();
-
-    $kArtikel = (int)$kArtikel;
+    $kArtikel    = (int)$kArtikel;
     if ($anzahl <= 0 || $kArtikel <= 0) {
         return $objResponse;
     }
@@ -194,9 +192,10 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
            ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
            ->assign('fAnzahl', $anzahl)
            ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
-           ->assign('Einstellungen', Shop::getSettings([CONF_GLOBAL]))
+           ->assign('Einstellungen', $config)
            ->assign('Xselling', $oXSelling)
            ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
+           ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
            ->assign('Steuerpositionen', $cart->gibSteuerpositionen());
 
     $oResponse->nType           = 2;
@@ -213,10 +212,9 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         setzeKampagnenVorgang(KAMPAGNE_DEF_WARENKORB, $kArtikel, $anzahl); // Warenkorb
     }
 
-    if ($GLOBALS['GlobaleEinstellungen']['global']['global_warenkorb_weiterleitung'] === 'Y') {
-        $linkHelper           = LinkHelper::getInstance();
+    if ($config['global']['global_warenkorb_weiterleitung'] === 'Y') {
         $oResponse->nType     = 1;
-        $oResponse->cLocation = $linkHelper->getStaticRoute('warenkorb.php');
+        $oResponse->cLocation = Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php');
         $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
     }
 
@@ -229,7 +227,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
  */
 function pushToComparelist($kArtikel)
 {
-    $Einstellungen = Shop::getSettings([CONF_VERGLEICHSLISTE]);
+    $Einstellungen = Shopsetting::getInstance()->getAll();
     $kArtikel      = (int)$kArtikel;
     $oResponse     = new stdClass();
     $objResponse   = new IOResponse();
@@ -372,9 +370,8 @@ function pushToWishlist($kArtikel, $qty)
     $qty           = (int)$qty === 0 ? 1 : (int)$qty;
     $smarty        = Shop::Smarty();
     if (empty($customerID = Session::Customer()->getID())) {
-        $linkHelper           = LinkHelper::getInstance();
         $oResponse->nType     = 1;
-        $oResponse->cLocation = $linkHelper->getStaticRoute('jtl.php') .
+        $oResponse->cLocation = Shop::Container()->getLinkService()->getStaticRoute('jtl.php') .
             '?a=' . $kArtikel .
             '&n=' . $qty .
             '&r=' . R_LOGIN_WUNSCHLISTE;
@@ -527,9 +524,7 @@ function getBasketItems($nTyp)
     $oResponse   = new stdClass();
     $objResponse = new IOResponse();
 
-    $GLOBALS['oSprache'] = Sprache::getInstance();
     WarenkorbHelper::addVariationPictures($cart);
-
     switch ((int)$nTyp) {
         default:
         case 0:
@@ -561,7 +556,7 @@ function getBasketItems($nTyp)
                            [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
                            true)
                    ))
-                   ->assign('oSpezialseiten_arr', LinkHelper::getInstance()->getSpecialPages());
+                   ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages());
 
             VersandartHelper::getShippingCosts($cLand, $cPLZ, $error);
             $oResponse->cTemplate = $smarty->fetch('basket/cart_dropdown_label.tpl');

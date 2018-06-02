@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -312,7 +313,7 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getSort()
+    public function getSort(): int
     {
         return $this->nSortierung;
     }
@@ -321,7 +322,7 @@ class ProductFilter
      * @param int $nSortierung
      * @return ProductFilter
      */
-    public function setSort($nSortierung): self
+    public function setSort(int $nSortierung): self
     {
         $this->nSortierung = $nSortierung;
 
@@ -794,7 +795,7 @@ class ProductFilter
                     $this->baseState = $this->searchQuery;
                 }
             }
-        } elseif (strlen($params['cSuche']) > 0) {
+        } elseif ($params['cSuche'] !== null && strlen($params['cSuche']) > 0) {
             $params['cSuche'] = \StringHandler::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
             $this->searchQuery->setName($params['cSuche']);

@@ -18,7 +18,6 @@ function gibRedirect($cRedirect)
 
     switch ($cRedirect) {
         case R_LOGIN_WUNSCHLISTE:
-            $linkHelper                  = LinkHelper::getInstance();
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'a';
@@ -33,7 +32,7 @@ function gibRedirect($cRedirect)
             $oTMP->Wert                  = 1;
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_WUNSCHLISTE;
-            $oRedirect->cURL             = $linkHelper->getStaticRoute('wunschliste.php', false);
+            $oRedirect->cURL             = Shop::Container()->getLinkService()->getStaticRoute('wunschliste.php', false);
             $oRedirect->cName            = Shop::Lang()->get('wishlist', 'redirect');
             break;
         case R_LOGIN_BEWERTUNG:
@@ -445,7 +444,6 @@ function fuehreLoginAus($userLogin, $passLogin)
                         $bPersWarenkorbGeladen = true;
                     }
                 }
-                LinkHelper::getInstance()->buildLinkGroups(true);
                 // Pruefe, ob Artikel im Warenkorb vorhanden sind,
                 // welche für den aktuellen Kunden nicht mehr sichtbar sein duerfen
                 pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);

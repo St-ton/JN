@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 Shop::setPageType(PAGE_KONTAKT);
 $AktuelleSeite = 'KONTAKT';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
-$linkHelper    = LinkHelper::getInstance();
+$linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
 //hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
@@ -106,8 +106,7 @@ if (pruefeBetreffVorhanden()) {
 }
 
 Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
-    ->assign('Spezialcontent', $SpezialContent)
-    ->assign('requestURL', $requestURL ?? null);
+    ->assign('Spezialcontent', $SpezialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);

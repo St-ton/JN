@@ -52,13 +52,9 @@ class Preisverlauf
      * @param int $nMonat
      * @return mixed
      */
-    public function gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat)
+    public function gibPreisverlauf(int $kArtikel, int $kKundengruppe, int $nMonat)
     {
-        $_currency     = null;
-        $kArtikel      = (int)$kArtikel;
-        $kKundengruppe = (int)$kKundengruppe;
-        $nMonat        = (int)$nMonat;
-        $cacheID       = 'gpv_' . $kArtikel . '_' . $kKundengruppe . '_' . $nMonat;
+        $cacheID = 'gpv_' . $kArtikel . '_' . $kKundengruppe . '_' . $nMonat;
         if (($obj_arr = Shop::Cache()->get($cacheID)) === false) {
             $obj_arr = Shop::Container()->getDB()->query(
                 "SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
@@ -96,9 +92,9 @@ class Preisverlauf
      * @param int $kPreisverlauf
      * @return $this
      */
-    public function loadFromDB($kPreisverlauf)
+    public function loadFromDB(int $kPreisverlauf): self
     {
-        $obj = Shop::Container()->getDB()->select('tpreisverlauf', 'kPreisverlauf', (int)$kPreisverlauf);
+        $obj = Shop::Container()->getDB()->select('tpreisverlauf', 'kPreisverlauf', $kPreisverlauf);
         if ($obj !== null) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
@@ -114,7 +110,7 @@ class Preisverlauf
      *
      * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $obj = kopiereMembers($this);
         unset($obj->kPreisverlauf);
@@ -128,7 +124,7 @@ class Preisverlauf
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $obj = kopiereMembers($this);
 
@@ -138,16 +134,11 @@ class Preisverlauf
     /**
      * setzt Daten aus Sync POST request.
      *
-     * @return bool - true, wenn alle notwendigen Daten vorhanden, sonst false
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzePostDaten()
+    public function setzePostDaten(): bool
     {
-        $this->kPreisverlauf  = (int)$_POST['PStaffelKey'];
-        $this->kArtikel       = (int)$_POST['KeyArtikel'];
-        $this->fPreisPrivat   = (float)$_POST['ArtikelVKBrutto'];
-        $this->fPreisHaendler = (float)$_POST['ArtikelVKHaendlerBrutto'];
-        $this->dDate          = 'now()';
-
-        return $this->kArtikel > 0;
+        return false;
     }
 }

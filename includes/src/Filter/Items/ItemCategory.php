@@ -195,14 +195,15 @@ class ItemCategory extends BaseCategory
                         AND tseo.cKey = 'kKategorie'
                         AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kKategorie
-                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName"
-            , 2
+                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName",
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $langID           = $this->getLanguageID();
         $customerGroupID  = $this->getCustomerGroupID();
         $additionalFilter = new self($this->productFilter);
         $helper           = \KategorieHelper::getInstance($langID, $customerGroupID);
         foreach ($categories as $category) {
+            $category->kKategorie = (int)$category->kKategorie;
             // Anzeigen als Kategoriepfad
             if ($categoryFilterType === 'KP') {
                 $category->cName = $helper->getPath(new \Kategorie($category->kKategorie, $langID, $customerGroupID));
@@ -215,9 +216,9 @@ class ItemCategory extends BaseCategory
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setName($category->cName)
-                ->setValue((int)$category->kKategorie)
-                ->setCount($category->nAnzahl)
-                ->setSort($category->nSort);
+                ->setValue($category->kKategorie)
+                ->setCount((int)$category->nAnzahl)
+                ->setSort((int)$category->nSort);
         }
         // neue Sortierung
         if ($categoryFilterType === 'KP') {

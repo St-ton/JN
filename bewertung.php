@@ -33,7 +33,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
 } elseif (verifyGPCDataInteger('bfa') === 1) {
     // Prüfe, ob Kunde eingeloggt
     if (empty($_SESSION['Kunde']->kKunde)) {
-        $helper = LinkHelper::getInstance();
+        $helper = Shop::Container()->getLinkService();
         header('Location: ' . $helper->getStaticRoute('jtl.php') .
                 '?a=' . verifyGPCDataInteger('a') .
                 '&bfa=1&r=' . R_LOGIN_BEWERTUNG,
@@ -81,8 +81,6 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
             Shop::Lang()->get('bewertung', 'breadcrumb'),
             'bewertung.php?a=' . $AktuellerArtikel->kArtikel . '&bfa=1'))
         ->assign('Artikel', $AktuellerArtikel)
-        ->assign('requestURL', $requestURL ?? null)
-        ->assign('sprachURL', $sprachURL ?? null)
         ->assign('oBewertung', Shop::Container()->getDB()->select(
             'tbewertung',
             ['kArtikel', 'kKunde'],

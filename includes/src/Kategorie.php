@@ -126,11 +126,10 @@ class Kategorie
      * @param int  $kKundengruppe
      * @param bool $noCache
      */
-    public function __construct($kKategorie = 0, $kSprache = 0, $kKundengruppe = 0, $noCache = false)
+    public function __construct(int $kKategorie = 0, int $kSprache = 0, int $kKundengruppe = 0, bool $noCache = false)
     {
-        $this->kSprache = (int)$kSprache;
-        if ((int)$kKategorie > 0) {
-            $this->loadFromDB((int)$kKategorie, (int)$kSprache, (int)$kKundengruppe, false, $noCache);
+        if ($kKategorie > 0) {
+            $this->loadFromDB($kKategorie, $kSprache, $kKundengruppe, false, $noCache);
         }
     }
 
@@ -144,7 +143,7 @@ class Kategorie
      * @param bool $noCache
      * @return $this
      */
-    public function loadFromDB($kKategorie, $kSprache = 0, $kKundengruppe = 0, $recall = false, $noCache = false)
+    public function loadFromDB(int $kKategorie, int $kSprache = 0, int $kKundengruppe = 0, bool $recall = false, bool $noCache = false)
     {
         $oSpracheTmp            = null;
         $oKategorieAttribut_arr = null;
@@ -165,9 +164,6 @@ class Kategorie
                 $kSprache    = $oSpracheTmp->kSprache;
             }
         }
-        $kSprache       = (int)$kSprache;
-        $kKundengruppe  = (int)$kKundengruppe;
-        $kKategorie     = (int)$kKategorie;
         $this->kSprache = $kSprache;
         //exculpate session
         $cacheID = CACHING_GROUP_CATEGORY . '_' . $kKategorie . '_' . $kSprache . '_cg_' . $kKundengruppe . '_ssl_' . pruefeSSL();
@@ -176,11 +172,10 @@ class Kategorie
                 $this->$k = $v;
             }
             executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, [
-                    'oKategorie' => &$this,
-                    'cacheTags'  => [],
-                    'cached'     => true
-                ]
-            );
+                'oKategorie' => &$this,
+                'cacheTags'  => [],
+                'cached'     => true
+            ]);
 
             return $this;
         }
@@ -367,7 +362,7 @@ class Kategorie
      *
      * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $obj                        = new stdClass();
         $obj->kKategorie            = $this->kKategorie;
@@ -386,7 +381,7 @@ class Kategorie
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $obj                        = new stdClass();
         $obj->kKategorie            = $this->kKategorie;
@@ -427,9 +422,9 @@ class Kategorie
      *
      * @return bool - true, wenn Unterkategorien existieren
      */
-    public function existierenUnterkategorien()
+    public function existierenUnterkategorien(): bool
     {
-        return ($this->bUnterKategorien > 0);
+        return $this->bUnterKategorien > 0;
     }
 
     /**
@@ -438,7 +433,7 @@ class Kategorie
      * @param bool $full
      * @return string|null
      */
-    public function getKategorieBild($full = false)
+    public function getKategorieBild(bool $full = false)
     {
         if ($this->kKategorie > 0) {
             if (!empty($this->cBildURL)) {
@@ -490,17 +485,12 @@ class Kategorie
     /**
      * set data from sync POST request
      *
-     * @return bool - true, wenn alle notwendigen Daten vorhanden, sonst false
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzePostDaten()
+    public function setzePostDaten(): bool
     {
-        $this->kKategorie     = (int)$_POST['KeyKategorie'];
-        $this->kOberKategorie = (int)$_POST['KeyOberKategorie'];
-        $this->cName          = StringHandler::htmlentities(StringHandler::filterXSS($_POST['KeyName']));
-        $this->cBeschreibung  = StringHandler::htmlentities(StringHandler::filterXSS($_POST['KeyBeschreibung']));
-        $this->nSort          = (int)$_POST['Sort'];
-
-        return ($this->kKategorie > 0 && $this->cName);
+        return false;
     }
 
     /**

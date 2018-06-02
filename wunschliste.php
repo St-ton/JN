@@ -23,7 +23,7 @@ $CWunschliste     = null;
 $action           = null;
 $kWunschlistePos  = null;
 $oWunschliste_arr = [];
-$linkHelper       = LinkHelper::getInstance();
+$linkHelper       = Shop::Container()->getLinkService();
 
 if ($kWunschliste === 0 && !empty($_SESSION['Kunde']->kKunde) && empty($_SESSION['Wunschliste']->kWunschliste)) {
     //create new wishlist at very first visit
@@ -279,9 +279,7 @@ if (verifyGPCDataInteger('error') === 1) {
         exit;
     }
 }
-$link       = ($cParameter_arr['kLink'] > 0) ? $linkHelper->getPageLink($cParameter_arr['kLink']) : null;
-$requestURL = baueURL($link, URLART_SEITE);
-$sprachURL  = $link->languageURLs ?? baueSprachURLS($link, URLART_SEITE);
+$link = ($cParameter_arr['kLink'] > 0) ? $linkHelper->getPageLink($cParameter_arr['kLink']) : null;
 // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
 if (empty($CWunschliste)) {
     $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));

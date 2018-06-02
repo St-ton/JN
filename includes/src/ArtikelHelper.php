@@ -13,9 +13,8 @@ class ArtikelHelper
      * @param int $kArtikel
      * @return bool
      */
-    public static function isVariChild($kArtikel)
+    public static function isVariChild(int $kArtikel): bool
     {
-        $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
             $oArtikel = Shop::Container()->getDB()->select(
                 'tartikel',
@@ -39,9 +38,8 @@ class ArtikelHelper
      * @param int $kArtikel
      * @return int
      */
-    public static function getParent($kArtikel)
+    public static function getParent(int $kArtikel): int
     {
-        $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
             $oArtikel = Shop::Container()->getDB()->select(
                 'tartikel',
@@ -67,7 +65,7 @@ class ArtikelHelper
      * @param int $kArtikel
      * @return bool
      */
-    public static function isVariCombiChild($kArtikel)
+    public static function isVariCombiChild(int $kArtikel): bool
     {
         return self::getParent($kArtikel) > 0;
     }
@@ -78,9 +76,8 @@ class ArtikelHelper
      * @param int $kArtikel
      * @return int
      */
-    public static function getArticleForParent($kArtikel)
+    public static function getArticleForParent(int $kArtikel): int
     {
-        $kArtikel            = (int)$kArtikel;
         $kKundengruppe       = Session::CustomerGroup()->getID();
         $properties          = self::getChildPropertiesForParent($kArtikel, $kKundengruppe);
         $kVariationKombi_arr = [];
@@ -93,19 +90,12 @@ class ArtikelHelper
             $kVariationKombi_arr[$i] = self::getSelectedVariationValue($i);
         }
         if ($nGueltig) {
-            $cSQL1       = '';
-            $cSQL2       = '';
-            $j           = 0;
+            $attributes      = [];
+            $attributeValues = [];
             if (count($kVariationKombi_arr) > 0) {
                 foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
-                    if ($j > 0) {
-                        $cSQL1 .= ',' . $i;
-                        $cSQL2 .= ',' . (int)$kVariationKombi;
-                    } else {
-                        $cSQL1 .= $i;
-                        $cSQL2 .= (int)$kVariationKombi;
-                    }
-                    $j++;
+                    $attributes[]      = $i;
+                    $attributeValues[] = (int)$kVariationKombi;
                 }
                 $oArtikelTMP = Shop::Container()->getDB()->query(
                     "SELECT tartikel.kArtikel
@@ -115,8 +105,8 @@ class ArtikelHelper
                         LEFT JOIN tartikelsichtbarkeit
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                        WHERE teigenschaftkombiwert.kEigenschaft IN (" . $cSQL1 . ")
-                            AND teigenschaftkombiwert.kEigenschaftWert IN (" . $cSQL2 . ")
+                        WHERE teigenschaftkombiwert.kEigenschaft IN (" . implode(',', $attributes) . ")
+                            AND teigenschaftkombiwert.kEigenschaftWert IN (" . implode(',', $attributeValues) . ")
                             AND tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = " . $kArtikel . "
                         GROUP BY tartikel.kArtikel
@@ -149,7 +139,7 @@ class ArtikelHelper
      * @param int $kKundengruppe
      * @return array
      */
-    public static function getChildPropertiesForParent($kArtikel, $kKundengruppe)
+    public static function getChildPropertiesForParent(int $kArtikel, int $kKundengruppe): array
     {
         $varCombinations = self::getPossibleVariationCombinations($kArtikel, $kKundengruppe);
         $properties      = [];
@@ -173,8 +163,11 @@ class ArtikelHelper
      * @param bool $bGroupBy
      * @return array
      */
-    public static function getPossibleVariationCombinations($kVaterArtikel, $kKundengruppe = 0, $bGroupBy = false)
-    {
+    public static function getPossibleVariationCombinations(
+        int $kVaterArtikel,
+        int $kKundengruppe = 0,
+        bool $bGroupBy = false
+    ): array {
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
@@ -191,11 +184,11 @@ class ArtikelHelper
                 "SELECT teigenschaftkombiwert.*
                     FROM teigenschaftkombiwert
                     JOIN tartikel
-                        ON tartikel.kVaterArtikel = " . (int)$kVaterArtikel . "
+                        ON tartikel.kVaterArtikel = " . $kVaterArtikel . "
                         AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . (int)$kKundengruppe . "
+                        AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     {$cGroupBy}
                     ORDER BY teigenschaftkombiwert.kEigenschaftWert",
@@ -210,7 +203,7 @@ class ArtikelHelper
      * @param int $nArtikelVariAufbau
      * @return array
      */
-    public static function getSelectedPropertiesForVarCombiArticle($kArtikel, $nArtikelVariAufbau = 0)
+    public static function getSelectedPropertiesForVarCombiArticle(int $kArtikel, int $nArtikelVariAufbau = 0): array
     {
         if ($kArtikel <= 0) {
             return [];
@@ -219,14 +212,13 @@ class ArtikelHelper
         $oProperties    = [];
         $propertyValues = [];
         $nVorhanden     = 1;
-        $kArtikel       = (int)$kArtikel;
         // Hole EigenschaftWerte zur gewaehlten VariationKombi
         $oVariationKombiKind_arr = Shop::Container()->getDB()->query(
             "SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
                 FROM teigenschaftkombiwert
                 JOIN tartikel
                     ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                    AND tartikel.kArtikel = " . (int)$kArtikel . "
+                    AND tartikel.kArtikel = " . $kArtikel . "
                 LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = " . $customerGroup . "
@@ -234,31 +226,19 @@ class ArtikelHelper
                 ORDER BY tartikel.kArtikel",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($oVariationKombiKind_arr) || count($oVariationKombiKind_arr) === 0) {
+        if (count($oVariationKombiKind_arr) === 0) {
             return [];
         }
         $kVaterArtikel = (int)$oVariationKombiKind_arr[0]->kVaterArtikel;
-
         foreach ($oVariationKombiKind_arr as $oVariationKombiKind) {
             if (!isset($propertyValues[$oVariationKombiKind->kEigenschaft])
                 || !is_array($propertyValues[$oVariationKombiKind->kEigenschaft])
             ) {
-                $propertyValues[$oVariationKombiKind->kEigenschaft] = $oVariationKombiKind->kEigenschaftWert;
+                $propertyValues[(int)$oVariationKombiKind->kEigenschaft] = (int)$oVariationKombiKind->kEigenschaftWert;
             }
         }
-        $cSQL1 = '';
-        $cSQL2 = '';
-        $j     = 0;
-        foreach ($propertyValues as $i => $kEigenschaftWertProEigenschaft) {
-            if ($j > 0) {
-                $cSQL1 .= ',' . $i;
-                $cSQL2 .= ',' . $propertyValues[$i];
-            } else {
-                $cSQL1 .= $i;
-                $cSQL2 .= $propertyValues[$i];
-            }
-            $j++;
-        }
+        $attributes       = [];
+        $attributeValues  = [];
         $kSprache         = Shop::getLanguage();
         $attr             = new stdClass();
         $attr->cSELECT    = '';
@@ -266,6 +246,10 @@ class ArtikelHelper
         $attrVal          = new stdClass();
         $attrVal->cSELECT = '';
         $attrVal->cJOIN   = '';
+        foreach ($propertyValues as $i => $kEigenschaftWertProEigenschaft) {
+            $attributes[]      = $i;
+            $attributeValues[] = $propertyValues[$i];
+        }
         if ($kSprache > 0 && !standardspracheAktiv()) {
             $attr->cSELECT = "teigenschaftsprache.cName AS cName_teigenschaftsprache, ";
             $attr->cJOIN   = "LEFT JOIN teigenschaftsprache 
@@ -293,8 +277,8 @@ class ArtikelHelper
                 " . $attrVal->cJOIN . "
                 WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-                    AND teigenschaftwert.kEigenschaft IN (" . $cSQL1 . ")
-                    AND teigenschaftwert.kEigenschaftWert IN (" . $cSQL2 . ")",
+                    AND teigenschaftwert.kEigenschaft IN (" . implode(',', $attributes) . ")
+                    AND teigenschaftwert.kEigenschaftWert IN (" . implode(',', $attributeValues) . ")",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
@@ -365,8 +349,8 @@ class ArtikelHelper
                 } else {
                     unset($oEigenschaftwerte);
                     if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD'
-                            && self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)
-                            && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0
+                        && self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)
+                        && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0
                     ) {
                         header('Location: ' . Shop::getURL() .
                             '/?a=' . $kArtikel .
@@ -426,19 +410,19 @@ class ArtikelHelper
      * @param bool $bRedirect
      * @return array
      */
-    public static function getSelectedPropertiesForArticle($kArtikel, $bRedirect = true)
+    public static function getSelectedPropertiesForArticle(int $kArtikel, bool $bRedirect = true): array
     {
         $kKundengruppe = Session::CustomerGroup()->getID();
-        $kArtikel      = (int)$kArtikel;
         // Pruefe welche kEigenschaft gesetzt ist
-        $oEigenschaft_arr = Shop::Container()->getDB()->query(
-            "SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
+        $oEigenschaft_arr = Shop::Container()->getDB()->queryPrepared(
+            'SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit 
                     ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                    AND teigenschaftsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                WHERE teigenschaft.kArtikel = " . $kArtikel . "
-                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL",
+                    AND teigenschaftsichtbarkeit.kKundengruppe = :cgroupid
+                WHERE teigenschaft.kArtikel = :articleid
+                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL',
+            ['cgroupid' => $kKundengruppe, 'articleid' => $kArtikel],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         // $oProperties anlegen
@@ -448,20 +432,25 @@ class ArtikelHelper
             return [];
         }
         foreach ($oEigenschaft_arr as $oEigenschaft) {
+            $oEigenschaft->kEigenschaft = (int)$oEigenschaft->kEigenschaft;
             if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
                 // Ist kEigenschaft zu eigenschaftwert vorhanden
                 if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
-                    $oEigenschaftWertVorhanden = Shop::Container()->getDB()->query(
-                        "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, 
+                    $oEigenschaftWertVorhanden = Shop::Container()->getDB()->queryPrepared(
+                        'SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, 
                             teigenschaftwertsichtbarkeit.kKundengruppe
                             FROM teigenschaftwert
                             LEFT JOIN teigenschaftwertsichtbarkeit
                                 ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                            WHERE teigenschaftwert.kEigenschaftWert = " . 
-                                (int)self::getSelectedVariationValue($oEigenschaft->kEigenschaft) . "
+                                AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgroupid
+                            WHERE teigenschaftwert.kEigenschaftWert = :attribvalueid
                                 AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                                AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft,
+                                AND teigenschaftwert.kEigenschaft = :attribid',
+                        [
+                            'cgroupid'      => $kKundengruppe,
+                            'attribvalueid' => self::getSelectedVariationValue($oEigenschaft->kEigenschaft),
+                            'attribid'      => $oEigenschaft->kEigenschaft
+                        ],
                         \DB\ReturnType::SINGLE_OBJECT
                     );
 
@@ -472,7 +461,7 @@ class ArtikelHelper
                         $val->cEigenschaftName     = $oEigenschaft->cName;
                         $val->cEigenschaftWertName = $oEigenschaftWertVorhanden->cName;
                         $val->cTyp                 = $oEigenschaft->cTyp;
-                        $oProperties[]                           = $val;
+                        $oProperties[]             = $val;
                     } else {
                         $nVorhanden = 0;
                         break;
@@ -488,7 +477,7 @@ class ArtikelHelper
                     }
                 }
             } else {
-                if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD' 
+                if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD'
                     && $bRedirect
                     && self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)
                     && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0
@@ -528,13 +517,13 @@ class ArtikelHelper
      * @param int $kVaterArtikel
      * @return array
      */
-    public static function getChildren($kVaterArtikel)
+    public static function getChildren(int $kVaterArtikel): array
     {
         return $kVaterArtikel > 0
             ? Shop::Container()->getDB()->selectAll(
                 'tartikel',
                 'kVaterArtikel',
-                (int)$kVaterArtikel,
+                $kVaterArtikel,
                 'kArtikel, kEigenschaftKombi'
             )
             : [];
@@ -545,12 +534,12 @@ class ArtikelHelper
      * @param int $kArtikel
      * @return bool
      */
-    public static function isParent($kArtikel)
+    public static function isParent(int $kArtikel): bool
     {
         $oArtikelTMP = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',
-            (int)$kArtikel,
+            $kArtikel,
             null,
             null,
             null,
@@ -567,9 +556,8 @@ class ArtikelHelper
      * @param bool $bInfo
      * @return bool|stdClass
      */
-    public static function isStuecklisteKomponente($kArtikel, $bInfo = false)
+    public static function isStuecklisteKomponente(int $kArtikel, $bInfo = false)
     {
-        $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
             $oObj = Shop::Container()->getDB()->select('tstueckliste', 'kArtikel', $kArtikel);
             if (isset($oObj->kStueckliste) && $oObj->kStueckliste > 0) {
@@ -587,9 +575,9 @@ class ArtikelHelper
      * neu: eigenschaftwert[{kEigenschaft}]
      *
      * @param int $groupId
-     * @return string
+     * @return string|bool
      */
-    protected static function getSelectedVariationValue($groupId)
+    protected static function getSelectedVariationValue(int $groupId)
     {
         $idx = 'eigenschaftwert_' . $groupId;
         if (isset($_POST[$idx])) {
@@ -603,15 +591,14 @@ class ArtikelHelper
      * @param int $groupId
      * @return bool
      */
-    protected static function hasSelectedVariationValue($groupId)
+    protected static function hasSelectedVariationValue(int $groupId): bool
     {
         return self::getSelectedVariationValue($groupId) !== false;
     }
 
     /**
-     * @param Artikel $artikel
+     * @param Artikel  $artikel
      * @param object[] $variationPicturesArr
-     * @return void
      */
     public static function addVariationPictures(Artikel $artikel, $variationPicturesArr)
     {
@@ -636,11 +623,11 @@ class ArtikelHelper
 
     /**
      * @param Artikel $artikel
-     * @param float $fPreis
-     * @param int $nAnzahl
+     * @param float   $fPreis
+     * @param int     $nAnzahl
      * @return stdClass
      */
-    public static function getBasePriceUnit(Artikel $artikel, $fPreis, $nAnzahl)
+    public static function getBasePriceUnit(Artikel $artikel, $fPreis, $nAnzahl): stdClass
     {
         $unitMappings = [
             'mg'  => 'kg',
@@ -652,11 +639,11 @@ class ArtikelHelper
         ];
 
         $result = (object)[
-            'fGrundpreisMenge'   => $artikel->fGrundpreisMenge,
-            'fMassMenge'         => $artikel->fMassMenge * $nAnzahl,
-            'fBasePreis'         => $fPreis / $artikel->fVPEWert,
-            'fVPEWert'           => (float)$artikel->fVPEWert,
-            'cVPEEinheit'        => $artikel->cVPEEinheit,
+            'fGrundpreisMenge' => $artikel->fGrundpreisMenge,
+            'fMassMenge'       => $artikel->fMassMenge * $nAnzahl,
+            'fBasePreis'       => $fPreis / $artikel->fVPEWert,
+            'fVPEWert'         => (float)$artikel->fVPEWert,
+            'cVPEEinheit'      => $artikel->cVPEEinheit,
         ];
 
         $gpUnit   = UnitsOfMeasure::getUnit($artikel->kGrundpreisEinheit);
@@ -673,7 +660,7 @@ class ArtikelHelper
                 $result->fMassMenge       /= $fFactor;
                 $result->fVPEWert         = $result->fMassMenge / $nAnzahl / $result->fGrundpreisMenge;
                 $result->fBasePreis       = $fPreis / $result->fVPEWert;
-                $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' . 
+                $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' .
                     UnitsOfMeasure::getPrintAbbreviation($mappedCode);
             }
         }
@@ -683,12 +670,12 @@ class ArtikelHelper
 
     /**
      * @param string        $attribute
-     * @param string        $value
+     * @param string|int    $value
      * @param callable|null $callback
      * @return mixed
      * @since 5.0
      */
-    public static function getDataByAttribute($attribute, $value, callable $callback = null)
+    public static function getDataByAttribute(string $attribute, $value, callable $callback = null)
     {
         $res = Shop::Container()->getDB()->select('tartikel', $attribute, $value);
 

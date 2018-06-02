@@ -82,15 +82,11 @@ class KategoriePict
     /**
      * setzt Daten aus Sync POST request.
      *
-     * @return bool - true, wenn alle notwendigen Daten vorhanden, sonst false
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzePostDaten()
+    public function setzePostDaten(): bool
     {
-        $this->kKategoriePict = (int)$_POST['KeyKategoriePict'];
-        $this->kKategorie     = (int)$_POST['KeyKategorie'];
-        $this->cPfad          = 'k' . StringHandler::htmlentities(StringHandler::filterXSS($_POST['KeyKategorie'])) . '.jpg';
-        $this->cType          = 0;
-
-        return ($this->kKategoriePict > 0 && $this->kKategorie > 0 && $this->cPfad);
+        return false;
     }
 }

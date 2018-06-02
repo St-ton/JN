@@ -369,7 +369,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     setzeKampagnenVorgang(KAMPAGNE_DEF_LOGIN, $Kunde->kKunde, 1.0); // Login
                 }
-                $session = Session::getInstance();
+                $session = \Session\Session::getInstance();
                 $session->setCustomer($Kunde);
                 // Setzt aktuelle Wunschliste (falls vorhanden) vom Kunden in die Session
                 setzeWunschlisteInSession();

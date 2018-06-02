@@ -482,12 +482,12 @@ final class Shop
     /**
      * get session instance
      *
-     * @return Session
+     * @return \Session\Session
      * @throws Exception
      */
-    public function Session(): Session
+    public function Session(): \Session\Session
     {
-        return Session::getInstance();
+        return \Session\Session::getInstance();
     }
 
     /**

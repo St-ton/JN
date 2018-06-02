@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/globalinclude.php';
-$session = Session::getInstance();
+$session = \Session\Session::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 

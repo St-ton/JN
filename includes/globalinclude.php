@@ -97,8 +97,8 @@ if (!JTL_INCLUDE_ONLY_DB) {
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $oBoxen              = Boxen::getInstance();
     $session             = (defined('JTLCRON') && JTLCRON === true)
-        ? Session::getInstance(true, true, 'JTLCRON')
-        : Session::getInstance();
+        ? \Session\Session::getInstance(true, true, 'JTLCRON')
+        : \Session\Session::getInstance();
     $bAdminWartungsmodus = false;
     if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'Y'
         && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php'

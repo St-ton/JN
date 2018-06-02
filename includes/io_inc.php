@@ -319,7 +319,7 @@ function removeFromComparelist($kArtikel)
     $_GET['Vergleichsliste'] = 1;
     $_GET['vlplo']           = $kArtikel;
 
-    Session::getInstance()->setStandardSessionVars();
+    \Session\Session::getInstance()->setStandardSessionVars();
     $oResponse->nType     = 2;
     $oResponse->nCount    = count($_SESSION['Vergleichsliste']->oArtikel_arr);
     $oResponse->cTitle    = Shop::Lang()->get('compare');
@@ -476,7 +476,7 @@ function removeFromWishlist($kArtikel)
     $_GET['Wunschliste'] = 1;
     $_GET['wlplo']       = $kArtikel;
 
-    Session::getInstance()->setStandardSessionVars();
+    \Session\Session::getInstance()->setStandardSessionVars();
     $oResponse->nType     = 2;
     $oResponse->nCount    = count($_SESSION['Wunschliste']->CWunschlistePos_arr);
     $oResponse->cTitle    = Shop::Lang()->get('goToWishlist');

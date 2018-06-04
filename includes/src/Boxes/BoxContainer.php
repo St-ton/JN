@@ -6,22 +6,14 @@
 
 namespace Boxes;
 
+use Boxes\Renderer\ContainerRenderer;
+
 /**
  * Class BoxContainer
  * @package Boxes
  */
 class BoxContainer extends AbstractBox
 {
-    /**
-     * @var string
-     */
-    private $html = '';
-
-    /**
-     * @var BoxInterface[]
-     */
-    public $children = [];
-
     /**
      * BoxContainer constructor.
      * @param array $config
@@ -34,46 +26,10 @@ class BoxContainer extends AbstractBox
     }
 
     /**
-     * @return array
-     */
-    public function getChildren(): array
-    {
-        return $this->children;
-    }
-
-    /**
-     * @param BoxInterface[] $chilren
-     */
-    public function setChildren(array $chilren)
-    {
-        $this->children = $chilren[$this->getID()] ?? [];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function render($smarty, int $pageType = 0, int $pageID = 0): string
-    {
-        foreach ($this->children as $child) {
-            $this->html .= trim($child->render($smarty, $pageType, $pageID));
-        }
-
-        return parent::render($smarty, $pageType, $pageID);
-    }
-
-    /**
      * @return string
      */
-    public function getHTML(): string
+    public function getRenderer(): string
     {
-        return $this->html;
-    }
-
-    /**
-     * @param string $html
-     */
-    public function setHTML(string $html)
-    {
-        $this->html = $html;
+        return ContainerRenderer::class;
     }
 }

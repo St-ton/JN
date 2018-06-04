@@ -220,7 +220,8 @@
                                         <label for="linkID">{#linkgroup#}</label>
                                     </span>
                                     <span class="input-group-wrap">
-                                        <select class="form-control" id="linkID" name="linkID">
+                                        <select class="form-control" id="linkID" name="linkID" required>
+                                            <option value="" {if $oEditBox->kCustomID == 0}selected="selected"{/if}>{#FillOut#}</option>
                                             {foreach from=$oLink_arr item=oLink}
                                                 <option value="{$oLink->kLinkgruppe}" {if $oLink->kLinkgruppe == $oEditBox->kCustomID}selected="selected"{/if}>{$oLink->cName}</option>
                                             {/foreach}

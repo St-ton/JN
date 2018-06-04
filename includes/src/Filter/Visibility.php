@@ -12,10 +12,10 @@ use MyCLabs\Enum\Enum;
  * Class ComponentPropertyType
  *
  * @package Filter
- * @method Visibility SHOW_NEVER()
- * @method Visibility SHOW_BOX()
- * @method Visibility SHOW_CONTENT()
- * @method Visibility SHOW_ALWAYS()
+ * @method static Visibility SHOW_NEVER()
+ * @method static Visibility SHOW_BOX()
+ * @method static Visibility SHOW_CONTENT()
+ * @method static Visibility SHOW_ALWAYS()
  */
 class Visibility extends Enum
 {

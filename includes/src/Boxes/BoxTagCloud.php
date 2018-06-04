@@ -68,7 +68,7 @@ final class BoxTagCloud extends AbstractBox
             $this->setShow(true);
             shuffle($tagCloud);
             $this->setItems($tagCloud);
-            $this->setJSON(\Boxen::gibJSONString($tagCloud));
+            $this->setJSON(AbstractBox::getJSONString($tagCloud));
             executeHook(HOOK_BOXEN_INC_TAGWOLKE, [
                 'box'        => &$this,
                 'cache_tags' => &$cacheTags,

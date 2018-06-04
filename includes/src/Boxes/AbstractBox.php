@@ -6,6 +6,7 @@
 
 namespace Boxes;
 
+use Boxes\Renderer\DefaultRenderer;
 use function Functional\first;
 
 /**
@@ -129,6 +130,16 @@ abstract class AbstractBox implements BoxInterface
     protected $json;
 
     /**
+     * @var array
+     */
+    protected $children = [];
+
+    /**
+     * @var string
+     */
+    protected $html = '';
+
+    /**
      * @var bool
      */
     protected $supportsRevisions = false;
@@ -144,12 +155,19 @@ abstract class AbstractBox implements BoxInterface
     protected $config;
 
     /**
-     * AbstractBox constructor.
-     * @param array $config
+     * @inheritdoc
      */
     public function __construct(array $config)
     {
         $this->config = $config;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRenderer(): string
+    {
+        return DefaultRenderer::class;
     }
 
     /**
@@ -239,22 +257,6 @@ abstract class AbstractBox implements BoxInterface
         }
 
         return $visible;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function render(\JTLSmarty $smarty, int $pageType = 0, int $pageID = 0): string
-    {
-        $smarty->assign('oBox', $this);
-
-        try {
-            return $this->getTemplateFile() !== '' && $this->isBoxVisible($pageType, $pageID)
-                ? $smarty->fetch($this->getTemplateFile())
-                : '';
-        } catch (\SmartyException $e) {
-            return \Shop::dbg($e->getMessage());
-        }
     }
 
     /**
@@ -641,6 +643,38 @@ abstract class AbstractBox implements BoxInterface
     public function setJSON(string $json)
     {
         $this->json = $json;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getChildren(): array
+    {
+        return $this->children;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setChildren(array $chilren)
+    {
+        $this->children = $chilren[$this->getID()] ?? [];
+    }
+
+    /**
+     * @return string
+     */
+    public function getHTML(): string
+    {
+        return $this->html;
+    }
+
+    /**
+     * @param string $html
+     */
+    public function setHTML(string $html)
+    {
+        $this->html = $html;
     }
 
     /**

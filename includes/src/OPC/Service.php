@@ -56,7 +56,7 @@ class Service
             'saveBlueprint',
             'deleteBlueprint',
             'getPageDraft',
-            'getPageRevisions',
+            'getPageDraftRevisions',
             'publicatePage',
             'lockPage',
             'unlockPage',
@@ -244,18 +244,20 @@ class Service
     }
 
     /**
-     * @param string $id
+     * @param int $key
      * @return array
+     * @throws \Exception
      */
-    public function getPageRevisions($id)
+    public function getPageDraftRevisions($key)
     {
-        $page = $this->getPage($id);
+        $page = $this->getPageDraft($key);
 
         return $this->db->getPageRevisions($page);
     }
 
     /**
      * @param array $data
+     * @throws \Exception
      */
     public function publicatePage($data)
     {

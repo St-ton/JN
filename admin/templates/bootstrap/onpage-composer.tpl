@@ -75,21 +75,21 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a href="#" id="btnImport" data-toggle="tooltip" data-placement="bottom"
+                                    <a href="#" id="btnImport" data-toggle="tooltip" data-placement="right"
                                        title="Import">
                                         <i class="fa fa-upload"></i> Import
                                     </a>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <a href="#" id="btnExport" data-toggle="tooltip" data-placement="bottom"
+                                    <a href="#" id="btnExport" data-toggle="tooltip" data-placement="right"
                                        title="Export">
                                         <i class="fa fa-download"></i> Export
                                     </a>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <a href="#" id="btnHelp" data-toggle="tooltip" data-placement="bottom"
+                                    <a href="#" id="btnHelp" data-toggle="tooltip" data-placement="right"
                                        title="Help">
                                         <i class="fa fa-question-circle"></i> Hilfe
                                     </a>
@@ -109,8 +109,8 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" id="btnClose" data-toggle="tooltip"
-                               data-placement="bottom" title="Editor schließen">
+                            <a href="#" id="btnClose" data-toggle="tooltip" data-placement="bottom"
+                               title="Editor schließen">
                                 <i class="fa fa-close"></i>
                             </a>
                         </li>
@@ -123,7 +123,7 @@
             <li class="active"><a href="#portlets" data-toggle="tab">Portlets</a></li>
             <li><a href="#blueprints" data-toggle="tab">Vorlagen</a></li>
             <li><a href="#revisions" data-toggle="tab">Versionen</a></li>
-            <li><a href="#debug" data-toggle="tab"><i class="fa fa-bug"></i></a></li>
+            <li><a href="#debug" data-toggle="tab" title="Seitenstruktur"><i class="fa fa-sitemap"></i></a></li>
         </ul>
 
         <div class="container-fluid">
@@ -378,26 +378,23 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Diesen Draft veröffentlichen...</h4>
+                    <h4 class="modal-title">Diesen Entwurf veröffentlichen...</h4>
                 </div>
                 <form id="publishForm">
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="draftName">Interner Name des Entwurfes</label>
-                            <input type="text" class="form-control" id="draftName" name="draftName"
-                                   value="">
+                            <input type="text" class="form-control" id="draftName" name="draftName" value="">
                         </div>
                         <div class="form-group">
                             <label>
-                                <input type="checkbox" id="publishFromEnabled">
-                                Veröffentlichen ab
+                                <input type="checkbox" id="publishFromEnabled"> Veröffentlichen ab
                             </label>
                             <input type="text" class="form-control" id="publishFrom" name="publishFrom">
                         </div>
                         <div class="form-group">
                             <label>
-                                <input type="checkbox" id="publishToEnabled">
-                                Veröffentlichen bis
+                                <input type="checkbox" id="publishToEnabled"> Veröffentlichen bis
                             </label>
                             <input type="text" class="form-control" id="publishTo" name="publishTo">
                         </div>

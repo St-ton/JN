@@ -413,7 +413,7 @@ class DB
         ];
 
         if ($page->getKey() > 0) {
-            $dbPage       = $this->shopDB->select('topcpage', 'cPageId', $page->getId());
+            $dbPage       = $this->shopDB->select('topcpage', 'kPage', $page->getKey());
             $oldAreasJson = $dbPage->cAreasJson;
             $newAreasJson = $pageDB->cAreasJson;
 

@@ -45,14 +45,14 @@ Page.prototype = {
 
     getRevisions: function(revisionsCB)
     {
-        this.io.getPageRevisions(this.id, revisionsCB);
+        this.io.getPageDraftRevisions(this.key, revisionsCB);
     },
 
     initIframe: function(jq, loadCB)
     {
         debuglog('Page initIframe');
 
-        this.jq  = jq;
+        this.jq = jq;
 
         this.rootAreas = this.jq('.opc-rootarea');
         this.fileInput = this.jq('<input type="file" accept=".json">');

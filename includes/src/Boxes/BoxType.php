@@ -24,7 +24,7 @@ class BoxType extends Enum
 
     const PLUGIN = 'plugin';
 
-    const TEXT = 'type';
+    const TEXT = 'text';
 
     const LINK = 'link';
 

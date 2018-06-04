@@ -215,9 +215,10 @@ interface BoxInterface
     public function setItems($items);
 
     /**
-     * @return array
+     * @param int $idx
+     * @return array|bool
      */
-    public function getFilter(): array;
+    public function getFilter(int $idx = null);
 
     /**
      * @param array $filter
@@ -280,4 +281,14 @@ interface BoxInterface
      * @param string $html
      */
     public function setHTML(string $html);
+
+    /**
+     * @return string
+     */
+    public function getRenderedContent(): string;
+
+    /**
+     * @param string $renderedContent
+     */
+    public function setRenderedContent(string $renderedContent);
 }

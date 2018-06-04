@@ -21,17 +21,65 @@ abstract class AbstractBox implements BoxInterface
      * @var array
      */
     private static $mapping = [
-        'compatName'   => 'Name',
-        'anzeigen'     => 'ShowCompat',
-        'kBox'         => 'ID',
-        'kBoxvorlage'  => 'BaseType',
-        'nSort'        => 'Sort',
-        'cTitel'       => 'Title',
-        'cInhalt'      => 'Content',
-        'nAnzeigen'    => 'ItemCount',
-        'cURL'         => 'URL',
-        'Artikel'      => 'Products',
-        'oArtikel_arr' => 'Products',
+        'compatName'     => 'Name',
+        'cName'          => 'Name',
+        'anzeigen'       => 'ShowCompat',
+        'kBox'           => 'ID',
+        'kBoxvorlage'    => 'BaseType',
+        'nSort'          => 'Sort',
+        'eTyp'           => 'Type',
+        'cTitel'         => 'Title',
+        'cInhalt'        => 'Content',
+        'nAnzeigen'      => 'ItemCount',
+        'cURL'           => 'URL',
+        'Artikel'        => 'Products',
+        'oArtikel_arr'   => 'Products',
+        'oContainer_arr' => 'Children',
+        'bContainer'     => 'ContainerCheckCompat',
+        'bAktiv'         => 'IsActive',
+        'kContainer'     => 'ContainerID',
+        'cFilter'        => 'Filter',
+    ];
+
+    /**
+     * @var array
+     */
+    private static $validPageTypes = [
+        PAGE_UNBEKANNT,
+        PAGE_ARTIKEL,
+        PAGE_ARTIKELLISTE,
+        PAGE_WARENKORB,
+        PAGE_MEINKONTO,
+        PAGE_KONTAKT,
+        PAGE_UMFRAGE,
+        PAGE_NEWS,
+        PAGE_NEWSLETTER,
+        PAGE_LOGIN,
+        PAGE_REGISTRIERUNG,
+        PAGE_BESTELLVORGANG,
+        PAGE_BEWERTUNG,
+        PAGE_DRUCKANSICHT,
+        PAGE_PASSWORTVERGESSEN,
+        PAGE_WARTUNG,
+        PAGE_WUNSCHLISTE,
+        PAGE_VERGLEICHSLISTE,
+        PAGE_STARTSEITE,
+        PAGE_VERSAND,
+        PAGE_AGB,
+        PAGE_DATENSCHUTZ,
+        PAGE_TAGGING,
+        PAGE_LIVESUCHE,
+        PAGE_HERSTELLER,
+        PAGE_SITEMAP,
+        PAGE_GRATISGESCHENK,
+        PAGE_WRB,
+        PAGE_PLUGIN,
+        PAGE_NEWSLETTERARCHIV,
+        PAGE_NEWSARCHIV,
+        PAGE_EIGENE,
+        PAGE_AUSWAHLASSISTENT,
+        PAGE_BESTELLABSCHLUSS,
+        PAGE_RMA
     ];
 
     /**
@@ -140,6 +188,11 @@ abstract class AbstractBox implements BoxInterface
     protected $html = '';
 
     /**
+     * @var string
+     */
+    protected $renderedContent = '';
+
+    /**
      * @var bool
      */
     protected $supportsRevisions = false;
@@ -184,8 +237,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function map(array $boxData)
     {
-        $multilang = false;
-        $data      = first($boxData);
+        $data = first($boxData);
         if ($data->eTyp === null) {
             // containers do not have a lot of data..
             $data->eTyp      = BoxType::CONTAINER;
@@ -222,6 +274,10 @@ abstract class AbstractBox implements BoxInterface
         $this->setTemplateFile($data->cTemplate);
         $this->setName($data->cName);
 
+        foreach (self::$validPageTypes as $pageType) {
+            $this->filter[$pageType] = false;
+        }
+
         foreach ($boxData as $box) {
             if (!empty($box->cFilter)) {
                 $this->filter[$box->visiblePages] = array_map('intval', explode(',', $box->cFilter));
@@ -238,6 +294,15 @@ abstract class AbstractBox implements BoxInterface
 
         }
         ksort($this->filter);
+    }
+
+    /**
+     * @param int $pageID
+     * @return bool|array
+     */
+    public function isVisibleOnPage(int $pageID)
+    {
+        return $this->filter[$pageID] ?? false;
     }
 
     /**
@@ -534,6 +599,14 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
+     * @return bool
+     */
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    /**
      * @inheritdoc
      */
     public function isActive(): bool
@@ -600,9 +673,9 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function getFilter(): array
+    public function getFilter(int $idx = null)
     {
-        return $this->filter;
+        return $idx === null ? $this->filter : $this->filter[$idx] ?? true;
     }
 
     /**
@@ -678,13 +751,92 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getRenderedContent(): string
+    {
+        return $this->renderedContent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setRenderedContent(string $renderedContent)
+    {
+        $this->renderedContent = $renderedContent;
+    }
+
+    /**
+     * special json string for sidebar clouds
+     *
+     * @param array  $oCloud_arr
+     * @param string $nSpeed
+     * @param string $nOpacity
+     * @param bool   $cColor
+     * @param bool   $cColorHover
+     * @return string
+     */
+    public static function getJSONString(
+        $oCloud_arr,
+        $nSpeed = '1',
+        $nOpacity = '0.2',
+        $cColor = false,
+        $cColorHover = false
+    ): string {
+        $iCur = 0;
+        $iMax = 15;
+        if (!count($oCloud_arr)) {
+            return '';
+        }
+        $oTags_arr                       = [];
+        $oTags_arr['options']['speed']   = $nSpeed;
+        $oTags_arr['options']['opacity'] = $nOpacity;
+        $gibTagFarbe                     = function () {
+            $cColor = '';
+            $cCodes = ['00', '33', '66', '99', 'CC', 'FF'];
+            for ($i = 0; $i < 3; $i++) {
+                $cColor .= $cCodes[rand(0, count($cCodes) - 1)];
+            }
+
+            return '0x' . $cColor;
+        };
+
+        foreach ($oCloud_arr as $oCloud) {
+            if ($iCur++ >= $iMax) {
+                break;
+            }
+            $cName               = $oCloud->cName ?? $oCloud->cSuche;
+            $cRandomColor        = (!$cColor || !$cColorHover) ? $gibTagFarbe() : '';
+            $cName               = urlencode($cName);
+            $cName               = str_replace('+', ' ', $cName); /* fix :) */
+            $oTags_arr['tags'][] = [
+                'name'  => $cName,
+                'url'   => $oCloud->cURL,
+                'size'  => (count($oCloud_arr) <= 5) ? '100' : (string)($oCloud->Klasse * 10), /* 10 bis 100 */
+                'color' => $cColor ?: $cRandomColor,
+                'hover' => $cColorHover ?: $cRandomColor
+            ];
+        }
+
+        return urlencode(json_encode($oTags_arr));
+    }
+
+    /**
+     * @return int
+     */
+    public function getContainerCheckCompat(): int
+    {
+        return $this->getBaseType() === BOX_CONTAINER ? 1 : 0;
+    }
+
+    /**
      * @return array
      */
     public function __debugInfo()
     {
         $res           = get_object_vars($this);
         $res['config'] = '*truncated*';
-        $res['filter'] = '*truncated*';
+//        $res['filter'] = '*truncated*';
 
         return $res;
     }

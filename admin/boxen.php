@@ -32,6 +32,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             break;
 
         case 'new':
+            Shop::dbg($_POST, true);
             $kBox       = $_REQUEST['item'];
             $ePosition  = $_REQUEST['position'];
             $kContainer = $_REQUEST['container'] ?? 0;
@@ -146,6 +147,11 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
             if ($ePosition !== 'left' || $nPage > 0) {
+                Shop::dbg($nPage, false, 'nPage:');
+                Shop::dbg($ePosition, false, '$ePosition:');
+                Shop::dbg($_REQUEST['box_show'], false, '$_REQUEST[\'box_show\']:');
+
+
                 $oBoxen->setzeBoxAnzeige($nPage, $ePosition, isset($_REQUEST['box_show']));
             }
             $cHinweis = 'Die Boxen wurden aktualisiert.';
@@ -179,17 +185,84 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
     $flushres = Shop::Cache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
     Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
 }
+$validPageTypes  = [
+    PAGE_UNBEKANNT,
+    PAGE_ARTIKEL,
+    PAGE_ARTIKELLISTE,
+    PAGE_WARENKORB,
+    PAGE_MEINKONTO,
+    PAGE_KONTAKT,
+    PAGE_UMFRAGE,
+    PAGE_NEWS,
+    PAGE_NEWSLETTER,
+    PAGE_LOGIN,
+    PAGE_REGISTRIERUNG,
+    PAGE_BESTELLVORGANG,
+    PAGE_BEWERTUNG,
+    PAGE_DRUCKANSICHT,
+    PAGE_PASSWORTVERGESSEN,
+    PAGE_WARTUNG,
+    PAGE_WUNSCHLISTE,
+    PAGE_VERGLEICHSLISTE,
+    PAGE_STARTSEITE,
+    PAGE_VERSAND,
+    PAGE_AGB,
+    PAGE_DATENSCHUTZ,
+    PAGE_TAGGING,
+    PAGE_LIVESUCHE,
+    PAGE_HERSTELLER,
+    PAGE_SITEMAP,
+    PAGE_GRATISGESCHENK,
+    PAGE_WRB,
+    PAGE_PLUGIN,
+    PAGE_NEWSLETTERARCHIV,
+    PAGE_NEWSARCHIV,
+    PAGE_EIGENE,
+    PAGE_AUSWAHLASSISTENT,
+    PAGE_BESTELLABSCHLUSS,
+    PAGE_RMA
+];
 $oBoxen_arr      = $oBoxen->holeBoxen($nPage, false, true, true);
 $oVorlagen_arr   = $oBoxen->holeVorlagen($nPage);
 $oBoxenContainer = Template::getInstance()->getBoxLayoutXML();
+$filterMapping = [];
+if ($nPage === PAGE_ARTIKELLISTE) { //map category name
+    $filterMapping = Shop::Container()->getDB()->query(
+        'SELECT kKategorie AS id, cName AS name FROM tkategorie',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+} elseif ($nPage === PAGE_ARTIKEL) { //map article name
+    $filterMapping = Shop::Container()->getDB()->query(
+        'SELECT kArtikel AS id, cName AS name FROM tartikel',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+} elseif ($nPage === PAGE_HERSTELLER) { //map manufacturer name
+    $filterMapping = Shop::Container()->getDB()->query(
+        'SELECT kHersteller AS id, cName AS name FROM thersteller',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+} elseif ($nPage === PAGE_EIGENE) { //map page name
+    $filterMapping = Shop::Container()->getDB()->query(
+        'SELECT kLink AS id, cName AS name FROM tlink',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+}
 
+$filterMapping = \Functional\reindex($filterMapping, function ($e) {
+    return $e->id;
+});
+$filterMapping = \Functional\map($filterMapping, function ($e) {
+    return $e->name;
+});
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
+       ->assign('filterMapping', $filterMapping)
+       ->assign('validPageTypes', $validPageTypes)
        ->assign('bBoxenAnzeigen', $oBoxen->holeBoxAnzeige($nPage))
-       ->assign('oBoxenLeft_arr', $oBoxen_arr['left'] ?? null)
-       ->assign('oBoxenTop_arr', $oBoxen_arr['top'] ?? null)
-       ->assign('oBoxenBottom_arr', $oBoxen_arr['bottom'] ?? null)
-       ->assign('oBoxenRight_arr', $oBoxen_arr['right'] ?? null)
+       ->assign('oBoxenLeft_arr', $oBoxen_arr['left'] ?? [])
+       ->assign('oBoxenTop_arr', $oBoxen_arr['top'] ?? [])
+       ->assign('oBoxenBottom_arr', $oBoxen_arr['bottom'] ?? [])
+       ->assign('oBoxenRight_arr', $oBoxen_arr['right'] ?? [])
        ->assign('oContainerTop_arr', $oBoxen->holeContainer('top'))
        ->assign('oContainerBottom_arr', $oBoxen->holeContainer('bottom'))
        ->assign('oSprachen_arr', Shop::Lang()->getAvailable())

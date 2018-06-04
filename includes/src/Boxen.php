@@ -47,6 +47,11 @@ class Boxen
     private static $_instance;
 
     /**
+     * @var \Boxes\BoxFactory
+     */
+    private $boxFactory;
+
+    /**
      * @return Boxen
      */
     public static function getInstance()
@@ -60,6 +65,7 @@ class Boxen
     public function __construct()
     {
         $this->boxConfig = Shopsetting::getInstance()->getAll();
+        $this->boxFactory = new \Boxes\BoxFactory($this->boxConfig);
         self::$_instance = $this;
     }
 
@@ -141,12 +147,12 @@ class Boxen
         $validPageTypes   = $this->getValidPageTypes();
         $oBox_arr         = [];
         $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
-        $cSQLAktiv        = $bAktiv ? " AND bAktiv = 1 " : "";
+        $cSQLAktiv        = $bAktiv ? ' AND bAktiv = 1 ' : '';
         $cPluginAktiv     = $bAktiv
             ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
             : "";
         $oBoxen_arr       = Shop::Container()->getDB()->query(
-            "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
+            'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
                        tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
                        tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus
@@ -157,9 +163,9 @@ class Boxen
                         ON tboxen.kCustomID = tplugin.kPlugin
                     LEFT JOIN tboxvorlage
                         ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                    WHERE tboxensichtbar.kSeite = " . $nSeite . $cPluginAktiv .
-            " AND tboxen.kContainer = 0 " . $cSQLAktiv . "
-                    ORDER BY tboxensichtbar.nSort ASC",
+                    WHERE tboxensichtbar.kSeite = ' . $nSeite . $cPluginAktiv .
+            ' AND tboxen.kContainer = 0 ' . $cSQLAktiv . '
+                    ORDER BY tboxensichtbar.nSort ASC',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oBoxen_arr as $oBox) {
@@ -233,7 +239,7 @@ class Boxen
                 $oBox->nContainer     = 0;
                 if ($kContainer > 0) {
                     $oContainerBoxen_arr = Shop::Container()->getDB()->query(
-                        "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, 
+                        'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, 
                             tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, tboxensichtbar.bAktiv, 
                             tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate
                             FROM tboxen
@@ -241,9 +247,9 @@ class Boxen
                                 ON tboxen.kBox = tboxensichtbar.kBox
                             LEFT JOIN tboxvorlage
                                 ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                            WHERE (tboxensichtbar.kSeite = " . $nSeite . ")
-                                AND tboxen.kContainer = " . $kContainer . $cSQLAktiv . "
-                                ORDER BY tboxensichtbar.nSort ASC",
+                            WHERE (tboxensichtbar.kSeite = ' . $nSeite . ')
+                                AND tboxen.kContainer = ' . $kContainer . $cSQLAktiv . '
+                                ORDER BY tboxensichtbar.nSort ASC',
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oContainerBoxen_arr as $childBox) {
@@ -1994,11 +2000,11 @@ class Boxen
         });
 
         return Shop::Container()->getDB()->query(
-            "SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
+            'SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
                 FROM tboxen 
                     LEFT JOIN tboxvorlage
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE ePosition IN (" . implode(',', $mapped) . ")",
+                WHERE ePosition IN (' . implode(',', $mapped) . ')',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -2072,7 +2078,6 @@ class Boxen
         $filterAfter       = !empty($this->boxConfig)
             ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults(false))
             : 0;
-        $path              = 'boxes/';
         $this->lagerFilter = $productFilter->getFilterSQL()->getStockFilterSQL();
         $htmlArray         = [
             'top'    => null,
@@ -2084,6 +2089,7 @@ class Boxen
                ->assign('bBoxenFilterNach', $filterAfter)
                ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
 
+        $boxRenderer = new \Boxes\Renderer\DefaultRenderer($smarty);
         foreach ($positionedBoxes as $_position => $_boxes) {
             if (!is_array($_boxes)) {
                 $_boxes = [];
@@ -2092,92 +2098,22 @@ class Boxen
             $this->rawData[$_position] = [];
             foreach ($_boxes as $_box) {
                 /** @var \Boxes\BoxInterface $_box */
-                $htmlArray[$_position]       .= trim($_box->render($smarty, $pageType, $pageID));
+                $renderClass = $_box->getRenderer();
+                if ($renderClass !== get_class($boxRenderer)) {
+                    $boxRenderer = new $renderClass($smarty);
+                }
+                $boxRenderer->setBox($_box);
+                $htmlArray[$_position]       .= trim($boxRenderer->render($pageType, $pageID));
                 $this->rawData[$_position][] = [
                     'obj' => $_box,
                     'tpl' => $_box->getTemplateFile()
                 ];
             }
         }
+        // avoid modification of article object on render loop
+        $smarty->assign('Artikel', $originalArticle);
 
         return $htmlArray;
-    }
-
-    /**
-     * @param int $baseType
-     * @return \Boxes\BoxInterface
-     */
-    private function getBoxByBaseType(int $baseType): \Boxes\BoxInterface
-    {
-        switch ($baseType) {
-            case BOX_BESTSELLER:
-                return new \Boxes\BoxBestsellingProducts($this->boxConfig);
-            case BOX_CONTAINER:
-                return new \Boxes\BoxContainer($this->boxConfig);
-            case BOX_IN_KUERZE_VERFUEGBAR:
-                return new \Boxes\BoxUpcomingProducts($this->boxConfig);
-            case BOX_ZULETZT_ANGESEHEN:
-                return new \Boxes\BoxRecentlyViewedProducts($this->boxConfig);
-            case BOX_NEUE_IM_SORTIMENT:
-                return new \Boxes\BoxNewProducts($this->boxConfig);
-            case BOX_TOP_ANGEBOT:
-                return new \Boxes\BoxTopOffers($this->boxConfig);
-            case BOX_SONDERANGEBOT:
-                return new \Boxes\BoxSpecialOffers($this->boxConfig);
-            case BOX_LOGIN:
-                return new \Boxes\BoxLogin($this->boxConfig);
-            case BOX_GLOBALE_MERKMALE:
-                return new \Boxes\BoxGlobalAttributes($this->boxConfig);
-            case BOX_KATEGORIEN:
-                return new \Boxes\BoxProductCategories($this->boxConfig);
-            case BOX_NEWS_KATEGORIEN:
-                return new \Boxes\BoxNewsCategories($this->boxConfig);
-            case BOX_NEWS_AKTUELLER_MONAT:
-                return new \Boxes\BoxNewsCurrentMonth($this->boxConfig);
-            case BOX_TAGWOLKE:
-                return new \Boxes\BoxTagCloud($this->boxConfig);
-            case BOX_WUNSCHLISTE:
-                return new \Boxes\BoxWishlist($this->boxConfig);
-            case BOX_WARENKORB:
-                return new \Boxes\BoxCart($this->boxConfig);
-            case BOX_SCHNELLKAUF:
-                return new \Boxes\BoxDirectPurchase($this->boxConfig);
-            case BOX_VERGLEICHSLISTE:
-                return new \Boxes\BoxCompareList($this->boxConfig);
-            case BOX_EIGENE_BOX_MIT_RAHMEN:
-            case BOX_EIGENE_BOX_OHNE_RAHMEN:
-                return new \Boxes\BoxPlain($this->boxConfig);
-            case BOX_LINKGRUPPE:
-                return new \Boxes\BoxLinkGroup($this->boxConfig);
-            case BOX_UMFRAGE:
-                return new \Boxes\BoxPoll($this->boxConfig);
-            case BOX_PREISRADAR:
-                return new \Boxes\BoxPriceRadar($this->boxConfig);
-            case BOX_HERSTELLER:
-                return new \Boxes\BoxManufacturer($this->boxConfig);
-            case BOX_FILTER_MERKMALE:
-                return new \Boxes\BoxFilterAttribute($this->boxConfig);
-            case BOX_FILTER_KATEGORIE:
-                return new \Boxes\BoxFilterCategory($this->boxConfig);
-            case BOX_FILTER_HERSTELLER:
-                return new \Boxes\BoxFilterManufacturer($this->boxConfig);
-            case BOX_FILTER_TAG:
-                return new \Boxes\BoxFilterTag($this->boxConfig);
-            case BOX_FILTER_PREISSPANNE:
-                return new \Boxes\BoxFilterPricerange($this->boxConfig);
-            case BOX_FILTER_BEWERTUNG:
-                return new \Boxes\BoxFilterRating($this->boxConfig);
-            case BOX_FILTER_SUCHE:
-                return new \Boxes\BoxFilterSearch($this->boxConfig);
-            case BOX_FILTER_SUCHSPECIAL:
-                return new \Boxes\BoxFilterItem($this->boxConfig);
-            case BOX_TRUSTEDSHOPS_GUETESIEGEL:
-                return new \Boxes\BoxTrustedShopsSeal($this->boxConfig);
-            case BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN:
-                return new \Boxes\BoxTrustedShopsReviews($this->boxConfig);
-            default:
-                return new \Boxes\BoxDefault($this->boxConfig);
-        }
     }
 
     /**
@@ -2208,18 +2144,16 @@ class Boxen
         $visiblePositions = \Functional\map($visiblePositions, function ($e) {
             return "'" . $e . "'";
         });
-        $validPageTypes   = $this->getValidPageTypes();
-        $oBox_arr         = [];
         $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
         $cSQLAktiv        = $bAktiv
-            ? " AND bAktiv = 1 AND tboxen.ePosition IN (" . implode(',', $visiblePositions) . ")"
+            ? ' AND bAktiv = 1 AND tboxen.ePosition IN (' . implode(',', $visiblePositions) . ')'
             : '';
         $cPluginAktiv     = $bAktiv
             ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
-            : "";
+            : '';
         if (($grouped = Shop::Cache()->get($cacheID)) === false) {
             $boxData = Shop::Container()->getDB()->query(
-                "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
+                'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
                        tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
                        tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus,
@@ -2236,9 +2170,9 @@ class Boxen
                         ON tboxsprache.kBox = tboxen.kBox
                     LEFT JOIN tsprache
                         ON tsprache.cISO = tboxsprache.cISO
-                    WHERE tboxen.kContainer > -1 " . $cSQLAktiv .
-                " GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
-                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC",
+                    WHERE tboxen.kContainer > -1 ' . $cSQLAktiv . $cPluginAktiv .
+                ' GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
+                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $grouped = \Functional\group($boxData, function ($e) {
@@ -2253,7 +2187,7 @@ class Boxen
             }
             $first = \Functional\first($boxes);
             if ((int)$first->kContainer > 0) {
-                $boxInstance = $this->getBoxByBaseType($first->kBoxvorlage);
+                $boxInstance = $this->boxFactory->getBoxByBaseType($first->kBoxvorlage);
                 $boxInstance->map($boxes);
                 if (!isset($children[(int)$first->kContainer])) {
                     $children[(int)$first->kContainer] = [];
@@ -2268,7 +2202,7 @@ class Boxen
                 continue;
             }
             $first       = \Functional\first($boxes);
-            $boxInstance = $this->getBoxByBaseType($first->kBoxvorlage);
+            $boxInstance = $this->boxFactory->getBoxByBaseType($first->kBoxvorlage);
             $boxInstance->map($boxes);
             if ($boxInstance->getType() === \Boxes\BoxType::CONTAINER) {
                 $boxInstance->setChildren($children);

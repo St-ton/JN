@@ -46,8 +46,8 @@ final class BoxLinkGroup extends AbstractBox
         if ($this->linkGroup !== null) {
             $this->setShow($this->linkGroup->getLinks()->count() > 0);
             $this->setLinkGroupTemplate($this->linkGroup->getTemplate());
-        } else {
-            throw new \InvalidArgumentException('Cannot find link group id ' . $this->getCustomID());
+//        } else {
+//            throw new \InvalidArgumentException('Cannot find link group id ' . $this->getCustomID());
         }
     }
 

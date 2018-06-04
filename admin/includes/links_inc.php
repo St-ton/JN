@@ -91,6 +91,46 @@ function parseText($cText, $kLink)
 }
 
 /**
+ * @param \Link\LinkInterface $link
+ * @param int                 $old
+ * @param int                 $new
+ */
+function updateChildLinkGroups(\Link\LinkInterface $link, int $old, int $new)
+{
+    $link->buildChildLinks();
+    $upd              = new stdClass();
+    $upd->linkGroupID = $new;
+    foreach ($link->getChildLinks() as $childLink) {
+        Shop::Container()->getDB()->update(
+            'tlinkgroupassociations',
+            ['linkGroupID', 'linkID'],
+            [$old, $childLink->getID()],
+            $upd
+        );
+        updateChildLinkGroups($childLink, $old, $new);
+    }
+}
+
+/**
+ * @param \Link\LinkInterface $link
+ * @param int                 $linkGroupID
+ */
+function copyChildLinksToLinkGroup(\Link\LinkInterface $link, int $linkGroupID)
+{
+    $link->buildChildLinks();
+    $ins              = new stdClass();
+    $ins->linkGroupID = $linkGroupID;
+    foreach ($link->getChildLinks() as $childLink) {
+        $ins->linkID = $childLink->getID();
+        Shop::Container()->getDB()->insert(
+            'tlinkgroupassociations',
+            $ins
+        );
+        copyChildLinksToLinkGroup($childLink, $linkGroupID);
+    }
+}
+
+/**
  * @param int $a
  * @param int $b
  * @return int

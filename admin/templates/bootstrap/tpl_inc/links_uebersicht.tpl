@@ -1,6 +1,6 @@
 <script type="text/javascript">
     function confirmDelete() {ldelim}
-        return confirm('Möchten Sie den Link wirklich löschen?\nBitte beachten Sie, dass auch untergeordnete Links gelöscht werden!');
+        return confirm('Möchten Sie den Link wirklich löschen?\nBitte beachten Sie, dass auch untergeordnete Links und alle Kopien gelöscht werden!');
     {rdelim}
 </script>
 

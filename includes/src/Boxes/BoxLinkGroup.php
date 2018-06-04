@@ -36,6 +36,22 @@ final class BoxLinkGroup extends AbstractBox
     }
 
     /**
+     * @inheritdoc
+     */
+    public function map(array $boxData)
+    {
+        parent::map($boxData);
+        $this->setShow(false);
+        $this->linkGroup = \Shop::Container()->getLinkService()->getLinkGroupByID($this->getCustomID());
+        if ($this->linkGroup !== null) {
+            $this->setShow($this->linkGroup->getLinks()->count() > 0);
+            $this->setLinkGroupTemplate($this->linkGroup->getTemplate());
+        } else {
+            throw new \InvalidArgumentException('Cannot find link group id ' . $this->getCustomID());
+        }
+    }
+
+    /**
      * @return LinkGroup|null
      */
     public function getLinkGroup()
@@ -65,22 +81,5 @@ final class BoxLinkGroup extends AbstractBox
     public function setLinkGroupTemplate(string $linkGroupTemplate)
     {
         $this->linkGroupTemplate = $linkGroupTemplate;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function render($smarty, int $pageType = 0, int $pageID = 0): string
-    {
-        $this->setShow(false);
-        $this->linkGroup = \Shop::Container()->getLinkService()->getLinkGroupByID($this->customID);
-        if ($this->linkGroup !== null) {
-            $this->setShow($this->linkGroup->getLinks()->count() > 0);
-            $this->setLinkGroupTemplate($this->linkGroup->getTemplate());
-        } else {
-            throw new \InvalidArgumentException('Cannot find link group id ' . $this->customID);
-        }
-
-        return parent::render($smarty, $pageType, $pageID);
     }
 }

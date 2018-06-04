@@ -1,11 +1,8 @@
 {assign var="title" value=$instance->getProperty('sliderTitle')}
 
 {if $productlist|@count > 0}
-    {if !isset($tplscope)}
-        {assign var='tplscope' value='slider'}
-    {/if}
     <section class="panel{if $title|strlen > 0} panel-default{/if}
-                    panel-slider{if $tplscope === 'box'} box box-slider{/if}
+                    panel-slider
                     {if isset($class) && $class|strlen > 0} {$class}{/if}"
             {if isset($id) && $id|strlen > 0} id="{$id}"{/if}>
         <div class="panel-heading">
@@ -22,8 +19,7 @@
             {/if}
         </div>
         <div{if $title|strlen > 0} class="panel-body"{/if}>
-            <div class="{if $tplscope == 'box'}{block name="product-box-slider-class"}evo-box-slider{/block}
-                        {else}{block name="product-slider-class"}evo-slider{/block}{/if}">
+            <div class="{block name="product-slider-class"}evo-opc-slider{/block}">
                 {foreach name="sliderproducts" from=$productlist item='product'}
                     <div class="product-wrapper{if isset($style)} {$style}{/if}"
                          {if isset($Link) && $Link->nLinkart == $smarty.const.LINKTYP_STARTSEITE}
@@ -32,10 +28,20 @@
                              itemprop="isRelatedTo"
                          {/if}
                          itemscope itemtype="http://schema.org/Product">
-                        {include file='productlist/item_slider.tpl' Artikel=$product tplscope=$tplscope class=''}
+                        {include file='productlist/item_slider.tpl' Artikel=$product tplscope='' class=''}
                     </div>
                 {/foreach}
             </div>
         </div>
+        <script>
+            $(window).on('load.opc', function () {
+                $('.evo-opc-slider:not(.slick-initialized)').slick({
+                    //dots: true,
+                    arrows: true,
+                    lazyLoad: 'ondemand',
+                    slidesToShow: {$instance->getProperty('productCount')},
+                });
+            });
+        </script>
     </section>{* /panel *}
 {/if}

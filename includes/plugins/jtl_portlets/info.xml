@@ -13,16 +13,56 @@
         </Version>
         <Portlets>
             <Portlet>
-                <Title>Sample</Title>
-                <Class>Sample</Class>
+                <Title>Alert</Title>
+                <Class>Alert</Class>
                 <Group>content</Group>
                 <Active>1</Active>
             </Portlet>
         </Portlets>
         <Blueprints>
             <Blueprint>
-                <Name>Zwei Tiere</Name>
-                <JSONFile>zwei_tiere.json</JSONFile>
+                <Name>Bild links Text rechts</Name>
+                <JSONFile>image_4_text_8.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Text links Bild rechts</Name>
+                <JSONFile>text_8_image_4.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Team mehrspaltig mit Bild</Name>
+                <JSONFile>team_section.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Person Bild Position Beschr</Name>
+                <JSONFile>team_single.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Product teaser 2-spaltig</Name>
+                <JSONFile>product_teaser.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Text Video 2-spaltig</Name>
+                <JSONFile>text_6_video_6.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Icon Text 4-spaltig</Name>
+                <JSONFile>icon_text_4_cols.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Price Item</Name>
+                <JSONFile>price_item.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Price Table</Name>
+                <JSONFile>price_table.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Flip Cards 4-spaltig</Name>
+                <JSONFile>flip_cards_4_cols.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>FAQ</Name>
+                <JSONFile>faq.json</JSONFile>
             </Blueprint>
         </Blueprints>
     </Install>

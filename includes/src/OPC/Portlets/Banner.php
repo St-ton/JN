@@ -12,6 +12,7 @@ class Banner extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->setProperty('kImageMap', uniqid('', false));
         $instance->addClass('img-responsive');
 
         return
@@ -100,22 +101,18 @@ class Banner extends \OPC\Portlet
                 'type'       => 'image',
                 'dspl_width' => 50,
             ],
-            'kImageMap' => [
-                'type'    => 'hidden',
-                'default' => uniqid('', false),
-            ],
             'zones'     => [
-                'type'    => 'banner-zones',
+                'type'    => 'Zonen',
                 'default' => [],
             ],
             'class'     => [
                 'label' => 'CSS Class',
             ],
             'alt'       => [
-                'label' => 'alt text',
+                'label' => 'Altenativtext',
             ],
             'title'     => [
-                'label' => 'title'
+                'label' => 'Titel'
             ],
         ];
 

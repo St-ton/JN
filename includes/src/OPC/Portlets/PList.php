@@ -21,8 +21,8 @@ class PList extends \OPC\Portlet
         $res .= '>';
 
         for ($x = 0; $x < (int)$instance->getProperty('count'); ++$x) {
-            $res .= '<li><div class="opc-area" data-area-id="' . $instance->getProperty("list-id"). '_'. $x . '">'
-                . $instance->getSubareaPreviewHtml($instance->getProperty("list-id"). '_'. $x) . '</div></li>';
+            $res .= '<li><div class="opc-area" data-area-id="sub_'. $x . '">'
+                . $instance->getSubareaPreviewHtml('sub_'. $x) . '</div></li>';
         }
 
         $res .= '</'. $instance->getProperty('listType') .'></div>';
@@ -40,8 +40,8 @@ class PList extends \OPC\Portlet
         $res .= '>';
 
         for ($x = 0; $x < (int)$instance->getProperty('count'); ++$x) {
-            $res .= '<li><div class="opc-area">'
-                . $instance->getSubareaFinalHtml($instance->getProperty("list-id") . '_'. $x) . '</div></li>';
+            $res .= '<li><div>'
+                . $instance->getSubareaFinalHtml('sub_'. $x) . '</div></li>';
         }
 
         $res .= '</'. $instance->getProperty('listType') .'></div>';
@@ -63,13 +63,8 @@ class PList extends \OPC\Portlet
     {
         return [
             // general
-            'list-id'         => [
-                'label'      => 'ID',
-                'dspl_width' => 50,
-                'default'    => uniqid('', false),
-            ],
             'list-class'      => [
-                'label'      => 'Class',
+                'label'      => 'CSS Klasse',
                 'dspl_width' => 50,
             ],
             'listType'        => [
@@ -77,8 +72,8 @@ class PList extends \OPC\Portlet
                 'type'       => 'radio',
                 'dspl_width' => 50,
                 'options'    => [
-                    'ordered list'   => 'ol',
-                    'unordered list' => 'ul',
+                    'ol' => 'geordnete Liste',
+                    'ul' => 'einfache Aufzählung',
                 ],
                 'default'    => 'ol',
             ],
@@ -89,15 +84,15 @@ class PList extends \OPC\Portlet
                 'dspl_width' => 50,
             ],
             'list-style-type' => [
-                'label'      => 'Type',
+                'label'      => 'Typ',
                 'type'       => 'select',
                 'dspl_width' => 50,
                 'options'    => [
                     ''            => 'default',
-                    'lower-latin' => 'lower-latin',
-                    'lower-roman' => 'lower-roman',
-                    'upper-latin' => 'upper-latin',
-                    'upper-roman' => 'upper-roman',
+                    'lower-latin' => 'latein. Kleinbuchstaben',
+                    'lower-roman' => 'kleine röm. Zahlen',
+                    'upper-latin' => 'latein. Großbuchstaben',
+                    'upper-roman' => 'große röm. Zahlen',
                 ]
             ],
         ];

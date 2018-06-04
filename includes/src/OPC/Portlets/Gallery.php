@@ -12,6 +12,7 @@ class Gallery extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->setProperty('uid', uniqid('gllry-', false));
         $images = $instance->getProperty('gllry_images');
         unset($images['NEU']);
         if (!empty($images)) {
@@ -31,11 +32,11 @@ class Gallery extends \OPC\Portlet
         }
         $instance->setProperty('gllry_images',$images);
         $id = !empty($instance->getProperty('id')) ? $instance->getProperty('id') : uniqid('gllry_', false);
-        $instance->setAttribute('id',$id);
+        $instance->setAttribute('id', $id);
 
         $instance
             ->addClass('row')
-            ->addClass('gal-container');
+            ->addClass('gllry-container');
 
         return $this->getPreviewHtmlFromTpl($instance);
     }
@@ -61,12 +62,10 @@ class Gallery extends \OPC\Portlet
         }
 
         $instance->setProperty('gllry_images',$images);
-        $id = !empty($instance->getProperty('id')) ? $instance->getProperty('id') : uniqid('gllry_');
-        $instance->setAttribute('id',$id);
 
         $instance
             ->addClass('row')
-            ->addClass('gal-container');
+            ->addClass('gllry-container');
 
         return $this->getFinalHtmlFromTpl($instance);
     }
@@ -85,17 +84,13 @@ class Gallery extends \OPC\Portlet
     {
         return [
             'gllry_height' => [
-                'label'      => 'height of preview',
+                'label'      => 'Höhe der Vorschaubilder',
                 'type'       => 'number',
                 'default'    => 250,
                 'dspl_width' => 50,
             ],
-            'id'           => [
-                'label'      => 'id',
-                'dspl_width' => 50,
-            ],
             'class'        => [
-                'label'      => 'CSS Class',
+                'label'      => 'CSS Klasse',
                 'dspl_width' => 50,
             ],
             'gllry_images' => [

@@ -39,15 +39,15 @@ class Revision
                 'reference_id'  => 'kEmailvorlage',
                 'reference_key' => 'kSprache'
             ],
-            'news'    => [
-                'table' => 'tnews',
-                'id'    => 'kNews'
-            ],
-            'opcpage' => [
+            'opcpage'       => [
                 'table' => 'topcpage',
                 'id'    => 'kPage'
             ],
-            'box'     => [
+            'news'          => [
+                'table' => 'tnews',
+                'id'    => 'kNews'
+            ],
+            'box'           => [
                 'table'         => 'tboxen',
                 'id'            => 'kBox',
                 'reference'     => 'tboxsprache',
@@ -61,9 +61,9 @@ class Revision
                 'reference_id'  => 'kNewslettervorlage',
                 'reference_key' => 'kNewslettervorlageStdVar'
             ],
-            'newsletter' => [
-                'table'         => 'tnewslettervorlage',
-                'id'            => 'kNewsletterVorlage'
+            'newsletter'    => [
+                'table' => 'tnewslettervorlage',
+                'id'    => 'kNewsletterVorlage'
             ]
         ];
     }

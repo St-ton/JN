@@ -361,7 +361,18 @@
                                         </div>
                                     </label>
                                 </div>
-
+                                <div class="radio">
+                                    <label class="tour-label">
+                                        <input type="radio" name="help-tour" id="helpTour4" value="ht4"
+                                               class="hidden">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">Einstellungen (Vertiefung)</div>
+                                            <div class="panel-body">
+                                                Lerne hier ein paar Tricks um deine Seiten für die verschiedenen Displayformate fit zu machen.
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
                                 <div class="btn-group pull-right">
                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
                                     <button class="btn btn-primary">Tour starten</button>

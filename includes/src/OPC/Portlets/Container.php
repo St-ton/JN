@@ -13,6 +13,7 @@ class Container extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->setProperty('uid', uniqid('cntr-', false));
         if (!empty($instance->getProperty('parallax-flag')) && !empty($instance->getProperty('src'))) {
             $name = explode('/', $instance->getProperty('src'));
             $name = end($name);
@@ -27,11 +28,14 @@ class Container extends \OPC\Portlet
 
             $instance->getImageAttributes(\Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
         }
+        if (!empty($instance->getProperty("class"))) {
+            $instance->addClass($instance->getProperty("class"));
+        }
 
         $res = "<div ".$instance->getAttributeString().$instance->getDataAttributeString().">";
 
-        $res .= "<div class='opc-area' data-area-id='" . $instance->getProperty("uid") . "'>"
-                . $instance->getSubareaPreviewHtml($instance->getProperty("uid")) . "</div></div>";
+        $res .= "<div class='opc-area' data-area-id='cntr-0'>"
+                . $instance->getSubareaPreviewHtml('cntr-0') . "</div></div>";
 
         return $res;
     }
@@ -49,9 +53,13 @@ class Container extends \OPC\Portlet
 
             $instance->getImageAttributes(\Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
         }
+        if (!empty($instance->getProperty("class"))) {
+            $instance->addClass($instance->getProperty("class"));
+        }
+
         $res = "<div ".$instance->getAttributeString().">";
 
-        $res.= $instance->getSubareaFinalHtml($instance->getProperty("uid"));
+        $res.= $instance->getSubareaFinalHtml('cntr-0');
         $res .= "</div>";
 
         return $res;
@@ -70,27 +78,29 @@ class Container extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'uid'           => [
-                'type'    => 'hidden',
-                'default' => uniqid(),
+            'class'         => [
+                'label'      => 'CSS Klasse',
+                'dspl_width' => 50,
             ],
             'parallax-flag' => [
-                'label'   => 'use parrallax effect',
+                'label'   => 'Parallaxeffekt nutzen?',
                 'type'    => 'radio',
                 'options' => [
-                    'mitlaufendes Bild'   => 'true',
-                    'einfacher Container' => 'false'
+                    'true'  => 'mitlaufendes Bild',
+                    'false' => 'einfacher Container',
                 ],
+                'default' => 'false',
+                'inline'  => true,
             ],
             'src'           => [
-                'type'                 => 'image',
+                'type'                 => 'Bild',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'parallax-flag',
                 'showOnPropValue'      => 'true',
                 'dspl_width'           => 50,
             ],
             'min-height'    => [
-                'label'              => 'min-height in px',
+                'label'              => 'Mindesthöhe in px',
                 'type'               => 'number',
                 'default'            => 300,
                 'dspl_width'         => 50,

@@ -13,7 +13,9 @@ class Image extends \OPC\Portlet
     public function getHtml(PortletInstance $instance, $preview = false)
     {
         $instance->setImageAttributes();
-        $instance->addClass('img-responsive');
+        if (!empty($instance->getProperty('responsive'))) {
+            $instance->addClass('img-responsive');
+        }
         if (!empty($instance->getProperty('shape'))) {
             $instance->addClass($instance->getProperty('shape'));
         }
@@ -47,25 +49,37 @@ class Image extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'src' => [
+            'src'        => [
                 'label'   => 'Bild',
                 'type'    => 'image',
                 'default' => '',
             ],
-            'shape' => [
-                'label'=> 'shape',
-                'type' => 'select',
-                'options' => [
+            'shape'      => [
+                'label'      => 'Form',
+                'type'       => 'select',
+                'options'    => [
                     '',
-                    'img-rounded',
-                    'img-circle',
-                    'img-thumbnail'
+                    'img-rounded' => 'abgerundete Ecken',
+                    'img-circle' => 'Kreis',
+                    'img-thumbnail' => 'mit Rahmen'
                 ],
+                'dspl_width' => 50,
             ],
-            'alt'  => [
-                'label'   => 'Alternativ-Text',
+            'responsive' => [
+                'label'      => 'responsives Bild?',
+                'type'       => 'radio',
+                'options'    => [
+                    true  => 'ja',
+                    false => 'nein',
+                ],
+                'default'    => true,
+                'inline'     => true,
+                'dspl_width' => 50,
             ],
-            'title' => [
+            'alt'        => [
+                'label' => 'Alternativtext',
+            ],
+            'title'      => [
                 'label' => 'title',
             ]
         ];

@@ -29,6 +29,34 @@
                 slidesToShow: 1
             });
 
+            $('.evo-box-vertical:not(.slick-initialized)').slick({
+                //dots: true,
+                arrows:          true,
+                vertical:        true,
+                adaptiveHeight:  true,
+                verticalSwiping: true,
+                prevArrow:       '<button class="slick-up" aria-label="Previous" type="button"></button>',
+                nextArrow:       '<button class="slick-down" aria-label="Next" type="button"></button>',
+                lazyLoad:        'progressive',
+                slidesToShow:    1,
+            }).on('afterChange', function () {
+                var heights = [];
+                $('.evo-box-vertical:not(.eq-height) .product-wrapper').each(function (i, element) {
+                    var $element       = $(element);
+                    var elementHeight;
+                    // Should we include the elements padding in it's height?
+                    var includePadding = ($element.css('box-sizing') === 'border-box') || ($element.css('-moz-box-sizing') === 'border-box');
+                    if (includePadding) {
+                        elementHeight = $element.innerHeight();
+                    } else {
+                        elementHeight = $element.height();
+                    }
+                    heights.push(elementHeight);
+                });
+                $('.evo-box-vertical.evo-box-vertical:not(.eq-height) .product-wrapper').css('height', Math.max.apply(window, heights) + 'px');
+                $('.evo-box-vertical.evo-box-vertical:not(.eq-height)').addClass('eq-height');
+            });
+
             /*
              * responsive slider (content)
              */

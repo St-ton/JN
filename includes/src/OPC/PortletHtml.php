@@ -165,13 +165,22 @@ trait PortletHtml
                                         }else{
                                             $('#collapseContainer$cllpsID').hide();
                                         }
-                                    });
+                                    });";
+                    if ($props[$propDesc['showOnProp']]['type'] == 'checkbox' || $props[$propDesc['showOnProp']]['type'] == 'radio') {
+                        $res .="    
+                                    if ($('[name=\"" . $propDesc['showOnProp'] . "\"][value=\"" . $propDesc['showOnPropValue'] . "\"]').prop('checked') == true){
+                                        $('#collapseContainer$cllpsID').show();
+                                    }
+                                });
+                            </script>";
+                    } else {
+                        $res .="    
                                     if ($('[name=\"" . $propDesc['showOnProp'] . "\"]').val() == '" . $propDesc['showOnPropValue'] . "'){
                                         $('#collapseContainer$cllpsID').show();
                                     }
                                 });
                             </script>";
-                    ;
+                    }
                     $res .= "<div class='collapse' id='collapseContainer$cllpsID'>";
                 }
 
@@ -247,14 +256,20 @@ trait PortletHtml
                 $res .= "<input type='date' class='form-control$class' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
                 break;
+            case 'time':
+                $res .= "<input type='time' class='form-control$class' name='$propname' value='$prop'"
+                    . " id='config-$propname'>";
+                break;
             case 'password':
                 $res .= "<input type='password' class='form-control$class' name='$propname' value='$prop'"
                     . " id='config-$propname'>";
                 break;
             case 'checkbox':
                 $res .= "<div class='checkbox$class'><label><input type='checkbox' name='" . $propname . "' value='1'";
-                $res .= $prop === "1" ? " checked" : "";
-                $res .= ">$label</label></div>";
+                $res .= $prop == "1" ? " checked" : "";
+                $res .= ">";
+                $res .= !empty($propDesc['option']) ? $propDesc['option'] : $label;
+                $res .= "</label></div>";
                 break;
             case 'textlist':
                 $res .= $this->getConfigPanelSnippet($instance, 'textlist', [
@@ -263,32 +278,34 @@ trait PortletHtml
                 ]);
                 break;
             case 'radio':
-                $res     .= "<div class='radio$class'>";
-                foreach ($propDesc['options'] as $name => $value) {
-                    $selected = $prop === $value ? " checked" : "";
-                    $res     .= "<label";
-                    $res .= !empty($propDesc['inline']) ? ' class="radio-inline"' : '';
-                    $res .="><input type='radio' name='$propname' value='$value'"
+                $res      .= "<div class='radio'>";
+                foreach ($propDesc['options'] as $value => $name) {
+                    $res      .= !empty($propDesc['inline']) ? "" : "<div class='radio$class'>";
+                    $selected = $prop == $value ? " checked" : "";
+                    $res      .= "<label";
+                    $res      .= !empty($propDesc['inline']) ? ' class="radio-inline"' : '';
+                    $res      .= "><input type='radio' name='$propname' value='$value'"
                         . "$selected>$name</label>";
+                    $res      .= !empty($propDesc['inline']) ? "" : "</div>";
                 }
-                $res     .= "</div>";
+                $res      .= "</div>";
                 break;
             case 'select':
                 $res .= "<select class='form-control$class' name='$propname'>";
 
-                foreach ($propDesc['options'] as $name => $option) {
-                    if (stripos($name, 'optgroup') !== false) {
-                        $res .= "<optgroup label='" . $option['label'] . "'>";
+                foreach ($propDesc['options'] as $key => $val) {
+                    if (stripos($key, 'optgroup') !== false) {
+                        $res .= "<optgroup label='" . $val['label'] . "'>";
 
-                        foreach ($option['options'] as $gr_option) {
+                        foreach ($val['options'] as $gr_option) {
                             $selected = ($prop === $gr_option) ? " selected" : "";
                             $res     .= "<option value='$gr_option' $selected>$gr_option</option>";
                         }
 
                         $res .= "</optgroup>";
                     } else {
-                        $selected = ($prop === $option) ? " selected" : "";
-                        $res     .= "<option value='$option' $selected>$option</option>";
+                        $selected = ($prop == $key) ? " selected" : "";
+                        $res     .= "<option value='$key' $selected>$val</option>";
                     }
                 }
 
@@ -304,7 +321,7 @@ trait PortletHtml
                     . "</button>";
                 break;
             case 'richtext':
-                $res .= "<textarea name='text' id='textarea-$propname' class='form-control'>"
+                $res .= "<textarea name='$propname' id='textarea-$propname' class='form-control'>"
                     . htmlspecialchars($prop)
                     . "</textarea>"
                     . "<script>CKEDITOR.replace('textarea-$propname', {baseFloatZIndex: 9000});"
@@ -321,7 +338,7 @@ trait PortletHtml
                     '#777777': '#777777',
                     '#337ab7': '#337ab7',
                     '#5cb85c': '#5cb85c',
-                    '#5bc0de': '#5bc0de',
+                    '#5cbcf6': '#5cbcf6',
                     '#f0ad4e': '#f0ad4e',
                     '#d9534f': '#d9534f',
                     '#000000': '#000000'

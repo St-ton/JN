@@ -12,11 +12,15 @@ class Row extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
+        $instance->addClass($instance->getProperty('class'));
+
         return $this->getPreviewHtmlFromTpl($instance);
     }
 
     public function getFinalHtml($instance)
     {
+        $instance->addClass($instance->getProperty('class'));
+
         return $this->getFinalHtmlFromTpl($instance);
     }
 
@@ -34,30 +38,28 @@ class Row extends \OPC\Portlet
     {
         return [
             'layout-xs' => [
-                'label'   => 'Layout XS',
+                'label'   => '<i class="fa fa-mobile"></i> Layout XS',
                 'type'    => 'text',
                 'default' => '6+6',
                 'dspl_width' => 50,
                 'layoutCollapse' => [
                     'layout-sm' => [
-                        'label'   => 'Layout SM',
+                        'label'   => '<i class="fa fa-tablet"></i> Layout S',
                         'type'    => 'text',
                     ],
                     'layout-md' => [
-                        'label'   => 'Layout MD',
+                        'label'   => '<i class="fa fa-laptop"></i> Layout M',
                         'type'    => 'text',
                     ],
                     'layout-lg' => [
-                        'label'   => 'Layout LG',
+                        'label'   => '<i class="fa fa-desktop"></i> Layout L',
                         'type'    => 'text',
                     ],
                 ]
             ],
-            'border-color' => [
-                'label'   => 'noob color',
-               'type'    => 'color',
-               'default' => 'blue',
-               'dspl_width' => 50,
+            'class' => [
+                'label' => 'CSS Klasse',
+                'dspl_width' => 50,
             ],
         ];
     }
@@ -65,7 +67,8 @@ class Row extends \OPC\Portlet
     public function getPropertyTabs()
     {
         return [
-            'Styles' => 'styles',
+            'Styles'    => 'styles',
+            'Animation' => 'animations',
         ];
     }
 

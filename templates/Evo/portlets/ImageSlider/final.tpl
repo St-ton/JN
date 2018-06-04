@@ -1,14 +1,14 @@
 <div {$instance->getAttributeString()}>
     {if $instance->getProperty('slides') > 0}
         <div class="slider-wrapper theme-{$instance->getProperty('slider-theme')}">
-            <div id="slider-{$instance->getProperty('slider-id')}" class="nivoSlider">
+            <div id="{$instance->getProperty('uid')}" class="nivoSlider">
                 {foreach from=$instance->getProperty('slides') item=slide}
                     {if !empty($slide.cText)}
                         {assign var="slideTitle" value=$slide.cTitle}
                     {else}
                         {assign var="slideTitle" value=''}
                     {/if}
-                    {assign var="slideTitle" value="#slider-{$instance->getProperty('slider-id')}_slide_caption_{$slide.nSort}"}
+                    {assign var="slideTitle" value="#{$instance->getProperty('uid')}_slide_caption_{$slide.nSort}"}
                     {if !empty($slide.url)}
                         {if !empty($slide.cLink)}
                             <a href="{$slide.cLink}"{if !empty($slide.cTitle)} title="{$slide.cTitle}"{/if} class="slide">
@@ -16,7 +16,7 @@
                             <div class="slide">
                         {/if}
                             <img srcset="{$slide['img_attr']['srcset']}"
-                                 sizes="{$slide['img_attr']['sizes']}"
+                                 sizes="{$slide['img_attr']['srcsizes']}"
                                  src="{$slide['img_attr']['src']}"
                                  data-desc="{$slide['desc']}"
                                  alt="{$slide['img_attr']['alt']}"
@@ -32,7 +32,7 @@
             {* slide captions outside of .nivoSlider *}
             {foreach  from=$instance->getProperty('slides') item=slide}
                 {if !empty($slide.cTitle) || !empty($slide.desc)}
-                    <div id="slider-{$instance->getProperty('slider-id')}_slide_caption_{$slide.nSort}" class="htmlcaption hidden">
+                    <div id="{$instance->getProperty('uid')}_slide_caption_{$slide.nSort}" class="htmlcaption hidden">
                         {if !empty($slide.cTitle)}<strong class="title">{$slide.cTitle}</strong>{/if}
                         <p class="desc">{$slide.desc}</p>
                     </div>
@@ -47,49 +47,49 @@
                 var durationFactor = 1.25;                                  // firstslide pausetime adjustment factor
 
                 function KBInit() {
-                    $('#slider-{$instance->getProperty("slider-id")}  img').css('visibility', 'hidden');
-                    $('#slider-{$instance->getProperty("slider-id")}  .nivo-nextNav').trigger('click');
-                    $('#slider-{$instance->getProperty("slider-id")} , .nivo-control').css('opacity', 1);
+                    $('#{$instance->getProperty("uid")}  img').css('visibility', 'hidden');
+                    $('#{$instance->getProperty("uid")}  .nivo-nextNav').trigger('click');
+                    $('#{$instance->getProperty("uid")} , .nivo-control').css('opacity', 1);
                     setTimeout(function () {
-                        $('#slider-{$instance->getProperty("slider-id")} , .nivo-control').animate({ldelim}opacity: 1{rdelim}, animSpeed);
+                        $('#{$instance->getProperty("uid")} , .nivo-control').animate({ldelim}opacity: 1{rdelim}, animSpeed);
                     }, 0);
-                    $('#slider-{$instance->getProperty("slider-id")} .nivo-control').on('click', function () {
+                    $('#{$instance->getProperty("uid")} .nivo-control').on('click', function () {
                         setTimeout(function () {
-                            $('#slider-{$instance->getProperty("slider-id")} .nivo-main-image').css('opacity', 0);
+                            $('#{$instance->getProperty("uid")} .nivo-main-image').css('opacity', 0);
                         }, 0);
                         durationFactor = 1.25;
                     });
-                    $('#slider-{$instance->getProperty("slider-id")} .nivo-prevNav, #slider-{$instance->getProperty("slider-id")} .nivo-nextNav').on('click', function () {
+                    $('#{$instance->getProperty("uid")} .nivo-prevNav, #{$instance->getProperty("uid")} .nivo-nextNav').on('click', function () {
                         setTimeout(function () {
-                            $('#slider-{$instance->getProperty("slider-id")} .nivo-main-image').css('opacity', 0);
+                            $('#{$instance->getProperty("uid")} .nivo-main-image').css('opacity', 0);
                         }, 20);
                         durationFactor = 1.25;
                     });
                 }
 
                 function NivoKenBurns() {
-                    $('#slider-{$instance->getProperty("slider-id")} .nivo-main-image').css('opacity', 1);
+                    $('#{$instance->getProperty("uid")} .nivo-main-image').css('opacity', 1);
                     setTimeout(function () {
-                        $('#slider-{$instance->getProperty("slider-id")}  .nivo-slice img').css('width', 100 + zoomFactor + '%');
+                        $('#{$instance->getProperty("uid")}  .nivo-slice img').css('width', 100 + zoomFactor + '%');
                     }, 10);
                     setTimeout(function () {
-                        var nivoWidth                                     = $('#slider-{$instance->getProperty("slider-id")} ').width(),
-                            nivoHeight                                    = $('#slider-{$instance->getProperty("slider-id")} ').height();
+                        var nivoWidth                                     = $('#{$instance->getProperty("uid")} ').width(),
+                            nivoHeight                                    = $('#{$instance->getProperty("uid")} ').height();
                         var xScope = nivoWidth * zoomFactor / 100, yScope = nivoHeight * zoomFactor / 105;
                         var xStart                                        = -xScope * Math.floor(Math.random() * 2);
                         var yStart                                        = -yScope * Math.floor(Math.random() * 2);
-                        $('#slider-{$instance->getProperty("slider-id")}  .nivo-slice img').css('left', xStart).css('top', yStart).animate(
+                        $('#{$instance->getProperty("uid")}  .nivo-slice img').css('left', xStart).css('top', yStart).animate(
                             {ldelim}width: '100%',
                                 left:         0,
                                 top:          0{rdelim}, pauseTime * durationFactor);
                         durationFactor = 1.02;
-                        $('#slider-{$instance->getProperty("slider-id")} .nivo-main-image').css('cssText', 'left:0 !important;top:0 !important;');
+                        $('#{$instance->getProperty("uid")} .nivo-main-image').css('cssText', 'left:0 !important;top:0 !important;');
                     }, 10);
                 }
 
                 jtl.ready(function () {
-                    var slider   = $('#slider-{$instance->getProperty('slider-id')}');
-                    var endSlide = $('#slider-{$instance->getProperty("slider-id")}  img').length - 1;
+                    var slider   = $('#{$instance->getProperty("uid")}');
+                    var endSlide = $('#{$instance->getProperty("uid")}  img').length - 1;
                     $('a.slide').click(function () {
                         if (!this.href.match(new RegExp('^' + location.protocol + '\\/\\/' + location.host))) {
                             this.target = '_blank';
@@ -120,7 +120,7 @@
                 });
             {else}
                 jtl.ready(function () {
-                    var slider = $('#slider-{$instance->getProperty('slider-id')}');
+                    var slider = $('#{$instance->getProperty("uid")}');
                     $('a.slide').click(function () {
                         if (!this.href.match(new RegExp('^' + location.protocol + '\\/\\/' + location.host))) {
                             this.target = '_blank';

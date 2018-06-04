@@ -280,7 +280,7 @@ function load_boxes($params, $smarty)
                     $oBoxVar = 'oBox' . $oBox->kBox;
                     $smarty->assign($oBoxVar, $oBox);
                     // Custom Template
-                    global $Einstellungen;
+                    $Einstellungen = $smarty->getTemplateVars('Einstellungen');
                     if ($Einstellungen['template']['general']['use_customtpl'] === 'Y') {
                         $cTemplatePath   = pathinfo($cTemplate);
                         $cCustomTemplate = $cTemplatePath['dirname'] . '/' . $cTemplatePath['filename'] . '_custom.tpl';
@@ -449,7 +449,6 @@ function getCheckBoxForLocation($params, $smarty)
         ? Shop::get($cid)
         : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
     if (count($oCheckBox_arr) > 0) {
-        $linkHelper = Shop::Container()->getLinkService();
         foreach ($oCheckBox_arr as $oCheckBox) {
             $cLinkURL                 = $oCheckBox->kLink > 0
                 ? $oCheckBox->getLink()->getURL()

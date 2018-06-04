@@ -14,6 +14,14 @@ use Filter\FilterInterface;
  */
 interface BoxInterface
 {
+
+    /**
+     * BoxInterface constructor.
+     *
+     * @param array $config
+     */
+    public function __construct(array $config);
+
     /**
      * @return bool
      */
@@ -244,15 +252,32 @@ interface BoxInterface
     public function isBoxVisible(int $pageType = 0, int $pageID = 0): bool;
 
     /**
-     * @param \JTLSmarty $smarty
-     * @param int        $pageType
-     * @param int        $pageID
-     * @return string
-     */
-    public function render(\JTLSmarty $smarty, int $pageType = 0, int $pageID = 0): string;
-
-    /**
      * @param array $boxData
      */
     public function map(array $boxData);
+
+    /**
+     * @return BoxInterface[]
+     */
+    public function getChildren(): array;
+
+    /**
+     * @param BoxInterface[] $chilren
+     */
+    public function setChildren(array $chilren);
+
+    /**
+     * @return string
+     */
+    public function getRenderer(): string;
+
+    /**
+     * @return string
+     */
+    public function getHTML(): string;
+
+    /**
+     * @param string $html
+     */
+    public function setHTML(string $html);
 }

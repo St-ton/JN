@@ -28,7 +28,7 @@ class DefaultRenderer implements RendererInterface
     /**
      * @inheritdoc
      */
-    public function __construct(\JTLSmarty $smarty, BoxInterface $box = null)
+    public function __construct($smarty, BoxInterface $box = null)
     {
         $this->smarty = $smarty;
         $this->box    = $box;

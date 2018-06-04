@@ -8,6 +8,7 @@
 $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
        ->registerPlugin('function', 'load_boxes', 'load_boxes')
        ->registerPlugin('function', 'load_boxes_raw', 'load_boxes_raw')
+       ->registerPlugin('function', 'getBoxesByPosition', 'getBoxesByPosition')
        ->registerPlugin('function', 'has_boxes', 'has_boxes')
        ->registerPlugin('function', 'image', 'get_img_tag')
        ->registerPlugin('function', 'getCheckBoxForLocation', 'getCheckBoxForLocation')
@@ -147,8 +148,26 @@ function get_manufacturers($params, $smarty)
 function load_boxes_raw($params, $smarty)
 {
     if (isset($params['array'], $params['assign']) && $params['array'] === true) {
-        $rawData = Boxen::getInstance()->getRawData();
+        $rawData = Shop::Container()->getBoxService()->getRawData();
         $smarty->assign($params['assign'], $rawData[$params['type']] ?? null);
+    }
+}
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return array|void
+ */
+function getBoxesByPosition($params, $smarty)
+{
+    if (isset($params['position'])) {
+        $data  = Shop::Container()->getBoxService()->boxes;
+        $boxes = $data[$params['position']] ?? [];
+        if (isset($params['assign'])) {
+            $smarty->assign($params['assign'], $boxes);
+        } else {
+            return $boxes;
+        }
     }
 }
 

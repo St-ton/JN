@@ -95,23 +95,24 @@ if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
 }
 
 if (isset($_POST['delconfirmlinkgruppe']) && (int)$_POST['delconfirmlinkgruppe'] > 0 && validateToken()) {
-    $step = 'linkgruppe_loeschen_confirm';
-    $links = Shop::Container()->getDB()->query(
+    $step  = 'linkgruppe_loeschen_confirm';
+    $links = Shop::Container()->getDB()->queryPrepared(
         'SELECT tlink.cName
             FROM tlink
             JOIN tlinkgroupassociations A
                 ON tlink.kLink = A.linkID
             JOIN tlinkgroupassociations B
                 ON A.linkID = B.linkID
-            WHERE A.linkGroupID = 15
+            WHERE A.linkGroupID = :lgid
             GROUP BY A.linkID
             HAVING COUNT(A.linkID) > 1',
+         ['lgid' => (int)$_POST['delconfirmlinkgruppe']],
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $smarty->assign('oLinkgruppe', holeLinkgruppe((int)$_POST['delconfirmlinkgruppe']))
            ->assign('affectedLinkNames', \Functional\map($links, function ($l) {
-            return $l->cName;
-        }));
+               return $l->cName;
+           }));
 }
 
 if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken()) {
@@ -256,8 +257,8 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
             }
         }
     } else {
-        $step = 'neuer Link';
-        $link = new stdClass();
+        $step              = 'neuer Link';
+        $link              = new stdClass();
         $link->kLinkgruppe = (int)$_POST['kLinkgruppe'];
         $fehler            = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
         $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
@@ -375,43 +376,39 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && va
 // Verschiebt einen Link in eine andere Linkgruppe
 if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1 && validateToken()) {
     if ((int)$_POST['kLink'] > 0 && (int)$_POST['kLinkgruppe'] > 0 && (int)$_POST['kLinkgruppeAlt'] >= 0) {
-        $oLink = new \Link\Link(Shop::Container()->getDB());
+        $oldLinkGroupID = (int)$_POST['kLinkgruppeAlt'];
+        $newLinkGroupID = (int)$_POST['kLinkgruppe'];
+        $oLink          = new \Link\Link(Shop::Container()->getDB());
         $oLink->load((int)$_POST['kLink']);
         if ($oLink->getID() > 0) {
-            $oLinkgruppe = Shop::Container()->getDB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
+            $oLinkgruppe = Shop::Container()->getDB()->select('tlinkgruppe', 'kLinkgruppe', $newLinkGroupID);
             if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
                 $exists = Shop::Container()->getDB()->select(
                     'tlinkgroupassociations',
                     ['linkGroupID', 'linkID'],
-                    [(int)$_POST['kLinkgruppe'], $oLink->getID()]
+                    [$newLinkGroupID, $oLink->getID()]
                 );
                 if (empty($exists)) {
                     $upd              = new stdClass();
-                    $upd->linkGroupID = (int)$_POST['kLinkgruppe'];
-                    $rows = Shop::Container()->getDB()->update(
+                    $upd->linkGroupID = $newLinkGroupID;
+                    $rows             = Shop::Container()->getDB()->update(
                         'tlinkgroupassociations',
                         ['linkGroupID', 'linkID'],
-                        [(int)$_POST['kLinkgruppeAlt'], $oLink->getID()],
+                        [$oldLinkGroupID, $oLink->getID()],
                         $upd
                     );
                     if ($rows === 0) {
                         // previously unassigned link
                         $upd              = new stdClass();
-                        $upd->linkGroupID = (int)$_POST['kLinkgruppe'];
+                        $upd->linkGroupID = $newLinkGroupID;
                         $upd->linkID      = $oLink->getID();
-                        $rows = Shop::Container()->getDB()->insert(
+                        $rows             = Shop::Container()->getDB()->insert(
                             'tlinkgroupassociations',
                             $upd
                         );
                     }
-                    foreach ($oLink->getChildLinks() as $childLink) {
-                        Shop::Container()->getDB()->update(
-                            'tlinkgroupassociations',
-                            ['linkGroupID', 'linkID'],
-                            [(int)$_POST['kLinkgruppeAlt'], $childLink->getID()],
-                            $upd
-                        );
-                    }
+                    unset($upd->linkID);
+                    updateChildLinkGroups($oLink, $oldLinkGroupID, $newLinkGroupID);
                     $hinweis    .= 'Sie haben den Link "' . $oLink->getName() . '" erfolgreich in die Linkgruppe "' .
                         $oLinkgruppe->cName . '" verschoben.';
                     $step       = 'uebersicht';
@@ -437,18 +434,20 @@ if (isset($_POST['kopiere_in_linkgruppe'])
     $link = new \Link\Link(Shop::Container()->getDB());
     $link->load((int)$_POST['kLink']);
     if ($link->getID() > 0) {
-        $oLinkgruppe = Shop::Container()->getDB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
+        $targetLinkGroupID = (int)$_POST['kLinkgruppe'];
+        $oLinkgruppe       = Shop::Container()->getDB()->select('tlinkgruppe', 'kLinkgruppe', $targetLinkGroupID);
         if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
             $exists = Shop::Container()->getDB()->select(
                 'tlinkgroupassociations',
                 ['linkID', 'linkGroupID'],
-                [(int)$_POST['kLink'], (int)$_POST['kLinkgruppe']]
+                [(int)$_POST['kLink'], $targetLinkGroupID]
             );
             if (empty($exists)) {
                 $ins              = new stdClass();
                 $ins->linkID      = $link->getID();
-                $ins->linkGroupID = (int)$_POST['kLinkgruppe'];
+                $ins->linkGroupID = $targetLinkGroupID;
                 Shop::Container()->getDB()->insert('tlinkgroupassociations', $ins);
+                copyChildLinksToLinkGroup($link, $targetLinkGroupID);
                 $hinweis .= 'Sie haben den Link "' . $link->getName() . '" erfolgreich in die Linkgruppe "' .
                     $oLinkgruppe->cName . '" kopiert.';
             } else {
@@ -497,7 +496,7 @@ if ($clearCache === true) {
     Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
 }
 if ($step === 'uebersicht') {
-    $db = Shop::Container()->getDB();
+    $db  = Shop::Container()->getDB();
     $lgl = new \Link\LinkGroupList($db);
     $lgl->loadAll();
     $linkGroups = $lgl->getLinkGroups()->filter(function (\Link\LinkGroupInterface $e) {
@@ -538,7 +537,21 @@ if ($step === 'uebersicht') {
         $ualg->setTemplate('');
         $linkGroups->push($ualg);
     }
+    $assocCount             = Shop::Container()->getDB()->query(
+        'SELECT tlink.kLink, COUNT(*) AS cnt 
+            FROM tlink 
+            JOIN tlinkgroupassociations
+                ON tlinkgroupassociations.linkID = tlink.kLink
+            GROUP BY tlink.kLink
+            HAVING COUNT(*) > 1',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    $linkGroupCountByLinkID = [];
+    foreach ($assocCount as $item) {
+        $linkGroupCountByLinkID[(int)$item->kLink] = (int)$item->cnt;
+    }
     $smarty->assign('kPlugin', verifyGPCDataInteger('kPlugin'))
+           ->assign('linkGroupCountByLinkID', $linkGroupCountByLinkID)
            ->assign('linkgruppen', $linkGroups);
 }
 

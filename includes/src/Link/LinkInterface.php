@@ -319,7 +319,7 @@ interface LinkInterface
     public function getChildLinks(): Collection;
 
     /**
-     * @param Collection $links
+     * @param array|Collection $links
      */
     public function setChildLinks(Collection $links);
 
@@ -445,7 +445,7 @@ interface LinkInterface
     /**
      * @return LinkInterface[]
      */
-    public function getChildren(): array;
+    public function buildChildLinks(): array;
 
     /**
      * @return array

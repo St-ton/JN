@@ -22,24 +22,14 @@ use Filter\Visibility;
 class BoxService
 {
     /**
-     * @var array
+     * @var BoxInterface[]
      */
     public $boxes = [];
 
     /**
      * @var array
      */
-    public $boxConfig = [];
-
-    /**
-     * @var string
-     */
-    public $lagerFilter = '';
-
-    /**
-     * @var string
-     */
-    public $cVaterSQL = ' AND tartikel.kVaterArtikel = 0';
+    public $config = [];
 
     /**
      * unrendered box template file name + data
@@ -54,19 +44,19 @@ class BoxService
     public $visibility;
 
     /**
-     * @var BoxService
-     */
-    private static $_instance;
-
-    /**
      * @var \Boxes\BoxFactory
      */
-    private $boxFactory;
+    private $factory;
 
     /**
      * @var DbInterface
      */
     private $db;
+
+    /**
+     * @var BoxService
+     */
+    private static $_instance;
 
     /**
      * @param array       $config
@@ -88,10 +78,10 @@ class BoxService
      */
     public function __construct(array $config, BoxFactory $factory, DbInterface $db)
     {
-        $this->boxConfig  = $config;
-        $this->boxFactory = $factory;
-        $this->db         = $db;
-        self::$_instance  = $this;
+        $this->config    = $config;
+        $this->factory   = $factory;
+        $this->db        = $db;
+        self::$_instance = $this;
     }
 
     /**
@@ -104,7 +94,7 @@ class BoxService
             return;
         }
         if ($nMaxAnzahl === null) {
-            $nMaxAnzahl = (int)$this->boxConfig['boxen']['box_zuletztangesehen_anzahl'];
+            $nMaxAnzahl = (int)$this->config['boxen']['box_zuletztangesehen_anzahl'];
         }
         if (!isset($_SESSION['ZuletztBesuchteArtikel']) || !is_array($_SESSION['ZuletztBesuchteArtikel'])) {
             $_SESSION['ZuletztBesuchteArtikel'] = [];
@@ -222,6 +212,14 @@ class BoxService
     }
 
     /**
+     * @return array
+     */
+    public function getBoxes(): array
+    {
+        return $this->boxes;
+    }
+
+    /**
      * compatibility layer for gibBoxen() which returns unrendered content
      *
      * @return array
@@ -261,43 +259,46 @@ class BoxService
         }
         $originalArticle   = $smarty->getTemplateVars('Artikel');
         $productFilter     = \Shop::getProductFilter();
-        $filterAfter       = !empty($this->boxConfig)
+        $filterAfter       = !empty($this->config)
             ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults(false))
             : 0;
-        $this->lagerFilter = $productFilter->getFilterSQL()->getStockFilterSQL();
         $htmlArray         = [
             'top'    => null,
             'right'  => null,
             'bottom' => null,
             'left'   => null
         ];
-        $smarty->assign('BoxenEinstellungen', $this->boxConfig)
+        $smarty->assign('BoxenEinstellungen', $this->config)
                ->assign('bBoxenFilterNach', $filterAfter)
                ->assign('NettoPreise', \Session::CustomerGroup()->getIsMerchant());
 
         $boxRenderer = new DefaultRenderer($smarty);
-        foreach ($positionedBoxes as $_position => $_boxes) {
-            if (!is_array($_boxes)) {
-                $_boxes = [];
+        foreach ($positionedBoxes as $_position => $boxes) {
+            if (!is_array($boxes)) {
+                $boxes = [];
             }
             $htmlArray[$_position]     = '';
             $this->rawData[$_position] = [];
-            foreach ($_boxes as $_box) {
-                /** @var BoxInterface $_box */
-                $renderClass = $_box->getRenderer();
+            foreach ($boxes as $box) {
+                /** @var BoxInterface $box */
+                $renderClass = $box->getRenderer();
                 if ($renderClass !== get_class($boxRenderer)) {
                     $boxRenderer = new $renderClass($smarty);
                 }
-                $boxRenderer->setBox($_box);
-                $htmlArray[$_position]       .= trim($boxRenderer->render($pageType, $pageID));
+                $boxRenderer->setBox($box);
+                $html = trim($boxRenderer->render($pageType, $pageID));
+                $box->setRenderedContent($html);
+                $htmlArray[$_position]       .= $html;
                 $this->rawData[$_position][] = [
-                    'obj' => $_box,
-                    'tpl' => $_box->getTemplateFile()
+                    'obj' => $box,
+                    'tpl' => $box->getTemplateFile()
                 ];
             }
         }
         // avoid modification of article object on render loop
-        $smarty->assign('Artikel', $originalArticle);
+        if ($originalArticle !== null) {
+            $smarty->assign('Artikel', $originalArticle);
+        }
 
         return $htmlArray;
     }
@@ -308,7 +309,7 @@ class BoxService
      * @param bool $bVisible
      * @return array
      */
-    public function getBoxes(int $nSeite = 0, bool $bAktiv = true, bool $bVisible = false): array
+    public function buildList(int $nSeite = 0, bool $bAktiv = true, bool $bVisible = false): array
     {
         $cacheID           = 'bx_' . $nSeite .
             '_' . (($bAktiv === true) ? '1' : '0') .
@@ -332,11 +333,11 @@ class BoxService
         $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
         $cSQLAktiv        = $bAktiv
             ? ' AND bAktiv = 1 AND tboxen.ePosition IN (' . implode(',', $visiblePositions) . ')'
-            : '';
+            : ' AND bAktiv = 1 ';
         $cPluginAktiv     = $bAktiv
             ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
             : '';
-        if (($grouped = \Shop::Cache()->get($cacheID)) === false) {
+        if (true||($grouped = \Shop::Cache()->get($cacheID)) === false) {
             $boxData = $this->db->query(
                 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
@@ -372,7 +373,7 @@ class BoxService
             }
             $first = \Functional\first($boxes);
             if ((int)$first->kContainer > 0) {
-                $boxInstance = $this->boxFactory->getBoxByBaseType($first->kBoxvorlage);
+                $boxInstance = $this->factory->getBoxByBaseType($first->kBoxvorlage);
                 $boxInstance->map($boxes);
                 if (!isset($children[(int)$first->kContainer])) {
                     $children[(int)$first->kContainer] = [];
@@ -387,7 +388,7 @@ class BoxService
                 continue;
             }
             $first       = \Functional\first($boxes);
-            $boxInstance = $this->boxFactory->getBoxByBaseType($first->kBoxvorlage);
+            $boxInstance = $this->factory->getBoxByBaseType($first->kBoxvorlage);
             $boxInstance->map($boxes);
             if ($boxInstance->getType() === BoxType::CONTAINER) {
                 $boxInstance->setChildren($children);
@@ -397,7 +398,7 @@ class BoxService
         $byPosition  = \Functional\group($result, function (BoxInterface $e) {
             return $e->getPosition();
         });
-        $this->boxes = $byPosition; // shop 4.x compatability only
+        $this->boxes = $byPosition;
 
         return $byPosition;
     }

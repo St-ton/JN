@@ -1,5 +1,34 @@
+{function draftItem}
+    {assign var="queryDraft" value=$query|cat:"&pageKey="|cat:$draftKey}
+    {if $isCurDraft}
+        {assign var="draftTooltip" value="Momentan öffentlich"}
+        {if $draftPublishTo !== null}
+            {assign var="draftTooltip" value=$draftTooltip|cat:" bis "|cat:($draftPublishTo|date_format:"d.m.Y")}
+        {/if}
+    {elseif $draftPublishFrom !== null}
+        {assign var="draftTooltip" value="Öffentlich ab "|cat:($draftPublishFrom|date_format:"d.m.Y")}
+    {else}
+        {assign var="draftTooltip" value="Entwurf"}
+    {/if}
+    <div class="list-group-item{if $isCurDraft} list-group-item-success{/if}" data-toggle="tooltip"
+         data-placement="right" title="{$draftTooltip}">
+        <a href="admin/onpage-composer.php{$queryDraft}&action=edit" class="btn btn-sm" title="Entwurf bearbeiten">
+            {if $isCurDraft}
+                <b><i class="fa fa-fw fa-newspaper-o"></i> {$draftName}</b>
+            {else}
+                <i class="fa fa-fw fa-file-o"></i> {$draftName}
+            {/if}
+        </a>
+        <a href="admin/onpage-composer.php{$queryDraft}&action=discard"
+           class="btn btn-sm btn-danger opc-draft-item-discard pull-right"
+           title="Entwurf verwerfen">
+            <i class="fa fa-times"></i>
+        </a>
+    </div>
+{/function}
+
 {assign var="pageDrafts" value=$opc->getPageDrafts($opc->getCurPage()->getId())}
-{assign var="curPageKey" value=$opc->getCurPage()->getKey()}
+{assign var="curDraftKey" value=$opc->getCurPage()->getKey()}
 
 <div id="opc-switcher">
     <div class="switcher" id="dashboard-config">
@@ -14,34 +43,22 @@
                 {assign var="query" value="?token="|cat:$smarty.session.jtl_token}
                 {if $pageDrafts|count > 0}
                     <div class="list-group">
-                        {if $curPageKey > 0}
-                            <div class="list-group-item list-group-item-success">
-                                {assign var="queryDraft" value=$query|cat:"&pageKey="|cat:$curPageKey}
-                                <a href="admin/onpage-composer.php{$queryDraft}&action=edit"
-                                   class="btn btn-sm opc-draft-item-edit" title="Entwurf bearbeiten">
-                                    <b><i class="fa fa-newspaper-o"></i> {$opc->getCurPage()->getName()}</b>
-                                </a>
-                                <a href="admin/onpage-composer.php{$queryDraft}&action=discard"
-                                   class="btn btn-sm btn-danger opc-draft-item-discard pull-right"
-                                   title="Entwurf verwerfen">
-                                    <i class="fa fa-times"></i>
-                                </a>
-                            </div>
+                        {if $curDraftKey > 0}
+                            {call draftItem isCurDraft=true
+                                query=$query
+                                draftKey=$curDraftKey
+                                draftPublishFrom=$opc->getCurPage()->getPublishFrom()
+                                draftPublishTo=$opc->getCurPage()->getPublishTo()
+                                draftName=$opc->getCurPage()->getName()}
                         {/if}
                         {foreach $pageDrafts as $i => $draft}
-                            {if $curPageKey != $draft->kPage}
-                                <div class="list-group-item">
-                                    {assign var="queryDraft" value=$query|cat:"&pageKey="|cat:$draft->kPage}
-                                    <a href="admin/onpage-composer.php{$queryDraft}&action=edit"
-                                       class="btn btn-sm opc-draft-item-edit" title="Entwurf bearbeiten">
-                                        <i class="fa fa-file-o"></i> {$draft->cName}
-                                    </a>
-                                    <a href="admin/onpage-composer.php{$queryDraft}&action=discard"
-                                       class="btn btn-sm btn-danger opc-draft-item-discard pull-right"
-                                       title="Entwurf verwerfen">
-                                        <i class="fa fa-times"></i>
-                                    </a>
-                                </div>
+                            {if $curDraftKey != $draft->kPage}
+                                {call draftItem isCurDraft=false
+                                    query=$query
+                                    draftKey=$draft->kPage
+                                    draftPublishFrom=$draft->dPublishFrom
+                                    draftPublishTo=$draft->dPublishTo
+                                    draftName=$draft->cName}
                             {/if}
                         {/foreach}
                     </div>
@@ -50,8 +67,8 @@
                 {assign var="query" value=$query|cat:"&pageUrl="|cat:$opc->getCurPage()->getUrl()}
                 {if $pageDrafts|count > 0}
                     <p>
-                        <a href="admin/onpage-composer.php{$query}&action=restore"
-                           class="btn btn-sm btn-danger">
+                        <a href="admin/onpage-composer.php{$query}&action=restore" class="btn btn-sm btn-danger"
+                           title="Verwirft alle vorhandenen Entwürfe!">
                             <i class="fa fa-times"></i>
                             Alle Entwürfe verwerfen
                         </a>
@@ -59,12 +76,14 @@
                     <p><label>Neuer Entwurf:</label></p>
                 {/if}
                 <div class="btn-group">
-                    <a href="admin/onpage-composer.php{$query}&action=extend" class="btn btn-sm btn-primary">
-                        <i class="fa fa-times"></i>
+                    <a href="admin/onpage-composer.php{$query}&action=extend" class="btn btn-sm btn-primary"
+                       title="Die aktuelle Seite in einem neuem Entwurf erweitern">
+                        <i class="fa fa-plus-circle"></i>
                         Seite erweitern
                     </a>
-                    <a href="admin/onpage-composer.php{$query}&action=replace" class="btn btn-sm btn-primary">
-                        <i class="fa fa-times"></i>
+                    <a href="admin/onpage-composer.php{$query}&action=replace" class="btn btn-sm btn-primary"
+                       title="Die aktuelle Seite in einem neuem Entwurf ersetzen">
+                        <i class="fa fa-file-o"></i>
                         Seite ersetzen
                     </a>
                 </div>

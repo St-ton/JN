@@ -25,11 +25,12 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
     protected $db;
 
     /**
-     *
+     * SessionHandlerDB constructor.
+     * @param DbInterface $db
      */
-    public function __construct()
+    public function __construct(DbInterface $db)
     {
-        $this->db = \Shop::Container()->getDB();
+        $this->db = $db;
     }
 
     /**
@@ -76,7 +77,6 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
      */
     public function write($sessID, $sessData)
     {
-        $sessID = $this->db->escape($sessID);
         // set new session expiration
         $newExp = time() + $this->lifeTime;
         // is a session with this id already in the database?
@@ -91,14 +91,17 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
             if ($this->db->update('tsession', 'cSessionId', $sessID, $update) > 0) {
                 return true;
             }
-        } 
-        // if no session was found, create a new row
-        $session                  = new \stdClass();
-        $session->cSessionId      = $sessID;
-        $session->nSessionExpires = $newExp;
-        $session->cSessionData    = $sessData;
+        } else {
+            // if no session was found, create a new row
+            $session                  = new \stdClass();
+            $session->cSessionId      = $sessID;
+            $session->nSessionExpires = $newExp;
+            $session->cSessionData    = $sessData;
 
-        return $this->db->insert('tsession', $session) > 0;
+            return $this->db->insert('tsession', $session) > 0;
+        }
+
+        return false;
     }
 
     /**

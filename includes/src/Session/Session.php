@@ -88,7 +88,9 @@ class Session
             : false;
         session_name(self::$_sessionName);
         if ($bot === false || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
-            self::$_handler = ES_SESSIONS === 1 ? new SessionHandlerDB() : new SessionHandlerJTL();
+            self::$_handler = ES_SESSIONS === 1
+                ? new SessionHandlerDB(\Shop::Container()->getDB())
+                : new SessionHandlerJTL();
         } else {
             if (SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
                 || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE

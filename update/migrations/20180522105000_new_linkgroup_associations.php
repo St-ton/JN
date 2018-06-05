@@ -27,6 +27,7 @@ class Migration_20180522105000 extends Migration implements IMigration
     public function up()
     {
         $this->execute("ALTER TABLE `tlinkgruppe` CHANGE COLUMN `kLinkgruppe` `kLinkgruppe` INT NOT NULL AUTO_INCREMENT;");
+        $this->execute("ALTER TABLE `tlink` CHANGE COLUMN `kLink` `kLink` INT NOT NULL AUTO_INCREMENT;");
         $missingLanguageEntries = Shop::Container()->getDB()->query(
             "SELECT tlink.*, tseo.* 
                 FROM tlink

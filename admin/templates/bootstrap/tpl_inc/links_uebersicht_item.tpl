@@ -67,7 +67,7 @@
                 {/if}
             </form>
         </td>
-        <td class="tcenter" style="width: 10%;min-width: 143px;">
+        <td class="tcenter" style="width: 10%;min-width: 160px;">
             <form method="post" action="links.php">
                 {$jtl_token}
                 {if $kPlugin > 0}
@@ -79,7 +79,14 @@
                         <button name="kLink" value="{$link->getID()}" class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i></button>
                         <button name="removefromlinkgroup" value="{$link->getID()}" class="btn btn-warning" title="{#linkGroupRemove#}"><i class="fa fa-unlink"></i></button>
                     {/if}
-                    <button name="dellink" value="{$link->getID()}" class="btn btn-danger{if $link->getPluginID() > 0} disabled{/if}"{if $link->getPluginID() === 0} onclick="return confirmDelete();"{/if} title="{#delete#}"><i class="fa fa-trash"></i></button>
+                    {assign var=deleteCount value=$linkGroupCountByLinkID[$link->getID()]|default:1}
+                    <button name="dellink"
+                            value="{$link->getID()}"
+                            class="btn btn-danger{if $link->getPluginID() > 0} disabled{/if}"
+                            {if $link->getPluginID() === 0} onclick="return confirmDelete();"{/if}
+                            title="{if $deleteCount > 1}Achtung: Link ist in {$deleteCount} Linkgruppen vorhanden und wird aus allen gelöscht!{else}{#delete#}{/if}">
+                        <i class="fa fa-trash"></i>{if $deleteCount > 1} ({$deleteCount}){/if}
+                    </button>
                 </div>
             </form>
         </td>

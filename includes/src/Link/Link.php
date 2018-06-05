@@ -270,6 +270,7 @@ final class Link extends AbstractLink
                 $this->setID((int)$link->kLink);
             }
         }
+        $this->setChildLinks($this->buildChildLinks());
 
         return $this;
     }
@@ -764,8 +765,11 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
-    public function setChildLinks(Collection $links)
+    public function setChildLinks($links)
     {
+        if (is_array($links)) {
+            $links = collect($links);
+        }
         $this->childLinks = $links;
     }
 
@@ -964,7 +968,7 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
-    public function getChildren(): array
+    public function buildChildLinks(): array
     {
         if ($this->getID() > 0) {
             if ($this->db === null) {

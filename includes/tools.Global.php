@@ -4792,28 +4792,13 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
  */
 function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 {
-    // Convert special entities in multibyte string
-    $metaProposal = str_replace(['"', chr(27)], '', $metaProposal);
+    $metaProposal = str_replace('"', '', StringHandler::unhtmlentities($metaProposal));
     $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
-    $regex        = '~&#x?([0-9a-fA-F]+);~i';
-
-    if (preg_match_all($regex, $metaProposal, $hits)) {
-        // set escape-sequence as placeholder for multibyte entities
-        $metaProposal = preg_replace($regex, chr(27), $metaProposal);
-    }
-    $metaProposal = StringHandler::unhtmlentities($metaProposal);
     if (!empty($maxLength) && $maxLength > 0) {
-        // shorten the string multibyte safe
-        $metaProposal = mb_substr($metaProposal, 0, (int)$maxLength);
-    }
-    $metaProposal = StringHandler::htmlentities(trim(preg_replace('/\s\s+/', ' ', $metaProposal)));
-    if (count($hits[0]) > 0) {
-        // reset placeholder to preserved multibyte entities
-        $metaProposal = str_replace(['%', chr(27)], ['%%', '%s'], $metaProposal);
-        $metaProposal = vsprintf($metaProposal, $hits[0]);
+        $metaProposal = substr($metaProposal, 0, (int)$maxLength);
     }
 
-    return $metaProposal . $metaSuffix;
+    return StringHandler::htmlentities(trim(preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
 }
 
 /**

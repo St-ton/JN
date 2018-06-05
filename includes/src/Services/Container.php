@@ -9,7 +9,6 @@ namespace Services;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
-use Services\JTL\LinkService;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
 use Services\JTL\PasswordServiceInterface;

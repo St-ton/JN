@@ -256,7 +256,6 @@ $filterMapping = \Functional\reindex($filterMapping, function ($e) {
 $filterMapping = \Functional\map($filterMapping, function ($e) {
     return $e->name;
 });
-die('xxx!');
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('filterMapping', $filterMapping)

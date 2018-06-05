@@ -14,12 +14,12 @@ namespace Session\Handler;
 class SessionHandlerJTL extends \SessionHandler implements \SessionHandlerInterface
 {
     /**
-     * @var array
+     * @var array|null
      */
     public $sessionData;
 
     /**
-     * @return array
+     * @return array|null
      */
     public function getAll()
     {

@@ -25,12 +25,19 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
     protected $db;
 
     /**
+     * @var string
+     */
+    protected $tableName;
+
+    /**
      * SessionHandlerDB constructor.
      * @param DbInterface $db
+     * @param string      $tableName
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, string $tableName = 'tsession')
     {
-        $this->db = $db;
+        $this->db        = $db;
+        $this->tableName = $tableName;
     }
 
     /**
@@ -60,10 +67,13 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
     public function read($sessID)
     {
         $res = $this->db->queryPrepared(
-            'SELECT cSessionData FROM tsession
+            'SELECT cSessionData FROM ' . $this->tableName . '
                 WHERE cSessionId = :id
                 AND nSessionExpires > :time',
-            ['id' => $sessID, 'time' => time()],
+            [
+                'id'   => $sessID,
+                'time' => time()
+            ],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -80,7 +90,7 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
         // set new session expiration
         $newExp = time() + $this->lifeTime;
         // is a session with this id already in the database?
-        $res = $this->db->select('tsession', 'cSessionId', $sessID);
+        $res = $this->db->select($this->tableName, 'cSessionId', $sessID);
         // if yes,
         if (!empty($res)) {
             //...update session data
@@ -88,7 +98,7 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
             $update->nSessionExpires = $newExp;
             $update->cSessionData    = $sessData;
             // if something happened, return true
-            if ($this->db->update('tsession', 'cSessionId', $sessID, $update) > 0) {
+            if ($this->db->update($this->tableName, 'cSessionId', $sessID, $update) > 0) {
                 return true;
             }
         } else {
@@ -98,7 +108,7 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
             $session->nSessionExpires = $newExp;
             $session->cSessionData    = $sessData;
 
-            return $this->db->insert('tsession', $session) > 0;
+            return $this->db->insert($this->tableName, $session) > 0;
         }
 
         return false;
@@ -113,7 +123,7 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
     public function destroy($sessID)
     {
         // if session was deleted, return true,
-        return $this->db->delete('tsession', 'cSessionId', $sessID) > 0;
+        return $this->db->delete($this->tableName, 'cSessionId', $sessID) > 0;
     }
 
     /**
@@ -125,6 +135,9 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
     public function gc($sessMaxLifeTime)
     {
         // return affected rows
-        return $this->db->query('DELETE FROM tsession WHERE nSessionExpires < ' . time(), ReturnType::AFFECTED_ROWS);
+        return $this->db->query(
+            'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . time(),
+            ReturnType::AFFECTED_ROWS
+        );
     }
 }

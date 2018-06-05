@@ -41,22 +41,22 @@ class Session
     /**
      * @var string
      */
-    protected static $_sessionName = self::DEFAULT_SESSION;
+    protected static $sessionName = self::DEFAULT_SESSION;
 
     /**
      * @var Session
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @var \SessionHandlerInterface
      */
-    protected static $_handler;
+    protected static $handler;
 
     /**
      * @var SessionStorage
      */
-    protected static $_storage;
+    protected static $storage;
 
     /**
      * @param bool   $start       - call session_start()?
@@ -67,9 +67,9 @@ class Session
      */
     public static function getInstance(bool $start = true, $force = false, $sessionName = self::DEFAULT_SESSION): self
     {
-        return ($force === true || self::$_instance === null || self::$_sessionName !== $sessionName)
+        return ($force === true || self::$instance === null || self::$sessionName !== $sessionName)
             ? new self($start, $sessionName)
-            : self::$_instance;
+            : self::$instance;
     }
 
     /**
@@ -81,14 +81,14 @@ class Session
      */
     public function __construct(bool $start = true, $sessionName = self::DEFAULT_SESSION)
     {
-        self::$_instance    = $this;
-        self::$_sessionName = $sessionName;
-        $bot                = SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
+        self::$instance    = $this;
+        self::$sessionName = $sessionName;
+        $bot               = SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
             ? self::getIsCrawler($_SERVER['HTTP_USER_AGENT'])
             : false;
-        session_name(self::$_sessionName);
+        session_name(self::$sessionName);
         if ($bot === false || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
-            self::$_handler = ES_SESSIONS === 1
+            self::$handler = ES_SESSIONS === 1
                 ? new SessionHandlerDB(\Shop::Container()->getDB())
                 : new SessionHandlerJTL();
         } else {
@@ -104,12 +104,12 @@ class Session
                     && \Shop::Cache()->isAvailable()
                     && \Shop::Cache()->isActive();
 
-                self::$_handler = new SessionHandlerBot($save);
+                self::$handler = new SessionHandlerBot($save);
             } else {
-                self::$_handler = new SessionHandlerJTL();
+                self::$handler = new SessionHandlerJTL();
             }
         }
-        self::$_storage = new SessionStorage(self::$_handler, [], $start);
+        self::$storage = new SessionStorage(self::$handler, [], $start);
         $this->setStandardSessionVars();
         \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
@@ -136,7 +136,7 @@ class Session
      */
     public static function get($key, $default = null)
     {
-        return self::$_handler->get($key, $default);
+        return self::$handler->get($key, $default);
     }
 
     /**
@@ -146,7 +146,7 @@ class Session
      */
     public static function set($key, $value)
     {
-        return self::$_handler->set($key, $value);
+        return self::$handler->set($key, $value);
     }
 
     /**

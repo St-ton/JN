@@ -13,6 +13,7 @@ use DB\Services\GcServiceInterface;
 use Services\JTL\BoxService;
 use Services\JTL\LinkService;
 use Services\JTL\CryptoServiceInterface;
+use Services\JTL\LinkServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -77,9 +78,9 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getLinkService(): LinkService
+    public function getLinkService(): LinkServiceInterface
     {
-        return $this->get(LinkService::class);
+        return $this->get(LinkServiceInterface::class);
     }
 
     /**

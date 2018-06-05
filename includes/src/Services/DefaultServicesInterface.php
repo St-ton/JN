@@ -6,11 +6,13 @@
 
 namespace Services;
 
+use Boxes\BoxFactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use Services\JTL\BoxServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
 use Services\JTL\PasswordServiceInterface;
@@ -62,4 +64,14 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return LinkServiceInterface
      */
     public function getLinkService(): LinkServiceInterface;
+
+    /**
+     * @return BoxFactoryInterface
+     */
+    public function getBoxFactory(): BoxFactoryInterface;
+
+    /**
+     * @return BoxServiceInterface
+     */
+    public function getBoxService(): BoxServiceInterface;
 }

@@ -85,7 +85,6 @@ if (!JTL_INCLUDE_ONLY_DB) {
     $template                     = Template::getInstance();
     $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
-    $oBoxen              = Boxen::getInstance();
     $session             = (defined('JTLCRON') && JTLCRON === true)
         ? \Session\Session::getInstance(true, true, 'JTLCRON')
         : \Session\Session::getInstance();

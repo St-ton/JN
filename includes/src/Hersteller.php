@@ -58,11 +58,6 @@ class Hersteller
     /**
      * @var string
      */
-    public $nGlobal;
-
-    /**
-     * @var string
-     */
     public $cURL;
 
     /**
@@ -74,6 +69,7 @@ class Hersteller
      * @var string
      */
     public $cBildpfadNormal;
+
     /**
      * @var string
      */
@@ -111,6 +107,7 @@ class Hersteller
                 $this->{$member} = $obj->{$member};
             }
             $this->kHersteller = (int)$this->kHersteller;
+            $this->nSortNr     = (int)$this->nSortNr;
         }
         if ($extras) {
             $this->getExtras($obj);
@@ -219,7 +216,7 @@ class Hersteller
     public static function getAll($productLookup = true)
     {
         $sqlWhere = '';
-        $kSprache = Shop::getLanguage();
+        $kSprache = Shop::getLanguageID();
         if ($productLookup) {
             $sqlWhere = "WHERE EXISTS (
                             SELECT 1

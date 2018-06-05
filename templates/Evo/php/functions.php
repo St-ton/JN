@@ -8,6 +8,7 @@
 $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
        ->registerPlugin('function', 'load_boxes', 'load_boxes')
        ->registerPlugin('function', 'load_boxes_raw', 'load_boxes_raw')
+       ->registerPlugin('function', 'getBoxesByPosition', 'getBoxesByPosition')
        ->registerPlugin('function', 'has_boxes', 'has_boxes')
        ->registerPlugin('function', 'image', 'get_img_tag')
        ->registerPlugin('function', 'getCheckBoxForLocation', 'getCheckBoxForLocation')
@@ -147,8 +148,26 @@ function get_manufacturers($params, $smarty)
 function load_boxes_raw($params, $smarty)
 {
     if (isset($params['array'], $params['assign']) && $params['array'] === true) {
-        $rawData = Boxen::getInstance()->getRawData();
+        $rawData = Shop::Container()->getBoxService()->getRawData();
         $smarty->assign($params['assign'], $rawData[$params['type']] ?? null);
+    }
+}
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return array|void
+ */
+function getBoxesByPosition($params, $smarty)
+{
+    if (isset($params['position'])) {
+        $data  = Shop::Container()->getBoxService()->boxes;
+        $boxes = $data[$params['position']] ?? [];
+        if (isset($params['assign'])) {
+            $smarty->assign($params['assign'], $boxes);
+        } else {
+            return $boxes;
+        }
     }
 }
 
@@ -280,7 +299,7 @@ function load_boxes($params, $smarty)
                     $oBoxVar = 'oBox' . $oBox->kBox;
                     $smarty->assign($oBoxVar, $oBox);
                     // Custom Template
-                    global $Einstellungen;
+                    $Einstellungen = $smarty->getTemplateVars('Einstellungen');
                     if ($Einstellungen['template']['general']['use_customtpl'] === 'Y') {
                         $cTemplatePath   = pathinfo($cTemplate);
                         $cCustomTemplate = $cTemplatePath['dirname'] . '/' . $cTemplatePath['filename'] . '_custom.tpl';
@@ -317,8 +336,8 @@ function load_boxes($params, $smarty)
  */
 function has_boxes($params, $smarty)
 {
-    $boxes = Boxen::getInstance();
-    $smarty->assign($params['assign'], isset($boxes->boxes[$params['position']]));
+    $boxData = $smarty->getTemplateVars('boxes');
+    $smarty->assign($params['assign'], !empty($boxData[$params['position']]));
 }
 
 /**
@@ -449,7 +468,6 @@ function getCheckBoxForLocation($params, $smarty)
         ? Shop::get($cid)
         : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
     if (count($oCheckBox_arr) > 0) {
-        $linkHelper = Shop::Container()->getLinkService();
         foreach ($oCheckBox_arr as $oCheckBox) {
             $cLinkURL                 = $oCheckBox->kLink > 0
                 ? $oCheckBox->getLink()->getURL()

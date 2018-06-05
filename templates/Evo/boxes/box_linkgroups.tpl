@@ -1,11 +1,11 @@
-{if isset($oBox->oLinkGruppe)}
-    <section class="panel panel-default box box-linkgroup" id="box{$oBox->kBox}">
+{if $oBox->show()}
+    <section class="panel panel-default box box-linkgroup" id="box{$oBox->getID()}">
         <div class="panel-heading">
-            <h5 class="panel-title">{$oBox->oLinkGruppe->getName()}</h5>
+            <div class="panel-title">{$oBox->getLinkGroupTemplate()}</div>
         </div>
         <div class="box-body nav-panel">
             <ul class="nav nav-list">
-                {include file='snippets/linkgroup_recursive.tpl' linkgroupIdentifier=$oBox->oLinkGruppeTemplate dropdownSupport=true  tplscope='box'}
+                {include file='snippets/linkgroup_recursive.tpl' linkgroupIdentifier=$oBox->getLinkGroupTemplate() dropdownSupport=true  tplscope='box'}
             </ul>
         </div>
     </section>

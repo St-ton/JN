@@ -6,6 +6,7 @@
 
 namespace Filter;
 
+use Boxes\AbstractBox;
 use function Functional\every;
 use Tightenco\Collect\Support\Collection;
 
@@ -735,7 +736,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
                      return $isCustom;
                  }
              ))
-             ->setSearchFilterJSON(\Boxen::gibJSONString(array_map(
+             ->setSearchFilterJSON(AbstractBox::getJSONString(array_map(
                  function ($e) {
                      $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
 
@@ -744,8 +745,8 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
                  $searchFilterOptions
              )));
 
-        if ($productFilter->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
-            $this->setTagFilterJSON(\Boxen::gibJSONString(array_map(
+        if ($productFilter->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] !== 'N') {
+            $this->setTagFilterJSON(AbstractBox::getJSONString(array_map(
                 function ($e) {
                     /** @var FilterOption $e */
                     return $e->setURL(\StringHandler::htmlentitydecode($e->getURL()));

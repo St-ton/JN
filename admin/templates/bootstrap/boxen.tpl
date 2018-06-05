@@ -101,7 +101,7 @@
 <div id="content">
     {if $invisibleBoxes|count > 0}
         <div class="alert alert-danger">{#warningInvisibleBoxes#}</div>
-        <form action="boxen.php" method="post">
+        <form action="boxen.php" method="post" class="block">
             {$jtl_token}
             <div class="panel panel-default editorInner">
                 <div class="panel-heading">
@@ -220,7 +220,8 @@
                                         <label for="linkID">{#linkgroup#}</label>
                                     </span>
                                     <span class="input-group-wrap">
-                                        <select class="form-control" id="linkID" name="linkID">
+                                        <select class="form-control" id="linkID" name="linkID" required>
+                                            <option value="" {if $oEditBox->kCustomID == 0}selected="selected"{/if}>{#FillOut#}</option>
                                             {foreach from=$oLink_arr item=oLink}
                                                 <option value="{$oLink->kLinkgruppe}" {if $oLink->kLinkgruppe == $oEditBox->kCustomID}selected="selected"{/if}>{$oLink->cName}</option>
                                             {/foreach}
@@ -246,7 +247,7 @@
                 </form>
             </div>
         {else}
-            <div class="block">
+            <div class="">
                 <form name="boxen" method="post" action="boxen.php">
                     {$jtl_token}
                     <div class="input-group p25 left">

@@ -39,7 +39,6 @@ class ItemRating extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('bf')
-             ->setUrlParamSEO(null)
              ->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('Votes'));
     }

@@ -273,6 +273,9 @@ final class LinkGroup implements LinkGroupInterface
      */
     public function getMissingTranslations(): array
     {
+        if ($this->db === null) {
+            $this->db = \Shop::Container()->getDB();
+        }
         return $this->db->queryPrepared(
             'SELECT tlinkgruppe.*, tsprache.* 
                 FROM tlinkgruppe

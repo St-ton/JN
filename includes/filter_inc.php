@@ -226,7 +226,7 @@ function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
         $oSuchfilter_arr[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
     }
 
-    return Boxen::gibJSONString($oSuchfilter_arr);
+    return \Boxes\AbstractBox::getJSONString($oSuchfilter_arr);
 }
 
 /**
@@ -243,7 +243,7 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
         $oTags_arr[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
     }
 
-    return Boxen::gibJSONString($oTags_arr);
+    return \Boxes\AbstractBox::getJSONString($oTags_arr);
 }
 
 /**

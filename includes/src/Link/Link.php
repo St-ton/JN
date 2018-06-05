@@ -993,6 +993,9 @@ final class Link extends AbstractLink
      */
     public function getMissingTranslations(): array
     {
+        if ($this->db === null) {
+            $this->db = \Shop::Container()->getDB();
+        }
         return $this->db->queryPrepared(
             'SELECT tlink.*,tsprache.*
                 FROM tlink

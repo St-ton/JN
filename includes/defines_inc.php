@@ -372,6 +372,7 @@ define('PAGE_IO', 37);
 define('PAGE_BESTELLSTATUS', 38);
 define('PAGE_MEDIA', 39);
 // Boxen
+define('BOX_CONTAINER', 0);
 define('BOX_BESTSELLER', 1);
 define('BOX_KATEGORIEN', 2);
 define('BOX_VERGLEICHSLISTE', 3);
@@ -401,6 +402,8 @@ define('BOX_FILTER_BEWERTUNG', 26);
 define('BOX_FILTER_MERKMALE', 27);
 define('BOX_FILTER_SUCHE', 28);
 define('BOX_FILTER_SUCHSPECIAL', 29);
+define('BOX_FILTER_HERSTELLER', 101);
+define('BOX_FILTER_KATEGORIE', 102);
 define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
 define('BOX_TAGWOLKE', 32);

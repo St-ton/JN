@@ -1050,13 +1050,12 @@ class TrustedShops
         } else {
             writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
         }
-
         if ($returnValue === 'OK') {
             $this->aenderKundenbewertungsstatusDB($nStatus, $cISOSprache);
 
             return 1;
         }
-        if ($returnValue == SOAP_ERROR) {
+        if ($returnValue === SOAP_ERROR) {
             return 2;
         }
         if ($returnValue === 'INVALID_TSID') {

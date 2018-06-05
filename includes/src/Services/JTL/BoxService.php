@@ -332,7 +332,7 @@ class BoxService implements BoxServiceInterface
         });
         $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
         $cSQLAktiv        = $bAktiv
-            ? ' AND bAktiv = 1 AND tboxen.ePosition IN (' . implode(',', $visiblePositions) . ')'
+            ? ' AND tboxen.ePosition IN (' . implode(',', $visiblePositions) . ')'
             : '';
         $cPluginAktiv     = $bAktiv
             ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"

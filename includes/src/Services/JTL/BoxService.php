@@ -333,17 +333,17 @@ class BoxService implements BoxServiceInterface
         $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
         $cSQLAktiv        = $bAktiv
             ? ' AND bAktiv = 1 AND tboxen.ePosition IN (' . implode(',', $visiblePositions) . ')'
-            : ' AND bAktiv = 1 ';
+            : '';
         $cPluginAktiv     = $bAktiv
             ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
             : '';
-        if (true||($grouped = \Shop::Cache()->get($cacheID)) === false) {
-            $boxData = $this->db->query(
-                'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
+        if (($grouped = \Shop::Cache()->get($cacheID)) === false) {
+            $sql = 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
                        tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
                        tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus,
-                       GROUP_CONCAT(tboxensichtbar.kSeite) AS visiblePages,
+                       GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,
+                       GROUP_CONCAT(tboxensichtbar.bAktiv) AS pageVisibilities,                       
                        tsprache.kSprache, tboxsprache.cInhalt, tboxsprache.cTitel
                     FROM tboxen
                     LEFT JOIN tboxensichtbar
@@ -358,7 +358,9 @@ class BoxService implements BoxServiceInterface
                         ON tsprache.cISO = tboxsprache.cISO
                     WHERE tboxen.kContainer > -1 ' . $cSQLAktiv . $cPluginAktiv .
                 ' GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
-                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
+                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC';
+            $boxData = $this->db->query(
+                $sql,
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $grouped = \Functional\group($boxData, function ($e) {

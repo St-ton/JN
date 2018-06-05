@@ -280,11 +280,13 @@ abstract class AbstractBox implements BoxInterface
 
         foreach ($boxData as $box) {
             if (!empty($box->cFilter)) {
-                $this->filter[$box->visiblePages] = array_map('intval', explode(',', $box->cFilter));
+                $this->filter[(int)$box->kSeite] = array_map('intval', explode(',', $box->cFilter));
             } else {
-                $filter = explode(',', $box->visiblePages);
-                foreach ($filter as $item) {
-                    $this->filter[$item] = true;
+                $pageIDs          = explode(',', $box->pageIDs);
+                $pageVisibilities = explode(',', $box->pageVisibilities);
+                $filter           = array_combine($pageIDs, $pageVisibilities);
+                foreach ($filter as $pageID => $visibility) {
+                    $this->filter[(int)$pageID] = (bool)$visibility;
                 }
             }
             if (!empty($box->kSprache)) {

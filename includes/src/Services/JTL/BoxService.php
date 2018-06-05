@@ -19,7 +19,7 @@ use Filter\Visibility;
 /**
  * Class BoxService
  */
-class BoxService
+class BoxService implements BoxServiceInterface
 {
     /**
      * @var BoxInterface[]

@@ -146,6 +146,7 @@ class Boxen
      * @param int    $kBox
      * @param string $cISO
      * @return mixed
+     * @deprecated since 5.0.0
      */
     public function gibBoxInhalt(int $kBox, string $cISO = '')
     {

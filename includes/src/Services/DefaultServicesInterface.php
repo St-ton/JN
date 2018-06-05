@@ -13,6 +13,7 @@ use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
 use Services\JTL\BoxService;
+use Services\JTL\BoxServiceInterface;
 use Services\JTL\LinkService;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
@@ -71,7 +72,7 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getBoxFactory(): BoxFactory;
 
     /**
-     * @return BoxService
+     * @return BoxServiceInterface
      */
-    public function getBoxService(): BoxService;
+    public function getBoxService(): BoxServiceInterface;
 }

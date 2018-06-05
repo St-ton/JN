@@ -10,6 +10,8 @@ $oAccount->permission('BOXES_VIEW', true, true);
 $cHinweis = '';
 $cFehler  = '';
 $nPage    = 0;
+$boxService = Shop::Container()->getBoxService();
+$boxAdmin = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB());
 $oBoxen   = Boxen::getInstance();
 $bOk      = false;
 
@@ -22,7 +24,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             if (!empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0) {
                 $cnt = 0;
                 foreach ($_POST['kInvisibleBox'] as $box) {
-                    $bOk = $oBoxen->loescheBox((int)$box);
+                    $bOk = $boxAdmin->delete((int)$box);
                     if ($box) {
                         ++$cnt;
                     }
@@ -32,7 +34,6 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             break;
 
         case 'new':
-            Shop::dbg($_POST, true);
             $kBox       = $_REQUEST['item'];
             $ePosition  = $_REQUEST['position'];
             $kContainer = $_REQUEST['container'] ?? 0;
@@ -40,14 +41,14 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
                 $kBox = (int)$kBox;
                 if ($kBox === 0) {
                     // Neuer Container
-                    $bOk = $oBoxen->setzeBox(0, $nPage, $ePosition);
+                    $bOk = $boxAdmin->create(0, $nPage, $ePosition);
                     if ($bOk) {
                         $cHinweis = 'Container wurde erfolgreich hinzugef&uuml;gt.';
                     } else {
                         $cFehler = 'Container konnte nicht angelegt werden.';
                     }
                 } else {
-                    $bOk = $oBoxen->setzeBox($kBox, $nPage, $ePosition, $kContainer);
+                    $bOk = $boxAdmin->create($kBox, $nPage, $ePosition, $kContainer);
                     if ($bOk) {
                         $cHinweis = 'Box wurde erfolgreich hinzugef&uuml;gt.';
                     } else {
@@ -59,7 +60,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
 
         case 'del':
             $kBox = (int)$_REQUEST['item'];
-            $bOk  = $oBoxen->loescheBox($kBox);
+            $bOk  = $boxAdmin->delete($kBox);
             if ($bOk) {
                 $cHinweis = 'Box wurde erfolgreich entfernt.';
             } else {
@@ -69,7 +70,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
 
         case 'edit_mode':
             $kBox = (int)$_REQUEST['item'];
-            $oBox = $oBoxen->holeBox($kBox);
+            $oBox = $boxAdmin->getByID($kBox);
             // revisions need this as a different formatted array
             $revisionData = [];
             foreach ($oBox->oSprache_arr as $lang) {
@@ -85,16 +86,16 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             $cTitel = $_REQUEST['boxtitle'];
             $eTyp   = $_REQUEST['typ'];
             if ($eTyp === 'text') {
-                $oldBox = $oBoxen->holeBox($kBox);
+                $oldBox = $boxAdmin->getByID($kBox);
                 if ($oldBox->supportsRevisions === true) {
                     $revision = new Revision();
                     $revision->addRevision('box', $kBox, true);
                 }
-                $bOk = $oBoxen->bearbeiteBox($kBox, $cTitel);
+                $bOk = $boxAdmin->update($kBox, $cTitel);
                 if ($bOk) {
                     foreach ($_REQUEST['title'] as $cISO => $cTitel) {
                         $cInhalt = $_REQUEST['text'][$cISO];
-                        $bOk     = $oBoxen->bearbeiteBoxSprache($kBox, $cISO, $cTitel, $cInhalt);
+                        $bOk     = $boxAdmin->updateLanguage($kBox, $cISO, $cTitel, $cInhalt);
                         if (!$bOk) {
                             break;
                         }
@@ -103,14 +104,14 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             } elseif ($eTyp === 'link') {
                 $linkID = (int)$_REQUEST['linkID'];
                 if ($linkID > 0) {
-                    $bOk = $oBoxen->bearbeiteBox($kBox, $cTitel, $linkID);
+                    $bOk = $boxAdmin->update($kBox, $cTitel, $linkID);
                 }
             } elseif ($eTyp === 'catbox') {
                 $linkID = (int)$_REQUEST['linkID'];
-                $bOk    = $oBoxen->bearbeiteBox($kBox, $cTitel, $linkID);
+                $bOk    = $boxAdmin->update($kBox, $cTitel, $linkID);
                 if ($bOk) {
                     foreach ($_REQUEST['title'] as $cISO => $cTitel) {
-                        $bOk = $oBoxen->bearbeiteBoxSprache($kBox, $cISO, $cTitel, '');
+                        $bOk = $boxAdmin->updateLanguage($kBox, $cISO, $cTitel, '');
                         if (!$bOk) {
                             break;
                         }
@@ -133,7 +134,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             $aktiv_arr = $_REQUEST['aktiv'] ?? [];
             $boxCount  = count($box_arr);
             $bValue    = $_REQUEST['box_show'] ?? false;
-            $bOk       = $oBoxen->setzeBoxAnzeige($nPage, $ePosition, $bValue);
+            $bOk       = $boxAdmin->setVisibility($nPage, $ePosition, $bValue);
             if ($bOk) {
                 $cHinweis = 'Box wurde erfolgreich bearbeitet.';
             } else {
@@ -142,8 +143,8 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
 
             foreach ($box_arr as $i => $kBox) {
                 $idx = 'box-filter-' . $kBox;
-                $oBoxen->sortBox($kBox, $nPage, $sort_arr[$i], in_array($kBox, $aktiv_arr));
-                $oBoxen->filterBoxVisibility((int)$kBox, $nPage, $_POST[$idx] ?? '');
+                $boxAdmin->sort($kBox, $nPage, $sort_arr[$i], in_array($kBox, $aktiv_arr));
+                $boxAdmin->filterBoxVisibility((int)$kBox, $nPage, $_POST[$idx] ?? '');
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
             if ($ePosition !== 'left' || $nPage > 0) {
@@ -152,7 +153,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
                 Shop::dbg($_REQUEST['box_show'], false, '$_REQUEST[\'box_show\']:');
 
 
-                $oBoxen->setzeBoxAnzeige($nPage, $ePosition, isset($_REQUEST['box_show']));
+                $boxAdmin->setVisibility($nPage, $ePosition, isset($_REQUEST['box_show']));
             }
             $cHinweis = 'Die Boxen wurden aktualisiert.';
             break;
@@ -160,7 +161,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
         case 'activate':
             $kBox    = (int)$_REQUEST['item'];
             $bActive = (boolean)$_REQUEST['value'];
-            $bOk     = $oBoxen->aktiviereBox($kBox, 0, $bActive);
+            $bOk     = $boxAdmin->activate($kBox, 0, $bActive);
             if ($bOk) {
                 $cHinweis = 'Box wurde erfolgreich bearbeitet.';
             } else {
@@ -171,7 +172,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
         case 'container':
             $ePosition = $_REQUEST['position'];
             $bValue    = (boolean)$_GET['value'];
-            $bOk       = $oBoxen->setzeBoxAnzeige(0, $ePosition, $bValue);
+            $bOk       = $boxAdmin->setVisibility(0, $ePosition, $bValue);
             if ($bOk) {
                 $cHinweis = 'Box wurde erfolgreich bearbeitet.';
             } else {

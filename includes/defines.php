@@ -185,7 +185,7 @@ ifndef('SHOW_CHILD_PRODUCTS', 0);
 ifndef('REDIS_CONNECT_TIMEOUT', 3);
 
 ifndef('SAVE_BOT_SESSION', 0);
-
+ifndef('ES_SESSIONS', 0);
 
 // security
 ifndef('NEWSLETTER_USE_SECURITY', true);

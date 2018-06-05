@@ -6,12 +6,11 @@
 
 namespace Services;
 
-use Boxes\BoxFactory;
+use Boxes\BoxFactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
-use Services\JTL\BoxService;
-use Services\JTL\LinkService;
+use Services\JTL\BoxServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
 use Services\JTL\PasswordServiceInterface;
@@ -86,16 +85,16 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getBoxFactory(): BoxFactory
+    public function getBoxFactory(): BoxFactoryInterface
     {
-        return $this->get(BoxFactory::class);
+        return $this->get(BoxFactoryInterface::class);
     }
 
     /**
      * @inheritdoc
      */
-    public function getBoxService(): BoxService
+    public function getBoxService(): BoxServiceInterface
     {
-        return $this->get(BoxService::class);
+        return $this->get(BoxServiceInterface::class);
     }
 }

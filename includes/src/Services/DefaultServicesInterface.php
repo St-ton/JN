@@ -16,6 +16,7 @@ use Services\JTL\BoxService;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\LinkService;
 use Services\JTL\CryptoServiceInterface;
+use Services\JTL\LinkServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -62,9 +63,9 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getBackendLogService(): LoggerInterface;
 
     /**
-     * @return LinkService
+     * @return LinkServiceInterface
      */
-    public function getLinkService(): LinkService;
+    public function getLinkService(): LinkServiceInterface;
 
     /**
      * @return BoxFactory

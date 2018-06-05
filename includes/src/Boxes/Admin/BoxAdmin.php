@@ -413,7 +413,6 @@ class BoxAdmin
      */
     public function getTemplates(int $nSeite = -1): array
     {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $cSQL          = '';
         $oVorlagen_arr = [];
 
@@ -503,7 +502,6 @@ class BoxAdmin
      */
     public function getInvisibleBoxes(): array
     {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $unavailabe = \Functional\filter(\Template::getInstance()->getBoxLayoutXML(), function ($e) {
             return $e === false;
         });

@@ -13,7 +13,6 @@ $nPage      = 0;
 $boxService = Shop::Container()->getBoxService();
 $boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB(), $boxService);
 $bOk        = false;
-
 if (isset($_REQUEST['page'])) {
     $nPage = (int)$_REQUEST['page'];
 }
@@ -102,12 +101,12 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
                         }
                     }
                 }
-            } elseif ($eTyp === 'link') {
+            } elseif ($eTyp === \Boxes\BoxType::LINK) {
                 $linkID = (int)$_REQUEST['linkID'];
                 if ($linkID > 0) {
                     $bOk = $boxAdmin->update($kBox, $cTitel, $linkID);
                 }
-            } elseif ($eTyp === 'catbox') {
+            } elseif ($eTyp === \Boxes\BoxType::CATBOX) {
                 $linkID = (int)$_REQUEST['linkID'];
                 $bOk    = $boxAdmin->update($kBox, $cTitel, $linkID);
                 if ($bOk) {
@@ -149,11 +148,6 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
             if ($ePosition !== 'left' || $nPage > 0) {
-                Shop::dbg($nPage, false, 'nPage:');
-                Shop::dbg($ePosition, false, '$ePosition:');
-                Shop::dbg($_REQUEST['box_show'], false, '$_REQUEST[\'box_show\']:');
-
-
                 $boxAdmin->setVisibility($nPage, $ePosition, isset($_REQUEST['box_show']));
             }
             $cHinweis = 'Die Boxen wurden aktualisiert.';

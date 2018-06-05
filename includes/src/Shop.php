@@ -1778,7 +1778,7 @@ final class Shop
         $container->setSingleton(\Cache\JTLCacheInterface::class, function () {
             return new \Cache\JTLCache();
         });
-        $container->setSingleton(\Services\JTL\LinkService::class, function (Container $container) {
+        $container->setSingleton(\Services\JTL\LinkServiceInterface::class, function (Container $container) {
             return new \Services\JTL\LinkService($container->getDB());
         });
         // SECURITY

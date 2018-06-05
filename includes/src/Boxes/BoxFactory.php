@@ -11,7 +11,7 @@ namespace Boxes;
  *
  * @package Boxes
  */
-class BoxFactory
+class BoxFactory implements BoxFactoryInterface
 {
     /**
      * @var array

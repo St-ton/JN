@@ -1818,10 +1818,10 @@ final class Shop
         $container->setSingleton(DbService\GcServiceInterface::class, function (Container $container) {
             return new DbService\GcService($container->getDB());
         });
-        $container->setFactory(\Boxes\BoxFactory::class, function () {
+        $container->setFactory(\Boxes\BoxFactoryInterface::class, function () {
             return new \Boxes\BoxFactory(Shopsetting::getInstance()->getAll());
         });
-        $container->setSingleton(\Services\JTL\BoxService::class, function (Container $container) {
+        $container->setSingleton(\Services\JTL\BoxServiceInterface::class, function (Container $container) {
             return new \Services\JTL\BoxService(Shopsetting::getInstance()->getAll(), $container->getBoxFactory(), $container->getDB());
         });
     }

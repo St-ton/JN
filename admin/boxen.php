@@ -7,13 +7,12 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 
-$cHinweis = '';
-$cFehler  = '';
-$nPage    = 0;
+$cHinweis   = '';
+$cFehler    = '';
+$nPage      = 0;
 $boxService = Shop::Container()->getBoxService();
-$boxAdmin = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB());
-$oBoxen   = Boxen::getInstance();
-$bOk      = false;
+$boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB(), $boxService);
+$bOk        = false;
 
 if (isset($_REQUEST['page'])) {
     $nPage = (int)$_REQUEST['page'];
@@ -78,7 +77,9 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             }
             $smarty->assign('oEditBox', $oBox)
                    ->assign('revisionData', $revisionData)
-                   ->assign('oLink_arr', $oBoxen->gibLinkGruppen());
+                   ->assign('oLink_arr',
+                       Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", \DB\ReturnType::ARRAY_OF_OBJECTS)
+                   );
             break;
 
         case 'edit':
@@ -223,10 +224,10 @@ $validPageTypes  = [
     PAGE_BESTELLABSCHLUSS,
     PAGE_RMA
 ];
-$oBoxen_arr      = $oBoxen->holeBoxen($nPage, false, true, true);
-$oVorlagen_arr   = $oBoxen->holeVorlagen($nPage);
+$oBoxen_arr      = $boxService->buildList($nPage, false, true);
+$oVorlagen_arr   = $boxAdmin->getTemplates($nPage);
 $oBoxenContainer = Template::getInstance()->getBoxLayoutXML();
-$filterMapping = [];
+$filterMapping   = [];
 if ($nPage === PAGE_ARTIKELLISTE) { //map category name
     $filterMapping = Shop::Container()->getDB()->query(
         'SELECT kKategorie AS id, cName AS name FROM tkategorie',
@@ -255,20 +256,21 @@ $filterMapping = \Functional\reindex($filterMapping, function ($e) {
 $filterMapping = \Functional\map($filterMapping, function ($e) {
     return $e->name;
 });
+die('xxx!');
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('filterMapping', $filterMapping)
        ->assign('validPageTypes', $validPageTypes)
-       ->assign('bBoxenAnzeigen', $oBoxen->holeBoxAnzeige($nPage))
+       ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($nPage))
        ->assign('oBoxenLeft_arr', $oBoxen_arr['left'] ?? [])
        ->assign('oBoxenTop_arr', $oBoxen_arr['top'] ?? [])
        ->assign('oBoxenBottom_arr', $oBoxen_arr['bottom'] ?? [])
        ->assign('oBoxenRight_arr', $oBoxen_arr['right'] ?? [])
-       ->assign('oContainerTop_arr', $oBoxen->holeContainer('top'))
-       ->assign('oContainerBottom_arr', $oBoxen->holeContainer('bottom'))
+       ->assign('oContainerTop_arr', $boxAdmin->getContainer('top'))
+       ->assign('oContainerBottom_arr', $boxAdmin->getContainer('bottom'))
        ->assign('oSprachen_arr', Shop::Lang()->getAvailable())
        ->assign('oVorlagen_arr', $oVorlagen_arr)
        ->assign('oBoxenContainer', $oBoxenContainer)
        ->assign('nPage', $nPage)
-       ->assign('invisibleBoxes', $oBoxen->getInvisibleBoxes())
+       ->assign('invisibleBoxes', $boxAdmin->getInvisibleBoxes())
        ->display('boxen.tpl');

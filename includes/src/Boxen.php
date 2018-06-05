@@ -181,7 +181,7 @@ class Boxen
     /**
      * generate array of currently active boxes
      *
-     * @param int  $nSeite
+     * @param int  $nSeiteholeVorlagen
      * @param bool $bAktiv
      * @param bool $bVisible
      * @return $this

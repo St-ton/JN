@@ -23,6 +23,21 @@ class Page implements \JsonSerializable
     protected $id = '';
 
     /**
+     * @var null|string
+     */
+    protected $publishFrom = null;
+
+    /**
+     * @var null|string
+     */
+    protected $publishTo = null;
+
+    /**
+     * @var string
+     */
+    protected $name = '';
+
+    /**
      * @var int
      */
     protected $revId = 0;
@@ -99,6 +114,63 @@ class Page implements \JsonSerializable
     public function setId(string $id)
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getPublishFrom()
+    {
+        return $this->publishFrom;
+    }
+
+    /**
+     * @param null|string $publishFrom
+     * @return Page
+     */
+    public function setPublishFrom($publishFrom)
+    {
+        $this->publishFrom = $publishFrom === '0000-00-00 00:00:00' ? null : $publishFrom;
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getPublishTo()
+    {
+        return $this->publishTo;
+    }
+
+    /**
+     * @param null|string $publishTo
+     * @return Page
+     */
+    public function setPublishTo($publishTo)
+    {
+        $this->publishTo = $publishTo === '0000-00-00 00:00:00' ? null : $publishTo;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return Page
+     */
+    public function setName($name): Page
+    {
+        $this->name = $name;
 
         return $this;
     }
@@ -242,10 +314,13 @@ class Page implements \JsonSerializable
      */
     public function deserialize($data)
     {
+        $this->setKey($data['key'] ?? $this->getKey());
         $this->setId($data['id'] ?? $this->getId());
+        $this->setPublishFrom($data['publishFrom'] ?? $this->getPublishFrom());
+        $this->setPublishTo($data['publishTo'] ?? $this->getPublishTo());
+        $this->setName($data['name'] ?? $this->getName());
         $this->setUrl($data['url'] ?? $this->getUrl());
         $this->setRevId($data['revId'] ?? $this->getRevId());
-        //$this->setReplace($data['replace'] ?? $this->)
 
         if (isset($data['areas']) && is_array($data['areas'])) {
             $this->getAreaList()->deserialize($data['areas']);
@@ -262,6 +337,9 @@ class Page implements \JsonSerializable
         $result = [
             'key'          => $this->getKey(),
             'id'           => $this->getId(),
+            'publishFrom'  => $this->getPublishFrom(),
+            'publishTo'    => $this->getPublishTo(),
+            'name'         => $this->getName(),
             'revId'        => $this->getRevId(),
             'url'          => $this->getUrl(),
             'lastModified' => $this->getLastModified(),

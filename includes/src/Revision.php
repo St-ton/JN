@@ -21,18 +21,18 @@ class Revision
     public function __construct()
     {
         $this->mapping = [
-            'link'          => [
+            'link'    => [
                 'table'         => 'tlink',
                 'id'            => 'kLink',
                 'reference'     => 'tlinksprache',
                 'reference_id'  => 'kLink',
                 'reference_key' => 'cISOSprache'
             ],
-            'export'        => [
+            'export'     => [
                 'table' => 'texportformat',
                 'id'    => 'kExportformat'
             ],
-            'mail'          => [
+            'mail'       => [
                 'table'         => 'temailvorlage',
                 'id'            => 'kEmailvorlage',
                 'reference'     => 'temailvorlagesprache',

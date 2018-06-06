@@ -28,6 +28,8 @@ Iframe.prototype = {
 
     init: function(loadCB)
     {
+        debuglog('Iframe init');
+
         installGuiElements(this, [
             'iframe',
             'portletToolbar',
@@ -57,22 +59,25 @@ Iframe.prototype = {
             pageUrlLink.search = '?opcEditMode=yes';
         }
 
+        pageUrlLink.search += '&opcEditedPageKey=' + this.page.key;
+
         return pageUrlLink.href.toString();
     },
 
     onIframeLoad: function(loadCB)
     {
+        debuglog('Iframe onIframeLoad');
+
         this.ctx = this.iframe[0].contentWindow;
         this.jq  = this.ctx.$;
 
         this.head = this.jq('head');
         this.body = this.jq('body');
 
-        this.loadStylesheet(this.templateUrl + 'css/onpage-composer/iframe.less', true);
-        this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js');
+        this.loadStylesheet(this.templateUrl + 'css/onpage-composer/iframe.css');
         this.loadScript('https://unpkg.com/popper.js/dist/umd/popper.min.js', this.onPopperLoad);
 
-        this.jq('a, button')      // disable links and buttons that could change the current iframes location
+        this.jq('a, button')      // disable links and buttons that could change the current iframe page
             .off('click')
             .attr('onclick', '')
             .click(function(e) { e.preventDefault(); });
@@ -84,6 +89,8 @@ Iframe.prototype = {
 
     onPopperLoad: function()
     {
+        debuglog('Iframe onPopperLoad');
+
         this.toolbarPopper      = this.makePopper(this.portletToolbar);
         this.previewLabelPopper = this.makePopper(this.portletPreviewLabel);
     },

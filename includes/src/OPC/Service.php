@@ -7,7 +7,6 @@
 namespace OPC;
 
 use Filter\AbstractFilter;
-use Filter\IFilter;
 use Filter\Type;
 
 class Service
@@ -56,11 +55,14 @@ class Service
             'getBlueprintPreview',
             'saveBlueprint',
             'deleteBlueprint',
-            'getPageRevisions',
+            'getPageDraft',
+            'getPageDraftRevisions',
+            'publicatePage',
             'lockPage',
             'unlockPage',
             'savePage',
             'loadPagePreview',
+            'getPageDraftPreview',
             'createPagePreview',
             'getPortletInstance',
             'getPortletPreviewHtml',
@@ -82,6 +84,15 @@ class Service
             $publicFunctionName = 'opc' . ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
         }
+    }
+
+    /**
+     * @param string $id
+     * @return array
+     */
+    public function getPageDrafts($id)
+    {
+        return $this->db->getPageDrafts($id);
     }
 
     /**
@@ -111,7 +122,7 @@ class Service
             ->setId($id)
             ->setRevId($revId);
 
-        if ($this->db->pageExists($page)) {
+        if ($this->db->hasPublicPage($id)) {
             $this->db->loadPage($page);
         }
 
@@ -119,27 +130,69 @@ class Service
     }
 
     /**
+     * @param int $key
      * @return Page
+     * @throws \Exception
+     */
+    public function getPageDraft($key)
+    {
+        $page = (new Page())->setKey($key);
+        $this->db->loadPage($page);
+
+        return $page;
+    }
+
+    /**
+     * @param string $id
+     * @return Page
+     */
+    public function createPageDraft($id)
+    {
+        return (new Page())->setId($id);
+    }
+
+    /**
+     * @param int $revId
+     * @return Page
+     * @throws \Exception
+     */
+    public function getPageRevision($revId)
+    {
+        $page = (new Page())->setRevId($revId);
+        $this->db->loadPage($page);
+
+        return $page;
+    }
+
+    /**
+     * @return Page
+     * @throws \Exception
      */
     public function getCurPage()
     {
         if ($this->curPage === null) {
-            $curPageUrl                    = '/' . ltrim(\Shop::getRequestUri(), '/');
-            $curPageParameters             = \Shop::getParameters();
-            $curPageParameters['kSprache'] = \Shop::getLanguage();
-            $curPageId                     = md5(serialize($curPageParameters));
-            $this->curPage                 = $this->getPage($curPageId)->setUrl($curPageUrl);
+            if ($this->isEditMode() && $this->getEditedPageKey() > 0) {
+                $key           = $this->getEditedPageKey();
+                $this->curPage = $this->getPageDraft($key);
+            } else {
+                $curPageUrl                    = '/' . ltrim(\Shop::getRequestUri(), '/');
+                $curPageParameters             = \Shop::getParameters();
+                $curPageParameters['kSprache'] = \Shop::getLanguage();
+                $curPageId                     = md5(serialize($curPageParameters));
+                $this->curPage                 = $this->getPage($curPageId)->setUrl($curPageUrl);
+            }
         }
 
         return $this->curPage;
     }
 
     /**
+     * @param $id
      * @return bool
      */
-    public function curPageExists()
+    public function pageIdExists($id)
     {
-        return $this->db->pageExists($this->getCurPage());
+        return $this->db->pageIdExists($id);
     }
 
     /**
@@ -170,10 +223,16 @@ class Service
      */
     public function savePage($data)
     {
-        $page = $this->getPage($data['id'])
-            ->deserialize($data);
-
+        $page = $this->getPageDraft($data['key'])->deserialize($data);
         $this->db->savePage($page);
+    }
+
+    /**
+     * @param $key
+     */
+    public function deletePageDraft($key)
+    {
+        $this->db->deletePageDraft($key);
     }
 
     /**
@@ -181,21 +240,29 @@ class Service
      */
     public function deletePage($id)
     {
-        $page = (new Page())
-            ->setId($id);
-
-        $this->db->deletePage($page);
+        $this->db->deletePage($id);
     }
 
     /**
-     * @param string $id
+     * @param int $key
      * @return array
+     * @throws \Exception
      */
-    public function getPageRevisions($id)
+    public function getPageDraftRevisions($key)
     {
-        $page = $this->getPage($id);
+        $page = $this->getPageDraft($key);
 
         return $this->db->getPageRevisions($page);
+    }
+
+    /**
+     * @param array $data
+     * @throws \Exception
+     */
+    public function publicatePage($data)
+    {
+        $page = (new Page())->setKey($data['key'])->deserialize($data);
+        $this->db->savePagePublicationStatus($page);
     }
 
     /**
@@ -207,6 +274,15 @@ class Service
     public function loadPagePreview($id, $revId = 0)
     {
         return $this->getPage($id, $revId)->getAreaList()->getPreviewHtml();
+    }
+
+    /**
+     * @param int $key
+     * @return string[]
+     */
+    public function getPageDraftPreview($key)
+    {
+        return $this->getPageDraft($key)->getAreaList()->getPreviewHtml();
     }
 
     /**
@@ -353,11 +429,11 @@ class Service
     }
 
     /**
-     * @return bool
+     * @return int
      */
-    public function isReplacePage()
+    public function getEditedPageKey()
     {
-        return $this->getCurPage()->isReplace();
+        return verifyGPCDataInteger('opcEditedPageKey');
     }
 
     /**

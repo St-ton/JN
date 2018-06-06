@@ -1,6 +1,38 @@
+{function draftItem}
+    {assign var="queryDraft" value=$query|cat:"&pageKey="|cat:$draftKey}
+    {if $isCurDraft}
+        {assign var="draftTooltip" value="Momentan öffentlich"}
+        {if $draftPublishTo !== null}
+            {assign var="draftTooltip" value=$draftTooltip|cat:" bis "|cat:($draftPublishTo|date_format:"d.m.Y")}
+        {/if}
+    {elseif $draftPublishFrom !== null}
+        {assign var="draftTooltip" value="Öffentlich ab "|cat:($draftPublishFrom|date_format:"d.m.Y")}
+    {else}
+        {assign var="draftTooltip" value="Entwurf"}
+    {/if}
+    <div class="list-group-item{if $isCurDraft} list-group-item-success{/if}" data-toggle="tooltip"
+         data-placement="right" title="{$draftTooltip}">
+        <a href="admin/onpage-composer.php{$queryDraft}&action=edit" class="btn btn-sm" title="Entwurf bearbeiten">
+            {if $isCurDraft}
+                <b><i class="fa fa-fw fa-newspaper-o"></i> {$draftName}</b>
+            {else}
+                <i class="fa fa-fw fa-file-o"></i> {$draftName}
+            {/if}
+        </a>
+        <a href="admin/onpage-composer.php{$queryDraft}&action=discard"
+           class="btn btn-sm btn-danger opc-draft-item-discard pull-right"
+           title="Entwurf verwerfen">
+            <i class="fa fa-times"></i>
+        </a>
+    </div>
+{/function}
+
+{assign var="pageDrafts" value=$opc->getPageDrafts($opc->getCurPage()->getId())}
+{assign var="curDraftKey" value=$opc->getCurPage()->getKey()}
+
 <div id="opc-switcher">
     <div class="switcher" id="dashboard-config">
-        <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown" aria-expanded="false">
+        <a href="#" class="parent btn-toggle" aria-expanded="false" onclick="$('.switcher').toggleClass('open')">
             <i class="fa fa-pencil"></i>
         </a>
         <div class="switcher-wrapper">
@@ -8,34 +40,53 @@
                 <h2>OnPage Composer</h2>
             </div>
             <div class="switcher-content">
-                <form id="opc-menu" action="admin/onpage-composer.php" class="form-group">
-                    <input type="hidden" name="token" value="{$smarty.session.jtl_token}">
-                    <input type="hidden" name="pageUrl" value="{$opcPage->getUrl()}">
-                    <input type="hidden" name="pageId" value="{$opcPage->getId()}">
-                    {if $opc->curPageExists()}
-                        <p>
-                            <button name="action" value="edit" class="btn btn-primary">
-                                Seite bearbeiten
-                            </button>
-                        </p>
-                        <p>
-                            <button name="action" value="restore" class="btn">
-                                Auf Standard zurücksetzen
-                            </button>
-                        </p>
-                    {else}
-                        <p>
-                            <button name="action" value="extend" class="btn btn-primary">
-                                Seite erweitern
-                            </button>
-                        </p>
-                        <p>
-                            <button name="action" value="replace" class="btn btn-primary">
-                                Seite ersetzen
-                            </button>
-                        </p>
-                    {/if}
-                </form>
+                {assign var="query" value="?token="|cat:$smarty.session.jtl_token}
+                {if $pageDrafts|count > 0}
+                    <div class="list-group">
+                        {if $curDraftKey > 0}
+                            {call draftItem isCurDraft=true
+                                query=$query
+                                draftKey=$curDraftKey
+                                draftPublishFrom=$opc->getCurPage()->getPublishFrom()
+                                draftPublishTo=$opc->getCurPage()->getPublishTo()
+                                draftName=$opc->getCurPage()->getName()}
+                        {/if}
+                        {foreach $pageDrafts as $i => $draft}
+                            {if $curDraftKey != $draft->kPage}
+                                {call draftItem isCurDraft=false
+                                    query=$query
+                                    draftKey=$draft->kPage
+                                    draftPublishFrom=$draft->dPublishFrom
+                                    draftPublishTo=$draft->dPublishTo
+                                    draftName=$draft->cName}
+                            {/if}
+                        {/foreach}
+                    </div>
+                {/if}
+                {assign var="query" value=$query|cat:"&pageId="|cat:$opc->getCurPage()->getId()}
+                {assign var="query" value=$query|cat:"&pageUrl="|cat:$opc->getCurPage()->getUrl()}
+                {if $pageDrafts|count > 0}
+                    <p>
+                        <a href="admin/onpage-composer.php{$query}&action=restore" class="btn btn-sm btn-danger"
+                           title="Verwirft alle vorhandenen Entwürfe!">
+                            <i class="fa fa-times"></i>
+                            Alle Entwürfe verwerfen
+                        </a>
+                    </p>
+                    <p><label>Neuer Entwurf:</label></p>
+                {/if}
+                <div class="btn-group">
+                    <a href="admin/onpage-composer.php{$query}&action=extend" class="btn btn-sm btn-primary"
+                       title="Die aktuelle Seite in einem neuem Entwurf erweitern">
+                        <i class="fa fa-plus-circle"></i>
+                        Seite erweitern
+                    </a>
+                    <a href="admin/onpage-composer.php{$query}&action=replace" class="btn btn-sm btn-primary"
+                       title="Die aktuelle Seite in einem neuem Entwurf ersetzen">
+                        <i class="fa fa-file-o"></i>
+                        Seite ersetzen
+                    </a>
+                </div>
             </div>
         </div>
     </div>

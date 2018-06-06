@@ -12,38 +12,48 @@
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-$pageId      = verifyGPDataString('pageId');
-$pageUrl     = verifyGPDataString('pageUrl');
-$action      = verifyGPDataString('action');
-$shopUrl     = \Shop::getURL();
-$opc         = \Shop::Container()->getOPC();
-$opcDB       = \Shop::Container()->getOPCDB();
+$pageKey = verifyGPCDataInteger('pageKey');
+$pageId  = verifyGPDataString('pageId');
+$pageUrl = verifyGPDataString('pageUrl');
+$action  = verifyGPDataString('action');
+$shopUrl = rtrim(\Shop::getURL(), '/');
+$opc     = \Shop::Container()->getOPC();
+$opcDB   = \Shop::Container()->getOPCDB();
+$error   = null;
+
 $templateUrl = $shopUrl . '/' . PFAD_ADMIN . $currentTemplateDir;
-$fullPageUrl = rtrim($shopUrl, '/') . $pageUrl;
+$fullPageUrl = $shopUrl . $pageUrl;
 
-if ($action === 'restore') {
-    $opc->deletePage($pageId);
-    header('Location: ' . $fullPageUrl);
-    exit();
-}
-
-$page = $opc->getPage($pageId)->setUrl($pageUrl);
-
-if ($action === 'edit') {
-    $replace = $page->isReplace();
-} elseif ($action === 'replace') {
-    $page->setReplace(true);
-    $opcDB->savePage($page);
-} else {
-    $page->setReplace(false);
-    $opcDB->savePage($page);
+try {
+    if ($action === 'edit') {
+        $page = $opc->getPageDraft($pageKey);
+    } elseif ($action === 'replace' || $action === 'extend') {
+        $page = $opc->createPageDraft($pageId)
+            ->setUrl($pageUrl)
+            ->setReplace($action === 'replace')
+            ->setName(
+                'Entwurf ' . ($opcDB->getPageDraftCount($pageId) + 1)
+                . ($action === 'extend' ? ' (erweitert)' : ' (ersetzt)')
+            );
+        $opcDB->savePage($page);
+        $pageKey = $page->getKey();
+    } elseif ($action === 'discard') {
+        $opc->deletePageDraft($pageKey);
+        header('Location: ' . $fullPageUrl);
+        exit();
+    } elseif ($action === 'restore') {
+        $opc->deletePage($pageId);
+        header('Location: ' . $fullPageUrl);
+        exit();
+    }
+} catch (Exception $e) {
+    $error = $e->getMessage();
 }
 
 $smarty
     ->assign('shopUrl', $shopUrl)
-    ->assign('pageUrl', $pageUrl)
-    ->assign('pageId', $pageId)
     ->assign('templateUrl', $templateUrl)
-    ->assign('fullPageUrl', $fullPageUrl)
+    ->assign('pageKey', $pageKey)
     ->assign('opc', $opc)
+    ->assign('error', $error)
     ->display('onpage-composer.tpl');

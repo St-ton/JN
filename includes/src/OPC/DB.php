@@ -230,6 +230,28 @@ class DB
     }
 
     /**
+     * @param string $id
+     * @return array
+     */
+    public function getPageDrafts($id)
+    {
+        return $this->shopDB->selectAll('topcpage', 'cPageId', $id, 'kPage, dPublishFrom, dPublishTo, cName');
+    }
+
+    /**
+     * @param string $id
+     * @return int
+     */
+    public function getPageDraftCount($id)
+    {
+        return $this->shopDB->queryPrepared(
+            "SELECT count(kPage) AS count FROM topcpage WHERE cPageId = :id",
+            ['id' => $id],
+            1
+        )->count;
+    }
+
+    /**
      * @return string[]
      */
     public function getAllPageIds()
@@ -253,6 +275,15 @@ class DB
     }
 
     /**
+     * @param string $id
+     * @return bool
+     */
+    public function pageIdExists($id)
+    {
+        return is_object($this->shopDB->select('topcpage', 'cPageId', $id));
+    }
+
+    /**
      * @param Page $page
      * @return bool
      */
@@ -262,12 +293,42 @@ class DB
     }
 
     /**
-     * @param Page $page
+     * @param string $pageId
+     * @return bool
+     */
+    public function hasPublicPage($pageId)
+    {
+        return is_object($this->shopDB->queryPrepared(
+            "SELECT kPage FROM topcpage
+                    WHERE
+                        cPageId = :pageId
+                        AND dPublishFrom IS NOT NULL
+                        AND dPublishFrom <= NOW()
+                        AND (dPublishTo > NOW() OR dPublishTo IS NULL)
+                    ORDER BY dPublishFrom DESC",
+            ['pageId' => $pageId],
+            \DB\ReturnType::SINGLE_OBJECT
+        ));
+    }
+
+    /**
+     * @param string $id
      * @return $this
      */
-    public function deletePage(Page $page)
+    public function deletePage($id)
     {
-        $this->shopDB->delete('topcpage', 'cPageId', $page->getId());
+        $this->shopDB->delete('topcpage', 'cPageId', $id);
+
+        return $this;
+    }
+
+    /**
+     * @param int $key
+     * @return $this
+     */
+    public function deletePageDraft($key)
+    {
+        $this->shopDB->delete('topcpage', 'kPage', $key);
 
         return $this;
     }
@@ -279,25 +340,35 @@ class DB
      */
     public function loadPage(Page $page)
     {
-        if (strlen($page->getId()) !== 32) {
-            throw new \Exception("The OPC page id '{$page->getId()}' is invalid.");
-        }
-
         if ($page->getRevId() > 0) {
             $revision = new \Revision();
             $revision = $revision->getRevision($page->getRevId());
             $pageDB   = json_decode($revision->content);
+        } elseif ($page->getKey() > 0) {
+            $pageDB = $this->shopDB->select('topcpage', 'kPage', $page->getKey());
+        } elseif (strlen($page->getId()) === 32) {
+            $pageDB = $this->shopDB->query(
+                "SELECT * FROM topcpage
+                    WHERE dPublishFrom IS NOT NULL
+                        AND dPublishFrom <= NOW()
+                        AND (dPublishTo > NOW() OR dPublishTo IS NULL)
+                    ORDER BY dPublishFrom DESC",
+                1
+            );
         } else {
-            $pageDB = $this->shopDB->select('topcpage', 'cPageId', $page->getId());
+            throw new \Exception("The OPC page has no sufficient data to be loaded from the database.");
         }
 
         if (!is_object($pageDB)) {
-            throw new \Exception("The OPC page with the id '{$page->getId()}' could not be found.");
+            throw new \Exception("The OPC page could not be found in the database.");
         }
 
         $page
             ->setKey($pageDB->kPage)
             ->setId($pageDB->cPageId)
+            ->setPublishFrom($pageDB->dPublishFrom)
+            ->setPublishTo($pageDB->dPublishTo)
+            ->setName($pageDB->cName)
             ->setUrl($pageDB->cPageUrl)
             ->setLastModified($pageDB->dLastModified)
             ->setLockedBy($pageDB->cLockedBy)
@@ -330,25 +401,28 @@ class DB
 
         $pageDB = (object)[
             'cPageId'       => $page->getId(),
+            'dPublishFrom'  => $page->getPublishFrom() ?? '_DBNULL_',
+            'dPublishTo'    => $page->getPublishTo() ?? '_DBNULL_',
+            'cName'         => $page->getName(),
             'cPageUrl'      => $page->getUrl(),
             'cAreasJson'    => json_encode($page->getAreaList()),
             'dLastModified' => $page->getLastModified(),
             'cLockedBy'     => $page->getLockedBy(),
             'dLockedAt'     => $page->getLockedAt(),
-            'bReplace'      => $page->isReplace(),
+            'bReplace'      => (int)$page->isReplace(),
         ];
 
-        if ($this->pageExists($page)) {
-            $dbPage       = $this->shopDB->select('topcpage', 'cPageId', $page->getId());
+        if ($page->getKey() > 0) {
+            $dbPage       = $this->shopDB->select('topcpage', 'kPage', $page->getKey());
             $oldAreasJson = $dbPage->cAreasJson;
-            $newAreasJson = json_encode($page->getAreaList()->jsonSerialize());
+            $newAreasJson = $pageDB->cAreasJson;
 
             if ($oldAreasJson !== $newAreasJson) {
                 $revision = new \Revision();
                 $revision->addRevision('opcpage', $dbPage->kPage);
             }
 
-            if ($this->shopDB->update('topcpage', 'cPageId', $page->getId(), $pageDB) === -1) {
+            if ($this->shopDB->update('topcpage', 'kPage', $page->getKey(), $pageDB) === -1) {
                 throw new \Exception('The OPC page could not be updated in the DB.');
             }
         } else {
@@ -389,6 +463,26 @@ class DB
             }
 
             $page->setKey($key);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Page $page
+     * @return $this
+     * @throws \Exception
+     */
+    public function savePagePublicationStatus(Page $page)
+    {
+        $pageDB = (object)[
+            'dPublishFrom' => $page->getPublishFrom() ?? '_DBNULL_',
+            'dPublishTo'   => $page->getPublishTo() ?? '_DBNULL_',
+            'cName'        => $page->getName(),
+        ];
+
+        if ($this->shopDB->update('topcpage', 'kPage', $page->getKey(), $pageDB) === -1) {
+            throw new \Exception('The OPC page publication status could not be updated in the DB.');
         }
 
         return $this;

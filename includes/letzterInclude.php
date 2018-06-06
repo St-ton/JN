@@ -132,14 +132,11 @@ $smarty->assign('linkgroups', $linkHelper->activate($pagetType))
        ->assign('bLiveEditMode', ((!empty($bLiveEditMode)) ? $bLiveEditMode : false))
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
-       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\ProductFilterSearchResults());
+       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\ProductFilterSearchResults())
+       ->assign('opc', Shop::Container()->getOPC());
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
-
-$smarty
-    ->assign('opc', Shop::Container()->getOPC())
-    ->assign('opcPage', Shop::Container()->getOPC()->getCurPage());
 
 // Kampagnen
 pruefeKampagnenParameter();

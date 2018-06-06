@@ -32,12 +32,16 @@ class Migration_20180507101900 extends Migration implements IMigration
         $this->execute("CREATE TABLE topcpage (
             kPage INT AUTO_INCREMENT PRIMARY KEY,
             cPageId CHAR(32) NOT NULL,
+            dPublishFrom DATETIME NULL,
+            dPublishTo DATETIME NULL,
+            cName VARCHAR(255),
             cPageUrl VARCHAR(255) NOT NULL,
             cAreasJson LONGTEXT NOT NULL,
             dLastModified DATETIME NOT NULL,
             cLockedBy VARCHAR(255) NOT NULL,
             dLockedAt DATETIME NOT NULL,
-            bReplace BOOL NOT NULL
+            bReplace BOOL NOT NULL,
+            UNIQUE KEY (cPageId, dPublishFrom)
         )");
 
         $this->execute("INSERT INTO tadminmenu (kAdminmenueGruppe, cModulId, cLinkname, cURL, cRecht, nSort)

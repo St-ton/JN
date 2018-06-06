@@ -1,5 +1,7 @@
 function GUI(io, page, kcfinderUrl)
 {
+    debuglog('construct GUI');
+
     bindProtoOnHandlers(this);
 
     this.io            = io;
@@ -13,8 +15,10 @@ GUI.prototype = {
 
     constructor: GUI,
 
-    init: function(iframe, tutorial)
+    init: function(iframe, tutorial, error)
     {
+        debuglog('GUI init');
+
         this.iframe    = iframe;
         this.tutorial  = tutorial;
 
@@ -35,10 +39,18 @@ GUI.prototype = {
             'blueprintDeleteModal',
             'blueprintDeleteId',
             'blueprintDeleteForm',
+            'publishModal',
+            'publishForm',
+            'draftName',
+            'publishFrom',
+            'publishFromEnabled',
+            'publishTo',
+            'publishToEnabled',
             'btnImport',
             'btnExport',
             'btnHelp',
             'btnPreview',
+            'btnPublish',
             'btnSave',
             'btnClose',
             'btnImportBlueprint',
@@ -50,10 +62,22 @@ GUI.prototype = {
             'collapseGroup',
         ]);
 
-        this.showLoader();
-        this.collapseGroups.first().click();
-        this.updateBlueprintList();
-        this.updateRevisionList();
+        if(typeof error === 'string' && error.length > 0) {
+            this.showError(error);
+        } else {
+            this.showLoader();
+            this.publishFrom.datetimepicker({locale: 'de', useCurrent: false});
+            this.publishTo.datetimepicker({locale: 'de', useCurrent: false});
+            this.publishFrom.on("dp.change", function (e) {
+                this.publishTo.data("DateTimePicker").minDate(e.date);
+            }.bind(this));
+            this.publishTo.on("dp.change", function (e) {
+                this.publishFrom.data("DateTimePicker").maxDate(e.date);
+            }.bind(this));
+            this.collapseGroups.first().click();
+            this.updateBlueprintList();
+            this.updateRevisionList();
+        }
     },
 
     showLoader: function()
@@ -172,7 +196,12 @@ GUI.prototype = {
 
     onBtnClose: function(e)
     {
-        this.page.unlock();
+        this.page.unlock(this.onUnlockedPage);
+    },
+
+    onUnlockedPage: function()
+    {
+        window.location = this.page.fullUrl;
     },
 
     onCollapseGroup: function(e)
@@ -345,6 +374,73 @@ GUI.prototype = {
         this.updateBlueprintList();
     },
 
+    onBtnPublish: function(e)
+    {
+        if(typeof this.page.publishFrom === 'string' && this.page.publishFrom.length > 0) {
+            this.publishFrom.val(this.page.publishFrom);
+            this.publishFrom.prop('disabled', false);
+            this.publishFromEnabled.prop('checked', true);
+        } else {
+            this.publishFrom.val('Unveröffentlicht');
+            this.publishFrom.prop('disabled', true);
+            this.publishFromEnabled.prop('checked', false);
+        }
+
+        if(typeof this.page.publishTo === 'string' && this.page.publishTo.length > 0) {
+            this.publishTo.val(this.page.publishTo);
+            this.publishTo.prop('disabled', false);
+            this.publishToEnabled.prop('checked', true);
+        } else {
+            this.publishTo.val('Auf unbestimmte Zeit öffentlich');
+            this.publishTo.prop('disabled', true);
+            this.publishToEnabled.prop('checked', false);
+        }
+
+        this.draftName.val(this.page.name);
+        this.publishModal.modal('show');
+    },
+
+    onPublishForm: function (e)
+    {
+        e.preventDefault();
+
+        this.page.name        = this.draftName.val();
+        this.page.publishFrom = this.publishFromEnabled.prop('checked') ? this.publishFrom.val() : null;
+        this.page.publishTo   = this.publishToEnabled.prop('checked') ? this.publishTo.val() : null;
+
+        this.page.publicate();
+
+        this.publishModal.modal('hide');
+    },
+
+    onPublishFromEnabled: function (e)
+    {
+        if(this.publishFromEnabled.prop('checked')) {
+            this.publishFrom.val(moment().format(localDateFormat));
+            this.publishFrom.prop('disabled', false);
+        } else {
+            this.publishFrom.val('Unveröffentlicht');
+            this.publishFrom.prop('disabled', true);
+            this.publishTo.data("DateTimePicker").minDate(false);
+        }
+    },
+
+    onPublishToEnabled: function (e)
+    {
+        if(this.publishToEnabled.prop('checked')) {
+            if(this.publishFromEnabled.prop('checked')) {
+                this.publishTo.val(moment(this.publishFrom.val(), localDateFormat).add(1, 'M').format(localDateFormat));
+            } else {
+                this.publishTo.val(moment().add(1, 'M').format(localDateFormat));
+            }
+            this.publishTo.prop('disabled', false);
+        } else {
+            this.publishTo.val('Auf unbestimmte Zeit öffentlich');
+            this.publishTo.prop('disabled', true);
+            this.publishFrom.data("DateTimePicker").maxDate(false);
+        }
+    },
+
     selectImageProp: function(propName)
     {
         this.onOpenKCFinder(function(url) {
@@ -389,5 +485,10 @@ GUI.prototype = {
     setImageSelectCallback: function(callback)
     {
         this.imageSelectCB = callback;
+    },
+
+    enableDateTime: function(input)
+    {
+        input.datetimepicker({locale: 'de'});
     },
 };

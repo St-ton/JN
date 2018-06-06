@@ -39,17 +39,19 @@ class Bewertung
      * @param int    $nOption
      * @param bool   $bAlleSprachen
      */
-    public function __construct($kArtikel, $kSprache, $nAnzahlSeite = -1, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0, $bAlleSprachen = false)
-    {
+    public function __construct(
+        int $kArtikel,
+        int $kSprache,
+        int $nAnzahlSeite = -1,
+        int $nSeite = 1,
+        int $nSterne = 0,
+        string $cFreischalten = 'N',
+        int $nOption = 0,
+        bool $bAlleSprachen = false
+    ) {
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
         }
-        $kArtikel     = (int)$kArtikel;
-        $kSprache     = (int)$kSprache;
-        $nAnzahlSeite = (int)$nAnzahlSeite;
-        $nSeite       = (int)$nSeite;
-        $nSterne      = (int)$nSterne;
-        $nOption      = (int)$nOption;
         if ($nOption === 1) {
             $this->holeHilfreichsteBewertung($kArtikel, $kSprache);
         } else {
@@ -71,7 +73,7 @@ class Bewertung
      * @param int $kSprache
      * @return $this
      */
-    public function holeHilfreichsteBewertung($kArtikel, $kSprache)
+    public function holeHilfreichsteBewertung(int $kArtikel, int $kSprache): self
     {
         $this->oBewertung_arr = [];
         if ($kArtikel > 0 && $kSprache > 0) {
@@ -79,15 +81,16 @@ class Bewertung
                 "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                     FROM tbewertung
-                    WHERE kSprache = " . (int)$kSprache . "
-                        AND kArtikel = " . (int)$kArtikel . "
+                    WHERE kSprache = " . $kSprache . "
+                        AND kArtikel = " . $kArtikel . "
                         AND nAktiv = 1
                     ORDER BY nHilfreich DESC
                     LIMIT 1",
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (!empty($oBewertungHilfreich)) {
-                $oBewertungHilfreich->nAnzahlHilfreich = $oBewertungHilfreich->nHilfreich + $oBewertungHilfreich->nNichtHilfreich;
+                $oBewertungHilfreich->nAnzahlHilfreich = $oBewertungHilfreich->nHilfreich +
+                    $oBewertungHilfreich->nNichtHilfreich;
             }
 
             executeHook(HOOK_BEWERTUNG_CLASS_HILFREICHSTEBEWERTUNG);
@@ -108,13 +111,16 @@ class Bewertung
      * @param bool   $bAlleSprachen
      * @return $this
      */
-    public function holeProduktBewertungen($kArtikel, $kSprache, $nAnzahlSeite, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0, $bAlleSprachen = false)
-    {
-        $kArtikel             = (int)$kArtikel;
-        $kSprache             = (int)$kSprache;
-        $nAnzahlSeite         = (int)$nAnzahlSeite;
-        $nSeite               = (int)$nSeite;
-        $nSterne              = (int)$nSterne;
+    public function holeProduktBewertungen(
+        int $kArtikel,
+        int $kSprache,
+        int $nAnzahlSeite,
+        int $nSeite = 1,
+        int $nSterne = 0,
+        string $cFreischalten = 'N',
+        int $nOption = 0,
+        bool $bAlleSprachen = false
+    ): self {
         $this->oBewertung_arr = [];
         if ($kArtikel > 0 && $kSprache > 0) {
             $oBewertungAnzahl_arr = [];

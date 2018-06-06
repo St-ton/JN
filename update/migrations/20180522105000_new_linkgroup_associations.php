@@ -26,8 +26,8 @@ class Migration_20180522105000 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tlinkgruppe` CHANGE COLUMN `kLinkgruppe` `kLinkgruppe` INT NOT NULL AUTO_INCREMENT;");
-        $this->execute("ALTER TABLE `tlink` CHANGE COLUMN `kLink` `kLink` INT NOT NULL AUTO_INCREMENT;");
+        $this->execute("ALTER TABLE `tlinkgruppe` CHANGE COLUMN `kLinkgruppe` `kLinkgruppe` INT UNSIGNED NOT NULL AUTO_INCREMENT, ENGINE=InnoDB;");
+        $this->execute("ALTER TABLE `tlink` CHANGE COLUMN `kLink` `kLink` INT UNSIGNED NOT NULL AUTO_INCREMENT, ENGINE=InnoDB;");
         $missingLanguageEntries = Shop::Container()->getDB()->query(
             "SELECT tlink.*, tseo.* 
                 FROM tlink
@@ -104,21 +104,22 @@ class Migration_20180522105000 extends Migration implements IMigration
             }
         }
         $this->execute("CREATE TABLE `tlinkgroupassociations` (
-              `id` INT NOT NULL AUTO_INCREMENT,
-              `linkID` INT NOT NULL,
-              `linkGroupID` INT NOT NULL,
+              `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+              `linkID` INT UNSIGNED NOT NULL,
+              `linkGroupID` INT UNSIGNED NOT NULL,
               PRIMARY KEY (`id`),
               INDEX `fk_tlinkgroupassociations_1_idx` (`linkID` ASC),
               CONSTRAINT `fk_tlinkGroupID`
                   FOREIGN KEY (`linkGroupID`)
                   REFERENCES `tlinkgruppe` (`kLinkgruppe`)
-                  ON DELETE RESTRICT
+                  ON DELETE CASCADE
                   ON UPDATE CASCADE,
               CONSTRAINT `fk_tlinkID`
                   FOREIGN KEY (`linkID`)
                   REFERENCES `tlink` (`kLink`)
                   ON DELETE CASCADE
-                  ON UPDATE CASCADE)"
+                  ON UPDATE CASCADE
+              ) ENGINE=InnoDB COLLATE utf8_unicode_ci"
         );
         $duplicates = Shop::Container()->getDB()->query(
             "SELECT *

@@ -321,7 +321,7 @@ interface LinkInterface
     /**
      * @param array|Collection $links
      */
-    public function setChildLinks(Collection $links);
+    public function setChildLinks($links);
 
     /**
      * @param Link $link

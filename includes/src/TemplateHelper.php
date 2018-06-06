@@ -32,7 +32,7 @@ class TemplateHelper
     /**
      * @param bool $isAdmin
      */
-    public function __construct($isAdmin = false)
+    public function __construct(bool $isAdmin = false)
     {
         $this->isAdmin         = $isAdmin;
         $idx                   = $isAdmin ? 'admin' : 'frontend';
@@ -43,7 +43,7 @@ class TemplateHelper
      * @param bool $isAdmin
      * @return TemplateHelper
      */
-    public static function getInstance($isAdmin = false) : self
+    public static function getInstance(bool $isAdmin = false) : self
     {
         $idx = $isAdmin ? 'admin' : 'frontend';
 
@@ -166,7 +166,7 @@ class TemplateHelper
      * @param int    $depth
      * @return array
      */
-    public function getFolders($path, $depth = 0) : array
+    public function getFolders(string $path, int $depth = 0) : array
     {
         $result = [];
 
@@ -287,7 +287,7 @@ class TemplateHelper
      * @param bool|null $isAdmin
      * @return mixed|stdClass
      */
-    public function getData($cOrdner, $isAdmin = null)
+    public function getData($cOrdner, bool $isAdmin = null)
     {
         $isAdmin = $isAdmin ?? $this->isAdmin;
         $cacheID = 'tpl_' . $cOrdner . ($isAdmin ? '_admin' : '');

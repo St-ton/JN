@@ -119,7 +119,7 @@ class CheckBox
      * @param bool $bSprachWerte
      * @return $this
      */
-    private function loadFromDB(int $kCheckBox, bool $bSprachWerte)
+    private function loadFromDB(int $kCheckBox, bool $bSprachWerte): self
     {
         if ($kCheckBox <= 0) {
             return $this;

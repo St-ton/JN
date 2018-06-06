@@ -39,9 +39,8 @@ class Tag
      *
      * @param int $kTag - Falls angegeben, wird Tag mit angegebenem kTag aus der DB geholt
      */
-    public function __construct($kTag = 0)
+    public function __construct(int $kTag = 0)
     {
-        $kTag = (int)$kTag;
         if ($kTag > 0) {
             $this->loadFromDB($kTag);
         }
@@ -50,13 +49,12 @@ class Tag
     /**
      * Setzt Tag mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kTag Primary Key
-     * @return $this
+     * @return $this|bool
      */
-    private function loadFromDB($kTag)
+    private function loadFromDB(int $kTag)
     {
-        $obj = Shop::Container()->getDB()->select('ttag', 'kTag', (int)$kTag);
+        $obj = Shop::Container()->getDB()->select('ttag', 'kTag', $kTag);
         if (!empty($obj)) {
             foreach (get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
@@ -64,20 +62,20 @@ class Tag
 
             return $this;
         }
+
         return false;
     }
 
     /**
      * Gibt Tagobjekt anhand der Sprache und des Namens zurück
      *
-     * @access public
      * @param string $cName
      * @return mixed - returns Object if found in DB, else false
      */
     public function getByName($cName = '')
     {
         $cName = StringHandler::filterXSS($cName);
-        $obj = Shop::Container()->getDB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $cName);
+        $obj   = Shop::Container()->getDB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $cName);
         if (!empty($obj)) {
             foreach (get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
@@ -85,16 +83,16 @@ class Tag
 
             return !empty($this->kTag) ? $this : false;
         }
+
         return false;
     }
 
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @access public
-     * @return mixed
+     * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $obj = kopiereMembers($this);
         unset($obj->kTag);
@@ -107,7 +105,7 @@ class Tag
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $obj = kopiereMembers($this);
 

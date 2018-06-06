@@ -87,9 +87,9 @@ class Hersteller
      * @param int  $kSprache
      * @param bool $noCache - set to true to avoid caching
      */
-    public function __construct($kHersteller = 0, $kSprache = 0, $noCache = false)
+    public function __construct(int $kHersteller = 0, int $kSprache = 0, bool $noCache = false)
     {
-        if ((int)$kHersteller > 0) {
+        if ($kHersteller > 0) {
             $this->loadFromDB($kHersteller, $kSprache, $noCache);
         }
     }
@@ -99,7 +99,7 @@ class Hersteller
      * @param bool     $extras
      * @return $this
      */
-    public function loadFromObject(stdClass $obj, $extras = true)
+    public function loadFromObject(stdClass $obj, $extras = true): self
     {
         $members = array_keys(get_object_vars($obj));
         if (is_array($members) && count($members) > 0) {
@@ -124,16 +124,14 @@ class Hersteller
      * @param bool $noCache
      * @return $this
      */
-    public function loadFromDB($kHersteller, $kSprache = 0, $noCache = false)
+    public function loadFromDB(int $kHersteller, int $kSprache = 0, bool $noCache = false): self
     {
         //noCache param to avoid problem with de-serialization of class properties with jtl search
-        $kSprache = (int)$kSprache > 0 ? (int)$kSprache : Shop::getLanguageID();
+        $kSprache = $kSprache > 0 ? $kSprache : Shop::getLanguageID();
         if ($kSprache === 0) {
             $oSprache = gibStandardsprache();
             $kSprache = (int)$oSprache->kSprache;
         }
-        $kHersteller = (int)$kHersteller;
-        $kSprache    = (int)$kSprache;
         $cacheID     = 'manuf_' . $kHersteller . '_' . $kSprache . Shop::Cache()->getBaseID();
         $cacheTags   = [CACHING_GROUP_MANUFACTURER];
         $cached      = true;
@@ -159,11 +157,10 @@ class Hersteller
             );
             $cached = false;
             executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [
-                    'oHersteller' => &$oHersteller,
-                    'cached'      => false,
-                    'cacheTags'   => &$cacheTags
-                ]
-            );
+                'oHersteller' => &$oHersteller,
+                'cached'      => false,
+                'cacheTags'   => &$cacheTags
+            ]);
             Shop::Cache()->set($cacheID, $oHersteller, $cacheTags);
         }
         if ($cached === true) {
@@ -185,7 +182,7 @@ class Hersteller
      * @param stdClass $obj
      * @return $this
      */
-    public function getExtras(stdClass $obj)
+    public function getExtras(stdClass $obj): self
     {
         $shopURL      = Shop::getURL() . '/';
         $imageBaseURL = Shop::getImageBaseURL();
@@ -213,7 +210,7 @@ class Hersteller
      * @param bool $productLookup
      * @return array
      */
-    public static function getAll($productLookup = true)
+    public static function getAll(bool $productLookup = true): array
     {
         $sqlWhere = '';
         $kSprache = Shop::getLanguageID();

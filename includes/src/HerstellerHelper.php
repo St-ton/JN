@@ -20,7 +20,7 @@ class HerstellerHelper
     public $cacheID;
 
     /**
-     * @var array|mixed
+     * @var array
      */
     public $manufacturers;
 
@@ -52,7 +52,7 @@ class HerstellerHelper
     /**
      * @return HerstellerHelper
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         return (self::$_instance === null || Shop::getLanguage() !== self::$langID)
             ? new self()
@@ -60,9 +60,9 @@ class HerstellerHelper
     }
 
     /**
-     * @return array|mixed
+     * @return array
      */
-    public function getManufacturers()
+    public function getManufacturers(): array
     {
         if ($this->manufacturers !== null) {
             return $this->manufacturers;

@@ -107,7 +107,7 @@ class Firma
     /**
      * @param bool $load
      */
-    public function __construct($load = true)
+    public function __construct(bool $load = true)
     {
         if ($load) {
             $this->loadFromDB();
@@ -119,7 +119,7 @@ class Firma
      *
      * @return $this
      */
-    public function loadFromDB()
+    public function loadFromDB(): self
     {
         $obj = Shop::Container()->getDB()->query("SELECT * FROM tfirma LIMIT 1", \DB\ReturnType::SINGLE_OBJECT);
         foreach (get_object_vars($obj) as $k => $v) {

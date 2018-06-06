@@ -87,9 +87,9 @@ class Bestseller
      * @param $customergroup
      * @return $this
      */
-    public function setCustomergroup($customergroup)
+    public function setCustomergroup(int $customergroup): self
     {
-        $this->_customergrp = (int)$customergroup;
+        $this->_customergrp = $customergroup;
 
         return $this;
     }
@@ -103,12 +103,12 @@ class Bestseller
     }
 
     /**
-     * @param $limit
+     * @param int $limit
      * @return $this
      */
-    public function setLimit($limit)
+    public function setLimit(int $limit): self
     {
-        $this->_limit = (int)$limit;
+        $this->_limit = $limit;
 
         return $this;
     }
@@ -125,9 +125,9 @@ class Bestseller
      * @param $minsales
      * @return $this
      */
-    public function setMinSales($minsales)
+    public function setMinSales(int $minsales): self
     {
-        $this->_minsales = (int)$minsales;
+        $this->_minsales = $minsales;
 
         return $this;
     }
@@ -188,10 +188,16 @@ class Bestseller
      * @param int   $minsells
      * @return array
      */
-    public static function buildBestsellers($products, $customergrp, $viewallowed = true, $onlykeys = true, $limit = 3, $minsells = 10)
-    {
+    public static function buildBestsellers(
+        $products,
+        int $customergrp,
+        bool $viewallowed = true,
+        bool $onlykeys = true,
+        int $limit = 3,
+        int $minsells = 10
+    ) {
         if ($viewallowed && is_array($products) && count($products) > 0) {
-            $options = [
+            $options    = [
                 'Products'      => $products,
                 'Customergroup' => $customergrp,
                 'Limit'         => $limit,
@@ -222,7 +228,7 @@ class Bestseller
      * @param array $bestsellers
      * @return array
      */
-    public static function ignoreProducts(&$products, $bestsellers)
+    public static function ignoreProducts(&$products, $bestsellers): array
     {
         $ignoredkeys = [];
         if (is_array($products) && is_array($bestsellers) && count($products) > 0 && count($bestsellers) > 0) {

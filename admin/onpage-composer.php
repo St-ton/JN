@@ -18,6 +18,7 @@ $pageUrl = verifyGPDataString('pageUrl');
 $action  = verifyGPDataString('action');
 $shopUrl = rtrim(\Shop::getURL(), '/');
 $opc     = \Shop::Container()->getOPC();
+$opcPage = \Shop::Container()->getOPCPageService();
 $opcDB   = \Shop::Container()->getOPCDB();
 $error   = null;
 
@@ -26,9 +27,9 @@ $fullPageUrl = $shopUrl . $pageUrl;
 
 try {
     if ($action === 'edit') {
-        $page = $opc->getPageDraft($pageKey);
+        $page = $opcPage->getDraft($pageKey);
     } elseif ($action === 'replace' || $action === 'extend') {
-        $page = $opc->createPageDraft($pageId)
+        $page = $opcPage->createDraft($pageId)
             ->setUrl($pageUrl)
             ->setReplace($action === 'replace')
             ->setName(
@@ -38,11 +39,11 @@ try {
         $opcDB->savePage($page);
         $pageKey = $page->getKey();
     } elseif ($action === 'discard') {
-        $opc->deletePageDraft($pageKey);
+        $opcPage->deleteDraft($pageKey);
         header('Location: ' . $fullPageUrl);
         exit();
     } elseif ($action === 'restore') {
-        $opc->deletePage($pageId);
+        $opcPage->deletePage($pageId);
         header('Location: ' . $fullPageUrl);
         exit();
     }

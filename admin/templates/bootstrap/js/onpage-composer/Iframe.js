@@ -249,7 +249,6 @@ Iframe.prototype = {
             this.dropTarget.replaceWith(this.draggedElm);
             this.updateDropTargets();
             this.setSelected(this.draggedElm);
-            this.gui.setUnsaved(true);
 
             if(this.dragNewPortletCls) {
                 this.newPortletDropTarget = this.draggedElm;
@@ -259,6 +258,8 @@ Iframe.prototype = {
                 this.newPortletDropTarget= this.draggedElm;
                 this.setSelected();
                 this.io.getBlueprintPreview(this.dragNewBlueprintId, this.onNewPortletCreated);
+            } else {
+                this.gui.setUnsaved(true);
             }
         }
     },

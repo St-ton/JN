@@ -56,6 +56,7 @@ GUI.prototype = {
             'btnImportBlueprint',
             'revisionList',
             'revisionBtnBlueprint',
+            'unsavedRevision',
             'blueprintList',
             'blueprintBtnBlueprint',
             'portletButton',
@@ -123,7 +124,7 @@ GUI.prototype = {
 
     updateRevisionList: function()
     {
-        this.page.getRevisions(this.onGetRevisions);
+        this.page.getRevisionList(this.onGetRevisions);
     },
 
     onGetRevisions: function(revisions)
@@ -192,6 +193,13 @@ GUI.prototype = {
     setUnsaved: function(enable)
     {
         this.btnSave.find('i').html(enable ? '*' : '');
+
+        if(enable) {
+            this.page.savePageToWebStorage();
+            this.unsavedRevision.show();
+        } else {
+            this.unsavedRevision.hide();
+        }
     },
 
     onBtnClose: function(e)
@@ -243,12 +251,12 @@ GUI.prototype = {
 
     onRevisionBtn: function(e)
     {
-        var elm   = $(e.target);
+        var elm   = $(e.target).closest('a');
         var revId = elm.data('revision-id');
 
         this.showLoader();
         this.page.loadRev(revId, this.iframe.onPageLoad);
-        this.setUnsaved(revId > 0);
+        this.setUnsaved(revId !== 0);
     },
 
     openConfigurator: function(portlet)

@@ -17,6 +17,7 @@ $jsonApi = JSONAPI::getInstance();
 $io      = AdminIO::getInstance()->setAccount($oAccount);
 
 Shop::Container()->getOPC()->registerAdminIOFunctions($io);
+Shop::Container()->getOPCPageService()->registerAdminIOFunctions($io);
 
 $dashboardInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 $accountInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';

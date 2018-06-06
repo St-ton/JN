@@ -7,10 +7,6 @@ function Page(io, shopUrl, key)
     this.io      = io;
     this.shopUrl = shopUrl;
     this.key     = key;
-
-    // this.id  = id;
-    // this.url = url;
-    // this.fullUrl = fullUrl;
 }
 
 Page.prototype = {
@@ -30,12 +26,12 @@ Page.prototype = {
     {
         debuglog('Page lock');
 
-        this.io.lockPage(this.id, lockedCB);
+        this.io.lockDraft(this.key, lockedCB);
     },
 
     unlock: function(unlockedCB)
     {
-        this.io.unlockPage(this.id, unlockedCB);
+        this.io.unlockDraft(this.key, unlockedCB);
     },
 
     onTimeToLockAgain: function()
@@ -43,9 +39,9 @@ Page.prototype = {
         this.lock();
     },
 
-    getRevisions: function(revisionsCB)
+    getRevisionList: function(revisionsCB)
     {
-        this.io.getPageDraftRevisions(this.key, revisionsCB);
+        this.io.getRevisionList(this.key, revisionsCB);
     },
 
     initIframe: function(jq, loadCB)
@@ -64,28 +60,31 @@ Page.prototype = {
     {
         debuglog('Page loadDraft');
 
-        this.io.getPageDraft(this.key, this.onLoadDraft.bind(this, loadCB || noop));
+        this.io.getDraft(this.key, this.onLoadDraft.bind(this, loadCB || noop));
     },
 
     loadDraftPreview: function(loadCB)
     {
-        this.io.getPageDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop));
-    },
+        debuglog('Page loadDraftPreview');
 
-    load: function(loadCB)
-    {
-        this.loadRev(0, loadCB);
+        this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop));
     },
 
     loadRev: function(revId, loadCB)
     {
-        this.io.loadPagePreview(this.id, revId || 0, this.onLoad.bind(this, loadCB || noop));
+        if(revId === -1) {
+            this.loadPageFromWebStorage(loadCB || noop);
+        } else if(revId === 0) {
+            this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop));
+        } else {
+            this.io.getRevisionPreview(revId, this.onLoad.bind(this, loadCB || noop));
+        }
     },
 
     loadFromData: function(data, loadCB)
     {
         this.io.createPagePreview(
-            {id: data.id, url: data.url, areas: data.areas},
+            {areas: data.areas},
             this.onLoad.bind(this, loadCB || noop)
         );
     },
@@ -100,19 +99,19 @@ Page.prototype = {
         this.fileInput.off('change').change(this.onImportChosen.bind(this, loadCB)).click();
     },
 
-    loadPageFromWebStorage: function()
+    loadPageFromWebStorage: function(loadCB)
     {
         var pageJson = window.localStorage.getItem(this.getStorageId());
 
         if(pageJson !== null) {
             this.clear();
-            this.loadFromJSON(pageJson);
+            this.loadFromJSON(pageJson, loadCB);
         }
     },
 
     publicate: function(saveCB, errorCB)
     {
-        this.io.publicatePage({
+        this.io.publicateDraft({
             key: this.key,
             publishFrom: this.publishFrom ? this.encodeDate(this.publishFrom) : null,
             publishTo: this.publishTo ? this.encodeDate(this.publishTo) : null,
@@ -132,7 +131,7 @@ Page.prototype = {
 
     getStorageId: function()
     {
-        return 'opcpage.' + this.id;
+        return 'opcpage.' + this.key;
     },
 
     onImportChosen: function(loadCB, e)
@@ -178,27 +177,20 @@ Page.prototype = {
 
     save: function(saveCB, errorCB)
     {
-        this.io.savePage(this.toJSON(), saveCB, errorCB);
+        this.io.saveDraft(this.toJSON(), saveCB, errorCB);
     },
 
     savePageToWebStorage: function()
     {
         window.localStorage.setItem(
             this.getStorageId(),
-            JSON.stringify(this.pageToJson())
+            JSON.stringify(this.toJSON())
         );
-
-        window.localStorage.setItem(
-            this.getStorageId() + '.lastmodified',
-            moment().format("YYYY-MM-DD HH:mm:ss")
-        );
-
-        // this.gui.setUnsaved(true);
     },
 
     exportAsDownload: function()
     {
-        download(JSON.stringify(this), 'page-export.json', 'application/json');
+        download(JSON.stringify(this), this.name + '.json', 'application/json');
     },
 
     clear: function()

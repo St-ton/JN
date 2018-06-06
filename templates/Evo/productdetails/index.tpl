@@ -23,7 +23,7 @@
     {else}
         <div id="result-wrapper" itemprop="mainEntity" itemscope itemtype="http://schema.org/Product" itemid="{$ShopURL}/{$Artikel->cSeo}">
             <meta itemprop="url" content="{$ShopURL}/{$Artikel->cSeo}">
-            {if $opc->getCurPage()->isReplace()}
+            {if $opcPageService->getCurPage()->isReplace()}
                 {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
             {else}
                 {include file='snippets/extension.tpl'}

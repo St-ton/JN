@@ -133,7 +133,8 @@ $smarty->assign('linkgroups', $linkHelper->activate($pagetType))
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
        ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\ProductFilterSearchResults())
-       ->assign('opc', Shop::Container()->getOPC());
+       ->assign('opc', Shop::Container()->getOPC())
+       ->assign('opcPageService', Shop::Container()->getOPCPageService());
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';

@@ -1,5 +1,5 @@
 {if $opc->isEditMode()}
     <div class="opc-area opc-rootarea" data-area-id="{$id}"></div>
-{elseif $opc->getCurPage()->getAreaList()->hasArea($id)}
-    {$opc->getCurPage()->getAreaList()->getArea($id)->getFinalHtml()}
+{elseif $opcPageService->getCurPage()->getAreaList()->hasArea($id)}
+    {$opcPageService->getCurPage()->getAreaList()->getArea($id)->getFinalHtml()}
 {/if}

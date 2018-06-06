@@ -13,21 +13,21 @@ namespace OPC;
 class Locker
 {
     /**
-     * @var null|DB
+     * @var null|PageDB
      */
-    protected $db = null;
+    protected $pageDB = null;
 
     /**
      * Locker constructor.
-     * @param DB $db
+     * @param PageDB $pageDB
      */
-    public function __construct(DB $db)
+    public function __construct(PageDB $pageDB)
     {
-        $this->db = $db;
+        $this->pageDB = $pageDB;
     }
 
     /**
-     * Lock page to only be manipulated by this one user
+     * Try to lock draft to only be manipulated by this one user
      *
      * @param string $userName
      * @param Page $page
@@ -51,13 +51,13 @@ class Locker
             ->setLockedBy($userName)
             ->setLockedAt(date('Y-m-d H:i:s'));
 
-        $this->db->savePageLockStatus($page);
+        $this->pageDB->saveDraftLockStatus($page);
 
         return true;
     }
 
     /**
-     * Unlock this page if it was locked
+     * Unlock this draft if it was locked
      *
      * @param Page $page
      * @throws \Exception
@@ -65,6 +65,6 @@ class Locker
     public function unlock(Page $page)
     {
         $page->setLockedBy('');
-        $this->db->savePageLockStatus($page);
+        $this->pageDB->saveDraftLockStatus($page);
     }
 }

@@ -82,9 +82,25 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
+    public function getOPCPageService()
+    {
+        return $this->get(\OPC\PageService::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getOPCDB()
     {
         return $this->get(\OPC\DB::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPCPageDB()
+    {
+        return $this->get(\OPC\PageDB::class);
     }
 
     /**

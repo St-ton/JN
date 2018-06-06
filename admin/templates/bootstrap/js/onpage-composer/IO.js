@@ -5,9 +5,13 @@
 
 function IO(readyCB)
 {
+    debuglog('construct IO');
+
     bindProtoOnHandlers(this);
 
-    this.readyCB = readyCB || noop;
+    this.readyCB      = readyCB || noop;
+    this.opcReady     = false;
+    this.opcPageReady = false;
 
     ioCall('opcGetIOFunctionNames', [], this.onGetIOFunctionNames);
 }
@@ -18,14 +22,28 @@ IO.prototype = {
 
     onGetIOFunctionNames: function(names)
     {
+        debuglog('IO onGetIOFunctionNames');
+
+        this.generateIoFunctions(names);
+        ioCall('opcGetPageIOFunctionNames', [], this.onGetPageIOFunctionNames);
+    },
+
+    onGetPageIOFunctionNames: function(names)
+    {
+        debuglog('IO onGetPageIOFunctionNames');
+
+        this.generateIoFunctions(names);
+        this.readyCB();
+    },
+
+    generateIoFunctions: function(names)
+    {
         for (var i=0; i<names.length; i++) {
             var name       = names[i];
             var publicName = 'opc' + capitalize(name);
 
             this[name] = this.generateIoFunction(publicName);
         }
-
-        this.readyCB();
     },
 
     generateIoFunction: function(publicName)
@@ -49,6 +67,8 @@ IO.prototype = {
                     args.push(arg);
                 }
             }
+
+            debuglog('IO call', publicName);
 
             ioCall(publicName, args, success || noop, error || noop);
         };

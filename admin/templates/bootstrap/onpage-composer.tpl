@@ -163,6 +163,9 @@
 
                 <div class="tab-pane" id="revisions">
                     <div class="list-group">
+                        <a class="list-group-item revisionBtn" href="#" data-revision-id="-1" id="unsavedRevision">
+                            <i>Ungespeicherte Version</i>
+                        </a>
                         <a class="list-group-item revisionBtn" href="#" data-revision-id="0">
                             Aktuelle Version
                         </a>

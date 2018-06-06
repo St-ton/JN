@@ -15,7 +15,7 @@
     {elseif $step === 'news_kategorieuebersicht'}
         {include file='blog/overview.tpl'}
     {elseif $step === 'news_detailansicht'}
-        {if $opc->getCurPage()->isReplace()}
+        {if $opcPageService->getCurPage()->isReplace()}
             {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
         {else}
             {include file='blog/details.tpl'}

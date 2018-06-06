@@ -1825,7 +1825,12 @@ final class Shop
 
         // ONPAGE COMPOSER
         $container->setSingleton(OPC\Service::class, function (Container $container) {
-            return new OPC\Service($container->getOPCDB(), $container->getOPCLocker());
+            return new OPC\Service($container->getOPCDB());
+        });
+
+        // ONPAGE COMPOSER PAGE SERVICE
+        $container->setSingleton(OPC\PageService::class, function (Container $container) {
+            return new OPC\PageService($container->getOPC(), $container->getOPCPageDB(), $container->getOPCLocker());
         });
 
         // ONPAGE COMPOSER DATABASE
@@ -1833,9 +1838,14 @@ final class Shop
             return new OPC\DB($container->getDB());
         });
 
+        // ONPAGE COMPOSER PAGE DATABASE
+        $container->setSingleton(OPC\PageDB::class, function (Container $container) {
+            return new OPC\PageDB($container->getDB());
+        });
+
         // ONPAGE COMPOSER LOCKER
         $container->setSingleton(OPC\Locker::class, function (Container $container) {
-            return new OPC\Locker($container->getOPCDB());
+            return new OPC\Locker($container->getOPCPageDB());
         });
     }
 }

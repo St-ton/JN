@@ -22,11 +22,6 @@ class Service
     protected $db = null;
 
     /**
-     * @var null|Locker
-     */
-    protected $locker = null;
-
-    /**
      * @var null|Page
      */
     protected $curPage = null;
@@ -34,12 +29,10 @@ class Service
     /**
      * Service constructor.
      * @param DB $db
-     * @param Locker $locker
      */
-    public function __construct(DB $db, Locker $locker)
+    public function __construct(DB $db)
     {
-        $this->db     = $db;
-        $this->locker = $locker;
+        $this->db = $db;
     }
 
     /**
@@ -55,15 +48,6 @@ class Service
             'getBlueprintPreview',
             'saveBlueprint',
             'deleteBlueprint',
-            'getPageDraft',
-            'getPageDraftRevisions',
-            'publicatePage',
-            'lockPage',
-            'unlockPage',
-            'savePage',
-            'loadPagePreview',
-            'getPageDraftPreview',
-            'createPagePreview',
             'getPortletInstance',
             'getPortletPreviewHtml',
             'getConfigPanelHtml',
@@ -84,217 +68,6 @@ class Service
             $publicFunctionName = 'opc' . ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
         }
-    }
-
-    /**
-     * @param string $id
-     * @return array
-     */
-    public function getPageDrafts($id)
-    {
-        return $this->db->getPageDrafts($id);
-    }
-
-    /**
-     * @return Page[]
-     */
-    public function getPages()
-    {
-        $pageIds = $this->db->getAllPageIds();
-        $pages   = [];
-
-        foreach ($pageIds as $pageId) {
-            $pages[] = $this->getPage($pageId);
-        }
-
-        return $pages;
-    }
-
-    /**
-     * @param string $id
-     * @param int $revId
-     * @return Page
-     * @throws \Exception
-     */
-    public function getPage($id, $revId = 0)
-    {
-        $page = (new Page())
-            ->setId($id)
-            ->setRevId($revId);
-
-        if ($this->db->hasPublicPage($id)) {
-            $this->db->loadPage($page);
-        }
-
-        return $page;
-    }
-
-    /**
-     * @param int $key
-     * @return Page
-     * @throws \Exception
-     */
-    public function getPageDraft($key)
-    {
-        $page = (new Page())->setKey($key);
-        $this->db->loadPage($page);
-
-        return $page;
-    }
-
-    /**
-     * @param string $id
-     * @return Page
-     */
-    public function createPageDraft($id)
-    {
-        return (new Page())->setId($id);
-    }
-
-    /**
-     * @param int $revId
-     * @return Page
-     * @throws \Exception
-     */
-    public function getPageRevision($revId)
-    {
-        $page = (new Page())->setRevId($revId);
-        $this->db->loadPage($page);
-
-        return $page;
-    }
-
-    /**
-     * @return Page
-     * @throws \Exception
-     */
-    public function getCurPage()
-    {
-        if ($this->curPage === null) {
-            if ($this->isEditMode() && $this->getEditedPageKey() > 0) {
-                $key           = $this->getEditedPageKey();
-                $this->curPage = $this->getPageDraft($key);
-            } else {
-                $curPageUrl                    = '/' . ltrim(\Shop::getRequestUri(), '/');
-                $curPageParameters             = \Shop::getParameters();
-                $curPageParameters['kSprache'] = \Shop::getLanguage();
-                $curPageId                     = md5(serialize($curPageParameters));
-                $this->curPage                 = $this->getPage($curPageId)->setUrl($curPageUrl);
-            }
-        }
-
-        return $this->curPage;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    public function pageIdExists($id)
-    {
-        return $this->db->pageIdExists($id);
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     * @throws \Exception
-     */
-    public function lockPage($id)
-    {
-        return $this->locker->lock($this->adminName, $this->getPage($id));
-    }
-
-    /**
-     * @param string $id
-     * @throws \Exception
-     */
-    public function unlockPage($id)
-    {
-        $page = (new Page())
-            ->setId($id);
-
-        $this->locker->unlock($page);
-    }
-
-    /**
-     * @param array $data
-     * @throws \Exception
-     */
-    public function savePage($data)
-    {
-        $page = $this->getPageDraft($data['key'])->deserialize($data);
-        $this->db->savePage($page);
-    }
-
-    /**
-     * @param $key
-     */
-    public function deletePageDraft($key)
-    {
-        $this->db->deletePageDraft($key);
-    }
-
-    /**
-     * @param string $id
-     */
-    public function deletePage($id)
-    {
-        $this->db->deletePage($id);
-    }
-
-    /**
-     * @param int $key
-     * @return array
-     * @throws \Exception
-     */
-    public function getPageDraftRevisions($key)
-    {
-        $page = $this->getPageDraft($key);
-
-        return $this->db->getPageRevisions($page);
-    }
-
-    /**
-     * @param array $data
-     * @throws \Exception
-     */
-    public function publicatePage($data)
-    {
-        $page = (new Page())->setKey($data['key'])->deserialize($data);
-        $this->db->savePagePublicationStatus($page);
-    }
-
-    /**
-     * @param int $id
-     * @param int $revId
-     * @return string[]
-     * @throws \Exception
-     */
-    public function loadPagePreview($id, $revId = 0)
-    {
-        return $this->getPage($id, $revId)->getAreaList()->getPreviewHtml();
-    }
-
-    /**
-     * @param int $key
-     * @return string[]
-     */
-    public function getPageDraftPreview($key)
-    {
-        return $this->getPageDraft($key)->getAreaList()->getPreviewHtml();
-    }
-
-    /**
-     * @param array $data
-     * @return string[]
-     */
-    public function createPagePreview($data)
-    {
-        $page = new Page();
-        $page->deserialize($data);
-
-        return $page->getAreaList()->getPreviewHtml();
     }
 
     /**

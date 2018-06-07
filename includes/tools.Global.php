@@ -407,8 +407,8 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', $bForc
 {
     $cString       = '';
     $oWaehrung_arr = Shop::Container()->getDB()->query(
-        "SELECT * 
-            FROM twaehrung 
+        "SELECT *
+            FROM twaehrung
             ORDER BY cStandard DESC",
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -1244,7 +1244,7 @@ function setzeSteuersaetze($steuerland = 0)
     $billingCountryCode     = null;
     $merchantCountryCode    = 'DE';
     $Firma                  = Shop::Container()->getDB()->query(
-        "SELECT cLand 
+        "SELECT cLand
             FROM tfirma",
         \DB\ReturnType::SINGLE_OBJECT
     );
@@ -1536,7 +1536,7 @@ function baueSprachURLS($obj, $art)
                     $seoobj = Shop::Container()->getDB()->query(
                         "SELECT tseo.cSeo
                             FROM tartikelsprache
-                            LEFT JOIN tseo 
+                            LEFT JOIN tseo
                                 ON tseo.cKey = 'kArtikel'
                                 AND tseo.kKey = tartikelsprache.kArtikel
                                 AND tseo.kSprache = " . (int)$Sprache->kSprache . "
@@ -1548,7 +1548,7 @@ function baueSprachURLS($obj, $art)
                     $seoobj = Shop::Container()->getDB()->query(
                         "SELECT tseo.cSeo
                             FROM tartikel
-                            LEFT JOIN tseo 
+                            LEFT JOIN tseo
                                 ON tseo.cKey = 'kArtikel'
                                 AND tseo.kKey = tartikel.kArtikel
                                 AND tseo.kSprache = " . (int)$Sprache->kSprache . "
@@ -1566,7 +1566,7 @@ function baueSprachURLS($obj, $art)
                     $seoobj = Shop::Container()->getDB()->query(
                         "SELECT tseo.cSeo
                             FROM tkategoriesprache
-                            LEFT JOIN tseo 
+                            LEFT JOIN tseo
                                 ON tseo.cKey = 'kKategorie'
                                 AND tseo.kKey = tkategoriesprache.kKategorie
                                 AND tseo.kSprache = " . (int)$Sprache->kSprache . "
@@ -1578,7 +1578,7 @@ function baueSprachURLS($obj, $art)
                     $seoobj = Shop::Container()->getDB()->query(
                         "SELECT tseo.cSeo
                             FROM tkategorie
-                            LEFT JOIN tseo 
+                            LEFT JOIN tseo
                                 ON tseo.cKey = 'kKategorie'
                                 AND tseo.kKey = tkategorie.kKategorie
                                 AND tseo.kSprache = " . (int)$Sprache->kSprache . "
@@ -1594,7 +1594,7 @@ function baueSprachURLS($obj, $art)
                 $seoobj = Shop::Container()->getDB()->query(
                     "SELECT tseo.cSeo
                         FROM tlinksprache
-                        LEFT JOIN tseo 
+                        LEFT JOIN tseo
                             ON tseo.cKey = 'kLink'
                             AND tseo.kKey = tlinksprache.kLink
                             AND tseo.kSprache = " . (int)$Sprache->kSprache . "
@@ -1781,7 +1781,7 @@ function checkeSpracheWaehrung($lang = '')
     $waehrung = verifyGPDataString('curr');
     if ($waehrung) {
         $Waehrungen = Shop::Container()->getDB()->query(
-            "SELECT cISO, kWaehrung 
+            "SELECT cISO, kWaehrung
                 FROM twaehrung",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -2370,16 +2370,16 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
         $where       = ' cISO IN (' . implode(',', $laender_arr) . ')';
         $laender     = count($laender_arr) > 0
             ? Shop::Container()->getDB()->query(
-                "SELECT cISO, $sel_var AS cName 
-                    FROM tland 
-                    WHERE $where 
+                "SELECT cISO, $sel_var AS cName
+                    FROM tland
+                    WHERE $where
                     ORDER BY $sel_var",
                 \DB\ReturnType::ARRAY_OF_OBJECTS)
             : [];
     } else {
         $laender = Shop::Container()->getDB()->query(
-            "SELECT cISO, $sel_var AS cName 
-                FROM tland 
+            "SELECT cISO, $sel_var AS cName
+                FROM tland
                 ORDER BY $sel_var",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -2973,8 +2973,8 @@ function baueVersandkostenfreiLaenderString($oVersandart)
                 return "'" . $iso . "'";
             }, $cLaender_arr)) . ')';
             $countries = Shop::Container()->getDB()->query(
-                "SELECT " . $select . " AS name 
-                    FROM tland 
+                "SELECT " . $select . " AS name
+                    FROM tland
                     WHERE " . $sql,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -3265,7 +3265,7 @@ function parseNewsText($cText)
                 $oTag           = Shop::Container()->getDB()->query(
                     "SELECT ttag.kTag, ttag.cName, tseo.cSeo
                         FROM ttag
-                        LEFT JOIN tseo 
+                        LEFT JOIN tseo
                             ON tseo.cKey = 'kTag'
                             AND tseo.kKey = ttag.kTag
                             AND tseo.kSprache = {$kSprache}
@@ -3286,7 +3286,7 @@ function parseNewsText($cText)
                 $oSuchanfrage   = Shop::Container()->getDB()->query(
                     "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.cSuche, tseo.cSeo
                         FROM tsuchanfrage
-                        LEFT JOIN tseo 
+                        LEFT JOIN tseo
                             ON tseo.cKey = 'kSuchanfrage'
                             AND tseo.kKey = tsuchanfrage.kSuchanfrage
                             AND tseo.kSprache = {$kSprache}
@@ -3883,7 +3883,7 @@ function pruefeEmailblacklist($cEmail)
         return false;
     }
     $oEmailBlackList_arr = Shop::Container()->getDB()->query(
-        "SELECT cEmail 
+        "SELECT cEmail
             FROM temailblacklist",
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -4009,8 +4009,8 @@ function gibAlleSprachen($nOption = 0)
             return $s;
         },
         Shop::Container()->getDB()->query(
-            "SELECT * 
-                FROM tsprache 
+            "SELECT *
+                FROM tsprache
                 ORDER BY cShopStandard DESC, cNameDeutsch",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         )
@@ -4033,7 +4033,8 @@ function gibAlleSprachen($nOption = 0)
  * @return bool
  */
 function pruefeSOAP($cURL = '')
-{    return !(strlen($cURL) > 0 && !phpLinkCheck($cURL)) && class_exists('SoapClient');
+{
+    return !(strlen($cURL) > 0 && !phpLinkCheck($cURL)) && class_exists('SoapClient');
 }
 
 /**
@@ -4367,7 +4368,7 @@ function archiviereBesucher()
     [ 'interval' => $iInterval ],
     Shop::Container()->getDB()::RET_AFFECTED_ROWS);
     Shop::Container()->getDB()->queryPrepared(
-        "DELETE FROM tbesucher 
+        "DELETE FROM tbesucher
             WHERE dLetzteAktivitaet <= date_sub(now(), INTERVAL :interval HOUR)",
     [ 'interval' => $iInterval ],
     Shop::Container()->getDB()::RET_AFFECTED_ROWS);

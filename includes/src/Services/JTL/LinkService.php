@@ -7,10 +7,10 @@
 namespace Services\JTL;
 
 
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use function Functional\first;
 use function Functional\first_index_of;
-use function Functional\select;
 use Link\LinkGroupCollection;
 use Link\LinkGroupInterface;
 use Link\LinkGroupList;
@@ -31,7 +31,7 @@ final class LinkService implements LinkServiceInterface
     private static $_instance;
 
     /**
-     * @var LinkGroupListInterface
+     * @var LinkGroupCollection
      */
     public $linkGroups;
 
@@ -47,13 +47,14 @@ final class LinkService implements LinkServiceInterface
 
     /**
      * LinkService constructor.
-     * @param DbInterface $db
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
         $this->db            = $db;
         self::$_instance     = $this;
-        $this->linkGroupList = new LinkGroupList($this->db);
+        $this->linkGroupList = new LinkGroupList($this->db, $cache);
         $this->initLinkGroups();
     }
 
@@ -62,7 +63,7 @@ final class LinkService implements LinkServiceInterface
      */
     public static function getInstance(): LinkServiceInterface
     {
-        return self::$_instance ?? new self(\Shop::Container()->getDB());
+        return self::$_instance ?? new self(\Shop::Container()->getDB(), \Shop::Container()->getCache());
     }
 
     /**
@@ -379,6 +380,7 @@ final class LinkService implements LinkServiceInterface
 
     /**
      * @inheritdoc
+     * @todo: use $cISOSprache?
      */
     public function buildSpecialPageMeta(int $type, string $cISOSprache = null): \stdClass
     {
@@ -389,15 +391,15 @@ final class LinkService implements LinkServiceInterface
                 return $link->getLinkType() === $type;
             });
         }
-        if ($cISOSprache !== null) {
-            $shopISO = \Shop::getLanguageCode();
-            if ($shopISO !== null && strlen($shopISO) > 0) {
-                $cISOSprache = $shopISO;
-            } else {
-                $oSprache    = gibStandardsprache();
-                $cISOSprache = $oSprache->cISO;
-            }
-        }
+//        if ($cISOSprache !== null) {
+//            $shopISO = \Shop::getLanguageCode();
+//            if ($shopISO !== null && strlen($shopISO) > 0) {
+//                $cISOSprache = $shopISO;
+//            } else {
+//                $oSprache    = gibStandardsprache();
+//                $cISOSprache = $oSprache->cISO;
+//            }
+//        }
         $oMeta            = new \stdClass();
         $oMeta->cTitle    = '';
         $oMeta->cDesc     = '';
@@ -450,8 +452,8 @@ final class LinkService implements LinkServiceInterface
                         }
                         if ($linkID === \Shop::$kLink) {
                             $link->setIsActive(true);
-                            $parent   = $this->getRootLink($linkID);
-                            $filtered = $linkGroup->getLinks()->filter(function (LinkInterface $l) use ($parent) {
+                            $parent = $this->getRootLink($linkID);
+                            $linkGroup->getLinks()->filter(function (LinkInterface $l) use ($parent) {
                                 return $l->getID() === $parent;
                             })->map(function (LinkInterface $l) {
                                 $l->setIsActive(true);

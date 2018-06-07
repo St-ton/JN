@@ -34,17 +34,17 @@ final class Link extends AbstractLink
     /**
      * @var int
      */
-    protected $linkGroupID;
+    protected $linkGroupID = -1;
 
     /**
      * @var int
      */
-    protected $pluginID;
+    protected $pluginID = -1;
 
     /**
      * @var int
      */
-    protected $linkType;
+    protected $linkType = -1;
 
     /**
      * @var array
@@ -241,6 +241,12 @@ final class Link extends AbstractLink
             }
             if ($link->localizedUrl === null && !empty($link->cDateiname)) {
                 $link->localizedUrl = $link->cDateiname;
+            }
+            if ((int)$link->bSSL === 2) {
+                $link->bSSL = 1;
+            }
+            if (isset($link->cIdentifier)) {
+                $this->setIdentifier($link->cIdentifier);
             }
             $this->setParent((int)$link->kVaterLink);
             $this->setPluginID((int)$link->kPlugin);
@@ -725,7 +731,7 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
-    public function getIdentifier(): string
+    public function getIdentifier()
     {
         return $this->identifier;
     }
@@ -733,7 +739,7 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
-    public function setIdentifier(string $identifier)
+    public function setIdentifier($identifier)
     {
         $this->identifier = $identifier;
     }
@@ -971,9 +977,6 @@ final class Link extends AbstractLink
     public function buildChildLinks(): array
     {
         if ($this->getID() > 0) {
-            if ($this->db === null) {
-                $this->db = \Shop::Container()->getDB();
-            }
             $links = [];
             $ids   = $this->db->selectAll('tlink', 'kVaterLink', $this->getID(), 'kLink');
             foreach ($ids as $id) {
@@ -986,31 +989,6 @@ final class Link extends AbstractLink
         }
 
         return [];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getMissingTranslations(): array
-    {
-        if ($this->db === null) {
-            $this->db = \Shop::Container()->getDB();
-        }
-        return $this->db->queryPrepared(
-            'SELECT tlink.*,tsprache.*
-                FROM tlink
-                JOIN tsprache
-                LEFT JOIN tlinksprache
-                    ON tlink.kLink = tlinksprache.kLink
-                    AND tlinksprache.cISOSprache = tsprache.cISO
-                LEFT JOIN tsprache t2
-                    ON t2.cISO = tlinksprache.cISOSprache
-                    AND t2.cISO = tsprache.cISO
-                WHERE t2.cISO IS NULL
-                    AND tlink.kLink = :lid',
-            ['lid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
     }
 
     /**

@@ -14,7 +14,6 @@ function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
     $kVaterLink = (int)$kVaterLink;
     $oNew_arr   = new \Tightenco\Collect\Support\Collection();
     $lh         = Shop::Container()->getLinkService();
-    $i          = 0;
     foreach ($linkGroup->getLinks() as $link) {
         $link->setLevel(count($lh->getParentIDs($link->getID())));
         /** @var \Link\Link $link */
@@ -88,46 +87,6 @@ function parseText($cText, $kLink)
     }
 
     return $cText;
-}
-
-/**
- * @param \Link\LinkInterface $link
- * @param int                 $old
- * @param int                 $new
- */
-function updateChildLinkGroups(\Link\LinkInterface $link, int $old, int $new)
-{
-    $link->buildChildLinks();
-    $upd              = new stdClass();
-    $upd->linkGroupID = $new;
-    foreach ($link->getChildLinks() as $childLink) {
-        Shop::Container()->getDB()->update(
-            'tlinkgroupassociations',
-            ['linkGroupID', 'linkID'],
-            [$old, $childLink->getID()],
-            $upd
-        );
-        updateChildLinkGroups($childLink, $old, $new);
-    }
-}
-
-/**
- * @param \Link\LinkInterface $link
- * @param int                 $linkGroupID
- */
-function copyChildLinksToLinkGroup(\Link\LinkInterface $link, int $linkGroupID)
-{
-    $link->buildChildLinks();
-    $ins              = new stdClass();
-    $ins->linkGroupID = $linkGroupID;
-    foreach ($link->getChildLinks() as $childLink) {
-        $ins->linkID = $childLink->getID();
-        Shop::Container()->getDB()->insert(
-            'tlinkgroupassociations',
-            $ins
-        );
-        copyChildLinksToLinkGroup($childLink, $linkGroupID);
-    }
 }
 
 /**
@@ -240,6 +199,13 @@ function getLinkVar($kLink, $var)
 function getGesetzteKundengruppen($link)
 {
     $ret = [];
+    if ($link instanceof \Link\LinkInterface) {
+        foreach ($link->getCustomerGroups() as $customerGroup) {
+            $ret[$customerGroup] = true;
+        }
+
+        return $ret;
+    }
     if (!isset($link->cKundengruppen) || !$link->cKundengruppen || $link->cKundengruppen == 'NULL') {
         $ret[0] = true;
 

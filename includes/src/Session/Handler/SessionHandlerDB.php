@@ -1,9 +1,18 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
+
+namespace Session\Handler;
+
+use DB\DbInterface;
+use DB\ReturnType;
 
 /**
  * Class SessionHandlerDB
  */
-class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandlerInterface
+class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInterface
 {
     /**
      * @var int
@@ -11,22 +20,36 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
     protected $lifeTime;
 
     /**
-     *
+     * @var DbInterface
      */
-    public function __construct()
+    protected $db;
+
+    /**
+     * @var string
+     */
+    protected $tableName;
+
+    /**
+     * SessionHandlerDB constructor.
+     * @param DbInterface $db
+     * @param string      $tableName
+     */
+    public function __construct(DbInterface $db, string $tableName = 'tsession')
     {
+        $this->db        = $db;
+        $this->tableName = $tableName;
     }
 
     /**
      * @param string $savePath
      * @param string $sessName
-     * @return mixed
+     * @return bool
      */
     public function open($savePath, $sessName)
     {
         $this->lifeTime = get_cfg_var('session.gc_maxlifetime');
 
-        return Shop::Container()->getDB()->isConnected();
+        return $this->db->isConnected();
     }
 
     /**
@@ -43,15 +66,18 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
      */
     public function read($sessID)
     {
-        $res = Shop::Container()->getDB()->executeQueryPrepared(
-            "SELECT cSessionData FROM tsession
+        $res = $this->db->queryPrepared(
+            'SELECT cSessionData FROM ' . $this->tableName . '
                 WHERE cSessionId = :id
-                AND nSessionExpires > :time",
-            ['id' => $sessID, 'time' => time()],
-            1
+                AND nSessionExpires > :time',
+            [
+                'id'   => $sessID,
+                'time' => time()
+            ],
+            ReturnType::SINGLE_OBJECT
         );
 
-        return ($res !== false && isset($res->cSessionData)) ? $res->cSessionData : '';
+        return $res->cSessionData ?? '';
     }
 
     /**
@@ -61,33 +87,30 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
      */
     public function write($sessID, $sessData)
     {
-        $sessID = Shop::Container()->getDB()->escape($sessID);
         // set new session expiration
         $newExp = time() + $this->lifeTime;
         // is a session with this id already in the database?
-        $res = Shop::Container()->getDB()->select('tsession', 'cSessionId', $sessID);
+        $res = $this->db->select($this->tableName, 'cSessionId', $sessID);
         // if yes,
         if (!empty($res)) {
             //...update session data
-            $update                  = new stdClass();
+            $update                  = new \stdClass();
             $update->nSessionExpires = $newExp;
             $update->cSessionData    = $sessData;
             // if something happened, return true
-            if (Shop::Container()->getDB()->update('tsession', 'cSessionId', $sessID, $update) > 0) {
+            if ($this->db->update($this->tableName, 'cSessionId', $sessID, $update) > 0) {
                 return true;
             }
-        } else { // if no session was found, create a new row
-            $session                  = new stdClass();
+        } else {
+            // if no session was found, create a new row
+            $session                  = new \stdClass();
             $session->cSessionId      = $sessID;
             $session->nSessionExpires = $newExp;
             $session->cSessionData    = $sessData;
 
-            if (Shop::Container()->getDB()->insert('tsession', $session) > 0) {
-                return true;
-            }
+            return $this->db->insert($this->tableName, $session) > 0;
         }
 
-        // an unknown error occured
         return false;
     }
 
@@ -100,7 +123,7 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
     public function destroy($sessID)
     {
         // if session was deleted, return true,
-        return Shop::Container()->getDB()->delete('tsession', 'cSessionId', $sessID) > 0;
+        return $this->db->delete($this->tableName, 'cSessionId', $sessID) > 0;
     }
 
     /**
@@ -112,6 +135,9 @@ class SessionHandlerDB extends \JTL\core\SessionHandler implements SessionHandle
     public function gc($sessMaxLifeTime)
     {
         // return affected rows
-        return Shop::Container()->getDB()->query("DELETE FROM tsession WHERE nSessionExpires < " . time(), 3);
+        return $this->db->query(
+            'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . time(),
+            ReturnType::AFFECTED_ROWS
+        );
     }
 }

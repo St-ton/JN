@@ -175,11 +175,9 @@ final class LinkAdmin
 
     /**
      * @param int $linkID
-     * @param int $linkGroupID
      * @return int
-     * @todo: $linkGroupID?
      */
-    public function deleteLink($linkID, $linkGroupID = 0): int
+    public function deleteLink($linkID): int
     {
         return $this->db->executeQueryPrepared(
             "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations

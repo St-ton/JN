@@ -44,7 +44,7 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
 }
 
 if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && validateToken()) {
-    $res = $linkAdmin->deleteLink((int)$_POST['dellink'], (int)$_POST['kLinkgruppe']);
+    $res = $linkAdmin->deleteLink((int)$_POST['dellink']);
     if ($res > 0) {
         $hinweis .= 'Link erfolgreich gel&ouml;scht!';
     } else {

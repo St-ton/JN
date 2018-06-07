@@ -42,7 +42,7 @@ if (!empty($_POST['action']) && !empty($_POST['check'])) {
     $maintenanceResult = doDBMaintenance($_POST['action'], $_POST['check']);
 }
 
-if (!is_array($cDBFileStruct_arr)) {
+if (empty($cDBFileStruct_arr)) {
     $cFehler = 'Fehler beim Lesen der Struktur-Datei.';
 }
 

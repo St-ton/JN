@@ -5,7 +5,7 @@
     {if $maintenanceResult !== null}
         {if $maintenanceResult|is_array}
             <ul class="list-group">
-                {foreach name=results from=$maintenanceResult item=result}
+                {foreach $maintenanceResult as $result}
                     <li class="list-group-item">
                         <strong>{$result->Op} {$result->Table}:</strong> {$result->Msg_text}
                     </li>
@@ -76,7 +76,7 @@
                                     {if $hasError}
                                         <span class="badge red">{$cDBError_arr[$cTable]}</span>
                                     {else}
-                                        <span class="badge green">Ok</span>
+                                        <span class="badge green">OK</span>
                                     {/if}
                                 </td>
                                 <td class="centered">
@@ -114,10 +114,6 @@
                     </div>
                 </div>
             </form>
-        {else}
-            {if isset($cFehler) && $cFehler|strlen > 0}
-                <div class="alert alert-danger">{$cFehler}</div>
-            {/if}
         {/if}
     </div>
 </div>
@@ -275,7 +271,7 @@
         if ($cols.length > 0) {
             $($cols[1]).html('<span class="badge alert-info">InnoDB</span>');
             $($cols[2]).html('<span class="badge alert-info">utf8_general_ci</span>');
-            $($cols[5]).html('<span class="badge green">Ok</span>');
+            $($cols[5]).html('<span class="badge green">OK</span>');
             $($cols[6]).html('');
         }
     }

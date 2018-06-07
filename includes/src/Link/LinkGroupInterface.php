@@ -114,9 +114,4 @@ interface LinkGroupInterface
      * @return bool
      */
     public function isAvailableInLanguage(int $langID): bool;
-
-    /**
-     * @return array
-     */
-    public function getMissingTranslations(): array;
 }

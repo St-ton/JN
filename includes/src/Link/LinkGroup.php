@@ -269,28 +269,6 @@ final class LinkGroup implements LinkGroupInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function getMissingTranslations(): array
-    {
-        return $this->db->queryPrepared(
-            'SELECT tlinkgruppe.*, tsprache.* 
-                FROM tlinkgruppe
-                JOIN tsprache
-                LEFT JOIN tlinkgruppesprache
-                    ON tlinkgruppe.kLinkgruppe = tlinkgruppesprache.kLinkgruppe
-                    AND tlinkgruppesprache.cISOSprache = tsprache.cISO
-                LEFT JOIN tsprache t2
-                    ON t2.cISO = tlinkgruppesprache.cISOSprache
-                    AND t2.cISO = tsprache.cISO
-                WHERE t2.cISO IS NULL
-                    AND tlinkgruppe.kLinkgruppe = :lgid',
-            ['lgid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-    }
-
-    /**
      * @return array
      */
     public function __debugInfo()

@@ -294,14 +294,14 @@ interface LinkInterface
     public function setVisibleLoggedInOnly(bool $visibleLoggedInOnly);
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getIdentifier(): string;
+    public function getIdentifier();
 
     /**
-     * @param string $identifier
+     * @param string|null $identifier
      */
-    public function setIdentifier(string $identifier);
+    public function setIdentifier($identifier);
 
     /**
      * @return bool
@@ -446,9 +446,4 @@ interface LinkInterface
      * @return LinkInterface[]
      */
     public function buildChildLinks(): array;
-
-    /**
-     * @return array
-     */
-    public function getMissingTranslations(): array;
 }

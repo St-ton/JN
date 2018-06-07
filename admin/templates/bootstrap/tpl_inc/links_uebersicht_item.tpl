@@ -2,7 +2,7 @@
     {assign var=kPlugin value=0}
 {/if}
 {foreach $list as $link}
-    {assign var=missingLinkTranslations value=$link->getMissingTranslations()}
+    {assign var=missingLinkTranslations value=$linkAdmin->getMissingLinkTranslations($link->getID())}
     <tr class="link-item{if $kPlugin > 0 && $kPlugin == $link->getPluginID()} highlight{/if}{if $link->getLevel() == 0} main{/if}">
         {math equation="a * b" a=$link->getLevel()-1 b=20 assign=fac}
         <td style="width: 40%">

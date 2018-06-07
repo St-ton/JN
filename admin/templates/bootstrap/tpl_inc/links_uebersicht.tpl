@@ -14,14 +14,22 @@
     </div>
     <div class="panel-group accordion" id="accordion2" role="tablist" aria-multiselectable="true">
         {foreach $linkgruppen as $linkgruppe}
+            {if $linkgruppe->getID() < 0 && $linkgruppe->getLinks()->count() === 0}
+                {continue}
+            {/if}
             {assign var=lgName value='linkgroup-'|cat:$linkgruppe->getID()}
-            {assign var=missingTranslations value=$linkgruppe->getMissingTranslations()}
+            {assign var=missingTranslations value=$linkAdmin->getMissingLinkGroupTranslations($linkgruppe->getID())}
             <div class="panel panel-{if $linkgruppe->getID() > 0}default{else}danger{/if}">
                 <div class="panel-heading accordion-heading">
                     <h3 class="panel-title" id="heading-{$lgName}">
                         <span class="pull-left">
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}"{if $missingTranslations|count > 0} title="Fehlende Übersetzungen: {$missingTranslations|count}"{/if}>
-                                <span class="accordion-toggle-icon"><i class="fa fa-plus"></i></span> {$linkgruppe->getName()} ({#linkGroupTemplatename#}: {$linkgruppe->getTemplate()})
+                                <span class="accordion-toggle-icon"><i class="fa fa-plus"></i></span>
+                                {if $linkgruppe->getID() > 0}
+                                    {$linkgruppe->getName()} ({#linkGroupTemplatename#}: {$linkgruppe->getTemplate()})
+                                {else}
+                                    Links ohne Linkgruppe
+                                {/if}
                                 {if $missingTranslations|count > 0}<i class="fa fa-warning"></i>{/if}
                             </a>
                         </span>

@@ -175,11 +175,9 @@ final class LinkAdmin
 
     /**
      * @param int $linkID
-     * @param int $linkGroupID
      * @return int
-     * @todo: $linkGroupID?
      */
-    public function deleteLink($linkID, $linkGroupID = 0): int
+    public function deleteLink(int $linkID): int
     {
         return $this->db->executeQueryPrepared(
             "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations
@@ -415,5 +413,127 @@ final class LinkAdmin
             );
             $this->copyChildLinksToLinkGroup($childLink, $linkGroupID);
         }
+    }
+
+    /**
+     * @param array $post
+     * @return Link
+     */
+    public function createOrUpdateLink($post)
+    {
+        $link                     = new \stdClass();
+        $link->kLink              = (int)$post['kLink'];
+        $link->kPlugin            = (int)$post['kPlugin'];
+        $link->cName              = htmlspecialchars($post['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $link->nLinkart           = (int)$post['nLinkart'];
+        $link->cURL               = $post['cURL'] ?? null;
+        $link->nSort              = !empty($post['nSort']) ? $post['nSort'] : 0;
+        $link->bSSL               = (int)$post['bSSL'];
+        $link->bIsActive          = 1;
+        $link->cSichtbarNachLogin = 'N';
+        $link->cNoFollow          = 'N';
+        $link->cIdentifier        = $post['cIdentifier'];
+        $link->bIsFluid           = (isset($post['bIsFluid']) && $post['bIsFluid'] === '1') ? 1 : 0;
+        if (isset($post['cKundengruppen']) && is_array($post['cKundengruppen']) && count($post['cKundengruppen']) > 0) {
+            $link->cKundengruppen = implode(';', $post['cKundengruppen']) . ';';
+        }
+        if (is_array($post['cKundengruppen']) && in_array('-1', $post['cKundengruppen'])) {
+            $link->cKundengruppen = 'NULL';
+        }
+        if (isset($post['bIsActive']) && (int)$post['bIsActive'] !== 1) {
+            $link->bIsActive = 0;
+        }
+        if (isset($post['cSichtbarNachLogin']) && $post['cSichtbarNachLogin'] === 'Y') {
+            $link->cSichtbarNachLogin = 'Y';
+        }
+        if (isset($post['cNoFollow']) && $post['cNoFollow'] === 'Y') {
+            $link->cNoFollow = 'Y';
+        }
+        if ($link->nLinkart > 2 && isset($post['nSpezialseite']) && (int)$post['nSpezialseite'] > 0) {
+            $link->nLinkart = (int)$post['nSpezialseite'];
+            $link->cURL     = '';
+        }
+
+        if ((int)$post['kLink'] === 0) {
+            // create new
+            $kLink              = $this->db->insert('tlink', $link);
+            $assoc              = new \stdClass();
+            $assoc->linkID      = $kLink;
+            $assoc->linkGroupID = (int)$post['kLinkgruppe'];
+            $this->db->insert('tlinkgroupassociations', $assoc);
+
+        } else {
+            // update existing
+            $kLink    = (int)$post['kLink'];
+            $revision = new \Revision();
+            $revision->addRevision('link', (int)$post['kLink'], true);
+            $this->db->update('tlink', 'kLink', $kLink, $link);
+
+        }
+        $sprachen    = gibAlleSprachen();
+        $linkSprache        = new \stdClass();
+        $linkSprache->kLink = $kLink;
+        foreach ($sprachen as $sprache) {
+            $linkSprache->cISOSprache = $sprache->cISO;
+            $linkSprache->cName       = $link->cName;
+            $linkSprache->cTitle      = '';
+            $linkSprache->cContent    = '';
+            if (!empty($post['cName_' . $sprache->cISO])) {
+                $linkSprache->cName = htmlspecialchars($post['cName_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401,
+                    JTL_CHARSET);
+            }
+            if (!empty($post['cTitle_' . $sprache->cISO])) {
+                $linkSprache->cTitle = htmlspecialchars($post['cTitle_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401,
+                    JTL_CHARSET);
+            }
+            if (!empty($post['cContent_' . $sprache->cISO])) {
+                $linkSprache->cContent = parseText($post['cContent_' . $sprache->cISO], $kLink);
+            }
+            $linkSprache->cSeo = $linkSprache->cName;
+            if (!empty($post['cSeo_' . $sprache->cISO])) {
+                $linkSprache->cSeo = $post['cSeo_' . $sprache->cISO];
+            }
+            $linkSprache->cMetaTitle = $linkSprache->cTitle;
+            if (isset($post['cMetaTitle_' . $sprache->cISO])) {
+                $linkSprache->cMetaTitle = htmlspecialchars($post['cMetaTitle_' . $sprache->cISO],
+                    ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            }
+            $linkSprache->cMetaKeywords    = htmlspecialchars($post['cMetaKeywords_' . $sprache->cISO],
+                ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $linkSprache->cMetaDescription = htmlspecialchars($post['cMetaDescription_' . $sprache->cISO],
+                ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $sprache->cISO]);
+            $linkSprache->cSeo = getSeo($linkSprache->cSeo);
+            $this->db->insert('tlinksprache', $linkSprache);
+            $oSpracheTMP = $this->db->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
+            if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
+                $this->db->delete(
+                    'tseo',
+                    ['cKey', 'kKey', 'kSprache'],
+                    ['kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache]
+                );
+                $oSeo           = new \stdClass();
+                $oSeo->cSeo     = checkSeo($linkSprache->cSeo);
+                $oSeo->kKey     = $linkSprache->kLink;
+                $oSeo->cKey     = 'kLink';
+                $oSeo->kSprache = $oSpracheTMP->kSprache;
+                $this->db->insert('tseo', $oSeo);
+            }
+        }
+        $linkInstance = new Link($this->db);
+        $linkInstance->load($kLink);
+
+        return $linkInstance;
+    }
+
+    /**
+     * @return bool
+     */
+    public function clearCache(): bool
+    {
+        $this->cache->flushTags([CACHING_GROUP_CORE]);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = now()', ReturnType::DEFAULT);
+
+        return true;
     }
 }

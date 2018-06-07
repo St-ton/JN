@@ -106,11 +106,11 @@
                                 {/foreach}
                                     {elseif !$Link->getID()}selected{/if}>{#all#}</option>
 
-                            {foreach name=kdgrp from=$kundengruppen item=kundengruppe}
+                            {foreach $kundengruppen as $kundengruppe}
                                 {assign var='kKundengruppe' value=$kundengruppe->kKundengruppe}
                                 {assign var=postkndgrp value='0'}
-                                    {if isset($xPostVar_arr.cKundengruppen)}
-                                    {foreach name=postkndgrp from=$xPostVar_arr.cKundengruppen item=cPostKndGrp}
+                                {if isset($xPostVar_arr.cKundengruppen)}
+                                    {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
                                         {if $cPostKndGrp == $kKundengruppe}{assign var=postkndgrp value='1'}{/if}
                                     {/foreach}
                                 {/if}
@@ -228,7 +228,7 @@
                             <div class="input-group">
                                 <span class="input-group-addon"><label for="cSeo_{$cISO}">{#linkSeo#}</label></span>
                                 {assign var=cSeo_ISO value="cSeo_"|cat:$cISO}
-                                <input class="form-control" type="text" name="cSeo_{$cISO}" id="cSeo_{$cISO}" value="{if isset($xPostVar_arr.$cSeo_ISO) && $xPostVar_arr.$cSeo_ISO}{$xPostVar_arr.$cSeo_ISO}{elseif !empty($Link->getURL($langID))}{$Link->getURL($langID)}{/if}" tabindex="7" />
+                                <input class="form-control" type="text" name="cSeo_{$cISO}" id="cSeo_{$cISO}" value="{if isset($xPostVar_arr.$cSeo_ISO) && $xPostVar_arr.$cSeo_ISO}{$xPostVar_arr.$cSeo_ISO}{elseif !empty($Link->getSEO($langID))}{$Link->getSEO($langID)}{/if}" tabindex="7" />
                             </div>
                             {assign var=cTitle_ISO value="cTitle_"|cat:$cISO}
                             <div class="input-group">

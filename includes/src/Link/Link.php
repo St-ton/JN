@@ -64,6 +64,11 @@ final class Link extends AbstractLink
     /**
      * @var array
      */
+    protected $seo = [];
+
+    /**
+     * @var array
+     */
     protected $titles = [];
 
     /**
@@ -271,6 +276,7 @@ final class Link extends AbstractLink
             $this->setName($link->localizedName ?? $link->cName, $languageID);
             $this->setTitle($link->localizedTitle ?? $link->cName, $languageID);
             $this->setLanguageID($languageID, $languageID);
+            $this->setSEO($link->localizedUrl ?? '', $languageID);
             $this->setURL($this->linkType === 2 ? $link->cURL : ($baseURL . $link->localizedUrl), $languageID);
             if (($this->id === null || $this->id === 0) && isset($link->kLink)) {
                 $this->setID((int)$link->kLink);
@@ -422,6 +428,40 @@ final class Link extends AbstractLink
     public function setNames(array $names)
     {
         $this->names = $names;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSEOs(): array
+    {
+        return $this->seo;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSEO(int $idx = null): string
+    {
+        $idx = $idx ?? \Shop::getLanguageID();
+
+        return $this->seo[$idx] ?? '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSEOs(array $seo)
+    {
+        $this->seo = $seo;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSEO(string $url, int $idx = null)
+    {
+        $this->seo[$idx ?? \Shop::getLanguageID()] = $url;
     }
 
     /**

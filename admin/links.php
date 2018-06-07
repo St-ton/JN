@@ -44,7 +44,7 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
 }
 
 if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && validateToken()) {
-    $res = $linkAdmin->deleteLink((int)$_POST['dellink'], (int)$_POST['kLinkgruppe']);
+    $res = $linkAdmin->deleteLink((int)$_POST['dellink']);
     if ($res > 0) {
         $hinweis .= 'Link erfolgreich gel&ouml;scht!';
     } else {
@@ -106,67 +106,24 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
     $oPlausiCMS->doPlausi('lnk');
 
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
-        $link                     = new stdClass();
-        $link->kLink              = (int)$_POST['kLink'];
-        $link->kPlugin            = (int)$_POST['kPlugin'];
-        $link->cName              = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $link->nLinkart           = (int)$_POST['nLinkart'];
-        $link->cURL               = $_POST['cURL'] ?? null;
-        $link->nSort              = !empty($_POST['nSort']) ? $_POST['nSort'] : 0;
-        $link->bSSL               = (int)$_POST['bSSL'];
-        $link->bIsActive          = 1;
-        $link->cSichtbarNachLogin = 'N';
-        $link->cNoFollow          = 'N';
-        $link->cIdentifier        = $_POST['cIdentifier'];
-        $link->bIsFluid           = (isset($_POST['bIsFluid']) && $_POST['bIsFluid'] === '1') ? 1 : 0;
-        if (isset($_POST['cKundengruppen']) && is_array($_POST['cKundengruppen']) && count($_POST['cKundengruppen']) > 0) {
-            $link->cKundengruppen = implode(';', $_POST['cKundengruppen']) . ';';
-        }
-        if (is_array($_POST['cKundengruppen']) && in_array('-1', $_POST['cKundengruppen'])) {
-            $link->cKundengruppen = 'NULL';
-        }
-        if (isset($_POST['bIsActive']) && (int)$_POST['bIsActive'] !== 1) {
-            $link->bIsActive = 0;
-        }
-        if (isset($_POST['cSichtbarNachLogin']) && $_POST['cSichtbarNachLogin'] === 'Y') {
-            $link->cSichtbarNachLogin = 'Y';
-        }
-        if (isset($_POST['cNoFollow']) && $_POST['cNoFollow'] === 'Y') {
-            $link->cNoFollow = 'Y';
-        }
-        if ($link->nLinkart > 2 && isset($_POST['nSpezialseite']) && (int)$_POST['nSpezialseite'] > 0) {
-            $link->nLinkart = (int)$_POST['nSpezialseite'];
-            $link->cURL     = '';
+        $link = $linkAdmin->createOrUpdateLink($_POST);
+        if ((int)$_POST['kLink'] === 0) {
+            $hinweis .= 'Link wurde erfolgreich hinzugef&uuml;gt.';
+        } else {
+            $hinweis .= 'Der Link <strong>' . $link->getName() . '</strong> wurde erfolgreich ge&auml;ndert.';
         }
         $clearCache = true;
         $kLink      = 0;
-        if ((int)$_POST['kLink'] === 0) {
-            //einfuegen
-            $kLink              = $db->insert('tlink', $link);
-            $assoc              = new stdClass();
-            $assoc->linkID      = $kLink;
-            $assoc->linkGroupID = (int)$_POST['kLinkgruppe'];
-            $db->insert('tlinkgroupassociations', $assoc);
-            $hinweis .= 'Link wurde erfolgreich hinzugef&uuml;gt.';
-        } else {
-            //updaten
-            $kLink    = (int)$_POST['kLink'];
-            $revision = new Revision();
-            $revision->addRevision('link', (int)$_POST['kLink'], true);
-            $db->update('tlink', 'kLink', $kLink, $link);
-            $hinweis .= "Der Link <strong>$link->cName</strong> wurde erfolgreich ge&auml;ndert.";
-        }
-        $step     = 'uebersicht';
-        $continue = (isset($_POST['continue']) && $_POST['continue'] === '1');
+        $step       = 'uebersicht';
+        $continue   = (isset($_POST['continue']) && (int)$_POST['continue'] === 1);
         if ($continue) {
-            $step           = 'neuer link';
-            $_POST['kLink'] = $kLink;
+            $step          = 'neuer link';
+            $post['kLink'] = $kLink;
         }
         // Bilder hochladen
         if (!is_dir($cUploadVerzeichnis . $kLink)) {
             mkdir($cUploadVerzeichnis . $kLink);
         }
-
         if (is_array($_FILES['Bilder']['name']) && count($_FILES['Bilder']['name']) > 0) {
             $nLetztesBild = gibLetzteBildNummer($kLink);
             $nZaehler     = 0;
@@ -189,60 +146,12 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken(
                 }
             }
         }
-        $linkSprache        = new stdClass();
-        $linkSprache->kLink = $kLink;
-        foreach ($sprachen as $sprache) {
-            $linkSprache->cISOSprache = $sprache->cISO;
-            $linkSprache->cName       = $link->cName;
-            $linkSprache->cTitle      = '';
-            $linkSprache->cContent    = '';
-            if (!empty($_POST['cName_' . $sprache->cISO])) {
-                $linkSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401,
-                    JTL_CHARSET);
-            }
-            if (!empty($_POST['cTitle_' . $sprache->cISO])) {
-                $linkSprache->cTitle = htmlspecialchars($_POST['cTitle_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401,
-                    JTL_CHARSET);
-            }
-            if (!empty($_POST['cContent_' . $sprache->cISO])) {
-                $linkSprache->cContent = parseText($_POST['cContent_' . $sprache->cISO], $kLink);
-            }
-            $linkSprache->cSeo = $linkSprache->cName;
-            if (!empty($_POST['cSeo_' . $sprache->cISO])) {
-                $linkSprache->cSeo = $_POST['cSeo_' . $sprache->cISO];
-            }
-            $linkSprache->cMetaTitle = $linkSprache->cTitle;
-            if (isset($_POST['cMetaTitle_' . $sprache->cISO])) {
-                $linkSprache->cMetaTitle = htmlspecialchars($_POST['cMetaTitle_' . $sprache->cISO],
-                    ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            }
-            $linkSprache->cMetaKeywords    = htmlspecialchars($_POST['cMetaKeywords_' . $sprache->cISO],
-                ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $linkSprache->cMetaDescription = htmlspecialchars($_POST['cMetaDescription_' . $sprache->cISO],
-                ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $sprache->cISO]);
-            $linkSprache->cSeo = getSeo($linkSprache->cSeo);
-            $db->insert('tlinksprache', $linkSprache);
-            $oSpracheTMP = $db->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
-            if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
-                $db->delete(
-                    'tseo',
-                    ['cKey', 'kKey', 'kSprache'],
-                    ['kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache]
-                );
-                $oSeo           = new stdClass();
-                $oSeo->cSeo     = checkSeo($linkSprache->cSeo);
-                $oSeo->kKey     = $linkSprache->kLink;
-                $oSeo->cKey     = 'kLink';
-                $oSeo->kSprache = $oSpracheTMP->kSprache;
-                $db->insert('tseo', $oSeo);
-            }
-        }
     } else {
-        $step              = 'neuer Link';
-        $link              = new stdClass();
-        $link->kLinkgruppe = (int)$_POST['kLinkgruppe'];
-        $fehler            = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
+        $step = 'neuer Link';
+        $link = new \Link\Link($db);
+        $link->setLinkGroupID((int)$_POST['kLinkgruppe']);
+        $link->setLinkGroups([(int)$_POST['kLinkgruppe']]);
+        $fehler = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
         $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
                ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
     }
@@ -380,8 +289,7 @@ if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 &
     }
 }
 if ($clearCache === true) {
-    $cache->flushTags([CACHING_GROUP_CORE]);
-    $db->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+    $linkAdmin->clearCache();
 }
 if ($step === 'uebersicht') {
     $smarty->assign('kPlugin', verifyGPCDataInteger('kPlugin'))

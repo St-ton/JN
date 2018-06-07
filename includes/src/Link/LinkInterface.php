@@ -120,6 +120,28 @@ interface LinkInterface
      * @param int|null $idx
      * @return string
      */
+    public function getSEO(int $idx = null): string;
+
+    /**
+     * @return array
+     */
+    public function getSEOs(): array;
+
+    /**
+     * @param array $seo
+     */
+    public function setSEOs(array $seo);
+
+    /**
+     * @param string $url
+     * @param int    $idx
+     */
+    public function setSEO(string $url, int $idx = null);
+
+    /**
+     * @param int|null $idx
+     * @return string
+     */
     public function getURL(int $idx = null): string;
 
     /**

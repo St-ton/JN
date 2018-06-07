@@ -424,6 +424,31 @@
         </div>
     </div>
 
+    <div id="restoreUnsavedModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Lokale Änderungen wiederherstellen?</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="errorAlert">
+                        Dieser Entwurf hat lokal ungespeicherte Änderungen. Wollen Sie diese wiederherstellen?
+                    </div>
+                </div>
+                <form id="restoreUnsavedForm">
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                Nein, Aktuelle Version bearbeiten!
+                            </button>
+                            <button class="btn btn-primary">Ja, wiederherstellen!</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div id="portletToolbar" class="opc-portlet-toolbar btn-group" style="display:none">
         <button type="button" class="btn btn-default btn-sm opc-label" id="portletLabel">
             Portlet-Label

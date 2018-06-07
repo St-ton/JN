@@ -48,11 +48,8 @@ Page.prototype = {
     {
         debuglog('Page initIframe');
 
-        this.jq = jq;
-
+        this.jq        = jq;
         this.rootAreas = this.jq('.opc-rootarea');
-        this.fileInput = this.jq('<input type="file" accept=".json">');
-
         this.loadDraftPreview(loadCB);
     },
 
@@ -96,7 +93,7 @@ Page.prototype = {
 
     loadFromImport: function(loadCB)
     {
-        this.fileInput.off('change').change(this.onImportChosen.bind(this, loadCB)).click();
+        this.jq('<input type="file" accept=".json">').change(this.onImportChosen.bind(this, loadCB)).click();
     },
 
     loadPageFromWebStorage: function(loadCB)
@@ -164,6 +161,8 @@ Page.prototype = {
     {
         var areas = this.rootAreas;
 
+        this.clear();
+
         for (var i=0; i<areas.length; i++) {
             var area = this.jq(areas[i]);
             var id   = area.data('area-id');
@@ -182,10 +181,17 @@ Page.prototype = {
 
     savePageToWebStorage: function()
     {
-        window.localStorage.setItem(
-            this.getStorageId(),
-            JSON.stringify(this.toJSON())
-        );
+        window.localStorage.setItem(this.getStorageId(), JSON.stringify(this.toJSON()));
+    },
+
+    clearPageWebStorage: function ()
+    {
+        window.localStorage.removeItem(this.getStorageId());
+    },
+
+    hasUnsavedContent: function ()
+    {
+        return window.localStorage.getItem(this.getStorageId()) !== null;
     },
 
     exportAsDownload: function()

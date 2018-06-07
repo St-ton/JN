@@ -259,7 +259,7 @@ Iframe.prototype = {
                 this.setSelected();
                 this.io.getBlueprintPreview(this.dragNewBlueprintId, this.onNewPortletCreated);
             } else {
-                this.gui.setUnsaved(true);
+                this.gui.setUnsaved(true, true);
             }
         }
     },
@@ -271,7 +271,7 @@ Iframe.prototype = {
         this.newPortletDropTarget.replaceWith(newElement);
         this.setSelected(newElement);
         this.updateDropTargets();
-        this.gui.setUnsaved(true);
+        this.gui.setUnsaved(true, true);
     },
 
     createPortletElm: function(previewHtml)
@@ -395,7 +395,7 @@ Iframe.prototype = {
         this.selectedElm.replaceWith(newPortlet);
         this.setSelected(newPortlet);
         this.updateDropTargets();
-        this.gui.setUnsaved(true);
+        this.gui.setUnsaved(true, true);
     },
 
     onBtnClone: function()
@@ -407,7 +407,7 @@ Iframe.prototype = {
             copiedElm.removeClass('opc-hovered');
             this.setSelected(this.selectedElm);
             this.updateDropTargets();
-            this.gui.setUnsaved(true);
+            this.gui.setUnsaved(true, true);
         }
     },
 
@@ -435,7 +435,7 @@ Iframe.prototype = {
             this.selectedElm.remove();
             this.setSelected();
             this.updateDropTargets();
-            this.gui.setUnsaved(true);
+            this.gui.setUnsaved(true, true);
         }
     },
 

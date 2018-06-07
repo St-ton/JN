@@ -37,7 +37,19 @@ OPC.prototype = {
         if (state === false) {
             this.gui.showError('Die Seite wird derzeit bearbeitet und kann von Ihnen nicht bearbeitet werden.');
         } else {
-            this.iframe.init(this.onPageLoad);
+            this.iframe.init(this.onPageLoadInital);
+        }
+    },
+
+    onPageLoadInital: function()
+    {
+        this.onPageLoad();
+
+        if(this.page.hasUnsavedContent()) {
+            this.gui.showRestoreUnsaved();
+            this.gui.unsavedRevision.show();
+        } else {
+            this.gui.unsavedRevision.hide();
         }
     },
 

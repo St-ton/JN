@@ -61,6 +61,8 @@ GUI.prototype = {
             'blueprintBtnBlueprint',
             'portletButton',
             'collapseGroup',
+            'restoreUnsavedModal',
+            'restoreUnsavedForm',
         ]);
 
         if(typeof error === 'string' && error.length > 0) {
@@ -89,6 +91,11 @@ GUI.prototype = {
     hideLoader: function()
     {
         this.loaderModal.modal('hide');
+    },
+
+    showRestoreUnsaved: function()
+    {
+        this.restoreUnsavedModal.modal('show');
     },
 
     showError: function(msg)
@@ -182,7 +189,7 @@ GUI.prototype = {
     {
         this.hideLoader();
         this.updateRevisionList();
-        this.setUnsaved(false);
+        this.setUnsaved(false, true);
     },
 
     onSavePageError: function(error)
@@ -190,15 +197,22 @@ GUI.prototype = {
         this.showError('Page could not be saved: ' + error);
     },
 
-    setUnsaved: function(enable)
+    setUnsaved: function(enable, record)
     {
+        record = record || false;
+
         this.btnSave.find('i').html(enable ? '*' : '');
 
         if(enable) {
-            this.page.savePageToWebStorage();
-            this.unsavedRevision.show();
+            if(record) {
+                this.page.savePageToWebStorage();
+                this.unsavedRevision.show();
+            }
         } else {
-            this.unsavedRevision.hide();
+            if(record) {
+                this.page.clearPageWebStorage();
+                this.unsavedRevision.hide();
+            }
         }
     },
 
@@ -485,6 +499,14 @@ GUI.prototype = {
         );
     },
 
+    onRestoreUnsavedForm: function (e)
+    {
+        e.preventDefault();
+
+        this.unsavedRevision.click();
+        this.restoreUnsavedModal.modal('hide');
+    },
+
     setConfigSaveCallback: function(callback)
     {
         this.configSaveCb = callback;
@@ -493,10 +515,5 @@ GUI.prototype = {
     setImageSelectCallback: function(callback)
     {
         this.imageSelectCB = callback;
-    },
-
-    enableDateTime: function(input)
-    {
-        input.datetimepicker({locale: 'de'});
     },
 };

@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/globalinclude.php';
 
-$session = Session::getInstance();
+$session = \Session\Session::getInstance();
 
 // kK   = kKampagne
 // kN   = kNewsletter

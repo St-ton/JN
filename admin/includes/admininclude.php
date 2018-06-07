@@ -40,7 +40,7 @@ if (!function_exists('Shop')) {
 // Datenbankverbindung aufbauen - ohne Debug Modus
 $DB      = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
 $cache   = Shop::Container()->getCache()->setJtlCacheConfig();
-$session = AdminSession::getInstance();
+$session = \Session\AdminSession::getInstance();
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 

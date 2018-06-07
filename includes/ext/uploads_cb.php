@@ -14,7 +14,7 @@ function retCode($bOk)
 {
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
-$session = Session::getInstance();
+$session = \Session\Session::getInstance();
 if (!validateToken()) {
     retCode(0);
 }

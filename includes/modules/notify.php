@@ -82,16 +82,14 @@ if (strlen($cSh) > 0) {
     if (session_id() !== $paymentSession->cSID) {
         session_destroy();
         session_id($paymentSession->cSID);
-        $session = Session::getInstance(true, true);
+        $session = \Session\Session::getInstance(true, true);
     } else {
-        $session = Session::getInstance(false, false);
+        $session = \Session\Session::getInstance(false, false);
     }
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 
     Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab cModulId aus Session: ' .
-        (isset($_SESSION['Zahlungsart']->cModulId)
-            ? $_SESSION['Zahlungsart']->cModulId
-            : '---'),
+        $_SESSION['Zahlungsart']->cModulId ?? '---',
         JTLLOG_LEVEL_DEBUG,
         false,
         'Notify'
@@ -196,7 +194,7 @@ if (strlen($cSh) > 0) {
 
 /*** Payment Hash ***/
 
-$session = Session::getInstance();
+$session = \Session\Session::getInstance();
 if (strlen($cPh) > 0) {
     if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
         Jtllog::writeLog(print_r($_REQUEST, true), JTLLOG_LEVEL_NOTICE, false, 'Notify');

@@ -126,7 +126,7 @@
             <li><a href="#debug" data-toggle="tab" title="Seitenstruktur"><i class="fa fa-sitemap"></i></a></li>
         </ul>
 
-        <div class="container-fluid">
+        <div id="sidebarInnerPanel" class="container-fluid">
             <div class="tab-content">
 
                 <div class="tab-pane active" id="portlets">

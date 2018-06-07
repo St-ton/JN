@@ -39,6 +39,10 @@ body {
   float: left;
   position: relative;
 }
+#sidebarPanel #sidebarInnerPanel {
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+}
 #sidebarPanel #topNav {
   background-color: #5cbcf6;
   background-image: none;

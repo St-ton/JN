@@ -200,13 +200,17 @@ function getGesetzteKundengruppen($link)
 {
     $ret = [];
     if ($link instanceof \Link\LinkInterface) {
-        foreach ($link->getCustomerGroups() as $customerGroup) {
+        $cGroups = $link->getCustomerGroups();
+        if (count($cGroups) === 0) {
+            $ret[0] = true;
+        }
+        foreach ($cGroups as $customerGroup) {
             $ret[$customerGroup] = true;
         }
 
         return $ret;
     }
-    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || $link->cKundengruppen == 'NULL') {
+    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || strtolower($link->cKundengruppen) === 'null') {
         $ret[0] = true;
 
         return $ret;

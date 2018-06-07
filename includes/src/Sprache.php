@@ -507,10 +507,17 @@ class Sprache
      */
     public function gibInstallierteSprachen(): array
     {
-        return array_filter(
-            Shop::Container()->getDB()->query('SELECT * FROM tsprache', \DB\ReturnType::ARRAY_OF_OBJECTS),
-            function ($l) {
-                return $this->mappekISO($l->cISO) > 0;
+        return \Functional\map(
+            array_filter(
+                Shop::Container()->getDB()->query('SELECT * FROM tsprache', \DB\ReturnType::ARRAY_OF_OBJECTS),
+                function ($l) {
+                    return $this->mappekISO($l->cISO) > 0;
+                }
+            ),
+            function ($e) {
+                $e->kSprache = (int)$e->kSprache;
+
+                return $e;
             }
         );
     }
@@ -520,7 +527,14 @@ class Sprache
      */
     public function gibVerfuegbareSprachen(): array
     {
-        return Shop::Container()->getDB()->query('SELECT * FROM tsprache', \DB\ReturnType::ARRAY_OF_OBJECTS);
+        return \Functional\map(
+            Shop::Container()->getDB()->query('SELECT * FROM tsprache', \DB\ReturnType::ARRAY_OF_OBJECTS),
+            function ($e) {
+                $e->kSprache = (int)$e->kSprache;
+
+                return $e;
+            }
+        );
     }
 
     /**

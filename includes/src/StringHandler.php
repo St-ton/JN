@@ -213,7 +213,7 @@ class StringHandler
      * @param string $ISO
      * @return int|string
      */
-    public static function convertISO6392ISO($ISO)
+    public static function convertISO6392ISO(string $ISO)
     {
         $cISO_arr = self::getISOMappings();
         foreach ($cISO_arr as $cISO639 => $cISO) {
@@ -228,7 +228,7 @@ class StringHandler
     /**
      * @return array
      */
-    public static function getISOMappings()
+    public static function getISOMappings(): array
     {
         return [
             'aar' => 'aa', // Afar
@@ -464,11 +464,9 @@ class StringHandler
      */
     public static function parseSSK($ssk)
     {
-        if (is_string($ssk)) {
-            return array_map('trim', array_filter(explode(';', $ssk)));
-        }
-
-        return [];
+        return is_string($ssk)
+            ? array_map('trim', array_filter(explode(';', $ssk)))
+            : [];
     }
 
     /**

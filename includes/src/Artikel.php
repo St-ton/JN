@@ -1273,7 +1273,8 @@ class Artikel
                 $image->cURLGross   = $imageBaseURL . $image->cPfadGross;
 
                 if ($i === 0) {
-                    $this->cVorschaubild = $image->cURLKlein;
+                    $this->cVorschaubild    = $image->cPfadKlein;
+                    $this->cVorschaubildURL = $imageBaseURL . $this->cVorschaubild;
                 }
                 // Lookup image alt attribute
                 $idx                 = 'img_alt_' . $imgNo;

@@ -38,25 +38,33 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @param int $kDownloadHistory
          */
-        public function __construct($kDownloadHistory = 0)
+        public function __construct(int $kDownloadHistory = 0)
         {
-            if ((int)$kDownloadHistory > 0) {
-                $this->loadFromDB((int)$kDownloadHistory);
+            if ($kDownloadHistory > 0) {
+                $this->loadFromDB($kDownloadHistory);
             }
         }
 
         /**
          * @param int $kDownloadHistory
          */
-        private function loadFromDB($kDownloadHistory)
+        private function loadFromDB(int $kDownloadHistory)
         {
-            $oDownloadHistory = Shop::Container()->getDB()->select('tdownloadhistory', 'kDownloadHistory', (int)$kDownloadHistory);
+            $oDownloadHistory = Shop::Container()->getDB()->select(
+                'tdownloadhistory',
+                'kDownloadHistory',
+                $kDownloadHistory
+            );
             if ($oDownloadHistory !== null && (int)$oDownloadHistory->kDownloadHistory > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownloadHistory));
                 if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                     foreach ($cMember_arr as $cMember) {
                         $this->$cMember = $oDownloadHistory->$cMember;
                     }
+                    $this->kDownload        = (int)$this->kDownload;
+                    $this->kDownloadHistory = (int)$this->kDownloadHistory;
+                    $this->kKunde           = (int)$this->kKunde;
+                    $this->kBestellung      = (int)$this->kBestellung;
                 }
             }
         }
@@ -64,10 +72,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @param int $kDownload
          * @return array
+         * @deprecated since 5.0.0
          */
-        public static function getHistorys($kDownload)
+        public static function getHistorys(int $kDownload): array
         {
-            $kDownload            = (int)$kDownload;
+            trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+
+            return self::getHistory($kDownload);
+        }
+
+        /**
+         * @param int $kDownload
+         * @return array
+         */
+        public static function getHistory(int $kDownload): array
+        {
             $oDownloadHistory_arr = [];
             if ($kDownload > 0) {
                 $oHistory_arr = Shop::Container()->getDB()->selectAll(
@@ -77,10 +96,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     'kDownloadHistory',
                     'dErstellt DESC'
                 );
-                if (count($oHistory_arr) > 0) {
-                    foreach ($oHistory_arr as $oHistory) {
-                        $oDownloadHistory_arr[] = new self($oHistory->kDownloadHistory);
-                    }
+                foreach ($oHistory_arr as $oHistory) {
+                    $oDownloadHistory_arr[] = new self($oHistory->kDownloadHistory);
                 }
             }
 
@@ -92,10 +109,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param int $kBestellung
          * @return array
          */
-        public static function getOrderHistory($kKunde, $kBestellung = 0)
+        public static function getOrderHistory(int $kKunde, int $kBestellung = 0): array
         {
-            $kBestellung  = (int)$kBestellung;
-            $kKunde       = (int)$kKunde;
             $oHistory_arr = [];
             if ($kBestellung > 0 || $kKunde > 0) {
                 $cSQLWhere = 'kBestellung = ' . $kBestellung;
@@ -127,9 +142,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
 
         /**
          * @param bool $bPrimary
-         * @return bool
+         * @return bool|int
          */
-        public function save($bPrimary = false)
+        public function save(bool $bPrimary = false)
         {
             $oObj = $this->kopiereMembers();
             unset($oObj->kDownloadHistory);
@@ -145,7 +160,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @return int
          */
-        public function update()
+        public function update(): int
         {
             $_upd              = new stdClass();
             $_upd->kDownload   = $this->kDownload;
@@ -153,16 +168,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             $_upd->kBestellung = $this->kBestellung;
             $_upd->dErstellt   = $this->dErstellt;
 
-            return Shop::Container()->getDB()->update('tdownloadhistory', 'kDownloadHistory', (int)$this->kDownloadHistory, $_upd);
+            return Shop::Container()->getDB()->update(
+                'tdownloadhistory',
+                'kDownloadHistory',
+                (int)$this->kDownloadHistory,
+                $_upd
+            );
         }
 
         /**
          * @param int $kDownloadHistory
          * @return $this
          */
-        public function setDownloadHistory($kDownloadHistory)
+        public function setDownloadHistory(int $kDownloadHistory): self
         {
-            $this->kDownloadHistory = (int)$kDownloadHistory;
+            $this->kDownloadHistory = $kDownloadHistory;
 
             return $this;
         }
@@ -171,9 +191,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param int $kDownload
          * @return $this
          */
-        public function setDownload($kDownload)
+        public function setDownload(int $kDownload): self
         {
-            $this->kDownload = (int)$kDownload;
+            $this->kDownload = $kDownload;
 
             return $this;
         }
@@ -182,9 +202,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param int $kKunde
          * @return $this
          */
-        public function setKunde($kKunde)
+        public function setKunde(int $kKunde): self
         {
-            $this->kKunde = (int)$kKunde;
+            $this->kKunde = $kKunde;
 
             return $this;
         }
@@ -193,9 +213,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param int $kBestellung
          * @return $this
          */
-        public function setBestellung($kBestellung)
+        public function setBestellung(int $kBestellung): self
         {
-            $this->kBestellung = (int)$kBestellung;
+            $this->kBestellung = $kBestellung;
 
             return $this;
         }
@@ -204,7 +224,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param string $dErstellt
          * @return $this
          */
-        public function setErstellt($dErstellt)
+        public function setErstellt($dErstellt): self
         {
             $this->dErstellt = $dErstellt;
 
@@ -214,7 +234,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @return int
          */
-        public function getDownloadHistory()
+        public function getDownloadHistory(): int
         {
             return (int)$this->kDownloadHistory;
         }
@@ -222,7 +242,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @return int
          */
-        public function getDownload()
+        public function getDownload(): int
         {
             return (int)$this->kDownload;
         }
@@ -230,7 +250,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @return int
          */
-        public function getKunde()
+        public function getKunde(): int
         {
             return (int)$this->kKunde;
         }
@@ -238,7 +258,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @return int
          */
-        public function getBestellung()
+        public function getBestellung(): int
         {
             return (int)$this->kBestellung;
         }
@@ -254,7 +274,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @return stdClass
          */
-        private function kopiereMembers()
+        private function kopiereMembers(): stdClass
         {
             $obj         = new stdClass();
             $cMember_arr = array_keys(get_object_vars($this));

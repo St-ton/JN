@@ -6,6 +6,7 @@
 
 namespace Link;
 
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
 use function Functional\group;
@@ -23,6 +24,11 @@ final class LinkGroupList implements LinkGroupListInterface
     private $db;
 
     /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
      * @var LinkGroupCollection
      */
     private $linkGroups;
@@ -34,11 +40,13 @@ final class LinkGroupList implements LinkGroupListInterface
 
     /**
      * LinkGroupList constructor.
-     * @param DbInterface $db
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
         $this->db                = $db;
+        $this->cache             = $cache;
         $this->linkGroups        = new LinkGroupCollection();
         $this->visibleLinkGroups = new LinkGroupCollection();
     }
@@ -80,20 +88,87 @@ final class LinkGroupList implements LinkGroupListInterface
         if ($this->linkGroups->count() > 0) {
             return $this;
         }
-        $cache = \Shop::Container()->getCache();
-        if (($this->linkGroups = $cache->get('linkgroups')) === false) {
+        if (($this->linkGroups = $this->cache->get('linkgroups')) === false) {
             $this->linkGroups = new LinkGroupCollection();
             foreach ($this->loadDefaultGroups() as $group) {
                 $this->linkGroups->push($group);
             }
             $this->linkGroups->push($this->loadSpecialPages());
             $this->linkGroups->push($this->loadStaticRoutes());
+            $this->linkGroups->push($this->loadUnassignedGroups());
 
-            $cache->set('linkgroups', $this->linkGroups, [CACHING_GROUP_CORE]);
+            $this->cache->set('linkgroups', $this->linkGroups, [CACHING_GROUP_CORE]);
         }
         $this->applyVisibilityFilter(\Session::CustomerGroup()->getID(), \Session::Customer()->getID());
 
         return $this;
+    }
+
+    /**
+     * @return LinkGroupInterface
+     */
+    private function loadUnassignedGroups(): LinkGroupInterface
+    {
+        $unassigned = $this->db->query(
+            "SELECT tlink.*,tlinksprache.cISOSprache, 
+                tlinksprache.cName AS localizedName, 
+                tlinksprache.cTitle AS localizedTitle, 
+                tsprache.kSprache, 
+                tlinksprache.cContent AS content,
+                tlinksprache.cMetaDescription AS metaDescription,
+                tlinksprache.cMetaKeywords AS metaKeywords,
+                tlinksprache.cMetaTitle AS metaTitle,
+                tseo.kSprache AS languageID,
+                tseo.cSeo AS localizedUrl,
+                '' AS cDateiname,
+                '' AS linkGroups,
+                2 AS pluginState
+                    FROM tlinksprache
+                    JOIN tlink
+                        ON tlink.kLink = tlinksprache.kLink
+                    JOIN tsprache
+                        ON tsprache.cISO = tlinksprache.cISOSprache
+                    LEFT JOIN tseo
+                        ON tseo.cKey = 'kLink'
+                        AND tseo.kKey = tlink.kLink
+                        AND tseo.kSprache = tsprache.kSprache
+                    WHERE tlink.kLink NOT IN (SELECT linkID FROM tlinkgroupassociations)
+                    GROUP BY tlink.kLink, tsprache.kSprache",
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+
+        $grouped = group($unassigned, function ($e) {
+            return $e->kLink;
+        });
+        $lg      = new LinkGroup($this->db);
+        $lg->setID(-1);
+        $lg->setNames(['unassigned']);
+        $lg->setTemplate('unassigned');
+        $links = new Collection();
+        foreach ($grouped as $linkID => $linkData) {
+            $link = new Link($this->db);
+            $link->map($linkData);
+            if ($link->getLinkType() === LINKTYP_DATENSCHUTZ) {
+                $this->linkGroups->Link_Datenschutz = [];
+                foreach ($link->getURLs() as $langID => $url) {
+                    $this->linkGroups->Link_Datenschutz[$link->getLanguageCode($langID)] = $url;
+                }
+            } elseif ($link->getLinkType() === LINKTYP_AGB) {
+                $this->linkGroups->Link_AGB = [];
+                foreach ($link->getURLs() as $langID => $url) {
+                    $this->linkGroups->Link_AGB[$link->getLanguageCode($langID)] = $url;
+                }
+            } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
+                $this->linkGroups->Link_Versandseite = [];
+                foreach ($link->getURLs() as $langID => $url) {
+                    $this->linkGroups->Link_Versandseite[$link->getLanguageCode($langID)] = $url;
+                }
+            }
+            $links->push($link);
+        }
+        $lg->setLinks($links);
+
+        return $lg;
     }
 
     /**
@@ -274,7 +349,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function getVisibleLinkGroups(): Collection
+    public function getVisibleLinkGroups(): LinkGroupCollection
     {
         return $this->visibleLinkGroups;
     }
@@ -282,7 +357,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function setVisibleLinkGroups(Collection $linkGroups)
+    public function setVisibleLinkGroups(LinkGroupCollection $linkGroups)
     {
         $this->visibleLinkGroups = $linkGroups;
     }

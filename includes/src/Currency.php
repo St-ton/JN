@@ -67,17 +67,6 @@ class Currency
     private $cURLFull;
 
     /**
-     * Currency constructor.
-     * @param int|null $id
-     */
-    public function __construct(int $id = null)
-    {
-        if ($id > 0) {
-            $this->extract(Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', $id));
-        }
-    }
-
-    /**
      * @var array
      */
     private static $mapping = [
@@ -95,6 +84,17 @@ class Currency
     ];
 
     /**
+     * Currency constructor.
+     * @param int|null $id
+     */
+    public function __construct(int $id = null)
+    {
+        if ($id > 0) {
+            $this->extract(Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', $id));
+        }
+    }
+
+    /**
      * @return int
      */
     public function getID()
@@ -106,9 +106,9 @@ class Currency
      * @param int $id
      * @return Currency
      */
-    public function setID($id)
+    public function setID(int $id): self
     {
-        $this->id = (int)$id;
+        $this->id = $id;
 
         return $this;
     }
@@ -125,7 +125,7 @@ class Currency
      * @param string $code
      * @return Currency
      */
-    public function setCode($code)
+    public function setCode(string $code): self
     {
         $this->code = $code;
 
@@ -144,7 +144,7 @@ class Currency
      * @param string $name
      * @return Currency
      */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -163,7 +163,7 @@ class Currency
      * @param string $htmlEntity
      * @return Currency
      */
-    public function setHtmlEntity($htmlEntity)
+    public function setHtmlEntity(string $htmlEntity): self
     {
         $this->htmlEntity = $htmlEntity;
 
@@ -182,7 +182,7 @@ class Currency
      * @param float $conversionFactor
      * @return Currency
      */
-    public function setConversionFactor($conversionFactor)
+    public function setConversionFactor($conversionFactor): self
     {
         $this->conversionFactor = (float)$conversionFactor;
 
@@ -201,7 +201,7 @@ class Currency
      * @param bool|string $isDefault
      * @return Currency
      */
-    public function setIsDefault($isDefault)
+    public function setIsDefault($isDefault): self
     {
         if (is_string($isDefault)) {
             $isDefault = $isDefault === 'Y';
@@ -223,7 +223,7 @@ class Currency
      * @param bool|string $forcePlacementBeforeNumber
      * @return Currency
      */
-    public function setForcePlacementBeforeNumber($forcePlacementBeforeNumber)
+    public function setForcePlacementBeforeNumber($forcePlacementBeforeNumber): self
     {
         if (is_string($forcePlacementBeforeNumber)) {
             $forcePlacementBeforeNumber = $forcePlacementBeforeNumber === 'Y';
@@ -245,7 +245,7 @@ class Currency
      * @param string $decimalSeparator
      * @return Currency
      */
-    public function setDecimalSeparator($decimalSeparator)
+    public function setDecimalSeparator($decimalSeparator): self
     {
         $this->decimalSeparator = $decimalSeparator;
 
@@ -264,7 +264,7 @@ class Currency
      * @param string $thousandsSeparator
      * @return Currency
      */
-    public function setThousandsSeparator($thousandsSeparator)
+    public function setThousandsSeparator(string $thousandsSeparator): self
     {
         $this->thousandsSeparator = $thousandsSeparator;
 
@@ -272,7 +272,7 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getURL()
     {
@@ -283,7 +283,7 @@ class Currency
      * @param string $cURL
      * @return Currency
      */
-    public function setURL($cURL)
+    public function setURL(string $cURL): self
     {
         $this->cURL = $cURL;
 
@@ -291,7 +291,7 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getURLFull()
     {
@@ -302,7 +302,7 @@ class Currency
      * @param string $cURLFull
      * @return Currency
      */
-    public function setURLFull($cURLFull)
+    public function setURLFull(string $cURLFull): self
     {
         $this->cURLFull = $cURLFull;
 
@@ -312,7 +312,7 @@ class Currency
     /**
      * @return Currency
      */
-    public function getDefault()
+    public function getDefault(): self
     {
         return $this->extract(Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y'));
     }
@@ -321,7 +321,7 @@ class Currency
      * @param stdClass $obs
      * @return $this
      */
-    private function extract($obs)
+    private function extract(stdClass $obs): self
     {
         foreach (get_object_vars($obs) as $var => $value) {
             if (($mapped = self::getMapping($var)) !== null) {

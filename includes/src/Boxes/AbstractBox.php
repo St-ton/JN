@@ -7,7 +7,9 @@
 namespace Boxes;
 
 use Boxes\Renderer\DefaultRenderer;
+use function Functional\false;
 use function Functional\first;
+use function Functional\true;
 
 /**
  * Class AbstractBox
@@ -160,7 +162,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @var bool
      */
-    protected $isActive = false;
+    protected $isActive = true;
 
     /**
      * @var \Artikel[]
@@ -251,10 +253,6 @@ abstract class AbstractBox implements BoxInterface
         $this->setContainerID((int)$data->kContainer);
         $this->setSort((int)$data->nSort);
         $this->setIsActive((int)$data->bAktiv === 1);
-        if (!is_bool($this->show)) {
-            // may be overridden in concrete classes' __construct
-            $this->setShow($this->isActive());
-        }
         if ($this->products === null) {
             $this->products = new \ArtikelListe();
         }
@@ -293,9 +291,16 @@ abstract class AbstractBox implements BoxInterface
                 $this->content[(int)$box->kSprache] = $box->cInhalt;
                 $this->title[(int)$box->kSprache]   = $box->cTitel;
             }
-
         }
         ksort($this->filter);
+
+        if (false($this->filter)) {
+            $this->setIsActive(false);
+        }
+        if (!is_bool($this->show)) {
+            // may be overridden in concrete classes' __construct
+            $this->setShow($this->isActive());
+        }
     }
 
     /**
@@ -312,7 +317,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function isBoxVisible(int $pageType = 0, int $pageID = 0): bool
     {
-        if (!$this->isActive || !$this->show) {
+        if ($this->show === false) {
             return false;
         }
         $visible = empty($this->filter)

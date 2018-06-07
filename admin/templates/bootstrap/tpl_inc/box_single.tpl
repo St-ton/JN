@@ -1,22 +1,29 @@
 <li class="list-group-item {if $oBox->getContainerID() > 0}boxRowContainer{/if}">
     <div class="row">
+        {assign var=isActive value=$oBox->getFilter($nPage) === true || is_array($oBox->getFilter($nPage))}
         {if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}
-            <div class="col-sm-6 col-xs-12{if !$oBox->getIsActive()} inactive text-muted{/if}">
+            <div class="col-sm-6 col-xs-12{if !$isActive} inactive text-muted{/if}">
                 <b>Container #{$oBox->getID()}</b>
             </div>
         {else}
-            <div class="col-sm-2 col-xs-4{if !$oBox->getIsActive()} inactive text-muted{/if}
+            <div class="col-sm-2 col-xs-4{if !$isActive} inactive text-muted{/if}
                         {if $oBox->getContainerID() > 0}boxSubName{/if}">
                 {$oBox->getTitle()}
             </div>
-            <div class="col-sm-1 col-xs-3{if !$oBox->getIsActive()} inactive text-muted{/if}">
+            <div class="col-sm-1 col-xs-3{if !$isActive} inactive text-muted{/if}">
                 {$oBox->getType()|ucfirst}
             </div>
-            <div class="col-sm-3 col-xs-4{if !$oBox->getIsActive()} inactive text-muted{/if}">
+            <div class="col-sm-3 col-xs-4{if !$isActive} inactive text-muted{/if}">
                 {$oBox->getName()}
             </div>
         {/if}
         <div class="col-sm-2">
+            {if false && $oBox->getID() === 134}
+                isActive: {$isActive|var_dump}
+                <pre>{$oBox->getFilter()|var_dump}</pre>
+                @page:
+                <pre>{$oBox->getFilter($nPage)|var_dump}</pre>
+            {/if}
             {if $nPage === 0}
                 {if $oBox->getFilter($nPage) === true}
                     sichtbar auf allen Seiten
@@ -36,8 +43,11 @@
             {/if}
         </div>
         <div class="col-sm-2 col-xs-6{if $oBox->getContainerID() > 0} boxSubName{/if}">
-            <input class="left{if $oBox->getIsActive() && ($nPage !== 0 && is_array($oBox->getFilter($nPage))) || ($nPage === 0 && is_array($oBox->getFilter($nPage)))} tristate{/if}" style="margin-right: 5px;" type="checkbox" name="aktiv[]"
-                   {if $oBox->getIsActive() && $oBox->isVisibleOnPage($nPage)}checked="checked"{/if} value="{$oBox->getID()}">
+            <input class="left{if ($nPage !== 0 && is_array($oBox->getFilter($nPage))) || ($nPage === 0 && is_array($oBox->getFilter($nPage)))} tristate{/if}"
+                   style="margin-right: 5px;"
+                   type="checkbox"
+                   name="aktiv[]"
+                   {if $oBox->isVisibleOnPage($nPage)}checked="checked"{/if} value="{$oBox->getID()}">
             <input type="hidden" name="box[]" value="{$oBox->getID()}">
             <input class="form-control text-right" type="number" size="3" name="sort[]" value="{$oBox->getSort()}"
                    autocomplete="off" id="{$oBox->getSort()}">
@@ -45,12 +55,13 @@
         <div class="col-sm-2 col-xs-6 btn-group">
             <a href="boxen.php?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                onclick="return confirmDelete('{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}');"
-               title="{#remove#}" class="btn btn-danger">
+               title="{#remove#}"
+               class="btn btn-danger">
                 <i class="fa fa-trash"></i>
             </a>
             <a href="boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
-               title="{#edit#}" class="btn btn-default
-                    {if empty($oBox->getType()) || ($oBox->getType() !== \Boxes\BoxType::TEXT && $oBox->getType() !== \Boxes\BoxType::LINK && $oBox->getType() !== \Boxes\BoxType::CATBOX)}disabled{/if}">
+               title="{#edit#}"
+               class="btn btn-default{if empty($oBox->getType()) || ($oBox->getType() !== \Boxes\BoxType::TEXT && $oBox->getType() !== \Boxes\BoxType::LINK && $oBox->getType() !== \Boxes\BoxType::CATBOX)}disabled{/if}">
                 <i class="fa fa-edit"></i>
             </a>
             {if $oBox->getContainerID() === 0}
@@ -64,7 +75,7 @@
                     {elseif $nPage === $smarty.const.PAGE_EIGENE}
                         {assign var='picker' value='pagePicker'}
                     {/if}
-                    {if \Functional\true($oBox->getFilter())}
+                    {if !is_array($oBox->getFilter($nPage)) || \Functional\true($oBox->getFilter())}
                         <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}" value="">
                     {else}
                         <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}"

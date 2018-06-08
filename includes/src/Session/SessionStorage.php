@@ -14,7 +14,7 @@ use Session\Handler\SessionHandlerJTL;
 class SessionStorage
 {
     /**
-     * @var SessionHandler
+     * @var \SessionHandlerInterface
      */
     protected $_handler;
 
@@ -25,23 +25,22 @@ class SessionStorage
 
     /**
      * @param \SessionHandlerInterface $handler
-     * @param array $options
-     * @param bool  $start - call session_start()?
+     * @param array                    $options
+     * @param bool                     $start - call session_start()?
      */
-    public function __construct(\SessionHandlerInterface $handler, array $options = [], $start = true)
+    public function __construct(\SessionHandlerInterface $handler, array $options = [], bool $start = true)
     {
         ini_set('session.use_cookies', 1);
         session_register_shutdown();
-
         $this->setHandler($handler, $start);
     }
 
     /**
-     * @param SessionHandlerInterface $handler
-     * @param bool $start - call session_start()?
+     * @param \SessionHandlerInterface $handler
+     * @param bool                     $start - call session_start()?
      * @return $this
      */
-    public function setHandler(\SessionHandlerInterface $handler, $start = true)
+    public function setHandler(\SessionHandlerInterface $handler, bool $start = true)
     {
         $this->_handler = $handler;
         if (get_class($this->_handler) === SessionHandlerJTL::class) {
@@ -78,11 +77,11 @@ class SessionStorage
                 foreach ($languages as $Sprache) {
                     if (defined('URL_SHOP_' . strtoupper($Sprache->cISO))) {
                         $shopLangURL = constant('URL_SHOP_' . strtoupper($Sprache->cISO));
-                        if (strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false) {
-                            if (defined('COOKIE_DOMAIN_' . strtoupper($Sprache->cISO))) {
-                                $domain = constant('COOKIE_DOMAIN_' . strtoupper($Sprache->cISO));
-                                break;
-                            }
+                        if (strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false
+                            && defined('COOKIE_DOMAIN_' . strtoupper($Sprache->cISO))
+                        ) {
+                            $domain = constant('COOKIE_DOMAIN_' . strtoupper($Sprache->cISO));
+                            break;
                         }
                     }
                 }
@@ -122,9 +121,9 @@ class SessionStorage
     }
 
     /**
-     * @return SessionHandler
+     * @return \SessionHandlerInterface
      */
-    public function getHandler()
+    public function getHandler(): \SessionHandlerInterface
     {
         return $this->_handler;
     }

@@ -575,7 +575,7 @@ class WarenkorbHelper
                 );
                 if ($vis === null || !isset($vis->kArtikel) || !$vis->kArtikel) {
                     // Prüfe auf Vater Artikel
-                    $oVariationen_arr = 0;
+                    $oVariationen_arr = [];
                     if (ArtikelHelper::isParent($kArtikel)) {
                         $kArtikel         = ArtikelHelper::getArticleForParent($kArtikel);
                         $oVariationen_arr = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel, 1);

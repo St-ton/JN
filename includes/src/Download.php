@@ -294,7 +294,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @param $oWarenkorb
+         * @param Warenkorb $oWarenkorb
          * @return bool
          */
         public static function hasDownloads($oWarenkorb): bool

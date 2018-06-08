@@ -35,11 +35,6 @@ class AdminTemplate
     private static $helper;
 
     /**
-     * @var object
-     */
-    public $xmlData;
-
-    /**
      * @var string
      */
     public $name;
@@ -75,7 +70,6 @@ class AdminTemplate
     public function __construct()
     {
         self::$helper  = TemplateHelper::getInstance(true);
-        $this->xmlData = self::$helper->getData(self::$cTemplate);
         $this->init();
         self::$instance = $this;
     }

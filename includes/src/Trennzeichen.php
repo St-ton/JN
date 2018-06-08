@@ -224,7 +224,7 @@ class Trennzeichen
     }
 
     /**
-     * @param bool $bPrim - Controls the return of the method
+     * @param bool $bPrim
      * @return bool|int
      */
     public function save(bool $bPrim = true)

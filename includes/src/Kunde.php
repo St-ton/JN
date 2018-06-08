@@ -226,13 +226,11 @@ class Kunde
     public $nLoginversuche = 0;
 
     /**
-     * Konstruktor
-     *
-     * @param int $kKunde - Falls angegeben, wird der Kunde mit angegebenem kKunde aus der DB geholt
+     * @param int $kKunde
      */
-    public function __construct($kKunde = 0)
+    public function __construct(int $kKunde = 0)
     {
-        if ((int)$kKunde > 0) {
+        if ($kKunde > 0) {
             $this->loadFromDB($kKunde);
         }
     }
@@ -300,8 +298,6 @@ class Kunde
     }
 
     /**
-     * Setzt Kunde mit Daten aus der DB mit spezifiziertem Primary Key
-     *
      * @param string $cBenutzername
      * @param string $cPasswort
      * @return int 1 = Alles O.K., 2 = Kunde ist gesperrt
@@ -418,14 +414,11 @@ class Kunde
     }
 
     /**
-     * Setzt Kunde mit Daten aus der DB mit spezifiziertem Primary Key
-     *
      * @param int $kKunde
      * @return $this
      */
-    public function loadFromDB($kKunde)
+    public function loadFromDB(int $kKunde)
     {
-        $kKunde = (int)$kKunde;
         if ($kKunde > 0) {
             $obj = Shop::Container()->getDB()->select('tkunde', 'kKunde', $kKunde);
             if ($obj !== null && isset($obj->kKunde) && $obj->kKunde > 0) {
@@ -488,11 +481,9 @@ class Kunde
     }
 
     /**
-     * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
-     * @return int - Key vom eingefügten Kunden
+     * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         executeHook(HOOK_KUNDE_DB_INSERT, ['oKunde' => &$this]);
 
@@ -553,11 +544,9 @@ class Kunde
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
-     * @return string
+     * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         if (preg_match('/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/', $this->dGeburtstag, $matches) === 1) {
             $this->dGeburtstag = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
@@ -768,7 +757,7 @@ class Kunde
      * @return bool - true if valid account
      * @throws Exception
      */
-    public function prepareResetPassword()
+    public function prepareResetPassword(): bool
     {
         $cryptoService = Shop::Container()->getCryptoService();
         if (!$this->kKunde) {
@@ -807,7 +796,7 @@ class Kunde
     /**
      * @return int
      */
-    public function getID()
+    public function getID(): int
     {
         return (int)$this->kKunde;
     }
@@ -815,7 +804,7 @@ class Kunde
     /**
      * @return bool
      */
-    public function isLoggedIn()
+    public function isLoggedIn(): bool
     {
         return $this->kKunde > 0;
     }

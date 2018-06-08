@@ -86,7 +86,7 @@ class Wunschliste
      * @param float  $fAnzahl
      * @return int
      */
-    public function fuegeEin(int $kArtikel, string $cArtikelName, array $oEigenschaftwerte_arr, $fAnzahl)
+    public function fuegeEin(int $kArtikel, string $cArtikelName, array $oEigenschaftwerte_arr, $fAnzahl): int
     {
         $bBereitsEnthalten = false;
         $nPosition         = 0;
@@ -132,7 +132,7 @@ class Wunschliste
 
         executeHook(HOOK_WUNSCHLISTE_CLASS_FUEGEEIN);
 
-        return $kWunschlistePos;
+        return (int)$kWunschlistePos;
     }
 
     /**
@@ -155,10 +155,8 @@ class Wunschliste
         if (!empty($oKunde->kKunde) && $oKunde->kKunde == $_SESSION['Kunde']->kKunde) {
             // Alle Eigenschaften löschen
             Shop::Container()->getDB()->delete('twunschlisteposeigenschaft', 'kWunschlistePos', $kWunschlistePos);
-
             // Die Posiotion mit ID $kWunschlistePos löschen
             Shop::Container()->getDB()->delete('twunschlistepos', 'kWunschlistePos', $kWunschlistePos);
-
             // Wunschliste Position aus der Session löschen
             foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $i => $wlPosition) {
                 if ($wlPosition->kWunschlistePos == $kWunschlistePos) {

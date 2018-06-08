@@ -89,9 +89,9 @@ class Revision
      * @param int $id
      * @return stdClass|null
      */
-    public function getRevision($id)
+    public function getRevision(int $id)
     {
-        return Shop::Container()->getDB()->select('trevisions', 'id', (int)$id);
+        return Shop::Container()->getDB()->select('trevisions', 'id', $id);
     }
 
     /**
@@ -103,7 +103,7 @@ class Revision
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function addRevision($type, $key, $secondary = false, $author = null, $utf8 = true): bool
+    public function addRevision($type, $key, bool $secondary = false, $author = null, $utf8 = true): bool
     {
         if (MAX_REVISIONS <= 0) {
             return false;
@@ -170,9 +170,9 @@ class Revision
     /**
      * @return $this
      */
-    public function deleteAll()
+    public function deleteAll(): self
     {
-        Shop::Container()->getDB()->query('TRUNCATE table trevisions', 3);
+        Shop::Container()->getDB()->query('TRUNCATE table trevisions', \DB\ReturnType::AFFECTED_ROWS);
 
         return $this;
     }
@@ -197,7 +197,7 @@ class Revision
     {
         $revision = $this->getRevision($id);
         $mapping  = $this->getMapping($type); // get static mapping from build in content types
-        if ($mapping === null && !empty($revision->custom_table) && !empty($revision->custom_primary_key)) {
+        if ($revision !== null && $mapping === null && !empty($revision->custom_table) && !empty($revision->custom_primary_key)) {
             // load dynamic mapping from DB
             $mapping = ['table' => $revision->custom_table, 'id' => $revision->custom_primary_key];
         }
@@ -240,9 +240,9 @@ class Revision
      * @param int $id
      * @return int
      */
-    public function deleteRevision($id): int
+    public function deleteRevision(int $id): int
     {
-        return Shop::Container()->getDB()->delete('trevisions', 'id', (int)$id);
+        return Shop::Container()->getDB()->delete('trevisions', 'id', $id);
     }
 
     /**

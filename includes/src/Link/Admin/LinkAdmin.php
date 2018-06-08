@@ -69,8 +69,8 @@ final class LinkAdmin
     }
 
     /**
-     * @param int $id
-     * @param     $post
+     * @param int   $id
+     * @param array $post
      * @return \stdClass
      */
     public function createOrUpdateLinkGroup(int $id = 0, $post): \stdClass

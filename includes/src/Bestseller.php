@@ -84,7 +84,7 @@ class Bestseller
     }
 
     /**
-     * @param $customergroup
+     * @param int $customergroup
      * @return $this
      */
     public function setCustomergroup(int $customergroup): self
@@ -122,7 +122,7 @@ class Bestseller
     }
 
     /**
-     * @param $minsales
+     * @param int $minsales
      * @return $this
      */
     public function setMinSales(int $minsales): self

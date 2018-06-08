@@ -32,24 +32,22 @@ class KategoriePict
     /**
      * Konstruktor
      *
-     * @param int $kKategoriePict - Falls angegeben, wird der KategoriePict mit angegebenem KategoriePict aus der DB geholt
+     * @param int $kKategoriePict
      */
-    public function __construct($kKategoriePict = 0)
+    public function __construct(int $kKategoriePict = 0)
     {
-        if ((int)$kKategoriePict > 0) {
+        if ($kKategoriePict > 0) {
             $this->loadFromDB($kKategoriePict);
         }
     }
 
     /**
-     * Setzt KategoriePict mit Daten aus der DB mit spezifiziertem Primary Key
-     *
-     * @param int $kKategoriePict Primary Key
+     * @param int $kKategoriePict
      * @return $this
      */
-    public function loadFromDB($kKategoriePict)
+    public function loadFromDB(int $kKategoriePict): self
     {
-        $obj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategoriePict', (int)$kKategoriePict);
+        $obj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategoriePict', $kKategoriePict);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -58,21 +56,17 @@ class KategoriePict
     }
 
     /**
-     * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
      * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         return Shop::Container()->getDB()->insert('tkategoriepict', kopiereMembers($this));
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $obj = kopiereMembers($this);
 
@@ -80,8 +74,6 @@ class KategoriePict
     }
 
     /**
-     * setzt Daten aus Sync POST request.
-     *
      * @return bool
      * @deprecated since 5.0.0
      */

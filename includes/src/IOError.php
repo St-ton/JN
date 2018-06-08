@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class IOError
+ */
 class IOError implements JsonSerializable
 {
     /**
@@ -24,8 +27,8 @@ class IOError implements JsonSerializable
     /**
      * IOError constructor.
      *
-     * @param $message
-     * @param int $code
+     * @param string     $message
+     * @param int        $code
      * @param array|null $errors
      */
     public function __construct($message, $code = 500, array $errors = null)

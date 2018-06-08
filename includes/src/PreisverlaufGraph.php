@@ -794,7 +794,7 @@ class PreisverlaufGraph
     /**
      * Berechnet zu jedem Preis aus der Datenbank, den Y Punkt
      *
-     * @param $fVKNetto
+     * @param float $fVKNetto
      * @return int
      */
     public function holeYPreis($fVKNetto)

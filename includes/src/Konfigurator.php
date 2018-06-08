@@ -22,7 +22,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kSprache
          * @return array
          */
-        public static function getKonfig($kArtikel, $kSprache = 0)
+        public static function getKonfig(int $kArtikel, int $kSprache = 0)
         {
             if (isset(self::$oGruppen_arr[$kArtikel])) {
                 //#7482
@@ -31,7 +31,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $oGruppen_arr = Shop::Container()->getDB()->selectAll(
                 'tartikelkonfiggruppe',
                 'kArtikel',
-                (int)$kArtikel,
+                $kArtikel,
                 'kArtikel, kKonfigGruppe',
                 'nSort ASC'
             );
@@ -52,15 +52,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @param $kArtikel
+         * @param int $kArtikel
          * @return bool
          */
-        public static function hasKonfig($kArtikel)
+        public static function hasKonfig(int $kArtikel): bool
         {
             $oGruppen_arr = Shop::Container()->getDB()->query(
                 "SELECT kArtikel, kKonfigGruppe
                      FROM tartikelkonfiggruppe
-                     WHERE tartikelkonfiggruppe.kArtikel = " . (int)$kArtikel . "
+                     WHERE tartikelkonfiggruppe.kArtikel = " . $kArtikel . "
                      ORDER BY tartikelkonfiggruppe.nSort ASC",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -72,7 +72,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kArtikel
          * @return bool
          */
-        public static function validateKonfig($kArtikel)
+        public static function validateKonfig($kArtikel): bool
         {
             /* Vorvalidierung deaktiviert */
             return true;
@@ -142,9 +142,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param array $oKonfigitem_arr
          * @return array|bool
          */
-        public static function validateBasket($kArtikel, $oKonfigitem_arr)
+        public static function validateBasket(int $kArtikel, $oKonfigitem_arr)
         {
-            if ((int)$kArtikel === 0 || !is_array($oKonfigitem_arr)) {
+            if ($kArtikel === 0 || !is_array($oKonfigitem_arr)) {
                 Jtllog::writeLog('Validierung der Konfiguration fehlgeschlagen - Ungültige Daten');
 
                 return false;
@@ -217,7 +217,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param bool $bSpace
          * @return string
          */
-        private static function langComponent($bPlural = false, $bSpace = true)
+        private static function langComponent(bool $bPlural = false, bool $bSpace = true)
         {
             $cComponent = $bSpace ? ' ' : '';
 

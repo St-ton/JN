@@ -31,7 +31,7 @@ trait MigrationTrait
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @param bool $echo
      * @param bool $bExecuteHook
      * @return array|object|int
@@ -42,7 +42,7 @@ trait MigrationTrait
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @param bool $echo
      * @param bool $bExecuteHook
      * @return array|object|int
@@ -53,7 +53,7 @@ trait MigrationTrait
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @param bool $echo
      * @param bool $bExecuteHook
      * @return array|object|int
@@ -64,7 +64,7 @@ trait MigrationTrait
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @param bool $echo
      * @param bool $bExecuteHook
      * @return array|object|int

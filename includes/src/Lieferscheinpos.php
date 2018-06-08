@@ -40,26 +40,23 @@ class Lieferscheinpos
     public $oLieferscheinPosInfo_arr;
 
     /**
-     * Constructor
-     *
-     * @param int $kLieferscheinPos primarykey
+     * Lieferscheinpos constructor.
+     * @param int $kLieferscheinPos
      */
-    public function __construct($kLieferscheinPos = 0)
+    public function __construct(int $kLieferscheinPos = 0)
     {
-        if ((int)$kLieferscheinPos > 0) {
+        if ($kLieferscheinPos > 0) {
             $this->loadFromDB($kLieferscheinPos);
         }
     }
 
     /**
-     * Loads database member into class member
-     *
      * @param int $kLieferscheinPos
      * @return $this
      */
-    private function loadFromDB($kLieferscheinPos = 0)
+    private function loadFromDB(int $kLieferscheinPos = 0)
     {
-        $oObj = Shop::Container()->getDB()->select('tlieferscheinpos', 'kLieferscheinPos', (int)$kLieferscheinPos);
+        $oObj = Shop::Container()->getDB()->select('tlieferscheinpos', 'kLieferscheinPos', $kLieferscheinPos);
         if ($oObj !== null && $oObj->kLieferscheinPos > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
@@ -71,12 +68,10 @@ class Lieferscheinpos
     }
 
     /**
-     * Store the class in the database
-     *
-     * @param bool $bPrim - Controls the return of the method
+     * @param bool $bPrim
      * @return bool|int
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
@@ -97,11 +92,9 @@ class Lieferscheinpos
     }
 
     /**
-     * Update the class in the database
-     *
      * @return int
      */
-    public function update()
+    public function update(): int
     {
         $_upd                = new stdClass();
         $_upd->kLieferschein = $this->getLieferschein();
@@ -113,11 +106,9 @@ class Lieferscheinpos
     }
 
     /**
-     * Delete the class in the database
-     *
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
         return Shop::Container()->getDB()->delete('tlieferscheinpos', 'kLieferscheinPos', $this->getLieferscheinPos());
     }
@@ -126,9 +117,9 @@ class Lieferscheinpos
      * @param int $kLieferscheinPos
      * @return $this
      */
-    public function setLieferscheinPos($kLieferscheinPos)
+    public function setLieferscheinPos(int $kLieferscheinPos)
     {
-        $this->kLieferscheinPos = (int)$kLieferscheinPos;
+        $this->kLieferscheinPos = $kLieferscheinPos;
 
         return $this;
     }
@@ -137,9 +128,9 @@ class Lieferscheinpos
      * @param int $kLieferschein
      * @return $this
      */
-    public function setLieferschein($kLieferschein)
+    public function setLieferschein(int $kLieferschein)
     {
-        $this->kLieferschein = (int)$kLieferschein;
+        $this->kLieferschein = $kLieferschein;
 
         return $this;
     }
@@ -148,9 +139,9 @@ class Lieferscheinpos
      * @param int $kBestellPos
      * @return $this
      */
-    public function setBestellPos($kBestellPos)
+    public function setBestellPos(int $kBestellPos)
     {
-        $this->kBestellPos = (int)$kBestellPos;
+        $this->kBestellPos = $kBestellPos;
 
         return $this;
     }
@@ -159,9 +150,9 @@ class Lieferscheinpos
      * @param int $kWarenlager
      * @return $this
      */
-    public function setWarenlager($kWarenlager)
+    public function setWarenlager(int $kWarenlager)
     {
-        $this->kWarenlager = (int)$kWarenlager;
+        $this->kWarenlager = $kWarenlager;
 
         return $this;
     }

@@ -79,7 +79,7 @@ class Kuponneukunde
     /**
      * @return bool
      */
-    public function Save()
+    public function Save(): bool
     {
         if ($this->kKuponNeukunde > 0) {
             Shop::Container()->getDB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
@@ -93,7 +93,7 @@ class Kuponneukunde
     /**
      * @return bool
      */
-    public function Delete()
+    public function Delete(): bool
     {
         return Shop::Container()->getDB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde) === 1;
     }
@@ -102,9 +102,9 @@ class Kuponneukunde
      * @param int $kKuponNeukunde
      * @return $this
      */
-    public function setKuponNeukunde($kKuponNeukunde)
+    public function setKuponNeukunde(int $kKuponNeukunde)
     {
-        $this->kKuponNeukunde = (int)$kKuponNeukunde;
+        $this->kKuponNeukunde = $kKuponNeukunde;
 
         return $this;
     }
@@ -113,9 +113,9 @@ class Kuponneukunde
      * @param int $kKupon
      * @return $this
      */
-    public function setKupon($kKupon)
+    public function setKupon(int $kKupon)
     {
-        $this->kKupon = (int)$kKupon;
+        $this->kKupon = $kKupon;
 
         return $this;
     }

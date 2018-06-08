@@ -25,13 +25,12 @@ class Nummern
     protected $dAktualisiert;
 
     /**
-     * Constructor
-     *
+     * Nummern constructor.
      * @param int $nArt
      */
-    public function __construct($nArt = 0)
+    public function __construct(int $nArt = 0)
     {
-        if ((int)$nArt > 0) {
+        if ($nArt > 0) {
             $this->loadFromDB($nArt);
         }
     }
@@ -42,9 +41,9 @@ class Nummern
      * @param int $nArt
      * @return $this
      */
-    private function loadFromDB($nArt = 0)
+    private function loadFromDB(int $nArt = 0)
     {
-        $oObj = Shop::Container()->getDB()->select('tnummern', 'nArt', (int)$nArt);
+        $oObj = Shop::Container()->getDB()->select('tnummern', 'nArt', $nArt);
         if ($oObj !== null && $oObj->nArt > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
@@ -56,12 +55,10 @@ class Nummern
     }
 
     /**
-     * Store the class in the database
-     *
-     * @param bool $bPrim - Controls the return of the method
+     * @param bool $bPrim
      * @return bool|int
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
@@ -79,12 +76,10 @@ class Nummern
     }
 
     /**
-     * Update the class in the database
-     *
      * @param bool $bDate
      * @return int
      */
-    public function update($bDate = true)
+    public function update(bool $bDate = true): int
     {
         if ($bDate) {
             $this->setAktualisiert('now()');
@@ -97,11 +92,9 @@ class Nummern
     }
 
     /**
-     * Delete the class in the database
-     *
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
         return Shop::Container()->getDB()->delete('tnummern', 'nArt', $this->nArt);
     }
@@ -110,9 +103,9 @@ class Nummern
      * @param int $nNummer
      * @return $this
      */
-    public function setNummer($nNummer)
+    public function setNummer(int $nNummer)
     {
-        $this->nNummer = (int)$nNummer;
+        $this->nNummer = $nNummer;
 
         return $this;
     }
@@ -121,9 +114,9 @@ class Nummern
      * @param int $nArt
      * @return $this
      */
-    public function setArt($nArt)
+    public function setArt(int $nArt)
     {
-        $this->nArt = (int)$nArt;
+        $this->nArt = $nArt;
 
         return $this;
     }

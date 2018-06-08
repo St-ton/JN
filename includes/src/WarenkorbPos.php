@@ -178,9 +178,9 @@ class WarenkorbPos
      *
      * @param int $kWarenkorbPos Falls angegeben, wird der WarenkorbPos mit angegebenem kWarenkorbPos aus der DB geholt
      */
-    public function __construct($kWarenkorbPos = 0)
+    public function __construct(int $kWarenkorbPos = 0)
     {
-        if ((int)$kWarenkorbPos > 0) {
+        if ($kWarenkorbPos > 0) {
             $this->loadFromDB($kWarenkorbPos);
         }
     }
@@ -194,10 +194,8 @@ class WarenkorbPos
      * @param string $freifeld
      * @return bool
      */
-    public function setzeVariationsWert($kEigenschaft, $kEigenschaftWert, $freifeld = '')
+    public function setzeVariationsWert(int $kEigenschaft, int $kEigenschaftWert, $freifeld = '')
     {
-        $kEigenschaftWert                                = (int)$kEigenschaftWert;
-        $kEigenschaft                                    = (int)$kEigenschaft;
         $EigenschaftWert                                 = new EigenschaftWert($kEigenschaftWert);
         $Eigenschaft                                     = new Eigenschaft($kEigenschaft);
         $NeueWarenkorbPosEigenschaft                     = new WarenkorbPosEigenschaft();
@@ -263,9 +261,8 @@ class WarenkorbPos
      * @param int $kEigenschaft - Key der Eigenschaft
      * @return int - gesetzter Wert. Falls nicht gesetzt, wird 0 zurückgegeben
      */
-    public function gibGesetztenEigenschaftsWert($kEigenschaft)
+    public function gibGesetztenEigenschaftsWert(int $kEigenschaft)
     {
-        $kEigenschaft = (int)$kEigenschaft;
         foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
             $WKPosEigenschaft->kEigenschaft = (int)$WKPosEigenschaft->kEigenschaft;
             if ($WKPosEigenschaft->kEigenschaft === $kEigenschaft) {
@@ -395,7 +392,7 @@ class WarenkorbPos
      * @param int $kWarenkorbPos
      * @return $this
      */
-    public function loadFromDB($kWarenkorbPos)
+    public function loadFromDB(int $kWarenkorbPos): self
     {
         $obj     = Shop::Container()->getDB()->select('twarenkorbpos', 'kWarenkorbPos', $kWarenkorbPos);
         $members = array_keys(get_object_vars($obj));
@@ -417,7 +414,7 @@ class WarenkorbPos
      *
      * @return int - Key von eingefügter WarenkorbPos
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $obj                            = new stdClass();
         $obj->kWarenkorb                = $this->kWarenkorb;
@@ -453,25 +450,25 @@ class WarenkorbPos
     /**
      * @return bool
      */
-    public function istKonfigVater()
+    public function istKonfigVater(): bool
     {
-        return (is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem === 0);
+        return is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem === 0;
     }
 
     /**
      * @return bool
      */
-    public function istKonfigKind()
+    public function istKonfigKind(): bool
     {
-        return (is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem > 0);
+        return is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem > 0;
     }
 
     /**
      * @return bool
      */
-    public function istKonfig()
+    public function istKonfig(): bool
     {
-        return ($this->istKonfigVater() || $this->istKonfigKind());
+        return $this->istKonfigVater() || $this->istKonfigKind();
     }
 
     /**
@@ -479,7 +476,7 @@ class WarenkorbPos
      * @param int|null     $nMinDelivery
      * @param int|null     $nMaxDelivery
      */
-    public static function setEstimatedDelivery($oWarenkorbPos, $nMinDelivery = null, $nMaxDelivery = null)
+    public static function setEstimatedDelivery($oWarenkorbPos, int $nMinDelivery = null, int $nMaxDelivery = null)
     {
         $oWarenkorbPos->oEstimatedDelivery = (object)[
             'localized'  => '',
@@ -487,8 +484,8 @@ class WarenkorbPos
             'longestMax' => 0,
         ];
         if ($nMinDelivery !== null && $nMaxDelivery !== null) {
-            $oWarenkorbPos->oEstimatedDelivery->longestMin = (int)$nMinDelivery;
-            $oWarenkorbPos->oEstimatedDelivery->longestMax = (int)$nMaxDelivery;
+            $oWarenkorbPos->oEstimatedDelivery->longestMin = $nMinDelivery;
+            $oWarenkorbPos->oEstimatedDelivery->longestMax = $nMaxDelivery;
 
             $oWarenkorbPos->oEstimatedDelivery->localized = (!empty($oWarenkorbPos->oEstimatedDelivery->longestMin)
                 && !empty($oWarenkorbPos->oEstimatedDelivery->longestMax))
@@ -504,7 +501,7 @@ class WarenkorbPos
     /**
      * Return value of config item property bIgnoreMultiplier
      *
-     * @return boolean
+     * @return bool|int
      */
     public function isIgnoreMultiplier()
     {

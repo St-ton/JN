@@ -15,7 +15,7 @@ if (!defined('TS_BUYERPROT_CLASSIC') || !defined('TS_BUYERPROT_EXCELLENCE')) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'defines_inc.php';
 }
 
-if (TS_MODUS == 1) {
+if (TS_MODUS === 1) {
     // Produktiv
     //define('TS_SERVER', 'https://protection.trustedshops.com/ts/protectionservices/ApplicationRequestService?wsdl');
     define('TS_SERVER', 'https://www.trustedshops.de/ts/services/TsProtection?wsdl');

@@ -160,7 +160,7 @@ class AuswahlAssistent
     }
 
     /**
-     * @param $kWert
+     * @param int $kWert
      * @return $this
      */
     public function setNextSelection($kWert)
@@ -328,10 +328,10 @@ class AuswahlAssistent
     }
 
     /**
-     * @param $nFrage
+     * @param int $nFrage
      * @return array
      */
-    public function getSelectedValue($nFrage)
+    public function getSelectedValue(int $nFrage)
     {
         $oFrage         = $this->oFrage_arr[$nFrage];
         $kSelectedValue = $this->kSelection_arr[$nFrage];

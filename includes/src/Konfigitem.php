@@ -184,7 +184,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKundengruppe
          * @return $this
          */
-        private function loadFromDB(int $kKonfigitem = 0, int $kSprache = 0, int $kKundengruppe = 0)
+        private function loadFromDB(int $kKonfigitem = 0, int $kSprache = 0, int $kKundengruppe = 0): self
         {
             $oObj = Shop::Container()->getDB()->select('tkonfigitem', 'kKonfigitem', $kKonfigitem);
             if (isset($oObj->kKonfigitem) && $oObj->kKonfigitem > 0) {
@@ -242,12 +242,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Store in database
-         *
-         * @param bool $bPrim - Controls the return of the method
+         * @param bool $bPrim
          * @return bool|int
          */
-        public function save($bPrim = true)
+        public function save(bool $bPrim = true)
         {
             $oObj                    = new stdClass();
             $oObj->kKonfiggruppe     = $this->kKonfiggruppe;
@@ -309,7 +307,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKonfiggruppe
          * @return array
          */
-        public static function fetchAll($kKonfiggruppe): array
+        public static function fetchAll(int $kKonfiggruppe): array
         {
             $oItemEx_arr = [];
             $oItem_arr   = Shop::Container()->getDB()->queryPrepared(
@@ -335,9 +333,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKonfigitem
          * @return $this
          */
-        public function setKonfigitem($kKonfigitem): self
+        public function setKonfigitem(int $kKonfigitem): self
         {
-            $this->kKonfigitem = (int)$kKonfigitem;
+            $this->kKonfigitem = $kKonfigitem;
 
             return $this;
         }
@@ -346,9 +344,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kArtikel
          * @return $this
          */
-        public function setArtikelKey($kArtikel): self
+        public function setArtikelKey(int $kArtikel): self
         {
-            $this->kArtikel = (int)$kArtikel;
+            $this->kArtikel = $kArtikel;
 
             return $this;
         }
@@ -368,9 +366,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $nPosTyp
          * @return $this
          */
-        public function setPosTyp($nPosTyp): self
+        public function setPosTyp(int $nPosTyp): self
         {
-            $this->nPosTyp = (int)$nPosTyp;
+            $this->nPosTyp = $nPosTyp;
 
             return $this;
         }
@@ -549,7 +547,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $totalAmount
          * @return float|int
          */
-        public function getFullPrice($bForceNetto = false, $bConvertCurrency = false, $totalAmount = 1)
+        public function getFullPrice(bool $bForceNetto = false, bool $bConvertCurrency = false, $totalAmount = 1)
         {
             $fVKPreis    = 0.0;
             $isConverted = false;

@@ -52,11 +52,17 @@ class WunschlistePosEigenschaft
      * @param string $cEigenschaftWertName
      * @param int    $kWunschlistePos
      */
-    public function __construct($kEigenschaft, $kEigenschaftWert, $cFreifeldWert, $cEigenschaftName, $cEigenschaftWertName, $kWunschlistePos)
-    {
-        $this->kEigenschaft         = (int)$kEigenschaft;
-        $this->kEigenschaftWert     = (int)$kEigenschaftWert;
-        $this->kWunschlistePos      = (int)$kWunschlistePos;
+    public function __construct(
+        int $kEigenschaft,
+        int $kEigenschaftWert,
+        $cFreifeldWert,
+        $cEigenschaftName,
+        $cEigenschaftWertName,
+        int $kWunschlistePos
+    ) {
+        $this->kEigenschaft         = $kEigenschaft;
+        $this->kEigenschaftWert     = $kEigenschaftWert;
+        $this->kWunschlistePos      = $kWunschlistePos;
         $this->cFreifeldWert        = $cFreifeldWert;
         $this->cEigenschaftName     = $cEigenschaftName;
         $this->cEigenschaftWertName = $cEigenschaftWertName;
@@ -67,7 +73,10 @@ class WunschlistePosEigenschaft
      */
     public function schreibeDB()
     {
-        $this->kWunschlistePosEigenschaft = Shop::Container()->getDB()->insert('twunschlisteposeigenschaft', kopiereMembers($this));
+        $this->kWunschlistePosEigenschaft = Shop::Container()->getDB()->insert(
+            'twunschlisteposeigenschaft',
+            kopiereMembers($this)
+        );
 
         return $this;
     }

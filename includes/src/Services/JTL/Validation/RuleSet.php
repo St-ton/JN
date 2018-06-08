@@ -148,7 +148,7 @@ class RuleSet
     /**
      * Validates that the value equals the expected value with a lax comparison (with type coercion / ==)
      *
-     * @param $expected
+     * @param mixed $expected
      * @return RuleSet
      */
     public function eqLax($expected): RuleSet

@@ -38,8 +38,8 @@ class ContainerEntry
 
     /**
      * ContainerEntry constructor.
-     * @param     $factory
-     * @param int $type
+     * @param callable $factory
+     * @param int      $type
      */
     public function __construct(callable $factory, $type)
     {

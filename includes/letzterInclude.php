@@ -122,6 +122,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('deletedPositions', Warenkorb::$deletedPositions)
        ->assign('updatedPositions', Warenkorb::$updatedPositions)
        ->assign('cCanonicalURL', $cCanonicalURL ?? null)
+       ->assign('Firma', new Firma())
        ->assign('AktuelleKategorie', $AktuelleKategorie)
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\ProductFilterSearchResults());

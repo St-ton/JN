@@ -249,7 +249,6 @@ $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
-    ->assign('Firma', Shop::Container()->getDB()->query("SELECT * FROM tfirma", 1))
     ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
     ->assign('Bestellung', $bestellung);
 

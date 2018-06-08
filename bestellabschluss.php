@@ -114,7 +114,6 @@ if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellung
 }
 
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('Firma', Shop::Container()->getDB()->query("SELECT * FROM tfirma", 1))
        ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Bestellung', $bestellung)
        ->assign('Kunde', $_SESSION['Kunde'] ?? null)

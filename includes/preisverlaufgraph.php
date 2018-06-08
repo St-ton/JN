@@ -27,7 +27,8 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
                 WHERE kArtikel = " . $kArtikel . "
                     AND kKundengruppe = " . $kKundengruppe . "
                     AND DATE_SUB(now(), INTERVAL " . $nMonat . " MONTH) < dDate
-                LIMIT 1", 1
+                LIMIT 1",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (isset($oPreisverlauf->kPreisverlauf) && $oPreisverlauf->kPreisverlauf > 0) {

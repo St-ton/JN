@@ -422,15 +422,21 @@ class PreisverlaufGraph
      * @param int $nMonat
      * @return array
      */
-    public function holePreisverlauf($kArtikel, $kKundegruppe, $nMonat)
+    public function holePreisverlauf(int $kArtikel, int $kKundegruppe, int $nMonat)
     {
-        $oPreisverlauf_arr = Shop::Container()->getDB()->query(
-            "SELECT fVKNetto, UNIX_TIMESTAMP(dDate) AS timestamp
+        $oPreisverlauf_arr = Shop::Container()->getDB()->queryPrepared(
+            'SELECT fVKNetto, UNIX_TIMESTAMP(dDate) AS timestamp
                 FROM tpreisverlauf
-                WHERE kArtikel = " . (int)$kArtikel . "
-                    AND kKundengruppe = " . (int)$kKundegruppe . "
-                    AND DATE_SUB(now(), INTERVAL " . (int)$nMonat . " MONTH) < dDate
-                ORDER BY dDate DESC", 2
+                WHERE kArtikel = :aid
+                    AND kKundengruppe = :cid
+                    AND DATE_SUB(now(), INTERVAL :mnth MONTH) < dDate
+                ORDER BY dDate DESC',
+            [
+                'aid'  => $kArtikel,
+                'cid'  => $kKundegruppe,
+                'mnth' => $nMonat
+            ],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (count($oPreisverlauf_arr) > 0) {
             $this->nAnzahlTage = count($oPreisverlauf_arr);
@@ -467,7 +473,7 @@ class PreisverlaufGraph
      * @param int $nMonat
      * @return bool
      */
-    public function berechneMinMaxPreis($kArtikel, $kKundegruppe, $nMonat)
+    public function berechneMinMaxPreis(int $kArtikel, $kKundegruppe, $nMonat)
     {
         $this->oPreisverlaufData_arr = $this->holePreisverlauf($kArtikel, $kKundegruppe, $nMonat);
 

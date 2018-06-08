@@ -501,7 +501,8 @@ class News extends MainModel
                 {$cSqlActive}
                 GROUP BY tnews.kNews
                 {$cSqlOrder}
-                {$cSqlLimit}", 2
+                {$cSqlLimit}",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         if (is_array($oObj_arr) && count($oObj_arr) > 0) {

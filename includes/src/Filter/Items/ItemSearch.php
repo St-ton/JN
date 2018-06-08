@@ -136,7 +136,7 @@ class ItemSearch extends AbstractFilter
                 WHERE cKey = 'kSuchanfrage' 
                     AND kKey = :kkey",
             ['kkey' => $this->getValue()],
-            1
+            ReturnType::SINGLE_OBJECT
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';

@@ -1252,7 +1252,8 @@ class Warenkorb
                 $oArtikelLagerbestand = Shop::Container()->getDB()->query(
                     "SELECT kArtikel, fLagerbestand >= " . $this->PositionenArr[$i]->nAnzahl . " AS bAusreichend, fLagerbestand
                         FROM tartikel
-                        WHERE kArtikel = " . (int)$this->PositionenArr[$i]->kArtikel, 1
+                        WHERE kArtikel = " . (int)$this->PositionenArr[$i]->kArtikel,
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 if ($oArtikelLagerbestand->kArtikel > 0 && !$oArtikelLagerbestand->bAusreichend) {
                     if ($oArtikelLagerbestand->fLagerbestand > 0) {

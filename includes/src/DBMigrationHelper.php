@@ -314,15 +314,15 @@ class DBMigrationHelper
 
         if (self::isTableNeedMigration($oTable)) {
             $sql = self::sqlMoveToInnoDB($oTable);
-            if (Shop::Container()->getDB()->executeQuery($sql, 10)) {
+            if (Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
                 $sql = self::sqlConvertUTF8($oTable);
-                if (empty($sql) || Shop::Container()->getDB()->executeQuery($sql, 10)) {
+                if (empty($sql) || Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
                     return self::SUCCESS;
                 }
             }
         } else {
             $sql = self::sqlConvertUTF8($oTable);
-            if (empty($sql) || Shop::Container()->getDB()->executeQuery($sql, 10)) {
+            if (empty($sql) || Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
                 return self::SUCCESS;
             }
         }

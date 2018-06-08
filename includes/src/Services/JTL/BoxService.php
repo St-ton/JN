@@ -7,6 +7,7 @@
 namespace Services\JTL;
 
 use Boxes\BoxFactory;
+use Boxes\BoxFactoryInterface;
 use Boxes\BoxInterface;
 use Boxes\BoxType;
 use Boxes\Renderer\DefaultRenderer;
@@ -54,17 +55,17 @@ class BoxService implements BoxServiceInterface
     private $db;
 
     /**
-     * @var BoxService
+     * @var BoxServiceInterface
      */
     private static $_instance;
 
     /**
-     * @param array       $config
-     * @param BoxFactory  $factory
-     * @param DbInterface $db
-     * @return BoxService
+     * @param array               $config
+     * @param BoxFactoryInterface $factory
+     * @param DbInterface         $db
+     * @return BoxServiceInterface
      */
-    public static function getInstance(array $config, BoxFactory $factory, DbInterface $db): self
+    public static function getInstance(array $config, BoxFactoryInterface $factory, DbInterface $db): BoxServiceInterface
     {
         return self::$_instance ?? new self($config, $factory, $db);
     }
@@ -72,11 +73,11 @@ class BoxService implements BoxServiceInterface
     /**
      * BoxService constructor.
      *
-     * @param array       $config
-     * @param BoxFactory  $factory
-     * @param DbInterface $db
+     * @param array               $config
+     * @param BoxFactoryInterface $factory
+     * @param DbInterface         $db
      */
-    public function __construct(array $config, BoxFactory $factory, DbInterface $db)
+    public function __construct(array $config, BoxFactoryInterface $factory, DbInterface $db)
     {
         $this->config    = $config;
         $this->factory   = $factory;
@@ -257,12 +258,12 @@ class BoxService implements BoxServiceInterface
         } elseif ($pageType === PAGE_HERSTELLER) {
             $pageID = (int)\Shop::$kHersteller;
         }
-        $originalArticle   = $smarty->getTemplateVars('Artikel');
-        $productFilter     = \Shop::getProductFilter();
-        $filterAfter       = !empty($this->config)
+        $originalArticle = $smarty->getTemplateVars('Artikel');
+        $productFilter   = \Shop::getProductFilter();
+        $filterAfter     = !empty($this->config)
             ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults(false))
             : 0;
-        $htmlArray         = [
+        $htmlArray       = [
             'top'    => null,
             'right'  => null,
             'bottom' => null,
@@ -338,7 +339,7 @@ class BoxService implements BoxServiceInterface
             ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
             : '';
         if (($grouped = \Shop::Cache()->get($cacheID)) === false) {
-            $sql = 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
+            $sql     = 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
                        tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
                        tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus,

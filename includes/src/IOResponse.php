@@ -25,7 +25,7 @@ class IOResponse implements JsonSerializable
      * @param mixed $data
      * @return $this
      */
-    public function assign($target, $attr, $data)
+    public function assign($target, $attr, $data): self
     {
         $this->assigns[] = (object)[
             'target' => $target,
@@ -40,7 +40,7 @@ class IOResponse implements JsonSerializable
      * @param string $js
      * @return $this
      */
-    public function script($js)
+    public function script($js): self
     {
         $this->scripts[] = $js;
 
@@ -51,7 +51,7 @@ class IOResponse implements JsonSerializable
      * @param string $function
      * @return $this
      */
-    public function jsfunc($function)
+    public function jsfunc($function): self
     {
         $arguments = func_get_args();
         array_shift($arguments);
@@ -118,7 +118,7 @@ class IOResponse implements JsonSerializable
     /**
      * @return array
      */
-    public function generateCallTrace()
+    public function generateCallTrace(): array
     {
         $str   = (new Exception())->getTraceAsString();
         $trace = explode("\n", $str);
@@ -137,7 +137,7 @@ class IOResponse implements JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'js'  => $this->scripts,

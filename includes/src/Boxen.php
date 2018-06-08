@@ -181,7 +181,7 @@ class Boxen
     /**
      * generate array of currently active boxes
      *
-     * @param int  $nSeiteholeVorlagen
+     * @param int  $nSeite
      * @param bool $bAktiv
      * @param bool $bVisible
      * @return $this
@@ -1130,122 +1130,6 @@ class Boxen
         );
 
         return $this->boxService->render($this->boxService->getBoxes());
-        $smarty          = Shop::Smarty();
-        $originalArticle = $smarty->getTemplateVars('Artikel');
-        $productFilter   = Shop::getProductFilter();
-        $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
-        // check whether filters should be displayed after a box
-        $filterAfter       = !empty($this->boxConfig)
-            ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults(false))
-            : 0;
-        $path              = 'boxes/';
-        $this->lagerFilter = $productFilter->getFilterSQL()->getStockFilterSQL();
-        $htmlArray         = [
-            'top'    => null,
-            'right'  => null,
-            'bottom' => null,
-            'left'   => null
-        ];
-        $smarty->assign('BoxenEinstellungen', $this->boxConfig)
-               ->assign('bBoxenFilterNach', $filterAfter);
-        foreach ($this->boxes as $_position => $_boxes) {
-            if (!is_array($_boxes)) {
-                $_boxes = [];
-            }
-            $htmlArray[$_position]     = '';
-            $this->rawData[$_position] = [];
-            foreach ($_boxes as $_box) {
-                if (!empty($_box->cFilter)) {
-                    $allowedIDs = [];
-                    foreach ($_box->cFilter as $_filter) {
-                        $allowedIDs[] = (int)$_filter['id'];
-                    }
-                    $pageType = (int)$_box->kSeite;
-                    if ($pageType === PAGE_ARTIKELLISTE) {
-                        if (!in_array((int)Shop::$kKategorie, $allowedIDs, true)) {
-                            continue;
-                        }
-                    } elseif ($pageType === PAGE_ARTIKEL) {
-                        if (!in_array((int)Shop::$kArtikel, $allowedIDs, true)) {
-                            continue;
-                        }
-                    } elseif ($pageType === PAGE_EIGENE) {
-                        if (!in_array((int)Shop::$kLink, $allowedIDs, true)) {
-                            continue;
-                        }
-                    } elseif ($pageType === PAGE_HERSTELLER) {
-                        if (!in_array((int)Shop::$kHersteller, $allowedIDs, true)) {
-                            continue;
-                        }
-                    }
-                }
-                if (isset($_box->bContainer) && $_box->bContainer === true) {
-                    //prepare boxes within a container
-                    $_box->cTemplate = 'box_container.tpl';
-                    $_box->innerHTML = '';
-                    $_box->children  = [];
-                    foreach ($_box->oContainer_arr as $_cbox) {
-                        $_cbox = $this->prepareBox($_cbox->kBoxvorlage, $_cbox);
-                        if ($_cbox->eTyp === 'link') {
-                            $linkGroup = $this->getLinkGroupByID($_cbox->kCustomID);
-                            if ($linkGroup !== null) {
-                                $_cbox->oLinkGruppe         = $linkGroup;
-                                $_cbox->oLinkGruppeTemplate = $linkGroup->getTemplate();
-                                $smarty->assign('oBox', $_cbox);
-                            } else {
-                                continue;
-                            }
-                        } else {
-                            $smarty->assign('oBox', $_cbox);
-                        }
-                        if (!empty($_cbox->cTemplate)) {
-                            $_box->innerHTML .= trim(($_cbox->eTyp === 'plugin')
-                                ? $smarty->fetch($_cbox->cTemplate)
-                                : $smarty->fetch($path . $_cbox->cTemplate));
-                        }
-                        $_box->children[] = ['obj' => $_cbox, 'tpl' => $path . $_cbox->cTemplate];
-                    }
-                }
-                $_box = $this->prepareBox($_box->kBoxvorlage, $_box);
-                if ($_box->eTyp === 'link') {
-                    $linkGroup = $this->getLinkGroupByID($_box->kCustomID);
-                    if ($linkGroup !== null) {
-                        $_box->oLinkGruppe         = $linkGroup;
-                        $_box->oLinkGruppeTemplate = $linkGroup->getTemplate();
-                        $smarty->assign('oBox', $_box);
-                    } else {
-                        continue;
-                    }
-                } else {
-                    $smarty->assign('oBox', $_box);
-                }
-                $this->rawData[$_position][] = [
-                    'obj' => $_box,
-                    'tpl' => ($_box->eTyp === 'plugin')
-                        ? $_box->cTemplate
-                        : ($path . $_box->cTemplate)
-                ];
-                $_oldPlugin                  = null;
-                if ($_box->eTyp === 'plugin') {
-                    $_oldPlugin = $smarty->getTemplateVars('oPlugin');
-                    $smarty->assign('oPlugin', $_box->oPlugin);
-                }
-                if (!empty($_box->cTemplate)) {
-                    $htmlArray[$_position] .= trim(($_box->eTyp === 'plugin')
-                        ? $smarty->fetch($_box->cTemplate)
-                        : $smarty->fetch($path . $_box->cTemplate));
-                }
-                if ($_oldPlugin !== null) {
-                    $smarty->assign('oPlugin', $_oldPlugin);
-                }
-            }
-        }
-        if ($originalArticle !== null) {
-            //avoid modification of article object on render loop
-            $smarty->assign('Artikel', $originalArticle);
-        }
-
-        return $htmlArray;
     }
 
     /**
@@ -1618,7 +1502,7 @@ class Boxen
      * @return int
      * @deprecated since 5.0.0
      */
-    public function filterBoxVisibility(int $kBox, int $kSeite, $cFilter = '')
+    public function filterBoxVisibility(int $kBox, int $kSeite, $cFilter = ''): int
     {
         trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         if (is_array($cFilter)) {

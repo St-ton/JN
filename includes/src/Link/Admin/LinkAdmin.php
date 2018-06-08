@@ -41,7 +41,8 @@ final class LinkAdmin
 
     /**
      * LinkAdmin constructor.
-     * @param DbInterface $db #
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
     public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {

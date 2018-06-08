@@ -139,7 +139,6 @@ class Merkmal
             $cJoin   = "INNER JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = {$kSprache}";
         }
-        $kMerkmal = (int)$kMerkmal;
         $oMerkmal = Shop::Container()->getDB()->query(
             "SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, 
                   {$cSelect}

@@ -221,7 +221,7 @@ class AdminAccount
             //check password hash and update if necessary
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
-                return $this->handleLoginResult(AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED);
+                return $this->handleLoginResult(AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED, $cLogin);
             }
 
             return $this->handleLoginResult($this->logged()
@@ -469,7 +469,7 @@ class AdminAccount
      * @param string $cLogin
      * @return $this
      */
-    private function _setLastLogin($cLogin)
+    private function _setLastLogin($cLogin): self
     {
         Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'now()']);
 

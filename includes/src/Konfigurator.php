@@ -22,7 +22,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kSprache
          * @return array
          */
-        public static function getKonfig(int $kArtikel, int $kSprache = 0)
+        public static function getKonfig(int $kArtikel, int $kSprache = 0): array
         {
             if (isset(self::$oGruppen_arr[$kArtikel])) {
                 //#7482
@@ -217,7 +217,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param bool $bSpace
          * @return string
          */
-        private static function langComponent(bool $bPlural = false, bool $bSpace = true)
+        private static function langComponent(bool $bPlural = false, bool $bSpace = true): string
         {
             $cComponent = $bSpace ? ' ' : '';
 

@@ -8,7 +8,6 @@ namespace Services\JTL;
 
 use Link\LinkGroupCollection;
 use Link\LinkGroupInterface;
-use Link\LinkGroupListInterface;
 use Link\LinkInterface;
 use Tightenco\Collect\Support\Collection;
 

@@ -83,7 +83,7 @@ class Cron
         string $dStartZeit = '00:00:00',
         string $dLetzterStart = '0000-00-00 00:00:00'
     ) {
-        $this->kCron         = (int)$kCron;
+        $this->kCron         = $kCron;
         $this->kKey          = $kKey;
         $this->cKey          = $cKey;
         $this->cTabelle      = $cTabelle;

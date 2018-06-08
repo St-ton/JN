@@ -110,10 +110,10 @@ class AuswahlAssistentFrage
      * @param bool $bAktiv
      * @return array
      */
-    public static function getQuestions($kAuswahlAssistentGruppe, $bAktiv = true)
+    public static function getQuestions(int $kAuswahlAssistentGruppe, bool $bAktiv = true): array
     {
         $oAuswahlAssistentFrage_arr = [];
-        if ((int)$kAuswahlAssistentGruppe > 0) {
+        if ($kAuswahlAssistentGruppe > 0) {
             $cAktivSQL = '';
             if ($bAktiv) {
                 $cAktivSQL = " AND nAktiv = 1";
@@ -138,7 +138,7 @@ class AuswahlAssistentFrage
      * @param bool $bPrimary
      * @return array|bool
      */
-    public function saveQuestion($bPrimary = false)
+    public function saveQuestion(bool $bPrimary = false)
     {
         $cPlausi_arr = $this->checkQuestion();
         if (count($cPlausi_arr) === 0) {
@@ -192,7 +192,7 @@ class AuswahlAssistentFrage
      * @param array $cParam_arr
      * @return bool
      */
-    public static function deleteQuestion($cParam_arr)
+    public static function deleteQuestion(array $cParam_arr): bool
     {
         if (isset($cParam_arr['kAuswahlAssistentFrage_arr'])
             && is_array($cParam_arr['kAuswahlAssistentFrage_arr'])
@@ -216,7 +216,7 @@ class AuswahlAssistentFrage
      * @param bool $bUpdate
      * @return array
      */
-    public function checkQuestion($bUpdate = false)
+    public function checkQuestion(bool $bUpdate = false): array
     {
         $cPlausi_arr = [];
         // Frage
@@ -254,19 +254,18 @@ class AuswahlAssistentFrage
      * @param int $kAuswahlAssistentGruppe
      * @return bool
      */
-    private function isMerkmalTaken($kMerkmal, $kAuswahlAssistentGruppe)
+    private function isMerkmalTaken(int $kMerkmal, int $kAuswahlAssistentGruppe): bool
     {
         if ($kMerkmal > 0 && $kAuswahlAssistentGruppe > 0) {
             $oFrage = Shop::Container()->getDB()->select(
                 'tauswahlassistentfrage',
                 'kMerkmal',
-                (int)$kMerkmal,
+                $kMerkmal,
                 'kAuswahlAssistentGruppe',
-                (int)$kAuswahlAssistentGruppe
+                $kAuswahlAssistentGruppe
             );
-            if (isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0) {
-                return true;
-            }
+
+            return isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0;
         }
 
         return false;
@@ -277,10 +276,8 @@ class AuswahlAssistentFrage
      * @param bool $bMMW
      * @return Merkmal|stdClass
      */
-    public static function getMerkmal($kMerkmal, $bMMW = false)
+    public static function getMerkmal(int $kMerkmal, bool $bMMW = false)
     {
-        $kMerkmal = (int)$kMerkmal;
-
         return $kMerkmal > 0
             ? new Merkmal($kMerkmal, $bMMW)
             : new stdClass();

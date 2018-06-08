@@ -327,7 +327,7 @@ class KategorieHelper
      * @param int $categoryID
      * @return array
      */
-    public function getFallBackFlatTree($categoryID)
+    public function getFallBackFlatTree(int $categoryID)
     {
         $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter         = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
@@ -409,7 +409,7 @@ class KategorieHelper
                 $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . "                     
                 WHERE node.nLevel > 0 AND parent.nLevel > 0
                     AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
-                    AND node.kKategorie = " . (int)$categoryID . $visibilityWhere . "
+                    AND node.kKategorie = " . $categoryID . $visibilityWhere . "
                     
                 GROUP BY parent.kKategorie
                 ORDER BY parent.lft",
@@ -530,7 +530,7 @@ class KategorieHelper
      * @param int $id
      * @return bool
      */
-    public static function categoryExists($id)
+    public static function categoryExists(int $id): bool
     {
         return Shop::Container()->getDB()->select('tkategorie', 'kKategorie', (int)$id) !== null;
     }
@@ -539,22 +539,22 @@ class KategorieHelper
      * @param int $id
      * @return null|object
      */
-    public function getCategoryById($id)
+    public function getCategoryById(int $id)
     {
         if (self::$fullCategories === null) {
             self::$fullCategories = $this->combinedGetAll();
         }
 
-        return $this->findCategoryInList((int)$id, self::$fullCategories);
+        return $this->findCategoryInList($id, self::$fullCategories);
     }
 
     /**
      * @param int $id
      * @return array
      */
-    public function getChildCategoriesById($id)
+    public function getChildCategoriesById(int $id)
     {
-        $current = $this->getCategoryById((int)$id);
+        $current = $this->getCategoryById($id);
 
         return $current !== null && isset($current->Unterkategorien)
             ? array_values($current->Unterkategorien)
@@ -568,7 +568,7 @@ class KategorieHelper
      * @param bool $noChildren - remove child categories from array?
      * @return array
      */
-    public function getFlatTree($id, $noChildren = true)
+    public function getFlatTree(int $id, bool $noChildren = true): array
     {
         if (self::$fullCategories === null) {
             self::$fullCategories = $this->combinedGetAll();
@@ -610,7 +610,7 @@ class KategorieHelper
      * @param array|object $haystack
      * @return object|bool
      */
-    private function findCategoryInList($id, $haystack)
+    private function findCategoryInList(int $id, $haystack)
     {
         if (isset($haystack->kKategorie) && (int)$haystack->kKategorie === $id) {
             return $haystack;

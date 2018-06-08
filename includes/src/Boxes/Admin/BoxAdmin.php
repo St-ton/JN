@@ -10,7 +10,6 @@ namespace Boxes\Admin;
 use Boxes\BoxType;
 use DB\DbInterface;
 use DB\ReturnType;
-use Services\JTL\BoxService;
 use Services\JTL\BoxServiceInterface;
 
 /**

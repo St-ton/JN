@@ -370,8 +370,8 @@ class Metadata implements MetadataInterface
     public function getNavigationInfo($currentCategory = null, $openCategories = null): MetadataInterface
     {
         if ($currentCategory !== null && $this->productFilter->hasCategory()) {
+            /** @var \Kategorie $currentCategory */
             $this->category = $currentCategory;
-
             if ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'Y') {
                 $this->name = $this->category->getName();
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'BT') {
@@ -890,10 +890,7 @@ class Metadata implements MetadataInterface
         if (strlen($cFilterShopURL) > 0) {
             $bSeo = false;
         }
-        $cURL        = '';
         $oSeite_arr  = [];
-        $nVon        = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
-        $nBis        = 0; // Begrenzt durch $nMaxAnzeige.
         $naviURL     = $this->productFilter->getFilterURL()->getURL();
         $bSeo        = $bSeo && strpos($naviURL, '?') === false;
         $nMaxAnzeige = (int)$nMaxAnzeige;

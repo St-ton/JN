@@ -47,7 +47,7 @@ class IO
      * @return $this
      * @throws Exception
      */
-    public function register($name, $function = null, $include = null)
+    public function register($name, $function = null, $include = null): self
     {
         if ($this->exists($name)) {
             throw new Exception("Function already registered");
@@ -99,9 +99,9 @@ class IO
     {
         // respond with an error?
         if (is_object($data)) {
-            if (get_class($data) === 'IOError') {
+            if ($data instanceof IOError) {
                 header(makeHTTPHeader($data->code), true, $data->code);
-            } elseif (get_class($data) === 'IOFile') {
+            } elseif ($data instanceof IOFile) {
                 $this->pushFile($data->filename, $data->mimetype);
             }
         }
@@ -121,7 +121,7 @@ class IO
      * @param string $name
      * @return bool
      */
-    public function exists($name)
+    public function exists($name): bool
     {
         return isset($this->functions[$name]);
     }

@@ -254,10 +254,10 @@ class JTLSmarty extends SmartyBC
     {
         $options = [];
         if ($minifyCSS === true) {
-            $options['cssMinifier'] = ['Minify_CSS', 'minify'];
+            $options['cssMinifier'] = [Minify_CSS::class, 'minify'];
         }
         if ($minifyJS === true) {
-            $options['jsMinifier'] = ['\JSMin\JSMin', 'minify'];
+            $options['jsMinifier'] = [\JSMin\JSMin::class, 'minify'];
         }
         try {
             $res = (new Minify_HTML($html, $options))->process();

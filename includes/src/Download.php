@@ -422,7 +422,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param int $nErrorCode
          * @return string
          */
-        public static function mapGetFileErrorCode(int $nErrorCode)
+        public static function mapGetFileErrorCode(int $nErrorCode): string
         {
             switch ($nErrorCode) {
                 case self::ERROR_ORDER_NOT_FOUND: // Bestellung nicht gefunden

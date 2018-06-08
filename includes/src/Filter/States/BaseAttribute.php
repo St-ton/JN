@@ -9,7 +9,6 @@ namespace Filter\States;
 use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
-use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
 

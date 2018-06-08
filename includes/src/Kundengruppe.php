@@ -187,8 +187,8 @@ class Kundengruppe
     {
         $_upd               = new stdClass();
         $_upd->cName        = $this->name;
-        $_upd->fRabatt      = $this->fRabatt;
-        $_upd->cStandard    = $this->cStandard;
+        $_upd->fRabatt      = $this->discount;
+        $_upd->cStandard    = $this->default;
         $_upd->cShopLogin   = $this->cShopLogin;
         $_upd->nNettoPreise = $this->isMerchant;
 
@@ -285,7 +285,7 @@ class Kundengruppe
      */
     public function setStandard($cStandard): self
     {
-        trigger_error('Kundengruppe::setStandard() is deprecated - use setDefault() instead', E_USER_DEPRECATED);
+        trigger_error(__METHOD__ . ' is deprecated - use setDefault() instead', E_USER_DEPRECATED);
 
         return $this->setDefault($cStandard);
     }

@@ -9,7 +9,6 @@ namespace Boxes;
 use Boxes\Renderer\DefaultRenderer;
 use function Functional\false;
 use function Functional\first;
-use function Functional\true;
 
 /**
  * Class AbstractBox

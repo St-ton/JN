@@ -68,7 +68,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
                         AND tuploadschemasprache.kSprache = " . Shop::getLanguageID() . "
-                    WHERE kUploadSchema =  " . (int)$kUploadSchema,
+                    WHERE kUploadSchema =  " . $kUploadSchema,
                 \DB\ReturnType::SINGLE_OBJECT
             );
 

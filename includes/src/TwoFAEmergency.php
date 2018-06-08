@@ -66,7 +66,7 @@ class TwoFAEmergency
             $iValCount++;
         }
         // now write into the DB what we got till now
-        $iEffectedRows = Shop::Container()->getDB()->executeQueryPrepared(
+        Shop::Container()->getDB()->executeQueryPrepared(
             'INSERT INTO `tadmin2facodes`(`kAdminlogin`, `cEmergencyCode`) VALUES' . $szSqlRowValues,
             $vAnalogyArray,
             \DB\ReturnType::AFFECTED_ROWS

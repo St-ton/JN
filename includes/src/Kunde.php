@@ -303,7 +303,7 @@ class Kunde
      * @return int 1 = Alles O.K., 2 = Kunde ist gesperrt
      * @throws Exception
      */
-    public function holLoginKunde($cBenutzername, $cPasswort)
+    public function holLoginKunde($cBenutzername, $cPasswort): int
     {
         $passwordService = Shop::Container()->getPasswordService();
         if (strlen($cBenutzername) > 0 && strlen($cPasswort) > 0) {
@@ -324,7 +324,7 @@ class Kunde
                 $this->angezeigtesLand = ISO2land($this->cLand);
                 $this->holeKundenattribute();
                 // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-                if ((isset($oUser->cPasswort) && $passwordService->needsRehash($oUser->cPasswort))) {
+                if (isset($oUser->cPasswort) && $passwordService->needsRehash($oUser->cPasswort)) {
                     $_upd            = new stdClass();
                     $_upd->cPasswort = $passwordService->hash($cPasswort);
                     Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
@@ -408,7 +408,7 @@ class Kunde
     /**
      * @return string
      */
-    public function gibGuthabenLocalized()
+    public function gibGuthabenLocalized(): string
     {
         return gibPreisStringLocalized($this->fGuthaben);
     }
@@ -667,7 +667,7 @@ class Kunde
      * @param Kunde $oKundeTwo
      * @return bool
      */
-    public static function isEqual($oKundeOne, $oKundeTwo)
+    public static function isEqual($oKundeOne, $oKundeTwo): bool
     {
         if (is_object($oKundeOne) && is_object($oKundeTwo)) {
             $cMemberOne_arr = array_keys(get_class_vars(get_class($oKundeOne)));

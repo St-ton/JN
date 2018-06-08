@@ -665,7 +665,6 @@ class WarenkorbHelper
             );
             // Falls Artikel vorhanden
             if ($productExists !== null && $productExists->kArtikel > 0) {
-                $attributes = [];
                 // Sichtbarkeit Prüfen
                 $vis = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',

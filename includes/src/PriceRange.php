@@ -245,18 +245,18 @@ class PriceRange
      */
     public function setDiscount(float $discount)
     {
-        $discount = $discount / 100;
+        $discount /= 100;
 
         if ($discount !== $this->discount) {
-            $this->minNettoPrice = $this->minNettoPrice / (1 - $this->discount);
-            $this->maxNettoPrice = $this->maxNettoPrice / (1 - $this->discount);
+            $this->minNettoPrice /= (1 - $this->discount);
+            $this->maxNettoPrice /= (1 - $this->discount);
 
             $this->discount = $discount;
 
             $ust = gibUst($this->articleData->kSteuerklasse);
 
-            $this->minNettoPrice  = $this->minNettoPrice * (1 - $this->discount);
-            $this->maxNettoPrice  = $this->maxNettoPrice * (1 - $this->discount);
+            $this->minNettoPrice  *= (1 - $this->discount);
+            $this->maxNettoPrice  *= (1 - $this->discount);
             $this->minBruttoPrice = berechneBrutto($this->minNettoPrice, $ust);
             $this->maxBruttoPrice = berechneBrutto($this->maxNettoPrice, $ust);
         }

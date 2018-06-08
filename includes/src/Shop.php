@@ -1381,7 +1381,7 @@ final class Shop
             $link       = self::Container()->getLinkService()->getLinkByID(self::$kLink);
             if ($link !== null && ($linkType = $link->getLinkType()) > 0) {
                 if ($linkType === LINKTYP_EXTERNE_URL) {
-                    header('Location: ' . $link->cURL, true, 303);
+                    header('Location: ' . $link->getURL(), true, 303);
                     exit;
                 }
                 self::$fileName = 'seite.php';

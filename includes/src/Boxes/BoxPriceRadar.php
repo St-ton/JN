@@ -6,8 +6,6 @@
 
 namespace Boxes;
 
-use DB\ReturnType;
-
 /**
  * Class BoxPriceRadar
  * @package Boxes

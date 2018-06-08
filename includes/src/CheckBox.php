@@ -365,9 +365,9 @@ class CheckBox
      * @param string $cLimitSQL
      * @param bool   $bAktiv
      * @param bool   $bSprache
-     * @return array
+     * @return CheckBox[]
      */
-    public function getAllCheckBox(string $cLimitSQL = '', bool $bAktiv = false, bool $bSprache = false)
+    public function getAllCheckBox(string $cLimitSQL = '', bool $bAktiv = false, bool $bSprache = false): array
     {
         $oCheckBox_arr = [];
         $cSQL          = '';

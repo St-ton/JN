@@ -7,6 +7,7 @@
 namespace Services\JTL;
 
 use Boxes\BoxFactory;
+use Boxes\BoxFactoryInterface;
 use DB\DbInterface;
 use Filter\ProductFilter;
 use Filter\ProductFilterSearchResults;
@@ -18,21 +19,25 @@ use Filter\ProductFilterSearchResults;
 interface BoxServiceInterface
 {
     /**
-     * @param array       $config
-     * @param BoxFactory  $factory
-     * @param DbInterface $db
-     * @return BoxService
+     * @param array               $config
+     * @param BoxFactoryInterface $factory
+     * @param DbInterface         $db
+     * @return BoxServiceInterface
      */
-    public static function getInstance(array $config, BoxFactory $factory, DbInterface $db): \Services\JTL\BoxService;
+    public static function getInstance(
+        array $config,
+        BoxFactoryInterface $factory,
+        DbInterface $db
+    ): BoxServiceInterface;
 
     /**
      * BoxService constructor.
      *
-     * @param array       $config
-     * @param BoxFactory  $factory
-     * @param DbInterface $db
+     * @param array               $config
+     * @param BoxFactoryInterface $factory
+     * @param DbInterface         $db
      */
-    public function __construct(array $config, BoxFactory $factory, DbInterface $db);
+    public function __construct(array $config, BoxFactoryInterface $factory, DbInterface $db);
 
     /**
      * @param int $kArtikel

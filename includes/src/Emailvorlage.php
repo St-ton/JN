@@ -104,7 +104,7 @@ class Emailvorlage
      * @param bool $bPlugin
      * @return $this
      */
-    private function loadFromDB(int $kEmailvorlage, bool $bPlugin)
+    private function loadFromDB(int $kEmailvorlage, bool $bPlugin): self
     {
         $cTable        = $bPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
         $cTableSetting = $bPlugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';

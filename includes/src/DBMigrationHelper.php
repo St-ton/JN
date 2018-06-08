@@ -79,7 +79,7 @@ class DBMigrationHelper
     /**
      * @return stdClass[]
      */
-    public static function getTablesNeedMigration()
+    public static function getTablesNeedMigration(): array
     {
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
@@ -140,7 +140,7 @@ class DBMigrationHelper
      * @param string $cTable
      * @return stdClass[]
      */
-    public static function getFulltextIndizes($cTable = null)
+    public static function getFulltextIndizes($cTable = null): array
     {
         $params = ['schema' => Shop::Container()->getDB()->getConfig()['database']];
         $filter = "AND `INDEX_NAME` NOT IN ('idx_tartikel_fulltext', 'idx_tartikelsprache_fulltext')";
@@ -165,7 +165,7 @@ class DBMigrationHelper
      * @param string|stdClass $oTable
      * @return bool
      */
-    public static function isTableNeedMigration($oTable)
+    public static function isTableNeedMigration($oTable): bool
     {
         if (is_string($oTable)) {
             $oTable = self::getTable($oTable);
@@ -178,7 +178,7 @@ class DBMigrationHelper
      * @param string $cTable
      * @return bool
      */
-    public static function isTableInUse($cTable)
+    public static function isTableInUse($cTable): bool
     {
         $mysqlVersion = self::getMySQLVersion();
         $database     = Shop::Container()->getDB()->getConfig()['database'];
@@ -204,7 +204,7 @@ class DBMigrationHelper
      * @param string $cTable
      * @return stdClass[]
      */
-    public static function getColumnsNeedMigration($cTable)
+    public static function getColumnsNeedMigration(string $cTable): array
     {
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
@@ -225,7 +225,7 @@ class DBMigrationHelper
      * @param stdClass $oTable
      * @return string
      */
-    public static function sqlAddLockInfo($oTable)
+    public static function sqlAddLockInfo($oTable): string
     {
         $mysqlVersion = self::getMySQLVersion();
 
@@ -238,7 +238,7 @@ class DBMigrationHelper
      * @param stdClass $oTable
      * @return string
      */
-    public static function sqlClearLockInfo($oTable)
+    public static function sqlClearLockInfo($oTable): string
     {
         $mysqlVersion = self::getMySQLVersion();
 
@@ -251,7 +251,7 @@ class DBMigrationHelper
      * @param stdClass $oTable
      * @return string
      */
-    public static function sqlMoveToInnoDB($oTable)
+    public static function sqlMoveToInnoDB($oTable): string
     {
         $mysqlVersion = self::getMySQLVersion();
 
@@ -273,7 +273,7 @@ class DBMigrationHelper
      * @param string $lineBreak
      * @return string
      */
-    public static function sqlConvertUTF8($oTable, $lineBreak = '')
+    public static function sqlConvertUTF8($oTable, $lineBreak = ''): string
     {
         $mysqlVersion = self::getMySQLVersion();
         $oColumn_arr  = self::getColumnsNeedMigration($oTable->TABLE_NAME);
@@ -305,7 +305,7 @@ class DBMigrationHelper
      * @param string $cTable
      * @return string - SUCCESS, FAILURE or IN_USE
      */
-    public static function migrateToInnoDButf8($cTable)
+    public static function migrateToInnoDButf8(string $cTable): string
     {
         $oTable = self::getTable($cTable);
         if (self::isTableInUse($oTable->TABLE_NAME)) {

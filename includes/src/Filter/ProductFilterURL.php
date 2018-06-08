@@ -276,7 +276,6 @@ class ProductFilterURL
         }
 
         $additionalFilter = (new ItemAttribute($this->productFilter))->setDoUnset(true);
-        $_attributesURLs  = [];
         foreach ($this->productFilter->getAttributeFilter() as $filter) {
             if ($filter->getAttributeID() > 0) {
                 $url->addAttribute($filter->getAttributeID(), $this->getURL(
@@ -373,7 +372,6 @@ class ProductFilterURL
                  ) as $filter
         ) {
             /** @var FilterInterface $filter */
-            $className   = $filter->getClassName();
             $extraFilter = clone $filter;
             $urls        = [];
             $extraFilter->setDoUnset(true);

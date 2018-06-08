@@ -12,7 +12,6 @@ use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
-use Filter\States\BaseCategory;
 
 /**
  * Class BaseSearchQuery

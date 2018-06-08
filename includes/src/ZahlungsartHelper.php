@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class ZahlungsartHelper
  */
@@ -14,18 +15,16 @@ class ZahlungsartHelper
             return false;
         }
         require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        $conf              = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
-        $Zahlungsart->einstellungen = $conf['zahlungsarten'];
+        $conf                       = Shop::getSettings([CONF_ZAHLUNGSARTEN])['zahlungsarten'];
+        $Zahlungsart->einstellungen = $conf;
         switch ($Zahlungsart->cModulId) {
             case 'za_ueberweisung_jtl':
                 if (!pruefeZahlungsartMinBestellungen($conf['zahlungsart_ueberweisung_min_bestellungen'])) {
                     return false;
                 }
-
                 if (!pruefeZahlungsartMinBestellwert($conf['zahlungsart_ueberweisung_min'])) {
                     return false;
                 }
-
                 if (!pruefeZahlungsartMaxBestellwert($conf['zahlungsart_ueberweisung_max'])) {
                     return false;
                 }
@@ -34,11 +33,9 @@ class ZahlungsartHelper
                 if (!pruefeZahlungsartMinBestellungen($conf['zahlungsart_nachnahme_min_bestellungen'])) {
                     return false;
                 }
-
                 if (!pruefeZahlungsartMinBestellwert($conf['zahlungsart_nachnahme_min'])) {
                     return false;
                 }
-
                 if (!pruefeZahlungsartMaxBestellwert($conf['zahlungsart_nachnahme_max'])) {
                     return false;
                 }
@@ -47,11 +44,9 @@ class ZahlungsartHelper
                 if (!pruefeZahlungsartMinBestellungen($conf['zahlungsart_kreditkarte_min_bestellungen'])) {
                     return false;
                 }
-
                 if (!pruefeZahlungsartMinBestellwert($conf['zahlungsart_kreditkarte_min'])) {
                     return false;
                 }
-
                 if (!pruefeZahlungsartMaxBestellwert($conf['zahlungsart_kreditkarte_max'])) {
                     return false;
                 }
@@ -60,11 +55,9 @@ class ZahlungsartHelper
                 if (!pruefeZahlungsartMinBestellungen($conf['zahlungsart_rechnung_min_bestellungen'])) {
                     return false;
                 }
-
                 if (!pruefeZahlungsartMinBestellwert($conf['zahlungsart_rechnung_min'])) {
                     return false;
                 }
-
                 if (!pruefeZahlungsartMaxBestellwert($conf['zahlungsart_rechnung_max'])) {
                     return false;
                 }
@@ -86,11 +79,9 @@ class ZahlungsartHelper
                 if (!pruefeZahlungsartMinBestellungen(!empty($conf['zahlungsart_barzahlung_min_bestellungen']) ? $conf['zahlungsart_barzahlung_min_bestellungen'] : 0)) {
                     return false;
                 }
-
                 if (!pruefeZahlungsartMinBestellwert(!empty($conf['zahlungsart_barzahlung_min']) ? $conf['zahlungsart_barzahlung_min'] : 0)) {
                     return false;
                 }
-
                 if (!pruefeZahlungsartMaxBestellwert(!empty($conf['zahlungsart_barzahlung_max']) ? $conf['zahlungsart_barzahlung_max'] : 0)) {
                     return false;
                 }

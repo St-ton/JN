@@ -43,7 +43,7 @@ class Bestseller
      * @param array $options
      * @return $this
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): self
     {
         $methods = get_class_methods($this);
         foreach ($options as $key => $value) {
@@ -68,7 +68,7 @@ class Bestseller
      * @param array $products
      * @return $this
      */
-    public function setProducts(array $products)
+    public function setProducts(array $products): self
     {
         $this->_products = $products;
 
@@ -97,7 +97,7 @@ class Bestseller
     /**
      * @return int
      */
-    public function getLimit()
+    public function getLimit(): int
     {
         return $this->_limit;
     }
@@ -116,7 +116,7 @@ class Bestseller
     /**
      * @return int
      */
-    public function getMinSales()
+    public function getMinSales(): int
     {
         return $this->_minsales;
     }
@@ -135,7 +135,7 @@ class Bestseller
     /**
      * @return array
      */
-    public function fetch()
+    public function fetch(): array
     {
         $products = [];
         if ($this->_customergrp !== null) {
@@ -195,7 +195,7 @@ class Bestseller
         bool $onlykeys = true,
         int $limit = 3,
         int $minsells = 10
-    ) {
+    ): array {
         if ($viewallowed && is_array($products) && count($products) > 0) {
             $options    = [
                 'Products'      => $products,

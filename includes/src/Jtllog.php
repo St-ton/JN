@@ -427,7 +427,7 @@ class Jtllog
     /**
      * @param int $nVal
      * @param int $nFlag
-     * @return int
+     * @return bool
      * @deprecated since 5.0.0
      */
     public static function isBitFlagSet($nVal, $nFlag): bool

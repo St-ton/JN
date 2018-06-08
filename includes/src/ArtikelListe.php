@@ -94,7 +94,7 @@ class ArtikelListe
         string $order,
         int $kKundengruppe = 0,
         int $kSprache = 0
-    ) {
+    ): array {
         $this->elemente = [];
         if (!$kKategorie || !Session::CustomerGroup()->mayViewCategories()) {
             return $this->elemente;
@@ -153,7 +153,7 @@ class ArtikelListe
      * @param int   $maxAnzahl
      * @return Artikel[]
      */
-    public function getArtikelByKeys(array $kArtikel_arr, int $start, int $maxAnzahl)
+    public function getArtikelByKeys(array $kArtikel_arr, int $start, int $maxAnzahl): array
     {
         $this->elemente = [];
         if (!Session::CustomerGroup()->mayViewCategories()) {

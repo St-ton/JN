@@ -548,7 +548,7 @@ class Redirect
      * @return array
      * @deprecated since 4.05 - use Redirect::getReferers()
      */
-    public function getVerweise(int $kRedirect)
+    public function getVerweise(int $kRedirect): array
     {
         return self::getReferers($kRedirect);
     }

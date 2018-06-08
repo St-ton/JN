@@ -688,7 +688,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
      * @inheritdoc
      */
     public function setFilterOptions(
-        $productFilter,
+        ProductFilter $productFilter,
         $currentCategory = null,
         $selectionWizard = false
     ): ProductFilterSearchResultsInterface {

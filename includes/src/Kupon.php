@@ -691,7 +691,7 @@ class Kupon
                 $name_spr = Shop::Container()->getDB()->select(
                     'tkuponsprache',
                     'kKupon',
-                    (int)$kKupon,
+                    $kKupon,
                     'cISOSprache',
                     $Sprache->cISO,
                     null,

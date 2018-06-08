@@ -18,7 +18,7 @@ class AdminIO extends IO
      * @param AdminAccount $oAccount
      * @return $this
      */
-    public function setAccount(AdminAccount $oAccount)
+    public function setAccount(AdminAccount $oAccount): self
     {
         $this->oAccount = $oAccount;
 
@@ -33,7 +33,7 @@ class AdminIO extends IO
      * @return $this
      * @throws Exception
      */
-    public function register($name, $function = null, $include = null, $permission = null)
+    public function register($name, $function = null, $include = null, $permission = null): self
     {
         parent::register($name, $function, $include);
         $this->functions[$name][] = $permission;

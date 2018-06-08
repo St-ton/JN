@@ -88,9 +88,9 @@ class ZahlungsInfo
      * @param int $kZahlungsInfo
      * @param int $kBestellung
      */
-    public function __construct($kZahlungsInfo = 0, $kBestellung = 0)
+    public function __construct(int $kZahlungsInfo = 0, int $kBestellung = 0)
     {
-        if ((int)$kZahlungsInfo > 0 || (int)$kBestellung > 0) {
+        if ($kZahlungsInfo > 0 || $kBestellung > 0) {
             $this->loadFromDB($kZahlungsInfo, $kBestellung);
         }
     }
@@ -102,11 +102,9 @@ class ZahlungsInfo
      * @param int $kBestellung
      * @return $this
      */
-    public function loadFromDB($kZahlungsInfo, $kBestellung)
+    public function loadFromDB(int $kZahlungsInfo, int $kBestellung): self
     {
-        $obj           = null;
-        $kZahlungsInfo = (int)$kZahlungsInfo;
-        $kBestellung   = (int)$kBestellung;
+        $obj = null;
         if ($kZahlungsInfo > 0) {
             $obj = Shop::Container()->getDB()->select('tzahlungsinfo', 'kZahlungsInfo', $kZahlungsInfo);
         } elseif ($kBestellung > 0) {
@@ -130,7 +128,7 @@ class ZahlungsInfo
     /**
      * @return $this
      */
-    public function verschluesselZahlungsinfo()
+    public function verschluesselZahlungsinfo(): self
     {
         $this->cBankName         = verschluesselXTEA(trim($this->cBankName));
         $this->cKartenNr         = verschluesselXTEA(trim($this->cKartenNr));
@@ -148,7 +146,7 @@ class ZahlungsInfo
     /**
      * @return $this
      */
-    public function entschluesselZahlungsinfo()
+    public function entschluesselZahlungsinfo(): self
     {
         $this->cBankName         = trim(entschluesselXTEA($this->cBankName));
         $this->cKartenNr         = trim(entschluesselXTEA($this->cKartenNr));
@@ -168,7 +166,7 @@ class ZahlungsInfo
      *
      * @return int - Key von eingefügter ZahlungsInfo
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $this->cAbgeholt = 'N';
         $this->verschluesselZahlungsinfo();
@@ -185,7 +183,7 @@ class ZahlungsInfo
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $this->verschluesselZahlungsinfo();
         $obj     = kopiereMembers($this);

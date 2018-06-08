@@ -31,14 +31,14 @@ interface LinkGroupListInterface
     public function setLinkGroups(Collection $linkGroups);
 
     /**
-     * @return Collection
+     * @return LinkGroupCollection
      */
-    public function getVisibleLinkGroups(): Collection;
+    public function getVisibleLinkGroups(): LinkGroupCollection;
 
     /**
-     * @param Collection $linkGroups
+     * @param LinkGroupCollection $linkGroups
      */
-    public function setVisibleLinkGroups(Collection $linkGroups);
+    public function setVisibleLinkGroups(LinkGroupCollection $linkGroups);
 
     /**
      * @param int $customerGroupID

@@ -110,7 +110,7 @@ class MerkmalWert
      * @param int $kMerkmalWert - Falls angegeben, wird der MerkmalWert mit angegebenem kMerkmalWert aus der DB geholt
      * @param int $kSprache
      */
-    public function __construct($kMerkmalWert = 0, $kSprache = 0)
+    public function __construct(int $kMerkmalWert = 0, int $kSprache = 0)
     {
         if ($kMerkmalWert > 0) {
             $this->loadFromDB($kMerkmalWert, $kSprache);
@@ -124,9 +124,9 @@ class MerkmalWert
      * @param int $kSprache
      * @return $this
      */
-    public function loadFromDB($kMerkmalWert, $kSprache = 0)
+    public function loadFromDB(int $kMerkmalWert, int $kSprache = 0)
     {
-        $kSprache     = (int)$kSprache === 0 ? Shop::getLanguageID() : (int)$kSprache;
+        $kSprache     = $kSprache === 0 ? Shop::getLanguageID() : $kSprache;
         $id           = 'mmw_' . $kMerkmalWert . '_' . $kSprache;
         if (Shop::has($id)) {
             foreach (get_object_vars(Shop::get($id)) as $k => $v) {
@@ -209,8 +209,7 @@ class MerkmalWert
         if ($kMerkmal <= 0) {
             return [];
         }
-        $oMerkmalWert_arr = [];
-        $kSprache         = Shop::getLanguage();
+        $kSprache = Shop::getLanguage();
         if (!$kSprache) {
             $oSprache = gibStandardsprache();
             if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {

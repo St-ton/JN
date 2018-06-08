@@ -37,7 +37,7 @@ class Redirect
     /**
      * @param int $kRedirect
      */
-    public function __construct($kRedirect = 0)
+    public function __construct(int $kRedirect = 0)
     {
         if ($kRedirect > 0) {
             $this->loadFromDB($kRedirect);
@@ -48,9 +48,9 @@ class Redirect
      * @param int $kRedirect
      * @return $this
      */
-    public function loadFromDB($kRedirect)
+    public function loadFromDB(int $kRedirect)
     {
-        $obj = Shop::Container()->getDB()->select('tredirect', 'kRedirect', (int)$kRedirect);
+        $obj = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $kRedirect);
         if ($obj !== null && $obj->kRedirect > 0) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
@@ -66,7 +66,7 @@ class Redirect
      * @return $this
      * @deprecated since 4.06 - use Redirect::deleteRedirect() instead
      */
-    public function delete($kRedirect)
+    public function delete(int $kRedirect)
     {
         self::deleteRedirect($kRedirect);
 
@@ -86,7 +86,7 @@ class Redirect
      * @param string $cUrl
      * @return null|stdClass
      */
-    public function find($cUrl)
+    public function find(string $cUrl)
     {
         return Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $this->normalize($cUrl));
     }
@@ -97,7 +97,7 @@ class Redirect
      * @param string $cToUrl target to search for
      * @return null|stdClass
      */
-    public function getRedirectByTarget($cToUrl)
+    public function getRedirectByTarget(string $cToUrl)
     {
         return Shop::Container()->getDB()->select('tredirect', 'cToUrl', $this->normalize($cToUrl));
     }
@@ -107,7 +107,7 @@ class Redirect
      * @param string $cDestination
      * @return bool
      */
-    public function isDeadlock($cSource, $cDestination): bool
+    public function isDeadlock(string $cSource, string $cDestination): bool
     {
         $xPath_arr    = parse_url(Shop::getURL());
         $cDestination = isset($xPath_arr['path']) ? $xPath_arr['path'] . '/' . $cDestination : $cDestination;
@@ -122,7 +122,7 @@ class Redirect
      * @param bool   $bForce
      * @return bool
      */
-    public function saveExt($cSource, $cDestination, $bForce = false): bool
+    public function saveExt(string $cSource, string $cDestination, bool $bForce = false): bool
     {
         if (strlen($cSource) > 0 && $cSource[0] !== '/') {
             $cSource = '/' . $cSource;
@@ -159,7 +159,7 @@ class Redirect
                 }
             } elseif ($this->normalize($oRedirect->cFromUrl) === $this->normalize($cSource)
                 && empty($oRedirect->cToUrl)
-                && (int)Shop::Container()->getDB()->update(
+                && Shop::Container()->getDB()->update(
                     'tredirect', 'cFromUrl', $this->normalize($cSource),
                     (object)['cToUrl' => StringHandler::convertUTF8($cDestination)]
                 ) > 0
@@ -176,7 +176,7 @@ class Redirect
      * @param string $cFile
      * @return array
      */
-    public function doImport($cFile): array
+    public function doImport(string $cFile): array
     {
         $cError_arr = [];
         if (file_exists($cFile)) {
@@ -265,7 +265,7 @@ class Redirect
      * @param string $cIso
      * @return null|string
      */
-    public function getArtNrUrl($cArtNr, $cIso)
+    public function getArtNrUrl($cArtNr, string $cIso)
     {
         if (strlen($cArtNr) === 0) {
             return null;
@@ -331,7 +331,7 @@ class Redirect
      * @param string $cUrl
      * @return bool|string
      */
-    public function checkFallbackRedirect($cUrl)
+    public function checkFallbackRedirect(string $cUrl)
     {
         $exploded = explode('/', trim($cUrl, '/'));
         if (count($exploded) > 0) {
@@ -355,7 +355,7 @@ class Redirect
      * @param string $cUrl
      * @return bool|string
      */
-    public function test($cUrl)
+    public function test(string $cUrl)
     {
         //Fallback e.g. if last URL-Path exists in tseo --> do not track 404 hit, instant redirect!
         if (($fallbackPath = $this->checkFallbackRedirect($cUrl)) !== false) {
@@ -436,7 +436,7 @@ class Redirect
      * @param string $cUrl
      * @return bool
      */
-    public function isValid($cUrl): bool
+    public function isValid(string $cUrl): bool
     {
         $cPath_arr       = pathinfo($cUrl);
         $cInvalidExt_arr = [
@@ -463,7 +463,7 @@ class Redirect
      * @return bool
      * @deprecated since 4.05 - use Redirect::checkAvailability()
      */
-    public function isAvailable($cUrl): bool
+    public function isAvailable(string $cUrl): bool
     {
         return self::checkAvailability($cUrl);
     }
@@ -472,7 +472,7 @@ class Redirect
      * @param string $cUrl
      * @return string
      */
-    public function normalize($cUrl): string
+    public function normalize(string $cUrl): string
     {
         $oUrl = new UrlHelper();
         $oUrl->setUrl($cUrl);
@@ -548,7 +548,7 @@ class Redirect
      * @return array
      * @deprecated since 4.05 - use Redirect::getReferers()
      */
-    public function getVerweise($kRedirect)
+    public function getVerweise(int $kRedirect): array
     {
         return self::getReferers($kRedirect);
     }
@@ -595,17 +595,18 @@ class Redirect
      * @param int $nLimit
      * @return array
      */
-    public static function getReferers($kRedirect, $nLimit = 100): array
+    public static function getReferers(int $kRedirect, int $nLimit = 100): array
     {
-        return Shop::Container()->getDB()->query(
-            "SELECT tredirectreferer.*, tbesucherbot.cName AS cBesucherBotName,
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT tredirectreferer.*, tbesucherbot.cName AS cBesucherBotName,
                     tbesucherbot.cUserAgent AS cBesucherBotAgent
                 FROM tredirectreferer
                 LEFT JOIN tbesucherbot
                     ON tredirectreferer.kBesucherBot = tbesucherbot.kBesucherBot
-                    WHERE kRedirect = " . (int)$kRedirect . "
+                    WHERE kRedirect = :kr
                 ORDER BY dDate ASC
-                LIMIT " . (int)$nLimit,
+                LIMIT :lmt',
+            ['kr' => $kRedirect, 'lmt' => $nLimit],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -616,8 +617,8 @@ class Redirect
     public static function getTotalRedirectCount(): int
     {
         return (int)Shop::Container()->getDB()->query(
-            "SELECT COUNT(kRedirect) AS nCount 
-                FROM tredirect",
+            'SELECT COUNT(kRedirect) AS nCount 
+                FROM tredirect',
             \DB\ReturnType::SINGLE_OBJECT
         )->nCount;
     }
@@ -629,7 +630,7 @@ class Redirect
      *   * path relative to the shop root url
      * @return bool
      */
-    public static function checkAvailability($cUrl): bool
+    public static function checkAvailability(string $cUrl): bool
     {
         if (empty($cUrl)) {
             return false;
@@ -677,9 +678,8 @@ class Redirect
     /**
      * @param int $kRedirect
      */
-    public static function deleteRedirect($kRedirect)
+    public static function deleteRedirect(int $kRedirect)
     {
-        $kRedirect = (int)$kRedirect;
         Shop::Container()->getDB()->delete('tredirect', 'kRedirect', $kRedirect);
         Shop::Container()->getDB()->delete('tredirectreferer', 'kRedirect', $kRedirect);
     }

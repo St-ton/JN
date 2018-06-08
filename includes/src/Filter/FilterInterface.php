@@ -237,10 +237,10 @@ interface FilterInterface
     /**
      * set basic information for using this filter
      *
-     * @param ProductFilter|null $productFilter
+     * @param ProductFilter $productFilter
      * @return $this
      */
-    public function setBaseData($productFilter): FilterInterface;
+    public function setBaseData(ProductFilter $productFilter): FilterInterface;
 
     /**
      * the language ID currently active in the shop

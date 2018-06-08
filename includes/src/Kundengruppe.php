@@ -82,8 +82,7 @@ class Kundengruppe
     ];
 
     /**
-     * Constructor
-     *
+     * Kundengruppe constructor.
      * @param int $kKundengruppe
      */
     public function __construct(int $kKundengruppe = 0)
@@ -143,8 +142,6 @@ class Kundengruppe
     }
 
     /**
-     * Loads database member into class member
-     *
      * @param int $kKundengruppe
      * @return $this
      */
@@ -164,9 +161,7 @@ class Kundengruppe
     }
 
     /**
-     * Store the class in the database
-     *
-     * @param bool $bPrim - Controls the return of the method
+     * @param bool $bPrim
      * @return bool|int
      */
     public function save(bool $bPrim = true)
@@ -186,16 +181,14 @@ class Kundengruppe
     }
 
     /**
-     * Update the class in the database
-     *
      * @return int
      */
     public function update(): int
     {
         $_upd               = new stdClass();
         $_upd->cName        = $this->name;
-        $_upd->fRabatt      = $this->fRabatt;
-        $_upd->cStandard    = $this->cStandard;
+        $_upd->fRabatt      = $this->discount;
+        $_upd->cStandard    = $this->default;
         $_upd->cShopLogin   = $this->cShopLogin;
         $_upd->nNettoPreise = $this->isMerchant;
 
@@ -203,8 +196,6 @@ class Kundengruppe
     }
 
     /**
-     * Delete the class in the database
-     *
      * @return int
      */
     public function delete(): int
@@ -294,7 +285,7 @@ class Kundengruppe
      */
     public function setStandard($cStandard): self
     {
-        trigger_error('Kundengruppe::setStandard() is deprecated - use setDefault() instead', E_USER_DEPRECATED);
+        trigger_error(__METHOD__ . ' is deprecated - use setDefault() instead', E_USER_DEPRECATED);
 
         return $this->setDefault($cStandard);
     }
@@ -336,20 +327,20 @@ class Kundengruppe
      * @param int $is
      * @return $this
      */
-    public function setIsMerchant($is): self
+    public function setIsMerchant(int $is): self
     {
-        $this->isMerchant = (int)$is;
+        $this->isMerchant = $is;
 
         return $this;
     }
 
     /**
-     * @param $n
+     * @param int $n
      * @return $this
      */
-    public function setMayViewPrices($n): self
+    public function setMayViewPrices(int $n): self
     {
-        $this->mayViewPrices = (int)$n;
+        $this->mayViewPrices = $n;
 
         return $this;
     }
@@ -374,9 +365,9 @@ class Kundengruppe
      * @param int $n
      * @return $this
      */
-    public function setMayViewCategories($n): self
+    public function setMayViewCategories(int $n): self
     {
-        $this->mayViewCategories = (int)$n;
+        $this->mayViewCategories = $n;
 
         return $this;
     }
@@ -401,7 +392,7 @@ class Kundengruppe
      * @return int
      * @deprecated since 4.06
      */
-    public function getKundengruppe(): self
+    public function getKundengruppe(): int
     {
         trigger_error('Kundengruppe::getKundengruppe() is deprecated - use getID() instead', E_USER_DEPRECATED);
 
@@ -557,7 +548,7 @@ class Kundengruppe
     public static function getDefaultGroupID(): int
     {
         if (isset($_SESSION['Kundengruppe'])
-            && get_class($_SESSION['Kundengruppe']) === 'Kundengruppe'
+            && $_SESSION['Kundengruppe'] instanceof self
             && $_SESSION['Kundengruppe']->getID() > 0
         ) {
             return $_SESSION['Kundengruppe']->getID();
@@ -577,7 +568,7 @@ class Kundengruppe
     public static function reset(int $kKundengruppe)
     {
         if (isset($_SESSION['Kundengruppe'])
-            && get_class($_SESSION['Kundengruppe']) === 'Kundengruppe'
+            && $_SESSION['Kundengruppe'] instanceof self
             && $_SESSION['Kundengruppe']->getID() === $kKundengruppe
         ) {
             return $_SESSION['Kundengruppe'];

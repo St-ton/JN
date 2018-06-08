@@ -97,9 +97,9 @@ class Merkmal
      * @param bool $bMMW
      * @param int  $kSprache
      */
-    public function __construct($kMerkmal = 0, $bMMW = false, $kSprache = 0)
+    public function __construct(int $kMerkmal = 0, bool $bMMW = false, int $kSprache = 0)
     {
-        if ((int)$kMerkmal > 0) {
+        if ($kMerkmal > 0) {
             $this->loadFromDB($kMerkmal, $bMMW, $kSprache);
         }
     }
@@ -112,9 +112,9 @@ class Merkmal
      * @param int  $kSprache
      * @return $this
      */
-    public function loadFromDB($kMerkmal, $bMMW = false, $kSprache = 0)
+    public function loadFromDB(int $kMerkmal, bool $bMMW = false, int $kSprache = 0)
     {
-        $kSprache = (int)$kSprache === 0 ? Shop::getLanguageID() : (int)$kSprache;
+        $kSprache = $kSprache === 0 ? Shop::getLanguageID() : $kSprache;
         $id       = 'mm_' . $kMerkmal . '_' . $kSprache;
 
         $this->kSprache = $kSprache;
@@ -139,7 +139,6 @@ class Merkmal
             $cJoin   = "INNER JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = {$kSprache}";
         }
-        $kMerkmal = (int)$kMerkmal;
         $oMerkmal = Shop::Container()->getDB()->query(
             "SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, 
                   {$cSelect}
@@ -175,14 +174,12 @@ class Merkmal
                     FROM tmerkmalwert tmw
                     {$cJoinMerkmalwert}
                     WHERE kMerkmal = {$this->kMerkmal}
-                    {$cOrderBy}", 2
+                    {$cOrderBy}",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-
-            if (is_array($oMerkmalWertTMP_arr) && count($oMerkmalWertTMP_arr) > 0) {
-                $this->oMerkmalWert_arr = [];
-                foreach ($oMerkmalWertTMP_arr as $oMerkmalWertTMP) {
-                    $this->oMerkmalWert_arr[] = new MerkmalWert($oMerkmalWertTMP->kMerkmalWert, $this->kSprache);
-                }
+            $this->oMerkmalWert_arr = [];
+            foreach ($oMerkmalWertTMP_arr as $oMerkmalWertTMP) {
+                $this->oMerkmalWert_arr[] = new MerkmalWert($oMerkmalWertTMP->kMerkmalWert, $this->kSprache);
             }
         }
         $imageBaseURL = Shop::getImageBaseURL();
@@ -223,10 +220,9 @@ class Merkmal
      * @param bool  $bMMW
      * @return array
      */
-    public function holeMerkmale($kMerkmal_arr, $bMMW = false)
+    public function holeMerkmale(array $kMerkmal_arr, bool $bMMW = false): array
     {
         $oMerkmal_arr = [];
-
         if (is_array($kMerkmal_arr) && count($kMerkmal_arr) > 0) {
             $kSprache = Shop::getLanguage();
             if (!$kSprache) {

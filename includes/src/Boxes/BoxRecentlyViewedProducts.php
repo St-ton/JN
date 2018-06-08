@@ -6,8 +6,6 @@
 
 namespace Boxes;
 
-use DB\ReturnType;
-
 /**
  * Class BoxRecentlyViewedProducts
  * @package Boxes

@@ -135,8 +135,8 @@ setzeSpracheUndWaehrungLink();
 // Extension Point
 $oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $kKundengruppe))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
-$boxes       = Boxen::getInstance();
-$boxesToShow = $boxes->renderNew($boxes->getBoxes($pagetType));
+$boxes       = Shop::Container()->getBoxService();
+$boxesToShow = $boxes->render($boxes->buildList($pagetType));
 /* @global Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     // Letzten angesehenden Artikel hinzufügen

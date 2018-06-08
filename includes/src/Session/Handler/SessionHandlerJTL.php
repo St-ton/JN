@@ -1,21 +1,25 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
-namespace JTL\core;
+namespace Session\Handler;
 
 /**
  * Class SessionHandler
  *
  * @package JTL\Session
  */
-class SessionHandler
+class SessionHandlerJTL extends \SessionHandler implements \SessionHandlerInterface
 {
     /**
-     * @var array
+     * @var array|null
      */
     public $sessionData;
 
     /**
-     * @return array
+     * @return array|null
      */
     public function getAll()
     {
@@ -87,7 +91,6 @@ class SessionHandler
      *
      * @param  string|array $key
      * @param  mixed|null   $value
-     * @return void
      */
     public function put($key, $value = null)
     {

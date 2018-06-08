@@ -3448,7 +3448,7 @@ function setzeSesssionAccountwahlLogin($oKunde)
             $_SESSION['Kupon']
         );
         $oKunde->angezeigtesLand = ISO2land($oKunde->cLand);
-        $session                 = Session::getInstance();
+        $session                 = \Session\Session::getInstance();
         $session->setCustomer($oKunde);
 
         return true;

@@ -15,7 +15,7 @@ class PHPSettingsHelper
      * @param string $shorthand
      * @return int
      */
-    private function shortHandToInt($shorthand)
+    private function shortHandToInt($shorthand): int
     {
         switch (substr($shorthand, -1)) {
             case 'M':
@@ -35,7 +35,7 @@ class PHPSettingsHelper
     /**
      * @return int
      */
-    public function limit()
+    public function limit(): int
     {
         return $this->shortHandToInt(ini_get('memory_limit'));
     }
@@ -43,7 +43,7 @@ class PHPSettingsHelper
     /**
      * @return string
      */
-    public function version()
+    public function version(): string
     {
         return PHP_VERSION;
     }
@@ -51,31 +51,31 @@ class PHPSettingsHelper
     /**
      * @return int
      */
-    public function executionTime()
+    public function executionTime(): int
     {
         return (int)ini_get('max_execution_time');
     }
-    
+
     /**
      * @return int
      */
-    public function postMaxSize()
+    public function postMaxSize(): int
     {
         return $this->shortHandToInt(ini_get('post_max_size'));
     }
-    
+
     /**
      * @return int
      */
-    public function uploadMaxFileSize()
+    public function uploadMaxFileSize(): int
     {
         return $this->shortHandToInt(ini_get('upload_max_filesize'));
     }
-    
+
     /**
      * @return bool
      */
-    public function safeMode()
+    public function safeMode(): bool
     {
         return false;
     }
@@ -83,7 +83,7 @@ class PHPSettingsHelper
     /**
      * @return string
      */
-    public function tempDir()
+    public function tempDir(): string
     {
         return sys_get_temp_dir();
     }
@@ -91,7 +91,7 @@ class PHPSettingsHelper
     /**
      * @return bool
      */
-    public function fopenWrapper()
+    public function fopenWrapper(): bool
     {
         return (bool)ini_get('allow_url_fopen');
     }
@@ -100,7 +100,7 @@ class PHPSettingsHelper
      * @param int $limit - in bytes
      * @return bool
      */
-    public function hasMinLimit($limit)
+    public function hasMinLimit(int $limit): bool
     {
         $value = $this->limit();
 
@@ -111,7 +111,7 @@ class PHPSettingsHelper
      * @param int $limit - in S
      * @return bool
      */
-    public function hasMinExecutionTime($limit)
+    public function hasMinExecutionTime(int $limit): bool
     {
         return ($this->executionTime() >= $limit || $this->executionTime() === 0);
     }
@@ -120,7 +120,7 @@ class PHPSettingsHelper
      * @param int $limit - in bytes
      * @return bool
      */
-    public function hasMinPostSize($limit)
+    public function hasMinPostSize(int $limit): bool
     {
         return $this->postMaxSize() >= $limit;
     }
@@ -129,7 +129,7 @@ class PHPSettingsHelper
      * @param int $limit - in bytes
      * @return bool
      */
-    public function hasMinUploadSize($limit)
+    public function hasMinUploadSize(int $limit): bool
     {
         return $this->uploadMaxFileSize() >= $limit;
     }
@@ -137,7 +137,7 @@ class PHPSettingsHelper
     /**
      * @return bool
      */
-    public function isTempWriteable()
+    public function isTempWriteable(): bool
     {
         return is_writable($this->tempDir());
     }

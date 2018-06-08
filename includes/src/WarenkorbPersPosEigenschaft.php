@@ -52,11 +52,17 @@ class WarenkorbPersPosEigenschaft
      * @param string $cEigenschaftWertName
      * @param int    $kWarenkorbPersPos
      */
-    public function __construct($kEigenschaft, $kEigenschaftWert, $cFreifeldWert, $cEigenschaftName, $cEigenschaftWertName, $kWarenkorbPersPos)
-    {
-        $this->kWarenkorbPersPos    = (int)$kWarenkorbPersPos;
-        $this->kEigenschaft         = (int)$kEigenschaft;
-        $this->kEigenschaftWert     = (int)$kEigenschaftWert;
+    public function __construct(
+        int $kEigenschaft,
+        int $kEigenschaftWert,
+        $cFreifeldWert,
+        $cEigenschaftName,
+        $cEigenschaftWertName,
+        int $kWarenkorbPersPos
+    ) {
+        $this->kWarenkorbPersPos    = $kWarenkorbPersPos;
+        $this->kEigenschaft         = $kEigenschaft;
+        $this->kEigenschaftWert     = $kEigenschaftWert;
         $this->cFreifeldWert        = $cFreifeldWert;
         $this->cEigenschaftName     = $cEigenschaftName;
         $this->cEigenschaftWertName = $cEigenschaftWertName;
@@ -65,7 +71,7 @@ class WarenkorbPersPosEigenschaft
     /**
      * @return $this
      */
-    public function schreibeDB()
+    public function schreibeDB(): self
     {
         $obj = kopiereMembers($this);
         unset($obj->kWarenkorbPersPosEigenschaft);

@@ -37,6 +37,16 @@ class Eigenschaft
     public $EigenschaftsWert;
 
     /**
+     * @var string
+     */
+    public $cTyp;
+
+    /**
+     * @var int
+     */
+    public $nSort;
+
+    /**
      * Konstruktor
      *
      * @param int $kEigenschaft - Falls angegeben, wird der Eigenschaft mit angegebenem kEigenschaft aus der DB geholt

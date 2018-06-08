@@ -453,7 +453,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setBaseData($productFilter): FilterInterface
+    public function setBaseData(ProductFilter $productFilter): FilterInterface
     {
         $this->productFilter      = $productFilter;
         $this->languageID         = $productFilter->getLanguageID();
@@ -801,9 +801,9 @@ abstract class AbstractFilter implements FilterInterface
      * @param int $value
      * @return $this
      */
-    public function setValueCompat($value)
+    public function setValueCompat(int $value)
     {
-        $this->value = (int)$value;
+        $this->value = $value;
         if ($this->value > 0) {
             $this->productFilter->enableFilter($this);
         }

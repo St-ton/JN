@@ -30,12 +30,12 @@ final class BoxUpcomingProducts extends AbstractBox
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $limit          = (int)$config['boxen']['box_erscheinende_anzahl_anzeige'];
             $cacheID        = 'box_ikv_' . $customerGroupID . '_' . $limit . md5($stockFilterSQL . $parentSQL);
-            if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) !== false) {
+            if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
                 $productIDs = \Shop::Container()->getDB()->queryPrepared(
                     "SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
-                            ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                            ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = :cid
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             $stockFilterSQL
@@ -50,7 +50,6 @@ final class BoxUpcomingProducts extends AbstractBox
                 }, $productIDs);
                 \Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-
             if (count($productIDs) > 0) {
                 $this->setShow(true);
                 $products = new \ArtikelListe();

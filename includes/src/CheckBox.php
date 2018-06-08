@@ -119,7 +119,7 @@ class CheckBox
      * @param bool $bSprachWerte
      * @return $this
      */
-    private function loadFromDB(int $kCheckBox, bool $bSprachWerte)
+    private function loadFromDB(int $kCheckBox, bool $bSprachWerte): self
     {
         if ($kCheckBox <= 0) {
             return $this;
@@ -365,9 +365,9 @@ class CheckBox
      * @param string $cLimitSQL
      * @param bool   $bAktiv
      * @param bool   $bSprache
-     * @return array
+     * @return CheckBox[]
      */
-    public function getAllCheckBox(string $cLimitSQL = '', bool $bAktiv = false, bool $bSprache = false)
+    public function getAllCheckBox(string $cLimitSQL = '', bool $bAktiv = false, bool $bSprache = false): array
     {
         $oCheckBox_arr = [];
         $cSQL          = '';

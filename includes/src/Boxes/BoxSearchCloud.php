@@ -65,7 +65,7 @@ final class BoxSearchCloud extends AbstractBox
             //hole anzuzeigende Suchwolke
             shuffle($searchCloudEntries);
             $this->setItems($searchCloudEntries);
-            $this->setJSON(\Boxen::gibJSONString($searchCloudEntries));
+            $this->setJSON(AbstractBox::getJSONString($searchCloudEntries));
             executeHook(HOOK_BOXEN_INC_SUCHWOLKE, [
                 'box'        => &$this,
                 'cache_tags' => &$cacheTags,

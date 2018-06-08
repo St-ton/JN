@@ -33,7 +33,7 @@ function expandPriceArray($data, $max)
 }
 
 if (isset($_GET['kArtikel'])) {
-    $session       = Session::getInstance();
+    $session       = \Session\Session::getInstance();
     $Einstellungen = Shop::getSettings([CONF_PREISVERLAUF]);
     $kArtikel      = (int)$_GET['kArtikel'];
     $kKundengruppe = (int)$_GET['kKundengruppe'];

@@ -72,18 +72,18 @@ class Cron
      * @param string $dLetzterStart
      */
     public function __construct(
-        $kCron = 0,
-        $kKey = 0,
-        $nAlleXStd = 0,
-        $cName = '',
-        $cJobArt = '',
-        $cTabelle = '',
-        $cKey = '',
-        $dStart = '0000-00-00 00:00:00',
-        $dStartZeit = '00:00:00',
-        $dLetzterStart = '0000-00-00 00:00:00'
+        int $kCron = 0,
+        int $kKey = 0,
+        int $nAlleXStd = 0,
+        string $cName = '',
+        string $cJobArt = '',
+        string $cTabelle = '',
+        string $cKey = '',
+        string $dStart = '0000-00-00 00:00:00',
+        string $dStartZeit = '00:00:00',
+        string $dLetzterStart = '0000-00-00 00:00:00'
     ) {
-        $this->kCron         = (int)$kCron;
+        $this->kCron         = $kCron;
         $this->kKey          = $kKey;
         $this->cKey          = $cKey;
         $this->cTabelle      = $cTabelle;

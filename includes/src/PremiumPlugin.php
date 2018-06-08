@@ -106,8 +106,8 @@ class PremiumPlugin
         $plugin            = Plugin::getPluginById($pluginID);
         $this->pluginID    = $pluginID;
         $this->exists      = file_exists(PFAD_ROOT . PFAD_PLUGIN . $pluginID . '/info.xml');
-        $this->isInstalled = ($plugin !== null && $plugin->kPlugin > 0);
-        $this->isActivated = ($this->isInstalled && (int)$plugin->nStatus === 2);
+        $this->isInstalled = $plugin !== null && $plugin->kPlugin > 0;
+        $this->isActivated = $this->isInstalled && (int)$plugin->nStatus === 2;
         $this->kPlugin     = $this->isInstalled ? (int)$plugin->kPlugin : 0;
     }
 
@@ -123,7 +123,7 @@ class PremiumPlugin
     }
 
     /**
-     * @param $link
+     * @param string $link
      * @return $this
      */
     public function setDownloadLink($link)
@@ -258,7 +258,7 @@ class PremiumPlugin
     }
 
     /**
-     * @param $author
+     * @param string $author
      * @return $this
      */
     public function setAuthor($author)
@@ -448,7 +448,7 @@ class PremiumPlugin
      * @param bool        $external
      * @return $this
      */
-    public function addButton($caption, $link, $class = 'btn btn-default', $fa = null, $external = false)
+    public function addButton($caption, $link, $class = 'btn btn-default', $fa = null, bool $external = false)
     {
         $btn           = new stdClass();
         $btn->link     = $link;
@@ -467,8 +467,8 @@ class PremiumPlugin
     /**
      * @return bool
      */
-    public function hasCertifcates()
+    public function hasCertifcates(): bool
     {
-        return (isset($this->servicePartner->oZertifizierungen_arr) && count($this->servicePartner->oZertifizierungen_arr) > 0);
+        return isset($this->servicePartner->oZertifizierungen_arr) && count($this->servicePartner->oZertifizierungen_arr) > 0;
     }
 }

@@ -7,7 +7,6 @@
 namespace Filter\Items;
 
 use DB\ReturnType;
-use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\Type;

@@ -482,12 +482,12 @@ final class Shop
     /**
      * get session instance
      *
-     * @return Session
+     * @return \Session\Session
      * @throws Exception
      */
-    public function Session(): Session
+    public function Session(): \Session\Session
     {
-        return Session::getInstance();
+        return \Session\Session::getInstance();
     }
 
     /**
@@ -1381,7 +1381,7 @@ final class Shop
             $link       = self::Container()->getLinkService()->getLinkByID(self::$kLink);
             if ($link !== null && ($linkType = $link->getLinkType()) > 0) {
                 if ($linkType === LINKTYP_EXTERNE_URL) {
-                    header('Location: ' . $link->cURL, true, 303);
+                    header('Location: ' . $link->getURL(), true, 303);
                     exit;
                 }
                 self::$fileName = 'seite.php';
@@ -1778,8 +1778,8 @@ final class Shop
         $container->setSingleton(\Cache\JTLCacheInterface::class, function () {
             return new \Cache\JTLCache();
         });
-        $container->setSingleton(\Services\JTL\LinkService::class, function (Container $container) {
-            return new \Services\JTL\LinkService($container->getDB());
+        $container->setSingleton(\Services\JTL\LinkServiceInterface::class, function (Container $container) {
+            return new \Services\JTL\LinkService($container->getDB(), $container->getCache());
         });
         // SECURITY
         $container->setSingleton(\Services\JTL\CryptoServiceInterface::class, function () {
@@ -1817,6 +1817,12 @@ final class Shop
         // DB SERVICES
         $container->setSingleton(DbService\GcServiceInterface::class, function (Container $container) {
             return new DbService\GcService($container->getDB());
+        });
+        $container->setFactory(\Boxes\BoxFactoryInterface::class, function () {
+            return new \Boxes\BoxFactory(Shopsetting::getInstance()->getAll());
+        });
+        $container->setSingleton(\Services\JTL\BoxServiceInterface::class, function (Container $container) {
+            return new \Services\JTL\BoxService(Shopsetting::getInstance()->getAll(), $container->getBoxFactory(), $container->getDB());
         });
     }
 }

@@ -12,8 +12,8 @@ use MyCLabs\Enum\Enum;
  * Class ComponentPropertyType
  *
  * @package Filter
- * @method Type OR()
- * @method Type AND()
+ * @method static Type OR()
+ * @method static Type AND()
  */
 class Type extends Enum
 {

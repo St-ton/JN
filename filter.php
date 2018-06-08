@@ -97,7 +97,6 @@ $oSuchergebnisse->getProducts()->transform(function ($article) use ($Einstellung
 
     return $article;
 });
-
 if ($oSuchergebnisse->getProducts()->count() === 0) {
     if ($NaviFilter->hasCategory()) {
         // hole alle enthaltenen Kategorien
@@ -116,7 +115,7 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
             $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
             $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
                 $KategorieInhalt->Unterkategorien,
-                $KategorieInhalt->TopArtikel ?? 0
+                $KategorieInhalt->TopArtikel ?? null
             );
         }
         $smarty->assign('KategorieInhalt', $KategorieInhalt);

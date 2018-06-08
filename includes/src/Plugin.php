@@ -308,16 +308,14 @@ class Plugin
     /**
      * Konstruktor
      *
-     * @param int  $kPlugin - Falls angegeben, wird das Plugin mit angegebenem $kPlugin aus der DB geholt
+     * @param int  $kPlugin
      * @param bool $invalidateCache - set to true to clear plugin cache
      * @param bool $suppressReload - set to true when the plugin shouldn't be reloaded, not even in plugin dev mode
      */
-    public function __construct($kPlugin = 0, $invalidateCache = false, $suppressReload = false)
+    public function __construct(int $kPlugin = 0, bool $invalidateCache = false, bool $suppressReload = false)
     {
-        $kPlugin = (int)$kPlugin;
         if ($kPlugin > 0) {
             $this->loadFromDB($kPlugin, $invalidateCache);
-
             if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true && $suppressReload === false) {
                 reloadPlugin($this);
                 $this->loadFromDB($kPlugin, $invalidateCache);
@@ -332,9 +330,8 @@ class Plugin
      * @param bool $invalidateCache - set to true to invalidate plugin cache
      * @return null|$this
      */
-    public function loadFromDB($kPlugin, $invalidateCache = false)
+    public function loadFromDB(int $kPlugin, bool $invalidateCache = false)
     {
-        $kPlugin = (int)$kPlugin;
         $cacheID = CACHING_GROUP_PLUGIN . '_' . $kPlugin . '_' . pruefeSSL() . '_' . Shop::getLanguage();
         if ($invalidateCache === true) {
             //plugin options were save in admin backend, so invalidate the cache
@@ -389,9 +386,23 @@ class Plugin
         $this->cLicencePfadURLSSL = $_shopURLSSL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
             PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_LICENCE;
         // Plugin Hooks holen
-        $this->oPluginHook_arr = Shop::Container()->getDB()->selectAll('tpluginhook', 'kPlugin', $kPlugin);
+        $this->oPluginHook_arr = array_map(function ($hook) {
+            $hook->kPluginHook = (int)$hook->kPluginHook;
+            $hook->kPlugin     = (int)$hook->kPlugin;
+            $hook->nHook       = (int)$hook->nHook;
+            $hook->nPriority   = (int)$hook->nPriority;
+
+            return $hook;
+        }, Shop::Container()->getDB()->selectAll('tpluginhook', 'kPlugin', $kPlugin));
         // Plugin AdminMenu holen
-        $this->oPluginAdminMenu_arr = Shop::Container()->getDB()->selectAll('tpluginadminmenu', 'kPlugin', $kPlugin, '*', 'nSort');
+        $this->oPluginAdminMenu_arr = array_map(function ($menu) {
+            $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
+            $menu->kPlugin          = (int)$menu->kPlugin;
+            $menu->nSort            = (int)$menu->nSort;
+            $menu->nConf            = (int)$menu->nConf;
+
+            return $menu;
+        }, Shop::Container()->getDB()->selectAll('tpluginadminmenu', 'kPlugin', $kPlugin, '*', 'nSort'));
         // searching for the files README.md and LICENSE.md
         $szPluginMainPath = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/';
         if ('' === $this->cTextReadmePath && $this->checkFileExistence($szPluginMainPath . 'README.md')) {
@@ -423,35 +434,49 @@ class Plugin
                 WHERE tplugineinstellungen.kPlugin = " . $kPlugin,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (is_array($this->oPluginEinstellung_arr)) {
-            foreach ($this->oPluginEinstellung_arr as $conf) {
-                if ($conf->cConf === 'M') {
-                    $conf->cWert = unserialize($conf->cWert);
-                }
-                unset($conf->cConf);
+        foreach ($this->oPluginEinstellung_arr as $conf) {
+            $conf->kPlugin = (int)$conf->kPlugin;
+            if ($conf->cConf === 'M') {
+                $conf->cWert = unserialize($conf->cWert);
             }
+            unset($conf->cConf);
         }
         // Plugin Einstellungen Conf holen
-        $oPluginEinstellungConfTMP_arr = Shop::Container()->getDB()->selectAll('tplugineinstellungenconf', 'kPlugin', $kPlugin, '*', 'nSort');
-        foreach ($oPluginEinstellungConfTMP_arr as $i => $oPluginEinstellungConfTMP) {
-            $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = [];
-            if ($oPluginEinstellungConfTMP->cInputTyp === 'selectbox' || $oPluginEinstellungConfTMP->cInputTyp === 'radio') {
-                if (!empty($oPluginEinstellungConfTMP->cSourceFile)) {
-                    $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr =
-                        $this->getDynamicOptions($oPluginEinstellungConfTMP);
+        $tmpConf = Shop::Container()->getDB()->selectAll(
+            'tplugineinstellungenconf',
+            'kPlugin',
+            $kPlugin,
+            '*',
+            'nSort'
+        );
+        foreach ($tmpConf as $i => $cfg) {
+            $cfg->kPluginEinstellungenConf = (int)$cfg->kPluginEinstellungenConf;
+            $cfg->kPlugin                  = (int)$cfg->kPlugin;
+            $cfg->kPluginAdminMenu         = (int)$cfg->kPluginAdminMenu;
+            $cfg->nSort                    = (int)$cfg->nSort;
+
+            $tmpConf[$i]->oPluginEinstellungenConfWerte_arr = [];
+            if ($cfg->cInputTyp === 'selectbox' || $cfg->cInputTyp === 'radio') {
+                if (!empty($cfg->cSourceFile)) {
+                    $tmpConf[$i]->oPluginEinstellungenConfWerte_arr = $this->getDynamicOptions($cfg);
                 } else {
-                    $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr =
-                        Shop::Container()->getDB()->selectAll(
-                            'tplugineinstellungenconfwerte',
-                            'kPluginEinstellungenConf',
-                            (int)$oPluginEinstellungConfTMP->kPluginEinstellungenConf,
-                            '*',
-                            'nSort'
-                        );
+                    $confValues = array_map(function ($c) {
+                        $c->kPluginEinstellungenConf = (int)$c->kPluginEinstellungenConf;
+                        $c->nSort                    = (int)$c->nSort;
+
+                        return $c;
+                    }, Shop::Container()->getDB()->selectAll(
+                        'tplugineinstellungenconfwerte',
+                        'kPluginEinstellungenConf',
+                        (int)$cfg->kPluginEinstellungenConf,
+                        '*',
+                        'nSort'
+                    ));
+                    $tmpConf[$i]->oPluginEinstellungenConfWerte_arr = $confValues;
                 }
             }
         }
-        $this->oPluginEinstellungConf_arr = $oPluginEinstellungConfTMP_arr;
+        $this->oPluginEinstellungConf_arr = $tmpConf;
         // Plugin Einstellungen Assoc
         $this->oPluginEinstellungAssoc_arr = gibPluginEinstellungen($this->kPlugin);
         // Plugin Sprachvariablen holen
@@ -461,7 +486,6 @@ class Plugin
             $cISOSprache = $_SESSION['cISOSprache'];
         } else {
             $oSprache = gibStandardsprache();
-
             if (isset($oSprache->cISO) && strlen($oSprache->cISO) > 0) {
                 $cISOSprache = $oSprache->cISO;
             }
@@ -470,15 +494,13 @@ class Plugin
         $this->oPluginSprachvariableAssoc_arr = gibPluginSprachvariablen($this->kPlugin, $cISOSprache);
         // FrontendLink
         $oPluginFrontendLink_arr = Shop::Container()->getDB()->selectAll('tlink', 'kPlugin', (int)$this->kPlugin);
-        if (is_array($oPluginFrontendLink_arr) && count($oPluginFrontendLink_arr) > 0) {
-            // Link Sprache holen
-            foreach ($oPluginFrontendLink_arr as $i => $oPluginFrontendLink) {
-                $oPluginFrontendLink_arr[$i]->oPluginFrontendLinkSprache_arr = Shop::Container()->getDB()->selectAll(
-                    'tlinksprache',
-                    'kLink',
-                    (int)$oPluginFrontendLink->kLink
-                );
-            }
+        // Link Sprache holen
+        foreach ($oPluginFrontendLink_arr as $i => $oPluginFrontendLink) {
+            $oPluginFrontendLink_arr[$i]->oPluginFrontendLinkSprache_arr = Shop::Container()->getDB()->selectAll(
+                'tlinksprache',
+                'kLink',
+                (int)$oPluginFrontendLink->kLink
+            );
         }
         $this->oPluginFrontendLink_arr = $oPluginFrontendLink_arr;
         // Zahlungsmethoden holen
@@ -520,50 +542,45 @@ class Plugin
         $this->oPluginZahlungsmethode_arr      = $methods;
         $this->oPluginZahlungsmethodeAssoc_arr = $methodsAssoc;
         // Zahlungsart Klassen holen
-        $oZahlungsartKlasse_arr = Shop::Container()->getDB()->selectAll('tpluginzahlungsartklasse', 'kPlugin', (int)$this->kPlugin);
-        if (is_array($oZahlungsartKlasse_arr) && count($oZahlungsartKlasse_arr) > 0) {
-            foreach ($oZahlungsartKlasse_arr as $oZahlungsartKlasse) {
-                if (isset($oZahlungsartKlasse->cModulId) && strlen($oZahlungsartKlasse->cModulId) > 0) {
-                    $this->oPluginZahlungsKlasseAssoc_arr[$oZahlungsartKlasse->cModulId] = $oZahlungsartKlasse;
-                }
+        $oZahlungsartKlasse_arr = Shop::Container()->getDB()->selectAll(
+            'tpluginzahlungsartklasse',
+            'kPlugin',
+            (int)$this->kPlugin
+        );
+        foreach ($oZahlungsartKlasse_arr as $oZahlungsartKlasse) {
+            if (isset($oZahlungsartKlasse->cModulId) && strlen($oZahlungsartKlasse->cModulId) > 0) {
+                $this->oPluginZahlungsKlasseAssoc_arr[$oZahlungsartKlasse->cModulId] = $oZahlungsartKlasse;
             }
         }
         // Emailvorlage holen
         $mailTplAssoc = []; // Assoc als cModulId
         $mailTpls     = Shop::Container()->getDB()->selectAll('tpluginemailvorlage', 'kPlugin', (int)$this->kPlugin);
-
-        if (is_array($mailTpls) && count($mailTpls) > 0) {
-            foreach ($mailTpls as $i => $oPluginEmailvorlage) {
-                $mailTpls[$i]->oPluginEmailvorlageSprache_arr = Shop::Container()->getDB()->selectAll(
-                    'tpluginemailvorlagesprache',
-                    'kEmailvorlage',
-                    (int)$oPluginEmailvorlage->kEmailvorlage
-                );
-
-                if (is_array($mailTpls[$i]->oPluginEmailvorlageSprache_arr) &&
-                    count($mailTpls[$i]->oPluginEmailvorlageSprache_arr) > 0
-                ) {
-                    $mailTpls[$i]->oPluginEmailvorlageSpracheAssoc_arr = []; // Assoc kSprache
-                    foreach ($mailTpls[$i]->oPluginEmailvorlageSprache_arr as $oPluginEmailvorlageSprache) {
-                        $mailTpls[$i]->oPluginEmailvorlageSpracheAssoc_arr[$oPluginEmailvorlageSprache->kSprache] =
-                            $oPluginEmailvorlageSprache;
-                    }
+        foreach ($mailTpls as $i => $oPluginEmailvorlage) {
+            $mailTpls[$i]->oPluginEmailvorlageSprache_arr = Shop::Container()->getDB()->selectAll(
+                'tpluginemailvorlagesprache',
+                'kEmailvorlage',
+                (int)$oPluginEmailvorlage->kEmailvorlage
+            );
+            if (is_array($mailTpls[$i]->oPluginEmailvorlageSprache_arr)
+                && count($mailTpls[$i]->oPluginEmailvorlageSprache_arr) > 0
+            ) {
+                $mailTpls[$i]->oPluginEmailvorlageSpracheAssoc_arr = []; // Assoc kSprache
+                foreach ($mailTpls[$i]->oPluginEmailvorlageSprache_arr as $oPluginEmailvorlageSprache) {
+                    $mailTpls[$i]->oPluginEmailvorlageSpracheAssoc_arr[$oPluginEmailvorlageSprache->kSprache] =
+                        $oPluginEmailvorlageSprache;
                 }
-
-                $mailTplAssoc[$oPluginEmailvorlage->cModulId] = $mailTpls[$i];
             }
+            $mailTplAssoc[$oPluginEmailvorlage->cModulId] = $mailTpls[$i];
         }
         $this->oPluginEmailvorlage_arr      = $mailTpls;
         $this->oPluginEmailvorlageAssoc_arr = $mailTplAssoc;
         // AdminWidgets
         $this->oPluginAdminWidget_arr = Shop::Container()->getDB()->selectAll('tadminwidgets', 'kPlugin', (int)$this->kPlugin);
-        if (is_array($this->oPluginAdminWidget_arr) && count($this->oPluginAdminWidget_arr) > 0) {
-            foreach ($this->oPluginAdminWidget_arr as $i => $oPluginAdminWidget) {
-                $this->oPluginAdminWidget_arr[$i]->cClassAbs                     =
-                    $this->cAdminmenuPfad . PFAD_PLUGIN_WIDGET . 'class.Widget' . $oPluginAdminWidget->cClass . '.php';
-                $this->oPluginAdminWidgetAssoc_arr[$oPluginAdminWidget->kWidget] =
-                    $this->oPluginAdminWidget_arr[$i];
-            }
+        foreach ($this->oPluginAdminWidget_arr as $i => $oPluginAdminWidget) {
+            $this->oPluginAdminWidget_arr[$i]->cClassAbs                     =
+                $this->cAdminmenuPfad . PFAD_PLUGIN_WIDGET . 'class.Widget' . $oPluginAdminWidget->cClass . '.php';
+            $this->oPluginAdminWidgetAssoc_arr[$oPluginAdminWidget->kWidget] =
+                $this->oPluginAdminWidget_arr[$i];
         }
         // Uninstall
         $this->oPluginUninstall = Shop::Container()->getDB()->select('tpluginuninstall', 'kPlugin', (int)$this->kPlugin);
@@ -574,7 +591,7 @@ class Plugin
         }
         $this->pluginCacheID    = 'plgn_' . $this->kPlugin . '_' . $this->nVersion;
         $this->pluginCacheGroup = CACHING_GROUP_PLUGIN . '_' . $this->kPlugin;
-        //save to cache
+        // save to cache
         Shop::Cache()->set($cacheID, $this, [CACHING_GROUP_PLUGIN, $this->pluginCacheGroup]);
 
         return $this;
@@ -587,7 +604,7 @@ class Plugin
      * @param bool   $bDateOnly
      * @return string
      */
-    public function gibDateTimeLokalisiert($cDateTime, $bDateOnly = false)
+    public function gibDateTimeLokalisiert($cDateTime, bool $bDateOnly = false)
     {
         if (strlen($cDateTime) > 0) {
             $date = new DateTime($cDateTime);
@@ -633,7 +650,7 @@ class Plugin
      * @param mixed $xWert
      * @return bool
      */
-    public function setConf($cName, $xWert)
+    public function setConf($cName, $xWert): bool
     {
         if (strlen($cName) > 0) {
             if (!isset($_SESSION['PluginSession'])) {
@@ -690,7 +707,7 @@ class Plugin
     /**
      * @return int
      */
-    public function getCurrentVersion()
+    public function getCurrentVersion(): int
     {
         $cPfad = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis;
         if (is_dir($cPfad) && file_exists($cPfad . '/' . PLUGIN_INFO_FILE)) {
@@ -712,7 +729,7 @@ class Plugin
      * @param int $nStatus
      * @return string
      */
-    public function mapPluginStatus($nStatus)
+    public function mapPluginStatus(int $nStatus): string
     {
         if ($nStatus > 0) {
             switch ($nStatus) {
@@ -769,8 +786,8 @@ class Plugin
         );
         foreach ($oPluginHook_arr as $oPluginHook) {
             $oPlugin             = new stdClass();
-            $oPlugin->kPlugin    = $oPluginHook->kPlugin;
-            $oPlugin->nVersion   = $oPluginHook->nVersion;
+            $oPlugin->kPlugin    = (int)$oPluginHook->kPlugin;
+            $oPlugin->nVersion   = (int)$oPluginHook->nVersion;
             $oPlugin->cDateiname = $oPluginHook->cDateiname;
 
             $oPluginHookListe_arr[$oPluginHook->nHook][$oPluginHook->kPlugin] = $oPlugin;
@@ -838,9 +855,8 @@ class Plugin
      * @param int $kPlugin
      * @return mixed
      */
-    public static function bootstrapper($kPlugin)
+    public static function bootstrapper(int $kPlugin)
     {
-        $kPlugin = (int)$kPlugin;
         if (!isset(self::$bootstrapper[$kPlugin])) {
             $plugin = new self($kPlugin);
 

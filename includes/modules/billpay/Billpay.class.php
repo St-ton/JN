@@ -276,7 +276,7 @@ class Billpay extends PaymentMethod
                         ->assign('abschlussseite', 1);
 
                     // clear session
-                    $session = Session::getInstance();
+                    $session = \Session\Session::getInstance();
                     $session->cleanUp();
                 } else {
                     $this->assignMessage($oCapture->get_customer_error_message(), 'error');

@@ -82,7 +82,7 @@ final class LinkList implements LinkListInterface
                     ON tspezialseite.nLinkart = tlink.nLinkart
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
-                WHERE tlinksprache.kLink IN (" . implode(',', $this->linkIDs) . ")
+                WHERE tlink.kLink IN (" . implode(',', $this->linkIDs) . ")
                 GROUP BY tlink.kLink, tseo.kSprache
                 ORDER BY tlink.nSort, tlink.cName",
             ReturnType::ARRAY_OF_OBJECTS

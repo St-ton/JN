@@ -500,7 +500,7 @@ class Kategorie
      * @param int $customerGroupId
      * @return bool
      */
-    public static function isVisible($categoryId, $customerGroupId)
+    public static function isVisible($categoryId, $customerGroupId): bool
     {
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(

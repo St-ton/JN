@@ -6,9 +6,7 @@
 
 namespace Filter\Items;
 
-use Filter\AbstractFilter;
 use Filter\FilterJoin;
-use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\Type;
 use Filter\ProductFilter;

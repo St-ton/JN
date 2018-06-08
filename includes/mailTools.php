@@ -32,7 +32,8 @@ function includeMailTemplate($params, $smarty)
                 "SELECT " . $row . " AS content
                     FROM temailvorlagesprache
                     WHERE kSprache = " . (int)$currenLanguage->kSprache .
-                    " AND kEmailvorlage = " . (int)$vorlage->kEmailvorlage, 1
+                    " AND kEmailvorlage = " . (int)$vorlage->kEmailvorlage,
+                \DB\ReturnType::SINGLE_OBJECT
             );
         }
         if (isset($res->content)) {

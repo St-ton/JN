@@ -142,14 +142,12 @@ class Kupon
     }
 
     /**
-     * Loads database member into class member
-     *
      * @param int $kKupon
      * @return bool|Kupon
      */
-    private function loadFromDB($kKupon = 0)
+    private function loadFromDB(int $kKupon = 0)
     {
-        $couponResult = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$kKupon);
+        $couponResult = Shop::Container()->getDB()->select('tkupon', 'kKupon', $kKupon);
 
         if ($couponResult !== null && $couponResult->kKupon > 0) {
             $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
@@ -165,12 +163,10 @@ class Kupon
     }
 
     /**
-     * Store the class in the database
-     *
-     * @param bool $bPrim - Controls the return of the method
+     * @param bool $bPrim
      * @return bool|int
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
@@ -192,11 +188,9 @@ class Kupon
     }
 
     /**
-     * Update the class in the database
-     *
      * @return int
      */
-    public function update()
+    public function update(): int
     {
         $_upd                        = new stdClass();
         $_upd->kKundengruppe         = $this->kKundengruppe;
@@ -226,11 +220,9 @@ class Kupon
     }
 
     /**
-     * Delete the class in the database
-     *
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
         return Shop::Container()->getDB()->delete('tkupon', 'kKupon', (int)$this->kKupon);
     }
@@ -239,9 +231,9 @@ class Kupon
      * @param int $kKupon
      * @return $this
      */
-    public function setKupon($kKupon)
+    public function setKupon(int $kKupon)
     {
-        $this->kKupon = (int)$kKupon;
+        $this->kKupon = $kKupon;
 
         return $this;
     }
@@ -250,9 +242,9 @@ class Kupon
      * @param int $kKundengruppe
      * @return $this
      */
-    public function setKundengruppe($kKundengruppe)
+    public function setKundengruppe(int $kKundengruppe)
     {
-        $this->kKundengruppe = (int)$kKundengruppe;
+        $this->kKundengruppe = $kKundengruppe;
 
         return $this;
     }
@@ -261,9 +253,9 @@ class Kupon
      * @param int $kSteuerklasse
      * @return $this
      */
-    public function setSteuerklasse($kSteuerklasse)
+    public function setSteuerklasse(int $kSteuerklasse)
     {
-        $this->kSteuerklasse = (int)$kSteuerklasse;
+        $this->kSteuerklasse = $kSteuerklasse;
 
         return $this;
     }
@@ -343,9 +335,9 @@ class Kupon
      * @param int $nVerwendungen
      * @return $this
      */
-    public function setVerwendungen($nVerwendungen)
+    public function setVerwendungen(int $nVerwendungen)
     {
-        $this->nVerwendungen = (int)$nVerwendungen;
+        $this->nVerwendungen = $nVerwendungen;
 
         return $this;
     }
@@ -354,9 +346,9 @@ class Kupon
      * @param int $nVerwendungenBisher
      * @return $this
      */
-    public function setVerwendungenBisher($nVerwendungenBisher)
+    public function setVerwendungenBisher(int $nVerwendungenBisher)
     {
-        $this->nVerwendungenBisher = (int)$nVerwendungenBisher;
+        $this->nVerwendungenBisher = $nVerwendungenBisher;
 
         return $this;
     }
@@ -365,9 +357,9 @@ class Kupon
      * @param int $nVerwendungenProKunde
      * @return $this
      */
-    public function setVerwendungenProKunde($nVerwendungenProKunde)
+    public function setVerwendungenProKunde(int $nVerwendungenProKunde)
     {
-        $this->nVerwendungenProKunde = (int)$nVerwendungenProKunde;
+        $this->nVerwendungenProKunde = $nVerwendungenProKunde;
 
         return $this;
     }
@@ -691,7 +683,7 @@ class Kupon
      * @param int $kKupon
      * @return array $translationList
      */
-    public function getTranslation($kKupon = 0)
+    public function getTranslation(int $kKupon = 0): array
     {
         $translationList = [];
         if(isset($_SESSION['Sprachen'])){
@@ -699,7 +691,7 @@ class Kupon
                 $name_spr = Shop::Container()->getDB()->select(
                     'tkuponsprache',
                     'kKupon',
-                    (int)$kKupon,
+                    $kKupon,
                     'cISOSprache',
                     $Sprache->cISO,
                     null,
@@ -748,7 +740,7 @@ class Kupon
      * @param string $suffix
      * @return string
      */
-    public function generateCode($len = 7, $lower = true, $upper = true, $numbers = true, $prefix = '', $suffix = '')
+    public function generateCode(int $len = 7, bool $lower = true, bool $upper = true, bool $numbers = true, $prefix = '', $suffix = '')
     {
         $lowerString   = $lower ? 'abcdefghijklmnopqrstuvwxyz' : null;
         $upperString   = $upper ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;

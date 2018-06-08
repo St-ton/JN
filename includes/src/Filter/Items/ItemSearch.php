@@ -11,7 +11,6 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseSearchQuery;
 
@@ -70,7 +69,7 @@ class ItemSearch extends AbstractFilter
     /**
      * @return int
      */
-    public function getSearchCacheID()
+    public function getSearchCacheID(): int
     {
         return $this->searchCacheID;
     }
@@ -79,9 +78,9 @@ class ItemSearch extends AbstractFilter
      * @param int $id
      * @return $this
      */
-    public function setSearchCacheID($id)
+    public function setSearchCacheID(int $id)
     {
-        $this->searchCacheID = (int)$id;
+        $this->searchCacheID = $id;
 
         return $this;
     }
@@ -110,7 +109,7 @@ class ItemSearch extends AbstractFilter
      */
     public function setValue($value) : FilterInterface
     {
-        $this->searchID = (int)$value;
+        $this->searchID = $value;
 
         return $this;
     }
@@ -137,7 +136,7 @@ class ItemSearch extends AbstractFilter
                 WHERE cKey = 'kSuchanfrage' 
                     AND kKey = :kkey",
             ['kkey' => $this->getValue()],
-            1
+            ReturnType::SINGLE_OBJECT
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -202,7 +201,7 @@ class ItemSearch extends AbstractFilter
      * @return bool
      * @former suchanfragenSpeichern
      */
-    public function saveQuery($hits, $query = '', $real = false, $languageIDExt = 0, $filterSpam = true)
+    public function saveQuery($hits, $query = '', $real = false, $languageIDExt = 0, $filterSpam = true): bool
     {
         if ($query === '') {
             $query = $this->getName();

@@ -85,10 +85,9 @@ if (!JTL_INCLUDE_ONLY_DB) {
     $template                     = Template::getInstance();
     $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
-    $oBoxen              = Boxen::getInstance();
     $session             = (defined('JTLCRON') && JTLCRON === true)
-        ? Session::getInstance(true, true, 'JTLCRON')
-        : Session::getInstance();
+        ? \Session\Session::getInstance(true, true, 'JTLCRON')
+        : \Session\Session::getInstance();
     $bAdminWartungsmodus = false;
     if ($config['wartungsmodus_aktiviert'] === 'Y' && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php') {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';

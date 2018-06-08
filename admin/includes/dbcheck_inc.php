@@ -8,7 +8,7 @@
  * @param bool $extended
  * @return array
  */
-function getDBStruct($extended = false)
+function getDBStruct(bool $extended = false)
 {
     static $dbStruct = [
         'normal' => null,
@@ -94,13 +94,13 @@ function getDBStruct($extended = false)
 }
 
 /**
- * @return array|bool|mixed
+ * @return array
  */
 function getDBFileStruct()
 {
     $cDateiListe = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . JTL_VERSION . '.json';
     if (!file_exists($cDateiListe)) {
-        return false;
+        return [];
     }
     $cJSON         = file_get_contents($cDateiListe);
     $oDBFileStruct = json_decode($cJSON);
@@ -116,7 +116,7 @@ function getDBFileStruct()
  * @param array $cDBStruct_arr
  * @return array
  */
-function compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr)
+function compareDBStruct(array $cDBFileStruct_arr, array $cDBStruct_arr)
 {
     $cDBError_arr = [];
     foreach ($cDBFileStruct_arr as $cTable => $cColumn_arr) {
@@ -152,7 +152,7 @@ function compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr)
  * @param array  $tables
  * @return array|bool
  */
-function doDBMaintenance($action, array $tables)
+function doDBMaintenance(string $action, array $tables)
 {
     $tableString = implode(', ', $tables);
 
@@ -182,7 +182,7 @@ function doDBMaintenance($action, array $tables)
  * @param array $cDBStruct_arr
  * @return stdClass
  */
-function determineEngineUpdate($cDBStruct_arr)
+function determineEngineUpdate(array $cDBStruct_arr)
 {
     $result = new stdClass();
 
@@ -210,7 +210,7 @@ function determineEngineUpdate($cDBStruct_arr)
  * @param string[] $shopTables
  * @return string
  */
-function doEngineUpdateScript($fileName, $shopTables)
+function doEngineUpdateScript(string $fileName, array $shopTables)
 {
     $nl = "\r\n";
 
@@ -296,11 +296,10 @@ function doEngineUpdateScript($fileName, $shopTables)
  * @param array $exclude
  * @return stdClass
  */
-function doMigrateToInnoDB_utf8($status = 'start', $table = '', $step = 1, $exclude = [])
+function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', int $step = 1, array $exclude = [])
 {
     $mysqlVersion = DBMigrationHelper::getMySQLVersion();
     $table        = StringHandler::filterXSS($table);
-    $step         = (int)$step;
     $result       = new stdClass();
 
     switch (strtolower($status)) {

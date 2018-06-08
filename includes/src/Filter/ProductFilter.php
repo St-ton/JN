@@ -558,7 +558,7 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getProductLimit()
+    public function getProductLimit(): int
     {
         return $this->productLimit;
     }
@@ -615,7 +615,7 @@ class ProductFilter
     /**
      * @return array
      */
-    public function getParams()
+    public function getParams(): array
     {
         return array_merge($this->getParamsPrototype(), $this->params);
     }
@@ -1437,7 +1437,7 @@ class ProductFilter
     }
 
     /**
-     * @param BaseSearchSpecial $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setSearchSpecial(FilterInterface $filter): self
@@ -1464,7 +1464,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemSearchSpecial $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setSearchSpecialFilter(FilterInterface $filter): self
@@ -1501,7 +1501,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemRating $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setRatingFilter(FilterInterface $filter): self
@@ -1528,7 +1528,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemPriceRange $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setPriceRangeFilter(FilterInterface $filter): self

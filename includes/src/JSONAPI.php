@@ -29,7 +29,7 @@ class JSONAPI
      */
     public static function getInstance()
     {
-        return self::$instance === null ? (self::$instance = new self()) : self::$instance;
+        return self::$instance ?? self::$instance = new self();
     }
 
     /**

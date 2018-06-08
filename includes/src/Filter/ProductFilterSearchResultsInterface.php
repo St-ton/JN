@@ -307,7 +307,7 @@ interface ProductFilterSearchResultsInterface
      * @return $this
      */
     public function setFilterOptions(
-        $productFilter,
+        ProductFilter $productFilter,
         $currentCategory = null,
         $selectionWizard = false
     ): ProductFilterSearchResultsInterface;

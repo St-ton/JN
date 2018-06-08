@@ -154,16 +154,16 @@
     {get_manufacturers assign='manufacturers'}
     {if !empty($manufacturers)}
         <li class="dropdown megamenu-fw{if $NaviFilter->hasManufacturer() || $nSeitenTyp == PAGE_HERSTELLER} active{/if}">
-            {assign var="linkKeyHersteller" value=Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)}
-            {if !empty($linkKeyHersteller)}{assign var="linkSEOHersteller" value=Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)}{/if}
-            {if isset($linkSEOHersteller)}
+            {assign var='linkKeyHersteller' value=Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)|default:0}
+            {assign var="linkSEOHersteller" value=Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
+            {if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}
                 <a href="{$linkSEOHersteller->getURL()}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true">
                     {$linkSEOHersteller->getName()}
                     <span class="caret"></span>
                 </a>
             {else}
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true">
-                    {lang key="manufacturers" section="global"}
+                    {lang key='manufacturers'}
                     <span class="caret"></span>
                 </a>
             {/if}

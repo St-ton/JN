@@ -641,7 +641,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function flushAll(): bool
     {
-        $this->_method->flush($this->_method->journalID);
+        $this->_method->flush($this->_method->getJournalID());
 
         return $this->_method->flushAll();
     }

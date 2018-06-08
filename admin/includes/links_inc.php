@@ -14,7 +14,6 @@ function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
     $kVaterLink = (int)$kVaterLink;
     $oNew_arr   = new \Tightenco\Collect\Support\Collection();
     $lh         = Shop::Container()->getLinkService();
-    $i          = 0;
     foreach ($linkGroup->getLinks() as $link) {
         $link->setLevel(count($lh->getParentIDs($link->getID())));
         /** @var \Link\Link $link */
@@ -143,7 +142,7 @@ function removeLink($kLink, $kLinkgruppe = 0)
     return Shop::Container()->getDB()->executeQueryPrepared(
         "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations
             FROM tlink
-            JOIN tlinkgroupassociations
+            LEFT JOIN tlinkgroupassociations
                 ON tlinkgroupassociations.linkID = tlink.kLink
             LEFT JOIN tlinksprache
                 ON tlink.kLink = tlinksprache.kLink
@@ -200,7 +199,18 @@ function getLinkVar($kLink, $var)
 function getGesetzteKundengruppen($link)
 {
     $ret = [];
-    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || $link->cKundengruppen == 'NULL') {
+    if ($link instanceof \Link\LinkInterface) {
+        $cGroups = $link->getCustomerGroups();
+        if (count($cGroups) === 0) {
+            $ret[0] = true;
+        }
+        foreach ($cGroups as $customerGroup) {
+            $ret[$customerGroup] = true;
+        }
+
+        return $ret;
+    }
+    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || strtolower($link->cKundengruppen) === 'null') {
         $ret[0] = true;
 
         return $ret;

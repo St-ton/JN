@@ -156,7 +156,7 @@ class Adresse
      * @param array $array
      * @return $this
      */
-    public function fromArray(array $array)
+    public function fromArray(array $array): self
     {
         foreach ($array as $key => $value) {
             if (property_exists($this, $key)) {

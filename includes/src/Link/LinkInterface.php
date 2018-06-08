@@ -120,6 +120,28 @@ interface LinkInterface
      * @param int|null $idx
      * @return string
      */
+    public function getSEO(int $idx = null): string;
+
+    /**
+     * @return array
+     */
+    public function getSEOs(): array;
+
+    /**
+     * @param array $seo
+     */
+    public function setSEOs(array $seo);
+
+    /**
+     * @param string $url
+     * @param int    $idx
+     */
+    public function setSEO(string $url, int $idx = null);
+
+    /**
+     * @param int|null $idx
+     * @return string
+     */
     public function getURL(int $idx = null): string;
 
     /**
@@ -294,14 +316,14 @@ interface LinkInterface
     public function setVisibleLoggedInOnly(bool $visibleLoggedInOnly);
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getIdentifier(): string;
+    public function getIdentifier();
 
     /**
-     * @param string $identifier
+     * @param string|null $identifier
      */
-    public function setIdentifier(string $identifier);
+    public function setIdentifier($identifier);
 
     /**
      * @return bool
@@ -319,9 +341,9 @@ interface LinkInterface
     public function getChildLinks(): Collection;
 
     /**
-     * @param Collection $links
+     * @param array|Collection $links
      */
-    public function setChildLinks(Collection $links);
+    public function setChildLinks($links);
 
     /**
      * @param Link $link
@@ -445,5 +467,5 @@ interface LinkInterface
     /**
      * @return LinkInterface[]
      */
-    public function getChildren(): array;
+    public function buildChildLinks(): array;
 }

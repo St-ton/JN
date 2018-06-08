@@ -54,9 +54,9 @@ class Kampagne
      *
      * @param int $kKampagne - Falls angegeben, wird die Kampagne mit kKampagne aus der DB geholt
      */
-    public function __construct($kKampagne = 0)
+    public function __construct(int $kKampagne = 0)
     {
-        if ((int)$kKampagne > 0) {
+        if ($kKampagne > 0) {
             $this->loadFromDB($kKampagne);
         }
     }
@@ -67,12 +67,12 @@ class Kampagne
      * @param int $kKampagne - Primary Key
      * @return $this
      */
-    public function loadFromDB($kKampagne)
+    public function loadFromDB(int $kKampagne): self
     {
         $oKampagne = Shop::Container()->getDB()->query(
             "SELECT tkampagne.*, DATE_FORMAT(tkampagne.dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
-                WHERE tkampagne.kKampagne = " . (int)$kKampagne,
+                WHERE tkampagne.kKampagne = " . $kKampagne,
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -91,7 +91,7 @@ class Kampagne
      *
      * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $obj             = new stdClass();
         $obj->cName      = $this->cName;
@@ -114,7 +114,7 @@ class Kampagne
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $obj             = new stdClass();
         $obj->cName      = $this->cName;
@@ -125,28 +125,26 @@ class Kampagne
         $obj->dErstellt  = $this->dErstellt;
         $obj->kKampagne  = $this->kKampagne;
 
-        $cReturn            = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
+        $res                = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
         $cDatum_arr         = gibDatumTeile($this->dErstellt);
         $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
             $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
 
-        return $cReturn;
+        return $res;
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
-     * @access public
      * @return bool
      */
-    public function deleteInDB()
+    public function deleteInDB(): bool
     {
         if ($this->kKampagne > 0) {
             Shop::Container()->getDB()->query(
                 "DELETE tkampagne, tkampagnevorgang
                     FROM tkampagne
                     LEFT JOIN tkampagnevorgang ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
-                    WHERE tkampagne.kKampagne = " . (int)$this->kKampagne, 3
+                    WHERE tkampagne.kKampagne = " . (int)$this->kKampagne,
+                \DB\ReturnType::AFFECTED_ROWS
             );
 
             return true;
@@ -158,7 +156,7 @@ class Kampagne
     /**
      * @return array|mixed
      */
-    public static function getAvailable()
+    public static function getAvailable(): array
     {
         $cacheID = 'campaigns';
         if (($oKampagne_arr = Shop::Cache()->get($cacheID)) === false) {

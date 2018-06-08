@@ -14,7 +14,7 @@ class PlausiTrennzeichen extends Plausi
      * @param bool        $bUpdate
      * @return bool
      */
-    public function doPlausi($cTyp = null, $bUpdate = false)
+    public function doPlausi($cTyp = null, bool $bUpdate = false): bool
     {
         if (count($this->xPostVar_arr) === 0) {
             return false;

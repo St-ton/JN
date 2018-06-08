@@ -7,10 +7,8 @@
 namespace Filter\Items;
 
 use DB\ReturnType;
-use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
-use Filter\FilterStateSQL;
 use Filter\FilterInterface;
 use Filter\FilterStateSQLInterface;
 use Filter\Type;
@@ -386,7 +384,6 @@ class ItemAttribute extends BaseAttribute
         $force               = $data['bForce'] ?? false;
         $catAttributeFilters = [];
         $attributeFilters    = [];
-        $activeValues        = [];
         $useAttributeFilter  = $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N';
         $attributeLimit      = $force === true
             ? 0

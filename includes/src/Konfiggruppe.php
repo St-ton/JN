@@ -66,11 +66,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKonfiggruppe
          * @param int $kSprache
          */
-        public function __construct($kKonfiggruppe = 0, $kSprache = 0)
+        public function __construct(int $kKonfiggruppe = 0, int $kSprache = 0)
         {
-            $this->kKonfiggruppe = (int)$kKonfiggruppe;
+            $this->kKonfiggruppe = $kKonfiggruppe;
             if ($this->kKonfiggruppe > 0) {
-                $this->loadFromDB($this->kKonfiggruppe, (int)$kSprache);
+                $this->loadFromDB($this->kKonfiggruppe, $kSprache);
             }
         }
 
@@ -81,6 +81,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function jsonSerialize()
         {
+            if ($this->oSprache === null) {
+                $this->oSprache  = new Konfiggruppesprache($this->kKonfiggruppe);
+            }
             $override = [
                 'kKonfiggruppe' => (int)$this->kKonfiggruppe,
                 'cBildPfad'     => $this->getBildPfad(),
@@ -105,9 +108,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kSprache
          * @return $this
          */
-        private function loadFromDB($kKonfiggruppe = 0, $kSprache = 0)
+        private function loadFromDB(int $kKonfiggruppe = 0, int $kSprache = 0)
         {
-            $oObj = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', (int)$kKonfiggruppe);
+            $oObj = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $kKonfiggruppe);
             if (isset($oObj->kKonfiggruppe) && $oObj->kKonfiggruppe > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
@@ -124,12 +127,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Store the class in the database
-         *
-         * @param bool $bPrim Controls the return of the method
+         * @param bool $bPrim
          * @return bool|int
          */
-        public function save($bPrim = true)
+        public function save(bool $bPrim = true)
         {
             $oObj             = new stdClass();
             $oObj->cBildPfad  = $this->cBildPfad;
@@ -148,11 +149,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Update the class in the database
-         *
          * @return int
          */
-        public function update()
+        public function update(): int
         {
             $_upd             = new stdClass();
             $_upd->cBildPfad  = $this->cBildPfad;
@@ -166,22 +165,20 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Delete the class in the database
-         *
          * @return int
          */
-        public function delete()
+        public function delete(): int
         {
             return Shop::Container()->getDB()->delete('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe);
         }
 
         /**
-         * @param int
+         * @param int $kKonfiggruppe
          * @return $this
          */
-        public function setKonfiggruppe($kKonfiggruppe)
+        public function setKonfiggruppe(int $kKonfiggruppe): self
         {
-            $this->kKonfiggruppe = (int)$kKonfiggruppe;
+            $this->kKonfiggruppe = $kKonfiggruppe;
 
             return $this;
         }
@@ -190,7 +187,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param string $cBildPfad
          * @return $this
          */
-        public function setBildPfad($cBildPfad)
+        public function setBildPfad($cBildPfad): self
         {
             $this->cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
 
@@ -201,9 +198,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $nTyp
          * @return $this
          */
-        public function setAnzeigeTyp($nTyp)
+        public function setAnzeigeTyp(int $nTyp): self
         {
-            $this->nTyp = (int)$nTyp;
+            $this->nTyp = $nTyp;
 
             return $this;
         }
@@ -212,9 +209,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $nSort
          * @return $this
          */
-        public function setSort($nSort)
+        public function setSort(int $nSort): self
         {
-            $this->nSort = (int)$nSort;
+            $this->nSort = $nSort;
 
             return $this;
         }
@@ -296,7 +293,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return int
          */
-        public function getItemCount()
+        public function getItemCount(): int
         {
             $oCount = Shop::Container()->getDB()->query("
                 SELECT COUNT(*) AS nCount 
@@ -313,7 +310,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return bool
          */
-        public function quantityEquals()
+        public function quantityEquals(): bool
         {
             $bEquals = false;
             if (count($this->oItem_arr) > 0) {

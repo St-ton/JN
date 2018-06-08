@@ -12,7 +12,6 @@ use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
-use Filter\States\BaseCategory;
 
 /**
  * Class BaseSearchQuery
@@ -189,7 +188,7 @@ class BaseSearchQuery extends AbstractFilter
                 WHERE cKey = 'kSuchanfrage' 
                     AND kKey = :key",
             ['key' => $this->getID()],
-            1
+            ReturnType::SINGLE_OBJECT
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';

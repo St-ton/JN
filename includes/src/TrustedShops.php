@@ -15,7 +15,7 @@ if (!defined('TS_BUYERPROT_CLASSIC') || !defined('TS_BUYERPROT_EXCELLENCE')) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'defines_inc.php';
 }
 
-if (TS_MODUS == 1) {
+if (TS_MODUS === 1) {
     // Produktiv
     //define('TS_SERVER', 'https://protection.trustedshops.com/ts/protectionservices/ApplicationRequestService?wsdl');
     define('TS_SERVER', 'https://www.trustedshops.de/ts/services/TsProtection?wsdl');
@@ -1050,13 +1050,12 @@ class TrustedShops
         } else {
             writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
         }
-
         if ($returnValue === 'OK') {
             $this->aenderKundenbewertungsstatusDB($nStatus, $cISOSprache);
 
             return 1;
         }
-        if ($returnValue == SOAP_ERROR) {
+        if ($returnValue === SOAP_ERROR) {
             return 2;
         }
         if ($returnValue === 'INVALID_TSID') {

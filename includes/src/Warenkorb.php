@@ -290,10 +290,11 @@ class Warenkorb
             $nLast = 0;
             for ($j = 1; $j <= 5; $j++) {
                 $cStaffel = 'nAnzahl' . $j;
-                if (isset($NeuePosition->Artikel->Preise->$cStaffel) && $NeuePosition->Artikel->Preise->$cStaffel > 0) {
-                    if ($NeuePosition->Artikel->Preise->$cStaffel <= $NeuePosition->nAnzahl) {
-                        $nLast = $j;
-                    }
+                if (isset($NeuePosition->Artikel->Preise->$cStaffel)
+                    && $NeuePosition->Artikel->Preise->$cStaffel > 0
+                    && $NeuePosition->Artikel->Preise->$cStaffel <= $NeuePosition->nAnzahl
+                ) {
+                    $nLast = $j;
                 }
             }
             if ($nLast > 0) {
@@ -952,11 +953,12 @@ class Warenkorb
         } else {
             $steuersatz = -1;
             foreach ($this->PositionenArr as $i => $Position) {
-                if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $Position->kSteuerklasse > 0) {
-                    if (gibUst($Position->kSteuerklasse) > $steuersatz) {
-                        $steuersatz    = gibUst($Position->kSteuerklasse);
-                        $kSteuerklasse = $Position->kSteuerklasse;
-                    }
+                if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                    && $Position->kSteuerklasse > 0
+                    && gibUst($Position->kSteuerklasse) > $steuersatz
+                ) {
+                    $steuersatz    = gibUst($Position->kSteuerklasse);
+                    $kSteuerklasse = $Position->kSteuerklasse;
                 }
             }
         }
@@ -1250,7 +1252,8 @@ class Warenkorb
                 $oArtikelLagerbestand = Shop::Container()->getDB()->query(
                     "SELECT kArtikel, fLagerbestand >= " . $this->PositionenArr[$i]->nAnzahl . " AS bAusreichend, fLagerbestand
                         FROM tartikel
-                        WHERE kArtikel = " . (int)$this->PositionenArr[$i]->kArtikel, 1
+                        WHERE kArtikel = " . (int)$this->PositionenArr[$i]->kArtikel,
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 if ($oArtikelLagerbestand->kArtikel > 0 && !$oArtikelLagerbestand->bAusreichend) {
                     if ($oArtikelLagerbestand->fLagerbestand > 0) {
@@ -1342,7 +1345,7 @@ class Warenkorb
 
         /** @var WarenkorbPos $oPosition */
         foreach ($this->PositionenArr as $oPosition) {
-            if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL || get_class($oPosition->Artikel) !== 'Artikel') {
+            if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL || !$oPosition->Artikel instanceof Artikel) {
                 continue;
             }
             $oPosition->Artikel->getDeliveryTime($_SESSION['cLieferlandISO'], $oPosition->nAnzahl);
@@ -1599,7 +1602,7 @@ class Warenkorb
 
     /**
      * refresh internal wk-checksum
-     * @param object $oWarenkorb
+     * @param Warenkorb|object $oWarenkorb
      */
     public static function refreshChecksum($oWarenkorb)
     {

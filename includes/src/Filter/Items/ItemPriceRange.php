@@ -11,7 +11,6 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\Type;
 use Filter\ProductFilter;
 
 /**
@@ -306,7 +305,7 @@ class ItemPriceRange extends AbstractFilter
      * @param array     $ranges
      * @return string
      */
-    public function getPriceRangeSQL($oPreis, $currency, array $ranges = [])
+    public function getPriceRangeSQL($oPreis, $currency, array $ranges = []): string
     {
         $cSQL          = '';
         $fKundenrabatt = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)

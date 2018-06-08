@@ -155,6 +155,16 @@ class Preise
     public $oPriceRange;
 
     /**
+     * @var string
+     */
+    public $SonderpreisBis_en;
+
+    /**
+     * @var string
+     */
+    public $SonderpreisBis_de;
+
+    /**
      * Konstruktor
      *
      * @param int $kKundengruppe

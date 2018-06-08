@@ -4,10 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Session\Handler;
+
+use Session\Session;
+
 /**
  * Class SessionHandlerBot
  */
-class SessionHandlerBot extends \JTL\core\SessionHandler implements SessionHandlerInterface
+class SessionHandlerBot extends SessionHandlerJTL implements \SessionHandlerInterface
 {
     /**
      * @var string
@@ -54,7 +58,7 @@ class SessionHandlerBot extends \JTL\core\SessionHandler implements SessionHandl
     {
         $sessionData = '';
         if ($this->doSave === true) {
-            $sessionData = (($sessionData = Shop::Cache()->get($this->sessionID)) !== false) ? $sessionData : '';
+            $sessionData = (($sessionData = \Shop::Cache()->get($this->sessionID)) !== false) ? $sessionData : '';
         }
         if ($sessionData === '') {
             Session::getInstance()->setStandardSessionVars();
@@ -71,7 +75,7 @@ class SessionHandlerBot extends \JTL\core\SessionHandler implements SessionHandl
     public function write($sessID, $sessData)
     {
         if ($this->doSave === true) {
-            Shop::Cache()->set($this->sessionID, $sessData, [CACHING_GROUP_CORE]);
+            \Shop::Cache()->set($this->sessionID, $sessData, [CACHING_GROUP_CORE]);
         }
 
         return true;

@@ -126,9 +126,9 @@ class Zahlungsart extends MainModel
      * @param int $kZahlungsart
      * @return $this
      */
-    public function setZahlungsart($kZahlungsart)
+    public function setZahlungsart(int $kZahlungsart)
     {
-        $this->kZahlungsart = (int)$kZahlungsart;
+        $this->kZahlungsart = $kZahlungsart;
 
         return $this;
     }
@@ -259,9 +259,9 @@ class Zahlungsart extends MainModel
      * @param int $nSort
      * @return $this
      */
-    public function setSort($nSort)
+    public function setSort(int $nSort)
     {
-        $this->nSort = (int)$nSort;
+        $this->nSort = $nSort;
 
         return $this;
     }
@@ -278,9 +278,9 @@ class Zahlungsart extends MainModel
      * @param int $nMailSenden
      * @return $this
      */
-    public function setMailSenden($nMailSenden)
+    public function setMailSenden(int $nMailSenden)
     {
-        $this->nMailSenden = (int)$nMailSenden;
+        $this->nMailSenden = $nMailSenden;
 
         return $this;
     }
@@ -297,9 +297,9 @@ class Zahlungsart extends MainModel
      * @param int $nActive
      * @return $this
      */
-    public function setActive($nActive)
+    public function setActive(int $nActive)
     {
-        $this->nActive = (int)$nActive;
+        $this->nActive = $nActive;
 
         return $this;
     }
@@ -332,7 +332,7 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @param $cTSCode
+     * @param string $cTSCode
      * @return $this
      */
     public function setTSCode($cTSCode)
@@ -354,9 +354,9 @@ class Zahlungsart extends MainModel
      * @param int $nWaehrendBestellung
      * @return $this
      */
-    public function setWaehrendBestellung($nWaehrendBestellung)
+    public function setWaehrendBestellung(int $nWaehrendBestellung)
     {
-        $this->nWaehrendBestellung = (int)$nWaehrendBestellung;
+        $this->nWaehrendBestellung = $nWaehrendBestellung;
 
         return $this;
     }
@@ -541,7 +541,7 @@ class Zahlungsart extends MainModel
      * @param string|null $iso
      * @return array
      */
-    public static function loadAll($active = true, $iso = null)
+    public static function loadAll(bool $active = true, string $iso = null): array
     {
         $payments = [];
         $where    = $active ? ' WHERE z.nActive = 1' : '';

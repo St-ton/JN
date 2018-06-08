@@ -64,7 +64,7 @@ class WarenkorbPosEigenschaft
      * @param int $kWarenkorbPosEigenschaft - Falls angegeben,
      * wird der WarenkorbPosEigenschaft mit angegebenem kWarenkorbPosEigenschaft aus der DB geholt
      */
-    public function __construct($kWarenkorbPosEigenschaft = 0)
+    public function __construct(int $kWarenkorbPosEigenschaft = 0)
     {
         if ($kWarenkorbPosEigenschaft > 0) {
             $this->loadFromDB($kWarenkorbPosEigenschaft);
@@ -76,7 +76,7 @@ class WarenkorbPosEigenschaft
      *
      * @return string - EigenschaftName
      */
-    public function gibEigenschaftName()
+    public function gibEigenschaftName(): string
     {
         $obj = Shop::Container()->getDB()->select('teigenschaft', 'kEigenschaft', $this->kEigenschaft);
 
@@ -101,12 +101,12 @@ class WarenkorbPosEigenschaft
      * @param int $kWarenkorbPosEigenschaft
      * @return $this
      */
-    public function loadFromDB($kWarenkorbPosEigenschaft)
+    public function loadFromDB(int $kWarenkorbPosEigenschaft): self
     {
         $obj     = Shop::Container()->getDB()->select(
             'twarenkorbposeigenschaft',
             'kWarenkorbPosEigenschaft',
-            (int)$kWarenkorbPosEigenschaft
+            $kWarenkorbPosEigenschaft
         );
         if ($obj !== null) {
             $members = array_keys(get_object_vars($obj));
@@ -123,7 +123,7 @@ class WarenkorbPosEigenschaft
      *
      * @return $this
      */
-    public function insertInDB()
+    public function insertInDB(): self
     {
         $obj = kopiereMembers($this);
         unset($obj->kWarenkorbPosEigenschaft, $obj->cAufpreisLocalized, $obj->fGewichtsdifferenz, $obj->cTyp);
@@ -141,7 +141,7 @@ class WarenkorbPosEigenschaft
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $obj = kopiereMembers($this);
 

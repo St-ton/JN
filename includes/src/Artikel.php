@@ -4,8 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use \DB\NiceDB;
-
 /**
  * Class Artikel
  */
@@ -778,6 +776,16 @@ class Artikel
     public $cHerstellerBildNormal;
 
     /**
+     * @var string
+     */
+    public $cHerstellerBildURLKlein;
+
+    /**
+     * @var string
+     */
+    public $cHerstellerBildURLNormal;
+
+    /**
      * @var int
      */
     public $cHerstellerSortNr;
@@ -1273,7 +1281,8 @@ class Artikel
                 $image->cURLGross   = $imageBaseURL . $image->cPfadGross;
 
                 if ($i === 0) {
-                    $this->cVorschaubild = $image->cURLKlein;
+                    $this->cVorschaubild    = $image->cPfadKlein;
+                    $this->cVorschaubildURL = $imageBaseURL . $this->cVorschaubild;
                 }
                 // Lookup image alt attribute
                 $idx                 = 'img_alt_' . $imgNo;
@@ -2186,7 +2195,6 @@ class Artikel
         }
         $kLetzteVariation = 0;
         $nZaehler         = -1;
-        $nFreifelder      = 0;
         $rabattTemp       = $this->Preise->isDiscountable() ? $this->getDiscount($kKundengruppe, $this->kArtikel) : 0;
         $outOfStock       = '(' . Shop::Lang()->get('outofstock', 'productDetails') . ')';
         $nGenauigkeit     = isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
@@ -3623,7 +3631,6 @@ class Artikel
         $nSchwelleTopBewertet     = isset($this->conf['boxen']['boxen_topbewertet_minsterne'])
             ? (int)$this->conf['boxen']['boxen_topbewertet_minsterne']
             : 4;
-        $kKundengruppe            = (int)$kKundengruppe;
         // Nicht Standardsprache?
         $oSQLArtikelSprache          = new stdClass();
         $oSQLArtikelSprache->cSELECT = '';
@@ -4218,7 +4225,6 @@ class Artikel
      */
     private function getCategories(int $kArtikel = 0, int $kKundengruppe = 0)
     {
-        $oKategorie_arr = [];
         $kArtikelKey    = $kArtikel > 0 ? $kArtikel : (int)$this->kArtikel;
         $kKdgKey        = $kKundengruppe > 0 ? $kKundengruppe : Session::CustomerGroup()->getID();
         $categories     = Shop::Container()->getDB()->query(
@@ -4561,7 +4567,7 @@ class Artikel
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
         $ust           = gibUst($this->kSteuerklasse);
 
-        if ((int)Shop::getPageType() === PAGE_ARTIKELLISTE && $this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()) {
+        if (Shop::getPageType() === PAGE_ARTIKELLISTE && $this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()) {
             if ($this->Preise->oPriceRange->rangeWidth() <= $this->conf['artikeluebersicht']['articleoverview_pricerange_width']) {
                 $this->cLocalizedVPE[0] = gibPreisStringLocalized(
                     berechneBrutto($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),

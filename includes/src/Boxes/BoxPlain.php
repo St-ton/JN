@@ -21,4 +21,13 @@ final class BoxPlain extends AbstractBox
         parent::__construct($config);
         $this->supportsRevisions = true;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function map(array $boxData)
+    {
+        parent::map($boxData);
+        $this->setShow(!empty($this->getContent(\Shop::getLanguageID())));
+    }
 }

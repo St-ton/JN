@@ -49,7 +49,7 @@ class Kundendatenhistory extends MainModel
     /**
      * @return int
      */
-    public function getKundendatenHistory()
+    public function getKundendatenHistory(): int
     {
         return (int)$this->kKundendatenHistory;
     }
@@ -58,9 +58,9 @@ class Kundendatenhistory extends MainModel
      * @param int $kKundendatenHistory
      * @return $this
      */
-    public function setKundendatenHistory($kKundendatenHistory)
+    public function setKundendatenHistory(int $kKundendatenHistory)
     {
-        $this->kKundendatenHistory = (int)$kKundendatenHistory;
+        $this->kKundendatenHistory = $kKundendatenHistory;
 
         return $this;
     }
@@ -68,7 +68,7 @@ class Kundendatenhistory extends MainModel
     /**
      * @return int
      */
-    public function getKunde()
+    public function getKunde(): int
     {
         return (int)$this->kKunde;
     }
@@ -77,9 +77,9 @@ class Kundendatenhistory extends MainModel
      * @param int $kKunde
      * @return $this
      */
-    public function setKunde($kKunde)
+    public function setKunde(int $kKunde)
     {
-        $this->kKunde = (int)$kKunde;
+        $this->kKunde = $kKunde;
 
         return $this;
     }
@@ -93,7 +93,7 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @param $cJsonAlt
+     * @param string $cJsonAlt
      * @return $this
      */
     public function setJsonAlt($cJsonAlt)
@@ -112,7 +112,7 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @param $cJsonNeu
+     * @param string $cJsonNeu
      * @return $this
      */
     public function setJsonNeu($cJsonNeu)
@@ -131,7 +131,7 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @param $cQuelle
+     * @param string $cQuelle
      * @return $this
      */
     public function setQuelle($cQuelle)
@@ -170,7 +170,7 @@ class Kundendatenhistory extends MainModel
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {
-        $data = Shop::Container()->getDB()->select('tkundendatenhistory', 'kKundendatenHistory', (int)$kKey);
+        $data = Shop::Container()->getDB()->select('tkundendatenhistory', 'kKundendatenHistory', $kKey);
         if (isset($data->kKundendatenHistory) && $data->kKundendatenHistory > 0) {
             $this->loadObject($data);
         }
@@ -180,9 +180,9 @@ class Kundendatenhistory extends MainModel
 
     /**
      * @param bool $bPrim
-     * @return bool
+     * @return bool|int
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
@@ -201,10 +201,10 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @return mixed
+     * @return int
      * @throws Exception
      */
-    public function update()
+    public function update(): int
     {
         $cQuery      = 'UPDATE tkundendatenhistory SET ';
         $cSet_arr    = [];
@@ -223,7 +223,7 @@ class Kundendatenhistory extends MainModel
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kKundendatenHistory = {$this->getKundendatenHistory()}";
 
-            return Shop::Container()->getDB()->query($cQuery, 3);
+            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -231,7 +231,7 @@ class Kundendatenhistory extends MainModel
     /**
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
         return Shop::Container()->getDB()->delete('tkundendatenhistory', 'kKundendatenHistory', $this->getKundendatenHistory());
     }
@@ -242,7 +242,7 @@ class Kundendatenhistory extends MainModel
      * @param string $cQuelle
      * @return bool
      */
-    public static function saveHistory($oKundeOld, $oKundeNew, $cQuelle)
+    public static function saveHistory($oKundeOld, $oKundeNew, $cQuelle): bool
     {
         if (is_object($oKundeOld) && is_object($oKundeNew)) {
             // Work Around

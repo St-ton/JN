@@ -113,19 +113,19 @@ class AuswahlAssistent
     {
         $oDbResult = Shop::Container()->getDB()->queryPrepared(
             'SELECT *
-                    FROM tauswahlassistentort AS ao
-                        JOIN tauswahlassistentgruppe AS ag
-                            ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
-                                AND ao.cKey = :ckey
-                                AND ao.kKey = :kkey
-                                AND ag.kSprache = :ksprache' .
+                FROM tauswahlassistentort AS ao
+                    JOIN tauswahlassistentgruppe AS ag
+                        ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
+                            AND ao.cKey = :ckey
+                            AND ao.kKey = :kkey
+                            AND ag.kSprache = :ksprache' .
             ($bOnlyActive ? ' AND ag.nAktiv = 1' : ''),
             [
                 'ckey'     => $cKey,
                 'kkey'     => $kKey,
                 'ksprache' => $kSprache
             ],
-            1
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if ($oDbResult !== null && $oDbResult !== false) {
@@ -160,7 +160,7 @@ class AuswahlAssistent
     }
 
     /**
-     * @param $kWert
+     * @param int $kWert
      * @return $this
      */
     public function setNextSelection($kWert)
@@ -279,9 +279,9 @@ class AuswahlAssistent
     }
 
     /**
-     * @return int
+     * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->nAktiv === 1;
     }
@@ -298,7 +298,7 @@ class AuswahlAssistent
     /**
      * @return array
      */
-    public function getQuestions()
+    public function getQuestions(): array
     {
         return $this->oFrage_arr;
     }
@@ -306,7 +306,7 @@ class AuswahlAssistent
     /**
      * @return int
      */
-    public function getQuestionCount()
+    public function getQuestionCount(): int
     {
         return count($this->oFrage_arr);
     }
@@ -328,10 +328,10 @@ class AuswahlAssistent
     }
 
     /**
-     * @param $nFrage
+     * @param int $nFrage
      * @return array
      */
-    public function getSelectedValue($nFrage)
+    public function getSelectedValue(int $nFrage)
     {
         $oFrage         = $this->oFrage_arr[$nFrage];
         $kSelectedValue = $this->kSelection_arr[$nFrage];
@@ -372,7 +372,7 @@ class AuswahlAssistent
      *
      * @return bool
      */
-    public static function isRequired()
+    public static function isRequired(): bool
     {
         return Shop::getSettings([CONF_AUSWAHLASSISTENT])['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
     }

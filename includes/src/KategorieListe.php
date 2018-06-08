@@ -392,7 +392,7 @@ class KategorieListe
                     }
                 }
                 //interne Verlinkung $#k:X:Y#$
-                $oKategorie->cBeschreibung = parseNewsText($oKategorie->cBeschreibung);
+                $oKategorie->cBeschreibung = StringHandler::parseNewsText($oKategorie->cBeschreibung);
                 //members kopieren
                 $oKategorieTmp = new Kategorie();
                 foreach (get_object_vars($oKategorie) as $k => $v) {

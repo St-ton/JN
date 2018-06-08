@@ -197,7 +197,7 @@ function bearbeite($xml)
                 $xml_obj['kunden']['tkunde'][0]['cFirma']    = trim(entschluesselXTEA($xml_obj['kunden']['tkunde'][0]['cFirma']));
                 $xml_obj['kunden']['tkunde'][0]['cZusatz']   = trim(entschluesselXTEA($xml_obj['kunden']['tkunde'][0]['cZusatz']));
                 $xml_obj['kunden']['tkunde'][0]['cStrasse']  = trim(entschluesselXTEA($xml_obj['kunden']['tkunde'][0]['cStrasse']));
-                $xml_obj['kunden']['tkunde'][0]['cAnrede']   = mappeKundenanrede($xml_obj['kunden']['tkunde'][0]['cAnrede'], $xml_obj['kunden']['tkunde'][0]['kSprache']);
+                $xml_obj['kunden']['tkunde'][0]['cAnrede']   = Kunde::mapSalutation($xml_obj['kunden']['tkunde'][0]['cAnrede'], $xml_obj['kunden']['tkunde'][0]['kSprache']);
                 //Strasse und Hausnummer zusammenführen
                 $xml_obj['kunden']['tkunde'][0]['cStrasse'] .= ' ' . $xml_obj['kunden']['tkunde'][0]['cHausnummer'];
                 unset($xml_obj['kunden']['tkunde'][0]['cHausnummer']);

@@ -743,7 +743,7 @@ class WarenkorbHelper
      * @return array
      * @former pruefeFuegeEinInWarenkorb()
      */
-    public static function addToCartCheck($product, $qty, $attributes, $accuracy = 2)
+    public static function addToCartCheck($product, $qty, $attributes, int $accuracy = 2): array
     {
         $cart          = Session::Cart();
         $kArtikel      = $product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
@@ -811,7 +811,7 @@ class WarenkorbHelper
             $redirectParam[] = R_AUFANFRAGE;
         }
         // Stücklistenkomponente oder Stückliste und ein Teil ist bereits im Warenkorb?
-        $xReturn = pruefeWarenkorbStueckliste($product, $qty);
+        $xReturn = self::checkCartPartComponent($product, $qty);
         if ($xReturn !== null) {
             $redirectParam[] = $xReturn;
         }
@@ -928,5 +928,64 @@ class WarenkorbHelper
         }
 
         return $total;
+    }
+
+
+    /**
+     * @param Artikel $oArtikel
+     * @param float   $fAnzahl
+     * @return int|null
+     * @former pruefeWarenkorbStueckliste()
+     */
+    public static function checkCartPartComponent($oArtikel, $fAnzahl)
+    {
+        $oStueckliste = ArtikelHelper::isStuecklisteKomponente($oArtikel->kArtikel, true);
+        if (!(is_object($oArtikel) && $oArtikel->cLagerBeachten === 'Y'
+            && $oArtikel->cLagerKleinerNull !== 'Y'
+            && ($oArtikel->kStueckliste > 0 || $oStueckliste))
+        ) {
+            return null;
+        }
+        $isComponent = false;
+        $components  = null;
+        if (isset($oStueckliste->kStueckliste)) {
+            $isComponent = true;
+        } else {
+            $components = gibStuecklistenKomponente($oArtikel->kStueckliste, true);
+        }
+        foreach (Session::Cart()->PositionenArr as $oPosition) {
+            if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL) {
+                continue;
+            }
+            // Komponente soll hinzugefügt werden aber die Stückliste ist bereits im Warenkorb
+            // => Prüfen ob der Lagebestand nicht unterschritten wird
+            if ($isComponent
+                && isset($oPosition->Artikel->kStueckliste)
+                && $oPosition->Artikel->kStueckliste > 0
+                && ($oPosition->nAnzahl * $oStueckliste->fAnzahl + $fAnzahl) > $oArtikel->fLagerbestand
+            ) {
+                return R_LAGER;
+            }
+            if (!$isComponent && count($components) > 0) {
+                //Test auf Stücklistenkomponenten in der aktuellen Position
+                if (!empty($oPosition->Artikel->kStueckliste)) {
+                    $oPositionKomponenten_arr = gibStuecklistenKomponente($oPosition->Artikel->kStueckliste, true);
+                    foreach ($oPositionKomponenten_arr as $oKomponente) {
+                        $desiredComponentQuantity = $fAnzahl * $components[$oKomponente->kArtikel]->fAnzahl;
+                        $currentComponentStock    = $oPosition->Artikel->fLagerbestand * $oKomponente->fAnzahl;
+                        if ($desiredComponentQuantity > $currentComponentStock) {
+                            return R_LAGER;
+                        }
+                    }
+                } elseif (isset($components[$oPosition->kArtikel])
+                    && (($oPosition->nAnzahl * $components[$oPosition->kArtikel]->fAnzahl) +
+                        ($components[$oPosition->kArtikel]->fAnzahl * $fAnzahl)) > $oPosition->Artikel->fLagerbestand
+                ) {
+                    return R_LAGER;
+                }
+            }
+        }
+
+        return null;
     }
 }

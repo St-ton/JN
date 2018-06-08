@@ -23,7 +23,7 @@ if (auth()) {
     if (is_array($xml_obj['kunden']['tkunde']) && count($xml_obj['kunden']['tkunde']) > 0) {
         $xml_obj['kunden attr']['anzahl'] = count($xml_obj['kunden']['tkunde']);
         for ($i = 0; $i < $xml_obj['kunden attr']['anzahl']; ++$i) {
-            $xml_obj['kunden']['tkunde'][$i]['cAnrede']   = mappeKundenanrede(
+            $xml_obj['kunden']['tkunde'][$i]['cAnrede']   = Kunde::mapSalutation(
                 $xml_obj['kunden']['tkunde'][$i]['cAnrede'],
                 $xml_obj['kunden']['tkunde'][$i]['kSprache']
             );

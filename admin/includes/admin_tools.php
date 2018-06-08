@@ -520,7 +520,7 @@ function getMaxFileSize($size_str)
 function getCurrencyConversionIO($fPreisNetto, $fPreisBrutto, $cTargetID)
 {
     $response = new IOResponse();
-    $cString  = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $cString  = Currency::getCurrencyConversion($fPreisNetto, $fPreisBrutto);
     $response->assign($cTargetID, 'innerHTML', $cString);
 
     return $response;
@@ -535,7 +535,7 @@ function getCurrencyConversionIO($fPreisNetto, $fPreisBrutto, $cTargetID)
 function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID)
 {
     $response = new IOResponse();
-    $cString  = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $cString  = Currency::getCurrencyConversion($fPreisNetto, $fPreisBrutto);
     $response->assign($cTooltipID, 'dataset.originalTitle', $cString);
 
     return $response;

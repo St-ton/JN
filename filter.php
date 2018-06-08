@@ -78,7 +78,6 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
 }
 if (verifyGPCDataInteger('zahl') > 0) {
     $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
-    setFsession(0, 0, $_SESSION['ArtikelProSeite']);
 }
 if (!isset($_SESSION['ArtikelProSeite'])
     && $Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'

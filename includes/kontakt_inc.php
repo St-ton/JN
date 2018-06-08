@@ -37,13 +37,13 @@ function gibFehlendeEingabenKontaktformular()
         $ret['firma'] = 1;
     }
     if ($conf['kontakt']['kontakt_abfragen_fax'] === 'Y') {
-        $ret['fax'] = checkeTel($_POST['fax']);
+        $ret['fax'] = StringHandler::checkPhoneNumber($_POST['fax']);
     }
     if ($conf['kontakt']['kontakt_abfragen_tel'] === 'Y') {
-        $ret['tel'] = checkeTel($_POST['tel']);
+        $ret['tel'] = StringHandler::checkPhoneNumber($_POST['tel']);
     }
     if ($conf['kontakt']['kontakt_abfragen_mobil'] === 'Y') {
-        $ret['mobil'] = checkeTel($_POST['mobil']);
+        $ret['mobil'] = StringHandler::checkPhoneNumber($_POST['mobil']);
     }
     if ($conf['kontakt']['kontakt_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
         $ret['captcha'] = 2;

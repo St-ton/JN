@@ -786,7 +786,7 @@ final class Shop
 
         self::$nSterne = verifyGPCDataInteger('nSterne');
 
-        self::$kWunschliste = checkeWunschlisteParameter();
+        self::$kWunschliste = Wunschliste::checkeParameters();
 
         self::$nNewsKat = verifyGPCDataInteger('nNewsKat');
         self::$cDatum   = verifyGPDataString('cDatum');

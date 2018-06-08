@@ -217,7 +217,6 @@ class Session
         if (!$checked) {
             checkeSpracheWaehrung($lang);
         }
-        getFsession();
         $this->checkWishlistDeletes()->checkComparelistDeletes();
         // Kampagnen in die Session laden
         \Kampagne::getAvailable();

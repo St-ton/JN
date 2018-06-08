@@ -61,11 +61,9 @@ class Rechnungsadresse extends Adresse
         if ($obj === null || $obj->kRechnungsadresse < 1) {
             return 0;
         }
-
         $this->fromObject($obj);
 
-        // Anrede mappen
-        $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, 0, $this->kKunde);
+        $this->cAnredeLocalized = Kunde::mapSalutation($this->cAnrede, 0, $this->kKunde);
         $this->angezeigtesLand  = ISO2land($this->cLand);
         if ($this->kRechnungsadresse > 0) {
             $this->decrypt();

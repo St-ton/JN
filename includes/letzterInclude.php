@@ -129,8 +129,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
-// Kampagnen
-pruefeKampagnenParameter();
+Kampagne::checkCampaignParameters();
 // Währungs- und Sprachlinks (um die Sprache oder Währung zu wechseln ohne die aktuelle Seite zu verlieren)
 setzeSpracheUndWaehrungLink();
 // Extension Point

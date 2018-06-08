@@ -3833,7 +3833,7 @@ class Artikel
         $this->fVPEWert                          = $oArtikelTMP->fVPEWert;
         $this->cName                             = $oArtikelTMP->cName;
         $this->cSeo                              = $oArtikelTMP->cSeo;
-        $this->cBeschreibung                     = parseNewsText($oArtikelTMP->cBeschreibung);
+        $this->cBeschreibung                     = StringHandler::parseNewsText($oArtikelTMP->cBeschreibung);
         $this->cAnmerkung                        = $oArtikelTMP->cAnmerkung;
         $this->cArtNr                            = $oArtikelTMP->cArtNr;
         $this->cVPE                              = $oArtikelTMP->cVPE;
@@ -3845,7 +3845,7 @@ class Artikel
         $this->cLagerBeachten                    = $oArtikelTMP->cLagerBeachten;
         $this->cLagerKleinerNull                 = $oArtikelTMP->cLagerKleinerNull;
         $this->cLagerVariation                   = $oArtikelTMP->cLagerVariation;
-        $this->cKurzBeschreibung                 = parseNewsText($oArtikelTMP->cKurzBeschreibung);
+        $this->cKurzBeschreibung                 = StringHandler::parseNewsText($oArtikelTMP->cKurzBeschreibung);
         $this->cLieferstatus                     = $oArtikelTMP->cName_tlieferstatus;
         $this->cTopArtikel                       = $oArtikelTMP->cTopArtikel;
         $this->cNeu                              = $oArtikelTMP->cNeu;
@@ -4081,7 +4081,7 @@ class Artikel
             $this->cHerstellerMetaTitle       = $oArtikelTMP->cMetaTitle_spr;
             $this->cHerstellerMetaKeywords    = $oArtikelTMP->cMetaKeywords_spr;
             $this->cHerstellerMetaDescription = $oArtikelTMP->cMetaDescription_spr;
-            $this->cHerstellerBeschreibung    = parseNewsText($oArtikelTMP->cBeschreibung_hersteller_spr);
+            $this->cHerstellerBeschreibung    = StringHandler::parseNewsText($oArtikelTMP->cBeschreibung_hersteller_spr);
             $this->cHerstellerSortNr          = $oArtikelTMP->nSortNr_thersteller;
             if (strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
                 $imageBaseURL = Shop::getImageBaseURL();
@@ -4840,10 +4840,10 @@ class Artikel
                 $this->cName = $objSprache->cName;
             }
             if (isset($objSprache->cKurzBeschreibung) && trim($objSprache->cKurzBeschreibung)) {
-                $this->cKurzBeschreibung = parseNewsText($objSprache->cKurzBeschreibung);
+                $this->cKurzBeschreibung = StringHandler::parseNewsText($objSprache->cKurzBeschreibung);
             }
             if (isset($objSprache->cBeschreibung) && trim($objSprache->cBeschreibung)) {
-                $this->cBeschreibung = parseNewsText($objSprache->cBeschreibung);
+                $this->cBeschreibung = StringHandler::parseNewsText($objSprache->cBeschreibung);
             }
             if (isset($objSprache->cSeo) && trim($objSprache->cSeo)) {
                 $this->cSeo = $objSprache->cSeo;

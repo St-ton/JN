@@ -579,7 +579,7 @@ if ($customerID > 0) {
                 ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr)
                 ->assign('Lieferadresse', $bestellung->Lieferadresse ?? null);
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                Shop::Smarty()->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                Shop::Smarty()->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                     $bestellung->oRechnungsadresse->cMail,
                     $bestellung->cBestellNr
                 ));

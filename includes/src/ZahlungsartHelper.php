@@ -6,18 +6,18 @@
 class ZahlungsartHelper
 {
     /**
-     * @param Zahlungsart $Zahlungsart
+     * @param Zahlungsart $paymentMethod
      * @return bool
      */
-    public static function shippingMethodWithValidPaymentMethod($Zahlungsart)
+    public static function shippingMethodWithValidPaymentMethod($paymentMethod)
     {
-        if (!isset($Zahlungsart->cModulId)) {
+        if (!isset($paymentMethod->cModulId)) {
             return false;
         }
         require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        $conf                       = Shop::getSettings([CONF_ZAHLUNGSARTEN])['zahlungsarten'];
-        $Zahlungsart->einstellungen = $conf;
-        switch ($Zahlungsart->cModulId) {
+        $conf                         = Shop::getSettings([CONF_ZAHLUNGSARTEN])['zahlungsarten'];
+        $paymentMethod->einstellungen = $conf;
+        switch ($paymentMethod->cModulId) {
             case 'za_ueberweisung_jtl':
                 if (!pruefeZahlungsartMinBestellungen($conf['zahlungsart_ueberweisung_min_bestellungen'])) {
                     return false;
@@ -92,13 +92,13 @@ class ZahlungsartHelper
             case 'za_billpay_rate_payment_jtl':
             case 'za_billpay_paylater_jtl':
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $paymentMethod = PaymentMethod::create($Zahlungsart->cModulId);
+                $paymentMethod = PaymentMethod::create($paymentMethod->cModulId);
 
                 return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Session::Cart());
                 break;
             default:
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $paymentMethod = PaymentMethod::create($Zahlungsart->cModulId);
+                $paymentMethod = PaymentMethod::create($paymentMethod->cModulId);
                 if ($paymentMethod !== null) {
                     return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Session::Cart());
                 }
@@ -106,5 +106,55 @@ class ZahlungsartHelper
         }
 
         return true;
+    }
+
+    /**
+     * @former pruefeZahlungsartNutzbarkeit()
+     */
+    public static function checkPaymentMethodAvailability()
+    {
+        foreach (Shop::Container()->getDB()->selectAll('tzahlungsart', 'nActive', 1) as $oZahlungsart) {
+            // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
+            if ((int)$oZahlungsart->nSOAP === 1 || (int)$oZahlungsart->nCURL === 1 || (int)$oZahlungsart->nSOCKETS === 1) {
+                self::activatePaymentMethod($oZahlungsart);
+            }
+        }
+    }
+
+    /**
+     * Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
+     *
+     * @param Zahlungsart|object $paymentMethod
+     * @return bool
+     * @former aktiviereZahlungsart()
+     */
+    public static function activatePaymentMethod($paymentMethod): bool
+    {
+        if ($paymentMethod->kZahlungsart > 0) {
+            $kZahlungsart = (int)$paymentMethod->kZahlungsart;
+            $nNutzbar     = 0;
+            // SOAP
+            if (!empty($paymentMethod->nSOAP)) {
+                $nNutzbar = pruefeSOAP() ? 1 : 0;
+            }
+            // CURL
+            if (!empty($paymentMethod->nCURL)) {
+                $nNutzbar = pruefeCURL() ? 1 : 0;
+            }
+            // SOCKETS
+            if (!empty($paymentMethod->nSOCKETS)) {
+                $nNutzbar = pruefeSOCKETS() ? 1 : 0;
+            }
+            Shop::Container()->getDB()->update(
+                'tzahlungsart',
+                'kZahlungsart',
+                $kZahlungsart,
+                (object)['nNutzbar' => $nNutzbar]
+            );
+
+            return true;
+        }
+
+        return false;
     }
 }

@@ -1344,7 +1344,6 @@ class Metadata implements MetadataInterface
             $_SESSION['Usersortierung']         = $gpcSort;
             $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
             $_SESSION['nUsersortierungWahl']    = 1;
-            setFsession(0, $_SESSION['Usersortierung'], 0);
         }
 
         return $this;

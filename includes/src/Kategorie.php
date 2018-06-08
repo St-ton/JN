@@ -339,7 +339,7 @@ class Kategorie
         $this->nSort          = (int)$this->nSort;
         $this->nBildVorhanden = (int)$this->nBildVorhanden;
         //interne Verlinkung $#k:X:Y#$
-        $this->cBeschreibung         = parseNewsText($this->cBeschreibung);
+        $this->cBeschreibung         = StringHandler::parseNewsText($this->cBeschreibung);
         // Kurzbezeichnung
         $this->cKurzbezeichnung      = (!empty($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]) && !empty($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert))
             ? $this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
@@ -407,7 +407,7 @@ class Kategorie
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
                 if ($member === 'cBeschreibung') {
-                    $this->$member = parseNewsText($obj->$member);
+                    $this->$member = StringHandler::parseNewsText($obj->$member);
                 } else {
                     $this->$member = $obj->$member;
                 }

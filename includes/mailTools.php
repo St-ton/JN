@@ -274,7 +274,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                     && strlen($oTrustedShopsKundenbewertung->cTSID) > 0
                     && $oTrustedShopsKundenbewertung->nStatus == 1
                 ) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr
                     ));
@@ -315,7 +315,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr
                     ));
@@ -358,7 +358,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr
                     ));
@@ -426,7 +426,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr
                     ));

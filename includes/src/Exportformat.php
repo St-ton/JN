@@ -1206,7 +1206,7 @@ class Exportformat
                 );
                 // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
                 $Artikel->Kategoriepfad = $Artikel->Kategorie->cKategoriePfad ?? $helper->getPath($Artikel->Kategorie);
-                $Artikel->Versandkosten = gibGuenstigsteVersandkosten(
+                $Artikel->Versandkosten = VersandartHelper::getLowestShippingFees(
                     $this->config['exportformate_lieferland'] ?? '',
                     $Artikel,
                     0,

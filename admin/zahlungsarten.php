@@ -16,7 +16,7 @@ $hinweis          = '';
 $step             = 'uebersicht';
 // Check Nutzbar
 if (verifyGPCDataInteger('checkNutzbar') === 1) {
-    pruefeZahlungsartNutzbarkeit();
+    ZahlungsartHelper::checkPaymentMethodAvailability();
     $hinweis = 'Ihre Zahlungsarten wurden auf Nutzbarkeit gepr&uuml;ft.';
 }
 // reset log
@@ -183,7 +183,7 @@ if ($step === 'einstellen') {
     } else {
         // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
         if ((int)$zahlungsart->nSOAP === 1 || (int)$zahlungsart->nCURL === 1 || (int)$zahlungsart->nSOCKETS === 1) {
-            aktiviereZahlungsart($zahlungsart);
+            ZahlungsartHelper::activatePaymentMethod($zahlungsart);
         }
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {

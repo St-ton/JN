@@ -269,7 +269,7 @@ final class Link extends AbstractLink
             $this->setIsEnabled((bool)$link->bIsActive);
             $this->setFileName($link->cDateiname ?? '');
             $this->setLanguageCode($link->cISOSprache ?? \Shop::getLanguageCode(), $languageID);
-            $this->setContent(parseNewsText($link->content ?? ''), $languageID);
+            $this->setContent(\StringHandler::parseNewsText($link->content ?? ''), $languageID);
             $this->setMetaDescription($link->metaDescription ?? '', $languageID);
             $this->setMetaTitle($link->metaTitle ?? '', $languageID);
             $this->setMetaKeyword($link->metaKeywords ?? '', $languageID);

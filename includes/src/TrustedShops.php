@@ -1260,4 +1260,50 @@ class TrustedShops
 
         return $oStatistik;
     }
+
+    /**
+     * @param string $cMail
+     * @param string $cBestellNr
+     * @return null|stdClass
+     * @former gibTrustedShopsBewertenButton()
+     */
+    public static function getRatingButton(string $cMail, string $cBestellNr)
+    {
+        $button = null;
+        if (strlen($cMail) > 0 && strlen($cBestellNr) > 0) {
+            $languageCode = StringHandler::convertISO2ISO639(Shop::getLanguageCode());
+            $langCodes    = ['de', 'en', 'fr', 'pl', 'es'];
+            if (in_array($languageCode, $langCodes, true)) {
+                $ts       = new TrustedShops(-1, $languageCode);
+                $tsRating = $ts->holeKundenbewertungsstatus($languageCode);
+
+                if (!empty($tsRating->cTSID)
+                    && $tsRating->kTrustedshopsKundenbewertung > 0
+                    && (int)$tsRating->nStatus === 1
+                ) {
+                    $button       = new stdClass();
+                    $imageBaseURL = Shop::getImageBaseURL() .
+                        PFAD_TEMPLATES .
+                        Template::getInstance()->getDir() .
+                        '/themes/base/images/trustedshops/rate_now_';
+                    $images       = [
+                        'de' => $imageBaseURL . 'de.png',
+                        'en' => $imageBaseURL . 'en.png',
+                        'fr' => $imageBaseURL . 'fr.png',
+                        'es' => $imageBaseURL . 'es.png',
+                        'nl' => $imageBaseURL . 'nl.png',
+                        'pl' => $imageBaseURL . 'pl.png'
+                    ];
+
+                    $button->cURL    = 'https://www.trustedshops.com/buyerrating/rate_' .
+                        $tsRating->cTSID .
+                        'html&buyerEmail=' . urlencode(base64_encode($cMail)) .
+                        '&shopOrderID=' . urlencode(base64_encode($cBestellNr));
+                    $button->cPicURL = $images[$languageCode];
+                }
+            }
+        }
+
+        return $button;
+    }
 }

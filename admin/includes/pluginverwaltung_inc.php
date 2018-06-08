@@ -2483,7 +2483,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oZahlungsart->kZahlungsart = $kZahlungsart;
 
         if ($bPruefen) {
-            aktiviereZahlungsart($oZahlungsart);
+            ZahlungsartHelper::activatePaymentMethod($oZahlungsart);
         }
 
         $cModulId = $oZahlungsart->cModulId;

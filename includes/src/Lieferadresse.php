@@ -55,7 +55,7 @@ class Lieferadresse extends Adresse
 
         $this->fromObject($obj);
         // Anrede mappen
-        $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, 0, $this->kKunde);
+        $this->cAnredeLocalized = Kunde::mapSalutation($this->cAnrede, 0, $this->kKunde);
         $this->angezeigtesLand  = ISO2land($this->cLand);
         if ($this->kLieferadresse > 0) {
             $this->decrypt();

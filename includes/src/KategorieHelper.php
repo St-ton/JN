@@ -255,7 +255,7 @@ class KategorieHelper
                 /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
                 $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
                 //interne Verlinkung $#k:X:Y#$
-                $_cat->cBeschreibung    = parseNewsText($_cat->cBeschreibung);
+                $_cat->cBeschreibung    = StringHandler::parseNewsText($_cat->cBeschreibung);
                 $_cat->bUnterKategorien = 0;
                 $_cat->Unterkategorien  = [];
                 // Kurzbezeichnung
@@ -466,7 +466,7 @@ class KategorieHelper
             /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
             $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
             //interne Verlinkung $#k:X:Y#$
-            $_cat->cBeschreibung    = parseNewsText($_cat->cBeschreibung);
+            $_cat->cBeschreibung    = StringHandler::parseNewsText($_cat->cBeschreibung);
             $_cat->bUnterKategorien = 0;
             $_cat->Unterkategorien  = [];
             $fullCats[]             = $_cat;

@@ -191,7 +191,7 @@ class Hersteller
             $this->cURL = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
                 ? $shopURL . $obj->cSeo
                 : $shopURL . '?h=' . $obj->kHersteller;
-            $this->cBeschreibung = parseNewsText($this->cBeschreibung);
+            $this->cBeschreibung = StringHandler::parseNewsText($this->cBeschreibung);
         }
         if (strlen($this->cBildpfad) > 0) {
             $this->cBildpfadKlein  = PFAD_HERSTELLERBILDER_KLEIN . $this->cBildpfad;

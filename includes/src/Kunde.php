@@ -339,7 +339,7 @@ class Kunde
             if ($this->kKunde > 0) {
                 $this->entschluesselKundendaten();
                 // Anrede mappen
-                $this->cAnredeLocalized   = mappeKundenanrede($this->cAnrede, $this->kSprache);
+                $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
                 $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
 
                 return 1;
@@ -427,7 +427,7 @@ class Kunde
                     $this->$member = $obj->$member;
                 }
                 // Anrede mappen
-                $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, $this->kSprache);
+                $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
                 $this->angezeigtesLand  = ISO2land($this->cLand);
                 //$this->cLand = landISO($this->cLand);
                 $this->holeKundenattribute()->entschluesselKundendaten();
@@ -535,7 +535,7 @@ class Kunde
         $this->kKunde = Shop::Container()->getDB()->insert('tkunde', $obj);
         $this->entschluesselKundendaten();
 
-        $this->cAnredeLocalized   = mappeKundenanrede($this->cAnrede, $this->kSprache);
+        $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
         $cDatum_arr               = gibDatumTeile($this->dErstellt);
         $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
@@ -583,7 +583,7 @@ class Kunde
         }
         $this->entschluesselKundendaten();
 
-        $this->cAnredeLocalized   = mappeKundenanrede($this->cAnrede, $this->kSprache);
+        $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
         $cDatum_arr               = gibDatumTeile($this->dErstellt);
         $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
@@ -639,7 +639,7 @@ class Kunde
         foreach (array_keys(get_object_vars($_SESSION['Kunde'])) as $oElement) {
             $this->$oElement = $_SESSION['Kunde']->$oElement;
         }
-        $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, $this->kSprache);
+        $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
 
         return $this;
     }
@@ -807,5 +807,58 @@ class Kunde
     public function isLoggedIn(): bool
     {
         return $this->kKunde > 0;
+    }
+
+    /**
+     * @param string $cAnrede
+     * @param int    $kSprache
+     * @param int    $kKunde
+     * @return mixed
+     * @former mappeKundenanrede()
+     */
+    public static function mapSalutation($cAnrede, int $kSprache, int $kKunde = 0)
+    {
+        if (($kSprache > 0 || $kKunde > 0) && strlen($cAnrede) > 0) {
+            if ($kSprache === 0 && $kKunde > 0) {
+                $oKunde = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT kSprache
+                        FROM tkunde
+                        WHERE kKunde = :cid',
+                    ['cid' => $kKunde],
+                    \DB\ReturnType::SINGLE_OBJECT
+                );
+                if (isset($oKunde->kSprache) && $oKunde->kSprache > 0) {
+                    $kSprache = (int)$oKunde->kSprache;
+                }
+            }
+            $cISOSprache = '';
+            if ($kSprache > 0) { // Kundensprache, falls gesetzt
+                $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', $kSprache);
+                if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
+                    $cISOSprache = $oSprache->cISO;
+                }
+            } else { // Ansonsten Standardsprache
+                $oSprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+                if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
+                    $cISOSprache = $oSprache->cISO;
+                }
+            }
+            $cName       = $cAnrede === 'm' ? 'salutationM' : 'salutationW';
+            $oSprachWert = Shop::Container()->getDB()->queryPrepared(
+                'SELECT tsprachwerte.cWert
+                    FROM tsprachwerte
+                    JOIN tsprachiso
+                        ON tsprachiso.cISO = :ciso
+                    WHERE tsprachwerte.kSprachISO = tsprachiso.kSprachISO
+                        AND tsprachwerte.cName = :cname',
+                ['ciso' => $cISOSprache, 'cname' => $cName],
+                \DB\ReturnType::SINGLE_OBJECT
+            );
+            if (isset($oSprachWert->cWert) && strlen($oSprachWert->cWert) > 0) {
+                $cAnrede = $oSprachWert->cWert;
+            }
+        }
+
+        return $cAnrede;
     }
 }

@@ -631,4 +631,31 @@ class Wunschliste
 
         return $this;
     }
+
+    /**
+     * Überprüft Parameter und gibt falls erfolgreich kWunschliste zurück, ansonten 0
+     *
+     * @return int
+     * @former checkeWunschlisteParameter()
+     */
+    public static function checkeParameters(): int
+    {
+        $cURLID = StringHandler::filterXSS(Shop::Container()->getDB()->escape(verifyGPDataString('wlid')));
+
+        if (strlen($cURLID) > 0) {
+            $campaing = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
+            $id       = ($campaing->kKampagne > 0)
+                ? ($cURLID . '&' . $campaing->cParameter . '=' . $campaing->cWert)
+                : $cURLID;
+            $keys     = ['nOeffentlich', 'cURLID'];
+            $values   = [1, $id];
+            $wishList = Shop::Container()->getDB()->select('twunschliste', $keys, $values);
+
+            if ($wishList !== null && $wishList->kWunschliste > 0) {
+                return (int)$wishList->kWunschliste;
+            }
+        }
+
+        return 0;
+    }
 }

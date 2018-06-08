@@ -267,7 +267,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             $exportformat->kKundengruppe
         );
         $Artikel->Kategoriepfad = $Artikel->Kategorie->cKategoriePfad;
-        $Artikel->Versandkosten = gibGuenstigsteVersandkosten(
+        $Artikel->Versandkosten = VersandartHelper::getLowestShippingFees(
             $ExportEinstellungen['exportformate_lieferland'],
             $Artikel,
             0,

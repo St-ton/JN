@@ -151,7 +151,7 @@ function gibNews($conf)
             $oNews->cPreviewImageFull = empty($oNews->cPreviewImage)
                 ? ''
                 : $imageBaseURL . $oNews->cPreviewImage;
-            $oNews->cText             = parseNewsText($oNews->cText);
+            $oNews->cText             = StringHandler::parseNewsText($oNews->cText);
             $oNews->cURL              = baueURL($oNews, URLART_NEWS);
             $oNews->cURLFull          = $shopURL . $oNews->cURL;
             $oNews->cMehrURL          = '<a href="' . $oNews->cURL . '">' .

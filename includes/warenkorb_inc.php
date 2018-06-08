@@ -207,7 +207,7 @@ function uebernehmeWarenkorbAenderungen()
                     }
                 }
                 // Stücklistenkomponente oder Stückliste und ein Teil ist bereits im Warenkorb?
-                $xReturn = pruefeWarenkorbStueckliste($Artikel, $_POST['anzahl'][$i]);
+                $xReturn = WarenkorbHelper::checkCartPartComponent($Artikel, $_POST['anzahl'][$i]);
                 if ($xReturn !== null) {
                     $gueltig                         = false;
                     $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailableVar', 'messages');

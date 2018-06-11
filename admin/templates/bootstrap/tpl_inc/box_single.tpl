@@ -6,8 +6,7 @@
                 <b>Container #{$oBox->getID()}</b>
             </div>
         {else}
-            <div class="col-sm-2 col-xs-4{if !$isActive} inactive text-muted{/if}
-                        {if $oBox->getContainerID() > 0}boxSubName{/if}">
+            <div class="col-sm-2 col-xs-4{if !$isActive} inactive text-muted{/if}{if $oBox->getContainerID() > 0} boxSubName{/if}">
                 {$oBox->getTitle()}
             </div>
             <div class="col-sm-1 col-xs-3{if !$isActive} inactive text-muted{/if}">

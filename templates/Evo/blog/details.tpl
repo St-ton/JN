@@ -134,18 +134,13 @@
                                                     {/if}
                                                 </div>
 
-                                                <div class="form-group float-label-control">
-                                                    {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-                                                        isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
-                                                        isset($Einstellungen.news.news_sicherheitscode) && $Einstellungen.news.news_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
-                                                        <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
-                                                        {if !empty($nPlausiValue_arr.captcha)}
-                                                            <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                                                {lang key="invalidToken" section="global"}
-                                                            </div>
-                                                        {/if}
-                                                    {/if}
-                                                </div>
+                                                {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
+                                                    isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
+                                                    isset($Einstellungen.news.news_sicherheitscode) && $Einstellungen.news.news_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
+                                                    <div class="form-group float-label-control{if !empty($nPlausiValue_arr.captcha)} has-error{/if} required">
+                                                        {captchaMarkup getBody=true}
+                                                    </div>
+                                                {/if}
 
                                                 <input class="btn btn-primary" name="speichern" type="submit" value="{lang key="newsCommentSave" section="news"}" />
                                             {elseif $Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)}

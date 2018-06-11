@@ -92,7 +92,7 @@ if (pruefeBetreffVorhanden()) {
     $cMetaDescription = $oMeta->cDesc;
     $cMetaKeywords    = $oMeta->cKeywords;
     Shop::Smarty()->assign('step', $step)
-        ->assign('code', generiereCaptchaCode($Einstellungen['kontakt']['kontakt_abfragen_captcha']))
+        ->assign('code', false)
         ->assign('betreffs', $subjects)
         ->assign('hinweis', $hinweis ?? null)
         ->assign('Vorgaben', $Vorgaben)

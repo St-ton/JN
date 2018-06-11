@@ -333,6 +333,7 @@
             $.get('includes/cron_inc.php');
         {/if}
     </script>
+    {captchaMarkup getBody=false}
 {/block}
 </body>
 </html>

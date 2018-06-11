@@ -100,9 +100,10 @@ class Banner extends \OPC\Portlet
                 'default'    => \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png',
                 'type'       => 'image',
                 'dspl_width' => 50,
+                'required'   => true,
             ],
             'zones'     => [
-                'type'    => 'Zonen',
+                'type'    => 'banner-zones',
                 'default' => [],
             ],
             'class'     => [

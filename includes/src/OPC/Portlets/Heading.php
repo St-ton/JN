@@ -38,6 +38,7 @@ class Heading extends \OPC\Portlet
                     '6' => '6',
                 ],
                 'default'    => '1',
+                'required'   => true,
                 'dspl_width' => 50,
             ],
             'text'  => [

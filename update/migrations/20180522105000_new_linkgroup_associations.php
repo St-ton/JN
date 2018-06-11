@@ -175,7 +175,9 @@ class Migration_20180522105000 extends Migration implements IMigration
         $this->execute("DROP TABLE tlinkgroupassociations");
         $this->execute("ALTER TABLE `tlinkgruppe` CHANGE COLUMN `kLinkgruppe` `kLinkgruppe` TINYINT(3) UNSIGNED NOT NULL AUTO_INCREMENT");
         $this->execute("ALTER TABLE tlink ADD INDEX `kLinkgruppe` (`kLinkgruppe`)");
+        $this->execute("ALTER TABLE tlink CHANGE COLUMN `kLink` `kLink` INT NOT NULL");
         $this->execute("ALTER TABLE tlink DROP PRIMARY KEY");
         $this->execute("ALTER TABLE tlink ADD PRIMARY KEY (`kLink`,`kLinkgruppe`)");
+        $this->execute("ALTER TABLE tlink CHANGE COLUMN `kLink` `kLink` INT NOT NULL AUTO_INCREMENT");
     }
 }

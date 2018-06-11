@@ -201,8 +201,8 @@
                             </a>
                             <ul class="dropdown-menu" role="main">
                                 <li>
-                                    <a href="http://jtl-url.de/mag6f" target="_blank" rel="noopener">Erste Schritte</a>
-                                    <a href="http://jtl-url.de/0762z" target="_blank" rel="noopener">JTL Guide</a>
+                                    <a href="http://jtl-url.de/shopschritte" target="_blank" rel="noopener">Erste Schritte</a>
+                                    <a href="http://jtl-url.de/shopguide" target="_blank" rel="noopener">JTL Guide</a>
                                     <a href="https://forum.jtl-software.de" target="_blank" rel="noopener">JTL Forum</a>
                                     <a href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">Training</a>
                                     <a href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">Servicepartner</a>

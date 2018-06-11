@@ -59,7 +59,7 @@
                 <div id="update_automatic" class="tab-pane fade{if $tab === 'update_automatic'} in active{/if}">
                     <h3>Automatisch</h3>
                     <p>Die automatische Migration wird empfohlen, wenn Ihre Shop-Datenbank komplett umgestellt werden mu&szlig; und sich die Datenmenge innerhalb der
-                        <a title="Softwarebeschr&auml;nkungen und Grenzen der JTL-Produkte" href="https://guide.jtl-software.de/Softwarebeschr%C3%A4nkungen_und_Grenzen_der_JTL-Produkte">Spezifikationen</a> f&uuml;r
+                        <a title="Softwarebeschr&auml;nkungen und Grenzen der JTL-Produkte" href="http://jtl-url.de/8qsat">Spezifikationen</a> f&uuml;r
                         JTL-Shop befindet.
                     </p>
                     <p>Bitte haben Sie Geduld! Bei {$engineUpdate->tableCount} Tabellen und einer Datenmenge von ca.&nbsp;{$engineUpdate->dataSize|formatSize:"%.0f"|upper|strip:"&nbsp;"} kann die Migration

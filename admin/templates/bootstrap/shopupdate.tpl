@@ -9,7 +9,7 @@
         {if $Version->nVersionDB_new > 0}
             <a class="externURL" href="https://www.jtl-software.de/Onlineshop-Software-JTL-Shop" rel="external">{#changelogVersion#} {$strCurrentVersion}</a>
         {else}
-            <a class="externURL button" href="http://guide.jtl-software.de/jtl/JTL-Shop:Installation:Changelog" rel="external">{#changelogLastVersion#}</a>
+            <a class="externURL button" href="http://jtl-url.de/shopchangelog" rel="external">{#changelogLastVersion#}</a>
         {/if}
     </p>
     <p class="updateLeft">{#currentShopVersion#}:</p>

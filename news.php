@@ -377,7 +377,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     Shop::Smarty()->assign('hinweis', $cHinweis)
         ->assign('fehler', $cFehler)
         ->assign('step', $step)
-        ->assign('code_news', generiereCaptchaCode($Einstellungen['news']['news_sicherheitscode'] ?? 'N'));
+        ->assign('code_news', false);
 
     require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     Shop::Smarty()->assign('meta_title', $cMetaTitle)

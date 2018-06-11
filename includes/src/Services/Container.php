@@ -11,6 +11,7 @@ use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Services\JTL\BoxServiceInterface;
+use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
 use Services\JTL\PasswordServiceInterface;
@@ -96,5 +97,13 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getBoxService(): BoxServiceInterface
     {
         return $this->get(BoxServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCaptchaService(): CaptchaServiceInterface
+    {
+        return $this->get(CaptchaServiceInterface::class);
     }
 }

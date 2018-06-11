@@ -13,6 +13,7 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
        ->registerPlugin('function', 'formatVersion', 'formatVersion')
        ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
        ->registerPlugin('function', 'getRevisions', 'getRevisions')
+       ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')
        ->registerPlugin('modifier', 'permission', 'permission');
 
 /**
@@ -234,4 +235,18 @@ function gravatarImage($params, $smarty)
     ]);
 
     return $url;
+}
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return string
+ */
+function captchaMarkup($params, $smarty)
+{
+    if (isset($params['getBody']) && $params['getBody']) {
+        return Shop::Container()->getCaptchaService()->getBodyMarkup($smarty);
+    } else {
+        return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
+    }
 }

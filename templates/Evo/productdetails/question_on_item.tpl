@@ -195,11 +195,8 @@
             isset($Einstellungen.artikeldetails.produktfrage_abfragen_captcha) && $Einstellungen.artikeldetails.produktfrage_abfragen_captcha !== 'N' && empty($smarty.session.Kunde->kKunde)}
             <hr>
             <div class="row">
-                <div class="col-xs-12 col-md-12">
-                    <div class="g-recaptcha form-group" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
-                    {if !empty($fehlendeAngaben_fragezumprodukt.captcha)}
-                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="invalidToken" section="global"}</div>
-                    {/if}
+                <div class="col-xs-12 col-md-12{if !empty($fehlendeAngaben_fragezumprodukt.captcha)} has-error{/if} required">
+                    {captchaMarkup getBody=true}
                     <hr>
                 </div>
             </div>

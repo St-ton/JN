@@ -1771,3 +1771,32 @@ define('HOOK_PRICES_CONSTRUCT', 260);
  * @param array   redirectParam
  */
 define('HOOK_ADD_TO_CART_CHECK', 261);
+
+/**
+ * in CaptchaService::isConfigured
+ *
+ * @since 5.0
+ * @file src/Services/CaptchaService.php
+ * @param bool isConfigured
+ */
+define('HOOK_CAPTCHA_CONFIGURED', 270);
+
+/**
+ * in CaptchaService::getHeadMarkup, CaptchaService::getBodyMarkup
+ *
+ * @since 5.0
+ * @file src/Services/CaptchaService.php
+ * @param bool   getBody
+ * @param string markup
+ */
+define('HOOK_CAPTCHA_MARKUP', 271);
+
+/**
+ * in CaptchaService::validate
+ *
+ * @since 5.0
+ * @file src/Services/CaptchaService.php
+ * @param array requestData
+ * @param bool  isValid
+ */
+define('HOOK_CAPTCHA_VALIDATE', 272);

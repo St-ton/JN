@@ -13,6 +13,7 @@ use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
 use Services\JTL\BoxServiceInterface;
+use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
 use Services\JTL\PasswordServiceInterface;
@@ -74,4 +75,9 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return BoxServiceInterface
      */
     public function getBoxService(): BoxServiceInterface;
+
+    /**
+     * @return CaptchaServiceInterface
+     */
+    public function getCaptchaService(): CaptchaServiceInterface;
 }

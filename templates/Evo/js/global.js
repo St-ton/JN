@@ -221,10 +221,6 @@ function addValidationListener() {
     }
 }
 
-function captcha_filled() {
-    $('.g-recaptcha').closest('.form-group').find('div.form-error-msg').remove();
-}
-
 function isTouchCapable() {
     return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
 }

@@ -559,7 +559,7 @@ function gibStepUnregistriertBestellen()
         ->assign('laender', gibBelieferbareLaender(Session::CustomerGroup()->getID()))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
-        ->assign('code_registrieren', generiereCaptchaCode($conf['kunden']['registrieren_captcha']));
+        ->assign('code_registrieren', false);
     if (isset($Kunde->cKundenattribut_arr) && is_array($Kunde->cKundenattribut_arr)) {
         Shop::Smarty()->assign('cKundenattribut_arr', $Kunde->cKundenattribut_arr);
     }

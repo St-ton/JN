@@ -1,6 +1,35 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="shopzuruecksetzen"}
 {include file='tpl_inc/seite_header.tpl' cTitel=#shopReset# cBeschreibung=#shopResetDesc# cDokuURL=#shopResetURL#}
+{literal}
+    <script>
+        $(document).ready(function () {
+            // danger on check checkbox
+            $('input[type="checkbox"]').not('input[value="artikel"]').change(function () {
+                if (this.checked) {
+                    $(this).next().after('<i data-placement="right" data-toggle="tooltip" title="Kann nicht wiederhergestellt werden." class="fa fa-exclamation-circle text-danger fa-fw" aria-hidden="true"></i>');
+                } else {
+                    $(this).next().next().remove();
+                }
+            });
+        });
+
+        function confirmZuruecksetzen() {
+            var itemsToDelete='',
+                itemValues=''; //used to see if only artikel is selected because artikel can be deleted without confirmation
+            $('input[type="checkbox"]:checked').next().each(function(i){
+                itemsToDelete+= $(this).text() + '\n';
+                itemValues+=$(this).prev().val();
+            });
+            if(itemValues === 'artikel') {
+                return true;
+            } else {
+                //maybe use bootstrap modal
+                return confirm('Es werden folgende Bereiche von JTL-Shop zurückgesetzt, das heißt, dass alle bisher gespeicherten Daten verloren gehen:\n \n ' + itemsToDelete);
+            }
+        }
+    </script>
+{/literal}
 <div id="content" class="container-fluid settings">
     <form name="login" method="post" action="shopzuruecksetzen.php">
         {$jtl_token}
@@ -44,10 +73,6 @@
                     <label for="Revisions">Revisionen l&ouml;schen</label>
                 </div>
             </div>
-            <div class="panel-footer">
-                <input type="checkbox" id="ALLMSGS1" class="Boxen" />
-                <label for="ALLMSGS1">Alle ausw&auml;hlen</label>
-            </div>
         </div>
 
         <div class="panel panel-default">
@@ -68,15 +93,11 @@
                     <label for="Bewertungen">Bewertungen l&ouml;schen</label>
                 </div>
             </div>
-            <div class="panel-footer">
-                <input type="checkbox" id="ALLMSGS2" class="Boxen" />
-                <label for="ALLMSGS2">Alle ausw&auml;hlen</label>
-            </div>
         </div>
         
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Shopkunden & Bestellungen & Kupons</h3>
+                <h3 class="panel-title">Shopkunden, Bestellungen und Kupons</h3>
             </div>
             <div class="panel-body">
                 <div class="item">
@@ -85,7 +106,7 @@
                 </div>
                 <div class="item">
                     <input type="checkbox" name="cOption_arr[]" value="kwerbenk" tabindex="14" id="KwerbenK" />
-                    <label for="KwerbenK">Kunden werben Kunden l&ouml;schen</label>
+                    <label for="KwerbenK">Daten zu „Kunden werben Kunden“ löschen</label>
                 </div>
                 <div class="item">
                     <input type="checkbox" name="cOption_arr[]" value="bestellungen" tabindex="15" id="Bestellungen" />
@@ -96,13 +117,9 @@
                     <label for="Kupons">Kupons l&ouml;schen</label>
                 </div>
             </div>
-            <div class="panel-footer">
-                <input type="checkbox" id="ALLMSGS3" class="Boxen" />
-                <label for="ALLMSGS3">Alle ausw&auml;hlen</label>
-            </div>
         </div>
         <div class="save_wrapper">
-            <button type="submit" value="{#shopReset#}" class="btn btn-danger"><i class="fa fa-exclamation-triangle"></i> {#shopReset#}</button>
+            <button type="submit" onclick="return confirmZuruecksetzen();" value="{#shopReset#}" class="btn btn-danger"><i class="fa fa-exclamation-triangle"></i> {#shopReset#}</button>
         </div>
     </form>
 </div>

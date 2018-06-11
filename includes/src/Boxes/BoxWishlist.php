@@ -13,6 +13,11 @@ namespace Boxes;
 final class BoxWishlist extends AbstractBox
 {
     /**
+     * @var int
+     */
+    private $wishListID = 0;
+
+    /**
      * BoxWishlist constructor.
      * @param array $config
      */
@@ -24,6 +29,7 @@ final class BoxWishlist extends AbstractBox
         if (empty(\Session::WishList()->kWunschliste)) {
             $this->setShow(false);
         } else {
+            $this->setWishListID(\Session::WishList()->kWunschliste);
             $wishlistItems    = \Session::WishList()->CWunschlistePos_arr;
             $validPostVars    = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
             $additionalParams = '';
@@ -81,11 +87,27 @@ final class BoxWishlist extends AbstractBox
     }
 
     /**
+     * @return int
+     */
+    public function getWishListID(): int
+    {
+        return $this->wishListID;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setWishListID(int $id)
+    {
+        $this->wishListID = $id;
+    }
+
+    /**
      * @return string
      */
     public function getShowImages(): string
     {
-        return $this->config['boxen']['boxen_wunschzettel_bilder'];
+        return $this->config['boxen']['boxen_wunschzettel_bilder'] === 'Y';
     }
 
     /**

@@ -1192,4 +1192,32 @@ class VersandartHelper
 
         return $versandpreis === 99999 ? -1 : $versandpreis;
     }
+
+    /**
+     * @param int $minDeliveryDays
+     * @param int $maxDeliveryDays
+     * @return string
+     */
+    public static function getDeliverytimeEstimationText(int $minDeliveryDays, int $maxDeliveryDays): string
+    {
+        $deliveryText = $minDeliveryDays === $maxDeliveryDays
+            ? str_replace(
+                '#DELIVERYDAYS#',
+                $minDeliveryDays,
+                Shop::Lang()->get('deliverytimeEstimationSimple')
+            )
+            : str_replace(
+                ['#MINDELIVERYDAYS#', '#MAXDELIVERYDAYS#'],
+                [$minDeliveryDays, $maxDeliveryDays],
+                Shop::Lang()->get('deliverytimeEstimation')
+            );
+
+        executeHook(HOOK_GET_DELIVERY_TIME_ESTIMATION_TEXT, [
+            'min'  => $minDeliveryDays,
+            'max'  => $maxDeliveryDays,
+            'text' => &$deliveryText
+        ]);
+
+        return $deliveryText;
+    }
 }

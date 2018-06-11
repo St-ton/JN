@@ -982,7 +982,7 @@ class Bestellung
 
             $this->oEstimatedDelivery->localized = (!empty($this->oEstimatedDelivery->longestMin)
                 && !empty($this->oEstimatedDelivery->longestMax))
-                ? getDeliverytimeEstimationText(
+                ? VersandartHelper::getDeliverytimeEstimationText(
                     $this->oEstimatedDelivery->longestMin,
                     $this->oEstimatedDelivery->longestMax
                 )

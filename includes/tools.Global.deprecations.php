@@ -886,3 +886,138 @@ function getFsession()
 
     return false;
 }
+
+/**
+ * @param string $filename
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function guessCsvDelimiter($filename)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use getCsvDelimiter() instead.', E_USER_DEPRECATED);
+    require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
+
+    return getCsvDelimiter($filename);
+}
+
+/**
+ * @param array $hookInfos
+ * @param bool  $forceExit
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function urlNotFoundRedirect(array $hookInfos = null, bool $forceExit = false)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Redirect::urlNotFoundRedirect() instead.', E_USER_DEPRECATED);
+
+    return Redirect::urlNotFoundRedirect($hookInfos, $forceExit);
+}
+
+/**
+ * @param int $minDeliveryDays
+ * @param int $maxDeliveryDays
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getDeliverytimeEstimationText() instead.', E_USER_DEPRECATED);
+
+    return VersandartHelper::getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays);
+}
+
+/**
+ * @param string $metaProposal the proposed meta text value.
+ * @param string $metaSuffix append suffix to meta value that wont be shortened
+ * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
+ * @return string truncated meta value with optional suffix (always appended if set),
+ * @deprecated since 5.0.0
+ */
+function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Metadata::prepareMeta() instead.', E_USER_DEPRECATED);
+
+    return \Filter\Metadata::prepareMeta($metaProposal, $metaSuffix, $maxLength);
+}
+
+/**
+ * return trimmed description without (double) line breaks
+ *
+ * @param string $cDesc
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function truncateMetaDescription($cDesc)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Metadata::truncateMetaDescription() instead.', E_USER_DEPRECATED);
+
+    return \Filter\Metadata::truncateMetaDescription($cDesc);
+}
+
+/**
+ * @param int  $kStueckliste
+ * @param bool $bAssoc
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function gibStuecklistenKomponente(int $kStueckliste, $bAssoc = false)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::getPartComponent() instead.', E_USER_DEPRECATED);
+
+    return WarenkorbHelper::getPartComponent($kStueckliste, $bAssoc);
+}
+
+/**
+ * @param object $NaviFilter
+ * @param int    $nAnzahl
+ * @param bool   $bSeo
+ * @deprecated since 5.0.0
+ */
+function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Redirect::doMainwordRedirect() instead.', E_USER_DEPRECATED);
+
+    Redirect::doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo);
+}
+
+/**
+ * Converts price into given currency
+ *
+ * @param float  $price
+ * @param string $iso - EUR / USD
+ * @param int    $id - kWaehrung
+ * @param bool   $useRounding
+ * @param int    $precision
+ * @return float|bool
+ * @deprecated since 5.0.0
+ */
+function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $precision = 2)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Currency::convertCurrency() instead.', E_USER_DEPRECATED);
+
+    return Currency::convertCurrency($price, $iso, $id, $useRounding, $precision);
+}
+/**
+ * @param float $price
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function gibPreisString($price)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+
+    return str_replace(',', '.', sprintf('%.2f', $price));
+}
+
+/**
+ * @param string $cISO
+ * @param int    $kSprache
+ * @return int|string|bool
+ * @deprecated since 5.0.0
+ */
+function gibSprachKeyISO($cISO = '', int $kSprache = 0)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getLanguageDataByType instead.', E_USER_DEPRECATED);
+
+    return Sprache::getLanguageDataByType($cISO, $kSprache);
+}

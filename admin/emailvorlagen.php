@@ -526,7 +526,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
                 $cModulId = 'kPlugin_' . verifyGPCDataInteger('kPlugin') . '_' . $cModulId;
             }
 
-            $bestellung->oEstimatedDelivery->localized = getDeliverytimeEstimationText(
+            $bestellung->oEstimatedDelivery->localized = VersandartHelper::getDeliverytimeEstimationText(
                 $bestellung->oEstimatedDelivery->longestMin,
                 $bestellung->oEstimatedDelivery->longestMax
             );

@@ -1399,6 +1399,62 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
 }
 
 /**
+ * @param int $kKonfig
+ * @param JTLSmarty $smarty
+ */
+function holeKonfigBearbeitenModus($kKonfig, $smarty)
+{
+    $cart = Session::Cart();
+    if (!isset($cart->PositionenArr[$kKonfig]) || !class_exists('Konfigitem')) {
+        return;
+    }
+    /** @var WarenkorbPos $oBasePosition */
+    $oBasePosition = $cart->PositionenArr[$kKonfig];
+    /** @var WarenkorbPos $oBasePosition */
+    if ($oBasePosition->istKonfigVater()) {
+        $nKonfigitem_arr         = [];
+        $nKonfigitemAnzahl_arr   = [];
+        $nKonfiggruppeAnzahl_arr = [];
+
+        /** @var WarenkorbPos $oPosition */
+        foreach ($cart->PositionenArr as &$oPosition) {
+            if ($oPosition->cUnique === $oBasePosition->cUnique && $oPosition->istKonfigKind()) {
+                $oKonfigitem                                              = new Konfigitem($oPosition->kKonfigitem);
+                $nKonfigitem_arr[]                                        = $oKonfigitem->getKonfigitem();
+                $nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()]     = $oPosition->nAnzahl / $oBasePosition->nAnzahl;
+                if ($oKonfigitem->ignoreMultiplier()) {
+                    $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] = $oPosition->nAnzahl;
+                } else {
+                    $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] = $oPosition->nAnzahl / $oBasePosition->nAnzahl;
+                }
+
+            }
+        }
+        unset($oPosition);
+
+        $smarty->assign('fAnzahl', $oBasePosition->nAnzahl)
+               ->assign('kEditKonfig', $kKonfig)
+               ->assign('nKonfigitem_arr', $nKonfigitem_arr)
+               ->assign('nKonfigitemAnzahl_arr', $nKonfigitemAnzahl_arr)
+               ->assign('nKonfiggruppeAnzahl_arr', $nKonfiggruppeAnzahl_arr);
+    }
+    if (isset($oBasePosition->WarenkorbPosEigenschaftArr)) {
+        $oEigenschaftWertEdit_arr = [];
+        foreach ($oBasePosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
+            $oEigenschaftWertEdit_arr[$oWarenkorbPosEigenschaft->kEigenschaft] = (object)[
+                'kEigenschaft'                  => $oWarenkorbPosEigenschaft->kEigenschaft,
+                'kEigenschaftWert'              => $oWarenkorbPosEigenschaft->kEigenschaftWert,
+                'cEigenschaftWertNameLocalized' => $oWarenkorbPosEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']],
+            ];
+        }
+
+        if (count($oEigenschaftWertEdit_arr) > 0) {
+            $smarty->assign('oEigenschaftWertEdit_arr', $oEigenschaftWertEdit_arr);
+        }
+    }
+}
+
+/**
  * @deprecated since 4.0
  * @param Artikel $Artikel
  * @return string

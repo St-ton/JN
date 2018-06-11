@@ -698,4 +698,96 @@ class Redirect
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
+
+    /**
+     * @param array $hookInfos
+     * @param bool  $forceExit
+     * @return array
+     */
+    public static function urlNotFoundRedirect(array $hookInfos = null, bool $forceExit = false)
+    {
+        $url         = $_SERVER['REQUEST_URI'];
+        $redirect    = new self;
+        $redirectUrl = $redirect->test($url);
+        if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {
+            $cUrl_arr = parse_url($redirectUrl);
+            if (!array_key_exists('scheme', $cUrl_arr)) {
+                $redirectUrl = strpos($redirectUrl, '/') === 0
+                    ? Shop::getURL() . $redirectUrl
+                    : Shop::getURL() . '/' . $redirectUrl;
+            }
+            http_response_code(301);
+            header('Location: ' . $redirectUrl);
+            exit;
+        }
+        http_response_code(404);
+
+        if ($forceExit || !$redirect->isValid($url)) {
+            exit;
+        }
+        $isFileNotFound = true;
+        executeHook(HOOK_PAGE_NOT_FOUND_PRE_INCLUDE, [
+            'isFileNotFound'  => &$isFileNotFound,
+            $hookInfos['key'] => &$hookInfos['value']
+        ]);
+        $hookInfos['isFileNotFound'] = $isFileNotFound;
+
+        return $hookInfos;
+    }
+
+    /**
+     * @param object $productFilter
+     * @param int    $count
+     * @param bool   $bSeo
+     */
+    public static function doMainwordRedirect($productFilter, int $count, bool $bSeo = false)
+    {
+        $cMainword_arr = [
+            'getCategory'       => [
+                'cKey'   => 'kKategorie',
+                'cParam' => 'k'
+            ],
+            'getManufacturer'   => [
+                'cKey'   => 'kHersteller',
+                'cParam' => 'h'
+            ],
+            'getSearchQuery'    => [
+                'cKey'   => 'kSuchanfrage',
+                'cParam' => 'l'
+            ],
+            'getAttributeValue' => [
+                'cKey'   => 'kMerkmalWert',
+                'cParam' => 'm'
+            ],
+            'getTag'            => [
+                'cKey'   => 'kTag',
+                'cParam' => 't'
+            ],
+            'getSearchSpecial'  => [
+                'cKey'   => 'kKey',
+                'cParam' => 'q'
+            ]
+        ];
+
+        $kSprache = Shop::getLanguageID();
+        if ($count === 0 && Shop::getProductFilter()->getFilterCount() > 0) {
+            foreach ($cMainword_arr as $function => $cInfo_arr) {
+                $cKey   = $cInfo_arr['cKey'];
+                $cParam = $cInfo_arr['cParam'];
+                $data   = method_exists($productFilter, $function)
+                    ? $productFilter->$function()
+                    : null;
+                if ($data !== null && isset($data->$cKey) && (int)$data->$cKey > 0) {
+                    $cUrl = '?' . $cParam . '=' . $data->$cKey;
+                    if ($bSeo && isset($data->cSeo) && is_array($data->cSeo)) {
+                        $cUrl = $data->cSeo[$kSprache];
+                    }
+                    if (strlen($cUrl) > 0) {
+                        header('Location: ' . $cUrl, true, 301);
+                        exit();
+                    }
+                }
+            }
+        }
+    }
 }

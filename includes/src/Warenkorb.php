@@ -1366,7 +1366,7 @@ class Warenkorb
             }
         }
 
-        return getDeliverytimeEstimationText($longestMinDeliveryDays, $longestMaxDeliveryDays);
+        return VersandartHelper::getDeliverytimeEstimationText($longestMinDeliveryDays, $longestMaxDeliveryDays);
     }
 
     /**

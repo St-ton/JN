@@ -330,15 +330,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
 }
 
 /**
- * @param float $price
- * @return string
- */
-function gibPreisString($price)
-{
-    return str_replace(',', '.', sprintf('%.2f', $price));
-}
-
-/**
  * @param float      $price
  * @param object|int $currency
  * @param int        $html
@@ -3328,37 +3319,15 @@ function archiviereBesucher()
             (UNIX_TIMESTAMP(dLetzteAktivitaet) - UNIX_TIMESTAMP(dZeit)) AS nBesuchsdauer, kBesucherBot, dZeit
               FROM tbesucher
               WHERE dLetzteAktivitaet <= date_sub(now(), INTERVAL :interval HOUR)",
-    [ 'interval' => $iInterval ],
-    Shop::Container()->getDB()::RET_AFFECTED_ROWS);
+        [ 'interval' => $iInterval ],
+        \DB\ReturnType::AFFECTED_ROWS
+    );
     Shop::Container()->getDB()->queryPrepared(
         "DELETE FROM tbesucher
             WHERE dLetzteAktivitaet <= date_sub(now(), INTERVAL :interval HOUR)",
-    [ 'interval' => $iInterval ],
-    Shop::Container()->getDB()::RET_AFFECTED_ROWS);
-}
-
-/**
- * @param string $cISO
- * @param int    $kSprache
- * @return int|string|bool
- */
-function gibSprachKeyISO($cISO = '', int $kSprache = 0)
-{
-    if (strlen($cISO) > 0) {
-        $oSprache = Shop::Container()->getDB()->select('tsprache', 'cISO', $cISO);
-
-        if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
-            return (int)$oSprache->kSprache;
-        }
-    } elseif ($kSprache > 0) {
-        $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', $kSprache);
-
-        if (isset($oSprache->cISO) && strlen($oSprache->cISO) > 0) {
-            return $oSprache->cISO;
-        }
-    }
-
-    return false;
+        [ 'interval' => $iInterval ],
+        \DB\ReturnType::AFFECTED_ROWS
+    );
 }
 
 /**
@@ -3586,105 +3555,6 @@ function json_safe_encode($data)
 }
 
 /**
- * @param object $NaviFilter
- * @param int    $nAnzahl
- * @param bool   $bSeo
- */
-function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
-{
-    $cMainword_arr = [
-        'getCategory'       => [
-            'cKey'   => 'kKategorie',
-            'cParam' => 'k'
-        ],
-        'getManufacturer'   => [
-            'cKey'   => 'kHersteller',
-            'cParam' => 'h'
-        ],
-        'getSearchQuery'    => [
-            'cKey'   => 'kSuchanfrage',
-            'cParam' => 'l'
-        ],
-        'getAttributeValue' => [
-            'cKey'   => 'kMerkmalWert',
-            'cParam' => 'm'
-        ],
-        'getTag'            => [
-            'cKey'   => 'kTag',
-            'cParam' => 't'
-        ],
-        'getSearchSpecial'  => [
-            'cKey'   => 'kKey',
-            'cParam' => 'q'
-        ]
-    ];
-
-    $kSprache = Shop::getLanguageID();
-    if ((int)$nAnzahl === 0 && Shop::getProductFilter()->getFilterCount() > 0) {
-        foreach ($cMainword_arr as $function => $cInfo_arr) {
-            $cKey   = $cInfo_arr['cKey'];
-            $cParam = $cInfo_arr['cParam'];
-            $data   = method_exists($NaviFilter, $function)
-                ? $NaviFilter->$function()
-                : null;
-            if (isset($data->$cKey) && (int)$data->$cKey > 0) {
-                $cUrl = "?{$cParam}={$data->$cKey}";
-                if ($bSeo && isset($data->cSeo) && is_array($data->cSeo)) {
-                    $cUrl = "{$data->cSeo[$kSprache]}";
-                }
-                if (strlen($cUrl) > 0) {
-                    header("Location: {$cUrl}", true, 301);
-                    exit();
-                }
-            }
-        }
-    }
-}
-
-/**
- * @param int  $kStueckliste
- * @param bool $bAssoc
- * @return array
- */
-function gibStuecklistenKomponente(int $kStueckliste, $bAssoc = false)
-{
-    if ($kStueckliste > 0) {
-        $oObj_arr = Shop::Container()->getDB()->selectAll('tstueckliste', 'kStueckliste', $kStueckliste);
-        if (count($oObj_arr) > 0) {
-            if ($bAssoc) {
-                $oArtikelAssoc_arr = [];
-                foreach ($oObj_arr as $oObj) {
-                    $oArtikelAssoc_arr[$oObj->kArtikel] = $oObj;
-                }
-
-                return $oArtikelAssoc_arr;
-            }
-
-            return $oObj_arr;
-        }
-    }
-
-    return [];
-}
-
-/**
- * @param string $metaProposal the proposed meta text value.
- * @param string $metaSuffix append suffix to meta value that wont be shortened
- * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
- * @return string truncated meta value with optional suffix (always appended if set)
- */
-function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
-{
-    $metaProposal = str_replace('"', '', StringHandler::unhtmlentities($metaProposal));
-    $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
-    if (!empty($maxLength) && $maxLength > 0) {
-        $metaProposal = substr($metaProposal, 0, (int)$maxLength);
-    }
-
-    return StringHandler::htmlentities(trim(preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
-}
-
-/**
  * @return mixed
  */
 function gibLetztenTokenDaten()
@@ -3737,36 +3607,6 @@ function validToken()
 }
 
 /**
- * Converts price into given currency
- *
- * @param float  $price
- * @param string $iso - EUR / USD
- * @param int    $id - kWaehrung
- * @param bool   $useRounding
- * @param int    $precision
- * @return float|bool
- */
-function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $precision = 2)
-{
-    if (count(Session::Currencies()) === 0) {
-        $_SESSION['Waehrungen'] = [];
-        $allCurrencies          = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
-        foreach ($allCurrencies as $currency) {
-            $_SESSION['Waehrungen'][] = new Currency($currency->kWaehrung);
-        }
-    }
-    foreach (Session::Currencies() as $currency) {
-        if (($iso !== null && $currency->getCode() === $iso) || ($id !== null && $currency->getID() === (int)$id)) {
-            $newprice = $price * $currency->getConversionFactor();
-
-            return $useRounding ? round($newprice, $precision) : $newprice;
-        }
-    }
-
-    return false;
-}
-
-/**
  *
  */
 function resetNeuKundenKupon()
@@ -3788,122 +3628,6 @@ function resetNeuKundenKupon()
     Session::Cart()
            ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
            ->setzePositionsPreise();
-}
-
-/**
- * @param int $kKonfig
- * @param JTLSmarty $smarty
- */
-function holeKonfigBearbeitenModus($kKonfig, $smarty)
-{
-    $cart = Session::Cart();
-    if (!isset($cart->PositionenArr[$kKonfig]) || !class_exists('Konfigitem')) {
-        return;
-    }
-    /** @var WarenkorbPos $oBasePosition */
-    $oBasePosition = $cart->PositionenArr[$kKonfig];
-    /** @var WarenkorbPos $oBasePosition */
-    if ($oBasePosition->istKonfigVater()) {
-        $nKonfigitem_arr         = [];
-        $nKonfigitemAnzahl_arr   = [];
-        $nKonfiggruppeAnzahl_arr = [];
-
-        /** @var WarenkorbPos $oPosition */
-        foreach ($cart->PositionenArr as &$oPosition) {
-            if ($oPosition->cUnique === $oBasePosition->cUnique && $oPosition->istKonfigKind()) {
-                $oKonfigitem                                              = new Konfigitem($oPosition->kKonfigitem);
-                $nKonfigitem_arr[]                                        = $oKonfigitem->getKonfigitem();
-                $nKonfigitemAnzahl_arr[$oKonfigitem->getKonfigitem()]     = $oPosition->nAnzahl / $oBasePosition->nAnzahl;
-                if ($oKonfigitem->ignoreMultiplier()) {
-                    $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] = $oPosition->nAnzahl;
-                } else {
-                    $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] = $oPosition->nAnzahl / $oBasePosition->nAnzahl;
-                }
-
-            }
-        }
-        unset($oPosition);
-
-        $smarty->assign('fAnzahl', $oBasePosition->nAnzahl)
-               ->assign('kEditKonfig', $kKonfig)
-               ->assign('nKonfigitem_arr', $nKonfigitem_arr)
-               ->assign('nKonfigitemAnzahl_arr', $nKonfigitemAnzahl_arr)
-               ->assign('nKonfiggruppeAnzahl_arr', $nKonfiggruppeAnzahl_arr);
-    }
-    if (isset($oBasePosition->WarenkorbPosEigenschaftArr)) {
-        $oEigenschaftWertEdit_arr = [];
-        foreach ($oBasePosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
-            $oEigenschaftWertEdit_arr[$oWarenkorbPosEigenschaft->kEigenschaft] = (object)[
-                'kEigenschaft'                  => $oWarenkorbPosEigenschaft->kEigenschaft,
-                'kEigenschaftWert'              => $oWarenkorbPosEigenschaft->kEigenschaftWert,
-                'cEigenschaftWertNameLocalized' => $oWarenkorbPosEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']],
-            ];
-        }
-
-        if (count($oEigenschaftWertEdit_arr) > 0) {
-            $smarty->assign('oEigenschaftWertEdit_arr', $oEigenschaftWertEdit_arr);
-        }
-    }
-}
-
-/**
- * @param array $hookInfos
- * @param bool  $forceExit
- * @return array
- */
-function urlNotFoundRedirect(array $hookInfos = null, bool $forceExit = false)
-{
-    $url         = $_SERVER['REQUEST_URI'];
-    $redirect    = new Redirect();
-    $redirectUrl = $redirect->test($url);
-    if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {
-        $cUrl_arr = parse_url($redirectUrl);
-        if (!array_key_exists('scheme', $cUrl_arr)) {
-            $redirectUrl = strpos($redirectUrl, '/') === 0
-                ? Shop::getURL() . $redirectUrl
-                : Shop::getURL() . '/' . $redirectUrl;
-        }
-        http_response_code(301);
-        header('Location: ' . $redirectUrl);
-        exit;
-    }
-    http_response_code(404);
-
-    if ($forceExit || !$redirect->isValid($url)) {
-        exit;
-    }
-    $isFileNotFound = true;
-    executeHook(HOOK_PAGE_NOT_FOUND_PRE_INCLUDE, [
-        'isFileNotFound'  => &$isFileNotFound,
-        $hookInfos['key'] => &$hookInfos['value']
-    ]);
-    $hookInfos['isFileNotFound'] = $isFileNotFound;
-
-    return $hookInfos;
-}
-
-/**
- * @param int $minDeliveryDays
- * @param int $maxDeliveryDays
- * @return string
- */
-function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
-{
-    $deliveryText = ($minDeliveryDays === $maxDeliveryDays) ? str_replace(
-        '#DELIVERYDAYS#', $minDeliveryDays, Shop::Lang()->get('deliverytimeEstimationSimple')
-    ) : str_replace(
-        ['#MINDELIVERYDAYS#', '#MAXDELIVERYDAYS#'],
-        [$minDeliveryDays, $maxDeliveryDays],
-        Shop::Lang()->get('deliverytimeEstimation')
-    );
-
-    executeHook(HOOK_GET_DELIVERY_TIME_ESTIMATION_TEXT, [
-        'min'  => $minDeliveryDays,
-        'max'  => $maxDeliveryDays,
-        'text' => &$deliveryText
-    ]);
-
-    return $deliveryText;
 }
 
 /**
@@ -4062,43 +3786,6 @@ function isAjaxRequest()
 }
 
 /**
- * @param string $filename
- * @return string delimiter guess
- */
-function guessCsvDelimiter($filename)
-{
-    $file      = fopen($filename, 'r');
-    $firstLine = fgets($file);
-
-    foreach ([';', ',', '|', '\t'] as $delim) {
-        if (strpos($firstLine, $delim) !== false) {
-            fclose($file);
-
-            return $delim;
-        }
-    }
-    fclose($file);
-
-    return ';';
-}
-
-/**
- * return trimmed description without (double) line breaks
- *
- * @param string $cDesc
- * @return string
- */
-function truncateMetaDescription($cDesc)
-{
-    $conf      = Shop::getSettings([CONF_METAANGABEN]);
-    $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description'])
-        ? (int)$conf['metaangaben']['global_meta_maxlaenge_description']
-        : 0;
-
-    return prepareMeta($cDesc, null, $maxLength);
-}
-
-/**
  * @param int $size
  * @param string $format
  * @return string
@@ -4155,45 +3842,6 @@ function dateAddWeekday($date, $weekdays)
     }
 
     return $resDate;
-}
-
-if (!function_exists('dd')) {
-    /**
-     * Dump the passed variables and end the script.
-     *
-     * @param mixed
-     * @return void
-     */
-    function dd()
-    {
-        array_map(function ($var) {
-            dump($var);
-        }, func_get_args());
-        die(1);
-    }
-}
-
-if (!function_exists('array_flatten')) {
-    /**
-     * @param array $array
-     * @return array|bool
-     */
-    function array_flatten($array)
-    {
-        if (!is_array($array)) {
-            return false;
-        }
-        $result = [];
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $result = array_merge($result, array_flatten($value));
-            } else {
-                $result[$key] = $value;
-            }
-        }
-
-        return $result;
-    }
 }
 
 /**

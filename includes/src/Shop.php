@@ -1475,7 +1475,7 @@ final class Shop
         }
         executeHook(HOOK_INDEX_SEO_404, ['seo' => self::getRequestUri()]);
         if (!self::$kLink) {
-            $hookInfos     = urlNotFoundRedirect([
+            $hookInfos     = Redirect::urlNotFoundRedirect([
                 'key'   => 'kLink',
                 'value' => self::$kLink
             ]);

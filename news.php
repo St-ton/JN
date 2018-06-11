@@ -372,7 +372,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         executeHook(HOOK_NEWS_PAGE_NEWSUEBERSICHT);
     }
 
-    $cMetaTitle = prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
+    $cMetaTitle = \Filter\Metadata::prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
 
     Shop::Smarty()->assign('hinweis', $cHinweis)
         ->assign('fehler', $cFehler)

@@ -457,7 +457,7 @@ class Metadata implements MetadataInterface
             : 0;
         // Prüfen ob bereits eingestellte Metas gesetzt sind
         if (!empty($this->metaDescription)) {
-            return prepareMeta(
+            return self::prepareMeta(
                 strip_tags($this->metaDescription),
                 null,
                 $maxLength
@@ -470,7 +470,7 @@ class Metadata implements MetadataInterface
             $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaDescription)) {
                 // meta description via new method
-                return prepareMeta(
+                return self::prepareMeta(
                     strip_tags($category->cMetaDescription),
                     null,
                     $maxLength
@@ -478,7 +478,7 @@ class Metadata implements MetadataInterface
             }
             if (!empty($category->categoryAttributes['meta_description']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
-                return prepareMeta(
+                return self::prepareMeta(
                     strip_tags($category->categoryAttributes['meta_description']->cWert),
                     null,
                     $maxLength
@@ -486,7 +486,7 @@ class Metadata implements MetadataInterface
             }
             if (!empty($category->KategorieAttribute['meta_description'])) {
                 /** @deprecated since 4.05 - this is for compatibilty only! */
-                return prepareMeta(
+                return self::prepareMeta(
                     strip_tags($category->KategorieAttribute['meta_description']),
                     null,
                     $maxLength
@@ -530,7 +530,7 @@ class Metadata implements MetadataInterface
                         " {$searchResults->getOffsetStart()} - {$searchResults->getOffsetEnd()}";
                 }
 
-                return prepareMeta($cMetaDescription, null, $maxLength);
+                return self::prepareMeta($cMetaDescription, null, $maxLength);
             }
         }
         // Keine eingestellten Metas vorhanden => generiere Standard Metas
@@ -563,7 +563,7 @@ class Metadata implements MetadataInterface
             }
         }
 
-        return prepareMeta(strip_tags($cMetaDescription), null, $maxLength);
+        return self::prepareMeta(strip_tags($cMetaDescription), null, $maxLength);
     }
 
     /**
@@ -1455,6 +1455,39 @@ class Metadata implements MetadataInterface
         }
 
         return $bNoIndex;
+    }
+
+    /**
+     * return trimmed description without (double) line breaks
+     *
+     * @param string $cDesc
+     * @return string
+     */
+    public static function truncateMetaDescription(string $cDesc): string
+    {
+        $conf      = \Shop::getSettings([CONF_METAANGABEN]);
+        $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description'])
+            ? (int)$conf['metaangaben']['global_meta_maxlaenge_description']
+            : 0;
+
+        return self::prepareMeta($cDesc, null, $maxLength);
+    }
+
+    /**
+     * @param string $metaProposal the proposed meta text value.
+     * @param string $metaSuffix append suffix to meta value that wont be shortened
+     * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
+     * @return string truncated meta value with optional suffix (always appended if set)
+     */
+    public static function prepareMeta(string $metaProposal, string $metaSuffix = null, int $maxLength = null): string
+    {
+        $metaProposal = str_replace('"', '', \StringHandler::unhtmlentities($metaProposal));
+        $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
+        if (!empty($maxLength) && $maxLength > 0) {
+            $metaProposal = substr($metaProposal, 0, $maxLength);
+        }
+
+        return \StringHandler::htmlentities(trim(preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
     }
 
     /**

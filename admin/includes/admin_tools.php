@@ -253,27 +253,26 @@ function getArrangedArray($oXML_arr, $nLevel = 1)
             if (strpos($cArrayKeys[$i], ' attr') !== false) {
                 //attribut array -> nicht beachten -> weiter
                 continue;
+            }
+            if ($nLevel === 0 || (int)$cArrayKeys[$i] > 0 || $cArrayKeys[$i] == '0') {
+                //int Arrayelement -> in die Tiefe gehen
+                $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
             } else {
-                if ($nLevel === 0 || (int)$cArrayKeys[$i] > 0 || $cArrayKeys[$i] == '0') {
-                    //int Arrayelement -> in die Tiefe gehen
+                if (isset($oXML_arr[$cArrayKeys[$i]][0])) {
                     $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
                 } else {
-                    if (isset($oXML_arr[$cArrayKeys[$i]][0])) {
-                        $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
-                    } else {
-                        if ($oXML_arr[$cArrayKeys[$i]] === '') {
-                            //empty node
-                            continue;
-                        }
-                        //kein Attributzweig, kein numerischer Anfang
-                        $tmp_arr           = [];
-                        $tmp_arr['0 attr'] = $oXML_arr[$cArrayKeys[$i] . ' attr'] ?? null;
-                        $tmp_arr['0']      = $oXML_arr[$cArrayKeys[$i]];
-                        unset($oXML_arr[$cArrayKeys[$i]], $oXML_arr[$cArrayKeys[$i] . ' attr']);
-                        $oXML_arr[$cArrayKeys[$i]] = $tmp_arr;
-                        if (is_array($oXML_arr[$cArrayKeys[$i]]['0'])) {
-                            $oXML_arr[$cArrayKeys[$i]]['0'] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]['0']);
-                        }
+                    if ($oXML_arr[$cArrayKeys[$i]] === '') {
+                        //empty node
+                        continue;
+                    }
+                    //kein Attributzweig, kein numerischer Anfang
+                    $tmp_arr           = [];
+                    $tmp_arr['0 attr'] = $oXML_arr[$cArrayKeys[$i] . ' attr'] ?? null;
+                    $tmp_arr['0']      = $oXML_arr[$cArrayKeys[$i]];
+                    unset($oXML_arr[$cArrayKeys[$i]], $oXML_arr[$cArrayKeys[$i] . ' attr']);
+                    $oXML_arr[$cArrayKeys[$i]] = $tmp_arr;
+                    if (is_array($oXML_arr[$cArrayKeys[$i]]['0'])) {
+                        $oXML_arr[$cArrayKeys[$i]]['0'] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]['0']);
                     }
                 }
             }
@@ -589,4 +588,26 @@ function getNotifyDropIO()
         'tpl' => Shop::Smarty()->fetch('tpl_inc/notify_drop.tpl'),
         'type' => 'notify'
     ];
+}
+
+/**
+ * @param string $filename
+ * @return string delimiter guess
+ * @former guessCsvDelimiter()
+ */
+function getCsvDelimiter($filename)
+{
+    $file      = fopen($filename, 'r');
+    $firstLine = fgets($file);
+
+    foreach ([';', ',', '|', '\t'] as $delim) {
+        if (strpos($firstLine, $delim) !== false) {
+            fclose($file);
+
+            return $delim;
+        }
+    }
+    fclose($file);
+
+    return ';';
 }

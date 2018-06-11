@@ -396,4 +396,34 @@ class Currency
 
         return $res;
     }
+
+    /**
+     * Converts price into given currency
+     *
+     * @param float  $price
+     * @param string $iso - EUR / USD
+     * @param int    $id - kWaehrung
+     * @param bool   $round
+     * @param int    $precision
+     * @return float|bool
+     */
+    public static function convertCurrency($price, string $iso = null, $id = null, bool $round = true, int $precision = 2)
+    {
+        if (count(Session::Currencies()) === 0) {
+            $_SESSION['Waehrungen'] = [];
+            $allCurrencies          = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
+            foreach ($allCurrencies as $currency) {
+                $_SESSION['Waehrungen'][] = new self($currency->kWaehrung);
+            }
+        }
+        foreach (Session::Currencies() as $currency) {
+            if (($iso !== null && $currency->getCode() === $iso) || ($id !== null && $currency->getID() === (int)$id)) {
+                $newprice = $price * $currency->getConversionFactor();
+
+                return $round ? round($newprice, $precision) : $newprice;
+            }
+        }
+
+        return false;
+    }
 }

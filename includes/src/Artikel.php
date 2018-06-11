@@ -5360,7 +5360,7 @@ class Artikel
             }
         }
         //set estimatedDeliverytime text
-        $estimatedDelivery      = getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays);
+        $estimatedDelivery      = VersandartHelper::getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays);
         $this->nMinDeliveryDays = $minDeliveryDays;
         $this->nMaxDeliveryDays = $maxDeliveryDays;
 
@@ -6100,14 +6100,14 @@ class Artikel
             $cPreis = ', ' . $this->Preise->cVKLocalized[$idx];
         }
         if (!empty($this->AttributeAssoc[ART_ATTRIBUT_METATITLE])) {
-            return prepareMeta(
+            return \Filter\Metadata::prepareMeta(
                 $this->AttributeAssoc[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle,
                 $cPreis,
                 (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']
             );
         }
         if (!empty($this->FunktionsAttribute[ART_ATTRIBUT_METATITLE])) {
-            return prepareMeta(
+            return \Filter\Metadata::prepareMeta(
                 $this->FunktionsAttribute[ART_ATTRIBUT_METATITLE] . $cGlobalMetaTitle,
                 $cPreis,
                 (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']
@@ -6123,7 +6123,7 @@ class Artikel
 
         executeHook(HOOK_ARTIKEL_INC_METATITLE, ['cTitle' => &$cTitle]);
 
-        return prepareMeta(
+        return \Filter\Metadata::prepareMeta(
             $cTitle,
             $cPreis,
             (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']
@@ -6149,7 +6149,7 @@ class Artikel
             : '';
         // Hat der Artikel per Attribut eine MetaDescription gesetzt?
         if (!empty($this->AttributeAssoc[ART_ATTRIBUT_METADESCRIPTION])) {
-            return truncateMetaDescription($prefix . $this->AttributeAssoc[ART_ATTRIBUT_METADESCRIPTION]);
+            return \Filter\Metadata::truncateMetaDescription($prefix . $this->AttributeAssoc[ART_ATTRIBUT_METADESCRIPTION]);
         }
         // Kurzbeschreibung vorhanden? Wenn ja, nimm dies als MetaDescription
         $cBeschreibung = ($this->cKurzBeschreibung !== null && strlen(strip_tags($this->cKurzBeschreibung)) > 6)
@@ -6161,7 +6161,7 @@ class Artikel
         }
 
         if (strlen($cBeschreibung) > 0) {
-            return truncateMetaDescription($prefix . strip_tags(str_replace(
+            return \Filter\Metadata::truncateMetaDescription($prefix . strip_tags(str_replace(
                 ['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.'],
                 ' ',
                 $cBeschreibung
@@ -6199,7 +6199,7 @@ class Artikel
             $cDesc .= implode(', ', $categoryNames);
         }
 
-        return truncateMetaDescription($cDesc);
+        return \Filter\Metadata::truncateMetaDescription($cDesc);
     }
 
     /**

@@ -951,7 +951,7 @@ class WarenkorbHelper
         if (isset($oStueckliste->kStueckliste)) {
             $isComponent = true;
         } else {
-            $components = gibStuecklistenKomponente($oArtikel->kStueckliste, true);
+            $components = self::getPartComponent($oArtikel->kStueckliste, true);
         }
         foreach (Session::Cart()->PositionenArr as $oPosition) {
             if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -969,7 +969,7 @@ class WarenkorbHelper
             if (!$isComponent && count($components) > 0) {
                 //Test auf Stücklistenkomponenten in der aktuellen Position
                 if (!empty($oPosition->Artikel->kStueckliste)) {
-                    $oPositionKomponenten_arr = gibStuecklistenKomponente($oPosition->Artikel->kStueckliste, true);
+                    $oPositionKomponenten_arr = self::getPartComponent($oPosition->Artikel->kStueckliste, true);
                     foreach ($oPositionKomponenten_arr as $oKomponente) {
                         $desiredComponentQuantity = $fAnzahl * $components[$oKomponente->kArtikel]->fAnzahl;
                         $currentComponentStock    = $oPosition->Artikel->fLagerbestand * $oKomponente->fAnzahl;
@@ -987,5 +987,31 @@ class WarenkorbHelper
         }
 
         return null;
+    }
+
+    /**
+     * @param int  $kStueckliste
+     * @param bool $bAssoc
+     * @return array
+     */
+    public static function getPartComponent(int $kStueckliste, $bAssoc = false): array
+    {
+        if ($kStueckliste > 0) {
+            $oObj_arr = Shop::Container()->getDB()->selectAll('tstueckliste', 'kStueckliste', $kStueckliste);
+            if (count($oObj_arr) > 0) {
+                if ($bAssoc) {
+                    $oArtikelAssoc_arr = [];
+                    foreach ($oObj_arr as $oObj) {
+                        $oArtikelAssoc_arr[$oObj->kArtikel] = $oObj;
+                    }
+
+                    return $oArtikelAssoc_arr;
+                }
+
+                return $oObj_arr;
+            }
+        }
+
+        return [];
     }
 }

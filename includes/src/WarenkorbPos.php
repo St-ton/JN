@@ -489,7 +489,7 @@ class WarenkorbPos
 
             $oWarenkorbPos->oEstimatedDelivery->localized = (!empty($oWarenkorbPos->oEstimatedDelivery->longestMin)
                 && !empty($oWarenkorbPos->oEstimatedDelivery->longestMax))
-                ? getDeliverytimeEstimationText(
+                ? VersandartHelper::getDeliverytimeEstimationText(
                     $oWarenkorbPos->oEstimatedDelivery->longestMin,
                     $oWarenkorbPos->oEstimatedDelivery->longestMax
                 )

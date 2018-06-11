@@ -62,12 +62,8 @@ class DefaultRenderer implements RendererInterface
                 ? $this->smarty->fetch($this->box->getTemplateFile())
                 : '';
         } catch (\SmartyException $e) {
-            \Shop::dbg($this, true);
-
             return $e->getMessage();
         } catch (\Exception $e) {
-            \Shop::dbg($this, true);
-
             return $e->getMessage();
         }
     }

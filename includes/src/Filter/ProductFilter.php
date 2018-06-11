@@ -271,14 +271,12 @@ class ProductFilter
      * @param int   $currentLanguageID
      * @param array $config
      */
-    public function __construct($languages = null, $currentLanguageID = null, $config = null)
+    public function __construct(array $languages = null, int $currentLanguageID = null, array $config = null)
     {
         $this->url               = new NavigationURLs();
         $this->languages         = $languages ?? \Sprache::getInstance()->getLangArray();
         $this->conf              = $config ?? \Shopsetting::getInstance()->getAll();
-        $this->languageID        = $currentLanguageID === null
-            ? \Shop::getLanguageID()
-            : (int)$currentLanguageID;
+        $this->languageID        = $currentLanguageID ?? \Shop::getLanguageID();
         $this->customerGroupID   = \Session::CustomerGroup()->getID();
         $this->baseURL           = \Shop::getURL() . '/';
         $this->metaData          = new Metadata($this);
@@ -341,7 +339,7 @@ class ProductFilter
      * @param NavigationURLsInterface $url
      * @return ProductFilter
      */
-    public function setURL(NavigationURLsInterface $url)
+    public function setURL(NavigationURLsInterface $url): self
     {
         $this->url = $url;
 
@@ -393,7 +391,7 @@ class ProductFilter
     /**
      * @return ProductFilterURL
      */
-    public function getFilterURL()
+    public function getFilterURL(): ProductFilterURL
     {
         return $this->filterURL;
     }
@@ -447,7 +445,7 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getPage()
+    public function getPage(): int
     {
         return $this->nSeite;
     }
@@ -472,7 +470,7 @@ class ProductFilter
      * @param FilterInterface $filter
      * @return $this
      */
-    public function setBaseState($filter): self
+    public function setBaseState(FilterInterface $filter): self
     {
         $this->baseState = $filter;
 
@@ -577,7 +575,7 @@ class ProductFilter
     /**
      * @return ItemSort
      */
-    public function getSorting()
+    public function getSorting(): ItemSort
     {
         return $this->sorting;
     }
@@ -586,7 +584,7 @@ class ProductFilter
      * @param ItemSort $sorting
      * @return $this
      */
-    public function setSorting($sorting): self
+    public function setSorting(ItemSort $sorting): self
     {
         $this->sorting = $sorting;
 
@@ -596,7 +594,7 @@ class ProductFilter
     /**
      * @return ItemLimit
      */
-    public function getLimits()
+    public function getLimits(): ItemLimit
     {
         return $this->limits;
     }
@@ -605,7 +603,7 @@ class ProductFilter
      * @param ItemLimit $limits
      * @return $this
      */
-    public function setLimits($limits): self
+    public function setLimits(ItemLimit $limits): self
     {
         $this->limits = $limits;
 
@@ -724,7 +722,7 @@ class ProductFilter
      * @param array $params
      * @return $this
      */
-    public function initStates($params): self
+    public function initStates(array $params): self
     {
         $params = array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
@@ -924,7 +922,7 @@ class ProductFilter
      * @return FilterInterface
      * @throws \InvalidArgumentException
      */
-    public function registerFilterByClassName($filterName): FilterInterface
+    public function registerFilterByClassName(string $filterName): FilterInterface
     {
         $filter = null;
         if (class_exists($filterName)) {
@@ -970,7 +968,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return int|null
      */
-    public function getFilterValue($filterClassName)
+    public function getFilterValue(string $filterClassName)
     {
         return array_reduce(
             $this->activeFilters,
@@ -987,7 +985,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return bool
      */
-    public function hasFilter($filterClassName): bool
+    public function hasFilter(string $filterClassName): bool
     {
         return $this->getActiveFilterByClassName($filterClassName) !== null;
     }
@@ -996,7 +994,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return FilterInterface|null
      */
-    public function getFilterByClassName($filterClassName)
+    public function getFilterByClassName(string $filterClassName)
     {
         $filter = array_filter(
             $this->filters,
@@ -1013,7 +1011,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return FilterInterface|null
      */
-    public function getActiveFilterByClassName($filterClassName)
+    public function getActiveFilterByClassName(string $filterClassName)
     {
         $filter = array_filter(
             $this->activeFilters,
@@ -1089,7 +1087,7 @@ class ProductFilter
      * @param FilterInterface $filter
      * @return bool
      */
-    public function override($className, FilterInterface $filter): bool
+    public function override(string $className, FilterInterface $filter): bool
     {
         foreach ($this->filters as $i => $registerdFilter) {
             if ($registerdFilter->getClassName() === $className) {
@@ -1111,7 +1109,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemManufacturer $filter
+     * @param ItemManufacturer|\stdClass $filter
      * @return $this
      */
     public function setManufacturerFilter($filter): self
@@ -1786,7 +1784,7 @@ class ProductFilter
      * @param bool $byType
      * @return array|FilterInterface[]
      */
-    public function getActiveFilters($byType = false): array
+    public function getActiveFilters(bool $byType = false): array
     {
         if ($byType === false) {
             return $this->activeFilters;
@@ -1857,29 +1855,47 @@ class ProductFilter
                     }
                 }
                 if (count($orFilters) > 0) {
-                    // group OR filters by their primary key row
-                    $groupedOrFilters = group($orFilters, function (FilterInterface $f) {
-                        return $f->getPrimaryKeyRow();
-                    });
-                    foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
-                        /** @var FilterInterface[] $orFilters */
-                        $values = implode(
-                            ',',
-                            array_map(function ($f) {
-                                /** @var FilterInterface $f */
-                                $val = $f->getValue();
-
-                                return is_array($val) ? implode(',', $val) : $val;
-                            }, $orFilters)
-                        );
-                        $table  = first($orFilters)->getTableAlias();
-                        if (empty($table)) {
-                            $table = first($orFilters)->getTableName();
+                    if ($type === 'mf') {
+                        foreach ($orFilters as $orFilter) {
+                            /** @var FilterInterface $orFilter */
+                            $values = $orFilter->getValue();
+                            if (is_array($values)) {
+                                $values = implode(',', $values);
+                            }
+                            $table  = $orFilter->getTableAlias();
+                            if (empty($table)) {
+                                $table = $orFilter->getTableName();
+                            }
+                            $conditions[] = "\n#combined conditions from OR filter " . $orFilter->getPrimaryKeyRow() . "\n" .
+                                $table . '.kArtikel IN ' .
+                                '(SELECT kArtikel FROM ' . $orFilter->getTableName() . ' WHERE ' .
+                                $orFilter->getPrimaryKeyRow() . ' IN (' . $values . '))';
                         }
-                        $conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
-                            $table . '.kArtikel IN ' .
-                            '(SELECT kArtikel FROM ' . first($orFilters)->getTableName() . ' WHERE ' .
-                            $primaryKeyRow . ' IN (' . $values . '))';
+                    } else {
+                        // group OR filters by their primary key row
+                        $groupedOrFilters = group($orFilters, function (FilterInterface $f) {
+                            return $f->getPrimaryKeyRow();
+                        });
+                        foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
+                            /** @var FilterInterface[] $orFilters */
+                            $values = implode(
+                                ',',
+                                array_map(function ($f) {
+                                    /** @var FilterInterface $f */
+                                    $val = $f->getValue();
+
+                                    return is_array($val) ? implode(',', $val) : $val;
+                                }, $orFilters)
+                            );
+                            $table  = first($orFilters)->getTableAlias();
+                            if (empty($table)) {
+                                $table = first($orFilters)->getTableName();
+                            }
+                            $conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
+                                $table . '.kArtikel IN ' .
+                                '(SELECT kArtikel FROM ' . first($orFilters)->getTableName() . ' WHERE ' .
+                                $primaryKeyRow . ' IN (' . $values . '))';
+                        }
                     }
                 }
                 foreach ($singleConditions as $singleCondition) {

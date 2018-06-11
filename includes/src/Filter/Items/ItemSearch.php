@@ -62,8 +62,7 @@ class ItemSearch extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('sf')
-             ->setUrlParamSEO(null);
+             ->setUrlParam('sf');
     }
 
     /**

@@ -13,12 +13,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     $ret['captcha'] = 0;
     $ret['csrf']    = 0;
     if (file_exists(CAPTCHA_LOCKFILE)) {
-        if (!isset($_POST['captcha']) || !$_POST['captcha']) {
-            $ret['captcha'] = 1;
-        }
-        if (!isset($_POST['md5']) || !$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . strtoupper($_POST['captcha'])))) {
-            $ret['captcha'] = 2;
-        }
+        $ret['captcha'] = Shop::Container()->getCaptchaService()->validate($_POST) ? 0 : 2;
     }
     // Check if shop version is new enough for csrf validation
     if (version_compare(Shop::getShopVersion(), 400, '>=') === true) {
@@ -119,7 +114,7 @@ switch ($profilerState) {
         break;
 }
 if (file_exists(CAPTCHA_LOCKFILE)) {
-    $smarty->assign('code_adminlogin', generiereCaptchaCode(3));
+    $smarty->assign('code_adminlogin', Shop::Container()->getCaptchaService()->isEnabled());
 }
 $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)

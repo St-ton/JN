@@ -6,8 +6,7 @@
                 <b>Container #{$oBox->getID()}</b>
             </div>
         {else}
-            <div class="col-sm-2 col-xs-4{if !$isActive} inactive text-muted{/if}
-                        {if $oBox->getContainerID() > 0}boxSubName{/if}">
+            <div class="col-sm-2 col-xs-4{if !$isActive} inactive text-muted{/if}{if $oBox->getContainerID() > 0} boxSubName{/if}">
                 {$oBox->getTitle()}
             </div>
             <div class="col-sm-1 col-xs-3{if !$isActive} inactive text-muted{/if}">
@@ -18,12 +17,6 @@
             </div>
         {/if}
         <div class="col-sm-2">
-            {if false && $oBox->getID() === 134}
-                isActive: {$isActive|var_dump}
-                <pre>{$oBox->getFilter()|var_dump}</pre>
-                @page:
-                <pre>{$oBox->getFilter($nPage)|var_dump}</pre>
-            {/if}
             {if $nPage === 0}
                 {if $oBox->getFilter($nPage) === true}
                     sichtbar auf allen Seiten
@@ -61,7 +54,7 @@
             </a>
             <a href="boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                title="{#edit#}"
-               class="btn btn-default{if empty($oBox->getType()) || ($oBox->getType() !== \Boxes\BoxType::TEXT && $oBox->getType() !== \Boxes\BoxType::LINK && $oBox->getType() !== \Boxes\BoxType::CATBOX)}disabled{/if}">
+               class="btn btn-default{if empty($oBox->getType()) || ($oBox->getType() !== \Boxes\BoxType::TEXT && $oBox->getType() !== \Boxes\BoxType::LINK && $oBox->getType() !== \Boxes\BoxType::CATBOX)} disabled{/if}">
                 <i class="fa fa-edit"></i>
             </a>
             {if $oBox->getContainerID() === 0}

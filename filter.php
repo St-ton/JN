@@ -145,8 +145,7 @@ $smarty->assign('NaviFilter', $NaviFilter)
        ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']))
        ->assign('oBestseller_arr', $bestsellers)
        ->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
-       ->assign('code_benachrichtigung_verfuegbarkeit',
-           generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
+       ->assign('code_benachrichtigung_verfuegbarkeit', false)
        ->assign('oNaviSeite_arr', $oNavigationsinfo->buildPageNavigation(
            true,
            $pages,

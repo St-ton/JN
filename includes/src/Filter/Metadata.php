@@ -33,7 +33,7 @@ class Metadata implements MetadataInterface
     /**
      * @var string
      */
-    private $breadCrumb;
+    private $breadCrumb = '';
 
     /**
      * @var string

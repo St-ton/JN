@@ -67,7 +67,7 @@ Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
     ->assign('hinweis', $hinweis)
     ->assign('step', $step)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
-    ->assign('code_registrieren', generiereCaptchaCode($Einstellungen['kunden']['registrieren_captcha']));
+    ->assign('code_registrieren', false);
 
 $cCanonicalURL = $linkHelper->getStaticRoute('registrieren.php');
 // Metaangaben

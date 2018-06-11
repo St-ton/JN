@@ -61,9 +61,9 @@ class ItemSearchSpecial extends AbstractFilter
      * @param array|int|string $value
      * @return $this
      */
-    public function setValueCompat($value)
+    public function setValueCompat(int $value)
     {
-        $this->value = [(int)$value];
+        $this->value = [$value];
 
         return $this;
     }

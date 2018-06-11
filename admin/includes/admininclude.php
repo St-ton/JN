@@ -44,6 +44,9 @@ $session = \Session\AdminSession::getInstance();
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
+Shop::Container()->setSingleton(\Services\JTL\CaptchaServiceInterface::class, function (\Services\Container $container) {
+    return new \Services\JTL\SimpleCaptchaService(true);
+});
 Shop::bootstrap();
 
 if ($oAccount->logged()) {

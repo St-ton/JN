@@ -1856,46 +1856,36 @@ class ProductFilter
                 }
                 if (count($orFilters) > 0) {
                     if ($type === 'mf') {
-                        foreach ($orFilters as $orFilter) {
-                            /** @var FilterInterface $orFilter */
-                            $values = $orFilter->getValue();
-                            if (is_array($values)) {
-                                $values = implode(',', $values);
-                            }
-                            $table  = $orFilter->getTableAlias();
-                            if (empty($table)) {
-                                $table = $orFilter->getTableName();
-                            }
-                            $conditions[] = "\n#combined conditions from OR filter " . $orFilter->getPrimaryKeyRow() . "\n" .
-                                $table . '.kArtikel IN ' .
-                                '(SELECT kArtikel FROM ' . $orFilter->getTableName() . ' WHERE ' .
-                                $orFilter->getPrimaryKeyRow() . ' IN (' . $values . '))';
-                        }
+                        $groupedOrFilters = group($orFilters, function (FilterInterface $f) {
+                            return $f->getAttributeID();
+                        });
                     } else {
                         // group OR filters by their primary key row
                         $groupedOrFilters = group($orFilters, function (FilterInterface $f) {
                             return $f->getPrimaryKeyRow();
                         });
-                        foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
-                            /** @var FilterInterface[] $orFilters */
-                            $values = implode(
-                                ',',
-                                array_map(function ($f) {
-                                    /** @var FilterInterface $f */
-                                    $val = $f->getValue();
+                    }
+                    foreach ($groupedOrFilters as $idx => $orFilters) {
+                        /** @var FilterInterface[] $orFilters */
+                        $values        = implode(
+                            ',',
+                            array_map(function ($f) {
+                                /** @var FilterInterface $f */
+                                $val = $f->getValue();
 
-                                    return is_array($val) ? implode(',', $val) : $val;
-                                }, $orFilters)
-                            );
-                            $table  = first($orFilters)->getTableAlias();
-                            if (empty($table)) {
-                                $table = first($orFilters)->getTableName();
-                            }
-                            $conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
-                                $table . '.kArtikel IN ' .
-                                '(SELECT kArtikel FROM ' . first($orFilters)->getTableName() . ' WHERE ' .
-                                $primaryKeyRow . ' IN (' . $values . '))';
+                                return is_array($val) ? implode(',', $val) : $val;
+                            }, $orFilters)
+                        );
+                        $first         = first($orFilters);
+                        $primaryKeyRow = $first->getPrimaryKeyRow();
+                        $table         = $first->getTableAlias();
+                        if (empty($table)) {
+                            $table = first($orFilters)->getTableName();
                         }
+                        $conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
+                            $table . '.kArtikel IN ' .
+                            '(SELECT kArtikel FROM ' . $first->getTableName() . ' WHERE ' .
+                            $primaryKeyRow . ' IN (' . $values . '))';
                     }
                 }
                 foreach ($singleConditions as $singleCondition) {

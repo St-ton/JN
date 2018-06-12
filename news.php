@@ -207,7 +207,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             if (strpos(baueURL($oNewsArchiv, URLART_NEWS), '.php') === false) {
                 $cCanonicalURL = Shop::getURL() . '/' . baueURL($oNewsArchiv, URLART_NEWS);
             }
-            Shop::Smarty()->assign('Navigation', createNavigation(
+            Shop::Smarty()->assign('Brotnavi', createNavigation(
                 Shop::$AktuelleSeite,
                 0,
                 0,
@@ -244,7 +244,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 // Canonical
                 if (isset($oNewsKategorie->cSeo)) {
                     $cCanonicalURL = Shop::getURL() . '/' . $oNewsKategorie->cSeo;
-                    Shop::Smarty()->assign('Navigation', createNavigation(
+                    Shop::Smarty()->assign('Brotnavi', createNavigation(
                             Shop::$AktuelleSeite,
                             0,
                             0,
@@ -267,7 +267,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
             if (isset($oNewsMonatsUebersicht->cSeo)) {
                 $cCanonicalURL = Shop::getURL() . '/' . $oNewsMonatsUebersicht->cSeo;
-                Shop::Smarty()->assign('Navigation', createNavigation(
+                Shop::Smarty()->assign('Brotnavi', createNavigation(
                         Shop::$AktuelleSeite,
                         0,
                         0,

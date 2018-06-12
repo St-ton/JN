@@ -18,7 +18,7 @@ $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite));
+Shop::Smarty()->assign('Brotnavi', createNavigation($AktuelleSeite));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

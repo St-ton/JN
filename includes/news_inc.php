@@ -407,11 +407,11 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
         if (empty($AktuelleSeite)) {
             $AktuelleSeite = null;
         }
-        $smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->getName(), $requestURL));
+        $smarty->assign('Brotnavi', createNavigation($AktuelleSeite, 0, 0, $Link->getName(), $requestURL));
     } else {
         // Canonical
         $cCanonicalURL = Shop::getURL() . '/news.php';
-        $smarty->assign('Navigation',
+        $smarty->assign('Brotnavi',
             createNavigation(
                 $AktuelleSeite,
                 0,

@@ -68,7 +68,7 @@ Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($oVergleichslis
     ->assign('oVariationen_arr', $oMerkVaria_arr[1])
     ->assign('print', (isset($_GET['print']) && (int)$_GET['print'] === 1) ? 1 : 0)
     ->assign('oVergleichsliste', $oVergleichsliste)
-    ->assign('Navigation', createNavigation($AktuelleSeite))
+    ->assign('Brotnavi', createNavigation($AktuelleSeite))
     ->assign('Einstellungen_Vergleichsliste', $conf);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

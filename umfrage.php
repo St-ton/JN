@@ -67,7 +67,7 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                 }
                 $_SESSION['Umfrage']->kUmfrage = $oUmfrage->kUmfrage;
                 $smarty->assign('oUmfrage', $oUmfrage)
-                       ->assign('Navigation', createNavigation(
+                       ->assign('Brotnavi', createNavigation(
                                Shop::getPageType(),
                                0,
                                0,
@@ -103,7 +103,7 @@ if ($step === 'umfrage_uebersicht') {
     }
     $cCanonicalURL = Shop::getURL() . '/umfrage.php';
 
-    $smarty->assign('Navigation', createNavigation(
+    $smarty->assign('Brotnavi', createNavigation(
             Shop::$AktuelleSeite,
             0,
             0,

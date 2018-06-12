@@ -301,7 +301,7 @@ Shop::Smarty()->assign('CWunschliste', $CWunschliste)
         && isset($_SESSION['Kunde']->kKunde)
         && (int)$CWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde)
     ->assign('cURLID', $cURLID)
-    ->assign('Navigation', createNavigation($AktuelleSeite))
+    ->assign('Brotnavi', createNavigation($AktuelleSeite))
     ->assign('step', $step)
     ->assign('cFehler', $cFehler)
     ->assign('cHinweis', $cHinweis);

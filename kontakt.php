@@ -105,7 +105,7 @@ if (pruefeBetreffVorhanden()) {
     $SpezialContent = new stdClass();
 }
 
-Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
+Shop::Smarty()->assign('Brotnavi', createNavigation($AktuelleSeite))
     ->assign('Spezialcontent', $SpezialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

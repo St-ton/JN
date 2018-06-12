@@ -93,7 +93,7 @@ $cMetaKeywords    = $oMeta->cKeywords;
 Shop::Smarty()->assign('step', $step)
     ->assign('hinweis', $hinweis)
     ->assign('cFehler', $cFehler)
-    ->assign('Navigation', createNavigation($AktuelleSeite));
+    ->assign('Brotnavi', createNavigation($AktuelleSeite));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 Shop::Smarty()->display('account/password.tpl');

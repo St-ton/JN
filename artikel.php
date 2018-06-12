@@ -225,7 +225,8 @@ if ($AktuellerArtikel->Variationen) {
 $nav = $Einstellungen['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? gibNaviBlaettern($AktuellerArtikel->kArtikel, $AktuelleKategorie->kKategorie)
     : null;
-$smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKategorien, $AktuellerArtikel))
+
+$smarty->assign('Brotnavi', createNavigation($AktuelleSeite, $AufgeklappteKategorien, $AktuellerArtikel))
        ->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
        ->assign('oAehnlicheArtikel_arr', $similarArticles)
@@ -265,7 +266,6 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('bPreisverlauf', is_array($oPreisverlauf) && count($oPreisverlauf) > 1)
        ->assign('preisverlaufData', $oPreisverlauf)
        ->assign('NavigationBlaettern', $nav);
-
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

@@ -13,9 +13,9 @@ namespace Filter;
 interface MetadataInterface
 {
     /**
-     * @return string
+     * @return array
      */
-    public function getBreadCrumb(): string;
+    public function getBreadCrumb(): array;
 
     /**
      * @param string $breadCrumb

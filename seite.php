@@ -111,7 +111,7 @@ if (Shop::getPageType() === PAGE_404) {
         Shop::$kLink
     );
 }
-$smarty->assign('Navigation', $Navigation)
+$smarty->assign('Brotnavi', $Navigation)
        ->assign('Link', $link)
        ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
        ->assign('cFehler', !empty($cFehler) ? $cFehler : null)

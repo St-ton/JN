@@ -3924,7 +3924,7 @@ function setzeFehlendeAngaben($fehlendeAngabe, $context = null)
 function globaleAssigns()
 {
     global $step, $hinweis, $Einstellungen, $AktuelleSeite;
-    Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
+    Shop::Smarty()->assign('Brotnavi', createNavigation($AktuelleSeite))
         ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
         ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
         ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))

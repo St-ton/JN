@@ -11,6 +11,7 @@ use function Functional\group;
 use function Functional\map;
 use function Functional\reduce_left;
 use function Functional\reindex;
+use JTL\Navigation;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -31,9 +32,9 @@ class Metadata implements MetadataInterface
     private $conf;
 
     /**
-     * @var string
+     * @var array
      */
-    private $breadCrumb = '';
+    private $breadCrumb = [];
 
     /**
      * @var string
@@ -103,7 +104,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getBreadCrumb(): string
+    public function getBreadCrumb(): array
     {
         return $this->breadCrumb;
     }

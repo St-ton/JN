@@ -10,7 +10,7 @@ if (!defined('PFAD_ROOT')) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
-/** @global ProductFilter $NaviFilter*/
+/** @global \Filter\ProductFilter $NaviFilter*/
 $Einstellungen      = Shopsetting::getInstance()->getAll();
 $bestsellers        = [];
 $suchanfrage        = '';
@@ -150,7 +150,7 @@ $smarty->assign('NaviFilter', $NaviFilter)
            true,
            $pages,
            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
-       ->assign('Navigation', $oNavigationsinfo->getBreadCrumb())
+       ->assign('Brotnavi', $oNavigationsinfo->getBreadCrumb())
        ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())
        ->assign('Suchergebnisse', $oSuchergebnisse)
        ->assign('oNavigationsinfo', $oNavigationsinfo)

@@ -74,7 +74,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     Shop::Smarty()->assign('BereitsBewertet', pruefeKundeArtikelBewertet(
         $AktuellerArtikel->kArtikel,
         $_SESSION['Kunde']->kKunde))
-        ->assign('Navigation', createNavigation(
+        ->assign('Brotnavi', createNavigation(
             $AktuelleSeite,
             0,
             0,

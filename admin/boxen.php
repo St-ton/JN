@@ -9,13 +9,10 @@ $oAccount->permission('BOXES_VIEW', true, true);
 
 $cHinweis   = '';
 $cFehler    = '';
-$nPage      = 0;
+$nPage      = isset($_REQUEST['page']) ? (int)$_REQUEST['page'] : 0;
 $boxService = Shop::Container()->getBoxService();
 $boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB(), $boxService);
 $bOk        = false;
-if (isset($_REQUEST['page'])) {
-    $nPage = (int)$_REQUEST['page'];
-}
 if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
@@ -155,7 +152,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
 
         case 'activate':
             $kBox    = (int)$_REQUEST['item'];
-            $bActive = (boolean)$_REQUEST['value'];
+            $bActive = (bool)$_REQUEST['value'];
             $bOk     = $boxAdmin->activate($kBox, 0, $bActive);
             if ($bOk) {
                 $cHinweis = 'Box wurde erfolgreich bearbeitet.';
@@ -166,7 +163,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
 
         case 'container':
             $ePosition = $_REQUEST['position'];
-            $bValue    = (boolean)$_GET['value'];
+            $bValue    = (bool)$_GET['value'];
             $bOk       = $boxAdmin->setVisibility(0, $ePosition, $bValue);
             if ($bOk) {
                 $cHinweis = 'Box wurde erfolgreich bearbeitet.';
@@ -181,43 +178,6 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
     $flushres = Shop::Cache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
     Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
 }
-$validPageTypes  = [
-    PAGE_UNBEKANNT,
-    PAGE_ARTIKEL,
-    PAGE_ARTIKELLISTE,
-    PAGE_WARENKORB,
-    PAGE_MEINKONTO,
-    PAGE_KONTAKT,
-    PAGE_UMFRAGE,
-    PAGE_NEWS,
-    PAGE_NEWSLETTER,
-    PAGE_LOGIN,
-    PAGE_REGISTRIERUNG,
-    PAGE_BESTELLVORGANG,
-    PAGE_BEWERTUNG,
-    PAGE_DRUCKANSICHT,
-    PAGE_PASSWORTVERGESSEN,
-    PAGE_WARTUNG,
-    PAGE_WUNSCHLISTE,
-    PAGE_VERGLEICHSLISTE,
-    PAGE_STARTSEITE,
-    PAGE_VERSAND,
-    PAGE_AGB,
-    PAGE_DATENSCHUTZ,
-    PAGE_TAGGING,
-    PAGE_LIVESUCHE,
-    PAGE_HERSTELLER,
-    PAGE_SITEMAP,
-    PAGE_GRATISGESCHENK,
-    PAGE_WRB,
-    PAGE_PLUGIN,
-    PAGE_NEWSLETTERARCHIV,
-    PAGE_NEWSARCHIV,
-    PAGE_EIGENE,
-    PAGE_AUSWAHLASSISTENT,
-    PAGE_BESTELLABSCHLUSS,
-    PAGE_RMA
-];
 $oBoxen_arr      = $boxService->buildList($nPage, false, true);
 $oVorlagen_arr   = $boxAdmin->getTemplates($nPage);
 $oBoxenContainer = Template::getInstance()->getBoxLayoutXML();
@@ -253,7 +213,7 @@ $filterMapping = \Functional\map($filterMapping, function ($e) {
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('filterMapping', $filterMapping)
-       ->assign('validPageTypes', $validPageTypes)
+       ->assign('validPageTypes', $boxAdmin->getValidPageTypes())
        ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($nPage))
        ->assign('oBoxenLeft_arr', $oBoxen_arr['left'] ?? [])
        ->assign('oBoxenTop_arr', $oBoxen_arr['top'] ?? [])

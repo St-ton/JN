@@ -37,7 +37,6 @@ if ($step === 'plugin_uebersicht') {
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     )
                     : [];
-                }
                 foreach ($oPluginEinstellungConf_arr as $oPluginEinstellungConf) {
                     Shop::Container()->getDB()->delete(
                         'tplugineinstellungen',

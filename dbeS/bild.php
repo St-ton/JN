@@ -19,10 +19,10 @@ if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'N') {
 }
 
 // Parameter holen
-$kArtikel    = verifyGPCDataInteger('a'); // Angeforderter Artikel
-$nBildNummer = verifyGPCDataInteger('n'); // Bildnummer
-$nURL        = verifyGPCDataInteger('url'); // Soll die URL zum Bild oder das Bild direkt ausgegeben werden
-$nSize       = verifyGPCDataInteger('s'); // Bildgröße
+$kArtikel    = RequestHelper::verifyGPCDataInt('a'); // Angeforderter Artikel
+$nBildNummer = RequestHelper::verifyGPCDataInt('n'); // Bildnummer
+$nURL        = RequestHelper::verifyGPCDataInt('url'); // Soll die URL zum Bild oder das Bild direkt ausgegeben werden
+$nSize       = RequestHelper::verifyGPCDataInt('s'); // Bildgröße
 
 if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
     // Standardkundengruppe holen

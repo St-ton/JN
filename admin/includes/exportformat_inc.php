@@ -258,7 +258,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(
             str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML)
         );
-        $Artikel->Preise->fVKBrutto     = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
+        $Artikel->Preise->fVKBrutto     = TaxHelper::getGross($Artikel->Preise->fVKNetto, TaxHelper::getSalesTax($Artikel->kSteuerklasse));
 
         //Kategoriepfad
         $Artikel->Kategorie     = new Kategorie(

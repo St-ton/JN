@@ -20,15 +20,15 @@ $cacheTags     = [];
 
 setzeSprache();
 
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $cTab = verifyGPDataString('tab');
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $cTab = RequestHelper::verifyGPDataString('tab');
 }
 // Bewertung editieren
-if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && validateToken()) {
     if (editiereBewertung($_POST)) {
         $cHinweis .= 'Ihre Bewertung wurde erfolgreich editiert. ';
 
-        if (verifyGPCDataInteger('nFZ') === 1) {
+        if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
             header('Location: freischalten.php');
             exit();
         }
@@ -39,8 +39,8 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
 } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
 
     // Validierung
-    if (verifyGPDataString('bewertung_guthaben_nutzen') === 'Y'
-        && verifyGPDataString('bewertung_freischalten') !== 'Y'
+    if (RequestHelper::verifyGPDataString('bewertung_guthaben_nutzen') === 'Y'
+        && RequestHelper::verifyGPDataString('bewertung_freischalten') !== 'Y'
     ) {
         $cFehler = 'Guthabenbonus kann nur mit "Bewertung freischalten" verwendet werden.';
     } else {
@@ -116,13 +116,13 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
 
 if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_editieren') {
     $step = 'bewertung_editieren';
-    $smarty->assign('oBewertung', holeBewertung(verifyGPCDataInteger('kBewertung')));
-    if (verifyGPCDataInteger('nFZ') === 1) {
+    $smarty->assign('oBewertung', holeBewertung(RequestHelper::verifyGPCDataInt('kBewertung')));
+    if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
         $smarty->assign('nFZ', 1);
     }
 } elseif ($step === 'bewertung_uebersicht') {
     if (isset($_GET['a']) && $_GET['a'] === 'delreply' && validateToken()) {
-        removeReply(verifyGPCDataInteger('kBewertung'));
+        removeReply(RequestHelper::verifyGPCDataInt('kBewertung'));
         $cHinweis = 'Antwort zu einer Bewertung wurde entfernt.';
     }
 
@@ -217,7 +217,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         ->assign('oBewertungLetzten50_arr', $oBewertungLetzten50_arr)
         ->assign('oBewertungAktiv_arr', $oBewertungAktiv_arr ?? null)
         ->assign('oConfig_arr', $oConfig_arr)
-        ->assign('Sprachen', gibAlleSprachen());
+        ->assign('Sprachen', Sprache::getAllLanguages());
 }
 
 $smarty->assign('hinweis', $cHinweis)

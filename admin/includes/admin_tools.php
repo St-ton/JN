@@ -315,7 +315,7 @@ function holeBewertungserinnerungSettings()
  */
 function setzeSprache()
 {
-    if (validateToken() && verifyGPCDataInteger('sprachwechsel') === 1) {
+    if (validateToken() && RequestHelper::verifyGPCDataInt('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
         $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
 

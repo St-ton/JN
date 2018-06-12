@@ -53,17 +53,14 @@ class WidgetVisitorsOnline extends WidgetBase
                     LEFT JOIN `tkunde` ON `tbesucher`.`kKunde` = `tkunde`.`kKunde`
             WHERE
                 `tbesucher`.`kBesucherBot` = 0
-                AND `tbesucher`.`kKunde` = 0   -- only guests are of interest here
-        ", 2);
-        if (is_array($oVisitors_arr)) {
-            foreach ($oVisitors_arr as $i => $oVisitor) {
-                $oVisitors_arr[$i]->cNachname = trim(entschluesselXTEA($oVisitor->cNachname));
-                if ($oVisitor->kBestellung > 0) {
-                    $oVisitors_arr[$i]->fGesamtsumme = gibPreisStringLocalized($oVisitor->fGesamtsumme);
-                }
+                AND `tbesucher`.`kKunde` = 0",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($oVisitors_arr as $i => $oVisitor) {
+            $oVisitors_arr[$i]->cNachname = trim(entschluesselXTEA($oVisitor->cNachname));
+            if ($oVisitor->kBestellung > 0) {
+                $oVisitors_arr[$i]->fGesamtsumme = Preise::getLocalizedPriceString($oVisitor->fGesamtsumme);
             }
-        } else {
-            $oVisitors_arr = [];
         }
 
         return $oVisitors_arr;

@@ -14,8 +14,8 @@ $cFehler           = null;
 $cStep             = 'uebersicht';
 /** @global JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 /** @var Billpay $oBillpay */
 $oBillpay = PaymentMethod::create('za_billpay_jtl');

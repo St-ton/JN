@@ -10,7 +10,7 @@
 function speicherStatusemailEinstellungen()
 {
     if ((int)$_POST['nAktiv'] === 0
-        || (valid_email($_POST['cEmail'])
+        || (StringHandler::filterEmailAddress($_POST['cEmail']) !== false
             && is_array($_POST['cIntervall_arr'])
             && count($_POST['cIntervall_arr']) > 0
             && is_array($_POST['cInhalt_arr'])

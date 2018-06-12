@@ -116,9 +116,9 @@ function bearbeite($xml)
             
             if ($Kunde->cMail !== $oKundeAlt->cMail) {
                 // E-Mail Adresse geändert - Verwendung prüfen!
-                if (!valid_email($Kunde->cMail) ||
-                    pruefeEmailblacklist($Kunde->cMail) ||
-                    Shop::Container()->getDB()->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null
+                if (StringHandler::filterEmailAddress($Kunde->cMail) === false
+                    || pruefeEmailblacklist($Kunde->cMail)
+                    || Shop::Container()->getDB()->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null
                 ) {
                     // E-Mail ist invalid, blacklisted bzw. wird bereits im Shop verwendet - die Änderung wird zurückgewiesen.
                     $res_obj['keys']['tkunde attr']['kKunde'] = 0;

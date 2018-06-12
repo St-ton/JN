@@ -15,13 +15,13 @@ $standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard',
 $hinweis          = '';
 $step             = 'uebersicht';
 // Check Nutzbar
-if (verifyGPCDataInteger('checkNutzbar') === 1) {
+if (RequestHelper::verifyGPCDataInt('checkNutzbar') === 1) {
     ZahlungsartHelper::checkPaymentMethodAvailability();
     $hinweis = 'Ihre Zahlungsarten wurden auf Nutzbarkeit gepr&uuml;ft.';
 }
 // reset log
-if (($action = verifyGPDataString('a')) !== ''
-    && ($kZahlungsart = verifyGPCDataInteger('kZahlungsart')) > 0
+if (($action = RequestHelper::verifyGPDataString('a')) !== ''
+    && ($kZahlungsart = RequestHelper::verifyGPCDataInt('kZahlungsart')) > 0
     && $action === 'logreset' && validateToken()
 ) {
     $oZahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
@@ -31,7 +31,7 @@ if (($action = verifyGPDataString('a')) !== ''
         $hinweis = 'Der Fehlerlog von ' . $oZahlungsart->cName . ' wurde erfolgreich zur&uuml;ckgesetzt.';
     }
 }
-if (verifyGPCDataInteger('kZahlungsart') > 0 && $action !== 'logreset' && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('kZahlungsart') > 0 && $action !== 'logreset' && validateToken()) {
     $step = 'einstellen';
     if ($action === 'payments') {
         // Zahlungseingaenge
@@ -147,7 +147,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
         }
     }
 
-    $sprachen = gibAlleSprachen();
+    $sprachen = Sprache::getAllLanguages();
     if (!isset($zahlungsartSprache)) {
         $zahlungsartSprache = new stdClass();
     }
@@ -176,7 +176,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
 }
 
 if ($step === 'einstellen') {
-    $zahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', verifyGPCDataInteger('kZahlungsart'));
+    $zahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', RequestHelper::verifyGPCDataInt('kZahlungsart'));
     if ($zahlungsart === null) {
         $step    = 'uebersicht';
         $hinweis = 'Zahlungsart nicht gefunden.';
@@ -256,7 +256,7 @@ if ($step === 'einstellen') {
                ->assign('zahlungsart', $zahlungsart)
                ->assign('kundengruppen', $kundengruppen)
                ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($zahlungsart))
-               ->assign('sprachen', gibAlleSprachen())
+               ->assign('sprachen', Sprache::getAllLanguages())
                ->assign('Zahlungsartname', getNames($zahlungsart->kZahlungsart))
                ->assign('Gebuehrname', getshippingTimeNames($zahlungsart->kZahlungsart))
                ->assign('cHinweisTexte_arr', getHinweisTexte($zahlungsart->kZahlungsart))
@@ -265,7 +265,7 @@ if ($step === 'einstellen') {
                ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
     }
 } elseif ($step === 'log') {
-    $kZahlungsart = verifyGPCDataInteger('kZahlungsart');
+    $kZahlungsart = RequestHelper::verifyGPCDataInt('kZahlungsart');
     $oZahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
@@ -289,7 +289,7 @@ if ($step === 'einstellen') {
         );
     }
 
-    $kZahlungsart = verifyGPCDataInteger('kZahlungsart');
+    $kZahlungsart = RequestHelper::verifyGPCDataInt('kZahlungsart');
 
     $oFilter = new Filter('payments-' . $kZahlungsart);
     $oFilter->addTextfield(

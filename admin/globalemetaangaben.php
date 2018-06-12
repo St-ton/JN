@@ -103,7 +103,7 @@ $excludeKeywords = Shop::Container()->getDB()->select('texcludekeywords', 'cISOS
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oMetaangaben_arr', $cTMP_arr)
        ->assign('keywords', $excludeKeywords)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $chinweis)
        ->assign('fehler', $cfehler)
        ->display('globalemetaangaben.tpl');

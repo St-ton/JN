@@ -55,7 +55,7 @@ if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && validateToken()) 
 $dStart = $startDate->format('Y-m-d 00:00:00');
 $dEnd   = $endDate->format('Y-m-d 23:59:59');
 
-$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons($dStart, $dEnd, verifyGPDataString('kKupon'));
+$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons($dStart, $dEnd, RequestHelper::verifyGPDataString('kKupon'));
 
 $nCountOrders_arr = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nCount
@@ -77,9 +77,9 @@ if (isset($usedCouponsOrder) && is_array($usedCouponsOrder)) {
         $usedCouponsOrder[$key]['cUserName'] = $oKunde->cVorname . ' ' . $oKunde->cNachname;
         unset($oKunde);
         $usedCouponsOrder[$key]['nCouponValue']        =
-            gibPreisLocalizedOhneFaktor($usedCouponOrder['fKuponwertBrutto']);
+            Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fKuponwertBrutto']);
         $usedCouponsOrder[$key]['nShoppingCartAmount'] =
-            gibPreisLocalizedOhneFaktor($usedCouponOrder['fGesamtsummeBrutto']);
+            Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fGesamtsummeBrutto']);
         $usedCouponsOrder[$key]['cOrderPos_arr']       = Shop::Container()->getDB()->query("
             SELECT CONCAT_WS(' ',wk.cName,wk.cHinweis) AS cName,
                 wk.fPreis+(wk.fPreis/100*wk.fMwSt) AS nPreis, wk.nAnzahl
@@ -92,9 +92,9 @@ if (isset($usedCouponsOrder) && is_array($usedCouponsOrder)) {
             $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nAnzahl']      =
                 str_replace('.', ',', number_format($value['nAnzahl'], 2));
             $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nPreis']       =
-                gibPreisLocalizedOhneFaktor($value['nPreis']);
+                Preise::getLocalizedPriceWithoutFactor($value['nPreis']);
             $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nGesamtPreis'] =
-                gibPreisLocalizedOhneFaktor($value['nAnzahl'] * $value['nPreis']);
+                Preise::getLocalizedPriceWithoutFactor($value['nAnzahl'] * $value['nPreis']);
         }
 
         $nCountUsedCouponsOrder++;
@@ -117,8 +117,8 @@ $overview_arr                  = [
     'nCountCustomers'          => $nCountCustomers,
     'nCountOrder'              => $nCountOrders_arr['nCount'],
     'nPercentCountUsedCoupons' => $nPercentCountUsedCoupons,
-    'nShoppingCartAmountAll'   => gibPreisLocalizedOhneFaktor($nShoppingCartAmountAll),
-    'nCouponAmountAll'         => gibPreisLocalizedOhneFaktor($nCouponAmountAll)
+    'nShoppingCartAmountAll'   => Preise::getLocalizedPriceWithoutFactor($nShoppingCartAmountAll),
+    'nCouponAmountAll'         => Preise::getLocalizedPriceWithoutFactor($nCouponAmountAll)
 ];
 
 $smarty->assign('overview_arr', $overview_arr)

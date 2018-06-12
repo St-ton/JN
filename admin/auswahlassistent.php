@@ -15,8 +15,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $step = 'uebersicht';
     setzeSprache();
 
-    if (strlen(verifyGPDataString('tab')) > 0) {
-        $cTab = verifyGPDataString('tab');
+    if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+        $cTab = RequestHelper::verifyGPDataString('tab');
     }
     if (isset($_POST['a']) && validateToken()) {
         if ($_POST['a'] === 'newGrp') {
@@ -135,7 +135,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 } else {
     $smarty->assign('noModule', true);
 }
-$smarty->assign('Sprachen', gibAlleSprachen())
+$smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
        ->assign('step', $step)

@@ -47,7 +47,7 @@ switch ($cAction) {
 
 if ($cStep === 'uebersicht') {
     $smarty->assign('oWarenlager_arr', Warenlager::getAll(false, true))
-           ->assign('oSprache_arr', gibAlleSprachen());
+           ->assign('oSprache_arr', Sprache::getAllLanguages());
 }
 
 $smarty->assign('cStep', $cStep)

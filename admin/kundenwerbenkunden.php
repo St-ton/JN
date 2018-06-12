@@ -17,17 +17,17 @@ $step          = 'kwk_uebersicht';
 setzeSprache();
 
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 // KwK
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST);
 }
 // KwK
-if (verifyGPCDataInteger('KwK') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('KwK') === 1 && validateToken()) {
     // Einladung vom Neukunden loeschen
-    if (verifyGPCDataInteger('nichtreggt_loeschen') === 1) {
+    if (RequestHelper::verifyGPCDataInt('nichtreggt_loeschen') === 1) {
         $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];
         if (is_array($kKundenWerbenKunden_arr) && count($kKundenWerbenKunden_arr) > 0) {
             foreach ($kKundenWerbenKunden_arr as $kKundenWerbenKunden) {
@@ -183,7 +183,7 @@ if ($step === 'kwk_uebersicht') {
         ->assign('oPagiReg', $oPagiReg)
         ->assign('oPagiPraemie', $oPagiPraemie);
 }
-$smarty->assign('Sprachen', gibAlleSprachen())
+$smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('kSprache', $_SESSION['kSprache'])
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

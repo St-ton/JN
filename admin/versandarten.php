@@ -10,7 +10,7 @@ $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global JTLSmarty $smarty */
-setzeSteuersaetze();
+TaxHelper::setTaxRates();
 $standardwaehrung   = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
 $versandberechnung  = null;
 $cHinweis           = '';
@@ -79,9 +79,9 @@ if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && validateToken()) {
     $cHinweis .= 'Zuschlagsliste erfolgreich gel&ouml;scht!';
 }
 // Zuschlagliste editieren
-if (verifyGPCDataInteger('editzus') > 0 && validateToken()) {
-    $kVersandzuschlag = verifyGPCDataInteger('editzus');
-    $cISO             = StringHandler::convertISO6392ISO(verifyGPDataString('cISO'));
+if (RequestHelper::verifyGPCDataInt('editzus') > 0 && validateToken()) {
+    $kVersandzuschlag = RequestHelper::verifyGPCDataInt('editzus');
+    $cISO             = StringHandler::convertISO6392ISO(RequestHelper::verifyGPDataString('cISO'));
 
     if ($kVersandzuschlag > 0 && (strlen($cISO) > 0 && $cISO !== 'noISO')) {
         $step             = 'Zuschlagsliste';
@@ -213,8 +213,8 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
 if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && validateToken()) {
     $step     = 'Zuschlagsliste';
     $Zuschlag = new stdClass();
-    if (verifyGPCDataInteger('kVersandzuschlag') > 0) {
-        $Zuschlag->kVersandzuschlag = verifyGPCDataInteger('kVersandzuschlag');
+    if (RequestHelper::verifyGPCDataInt('kVersandzuschlag') > 0) {
+        $Zuschlag->kVersandzuschlag = RequestHelper::verifyGPCDataInt('kVersandzuschlag');
     }
 
     $Zuschlag->kVersandart = (int)$_POST['kVersandart'];
@@ -232,7 +232,7 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && vali
         if (isset($Zuschlag->kVersandzuschlag) && $Zuschlag->kVersandzuschlag > 0) {
             $kVersandzuschlag = $Zuschlag->kVersandzuschlag;
         }
-        $sprachen        = gibAlleSprachen();
+        $sprachen        = Sprache::getAllLanguages();
         $zuschlagSprache = new stdClass();
 
         $zuschlagSprache->kVersandzuschlag = $kVersandzuschlag;
@@ -383,7 +383,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
                 $versandartstaffel->kVersandart = $kVersandart;
                 Shop::Container()->getDB()->insert('tversandartstaffel', $versandartstaffel);
             }
-            $sprachen       = gibAlleSprachen();
+            $sprachen       = Sprache::getAllLanguages();
             $versandSprache = new stdClass();
 
             $versandSprache->kVersandart = $kVersandart;
@@ -459,7 +459,7 @@ if ($step === 'neue Versandart') {
         $kVersandartTMP = $Versandart->kVersandart;
     }
 
-    $sprachen = gibAlleSprachen();
+    $sprachen = Sprache::getAllLanguages();
     $smarty->assign('sprachen', $sprachen)
            ->assign('zahlungsarten', $zahlungsarten)
            ->assign('versandlaender', $versandlaender)
@@ -628,7 +628,7 @@ if ($step === 'Zuschlagsliste') {
            ->assign('Land', Shop::Container()->getDB()->select('tland', 'cISO', $cISO))
            ->assign('cHinweis', $cHinweis)
            ->assign('cFehler', $cFehler)
-           ->assign('sprachen', gibAlleSprachen());
+           ->assign('sprachen', Sprache::getAllLanguages());
 }
 
 $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]])

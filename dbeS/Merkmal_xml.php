@@ -92,7 +92,7 @@ function bearbeiteInsert($xml)
 {
     if (isset($xml['merkmale']['tmerkmal']) && is_array($xml['merkmale']['tmerkmal'])) {
         // Standardsprache rausholen
-        $oSprachSTD = gibStandardsprache();
+        $oSprachSTD = Sprache::getDefaultLanguage();
         $oMM_arr    = []; // Merkt sich alle MerkmalWerte die von der Wawi geschickt werden
 
         //Merkmal

@@ -16,12 +16,12 @@ $step          = 'suchspecials';
 setzeSprache();
 
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 
 // Einstellungen
-if (verifyGPCDataInteger('einstellungen') === 1) {
+if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
 } elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && validateToken()) {
     // Suchspecials aus der DB holen und in smarty assignen
@@ -274,7 +274,7 @@ for ($i = 0; $i < $configCount; $i++) {
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oSuchSpecials_arr', $oSuchSpecials_arr)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

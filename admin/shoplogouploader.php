@@ -37,7 +37,7 @@ if (!empty($_FILES) && validateToken()) {
     echo json_encode($response);
     die();
 }
-if (verifyGPCDataInteger('upload') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('upload') === 1 && validateToken()) {
     if (isset($_POST['delete'])) {
         $delete = deleteShopLogo(Shop::getLogo());
         if ($delete === true) {

@@ -18,8 +18,8 @@ setzeSprache();
 
 // Tabs
 $smarty->assign('cTab', $cStep ?? null);
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 
 // Einstellungen
@@ -91,8 +91,8 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
                    ->assign('kKundenfeld', $customerField->kKundenfeld);
         }
     }
-} elseif (verifyGPDataString('a') === 'edit') { // Editieren
-    $kKundenfeld = verifyGPCDataInteger('kKundenfeld');
+} elseif (RequestHelper::verifyGPDataString('a') === 'edit') { // Editieren
+    $kKundenfeld = RequestHelper::verifyGPCDataInt('kKundenfeld');
 
     if ($kKundenfeld > 0) {
         $customerField = $customerFields->getCustomerField($kKundenfeld);
@@ -152,7 +152,7 @@ $smarty->assign('oKundenfeld_arr', $oKundenfeld_arr)
        ->assign('nHighestSortValue', $nHighestSortValue)
        ->assign('nHighestSortDiff', $nHighestSortDiff)
        ->assign('oConfig_arr', $oConfig_arr)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

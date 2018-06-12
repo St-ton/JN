@@ -18,8 +18,8 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         $cParameter_arr['kArtikel'],
         Session::Customer()->getID(),
         Shop::getLanguage(),
-        verifyGPDataString('cTitel'),
-        verifyGPDataString('cText'),
+        RequestHelper::verifyGPDataString('cTitel'),
+        RequestHelper::verifyGPDataString('cText'),
         $cParameter_arr['nSterne']
     );
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) { // Hilfreich abspeichern
@@ -27,15 +27,15 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         $cParameter_arr['kArtikel'],
         Session::Customer()->getID(),
         Shop::getLanguage(),
-        verifyGPCDataInteger('btgseite'),
-        verifyGPCDataInteger('btgsterne')
+        RequestHelper::verifyGPCDataInt('btgseite'),
+        RequestHelper::verifyGPCDataInt('btgsterne')
     );
-} elseif (verifyGPCDataInteger('bfa') === 1) {
+} elseif (RequestHelper::verifyGPCDataInt('bfa') === 1) {
     // Prüfe, ob Kunde eingeloggt
     if (empty($_SESSION['Kunde']->kKunde)) {
         $helper = Shop::Container()->getLinkService();
         header('Location: ' . $helper->getStaticRoute('jtl.php') .
-                '?a=' . verifyGPCDataInteger('a') .
+                '?a=' . RequestHelper::verifyGPCDataInt('a') .
                 '&bfa=1&r=' . R_LOGIN_BEWERTUNG,
             true,
             303

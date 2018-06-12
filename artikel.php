@@ -38,15 +38,15 @@ $fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'
 $cHinweis = $smarty->getTemplateVars('hinweis');
 $shopURL  = Shop::getURL() . '/';
 if (empty($cHinweis)) {
-    $cHinweis = mappingFehlerCode(verifyGPDataString('cHinweis'), $fBelohnung);
+    $cHinweis = mappingFehlerCode(RequestHelper::verifyGPDataString('cHinweis'), $fBelohnung);
 }
 $cFehler = $smarty->getTemplateVars('fehler');
 if (empty($cFehler)) {
-    $cFehler = mappingFehlerCode(verifyGPDataString('cFehler'));
+    $cFehler = mappingFehlerCode(RequestHelper::verifyGPDataString('cFehler'));
 }
 // Product Bundle in WK?
 if (isset($_POST['a'])
-    && verifyGPCDataInteger('addproductbundle') === 1
+    && RequestHelper::verifyGPCDataInt('addproductbundle') === 1
     && ProductBundleWK($_POST['a'])
 ) {
     $cHinweis       = Shop::Lang()->get('basketAllAdded', 'messages');
@@ -142,11 +142,11 @@ $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $nAnzahlBewertungen    = 0;
-$bewertung_seite       = verifyGPCDataInteger('btgseite');
-$bewertung_sterne      = verifyGPCDataInteger('btgsterne');
-$nSortierung           = verifyGPCDataInteger('sortierreihenfolge');
-$bewertung_anzeigen    = verifyGPCDataInteger('bewertung_anzeigen');
-$bAlleSprachen         = verifyGPCDataInteger('moreRating');
+$bewertung_seite       = RequestHelper::verifyGPCDataInt('btgseite');
+$bewertung_sterne      = RequestHelper::verifyGPCDataInt('btgsterne');
+$nSortierung           = RequestHelper::verifyGPCDataInt('sortierreihenfolge');
+$bewertung_anzeigen    = RequestHelper::verifyGPCDataInt('bewertung_anzeigen');
+$bAlleSprachen         = RequestHelper::verifyGPCDataInt('moreRating');
 $BewertungsTabAnzeigen = ($bewertung_seite || $bewertung_sterne || $bewertung_anzeigen || $bAlleSprachen) ? 1 : 0;
 if ($bewertung_seite === 0) {
     $bewertung_seite = 1;
@@ -210,8 +210,8 @@ $oBlaetterNavi = baueBewertungNavi(
     $Einstellungen['bewertung']['bewertung_anzahlseite']
 );
 // Konfig bearbeiten
-if (hasGPCDataInteger('ek')) {
-    holeKonfigBearbeitenModus(verifyGPCDataInteger('ek'), $smarty);
+if (RequestHelper::hasGPCData('ek')) {
+    holeKonfigBearbeitenModus(RequestHelper::verifyGPCDataInt('ek'), $smarty);
 }
 if ($AktuellerArtikel->Variationen) {
     foreach ($AktuellerArtikel->Variationen as $Variation) {
@@ -230,7 +230,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
        ->assign('oAehnlicheArtikel_arr', $similarArticles)
        ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)
-       ->assign('UVPBruttolocalized', gibPreisStringLocalized($AktuellerArtikel->fUVPBrutto))
+       ->assign('UVPBruttolocalized', Preise::getLocalizedPriceString($AktuellerArtikel->fUVPBrutto))
        ->assign('Artikel', $AktuellerArtikel)
        ->assign('Xselling', !empty($AktuellerArtikel->kVariKindArtikel)
            ? gibArtikelXSelling($AktuellerArtikel->kVariKindArtikel)
@@ -274,7 +274,7 @@ $smarty->assign('meta_title', $AktuellerArtikel->getMetaTitle())
        ->assign('meta_keywords', $AktuellerArtikel->getMetaKeywords());
 executeHook(HOOK_ARTIKEL_PAGE, ['oArtikel' => $AktuellerArtikel]);
 
-if (isAjaxRequest()) {
+if (RequestHelper::isAjaxRequest()) {
     $smarty->assign('listStyle', isset($_GET['isListStyle']) ? StringHandler::filterXSS($_GET['isListStyle']) : '');
 }
 

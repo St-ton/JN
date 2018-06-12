@@ -144,7 +144,7 @@ function bearbeiteInsert($xml)
         //Kategoriesprache
         $kategoriesprache_arr = mapArray($xml['tkategorie'], 'tkategoriesprache', $GLOBALS['mKategorieSprache']);
         if (is_array($kategoriesprache_arr)) {
-            $oShopSpracheAssoc_arr = gibAlleSprachen(1);
+            $oShopSpracheAssoc_arr = Sprache::getAllLanguages(1);
             $lCount                = count($kategoriesprache_arr);
             for ($i = 0; $i < $lCount; ++$i) {
                 // Sprachen die nicht im Shop vorhanden sind überspringen

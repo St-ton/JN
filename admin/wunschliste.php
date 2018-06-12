@@ -10,11 +10,11 @@ $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
 $cHinweis          = '';
 $settingsIDs       = [442, 443, 440, 439, 445, 446, 1460];
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 // Einstellungen
-if (verifyGPCDataInteger('einstellungen') === 1) {
+if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 // Anzahl Wunschzettel, gewünschte Artikel, versendete Wunschzettel

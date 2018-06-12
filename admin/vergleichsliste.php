@@ -11,8 +11,8 @@ $cHinweis = '';
 $cFehler  = '';
 $cSetting = '(469, 470)';
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 // Zeitfilter
 if (!isset($_SESSION['Vergleichsliste'])) {
@@ -154,7 +154,7 @@ if (is_array($oTopVergleichsliste_arr) && count($oTopVergleichsliste_arr) > 0) {
 $smarty->assign('Letzten20Vergleiche', $oLetzten20Vergleichsliste_arr)
     ->assign('TopVergleiche', $oTopVergleichsliste_arr)
     ->assign('oPagination', $oPagination)
-    ->assign('sprachen', gibAlleSprachen())
+    ->assign('sprachen', Sprache::getAllLanguages())
     ->assign('hinweis', $cHinweis)
     ->assign('fehler', $cFehler)
     ->display('vergleichsliste.tpl');

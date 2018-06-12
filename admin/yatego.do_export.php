@@ -60,7 +60,7 @@ $oGlobal_arr          = [];
 $oGlobal_arr['lager'] = [];
 $KategorieListe       = [];
 
-setzeSteuersaetze();
+TaxHelper::setTaxRates();
 $_SESSION['Kundengruppe']->setMayViewPrices(1)->setMayViewCategories(1)->setID($exportformat->kKundengruppe);
 $_SESSION['kSprache']      = (int)$exportformat->kSprache;
 $_SESSION['kKundengruppe'] = (int)$exportformat->kKundengruppe;

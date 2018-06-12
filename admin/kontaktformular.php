@@ -19,7 +19,7 @@ if (isset($_GET['del']) && (int)$_GET['del'] > 0 && validateToken()) {
 
 if (isset($_POST['content']) && (int)$_POST['content'] === 1 && validateToken()) {
     Shop::Container()->getDB()->delete('tspezialcontentsprache', 'nSpezialContent', SC_KONTAKTFORMULAR);
-    $sprachen = gibAlleSprachen();
+    $sprachen = Sprache::getAllLanguages();
     foreach ($sprachen as $sprache) {
         $spezialContent1                  = new stdClass();
         $spezialContent2                  = new stdClass();
@@ -78,7 +78,7 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && validateToken())
             Shop::Container()->getDB()->update('tkontaktbetreff', 'kKontaktBetreff', $kKontaktBetreff, $neuerBetreff);
             $cHinweis .= "Der Betreff <strong>$neuerBetreff->cName</strong> wurde erfolgreich ge&auml;ndert.";
         }
-        $sprachen            = gibAlleSprachen();
+        $sprachen            = Sprache::getAllLanguages();
         $neuerBetreffSprache = new stdClass();
         $neuerBetreffSprache->kKontaktBetreff = $kKontaktBetreff;
         foreach ($sprachen as $sprache) {
@@ -185,7 +185,7 @@ if ($step === 'betreff') {
 }
 
 $smarty->assign('step', $step)
-       ->assign('sprachen', gibAlleSprachen())
+       ->assign('sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('cTab', $cTab)
        ->display('kontaktformular.tpl');

@@ -14,11 +14,11 @@ $cHinweis          = '';
 $cfehler           = '';
 $settingsIDs       = [1143, 1144, 1145, 1146];
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 // Einstellungen
-if (verifyGPCDataInteger('einstellungen') === 1) {
+if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 // Config holen

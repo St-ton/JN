@@ -29,7 +29,7 @@ $cTableSprache         = 'temailvorlagesprache';
 $cTableSpracheOriginal = 'temailvorlagespracheoriginal';
 $cTableSetting         = 'temailvorlageeinstellungen';
 $cTablePluginSetting   = 'tpluginemailvorlageeinstellungen';
-if (verifyGPCDataInteger('kPlugin') > 0) {
+if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
     $cTable                = 'tpluginemailvorlage';
     $cTableSprache         = 'tpluginemailvorlagesprache';
     $cTableSpracheOriginal = 'tpluginemailvorlagespracheoriginal';
@@ -63,7 +63,7 @@ if (isset($_POST['resetEmailvorlage'])
     $oEmailvorlage = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
     if ($oEmailvorlage->kEmailvorlage > 0 && isset($_POST['resetConfirmJaSubmit'])) {
         // Resetten
-        if (verifyGPCDataInteger('kPlugin') > 0) {
+        if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
             Shop::Container()->getDB()->delete('tpluginemailvorlagesprache', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
         } else {
             Shop::Container()->getDB()->query(
@@ -86,8 +86,8 @@ if (isset($_POST['resetEmailvorlage'])
                 FROM " . $cTableSpracheOriginal . "
                 WHERE " . $cTableSpracheOriginal . ".kEmailvorlage = " . (int)$_POST['kEmailvorlage'], 4
         );
-        $languages = gibAlleSprachen();
-        if (empty(verifyGPCDataInteger('kPlugin'))) {
+        $languages = Sprache::getAllLanguages();
+        if (empty(RequestHelper::verifyGPCDataInt('kPlugin'))) {
             $vorlage   = Shop::Container()->getDB()->select('temailvorlageoriginal', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
             if (isset($vorlage->cDateiname) && strlen($vorlage->cDateiname) > 0) {
                 foreach ($languages as $_lang) {
@@ -522,8 +522,8 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
         );
         if (!empty($Emailvorlagesprache[$Sprache->kSprache])) {
             $cModulId = $Emailvorlage->cModulId;
-            if (verifyGPCDataInteger('kPlugin') > 0) {
-                $cModulId = 'kPlugin_' . verifyGPCDataInteger('kPlugin') . '_' . $cModulId;
+            if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
+                $cModulId = 'kPlugin_' . RequestHelper::verifyGPCDataInt('kPlugin') . '_' . $cModulId;
             }
 
             $bestellung->oEstimatedDelivery->localized = VersandartHelper::getDeliverytimeEstimationText(
@@ -648,8 +648,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             && !strrpos($_POST['dateiname_' . $i . '_' . $Sprache->kSprache], ';')
                         ) {
                             $cPlugin = '';
-                            if (verifyGPCDataInteger('kPlugin') > 0) {
-                                $cPlugin = '_' . verifyGPCDataInteger('kPlugin');
+                            if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
+                                $cPlugin = '_' . RequestHelper::verifyGPCDataInt('kPlugin');
                             }
                             $cUploadDatei = $cUploadVerzeichnis . $Emailvorlagesprache->kEmailvorlage .
                                 '_' . $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
@@ -852,7 +852,7 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
     $step       = 'bearbeiten';
     $cFromTable = isset($_REQUEST['kPlugin']) ? $cTablePluginSetting : $cTableSetting;
 
-    $Sprachen                   = gibAlleSprachen();
+    $Sprachen                   = Sprache::getAllLanguages();
     $Emailvorlage               = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
     $oEmailEinstellung_arr      = Shop::Container()->getDB()->selectAll($cFromTable, 'kEmailvorlage', (int)$Emailvorlage->kEmailvorlage);
     $oEmailEinstellungAssoc_arr = [];
@@ -902,7 +902,7 @@ if ($step === 'bearbeiten') {
     $smarty->assign('Emailvorlage', $Emailvorlage)
            ->assign('Emailvorlagesprache', $Emailvorlagesprache);
 }
-$smarty->assign('kPlugin', verifyGPCDataInteger('kPlugin'))
+$smarty->assign('kPlugin', RequestHelper::verifyGPCDataInt('kPlugin'))
        ->assign('cFehlerAnhang_arr', $cFehlerAnhang_arr)
        ->assign('step', $step)
        ->assign('hinweis', $cHinweis)

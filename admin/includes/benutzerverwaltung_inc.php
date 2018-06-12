@@ -711,7 +711,7 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
     $smarty->assign('hinweis', $messages['notice'])
            ->assign('fehler', $messages['error'])
            ->assign('action', $step)
-           ->assign('cTab', StringHandler::filterXSS(verifyGPDataString('tab')))
+           ->assign('cTab', StringHandler::filterXSS(RequestHelper::verifyGPDataString('tab')))
            ->display('benutzer.tpl');
 }
 

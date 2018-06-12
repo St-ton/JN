@@ -12,7 +12,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cHinweis     = '';
 $cFehler      = '';
 $step         = 'zusatzverpackung';
-$oSprache_arr = gibAlleSprachen();
+$oSprache_arr = Sprache::getAllLanguages();
 // Zusatzverpackung speichern
 if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToken()) {
     $kVerpackung         = (int)$_POST['kVerpackung'];
@@ -114,8 +114,8 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
             $cHinweis .= 'Ihre markierten Verpackungen wurden erfolgreich aktualisiert.<br />';
         }
     }
-} elseif (verifyGPCDataInteger('edit') > 0 && validateToken()) { // Editieren
-    $kVerpackung = verifyGPCDataInteger('edit');
+} elseif (RequestHelper::verifyGPCDataInt('edit') > 0 && validateToken()) { // Editieren
+    $kVerpackung = RequestHelper::verifyGPCDataInt('edit');
     $oVerpackung = Shop::Container()->getDB()->select('tverpackung', 'kVerpackung', $kVerpackung);
 
     if ($oVerpackung->kVerpackung > 0) {

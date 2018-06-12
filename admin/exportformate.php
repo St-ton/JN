@@ -190,7 +190,7 @@ if ($step === 'uebersicht') {
 }
 
 if ($step === 'neuer Export') {
-    $smarty->assign('sprachen', gibAlleSprachen())
+    $smarty->assign('sprachen', Sprache::getAllLanguages())
            ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
            ->assign('waehrungen', Shop::Container()->getDB()->query("SELECT * FROM twaehrung ORDER BY cStandard DESC", 2))
            ->assign('oKampagne_arr', holeAlleKampagnen(false, true));

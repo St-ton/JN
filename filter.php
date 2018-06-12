@@ -76,8 +76,8 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
     $products = $oSuchergebnisse->getProducts()->all();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
-if (verifyGPCDataInteger('zahl') > 0) {
-    $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
+if (RequestHelper::verifyGPCDataInt('zahl') > 0) {
+    $_SESSION['ArtikelProSeite'] = RequestHelper::verifyGPCDataInt('zahl');
 }
 if (!isset($_SESSION['ArtikelProSeite'])
     && $Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'

@@ -94,7 +94,7 @@ if (isset($_POST['delconfirmlinkgruppe']) && (int)$_POST['delconfirmlinkgruppe']
 }
 
 if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && validateToken()) {
-    $sprachen    = gibAlleSprachen();
+    $sprachen    = Sprache::getAllLanguages();
     $hasHTML_arr = [];
 
     foreach ($sprachen as $sprache) {
@@ -173,11 +173,11 @@ if ($continue
     && validateToken()
 ) {
     $step = 'neuer Link';
-    $link = (new \Link\Link($db))->load(verifyGPCDataInteger('kLink'));
+    $link = (new \Link\Link($db))->load(RequestHelper::verifyGPCDataInt('kLink'));
     $smarty->assign('Link', $link);
     // Bild loeschen?
-    if (verifyGPCDataInteger('delpic') === 1) {
-        @unlink($cUploadVerzeichnis . $link->getID() . '/' . verifyGPDataString('cName'));
+    if (RequestHelper::verifyGPCDataInt('delpic') === 1) {
+        @unlink($cUploadVerzeichnis . $link->getID() . '/' . RequestHelper::verifyGPDataString('cName'));
     }
     $cDatei_arr = [];
     if (is_dir($cUploadVerzeichnis . $link->getID())) {
@@ -292,7 +292,7 @@ if ($clearCache === true) {
     $linkAdmin->clearCache();
 }
 if ($step === 'uebersicht') {
-    $smarty->assign('kPlugin', verifyGPCDataInteger('kPlugin'))
+    $smarty->assign('kPlugin', RequestHelper::verifyGPCDataInt('kPlugin'))
            ->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())
            ->assign('linkgruppen', $linkAdmin->getLinkGroups());
 }
@@ -300,12 +300,12 @@ if ($step === 'neuer Link') {
     $kundengruppen = $db->query('SELECT * FROM tkundengruppe ORDER BY cName', \DB\ReturnType::ARRAY_OF_OBJECTS);
     $smarty->assign('Link', $link)
            ->assign('oSpezialseite_arr', holeSpezialseiten())
-           ->assign('sprachen', gibAlleSprachen())
+           ->assign('sprachen', Sprache::getAllLanguages())
            ->assign('kundengruppen', $kundengruppen)
            ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($link));
 }
 $smarty->assign('step', $step)
-       ->assign('sprachen', gibAlleSprachen())
+       ->assign('sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $hinweis)
        ->assign('fehler', $fehler)
        ->assign('linkAdmin', $linkAdmin)

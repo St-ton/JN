@@ -14,15 +14,15 @@ $cHinweis          = '';
 $cFehler           = '';
 $cStep             = 'uebersicht';
 $nAnzahlProSeite   = 15;
-$oSprach_arr       = gibAlleSprachen();
+$oSprach_arr       = Sprache::getAllLanguages();
 $oCheckBox         = new CheckBox();
 $cTab              = $cStep;
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $cTab = verifyGPDataString('tab');
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $cTab = RequestHelper::verifyGPDataString('tab');
 }
 if (isset($_POST['erstellenShowButton'])) {
     $cTab = 'erstellen';
-} elseif (verifyGPCDataInteger('uebersicht') === 1) { // Loeschen, aktivieren, deaktivieren
+} elseif (RequestHelper::verifyGPCDataInt('uebersicht') === 1) { // Loeschen, aktivieren, deaktivieren
     $kCheckBox_arr = $_POST['kCheckBox'];
     if (isset($_POST['checkboxAktivierenSubmit']) && validateToken()) {
         $oCheckBox->aktivateCheckBox($kCheckBox_arr);
@@ -34,14 +34,14 @@ if (isset($_POST['erstellenShowButton'])) {
         $oCheckBox->deleteCheckBox($kCheckBox_arr);
         $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich gel&ouml;scht.';
     }
-} elseif (verifyGPCDataInteger('edit') > 0) {
-    $kCheckBox = verifyGPCDataInteger('edit');
+} elseif (RequestHelper::verifyGPCDataInt('edit') > 0) {
+    $kCheckBox = RequestHelper::verifyGPCDataInt('edit');
     $cStep     = 'erstellen';
     $cTab      = $cStep;
     $smarty->assign('oCheckBox', new CheckBox($kCheckBox, true));
-} elseif (verifyGPCDataInteger('erstellen') === 1 && validateToken()) { // Erstellen
+} elseif (RequestHelper::verifyGPCDataInt('erstellen') === 1 && validateToken()) { // Erstellen
     $cStep       = 'erstellen';
-    $kCheckBox   = verifyGPCDataInteger('kCheckBox');
+    $kCheckBox   = RequestHelper::verifyGPCDataInt('kCheckBox');
     $cPlausi_arr = plausiCheckBox($_POST, $oSprach_arr);
     if (count($cPlausi_arr) === 0) {
         $oCheckBox = speicherCheckBox($_POST, $oSprach_arr);

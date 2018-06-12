@@ -23,7 +23,7 @@
  */
 function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
 {
-    if (validateToken() && verifyGPDataString('importcsv') === $importerId) {
+    if (validateToken() && RequestHelper::verifyGPDataString('importcsv') === $importerId) {
         if (isset($_FILES['csvfile']['type']) &&
             (
                 $_FILES['csvfile']['type'] === 'application/vnd.ms-excel' ||
@@ -46,7 +46,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             }
 
             if (isset($_REQUEST['importType'])) {
-                $importType = verifyGPCDataInteger('importType');
+                $importType = RequestHelper::verifyGPCDataInt('importType');
             }
 
             if ($importType === 0 && is_string($target)) {

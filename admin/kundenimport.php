@@ -52,7 +52,7 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     }
 }
 
-$smarty->assign('sprachen', gibAlleSprachen())
+$smarty->assign('sprachen', Sprache::getAllLanguages())
        ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
        ->assign('step', $step ?? null)
        ->assign('hinweis', $hinweis ?? null)
@@ -128,13 +128,13 @@ function processImport($fmt, $data)
             $kunde->{$fmt[$i]} = $data[$i];
         }
     }
-    if (!valid_email($kunde->cMail)) {
+    if (StringHandler::filterEmailAddress($kunde->cMail) === false) {
         return 'keine g&uuml;ltige Email ($kunde->cMail) ! &Uuml;bergehe diesen Datensatz.';
     }
-    if ((int)$_POST['PasswortGenerieren'] !== 1) {
-        if (!$kunde->cPasswort || $kunde->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e') {
-            return 'kein Passwort! &Uuml;bergehe diesen Datensatz. (Kann unregstrierter JTL Shop Kunde sein)';
-        }
+    if ((int)$_POST['PasswortGenerieren'] !== 1
+        && (!$kunde->cPasswort || $kunde->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
+    ) {
+        return 'kein Passwort! &Uuml;bergehe diesen Datensatz. (Kann unregstrierter JTL Shop Kunde sein)';
     }
     if (!$kunde->cNachname) {
         return 'kein Nachname! &Uuml;bergehe diesen Datensatz.';

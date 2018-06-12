@@ -455,7 +455,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                                 : 'Nein';
                         }
                         if ($oDaten_arr[$i]->fGesamtsumme !== 'n.v.') {
-                            $oDaten_arr[$i]->fGesamtsumme = gibPreisStringLocalized($oDaten_arr[$i]->fGesamtsumme);
+                            $oDaten_arr[$i]->fGesamtsumme = Preise::getLocalizedPriceString($oDaten_arr[$i]->fGesamtsumme);
                         }
                         if ($oDaten_arr[$i]->cStatus !== 'n.v.') {
                             $oDaten_arr[$i]->cStatus = lang_bestellstatus($oDaten_arr[$i]->cStatus);
@@ -559,7 +559,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                                 : 'Nein';
                         }
                         if ($oDaten_arr[$i]->fGesamtsumme !== 'n.v.') {
-                            $oDaten_arr[$i]->fGesamtsumme = gibPreisStringLocalized($oDaten_arr[$i]->fGesamtsumme);
+                            $oDaten_arr[$i]->fGesamtsumme = Preise::getLocalizedPriceString($oDaten_arr[$i]->fGesamtsumme);
                         }
                         if ($oDaten_arr[$i]->cStatus !== 'n.v.') {
                             $oDaten_arr[$i]->cStatus = lang_bestellstatus($oDaten_arr[$i]->cStatus);
@@ -779,7 +779,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                     $count = count($oDaten_arr);
                     for ($i = 0; $i < $count; $i++) {
                         if (isset($oDaten_arr[$i]->fVKNetto) && $oDaten_arr[$i]->fVKNetto > 0) {
-                            $oDaten_arr[$i]->fVKNetto = gibPreisStringLocalized($oDaten_arr[$i]->fVKNetto);
+                            $oDaten_arr[$i]->fVKNetto = Preise::getLocalizedPriceString($oDaten_arr[$i]->fVKNetto);
                         }
                         if (isset($oDaten_arr[$i]->fMwSt) && $oDaten_arr[$i]->fMwSt > 0) {
                             $oDaten_arr[$i]->fMwSt = number_format($oDaten_arr[$i]->fMwSt, 2) . "%";
@@ -1176,7 +1176,7 @@ function setzeDetailZeitraum($cDatumNow_arr)
         $_SESSION['Kampagne']->cToDate = (int)$cDatumNow_arr['cJahr'] . '-' . (int)$cDatumNow_arr['cMonat'] . '-' . (int)$cDatumNow_arr['cTag'];
     }
     // Ansicht und Zeitraum
-    if (verifyGPCDataInteger('zeitraum') === 1) {
+    if (RequestHelper::verifyGPCDataInt('zeitraum') === 1) {
         // Ansicht
         if (isset($_POST['nAnsicht']) && (int)$_POST['nAnsicht'] > 0) {
             $_SESSION['Kampagne']->nDetailAnsicht = $_POST['nAnsicht'];
@@ -1218,8 +1218,8 @@ function checkGesamtStatZeitParam()
     $cStamp = '';
 
     // Klick durch Gesamtübersicht
-    if (strlen(verifyGPDataString('cZeitParam')) > 0) {
-        $cZeitraum          = base64_decode(verifyGPDataString('cZeitParam'));
+    if (strlen(RequestHelper::verifyGPDataString('cZeitParam')) > 0) {
+        $cZeitraum          = base64_decode(RequestHelper::verifyGPDataString('cZeitParam'));
         $cZeitraumParts_arr = explode(' - ', $cZeitraum);
         $cStartDatum        = $cZeitraumParts_arr[0] ?? '';
         $cEndDatum          = $cZeitraumParts_arr[1] ?? '';

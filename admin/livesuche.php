@@ -16,16 +16,16 @@ $fehler            = '';
 $settingsIDs       = [423, 425, 422, 437, 438];
 
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 
 // Suchanfrage Suche
 $cLivesucheSQL = new stdClass();
 $cLivesucheSQL->cWhere = '';
 $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche DESC ';
-if (strlen(verifyGPDataString('cSuche')) > 0) {
-    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
+if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
+    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche')));
 
     if (strlen($cSuche) > 0) {
         $cLivesucheSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $cSuche . "%'";
@@ -36,16 +36,16 @@ if (strlen(verifyGPDataString('cSuche')) > 0) {
 }
 
 // Einstellungen
-if (verifyGPCDataInteger('einstellungen') === 1) {
+if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     $hinweis .= saveAdminSettings($settingsIDs, $_POST);
     $smarty->assign('tab', 'einstellungen');
 }
 
 // Suchanfragen Sortierung
-if (verifyGPCDataInteger('nSort') > 0) {
-    $smarty->assign('nSort', verifyGPCDataInteger('nSort'));
+if (RequestHelper::verifyGPCDataInt('nSort') > 0) {
+    $smarty->assign('nSort', RequestHelper::verifyGPCDataInt('nSort'));
 
-    switch (verifyGPCDataInteger('nSort')) {
+    switch (RequestHelper::verifyGPCDataInt('nSort')) {
         case 1:
             $cLivesucheSQL->cOrder = ' tsuchanfrage.cSuche ASC ';
             break;
@@ -173,7 +173,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
 
         $hinweis .= 'Die Suchanfragen wurden erfolgreich aktualisiert.<br />';
     } elseif (isset($_POST['submitMapping'])) { // Auswahl mappen
-        $cMapping = verifyGPDataString('cMapping');
+        $cMapping = RequestHelper::verifyGPDataString('cMapping');
 
         if (strlen($cMapping) > 0) {
             if (is_array($_POST['kSuchanfrage']) && count($_POST['kSuchanfrage']) > 0) {
@@ -339,7 +339,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     $smarty->assign('tab', 'mapping');
 }
 
-$Sprachen = gibAlleSprachen();
+$Sprachen = Sprache::getAllLanguages();
 // Anzahl Suchanfragen
 $nAnzahlSuchanfragen = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nAnzahl

@@ -43,7 +43,7 @@ $obj->tbestellung = $bestellung;
 Shop::Smarty()->assign('Bestellung', $bestellung);
 
 $oZahlungsInfo = new stdClass();
-if (verifyGPCDataInteger('zusatzschritt') === 1) {
+if (RequestHelper::verifyGPCDataInt('zusatzschritt') === 1) {
     $bZusatzangabenDa = false;
     switch ($bestellung->Zahlungsart->cModulId) {
         case 'za_kreditkarte_jtl':
@@ -242,7 +242,7 @@ elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_dd_jtl') {
     $paymentMethod->preparePaymentProcess($bestellung);
 }
 //hole aktuelle Kategorie, falls eine gesetzt
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;

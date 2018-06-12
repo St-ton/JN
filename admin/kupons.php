@@ -16,7 +16,7 @@ $cHinweis         = '';
 $cFehler          = '';
 $action           = '';
 $tab              = 'standard';
-$oSprache_arr     = gibAlleSprachen();
+$oSprache_arr     = Sprache::getAllLanguages();
 $oKupon           = null;
 $importDeleteDone = false;
 
@@ -83,7 +83,7 @@ if (validateToken()) {
             // Kupons loeschen
             $action = 'loeschen';
         }
-    } elseif (isset($_GET['kKupon']) && verifyGPCDataInteger('kKupon') >= 0) {
+    } elseif (isset($_GET['kKupon']) && RequestHelper::verifyGPCDataInt('kKupon') >= 0) {
         // Kupon bearbeiten
         $action = 'bearbeiten';
     }
@@ -176,10 +176,10 @@ if ($action === 'bearbeiten') {
            ->assign('oKupon', $oKupon);
 } else {
     // Seite: Uebersicht
-    if (hasGPCDataInteger('tab')) {
-        $tab = verifyGPDataString('tab');
-    } elseif (hasGPCDataInteger('cKuponTyp')) {
-        $tab = verifyGPDataString('cKuponTyp');
+    if (RequestHelper::hasGPCData('tab')) {
+        $tab = RequestHelper::verifyGPDataString('tab');
+    } elseif (RequestHelper::hasGPCData('cKuponTyp')) {
+        $tab = RequestHelper::verifyGPDataString('cKuponTyp');
     }
 
     deactivateOutdatedCoupons();

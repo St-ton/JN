@@ -15,8 +15,8 @@ $tab          = 'uebersicht';
 $action       = (isset($_POST['a']) && validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
-if (0 < strlen(verifyGPDataString('tab'))) {
-    $smarty->assign('tab', verifyGPDataString('tab'));
+if (0 < strlen(RequestHelper::verifyGPDataString('tab'))) {
+    $smarty->assign('tab', RequestHelper::verifyGPDataString('tab'));
 }
 try {
     $cache = Shop::Container()->getCache();

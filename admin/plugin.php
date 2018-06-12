@@ -17,10 +17,10 @@ $customPluginTabs   = [];
 $invalidateCache    = false;
 $pluginTemplateFile = 'plugin.tpl';
 if ($step === 'plugin_uebersicht') {
-    $kPlugin = verifyGPCDataInteger('kPlugin');
+    $kPlugin = RequestHelper::verifyGPCDataInt('kPlugin');
     if ($kPlugin > 0) {
         // Ein Settinglink wurde submitted
-        if (verifyGPCDataInteger('Setting') === 1) {
+        if (RequestHelper::verifyGPCDataInt('Setting') === 1) {
             if (!validateToken()) {
                 $bError = true;
             } else {
@@ -78,11 +78,11 @@ if ($step === 'plugin_uebersicht') {
                 $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert';
             }
         }
-        if (verifyGPCDataInteger('kPluginAdminMenu') > 0) {
-            $smarty->assign('defaultTabbertab', verifyGPCDataInteger('kPluginAdminMenu'));
+        if (RequestHelper::verifyGPCDataInt('kPluginAdminMenu') > 0) {
+            $smarty->assign('defaultTabbertab', RequestHelper::verifyGPCDataInt('kPluginAdminMenu'));
         }
-        if (strlen(verifyGPDataString('cPluginTab')) > 0) {
-            $smarty->assign('defaultTabbertab', verifyGPDataString('cPluginTab'));
+        if (strlen(RequestHelper::verifyGPDataString('cPluginTab')) > 0) {
+            $smarty->assign('defaultTabbertab', RequestHelper::verifyGPDataString('cPluginTab'));
         }
 
         $oPlugin = new Plugin($kPlugin, $invalidateCache);

@@ -310,7 +310,7 @@ function exportformatQueueActionErstellen(JTLSmarty $smarty, array &$messages)
  */
 function exportformatQueueActionEditieren(JTLSmarty $smarty, array &$messages)
 {
-    $kCron = verifyGPCDataInteger('kCron');
+    $kCron = RequestHelper::verifyGPCDataInt('kCron');
     $oCron = $kCron > 0 ? holeCron($kCron) : 0;
 
     if (is_object($oCron) && $oCron->kCron > 0) {
@@ -388,7 +388,7 @@ function exportformatQueueActionTriggern(JTLSmarty $smarty, array &$messages)
  */
 function exportformatQueueActionFertiggestellt(JTLSmarty $smarty, array &$messages)
 {
-    $nStunden = verifyGPCDataInteger('nStunden');
+    $nStunden = RequestHelper::verifyGPCDataInt('nStunden');
     if ($nStunden <= 0) {
         $nStunden = 24;
     }
@@ -530,6 +530,6 @@ function exportformatQueueFinalize($step, JTLSmarty $smarty, array &$messages)
     $smarty->assign('hinweis', $messages['notice'])
            ->assign('fehler', $messages['error'])
            ->assign('step', $step)
-           ->assign('cTab', verifyGPDataString('tab'))
+           ->assign('cTab', RequestHelper::verifyGPDataString('tab'))
            ->display('exportformat_queue.tpl');
 }

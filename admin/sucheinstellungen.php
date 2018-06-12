@@ -28,7 +28,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     $index = strtolower(StringHandler::xssClean($_GET['index']));
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
-        header(makeHTTPHeader(403), true);
+        header(RequestHelper::makeHTTPHeader(403), true);
         echo json_encode((object)['error' => 'Ungültiger Index angegeben']);
         exit;
     }
@@ -59,7 +59,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
                 $cSpalten_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
                 break;
             default:
-                header(makeHTTPHeader(403), true);
+                header(RequestHelper::makeHTTPHeader(403), true);
                 echo json_encode((object)['error' => 'Ungültiger Index angegeben']);
                 exit;
         }
@@ -102,7 +102,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         $cHinweis = 'Der Volltextindex für ' . $index . ' wurde gelöscht!';
     }
 
-    header(makeHTTPHeader(200), true);
+    header(RequestHelper::makeHTTPHeader(200), true);
     echo json_encode((object)['error' => $cFehler, 'hinweis' => $cHinweis]);
     exit;
 }

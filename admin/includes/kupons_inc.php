@@ -201,10 +201,10 @@ function getCoupon($kKupon)
 function augmentCoupon($oKupon)
 {
     $oKupon->cLocalizedValue = $oKupon->cWertTyp === 'festpreis'
-        ? gibPreisStringLocalized($oKupon->fWert)
+        ? Preise::getLocalizedPriceString($oKupon->fWert)
         : '';
     $oKupon->cLocalizedMbw   = isset($oKupon->fMindestbestellwert)
-        ? gibPreisStringLocalized($oKupon->fMindestbestellwert)
+        ? Preise::getLocalizedPriceString($oKupon->fMindestbestellwert)
         : '';
     $oKupon->bOpenEnd        = $oKupon->dGueltigBis === '0000-00-00 00:00:00';
 
@@ -602,9 +602,9 @@ function informCouponCustomers($oKupon)
     $defaultOptions = Artikel::getDefaultOptions();
     // lokalisierter Kuponwert und MBW
     $oKupon->cLocalizedWert = $oKupon->cWertTyp === 'festpreis'
-        ? gibPreisStringLocalized($oKupon->fWert, $oStdWaehrung, 0)
+        ? Preise::getLocalizedPriceString($oKupon->fWert, $oStdWaehrung, 0)
         : $oKupon->fWert . ' %';
-    $oKupon->cLocalizedMBW  = gibPreisStringLocalized($oKupon->fMindestbestellwert, $oStdWaehrung, 0);
+    $oKupon->cLocalizedMBW  = Preise::getLocalizedPriceString($oKupon->fMindestbestellwert, $oStdWaehrung, 0);
     // kKunde-Array aller auserwaehlten Kunden
     $kKunde_arr   = StringHandler::parseSSK($oKupon->cKunden);
     $oKundeDB_arr = Shop::Container()->getDB()->query(

@@ -61,7 +61,7 @@ for ($i = 0; $i < $configCount; $i++) {
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->display('shopsitemap.tpl');

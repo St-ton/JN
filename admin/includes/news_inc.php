@@ -497,9 +497,9 @@ function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
             $urlParams = [];
         }
         $urlParams['tab'] = $cTab;
-        if (isset($tabPageMapping[$cTab]) && verifyGPCDataInteger($tabPageMapping[$cTab]) > 1 && 
+        if (isset($tabPageMapping[$cTab]) && RequestHelper::verifyGPCDataInt($tabPageMapping[$cTab]) > 1 &&
             !array_key_exists($tabPageMapping[$cTab], $urlParams)) {
-            $urlParams[$tabPageMapping[$cTab]] = verifyGPCDataInteger($tabPageMapping[$cTab]);
+            $urlParams[$tabPageMapping[$cTab]] = RequestHelper::verifyGPCDataInt($tabPageMapping[$cTab]);
         }
     }
 

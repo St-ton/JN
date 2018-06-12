@@ -71,7 +71,7 @@ $oPreisspannenfilter_arr = Shop::Container()->getDB()->query("SELECT * FROM tpre
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oPreisspannenfilter_arr', $oPreisspannenfilter_arr)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->display('navigationsfilter.tpl');

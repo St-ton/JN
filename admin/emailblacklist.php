@@ -74,7 +74,7 @@ $oEmailBlacklistBlock_arr = Shop::Container()->getDB()->query("
         LIMIT 100", 2
 );
 
-$smarty->assign('Sprachen', gibAlleSprachen())
+$smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('oEmailBlacklist_arr', is_array($oEmailBlacklist_arr) ? $oEmailBlacklist_arr : [])
        ->assign('oEmailBlacklistBlock_arr', is_array($oEmailBlacklistBlock_arr) ? $oEmailBlacklistBlock_arr : [])
        ->assign('oConfig_arr', $oConfig_arr)

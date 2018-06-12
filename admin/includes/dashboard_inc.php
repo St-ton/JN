@@ -159,7 +159,7 @@ function getRemoteData($cURL, $nTimeout = 15)
 function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $cCallback = null, $bDecodeUTF8 = false)
 {
     $response = new IOResponse();
-    $cData    = http_get_contents($cURL, 15, $cPost);
+    $cData    = RequestHelper::http_get_contents($cURL, 15, $cPost);
     $oData    = json_decode($cData);
     $oData    = $bDecodeUTF8 ? utf8_convert_recursive($oData) : $oData;
     Shop::Smarty()->assign($cDataName, $oData);;

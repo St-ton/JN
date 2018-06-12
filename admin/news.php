@@ -23,32 +23,32 @@ $continueWith          = false;
 setzeSprache();
 
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $backTab  = verifyGPDataString('tab');
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $backTab  = RequestHelper::verifyGPDataString('tab');
     $smarty->assign('cTab', $backTab);
 
     switch ($backTab) {
         case 'inaktiv':
-            if (verifyGPCDataInteger('s1') > 1) {
-                $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . verifyGPCDataInteger('s1'))
-                       ->assign('cSeite', verifyGPCDataInteger('s1'));
+            if (RequestHelper::verifyGPCDataInt('s1') > 1) {
+                $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . RequestHelper::verifyGPCDataInt('s1'))
+                       ->assign('cSeite', RequestHelper::verifyGPCDataInt('s1'));
             }
             break;
         case 'aktiv':
-            if (verifyGPCDataInteger('s2') > 1) {
-                $smarty->assign('cBackPage', 'tab=aktiv&s2=' . verifyGPCDataInteger('s2'))
-                       ->assign('cSeite', verifyGPCDataInteger('s2'));
+            if (RequestHelper::verifyGPCDataInt('s2') > 1) {
+                $smarty->assign('cBackPage', 'tab=aktiv&s2=' . RequestHelper::verifyGPCDataInt('s2'))
+                       ->assign('cSeite', RequestHelper::verifyGPCDataInt('s2'));
             }
             break;
         case 'kategorien':
-            if (verifyGPCDataInteger('s3') > 1) {
-                $smarty->assign('cBackPage', 'tab=kategorien&s3=' . verifyGPCDataInteger('s3'))
-                       ->assign('cSeite', verifyGPCDataInteger('s3'));
+            if (RequestHelper::verifyGPCDataInt('s3') > 1) {
+                $smarty->assign('cBackPage', 'tab=kategorien&s3=' . RequestHelper::verifyGPCDataInt('s3'))
+                       ->assign('cSeite', RequestHelper::verifyGPCDataInt('s3'));
             }
             break;
     }
 }
-$Sprachen     = gibAlleSprachen();
+$Sprachen     = Sprache::getAllLanguages();
 $oSpracheNews = Shop::Lang()->getIsoFromLangID($_SESSION['kSprache']);
 if (!$oSpracheNews) {
     $oSpracheNews = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
@@ -75,7 +75,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && valida
     }
 }
 
-if (verifyGPCDataInteger('news') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('news') === 1 && validateToken()) {
     // Neue News erstellen
     if ((isset($_POST['erstellen']) && (int)$_POST['erstellen'] === 1 && isset($_POST['news_erstellen'])) ||
         (isset($_POST['news_erstellen']) && (int)$_POST['news_erstellen'] === 1)) {
@@ -92,23 +92,23 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
     } elseif ((isset($_POST['erstellen']) && (int)$_POST['erstellen'] === 1 && isset($_POST['news_kategorie_erstellen'])) ||
         (isset($_POST['news_kategorie_erstellen']) && (int)$_POST['news_kategorie_erstellen'] === 1)) {
         $step = 'news_kategorie_erstellen';
-    } elseif (verifyGPCDataInteger('nkedit') === 1) { // Newskommentar editieren
-        if (verifyGPCDataInteger('kNews') > 0) {
+    } elseif (RequestHelper::verifyGPCDataInt('nkedit') === 1) { // Newskommentar editieren
+        if (RequestHelper::verifyGPCDataInt('kNews') > 0) {
             if (isset($_POST['newskommentarsavesubmit'])) {
-                if (speicherNewsKommentar(verifyGPCDataInteger('kNewsKommentar'), $_POST)) {
+                if (speicherNewsKommentar(RequestHelper::verifyGPCDataInt('kNewsKommentar'), $_POST)) {
                     $step = 'news_vorschau';
                     $cHinweis .= 'Der Newskommentar wurde erfolgreich editiert.<br />';
 
-                    if (verifyGPCDataInteger('nFZ') === 1) {
+                    if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
                         header('Location: freischalten.php');
                         exit();
                     } else {
-                        $tab = verifyGPDataString('tab');
+                        $tab = RequestHelper::verifyGPDataString('tab');
                         if ($tab === 'aktiv') {
                             newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis, [
                                 'news'  => '1',
                                 'nd'    => '1',
-                                'kNews' => verifyGPCDataInteger('kNews'),
+                                'kNews' => RequestHelper::verifyGPCDataInt('kNews'),
                                 'token' => $_SESSION['jtl_token'],
                             ]);
                         } else {
@@ -130,9 +130,9 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 $smarty->assign('oNewsKommentar', Shop::Container()->getDB()->select(
                     'tnewskommentar',
                     'kNewsKommentar',
-                    verifyGPCDataInteger('kNewsKommentar'))
+                    RequestHelper::verifyGPCDataInt('kNewsKommentar'))
                 );
-                if (verifyGPCDataInteger('nFZ') === 1) {
+                if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
                     $smarty->assign('nFZ', 1);
                 }
             }
@@ -341,7 +341,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 $step         = 'news_editieren';
                 $continueWith = (int)$kNews;
             } else {
-                $tab = verifyGPDataString('tab');
+                $tab = RequestHelper::verifyGPDataString('tab');
                 newsRedirect(empty($tab) ? 'aktiv' : $tab, $cHinweis);
             }
         } else {
@@ -494,13 +494,13 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $cFehler .= 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben.<br />';
             $step = 'news_kategorie_erstellen';
 
-            $oNewsKategorie = editiereNewskategorie(verifyGPCDataInteger('kNewsKategorie'), $_SESSION['kSprache']);
+            $oNewsKategorie = editiereNewskategorie(RequestHelper::verifyGPCDataInt('kNewsKategorie'), $_SESSION['kSprache']);
 
             if (isset($oNewsKategorie->kNewsKategorie) && (int)$oNewsKategorie->kNewsKategorie > 0) {
                 $smarty->assign('oNewsKategorie', $oNewsKategorie);
             } else {
                 $step = 'news_uebersicht';
-                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . verifyGPCDataInteger('kNewsKategorie') .
+                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . RequestHelper::verifyGPCDataInt('kNewsKategorie') .
                     '" konnte nicht gefunden werden.<br />';
             }
 
@@ -520,8 +520,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         // Newskategorie editieren
         // Soll Preview geloescht werden?
         $kNewsKategorie = (int) $_GET['kNewsKategorie'];
-        if (strlen(verifyGPDataString('delpic')) > 0) {
-            if (loescheNewsBild(verifyGPDataString('delpic'), $kNewsKategorie, $cUploadVerzeichnisKat)) {
+        if (strlen(RequestHelper::verifyGPDataString('delpic')) > 0) {
+            if (loescheNewsBild(RequestHelper::verifyGPDataString('delpic'), $kNewsKategorie, $cUploadVerzeichnisKat)) {
                 $cHinweis .= 'Ihr ausgew&auml;hltes Newsbild wurde erfolgreich gel&ouml;scht.';
             } else {
                 $cFehler .= 'Fehler: Ihr ausgew&auml;hltes Newsbild konnte nicht gel&ouml;scht werden.';
@@ -554,7 +554,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 Shop::Container()->getDB()->update('tnewskommentar', 'kNewsKommentar', $kNewsKommentar, $upd);
             }
             $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich freigeschaltet.<br />';
-            $tab = verifyGPDataString('tab');
+            $tab = RequestHelper::verifyGPDataString('tab');
             newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis);
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newskommentar.<br />';
@@ -566,7 +566,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             }
 
             $cHinweis .= 'Ihre markierten Kommentare wurden erfolgreich gel&ouml;scht.<br />';
-            $tab = verifyGPDataString('tab');
+            $tab = RequestHelper::verifyGPDataString('tab');
             newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis);
         } else {
             $cFehler .= 'Fehler: Sie m&uuml;ssen mindestens einen Kommentar markieren.<br />';
@@ -580,8 +580,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             ? $continueWith
             : (int)$_GET['kNews'];
         // Sollen einzelne Newsbilder geloescht werden?
-        if (strlen(verifyGPDataString('delpic')) > 0) {
-            if (loescheNewsBild(verifyGPDataString('delpic'), $kNews, $cUploadVerzeichnis)) {
+        if (strlen(RequestHelper::verifyGPDataString('delpic')) > 0) {
+            if (loescheNewsBild(RequestHelper::verifyGPDataString('delpic'), $kNews, $cUploadVerzeichnis)) {
                 $cHinweis .= 'Ihr ausgew&auml;hltes Newsbild wurde erfolgreich gel&ouml;scht.';
             } else {
                 $cFehler .= 'Fehler: Ihr ausgew&auml;hltes Newsbild konnte nicht gel&ouml;scht werden.';
@@ -630,10 +630,10 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
     }
 
     // News Vorschau
-    if (verifyGPCDataInteger('nd') === 1 || $step === 'news_vorschau') {
-        if (verifyGPCDataInteger('kNews')) {
+    if (RequestHelper::verifyGPCDataInt('nd') === 1 || $step === 'news_vorschau') {
+        if (RequestHelper::verifyGPCDataInt('kNews')) {
             $step  = 'news_vorschau';
-            $kNews = verifyGPCDataInteger('kNews');
+            $kNews = RequestHelper::verifyGPCDataInt('kNews');
             $oNews = Shop::Container()->getDB()->query(
                 "SELECT DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
                     DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de,
@@ -664,7 +664,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                         }
 
                         $cHinweis .= "Ihre markierten Kommentare wurden erfolgreich gel&ouml;scht.<br />";
-                        $tab = verifyGPDataString('tab');
+                        $tab = RequestHelper::verifyGPDataString('tab');
                         newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis, [
                             'news'  => '1',
                             'nd'    => '1',

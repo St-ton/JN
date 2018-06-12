@@ -17,8 +17,8 @@ $cFehler           = '';
 $step              = 'uebersicht';
 $settingsIDs       = [427, 428, 431, 433, 434, 435, 430];
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken()) {
     //Formular wurde abgeschickt
@@ -193,17 +193,17 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken())
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 // Tagdetail
-if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1) {
+if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataInt('tagdetail') === 1) {
     $step = 'detail';
     // Pagination
-    $nTagDetailAnzahl = holeTagDetailAnzahl(verifyGPCDataInteger('kTag'), $_SESSION['kSprache']);
+    $nTagDetailAnzahl = holeTagDetailAnzahl(RequestHelper::verifyGPCDataInt('kTag'), $_SESSION['kSprache']);
     $oPagiTagDetail   = (new Pagination('detail'))
         ->setItemCount($nTagDetailAnzahl)
         ->assemble();
     // Tag von einem odere mehreren Artikeln loesen
     if (!empty($_POST['kArtikel_arr']) && is_array($_POST['kArtikel_arr']) &&
-        count($_POST['kArtikel_arr']) && verifyGPCDataInteger('detailloeschen') === 1) {
-        if (loescheTagsVomArtikel($_POST['kArtikel_arr'], verifyGPCDataInteger('kTag'))) {
+        count($_POST['kArtikel_arr']) && RequestHelper::verifyGPCDataInt('detailloeschen') === 1) {
+        if (loescheTagsVomArtikel($_POST['kArtikel_arr'], RequestHelper::verifyGPCDataInt('kTag'))) {
             $cHinweis = 'Der Tag wurde erfolgreich bei Ihren markierten Artikeln gel&ouml;scht.';
         } else {
             $step    = 'detail';
@@ -211,13 +211,13 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
         }
     }
     $oTagArtikel_arr = holeTagDetail(
-        verifyGPCDataInteger('kTag'),
+        RequestHelper::verifyGPCDataInt('kTag'),
         (int)$_SESSION['kSprache'],
         ' LIMIT ' . $oPagiTagDetail->getLimitSQL()
     );
     $smarty->assign('oTagArtikel_arr', $oTagArtikel_arr)
         ->assign('oPagiTagDetail', $oPagiTagDetail)
-        ->assign('kTag', verifyGPCDataInteger('kTag'))
+        ->assign('kTag', RequestHelper::verifyGPCDataInt('kTag'))
         ->assign('cTagName', $oTagArtikel_arr[0]->cName ?? '');
 } else {
     // Anzahl Tags fuer diese Sprache
@@ -241,7 +241,7 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
         ->setItemCount($nAnzahlTagMappings->nAnzahl)
         ->assemble();
 
-    $Sprachen = gibAlleSprachen();
+    $Sprachen = Sprache::getAllLanguages();
     $Tags     = Shop::Container()->getDB()->query("
         SELECT ttag.kTag, ttag.cName, ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
             FROM ttag

@@ -43,7 +43,7 @@ if ((int)$_POST['newsletterimport'] === 1 &&
     }
 }
 
-$smarty->assign('sprachen', gibAlleSprachen())
+$smarty->assign('sprachen', Sprache::getAllLanguages())
        ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
        ->assign('hinweis', $hinweis)
        ->assign('fehler', $fehler)
@@ -171,7 +171,7 @@ function processImport($fmt, $data)
         }
     }
 
-    if (!valid_email($newsletterempfaenger->cEmail)) {
+    if (StringHandler::filterEmailAddress($newsletterempfaenger->cEmail) === false) {
         return "keine g&uuml;ltige Email ($newsletterempfaenger->cEmail)! &Uuml;bergehe diesen Datensatz.";
     }
     // NewsletterEmpfaengerBlacklist

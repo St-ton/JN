@@ -1988,9 +1988,9 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
 
     // used in ExportFormate
     $kKundengruppeStd = Kundengruppe::getDefaultGroupID();
-    $oSprache         = gibStandardsprache(true);
+    $oSprache         = Sprache::getDefaultLanguage(true);
     $kSpracheStd      = $oSprache->kSprache;
-    $kWaehrungStd     = gibStandardWaehrung();
+    $kWaehrungStd     = Session::Currency()->getID();
 
     $hooksNode      = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'])
@@ -2336,7 +2336,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             $oLinkSprache->kLink = $kLink;
             // Hole alle Sprachen des Shops
             // Assoc cISO
-            $oSprachAssoc_arr = gibAlleSprachen(2);
+            $oSprachAssoc_arr = Sprache::getAllLanguages(2);
             // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
             // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
             // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
@@ -2509,7 +2509,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $cISOSprache = '';
         // Hole alle Sprachen des Shops
         // Assoc cISO
-        $oSprachAssoc_arr = gibAlleSprachen(2);
+        $oSprachAssoc_arr = Sprache::getAllLanguages(2);
         // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
         // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
         // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
@@ -2780,7 +2780,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oTemplateSprache->kEmailvorlage = $kEmailvorlage;
         // Hole alle Sprachen des Shops
         // Assoc cISO
-        $oSprachAssoc_arr = gibAlleSprachen(2);
+        $oSprachAssoc_arr = Sprache::getAllLanguages(2);
         // Ist das erste Standard Template gesetzt worden? => wird etwas weiter unten gebraucht
         // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
         // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
@@ -2837,7 +2837,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         }
     }
     // tpluginsprachvariable + tpluginsprachvariablesprache füllen
-    $oSprachStandardAssoc_arr = gibAlleSprachen(2);
+    $oSprachStandardAssoc_arr = Sprache::getAllLanguages(2);
     foreach ($localeNode as $t => $Variable_arr) {
         $oSprachAssoc_arr = $oSprachStandardAssoc_arr;
         preg_match("/[0-9]+/", $t, $cTreffer1_arr);
@@ -3504,7 +3504,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
     if (is_array($oObj_arr) && count($oObj_arr) === 2) {
         $oLinkspracheOld_arr = Shop::Container()->getDB()->selectAll('tlinksprache', 'kLink', $oObj_arr[0]->kLink);
         if (is_array($oLinkspracheOld_arr) && count($oLinkspracheOld_arr) > 0) {
-            $oSprachAssoc_arr = gibAlleSprachen(2);
+            $oSprachAssoc_arr = Sprache::getAllLanguages(2);
 
             foreach ($oLinkspracheOld_arr as $oLinkspracheOld) {
                 $_upd       = new stdClass();

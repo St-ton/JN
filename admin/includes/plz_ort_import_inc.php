@@ -647,7 +647,7 @@ function plzimportMakeResponse($data, $error = null)
     header('Content-type: application/json');
 
     if ($error !== null) {
-        header(makeHTTPHeader(500), true, $error);
+        header(RequestHelper::makeHTTPHeader(500), true, $error);
     }
 
     $result = (object)[

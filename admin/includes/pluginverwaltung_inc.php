@@ -2311,10 +2311,9 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
             continue;
         }
-        $kLinkOld                  = (!empty($oPluginOld->kPlugin))
-            ? Shop::Container()->getDB()->select('tlink', 'kPlugin', $oPluginOld->kPlugin, 'cName', $Link_arr['Name'])
-            : null;
-        $oLink->kLinkgruppe        = $kLinkgruppe;
+        $kLinkOld                  = empty($oPluginOld->kPlugin)
+            ? null
+            : Shop::Container()->getDB()->select('tlink', 'kPlugin', $oPluginOld->kPlugin, 'cName', $Link_arr['Name']);
         $oLink->kPlugin            = $kPlugin;
         $oLink->cName              = $Link_arr['Name'];
         $oLink->nLinkart           = LINKTYP_PLUGIN;
@@ -2325,10 +2324,14 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oLink->bSSL               = isset($Link_arr['SSL'])
             ? (int)$Link_arr['SSL']
             : 0;
-        // tlink füllen
         $kLink = Shop::Container()->getDB()->insert('tlink', $oLink);
 
         if ($kLink > 0) {
+            $linkGroupAssociation              = new stdClass();
+            $linkGroupAssociation->linkGroupID = $kLinkgruppe;
+            $linkGroupAssociation->linkID      = $kLink;
+            Shop::Container()->getDB()->insert('tlinkgroupassociations', $linkGroupAssociation);
+
             $oLinkSprache        = new stdClass();
             $oLinkSprache->kLink = $kLink;
             // Hole alle Sprachen des Shops

@@ -40,6 +40,7 @@ abstract class AbstractBox implements BoxInterface
         'bAktiv'         => 'IsActive',
         'kContainer'     => 'ContainerID',
         'cFilter'        => 'Filter',
+        'oPlugin'        => 'Plugin',
     ];
 
     /**
